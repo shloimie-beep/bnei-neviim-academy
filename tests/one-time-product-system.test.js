@@ -373,7 +373,7 @@ test('server exposes scoped One Time product APIs and public draft routes', () =
 test('public One Time launch page is indexable, interest-only, and has no checkout call', () => {
   assert.match(oneTimeHtml, /<meta name="robots" content="index, follow">/);
   assert.match(oneTimeHtml, /One Time Mishnayos/);
-  assert.match(oneTimeHtml, /Give your son a love for Torah you never thought possible\./);
+  assert.match(oneTimeHtml, /Give your son a love for learning Torah\./);
   assert.match(oneTimeHtml, /Sign Up Now/);
   assert.match(oneTimeHtml, /href="\/one-time\/signup"/);
   assert.doesNotMatch(oneTimeHtml, /data-signup-modal|data-signup-trigger/);
@@ -389,7 +389,7 @@ test('public One Time launch page is indexable, interest-only, and has no checko
   assert.doesNotMatch(oneTimeHtml, /signup-strip/);
   assert.match(oneTimeSignupHtml, /source_landing_page/);
   assert.match(oneTimeSignupHtml, /signup_mode/);
-  assert.match(oneTimeSignupHtml, /REQ-20260712-013/);
+  assert.match(oneTimeSignupHtml, /REQ-20260712-106/);
   assert.match(oneTimeSignupHtml, /\/api\/one-time\/interest/);
   assert.doesNotMatch(oneTimeHtml, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
   assert.doesNotMatch(oneTimeHtml, /WhatsApp Robot Scheller/);

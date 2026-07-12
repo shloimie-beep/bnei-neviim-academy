@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T10:35:05.056Z",
+  "generated_at": "2026-07-12T12:21:44.080Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -362,6 +362,8 @@
     "ops/prompt-packets/2026-07-10-onetime-ui-gap-implementation/manifest.json",
     "ops/prompt-packets/2026-07-11-onetime-p0p1-corrective/00-control-tower.md",
     "ops/prompt-packets/2026-07-11-onetime-p0p1-corrective/01-current-state-visual-audit.md",
+    "ops/prompt-packets/2026-07-12-onetime-landing-visual-revision/00-control-tower.md",
+    "ops/prompt-packets/2026-07-12-onetime-landing-visual-revision/01-current-state-visual-audit.md",
     "ops/prompt-packets/README.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/00-control-tower.sample.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/01-current-state-visual-audit.sample.md",
@@ -604,6 +606,7 @@
     "tasks-pending/2026-07-10-onetime-public-landing-production-rebuild.md",
     "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
     "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.md",
+    "tasks-pending/2026-07-12-onetime-landing-visual-revision.md",
     "tasks-pending/2026-07-12-onetime-p0p1-corrective-completion.md",
     "tasks-pending/2026-07-12-onetime-signup-reminder-workflow-addendum.md",
     "tasks-pending/_template-goal-mode-correction-output.md",

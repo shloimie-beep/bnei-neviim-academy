@@ -85,13 +85,13 @@ test('shared One Time review pages include review branding assets', () => {
   }
 
   const oneTimeHtml = fs.readFileSync('public/one-time/index.html', 'utf8');
-  assert.match(oneTimeHtml, /Give your son a love for Torah you never thought possible\./);
+  assert.match(oneTimeHtml, /Give your son a love for learning Torah\./);
   assert.match(oneTimeHtml, /\/assets\/one-time\/brand\/one-time-logo-white\.webp/);
   assert.doesNotMatch(oneTimeHtml, /onetime-hero-vertical\.webp/);
   assert.doesNotMatch(oneTimeHtml, /TODO: replace with final hero video\/image/);
   assert.match(oneTimeHtml, /\/assets\/one-time\/press\/torah-anytime\.png/);
   assert.doesNotMatch(oneTimeHtml, /player\.vimeo\.com\/video\/1158542993\?h=daa31d3417/);
-  assert.match(oneTimeHtml, /\/api\/one-time\/interest/);
+  assert.match(fs.readFileSync('public/one-time/signup.html', 'utf8'), /\/api\/one-time\/interest/);
   assert.doesNotMatch(oneTimeHtml, /TEST-ONETIME-REVIEW-ACCESS/);
   assert.match(fs.readFileSync('public/provider.html', 'utf8'), /\/css\/one-time-shared-review\.css/);
   assert.match(fs.readFileSync('public/provider.html', 'utf8'), /One Time Rabbi Workspace Review/);
@@ -221,9 +221,9 @@ test('One Time brand kit and service-provider site config are present', () => {
   assert.equal(site.status, 'public_launch_priority');
   assert.equal(site.review_only, false);
   assert.equal(site.external_write_performed, false);
-  assert.equal(site.copy.headline, 'Your Child Can Love Learning Mishnayos');
-  assert.equal(site.copy.primary_cta, 'Join the Free Class');
-  assert.equal(site.copy.secondary_cta, 'See How It Works');
+  assert.equal(site.copy.headline, 'Give your son a love for learning Torah.');
+  assert.equal(site.copy.primary_cta, 'Sign Up Now');
+  assert.equal(site.copy.secondary_cta, null);
   assert.equal(site.assets.social_og, '/images/one-time/social/one-time-og-20260622.jpg');
   assert.ok(site.blocked_live_actions.includes('live_email_send'));
 

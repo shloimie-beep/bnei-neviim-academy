@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Give Your Son A Love For Torah | One Time Mishnayos</title>
-  <meta name="description" content="A live worldwide Mishnayos class with Rabbi Eli Scheller, built for boys to love learning Torah with clarity, excitement, and accountability.">
+  <title>Give Your Son A Love For Learning Torah | One Time Mishnayos</title>
+  <meta name="description" content="A live worldwide Mishnayos class with Rabbi Eli Scheller, built for boys to love learning Torah with clarity, excitement, and steady progress.">
   <meta name="robots" content="index, follow">
-  <meta property="og:title" content="Give Your Son A Love For Torah">
+  <meta property="og:title" content="Give your son a love for learning Torah.">
   <meta property="og:description" content="Join One Time Mishnayos live from Eretz Yisrael with Rabbi Eli Scheller.">
   <meta property="og:image" content="/images/one-time/social/one-time-og-20260622.jpg">
   <meta property="og:type" content="website">
@@ -16,19 +16,21 @@
   <style>
     :root {
       --black: #050505;
-      --black-soft: #101010;
+      --black-soft: #101116;
       --ink: #141414;
       --white: #ffffff;
-      --paper: #f9f7ee;
-      --muted: #cfcfcf;
-      --muted-dark: #555b61;
+      --paper: #f7f5eb;
+      --paper-strong: #fffdf5;
+      --muted: rgba(255, 255, 255, 0.72);
+      --muted-dark: rgba(5, 5, 5, 0.64);
       --yellow: #f3e63d;
-      --yellow-deep: #d9c915;
+      --yellow-deep: #cdbb00;
       --ice: #dff8ff;
-      --ice-line: rgba(145, 226, 255, 0.42);
+      --ice-strong: #96e7ff;
+      --chrome: linear-gradient(135deg, #fff9b7 0%, #f3e63d 30%, #f7fbff 50%, #c8ac00 74%, #fff8a5 100%);
       --line: rgba(255, 255, 255, 0.16);
-      --line-dark: rgba(5, 5, 5, 0.13);
-      --shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+      --line-dark: rgba(5, 5, 5, 0.14);
+      --shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
       --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --serif: Georgia, "Times New Roman", Times, serif;
       --header-height: 74px;
@@ -49,23 +51,13 @@
       font-family: var(--sans);
       line-height: 1.5;
       letter-spacing: 0;
-    }
-
-    body.modal-open {
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     body,
     button,
-    input,
-    select,
-    textarea {
+    input {
       font: inherit;
-    }
-
-    button,
-    a {
-      -webkit-tap-highlight-color: transparent;
     }
 
     a {
@@ -73,7 +65,8 @@
       text-decoration: none;
     }
 
-    img {
+    img,
+    svg {
       display: block;
       max-width: 100%;
     }
@@ -94,26 +87,26 @@
     }
 
     h1 {
-      max-width: 920px;
+      max-width: 900px;
       margin: 0 0 22px;
-      font-size: 5.1rem;
+      font-size: 5.05rem;
       line-height: 0.96;
     }
 
     h2 {
-      margin-bottom: 16px;
-      font-size: 3.35rem;
+      margin: 0;
+      font-size: 3.25rem;
       line-height: 1.02;
     }
 
     h3 {
-      margin-bottom: 8px;
-      font-size: 1.12rem;
+      margin: 0;
+      font-size: 1.08rem;
       line-height: 1.18;
     }
 
     p {
-      color: rgba(255, 255, 255, 0.74);
+      color: var(--muted);
     }
 
     .wrap {
@@ -138,16 +131,11 @@
       transform: translateY(0);
     }
 
-    .visually-hidden {
+    .icon-defs {
       position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+      width: 0;
+      height: 0;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
     }
 
     .site-header {
@@ -178,13 +166,14 @@
     .brand-lockup img {
       width: 132px;
       height: auto;
+      flex: 0 0 auto;
     }
 
     .brand-lockup span {
       display: block;
       color: rgba(255, 255, 255, 0.72);
       font-size: 0.78rem;
-      font-weight: 750;
+      font-weight: 800;
       line-height: 1.15;
       text-transform: uppercase;
     }
@@ -192,16 +181,17 @@
     .nav-shell {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 16px;
+      min-width: 0;
     }
 
     .site-nav {
       display: flex;
       align-items: center;
-      gap: 16px;
-      color: rgba(255, 255, 255, 0.76);
-      font-size: 0.94rem;
-      font-weight: 720;
+      gap: 14px;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 0.9rem;
+      font-weight: 800;
     }
 
     .site-nav a {
@@ -229,11 +219,15 @@
     }
 
     .member-link {
-      color: rgba(255, 255, 255, 0.68);
-      font-size: 0.92rem;
-      font-weight: 760;
-      padding: 9px 10px;
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
       border-radius: 6px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      font-weight: 800;
     }
 
     .member-link:hover,
@@ -244,25 +238,28 @@
     }
 
     .button {
+      position: relative;
+      min-height: 46px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 9px;
-      min-height: 46px;
       padding: 0 18px;
       border: 1px solid transparent;
       border-radius: 6px;
       cursor: pointer;
-      font-weight: 850;
+      overflow: hidden;
+      font-weight: 900;
       line-height: 1;
       text-align: center;
-      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+      transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
     }
 
     .button:focus-visible,
     .icon-button:focus-visible,
-    .choice-card:focus-within {
-      outline: 3px solid rgba(223, 248, 255, 0.92);
+    .carousel-dot:focus-visible,
+    .ticker-link:focus-visible {
+      outline: 3px solid rgba(223, 248, 255, 0.95);
       outline-offset: 3px;
     }
 
@@ -271,57 +268,33 @@
     }
 
     .button.primary {
-      position: relative;
-      overflow: hidden;
       color: var(--black);
-      background: var(--yellow);
+      background: var(--chrome);
       border-color: rgba(255, 255, 255, 0.16);
-      box-shadow: 0 14px 30px rgba(243, 230, 61, 0.18);
+      box-shadow: 0 16px 34px rgba(243, 230, 61, 0.2);
     }
 
     .button.primary::after {
       content: "";
       position: absolute;
-      inset: -120% auto -120% -40%;
+      inset: -130% auto -130% -42%;
       width: 34%;
       transform: rotate(18deg);
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
       animation: buttonSweep 5.8s ease-in-out infinite;
       pointer-events: none;
     }
 
     .button.primary:hover {
-      background: #fff26b;
-    }
-
-    .button.dark {
-      color: var(--white);
-      background: var(--black);
-      border-color: rgba(255, 255, 255, 0.22);
-    }
-
-    .button.light {
-      color: var(--black);
-      background: var(--white);
-      border-color: rgba(5, 5, 5, 0.1);
-    }
-
-    .button.full {
-      width: 100%;
-    }
-
-    .button[disabled] {
-      cursor: not-allowed;
-      opacity: 0.52;
-      transform: none;
+      filter: saturate(1.08);
     }
 
     .icon-button {
+      width: 46px;
+      height: 46px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 46px;
-      height: 46px;
       border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: 6px;
       color: var(--white);
@@ -351,140 +324,99 @@
 
     .hero {
       position: relative;
+      isolation: isolate;
       overflow: hidden;
-      min-height: 760px;
-      padding: 76px 0 62px;
+      min-height: calc(100vh - var(--header-height));
+      padding: 104px 0 78px;
+      display: grid;
+      align-items: center;
       border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-      background:
-        radial-gradient(circle at 84% 30%, rgba(223, 248, 255, 0.18), transparent 24%),
-        radial-gradient(circle at 68% 72%, rgba(243, 230, 61, 0.1), transparent 22%),
-        linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.91) 48%, rgba(8, 18, 22, 0.76) 100%),
-        var(--black);
+      background: var(--black);
     }
 
-    .hero::before {
+    .hero-background-slot {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background:
+        linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 46%, rgba(5, 5, 5, 0.58) 100%),
+        radial-gradient(circle at 74% 26%, rgba(223, 248, 255, 0.28), transparent 24%),
+        radial-gradient(circle at 76% 68%, rgba(243, 230, 61, 0.13), transparent 26%),
+        linear-gradient(140deg, #070707 0%, #111820 52%, #15313a 100%);
+    }
+
+    .hero-background-slot::before {
+      content: "";
+      position: absolute;
+      inset: 7% 5% 10% 48%;
+      border: 1px solid rgba(223, 248, 255, 0.26);
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 92px),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 78px);
+      box-shadow:
+        0 0 0 1px rgba(243, 230, 61, 0.1),
+        0 28px 90px rgba(0, 0, 0, 0.48),
+        inset 0 0 90px rgba(223, 248, 255, 0.09);
+      transform: perspective(900px) rotateY(-8deg) rotateX(2deg);
+    }
+
+    .hero-background-slot::after {
       content: "";
       position: absolute;
       inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-      background-size: 92px 92px;
-      mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.8), transparent 72%);
+      background:
+        linear-gradient(180deg, rgba(5, 5, 5, 0), rgba(5, 5, 5, 0.38)),
+        radial-gradient(circle at 56% 44%, transparent 0 12%, rgba(243, 230, 61, 0.07) 12% 13%, transparent 13% 100%);
     }
 
     .hero-inner {
-      position: relative;
-      z-index: 1;
-      width: min(720px, 100%);
+      max-width: 820px;
     }
 
     .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 18px;
+      margin: 0 0 18px;
       color: var(--ice);
-      font-size: 0.82rem;
-      font-weight: 900;
+      font-size: 0.84rem;
+      font-weight: 950;
+      text-transform: uppercase;
     }
 
     .eyebrow::before {
       content: "";
       width: 36px;
       height: 2px;
+      flex: 0 0 auto;
       background: var(--yellow);
     }
 
-    .hero-copy {
-      max-width: 650px;
-      color: rgba(255, 255, 255, 0.82);
-      font-size: 1.2rem;
+    .hero .eyebrow {
+      margin-bottom: 22px;
+      font-size: clamp(1.02rem, 1.4vw, 1.34rem);
+      letter-spacing: 0;
+      text-transform: none;
     }
 
     .hero-schedule {
-      margin: 14px 0 0;
+      margin: 0;
       color: var(--yellow);
-      font-size: 1.06rem;
-      font-weight: 900;
+      font-size: 1.16rem;
+      font-weight: 950;
     }
 
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin: 30px 0 28px;
-    }
-
-    .hero-proof {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      max-width: 650px;
-    }
-
-    .proof-item {
-      min-height: 92px;
-      padding: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .proof-item strong {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--yellow);
-      font-size: 1rem;
-    }
-
-    .proof-item span {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 0.91rem;
-    }
-
-    .promotion {
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-      border-bottom: 1px solid rgba(243, 230, 61, 0.32);
-      background:
-        linear-gradient(90deg, rgba(243, 230, 61, 0.08), transparent 42%),
-        #070707;
-      color: var(--white);
-    }
-
-    .promotion-inner {
-      display: grid;
-      grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 24px;
-      min-height: 104px;
-      padding: 20px 0;
-    }
-
-    .promotion small {
-      display: block;
-      color: var(--yellow);
-      font-size: 0.78rem;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-
-    .promotion strong {
-      display: block;
-      font-family: var(--serif);
-      font-size: 2rem;
-      line-height: 1.05;
-    }
-
-    .promotion p {
-      margin: 0;
-      color: rgba(255, 255, 255, 0.72);
-      font-weight: 650;
+      margin-top: 32px;
     }
 
     .section {
-      padding: 86px 0;
+      padding: 88px 0;
     }
 
     .section.dark {
@@ -496,61 +428,257 @@
       background: var(--paper);
     }
 
-    .section.paper p {
-      color: rgba(5, 5, 5, 0.68);
-    }
-
     .section.ice {
       color: var(--black);
-      background: var(--ice);
+      background:
+        radial-gradient(circle at 14% 12%, rgba(243, 230, 61, 0.16), transparent 22%),
+        linear-gradient(180deg, #e7fbff 0%, #d7f5ff 100%);
     }
 
-    .section.ice p {
-      color: rgba(5, 5, 5, 0.68);
-    }
-
-    .section-head {
-      display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(260px, 0.55fr);
+    .section-title {
+      display: flex;
       align-items: end;
-      gap: 32px;
+      justify-content: space-between;
+      gap: 28px;
       margin-bottom: 34px;
     }
 
-    .section-head p {
-      margin-bottom: 0;
-      font-size: 1.06rem;
+    .receive-composition {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(310px, 0.5fr);
+      gap: 24px;
+      align-items: stretch;
     }
 
-    .rabbi-grid {
+    .feature-grid {
       display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(300px, 0.62fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      align-content: stretch;
+    }
+
+    .feature-tile {
+      min-height: 126px;
+      display: grid;
+      align-content: space-between;
+      gap: 18px;
+      padding: 18px;
+      border: 1px solid rgba(5, 5, 5, 0.1);
+      border-radius: 8px;
+      color: var(--black);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(231, 251, 255, 0.74)),
+        var(--white);
+      box-shadow: 0 16px 44px rgba(5, 5, 5, 0.08);
+    }
+
+    .feature-tile:nth-child(2n) {
+      transform: translateY(16px);
+      border-color: rgba(142, 229, 255, 0.42);
+    }
+
+    .feature-tile:nth-child(3n) {
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 248, 166, 0.32)),
+        var(--white);
+    }
+
+    .tile-icon,
+    .benefit-icon,
+    .step-number,
+    .audience-icon {
+      width: 46px;
+      height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(5, 5, 5, 0.14);
+      border-radius: 8px;
+      color: var(--black);
+      background: var(--chrome);
+      box-shadow: 0 12px 28px rgba(243, 230, 61, 0.18);
+    }
+
+    .tile-icon svg,
+    .benefit-icon svg,
+    .audience-icon svg {
+      width: 25px;
+      height: 25px;
+    }
+
+    .classroom-placeholder {
+      position: relative;
+      min-height: 100%;
+      overflow: hidden;
+      border: 1px solid rgba(5, 5, 5, 0.16);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(5, 5, 5, 0.02), rgba(5, 5, 5, 0.5)),
+        radial-gradient(circle at 20% 25%, rgba(243, 230, 61, 0.42), transparent 18%),
+        radial-gradient(circle at 74% 24%, rgba(223, 248, 255, 0.6), transparent 22%),
+        linear-gradient(135deg, #101116 0%, #182f38 100%);
+      box-shadow: var(--shadow);
+    }
+
+    .classroom-placeholder::before {
+      content: "";
+      position: absolute;
+      inset: 16%;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      box-shadow:
+        0 0 0 40px rgba(255, 255, 255, 0.025),
+        0 0 70px rgba(223, 248, 255, 0.24);
+    }
+
+    .classroom-placeholder span {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      z-index: 1;
+      color: var(--white);
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .benefit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .benefit-card {
+      min-height: 300px;
+      display: grid;
+      align-content: space-between;
+      gap: 22px;
+      padding: 26px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 8px;
+      background:
+        linear-gradient(150deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03)),
+        #111217;
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+    }
+
+    .benefit-card:nth-child(2) {
+      background:
+        linear-gradient(150deg, rgba(223, 248, 255, 0.12), rgba(255, 255, 255, 0.04)),
+        #10161a;
+    }
+
+    .benefit-card:nth-child(3) {
+      background:
+        linear-gradient(150deg, rgba(243, 230, 61, 0.13), rgba(255, 255, 255, 0.03)),
+        #111106;
+    }
+
+    .benefit-card p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.02rem;
+    }
+
+    .step-flow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      margin-bottom: 28px;
+      counter-reset: steps;
+    }
+
+    .step {
+      position: relative;
+      min-height: 174px;
+      display: grid;
+      align-content: center;
+      gap: 18px;
+      padding: 28px;
+      border: 1px solid rgba(5, 5, 5, 0.13);
+      background: rgba(255, 255, 255, 0.72);
+      counter-increment: steps;
+    }
+
+    .step:first-child {
+      border-radius: 8px 0 0 8px;
+    }
+
+    .step:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+
+    .step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -14px;
+      z-index: 2;
+      width: 28px;
+      height: 28px;
+      border-top: 1px solid rgba(5, 5, 5, 0.13);
+      border-right: 1px solid rgba(5, 5, 5, 0.13);
+      background: #edfaff;
+      transform: translateY(-50%) rotate(45deg);
+    }
+
+    .step-number::before {
+      content: counter(steps, decimal-leading-zero);
+      font-weight: 950;
+    }
+
+    .how-actions {
+      display: flex;
+      justify-content: center;
+    }
+
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .audience-card {
+      min-height: 176px;
+      display: grid;
+      align-content: start;
+      gap: 20px;
+      padding: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      background:
+        linear-gradient(150deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035)),
+        #111217;
+    }
+
+    .audience-card p {
+      margin: -8px 0 0;
+      color: var(--yellow);
+      font-weight: 900;
+    }
+
+    .rabbi-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.78fr) minmax(340px, 0.58fr);
       gap: 34px;
-      align-items: stretch;
+      align-items: center;
     }
 
     .rabbi-copy {
       display: grid;
       gap: 20px;
-      align-content: center;
-      padding-right: 22px;
     }
 
-    .rabbi-copy p {
-      margin-bottom: 0;
-      font-size: 1.13rem;
-    }
-
-    .rabbi-copy .lead {
-      color: rgba(255, 255, 255, 0.88);
-      font-size: 1.32rem;
-      font-weight: 760;
-      line-height: 1.46;
+    .rabbi-copy p:not(.eyebrow) {
+      max-width: 700px;
+      margin: 0;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 1.1rem;
     }
 
     .rabbi-photo {
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       border-radius: 8px;
       background: #0f0f0f;
       box-shadow: var(--shadow);
@@ -559,8 +687,118 @@
     .rabbi-photo img {
       width: 100%;
       height: 100%;
-      min-height: 420px;
+      min-height: 410px;
       object-fit: cover;
+    }
+
+    .carousel-heading {
+      margin: 68px 0 24px;
+      font-family: var(--serif);
+      font-size: 2.15rem;
+      line-height: 1.08;
+    }
+
+    .carousel-shell {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 8px;
+      background: #0f1117;
+      box-shadow: var(--shadow);
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 420ms ease;
+      will-change: transform;
+    }
+
+    .teaching-slide {
+      position: relative;
+      flex: 0 0 100%;
+      min-height: 440px;
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 28% 28%, rgba(243, 230, 61, 0.22), transparent 20%),
+        radial-gradient(circle at 72% 34%, rgba(223, 248, 255, 0.28), transparent 24%),
+        linear-gradient(135deg, #090909 0%, #10252c 100%);
+    }
+
+    .teaching-slide::before {
+      content: "";
+      position: absolute;
+      inset: 9%;
+      border: 1px solid rgba(223, 248, 255, 0.2);
+      border-radius: 22px;
+      background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.075) 0 1px, transparent 1px 88px),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.055) 0 1px, transparent 1px 74px);
+      box-shadow: inset 0 0 90px rgba(223, 248, 255, 0.08);
+    }
+
+    .slide-label {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      padding: 46px 28px 26px;
+      color: var(--white);
+      background: linear-gradient(180deg, transparent, rgba(5, 5, 5, 0.84));
+    }
+
+    .slide-label strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: 2.1rem;
+      line-height: 1.05;
+    }
+
+    .slide-label span {
+      display: block;
+      margin-top: 6px;
+      color: rgba(255, 255, 255, 0.76);
+      font-weight: 800;
+    }
+
+    .carousel-controls {
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      z-index: 3;
+      display: flex;
+      gap: 8px;
+    }
+
+    .carousel-controls .icon-button {
+      color: var(--black);
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(255, 255, 255, 0.68);
+    }
+
+    .carousel-pagination {
+      position: absolute;
+      right: 18px;
+      top: 26px;
+      z-index: 3;
+      display: flex;
+      gap: 8px;
+    }
+
+    .carousel-dot {
+      width: 11px;
+      height: 11px;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.55);
+      cursor: pointer;
+    }
+
+    .carousel-dot.active {
+      background: var(--yellow);
+      border-color: var(--yellow);
     }
 
     .press-band {
@@ -574,21 +812,21 @@
       margin: 18px 0 0;
       color: rgba(255, 255, 255, 0.82);
       font-size: 0.82rem;
-      font-weight: 900;
-      letter-spacing: 0;
+      font-weight: 950;
       text-transform: uppercase;
     }
 
     .press-track {
       display: flex;
       width: max-content;
-      gap: 34px;
+      gap: 36px;
       align-items: center;
       padding: 22px 0;
       animation: marquee 26s linear infinite;
     }
 
-    .press-track:hover {
+    .press-track:hover,
+    .press-track:focus-within {
       animation-play-state: paused;
     }
 
@@ -596,7 +834,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 155px;
+      min-width: 150px;
       height: 48px;
       padding: 0 12px;
     }
@@ -607,303 +845,37 @@
       object-fit: contain;
     }
 
-    @keyframes marquee {
-      from {
-        transform: translateX(0);
-      }
-      to {
-        transform: translateX(-50%);
-      }
-    }
-
-    @keyframes buttonSweep {
-      0%,
-      72% {
-        transform: translateX(-170%) rotate(18deg);
-      }
-      100% {
-        transform: translateX(620%) rotate(18deg);
-      }
-    }
-
-    .carousel-shell {
-      position: relative;
+    .rosh-ticker {
       overflow: hidden;
-      border: 1px solid var(--line-dark);
-      border-radius: 8px;
-      background: var(--white);
-      box-shadow: 0 18px 48px rgba(5, 5, 5, 0.08);
-    }
-
-    .carousel-track {
-      display: flex;
-      transition: transform 420ms ease;
-    }
-
-    .teaching-slide {
-      flex: 0 0 100%;
-      margin: 0;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px;
-      min-height: 460px;
-      background: var(--white);
-    }
-
-    .teaching-visual {
-      position: relative;
-      overflow: hidden;
-      width: 100%;
-      height: 100%;
-      min-height: 460px;
-      background:
-        radial-gradient(circle at 24% 28%, rgba(243, 230, 61, 0.2), transparent 20%),
-        radial-gradient(circle at 72% 32%, rgba(223, 248, 255, 0.24), transparent 26%),
-        linear-gradient(140deg, #090909 0%, #111 52%, #16272d 100%);
-    }
-
-    .teaching-visual::before {
-      content: "";
-      position: absolute;
-      inset: 12%;
-      border: 1px solid rgba(223, 248, 255, 0.24);
-      border-radius: 50%;
-      box-shadow:
-        0 0 0 42px rgba(223, 248, 255, 0.025),
-        0 0 70px rgba(223, 248, 255, 0.22);
-    }
-
-    .teaching-visual::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-      background-size: 78px 78px;
-      mask-image: radial-gradient(circle at 42% 50%, rgba(0, 0, 0, 0.9), transparent 70%);
-    }
-
-    .teaching-marker {
-      position: absolute;
-      width: 13px;
-      height: 13px;
-      border-radius: 999px;
-      background: var(--yellow);
-      box-shadow: 0 0 0 8px rgba(243, 230, 61, 0.15), 0 0 28px rgba(223, 248, 255, 0.5);
-    }
-
-    .teaching-marker.one {
-      left: 28%;
-      top: 38%;
-    }
-
-    .teaching-marker.two {
-      left: 55%;
-      top: 28%;
-    }
-
-    .teaching-marker.three {
-      left: 68%;
-      top: 58%;
-    }
-
-    .teaching-caption {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      gap: 12px;
-      padding: 34px;
+      border-top: 1px solid rgba(5, 5, 5, 0.28);
+      border-bottom: 1px solid rgba(5, 5, 5, 0.28);
       color: var(--black);
-      background: var(--ice);
+      background: var(--chrome);
     }
 
-    .teaching-caption span {
-      color: rgba(5, 5, 5, 0.6);
-      font-size: 0.82rem;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-
-    .teaching-caption strong {
-      display: block;
-      font-family: var(--serif);
-      font-size: 2rem;
-      line-height: 1.08;
-    }
-
-    .teaching-caption p {
-      margin: 0;
-      color: rgba(5, 5, 5, 0.66);
-    }
-
-    .carousel-controls {
-      position: absolute;
-      left: 18px;
-      bottom: 18px;
-      z-index: 2;
+    .ticker-link {
+      min-height: 58px;
       display: flex;
-      gap: 8px;
-    }
-
-    .carousel-controls .icon-button {
-      color: var(--black);
-      border-color: rgba(5, 5, 5, 0.16);
-      background: rgba(255, 255, 255, 0.88);
-    }
-
-    .dots {
-      position: absolute;
-      right: 18px;
-      bottom: 25px;
-      z-index: 2;
-      display: flex;
-      gap: 8px;
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border: 1px solid rgba(5, 5, 5, 0.35);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.7);
-    }
-
-    .dot.active {
-      background: var(--yellow);
-      border-color: rgba(5, 5, 5, 0.56);
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .card-grid.receive {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .info-card {
-      min-height: 220px;
-      padding: 24px;
-      border: 1px solid var(--line-dark);
-      border-radius: 8px;
-      background: var(--white);
-      color: var(--black);
-    }
-
-    .info-card p {
-      margin-bottom: 0;
-      color: rgba(5, 5, 5, 0.66);
-    }
-
-    .info-card.dark {
-      border-color: rgba(255, 255, 255, 0.14);
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--white);
-    }
-
-    .info-card.dark p {
-      color: rgba(255, 255, 255, 0.72);
-    }
-
-    .card-icon {
-      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      width: 46px;
-      height: 46px;
-      margin-bottom: 18px;
-      border: 1px solid rgba(5, 5, 5, 0.14);
-      border-radius: 8px;
       color: var(--black);
-      background: var(--yellow);
-      font-weight: 900;
-    }
-
-    .dark .card-icon,
-    .info-card.dark .card-icon {
-      border-color: rgba(255, 255, 255, 0.18);
-      color: var(--black);
-      background: var(--yellow);
-    }
-
-    .step-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-      counter-reset: steps;
-    }
-
-    .step {
-      position: relative;
-      min-height: 250px;
-      padding: 26px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.07);
-      counter-increment: steps;
-    }
-
-    .step::before {
-      content: counter(steps, decimal-leading-zero);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 48px;
-      height: 48px;
-      margin-bottom: 24px;
-      border-radius: 50%;
-      color: var(--black);
-      background: var(--yellow);
       font-weight: 950;
+      text-transform: uppercase;
+      white-space: nowrap;
     }
 
-    .step p {
-      margin-bottom: 0;
+    .ticker-track {
+      display: flex;
+      min-width: max-content;
+      animation: tickerMove 20s linear infinite;
     }
 
-    .audience-section {
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-      background:
-        linear-gradient(90deg, rgba(5, 5, 5, 0.99), rgba(5, 5, 5, 0.92)),
-        var(--black);
+    .ticker-link:hover .ticker-track,
+    .ticker-link:focus-visible .ticker-track {
+      animation-play-state: paused;
     }
 
-    .audience-panel {
-      display: grid;
-      grid-template-columns: minmax(0, 0.78fr) minmax(0, 1fr);
-      align-items: center;
-      gap: 38px;
-    }
-
-    .audience-copy p {
-      max-width: 560px;
-      font-size: 1.08rem;
-    }
-
-    .audience-cards {
-      display: grid;
-      gap: 14px;
-    }
-
-    .audience-card {
-      display: grid;
-      grid-template-columns: 58px minmax(0, 1fr);
-      gap: 16px;
-      min-height: 118px;
-      padding: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.07);
-    }
-
-    .audience-card .card-icon {
-      margin: 0;
-    }
-
-    .audience-card p {
-      margin-bottom: 0;
+    .ticker-text {
+      padding-right: 44px;
     }
 
     .one-time-site-footer {
@@ -925,11 +897,16 @@
       height: auto;
     }
 
+    .one-time-site-footer p {
+      margin: 10px 0 0;
+      color: rgba(255, 255, 255, 0.68);
+    }
+
     .footer-links {
       display: flex;
       flex-wrap: wrap;
       gap: 16px;
-      font-weight: 750;
+      font-weight: 800;
     }
 
     .footer-links a:hover,
@@ -938,186 +915,35 @@
       outline: none;
     }
 
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 1600;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-      background: rgba(0, 0, 0, 0.72);
+    @keyframes buttonSweep {
+      0%,
+      72% {
+        transform: translateX(-170%) rotate(18deg);
+      }
+      100% {
+        transform: translateX(620%) rotate(18deg);
+      }
     }
 
-    .modal-backdrop.open {
-      display: flex;
+    @keyframes marquee {
+      from {
+        transform: translateX(0);
+      }
+      to {
+        transform: translateX(-50%);
+      }
     }
 
-    .signup-dialog {
-      position: relative;
-      width: min(610px, 100%);
-      max-height: min(720px, calc(100vh - 36px));
-      overflow: auto;
-      border: 1px solid rgba(255, 255, 255, 0.24);
-      border-radius: 8px;
-      color: var(--black);
-      background: var(--paper);
-      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.5);
+    @keyframes tickerMove {
+      from {
+        transform: translateX(0);
+      }
+      to {
+        transform: translateX(-50%);
+      }
     }
 
-    .modal-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 26px 28px 14px;
-      border-bottom: 1px solid rgba(5, 5, 5, 0.1);
-    }
-
-    .modal-head h2 {
-      margin: 0;
-      font-size: 2.15rem;
-    }
-
-    .modal-head p {
-      margin: 8px 0 0;
-      color: rgba(5, 5, 5, 0.64);
-    }
-
-    .modal-close {
-      flex: 0 0 auto;
-      color: var(--black);
-      border-color: rgba(5, 5, 5, 0.14);
-      background: var(--white);
-    }
-
-    .modal-body {
-      padding: 24px 28px 28px;
-    }
-
-    .form-grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    label {
-      display: grid;
-      gap: 7px;
-      color: var(--black);
-      font-weight: 800;
-    }
-
-    label span {
-      color: rgba(5, 5, 5, 0.68);
-      font-size: 0.88rem;
-      font-weight: 750;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="tel"] {
-      width: 100%;
-      min-height: 52px;
-      padding: 0 14px;
-      border: 1px solid rgba(5, 5, 5, 0.2);
-      border-radius: 6px;
-      color: var(--black);
-      background: var(--white);
-    }
-
-    input:focus {
-      outline: 3px solid rgba(145, 226, 255, 0.8);
-      outline-offset: 2px;
-      border-color: rgba(5, 5, 5, 0.46);
-    }
-
-    .field-error {
-      display: none;
-      color: #8c1f13;
-      font-size: 0.88rem;
-      font-weight: 760;
-    }
-
-    .field-error.visible {
-      display: block;
-    }
-
-    .form-note {
-      margin: 2px 0 0;
-      color: rgba(5, 5, 5, 0.62);
-      font-size: 0.92rem;
-    }
-
-    .form-status {
-      display: none;
-      margin: 18px 0 0;
-      padding: 13px 14px;
-      border-radius: 6px;
-      color: var(--black);
-      background: var(--ice);
-      font-weight: 760;
-    }
-
-    .form-status.visible {
-      display: block;
-    }
-
-    .form-status.error {
-      color: #681a12;
-      background: #ffe4dc;
-    }
-
-    .success-step {
-      display: none;
-    }
-
-    .success-step.active {
-      display: block;
-    }
-
-    .choice-grid {
-      display: grid;
-      gap: 12px;
-      margin: 18px 0;
-    }
-
-    .choice-card {
-      position: relative;
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 12px;
-      align-items: start;
-      padding: 16px;
-      border: 1px solid rgba(5, 5, 5, 0.14);
-      border-radius: 8px;
-      background: var(--white);
-      cursor: pointer;
-    }
-
-    .choice-card input {
-      width: 20px;
-      height: 20px;
-      margin-top: 3px;
-      accent-color: var(--black);
-    }
-
-    .choice-card strong {
-      display: block;
-      margin-bottom: 3px;
-      color: var(--black);
-    }
-
-    .choice-card span {
-      color: rgba(5, 5, 5, 0.62);
-      font-size: 0.94rem;
-    }
-
-    .choice-card:has(input:checked) {
-      border-color: rgba(5, 5, 5, 0.55);
-      background: var(--ice);
-    }
-
-    @media (max-width: 1080px) {
+    @media (max-width: 1120px) {
       h1 {
         font-size: 4.2rem;
       }
@@ -1177,7 +1003,8 @@
         min-width: max-content;
       }
 
-      .nav-shell .site-nav a {
+      .nav-shell .site-nav a,
+      .nav-shell .member-link {
         min-height: 42px;
         display: inline-flex;
         align-items: center;
@@ -1187,72 +1014,33 @@
         border-radius: 6px;
         color: var(--black);
         background: var(--white);
-        box-shadow: none;
       }
 
       .nav-shell .header-actions {
         display: flex;
-        align-items: center;
-        gap: 10px;
         min-width: max-content;
-        margin-top: 0;
       }
 
-      .nav-shell .member-link {
-        min-height: 44px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0 14px;
-        border: 1px solid rgba(255, 255, 255, 0.86);
-        border-radius: 6px;
-        color: var(--black);
-        background: var(--white);
-      }
-
-      .nav-shell .button {
-        min-height: 44px;
-      }
-
-      .hero {
-        background:
-          radial-gradient(circle at 88% 34%, rgba(223, 248, 255, 0.18), transparent 22%),
-          linear-gradient(90deg, rgba(5, 5, 5, 0.98), rgba(5, 5, 5, 0.88)),
-          var(--black);
-      }
-
-      .promotion-inner,
-      .section-head,
-      .rabbi-grid,
-      .audience-panel {
+      .receive-composition,
+      .rabbi-layout {
         grid-template-columns: 1fr;
       }
 
-      .promotion-inner {
-        align-items: start;
+      .classroom-placeholder {
+        min-height: 280px;
       }
 
-      .promotion-inner .button {
-        justify-self: start;
-      }
-
-      .card-grid,
-      .card-grid.receive,
-      .step-grid {
+      .feature-grid,
+      .audience-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .teaching-slide {
+      .benefit-grid {
         grid-template-columns: 1fr;
-      }
-
-      .teaching-visual {
-        height: 420px;
-        min-height: 420px;
       }
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 760px) {
       :root {
         --header-height: 66px;
       }
@@ -1270,7 +1058,7 @@
       }
 
       h1 {
-        font-size: 3.05rem;
+        font-size: 3rem;
       }
 
       h2 {
@@ -1278,104 +1066,82 @@
       }
 
       .hero {
-        min-height: 610px;
-        padding: 54px 0 42px;
-        background:
-          radial-gradient(circle at 84% 18%, rgba(223, 248, 255, 0.16), transparent 24%),
-          linear-gradient(180deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.88) 62%, rgba(5, 5, 5, 0.98) 100%),
-          var(--black);
+        min-height: 620px;
+        padding: 64px 0 56px;
       }
 
-      .hero-copy {
-        max-width: 86%;
-        font-size: 1.05rem;
+      .hero-background-slot::before {
+        inset: 54% 8% 8%;
+        transform: none;
+        opacity: 0.66;
       }
 
-      .hero-actions {
-        max-width: 230px;
-      }
-
-      .hero-actions .button {
-        width: 100%;
-      }
-
-      .hero-proof {
-        grid-template-columns: 1fr;
-        max-width: 72%;
-      }
-
-      .promotion strong {
-        font-size: 1.55rem;
+      .hero .eyebrow {
+        font-size: 1rem;
       }
 
       .section {
-        padding: 62px 0;
+        padding: 64px 0;
       }
 
-      .rabbi-copy {
-        padding-right: 0;
+      .section-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .feature-grid,
+      .audience-grid,
+      .step-flow {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-tile:nth-child(2n) {
+        transform: none;
+      }
+
+      .step,
+      .step:first-child,
+      .step:last-child {
+        border-radius: 8px;
+      }
+
+      .step:not(:last-child)::after {
+        display: none;
       }
 
       .rabbi-photo img {
         min-height: 300px;
       }
 
-      .card-grid,
-      .card-grid.receive,
-      .step-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .info-card,
-      .step {
-        min-height: auto;
-      }
-
       .teaching-slide {
-        min-height: auto;
+        min-height: 340px;
       }
 
-      .teaching-visual {
-        height: 320px;
-        min-height: 320px;
+      .slide-label {
+        padding: 42px 22px 22px;
       }
 
-      .teaching-caption {
-        padding: 24px 22px 78px;
+      .slide-label strong {
+        font-size: 1.55rem;
       }
 
       .carousel-controls {
-        left: 14px;
-        bottom: 14px;
+        left: 12px;
+        top: 12px;
       }
 
-      .dots {
-        right: 14px;
-        bottom: 21px;
+      .carousel-pagination {
+        right: 12px;
+        top: 21px;
       }
 
-      .audience-card {
-        grid-template-columns: 1fr;
+      .ticker-link {
+        min-height: 52px;
       }
 
       .footer-inner {
         align-items: flex-start;
         flex-direction: column;
-      }
-
-      .modal-backdrop {
-        align-items: center;
-        padding: 10px;
-      }
-
-      .signup-dialog {
-        max-height: calc(100vh - 20px);
-      }
-
-      .modal-head,
-      .modal-body {
-        padding-left: 20px;
-        padding-right: 20px;
       }
     }
 
@@ -1406,29 +1172,56 @@
         min-height: 590px;
       }
 
-      .hero-copy,
-      .hero-proof {
-        max-width: 100%;
+      .hero-schedule {
+        font-size: 1.02rem;
       }
 
-      .proof-item {
-        min-height: 82px;
+      .feature-tile,
+      .benefit-card,
+      .audience-card,
+      .step {
+        padding: 18px;
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
       *,
       *::before,
       *::after {
-        scroll-behavior: auto !important;
-        transition-duration: 0.001ms !important;
         animation-duration: 0.001ms !important;
         animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+
+      .ticker-track,
+      .press-track {
+        animation: none !important;
+        transform: none !important;
+      }
+
+      .ticker-text[aria-hidden="true"] {
+        display: none;
       }
     }
   </style>
 </head>
 <body data-one-time-rabbi-dashboard="public-landing" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
+  <svg class="icon-defs" aria-hidden="true" focusable="false">
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7-11-7Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-library" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V5a1 1 0 0 1 1-1Zm2 2v11a1 1 0 0 0 1 1h9V7a1 1 0 0 0-1-1H7Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-portal" viewBox="0 0 24 24"><path d="M4 5h16v14H4V5Zm2 2v10h12V7H6Zm3 3h6v2H9v-2Zm0 4h4v2H9v-2Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-sheet" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6V3Zm2 2v14h8V8h-3V5H8Zm2 6h5v2h-5v-2Zm0 4h5v2h-5v-2Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-bell" viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8A2.5 2.5 0 0 0 12 22Zm7-5-2-2v-5a5 5 0 0 0-10 0v5l-2 2v1h14v-1Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-question" viewBox="0 0 24 24"><path d="M11 17h2v-2h-2v2Zm1-14a6 6 0 0 0-6 6h2a4 4 0 1 1 6.7 2.9l-1.2 1.1A4.4 4.4 0 0 0 11 16h2c0-.7.3-1.1 1.1-1.9l1.1-1A6 6 0 0 0 12 3Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 2 5 5v6c0 4.7 2.9 8.6 7 11 4.1-2.4 7-6.3 7-11V5l-7-3Zm0 3.2 5 2.1V11c0 3.4-1.9 6.4-5 8.3-3.1-1.9-5-4.9-5-8.3V7.3l5-2.1Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-spark" viewBox="0 0 24 24"><path d="m12 2 2.2 6.2L20 10l-5.8 1.8L12 18l-2.2-6.2L4 10l5.8-1.8L12 2Zm7 12 1 2.8 3 1-3 1-1 3-1-3-3-1 3-1 1-2.8ZM5 14l.8 2.2L8 17l-2.2.8L5 20l-.8-2.2L2 17l2.2-.8L5 14Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-target" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10h-2a8 8 0 1 1-8-8V2Zm0 4a6 6 0 1 0 6 6h-2a4 4 0 1 1-4-4V6Zm0 4a2 2 0 1 0 2 2h-2v-2Z" fill="currentColor"></path></symbol>
+  </svg>
+
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
@@ -1448,11 +1241,12 @@
 
       <div class="nav-shell" id="siteNavShell" data-nav-shell>
         <nav class="site-nav" aria-label="One Time page sections">
-          <a href="#rabbi">Rabbi Eli</a>
-          <a href="#gain">What He&rsquo;ll Gain</a>
           <a href="#receive">What You Receive</a>
+          <a href="#gain">What He&rsquo;ll Gain</a>
           <a href="#how-it-works">How It Works</a>
           <a href="#who">Who It&rsquo;s For</a>
+          <a href="#rabbi">Rabbi Scheller</a>
+          <a href="#rosh-special">Rosh Hashanah</a>
         </nav>
         <div class="header-actions" aria-label="Secondary actions">
           <a class="member-link" href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
@@ -1464,57 +1258,152 @@
 
   <main id="main">
     <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-background-slot" aria-hidden="true" data-placeholder-file="one-time-hero-live-classroom-placeholder.jpg" data-intended-subject="Wide live Mishnayos classroom image from Eretz Yisrael"></div>
       <div class="wrap">
         <div class="hero-inner">
           <p class="eyebrow">Worldwide Mishnah learning &mdash; live from Eretz Yisrael</p>
-          <h1 id="heroTitle">Give your son a love for Torah you never thought possible.</h1>
-          <p class="hero-copy">A live Mishnayos class with Rabbi Eli Scheller that makes learning exciting, clear, and unforgettable &mdash; for boys around the world.</p>
-          <p class="hero-schedule">Live from Israel. Every day at 7 p.m. Israel time.</p>
+          <h1 id="heroTitle">Give your son a love for learning Torah.</h1>
+          <p class="hero-schedule">Live every day at 7:00 p.m. Israel time.</p>
           <div class="hero-actions">
             <a class="button primary" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
-          </div>
-          <div class="hero-proof" aria-label="One Time Mishnayos highlights">
-            <div class="proof-item">
-              <strong>Live from Eretz Yisrael</strong>
-              <span>A real shiur rhythm your son can look forward to.</span>
-            </div>
-            <div class="proof-item">
-              <strong>Rabbi Eli Scheller</strong>
-              <span>Storytelling, clarity, warmth, and geshmak.</span>
-            </div>
-            <div class="proof-item">
-              <strong>Built for boys</strong>
-              <span>Short, memorable, accountable learning.</span>
-            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="promotion" aria-labelledby="promoTitle">
-      <div class="wrap promotion-inner">
-        <div>
-          <small>Rosh Hashanah Special</small>
-          <strong id="promoTitle">Join free until Rosh Hashanah.</strong>
+    <section class="section paper" id="receive" aria-labelledby="receiveTitle">
+      <div class="wrap">
+        <div class="section-title">
+          <h2 id="receiveTitle">What You Receive</h2>
         </div>
-        <p>Give your son a chance to experience the class, feel the excitement, and see what changes when Mishnayos finally clicks.</p>
-        <a class="button primary" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
+        <div class="receive-composition">
+          <div class="feature-grid" aria-label="One Time learning features">
+            <article class="feature-tile"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-play"></use></svg></span><h3>Live daily Mishnayos class</h3></article>
+            <article class="feature-tile"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-library"></use></svg></span><h3>Online class library</h3></article>
+            <article class="feature-tile"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-portal"></use></svg></span><h3>Student portal</h3></article>
+            <article class="feature-tile"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-portal"></use></svg></span><h3>Parent portal</h3></article>
+            <article class="feature-tile"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-sheet"></use></svg></span><h3>Review sheets</h3></article>
+            <article class="feature-tile"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-bell"></use></svg></span><h3>Daily email and WhatsApp reminders</h3></article>
+            <article class="feature-tile"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-question"></use></svg></span><h3>Questions with Rabbi Scheller</h3></article>
+            <article class="feature-tile"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-shield"></use></svg></span><h3>Monitored online platform</h3></article>
+          </div>
+          <div class="classroom-placeholder" aria-hidden="true" data-placeholder-file="one-time-classroom-live-learning-placeholder.jpg" data-intended-subject="Boys learning in the live One Time Mishnayos classroom">
+            <span>Live classroom image pending</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark" id="gain" aria-labelledby="gainTitle">
+      <div class="wrap">
+        <div class="section-title">
+          <h2 id="gainTitle">What He&rsquo;ll Gain</h2>
+        </div>
+        <div class="benefit-grid">
+          <article class="benefit-card">
+            <span class="benefit-icon" aria-hidden="true"><svg><use href="#icon-target"></use></svg></span>
+            <div>
+              <h3>Clarity</h3>
+              <p>He&rsquo;ll understand the main points, the questions, and the logic behind each Mishnah&mdash;with review sheets and opportunities to ask Rabbi Scheller questions.</p>
+            </div>
+          </article>
+          <article class="benefit-card">
+            <span class="benefit-icon" aria-hidden="true"><svg><use href="#icon-spark"></use></svg></span>
+            <div>
+              <h3>Accomplishment</h3>
+              <p>One perek a day gives him a clear goal, steady progress, and visible progress badges and milestones in his student portal.</p>
+            </div>
+          </article>
+          <article class="benefit-card">
+            <span class="benefit-icon" aria-hidden="true"><svg><use href="#icon-play"></use></svg></span>
+            <div>
+              <h3>Excitement for learning Torah</h3>
+              <p>A lively class and a real connection with Rabbi Scheller make Torah learning something he looks forward to each day.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section ice" id="how-it-works" aria-labelledby="howTitle">
+      <div class="wrap">
+        <div class="section-title">
+          <h2 id="howTitle">How It Works</h2>
+        </div>
+        <div class="step-flow" aria-label="Three steps to join">
+          <article class="step">
+            <span class="step-number" aria-hidden="true"></span>
+            <h3>Sign up</h3>
+          </article>
+          <article class="step">
+            <span class="step-number" aria-hidden="true"></span>
+            <h3>Receive the class link</h3>
+          </article>
+          <article class="step">
+            <span class="step-number" aria-hidden="true"></span>
+            <h3>Join the live class</h3>
+          </article>
+        </div>
+        <div class="how-actions">
+          <a class="button primary" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark" id="who" aria-labelledby="whoTitle">
+      <div class="wrap">
+        <div class="section-title">
+          <h2 id="whoTitle">Who It&rsquo;s For</h2>
+        </div>
+        <div class="audience-grid">
+          <article class="audience-card"><span class="audience-icon" aria-hidden="true"><svg><use href="#icon-spark"></use></svg></span><h3>Families</h3></article>
+          <article class="audience-card"><span class="audience-icon" aria-hidden="true"><svg><use href="#icon-library"></use></svg></span><h3>English-speaking homeschoolers</h3></article>
+          <article class="audience-card"><span class="audience-icon" aria-hidden="true"><svg><use href="#icon-portal"></use></svg></span><h3>Schools</h3></article>
+          <article class="audience-card"><span class="audience-icon" aria-hidden="true"><svg><use href="#icon-play"></use></svg></span><h3>Local boys in Ramat Beit Shemesh Alef</h3><p>Free live class at 7:00 p.m.</p></article>
+        </div>
       </div>
     </section>
 
     <section class="section dark" id="rabbi" aria-labelledby="rabbiTitle">
       <div class="wrap">
-        <div class="rabbi-grid">
+        <div class="rabbi-layout">
           <div class="rabbi-copy">
-            <p class="eyebrow">Meet Rabbi Eli Scheller</p>
-            <h2 id="rabbiTitle">A storyteller your son will remember.</h2>
-            <p class="lead">Rabbi Eli Scheller teaches with humor, warmth, clarity, and the kind of storytelling that helps boys remember what they learned.</p>
-            <p>His shiurim and stories have appeared across TorahAnytime, 24Six, Loop, NakiRadio, Mishpacha Magazine, and live Jewish learning settings.</p>
-            <p>Now, through One Time Mishnayos, your son can learn directly from Rabbi Scheller every day &mdash; with excitement, accountability, and geshmak.</p>
+            <p class="eyebrow">Meet Rabbi Scheller</p>
+            <h2 id="rabbiTitle">A world-renowned Torah teacher.</h2>
+            <p>Rabbi Eli Scheller has taught Torah to students and audiences across the Jewish world. His clarity, warmth, and energy help boys understand what they are learning and look forward to coming back.</p>
           </div>
           <figure class="rabbi-photo">
-            <img src="/assets/one-time/rabbi/rabbi-eli-holding-book.jpg" width="1600" height="1067" alt="Rabbi Eli Scheller holding the One Time book" loading="lazy">
+            <img src="/assets/one-time/rabbi/rabbi-eli-holding-book.jpg" width="1600" height="1067" alt="Rabbi Eli Scheller holding the One Time book" loading="eager" decoding="async">
           </figure>
+        </div>
+
+        <h3 class="carousel-heading">Teaching Torah Across the Jewish World</h3>
+        <div class="carousel-shell" data-carousel aria-roledescription="carousel" aria-label="Teaching locations">
+          <div class="carousel-track" data-carousel-track>
+            <figure class="teaching-slide" data-placeholder-file="one-time-teaching-baltimore-placeholder.jpg" data-intended-subject="Rabbi Scheller teaching boys in Baltimore">
+              <figcaption class="slide-label"><strong>Baltimore</strong><span>Teaching image pending</span></figcaption>
+            </figure>
+            <figure class="teaching-slide" data-placeholder-file="one-time-teaching-flatbush-new-york-placeholder.jpg" data-intended-subject="Rabbi Scheller teaching boys in Flatbush, New York">
+              <figcaption class="slide-label"><strong>Flatbush, New York</strong><span>Teaching image pending</span></figcaption>
+            </figure>
+            <figure class="teaching-slide" data-placeholder-file="one-time-teaching-hollywood-florida-placeholder.jpg" data-intended-subject="Rabbi Scheller teaching boys in Hollywood, Florida">
+              <figcaption class="slide-label"><strong>Hollywood, Florida</strong><span>Teaching image pending</span></figcaption>
+            </figure>
+            <figure class="teaching-slide" data-placeholder-file="one-time-teaching-additional-location-placeholder.jpg" data-intended-subject="Additional Rabbi Scheller teaching location image">
+              <figcaption class="slide-label"><strong>Additional location</strong><span>Image pending</span></figcaption>
+            </figure>
+          </div>
+          <div class="carousel-controls" aria-label="Teaching carousel controls">
+            <button class="icon-button" type="button" data-carousel-prev data-action-id="ACTION-ONETIME-TEACHING-CAROUSEL-PREV" aria-label="Previous teaching location">&#8249;</button>
+            <button class="icon-button" type="button" data-carousel-next data-action-id="ACTION-ONETIME-TEACHING-CAROUSEL-NEXT" aria-label="Next teaching location">&#8250;</button>
+            <button class="icon-button" type="button" data-carousel-pause data-action-id="ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE" aria-label="Pause teaching location carousel">||</button>
+          </div>
+          <div class="carousel-pagination" aria-label="Teaching carousel pagination">
+            <button class="carousel-dot active" type="button" data-dot="0" aria-label="Show Baltimore" aria-current="true"></button>
+            <button class="carousel-dot" type="button" data-dot="1" aria-label="Show Flatbush, New York"></button>
+            <button class="carousel-dot" type="button" data-dot="2" aria-label="Show Hollywood, Florida"></button>
+            <button class="carousel-dot" type="button" data-dot="3" aria-label="Show additional location"></button>
+          </div>
         </div>
 
         <div class="press-band" aria-labelledby="pressTitle">
@@ -1535,163 +1424,14 @@
       </div>
     </section>
 
-    <section class="section ice" id="gain" aria-labelledby="gainTitle">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">What He&rsquo;ll Gain</p>
-            <h2 id="gainTitle">Not just another class. A new relationship with learning.</h2>
-          </div>
-          <p>Designed for boys who can handle more when the learning is clear, alive, and connected to a real teacher.</p>
-        </div>
-
-        <div class="card-grid">
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">01</span>
-            <h3>Clarity</h3>
-            <p>Rabbi Scheller turns each Mishnah into a story, a question, and a point your son can remember later.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">02</span>
-            <h3>Accomplishment</h3>
-            <p>The live structure creates momentum without making learning feel heavy or impersonal.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">03</span>
-            <h3>Excitement for learning Torah</h3>
-            <p>Clear takeaways help boys review, repeat, and feel proud that the Mishnah belongs to them.</p>
-          </article>
-        </div>
-      </div>
+    <section class="rosh-ticker" id="rosh-special" data-rosh-hashanah-ticker aria-label="Rosh Hashanah special countdown">
+      <a class="ticker-link" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">
+        <span class="ticker-track">
+          <span class="ticker-text" data-ticker-text>ROSH HASHANAH SPECIAL</span>
+          <span class="ticker-text" data-ticker-text aria-hidden="true">ROSH HASHANAH SPECIAL</span>
+        </span>
+      </a>
     </section>
-
-    <section class="section paper" id="receive" aria-labelledby="receiveTitle">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">What You Receive</p>
-            <h2 id="receiveTitle">A complete learning experience for home or school.</h2>
-          </div>
-          <p>Everything is shaped around a simple goal: your son should walk away loving the learning more than when he came in.</p>
-        </div>
-
-        <div class="card-grid receive">
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">L</span>
-            <h3>Live daily Mishnayos class</h3>
-            <p>Direct learning with a teacher boys connect to.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">C</span>
-            <h3>Online class library</h3>
-            <p>A growing place to review classes and keep the learning available after the live shiur.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">P</span>
-            <h3>Parent portal</h3>
-            <p>A clear parent view for class context, updates, and next steps.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">S</span>
-            <h3>Student portal</h3>
-            <p>A student-safe learning view that keeps boys focused on class material and review.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">W</span>
-            <h3>Worksheets and review materials</h3>
-            <p>Support materials that help the Mishnah stay clear and reviewable.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">D</span>
-            <h3>Daily reminders</h3>
-            <p>Email or WhatsApp reminder options help families remember the live class time.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">M</span>
-            <h3>Monitored online platform</h3>
-            <p>A structured environment designed for learning, review, and age-appropriate access.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">R</span>
-            <h3>Structured communication with the Rabbi</h3>
-            <p>Questions and follow-up can be routed clearly without turning the class into a noisy chat.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section dark" id="how-it-works" aria-labelledby="howTitle">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">How It Works</p>
-            <h2 id="howTitle">Simple enough to start. Strong enough to keep going.</h2>
-          </div>
-          <p>Start with a short signup, choose the right path, and step into the daily live learning rhythm.</p>
-        </div>
-
-        <div class="step-grid">
-          <article class="step">
-            <h3>Sign up</h3>
-            <p>Share the parent or contact name, email, optional phone, and city.</p>
-          </article>
-          <article class="step">
-            <h3>Choose Family or School</h3>
-            <p>Tell us whether the class is for your family or for a school group.</p>
-          </article>
-          <article class="step">
-            <h3>Receive class details and reminders</h3>
-            <p>Get the class details and choose email, WhatsApp, both, or no daily reminders.</p>
-          </article>
-          <article class="step">
-            <h3>Join the live learning rhythm</h3>
-            <p>Rabbi Scheller brings Mishnayos to life with warmth, clarity, and accountability.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section audience-section" id="who" aria-labelledby="whoTitle">
-      <div class="wrap audience-panel">
-        <div class="audience-copy">
-          <p class="eyebrow">Who It&rsquo;s For</p>
-          <h2 id="whoTitle">For parents and schools who want boys to love learning.</h2>
-          <p>One Time Mishnayos is built for families, rebbeim, and schools looking for a serious, warm, exciting way to bring Mishnayos into a boy&rsquo;s daily life.</p>
-          <a class="button primary" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
-        </div>
-        <div class="audience-cards">
-          <article class="audience-card">
-            <span class="card-icon" aria-hidden="true">F</span>
-            <div>
-              <h3>Families</h3>
-              <p>A simple entry point for boys who need the right teacher and rhythm.</p>
-            </div>
-          </article>
-          <article class="audience-card">
-            <span class="card-icon" aria-hidden="true">H</span>
-            <div>
-              <h3>English-speaking homeschoolers</h3>
-              <p>A daily Mishnayos rhythm for boys learning from home or across time zones.</p>
-            </div>
-          </article>
-          <article class="audience-card">
-            <span class="card-icon" aria-hidden="true">S</span>
-            <div>
-              <h3>Schools using it as a class</h3>
-              <p>A clear option for classrooms that need energy, consistency, and trusted delivery.</p>
-            </div>
-          </article>
-          <article class="audience-card">
-            <span class="card-icon" aria-hidden="true">R</span>
-            <div>
-              <h3>Local boys joining the free live class at 7 p.m. in Ramat Beit Shemesh Alef</h3>
-              <p>For boys who can join the live local learning rhythm in Ramat Beit Shemesh Alef.</p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
   </main>
 
   <footer class="one-time-site-footer" data-one-time-canonical-footer>
@@ -1703,7 +1443,7 @@
       <nav class="footer-links" aria-label="Footer">
         <a href="/one-time/privacy.html">Privacy</a>
         <a href="/one-time/terms.html">Terms</a>
-        <a href="/rabbi-member">Member Login</a>
+        <a href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
       </nav>
     </div>
   </footer>
@@ -1737,11 +1477,10 @@
       });
 
       document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-          setMenu(false);
-        }
+        if (event.key === 'Escape') setMenu(false);
       });
 
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
       const carousel = document.querySelector('[data-carousel]');
       if (carousel) {
         const track = carousel.querySelector('[data-carousel-track]');
@@ -1751,42 +1490,128 @@
         const next = carousel.querySelector('[data-carousel-next]');
         const pause = carousel.querySelector('[data-carousel-pause]');
         let index = 0;
-        let paused = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let userPaused = reducedMotion.matches;
+        let hoverPaused = false;
+        let focusPaused = false;
         let timer = null;
+        let touchStartX = 0;
+
+        function isPaused() {
+          return userPaused || hoverPaused || focusPaused || reducedMotion.matches;
+        }
 
         function render() {
           if (track) track.style.transform = `translateX(-${index * 100}%)`;
-          dots.forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === index));
+          dots.forEach((dot, dotIndex) => {
+            const active = dotIndex === index;
+            dot.classList.toggle('active', active);
+            dot.setAttribute('aria-current', active ? 'true' : 'false');
+          });
+          if (pause) {
+            pause.textContent = isPaused() ? '>' : '||';
+            pause.setAttribute('aria-label', isPaused() ? 'Play teaching location carousel' : 'Pause teaching location carousel');
+          }
         }
 
-        function go(delta) {
-          index = (index + delta + slides.length) % slides.length;
+        function go(nextIndex) {
+          index = (nextIndex + slides.length) % slides.length;
           render();
+        }
+
+        function goDelta(delta) {
+          go(index + delta);
         }
 
         function schedule() {
           window.clearInterval(timer);
-          if (!paused) timer = window.setInterval(() => go(1), 5600);
+          timer = null;
+          if (!isPaused()) timer = window.setInterval(() => goDelta(1), 5600);
+          render();
         }
 
         prev?.addEventListener('click', () => {
-          go(-1);
+          goDelta(-1);
           schedule();
         });
         next?.addEventListener('click', () => {
-          go(1);
+          goDelta(1);
           schedule();
         });
         pause?.addEventListener('click', () => {
-          paused = !paused;
-          pause.setAttribute('aria-label', paused ? 'Play teaching photo carousel' : 'Pause teaching photo carousel');
-          pause.textContent = paused ? '>' : '||';
+          userPaused = !userPaused;
           schedule();
         });
-
+        dots.forEach((dot) => {
+          dot.addEventListener('click', () => {
+            go(Number(dot.dataset.dot || 0));
+            schedule();
+          });
+        });
+        carousel.addEventListener('mouseenter', () => {
+          hoverPaused = true;
+          schedule();
+        });
+        carousel.addEventListener('mouseleave', () => {
+          hoverPaused = false;
+          schedule();
+        });
+        carousel.addEventListener('focusin', () => {
+          focusPaused = true;
+          schedule();
+        });
+        carousel.addEventListener('focusout', () => {
+          focusPaused = false;
+          schedule();
+        });
+        carousel.addEventListener('touchstart', (event) => {
+          touchStartX = event.changedTouches?.[0]?.clientX || 0;
+        }, { passive: true });
+        carousel.addEventListener('touchend', (event) => {
+          const endX = event.changedTouches?.[0]?.clientX || 0;
+          const delta = endX - touchStartX;
+          if (Math.abs(delta) > 44) {
+            goDelta(delta > 0 ? -1 : 1);
+            schedule();
+          }
+        }, { passive: true });
+        reducedMotion.addEventListener?.('change', schedule);
         render();
         schedule();
       }
+
+      function jerusalemDateParts(date) {
+        const parts = new Intl.DateTimeFormat('en-CA', {
+          timeZone: 'Asia/Jerusalem',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        }).formatToParts(date);
+        const map = {};
+        parts.forEach((part) => {
+          if (part.type !== 'literal') map[part.type] = Number(part.value);
+        });
+        return map;
+      }
+
+      function daysUntilRoshHashanah() {
+        const nowParts = jerusalemDateParts(new Date());
+        const current = Date.UTC(nowParts.year, nowParts.month - 1, nowParts.day);
+        const target = Date.UTC(2026, 8, 11);
+        return Math.max(0, Math.ceil((target - current) / 86400000));
+      }
+
+      function updateTicker() {
+        const days = daysUntilRoshHashanah();
+        const text = days > 0
+          ? `ROSH HASHANAH SPECIAL \u2022 ${days} DAYS UNTIL ROSH HASHANAH \u2022 JOIN FREE UNTIL ROSH HASHANAH \u2022 SIGN UP NOW`
+          : 'ROSH HASHANAH SPECIAL \u2022 JOIN FREE UNTIL ROSH HASHANAH \u2022 SIGN UP NOW';
+        document.querySelectorAll('[data-ticker-text]').forEach((node) => {
+          node.textContent = text;
+        });
+      }
+
+      updateTicker();
+      window.setInterval(updateTicker, 15 * 60 * 1000);
     })();
   </script>
 </body>

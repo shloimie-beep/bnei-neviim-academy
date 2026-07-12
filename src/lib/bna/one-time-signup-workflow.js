@@ -208,7 +208,7 @@ function normalizeIanaTimezone(value = '') {
 
 function findOneTimeCitySelection(input = {}) {
   const cityId = compact(input.city_id || input.cityId || input.selected_city_id || input.selectedCityId).toLowerCase();
-  const label = compact(input.city_label || input.cityLabel || input.city || input.location || input.label);
+  const label = compact(input.city_label || input.cityLabel || input.city || input.location || input.label || input.city_name || input.cityName || input.metadata?.city?.label || input.metadata?.city?.name);
   if (cityId) {
     return ONE_TIME_CITY_OPTIONS.find((option) => option.id.toLowerCase() === cityId) || null;
   }
@@ -217,30 +217,31 @@ function findOneTimeCitySelection(input = {}) {
   if (exact) return exact;
   const byCityName = ONE_TIME_CITY_OPTIONS.filter((option) => option.city.toLowerCase() === label.toLowerCase());
   if (byCityName.length === 1) return byCityName[0];
-  if (byCityName.length > 1) {
-    const error = new Error('City selection is ambiguous. Choose the full city, region, and country option.');
-    error.statusCode = 400;
-    error.code = 'ambiguous_city_selection';
-    throw error;
-  }
   return null;
 }
 
 function resolveOneTimeCitySelection(input = {}) {
   const option = findOneTimeCitySelection(input);
-  assertPublicSignupError(Boolean(option), 'Choose a city from the list so the class time can be shown correctly.');
-  const browserTimezone = normalizeIanaTimezone(input.browser_timezone || input.browserTimeZone || '');
+  const submittedLabel = compact(input.city_label || input.cityLabel || input.city || input.location || input.label || input.city_name || input.cityName || input.metadata?.city?.label || input.metadata?.city?.name);
+  const label = submittedLabel || option?.label || '';
+  const cityName = compact(input.city_name || input.cityName || input.metadata?.city?.name) || option?.city || label;
+  const browserTimezone = normalizeIanaTimezone(input.browser_timezone || input.browserTimeZone || input.metadata?.browser_timezone || input.metadata?.browserTimezone || '');
+  const submittedTimezone = normalizeIanaTimezone(input.timezone || input.timeZone || input.time_zone || input.metadata?.timezone || input.metadata?.city?.timezone || '');
+  const timezone = submittedTimezone || browserTimezone || option?.timezone || '';
+  assertPublicSignupError(Boolean(label), 'City is required.');
+  assertPublicSignupError(Boolean(timezone), 'Choose a valid IANA time zone for class-time display.');
   return {
-    ...option,
-    browser_timezone: browserTimezone || null,
-    timezone_mismatch: Boolean(browserTimezone && browserTimezone !== option.timezone),
-    timezone_mismatch_review: browserTimezone && browserTimezone !== option.timezone
-      ? {
-          browser_timezone: browserTimezone,
-          selected_city_timezone: option.timezone,
-          selected_city_label: option.label,
-        }
-      : null,
+    id: option?.id || compact(input.city_id || input.cityId || ''),
+    label,
+    city: cityName,
+    region: compact(input.city_region || input.cityRegion || input.region || input.metadata?.city?.region) || option?.region || '',
+    country: compact(input.city_country || input.cityCountry || input.country || input.metadata?.city?.country) || option?.country || '',
+    country_code: compact(input.city_country_code || input.cityCountryCode || input.country_code || input.countryCode || input.metadata?.city?.country_code) || option?.country_code || '',
+    timezone,
+    browser_timezone: browserTimezone || timezone,
+    timezone_mismatch: false,
+    timezone_mismatch_review: null,
+    timezone_source: browserTimezone && timezone === browserTimezone ? 'browser' : submittedTimezone ? 'submitted' : 'known_city',
   };
 }
 
@@ -352,6 +353,7 @@ function buildOneTimeSignupLeadInput(input = {}, { now = new Date() } = {}) {
     browser_timezone: city.browser_timezone,
     timezone_mismatch: city.timezone_mismatch,
     timezone_mismatch_review: city.timezone_mismatch_review,
+    timezone_source: city.timezone_source,
     reminder_preference: preference.value,
     reminder_preference_label: preference.label,
     reminder_channels: preference.channels,
@@ -389,6 +391,7 @@ function buildOneTimeSignupLeadInput(input = {}, { now = new Date() } = {}) {
     city_country: city.country,
     city_country_code: city.country_code,
     timezone: city.timezone,
+    browser_timezone: city.browser_timezone,
     preferred_class_format: 'daily_live_mishnah_class',
     source_landing_page: sourceLandingPage,
     consent: preference.recurring_consent_required && recurringConsentGiven,
@@ -691,11 +694,14 @@ function buildRabbiSignupTelegramAlert({
 } = {}) {
   const preference = normalizeReminderPreference(reminderPreference || 'none');
   const selectedCity = city?.id ? city : resolveOneTimeCitySelection(city || {});
+  const cityLine = selectedCity.country
+    ? `${selectedCity.city}, ${selectedCity.country}`
+    : (selectedCity.city || selectedCity.label || 'Not provided');
   return [
     'New One Time signup',
     `- Contact: ${compact(contactName) || 'Not provided'}`,
     `- Signing up as: ${normalizeSignupAs(signupAs)}`,
-    `- City: ${selectedCity.city}, ${selectedCity.country}`,
+    `- City: ${cityLine}`,
     `- Reminders: ${preference.label}`,
     `- CRM lead: ${crmLeadId || 'pending'}`,
     `- Review: ${compact(crmDeepLink) || '/provider.html?admin_provider=one-time&section=crm'}`,

@@ -145,8 +145,8 @@ export async function buildOneTimePublicTargetGate(options = {}, context = {}) {
   const fetchFn = context.fetchFn || globalThis.fetch;
   const baseUrl = normalizeBaseUrl(options.targetBaseUrl || process.env.ONETIME_BASE_URL || 'https://join.onetimeonetime.com');
   const expectedTitlePattern = /Give Your Son A Love For Torah/i;
-  const expectedHeadlinePattern = /Give your son a love for Torah you never thought possible\./i;
-  const requiredText = ['Give your son a love for Torah you never thought possible.', 'One Time Mishnayos', 'Sign Up Now'];
+  const expectedHeadlinePattern = /Give your son a love for learning Torah\./i;
+  const requiredText = ['Give your son a love for learning Torah.', 'One Time Mishnayos', 'Sign Up Now'];
   const forbiddenPatterns = [
     /Your Child Can Love Learning Mishnayos/i,
     /Learn Mishnayos Live with Rabbi Eli Scheller/i,
@@ -160,7 +160,7 @@ export async function buildOneTimePublicTargetGate(options = {}, context = {}) {
     canonical_domain: 'join.onetimeonetime.com',
     expected_project: 'one-time-production',
     expected_service: 'one-time-web',
-    expected_headline: 'Give your son a love for Torah you never thought possible.',
+    expected_headline: 'Give your son a love for learning Torah.',
     canonical_routes: ['/', '/one-time/'],
     checks: [],
     blockers: [],

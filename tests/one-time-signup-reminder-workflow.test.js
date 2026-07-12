@@ -42,6 +42,8 @@ test('direct signup page is the canonical public form', () => {
   assert.match(signup, /name="city_country_code"/);
   assert.match(signup, /name="timezone"/);
   assert.match(signup, /name="browser_timezone"/);
+  assert.match(signup, /name="timezone_fallback"/);
+  assert.doesNotMatch(signup, /cityOptions|CITY_OPTIONS|Choose the matching city|unambiguous city/);
   assert.match(signup, /name="email"/);
   assert.match(signup, /name="phone"/);
   assert.match(signup, /name="signup_acknowledgement"/);
@@ -49,7 +51,7 @@ test('direct signup page is the canonical public form', () => {
   assert.match(signup, /name="reminder_preference" value="whatsapp"/);
   assert.match(signup, /name="reminder_preference" value="both"/);
   assert.match(signup, /name="reminder_preference" value="none"/);
-  assert.match(signup, /Use my selected city for class times\. By choosing reminders, I agree to receive class updates and can stop them at any time\./);
+  assert.match(signup, /Use my detected time zone for class times\. By choosing reminders, I agree to receive class updates and can stop them at any time\./);
   assert.match(signup, /class="required-dot"/);
   assert.match(signup, /data-phone-required-dot[^>]*hidden/);
   assert.match(signup, /data-phone-hint hidden>Required for WhatsApp reminders\./);
@@ -57,7 +59,7 @@ test('direct signup page is the canonical public form', () => {
   assert.doesNotMatch(visibleSignupText, /phone\s*(?:\/\s*WhatsApp)?\s*[-:]?\s*optional/i);
   assert.match(signup, /prefers-reduced-motion/);
   assert.match(signup, /\/api\/one-time\/interest/);
-  assert.doesNotMatch(visibleSignupText, /Member Login|parent portal|student portal|checkout|billing|CRM|Codex|guardrail|approval|password setup|Optional unless/i);
+  assert.doesNotMatch(visibleSignupText, /parent portal|student portal|checkout|billing|CRM|Codex|guardrail|approval|password setup|Optional unless/i);
 
   assert.match(landing, /href="\/one-time\/signup"[^>]*>Sign Up Now<\/a>/);
   assert.doesNotMatch(landing, /data-signup-modal|data-signup-form|data-continue-onboarding/);
@@ -69,7 +71,7 @@ test('direct signup page is the canonical public form', () => {
   assert.ok(actions.has('ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT'));
 });
 
-test('signup payload validation covers consent, city disambiguation, and WhatsApp phone requirement', () => {
+test('signup payload validation covers consent, free-text city timezone, and WhatsApp phone requirement', () => {
   const base = {
     contact_name: 'Example Family',
     signup_as: 'Family',
@@ -81,6 +83,7 @@ test('signup payload validation covers consent, city disambiguation, and WhatsAp
   };
   const noReminder = buildOneTimeSignupLeadInput(base, { now: new Date('2026-07-12T12:00:00Z') });
   assert.equal(noReminder.email, 'family@example.com');
+  assert.equal(noReminder.browser_timezone, 'America/New_York');
   assert.equal(noReminder.consent, false);
   assert.equal(noReminder.metadata.reminder_consent_at, null);
   assert.deepEqual(noReminder.metadata.reminder_channels, []);
@@ -103,14 +106,30 @@ test('signup payload validation covers consent, city disambiguation, and WhatsAp
   const whatsapp = buildOneTimeSignupLeadInput({ ...base, reminder_preference: 'whatsapp', phone: '+1 732 555 0101', reminder_consent_ack: true });
   assert.equal(whatsapp.whatsapp, '+1 732 555 0101');
 
-  assert.throws(
-    () => resolveOneTimeCitySelection({ city: 'Springfield' }),
-    /ambiguous/i
-  );
-  const mismatch = resolveOneTimeCitySelection({ city_id: 'lakewood-nj-us', browser_timezone: 'Europe/London' });
-  assert.equal(mismatch.timezone, 'America/New_York');
-  assert.equal(mismatch.timezone_mismatch, true);
-  assert.equal(mismatch.timezone_mismatch_review.browser_timezone, 'Europe/London');
+  const customCity = resolveOneTimeCitySelection({
+    city_label: 'Buenos Aires',
+    city_name: 'Buenos Aires',
+    timezone: 'America/Buenos_Aires',
+    browser_timezone: 'America/Buenos_Aires',
+  });
+  assert.equal(customCity.id, '');
+  assert.equal(customCity.label, 'Buenos Aires');
+  assert.equal(customCity.city, 'Buenos Aires');
+  assert.equal(customCity.timezone, 'America/Buenos_Aires');
+  assert.equal(customCity.browser_timezone, 'America/Buenos_Aires');
+  assert.equal(customCity.timezone_mismatch, false);
+
+  const springfield = resolveOneTimeCitySelection({ city: 'Springfield', timezone: 'America/Chicago' });
+  assert.equal(springfield.label, 'Springfield');
+  assert.equal(springfield.timezone, 'America/Chicago');
+
+  const legacyKnownCity = resolveOneTimeCitySelection({ city_id: 'lakewood-nj-us' });
+  assert.equal(legacyKnownCity.timezone, 'America/New_York');
+  assert.equal(legacyKnownCity.timezone_source, 'known_city');
+
+  const detectedTimezone = resolveOneTimeCitySelection({ city_id: 'lakewood-nj-us', browser_timezone: 'Europe/London' });
+  assert.equal(detectedTimezone.timezone, 'Europe/London');
+  assert.equal(detectedTimezone.timezone_mismatch, false);
 });
 
 test('class schedule uses one Jerusalem instant and recipient-local display with DST-safe IANA zones', () => {

@@ -85,7 +85,7 @@
     .signup-shell {
       min-height: 100vh;
       display: grid;
-      grid-template-rows: auto 1fr;
+      grid-template-rows: auto 1fr auto;
     }
 
     .signup-header {
@@ -306,6 +306,35 @@
       color: var(--muted-dark);
       font-size: 0.88rem;
       font-weight: 650;
+    }
+
+    .timezone-fallback[hidden] {
+      display: none;
+    }
+
+    .local-time-card {
+      display: grid;
+      gap: 4px;
+      padding: 13px 14px;
+      border: 1px solid rgba(5, 5, 5, 0.12);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(223, 248, 255, 0.76), rgba(255, 255, 255, 0.94)),
+        var(--white);
+      color: var(--black);
+    }
+
+    .local-time-card span {
+      color: var(--muted-dark);
+      font-size: 0.78rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .local-time-card strong {
+      color: var(--black);
+      font-size: 1rem;
+      line-height: 1.24;
     }
 
     input,
@@ -553,6 +582,49 @@
       pointer-events: none;
     }
 
+    .one-time-site-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(5, 5, 5, 0.88);
+      color: var(--white);
+    }
+
+    .footer-inner {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .one-time-site-footer img {
+      width: 104px;
+      height: auto;
+    }
+
+    .one-time-site-footer p {
+      margin: 5px 0 0;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 720;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      align-items: center;
+      justify-content: flex-end;
+      color: rgba(255, 255, 255, 0.78);
+      font-weight: 850;
+    }
+
+    .footer-links a:hover,
+    .footer-links a:focus-visible {
+      color: var(--yellow);
+      outline: none;
+    }
+
     @keyframes buttonSweep {
       0%,
       72% {
@@ -649,6 +721,16 @@
         grid-template-columns: 1fr;
       }
 
+      .footer-inner {
+        width: min(100% - 28px, 1180px);
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .footer-links {
+        justify-content: flex-start;
+      }
+
       .robot-cue {
         display: none;
       }
@@ -672,11 +754,11 @@
     <main class="signup-main" id="main" data-one-time-signup-page>
       <section class="intro" aria-labelledby="signupHeroTitle">
         <p class="eyebrow">Worldwide Mishnah learning &mdash; live from Eretz Yisrael</p>
-        <h1 id="signupHeroTitle">Give your son a love for Torah you never thought possible.</h1>
+        <h1 id="signupHeroTitle">Give your son a love for learning Torah.</h1>
         <p class="intro-copy">Join the daily live Mishnayos class with Rabbi Eli Scheller. Start with your contact details and how you want to receive class reminders.</p>
         <div class="schedule-card">
-          <strong>Live from Israel. Every day at 7 p.m. Israel time.</strong>
-          <span>Class reminders are timed from the Israel class schedule.</span>
+          <strong>Live every day at 7:00 p.m. Israel time.</strong>
+          <span>We use your browser time zone to show the class time where you are.</span>
         </div>
       </section>
 
@@ -700,18 +782,8 @@
           </div>
 
           <div class="field">
-            <label for="city">City <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
-            <input id="city" name="city_label" type="text" list="cityOptions" autocomplete="address-level2" required>
-            <datalist id="cityOptions">
-              <option value="Lakewood, New Jersey, United States"></option>
-              <option value="New York, New York, United States"></option>
-              <option value="London, England, United Kingdom"></option>
-              <option value="Jerusalem, Jerusalem District, Israel"></option>
-              <option value="Sydney, New South Wales, Australia"></option>
-              <option value="Beit Shemesh, Jerusalem District, Israel"></option>
-              <option value="Springfield, Massachusetts, United States"></option>
-              <option value="Springfield, Illinois, United States"></option>
-            </datalist>
+            <label for="city">City. <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
+            <input id="city" name="city_label" type="text" autocomplete="address-level2" required>
             <input type="hidden" name="city_id">
             <input type="hidden" name="city_name">
             <input type="hidden" name="city_region">
@@ -719,8 +791,35 @@
             <input type="hidden" name="city_country_code">
             <input type="hidden" name="timezone">
             <input type="hidden" name="browser_timezone">
-            <span class="field-hint">Choose the matching city from the list.</span>
-            <span class="field-error" data-error-for="city_label">Choose an unambiguous city from the list.</span>
+            <span class="field-hint">Enter your city exactly as you want it saved.</span>
+            <span class="field-error" data-error-for="city_label">Enter your city.</span>
+          </div>
+
+          <div class="field timezone-fallback" data-timezone-fallback hidden>
+            <label for="timezoneFallback">Time zone <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required when browser detection fails</span></label>
+            <input id="timezoneFallback" name="timezone_fallback" type="text" list="timezoneOptions" autocomplete="off">
+            <datalist id="timezoneOptions">
+              <option value="America/New_York"></option>
+              <option value="America/Chicago"></option>
+              <option value="America/Denver"></option>
+              <option value="America/Los_Angeles"></option>
+              <option value="America/Toronto"></option>
+              <option value="America/Buenos_Aires"></option>
+              <option value="Europe/London"></option>
+              <option value="Europe/Paris"></option>
+              <option value="Europe/Zurich"></option>
+              <option value="Asia/Jerusalem"></option>
+              <option value="Australia/Sydney"></option>
+              <option value="Australia/Melbourne"></option>
+              <option value="Africa/Johannesburg"></option>
+            </datalist>
+            <span class="field-hint">Use an IANA time zone such as America/New_York.</span>
+            <span class="field-error" data-error-for="timezone_fallback">Enter a valid IANA time zone.</span>
+          </div>
+
+          <div class="local-time-card" data-local-class-time-status>
+            <span>Class time where you are</span>
+            <strong data-local-class-time>Detecting your time zone...</strong>
           </div>
 
           <div class="field">
@@ -758,7 +857,7 @@
             </div>
             <label class="consent-check" for="signupAcknowledgement">
               <input id="signupAcknowledgement" name="signup_acknowledgement" type="checkbox" value="yes" required>
-              <span class="consent-copy">Use my selected city for class times. By choosing reminders, I agree to receive class updates and can stop them at any time. <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></span>
+              <span class="consent-copy">Use my detected time zone for class times. By choosing reminders, I agree to receive class updates and can stop them at any time. <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></span>
             </label>
             <span class="field-error" data-error-for="signup_acknowledgement">Check the box to confirm your class-time and reminder preferences.</span>
             <span class="field-error" data-error-for="reminder_preference">Choose a reminder option.</span>
@@ -774,21 +873,27 @@
         </div>
       </section>
     </main>
+
+    <footer class="one-time-site-footer" data-one-time-canonical-footer>
+      <div class="footer-inner">
+        <div>
+          <img src="/assets/one-time/brand/one-time-logo-white.webp" width="104" height="66" alt="One Time">
+          <p>One Time Mishnayos with Rabbi Eli Scheller.</p>
+        </div>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="/one-time/privacy.html">Privacy</a>
+          <a href="/one-time/terms.html">Terms</a>
+          <a href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
+        </nav>
+      </div>
+    </footer>
   </div>
 
   <script>
     (() => {
-      const CITY_OPTIONS = [
-        { id: 'lakewood-nj-us', label: 'Lakewood, New Jersey, United States', city: 'Lakewood', region: 'New Jersey', country: 'United States', countryCode: 'US', timezone: 'America/New_York' },
-        { id: 'new-york-ny-us', label: 'New York, New York, United States', city: 'New York', region: 'New York', country: 'United States', countryCode: 'US', timezone: 'America/New_York' },
-        { id: 'london-england-gb', label: 'London, England, United Kingdom', city: 'London', region: 'England', country: 'United Kingdom', countryCode: 'GB', timezone: 'Europe/London' },
-        { id: 'jerusalem-il', label: 'Jerusalem, Jerusalem District, Israel', city: 'Jerusalem', region: 'Jerusalem District', country: 'Israel', countryCode: 'IL', timezone: 'Asia/Jerusalem' },
-        { id: 'sydney-nsw-au', label: 'Sydney, New South Wales, Australia', city: 'Sydney', region: 'New South Wales', country: 'Australia', countryCode: 'AU', timezone: 'Australia/Sydney' },
-        { id: 'beit-shemesh-il', label: 'Beit Shemesh, Jerusalem District, Israel', city: 'Beit Shemesh', region: 'Jerusalem District', country: 'Israel', countryCode: 'IL', timezone: 'Asia/Jerusalem' },
-        { id: 'springfield-ma-us', label: 'Springfield, Massachusetts, United States', city: 'Springfield', region: 'Massachusetts', country: 'United States', countryCode: 'US', timezone: 'America/New_York' },
-        { id: 'springfield-il-us', label: 'Springfield, Illinois, United States', city: 'Springfield', region: 'Illinois', country: 'United States', countryCode: 'US', timezone: 'America/Chicago' }
-      ];
-
+      const ISRAEL_TIME_ZONE = 'Asia/Jerusalem';
+      const CLASS_HOUR = 19;
+      const CLASS_MINUTE = 0;
       const form = document.querySelector('[data-one-time-direct-signup-form]');
       const status = document.querySelector('[data-form-status]');
       const successPanel = document.querySelector('[data-success-panel]');
@@ -797,6 +902,9 @@
       const phoneRequiredDot = document.querySelector('[data-phone-required-dot]');
       const phoneRequiredCopy = document.querySelector('[data-phone-required-copy]');
       const reminderInputs = form ? Array.from(form.querySelectorAll('input[name="reminder_preference"]')) : [];
+      const timezoneFallbackField = document.querySelector('[data-timezone-fallback]');
+      const timezoneFallbackInput = form?.elements.timezone_fallback;
+      const localClassTime = document.querySelector('[data-local-class-time]');
 
       function selectedReminder() {
         return reminderInputs.find((input) => input.checked)?.value || '';
@@ -819,19 +927,128 @@
         }
       }
 
-      function cityForLabel(label) {
-        const normalized = String(label || '').trim().toLowerCase();
-        return CITY_OPTIONS.find((city) => city.label.toLowerCase() === normalized) || null;
+      function validTimezone(value) {
+        const timezone = String(value || '').trim();
+        if (!timezone) return '';
+        try {
+          new Intl.DateTimeFormat('en-US', { timeZone: timezone }).format(new Date('2026-01-01T00:00:00Z'));
+          return timezone;
+        } catch {
+          return '';
+        }
       }
 
-      function setCityFields(city) {
+      function detectBrowserTimezone() {
+        try {
+          return validTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone || '');
+        } catch {
+          return '';
+        }
+      }
+
+      function zoneDateParts(date, timeZone) {
+        const parts = new Intl.DateTimeFormat('en-US', {
+          timeZone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hourCycle: 'h23'
+        }).formatToParts(date instanceof Date ? date : new Date(date));
+        const out = {};
+        for (const part of parts) {
+          if (part.type !== 'literal') out[part.type] = part.value;
+        }
+        return {
+          year: Number(out.year),
+          month: Number(out.month),
+          day: Number(out.day),
+          hour: Number(out.hour),
+          minute: Number(out.minute),
+          second: Number(out.second || 0)
+        };
+      }
+
+      function timezoneOffsetMs(timeZone, instantMs) {
+        const parts = zoneDateParts(new Date(instantMs), timeZone);
+        return Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second) - instantMs;
+      }
+
+      function zonedTimeToUtc(parts, timeZone) {
+        const civilMs = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second || 0);
+        let instantMs = civilMs;
+        for (let i = 0; i < 4; i += 1) {
+          instantMs = civilMs - timezoneOffsetMs(timeZone, instantMs);
+        }
+        return new Date(instantMs);
+      }
+
+      function nextJerusalemClassInstant(now = new Date()) {
+        const parts = zoneDateParts(now, ISRAEL_TIME_ZONE);
+        const classPassed = parts.hour > CLASS_HOUR || (parts.hour === CLASS_HOUR && parts.minute > CLASS_MINUTE);
+        return zonedTimeToUtc({
+          year: parts.year,
+          month: parts.month,
+          day: parts.day + (classPassed ? 1 : 0),
+          hour: CLASS_HOUR,
+          minute: CLASS_MINUTE,
+          second: 0
+        }, ISRAEL_TIME_ZONE);
+      }
+
+      function formatLocalClassTime(timezone) {
+        const classInstant = nextJerusalemClassInstant();
+        return new Intl.DateTimeFormat('en-US', {
+          timeZone: timezone,
+          weekday: 'long',
+          hour: 'numeric',
+          minute: '2-digit',
+          timeZoneName: 'short'
+        }).format(classInstant).replace(/\bAM\b/g, 'a.m.').replace(/\bPM\b/g, 'p.m.');
+      }
+
+      function currentTimezone() {
+        return validTimezone(form?.elements.timezone?.value || '') || validTimezone(timezoneFallbackInput?.value || '');
+      }
+
+      function setTimezoneFallbackVisible(visible) {
+        if (!timezoneFallbackField || !timezoneFallbackInput) return;
+        timezoneFallbackField.hidden = !visible;
+        timezoneFallbackInput.required = visible;
+        timezoneFallbackInput.setAttribute('aria-required', String(visible));
+        if (!visible) {
+          timezoneFallbackInput.removeAttribute('aria-invalid');
+          form?.querySelector('[data-error-for="timezone_fallback"]')?.classList.remove('visible');
+        }
+      }
+
+      function updateLocalClassTime() {
+        if (!localClassTime) return;
+        const timezone = currentTimezone();
+        if (!timezone) {
+          localClassTime.textContent = 'Choose your time zone to show your local class time.';
+          return;
+        }
+        localClassTime.textContent = `${formatLocalClassTime(timezone)} where you are. Israel time stays 7:00 p.m.`;
+      }
+
+      function setTimezone(value) {
+        const timezone = validTimezone(value);
+        if (form?.elements.timezone) form.elements.timezone.value = timezone;
+        updateLocalClassTime();
+        return timezone;
+      }
+
+      function setCityFields(cityLabel) {
+        const city = String(cityLabel || '').trim();
         for (const [name, value] of Object.entries({
-          city_id: city?.id || '',
-          city_name: city?.city || '',
-          city_region: city?.region || '',
-          city_country: city?.country || '',
-          city_country_code: city?.countryCode || '',
-          timezone: city?.timezone || ''
+          city_id: '',
+          city_name: city,
+          city_region: '',
+          city_country: '',
+          city_country_code: ''
         })) {
           if (form?.elements[name]) form.elements[name].value = value;
         }
@@ -870,14 +1087,6 @@
         error?.classList.add('visible');
       }
 
-      function regionForCity(city) {
-        if (!city) return 'worldwide';
-        if (city.countryCode === 'IL') return 'israel';
-        if (city.countryCode === 'GB') return 'uk';
-        if (city.countryCode === 'US') return 'us';
-        return 'worldwide';
-      }
-
       function utmParams() {
         const utm = {};
         const params = new URLSearchParams(window.location.search);
@@ -887,10 +1096,11 @@
         return utm;
       }
 
-      function buildPayload({ contactName, signupAs, city, email, phone, reminder, acknowledgement }) {
+      function buildPayload({ contactName, signupAs, cityLabel, timezone, email, phone, reminder, acknowledgement }) {
         const reminderConsent = acknowledgement && reminder !== 'none';
         const now = new Date().toISOString();
-        const browserTimezone = form.elements.browser_timezone?.value || '';
+        const detectedBrowserTimezone = form.elements.browser_timezone?.value || '';
+        const browserTimezone = detectedBrowserTimezone || timezone;
         const signupType = signupAs.toLowerCase();
         return {
           parent_name: contactName,
@@ -899,14 +1109,14 @@
           phone,
           whatsapp: needsWhatsAppPhone(reminder) ? phone : '',
           audience: 'parents',
-          region: regionForCity(city),
-          city_id: city.id,
-          city_label: city.label,
-          city_name: city.city,
-          city_region: city.region,
-          city_country: city.country,
-          city_country_code: city.countryCode,
-          timezone: city.timezone,
+          region: 'worldwide',
+          city_id: '',
+          city_label: cityLabel,
+          city_name: cityLabel,
+          city_region: '',
+          city_country: '',
+          city_country_code: '',
+          timezone,
           browser_timezone: browserTimezone,
           source_landing_page: '/one-time/signup',
           signup_mode: 'one_time_class_signup',
@@ -916,18 +1126,18 @@
           consent: reminderConsent,
           notes: `${signupType === 'school' ? 'School' : 'Family'} signup for the One Time daily Mishnayos class.`,
           metadata: {
-            raw_intake_id: 'RAW-20260712-002',
-            requirement_id: 'REQ-20260712-013',
-            form_version: 'one-time-direct-signup-v1',
+            raw_intake_id: 'RAW-20260712-004',
+            requirement_id: 'REQ-20260712-106',
+            form_version: 'one-time-direct-signup-v2',
             signup_as: signupAs,
             city: {
-              id: city.id,
-              label: city.label,
-              name: city.city,
-              region: city.region,
-              country: city.country,
-              country_code: city.countryCode,
-              timezone: city.timezone
+              id: '',
+              label: cityLabel,
+              name: cityLabel,
+              region: '',
+              country: '',
+              country_code: '',
+              timezone
             },
             reminder_preference: reminder,
             reminder_consent: reminderConsent,
@@ -943,17 +1153,30 @@
             },
             referrer: document.referrer || '',
             utm: utmParams(),
-            browser_timezone: browserTimezone
+            browser_timezone: browserTimezone,
+            timezone_source: detectedBrowserTimezone ? 'browser' : 'manual_fallback'
           }
         };
       }
 
+      const detectedTimezone = detectBrowserTimezone();
       if (form?.elements.browser_timezone) {
-        form.elements.browser_timezone.value = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+        form.elements.browser_timezone.value = detectedTimezone;
+      }
+      if (detectedTimezone) {
+        setTimezoneFallbackVisible(false);
+        setTimezone(detectedTimezone);
+      } else {
+        setTimezoneFallbackVisible(true);
+        updateLocalClassTime();
       }
 
       form?.elements.city_label?.addEventListener('input', () => {
-        setCityFields(cityForLabel(form.elements.city_label.value));
+        setCityFields(form.elements.city_label.value);
+      });
+
+      timezoneFallbackInput?.addEventListener('input', () => {
+        setTimezone(timezoneFallbackInput.value);
       });
 
       reminderInputs.forEach((input) => {
@@ -968,7 +1191,8 @@
 
         const contactName = String(form.elements.contact_name.value || '').trim();
         const signupAs = String(form.elements.signup_as.value || '').trim();
-        const city = cityForLabel(form.elements.city_label.value);
+        const cityLabel = String(form.elements.city_label.value || '').trim();
+        const timezone = currentTimezone();
         const email = String(form.elements.email.value || '').trim().toLowerCase();
         const phone = String(form.elements.phone.value || '').trim();
         const reminder = selectedReminder();
@@ -983,11 +1207,18 @@
           showFieldError('signup_as');
           invalid = true;
         }
-        if (!city) {
+        if (!cityLabel) {
           showFieldError('city_label');
           invalid = true;
         } else {
-          setCityFields(city);
+          setCityFields(cityLabel);
+        }
+        if (!timezone) {
+          setTimezoneFallbackVisible(true);
+          showFieldError('timezone_fallback');
+          invalid = true;
+        } else {
+          setTimezone(timezone);
         }
         if (!isValidEmail(email)) {
           showFieldError('email');
@@ -1021,7 +1252,7 @@
           const response = await fetch('/api/one-time/interest', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(buildPayload({ contactName, signupAs, city, email, phone, reminder, acknowledgement }))
+            body: JSON.stringify(buildPayload({ contactName, signupAs, cityLabel, timezone, email, phone, reminder, acknowledgement }))
           });
           const result = await response.json().catch(() => ({}));
           if (!response.ok || result.success === false) {
@@ -1036,18 +1267,18 @@
             email,
             phone,
             signup_as: signupAs,
-            city: city.label,
+            city: cityLabel,
             city_context: {
-              id: city.id,
-              label: city.label,
-              name: city.city,
-              region: city.region,
-              country: city.country,
-              country_code: city.countryCode,
-              timezone: city.timezone
+              id: '',
+              label: cityLabel,
+              name: cityLabel,
+              region: '',
+              country: '',
+              country_code: '',
+              timezone
             },
-            timezone: city.timezone,
-            browser_timezone: form.elements.browser_timezone?.value || '',
+            timezone,
+            browser_timezone: form.elements.browser_timezone?.value || timezone,
             reminder_preference: reminder,
             product_lead_id: productLeadId ? String(productLeadId) : '',
             crm_lead_id: crmLeadId ? String(crmLeadId) : '',

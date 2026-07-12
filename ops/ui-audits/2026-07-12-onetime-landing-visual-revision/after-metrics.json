@@ -1,0 +1,632 @@
+{
+  "generated_at": "2026-07-12T12:21:00.521Z",
+  "baseUrl": "http://127.0.0.1:3212",
+  "landing": {
+    "390": {
+      "url": "http://127.0.0.1:3212/one-time/",
+      "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+      "h1": "Give your son a love for learning Torah.",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "bodyWidth": 390,
+      "sectionIds": [
+        "receive",
+        "gain",
+        "how-it-works",
+        "who",
+        "rabbi",
+        "rosh-special"
+      ],
+      "signupLinks": [
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        }
+      ],
+      "tickerText": "ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW",
+      "roshDays": 61,
+      "reducedMotionAnimation": "tickerMove",
+      "launcher": {
+        "text": "Robot Scheller",
+        "right": 12,
+        "bottom": 12,
+        "width": 82,
+        "height": 82
+      },
+      "avatar": {
+        "tagName": "img",
+        "src": "/assets/one-time/robot/robot-scheller-whatsapp.png",
+        "objectFit": "contain",
+        "width": 74,
+        "height": 74,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254,
+        "complete": true
+      }
+    },
+    "430": {
+      "url": "http://127.0.0.1:3212/one-time/",
+      "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+      "h1": "Give your son a love for learning Torah.",
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "bodyWidth": 430,
+      "sectionIds": [
+        "receive",
+        "gain",
+        "how-it-works",
+        "who",
+        "rabbi",
+        "rosh-special"
+      ],
+      "signupLinks": [
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        }
+      ],
+      "tickerText": "ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW",
+      "roshDays": 61,
+      "reducedMotionAnimation": "tickerMove",
+      "launcher": {
+        "text": "Robot Scheller",
+        "right": 12,
+        "bottom": 12,
+        "width": 82,
+        "height": 82
+      },
+      "avatar": {
+        "tagName": "img",
+        "src": "/assets/one-time/robot/robot-scheller-whatsapp.png",
+        "objectFit": "contain",
+        "width": 74,
+        "height": 74,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254,
+        "complete": true
+      }
+    },
+    "768": {
+      "url": "http://127.0.0.1:3212/one-time/",
+      "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+      "h1": "Give your son a love for learning Torah.",
+      "scrollWidth": 768,
+      "clientWidth": 768,
+      "bodyWidth": 768,
+      "sectionIds": [
+        "receive",
+        "gain",
+        "how-it-works",
+        "who",
+        "rabbi",
+        "rosh-special"
+      ],
+      "signupLinks": [
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        }
+      ],
+      "tickerText": "ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW",
+      "roshDays": 61,
+      "reducedMotionAnimation": "tickerMove",
+      "launcher": {
+        "text": "Robot Scheller",
+        "right": 22,
+        "bottom": 22,
+        "width": 84,
+        "height": 90
+      },
+      "avatar": {
+        "tagName": "img",
+        "src": "/assets/one-time/robot/robot-scheller-whatsapp.png",
+        "objectFit": "contain",
+        "width": 82,
+        "height": 88,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254,
+        "complete": true
+      }
+    },
+    "1024": {
+      "url": "http://127.0.0.1:3212/one-time/",
+      "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+      "h1": "Give your son a love for learning Torah.",
+      "scrollWidth": 1024,
+      "clientWidth": 1024,
+      "bodyWidth": 1024,
+      "sectionIds": [
+        "receive",
+        "gain",
+        "how-it-works",
+        "who",
+        "rabbi",
+        "rosh-special"
+      ],
+      "signupLinks": [
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        }
+      ],
+      "tickerText": "ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW",
+      "roshDays": 61,
+      "reducedMotionAnimation": "tickerMove",
+      "launcher": {
+        "text": "Robot Scheller",
+        "right": 22,
+        "bottom": 22,
+        "width": 84,
+        "height": 90
+      },
+      "avatar": {
+        "tagName": "img",
+        "src": "/assets/one-time/robot/robot-scheller-whatsapp.png",
+        "objectFit": "contain",
+        "width": 82,
+        "height": 88,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254,
+        "complete": true
+      }
+    },
+    "1440": {
+      "url": "http://127.0.0.1:3212/one-time/",
+      "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+      "h1": "Give your son a love for learning Torah.",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "bodyWidth": 1440,
+      "sectionIds": [
+        "receive",
+        "gain",
+        "how-it-works",
+        "who",
+        "rabbi",
+        "rosh-special"
+      ],
+      "signupLinks": [
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "Sign Up Now",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        },
+        {
+          "text": "ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW",
+          "href": "/one-time/signup",
+          "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+        }
+      ],
+      "tickerText": "ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW",
+      "roshDays": 61,
+      "reducedMotionAnimation": "tickerMove",
+      "launcher": {
+        "text": "Robot Scheller",
+        "right": 22,
+        "bottom": 22,
+        "width": 84,
+        "height": 90
+      },
+      "avatar": {
+        "tagName": "img",
+        "src": "/assets/one-time/robot/robot-scheller-whatsapp.png",
+        "objectFit": "contain",
+        "width": 82,
+        "height": 88,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254,
+        "complete": true
+      }
+    }
+  },
+  "signup": {
+    "390": {
+      "url": "http://127.0.0.1:3212/one-time/signup",
+      "title": "Sign Up Now | One Time Mishnayos",
+      "h1": "Give your son a love for learning Torah.",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "bodyWidth": 390,
+      "sectionIds": [],
+      "signupLinks": [
+        {
+          "text": "Skip to signup form",
+          "href": "#signupForm",
+          "action": ""
+        }
+      ],
+      "tickerText": "",
+      "roshDays": null,
+      "reducedMotionAnimation": "",
+      "launcher": null,
+      "avatar": null
+    },
+    "430": {
+      "url": "http://127.0.0.1:3212/one-time/signup",
+      "title": "Sign Up Now | One Time Mishnayos",
+      "h1": "Give your son a love for learning Torah.",
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "bodyWidth": 430,
+      "sectionIds": [],
+      "signupLinks": [
+        {
+          "text": "Skip to signup form",
+          "href": "#signupForm",
+          "action": ""
+        }
+      ],
+      "tickerText": "",
+      "roshDays": null,
+      "reducedMotionAnimation": "",
+      "launcher": null,
+      "avatar": null
+    },
+    "768": {
+      "url": "http://127.0.0.1:3212/one-time/signup",
+      "title": "Sign Up Now | One Time Mishnayos",
+      "h1": "Give your son a love for learning Torah.",
+      "scrollWidth": 768,
+      "clientWidth": 768,
+      "bodyWidth": 768,
+      "sectionIds": [],
+      "signupLinks": [
+        {
+          "text": "Skip to signup form",
+          "href": "#signupForm",
+          "action": ""
+        }
+      ],
+      "tickerText": "",
+      "roshDays": null,
+      "reducedMotionAnimation": "",
+      "launcher": null,
+      "avatar": null
+    },
+    "1024": {
+      "url": "http://127.0.0.1:3212/one-time/signup",
+      "title": "Sign Up Now | One Time Mishnayos",
+      "h1": "Give your son a love for learning Torah.",
+      "scrollWidth": 1024,
+      "clientWidth": 1024,
+      "bodyWidth": 1024,
+      "sectionIds": [],
+      "signupLinks": [
+        {
+          "text": "Skip to signup form",
+          "href": "#signupForm",
+          "action": ""
+        }
+      ],
+      "tickerText": "",
+      "roshDays": null,
+      "reducedMotionAnimation": "",
+      "launcher": null,
+      "avatar": null
+    },
+    "1440": {
+      "url": "http://127.0.0.1:3212/one-time/signup",
+      "title": "Sign Up Now | One Time Mishnayos",
+      "h1": "Give your son a love for learning Torah.",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "bodyWidth": 1440,
+      "sectionIds": [],
+      "signupLinks": [
+        {
+          "text": "Skip to signup form",
+          "href": "#signupForm",
+          "action": ""
+        }
+      ],
+      "tickerText": "",
+      "roshDays": null,
+      "reducedMotionAnimation": "",
+      "launcher": null,
+      "avatar": null
+    }
+  },
+  "robot": {
+    "390": {
+      "currentInfoVisible": true,
+      "panelAvatar": {
+        "tagName": "img",
+        "src": "/assets/one-time/robot/robot-scheller-whatsapp.png",
+        "objectFit": "contain",
+        "width": 64,
+        "height": 64,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254,
+        "complete": true
+      }
+    },
+    "430": {
+      "currentInfoVisible": true,
+      "panelAvatar": {
+        "tagName": "img",
+        "src": "/assets/one-time/robot/robot-scheller-whatsapp.png",
+        "objectFit": "contain",
+        "width": 64,
+        "height": 64,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254,
+        "complete": true
+      }
+    },
+    "768": {
+      "currentInfoVisible": true,
+      "panelAvatar": {
+        "tagName": "img",
+        "src": "/assets/one-time/robot/robot-scheller-whatsapp.png",
+        "objectFit": "contain",
+        "width": 84,
+        "height": 84,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254,
+        "complete": true
+      }
+    },
+    "1440": {
+      "currentInfoVisible": true,
+      "panelAvatar": {
+        "tagName": "img",
+        "src": "/assets/one-time/robot/robot-scheller-whatsapp.png",
+        "objectFit": "contain",
+        "width": 84,
+        "height": 84,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254,
+        "complete": true
+      }
+    }
+  },
+  "signupSubmit": {
+    "payload": {
+      "parent_name": "Leah Cohen",
+      "contact_name": "Leah Cohen",
+      "email": "leah@example.invalid",
+      "phone": "",
+      "whatsapp": "",
+      "audience": "parents",
+      "region": "worldwide",
+      "city_id": "",
+      "city_label": "Buenos Aires",
+      "city_name": "Buenos Aires",
+      "city_region": "",
+      "city_country": "",
+      "city_country_code": "",
+      "timezone": "America/New_York",
+      "browser_timezone": "America/New_York",
+      "source_landing_page": "/one-time/signup",
+      "signup_mode": "one_time_class_signup",
+      "signup_acknowledgement": true,
+      "reminder_consent_ack": true,
+      "location_time_acknowledgement": true,
+      "consent": true,
+      "notes": "Family signup for the One Time daily Mishnayos class.",
+      "metadata": {
+        "raw_intake_id": "RAW-20260712-004",
+        "requirement_id": "REQ-20260712-106",
+        "form_version": "one-time-direct-signup-v2",
+        "signup_as": "Family",
+        "city": {
+          "id": "",
+          "label": "Buenos Aires",
+          "name": "Buenos Aires",
+          "region": "",
+          "country": "",
+          "country_code": "",
+          "timezone": "America/New_York"
+        },
+        "reminder_preference": "email",
+        "reminder_consent": true,
+        "reminder_consent_acknowledged": true,
+        "reminder_consent_at": "2026-07-12T12:20:59.437Z",
+        "reminder_consent_policy_version": "one-time-class-reminders-v1-2026-07-12",
+        "signup_acknowledgement": true,
+        "location_time_acknowledgement": true,
+        "class_schedule": {
+          "source_timezone": "Asia/Jerusalem",
+          "class_time": "19:00",
+          "reminder_time": "18:30"
+        },
+        "referrer": "",
+        "utm": {},
+        "browser_timezone": "America/New_York",
+        "timezone_source": "browser"
+      }
+    },
+    "successState": {
+      "successText": "You're signed up. Check your email for the class link and class time in your city.",
+      "storedLead": {
+        "parent_name": "Leah Cohen",
+        "contact_name": "Leah Cohen",
+        "email": "leah@example.invalid",
+        "phone": "",
+        "signup_as": "Family",
+        "city": "Buenos Aires",
+        "city_context": {
+          "id": "",
+          "label": "Buenos Aires",
+          "name": "Buenos Aires",
+          "region": "",
+          "country": "",
+          "country_code": "",
+          "timezone": "America/New_York"
+        },
+        "timezone": "America/New_York",
+        "browser_timezone": "America/New_York",
+        "reminder_preference": "email",
+        "product_lead_id": "123",
+        "crm_lead_id": "456",
+        "source_landing_page": "/one-time/signup",
+        "referrer": "",
+        "utm": {}
+      }
+    }
+  },
+  "reducedMotion": {
+    "url": "http://127.0.0.1:3212/one-time/",
+    "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+    "h1": "Give your son a love for learning Torah.",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "bodyWidth": 390,
+    "sectionIds": [
+      "receive",
+      "gain",
+      "how-it-works",
+      "who",
+      "rabbi",
+      "rosh-special"
+    ],
+    "signupLinks": [
+      {
+        "text": "Sign Up Now",
+        "href": "/one-time/signup",
+        "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+      },
+      {
+        "text": "Sign Up Now",
+        "href": "/one-time/signup",
+        "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+      },
+      {
+        "text": "Sign Up Now",
+        "href": "/one-time/signup",
+        "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+      },
+      {
+        "text": "Sign Up Now",
+        "href": "/one-time/signup",
+        "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+      },
+      {
+        "text": "ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW",
+        "href": "/one-time/signup",
+        "action": "ACTION-ONETIME-JOIN-SHIR-CTA"
+      }
+    ],
+    "tickerText": "ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW ROSH HASHANAH SPECIAL • 61 DAYS UNTIL ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW",
+    "roshDays": 61,
+    "reducedMotionAnimation": "none",
+    "launcher": {
+      "text": "Robot Scheller",
+      "right": 12,
+      "bottom": 12,
+      "width": 82,
+      "height": 82
+    },
+    "avatar": {
+      "tagName": "img",
+      "src": "/assets/one-time/robot/robot-scheller-whatsapp.png",
+      "objectFit": "contain",
+      "width": 74,
+      "height": 74,
+      "naturalWidth": 1254,
+      "naturalHeight": 1254,
+      "complete": true
+    }
+  },
+  "expectedRoshDaysOn20260712": 61,
+  "noMergeOrDeployPerformed": true
+}

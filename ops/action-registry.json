@@ -428,12 +428,12 @@
       "surface": "one_time_public_direct_signup",
       "route": "/one-time/signup",
       "selector_hint": "[data-one-time-direct-signup-form] button[type=\"submit\"]",
-      "expected_behavior": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required unambiguous city/timezone metadata, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
+      "expected_behavior": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required free-text city, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "api_guarded",
-        "expected_result": "Posts direct signup payload to /api/one-time/interest, stores city/timezone, Family or School, reminder preference and consent, queues confirmation/alert outbox records idempotently, and returns no-checkout/no-access-grant metadata with no student-name field."
+        "expected_result": "Posts direct signup payload to /api/one-time/interest, stores free-text city plus detected/fallback IANA timezone, Family or School, reminder preference and consent, queues confirmation/alert outbox records idempotently, and returns no-checkout/no-access-grant metadata with no student-name field."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -584,18 +584,17 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-PREV\"]",
-      "expected_behavior": "No public carousel control is rendered while verified approved teaching-location images are unavailable.",
+      "expected_behavior": "Moves the public teaching-location carousel to the previous placeholder teaching-location slides, updates the active pagination state, remains keyboard accessible, and performs no external writes.",
       "permission": "public",
-      "status": "hidden_until_verified_assets",
+      "status": "active_placeholder_carousel",
       "test": {
-        "type": "static_guard",
-        "expected_result": "The One Time landing page omits the teaching carousel controls and contains no placeholder asset instructions."
+        "type": "static_and_browser",
+        "expected_result": "The One Time landing page renders the previous carousel control, rotates only among public placeholder location slides, and does not expose private data."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-014"
-      ],
-      "disabled_reason": "Hidden by RAW-20260712-002 / REQ-20260712-007 until verified approved teaching-location images exist in public assets."
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-TEACHING-CAROUSEL-NEXT",
@@ -603,18 +602,17 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-NEXT\"]",
-      "expected_behavior": "No public carousel control is rendered while verified approved teaching-location images are unavailable.",
+      "expected_behavior": "Moves the public teaching-location carousel to the next placeholder teaching-location slides, updates the active pagination state, remains keyboard accessible, and performs no external writes.",
       "permission": "public",
-      "status": "hidden_until_verified_assets",
+      "status": "active_placeholder_carousel",
       "test": {
-        "type": "static_guard",
-        "expected_result": "The One Time landing page omits the teaching carousel controls and contains no placeholder asset instructions."
+        "type": "static_and_browser",
+        "expected_result": "The One Time landing page renders the next carousel control, rotates only among public placeholder location slides, and does not expose private data."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-014"
-      ],
-      "disabled_reason": "Hidden by RAW-20260712-002 / REQ-20260712-007 until verified approved teaching-location images exist in public assets."
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE",
@@ -622,18 +620,17 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE\"]",
-      "expected_behavior": "No public carousel control is rendered while verified approved teaching-location images are unavailable.",
+      "expected_behavior": "Pauses and resumes the public teaching-location carousel auto-advance across placeholder teaching-location slides without changing route, writing data, or exposing private information.",
       "permission": "public",
-      "status": "hidden_until_verified_assets",
+      "status": "active_placeholder_carousel",
       "test": {
-        "type": "static_guard",
-        "expected_result": "The One Time landing page omits the teaching carousel controls and contains no placeholder asset instructions."
+        "type": "static_and_browser",
+        "expected_result": "The pause control toggles the carousel auto-advance state and stays accessible with keyboard/focus and reduced-motion handling."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-014"
-      ],
-      "disabled_reason": "Hidden by RAW-20260712-002 / REQ-20260712-007 until verified approved teaching-location images exist in public assets."
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-VIEW-AS-RABBI-START",

@@ -38596,3 +38596,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   sends; it remains gated only by live auto-reply/Telegram approval flags.
 - No WhatsApp message, Telegram message, email, CRM mutation, payment/access
   mutation, DNS/account mutation, or raw secret commit was performed.
+
+## 2026-07-12 - One Time landing visual revision prepared for approval
+
+- Implemented the focused One Time public landing visual/copy revision in the
+  clean worktree `C:\Users\User\BNA-onetime-landing-visual-20260712`.
+- Updated `/one-time` with the requested hero copy, section order, feature
+  tiles, benefit panels, compact how-it-works flow, audience cards, Rabbi
+  section, teaching-location placeholder carousel, press marquee, and dynamic
+  Rosh Hashanah ticker.
+- Updated Robot Scheller to use the approved robot PNG as a contained image in
+  launcher and panel header; mobile open panel no longer covers the composer.
+- Updated `/one-time/signup` to accept any city as free text, store the city
+  exactly, capture browser/fallback IANA timezone, show local class time, keep
+  WhatsApp phone conditional, and add the canonical One Time footer.
+- Captured approval screenshots and metrics under
+  `ops/ui-audits/2026-07-12-onetime-landing-visual-revision/`.
+- Verification passed: syntax checks, focused 45-test batch,
+  `npm run test:onetime:focused` 72/72, `npm run pqc:validate`,
+  `npm run watchdog:actions`, and `npm run watchdog:protocol-drift`.
+- No merge, deploy, live smoke, email/WhatsApp/Telegram send, provider write,
+  production-data mutation, payment/access mutation, DNS/account mutation, or
+  credential mutation was performed; visual approval is still required.

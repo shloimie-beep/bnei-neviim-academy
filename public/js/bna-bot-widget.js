@@ -585,24 +585,21 @@
       box-shadow: 0 0 0 4px rgba(227, 184, 72, 0.22);
     }
     .bna-bot-avatar {
+      display: block;
       flex: 0 0 auto;
       width: 34px;
       height: 34px;
-      border: 2px solid rgba(237, 229, 24, 0.76);
-      border-radius: 999px;
-      overflow: hidden;
-      background:
-        linear-gradient(150deg, rgba(37, 211, 102, 0.22), rgba(8, 9, 16, 0.18)),
-        #080910 url("/assets/one-time/robot/robot-scheller-whatsapp.png") center center / contain no-repeat;
-      box-shadow: 0 0 0 4px rgba(237, 229, 24, 0.14);
+      border: 0;
+      border-radius: 0;
+      overflow: visible;
+      background: transparent;
+      box-shadow: none;
+      object-fit: contain;
+      object-position: center;
+      filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.38));
     }
     .bna-bot-avatar::after {
-      content: "";
-      display: block;
-      width: 100%;
-      height: 100%;
-      border-radius: inherit;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+      display: none;
     }
     .bna-bot-nudge {
       position: fixed;
@@ -695,18 +692,20 @@
       background: #080910;
       color: #ffffff;
       box-shadow: 0 16px 34px rgba(8, 9, 16, 0.34);
+      min-height: 70px;
+      padding: 0.18rem 1rem 0.18rem 0.32rem;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-launcher .bna-bot-avatar,
     body.bna-assistant-surface-one-time-parent .bna-bot-launcher .bna-bot-avatar,
     body.bna-assistant-surface-one-time-student .bna-bot-launcher .bna-bot-avatar,
     body.bna-assistant-surface-one-time-member .bna-bot-launcher .bna-bot-avatar,
     body.bna-assistant-surface-one-time-provider .bna-bot-launcher .bna-bot-avatar {
-      width: 38px;
-      height: 38px;
+      width: 48px;
+      height: 48px;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-launcher .bna-bot-avatar {
-      width: 72px;
-      height: 72px;
+      width: 88px;
+      height: 88px;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-launcher-dot,
     body.bna-assistant-surface-one-time-parent .bna-bot-launcher-dot,
@@ -848,13 +847,23 @@
         top: auto;
         right: 12px;
         bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-        width: 76px;
-        min-width: 76px;
-        min-height: 76px;
+        width: 82px;
+        min-width: 82px;
+        min-height: 82px;
       }
       body.bna-assistant-surface-one-time-public .bna-bot-launcher .bna-bot-avatar {
-        width: 66px;
-        height: 66px;
+        width: 74px;
+        height: 74px;
+      }
+      body.bna-assistant-surface-one-time-public .bna-bot-head .bna-bot-avatar,
+      body.one-time-review-active.bna-assistant-surface-one-time-parent .bna-bot-head .bna-bot-avatar,
+      body.one-time-review-active.bna-assistant-surface-one-time-student .bna-bot-head .bna-bot-avatar,
+      body.one-time-review-active.bna-assistant-surface-one-time-member .bna-bot-head .bna-bot-avatar,
+      body.bna-assistant-surface-one-time-provider .bna-bot-head .bna-bot-avatar {
+        width: 64px;
+        height: 64px;
+        max-width: 18vw;
+        margin: -6px 0 -8px;
       }
       body.bna-assistant-surface-one-time-public .bna-bot-nudge {
         top: auto;
@@ -895,6 +904,35 @@
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
+    }
+    .bna-bot-head-top > div:not(.bna-bot-head-actions) {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .bna-bot-head-actions {
+      flex: 0 0 auto;
+    }
+    body.bna-assistant-surface-one-time-public .bna-bot-head .bna-bot-avatar,
+    body.bna-assistant-surface-one-time-parent .bna-bot-head .bna-bot-avatar,
+    body.bna-assistant-surface-one-time-student .bna-bot-head .bna-bot-avatar,
+    body.bna-assistant-surface-one-time-member .bna-bot-head .bna-bot-avatar,
+    body.bna-assistant-surface-one-time-provider .bna-bot-head .bna-bot-avatar {
+      width: 84px;
+      height: 84px;
+      max-width: 24vw;
+      margin: -10px 0 -12px;
+    }
+    @media (max-width: 520px) {
+      body.bna-assistant-surface-one-time-public .bna-bot-head .bna-bot-avatar,
+      body.one-time-review-active.bna-assistant-surface-one-time-parent .bna-bot-head .bna-bot-avatar,
+      body.one-time-review-active.bna-assistant-surface-one-time-student .bna-bot-head .bna-bot-avatar,
+      body.one-time-review-active.bna-assistant-surface-one-time-member .bna-bot-head .bna-bot-avatar,
+      body.bna-assistant-surface-one-time-provider .bna-bot-head .bna-bot-avatar {
+        width: 64px;
+        height: 64px;
+        max-width: 18vw;
+        margin: -6px 0 -8px;
+      }
     }
     .bna-bot-head strong { display: block; font-size: 1rem; }
     .bna-bot-head span { display: block; color: rgba(255,255,255,0.78); font-size: 0.78rem; }
@@ -1148,6 +1186,9 @@
       body.bna-assistant-keyboard-open .bna-bot-launcher.is-panel-open {
         display: none;
       }
+      body.bna-assistant-surface-one-time-public .bna-bot-launcher.is-panel-open {
+        display: none;
+      }
       .bna-bot-head { padding: 0.82rem 0.9rem; }
       .bna-bot-thread {
         padding: 0.78rem;
@@ -1162,7 +1203,7 @@
   document.body.classList.add(`bna-assistant-surface-${surface.replace(/_/g, '-')}`);
   const copy = surfaceConfig();
   const isOneTimeAssistantSurface = surface.startsWith('one_time_');
-  const oneTimeAssistantAvatar = '<span class="bna-bot-avatar" aria-hidden="true"></span>';
+  const oneTimeAssistantAvatar = '<img class="bna-bot-avatar" src="/assets/one-time/robot/robot-scheller-whatsapp.png" alt="" aria-hidden="true" width="88" height="88" loading="lazy" decoding="async">';
 
   const launcher = document.createElement('button');
   launcher.type = 'button';

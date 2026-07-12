@@ -95,7 +95,7 @@ async function main() {
     const page = await fetchText(options.baseUrl, '/rabbi');
     assert(page.response.status === 200, `/rabbi expected 200, got ${page.response.status}`);
     expectIncludes(page.text, [
-      'Give your son a love for Torah you never thought possible.',
+      'Give your son a love for learning Torah.',
       'One Time',
       'Rabbi Eli Scheller',
       'Sign Up Now',

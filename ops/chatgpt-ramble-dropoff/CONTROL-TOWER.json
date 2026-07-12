@@ -1,263 +1,10 @@
 {
-  "generated_at": "2026-07-12T07:31:14.274Z",
+  "generated_at": "2026-07-12T11:44:42.613Z",
   "git": {
-    "branch": "codex/onetime-p0p1-corrective-20260711",
-    "dirty": true,
-    "dirty_files": [
-      {
-        "status": "M",
-        "path": "config/service-provider-sites/one-time.json"
-      },
-      {
-        "status": "M",
-        "path": "content-memory/website-blog-posts.json"
-      },
-      {
-        "status": "M",
-        "path": "ops/action-registry.json"
-      },
-      {
-        "status": "M",
-        "path": "ops/agent-changelog.md"
-      },
-      {
-        "status": "M",
-        "path": "ops/agent-task-ledger.jsonl"
-      },
-      {
-        "status": "M",
-        "path": "ops/chatgpt-ramble-dropoff/incoming/onetime-launch-priority-ui-crm-automation-20260710-001/status.json"
-      },
-      {
-        "status": "M",
-        "path": "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/DEPLOYMENT.md"
-      },
-      {
-        "status": "M",
-        "path": "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/EVIDENCE.md"
-      },
-      {
-        "status": "M",
-        "path": "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/requirements.json"
-      },
-      {
-        "status": "M",
-        "path": "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/run.json"
-      },
-      {
-        "status": "M",
-        "path": "ops/execution-runs/latest.json"
-      },
-      {
-        "status": "M",
-        "path": "ops/route-registry.json"
-      },
-      {
-        "status": "M",
-        "path": "package.json"
-      },
-      {
-        "status": "M",
-        "path": "public/data/website-blog-posts.json"
-      },
-      {
-        "status": "M",
-        "path": "public/js/bna-bot-widget.js"
-      },
-      {
-        "status": "M",
-        "path": "public/js/operations-deferred-renderers.js"
-      },
-      {
-        "status": "M",
-        "path": "public/js/operations-shell.js"
-      },
-      {
-        "status": "M",
-        "path": "public/one-time/index.html"
-      },
-      {
-        "status": "M",
-        "path": "public/one-time/privacy.html"
-      },
-      {
-        "status": "M",
-        "path": "public/one-time/terms.html"
-      },
-      {
-        "status": "M",
-        "path": "public/operations.html"
-      },
-      {
-        "status": "M",
-        "path": "scripts/chatgpt-dropoff-control-tower.mjs"
-      },
-      {
-        "status": "M",
-        "path": "scripts/chatgpt-dropoff-ingestor.mjs"
-      },
-      {
-        "status": "M",
-        "path": "scripts/smoke-onetime-operations-crm-workbench-local.mjs"
-      },
-      {
-        "status": "M",
-        "path": "scripts/split-operations-shell.mjs"
-      },
-      {
-        "status": "M",
-        "path": "scripts/watchdog-raw-intake-drift.mjs"
-      },
-      {
-        "status": "M",
-        "path": "server.js"
-      },
-      {
-        "status": "M",
-        "path": "src/lib/bna/crm-contact-model.js"
-      },
-      {
-        "status": "M",
-        "path": "src/lib/bna/intake-schema.js"
-      },
-      {
-        "status": "M",
-        "path": "src/lib/bna/ramble-routing.js"
-      },
-      {
-        "status": "M",
-        "path": "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.md"
-      },
-      {
-        "status": "M",
-        "path": "tests/chatgpt-dropoff-control-tower.test.js"
-      },
-      {
-        "status": "M",
-        "path": "tests/chatgpt-dropoff-ingestor.test.js"
-      },
-      {
-        "status": "M",
-        "path": "tests/crm-contact-model.test.js"
-      },
-      {
-        "status": "M",
-        "path": "tests/one-time-focused-landing.test.js"
-      },
-      {
-        "status": "M",
-        "path": "tests/one-time-intake-api-readback.test.js"
-      },
-      {
-        "status": "M",
-        "path": "tests/one-time-operations-ui-smoke.test.js"
-      },
-      {
-        "status": "M",
-        "path": "tests/one-time-product-system.test.js"
-      },
-      {
-        "status": "M",
-        "path": "tests/one-time-route-role-mapping.test.js"
-      },
-      {
-        "status": "M",
-        "path": "tests/service-provider-scope-routes.test.js"
-      },
-      {
-        "status": "M",
-        "path": "tests/watchdog-raw-intake-drift.test.js"
-      },
-      {
-        "status": "??",
-        "path": ".github/"
-      },
-      {
-        "status": "??",
-        "path": "memory/2026-07-12.md"
-      },
-      {
-        "status": "??",
-        "path": "ops/evidence/"
-      },
-      {
-        "status": "??",
-        "path": "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/"
-      },
-      {
-        "status": "??",
-        "path": "ops/watchdog-audits/2026-07-12-product-quality-drift.json"
-      },
-      {
-        "status": "??",
-        "path": "ops/watchdog-audits/2026-07-12-product-quality-drift.md"
-      },
-      {
-        "status": "??",
-        "path": "public/one-time/signup.html"
-      },
-      {
-        "status": "??",
-        "path": "raw-input/RAW-20260712-001-onetime-pr129-completion-followup.md"
-      },
-      {
-        "status": "??",
-        "path": "raw-input/RAW-20260712-002-onetime-signup-reminder-workflow-addendum.md"
-      },
-      {
-        "status": "??",
-        "path": "raw-input/RAW-20260712-003-onetime-signup-required-markers-consent.md"
-      },
-      {
-        "status": "??",
-        "path": "scripts/simulate-one-time-class-reminder.mjs"
-      },
-      {
-        "status": "??",
-        "path": "scripts/smoke-onetime-crm-journey-local-db.mjs"
-      },
-      {
-        "status": "??",
-        "path": "src/lib/bna/one-time-signup-workflow.js"
-      },
-      {
-        "status": "??",
-        "path": "src/platform/ingestion/operator-ramble-service.js"
-      },
-      {
-        "status": "??",
-        "path": "src/platform/ingestion/packet-status.js"
-      },
-      {
-        "status": "??",
-        "path": "tasks-pending/2026-07-12-onetime-p0p1-corrective-completion.md"
-      },
-      {
-        "status": "??",
-        "path": "tasks-pending/2026-07-12-onetime-signup-reminder-workflow-addendum.md"
-      },
-      {
-        "status": "??",
-        "path": "tests/ingestion/operator-ramble-service.test.js"
-      },
-      {
-        "status": "??",
-        "path": "tests/ingestion/ramble-regression-suite.test.js"
-      },
-      {
-        "status": "??",
-        "path": "tests/one-time-direct-signup-page.test.js"
-      },
-      {
-        "status": "??",
-        "path": "tests/one-time-provider-operations-login.test.js"
-      },
-      {
-        "status": "??",
-        "path": "tests/one-time-signup-reminder-workflow.test.js"
-      }
-    ],
-    "collision_warning": "Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files."
+    "branch": "codex/onetime-landing-visual-20260712",
+    "dirty": false,
+    "dirty_files": [],
+    "collision_warning": ""
   },
   "packets": {
     "count": 3,
@@ -423,25 +170,25 @@
   },
   "latest_pickup_reports": [
     {
+      "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-06T14-25-46-791Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-12T11:43:59.752Z",
+      "size": 264
+    },
+    {
       "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-07T09-15-13-onetime-agent-prompt-series-audit.md",
-      "updated_at": "2026-07-11T20:13:40.513Z",
+      "updated_at": "2026-07-12T11:43:59.752Z",
       "size": 3058
     },
     {
       "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-05-fleet-claim-completion-fix.md",
-      "updated_at": "2026-07-11T20:13:40.512Z",
+      "updated_at": "2026-07-12T11:43:59.751Z",
       "size": 2343
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-06T14-25-46-791Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-11T20:13:40.512Z",
-      "size": 264
     }
   ],
   "latest_comment_pickup_reports": [
     {
       "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-06T14-22-03-686Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-11T20:13:40.493Z",
+      "updated_at": "2026-07-12T11:43:59.734Z",
       "size": 334
     }
   ],
@@ -452,10 +199,9 @@
     "not_claimable": [],
     "fallback_candidates": [],
     "raw_excerpt": [],
-    "error": "Error: OPS_USERNAME/OPS_PASSWORD are required for agent fleet app access\n    at appRequest (file:///C:/Users/User/BNA-onetime-p0p1-corrective-20260711/scripts/agent-fleet-supervisor.mjs:310:11)\n    at loadTasks (file:///C:/Users/User/BNA-onetime-p0p1-corrective-20260711/scripts/agent-fleet-supervisor.mjs:469:22)\n    at status (file:///C:/Users/User/BNA-onetime-p0p1-corrective-20260711/scripts/agent-fleet-supervisor.mjs:3654:21)\n    at main (file:///C:/Users/User/BNA-onetime-p0p1-corrective-20260711/scripts/agent-fleet-supervisor.mjs:3865:70)\n    at file:///C:/Users/User/BNA-onetime-p0p1-corrective-20260711/scripts/agent-fleet-supervisor.mjs:4003:3\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)"
+    "error": "Error: OPS_USERNAME/OPS_PASSWORD are required for agent fleet app access\n    at appRequest (file:///C:/Users/User/BNA-onetime-landing-visual-20260712/scripts/agent-fleet-supervisor.mjs:310:11)\n    at loadTasks (file:///C:/Users/User/BNA-onetime-landing-visual-20260712/scripts/agent-fleet-supervisor.mjs:469:22)\n    at status (file:///C:/Users/User/BNA-onetime-landing-visual-20260712/scripts/agent-fleet-supervisor.mjs:3654:21)\n    at main (file:///C:/Users/User/BNA-onetime-landing-visual-20260712/scripts/agent-fleet-supervisor.mjs:3865:70)\n    at file:///C:/Users/User/BNA-onetime-landing-visual-20260712/scripts/agent-fleet-supervisor.mjs:4003:3\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)"
   },
   "recommendations": [
-    "Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.",
     "No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.",
     "GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it."
   ]

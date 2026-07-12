@@ -183,15 +183,20 @@ async function main() {
     await launcherAvatar.waitFor({ timeout: 5000 });
     await mobile.locator('.bna-bot-launcher').screenshot({ path: path.join(outDir, 'one-time-robot-launcher-390.png') });
     report.screenshots.push('ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-robot-launcher-390.png');
-    const avatarStyle = await launcherAvatar.evaluate((node) => {
+    const avatarState = await launcherAvatar.evaluate((node) => {
       const style = getComputedStyle(node);
-      return { backgroundImage: style.backgroundImage, backgroundSize: style.backgroundSize };
+      return {
+        tagName: node.tagName.toLowerCase(),
+        src: node.getAttribute('src') || '',
+        objectFit: style.objectFit,
+        width: Math.round(node.getBoundingClientRect().width),
+        height: Math.round(node.getBoundingClientRect().height),
+      };
     });
-    const avatarBackgroundSizes = avatarStyle.backgroundSize.split(',').map((value) => value.trim());
-    if (!avatarStyle.backgroundImage.includes('robot-scheller-whatsapp.png') || !avatarBackgroundSizes.includes('contain')) {
-      throw new Error(`Robot avatar is not using contained full-body asset: ${JSON.stringify(avatarStyle)}`);
+    if (avatarState.tagName !== 'img' || !avatarState.src.includes('robot-scheller-whatsapp.png') || avatarState.objectFit !== 'contain') {
+      throw new Error(`Robot avatar is not using contained full-body asset: ${JSON.stringify(avatarState)}`);
     }
-    ok('robot_scheller_contained_asset', avatarStyle);
+    ok('robot_scheller_contained_asset', avatarState);
 
     await mobile.goto(`${baseUrl}/one-time-onboarding?audience=family&product_lead_id=7101&crm_lead_id=8101`, { waitUntil: 'networkidle' });
     await mobile.screenshot({ path: path.join(outDir, 'one-time-onboarding-family-390.png'), fullPage: true });

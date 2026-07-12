@@ -116,12 +116,14 @@ async function main() {
     assert(/name="signup_as"/.test(text), 'Family/School dropdown missing');
     assert(/<option value="Family">Family<\/option>/.test(text), 'Family choice missing');
     assert(/<option value="School">School<\/option>/.test(text), 'School choice missing');
-    assert(/name="city_label"/.test(text), 'city autocomplete input missing');
+    assert(/name="city_label"/.test(text), 'city free-text input missing');
     assert(/name="city_id"/.test(text), 'city id field missing');
     assert(/name="city_region"/.test(text), 'city region field missing');
     assert(/name="city_country_code"/.test(text), 'city country code field missing');
     assert(/name="timezone"/.test(text), 'city timezone field missing');
     assert(/name="browser_timezone"/.test(text), 'browser timezone fallback field missing');
+    assert(/name="timezone_fallback"/.test(text), 'manual timezone fallback field missing');
+    assert(!/cityOptions|CITY_OPTIONS|Choose the matching city|unambiguous city/.test(text), 'retired city option list remains');
     assert(/name="email"/.test(text), 'email input missing');
     assert(/name="phone"/.test(text), 'phone input missing');
     assert(/name="reminder_preference" value="email"/.test(text), 'email reminders choice missing');
@@ -137,7 +139,7 @@ async function main() {
     assert(/\/api\/one-time\/interest/.test(text), 'interest endpoint missing');
     assert(!/signup-strip|id="interestForm"|signupStudentName|name="student/i.test(text), 'retired inline/student signup field is still visible');
     assert(!/phone\s*(?:\/\s*WhatsApp)?\s*[-:]?\s*optional/i.test(customerText), 'phone optional copy leaked into customer-facing form');
-    assert(!/parent access next steps|Parent portal setup instructions|Stripe checkout|GreenInvoice checkout|Member Login|No billing|No checkout|No external send|CRM|Codex|guardrail|approval|portal|password setup|configuration/i.test(customerText), 'internal or portal/payment copy leaked into customer-facing form');
+    assert(!/parent access next steps|Parent portal setup instructions|Stripe checkout|GreenInvoice checkout|No billing|No checkout|No external send|CRM|Codex|guardrail|approval|password setup|configuration/i.test(customerText), 'internal or portal/payment copy leaked into customer-facing form');
     return { status: response.status };
   });
 
@@ -149,14 +151,14 @@ async function main() {
       email: `onetime-dry-run-${stamp}@example.invalid`,
       phone: '',
       signup_as: 'Family',
-      city_id: 'lakewood-nj-us',
-      city_label: 'Lakewood, New Jersey, United States',
-      city_name: 'Lakewood',
-      city_region: 'New Jersey',
-      city_country: 'United States',
-      city_country_code: 'US',
-      timezone: 'America/New_York',
-      browser_timezone: 'America/New_York',
+      city_id: '',
+      city_label: 'Buenos Aires',
+      city_name: 'Buenos Aires',
+      city_region: '',
+      city_country: '',
+      city_country_code: '',
+      timezone: 'America/Buenos_Aires',
+      browser_timezone: 'America/Buenos_Aires',
       source_landing_page: '/one-time/signup',
       signup_mode: 'one_time_class_signup',
       signup_acknowledgement: true,
@@ -168,16 +170,16 @@ async function main() {
         smoke: 'one_time_interest_dry_run',
         external_write_expected: false,
         one_time_direct_signup: true,
-        form_version: 'one-time-direct-signup-v1',
+        form_version: 'one-time-direct-signup-v2',
         signup_as: 'Family',
         city: {
-          id: 'lakewood-nj-us',
-          label: 'Lakewood, New Jersey, United States',
-          name: 'Lakewood',
-          region: 'New Jersey',
-          country: 'United States',
-          country_code: 'US',
-          timezone: 'America/New_York',
+          id: '',
+          label: 'Buenos Aires',
+          name: 'Buenos Aires',
+          region: '',
+          country: '',
+          country_code: '',
+          timezone: 'America/Buenos_Aires',
         },
         reminder_preference: 'email',
         reminder_consent: true,
@@ -185,7 +187,8 @@ async function main() {
         signup_acknowledgement: true,
         location_time_acknowledgement: true,
         reminder_consent_policy_version: 'one-time-class-reminders-v1-2026-07-12',
-        browser_timezone: 'America/New_York',
+        browser_timezone: 'America/Buenos_Aires',
+        timezone_source: 'browser',
       },
     };
     const { response, data, text } = await fetchJson('/api/one-time/interest?dry_run=true', {
@@ -208,8 +211,9 @@ async function main() {
     assert(data.preview?.product_lead_preview?.preferred_class_format === 'daily_live_mishnah_class', 'preferred format missing');
     assert(data.preview?.product_lead_preview?.source_landing_page === '/one-time/signup', 'signup source route mismatch');
     assert(data.preview?.product_lead_preview?.signup_as === 'Family', 'Family signup type missing');
-    assert(data.preview?.product_lead_preview?.city?.id === 'lakewood-nj-us', 'city id missing from product preview');
-    assert(data.preview?.product_lead_preview?.city?.timezone === 'America/New_York', 'city timezone missing from product preview');
+    assert(data.preview?.product_lead_preview?.city?.id === '', 'custom city should not require a registry id');
+    assert(data.preview?.product_lead_preview?.city?.label === 'Buenos Aires', 'custom city label missing from product preview');
+    assert(data.preview?.product_lead_preview?.city?.timezone === 'America/Buenos_Aires', 'custom city timezone missing from product preview');
     assert(data.preview?.product_lead_preview?.reminder_preference === 'email', 'email reminder preference missing');
     assert(data.preview?.product_lead_preview?.reminder_channels?.includes('email'), 'email reminder channel missing');
     assert(Boolean(data.preview?.product_lead_preview?.reminder_consent_at), 'reminder consent timestamp missing');

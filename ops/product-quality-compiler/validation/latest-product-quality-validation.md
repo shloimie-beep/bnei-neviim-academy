@@ -1,9 +1,9 @@
 # Product Quality Compiler Validation
 
-Generated: 2026-07-11T21:31:39.050Z
+Generated: 2026-07-12T12:21:43.229Z
 Mode: default
-Files scanned: 79
-Passed: 69
+Files scanned: 80
+Passed: 70
 Failed: 0
 
 ## PASS ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/02-operations-shell-heading-labels.product-quality.json
@@ -143,3 +143,5 @@ Failed: 0
 ## PASS tasks-pending/2026-07-10-onetime-public-landing-production-rebuild.product-quality.json
 
 ## PASS tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.product-quality.json
+
+## PASS tasks-pending/2026-07-12-onetime-landing-visual-revision.product-quality.json
