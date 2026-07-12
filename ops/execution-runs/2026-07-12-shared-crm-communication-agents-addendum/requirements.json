@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-13T02:13:00+03:00",
+  "updated_at": "2026-07-13T02:18:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -78,9 +78,9 @@
         "REQ-20260712-305"
       ],
       "status": "in_progress",
-      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked through the enabled workspace tabs slice. Canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, the One Time Operations CRM workbench API/timeline smoke passed, the crm_contact/filter/search/sort/list-scroll URL-state slice is deployed and live-smoked, the local CRM update form/no-auto-task policy slice is deployed and live-smoked, the dead-end Create task placeholder is replaced by deployed explicit ACTION-CRM-CREATE-TASK at commit ded53274e31f91abff7944c094bdcdfaa9c55c5e, and Overview/Activity/Conversations/Tasks/Access tabs are deployed at commit 1c4880418954d984c08683ba0955a32549eb33aa with real customer-facing panels.",
+      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked through the enabled workspace tabs slice. Canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, the One Time Operations CRM workbench API/timeline smoke passed, the crm_contact/filter/search/sort/list-scroll URL-state slice is deployed and live-smoked, the local CRM update form/no-auto-task policy slice is deployed and live-smoked, the dead-end Create task placeholder is replaced by deployed explicit ACTION-CRM-CREATE-TASK at commit ded53274e31f91abff7944c094bdcdfaa9c55c5e, and Overview/Activity/Conversations/Tasks/Access tabs are deployed at commit 1c4880418954d984c08683ba0955a32549eb33aa with real customer-facing panels. Shared CRM contract/geometry slice is locally verified: public/js/crm/contact-workspace.js owns shared-crm-v1, Operations emits the same component order, pane count, breakpoints, and 40px mobile back-control target as contract attributes, and local smoke asserts the contract across split shell and monolith.",
       "can_continue_without_operator": true,
-      "next_action": "Continue deeper dedicated contact workspace/actions without reintroducing workspace leakage or internal CRM copy.",
+      "next_action": "Commit, push, deploy, and live-smoke shared CRM contract/geometry; then continue deeper dedicated contact workspace/actions without reintroducing workspace leakage or internal CRM copy.",
       "acceptance_criteria": [
         "BNA and One Time use shared CRM shell/index/workspace/inbox/actions/components with only theme, logo, title, allowed fields/actions, channels, agents, and records varying by workspace."
       ],
@@ -108,7 +108,12 @@
         "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records local smoke PASS after clicking all workspace tabs across split-shell and monolith at 1440, 1024, 768, 430, and 390.",
         "BNA deployment d580fdf6-535a-42e4-bfab-aff27fc0ce7b SUCCESS at commit 1c4880418954d984c08683ba0955a32549eb33aa.",
         "One Time deployment e66f0964-6752-4c20-8eac-adec647b58dd SUCCESS at commit 1c4880418954d984c08683ba0955a32549eb33aa.",
-        "ops/live-smokes/2026-07-12T22-41-20-271Z-one-time-operations-crm-workbench-live-smoke.md records deployed One Time Operations CRM workbench smoke after enabled workspace tabs slice."
+        "ops/live-smokes/2026-07-12T22-41-20-271Z-one-time-operations-crm-workbench-live-smoke.md records deployed One Time Operations CRM workbench smoke after enabled workspace tabs slice.",
+        "public/js/crm/contact-workspace.js owns the shared-crm-v1 workbench contract with component order, pane count, tablet/mobile breakpoints, and 40px mobile back-control target.",
+        "public/operations.html and generated Operations shell emit shared CRM contract data attributes on the workbench shell.",
+        "public/css/operations-shell.css applies an explicit 40px mobile Back to contacts target.",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records local smoke PASS after asserting shared CRM contract attributes and mobile back-control height.",
+        "ops/watchdog-audits/2026-07-12T23-18-watchdog-action-audit.md records action watchdog PASS finding_count 0 after the shared CRM contract/geometry slice."
       ],
       "verification": [
         "node --check server.js PASS",
@@ -177,7 +182,17 @@
         "One Time Railway post-deploy doctor PASS deployment e66f0964-6752-4c20-8eac-adec647b58dd",
         "BNA and One Time deploy-info returned commit_sha=1c4880418954d984c08683ba0955a32549eb33aa",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1c4880418954d984c08683ba0955a32549eb33aa PASS",
-        "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com PASS after enabled workspace tabs slice"
+        "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com PASS after enabled workspace tabs slice",
+        "node --check public/js/operations-shell.js scripts/smoke-onetime-operations-crm-workbench-local.mjs public/js/crm/contact-workspace.js PASS after shared CRM contract/geometry slice",
+        "npm run operations:check-generated PASS after shared CRM contract/geometry slice",
+        "node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js PASS 12/12 after shared CRM contract/geometry slice",
+        "node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js PASS 37/37 after shared CRM contract/geometry slice",
+        "node scripts/smoke-onetime-operations-crm-workbench-local.mjs PASS after shared CRM contract/geometry slice",
+        "npm run watchdog:actions PASS finding_count 0 after shared CRM contract/geometry slice",
+        "npm run watchdog:protocol-drift PASS after shared CRM contract/geometry slice",
+        "npm run secrets:audit PASS after shared CRM contract/geometry slice",
+        "npm run bna:run:validate PASS after shared CRM contract/geometry slice",
+        "git diff --check PASS with line-ending warnings only after shared CRM contract/geometry slice"
       ],
       "implementation_files": [
         "src/lib/bna/crm/contact-service.js",
@@ -201,7 +216,8 @@
         "tests/crm-contact-service.test.js",
         "tests/shared-crm-workbench-contract.test.js",
     "tests/rabbi-scheller-tenant-isolation-contract.test.js",
-    "scripts/smoke-onetime-operations-crm-workbench-local.mjs"
+    "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+    "ops/watchdog-audits/2026-07-12T23-18-watchdog-action-audit.md"
       ],
       "deployment_required": true,
       "deployment_evidence": [
@@ -212,9 +228,10 @@
         "URL-state slice deployed at f818822bb3969dca5d27f7c5a70d4dbf0baa8744 with live smoke report ops/live-smokes/2026-07-12T21-39-03-428Z-one-time-operations-crm-workbench-live-smoke.md.",
         "Local update/no-auto-task slice deployed at 224bc077919c624f115c264d35e35092ed4144da with live smoke report ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md.",
         "Explicit Create task action slice deployed at ded53274e31f91abff7944c094bdcdfaa9c55c5e with live smoke report ops/live-smokes/2026-07-12T22-30-27-405Z-one-time-operations-crm-workbench-live-smoke.md.",
-        "Enabled workspace tabs slice deployed at 1c4880418954d984c08683ba0955a32549eb33aa with live smoke report ops/live-smokes/2026-07-12T22-41-20-271Z-one-time-operations-crm-workbench-live-smoke.md."
+    "Enabled workspace tabs slice deployed at 1c4880418954d984c08683ba0955a32549eb33aa with live smoke report ops/live-smokes/2026-07-12T22-41-20-271Z-one-time-operations-crm-workbench-live-smoke.md.",
+    "Shared CRM contract/geometry slice local verification completed; deployment/live smoke pending for this slice."
       ],
-      "updated_at": "2026-07-13T01:52:00+03:00",
+  "updated_at": "2026-07-13T02:18:00+03:00",
       "blocker": ""
     },
     {

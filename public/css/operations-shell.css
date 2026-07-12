@@ -1677,6 +1677,12 @@
             margin-bottom: 12px;
         }
 
+        .crm-mobile-selected-actions .task-action {
+            align-items: center;
+            display: inline-flex;
+            min-height: 40px;
+        }
+
         .crm-workbench-tabs {
             display: flex;
             flex-wrap: wrap;

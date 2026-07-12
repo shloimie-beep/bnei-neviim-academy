@@ -448,6 +448,10 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     profilePaneVisible: Boolean(document.querySelector('[data-crm-contact-profile]')?.getBoundingClientRect?.().width),
     legacyTableClosedCount: document.querySelectorAll('[data-one-time-crm-review-context]:not([open]) [data-one-time-crm-contact-table]').length,
     legacyPlaceholderCount: document.querySelectorAll('[data-one-time-crm-review-placeholder]').length,
+    crmContractVersion: document.querySelector('[data-shared-crm-workbench]')?.getAttribute('data-crm-contract-version') || '',
+    crmComponentOrder: document.querySelector('[data-shared-crm-workbench]')?.getAttribute('data-crm-component-order') || '',
+    crmMobileBreakpoint: document.querySelector('[data-shared-crm-workbench]')?.getAttribute('data-crm-mobile-breakpoint') || '',
+    crmBackControlHeight: document.querySelector('[data-shared-crm-workbench]')?.getAttribute('data-crm-back-control-height') || '',
   }));
   const initialCrmRequestCount = crmRequests.length;
   const initialListRequestCount = crmRequests.filter((item) => item.pathname === '/api/bna/crm/contacts').length;
@@ -504,6 +508,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       hasAddContactAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-ADD-CONTACT"]')),
       hasCreateTaskAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-CREATE-TASK"]:not([disabled])')),
       hasArchiveContactAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-ARCHIVE-CONTACT"]:not([disabled])')),
+      mobileBackControlHeight: window.innerWidth <= 700 ? (document.querySelector('[data-action-id="ACTION-CRM-CONTACT-BACK"]')?.getBoundingClientRect?.().height || 0) : 40,
       disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-CREATE-TASK"][disabled], [data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
       hasOpenScopedInboxAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]')),
     };
@@ -616,6 +621,10 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       initialMetrics.listPaneVisible &&
       initialMetrics.activityPaneVisible &&
       initialMetrics.profilePaneVisible &&
+      initialMetrics.crmContractVersion === 'shared-crm-v1' &&
+      initialMetrics.crmComponentOrder === 'contacts-index>contact-workspace>contact-inspector' &&
+      initialMetrics.crmMobileBreakpoint === '700' &&
+      initialMetrics.crmBackControlHeight === '40' &&
       initialMetrics.cardCount > 0 &&
       initialMetrics.cardCount <= 50 &&
       initialCrmRequestCount <= 3 &&
@@ -634,6 +643,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       addContactMetrics.noExternalCopy &&
       selectedMetrics.hasCreateTaskAction &&
       selectedMetrics.hasArchiveContactAction &&
+      selectedMetrics.mobileBackControlHeight >= 40 &&
       Object.values(workspaceTabMetrics).every(Boolean) &&
       selectedMetrics.hasOpenScopedInboxAction &&
       mobileBackMetrics.restoredList &&
@@ -666,6 +676,10 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     initialListRequestCount,
     initialRenderedCardCount: initialMetrics.cardCount,
     initialPaneCount: initialMetrics.paneCount,
+    crmContractVersion: initialMetrics.crmContractVersion,
+    crmComponentOrder: initialMetrics.crmComponentOrder,
+    crmMobileBreakpoint: initialMetrics.crmMobileBreakpoint,
+    crmBackControlHeight: initialMetrics.crmBackControlHeight,
     initialListPaneVisible: initialMetrics.listPaneVisible,
     initialActivityPaneVisible: initialMetrics.activityPaneVisible,
     initialProfilePaneVisible: initialMetrics.profilePaneVisible,
@@ -681,6 +695,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     addContactMetrics,
     hasCreateTaskActionAfterSelect: selectedMetrics.hasCreateTaskAction,
     hasArchiveContactActionAfterSelect: selectedMetrics.hasArchiveContactAction,
+    mobileBackControlHeightAfterSelect: selectedMetrics.mobileBackControlHeight,
     workspaceTabMetrics,
     disabledCrmActionCountAfterSelect: selectedMetrics.disabledCrmActionCount,
     hasOpenScopedInboxActionAfterSelect: selectedMetrics.hasOpenScopedInboxAction,
@@ -854,7 +869,7 @@ async function main() {
     '',
     '- One Time Operations CRM route renders the API-backed workbench.',
     '- Split shell and monolith fallback render the API-backed workbench.',
-    '- Search/filter/sort controls, Add Contact form, cards, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe actions, explicit Create task/archive actions, and timeline readback are visible.',
+    '- Search/filter/sort controls, Add Contact form, cards, shared CRM contract attributes, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe actions, explicit Create task/archive actions, and timeline readback are visible.',
     '- Overview, Activity, Conversations, Tasks, and Access tabs are clickable and render non-disabled workspace panels.',
     '- Mobile selected-contact state hides the list and Back to contacts restores it.',
     '- Scoped One Time Inbox retains selected CRM contact context and keeps send gates visible.',

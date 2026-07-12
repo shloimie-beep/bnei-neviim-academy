@@ -39053,6 +39053,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Operations CRM workbench smoke with 12 scoped cards and read-only selected
   timeline.
 
+## 2026-07-13 - Shared CRM contract geometry local verification
+
+- Added a shared `shared-crm-v1` workbench contract to
+  `public/js/crm/contact-workspace.js` covering component order, pane count,
+  tablet/mobile breakpoints, and the 40px mobile Back to contacts target.
+- Operations now emits the contract as workbench data attributes and applies an
+  explicit 40px mobile selected-contact back-control target without changing
+  workspace-specific records, theme tokens, or allowed actions.
+- Verification passed: generated-shell check, focused CRM tests `37/37`, local
+  Operations CRM workbench smoke at 1440/1024/768/430/390 with shared contract
+  attributes and mobile back-control height checks, action watchdog 0 findings,
+  protocol drift watchdog, secret audit, execution run validation, and diff
+  check with line-ending warnings only.
+- Status: local verified, pending commit, push, BNA/One Time deploy, and live
+  One Time Operations CRM smoke before this slice is deployed.
+
 ## 2026-07-13 - Shared CRM Archive Contact local verification
 
 - Added `ACTION-CRM-ARCHIVE-CONTACT` to the selected CRM contact workspace with

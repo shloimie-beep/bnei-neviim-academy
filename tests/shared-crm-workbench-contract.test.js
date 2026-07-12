@@ -39,6 +39,13 @@ test('Operations loads the shared CRM browser modules before the shell', () => {
   assert.match(operations, /data-shared-crm-component="contacts-index"/);
   assert.match(operations, /data-shared-crm-component="contact-workspace"/);
   assert.match(operations, /data-shared-crm-component="contact-inspector"/);
+  assert.match(operations, /function firstPartyCrmWorkbenchContract\(\)/);
+  assert.match(operations, /function firstPartyCrmWorkbenchContractAttrs\(\)/);
+  assert.match(operations, /data-crm-contract-version/);
+  assert.match(operations, /data-crm-component-order/);
+  assert.match(operations, /data-crm-mobile-breakpoint/);
+  assert.match(operations, /data-crm-back-control-height/);
+  assert.match(operations, /\.crm-mobile-selected-actions \.task-action[\s\S]*min-height: 40px;/);
 });
 
 test('Operations CRM contact workspace keeps URL state for reload and browser Back', () => {
@@ -137,6 +144,15 @@ test('Shared CRM modules expose paths, empty states, actions, and inbox scope', 
     ['tasks', true],
     ['access', true],
   ]));
+  assert.equal(JSON.stringify(global.BnaCrmContactWorkspace.workbenchContract()), JSON.stringify({
+    version: 'shared-crm-v1',
+    pane_count: 3,
+    component_order: ['contacts-index', 'contact-workspace', 'contact-inspector'],
+    desktop_grid: 'minmax(260px,0.78fr) minmax(0,1.12fr) minmax(240px,0.8fr)',
+    tablet_breakpoint_px: 900,
+    mobile_breakpoint_px: 700,
+    mobile_back_control_height_px: 40,
+  }));
   assert.equal(global.BnaCrmActions.whatsappHref('+1 (555) 100-2000'), 'https://wa.me/15551002000');
   assert.equal(global.BnaCrmActions.followUpTaskSummary({ display_name: 'Sara Parent' }), 'Manual CRM follow-up task for Sara Parent');
   assert.equal(global.BnaCrmInbox.scopeForWorkspace('rabbi_sheller_provider'), 'rabbi');

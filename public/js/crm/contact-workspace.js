@@ -20,6 +20,16 @@
         { id: 'access', label: 'Access', enabled: true }
     ]);
 
+    const WORKBENCH_CONTRACT = Object.freeze({
+        version: 'shared-crm-v1',
+        pane_count: 3,
+        component_order: Object.freeze(['contacts-index', 'contact-workspace', 'contact-inspector']),
+        desktop_grid: 'minmax(260px,0.78fr) minmax(0,1.12fr) minmax(240px,0.8fr)',
+        tablet_breakpoint_px: 900,
+        mobile_breakpoint_px: 700,
+        mobile_back_control_height_px: 40
+    });
+
     function emptyState(key) {
         return EMPTY_STATES[key] || '';
     }
@@ -49,11 +59,19 @@
         return WORKSPACE_TABS.map(tab => ({ ...tab }));
     }
 
+    function workbenchContract() {
+        return {
+            ...WORKBENCH_CONTRACT,
+            component_order: [...WORKBENCH_CONTRACT.component_order]
+        };
+    }
+
     global.BnaCrmContactWorkspace = Object.freeze({
         EMPTY_STATES,
         emptyState,
         workspaceDescription,
         profileValue,
-        workspaceTabs
+        workspaceTabs,
+        workbenchContract
     });
 })(window);

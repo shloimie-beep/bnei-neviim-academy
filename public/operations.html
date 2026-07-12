@@ -1701,6 +1701,12 @@
             margin-bottom: 12px;
         }
 
+        .crm-mobile-selected-actions .task-action {
+            align-items: center;
+            display: inline-flex;
+            min-height: 40px;
+        }
+
         .crm-workbench-tabs {
             display: flex;
             flex-wrap: wrap;
@@ -15712,6 +15718,31 @@
             `;
         }
 
+        function firstPartyCrmWorkbenchContract() {
+            return window.BnaCrmContactWorkspace?.workbenchContract?.() || {
+                version: 'shared-crm-v1',
+                pane_count: 3,
+                component_order: ['contacts-index', 'contact-workspace', 'contact-inspector'],
+                desktop_grid: 'minmax(260px,0.78fr) minmax(0,1.12fr) minmax(240px,0.8fr)',
+                tablet_breakpoint_px: 900,
+                mobile_breakpoint_px: 700,
+                mobile_back_control_height_px: 40
+            };
+        }
+
+        function firstPartyCrmWorkbenchContractAttrs() {
+            const sharedContract = firstPartyCrmWorkbenchContract();
+            const componentOrder = Array.isArray(sharedContract.component_order) ? sharedContract.component_order.join('>') : 'contacts-index>contact-workspace>contact-inspector';
+            return [
+                `data-crm-contract-version="${escapeHtml(sharedContract.version || 'shared-crm-v1')}"`,
+                `data-crm-component-order="${escapeHtml(componentOrder)}"`,
+                `data-crm-pane-count="${Number(sharedContract.pane_count || 3)}"`,
+                `data-crm-tablet-breakpoint="${Number(sharedContract.tablet_breakpoint_px || 900)}"`,
+                `data-crm-mobile-breakpoint="${Number(sharedContract.mobile_breakpoint_px || 700)}"`,
+                `data-crm-back-control-height="${Number(sharedContract.mobile_back_control_height_px || 40)}"`
+            ].join(' ');
+        }
+
         function renderFirstPartyCrmContactsPanel(options = {}) {
             firstPartyCrmRenderOptions = { ...options };
             if (!firstPartyCrmContactsPayload && !firstPartyCrmLoading && !firstPartyCrmError) {
@@ -15721,6 +15752,7 @@
             const cards = Array.isArray(payload.cards) ? payload.cards : [];
             const selectedCard = selectedFirstPartyCrmCard(cards);
             const workbenchAttrs = options.oneTime ? ' data-one-time-crm-workbench data-requirement-id="REQ-20260710-020"' : '';
+            const sharedWorkbenchAttrs = firstPartyCrmWorkbenchContractAttrs();
             const statusText = window.BnaCrmContactsIndex?.statusText
                 ? window.BnaCrmContactsIndex.statusText({ loading: firstPartyCrmLoading, cards, payload })
                 : (firstPartyCrmLoading ? 'Loading CRM contacts...' : `${cards.length.toLocaleString()} visible / ${Number(payload.filtered_total || cards.length).toLocaleString()} matching / ${Number(payload.total || cards.length).toLocaleString()} total.`);
@@ -15734,7 +15766,7 @@
                         ${escapeHtml(statusText)}
                     </div>
                     ${cards.length ? `
-                        <section class="crm-workbench-shell"${workbenchAttrs} data-shared-crm-workbench="true" data-selected-contact="${selectedCard ? 'true' : 'false'}" data-crm-pane-count="3" aria-label="${escapeHtml(options.title || 'CRM contact workbench')}">
+                        <section class="crm-workbench-shell"${workbenchAttrs} data-shared-crm-workbench="true" ${sharedWorkbenchAttrs} data-selected-contact="${selectedCard ? 'true' : 'false'}" aria-label="${escapeHtml(options.title || 'CRM contact workbench')}">
                             <div class="contact-list crm-workbench-list" data-shared-crm-component="contacts-index" aria-label="CRM contact list">
                                 ${cards.map(renderFirstPartyCrmCard).join('')}
                             </div>
