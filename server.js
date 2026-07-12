@@ -64390,6 +64390,9 @@ function oneTimeWapiBindingError(normalized = {}) {
     return 'WAPI webhook channel binding did not match the One Time provider instance';
   }
   if (ONE_TIME_WAPI_SENDER_PHONE && !providerPhone) {
+    if (!normalized.fromMe && suppliedInstance && suppliedInstance === ONE_TIME_WAPI_INSTANCE_ID) {
+      return '';
+    }
     return 'WAPI webhook omitted the required One Time provider-number binding';
   }
   if (ONE_TIME_WAPI_SENDER_PHONE && !samePhoneIdentity(providerPhone, ONE_TIME_WAPI_SENDER_PHONE)) {

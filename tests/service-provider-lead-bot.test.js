@@ -216,6 +216,7 @@ test('server wires fail-closed hosted webhook auth, sanitized headers, CRM lead 
   assert.match(server, /WAPI_WEBHOOK_ALLOW_INSECURE_LOCAL_TEST/);
   assert.match(server, /function oneTimeWapiBindingError/);
   assert.match(server, /provider-number binding/);
+  assert.match(server, /!normalized\.fromMe && suppliedInstance && suppliedInstance === ONE_TIME_WAPI_INSTANCE_ID/);
   assert.match(server, /async function ensureOneTimeProviderBotLead/);
   assert.match(server, /pg_advisory_xact_lock/);
   assert.match(server, /active_member_phone/);
