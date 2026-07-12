@@ -3,11 +3,11 @@
 Next unblocked batch: `2-shared-crm`
 Open requirement: `REQ-20260712-302`
 
-Latest deployed SHA: `de48d8aef8b4764b5144a89edef9e269c102c25f`
+Latest deployed SHA: `3293d3528ace28938d5f13d8b65b485448c9ebc9`
 
 Current proof:
 
-- `de48d8aef8b4764b5144a89edef9e269c102c25f` is pushed to `origin/master`.
+- `3293d3528ace28938d5f13d8b65b485448c9ebc9` is pushed to `origin/master`.
 - BNA production `https://bneineviimacademy.org/api/deploy-info` returns that SHA.
 - One Time production `https://join.onetimeonetime.com/api/deploy-info` returns that SHA.
 - One Time signup Family/School behavior has live no-write browser proof and API dry-run proof.
@@ -19,11 +19,11 @@ Current proof:
 - Explicit Create task action is deployed through `ded53274e31f91abff7944c094bdcdfaa9c55c5e`; the action creates a task only after an explicit click with `create_follow_up_task=true`.
 - CRM workspace tabs are deployed through `1c4880418954d984c08683ba0955a32549eb33aa`; Overview, Activity, Conversations, Tasks, and Access render customer-facing panels and the One Time CRM workbench live smoke passed with 12 scoped cards and read-only selected timeline.
 - Add Contact is deployed under `REQ-20260712-303` through `de48d8aef8b4764b5144a89edef9e269c102c25f`: the form is registered as `ACTION-CRM-ADD-CONTACT`, POST `/api/bna/crm/contacts` is workspace-scoped, identities are workspace-scoped, no external send/access/import/task creation runs, and the One Time live CRM workbench smoke passed after deploy.
-- Archive Contact is locally verified and pending deploy under `REQ-20260712-303`: the action is registered as `ACTION-CRM-ARCHIVE-CONTACT`, uses the scoped CRM PATCH path with `status=archived`, `create_follow_up_task=false`, and no external-write flags, and local smoke verifies the action is visible without clicking it.
+- Archive Contact is deployed under `REQ-20260712-303` through `3293d3528ace28938d5f13d8b65b485448c9ebc9`: the action is registered as `ACTION-CRM-ARCHIVE-CONTACT`, uses the scoped CRM PATCH path with `status=archived`, `create_follow_up_task=false`, and no external-write flags, BNA deployment `d454d665-4e81-43d7-868e-8c02888c0080` and One Time deployment `e4883410-13ce-4ad8-8d59-db5fc50effd4` reached `SUCCESS`, and the One Time live CRM workbench smoke passed.
 
 Continue by inspecting and repairing:
 
-- deploy/live-smoke Archive Contact, then continue remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`;
+- continue remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`, especially complete/reopen task and family/member linking;
 - canonical CRM contact aggregate service boundaries;
 - list, aggregate, timeline, conversations, and tasks DTOs;
 - server-side reconciliation of contacts, parent leads, signups, students, members, access, attendance, lifecycle, communications, notes, tasks, tickets, and suppression/opt-out records;

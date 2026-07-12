@@ -162,3 +162,10 @@
 - PASS `npm run secrets:audit` after Archive Contact slice.
 - PASS `npm run bna:run:validate` after Archive Contact slice; work remains on the broader addendum.
 - PASS `git diff --check` with line-ending warnings only after Archive Contact slice.
+- PASS `git push origin master` for Archive Contact commit `3293d3528ace28938d5f13d8b65b485448c9ebc9`.
+- PASS BNA Railway post-deploy doctor for deployment `d454d665-4e81-43d7-868e-8c02888c0080`.
+- PASS One Time Railway post-deploy doctor for deployment `e4883410-13ce-4ad8-8d59-db5fc50effd4`.
+- PASS BNA and One Time deploy-info readbacks returned `commit_sha=3293d3528ace28938d5f13d8b65b485448c9ebc9`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 3293d3528ace28938d5f13d8b65b485448c9ebc9`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-12-32-836Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only deployed HTML marker check: `https://join.onetimeonetime.com/operations.html` contains `ACTION-CRM-ARCHIVE-CONTACT` and `archiveFirstPartyCrmContact`.
