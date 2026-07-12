@@ -1,6 +1,6 @@
 {
   "success": true,
-  "checked_at": "2026-07-10T14:55:52.762Z",
+  "checked_at": "2026-07-12T11:21:56.219Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "external_write_performed": false,
@@ -12,45 +12,41 @@
     "configured": true,
     "credential_scope": "one_time_scoped",
     "one_time_token_present": true,
-    "default_token_present": true,
+    "default_token_present": false,
     "one_time_token_source": ".secrets",
-    "default_token_source": ".secrets",
+    "default_token_source": "not configured",
     "base_url_configured": true,
-    "base_url_source": "default",
+    "base_url_source": "env",
     "railway_readback": {
       "attempted": true,
       "ok": true,
-      "source": "railway_cli_session_fallback",
-      "key_count": 55,
+      "source": "railway_token_or_env",
+      "key_count": 60,
       "class_link_present": true,
-      "instance_id_present": false,
-      "phone_metadata_present": false
+      "instance_id_present": true,
+      "phone_metadata_present": true
     }
   },
   "provider_setup": {
-    "ready": false,
-    "instance_id_present": false,
-    "instance_id_source": "not configured",
-    "phone_metadata_present": false,
-    "phone_metadata_source": "not configured",
-    "blockers": [
-      "Whapi/WAPI instance id missing",
-      "WhatsApp sender phone metadata missing",
-      "WAPI webhook secret missing"
-    ]
+    "ready": true,
+    "instance_id_present": true,
+    "instance_id_source": "env",
+    "phone_metadata_present": true,
+    "phone_metadata_source": "env",
+    "blockers": []
   },
   "auto_reply": {
     "ready": false,
     "enabled": false,
     "approved": false,
     "class_link_configured": true,
-    "class_link_source": "railway_cli_session_fallback:one_time_class_link_present",
+    "class_link_source": "railway_token_or_env:one_time_class_link_present",
     "credential_scope": "one_time_scoped",
     "provider_bot_profile": "one_time_whatsapp_lead_bot",
     "provider_bot_profile_version": "2026-07-10-v1",
     "provider_bot_profile_valid": true,
     "provider_bot_mode": "observe_only",
-    "webhook_secret_present": false,
+    "webhook_secret_present": true,
     "webhook_header_auth_only_required": true,
     "instance_binding_required": true,
     "destination_number_binding_required": true,
@@ -58,8 +54,7 @@
     "blockers": [
       "ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled",
       "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY",
-      "ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live",
-      "One Time WAPI webhook secret missing"
+      "ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live"
     ],
     "copy_version": "2026-07-10-v1"
   },
@@ -73,13 +68,9 @@
     ]
   },
   "required_next_actions": [
-    "Whapi/WAPI instance id missing",
-    "WhatsApp sender phone metadata missing",
-    "WAPI webhook secret missing",
     "ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled",
     "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY",
     "ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live",
-    "One Time WAPI webhook secret missing",
     "ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM"
   ],
   "guardrails": [

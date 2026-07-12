@@ -261,6 +261,7 @@ test('server wires fail-closed hosted webhook auth, sanitized headers, CRM lead 
   assert.match(server, /WAPI_WEBHOOK_ALLOW_INSECURE_LOCAL_TEST/);
   assert.match(server, /function oneTimeWapiBindingError/);
   assert.match(server, /provider-number binding/);
+  assert.match(server, /!normalized\.fromMe && suppliedInstance && suppliedInstance === ONE_TIME_WAPI_INSTANCE_ID/);
   assert.match(server, /async function ensureOneTimeProviderBotLead/);
   assert.match(server, /pg_advisory_xact_lock/);
   assert.match(server, /active_member_phone/);
@@ -276,6 +277,9 @@ test('server wires fail-closed hosted webhook auth, sanitized headers, CRM lead 
   assert.match(server, /roleAlias: 'one_time_rabbi_operator'/);
   assert.match(server, /auto_reply_type: 'provider_lead_bot_reply'/);
   assert.match(server, /claimOneTimeWapiAutoReplyAttempt/);
+  assert.match(server, /normalized\.messageId && db === pool && typeof db\.connect === 'function'/);
+  assert.match(server, /db !== pool \|\| typeof db\.connect !== 'function'/);
+  assert.match(server, /\$2::text <> ''/);
   assert.match(server, /reply_audit_body/);
   assert.match(server, /skipped_observe_only/);
   assert.match(server, /ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'live'/);

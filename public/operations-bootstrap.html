@@ -6,8 +6,12 @@
     <title>BNA Operations</title>
     <script>
         const operationsSource = new URLSearchParams(window.location.search).get('source');
-        if (window.location.pathname === '/operations.html' && ['pwa', 'ops-pwa'].includes(operationsSource)) {
-            window.location.replace('/operations');
+        const operationsSourceReadModes = ['split-source', 'codex-source'];
+        if (window.location.pathname === '/operations.html' && !operationsSourceReadModes.includes(operationsSource)) {
+            const redirectParams = new URLSearchParams(window.location.search);
+            redirectParams.delete('source');
+            const redirectQuery = redirectParams.toString();
+            window.location.replace(`/operations${redirectQuery ? `?${redirectQuery}` : ''}${window.location.hash || ''}`);
         }
     </script>
     <meta name="theme-color" content="#1e3a5f">
@@ -30,6 +34,7 @@
 
     <script src="/js/platform-ui/platform-ui-fixtures.js"></script>
     <script src="/js/platform-ui/platform-ui.js"></script>
+    <script src="/js/one-time-rabbi-dashboard-ia.generated.js"></script>
     <script src="/js/operations-shell.js"></script>
     <script src="/js/app-select.js"></script>
 </body>

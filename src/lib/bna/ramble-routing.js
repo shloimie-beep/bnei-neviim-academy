@@ -107,6 +107,8 @@ function buildStatementRecords(input = {}, sourceEnvelope = buildSourceEnvelope(
     statement_id: statementId(sourceEnvelope.source_date, index, fragment.text),
     index: index + 1,
     text: fragment.text,
+    offset_start: fragment.start,
+    offset_end: fragment.end,
     source_excerpt: fragment.excerpt,
     statement_hash: stableHash(fragment.text),
     classification: classifyStatement(fragment.text),

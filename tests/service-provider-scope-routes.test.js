@@ -17,6 +17,7 @@ test('server wires service-provider scope and first-party CRM routes', () => {
     "app.get('/api/bna/account-scope/summary'",
     "app.get('/api/bna/crm/contacts'",
     "app.get('/api/bna/crm/contacts/:id/timeline'",
+    "app.patch('/api/bna/crm/contacts/:id'",
     "app.post('/api/bna/assistant/scope-plan'",
     "app.get('/api/provider-portal/scope-session'",
     "app.get('/api/provider-portal/inquiries'",
@@ -27,6 +28,10 @@ test('server wires service-provider scope and first-party CRM routes', () => {
 
   assert.match(server, /no_external_calendar_write/);
   assert.match(server, /external_write_performed:\s*false/);
+  assert.match(server, /async function createOperationsCrmFollowUpTask/);
+  assert.match(server, /INSERT INTO bna_tasks \(/);
+  assert.match(server, /'dashboard',\s*\$6::jsonb,\s*\$7::jsonb/);
+  assert.match(server, /'follow_up_task' AS communication_type/);
 });
 test('provider and operations UIs expose scoped package surfaces', () => {
   const provider = read('public/provider.html');
@@ -45,6 +50,14 @@ test('provider and operations UIs expose scoped package surfaces', () => {
     'getCrmContacts',
     'getCrmContactTimeline',
     'renderFirstPartyCrmContactsPanel',
+    'membership_access',
+    'follow_up_task',
+    'name="display_name"',
+    'name="email"',
+    'name="phone"',
+    'create_follow_up_task',
+    'data-crm-targeted-mailbox',
+    'clearCrmMailboxTarget',
     'ACTION-CRM-CONTACTS-FILTER',
     'ACTION-CRM-CONTACT-CARD-EXPAND',
   ].forEach((needle) => assert.match(operations, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
@@ -69,6 +82,8 @@ test('migration and registries cover service-provider scope package', () => {
     'ACTION-PROVIDER-PORTAL-UPGRADE',
     'ACTION-CRM-CONTACTS-FILTER',
     'ACTION-CRM-CONTACT-CARD-EXPAND',
+    'ACTION-CRM-CONTACT-MAILBOX-OPEN',
+    'ACTION-CRM-CONTACT-SAFE-UPDATE',
     'ACTION-ASSISTANT-CODEX-CLI-ROUTING-DISABLED',
   ].forEach((id) => assert.equal(actionIds.has(id), true, `${id} is registered`));
 
@@ -76,6 +91,7 @@ test('migration and registries cover service-provider scope package', () => {
     '/api/bna/account-scope/summary',
     '/api/bna/crm/contacts',
     '/api/bna/crm/contacts/:id/timeline',
+    '/api/bna/crm/contacts/:id',
     '/api/bna/assistant/scope-plan',
     '/api/provider-portal/scope-session',
     '/api/provider-portal/inquiries',

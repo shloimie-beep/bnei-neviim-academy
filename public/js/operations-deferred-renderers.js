@@ -578,7 +578,7 @@ function renderCommunications() {
             ${section === 'support_threads' ? renderSupportThreadsPanel() : ''}
             ${section === 'announcements' ? renderAnnouncementPanel() : ''}
             ${section === 'settings' ? renderCommunicationsIntegrationPanel() : ''}
-            ${section === 'templates' ? renderNotConfiguredPanel(COMMUNICATIONS_SUBTABS.find(tab => tab.id === section)?.label || 'Communications', 'This lane needs template persistence before editing is exposed to normal users.') : ''}
+            ${section === 'templates' ? renderNotConfiguredPanel(COMMUNICATIONS_SUBTABS.find(tab => tab.id === section)?.label || 'Communications', 'Template editing is not enabled for this account yet. Current communication history and mailbox views remain available.') : ''}
         </div>
     `;
 }
@@ -1316,6 +1316,39 @@ async function openOneTimeProviderSession(event) {
     }
 }
 
+function crmMailboxTargetEmail() {
+    return String(window.sessionStorage?.getItem?.('oneTimeSelectedCrmContactEmail') || '').trim().toLowerCase();
+}
+
+function emailRecordMatchesCrmTarget(item = {}, targetEmail = crmMailboxTargetEmail()) {
+    if (!targetEmail) return true;
+    const metadata = parseObjectMaybe(item.metadata);
+    const sourceContext = parseObjectMaybe(item.source_context);
+    const addresses = [
+        item.contact_email,
+        item.from_email,
+        item.from_address,
+        item.to_email,
+        item.to_address,
+        item.reply_to,
+        metadata.email,
+        metadata.contact_email,
+        metadata.parent_email,
+        metadata.reply_to,
+        sourceContext.email,
+        sourceContext.contact_email,
+        sourceContext.parent_email,
+        ...(Array.isArray(item.to) ? item.to : []),
+        ...(Array.isArray(item.recipients) ? item.recipients : []),
+    ].map(value => String(value || '').toLowerCase());
+    return addresses.some(value => value.includes(targetEmail));
+}
+
+function clearCrmMailboxTarget() {
+    window.sessionStorage?.removeItem?.('oneTimeSelectedCrmContactEmail');
+    rerenderOperationsApp();
+}
+
 function renderEmailInboxSelector(emailRecords = [], drafts = []) {
     const activeScope = emailInboxScopeRecord();
     const bnaScope = emailInboxScopeRecord('bna');
@@ -1578,6 +1611,13 @@ function renderEmailOperatorWorkspace(emailRecords = []) {
     const resendEvents = state.resendEvents || [];
     const dnsTasks = state.dnsTasks || [];
     const workspaceFilters = emailInboxFilters();
+    const targetEmail = crmMailboxTargetEmail();
+    const visibleEmailRecords = targetEmail
+        ? scopedEmailRecords.filter(item => emailRecordMatchesCrmTarget(item, targetEmail))
+        : scopedEmailRecords;
+    const visibleDrafts = targetEmail
+        ? filterEmailRecordsForInboxScope(allDrafts, activeInboxScope).filter(item => emailRecordMatchesCrmTarget(item, targetEmail)).slice(0, 8)
+        : filterEmailRecordsForInboxScope(allDrafts, activeInboxScope).slice(0, 8);
     const sendGate = resend.send_allowed ? 'Ready after review + SEND_RESEND_EMAIL' : 'Locked until sender/domain readiness';
     const inboxTitle = activeInboxScope.id === 'rabbi' ? 'One Time Inbox' : 'Email Workspace';
     return `
@@ -1591,6 +1631,7 @@ function renderEmailOperatorWorkspace(emailRecords = []) {
             </div>
             ${renderEmailInboxSelector(emailRecords, allDrafts)}
             ${renderEmailCrmContextCard(activeInboxScope)}
+            ${targetEmail ? `<div class="success-banner" data-crm-targeted-mailbox>Mailbox filtered to ${escapeHtml(targetEmail)}. <button type="button" class="task-action" onclick="clearCrmMailboxTarget()">Clear filter</button></div>` : ''}
             <div class="settings-control-grid compact" data-email-readiness-gates>
                 ${renderSettingsControlRow('Provider account', resend.connected ? 'Connected' : (resend.configured ? 'Configured / blocked' : 'Missing'), 'Resend API readiness is checked separately from sender and domain readiness.', resend.connected ? 'Connected' : 'Blocked')}
                 ${renderSettingsControlRow('Sender identity', resend.from_email || 'Not finalized', 'From identity must be explicitly configured for this workspace before send.', resend.sender_configured || resend.from_email ? 'Configured' : 'Blocked')}
@@ -1598,7 +1639,7 @@ function renderEmailOperatorWorkspace(emailRecords = []) {
                 ${renderSettingsControlRow('Recipients', workspaceFilters.project_key || 'All workspaces', 'Recipient validation uses workspace/project filters to prevent accidental cross-workspace sends.', 'Scoped')}
                 ${renderSettingsControlRow('Send confirmation', 'SEND_RESEND_EMAIL', 'The send endpoint rejects requests without the exact approval phrase.', 'Required')}
             </div>
-            ${renderEmailViewRail(scopedEmailRecords, drafts, resendEvents, dnsTasks, resendDomains)}
+            ${renderEmailViewRail(visibleEmailRecords, visibleDrafts, resendEvents, dnsTasks, resendDomains)}
             <div class="email-operator-grid">
                 <div class="email-draft-card">
                     <div class="task-section-header"><h3>Draft Editor</h3><span>Preview only</span></div>
@@ -1620,14 +1661,14 @@ function renderEmailOperatorWorkspace(emailRecords = []) {
                     </form>
                     <div class="settings-disabled-note">Draft creation stores a local review item and readiness blocker only. It does not send email.</div>
                 </div>
-                ${renderEmailWorkspaceView(emailOperationsView, { emailRecords: scopedEmailRecords, drafts, resend, resendDomains, resendEvents, dnsTasks })}
+                ${renderEmailWorkspaceView(emailOperationsView, { emailRecords: visibleEmailRecords, drafts: visibleDrafts, resend, resendDomains, resendEvents, dnsTasks })}
             </div>
         </section>
     `;
 }
 
 function renderBotConversationPlaceholder() {
-    return renderNotConfiguredPanel('Bot Conversations', 'Bot conversation storage and per-role transcript visibility are not persisted as a first-class dashboard feed yet. Existing bot/API issues are visible through support tickets and API Usage.');
+    return renderNotConfiguredPanel('Bot Conversations', 'Bot conversation history is not available in this account view yet. Existing bot/API issues are visible through support tickets and API Usage.');
 }
 
 function renderSupportThreadsPanel() {
@@ -3409,7 +3450,7 @@ function renderApiUsage() {
                     ${errorTickets.length ? `<div class="task-list">${errorTickets.map(renderSupportTicketCard).join('')}</div>` : '<div class="empty-state">No open bot/API support records are loaded.</div>'}
                 </section>
             ` : ''}
-            ${apiUsageSection !== 'errors' && apiUsageSection !== 'overview' ? renderNotConfiguredPanel(API_USAGE_SUBTABS.find(tab => tab.id === apiUsageSection)?.label || 'API Usage', 'Detailed token, model, cost, budget, and export controls need backend metering before they can be enabled. Next implementation step: add usage-event persistence and aggregation endpoints.') : ''}
+            ${apiUsageSection !== 'errors' && apiUsageSection !== 'overview' ? renderNotConfiguredPanel(API_USAGE_SUBTABS.find(tab => tab.id === apiUsageSection)?.label || 'API Usage', 'Detailed token, model, cost, budget, and export controls are not enabled for this account view yet.') : ''}
         </div>
     `;
 }
@@ -3446,7 +3487,7 @@ function renderTeamAdmin() {
             ${adminSection === 'users' ? renderAdminUsersPanel() : ''}
             ${adminSection === 'roles' ? renderAdminRolesPolicyPanel() : ''}
             ${adminSection === 'workspaces' ? renderAdminWorkspacesPanel() : ''}
-            ${['invitations', 'messages', 'settings'].includes(adminSection) ? renderNotConfiguredPanel(ADMIN_SUBTABS.find(tab => tab.id === adminSection)?.label || 'Admin', 'This admin workflow needs a dedicated persistence endpoint before normal users can change it from the UI.') : ''}
+            ${['invitations', 'messages', 'settings'].includes(adminSection) ? renderNotConfiguredPanel(ADMIN_SUBTABS.find(tab => tab.id === adminSection)?.label || 'Admin', 'This admin workflow is not enabled for this account view yet.') : ''}
         </div>
     `;
 }
@@ -4698,7 +4739,7 @@ function renderSettingsContent(section) {
         ],
         branding: [
             ['Brand name', workspace.display_name || 'BNA Operations', 'Brand text is editable through workspace settings; logo upload storage is not enabled yet.', 'Partial'],
-            ['Logo upload', 'Not configured', 'Requires file storage and branding asset persistence endpoint.', 'Disabled']
+            ['Logo upload', 'Not enabled', 'Logo changes are locked for this account view.', 'Disabled']
         ],
         language: [
             ['Parent/student portals', 'English LTR and Hebrew RTL', 'Portal screens must remain usable in both directions.', 'Configured'],
@@ -6917,7 +6958,7 @@ async function saveVisibleSettings() {
 
 function renderNotConfiguredPanel(title, description) {
     const heading = title || 'Configuration required';
-    const copy = description || 'This area is visible in the shell, but it needs persistence, role checks, and audit logging before normal users can change it.';
+    const copy = description || 'This area is visible for orientation, but editing is not enabled for this account yet.';
     return `
         <section class="focus-panel not-configured-panel">
             <div class="not-configured-icon">Off</div>
@@ -6925,11 +6966,11 @@ function renderNotConfiguredPanel(title, description) {
                 <h3>${escapeHtml(heading)}</h3>
                 <p>${escapeHtml(copy)}</p>
                 <div class="settings-control-grid" style="margin-top:12px;">
-                    ${renderSettingsControlRow('Persistence', 'Not connected', 'Requires a scoped settings endpoint before edits can be saved.', 'Disabled')}
-                    ${renderSettingsControlRow('Audit trail', 'Required', 'Writes stay locked until changes can be attributed and reviewed.', 'Disabled')}
+                    ${renderSettingsControlRow('Availability', 'Not enabled', 'This control is locked for the current account view.', 'Disabled')}
+                    ${renderSettingsControlRow('Changes', 'Locked', 'No changes are saved from this screen.', 'Disabled')}
                 </div>
                 <div class="task-actions">
-                    <button class="task-action" disabled title="Requires settings persistence and audit logging">Configure after backend is ready</button>
+                    <button class="task-action" disabled title="Not available for this account yet">Not available yet</button>
                 </div>
             </div>
         </section>
@@ -6945,12 +6986,12 @@ function showNotConfigured(label = 'This feature') {
     modal.innerHTML = `
         <div class="modal">
             <div class="modal-header">
-                <h2>Not configured yet</h2>
+                <h2>Not available yet</h2>
                 <button class="modal-close" type="button" aria-label="Close" onclick="document.getElementById('notConfiguredModal')?.remove()">Close</button>
             </div>
             <div class="modal-body">
-                <p>${escapeHtml(label)} is intentionally visible in the new SaaS shell, but it is disabled until the backend settings, role checks, and audit trail are wired.</p>
-                <p class="event-meta">Implementation note: add a persistence endpoint, role-scoped writes, and verification before enabling this for normal users.</p>
+                <p>${escapeHtml(label)} is visible for orientation, but it is not enabled for this account yet.</p>
+                <p class="event-meta">No changes are saved from this screen.</p>
             </div>
             <div class="modal-footer">
                 <button class="btn" type="button" onclick="document.getElementById('notConfiguredModal')?.remove()">Close</button>

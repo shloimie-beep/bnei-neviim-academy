@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Give Your Son A Love For Torah | One Time Mishnayos</title>
-  <meta name="description" content="A live worldwide Mishnayos class with Rabbi Eli Scheller, built for boys to love learning Torah with clarity, excitement, and accountability.">
+  <title>Give Your Son A Love For Learning Torah | One Time Mishnayos</title>
+  <meta name="description" content="A live worldwide Mishnayos class with Rabbi Eli Scheller, built for boys to love learning Torah with clarity, excitement, and steady progress.">
   <meta name="robots" content="index, follow">
-  <meta property="og:title" content="Give Your Son A Love For Torah">
+  <meta property="og:title" content="Give your son a love for learning Torah.">
   <meta property="og:description" content="Join One Time Mishnayos live from Eretz Yisrael with Rabbi Eli Scheller.">
   <meta property="og:image" content="/images/one-time/social/one-time-og-20260622.jpg">
   <meta property="og:type" content="website">
@@ -16,116 +16,52 @@
   <style>
     :root {
       --black: #050505;
-      --black-soft: #101010;
-      --ink: #141414;
+      --night: #071117;
+      --night-2: #0b1820;
       --white: #ffffff;
       --paper: #f9f7ee;
-      --muted: #cfcfcf;
-      --muted-dark: #555b61;
-      --yellow: #f3e63d;
-      --yellow-deep: #d9c915;
+      --muted: rgba(255, 255, 255, 0.72);
       --ice: #dff8ff;
-      --ice-line: rgba(145, 226, 255, 0.42);
-      --line: rgba(255, 255, 255, 0.16);
-      --line-dark: rgba(5, 5, 5, 0.13);
-      --shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+      --blue: #86e8ff;
+      --yellow: #f0ff32;
+      --yellow-soft: #faff82;
+      --line: rgba(223, 248, 255, 0.18);
+      --shadow: 0 30px 90px rgba(0, 0, 0, 0.48);
       --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --serif: Georgia, "Times New Roman", Times, serif;
       --header-height: 74px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
       color: var(--white);
-      background: var(--black);
+      background:
+        radial-gradient(circle at 78% 9%, rgba(134, 232, 255, 0.18), transparent 28rem),
+        radial-gradient(circle at 14% 18%, rgba(240, 255, 50, 0.11), transparent 22rem),
+        linear-gradient(180deg, #050505 0%, #071117 44%, #050505 100%);
       font-family: var(--sans);
       line-height: 1.5;
       letter-spacing: 0;
+      overflow-x: hidden;
     }
-
-    body.modal-open {
-      overflow: hidden;
-    }
-
-    body,
-    button,
-    input,
-    select,
-    textarea {
-      font: inherit;
-    }
-
-    button,
-    a {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    img {
-      display: block;
-      max-width: 100%;
-    }
-
-    h1,
-    h2,
-    h3,
-    p {
-      margin-top: 0;
-      letter-spacing: 0;
-    }
-
-    h1,
-    h2 {
-      font-family: var(--serif);
-      font-weight: 800;
-      text-wrap: balance;
-    }
-
-    h1 {
-      max-width: 920px;
-      margin: 0 0 22px;
-      font-size: 5.1rem;
-      line-height: 0.96;
-    }
-
-    h2 {
-      margin-bottom: 16px;
-      font-size: 3.35rem;
-      line-height: 1.02;
-    }
-
-    h3 {
-      margin-bottom: 8px;
-      font-size: 1.12rem;
-      line-height: 1.18;
-    }
-
-    p {
-      color: rgba(255, 255, 255, 0.74);
-    }
-
-    .wrap {
-      width: min(1180px, calc(100% - 36px));
-      margin: 0 auto;
-    }
-
+    body, button, input { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+    img, svg { display: block; max-width: 100%; }
+    h1, h2, h3, p { margin-top: 0; letter-spacing: 0; }
+    h1, h2 { font-family: var(--serif); font-weight: 850; text-wrap: balance; }
+    h1 { max-width: 900px; margin: 0 0 22px; font-size: clamp(3.45rem, 8vw, 6.75rem); line-height: 0.94; }
+    h2 { margin: 0; font-size: clamp(2.35rem, 4.6vw, 4.3rem); line-height: 0.98; }
+    h2, h3 { color: var(--white); text-shadow: 0 0 22px rgba(134, 232, 255, 0.12); }
+    h3 { margin: 0; font-size: 1.06rem; line-height: 1.2; }
+    p { color: var(--muted); }
+    .wrap { width: min(1180px, calc(100% - 36px)); margin: 0 auto; }
     .skip-link {
       position: fixed;
       left: 16px;
       top: 12px;
-      z-index: 2000;
+      z-index: 3000;
       padding: 10px 14px;
       border-radius: 6px;
       color: var(--black);
@@ -133,778 +69,433 @@
       transform: translateY(-150%);
       transition: transform 160ms ease;
     }
-
-    .skip-link:focus {
-      transform: translateY(0);
-    }
-
-    .visually-hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
+    .skip-link:focus { transform: translateY(0); }
+    .icon-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
 
     .site-header {
       position: sticky;
       top: 0;
-      z-index: 1000;
+      z-index: 1200;
       min-height: var(--header-height);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(5, 5, 5, 0.94);
-      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(223, 248, 255, 0.16);
+      background:
+        linear-gradient(90deg, rgba(5, 5, 5, 0.96), rgba(7, 17, 23, 0.94)),
+        radial-gradient(circle at 90% 0%, rgba(134, 232, 255, 0.16), transparent 18rem);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 14px 38px rgba(0, 0, 0, 0.32);
     }
-
     .header-inner {
       min-height: var(--header-height);
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
       align-items: center;
-      justify-content: space-between;
-      gap: 20px;
+      gap: 14px;
     }
-
-    .brand-lockup {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .brand-lockup img {
-      width: 132px;
-      height: auto;
-    }
-
+    .brand-lockup { min-width: 0; display: inline-flex; align-items: center; gap: 13px; }
+    .brand-lockup img { width: 124px; height: auto; flex: 0 0 auto; filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.38)); }
     .brand-lockup span {
-      display: block;
-      color: rgba(255, 255, 255, 0.72);
-      font-size: 0.78rem;
-      font-weight: 750;
-      line-height: 1.15;
+      color: var(--ice);
+      font-size: 0.8rem;
+      font-weight: 950;
+      line-height: 1.08;
       text-transform: uppercase;
+      text-shadow: 0 0 18px rgba(134, 232, 255, 0.28);
     }
 
-    .nav-shell {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-    }
-
-    .site-nav {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      color: rgba(255, 255, 255, 0.76);
-      font-size: 0.94rem;
-      font-weight: 720;
-    }
-
-    .site-nav a {
-      padding: 10px 0;
-      border-bottom: 2px solid transparent;
-      transition: color 160ms ease, border-color 160ms ease;
-    }
-
-    .site-nav a:hover,
-    .site-nav a:focus-visible {
-      color: var(--white);
-      border-color: var(--yellow);
-      outline: none;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      white-space: nowrap;
-    }
-
-    .header-actions.mobile-direct {
-      display: none;
-    }
-
-    .member-link {
-      color: rgba(255, 255, 255, 0.68);
-      font-size: 0.92rem;
-      font-weight: 760;
-      padding: 9px 10px;
-      border-radius: 6px;
-    }
-
-    .member-link:hover,
-    .member-link:focus-visible {
-      color: var(--white);
-      background: rgba(255, 255, 255, 0.08);
-      outline: none;
-    }
-
-    .button {
+    .chrome-button {
+      position: relative;
+      isolation: isolate;
+      min-height: 48px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 9px;
-      min-height: 46px;
-      padding: 0 18px;
-      border: 1px solid transparent;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 850;
-      line-height: 1;
-      text-align: center;
-      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
-    }
-
-    .button:focus-visible,
-    .icon-button:focus-visible,
-    .choice-card:focus-within {
-      outline: 3px solid rgba(223, 248, 255, 0.92);
-      outline-offset: 3px;
-    }
-
-    .button:hover {
-      transform: translateY(-1px);
-    }
-
-    .button.primary {
-      position: relative;
       overflow: hidden;
-      color: var(--black);
-      background: var(--yellow);
-      border-color: rgba(255, 255, 255, 0.16);
-      box-shadow: 0 14px 30px rgba(243, 230, 61, 0.18);
+      border: 1px solid rgba(223, 248, 255, 0.7);
+      border-radius: 6px;
+      padding: 0 19px;
+      color: #040404;
+      background:
+        linear-gradient(115deg, rgba(255, 255, 255, 0.72) 0%, transparent 18%, transparent 58%, rgba(223, 248, 255, 0.68) 72%, transparent 100%),
+        linear-gradient(180deg, var(--yellow-soft) 0%, var(--yellow) 48%, #e8f525 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.92),
+        inset 0 -2px 0 rgba(5, 5, 5, 0.28),
+        0 13px 0 rgba(0, 0, 0, 0.48),
+        0 22px 45px rgba(240, 255, 50, 0.21);
+      font-weight: 950;
+      white-space: nowrap;
+      transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
     }
-
-    .button.primary::after {
+    .chrome-button::before {
       content: "";
       position: absolute;
-      inset: -120% auto -120% -40%;
-      width: 34%;
-      transform: rotate(18deg);
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-      animation: buttonSweep 5.8s ease-in-out infinite;
-      pointer-events: none;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(100deg, transparent 8%, rgba(255, 255, 255, 0.62) 38%, transparent 62%);
+      transform: translateX(-130%);
+      transition: transform 620ms ease;
     }
-
-    .button.primary:hover {
-      background: #fff26b;
+    .chrome-button:hover, .chrome-button:focus-visible {
+      outline: none;
+      transform: translateY(-2px);
+      filter: saturate(1.05);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -2px 0 rgba(5, 5, 5, 0.28),
+        0 15px 0 rgba(0, 0, 0, 0.54),
+        0 28px 58px rgba(240, 255, 50, 0.28),
+        0 0 0 4px rgba(134, 232, 255, 0.18);
     }
-
-    .button.dark {
-      color: var(--white);
-      background: var(--black);
-      border-color: rgba(255, 255, 255, 0.22);
-    }
-
-    .button.light {
-      color: var(--black);
-      background: var(--white);
-      border-color: rgba(5, 5, 5, 0.1);
-    }
-
-    .button.full {
-      width: 100%;
-    }
-
-    .button[disabled] {
-      cursor: not-allowed;
-      opacity: 0.52;
-      transform: none;
-    }
-
+    .chrome-button:hover::before, .chrome-button:focus-visible::before { transform: translateX(130%); }
     .icon-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 46px;
-      height: 46px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      width: 48px;
+      height: 48px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid rgba(223, 248, 255, 0.35);
       border-radius: 6px;
-      color: var(--white);
-      background: rgba(255, 255, 255, 0.08);
+      color: var(--ice);
+      background: rgba(7, 17, 23, 0.72);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 14px 30px rgba(0, 0, 0, 0.26);
       cursor: pointer;
+      transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
     }
-
-    .menu-button {
-      display: none;
+    .icon-button:hover, .icon-button:focus-visible {
+      outline: none;
+      border-color: var(--yellow);
+      background: rgba(13, 31, 40, 0.95);
+      transform: translateY(-1px);
     }
-
-    .menu-lines {
-      width: 19px;
-      height: 13px;
-      display: grid;
-      align-content: space-between;
-    }
-
-    .menu-lines::before,
-    .menu-lines::after,
-    .menu-lines span {
-      content: "";
+    .menu-lines, .menu-lines::before, .menu-lines::after {
+      width: 21px;
       height: 2px;
+      display: block;
       border-radius: 999px;
       background: currentColor;
     }
+    .menu-lines { position: relative; }
+    .menu-lines::before, .menu-lines::after { content: ""; position: absolute; left: 0; }
+    .menu-lines::before { top: -7px; }
+    .menu-lines::after { top: 7px; }
+
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1500;
+      border: 0;
+      background: rgba(0, 0, 0, 0.58);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease;
+    }
+    .nav-drawer {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 1501;
+      width: min(410px, calc(100vw - 24px));
+      padding: 22px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 20px;
+      border: 1px solid rgba(223, 248, 255, 0.32);
+      border-radius: 8px;
+      color: var(--white);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(134, 232, 255, 0.18), transparent 16rem),
+        linear-gradient(180deg, rgba(7, 17, 23, 0.97), rgba(5, 5, 5, 0.97));
+      box-shadow: -28px 0 90px rgba(0, 0, 0, 0.54), 0 0 60px rgba(134, 232, 255, 0.14);
+      transform: translateX(calc(100% + 24px));
+      pointer-events: none;
+      transition: transform 260ms cubic-bezier(.2,.8,.2,1);
+    }
+    body.drawer-open .drawer-overlay { opacity: 1; pointer-events: auto; }
+    body.drawer-open .nav-drawer { transform: translateX(0); pointer-events: auto; }
+    .drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .drawer-head strong { color: var(--ice); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0; }
+    .drawer-links { display: grid; align-content: start; gap: 8px; }
+    .drawer-links a {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2px;
+      border-bottom: 1px solid rgba(223, 248, 255, 0.13);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.08rem;
+      font-weight: 900;
+      transition: color 160ms ease, padding 160ms ease;
+    }
+    .drawer-links a::after {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-top: 2px solid var(--yellow);
+      border-right: 2px solid var(--yellow);
+      transform: rotate(45deg);
+    }
+    .drawer-links a:hover, .drawer-links a:focus-visible { color: var(--yellow-soft); outline: none; padding-left: 8px; }
+    .drawer-note { margin: 0; padding-top: 16px; border-top: 1px solid rgba(223, 248, 255, 0.16); color: rgba(223, 248, 255, 0.74); font-size: 0.9rem; }
+
+    .rosh-ticker {
+      position: relative;
+      z-index: 20;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(223, 248, 255, 0.2);
+      color: #040404;
+      background:
+        linear-gradient(100deg, rgba(255, 255, 255, 0.48), transparent 18%, transparent 72%, rgba(223, 248, 255, 0.48)),
+        linear-gradient(180deg, var(--yellow-soft), var(--yellow));
+      box-shadow: 0 14px 34px rgba(240, 255, 50, 0.13);
+    }
+    .rosh-link { display: block; min-height: 39px; overflow: hidden; white-space: nowrap; font-weight: 950; text-transform: uppercase; }
+    .rosh-track { width: max-content; display: flex; align-items: center; animation: rosh-marquee 24s linear infinite; }
+    .rosh-ticker:hover .rosh-track, .rosh-link:focus-visible .rosh-track { animation-play-state: paused; }
+    .rosh-link:focus-visible { outline: 3px solid var(--blue); outline-offset: -3px; }
+    .rosh-text { padding: 9px 26px; }
+    @keyframes rosh-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
     .hero {
       position: relative;
+      isolation: isolate;
+      min-height: calc(100svh - var(--header-height) - 39px);
+      display: grid;
+      align-items: center;
       overflow: hidden;
-      min-height: 760px;
-      padding: 76px 0 62px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 86px 0 104px;
       background:
-        radial-gradient(circle at 84% 30%, rgba(223, 248, 255, 0.18), transparent 24%),
-        radial-gradient(circle at 68% 72%, rgba(243, 230, 61, 0.1), transparent 22%),
-        linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.91) 48%, rgba(8, 18, 22, 0.76) 100%),
-        var(--black);
+        radial-gradient(circle at 78% 34%, rgba(134, 232, 255, 0.24), transparent 24rem),
+        radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.13), transparent 18rem),
+        linear-gradient(130deg, #050505 0%, #071117 58%, #0c2029 100%);
     }
-
     .hero::before {
       content: "";
       position: absolute;
       inset: 0;
-      pointer-events: none;
+      z-index: -3;
       background-image:
-        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-      background-size: 92px 92px;
-      mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.8), transparent 72%);
+        linear-gradient(rgba(223, 248, 255, 0.075) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(223, 248, 255, 0.075) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.92), rgba(0,0,0,0.55) 75%, transparent 100%);
     }
-
-    .hero-inner {
-      position: relative;
-      z-index: 1;
-      width: min(720px, 100%);
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 18px;
-      color: var(--ice);
-      font-size: 0.82rem;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-
-    .eyebrow::before {
+    .hero::after {
       content: "";
-      width: 36px;
-      height: 2px;
-      background: var(--yellow);
-    }
-
-    .hero-copy {
-      max-width: 650px;
-      color: rgba(255, 255, 255, 0.82);
-      font-size: 1.2rem;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin: 30px 0 28px;
-    }
-
-    .hero-proof {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      max-width: 650px;
-    }
-
-    .proof-item {
-      min-height: 92px;
-      padding: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .proof-item strong {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--yellow);
-      font-size: 1rem;
-    }
-
-    .proof-item span {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 0.91rem;
-    }
-
-    .promotion {
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-      border-bottom: 1px solid rgba(243, 230, 61, 0.32);
+      position: absolute;
+      inset: -10% -8% -22% 42%;
+      z-index: -2;
       background:
-        linear-gradient(90deg, rgba(243, 230, 61, 0.08), transparent 42%),
-        #070707;
-      color: var(--white);
+        repeating-radial-gradient(circle at 50% 46%, rgba(223, 248, 255, 0.16) 0 1px, transparent 1px 82px),
+        radial-gradient(ellipse at center, rgba(134, 232, 255, 0.18), transparent 58%);
+      opacity: 0.78;
+      transform: rotate(-8deg);
     }
-
-    .promotion-inner {
+    .hero-fade { position: absolute; inset: auto 0 0; height: 150px; z-index: -1; background: linear-gradient(180deg, transparent, #061017 88%); pointer-events: none; }
+    .hero-inner { max-width: 950px; animation: hero-in 720ms cubic-bezier(.2,.8,.2,1) both; }
+    .eyebrow { color: var(--ice); font-weight: 950; letter-spacing: 0; text-transform: uppercase; }
+    .hero .eyebrow {
+      width: min(840px, 100%);
       display: grid;
-      grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr) auto;
+      grid-template-columns: minmax(34px, 1fr) auto minmax(34px, 1fr);
       align-items: center;
-      gap: 24px;
-      min-height: 104px;
-      padding: 20px 0;
-    }
-
-    .promotion small {
-      display: block;
-      color: var(--yellow);
-      font-size: 0.78rem;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-
-    .promotion strong {
-      display: block;
-      font-family: var(--serif);
-      font-size: 2rem;
-      line-height: 1.05;
-    }
-
-    .promotion p {
-      margin: 0;
-      color: rgba(255, 255, 255, 0.72);
-      font-weight: 650;
-    }
-
-    .section {
-      padding: 86px 0;
-    }
-
-    .section.dark {
-      background: var(--black);
-    }
-
-    .section.paper {
-      color: var(--black);
-      background: var(--paper);
-    }
-
-    .section.paper p {
-      color: rgba(5, 5, 5, 0.68);
-    }
-
-    .section.ice {
-      color: var(--black);
-      background: var(--ice);
-    }
-
-    .section.ice p {
-      color: rgba(5, 5, 5, 0.68);
-    }
-
-    .section-head {
-      display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(260px, 0.55fr);
-      align-items: end;
-      gap: 32px;
-      margin-bottom: 34px;
-    }
-
-    .section-head p {
-      margin-bottom: 0;
-      font-size: 1.06rem;
-    }
-
-    .rabbi-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(300px, 0.62fr);
-      gap: 34px;
-      align-items: stretch;
-    }
-
-    .rabbi-copy {
-      display: grid;
-      gap: 20px;
-      align-content: center;
-      padding-right: 22px;
-    }
-
-    .rabbi-copy p {
-      margin-bottom: 0;
-      font-size: 1.13rem;
-    }
-
-    .rabbi-copy .lead {
-      color: rgba(255, 255, 255, 0.88);
-      font-size: 1.32rem;
-      font-weight: 760;
-      line-height: 1.46;
-    }
-
-    .rabbi-photo {
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 8px;
-      background: #0f0f0f;
-      box-shadow: var(--shadow);
-    }
-
-    .rabbi-photo img {
-      width: 100%;
-      height: 100%;
-      min-height: 420px;
-      object-fit: cover;
-    }
-
-    .press-band {
-      margin-top: 42px;
-      overflow: hidden;
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-    }
-
-    .press-track {
-      display: flex;
-      width: max-content;
-      gap: 34px;
-      align-items: center;
-      padding: 22px 0;
-      animation: marquee 26s linear infinite;
-    }
-
-    .press-track:hover {
-      animation-play-state: paused;
-    }
-
-    .press-logo {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 155px;
-      height: 48px;
-      padding: 0 12px;
-    }
-
-    .press-logo img {
-      max-width: 124px;
-      max-height: 34px;
-      object-fit: contain;
-    }
-
-    @keyframes marquee {
-      from {
-        transform: translateX(0);
-      }
-      to {
-        transform: translateX(-50%);
-      }
-    }
-
-    @keyframes buttonSweep {
-      0%,
-      72% {
-        transform: translateX(-170%) rotate(18deg);
-      }
-      100% {
-        transform: translateX(620%) rotate(18deg);
-      }
-    }
-
-    .carousel-shell {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid var(--line-dark);
-      border-radius: 8px;
-      background: var(--white);
-      box-shadow: 0 18px 48px rgba(5, 5, 5, 0.08);
-    }
-
-    .carousel-track {
-      display: flex;
-      transition: transform 420ms ease;
-    }
-
-    .teaching-slide {
-      flex: 0 0 100%;
-      margin: 0;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px;
-      min-height: 460px;
-      background: var(--white);
-    }
-
-    .teaching-visual {
-      position: relative;
-      overflow: hidden;
-      width: 100%;
-      height: 100%;
-      min-height: 460px;
-      background:
-        radial-gradient(circle at 24% 28%, rgba(243, 230, 61, 0.2), transparent 20%),
-        radial-gradient(circle at 72% 32%, rgba(223, 248, 255, 0.24), transparent 26%),
-        linear-gradient(140deg, #090909 0%, #111 52%, #16272d 100%);
-    }
-
-    .teaching-visual::before {
-      content: "";
-      position: absolute;
-      inset: 12%;
-      border: 1px solid rgba(223, 248, 255, 0.24);
-      border-radius: 50%;
-      box-shadow:
-        0 0 0 42px rgba(223, 248, 255, 0.025),
-        0 0 70px rgba(223, 248, 255, 0.22);
-    }
-
-    .teaching-visual::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-      background-size: 78px 78px;
-      mask-image: radial-gradient(circle at 42% 50%, rgba(0, 0, 0, 0.9), transparent 70%);
-    }
-
-    .teaching-marker {
-      position: absolute;
-      width: 13px;
-      height: 13px;
-      border-radius: 999px;
-      background: var(--yellow);
-      box-shadow: 0 0 0 8px rgba(243, 230, 61, 0.15), 0 0 28px rgba(223, 248, 255, 0.5);
-    }
-
-    .teaching-marker.one {
-      left: 28%;
-      top: 38%;
-    }
-
-    .teaching-marker.two {
-      left: 55%;
-      top: 28%;
-    }
-
-    .teaching-marker.three {
-      left: 68%;
-      top: 58%;
-    }
-
-    .teaching-caption {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      gap: 12px;
-      padding: 34px;
-      color: var(--black);
-      background: var(--ice);
-    }
-
-    .teaching-caption span {
-      color: rgba(5, 5, 5, 0.6);
-      font-size: 0.82rem;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-
-    .teaching-caption strong {
-      display: block;
-      font-family: var(--serif);
-      font-size: 2rem;
-      line-height: 1.08;
-    }
-
-    .teaching-caption p {
-      margin: 0;
-      color: rgba(5, 5, 5, 0.66);
-    }
-
-    .carousel-controls {
-      position: absolute;
-      left: 18px;
-      bottom: 18px;
-      z-index: 2;
-      display: flex;
-      gap: 8px;
-    }
-
-    .carousel-controls .icon-button {
-      color: var(--black);
-      border-color: rgba(5, 5, 5, 0.16);
-      background: rgba(255, 255, 255, 0.88);
-    }
-
-    .dots {
-      position: absolute;
-      right: 18px;
-      bottom: 25px;
-      z-index: 2;
-      display: flex;
-      gap: 8px;
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border: 1px solid rgba(5, 5, 5, 0.35);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.7);
-    }
-
-    .dot.active {
-      background: var(--yellow);
-      border-color: rgba(5, 5, 5, 0.56);
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 18px;
+      margin: 0 0 22px;
+      font-size: clamp(0.98rem, 1.8vw, 1.42rem);
+      color: rgba(255, 255, 255, 0.94);
+      text-shadow: 0 0 22px rgba(134, 232, 255, 0.32);
     }
-
-    .card-grid.receive {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+    .hero .eyebrow::before, .hero .eyebrow::after {
+      content: "";
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+      box-shadow: 0 0 18px rgba(240, 255, 50, 0.52);
     }
+    .hero-schedule { margin: 0 0 34px; color: rgba(223, 248, 255, 0.9); font-size: clamp(1.2rem, 2.2vw, 1.65rem); font-weight: 800; }
+    .hero-actions, .final-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    @keyframes hero-in { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
 
-    .info-card {
-      min-height: 220px;
-      padding: 24px;
-      border: 1px solid var(--line-dark);
-      border-radius: 8px;
-      background: var(--white);
-      color: var(--black);
+    .section { position: relative; overflow: hidden; padding: clamp(74px, 8vw, 112px) 0; }
+    .section.dark {
+      background:
+        radial-gradient(circle at 18% 18%, rgba(134, 232, 255, 0.14), transparent 22rem),
+        radial-gradient(circle at 82% 12%, rgba(240, 255, 50, 0.08), transparent 19rem),
+        linear-gradient(180deg, #08141b 0%, #061017 56%, #050505 100%);
     }
-
-    .info-card p {
-      margin-bottom: 0;
-      color: rgba(5, 5, 5, 0.66);
+    .section.ice {
+      background:
+        radial-gradient(circle at 88% 12%, rgba(134, 232, 255, 0.2), transparent 20rem),
+        radial-gradient(circle at 12% 70%, rgba(240, 255, 50, 0.08), transparent 18rem),
+        linear-gradient(180deg, #071117, #0a1b24);
     }
-
-    .info-card.dark {
-      border-color: rgba(255, 255, 255, 0.14);
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--white);
+    .section-title { max-width: 820px; margin: 0 0 34px; }
+    .section-title.center { margin-inline: auto; text-align: center; }
+    .section-title p { max-width: 700px; margin: 16px 0 0; color: rgba(223, 248, 255, 0.78); font-size: clamp(1rem, 1.6vw, 1.18rem); }
+    .receive-composition { display: grid; grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr); align-items: center; gap: clamp(34px, 5vw, 72px); }
+    .student-orbit { position: relative; width: min(420px, 100%); aspect-ratio: 1; margin-inline: auto; display: grid; place-items: center; }
+    .student-orbit::before, .student-orbit::after { content: ""; position: absolute; border-radius: 999px; pointer-events: none; }
+    .student-orbit::before { inset: 2%; border: 2px solid var(--yellow); box-shadow: 0 0 30px rgba(240, 255, 50, 0.36); }
+    .student-orbit::after { inset: -6%; border: 1px solid rgba(134, 232, 255, 0.55); box-shadow: 0 0 70px rgba(134, 232, 255, 0.22); }
+    .student-orbit img { width: 88%; height: 88%; border-radius: 50%; object-fit: cover; object-position: center 39%; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: var(--shadow); }
+    .feature-grid { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 14px; }
+    .feature-grid::before { content: ""; position: absolute; left: -9%; top: 50%; width: 12%; height: 1px; background: linear-gradient(90deg, transparent, rgba(134, 232, 255, 0.78)); box-shadow: 0 0 22px rgba(134, 232, 255, 0.45); }
+    .feature-tile, .benefit-card, .audience-card {
+      border: 1px solid rgba(223, 248, 255, 0.28);
+      background:
+        linear-gradient(145deg, rgba(18, 50, 64, 0.94), rgba(8, 18, 24, 0.9)),
+        radial-gradient(circle at 100% 0%, rgba(134, 232, 255, 0.22), transparent 14rem);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.13), 0 24px 58px rgba(0, 0, 0, 0.28);
+      transition: transform 170ms ease, border-color 170ms ease, box-shadow 170ms ease;
     }
-
-    .info-card.dark p {
-      color: rgba(255, 255, 255, 0.72);
+    .feature-tile:hover, .benefit-card:hover, .audience-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(240, 255, 50, 0.44);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 28px 66px rgba(0, 0, 0, 0.34), 0 0 42px rgba(134, 232, 255, 0.1);
     }
-
-    .card-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 46px;
-      height: 46px;
-      margin-bottom: 18px;
-      border: 1px solid rgba(5, 5, 5, 0.14);
-      border-radius: 8px;
-      color: var(--black);
-      background: var(--yellow);
-      font-weight: 900;
+    .feature-tile { min-height: 132px; padding: 20px; display: grid; align-content: center; gap: 14px; border-radius: 8px; }
+    .feature-tile h3,
+    .benefit-body h3,
+    .audience-card h3,
+    .step h3 {
+      color: rgba(255, 255, 255, 0.96);
+      text-shadow: 0 0 18px rgba(134, 232, 255, 0.14);
     }
-
-    .dark .card-icon,
-    .info-card.dark .card-icon {
-      border-color: rgba(255, 255, 255, 0.18);
-      color: var(--black);
-      background: var(--yellow);
+    .tile-icon, .benefit-icon, .audience-icon, .step-icon {
+      width: 42px;
+      height: 42px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid rgba(240, 255, 50, 0.38);
+      border-radius: 999px;
+      color: var(--yellow);
+      background: rgba(5, 5, 5, 0.46);
+      box-shadow: 0 0 24px rgba(240, 255, 50, 0.16), inset 0 0 16px rgba(134, 232, 255, 0.08);
     }
-
-    .step-grid {
+    .tile-icon svg, .benefit-icon svg, .audience-icon svg, .step-icon svg { width: 22px; height: 22px; }
+    .benefit-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .benefit-card { min-height: 100%; display: grid; grid-template-rows: auto 1fr; gap: 18px; padding: 18px; border-radius: 8px; }
+    .benefit-visual {
+      aspect-ratio: 16 / 10;
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-      counter-reset: steps;
+      place-items: center;
+      border: 1px solid rgba(223, 248, 255, 0.18);
+      border-radius: 6px;
+      color: rgba(255, 255, 255, 0.9);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(240, 255, 50, 0.22), transparent 9rem),
+        linear-gradient(135deg, rgba(134, 232, 255, 0.22), rgba(9, 25, 32, 0.86));
+      font-weight: 900;
+      text-align: center;
+      padding: 10px;
     }
-
+    .benefit-body { display: grid; align-content: start; gap: 13px; }
+    .benefit-body p { margin: 0; color: rgba(255, 255, 255, 0.84); }
+    .step-copy { max-width: 780px; margin: -14px auto 38px; color: rgba(223, 248, 255, 0.78); text-align: center; font-size: clamp(1rem, 1.5vw, 1.14rem); }
+    .step-flow { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .step-flow::before { content: ""; position: absolute; top: 49px; left: 16%; right: 16%; height: 2px; background: linear-gradient(90deg, transparent, var(--blue), var(--yellow), var(--blue), transparent); box-shadow: 0 0 28px rgba(134, 232, 255, 0.34); }
     .step {
       position: relative;
-      min-height: 250px;
-      padding: 26px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.07);
-      counter-increment: steps;
-    }
-
-    .step::before {
-      content: counter(steps, decimal-leading-zero);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 48px;
-      height: 48px;
-      margin-bottom: 24px;
-      border-radius: 50%;
-      color: var(--black);
-      background: var(--yellow);
-      font-weight: 950;
-    }
-
-    .step p {
-      margin-bottom: 0;
-    }
-
-    .audience-section {
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-      background:
-        linear-gradient(90deg, rgba(5, 5, 5, 0.99), rgba(5, 5, 5, 0.92)),
-        var(--black);
-    }
-
-    .audience-panel {
+      z-index: 1;
+      min-height: 168px;
       display: grid;
-      grid-template-columns: minmax(0, 0.78fr) minmax(0, 1fr);
-      align-items: center;
-      gap: 38px;
-    }
-
-    .audience-copy p {
-      max-width: 560px;
-      font-size: 1.08rem;
-    }
-
-    .audience-cards {
-      display: grid;
+      place-items: center;
       gap: 14px;
-    }
-
-    .audience-card {
-      display: grid;
-      grid-template-columns: 58px minmax(0, 1fr);
-      gap: 16px;
-      min-height: 118px;
-      padding: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 28px 20px;
+      border: 1px solid rgba(223, 248, 255, 0.26);
       border-radius: 8px;
-      background: rgba(255, 255, 255, 0.07);
+      background: linear-gradient(180deg, rgba(12, 39, 50, 0.92), rgba(7, 17, 23, 0.88));
+      box-shadow: 0 26px 58px rgba(0, 0, 0, 0.32);
+      text-align: center;
     }
-
-    .audience-card .card-icon {
-      margin: 0;
+    .who-section {
+      background:
+        radial-gradient(circle at 50% 45%, rgba(134, 232, 255, 0.22), transparent 26rem),
+        radial-gradient(circle at 20% 18%, rgba(240, 255, 50, 0.08), transparent 18rem),
+        linear-gradient(180deg, #091923, #061017);
     }
-
-    .audience-card p {
-      margin-bottom: 0;
+    .audience-stage { position: relative; isolation: isolate; padding: clamp(18px, 3vw, 34px) 0; }
+    .audience-stage::before {
+      content: "";
+      position: absolute;
+      inset: -28px -12px;
+      z-index: -1;
+      opacity: 0.58;
+      background-image:
+        linear-gradient(rgba(223, 248, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(223, 248, 255, 0.07) 1px, transparent 1px),
+        radial-gradient(circle at 50% 50%, transparent 0 112px, rgba(134, 232, 255, 0.18) 113px, transparent 114px 196px, rgba(240, 255, 50, 0.18) 197px, transparent 198px);
+      background-size: 36px 36px, 36px 36px, 100% 100%;
+      mask-image: radial-gradient(circle at 50% 50%, black, transparent 72%);
     }
+    .audience-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .audience-card { min-height: 176px; display: grid; align-content: center; gap: 15px; padding: 20px; border-radius: 8px; }
+    .audience-card p { margin: -5px 0 0; color: var(--yellow-soft); font-size: 0.9rem; font-weight: 850; }
+    .rabbi-layout { display: grid; grid-template-columns: minmax(0, 0.84fr) minmax(320px, 0.72fr); gap: clamp(28px, 5vw, 64px); align-items: center; margin-bottom: 54px; }
+    .rabbi-copy p:not(.eyebrow) { max-width: 640px; color: rgba(255, 255, 255, 0.78); font-size: 1.08rem; }
+    .rabbi-photo { position: relative; margin: 0; aspect-ratio: 4 / 3; overflow: hidden; border: 1px solid rgba(223, 248, 255, 0.2); border-radius: 8px; box-shadow: var(--shadow); }
+    .rabbi-photo::after { content: ""; position: absolute; inset: 0; border: 1px solid rgba(255, 255, 255, 0.12); pointer-events: none; }
+    .rabbi-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .carousel-heading { margin: 0 0 18px; color: var(--ice); font-size: clamp(1.3rem, 2.3vw, 1.85rem); }
+    .carousel-shell { display: grid; grid-template-columns: minmax(0, 1fr) minmax(190px, 0.28fr); gap: 16px; align-items: stretch; }
+    .carousel-viewport, .carousel-preview { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid rgba(223, 248, 255, 0.18); border-radius: 8px; background: #050505; box-shadow: 0 28px 70px rgba(0, 0, 0, 0.38); }
+    .carousel-track { height: 100%; display: flex; transition: transform 520ms cubic-bezier(.2,.8,.2,1); }
+    .teaching-slide { position: relative; flex: 0 0 100%; margin: 0; }
+    .teaching-slide img, .carousel-preview img { width: 100%; height: 100%; object-fit: cover; object-position: var(--position, center center); }
+    .carousel-preview { opacity: 0.76; transform: scale(0.96); }
+    .slide-label { position: absolute; left: 0; right: 0; bottom: 0; padding: 44px 20px 18px; display: grid; gap: 3px; color: var(--white); background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.82)); }
+    .slide-label strong { font-size: 1.08rem; }
+    .slide-label span { color: rgba(223, 248, 255, 0.78); font-size: 0.9rem; }
+    .carousel-controls { margin-top: 16px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .carousel-buttons, .carousel-pagination { display: flex; align-items: center; gap: 8px; }
+    .carousel-dot { width: 11px; height: 11px; border: 1px solid rgba(223, 248, 255, 0.5); border-radius: 999px; background: rgba(223, 248, 255, 0.18); cursor: pointer; }
+    .carousel-dot.active { width: 28px; background: var(--yellow); border-color: var(--yellow); box-shadow: 0 0 18px rgba(240, 255, 50, 0.34); }
+    .carousel-dot:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+    .press-band { margin-top: 60px; overflow: hidden; border-top: 1px solid rgba(223, 248, 255, 0.14); border-bottom: 1px solid rgba(223, 248, 255, 0.14); padding: 26px 0; }
+    .press-band h3 { margin: 0 0 18px; color: rgba(223, 248, 255, 0.82); text-align: center; }
+    .press-track { width: max-content; display: flex; align-items: center; gap: 28px; animation: press-marquee 28s linear infinite; }
+    .press-logo { width: 138px; height: 46px; display: grid; place-items: center; opacity: 0.72; filter: grayscale(1) brightness(1.24); }
+    .press-logo img { max-width: 124px; max-height: 34px; object-fit: contain; background: transparent; }
+    @keyframes press-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .final-cta { padding: 76px 0; background: radial-gradient(circle at 50% 0%, rgba(240, 255, 50, 0.16), transparent 20rem), radial-gradient(circle at 80% 80%, rgba(134, 232, 255, 0.16), transparent 22rem), linear-gradient(180deg, #050505, #071117); text-align: center; }
+    .final-cta h2 { margin-bottom: 24px; }
+    .final-actions { justify-content: center; }
+    .one-time-site-footer { border-top: 1px solid rgba(223, 248, 255, 0.16); background: radial-gradient(circle at 20% 0%, rgba(134, 232, 255, 0.12), transparent 18rem), linear-gradient(180deg, #071117, #050505); }
+    .footer-inner { min-height: 172px; padding: 34px 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 28px; }
+    .footer-brand { display: flex; align-items: center; gap: 16px; min-width: 0; }
+    .footer-brand img { width: 112px; height: auto; flex: 0 0 auto; }
+    .footer-brand p { margin: 0; max-width: 380px; color: rgba(223, 248, 255, 0.74); }
+    .footer-links { display: flex; align-items: center; justify-content: flex-end; gap: 18px; flex-wrap: wrap; color: rgba(255, 255, 255, 0.78); font-weight: 850; }
+    .footer-links a:hover, .footer-links a:focus-visible { color: var(--yellow-soft); outline: none; }
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 620ms ease, transform 620ms ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
 
-    .one-time-site-footer {
-      padding: 42px 0 34px;
-      color: rgba(255, 255, 255, 0.68);
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-      background: #030303;
+    @media (max-width: 920px) {
+      .brand-lockup img { width: 112px; }
+      .receive-composition, .rabbi-layout, .carousel-shell { grid-template-columns: 1fr; }
+      .student-orbit { width: 240px; }
+      .feature-grid::before, .carousel-preview { display: none; }
+      .benefit-grid, .audience-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-
-    .footer-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 22px;
+    @media (max-width: 680px) {
+      :root { --header-height: 68px; }
+      .wrap { width: min(100% - 28px, 1180px); }
+      .header-inner { gap: 10px; }
+      .brand-lockup { gap: 9px; }
+      .brand-lockup img { width: 88px; }
+      .brand-lockup span { max-width: 118px; font-size: 0.68rem; line-height: 1.03; }
+      .header-cta { min-height: 42px; padding: 0 11px; font-size: 0.82rem; }
+      .icon-button { width: 42px; height: 42px; }
+      .rosh-link { min-height: 36px; font-size: 0.82rem; }
+      .hero { min-height: calc(100svh - var(--header-height) - 36px); padding: 64px 0 82px; }
+      .hero .eyebrow { grid-template-columns: 36px minmax(0, auto) 36px; gap: 10px; font-size: clamp(0.95rem, 4vw, 1.06rem); text-align: center; }
+      h1 { font-size: clamp(3.1rem, 16vw, 4.75rem); }
+      .feature-grid, .benefit-grid, .audience-grid, .step-flow { grid-template-columns: 1fr; }
+      .step-flow::before { top: 42px; bottom: 42px; left: 50%; right: auto; width: 2px; height: auto; background: linear-gradient(180deg, transparent, var(--blue), var(--yellow), var(--blue), transparent); }
+      .footer-inner, .footer-brand { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+      .footer-brand { display: grid; }
+      .footer-links { justify-content: center; }
     }
-
     .one-time-site-footer img {
       width: 118px;
       height: auto;
@@ -1459,107 +1050,212 @@
       }
     }
 
+    @media (max-width: 420px) {
+      .brand-lockup img { width: 78px; }
+      .brand-lockup span { max-width: 96px; font-size: 0.62rem; }
+      .header-cta { padding: 0 9px; }
+    }
     @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        scroll-behavior: auto !important;
-        transition-duration: 0.001ms !important;
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-      }
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+      .rosh-track, .press-track { animation: none !important; transform: none !important; }
+      .rosh-text[aria-hidden="true"] { display: none; }
+      .reveal { opacity: 1; transform: none; }
     }
   </style>
 </head>
 <body data-one-time-rabbi-dashboard="public-landing" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
+  <svg class="icon-defs" aria-hidden="true" focusable="false">
+    <symbol id="icon-video" viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h7A2.5 2.5 0 0 1 16 6.5v1.7l4-2.2v12l-4-2.2v1.7a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 4 17.5v-11Zm2 0v11c0 .3.2.5.5.5h7c.3 0 .5-.2.5-.5v-11c0-.3-.2-.5-.5-.5h-7c-.3 0-.5.2-.5.5Zm10 4v3l2 1.1V9.4l-2 1.1Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-library" viewBox="0 0 24 24"><path d="M5 4h10.5A3.5 3.5 0 0 1 19 7.5V20H7.5A3.5 3.5 0 0 1 4 16.5V5a1 1 0 0 1 1-1Zm2 2v10.5A1.5 1.5 0 0 0 8.5 18H17V7.5A1.5 1.5 0 0 0 15.5 6H7Zm3 3 5 3-5 3V9Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-cap" viewBox="0 0 24 24"><path d="m12 3 10 5-10 5L2 8l10-5Zm-6 8 6 3 6-3v4.5c0 1.7-2.7 3.5-6 3.5s-6-1.8-6-3.5V11Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-users" viewBox="0 0 24 24"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-3.9 0-7 2.1-7 4.8V20h14v-2.2C16 15.1 12.9 13 9 13Zm8-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0 2c-.7 0-1.4.1-2 .3 1.8 1 3 2.4 3 4.1V20h4v-1.8c0-2.4-2.2-4.2-5-4.2Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-document" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6V3Zm2 2v14h8V9h-4V5H8Zm2 7h5v2h-5v-2Zm0 4h5v2h-5v-2Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-bell" viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.4-2H9.6A2.5 2.5 0 0 0 12 22Zm7-5-2-2v-5a5 5 0 0 0-10 0v5l-2 2v1h14v-1Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-question" viewBox="0 0 24 24"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2h9A3.5 3.5 0 0 1 20 5.5v7A3.5 3.5 0 0 1 16.5 16H12l-5 4v-4A3.5 3.5 0 0 1 4 12.5v-7Zm7 6.5h2v-2h-2v2Zm1-8a4 4 0 0 0-4 4h2a2 2 0 1 1 3.3 1.5l-.7.6c-1 .8-1.6 1.5-1.6 2.9h2c0-.5.2-.8 1-1.4l.7-.6A4 4 0 0 0 12 4Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 2 5 5v6c0 4.7 2.9 8.6 7 11 4.1-2.4 7-6.3 7-11V5l-7-3Zm0 3.2 5 2.1V11c0 3.4-1.9 6.4-5 8.3-3.1-1.9-5-4.9-5-8.3V7.3l5-2.1Zm3.9 4.7-4.7 4.7-2.1-2.1-1.4 1.4 3.5 3.5 6.1-6.1-1.4-1.4Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-spark" viewBox="0 0 24 24"><path d="m12 2 2.2 6.2L20 10l-5.8 1.8L12 18l-2.2-6.2L4 10l5.8-1.8L12 2Zm7 12 1 2.8 3 1-3 1-1 3-1-3-3-1 3-1 1-2.8ZM5 14l.8 2.2L8 17l-2.2.8L5 20l-.8-2.2L2 17l2.2-.8L5 14Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-target" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10h-2a8 8 0 1 1-8-8V2Zm0 4a6 6 0 1 0 6 6h-2a4 4 0 1 1-4-4V6Zm0 4a2 2 0 1 0 2 2h-2v-2Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-link" viewBox="0 0 24 24"><path d="M7 7h5v2H9v6H7V7Zm5 0h5v10h-5v-2h3V9h-3V7Zm-1 4h2v2h-2v-2Z" fill="currentColor"></path></symbol>
+    <symbol id="icon-map" viewBox="0 0 24 24"><path d="M9 18 3 21V6l6-3 6 3 6-3v15l-6 3-6-3Zm1-12v10l4 2V8l-4-2Zm-2 0L5 7.5v10.3l3-1.5V6Zm8 2v10l3-1.5V6.2L16 8Z" fill="currentColor"></path></symbol>
+  </svg>
+
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="brand-lockup" href="/one-time" aria-label="One Time Mishnayos home">
-        <img src="/assets/one-time/brand/one-time-logo-white.webp" width="132" height="83" alt="One Time">
-        <span>Mishnayos with Rabbi Eli Scheller</span>
+        <img src="/assets/one-time/brand/one-time-logo-white.webp" width="124" height="78" alt="One Time">
+        <span>Worldwide Mishnah Learning</span>
       </a>
-
-      <div class="header-actions mobile-direct" aria-label="Primary actions">
-        <a class="member-link" href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
-        <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
-        <button class="icon-button menu-button" type="button" aria-label="Open navigation" aria-controls="siteNavShell" aria-expanded="false" data-menu-button data-action-id="ACTION-ONETIME-PUBLIC-MOBILE-MENU">
-          <span class="menu-lines" aria-hidden="true"><span></span></span>
-        </button>
-      </div>
-
-      <div class="nav-shell" id="siteNavShell" data-nav-shell>
-        <nav class="site-nav" aria-label="One Time page sections">
-          <a href="#rabbi">Rabbi Eli</a>
-          <a href="#gain">What He&rsquo;ll Gain</a>
-          <a href="#receive">What You Receive</a>
-          <a href="#how-it-works">How It Works</a>
-          <a href="#who">Who It&rsquo;s For</a>
-        </nav>
-        <div class="header-actions" aria-label="Secondary actions">
-          <a class="member-link" href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
-          <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
-        </div>
-      </div>
+      <a class="chrome-button cta-large header-cta" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
+      <button class="icon-button menu-button" type="button" aria-label="Open navigation" aria-controls="siteDrawer" aria-expanded="false" data-menu-button data-action-id="ACTION-ONETIME-PUBLIC-MOBILE-MENU">
+        <span class="menu-lines" aria-hidden="true"></span>
+      </button>
     </div>
   </header>
 
+  <section class="rosh-ticker" id="rosh-special" data-rosh-hashanah-ticker aria-label="Rosh Hashanah special countdown">
+    <a class="rosh-link" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">
+      <span class="rosh-track">
+        <span class="rosh-text" data-ticker-text>ROSH HASHANAH SPECIAL</span>
+        <span class="rosh-text" data-ticker-text aria-hidden="true">ROSH HASHANAH SPECIAL</span>
+      </span>
+    </a>
+  </section>
+
+  <button class="drawer-overlay" type="button" aria-label="Close navigation" data-drawer-overlay tabindex="-1"></button>
+  <aside class="nav-drawer" id="siteDrawer" role="dialog" aria-modal="true" aria-label="One Time navigation" aria-hidden="true" data-drawer>
+    <div class="drawer-head">
+      <strong>One Time Menu</strong>
+      <button class="icon-button" type="button" aria-label="Close navigation" data-drawer-close>&times;</button>
+    </div>
+    <nav class="drawer-links" aria-label="One Time page sections">
+      <a href="#receive">What You Receive</a>
+      <a href="#gain">What He&rsquo;ll Gain</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#who">Who It&rsquo;s For</a>
+      <a href="#rabbi">Rabbi Scheller</a>
+      <a href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
+    </nav>
+    <p class="drawer-note">Live Mishnayos with Rabbi Eli Scheller from Eretz Yisrael.</p>
+  </aside>
+
   <main id="main">
     <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-fade" aria-hidden="true"></div>
       <div class="wrap">
         <div class="hero-inner">
-          <p class="eyebrow">Worldwide Mishnah Learning &mdash; Live From Eretz Yisrael</p>
-          <h1 id="heroTitle">Give your son a love for Torah you never thought possible.</h1>
-          <p class="hero-copy">A live Mishnayos class with Rabbi Eli Scheller that makes learning exciting, clear, and unforgettable &mdash; for boys around the world.</p>
+          <p class="eyebrow">Worldwide Mishnah learning &mdash; live from Eretz Yisrael</p>
+          <h1 id="heroTitle">Give your son a love for learning Torah.</h1>
+          <p class="hero-schedule">Live every day at 7:00 p.m. Israel time.</p>
           <div class="hero-actions">
-            <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
-          </div>
-          <div class="hero-proof" aria-label="One Time Mishnayos highlights">
-            <div class="proof-item">
-              <strong>Live from Eretz Yisrael</strong>
-              <span>A real shiur rhythm your son can look forward to.</span>
-            </div>
-            <div class="proof-item">
-              <strong>Rabbi Eli Scheller</strong>
-              <span>Storytelling, clarity, warmth, and geshmak.</span>
-            </div>
-            <div class="proof-item">
-              <strong>Built for boys</strong>
-              <span>Short, memorable, accountable learning.</span>
-            </div>
+            <a class="chrome-button cta-large hero-cta" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="promotion" aria-labelledby="promoTitle">
-      <div class="wrap promotion-inner">
-        <div>
-          <small>Rosh Hashanah Special</small>
-          <strong id="promoTitle">Join free until Rosh Hashanah.</strong>
-        </div>
-        <p>Give your son a chance to experience the class, feel the excitement, and see what changes when Mishnayos finally clicks.</p>
-        <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
-      </div>
-    </section>
-
-    <section class="section dark" id="rabbi" aria-labelledby="rabbiTitle">
+    <section class="section ice reveal" id="receive" aria-labelledby="receiveTitle">
       <div class="wrap">
-        <div class="rabbi-grid">
+        <div class="section-title">
+          <h2 id="receiveTitle">What You Receive</h2>
+          <p>A complete online dashboard for learning, progress tracking, reminders, and communication.</p>
+        </div>
+        <div class="receive-composition">
+          <div class="student-orbit">
+            <img src="/assets/one-time/students/smiley-kid.png" width="337" height="600" alt="Smiling One Time Mishnayos student" loading="eager" decoding="async">
+          </div>
+          <div class="feature-grid" aria-label="One Time learning features">
+            <article class="feature-tile reveal"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-video"></use></svg></span><h3>Live daily Mishnayos class</h3></article>
+            <article class="feature-tile reveal"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-library"></use></svg></span><h3>Online class library</h3></article>
+            <article class="feature-tile reveal"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-cap"></use></svg></span><h3>Student portal</h3></article>
+            <article class="feature-tile reveal"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-users"></use></svg></span><h3>Parent portal</h3></article>
+            <article class="feature-tile reveal"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-document"></use></svg></span><h3>Review sheets</h3></article>
+            <article class="feature-tile reveal"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-bell"></use></svg></span><h3>Daily reminders</h3></article>
+            <article class="feature-tile reveal"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-question"></use></svg></span><h3>Questions with Rabbi Scheller</h3></article>
+            <article class="feature-tile reveal"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-shield"></use></svg></span><h3>Monitored online platform</h3></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark reveal" id="gain" aria-labelledby="gainTitle">
+      <div class="wrap">
+        <div class="section-title center">
+          <h2 id="gainTitle">What He&rsquo;ll Gain</h2>
+        </div>
+        <div class="benefit-grid">
+          <article class="benefit-card reveal">
+            <div class="benefit-visual">Clarity image pending</div>
+            <div class="benefit-body"><span class="benefit-icon" aria-hidden="true"><svg><use href="#icon-target"></use></svg></span><h3>Clarity</h3><p>He&rsquo;ll understand the main points, the questions, and the logic behind each Mishnah&mdash;with review sheets and opportunities to ask Rabbi Scheller questions.</p></div>
+          </article>
+          <article class="benefit-card reveal">
+            <div class="benefit-visual">Accomplishment image pending</div>
+            <div class="benefit-body"><span class="benefit-icon" aria-hidden="true"><svg><use href="#icon-shield"></use></svg></span><h3>Accomplishment</h3><p>One perek a day gives him a clear goal, steady progress, and visible progress badges and milestones in his student portal.</p></div>
+          </article>
+          <article class="benefit-card reveal">
+            <div class="benefit-visual">Excitement image pending</div>
+            <div class="benefit-body"><span class="benefit-icon" aria-hidden="true"><svg><use href="#icon-spark"></use></svg></span><h3>Excitement for learning Torah</h3><p>A lively class and a real connection with Rabbi Scheller make Torah learning something he looks forward to each day.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section ice reveal" id="how-it-works" aria-labelledby="howTitle">
+      <div class="wrap">
+        <div class="section-title center"><h2 id="howTitle">How It Works</h2></div>
+        <p class="step-copy">Join the live class now and stay updated as we continue refining the technology that brings Torah learning to boys around the world.</p>
+        <div class="step-flow" aria-label="Three steps to join">
+          <article class="step reveal"><span class="step-icon" aria-hidden="true"><svg><use href="#icon-document"></use></svg></span><h3>Sign up</h3></article>
+          <article class="step reveal"><span class="step-icon" aria-hidden="true"><svg><use href="#icon-link"></use></svg></span><h3>Receive the class link</h3></article>
+          <article class="step reveal"><span class="step-icon" aria-hidden="true"><svg><use href="#icon-video"></use></svg></span><h3>Enjoy the live class</h3></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section who-section reveal" id="who" aria-labelledby="whoTitle">
+      <div class="wrap">
+        <div class="section-title center">
+          <h2 id="whoTitle">Who It&rsquo;s For</h2>
+          <p>Built for families, homeschoolers, schools, and local boys who want a clear daily Mishnayos rhythm.</p>
+        </div>
+        <div class="audience-stage">
+          <div class="audience-grid">
+            <article class="audience-card reveal"><span class="audience-icon" aria-hidden="true"><svg><use href="#icon-users"></use></svg></span><h3>Families</h3></article>
+            <article class="audience-card reveal"><span class="audience-icon" aria-hidden="true"><svg><use href="#icon-map"></use></svg></span><h3>English-speaking homeschoolers</h3></article>
+            <article class="audience-card reveal"><span class="audience-icon" aria-hidden="true"><svg><use href="#icon-cap"></use></svg></span><h3>Schools</h3></article>
+            <article class="audience-card reveal"><span class="audience-icon" aria-hidden="true"><svg><use href="#icon-video"></use></svg></span><h3>Local boys in Ramat Beit Shemesh Alef</h3><p>Free live class at 7:00 p.m.</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark reveal" id="rabbi" aria-labelledby="rabbiTitle">
+      <div class="wrap">
+        <div class="rabbi-layout">
           <div class="rabbi-copy">
-            <p class="eyebrow">Meet Rabbi Eli Scheller</p>
-            <h2 id="rabbiTitle">A storyteller your son will remember.</h2>
-            <p class="lead">Rabbi Eli Scheller isn&rsquo;t just another teacher. He&rsquo;s one of the most sought-after storytellers and speakers in the Jewish world &mdash; known for his humor, warmth, clarity, and ability to make Torah unforgettable.</p>
-            <p>His shiurim have reached audiences through TorahAnytime, 24Six, Loop, NakiRadio, Mishpacha Magazine, and live events across the world.</p>
-            <p>Now, through One Time Mishnayos, your son can learn directly from Rabbi Scheller every day &mdash; with excitement, accountability, and geshmak.</p>
+            <p class="eyebrow">Meet Rabbi Scheller</p>
+            <h2 id="rabbiTitle">A world-renowned Torah teacher.</h2>
+            <p>Rabbi Eli Scheller has taught Torah to students and audiences across the Jewish world. His clarity, warmth, and energy help boys understand what they are learning and look forward to coming back.</p>
           </div>
           <figure class="rabbi-photo">
-            <img src="/assets/one-time/rabbi/rabbi-eli-holding-book.jpg" width="1600" height="1067" alt="Rabbi Eli Scheller holding the One Time book" loading="lazy">
+            <img src="/assets/one-time/rabbi/rabbi-eli-holding-book.jpg" width="1600" height="1067" alt="Rabbi Eli Scheller holding the One Time book" loading="eager" decoding="async">
           </figure>
         </div>
 
-        <div class="press-band" aria-label="As seen through Jewish media and learning platforms">
+        <h3 class="carousel-heading">Teaching Torah Across the Jewish World</h3>
+        <div class="carousel-shell" data-carousel aria-roledescription="carousel" aria-label="Rabbi Scheller teaching locations" tabindex="0">
+          <div>
+            <div class="carousel-viewport">
+              <div class="carousel-track" data-carousel-track>
+                <figure class="teaching-slide" data-location="Atlanta, Georgia"><img src="/assets/one-time/rabbi/teaching-locations/rabbi-scheller-atlanta-georgia.webp" width="1600" height="714" alt="Rabbi Eli Scheller teaching students in Atlanta, Georgia" loading="eager" decoding="async" style="--position:center center;"><figcaption class="slide-label"><strong>Atlanta, Georgia</strong><span>Rabbi Scheller teaching a large student group.</span></figcaption></figure>
+                <figure class="teaching-slide" data-location="Baltimore, Maryland"><img src="/assets/one-time/rabbi/teaching-locations/rabbi-scheller-baltimore-maryland.webp" width="1600" height="1066" alt="Rabbi Eli Scheller teaching students in Baltimore, Maryland" loading="eager" decoding="async" style="--position:center center;"><figcaption class="slide-label"><strong>Baltimore, Maryland</strong><span>Large live teaching session with students.</span></figcaption></figure>
+                <figure class="teaching-slide" data-location="Flatbush, New York"><img src="/assets/one-time/rabbi/teaching-locations/rabbi-scheller-flatbush-ny.webp" width="1600" height="1200" alt="Rabbi Eli Scheller teaching students in Flatbush, New York" loading="eager" decoding="async" style="--position:center 40%;"><figcaption class="slide-label"><strong>Flatbush, New York</strong><span>Students gathered for Torah learning.</span></figcaption></figure>
+                <figure class="teaching-slide" data-location="Hollywood, Florida"><img src="/assets/one-time/rabbi/teaching-locations/rabbi-scheller-hollywood-florida.webp" width="1600" height="1200" alt="Rabbi Eli Scheller teaching students in Hollywood, Florida" loading="eager" decoding="async" style="--position:center 43%;"><figcaption class="slide-label"><strong>Hollywood, Florida</strong><span>Classroom teaching with engaged boys.</span></figcaption></figure>
+                <figure class="teaching-slide" data-location="Lakewood, New Jersey"><img src="/assets/one-time/rabbi/teaching-locations/rabbi-scheller-lakewood-nj.webp" width="1600" height="1200" alt="Rabbi Eli Scheller teaching students in Lakewood, New Jersey" loading="eager" decoding="async" style="--position:center 42%;"><figcaption class="slide-label"><strong>Lakewood, New Jersey</strong><span>Evening Torah gathering with Rabbi Scheller.</span></figcaption></figure>
+                <figure class="teaching-slide" data-location="Miami, Florida"><img src="/assets/one-time/rabbi/teaching-locations/rabbi-scheller-miami-florida.webp" width="1600" height="1200" alt="Rabbi Eli Scheller teaching students in Miami, Florida" loading="eager" decoding="async" style="--position:center 48%;"><figcaption class="slide-label"><strong>Miami, Florida</strong><span>Large outdoor teaching event.</span></figcaption></figure>
+                <figure class="teaching-slide" data-location="Philadelphia, Pennsylvania"><img src="/assets/one-time/rabbi/teaching-locations/rabbi-scheller-philadelphia.webp" width="1600" height="1200" alt="Rabbi Eli Scheller teaching students in Philadelphia, Pennsylvania" loading="eager" decoding="async" style="--position:center 45%;"><figcaption class="slide-label"><strong>Philadelphia, Pennsylvania</strong><span>Rabbi Scheller speaking to a full room.</span></figcaption></figure>
+                <figure class="teaching-slide" data-location="Silver Spring, Maryland"><img src="/assets/one-time/rabbi/teaching-locations/rabbi-scheller-silver-spring.webp" width="1600" height="1200" alt="Rabbi Eli Scheller teaching students in Silver Spring, Maryland" loading="eager" decoding="async" style="--position:center 41%;"><figcaption class="slide-label"><strong>Silver Spring, Maryland</strong><span>Classroom learning with Rabbi Scheller.</span></figcaption></figure>
+              </div>
+            </div>
+            <div class="carousel-controls" aria-label="Teaching carousel controls">
+              <div class="carousel-buttons">
+                <button class="icon-button" type="button" data-carousel-prev data-action-id="ACTION-ONETIME-TEACHING-CAROUSEL-PREV" aria-label="Previous teaching location">&#8249;</button>
+                <button class="icon-button" type="button" data-carousel-next data-action-id="ACTION-ONETIME-TEACHING-CAROUSEL-NEXT" aria-label="Next teaching location">&#8250;</button>
+                <button class="icon-button" type="button" data-carousel-pause data-action-id="ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE" aria-label="Pause teaching location carousel">||</button>
+              </div>
+              <div class="carousel-pagination" aria-label="Teaching carousel pagination" data-carousel-dots></div>
+            </div>
+          </div>
+          <figure class="carousel-preview" aria-hidden="true" data-carousel-preview>
+            <img src="/assets/one-time/rabbi/teaching-locations/rabbi-scheller-baltimore-maryland.webp" width="1600" height="1066" alt="" loading="eager" decoding="async">
+            <figcaption class="slide-label"><strong>Next</strong><span>Baltimore, Maryland</span></figcaption>
+          </figure>
+        </div>
+
+        <div class="press-band" aria-labelledby="pressTitle">
+          <h3 id="pressTitle">As Seen Across the Jewish World</h3>
           <div class="press-track">
             <span class="press-logo"><img src="/assets/one-time/press/torah-anytime.png" width="124" height="34" alt="TorahAnytime"></span>
             <span class="press-logo"><img src="/assets/one-time/press/24six.png" width="124" height="34" alt="24Six"></span>
@@ -1576,270 +1272,11 @@
       </div>
     </section>
 
-    <section class="section paper" id="teaching" aria-labelledby="teachingTitle">
+    <section class="final-cta reveal" aria-labelledby="finalCtaTitle">
       <div class="wrap">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">Teaching Torah Across The World</p>
-            <h2 id="teachingTitle">A class that feels alive before the first Mishnah begins.</h2>
-          </div>
-          <p>Large teaching moments, clear visuals, and a pace built for boys who need Torah to feel close, warm, and memorable.</p>
-        </div>
-
-        <div class="carousel-shell" data-carousel>
-          <div class="carousel-track" data-carousel-track>
-            <figure class="teaching-slide">
-              <div class="teaching-visual" role="img" aria-label="Replacement-ready visual slot for a verified Baltimore teaching photograph">
-                <span class="teaching-marker one" aria-hidden="true"></span>
-                <span class="teaching-marker two" aria-hidden="true"></span>
-                <span class="teaching-marker three" aria-hidden="true"></span>
-              </div>
-              <figcaption class="teaching-caption">
-                <span>Verified photo slot</span>
-                <strong>Baltimore teaching photograph.</strong>
-                <p>This slide is ready for the approved Baltimore asset once identity, location, and usage rights are confirmed.</p>
-              </figcaption>
-            </figure>
-            <figure class="teaching-slide">
-              <div class="teaching-visual" role="img" aria-label="Replacement-ready visual slot for a verified Flatbush or New York teaching photograph">
-                <span class="teaching-marker one" aria-hidden="true"></span>
-                <span class="teaching-marker two" aria-hidden="true"></span>
-                <span class="teaching-marker three" aria-hidden="true"></span>
-              </div>
-              <figcaption class="teaching-caption">
-                <span>Verified photo slot</span>
-                <strong>Flatbush or New York teaching photograph.</strong>
-                <p>This slide is ready for the approved New York-area asset once identity, location, and usage rights are confirmed.</p>
-              </figcaption>
-            </figure>
-            <figure class="teaching-slide">
-              <div class="teaching-visual" role="img" aria-label="Replacement-ready visual slot for a verified Florida teaching photograph">
-                <span class="teaching-marker one" aria-hidden="true"></span>
-                <span class="teaching-marker two" aria-hidden="true"></span>
-                <span class="teaching-marker three" aria-hidden="true"></span>
-              </div>
-              <figcaption class="teaching-caption">
-                <span>Verified photo slot</span>
-                <strong>Hollywood or Orlando teaching photograph.</strong>
-                <p>This slide is ready for an approved Florida asset once identity, location, and usage rights are confirmed.</p>
-              </figcaption>
-            </figure>
-          </div>
-          <div class="carousel-controls" aria-label="Teaching photo controls">
-            <button class="icon-button" type="button" aria-label="Previous teaching photo" data-carousel-prev data-action-id="ACTION-ONETIME-TEACHING-CAROUSEL-PREV">&lsaquo;</button>
-            <button class="icon-button" type="button" aria-label="Next teaching photo" data-carousel-next data-action-id="ACTION-ONETIME-TEACHING-CAROUSEL-NEXT">&rsaquo;</button>
-            <button class="icon-button" type="button" aria-label="Pause teaching photo carousel" data-carousel-pause data-action-id="ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE">||</button>
-          </div>
-          <div class="dots" aria-hidden="true">
-            <span class="dot active" data-dot></span>
-            <span class="dot" data-dot></span>
-            <span class="dot" data-dot></span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section ice" id="gain" aria-labelledby="gainTitle">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">What He&rsquo;ll Gain</p>
-            <h2 id="gainTitle">Not just another class. A new relationship with learning.</h2>
-          </div>
-          <p>Designed for boys who can handle more when the learning is clear, alive, and connected to a real teacher.</p>
-        </div>
-
-        <div class="card-grid">
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">01</span>
-            <h3>He&rsquo;ll enjoy Mishnayos instead of just getting through it.</h3>
-            <p>Rabbi Scheller turns each Mishnah into a story, a question, and a point your son can remember later.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">02</span>
-            <h3>He&rsquo;ll feel part of a serious Torah rhythm.</h3>
-            <p>The live structure creates momentum without making learning feel heavy or impersonal.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">03</span>
-            <h3>He&rsquo;ll build confidence saying over what he learned.</h3>
-            <p>Clear takeaways help boys review, repeat, and feel proud that the Mishnah belongs to them.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section paper" id="receive" aria-labelledby="receiveTitle">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">What You Receive</p>
-            <h2 id="receiveTitle">A complete learning experience for home or school.</h2>
-          </div>
-          <p>Everything is shaped around a simple goal: your son should walk away loving the learning more than when he came in.</p>
-        </div>
-
-        <div class="card-grid receive">
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">L</span>
-            <h3>Live Mishnayos shiurim with Rabbi Eli Scheller.</h3>
-            <p>Direct learning with a teacher boys connect to.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">R</span>
-            <h3>Review-friendly clarity.</h3>
-            <p>Built so boys can remember and say over the main point.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">S</span>
-            <h3>Stories that make the Mishnah stick.</h3>
-            <p>Warm, memorable examples that turn content into connection.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">A</span>
-            <h3>Accountability without pressure.</h3>
-            <p>A real rhythm that keeps boys coming back.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">F</span>
-            <h3>Family-friendly access.</h3>
-            <p>Simple onboarding for parents who want a better daily learning option.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">C</span>
-            <h3>Classroom-ready structure.</h3>
-            <p>Helpful for schools that want energy, consistency, and a trusted Torah voice.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">G</span>
-            <h3>Geshmak-first teaching.</h3>
-            <p>The class is designed to make boys feel Torah is alive and enjoyable.</p>
-          </article>
-          <article class="info-card">
-            <span class="card-icon" aria-hidden="true">W</span>
-            <h3>Worldwide connection.</h3>
-            <p>Boys can join a serious Torah environment wherever they live.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section dark" id="how-it-works" aria-labelledby="howTitle">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">How It Works</p>
-            <h2 id="howTitle">Simple enough to start. Strong enough to keep going.</h2>
-          </div>
-          <p>No complicated public checkout or portal promise from this page. The first step is a clean signup, then the full onboarding flow collects what is needed.</p>
-        </div>
-
-        <div class="step-grid">
-          <article class="step">
-            <h3>Sign up with parent contact details.</h3>
-            <p>Quick capture asks only for the contact name, email, and optional phone number.</p>
-          </article>
-          <article class="step">
-            <h3>Choose family or school onboarding.</h3>
-            <p>After the first step, continue into the existing onboarding path for the right setup.</p>
-          </article>
-          <article class="step">
-            <h3>Receive the next class details.</h3>
-            <p>The signup creates a first-party follow-up record; it does not charge, send, or grant access automatically.</p>
-          </article>
-          <article class="step">
-            <h3>Your son joins the learning rhythm.</h3>
-            <p>Rabbi Scheller brings Mishnayos to life with warmth, clarity, and accountability.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section audience-section" id="who" aria-labelledby="whoTitle">
-      <div class="wrap audience-panel">
-        <div class="audience-copy">
-          <p class="eyebrow">Who It&rsquo;s For</p>
-          <h2 id="whoTitle">For parents and schools who want boys to love learning.</h2>
-          <p>One Time Mishnayos is built for families, rebbeim, and schools looking for a serious, warm, exciting way to bring Mishnayos into a boy&rsquo;s daily life.</p>
-          <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
-        </div>
-        <div class="audience-cards">
-          <article class="audience-card">
-            <span class="card-icon" aria-hidden="true">P</span>
-            <div>
-              <h3>Parents who want Torah to feel exciting at home.</h3>
-              <p>A simple entry point for boys who need the right teacher and rhythm.</p>
-            </div>
-          </article>
-          <article class="audience-card">
-            <span class="card-icon" aria-hidden="true">S</span>
-            <div>
-              <h3>Schools that want a strong supplemental shiur.</h3>
-              <p>A clear option for classrooms that need energy, consistency, and trusted delivery.</p>
-            </div>
-          </article>
-          <article class="audience-card">
-            <span class="card-icon" aria-hidden="true">B</span>
-            <div>
-              <h3>Boys who can love Torah when it is taught with life.</h3>
-              <p>For students ready to hear the Mishnah in a way that feels close and memorable.</p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="modal-backdrop" aria-hidden="true" data-signup-modal>
-      <div class="signup-dialog" role="dialog" aria-modal="true" aria-labelledby="signupTitle" aria-describedby="signupDescription">
-        <div class="modal-head">
-          <div>
-            <h2 id="signupTitle">Sign Up Now</h2>
-            <p id="signupDescription">Start with parent contact details. The next step asks whether this is for a family or a school.</p>
-          </div>
-          <button class="icon-button modal-close" type="button" aria-label="Close signup modal" data-modal-close data-action-id="ACTION-ONETIME-SIGNUP-MODAL-CLOSE">&times;</button>
-        </div>
-        <div class="modal-body">
-          <form class="form-grid" data-signup-form novalidate>
-            <label>
-              Parent or contact name
-              <input type="text" name="parent_name" autocomplete="name" required data-required-field>
-              <span class="field-error" data-error-for="parent_name">Enter the parent or contact name.</span>
-            </label>
-            <label>
-              Email
-              <input type="email" name="email" autocomplete="email" inputmode="email" required data-required-field>
-              <span class="field-error" data-error-for="email">Enter a valid email address.</span>
-            </label>
-            <label>
-              Phone <span>Optional</span>
-              <input type="tel" name="phone" autocomplete="tel" inputmode="tel">
-            </label>
-            <p class="form-note">This page records a first-party interest request only. It does not charge, send a message, create a meeting, or grant access automatically.</p>
-            <button class="button primary full" type="submit" data-action-id="ACTION-ONETIME-INTEREST-FORM">Sign Up Now</button>
-            <div class="form-status" role="status" aria-live="polite" data-form-status></div>
-          </form>
-
-          <div class="success-step" data-success-step>
-            <h3>Choose the right onboarding path.</h3>
-            <p class="form-note">Your first step was captured. Tell us which setup fits, then continue to the existing onboarding page.</p>
-            <div class="choice-grid" role="radiogroup" aria-label="Signup type">
-              <label class="choice-card">
-                <input type="radio" name="signup_audience" value="family">
-                <span>
-                  <strong>Family</strong>
-                  <span>For a parent signing up a son at home.</span>
-                </span>
-              </label>
-              <label class="choice-card">
-                <input type="radio" name="signup_audience" value="school">
-                <span>
-                  <strong>School</strong>
-                  <span>For a rebbi, principal, or school contact.</span>
-                </span>
-              </label>
-            </div>
-            <button class="button primary full" type="button" data-continue-onboarding data-action-id="ACTION-ONETIME-SIGNUP-CONTINUE-ONBOARDING" disabled>Continue</button>
-          </div>
+        <h2 id="finalCtaTitle">Ready to join the live class?</h2>
+        <div class="final-actions">
+          <a class="chrome-button cta-large final-cta-button" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
         </div>
       </div>
     </section>
@@ -1847,14 +1284,16 @@
 
   <footer class="one-time-site-footer" data-one-time-canonical-footer>
     <div class="wrap footer-inner">
-      <div>
-        <img src="/assets/one-time/brand/one-time-logo-white.webp" width="118" height="74" alt="One Time">
-        <p>One Time Mishnayos with Rabbi Eli Scheller.</p>
+      <div class="footer-brand">
+        <img src="/assets/one-time/brand/one-time-logo-white.webp" width="112" height="70" alt="One Time">
+        <p>Worldwide Mishnah learning with Rabbi Eli Scheller.</p>
       </div>
       <nav class="footer-links" aria-label="Footer">
+        <a href="/one-time">Home</a>
+        <a href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
         <a href="/one-time/privacy.html">Privacy</a>
         <a href="/one-time/terms.html">Terms</a>
-        <a href="/rabbi-member">Member Login</a>
+        <a href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
       </nav>
     </div>
   </footer>
@@ -1873,128 +1312,52 @@
 
   <script>
     (() => {
-      const navShell = document.querySelector('[data-nav-shell]');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const body = document.body;
       const menuButton = document.querySelector('[data-menu-button]');
-      const signupTriggers = Array.from(document.querySelectorAll('[data-signup-trigger]'));
-      const modal = document.querySelector('[data-signup-modal]');
-      const dialog = modal?.querySelector('.signup-dialog');
-      const closeButton = modal?.querySelector('[data-modal-close]');
-      const form = modal?.querySelector('[data-signup-form]');
-      const status = modal?.querySelector('[data-form-status]');
-      const successStep = modal?.querySelector('[data-success-step]');
-      const continueButton = modal?.querySelector('[data-continue-onboarding]');
-      const audienceRadios = modal ? Array.from(modal.querySelectorAll('input[name="signup_audience"]')) : [];
-      const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-      let lastFocused = null;
-      let latestLead = null;
+      const drawer = document.querySelector('[data-drawer]');
+      const overlay = document.querySelector('[data-drawer-overlay]');
+      const closeButton = document.querySelector('[data-drawer-close]');
+      let previousFocus = null;
 
-      function setMenu(open) {
-        if (!navShell || !menuButton) return;
-        navShell.classList.toggle('open', open);
+      function focusableInDrawer() {
+        return Array.from(drawer?.querySelectorAll('a[href], button:not([disabled])') || []);
+      }
+
+      function setDrawer(open) {
+        if (!drawer || !menuButton) return;
+        body.classList.toggle('drawer-open', open);
+        drawer.setAttribute('aria-hidden', String(!open));
         menuButton.setAttribute('aria-expanded', String(open));
         menuButton.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+        overlay?.setAttribute('tabindex', open ? '0' : '-1');
+        if (open) {
+          previousFocus = document.activeElement;
+          window.setTimeout(() => focusableInDrawer()[0]?.focus(), 30);
+        } else if (previousFocus instanceof HTMLElement) {
+          previousFocus.focus();
+        }
       }
 
-      menuButton?.addEventListener('click', () => {
-        setMenu(!navShell?.classList.contains('open'));
-      });
-
-      navShell?.addEventListener('click', (event) => {
-        if (event.target.closest('a')) setMenu(false);
-      });
-
-      document.addEventListener('click', (event) => {
-        if (!navShell?.classList.contains('open')) return;
-        if (event.target.closest('[data-nav-shell]') || event.target.closest('[data-menu-button]')) return;
-        setMenu(false);
-      });
-
-      function showStatus(type, message) {
-        if (!status) return;
-        status.className = `form-status visible ${type || ''}`.trim();
-        status.textContent = message;
-      }
-
-      function clearErrors() {
-        modal?.querySelectorAll('.field-error.visible').forEach((node) => node.classList.remove('visible'));
-        modal?.querySelectorAll('[aria-invalid="true"]').forEach((node) => node.removeAttribute('aria-invalid'));
-      }
-
-      function showFieldError(name) {
-        const input = form?.elements[name];
-        const error = modal?.querySelector(`[data-error-for="${name}"]`);
-        input?.setAttribute('aria-invalid', 'true');
-        error?.classList.add('visible');
-      }
-
-      function isValidEmail(value) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
-      }
-
-      function buildMetadata() {
-        const params = new URLSearchParams(window.location.search);
-        const utm = {};
-        params.forEach((value, key) => {
-          if (/^(utm_|gclid|fbclid)/i.test(key)) utm[key] = value;
-        });
-        return {
-          raw_intake_id: 'RAW-20260710-007',
-          addendum_raw_intake_id: 'RAW-20260710-008',
-          route: window.location.pathname,
-          page_hash: window.location.hash || '',
-          referrer: document.referrer || '',
-          utm,
-          viewport: {
-            width: window.innerWidth,
-            height: window.innerHeight,
-            device_scale_factor: window.devicePixelRatio || 1
-          },
-          external_write_performed: false
-        };
-      }
-
-      function openModal(trigger) {
-        if (!modal || !dialog) return;
-        lastFocused = trigger || document.activeElement;
-        modal.classList.add('open');
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('modal-open');
-        const firstInput = modal.querySelector('input[name="parent_name"]');
-        window.setTimeout(() => firstInput?.focus(), 40);
-      }
-
-      function closeModal() {
-        if (!modal) return;
-        modal.classList.remove('open');
-        modal.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('modal-open');
-        if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
-      }
-
-      signupTriggers.forEach((trigger) => {
-        trigger.addEventListener('click', (event) => {
-          event.preventDefault();
-          openModal(trigger);
-        });
-      });
-
-      closeButton?.addEventListener('click', closeModal);
-
-      modal?.addEventListener('click', (event) => {
-        if (event.target === modal) closeModal();
+      menuButton?.addEventListener('click', () => setDrawer(!body.classList.contains('drawer-open')));
+      closeButton?.addEventListener('click', () => setDrawer(false));
+      overlay?.addEventListener('click', () => setDrawer(false));
+      drawer?.addEventListener('click', (event) => {
+        if (event.target.closest('a')) setDrawer(false);
       });
 
       document.addEventListener('keydown', (event) => {
+        if (!body.classList.contains('drawer-open')) return;
         if (event.key === 'Escape') {
-          if (modal?.classList.contains('open')) closeModal();
-          setMenu(false);
+          event.preventDefault();
+          setDrawer(false);
+          return;
         }
-
-        if (event.key !== 'Tab' || !modal?.classList.contains('open')) return;
-        const focusable = Array.from(modal.querySelectorAll(focusableSelector)).filter((node) => node.offsetParent !== null);
-        if (!focusable.length) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
+        if (event.key !== 'Tab') return;
+        const focusables = focusableInDrawer();
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
         if (event.shiftKey && document.activeElement === first) {
           event.preventDefault();
           last.focus();
@@ -2004,140 +1367,166 @@
         }
       });
 
-      form?.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        clearErrors();
-        const formData = new FormData(form);
-        const parentName = String(formData.get('parent_name') || '').trim();
-        const email = String(formData.get('email') || '').trim().toLowerCase();
-        const phone = String(formData.get('phone') || '').trim();
-        let invalid = false;
+      function jerusalemDateParts(date) {
+        const parts = new Intl.DateTimeFormat('en-CA', {
+          timeZone: 'Asia/Jerusalem',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        }).formatToParts(date);
+        const map = {};
+        parts.forEach((part) => {
+          if (part.type !== 'literal') map[part.type] = Number(part.value);
+        });
+        return map;
+      }
 
-        if (!parentName) {
-          showFieldError('parent_name');
-          invalid = true;
-        }
-        if (!isValidEmail(email)) {
-          showFieldError('email');
-          invalid = true;
-        }
-        if (invalid) {
-          showStatus('error', 'Please fix the highlighted fields.');
-          const firstInvalid = form.querySelector('[aria-invalid="true"]');
-          firstInvalid?.focus();
-          return;
-        }
+      function daysUntilRoshHashanah() {
+        const nowParts = jerusalemDateParts(new Date());
+        const current = Date.UTC(nowParts.year, nowParts.month - 1, nowParts.day);
+        const target = Date.UTC(2026, 8, 11);
+        return Math.max(0, Math.ceil((target - current) / 86400000));
+      }
 
-        const submitButton = form.querySelector('button[type="submit"]');
-        submitButton.disabled = true;
-        showStatus('', 'Capturing your signup...');
+      function updateTicker() {
+        const days = daysUntilRoshHashanah();
+        const text = days > 0
+          ? `ROSH HASHANAH SPECIAL \u2022 ${days} DAYS TO ROSH HASHANAH \u2022 JOIN FREE UNTIL ROSH HASHANAH \u2022 SIGN UP NOW`
+          : 'ROSH HASHANAH SPECIAL \u2022 JOIN FREE UNTIL ROSH HASHANAH \u2022 SIGN UP NOW';
+        document.querySelectorAll('[data-ticker-text]').forEach((node) => {
+          node.textContent = text;
+        });
+      }
 
-        const payload = {
-          parent_name: parentName,
-          email,
-          phone,
-          audience: 'parents',
-          preferred_class_format: 'live_mishnayos_intro',
-          source_landing_page: window.location.pathname,
-          consent: true,
-          notes: 'Public One Time Mishnayos landing page quick capture. Continue onboarding asks family or school.',
-          metadata: buildMetadata()
-        };
+      updateTicker();
+      window.setInterval(updateTicker, 15 * 60 * 1000);
 
-        try {
-          const response = await fetch('/api/one-time/interest', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+      if (!reducedMotion.matches && 'IntersectionObserver' in window) {
+        const revealItems = Array.from(document.querySelectorAll('.reveal'));
+        revealItems.forEach((item, index) => {
+          item.style.transitionDelay = `${Math.min(index % 6, 5) * 55}ms`;
+        });
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
           });
-          const result = await response.json().catch(() => ({}));
-          if (!response.ok || result.success === false) {
-            throw new Error(result.error || 'Could not capture the signup.');
-          }
-          latestLead = {
-            parent_name: parentName,
-            email,
-            phone,
-            crm_lead_id: result.crm_lead_id || result.lead?.crm_lead_id || '',
-            product_lead_id: result.lead?.id || result.product_lead_id || ''
-          };
-          try {
-            window.sessionStorage.setItem('oneTimeSignupLead', JSON.stringify(latestLead));
-          } catch {}
-          form.style.display = 'none';
-          successStep?.classList.add('active');
-          audienceRadios.forEach((radio) => { radio.checked = false; });
-          if (continueButton) continueButton.disabled = true;
-          showStatus('', '');
-          window.setTimeout(() => audienceRadios[0]?.focus(), 40);
-        } catch (error) {
-          showStatus('error', error.message || 'Could not capture the signup.');
-        } finally {
-          submitButton.disabled = false;
-        }
-      });
-
-      audienceRadios.forEach((radio) => {
-        radio.addEventListener('change', () => {
-          if (continueButton) continueButton.disabled = !audienceRadios.some((item) => item.checked);
-        });
-      });
-
-      continueButton?.addEventListener('click', () => {
-        const selected = audienceRadios.find((item) => item.checked)?.value;
-        if (!selected) return;
-        const params = new URLSearchParams({
-          audience: selected,
-          source: 'one_time_public_landing',
-          lead_hint: 'captured'
-        });
-        if (latestLead?.product_lead_id) params.set('product_lead_id', latestLead.product_lead_id);
-        if (latestLead?.crm_lead_id) params.set('crm_lead_id', latestLead.crm_lead_id);
-        window.location.href = `/one-time-preview?${params.toString()}`;
-      });
+        }, { threshold: 0.14, rootMargin: '0px 0px -8% 0px' });
+        revealItems.forEach((item) => observer.observe(item));
+      } else {
+        document.querySelectorAll('.reveal').forEach((item) => item.classList.add('visible'));
+      }
 
       const carousel = document.querySelector('[data-carousel]');
       if (carousel) {
         const track = carousel.querySelector('[data-carousel-track]');
         const slides = Array.from(carousel.querySelectorAll('.teaching-slide'));
-        const dots = Array.from(carousel.querySelectorAll('[data-dot]'));
+        const dotsWrap = carousel.querySelector('[data-carousel-dots]');
         const prev = carousel.querySelector('[data-carousel-prev]');
         const next = carousel.querySelector('[data-carousel-next]');
         const pause = carousel.querySelector('[data-carousel-pause]');
+        const preview = carousel.querySelector('[data-carousel-preview]');
         let index = 0;
-        let paused = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let userPaused = reducedMotion.matches;
+        let hoverPaused = false;
+        let focusPaused = false;
         let timer = null;
+        let touchStartX = 0;
+
+        slides.forEach((slide, slideIndex) => {
+          const dot = document.createElement('button');
+          dot.className = 'carousel-dot';
+          dot.type = 'button';
+          dot.dataset.dot = String(slideIndex);
+          dot.setAttribute('aria-label', `Show ${slide.dataset.location || `slide ${slideIndex + 1}`}`);
+          dotsWrap?.appendChild(dot);
+        });
+        const dots = Array.from(carousel.querySelectorAll('[data-dot]'));
+
+        function isPaused() {
+          return userPaused || hoverPaused || focusPaused || reducedMotion.matches;
+        }
+
+        function updatePreview() {
+          if (!preview || !slides.length) return;
+          const nextSlide = slides[(index + 1) % slides.length];
+          const source = nextSlide.querySelector('img');
+          const image = preview.querySelector('img');
+          const label = preview.querySelector('.slide-label span');
+          if (source && image) {
+            image.src = source.currentSrc || source.src;
+            image.style.setProperty('--position', source.style.getPropertyValue('--position') || 'center center');
+          }
+          if (label) label.textContent = nextSlide.dataset.location || 'Next location';
+        }
 
         function render() {
           if (track) track.style.transform = `translateX(-${index * 100}%)`;
-          dots.forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === index));
+          dots.forEach((dot, dotIndex) => {
+            const active = dotIndex === index;
+            dot.classList.toggle('active', active);
+            dot.setAttribute('aria-current', active ? 'true' : 'false');
+          });
+          if (pause) {
+            pause.textContent = isPaused() ? '>' : '||';
+            pause.setAttribute('aria-label', isPaused() ? 'Play teaching location carousel' : 'Pause teaching location carousel');
+          }
+          updatePreview();
         }
 
-        function go(delta) {
-          index = (index + delta + slides.length) % slides.length;
+        function go(nextIndex) {
+          index = (nextIndex + slides.length) % slides.length;
           render();
         }
 
+        function goDelta(delta) { go(index + delta); }
         function schedule() {
           window.clearInterval(timer);
-          if (!paused) timer = window.setInterval(() => go(1), 5600);
+          timer = null;
+          if (!isPaused()) timer = window.setInterval(() => goDelta(1), 5600);
+          render();
         }
 
-        prev?.addEventListener('click', () => {
-          go(-1);
+        prev?.addEventListener('click', () => { goDelta(-1); schedule(); });
+        next?.addEventListener('click', () => { goDelta(1); schedule(); });
+        pause?.addEventListener('click', () => { userPaused = !userPaused; schedule(); });
+        dots.forEach((dot) => {
+          dot.addEventListener('click', () => {
+            go(Number(dot.dataset.dot || 0));
+            schedule();
+          });
+        });
+        carousel.addEventListener('keydown', (event) => {
+          if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            goDelta(-1);
+            schedule();
+          } else if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            goDelta(1);
+            schedule();
+          }
+        });
+        carousel.addEventListener('mouseenter', () => { hoverPaused = true; schedule(); });
+        carousel.addEventListener('mouseleave', () => { hoverPaused = false; schedule(); });
+        carousel.addEventListener('focusin', () => { focusPaused = true; schedule(); });
+        carousel.addEventListener('focusout', () => { focusPaused = false; schedule(); });
+        carousel.addEventListener('touchstart', (event) => {
+          touchStartX = event.changedTouches?.[0]?.clientX || 0;
+        }, { passive: true });
+        carousel.addEventListener('touchend', (event) => {
+          const endX = event.changedTouches?.[0]?.clientX || 0;
+          const delta = endX - touchStartX;
+          if (Math.abs(delta) > 44) {
+            goDelta(delta > 0 ? -1 : 1);
+            schedule();
+          }
+        }, { passive: true });
+        reducedMotion.addEventListener?.('change', () => {
+          userPaused = reducedMotion.matches;
           schedule();
         });
-        next?.addEventListener('click', () => {
-          go(1);
-          schedule();
-        });
-        pause?.addEventListener('click', () => {
-          paused = !paused;
-          pause.setAttribute('aria-label', paused ? 'Play teaching photo carousel' : 'Pause teaching photo carousel');
-          pause.textContent = paused ? '>' : '||';
-          schedule();
-        });
-
         render();
         schedule();
       }

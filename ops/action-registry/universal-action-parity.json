@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T15:59:16.613Z",
+  "generated_at": "2026-07-12T17:54:16.480Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,60 +16,60 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "66012deaee8e6b05b4b856b3b96365d49b5eb5e7262c1f0c0d436c5cbdd8ab74",
+  "content_hash": "c67fce2ce2732bec4572d40776cc729c11f2e4c859681c4d04bef342d8f6e2e5",
   "source_hashes": {
-    "ops/action-registry.json": "7c12f87b7ce6312496f39540180b6c7ebe5840a1e0bdb5e04d9cf1d23188219e",
-    "ops/action-registry/actions.json": "d14449dbfad1fc46dce7f89ed3899f25fea6e98159c428f054c3229b060423cf",
-    "public/operations.html": "6c82c4e6af310493db9288dce6bdbdb6a7be73132001923508c665a80175ce62",
+    "ops/action-registry.json": "67c30acac87b7a5428ce231978027efa76d213d2ab23a6f2a8d96c48361c060d",
+    "ops/action-registry/actions.json": "31b259f7e860fee4e2562b7a79a53ad24106c4f1d1a7b8b71a467aca3f82b048",
+    "public/operations.html": "863f3dc739730ffa191d99e6699c268e571c7bbc1f9bf40667ce2749379e8c3c",
     "public/parent.html": "c9928f157d29d6f5da7e6710805315c8403d782f318d63dbd425f157de9f4549",
-    "public/student.html": "e6ce29152bfba7160f09cc962ad87625ec559cb90a26e8b84c97456887c60beb",
-    "public/provider.html": "9af99e7829a56fee0448157eb5e94a50eff586c050fd51fedebe4fe5ccec8a36",
+    "public/student.html": "5ae3e10905bed4452cc14c982dc21de3e3743d674ff34b1e581323f20492647a",
+    "public/provider.html": "5e6f67f32b93030be1e2b89d8c5f4421cb6c1f1fae7833620015cfd6b5183d33",
     "src/platform/assistant/control-plane.js": "7eaf0dff452382e9694aa9dae32df76c29f1e0b912cfa69d59dc88eee9721592"
   },
   "summary": {
-    "root_actions": 127,
-    "detailed_actions": 80,
-    "total_registry_rows": 207,
-    "visible_controls": 51,
-    "visible_controls_classified": 51,
+    "root_actions": 134,
+    "detailed_actions": 87,
+    "total_registry_rows": 221,
+    "visible_controls": 59,
+    "visible_controls_classified": 59,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
-    "blocked_connector": 12,
-    "risky_actions": 97,
+    "blocked_connector": 14,
+    "risky_actions": 109,
     "risky_without_approval": 0,
     "visible_by_classification": {
-      "read_only": 8,
-      "secure_deep_link_only": 5,
-      "preview_then_approve": 28,
-      "blocked_connector": 4,
+      "read_only": 9,
+      "secure_deep_link_only": 7,
+      "preview_then_approve": 30,
+      "blocked_connector": 7,
       "not_applicable": 2,
       "executable": 4
     },
     "registry_by_classification": {
-      "secure_deep_link_only": 23,
-      "preview_then_approve": 88,
-      "executable": 25,
-      "blocked_connector": 12,
+      "secure_deep_link_only": 26,
+      "preview_then_approve": 98,
+      "executable": 24,
       "read_only": 57,
+      "blocked_connector": 14,
       "not_applicable": 2
     }
   },
   "parity_sources": {
     "ui_button": {
-      "count": 51
+      "count": 59
     },
     "telegram_request": {
       "count": 80
     },
     "website_assistant_request": {
-      "count": 207
+      "count": 221
     },
     "operations_helper_request": {
-      "count": 180
+      "count": 189
     },
     "automation_action": {
-      "count": 86
+      "count": 92
     },
     "agent_work_handoff": {
       "count": 100
@@ -80,7 +80,7 @@
       {
         "name": "all_visible_controls_classified",
         "passed": true,
-        "value": "51/51"
+        "value": "59/59"
       },
       {
         "name": "zero_visible_missing_contracts",
@@ -110,7 +110,7 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 207
+        "value": 221
       },
       {
         "name": "agent_work_handoff_parity_present",
@@ -287,6 +287,104 @@
       "risk": "low",
       "registry_layer": "root",
       "result_renderer": "Expands a local first-party CRM contact and timeline readback only; no message is sent."
+    },
+    {
+      "action_id": "ACTION-CRM-OPEN-SCOPED-INBOX",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "secure_deep_link_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "detailed",
+      "result_renderer": "Scoped inbox opened."
+    },
+    {
+      "action_id": "ACTION-CRM-REPLY-DRAFT-BLOCKED",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "blocked_connector",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "detailed",
+      "result_renderer": "Reply remains locked."
+    },
+    {
+      "action_id": "ACTION-CRM-INTERNAL-NOTE-BLOCKED",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "blocked_connector",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "detailed",
+      "result_renderer": "Note remains preview-only."
+    },
+    {
+      "action_id": "ACTION-CRM-TASK-BLOCKED",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "blocked_connector",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "detailed",
+      "result_renderer": "Task remains preview-only."
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-BACK",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "read_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "detailed",
+      "result_renderer": "Contact list restored."
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-MAILBOX-OPEN",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Moves from the selected local CRM contact to the scoped Rabbi / One Time email inbox while preserving selected contact context; does not send, draft-send, charge, grant access, import, or write to an external CRM."
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-SAFE-UPDATE",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Saves status, tags, owner, follow-up date, and internal note to first-party local CRM tables only; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs."
     },
     {
       "action_id": "ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS",
@@ -667,6 +765,20 @@
       "result_renderer": "After server-backed password authentication returns chooser_required, each visible destination link opens only the server-provided same-origin redirect_to for an authenticated membership; it must not route by client-trusted workspace keys, grant extra permissions, accept unsafe external returnTo values, or expose credentials, prompts, secrets, or private account data."
     },
     {
+      "action_id": "ACTION-ONETIME-PORTAL-MENU-TOGGLE",
+      "file": "public/student.html",
+      "surface": "student_portal",
+      "classification": "secure_deep_link_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "detailed",
+      "result_renderer": "One Time portal menu toggled."
+    },
+    {
       "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
       "file": "public/student.html",
       "surface": "student_portal",
@@ -869,7 +981,7 @@
     },
     {
       "action_id": "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
-      "label": "Robot Scheller WhatsApp Assistant",
+      "label": "Robot Scheller public helper",
       "registry_layer": "root",
       "category": "",
       "surface": "one_time_public_landing",
@@ -879,8 +991,8 @@
         "anonymous public visitor"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Opens the bottom-corner Robot Scheller public assistant for Rabbi Scheller's One Time public page, with tooltip/ARIA text that identifies it as the WhatsApp assistant entry. Internal scope guardrails remain One Time only and do not expose BNA Academy or private portal data.",
-      "status": "active",
+      "execution_handler": "Archived public landing helper action. The served /one-time route now uses ACTION-ONETIME-PUBLIC-WHATSAPP as the visible bottom-corner contact launcher and does not load the public helper widget scripts.",
+      "status": "removed_from_public_landing",
       "classification": "preview_then_approve",
       "risk": "high",
       "preview_required": true,
@@ -892,15 +1004,15 @@
       "test_present": true,
       "telegram_examples": [],
       "website_examples": [
-        "Robot Scheller WhatsApp Assistant"
+        "Robot Scheller public helper"
       ],
-      "result_renderer": "Opens the bottom-corner Robot Scheller public assistant for Rabbi Scheller's One Time public page, with tooltip/ARIA text that identifies it as the WhatsApp assistant entry. Internal scope guardrails remain One Time only and do not expose BNA Academy or private portal data.",
-      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "result_renderer": "Archived public landing helper action. The served /one-time route now uses ACTION-ONETIME-PUBLIC-WHATSAPP as the visible bottom-corner contact launcher and does not load the public helper widget scripts.",
+      "rollback_or_correction_path": "REQ-20260712-109 replaces the public helper widget with a standard WhatsApp launcher.",
       "audit_event": ""
     },
     {
       "action_id": "ACTION-ONETIME-PUBLIC-WHATSAPP",
-      "label": "Open WhatsApp Assistant",
+      "label": "Open WhatsApp",
       "registry_layer": "root",
       "category": "",
       "surface": "one_time_public_landing",
@@ -911,7 +1023,7 @@
       ],
       "allowed_workspaces": [],
       "execution_handler": "GET /api/one-time/public-whatsapp/redirect",
-      "status": "blocked_external_setup_until_runtime_number_configured",
+      "status": "active_runtime_redirect_with_setup_fallback",
       "classification": "preview_then_approve",
       "risk": "high",
       "preview_required": true,
@@ -923,10 +1035,10 @@
       "test_present": true,
       "telegram_examples": [],
       "website_examples": [
-        "Open WhatsApp Assistant"
+        "Open WhatsApp"
       ],
-      "result_renderer": "Opens a same-origin runtime redirect for the One Time public WhatsApp business line. The server reads ONE_TIME_PUBLIC_WHATSAPP_NUMBER or aliases at runtime, never commits or returns the full number in repo evidence, and performs no WhatsApp send by itself. If runtime config is missing, the redirect falls back to the public form and readiness reports the exact missing env var.",
-      "rollback_or_correction_path": "Direct WhatsApp chat requires ONE_TIME_PUBLIC_WHATSAPP_NUMBER in runtime/keyholder configuration.",
+      "result_renderer": "Opens a same-origin runtime redirect for the One Time public WhatsApp business line from a standard bottom-right WhatsApp launcher. The server reads ONE_TIME_PUBLIC_WHATSAPP_NUMBER or aliases at runtime, never commits or returns the full number in repo evidence, and performs no WhatsApp send by itself. If runtime config is missing, the redirect falls back to the public form and readiness reports the exact missing env var.",
+      "rollback_or_correction_path": "Live WhatsApp chat requires ONE_TIME_PUBLIC_WHATSAPP_NUMBER in runtime/keyholder configuration; missing config falls back to /one-time#start-free.",
       "audit_event": ""
     },
     {
@@ -1406,7 +1518,7 @@
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Opens the accessible first-party signup modal; does not create checkout, send messages, create a Zoom meeting, open a portal account, or grant access.",
+      "execution_handler": "Opens the canonical /one-time/signup page; does not create checkout, send messages, create a Zoom meeting, open a portal account, or grant access.",
       "status": "active",
       "classification": "preview_then_approve",
       "risk": "high",
@@ -1421,7 +1533,7 @@
       "website_examples": [
         "Sign Up Now"
       ],
-      "result_renderer": "Opens the accessible first-party signup modal; does not create checkout, send messages, create a Zoom meeting, open a portal account, or grant access.",
+      "result_renderer": "Opens the canonical /one-time/signup page; does not create checkout, send messages, create a Zoom meeting, open a portal account, or grant access.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
@@ -1488,20 +1600,20 @@
       "audit_event": ""
     },
     {
-      "action_id": "ACTION-ONETIME-INTEREST-FORM",
+      "action_id": "ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT",
       "label": "Sign Up Now",
       "registry_layer": "root",
       "category": "",
-      "surface": "one_time_public_focused_offer",
-      "route": "/one-time",
+      "surface": "one_time_public_direct_signup",
+      "route": "/one-time/signup",
       "permission": "public",
       "allowed_roles": [
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Creates a first-party One Time product lead and CRM lead from the public signup modal with required parent/contact name, required email, optional phone, consent, route/referrer/UTM metadata, and idempotent blocked email/WhatsApp transactional follow-up timeline records; no student name is collected in quick capture, and no checkout, external send, live charge, portal account, Zoom meeting creation, or access grant occurs.",
+      "execution_handler": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required free-text location entry accepting city, ZIP/postal code, area code, or neighborhood, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
       "status": "active",
-      "classification": "blocked_connector",
+      "classification": "preview_then_approve",
       "risk": "high",
       "preview_required": true,
       "approval_required": true,
@@ -1514,7 +1626,69 @@
       "website_examples": [
         "Sign Up Now"
       ],
-      "result_renderer": "Creates a first-party One Time product lead and CRM lead from the public signup modal with required parent/contact name, required email, optional phone, consent, route/referrer/UTM metadata, and idempotent blocked email/WhatsApp transactional follow-up timeline records; no student name is collected in quick capture, and no checkout, external send, live charge, portal account, Zoom meeting creation, or access grant occurs.",
+      "result_renderer": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required free-text location entry accepting city, ZIP/postal code, area code, or neighborhood, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-SIGNUP-AS-FAMILY",
+      "label": "Family",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_public_direct_signup",
+      "route": "/one-time/signup",
+      "permission": "public",
+      "allowed_roles": [
+        "public"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Sets the direct signup form's required signup_as value to Family through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Family"
+      ],
+      "result_renderer": "Sets the direct signup form's required signup_as value to Family through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-SIGNUP-AS-SCHOOL",
+      "label": "School",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_public_direct_signup",
+      "route": "/one-time/signup",
+      "permission": "public",
+      "allowed_roles": [
+        "public"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Sets the direct signup form's required signup_as value to School through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "School"
+      ],
+      "result_renderer": "Sets the direct signup form's required signup_as value to School through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
@@ -1551,7 +1725,7 @@
     },
     {
       "action_id": "ACTION-ONETIME-PUBLIC-MOBILE-MENU",
-      "label": "Mobile Navigation",
+      "label": "Navigation drawer",
       "registry_layer": "root",
       "category": "",
       "surface": "one_time_public_focused_offer",
@@ -1561,10 +1735,10 @@
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Toggles the mobile navigation panel, updates aria-expanded, and closes on section-link click, outside click, or Escape without navigating to private data.",
+      "execution_handler": "Toggles the public One Time right-side navigation drawer at every viewport, updates aria-expanded, traps focus while open, restores focus on close, and closes on section-link click, overlay click, or Escape without navigating to private data.",
       "status": "active",
       "classification": "secure_deep_link_only",
-      "risk": "medium",
+      "risk": "low",
       "preview_required": false,
       "approval_required": false,
       "dry_run_supported": false,
@@ -1574,9 +1748,9 @@
       "test_present": true,
       "telegram_examples": [],
       "website_examples": [
-        "Mobile Navigation"
+        "Navigation drawer"
       ],
-      "result_renderer": "Toggles the mobile navigation panel, updates aria-expanded, and closes on section-link click, outside click, or Escape without navigating to private data.",
+      "result_renderer": "Toggles the public One Time right-side navigation drawer at every viewport, updates aria-expanded, traps focus while open, restores focus on close, and closes on section-link click, overlay click, or Escape without navigating to private data.",
       "rollback_or_correction_path": "standard_error_state",
       "audit_event": ""
     },
@@ -1592,8 +1766,8 @@
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Closes the signup modal, restores body scroll, and returns keyboard focus to the triggering Sign Up Now control.",
-      "status": "active",
+      "execution_handler": "Archived old modal close action. The public page now links to /one-time/signup instead of opening a modal.",
+      "status": "archived_removed_direct_signup_page",
       "classification": "executable",
       "risk": "medium",
       "preview_required": false,
@@ -1607,39 +1781,132 @@
       "website_examples": [
         "Close signup modal"
       ],
-      "result_renderer": "Closes the signup modal, restores body scroll, and returns keyboard focus to the triggering Sign Up Now control.",
-      "rollback_or_correction_path": "standard_error_state",
+      "result_renderer": "Archived old modal close action. The public page now links to /one-time/signup instead of opening a modal.",
+      "rollback_or_correction_path": "Removed by REQ-20260712-013. The canonical signup implementation is /one-time/signup.",
       "audit_event": ""
     },
     {
       "action_id": "ACTION-ONETIME-SIGNUP-CONTINUE-ONBOARDING",
-      "label": "Continue",
+      "label": "Removed signup continuation",
       "registry_layer": "root",
       "category": "",
-      "surface": "one_time_public_focused_offer",
-      "route": "/one-time",
+      "surface": "one_time_public_direct_signup",
+      "route": "/one-time/signup",
       "permission": "public",
       "allowed_roles": [
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "After successful first-party capture and a family/school choice, continues to /one-time-preview with non-secret query parameters for the existing onboarding flow.",
-      "status": "active",
-      "classification": "read_only",
-      "risk": "low",
+      "execution_handler": "Archived continuation action. The direct launch signup now ends on a confirmation state after queueing the email and Rabbi alert.",
+      "status": "archived_removed_from_direct_signup",
+      "classification": "preview_then_approve",
+      "risk": "high",
       "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Removed signup continuation"
+      ],
+      "result_renderer": "Archived continuation action. The direct launch signup now ends on a confirmation state after queueing the email and Rabbi alert.",
+      "rollback_or_correction_path": "Removed by REQ-20260712-013. The launch form must not start parent portal, student portal, onboarding, password setup, payment, or access-grant flows.",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-SIGNUP-BACK-HOME",
+      "label": "Back to Home",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_public_direct_signup",
+      "route": "/one-time/signup",
+      "permission": "public",
+      "allowed_roles": [
+        "public"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Returns from the direct signup page to the public One Time landing page without starting a private portal, payment, send, or access workflow.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Back to Home"
+      ],
+      "result_renderer": "Returns from the direct signup page to the public One Time landing page without starting a private portal, payment, send, or access workflow.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-ONBOARDING-AUDIENCE",
+      "label": "Family or School",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_public_onboarding",
+      "route": "/one-time-onboarding",
+      "permission": "public",
+      "allowed_roles": [
+        "public"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Switches the public onboarding form between family and school fields without submitting, sending, charging, creating access, or exposing private data.",
+      "status": "active",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
       "approval_required": false,
-      "dry_run_supported": true,
+      "dry_run_supported": false,
       "external_write_possible": false,
       "handler_present": true,
       "permission_present": true,
       "test_present": true,
       "telegram_examples": [],
       "website_examples": [
-        "Continue"
+        "Family or School"
       ],
-      "result_renderer": "After successful first-party capture and a family/school choice, continues to /one-time-preview with non-secret query parameters for the existing onboarding flow.",
+      "result_renderer": "Switches the public onboarding form between family and school fields without submitting, sending, charging, creating access, or exposing private data.",
       "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-ONBOARDING-SUBMIT",
+      "label": "Save Onboarding Details",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_public_onboarding",
+      "route": "/one-time-onboarding",
+      "permission": "public",
+      "allowed_roles": [
+        "public"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Saves a first-party One Time onboarding review record linked to any product/CRM lead ids and returns a no-send/no-checkout/no-access confirmation.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Save Onboarding Details"
+      ],
+      "result_renderer": "Saves a first-party One Time onboarding review record linked to any product/CRM lead ids and returns a no-send/no-checkout/no-access confirmation.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
     {
@@ -1654,14 +1921,14 @@
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Moves the public teaching photo carousel to the previous verified repo asset without loading private media.",
+      "execution_handler": "Moves the public teaching-location carousel to the previous selected Rabbi Scheller teaching photo, updates the active pagination state and desktop next-preview frame, remains keyboard accessible, and performs no external writes.",
       "status": "active",
-      "classification": "executable",
-      "risk": "medium",
-      "preview_required": false,
-      "approval_required": false,
-      "dry_run_supported": false,
-      "external_write_possible": false,
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
       "handler_present": true,
       "permission_present": true,
       "test_present": true,
@@ -1669,8 +1936,8 @@
       "website_examples": [
         "Previous teaching photo"
       ],
-      "result_renderer": "Moves the public teaching photo carousel to the previous verified repo asset without loading private media.",
-      "rollback_or_correction_path": "standard_error_state",
+      "result_renderer": "Moves the public teaching-location carousel to the previous selected Rabbi Scheller teaching photo, updates the active pagination state and desktop next-preview frame, remains keyboard accessible, and performs no external writes.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
     {
@@ -1685,14 +1952,14 @@
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Moves the public teaching photo carousel to the next verified repo asset without loading private media.",
+      "execution_handler": "Moves the public teaching-location carousel to the next selected Rabbi Scheller teaching photo, updates the active pagination state and desktop next-preview frame, remains keyboard accessible, and performs no external writes.",
       "status": "active",
-      "classification": "executable",
-      "risk": "medium",
-      "preview_required": false,
-      "approval_required": false,
-      "dry_run_supported": false,
-      "external_write_possible": false,
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
       "handler_present": true,
       "permission_present": true,
       "test_present": true,
@@ -1700,8 +1967,8 @@
       "website_examples": [
         "Next teaching photo"
       ],
-      "result_renderer": "Moves the public teaching photo carousel to the next verified repo asset without loading private media.",
-      "rollback_or_correction_path": "standard_error_state",
+      "result_renderer": "Moves the public teaching-location carousel to the next selected Rabbi Scheller teaching photo, updates the active pagination state and desktop next-preview frame, remains keyboard accessible, and performs no external writes.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
     {
@@ -1716,7 +1983,7 @@
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Pauses or resumes the public teaching photo carousel and updates the accessible label.",
+      "execution_handler": "Pauses and resumes the public teaching-location carousel auto-advance across selected public Rabbi Scheller teaching-location photos without changing route, writing data, or exposing private information.",
       "status": "active",
       "classification": "executable",
       "risk": "medium",
@@ -1731,7 +1998,7 @@
       "website_examples": [
         "Pause teaching photo carousel"
       ],
-      "result_renderer": "Pauses or resumes the public teaching photo carousel and updates the accessible label.",
+      "result_renderer": "Pauses and resumes the public teaching-location carousel auto-advance across selected public Rabbi Scheller teaching-location photos without changing route, writing data, or exposing private information.",
       "rollback_or_correction_path": "standard_error_state",
       "audit_event": ""
     },
@@ -4740,6 +5007,68 @@
       ],
       "result_renderer": "Expands a local first-party CRM contact and timeline readback only; no message is sent.",
       "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-MAILBOX-OPEN",
+      "label": "Open contact mailbox",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Moves from the selected local CRM contact to the scoped Rabbi / One Time email inbox while preserving selected contact context; does not send, draft-send, charge, grant access, import, or write to an external CRM.",
+      "status": "active_navigation_only",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open contact mailbox"
+      ],
+      "result_renderer": "Moves from the selected local CRM contact to the scoped Rabbi / One Time email inbox while preserving selected contact context; does not send, draft-send, charge, grant access, import, or write to an external CRM.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-SAFE-UPDATE",
+      "label": "Save CRM update",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Saves status, tags, owner, follow-up date, and internal note to first-party local CRM tables only; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Save CRM update"
+      ],
+      "result_renderer": "Saves status, tags, owner, follow-up date, and internal note to first-party local CRM tables only; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
     {
@@ -9125,6 +9454,331 @@
         "/parent",
         "/provider"
       ]
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-BACK",
+      "label": "Back to CRM contact list",
+      "registry_layer": "detailed",
+      "category": "crm",
+      "surface": "contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "permission": "super_admin/project_owner/one_time_admin/operator/system",
+      "allowed_roles": [
+        "super_admin",
+        "project_owner",
+        "one_time_admin",
+        "operator",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "ui.clearFirstPartyCrmSelection",
+      "status": "active",
+      "classification": "read_only",
+      "risk": "low",
+      "preview_required": true,
+      "approval_required": false,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Back to contacts"
+      ],
+      "result_renderer": "Contact list restored.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": "ui_only_no_write",
+      "page_contexts": [
+        "contacts",
+        "one_time_crm"
+      ],
+      "related_routes": [
+        "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-OPEN-SCOPED-INBOX",
+      "label": "Open scoped One Time inbox",
+      "registry_layer": "detailed",
+      "category": "crm",
+      "surface": "contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "permission": "super_admin/project_owner/one_time_admin/operator/system",
+      "allowed_roles": [
+        "super_admin",
+        "project_owner",
+        "one_time_admin",
+        "operator",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "ui.openFirstPartyCrmInboxContext",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": true,
+      "approval_required": false,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open scoped inbox"
+      ],
+      "result_renderer": "Scoped inbox opened.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": "ui_navigation_no_write",
+      "page_contexts": [
+        "contacts",
+        "communications",
+        "one_time_crm"
+      ],
+      "related_routes": [
+        "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-REPLY-DRAFT-BLOCKED",
+      "label": "CRM reply draft locked",
+      "registry_layer": "detailed",
+      "category": "crm",
+      "surface": "contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "permission": "super_admin/project_owner/one_time_admin/operator/system",
+      "allowed_roles": [
+        "super_admin",
+        "project_owner",
+        "one_time_admin",
+        "operator",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "blocked.externalSendApprovalRequired",
+      "status": "approval_required",
+      "classification": "blocked_connector",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Reply draft locked"
+      ],
+      "result_renderer": "Reply remains locked.",
+      "rollback_or_correction_path": "preview_edit_cancel_or_operator_review",
+      "audit_event": "crm_reply_draft_blocked",
+      "page_contexts": [
+        "contacts",
+        "one_time_crm"
+      ],
+      "related_routes": [
+        "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-INTERNAL-NOTE-BLOCKED",
+      "label": "CRM internal note preview",
+      "registry_layer": "detailed",
+      "category": "crm",
+      "surface": "contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "permission": "super_admin/project_owner/one_time_admin/operator/system",
+      "allowed_roles": [
+        "super_admin",
+        "project_owner",
+        "one_time_admin",
+        "operator",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "blocked.localCrmNoteWriteNotInPacket",
+      "status": "approval_required",
+      "classification": "blocked_connector",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Internal note preview"
+      ],
+      "result_renderer": "Note remains preview-only.",
+      "rollback_or_correction_path": "preview_edit_cancel_or_operator_review",
+      "audit_event": "crm_note_write_blocked",
+      "page_contexts": [
+        "contacts",
+        "one_time_crm"
+      ],
+      "related_routes": [
+        "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-TASK-BLOCKED",
+      "label": "CRM task preview",
+      "registry_layer": "detailed",
+      "category": "crm",
+      "surface": "contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "permission": "super_admin/project_owner/one_time_admin/operator/system",
+      "allowed_roles": [
+        "super_admin",
+        "project_owner",
+        "one_time_admin",
+        "operator",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "blocked.localCrmTaskWriteNotInPacket",
+      "status": "approval_required",
+      "classification": "blocked_connector",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Task preview"
+      ],
+      "result_renderer": "Task remains preview-only.",
+      "rollback_or_correction_path": "preview_edit_cancel_or_operator_review",
+      "audit_event": "crm_task_write_blocked",
+      "page_contexts": [
+        "contacts",
+        "one_time_crm"
+      ],
+      "related_routes": [
+        "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PORTAL-MENU-TOGGLE",
+      "label": "Toggle One Time portal menu",
+      "registry_layer": "detailed",
+      "category": "navigation",
+      "surface": "one_time_family_portal",
+      "route": "/rabbi-member",
+      "permission": "member/parent/student/provider_admin/super_admin/system",
+      "allowed_roles": [
+        "member",
+        "parent",
+        "student",
+        "provider_admin",
+        "super_admin",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "ui.toggleOneTimePortalMenu",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": true,
+      "approval_required": false,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Menu",
+        "Close One Time portal menu"
+      ],
+      "result_renderer": "One Time portal menu toggled.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": "ui_navigation_no_write",
+      "page_contexts": [
+        "one_time_family_portal",
+        "one_time_student_portal",
+        "one_time_classroom",
+        "one_time_member_library",
+        "one_time_parent_setup",
+        "one_time_preview"
+      ],
+      "related_routes": [
+        "/rabbi-member",
+        "/member-library",
+        "/one-time-classroom",
+        "/one-time-parent",
+        "/parent.html?review=one-time",
+        "/student.html?review=one-time"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PORTAL-EXIT-PREVIEW",
+      "label": "Exit One Time preview",
+      "registry_layer": "detailed",
+      "category": "navigation",
+      "surface": "one_time_preview",
+      "route": "/rabbi-member?review=one-time",
+      "permission": "member/parent/student/provider_admin/super_admin/system",
+      "allowed_roles": [
+        "member",
+        "parent",
+        "student",
+        "provider_admin",
+        "super_admin",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "ui.exitOneTimePreview",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": true,
+      "approval_required": false,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Exit Preview"
+      ],
+      "result_renderer": "Exited One Time preview.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": "ui_navigation_no_write",
+      "page_contexts": [
+        "one_time_preview"
+      ],
+      "related_routes": [
+        "/rabbi-member?review=one-time",
+        "/member-library?review=one-time",
+        "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+        "/parent.html?review=one-time",
+        "/student.html?review=one-time"
+      ]
     }
   ],
   "category_coverage": [
@@ -9358,6 +10012,7 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": true,
       "action_ids": [
+        "ACTION-CRM-REPLY-DRAFT-BLOCKED",
         "ACTION-ONETIME-MEMBER-LIBRARY-APPROVE",
         "ACTION-PROVIDER-CLASSROOM-DRAFT",
         "ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT",
@@ -9399,8 +10054,15 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": true,
       "action_ids": [
+        "ACTION-CRM-CONTACT-BACK",
         "ACTION-CRM-CONTACT-CARD-EXPAND",
+        "ACTION-CRM-CONTACT-MAILBOX-OPEN",
+        "ACTION-CRM-CONTACT-SAFE-UPDATE",
         "ACTION-CRM-CONTACTS-FILTER",
+        "ACTION-CRM-INTERNAL-NOTE-BLOCKED",
+        "ACTION-CRM-OPEN-SCOPED-INBOX",
+        "ACTION-CRM-REPLY-DRAFT-BLOCKED",
+        "ACTION-CRM-TASK-BLOCKED",
         "create_referral_ledger_entry",
         "move_lead_stage",
         "preview_campaign_segment",
@@ -9477,7 +10139,6 @@
         "ACTION-INTEGRATION-SETUP-VALIDATE",
         "ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN",
         "ACTION-ONETIME-LIVE-ZOOM-LINK-SEND",
-        "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
         "ACTION-ONETIME-PUBLIC-WHATSAPP",
         "ACTION-PARENT-ACCESS-LINK-WHATSAPP",
         "ACTION-PROVIDER-API-USAGE-PREVIEW-NAV",

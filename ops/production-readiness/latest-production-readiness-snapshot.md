@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-12T17:39:15.420Z
+# Production Readiness Snapshot - 2026-07-12T18:04:13.277Z
 
 Result: not_production_complete
 Production ready: no
@@ -6,20 +6,19 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Why Not Done Yet
 - full One Time launch has external Stripe/WAPI/campaign blockers
-- public launch no-write smoke is passed
-- Rabbi Telegram runtime is local_runtime_ready_live_smoke_pending
+- Rabbi Telegram runtime is blocked_missing_bot_token
 - Rabbi Agent Review still needs terminal Agent Mode proof
 - active execution run has no unblocked executable batch
 
 ## Git
-- Branch: master
-- HEAD: d68e3f9a3
+- Branch: codex/launch-consolidation-20260712
+- HEAD: 6c7e04988
 - origin/master: e5efbb15a
 - Worktree clean when sampled: no
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: d68e3f9a3
+- Sampled git head: 6c7e04988
 - Sampled origin/master: e5efbb15a
 - Sampled worktree clean: no
 - Refresh command: `npm run production:readiness:snapshot`
@@ -43,38 +42,38 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Setup ready count: 5/8
 - Operator blocker count: 3
 - SETUP-ONETIME-STRIPE-001: Rabbi Stripe sandbox (blocked_external_input). Missing now: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias. Required: rabbi_stripe_test_secret_key_alias, stripe_publishable_key_alias_if_needed, stripe_webhook_secret_alias_if_needed, 67_month_product_price_ids_or_sandbox_create_permission, confirm_sandbox_only
-- SETUP-ONETIME-WHAPI-001: Whapi/WAPI provider details (blocked_external_input). Missing now: whapi_wapi_instance_id, whapi_wapi_phone_number. Required: provider_account, phone_number, instance_id_or_alias, webhook_url_status, safe_test_recipient_for_later_packet, ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended, ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval
+- SETUP-ONETIME-WHAPI-001: Whapi/WAPI provider details (provider_setup_ready_live_send_gated). Missing now: whapi_wapi_instance_id, whapi_wapi_phone_number. Required: provider_account, phone_number, instance_id_or_alias, webhook_url_status, safe_test_recipient_for_later_packet, ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended, ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval
 - SETUP-ONETIME-CAMPAIGN-001: Campaign seed / real campaign (blocked_external_input). Missing now: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval. Required: final_campaign_copy, exact_recipient_segment_or_list_source, suppression_unsubscribe_proof, final_join_member_links, seed_recipient_sdratler_gmail, explicit_seed_packet_approval, separate_explicit_real_send_command_if_seed_passes
 
 ## Public Launch No-Write Smoke
-- Path: ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
+- Path: ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json
 - Status: passed
-- Ready: no
-- Fresh for launch gate: no (48.93h old, max 24h)
+- Ready: yes
+- Fresh for launch gate: yes (9.46h old, max 24h)
 - Commands passed: 4/4
 - External write performed: no
 - Production data mutation performed: no
-- Blocker: stale_or_unparseable_age_hours=48.93
+- Blocker: none
 
 ## Rabbi Telegram Runtime
 - Readiness report: ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
 - Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (available locally)
-- Status: local_runtime_ready_live_smoke_pending
-- Local ready: yes
-- Token configured: yes
-- Chat ID configured: yes
-- Ops credentials configured: yes
+- Status: blocked_missing_bot_token
+- Local ready: no
+- Token configured: no
+- Chat ID configured: no
+- Ops credentials configured: no
 - Candidate count: 0
 - Unique masked chat count: 0
 - No masked chat candidates reported.
 - Live delivery smoke: not_exercised_by_readiness_report
-- Next: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
+- Next: Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness.
 
 ## Agent Fleet
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: observable jobs 0, fallback task candidates 0
-- Queue health: fresh 1, stale 523, blocked 132, unknown 192, do-not-redo 894
+- Queue health: fresh 2, stale 551, blocked 137, unknown 192, do-not-redo 905
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
@@ -85,7 +84,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - No running launch collision lanes reported.
 
 ## Other Agent Policy Rows
-- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=245 path=.runtime/agent-fleet/task-1736.lock.json)
+- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=245.42 path=.runtime/agent-fleet/task-1736.lock.json)
 - job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)
 - job #443 / task #2258 [failed] Turn Rabbi meeting drop into One Time build brief (local_lock=missing path=.runtime/agent-fleet/task-2258.lock.json)
 - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json)
@@ -113,7 +112,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 1. Codex/operator release lane: Start from current origin/master in a clean scoped release lane, reapply only the One Time correction files, push the exact One Time release commit, complete or explicitly defer Railway/Drive readback through approved release-gate options, then rerun deploy/live verification.
 2. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md
 3. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md
-4. Codex / operator: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
+4. Codex / operator: Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness.
 5. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
 
 ## Evidence
@@ -125,7 +124,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - .runtime/rabbi-telegram-chat-id-candidates.json
 - ops/agent-fleet-hardening/latest-agent-fleet-readiness.json
 - ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
-- ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
+- ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json
 - ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md
 
 ## Guardrails

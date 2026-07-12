@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-07-12T18:01:15.709Z",
+  "base_url": "http://127.0.0.1:52257",
+  "screenshots": [
+    "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-1440.png",
+    "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-signup-success-1440.png",
+    "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-390.png",
+    "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-whatsapp-launcher-390.png",
+    "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-signup-390.png"
+  ],
+  "assertions": [
+    {
+      "name": "landing_cta_labels",
+      "ok": true,
+      "count": 3
+    },
+    {
+      "name": "landing_forbidden_text_absent",
+      "ok": true
+    },
+    {
+      "name": "direct_signup_success",
+      "ok": true,
+      "url": "http://127.0.0.1:52257/one-time/signup"
+    },
+    {
+      "name": "public_whatsapp_launcher_same_origin",
+      "ok": true,
+      "tagName": "a",
+      "href": "/api/one-time/public-whatsapp/redirect?intent=free_class",
+      "text": "WA",
+      "display": "grid",
+      "width": 58,
+      "height": 58
+    },
+    {
+      "name": "onboarding_forbidden_text_absent",
+      "ok": true
+    }
+  ]
+}

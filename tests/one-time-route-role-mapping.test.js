@@ -103,7 +103,7 @@ test('One Time provider.html requests are intercepted before static BNA shell ma
   assert.match(serverJs, /Rabbi provider account<\/span>/);
   assert.match(serverJs, /\.replace\(\/Bnei Neviim Academy\/g, 'One Time'\)/);
   assert.match(serverJs, /\.replace\(\/BNA Academy\/g, 'One Time'\)/);
-  assert.match(serverJs, /app\.get\('\/provider\.html', \(req, res, next\) => \{/);
+  assert.match(serverJs, /app\.get\('\/provider\.html', async \(req, res, next\) => \{/);
   assert.match(serverJs, /return sendOneTimeProviderShell\(req, res\)/);
 });
 

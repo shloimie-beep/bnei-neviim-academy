@@ -1,13 +1,15 @@
 {
   "packet_id": "telegram-sidekick-super-package-20260712",
-  "status": "codex_lane_01_local_verified",
+  "status": "blocked_needs_operator_decision",
   "owner": "ChatGPT",
   "lane_key": "platform-assistant-telegram-sidekick-v2",
   "created_at": "2026-07-12T10:00:00+03:00",
-  "updated_at": "2026-07-12T17:33:23+03:00",
+  "updated_at": "2026-07-12T17:45:09.449Z",
   "picked_up_by": "chatgpt-dropoff-ingestor",
   "picked_up_at": "2026-07-12T14:19:17.258Z",
-  "raw_ids_created": ["RAW-20260712-005"],
+  "raw_ids_created": [
+    "RAW-20260712-005"
+  ],
   "requirement_ids_created": [
     "REQ-20260712-201",
     "REQ-20260712-202",
@@ -16,8 +18,10 @@
     "REQ-20260712-205",
     "REQ-20260712-206"
   ],
-  "decision_ids_created": ["DEC-20260712-201"],
-  "implementation_status": "lane_01_local_verified_production_blocked",
+  "decision_ids_created": [
+    "DEC-20260712-201"
+  ],
+  "implementation_status": "blocked",
   "agent_mode_audit_ready": true,
   "next_action": "Lane 02/shared orchestrator work can start from the local Lane 01 guardrails. Production deploy, worker restart, live Telegram smoke, real identity binding, migrations, or external actions still require explicit operator approval.",
   "verification": [
@@ -54,8 +58,7 @@
     "memory/2026-07-12.md"
   ],
   "remaining_blockers": [
-    "Production deploy, worker restart, live Telegram smoke, real identity binding, production migration apply, and external actions require separate explicit operator approval.",
-    "Shared turn orchestrator, thin Telegram adapter, read/query foundation, durable memory, capability parity compiler, and safe external tools remain later packet lanes and were not claimed complete in Lane 01."
+    "Packet status is not recognized by the canonical lifecycle: codex_lane_01_local_verified"
   ],
   "task_ids_created": [
     "2266"

@@ -44,6 +44,15 @@ function relative(filePath) {
   return path.relative(repoRoot, filePath).replace(/\\/g, '/');
 }
 
+function visibleText(html = '') {
+  return String(html)
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 async function fetchText(route, options = {}) {
   const response = await fetch(`${baseUrl}${route}`, options);
   const text = await response.text();
@@ -97,35 +106,96 @@ function writeReports() {
 }
 
 async function main() {
-  await step('public One Time landing form points to interest endpoint', async () => {
-    const { response, text } = await fetchText('/');
-    assert(response.status === 200, `/ returned ${response.status}`);
-    assert(/Give your son a love for Torah you never thought possible\./i.test(text), 'headline missing');
-    assert(/data-signup-modal/.test(text), 'signup modal missing');
-    assert(/name="parent_name"/.test(text), 'parent/contact name input missing');
+  await step('public One Time direct signup form points to interest endpoint', async () => {
+    const { response, text } = await fetchText('/one-time/signup');
+    const customerText = visibleText(text);
+    assert(response.status === 200, `/one-time/signup returned ${response.status}`);
+    assert(/data-one-time-direct-signup-form/.test(text), 'direct signup form missing');
+    assert(/href="\/one-time"[^>]*>Back to Home<\/a>/.test(text), 'Back to Home link missing');
+    assert(/name="contact_name"/.test(text), 'contact name input missing');
+    assert(/name="signup_as"/.test(text), 'Family/School value field missing');
+    assert(/data-signup-type-picker/.test(text), 'Family/School visible button group missing');
+    assert(/data-signup-type-option[^>]+data-value="Family"/.test(text), 'Family visible choice missing');
+    assert(/data-signup-type-option[^>]+data-value="School"/.test(text), 'School visible choice missing');
+    assert(/ACTION-ONETIME-SIGNUP-AS-FAMILY/.test(text), 'Family choice action missing');
+    assert(/ACTION-ONETIME-SIGNUP-AS-SCHOOL/.test(text), 'School choice action missing');
+    assert(!/<select[^>]+name="signup_as"/i.test(text), 'retired Family/School select remains');
+    assert(!/<option value="Family">Family<\/option>/.test(text), 'retired Family option remains');
+    assert(!/<option value="School">School<\/option>/.test(text), 'retired School option remains');
+    assert(!/data-signup-type-trigger|data-signup-type-menu/.test(text), 'retired Family/School dropdown markup remains');
+    assert(/name="city_label"/.test(text), 'city free-text input missing');
+    assert(/name="city_id"/.test(text), 'city id field missing');
+    assert(/name="city_region"/.test(text), 'city region field missing');
+    assert(/name="city_country_code"/.test(text), 'city country code field missing');
+    assert(/name="timezone"/.test(text), 'city timezone field missing');
+    assert(/name="browser_timezone"/.test(text), 'browser timezone fallback field missing');
+    assert(/name="timezone_fallback"/.test(text), 'manual timezone fallback field missing');
+    assert(!/cityOptions|CITY_OPTIONS|Choose the matching city|unambiguous city/.test(text), 'retired city option list remains');
     assert(/name="email"/.test(text), 'email input missing');
-    assert(/name="phone"/.test(text), 'optional phone input missing');
-    assert(/name="signup_audience"\s+value="family"/.test(text), 'family audience choice missing');
-    assert(/name="signup_audience"\s+value="school"/.test(text), 'school audience choice missing');
+    assert(/name="phone"/.test(text), 'phone input missing');
+    assert(/name="reminder_preference" value="email"/.test(text), 'email reminders choice missing');
+    assert(/name="reminder_preference" value="whatsapp"/.test(text), 'WhatsApp reminders choice missing');
+    assert(/name="reminder_preference" value="both"/.test(text), 'email and WhatsApp reminders choice missing');
+    assert(/name="reminder_preference" value="none"/.test(text), 'no daily reminders choice missing');
+    assert(/name="signup_acknowledgement"/.test(text), 'city/reminder acknowledgement checkbox missing');
+    assert(/\.consent-check input:checked::before/.test(text), 'acknowledgement checkbox checkmark style missing');
+    assert(/class="required-dot"/.test(text), 'required red dots missing');
+    assert(/data-phone-required-dot[^>]*hidden/.test(text), 'phone required dot should start hidden');
+    assert(/data-phone-hint hidden>Required for WhatsApp reminders\./.test(text), 'WhatsApp phone hint missing');
+    assert(!/<input[^>]+name="reminder_preference"[^>]+checked/i.test(text), 'reminder choice should not be preselected');
     assert(/\/api\/one-time\/interest/.test(text), 'interest endpoint missing');
     assert(!/signup-strip|id="interestForm"|signupStudentName|name="student/i.test(text), 'retired inline/student signup field is still visible');
-    assert(!/parent access next steps|Parent portal setup instructions|Stripe checkout|GreenInvoice checkout/i.test(text), 'portal/payment promise leaked into public form');
+    assert(!/phone\s*(?:\/\s*WhatsApp)?\s*[-:]?\s*optional/i.test(customerText), 'phone optional copy leaked into customer-facing form');
+    assert(!/parent access next steps|Parent portal setup instructions|Stripe checkout|GreenInvoice checkout|No billing|No checkout|No external send|CRM|Codex|guardrail|approval|password setup|configuration/i.test(customerText), 'internal or portal/payment copy leaked into customer-facing form');
     return { status: response.status };
   });
 
   await step('public dry-run validates lead capture mapping without writes', async () => {
     const payload = {
       dry_run: true,
-      parent_name: 'Smoke Test Parent',
+      parent_name: 'Smoke Test Family',
+      contact_name: 'Smoke Test Family',
       email: `onetime-dry-run-${stamp}@example.invalid`,
-      phone: '+1 555 010 7878',
-      signup_audience: 'family',
-      source_landing_page: '/one-time',
-      preferred_class_format: 'live_mishnayos_intro',
-      addendum_raw_intake_id: 'RAW-20260710-008',
+      phone: '',
+      signup_as: 'Family',
+      city_id: '',
+      city_label: 'Buenos Aires',
+      city_name: 'Buenos Aires',
+      city_region: '',
+      city_country: '',
+      city_country_code: '',
+      timezone: 'America/Buenos_Aires',
+      browser_timezone: 'America/Buenos_Aires',
+      source_landing_page: '/one-time/signup',
+      signup_mode: 'one_time_class_signup',
+      signup_acknowledgement: true,
+      location_time_acknowledgement: true,
+      reminder_preference: 'email',
+      reminder_consent_ack: true,
+      consent: true,
       metadata: {
         smoke: 'one_time_interest_dry_run',
         external_write_expected: false,
+        one_time_direct_signup: true,
+        form_version: 'one-time-direct-signup-v2',
+        signup_as: 'Family',
+        city: {
+          id: '',
+          label: 'Buenos Aires',
+          name: 'Buenos Aires',
+          region: '',
+          country: '',
+          country_code: '',
+          timezone: 'America/Buenos_Aires',
+        },
+        reminder_preference: 'email',
+        reminder_consent: true,
+        reminder_consent_acknowledged: true,
+        signup_acknowledgement: true,
+        location_time_acknowledgement: true,
+        reminder_consent_policy_version: 'one-time-class-reminders-v1-2026-07-12',
+        browser_timezone: 'America/Buenos_Aires',
+        timezone_source: 'browser',
       },
     };
     const { response, data, text } = await fetchJson('/api/one-time/interest?dry_run=true', {
@@ -140,13 +210,30 @@ async function main() {
     assert(data.preview?.project_key === 'one_time_mishnah_class', 'project scope mismatch');
     assert(data.preview?.program_key === 'one_time_mishnah_class', 'program key mismatch');
     assert(data.preview?.project_id_present === true, 'project was not resolved');
+    assert(data.preview?.direct_signup_workflow === true, 'direct signup workflow was not recognized');
     assert(data.preview?.product_lead_preview?.parent_email === payload.email.toLowerCase(), 'email was not preserved in product preview');
+    assert(data.preview?.product_lead_preview?.parent_phone === null, 'phone should remain blank for email reminders');
+    assert(data.preview?.product_lead_preview?.parent_whatsapp === null, 'WhatsApp should remain blank for email-only reminders');
     assert(data.preview?.product_lead_preview?.student_name === null, 'student name should be absent from modal preview');
-    assert(data.preview?.product_lead_preview?.preferred_class_format === 'live_mishnayos_intro', 'preferred format missing');
+    assert(data.preview?.product_lead_preview?.preferred_class_format === 'daily_live_mishnah_class', 'preferred format missing');
+    assert(data.preview?.product_lead_preview?.source_landing_page === '/one-time/signup', 'signup source route mismatch');
+    assert(data.preview?.product_lead_preview?.signup_as === 'Family', 'Family signup type missing');
+    assert(data.preview?.product_lead_preview?.city?.id === '', 'custom city should not require a registry id');
+    assert(data.preview?.product_lead_preview?.city?.label === 'Buenos Aires', 'custom city label missing from product preview');
+    assert(data.preview?.product_lead_preview?.city?.timezone === 'America/Buenos_Aires', 'custom city timezone missing from product preview');
+    assert(data.preview?.product_lead_preview?.reminder_preference === 'email', 'email reminder preference missing');
+    assert(data.preview?.product_lead_preview?.reminder_channels?.includes('email'), 'email reminder channel missing');
+    assert(Boolean(data.preview?.product_lead_preview?.reminder_consent_at), 'reminder consent timestamp missing');
+    assert(data.preview?.product_lead_preview?.reminder_consent_policy_version === 'one-time-class-reminders-v1-2026-07-12', 'reminder consent policy version mismatch');
     assert(data.preview?.crm_lead_preview?.table === 'bna_parent_leads', 'CRM lead table mismatch');
     assert(data.preview?.crm_lead_preview?.status === 'follow_up', 'CRM follow-up status mismatch');
     assert(data.preview?.crm_lead_preview?.tags?.includes('free-class-interest'), 'free-class tag missing');
+    assert(data.preview?.crm_lead_preview?.tags?.includes('one-time-direct-signup'), 'direct signup tag missing');
     assert(data.preview?.communication_preview?.table === 'bna_contact_communications', 'communication preview table mismatch');
+    assert(data.preview?.transactional_follow_up_preview?.some((event) => event.channel_key === 'email:one_time_signup_confirmation'), 'confirmation email outbox preview missing');
+    assert(data.preview?.transactional_follow_up_preview?.some((event) => event.channel_key === 'telegram:one_time_rabbi_operator'), 'Rabbi Telegram outbox preview missing');
+    assert(!data.preview?.transactional_follow_up_preview?.some((event) => event.channel_key === 'whatsapp:one_time_signup_confirmation'), 'WhatsApp preview should not queue for email-only signup');
+    assert(data.preview?.transactional_follow_up_preview?.every((event) => event.raw_join_url_in_payload === false), 'raw Zoom URL leaked into outbox preview');
     for (const key of [
       'no_database_write_performed',
       'no_product_lead_created',
@@ -168,6 +255,8 @@ async function main() {
       project_key: data.preview.project_key,
       product_preview: data.preview.product_lead_preview.product_key,
       crm_preview: data.preview.crm_lead_preview.table,
+      direct_signup_workflow: data.preview.direct_signup_workflow,
+      reminder_preference: data.preview.product_lead_preview.reminder_preference,
       no_database_write_performed: data.no_database_write_performed,
     };
   });

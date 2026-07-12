@@ -105,6 +105,41 @@ function humanCrmSourceLabel(value, fallback = '') {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+function parseObject(value) {
+  if (!value) return {};
+  if (typeof value === 'object' && !Array.isArray(value)) return value;
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    } catch (_) {
+      return {};
+    }
+  }
+  return {};
+}
+
+function numberOrZero(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : 0;
+}
+
+function deriveFamilySchoolClassification(row = {}, contactType = '') {
+  const raw = String(firstNonEmpty(
+    row.family_school_classification,
+    row.classification,
+    row.signup_as,
+    row.audience_type,
+    row.contact_segment,
+    row.lead_type,
+    contactType
+  )).toLowerCase();
+  if (/school|classroom|teacher|principal|administrator|mosad/.test(raw)) return 'school';
+  if (/family|parent|home|homeschool|household/.test(raw)) return 'family';
+  if (contactType === 'school_interest') return 'school';
+  return 'family';
+}
+
 function toContactCard(row = {}, options = {}) {
   const source = options.source || row.source_table || row.source || 'unknown';
   const id = firstNonEmpty(row.id, row.contact_id, row.person_id, row.lead_id, row.provider_id);
@@ -127,6 +162,13 @@ function toContactCard(row = {}, options = {}) {
   const tags = splitTags(firstNonEmpty(row.tags, row.contact_tags, row.lead_tags));
   const contactType = deriveContactType(row);
   const status = String(firstNonEmpty(row.lead_status, row.status, row.contact_status, 'new')).toLowerCase();
+  const membershipAccess = parseObject(row.membership_access);
+  const mailbox = parseObject(row.mailbox);
+  const support = parseObject(row.support);
+  const followUpTask = parseObject(row.follow_up_task);
+  const classContext = parseObject(row.class_context);
+  const timelineActivity = parseObject(row.timeline_activity);
+  const classification = deriveFamilySchoolClassification(row, contactType);
 
   return {
     id: String(id || `${source}:${displayName}:${email || phone}`),
@@ -135,7 +177,10 @@ function toContactCard(row = {}, options = {}) {
     project_key: row.project_key || row.projectKey || options.project_key || null,
     display_name: String(displayName || 'Unknown contact'),
     contact_type: contactType,
+    family_school_classification: classification,
     status,
+    lifecycle_stage: status,
+    assigned_owner: firstNonEmpty(row.assigned_owner, row.owner, row.assignee, row.created_by),
     interest_level: row.interest_level || row.priority || '',
     email,
     phone,
@@ -151,7 +196,48 @@ function toContactCard(row = {}, options = {}) {
       provider_profile_id: row.provider_profile_id || null,
       student_id: row.student_id || null,
       signup_id: row.signup_id || null,
+      parent_name: firstNonEmpty(row.parent_name, row.linked_parent_name),
+      student_name: firstNonEmpty(row.student_name, row.linked_student_name),
     },
+    membership_access: {
+      member_id: membershipAccess.member_id || row.member_id || null,
+      access_status: firstNonEmpty(membershipAccess.access_status, row.access_status),
+      access_tier: firstNonEmpty(membershipAccess.access_tier, row.access_tier),
+      access_enabled: membershipAccess.access_enabled !== undefined ? Boolean(membershipAccess.access_enabled) : row.access_enabled,
+      source: firstNonEmpty(membershipAccess.source, row.membership_source, 'first_party'),
+    },
+    mailbox: {
+      message_count: numberOrZero(firstNonEmpty(mailbox.message_count, row.message_count)),
+      latest_thread_key: firstNonEmpty(mailbox.latest_thread_key, row.latest_thread_key, row.thread_key),
+      latest_subject: firstNonEmpty(mailbox.latest_subject, row.latest_subject, row.subject),
+      latest_at: firstNonEmpty(mailbox.latest_at, row.latest_message_at, row.last_contact_at),
+      filtered_route: firstNonEmpty(mailbox.filtered_route, row.filtered_mailbox_route),
+    },
+    support: {
+      ticket_count: numberOrZero(firstNonEmpty(support.ticket_count, row.support_ticket_count)),
+      open_ticket_count: numberOrZero(firstNonEmpty(support.open_ticket_count, row.open_support_ticket_count)),
+      latest_ticket_id: support.latest_ticket_id || row.latest_ticket_id || null,
+      latest_ticket_title: firstNonEmpty(support.latest_ticket_title, row.latest_ticket_title),
+    },
+    follow_up_task: {
+      task_id: followUpTask.task_id || row.follow_up_task_id || null,
+      task_count: numberOrZero(firstNonEmpty(followUpTask.task_count, row.follow_up_task_count)),
+      assigned_to: firstNonEmpty(followUpTask.assigned_to, row.follow_up_assigned_to, row.assigned_owner),
+      due_date: firstNonEmpty(followUpTask.due_date, row.follow_up_due_date, row.next_follow_up_at),
+      status: firstNonEmpty(followUpTask.status, row.follow_up_task_status),
+    },
+    class_context: {
+      class_type: firstNonEmpty(classContext.class_type, row.class_type, contactType),
+      trial_status: firstNonEmpty(classContext.trial_status, row.trial_status),
+      access_context: firstNonEmpty(classContext.access_context, row.access_context),
+      live_class_context: firstNonEmpty(classContext.live_class_context, row.live_class_context),
+    },
+    timeline_activity: {
+      activity_count: numberOrZero(firstNonEmpty(timelineActivity.activity_count, row.timeline_activity_count)),
+      latest_activity_at: firstNonEmpty(timelineActivity.latest_activity_at, row.latest_activity_at, row.last_contact_at),
+      latest_activity_type: firstNonEmpty(timelineActivity.latest_activity_type, row.latest_activity_type),
+    },
+    editable_fields: ['display_name', 'email', 'phone', 'lifecycle_stage', 'next_follow_up_at', 'assigned_owner', 'tags', 'internal_note'],
     raw: options.includeRaw ? row : undefined,
   };
 }
@@ -189,6 +275,12 @@ function matchesFilters(card, filters = {}) {
       card.summary,
       card.tags.join(' '),
       card.source_label,
+      card.family_school_classification,
+      card.membership_access?.access_status,
+      card.membership_access?.access_tier,
+      card.mailbox?.latest_subject,
+      card.support?.latest_ticket_title,
+      card.follow_up_task?.assigned_to,
     ].join(' ');
     if (!textIncludes(blob, filters.search)) return false;
   }

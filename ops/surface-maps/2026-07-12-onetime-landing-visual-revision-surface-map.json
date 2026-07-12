@@ -1,0 +1,42 @@
+{
+  "raw_id": "RAW-20260712-004",
+  "surface": "one_time_public_acquisition_flow",
+  "major_surface_count": 1,
+  "routes": [
+    {
+      "route": "/one-time",
+      "access": "public",
+      "scope": "landing",
+      "status": "implemented_needs_screenshot_approval"
+    },
+    {
+      "route": "/one-time/signup",
+      "access": "public",
+      "scope": "direct_signup",
+      "status": "implemented_needs_screenshot_approval"
+    },
+    {
+      "route": "public assistant widget on /one-time",
+      "access": "public",
+      "scope": "robot_scheller",
+      "status": "implemented_needs_screenshot_approval"
+    }
+  ],
+  "primary_files": [
+    "public/one-time/index.html",
+    "public/one-time/signup.html",
+    "public/js/bna-bot-widget.js",
+    "src/lib/bna/one-time-signup-workflow.js",
+    "ops/action-registry.json",
+    "config/service-provider-sites/one-time.json"
+  ],
+  "blocked_actions": [
+    "merge",
+    "deploy",
+    "external_send",
+    "payment",
+    "access_grant",
+    "dns_change",
+    "production_data_mutation"
+  ]
+}

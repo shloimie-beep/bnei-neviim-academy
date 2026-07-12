@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-07-08T14:24:17+03:00",
+  "updated_at": "2026-07-12T09:05:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -543,6 +543,82 @@
       ]
     },
     {
+      "route": "/one-time/signup",
+      "surface": "one_time_public_direct_signup",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_public_one_time_direct_signup_without_private_member_student_provider_or_operations_data",
+      "expected_logged_in_behavior": "load_public_one_time_direct_signup_without_starting_private_portal_payment_or_access_workflows",
+      "privacy_risk": "normal",
+      "canonical_target": "/one-time/signup",
+      "security_expectation": "Public One Time direct signup only: collects contact name, Family or School choice, free-text location/timezone metadata, email, optional phone unless WhatsApp reminders are selected, and class reminder preference. It must not expose private records, open member login, start checkout/payment, grant access, create a Zoom meeting, or perform an external send from the page route.",
+      "smoke_expectation": "tests/one-time-direct-signup-page.test.js verifies route registration, responsive form behavior, no student-name field, WhatsApp-only phone requirement, and no portal/payment/access actions.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/cron/one-time/class-reminders",
+      "surface": "one_time_class_reminder_cron",
+      "access": "protected_cron",
+      "required_role": "cron_secret",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_without_cron_secret",
+      "expected_logged_in_behavior": "enqueue_scoped_one_time_class_reminders_only_when_runtime_gates_pass",
+      "privacy_risk": "high",
+      "security_expectation": "Protected One Time reminder dispatcher requires CRON_SECRET plus ONE_TIME_CLASS_REMINDERS_ENABLED=true and ONE_TIME_CLASS_REMINDERS_CONFIRM=APPROVE_ONE_TIME_CLASS_REMINDERS for live enqueue. It uses class-date/contact/channel/window/schedule-version idempotency, never exposes raw class links, and must not create portal, payment, password, or access records.",
+      "smoke_expectation": "tests/one-time-signup-reminder-workflow.test.js verifies env gates, idempotency key shape, single-recipient simulation guard, and no portal/payment/access paths.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/cron/one-time/delivery-outbox",
+      "surface": "one_time_delivery_outbox_dispatcher",
+      "access": "protected_cron",
+      "required_role": "cron_secret",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_without_cron_secret",
+      "expected_logged_in_behavior": "deliver_due_scoped_one_time_confirmation_reminder_and_rabbi_alert_outbox_rows_with_retries",
+      "privacy_risk": "high",
+      "security_expectation": "Protected One Time delivery dispatcher requires CRON_SECRET, drains only scoped One Time delivery outbox channel keys, uses server-side class link aliases, redacts Zoom/message bodies from API responses, records retries/dead letters, and must not create portal, payment, password, or access records.",
+      "smoke_expectation": "tests/one-time-delivery-outbox.test.js and tests/one-time-signup-reminder-workflow.test.js verify channel scope, redaction, retry/dead-letter behavior, cron protection, and no portal/payment/access paths.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/local-class-reminder-preview",
+      "surface": "one_time_local_class_reminder_preview",
+      "access": "admin",
+      "required_role": "admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_admin_required",
+      "expected_logged_in_behavior": "return_redacted_exact_three_local_class_preview_without_mutation",
+      "privacy_risk": "high",
+      "security_expectation": "Admin-only preview for scoped rabbi_sheller_provider / one_time_mishnah_class contacts tagged local_class_attendee, zoom_mishnayos_class, or local_student. It must block activation unless exactly three unique, unsuppressed, non-archived contacts with valid emails are found and must not send reminders or create portal/access records.",
+      "smoke_expectation": "tests/one-time-signup-reminder-workflow.test.js verifies exact-three, duplicate, invalid-email, suppression/archive, and mismatch blocker behavior plus the no-send email-only activation plan.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/one-time/mishnayos",
       "surface": "one_time_public_focused_offer_alias",
       "access": "public",
@@ -589,16 +665,34 @@
       ]
     },
     {
-      "route": "/one-time-preview",
-      "surface": "one_time_public_preview_onboarding",
-      "access": "public_preview",
+      "route": "/one-time-onboarding",
+      "surface": "one_time_public_onboarding",
+      "access": "public",
       "required_role": null,
       "workspace_scope_required": false,
       "public_allowed": true,
-      "expected_logged_out_behavior": "load_anonymous_one_time_preview_onboarding_without_live_checkout_or_private_member_data",
-      "expected_logged_in_behavior": "load_anonymous_one_time_preview_onboarding_without_live_checkout_or_private_member_data",
+      "expected_logged_out_behavior": "load_anonymous_one_time_onboarding_without_live_checkout_or_private_member_data",
+      "expected_logged_in_behavior": "load_anonymous_one_time_onboarding_without_live_checkout_or_private_member_data",
       "privacy_risk": "normal",
-      "security_expectation": "Preview-only One Time continuation: no live checkout, no payment write, no access grant, no email or WhatsApp send, and no private member/student/provider records are exposed.",
+      "security_expectation": "One Time family/school onboarding continuation: no checkout, no payment write, no access grant, no email/WhatsApp/Telegram send, and no private member/student/provider records are exposed.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/one-time-preview",
+      "surface": "one_time_public_onboarding_legacy_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "canonical_target": "/one-time-onboarding",
+      "expected_logged_out_behavior": "load_anonymous_one_time_onboarding_without_live_checkout_or_private_member_data",
+      "expected_logged_in_behavior": "load_anonymous_one_time_onboarding_without_live_checkout_or_private_member_data",
+      "privacy_risk": "normal",
+      "security_expectation": "Legacy alias serving the same no-send One Time onboarding page; no live checkout, no payment write, no access grant, no email/WhatsApp/Telegram send, and no private member/student/provider records are exposed.",
       "related_goal_ids": [
         "GOAL-CORE-003",
         "GOAL-CORE-014",
@@ -607,16 +701,16 @@
     },
     {
       "route": "/preview/one-time-mishnah",
-      "surface": "one_time_public_preview_onboarding_alias",
-      "access": "public_preview",
+      "surface": "one_time_public_onboarding_legacy_alias",
+      "access": "public",
       "required_role": null,
       "workspace_scope_required": false,
       "public_allowed": true,
-      "canonical_target": "/one-time-preview",
-      "expected_logged_out_behavior": "load_anonymous_one_time_preview_onboarding_without_live_checkout_or_private_member_data",
-      "expected_logged_in_behavior": "load_anonymous_one_time_preview_onboarding_without_live_checkout_or_private_member_data",
+      "canonical_target": "/one-time-onboarding",
+      "expected_logged_out_behavior": "load_anonymous_one_time_onboarding_without_live_checkout_or_private_member_data",
+      "expected_logged_in_behavior": "load_anonymous_one_time_onboarding_without_live_checkout_or_private_member_data",
       "privacy_risk": "normal",
-      "security_expectation": "Legacy preview alias only: serves the same no-write One Time preview onboarding page and must not start checkout, grant access, or expose private records.",
+      "security_expectation": "Legacy alias only: serves the same no-send One Time onboarding page and must not start checkout, grant access, send external messages, or expose private records.",
       "related_goal_ids": [
         "GOAL-CORE-003",
         "GOAL-CORE-014",
@@ -1307,13 +1401,32 @@
       "workspace_scope_required": true,
       "public_allowed": false,
       "expected_logged_out_behavior": "reject_unauthorized",
-      "expected_logged_in_behavior": "create_scoped_rabbi_one_time_provider_session_cookie_and_return_provider_mailbox_url",
+      "expected_logged_in_behavior": "create_scoped_rabbi_one_time_provider_session_cookie_and_return_operations_rabbi_mailbox_url",
       "privacy_risk": "critical",
-      "canonical_target": "/provider.html?admin_provider=one-time&section=mailbox",
+      "canonical_target": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
       "security_expectation": "Requires platform-super-admin/all-scope identity, resolves only the Rabbi / One Time provider account, sets a provider session cookie, returns no password or secret fields, and performs no external send, payment, access grant, DNS, or provider-account mutation beyond the session row.",
       "smoke_expectation": "tests/one-time-admin-mailbox-access.test.js verifies route registration, Super Admin guard, provider session creation, no password return, and provider admin banner contract.",
       "related_goal_ids": [
         "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/dashboard-ia",
+      "surface": "operations_api_one_time_dashboard_ia",
+      "access": "private",
+      "required_role": "super_admin_or_project_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_scoped_rabbi_dashboard_ia_without_internal_support_modules",
+      "privacy_risk": "normal",
+      "security_expectation": "Requires One Time workspace access and returns the Rabbi-facing IA contract only; no private contact rows, provider secrets, sends, charges, imports, uploads, or access changes.",
+      "smoke_expectation": "tests/one-time-rabbi-dashboard-ia.test.js verifies labels, routes, hidden internal modules, and generated client IA.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
         "GOAL-CORE-006",
         "GOAL-CORE-014",
         "GOAL-CORE-015"
@@ -2223,6 +2336,24 @@
       "privacy_risk": "high_private_contacts",
       "security_expectation": "Requires contact_timeline entitlement and workspace access; returns no_send/external_write_performed=false.",
       "smoke_expectation": "tests/crm-contact-model.test.js verifies timeline no-send flags.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/crm/contacts/:id",
+      "surface": "operations_api_first_party_crm_contact_update",
+      "access": "private",
+      "required_role": "super_admin_or_scoped_crm_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "save_workspace_scoped_local_crm_update_without_external_write",
+      "privacy_risk": "high_private_contacts",
+      "security_expectation": "Requires CRM entitlements and workspace access; only updates first-party local CRM tables and local timeline/events; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write. View-as Rabbi non-GET requests are rejected.",
+      "smoke_expectation": "Focused CRM workbench smoke verifies local update copy and no_send/external_write_performed=false.",
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-006",
