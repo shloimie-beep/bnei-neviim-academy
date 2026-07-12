@@ -8,7 +8,8 @@ Release-lane state as of 2026-07-12T21:14:00+03:00:
 - A clean worktree was created from current `origin/master`.
 - Scoped One Time CRM/portal correction work was reapplied without unrelated dirty lanes.
 - Implementation commit `833cac222` was pushed to `origin/codex/onetime-crm-portal-release-20260712`.
-- Draft PR `#131` is open: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/131`.
+- Draft PR `#131` is open and mergeable/clean: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/131`.
+- GitHub currently reports no status checks on the PR branch.
 - Local validation, focused tests, screenshots/smokes, protocol drift watchdog, audit governance, and release-gate dry-run all completed on the release branch.
 - No production deployment, production mutation, external send, provider write, payment/access/DNS change, or live verification was performed.
 
@@ -25,7 +26,7 @@ Open requirements:
 - `REQ-20260712-109`: Done locally - public landing Robot/helper widget assets are removed from the served page, one accessible same-origin WhatsApp launcher is present, action registry coverage is updated, and local screenshots cover 1440/1024/768/430/390 widths. Public-number live readback/release/live-smoke remains under `REQ-20260712-112`.
 - `REQ-20260712-110`: Done locally - WhatsApp assistant natural deterministic replies and WAPI safety gates pass local tests. WAPI live/no-unapproved-send proof remains under `REQ-20260712-112`.
 - `REQ-20260712-111`: Done locally - split shell is under the 1.2 MB budget, CRM metrics pass locally, cache policy contract passes, and member-library Vimeo loads only after Play Video. Production compression/cache/header readback remains under `REQ-20260712-112`.
-- `REQ-20260712-112`: Blocked / needs operator release decision - scoped branch is clean, pushed, draft PR `#131` is open, and release-gate dry-run reports ready. Production deploy/live verification still requires PR review/release approval, explicit release-gate confirmation, and either completion or approved deferral of external Railway/Drive readbacks.
+- `REQ-20260712-112`: Blocked / needs operator release decision - scoped branch is clean, pushed, draft PR `#131` is open and mergeable/clean, and release-gate dry-run reports ready. Production deploy/live verification still requires PR review/release approval, explicit release-gate confirmation, and either completion or approved deferral of external Railway/Drive readbacks.
 
 Next safe commands:
 

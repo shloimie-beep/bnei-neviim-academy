@@ -727,7 +727,7 @@
         "REQ-20260712-111"
       ],
       "status": "blocked",
-      "implementation_status": "Clean release branch is pushed, draft PR #131 is open, and release-gate dry-run is ready. No production deploy, production mutation, external write, or live verification was performed.",
+      "implementation_status": "Clean release branch is pushed, draft PR #131 is open and mergeable/clean, and release-gate dry-run is ready. No production deploy, production mutation, external write, or live verification was performed.",
       "can_continue_without_operator": false,
       "next_action": "Unblock by reviewing/merging PR #131 or otherwise confirming the production release path, then run the approved deploy/live-verify gate commands and complete or explicitly defer Railway/Drive external readbacks through the approved release gate options.",
       "acceptance_criteria": [
@@ -761,6 +761,7 @@
         "PASS npm run audit:governance exit 0; current One Time audit packages mapped, historical repo-wide audit debt remains",
         "PASS npm run bna:release-gate -- --expected-branch codex/onetime-crm-portal-release-20260712 (dry run): ready, HEAD pushed yes, dirty files 0, production mutation performed no",
         "PASS draft PR #131 opened against master: https://github.com/shloimie-beep/bnei-neviim-academy/pull/131",
+        "PASS PR #131 readiness readback: open, draft, mergeable, merge state CLEAN, and no status checks reported on the branch",
         "BLOCKED / NEEDS OPERATOR RELEASE DECISION: PR review/release approval is required; deploy requires DEPLOY_BNA_PRODUCTION_CLOSEOUT, live verification requires VERIFY_BNA_LIVE_CLOSEOUT, and Railway/Drive readbacks must be completed or explicitly deferred"
       ],
       "implementation_files": [
@@ -770,13 +771,13 @@
         "ops/ui-audits/"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T21:19:00+03:00",
-      "blocker": "Production Done is blocked until PR review/release approval and explicit deploy/live-verify approval are given, and Railway/Drive readbacks are completed or explicitly deferred through approved release-gate options. The stale master / dirty worktree blocker is superseded by the clean pushed release branch and draft PR #131.",
+      "updated_at": "2026-07-12T21:22:41+03:00",
+      "blocker": "Production Done is blocked until PR review/release approval and explicit deploy/live-verify approval are given, and Railway/Drive readbacks are completed or explicitly deferred through approved release-gate options. The stale master / dirty worktree blocker is superseded by the clean pushed release branch and mergeable/clean draft PR #131.",
       "blocker_owner": "Codex/operator release lane",
       "blocker_next_action": "Review/merge PR #131 or otherwise confirm the production release path, then run the approved deploy/live-verify gate commands and complete or explicitly defer Railway/Drive readback through approved release-gate options.",
       "blocker_detail": {
         "id": "DEC-20260712-112",
-        "reason": "The scoped release branch is clean, pushed, draft PR #131 is open, and release-gate dry-run ready, but production deploy/live verification would mutate release state and requires PR review/release approval plus explicit approval tokens. Railway/Drive external readbacks also need completion or approved deferral before production Done can be claimed.",
+        "reason": "The scoped release branch is clean, pushed, draft PR #131 is open and mergeable/clean, and release-gate dry-run ready, but production deploy/live verification would mutate release state and requires PR review/release approval plus explicit approval tokens. Railway/Drive external readbacks also need completion or approved deferral before production Done can be claimed.",
         "owner": "Codex/operator release lane",
         "recommended_option": "Review/merge PR #131, approve the production release path, run the deploy gate, verify exact SHA on the BNA Operations/portal and One Time public services, then run the required live smokes.",
         "alternatives": [

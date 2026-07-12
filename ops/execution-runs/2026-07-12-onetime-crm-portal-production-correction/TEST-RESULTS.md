@@ -232,6 +232,7 @@ Result:
 - PASS commit and push to `origin/codex/onetime-crm-portal-release-20260712`; implementation commit `833cac222`.
 - PASS release-gate dry-run on the clean pushed release branch: ready, dry-run mode, branch `codex/onetime-crm-portal-release-20260712`, HEAD pushed yes, dirty files 0, production mutation performed no.
 - PASS draft PR opened against `master`: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/131`.
+- PASS PR readiness readback: PR `#131` is open, draft, mergeable, merge state `CLEAN`, and GitHub currently reports no status checks on the branch.
 - BLOCKED / NEEDS OPERATOR RELEASE DECISION: no deploy or live verification was run. PR review/release approval is required; the deploy command requires `DEPLOY_BNA_PRODUCTION_CLOSEOUT`; live verification requires `VERIFY_BNA_LIVE_CLOSEOUT`; Railway/Drive external readbacks must be completed or explicitly deferred through approved release-gate flags.
 
 Closeout checks:

@@ -7,6 +7,7 @@ Release candidate state as of 2026-07-12T21:14:00+03:00:
 - Release branch: `codex/onetime-crm-portal-release-20260712`
 - Pushed implementation commit: `833cac222`
 - Draft PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/131`
+- PR mergeability: mergeable/clean as of 2026-07-12T21:22:41+03:00; no status checks reported.
 - Local release-gate dry-run: ready on the clean pushed release branch.
 - Production deployment/live verification: not run.
 
