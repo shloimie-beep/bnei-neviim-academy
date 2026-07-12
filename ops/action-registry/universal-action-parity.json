@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T14:48:47.904Z",
+  "generated_at": "2026-07-12T17:01:38.085Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,9 +16,9 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "4992588ef48286325623b40c0239d9bfac36fe47e43d5c56e1f4e1c26e8a1fab",
+  "content_hash": "7b20f3bfd4719ec25896477ebc732cdbf4f50b0c64f6713c935fc14cabbdc3e5",
   "source_hashes": {
-    "ops/action-registry.json": "144b206996c45c5e3e562657deb768a5c0f1078e1dd11cc02037f677f48a21f9",
+    "ops/action-registry.json": "0a21d51053dc3de1f6bf25d41ca4e084f38511cf3272c94b3d241f84a7b33c4c",
     "ops/action-registry/actions.json": "71eb9f135d8e056d37fb5d52d0f8a3fe0751ab1579dee845fdb7df6d097ea8d5",
     "public/operations.html": "625762356ef6c288b20c11329eb0785a161f83eddb22cedaed9a292d703adc42",
     "public/parent.html": "c9928f157d29d6f5da7e6710805315c8403d782f318d63dbd425f157de9f4549",
@@ -27,16 +27,16 @@
     "src/platform/assistant/control-plane.js": "7eaf0dff452382e9694aa9dae32df76c29f1e0b912cfa69d59dc88eee9721592"
   },
   "summary": {
-    "root_actions": 132,
+    "root_actions": 134,
     "detailed_actions": 80,
-    "total_registry_rows": 212,
+    "total_registry_rows": 214,
     "visible_controls": 53,
     "visible_controls_classified": 53,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
     "blocked_connector": 11,
-    "risky_actions": 104,
+    "risky_actions": 106,
     "risky_without_approval": 0,
     "visible_by_classification": {
       "read_only": 8,
@@ -48,7 +48,7 @@
     },
     "registry_by_classification": {
       "secure_deep_link_only": 23,
-      "preview_then_approve": 96,
+      "preview_then_approve": 98,
       "executable": 24,
       "read_only": 56,
       "blocked_connector": 11,
@@ -63,7 +63,7 @@
       "count": 80
     },
     "website_assistant_request": {
-      "count": 212
+      "count": 214
     },
     "operations_helper_request": {
       "count": 182
@@ -110,7 +110,7 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 212
+        "value": 214
       },
       {
         "name": "agent_work_handoff_parity_present",
@@ -1543,6 +1543,68 @@
         "Sign Up Now"
       ],
       "result_renderer": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required free-text location entry accepting city, ZIP/postal code, area code, or neighborhood, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-SIGNUP-AS-FAMILY",
+      "label": "Family",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_public_direct_signup",
+      "route": "/one-time/signup",
+      "permission": "public",
+      "allowed_roles": [
+        "public"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Sets the direct signup form's required signup_as value to Family through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Family"
+      ],
+      "result_renderer": "Sets the direct signup form's required signup_as value to Family through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-SIGNUP-AS-SCHOOL",
+      "label": "School",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_public_direct_signup",
+      "route": "/one-time/signup",
+      "permission": "public",
+      "allowed_roles": [
+        "public"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Sets the direct signup form's required signup_as value to School through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "School"
+      ],
+      "result_renderer": "Sets the direct signup form's required signup_as value to School through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },

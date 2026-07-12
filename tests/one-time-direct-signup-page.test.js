@@ -61,8 +61,15 @@ test('One Time direct signup route, registries, and landing CTAs are canonical',
   assert.match(signupHtml, /data-one-time-direct-signup-form/);
   assert.match(signupHtml, /name="contact_name"/);
   assert.match(signupHtml, /name="signup_as"/);
-  assert.match(signupHtml, /<option value="Family">Family<\/option>/);
-  assert.match(signupHtml, /<option value="School">School<\/option>/);
+  assert.match(signupHtml, /data-signup-type-picker/);
+  assert.match(signupHtml, /data-signup-type-option[^>]+data-value="Family"/);
+  assert.match(signupHtml, /data-signup-type-option[^>]+data-value="School"/);
+  assert.match(signupHtml, /ACTION-ONETIME-SIGNUP-AS-FAMILY/);
+  assert.match(signupHtml, /ACTION-ONETIME-SIGNUP-AS-SCHOOL/);
+  assert.doesNotMatch(signupHtml, /<select[^>]+name="signup_as"/i);
+  assert.doesNotMatch(signupHtml, /<option value="Family">Family<\/option>/);
+  assert.doesNotMatch(signupHtml, /<option value="School">School<\/option>/);
+  assert.doesNotMatch(signupHtml, /data-signup-type-trigger|data-signup-type-menu/);
   assert.match(signupHtml, /name="city_label"/);
   assert.match(signupHtml, /name="city_id"/);
   assert.match(signupHtml, /name="city_name"/);
@@ -108,6 +115,8 @@ test('One Time direct signup route, registries, and landing CTAs are canonical',
 
   const actions = new Map(actionRegistry.actions.map((action) => [action.action_id, action]));
   assert.match(actions.get('ACTION-ONETIME-JOIN-SHIR-CTA')?.expected_behavior || '', /\/one-time\/signup/);
+  assert.match(actions.get('ACTION-ONETIME-SIGNUP-AS-FAMILY')?.expected_behavior || '', /Family/i);
+  assert.match(actions.get('ACTION-ONETIME-SIGNUP-AS-SCHOOL')?.expected_behavior || '', /School/i);
   assert.equal(actions.get('ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT')?.route, '/one-time/signup');
   assert.match(actions.get('ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT')?.expected_behavior || '', /no student name/i);
   assert.match(actions.get('ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT')?.expected_behavior || '', /phone required only for WhatsApp/i);
@@ -140,6 +149,11 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
         acknowledgementChecked: Boolean(document.querySelector('input[name="signup_acknowledgement"]')?.checked),
         phoneLabel: document.querySelector('label[for="phone"]')?.textContent || '',
         consentText: document.querySelector('.consent-copy')?.textContent || '',
+        signupTypePickerVisible: Boolean(document.querySelector('[data-signup-type-picker]')?.offsetParent),
+        signupTypeOptionCount: document.querySelectorAll('[data-signup-type-option]').length,
+        signupTypeVisibleOptionCount: Array.from(document.querySelectorAll('[data-signup-type-option]')).filter((node) => Boolean(node.offsetParent)).length,
+        signupTypeSelectCount: document.querySelectorAll('select[name="signup_as"]').length,
+        signupTypeValue: document.querySelector('input[name="signup_as"]')?.value || '',
         cityList: document.querySelector('input[name="city_label"]')?.getAttribute('list') || '',
         cityPlaceholder: document.querySelector('input[name="city_label"]')?.getAttribute('placeholder') || '',
         cityHint: document.querySelector('input[name="city_label"]')?.closest('.field')?.querySelector('.field-hint')?.textContent || '',
@@ -154,6 +168,11 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
       assert.doesNotMatch(metrics.phoneLabel, /optional/i, `phone label has no optional copy at ${width}`);
       assert.equal(metrics.acknowledgementRequired, true, `acknowledgement required at ${width}`);
       assert.equal(metrics.acknowledgementChecked, false, `acknowledgement not prechecked at ${width}`);
+      assert.equal(metrics.signupTypePickerVisible, true, `Family/School buttons visible at ${width}`);
+      assert.equal(metrics.signupTypeOptionCount, 2, `Family/School button count at ${width}`);
+      assert.equal(metrics.signupTypeVisibleOptionCount, 2, `Family/School visible button count at ${width}`);
+      assert.equal(metrics.signupTypeSelectCount, 0, `no Family/School select at ${width}`);
+      assert.equal(metrics.signupTypeValue, '', `Family/School starts unselected at ${width}`);
       assert.equal(metrics.cityList, '', `city field is free text at ${width}`);
       assert.match(metrics.cityPlaceholder, /ZIP\/postal code|area/i, `location placeholder accepts zip/area at ${width}`);
       assert.match(metrics.cityHint, /No city list is required/i, `location hint removes city-picker ambiguity at ${width}`);
@@ -167,7 +186,9 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
     await page.setViewportSize({ width: 430, height: 920 });
     await page.goto(`${baseUrl}/one-time/signup`, { waitUntil: 'domcontentloaded' });
     await page.fill('input[name="contact_name"]', 'Leah Cohen');
-    await page.selectOption('select[name="signup_as"]', 'Family');
+    await page.click('[data-signup-type-option][data-value="Family"]');
+    assert.equal(await page.locator('input[name="signup_as"]').inputValue(), 'Family');
+    assert.equal(await page.locator('[data-signup-type-option][data-value="Family"]').getAttribute('aria-pressed'), 'true');
     await page.fill('input[name="city_label"]', '11230');
     await page.dispatchEvent('input[name="city_label"]', 'input');
     await page.fill('input[name="email"]', 'leah@example.invalid');

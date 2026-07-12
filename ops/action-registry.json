@@ -443,6 +443,46 @@
       ]
     },
     {
+      "action_id": "ACTION-ONETIME-SIGNUP-AS-FAMILY",
+      "label": "Family",
+      "surface": "one_time_public_direct_signup",
+      "route": "/one-time/signup",
+      "selector_hint": "[data-signup-type-option][data-value=\"Family\"]",
+      "expected_behavior": "Sets the direct signup form's required signup_as value to Family through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "browser_static_and_submit",
+        "expected_result": "The Family button is visible at desktop and mobile widths, no Family/School select or dropdown trigger is required, clicking Family stores signup_as=Family, and submit payload metadata keeps signup_as as Family."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-SIGNUP-AS-SCHOOL",
+      "label": "School",
+      "surface": "one_time_public_direct_signup",
+      "route": "/one-time/signup",
+      "selector_hint": "[data-signup-type-option][data-value=\"School\"]",
+      "expected_behavior": "Sets the direct signup form's required signup_as value to School through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "browser_static",
+        "expected_result": "The School button is visible at desktop and mobile widths, no Family/School select or dropdown trigger is required, and clicking School stores signup_as=School without submitting."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-ONETIME-MEMBER-LOGIN-LINK",
       "label": "Member Login",
       "surface": "one_time_public_focused_offer",

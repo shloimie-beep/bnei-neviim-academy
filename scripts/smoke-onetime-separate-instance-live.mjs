@@ -83,12 +83,14 @@ try {
 
   const signup = await fetchText('/one-time/signup');
   assertText('/one-time/signup', signup.text, /name="contact_name"/i, 'signup contact name input missing');
-  assertText('/one-time/signup', signup.text, /name="signup_as"/i, 'Family/School selector missing');
-  assertText('/one-time/signup', signup.text, /<option value="Family">Family<\/option>/i, 'Family signup option missing');
-  assertText('/one-time/signup', signup.text, /<option value="School">School<\/option>/i, 'School signup option missing');
+  assertText('/one-time/signup', signup.text, /name="signup_as"/i, 'Family/School value field missing');
+  assertText('/one-time/signup', signup.text, /data-signup-type-picker/i, 'Family/School visible button group missing');
+  assertText('/one-time/signup', signup.text, /data-signup-type-option[^>]+data-value="Family"/i, 'Family signup button missing');
+  assertText('/one-time/signup', signup.text, /data-signup-type-option[^>]+data-value="School"/i, 'School signup button missing');
   assertText('/one-time/signup', signup.text, /name="email"/i, 'signup email input missing');
   assertText('/one-time/signup', signup.text, /name="phone"/i, 'optional phone input missing');
   assertText('/one-time/signup', signup.text, /\/api\/one-time\/interest/i, 'signup form does not target One Time interest endpoint');
+  assertNoText('/one-time/signup', signup.text, /<select[^>]+name="signup_as"|<option value="Family">Family<\/option>|<option value="School">School<\/option>|data-signup-type-trigger|data-signup-type-menu/i, 'retired Family/School dropdown remains');
   assertNoText('/one-time/signup', signup.text, /name="student|student_name|signupStudentName/i, 'first lightweight signup asks for student name');
 
   for (const route of ['/operations-login.html', '/parent.html', '/student.html', '/provider.html', '/one-time-classroom.html']) {

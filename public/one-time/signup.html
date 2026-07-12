@@ -271,6 +271,7 @@
     }
 
     .field label,
+    .field-label,
     .fieldset-label {
       color: var(--black);
       font-weight: 880;
@@ -351,10 +352,55 @@
 
     input:focus,
     select:focus,
+    .signup-type-option:focus-visible,
     .radio-card:focus-within {
       outline: 3px solid rgba(142, 229, 255, 0.9);
       outline-offset: 2px;
       border-color: rgba(5, 5, 5, 0.48);
+    }
+
+    .signup-type-picker {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .signup-type-picker[aria-invalid="true"] .signup-type-option {
+      border-color: rgba(143, 33, 21, 0.86);
+      box-shadow: 0 0 0 3px rgba(143, 33, 21, 0.12);
+    }
+
+    .signup-type-option {
+      display: grid;
+      gap: 2px;
+      width: 100%;
+      min-height: 58px;
+      padding: 11px 12px;
+      border: 1px solid rgba(5, 5, 5, 0.16);
+      border-radius: 6px;
+      color: var(--black);
+      background: rgba(223, 248, 255, 0.26);
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+
+    .signup-type-option span {
+      font-weight: 940;
+      line-height: 1.16;
+    }
+
+    .signup-type-option small {
+      color: var(--muted-dark);
+      font-size: 0.78rem;
+      font-weight: 700;
+      line-height: 1.18;
+    }
+
+    .signup-type-option:hover,
+    .signup-type-option[aria-pressed="true"] {
+      border-color: rgba(5, 5, 5, 0.48);
+      background: var(--ice);
     }
 
     .radio-grid {
@@ -730,6 +776,7 @@
         font-size: 1.76rem;
       }
 
+      .signup-type-picker,
       .radio-grid {
         grid-template-columns: 1fr;
       }
@@ -791,13 +838,19 @@
           </div>
 
           <div class="field">
-            <label for="signupAs">Signing up as <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
-            <select id="signupAs" name="signup_as" required>
-              <option value="">Choose one</option>
-              <option value="Family">Family</option>
-              <option value="School">School</option>
-            </select>
-            <span class="field-error" data-error-for="signup_as">Choose Family or School.</span>
+            <span class="field-label" id="signupAsLabel">Signing up as <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></span>
+            <input id="signupAs" name="signup_as" type="hidden" data-signup-type-value required>
+            <div class="signup-type-picker" role="group" aria-labelledby="signupAsLabel" aria-describedby="signupAsError" tabindex="-1" data-signup-type-picker>
+              <button type="button" class="signup-type-option" data-signup-type-option data-value="Family" data-action-id="ACTION-ONETIME-SIGNUP-AS-FAMILY" aria-pressed="false">
+                <span>Family</span>
+                <small>For a parent or family signup.</small>
+              </button>
+              <button type="button" class="signup-type-option" data-signup-type-option data-value="School" data-action-id="ACTION-ONETIME-SIGNUP-AS-SCHOOL" aria-pressed="false">
+                <span>School</span>
+                <small>For a school or class group.</small>
+              </button>
+            </div>
+            <span class="field-error" id="signupAsError" data-error-for="signup_as">Choose Family or School.</span>
           </div>
 
           <div class="field">
@@ -923,12 +976,34 @@
       const phoneRequiredDot = document.querySelector('[data-phone-required-dot]');
       const phoneRequiredCopy = document.querySelector('[data-phone-required-copy]');
       const reminderInputs = form ? Array.from(form.querySelectorAll('input[name="reminder_preference"]')) : [];
+      const signupTypeInput = form?.elements.signup_as;
+      const signupTypePicker = document.querySelector('[data-signup-type-picker]');
+      const signupTypeOptions = Array.from(document.querySelectorAll('[data-signup-type-option]'));
+      const signupTypeValues = new Set(['Family', 'School']);
       const timezoneFallbackField = document.querySelector('[data-timezone-fallback]');
       const timezoneFallbackInput = form?.elements.timezone_fallback;
       const localClassTime = document.querySelector('[data-local-class-time]');
 
       function selectedReminder() {
         return reminderInputs.find((input) => input.checked)?.value || '';
+      }
+
+      function selectedSignupType() {
+        const value = String(signupTypeInput?.value || '').trim();
+        return signupTypeValues.has(value) ? value : '';
+      }
+
+      function setSignupType(value) {
+        const normalized = signupTypeValues.has(value) ? value : '';
+        if (signupTypeInput) signupTypeInput.value = normalized;
+        signupTypeOptions.forEach((option) => {
+          const active = option.dataset.value === normalized;
+          option.setAttribute('aria-pressed', String(active));
+        });
+        if (normalized) {
+          signupTypePicker?.removeAttribute('aria-invalid');
+          form?.querySelector('[data-error-for="signup_as"]')?.classList.remove('visible');
+        }
       }
 
       function needsWhatsAppPhone(value = selectedReminder()) {
@@ -1102,6 +1177,8 @@
         const error = form?.querySelector(`[data-error-for="${name}"]`);
         if (name === 'reminder_preference') {
           form?.querySelector('[data-reminder-fieldset]')?.setAttribute('aria-invalid', 'true');
+        } else if (name === 'signup_as') {
+          signupTypePicker?.setAttribute('aria-invalid', 'true');
         } else {
           input?.setAttribute('aria-invalid', 'true');
         }
@@ -1205,13 +1282,23 @@
       });
       updatePhoneRequirement();
 
+      signupTypeOptions.forEach((option) => {
+        option.addEventListener('click', () => setSignupType(option.dataset.value || ''));
+        option.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            setSignupType(option.dataset.value || '');
+          }
+        });
+      });
+
       form?.addEventListener('submit', async (event) => {
         event.preventDefault();
         clearErrors();
         clearStatus();
 
         const contactName = String(form.elements.contact_name.value || '').trim();
-        const signupAs = String(form.elements.signup_as.value || '').trim();
+        const signupAs = selectedSignupType();
         const cityLabel = String(form.elements.city_label.value || '').trim();
         const timezone = currentTimezone();
         const email = String(form.elements.email.value || '').trim().toLowerCase();
@@ -1261,7 +1348,11 @@
         if (invalid) {
           showStatus('error', 'Please fix the highlighted fields.');
           const firstInvalid = form.querySelector('[aria-invalid="true"]');
-          firstInvalid?.focus();
+          if (firstInvalid?.matches('[data-signup-type-picker]')) {
+            signupTypeOptions[0]?.focus();
+          } else {
+            firstInvalid?.focus();
+          }
           return;
         }
 
