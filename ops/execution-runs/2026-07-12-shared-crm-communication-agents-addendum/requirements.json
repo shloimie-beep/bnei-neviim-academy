@@ -235,22 +235,54 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "not_started",
-      "implementation_status": "partial",
+      "status": "in_progress",
+      "implementation_status": "Add Contact slice local verified and pending deploy: Operations exposes ACTION-CRM-ADD-CONTACT, POST /api/bna/crm/contacts creates or updates one workspace-scoped first-party bna_contacts record, upserts workspace-scoped email/phone/WhatsApp identities, writes a local pipeline event, returns the stable bna_contacts:<id> contact key, and opens the saved contact workspace without external sends, access grants, imports, checkout, or automatic task creation. Remaining actions include complete/reopen task, archive contact, and family/member linking.",
       "can_continue_without_operator": true,
-      "next_action": "Continue REQ-20260712-303 after dependent earlier batches are validated.",
+      "next_action": "Commit, push, deploy the Add Contact slice, live-smoke One Time Operations CRM workbench, then continue complete/reopen task, archive contact, and family/member linking.",
       "acceptance_criteria": [
         "Contact index opens a full workspace with URL/back-state persistence, mobile one-pane behavior, and persisted add/edit/tag/owner/lifecycle/follow-up/task/thread/family/archive actions."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "server.js POST /api/bna/crm/contacts creates or updates one workspace-scoped first-party CRM contact and returns stable bna_contacts:<id> identity.",
+        "server.js uses workspace-scoped bna_contact_identities upserts for email, phone, and WhatsApp identities.",
+        "server.js writes bna_contact_pipeline_events with no_send/external_write_performed=false metadata.",
+        "public/operations.html exposes ACTION-CRM-ADD-CONTACT with a compact Add Contact form and read-only preview disabled state.",
+        "public/operations.html opens the saved contact workspace after local save and sends create_follow_up_task=false.",
+        "public/js/operations-shell.js regenerated from public/operations.html.",
+        "ops/action-registry.json registers ACTION-CRM-ADD-CONTACT.",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records Add Contact form coverage without submitting a write.",
+        "ops/watchdog-audits/2026-07-12T22-54-watchdog-action-audit.md records action watchdog PASS finding_count 0."
+      ],
+      "verification": [
+        "node --check server.js public/js/operations-shell.js scripts/smoke-onetime-operations-crm-workbench-local.mjs PASS after Add Contact slice",
+        "npm run operations:check-generated PASS after Add Contact slice",
+        "node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js PASS 11/11 after Add Contact slice",
+        "node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js PASS 36/36 after Add Contact slice",
+        "node scripts/smoke-onetime-operations-crm-workbench-local.mjs PASS after Add Contact slice",
+        "npm run watchdog:actions PASS finding_count 0 after Add Contact slice",
+        "npm run watchdog:protocol-drift PASS after Add Contact slice",
+        "npm run secrets:audit PASS after Add Contact slice",
+        "npm run bna:run:validate PASS after Add Contact slice",
+        "git diff --check PASS with line-ending warnings only after Add Contact slice"
+      ],
       "implementation_files": [
         "public/js/operations-shell.js",
         "public/js/operations-deferred-renderers.js",
-        "server.js"
+        "server.js",
+        "public/operations.html",
+        "public/js/operations-shell.js",
+        "ops/action-registry.json",
+        "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "tests/shared-crm-workbench-contract.test.js",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json",
+        "ops/watchdog-audits/2026-07-12T22-54-watchdog-action-audit.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:18:00+03:00",
+      "deployment_evidence": [
+        "Add Contact slice local verified; deployment/live smoke pending."
+      ],
+      "updated_at": "2026-07-13T01:55:00+03:00",
       "blocker": ""
     },
     {

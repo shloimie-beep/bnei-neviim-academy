@@ -49914,6 +49914,158 @@ app.get('/api/bna/crm/contacts/:id/timeline', requireAdmin, async (req, res) => 
   }
 });
 
+app.post('/api/bna/crm/contacts', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const displayName = limitText(String(body.display_name || body.full_name || body.parent_name || body.name || '').trim(), 180);
+  const email = normalizeEmail(body.email || body.parent_email || body.primary_email || '');
+  const phone = limitText(String(body.phone || body.parent_phone || body.primary_phone || '').trim(), 80);
+  const phoneDigits = normalizePhoneDigits(phone);
+  const lifecycleStage = limitText(String(body.lifecycle_stage || body.status || 'new').trim(), 80) || 'new';
+  const assignedOwner = limitText(String(body.assigned_owner || body.owner || '').trim(), 120);
+  const nextFollowUpAt = String(body.next_follow_up_at || body.next_follow_up_date || '').trim();
+  const contactType = limitText(String(body.contact_type || 'general_contact').trim(), 80) || 'general_contact';
+  const familySchoolClassification = limitText(String(body.family_school_classification || body.signup_as || contactType).trim(), 80);
+  const source = limitText(String(body.source || 'manual_crm').trim(), 80) || 'manual_crm';
+  const noteText = limitText(String(body.note || body.note_body || body.body || '').trim(), 4000);
+  const noteSummary = limitText(String(body.note_summary || body.summary || (noteText ? 'Manual CRM contact note' : 'Manual CRM contact created')).trim(), 240);
+  const tags = normalizeTextArray(body.tags);
+
+  if (!displayName && !email && !phoneDigits) {
+    return res.status(400).json({
+      success: false,
+      error: 'Add a name, email, or phone before saving this CRM contact.',
+      external_write_performed: false,
+    });
+  }
+
+  try {
+    const scope = scopeFromOpsRequest(req, body);
+    const workspaceKey = assertWorkspaceAccess(req, scope.workspace_key || defaultWorkspaceKeyForRequest(req), 'add CRM contact');
+    scope.workspace_key = workspaceKey;
+    scope.project_key = scope.project_key || workspaceProjectKey(workspaceKey) || opsScopeProjectKey(req) || null;
+    scope.feature_overrides = await featureOverridesForScope(scope);
+    accountScope.assertEntitlement(scope, accountScope.ENTITLEMENTS.CRM_CONTACTS);
+
+    const workspaceResult = await pool.query('SELECT id FROM bna_workspace_settings WHERE workspace_key = $1 LIMIT 1', [workspaceKey]);
+    const workspaceId = workspaceResult.rows[0]?.id || null;
+    if (!workspaceId) {
+      return res.status(404).json({ success: false, error: 'CRM workspace was not found.', external_write_performed: false });
+    }
+
+    let existing = null;
+    if (email || phoneDigits) {
+      existing = (await pool.query(
+        `SELECT c.*
+         FROM bna_contacts c
+         LEFT JOIN bna_contact_identities i
+           ON i.contact_id = c.id
+          AND i.workspace_id = c.workspace_id
+         WHERE c.workspace_id = $1
+           AND (
+             ($2 <> '' AND (
+               lower(COALESCE(c.primary_email, '')) = $2
+               OR (i.identity_type = 'email' AND i.normalized_value = $2)
+             ))
+             OR ($3 <> '' AND (
+               regexp_replace(COALESCE(c.primary_phone, ''), '\\D', '', 'g') = $3
+               OR (i.identity_type IN ('phone', 'whatsapp') AND i.normalized_value = $3)
+             ))
+           )
+         ORDER BY c.updated_at DESC NULLS LAST, c.created_at ASC, c.id ASC
+         LIMIT 1`,
+        [workspaceId, email || '', phoneDigits || '']
+      )).rows[0] || null;
+    }
+
+    const metadata = {
+      project_key: scope.project_key || null,
+      contact_type: contactType,
+      family_school_classification: familySchoolClassification || contactType,
+      assigned_owner: assignedOwner || null,
+      next_follow_up_at: nextFollowUpAt || null,
+      summary: noteText || noteSummary || null,
+      created_from: 'operations_crm_workbench',
+      no_send: true,
+      external_write_performed: false,
+    };
+
+    const contact = existing
+      ? (await pool.query(
+          `UPDATE bna_contacts
+           SET full_name = COALESCE(NULLIF($2, ''), full_name),
+               primary_email = COALESCE(NULLIF($3, ''), primary_email),
+               primary_phone = COALESCE(NULLIF($4, ''), primary_phone),
+               status = COALESCE(NULLIF($5, ''), status, 'new'),
+               source = COALESCE(source, NULLIF($6, ''), 'manual_crm'),
+               tags = (
+                 SELECT ARRAY(
+                   SELECT DISTINCT tag_value
+                   FROM unnest(COALESCE(tags, ARRAY[]::text[]) || $7::text[]) AS tag_values(tag_value)
+                   WHERE trim(tag_value) <> ''
+                 )
+               ),
+               metadata = COALESCE(metadata, '{}'::jsonb) || $8::jsonb,
+               updated_at = NOW()
+           WHERE id = $1
+             AND workspace_id = $9
+           RETURNING *`,
+          [existing.id, displayName, email, phone, lifecycleStage, source, tags, JSON.stringify(metadata), workspaceId]
+        )).rows[0]
+      : (await pool.query(
+          `INSERT INTO bna_contacts (
+             workspace_id, full_name, primary_email, primary_phone, status, source, tags, metadata
+           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)
+           RETURNING *`,
+          [workspaceId, displayName || null, email || null, phone || null, lifecycleStage, source, tags, JSON.stringify(metadata)]
+        )).rows[0];
+
+    if (email) {
+      await upsertContactIdentity({ workspaceId, contactId: contact.id, identityType: 'email', identityValue: email, verified: false, metadata }, pool);
+    }
+    if (phone) {
+      await upsertContactIdentity({ workspaceId, contactId: contact.id, identityType: 'phone', identityValue: phone, verified: false, metadata }, pool);
+      await upsertContactIdentity({ workspaceId, contactId: contact.id, identityType: 'whatsapp', identityValue: phone, verified: false, metadata }, pool);
+    }
+
+    await pool.query(
+      `INSERT INTO bna_contact_pipeline_events (
+         workspace_id, contact_id, event_type, pipeline_status, summary, source, metadata
+       ) VALUES ($1, $2, $3, $4, $5, 'operations_crm_workbench', $6::jsonb)`,
+      [
+        workspaceId,
+        contact.id,
+        existing ? 'crm_contact_updated' : 'crm_contact_created',
+        lifecycleStage,
+        noteSummary || (existing ? 'Manual CRM contact updated' : 'Manual CRM contact created'),
+        JSON.stringify({
+          ...metadata,
+          body: noteText || null,
+          tags,
+        }),
+      ]
+    );
+
+    const contactId = `bna_contacts:${contact.id}`;
+    const listPayload = await operationsCrmContactService.listContacts(scope, { limit: 100 });
+    const card = (listPayload.cards || []).find((item) => String(item.id) === contactId) || null;
+    const timelinePayload = await operationsCrmContactService.getContactTimeline(contactId, scope);
+    res.status(existing ? 200 : 201).json({
+      success: true,
+      created: !existing,
+      contact_id: contactId,
+      contact: card || { ...contact, id: contactId, display_name: contact.full_name },
+      timeline: timelinePayload.timeline || [],
+      no_send: true,
+      no_checkout: true,
+      no_access_granted: true,
+      no_import_performed: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message, external_write_performed: false });
+  }
+});
+
 app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
   const body = req.body || {};
   const contactRef = parseCrmContactRef(req.params.id);

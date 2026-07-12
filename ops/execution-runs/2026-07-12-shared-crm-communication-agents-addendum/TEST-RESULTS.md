@@ -135,3 +135,14 @@
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 301b408b36fa982d4562d06f30de56758cd0e168`.
 - PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
   - Verified `/rabbi` One Time branding, direct signup CTA, WhatsApp launcher, no Academy chrome, public WhatsApp readiness configured/scoped/no-send, lightweight Family/School signup fields, and scoped One Time instance config.
+- PASS `node --check server.js public/js/operations-shell.js scripts/smoke-onetime-operations-crm-workbench-local.mjs` after Add Contact slice.
+- PASS `npm run operations:check-generated` after Add Contact slice.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js` (11/11) after Add Contact slice.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js` (36/36) after Add Contact slice.
+- PASS `node scripts/smoke-onetime-operations-crm-workbench-local.mjs` after Add Contact slice.
+  - Report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` records Add Contact form coverage without submitting a write.
+- PASS `npm run watchdog:actions` finding_count `0` after Add Contact slice; report `ops/watchdog-audits/2026-07-12T22-54-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift` after Add Contact slice.
+- PASS `npm run secrets:audit` after Add Contact slice.
+- PASS `npm run bna:run:validate` after Add Contact slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after Add Contact slice.

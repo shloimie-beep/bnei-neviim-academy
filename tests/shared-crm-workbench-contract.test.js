@@ -62,6 +62,24 @@ test('Operations CRM local update form is first-party only and does not auto-cre
   assert.match(server, /const shouldCreateFollowUpTask = body\.create_follow_up_task === true \|\| String\(body\.create_follow_up_task \|\| ''\)\.toLowerCase\(\) === 'true';/);
 });
 
+test('Operations CRM Add Contact action is first-party and workspace-scoped', () => {
+  assert.match(operations, /let firstPartyCrmAddContactOpen = false;/);
+  assert.match(operations, /data-action-id="ACTION-CRM-ADD-CONTACT"/);
+  assert.match(operations, /data-crm-add-contact-form/);
+  assert.match(operations, /function saveFirstPartyCrmNewContact\(event\)/);
+  assert.match(operations, /api\.createCrmContact/);
+  assert.match(operations, /create_follow_up_task: false/);
+  assert.match(operations, /No email, WhatsApp, Telegram, payment, access, import, or external CRM write runs\./);
+  assert.match(server, /app\.post\('\/api\/bna\/crm\/contacts', requireAdmin, async \(req, res\) =>/);
+  assert.match(server, /assertWorkspaceAccess\(req, scope\.workspace_key \|\| defaultWorkspaceKeyForRequest\(req\), 'add CRM contact'\)/);
+  assert.match(server, /accountScope\.assertEntitlement\(scope, accountScope\.ENTITLEMENTS\.CRM_CONTACTS\)/);
+  assert.match(server, /i\.workspace_id = c\.workspace_id/);
+  assert.match(server, /upsertContactIdentity\(\{ workspaceId, contactId: contact\.id, identityType: 'email'/);
+  assert.match(server, /upsertContactIdentity\(\{ workspaceId, contactId: contact\.id, identityType: 'whatsapp'/);
+  assert.match(server, /event_type, pipeline_status, summary, source, metadata/);
+  assert.match(server, /external_write_performed: false/);
+});
+
 test('Operations CRM Create task action is explicit and first-party only', () => {
   assert.doesNotMatch(operations, /ACTION-CRM-CREATE-TASK-PENDING/);
   assert.match(operations, /data-action-id="ACTION-CRM-CREATE-TASK"/);

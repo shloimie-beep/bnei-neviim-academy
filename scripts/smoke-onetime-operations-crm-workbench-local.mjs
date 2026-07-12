@@ -465,6 +465,24 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     window.__crmSmokeRootObserver.observe(app, { childList: true });
   });
 
+  const addContactMetrics = {
+    hasAction: await page.locator('[data-action-id="ACTION-CRM-ADD-CONTACT"]').count().then((count) => count > 0),
+    formVisible: false,
+    noExternalCopy: false,
+  };
+  await page.locator('[data-action-id="ACTION-CRM-ADD-CONTACT"]').first().click();
+  await page.waitForSelector('[data-crm-add-contact-form]', { timeout: 5000 });
+  Object.assign(addContactMetrics, await page.evaluate(() => {
+    const form = document.querySelector('[data-crm-add-contact-form]');
+    const text = form?.innerText.replace(/\s+/g, ' ').trim() || '';
+    return {
+      formVisible: Boolean(form),
+      noExternalCopy: /No email, WhatsApp, Telegram, payment, access, import, or external CRM write runs/.test(text),
+    };
+  }));
+  await page.locator('[data-crm-add-contact-cancel]').click();
+  await page.waitForFunction(() => !document.querySelector('[data-crm-add-contact-form]'), null, { timeout: 5000 });
+
   await page.locator('[data-first-party-crm-card] [data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND"]').first().click();
   await page.waitForFunction(() => /Contact Timeline/.test(document.body.textContent || '') && /One Time free-class public signup captured/.test(document.body.textContent || ''), null, { timeout: 15000 });
   const selectedMetrics = await page.evaluate(() => {
@@ -483,6 +501,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       hasClassTrialAccess: /Class \/ Trial \/ Access/i.test(text),
       hasNoSendLock: /Review mode|Scoped review|Read-only preview|No email, WhatsApp, payment, access, or external CRM write/.test(text),
       hasSafeActionPanel: Boolean(document.querySelector('[data-crm-safe-actions]')),
+      hasAddContactAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-ADD-CONTACT"]')),
       hasCreateTaskAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-CREATE-TASK"]:not([disabled])')),
       disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-CREATE-TASK"][disabled], [data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
       hasOpenScopedInboxAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]')),
@@ -608,6 +627,10 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       selectedMetrics.hasClassTrialAccess &&
       selectedMetrics.hasNoSendLock &&
       selectedMetrics.hasSafeActionPanel &&
+      selectedMetrics.hasAddContactAction &&
+      addContactMetrics.hasAction &&
+      addContactMetrics.formVisible &&
+      addContactMetrics.noExternalCopy &&
       selectedMetrics.hasCreateTaskAction &&
       Object.values(workspaceTabMetrics).every(Boolean) &&
       selectedMetrics.hasOpenScopedInboxAction &&
@@ -652,6 +675,8 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     hasClassTrialAccessAfterSelect: selectedMetrics.hasClassTrialAccess,
     hasNoSendLockAfterSelect: selectedMetrics.hasNoSendLock,
     hasSafeActionPanelAfterSelect: selectedMetrics.hasSafeActionPanel,
+    hasAddContactActionAfterSelect: selectedMetrics.hasAddContactAction,
+    addContactMetrics,
     hasCreateTaskActionAfterSelect: selectedMetrics.hasCreateTaskAction,
     workspaceTabMetrics,
     disabledCrmActionCountAfterSelect: selectedMetrics.disabledCrmActionCount,
@@ -826,7 +851,7 @@ async function main() {
     '',
     '- One Time Operations CRM route renders the API-backed workbench.',
     '- Split shell and monolith fallback render the API-backed workbench.',
-    '- Search/filter/sort controls, cards, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe actions, explicit Create task action, and timeline readback are visible.',
+    '- Search/filter/sort controls, Add Contact form, cards, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe actions, explicit Create task action, and timeline readback are visible.',
     '- Overview, Activity, Conversations, Tasks, and Access tabs are clickable and render non-disabled workspace panels.',
     '- Mobile selected-contact state hides the list and Back to contacts restores it.',
     '- Scoped One Time Inbox retains selected CRM contact context and keeps send gates visible.',

@@ -2593,6 +2593,25 @@
       ]
     },
     {
+      "action_id": "ACTION-CRM-ADD-CONTACT",
+      "label": "Add contact",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-ADD-CONTACT\"]",
+      "expected_behavior": "Creates or updates one workspace-scoped first-party CRM contact, writes workspace-scoped email/phone/WhatsApp identities when provided, records a local pipeline event, opens the contact workspace, and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write. The action is disabled in read-only preview.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the POST route is workspace-scoped and no-send; the One Time CRM workbench local smoke verifies the Add Contact form is visible without submitting a production write."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-CRM-CONTACTS-FILTER",
       "label": "Filter CRM contacts",
       "surface": "operations_contacts",

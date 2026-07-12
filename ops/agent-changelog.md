@@ -39073,3 +39073,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Live proof passed: One Time separate-instance SHA smoke and One Time
   Operations CRM workbench smoke with 12 scoped cards and read-only selected
   timeline.
+
+## 2026-07-13 - Shared CRM Add Contact local verification
+
+- Added `ACTION-CRM-ADD-CONTACT` to the CRM contacts index with a compact
+  first-party Add Contact form and read-only preview disabled state.
+- Added POST `/api/bna/crm/contacts` to create or update one workspace-scoped
+  CRM contact, upsert workspace-scoped email/phone/WhatsApp identities, record
+  a local pipeline event, and return the stable `bna_contacts:<id>` contact key.
+- The UI resets filters and opens the saved contact workspace after a local
+  save; it does not send email, WhatsApp, Telegram, charge, import, grant
+  access, or create tasks automatically.
+- Verification passed: generated-shell check, focused CRM tests `36/36`, local
+  Operations CRM workbench smoke at 1440/1024/768/430/390 with Add Contact form
+  coverage and no submit/write, action watchdog 0 findings, protocol drift
+  watchdog, secret audit, execution run validation, and diff check with
+  line-ending warnings only.
+- Status: local verified, pending commit, push, BNA/One Time deploy, and live
+  One Time Operations CRM smoke before this slice is deployed.

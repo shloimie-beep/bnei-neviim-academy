@@ -8778,6 +8778,7 @@
                     : '/crm/contacts/' + encodeURIComponent(id) + '/timeline';
                 return this.request('GET', path, null, requestOptions);
             },
+            createCrmContact(payload = {}) { return this.request('POST', '/crm/contacts', payload); },
             updateCrmContact(id, payload = {}) { return this.request('PATCH', '/crm/contacts/' + encodeURIComponent(id), payload); },
             createContactCommunication(note) { return this.request('POST', '/contact-communications', note); },
             previewContactImport(payload = {}) { return this.request('POST', '/contact-imports/preview', payload); },
@@ -9669,6 +9670,7 @@
         let firstPartyCrmError = '';
         let firstPartyCrmNotice = '';
         let firstPartyCrmSaving = false;
+        let firstPartyCrmAddContactOpen = false;
         let firstPartyCrmActiveTab = 'activity';
         const initialCrmSort = String(initialParams.get('crm_sort') || '').trim();
         let firstPartyCrmFilters = {
@@ -15687,7 +15689,12 @@
                             <h3>${escapeHtml(title)}</h3>
                             <p class="notification-lock-note">${escapeHtml(description)}</p>
                         </div>
-                        <button class="task-action primary crm-workbench-refresh" type="button" onclick="loadFirstPartyCrmContacts(event, { force: true })" data-action-id="ACTION-CRM-CONTACTS-FILTER">Refresh</button>
+                        <div class="task-actions">
+                            ${oneTimeViewAsRabbiActive()
+                                ? '<button class="task-action primary" type="button" data-action-id="ACTION-CRM-ADD-CONTACT" disabled aria-disabled="true" title="Add contact is unavailable in read-only preview.">Add contact</button>'
+                                : `<button class="task-action primary" type="button" onclick="toggleFirstPartyCrmAddContact(event)" data-action-id="ACTION-CRM-ADD-CONTACT">${firstPartyCrmAddContactOpen ? 'Close form' : 'Add contact'}</button>`}
+                            <button class="task-action crm-workbench-refresh" type="button" onclick="loadFirstPartyCrmContacts(event, { force: true })" data-action-id="ACTION-CRM-CONTACTS-FILTER">Refresh</button>
+                        </div>
                     </div>
                     <div class="settings-control-grid compact" style="margin-top:12px;">
                         <label class="crm-filter-search">Search<input value="${escapeHtml(firstPartyCrmFilters.search || '')}" oninput="setFirstPartyCrmFilter('search', this.value)" data-first-party-crm-search autocomplete="off" placeholder="Name, email, phone, tag"></label>
@@ -15721,6 +15728,7 @@
             return `
                 <div data-first-party-crm-panel data-one-time-crm-mode="${options.oneTime ? 'one_time' : 'workspace'}">
                     ${renderFirstPartyCrmFilterControls(payload, options)}
+                    ${renderFirstPartyCrmAddContactForm(oneTimeViewAsRabbiActive())}
                     ${firstPartyCrmError ? `<div class="error-banner">${escapeHtml(firstPartyCrmError)}</div>` : ''}
                     <div class="contact-empty-card" data-first-party-crm-status>
                         ${escapeHtml(statusText)}
@@ -15740,6 +15748,52 @@
                     ` : !firstPartyCrmLoading ? `<div class="contact-empty-card">${escapeHtml(filteredEmptyText)}</div>` : ''}
 
                 </div>
+            `;
+        }
+
+        function renderFirstPartyCrmAddContactForm(readOnly = false) {
+            if (!firstPartyCrmAddContactOpen) return '';
+            if (readOnly) {
+                return `
+                    <div class="contact-empty-card" data-crm-add-contact-readonly>
+                        Add contact is unavailable in read-only preview.
+                    </div>
+                `;
+            }
+            return `
+                <form class="crm-local-update-form crm-add-contact-form" onsubmit="saveFirstPartyCrmNewContact(event)" data-crm-add-contact-form>
+                    <div class="task-section-header compact">
+                        <div>
+                            <h3>Add Contact</h3>
+                            <p class="notification-lock-note">Creates or updates one workspace CRM record only. No email, WhatsApp, Telegram, payment, access, import, or external CRM write runs.</p>
+                        </div>
+                    </div>
+                    <div class="settings-control-grid compact">
+                        <label>Name<input name="display_name" autocomplete="off" placeholder="Contact name"></label>
+                        <label>Email<input name="email" type="email" autocomplete="off" placeholder="name@example.com"></label>
+                        <label>Phone / WhatsApp<input name="phone" autocomplete="off" placeholder="+1 555 000 0000"></label>
+                        <label>Type<select name="contact_type">
+                            <option value="general_contact">General contact</option>
+                            <option value="family">Family</option>
+                            <option value="school">School</option>
+                            <option value="provider">Provider</option>
+                        </select></label>
+                        <label>Lifecycle<select name="status">
+                            <option value="new">New</option>
+                            <option value="follow_up">Follow up</option>
+                            <option value="active">Active</option>
+                            <option value="signed_up">Signed up</option>
+                        </select></label>
+                        <label>Owner<input name="assigned_owner" autocomplete="off" placeholder="Unassigned"></label>
+                        <label>Follow-up<input name="next_follow_up_at" type="date"></label>
+                    </div>
+                    <label class="crm-local-update-wide">Tags<input name="tags" autocomplete="off" placeholder="Comma separated"></label>
+                    <label class="crm-local-update-wide">Add note<textarea name="note_body" rows="3" placeholder="No notes yet."></textarea></label>
+                    <div class="task-actions">
+                        <button class="task-action primary" type="submit" data-action-id="ACTION-CRM-ADD-CONTACT" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>${firstPartyCrmSaving ? 'Saving...' : 'Save contact'}</button>
+                        <button class="task-action" type="button" onclick="toggleFirstPartyCrmAddContact(event, false)" data-crm-add-contact-cancel>Cancel</button>
+                    </div>
+                </form>
             `;
         }
 
@@ -15995,6 +16049,14 @@
             updateFirstPartyCrmPanel();
         }
 
+        function toggleFirstPartyCrmAddContact(event, force = null) {
+            event?.preventDefault?.();
+            if (oneTimeViewAsRabbiActive()) return;
+            firstPartyCrmAddContactOpen = force === null ? !firstPartyCrmAddContactOpen : Boolean(force);
+            firstPartyCrmError = '';
+            updateFirstPartyCrmPanel();
+        }
+
         function renderFirstPartyCrmTabContent(card = {}, readOnly = false) {
             const activeTab = firstPartyCrmWorkspaceTabs().some(tab => tab.id === firstPartyCrmActiveTab) ? firstPartyCrmActiveTab : 'activity';
             if (activeTab === 'overview') {
@@ -16183,6 +16245,70 @@
                 if (!firstPartyCrmTimelinePayload) await openFirstPartyCrmContact(contactId);
             } catch (error) {
                 firstPartyCrmError = error.message || 'Could not save CRM update.';
+            } finally {
+                firstPartyCrmSaving = false;
+                render();
+            }
+        }
+
+        async function saveFirstPartyCrmNewContact(event) {
+            event.preventDefault();
+            if (oneTimeViewAsRabbiActive()) return;
+            const form = event.currentTarget;
+            const data = new FormData(form);
+            const noteBody = String(data.get('note_body') || '').trim();
+            const tags = String(data.get('tags') || '')
+                .split(',')
+                .map(tag => tag.trim())
+                .filter(Boolean);
+            firstPartyCrmSaving = true;
+            firstPartyCrmError = '';
+            firstPartyCrmNotice = '';
+            render();
+            try {
+                const result = await api.createCrmContact({
+                    ...firstPartyCrmQueryFilters(),
+                    display_name: data.get('display_name') || '',
+                    email: data.get('email') || '',
+                    phone: data.get('phone') || '',
+                    contact_type: data.get('contact_type') || 'general_contact',
+                    family_school_classification: data.get('contact_type') || 'general_contact',
+                    status: data.get('status') || 'new',
+                    lifecycle_stage: data.get('status') || 'new',
+                    next_follow_up_at: data.get('next_follow_up_at') || '',
+                    assigned_owner: data.get('assigned_owner') || '',
+                    source: 'manual_crm',
+                    tags,
+                    create_follow_up_task: false,
+                    note_summary: noteBody ? 'Manual CRM contact note' : 'Manual CRM contact created',
+                    note_body: noteBody,
+                    no_send: true,
+                    external_write_performed: false
+                });
+                const contactId = result?.contact?.id || result?.contact_id || '';
+                firstPartyCrmNotice = result?.created === false
+                    ? 'Existing workspace contact updated locally. No external message, charge, import, or access change ran.'
+                    : 'Contact created locally. No external message, charge, import, or access change ran.';
+                firstPartyCrmAddContactOpen = false;
+                firstPartyCrmActiveTab = 'overview';
+                firstPartyCrmFilters = {
+                    contact_type: 'all',
+                    status: 'all',
+                    source: 'all',
+                    tag: 'all',
+                    sort_key: 'last_contact_desc',
+                    search: ''
+                };
+                firstPartyCrmContactsCache.clear();
+                selectedFirstPartyCrmContactId = contactId || null;
+                syncOperationsUrl();
+                await loadFirstPartyCrmContacts(null, { force: true });
+                if (contactId) {
+                    selectedFirstPartyCrmContactId = contactId;
+                    await openFirstPartyCrmContact(contactId, { captureScroll: false });
+                }
+            } catch (error) {
+                firstPartyCrmError = error.message || 'Could not save CRM contact.';
             } finally {
                 firstPartyCrmSaving = false;
                 render();
