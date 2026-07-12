@@ -1,0 +1,119 @@
+{
+  "generated_at": "2026-07-12T15:54:31.483Z",
+  "raw_input": "RAW-20260712-009",
+  "route": "/one-time",
+  "results": [
+    {
+      "screenshot": "ops/ui-audits/2026-07-12-onetime-mobile-whatsapp-cta/landing-1440.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "ctaVisible": true,
+      "ctaRect": {
+        "top": 758,
+        "bottom": 806,
+        "left": 130,
+        "right": 260,
+        "height": 48
+      },
+      "whatsAppVisible": true,
+      "whatsAppRect": {
+        "top": 816,
+        "bottom": 878,
+        "left": 1356,
+        "right": 1418,
+        "width": 62,
+        "height": 62
+      },
+      "whatsAppHref": "/api/one-time/public-whatsapp/redirect?intent=lead_capture",
+      "bnaWidgetLoaded": false,
+      "headerBottom": 125,
+      "horizontalOverflow": false
+    },
+    {
+      "screenshot": "ops/ui-audits/2026-07-12-onetime-mobile-whatsapp-cta/landing-768.png",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "ctaVisible": true,
+      "ctaRect": {
+        "top": 630,
+        "bottom": 678,
+        "left": 18,
+        "right": 148,
+        "height": 48
+      },
+      "whatsAppVisible": true,
+      "whatsAppRect": {
+        "top": 816,
+        "bottom": 878,
+        "left": 684,
+        "right": 746,
+        "width": 62,
+        "height": 62
+      },
+      "whatsAppHref": "/api/one-time/public-whatsapp/redirect?intent=lead_capture",
+      "bnaWidgetLoaded": false,
+      "headerBottom": 113,
+      "horizontalOverflow": false
+    },
+    {
+      "screenshot": "ops/ui-audits/2026-07-12-onetime-mobile-whatsapp-cta/landing-430.png",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "ctaVisible": true,
+      "ctaRect": {
+        "top": 488,
+        "bottom": 534,
+        "left": 14,
+        "right": 144,
+        "height": 46
+      },
+      "whatsAppVisible": true,
+      "whatsAppRect": {
+        "top": 776,
+        "bottom": 830,
+        "left": 362,
+        "right": 416,
+        "width": 54,
+        "height": 54
+      },
+      "whatsAppHref": "/api/one-time/public-whatsapp/redirect?intent=lead_capture",
+      "bnaWidgetLoaded": false,
+      "headerBottom": 89,
+      "horizontalOverflow": false
+    },
+    {
+      "screenshot": "ops/ui-audits/2026-07-12-onetime-mobile-whatsapp-cta/landing-390.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "ctaVisible": true,
+      "ctaRect": {
+        "top": 437,
+        "bottom": 483,
+        "left": 14,
+        "right": 144,
+        "height": 46
+      },
+      "whatsAppVisible": true,
+      "whatsAppRect": {
+        "top": 776,
+        "bottom": 830,
+        "left": 322,
+        "right": 376,
+        "width": 54,
+        "height": 54
+      },
+      "whatsAppHref": "/api/one-time/public-whatsapp/redirect?intent=lead_capture",
+      "bnaWidgetLoaded": false,
+      "headerBottom": 79,
+      "horizontalOverflow": false
+    }
+  ]
+}

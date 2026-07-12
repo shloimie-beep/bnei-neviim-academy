@@ -69,6 +69,17 @@
       transition: transform 160ms ease;
     }
     .skip-link:focus { transform: translateY(0); }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
     .icon-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
 
     .site-header {
@@ -237,6 +248,64 @@
     }
     .drawer-links a:hover, .drawer-links a:focus-visible { color: var(--yellow-soft); outline: none; padding-left: 8px; }
     .drawer-note { margin: 0; padding-top: 16px; border-top: 1px solid rgba(223, 248, 255, 0.16); color: rgba(223, 248, 255, 0.74); font-size: 0.9rem; }
+
+    .whatsapp-lead-launcher {
+      position: fixed;
+      right: 22px;
+      bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+      z-index: 1300;
+      width: 62px;
+      height: 62px;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgba(255, 255, 255, 0.88);
+      border-radius: 999px;
+      color: #ffffff;
+      background: #25d366;
+      box-shadow:
+        0 0 0 5px rgba(37, 211, 102, 0.18),
+        0 16px 42px rgba(0, 0, 0, 0.38);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+    .whatsapp-lead-launcher:hover,
+    .whatsapp-lead-launcher:focus-visible {
+      outline: none;
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 0 5px rgba(37, 211, 102, 0.22),
+        0 0 0 9px rgba(134, 232, 255, 0.16),
+        0 22px 52px rgba(0, 0, 0, 0.46);
+    }
+    .whatsapp-lead-launcher svg {
+      width: 34px;
+      height: 34px;
+      fill: currentColor;
+    }
+    .whatsapp-lead-launcher::before {
+      content: "WhatsApp";
+      position: absolute;
+      right: calc(100% + 12px);
+      bottom: 13px;
+      width: max-content;
+      max-width: min(210px, calc(100vw - 118px));
+      padding: 8px 10px;
+      border: 1px solid rgba(223, 248, 255, 0.24);
+      border-radius: 6px;
+      color: var(--ice);
+      background: rgba(5, 5, 5, 0.94);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34);
+      font-size: 0.82rem;
+      font-weight: 950;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(4px);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+    .whatsapp-lead-launcher:hover::before,
+    .whatsapp-lead-launcher:focus-visible::before {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     .rosh-ticker {
       position: relative;
@@ -486,19 +555,35 @@
       .header-cta { min-height: 42px; padding: 0 11px; font-size: 0.82rem; }
       .icon-button { width: 42px; height: 42px; }
       .rosh-link { min-height: 36px; font-size: 0.82rem; }
-      .hero { min-height: calc(100svh - var(--header-height) - 36px); padding: 64px 0 82px; }
-      .hero .eyebrow { grid-template-columns: 36px minmax(0, auto) 36px; gap: 10px; font-size: clamp(0.95rem, 4vw, 1.06rem); text-align: center; }
-      h1 { font-size: clamp(3.1rem, 16vw, 4.75rem); }
+      .hero { min-height: calc(100svh - var(--header-height) - 36px); align-items: start; padding: 34px 0 70px; }
+      .hero .eyebrow { grid-template-columns: 28px minmax(0, auto) 28px; gap: 10px; margin-bottom: 15px; font-size: clamp(0.86rem, 3.55vw, 1rem); text-align: center; }
+      h1 { margin-bottom: 16px; font-size: clamp(2.65rem, 13.2vw, 3.9rem); line-height: 0.96; }
+      .hero-schedule { margin-bottom: 22px; font-size: clamp(1rem, 4.1vw, 1.22rem); }
+      .hero-cta { min-height: 46px; }
       .feature-grid, .benefit-grid, .audience-grid, .step-flow { grid-template-columns: 1fr; }
       .step-flow::before { top: 42px; bottom: 42px; left: 50%; right: auto; width: 2px; height: auto; background: linear-gradient(180deg, transparent, var(--blue), var(--yellow), var(--blue), transparent); }
       .footer-inner, .footer-brand { grid-template-columns: 1fr; justify-items: center; text-align: center; }
       .footer-brand { display: grid; }
       .footer-links { justify-content: center; }
+      .whatsapp-lead-launcher {
+        right: 14px;
+        bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+        width: 54px;
+        height: 54px;
+      }
+      .whatsapp-lead-launcher svg { width: 30px; height: 30px; }
+      .whatsapp-lead-launcher::before {
+        right: 0;
+        bottom: calc(100% + 10px);
+        max-width: calc(100vw - 28px);
+      }
     }
     @media (max-width: 420px) {
       .brand-lockup img { width: 78px; }
       .brand-lockup span { max-width: 96px; font-size: 0.62rem; }
       .header-cta { padding: 0 9px; }
+      .hero { padding-top: 28px; }
+      h1 { font-size: clamp(2.36rem, 12.7vw, 3.35rem); }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -565,6 +650,13 @@
     </nav>
     <p class="drawer-note">Live Mishnayos with Rabbi Eli Scheller from Eretz Yisrael.</p>
   </aside>
+
+  <a class="whatsapp-lead-launcher" href="/api/one-time/public-whatsapp/redirect?intent=lead_capture" data-action-id="ACTION-ONETIME-PUBLIC-WHATSAPP" aria-label="Open One Time WhatsApp lead capture" title="Open One Time WhatsApp lead capture">
+    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <path d="M16 3.2A12.7 12.7 0 0 0 5 22.3L3.5 28.8l6.7-1.6A12.8 12.8 0 1 0 16 3.2Zm0 2.3a10.5 10.5 0 0 1 0 21 10.4 10.4 0 0 1-5.3-1.4l-.5-.3-3.6.9.8-3.5-.3-.5A10.5 10.5 0 0 1 16 5.5Zm-4.2 5.1c-.2 0-.5 0-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.2 4.9 4.4 2.4 1 2.9.8 3.4.8.5 0 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.2-.2-.5-.4l-1.8-.9c-.3-.1-.5-.2-.7.2l-.8 1c-.2.3-.4.3-.7.1a8.6 8.6 0 0 1-2.5-1.5 9.5 9.5 0 0 1-1.7-2.2c-.2-.3 0-.5.1-.7l.5-.5c.2-.2.2-.4.3-.6.1-.2 0-.4 0-.5l-.9-2c-.2-.5-.5-.5-.8-.5h-.4Z"></path>
+    </svg>
+    <span class="sr-only">Open One Time WhatsApp lead capture</span>
+  </a>
 
   <main id="main">
     <section class="hero" aria-labelledby="heroTitle">
@@ -743,8 +835,6 @@
     </div>
   </footer>
 
-  <script src="/js/bna-helper-knowledge.js" defer></script>
-  <script src="/js/bna-bot-widget.js" defer></script>
   <script>
     (() => {
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');

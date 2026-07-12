@@ -264,17 +264,17 @@
     if (surface === 'one_time_public') {
       return {
         ...base,
-        helperTitle: 'Robot Scheller',
-        surfaceLabel: "Rabbi Scheller's automated assistant",
-        intro: "Hi - I'm Robot Scheller, Rabbi Scheller's automated assistant. Would you like the current class information or help signing up?",
+        helperTitle: 'One Time WhatsApp',
+        surfaceLabel: 'Rabbi Scheller class lead capture',
+        intro: "Hi - this is Rabbi Scheller's class assistant. I can collect your name, location, and contact information so the One Time team can follow up.",
         cards: [
-          ['Sign Up Now', 'Leave the minimum details and the One Time team will follow up.'],
+          ['Share basic details', 'Send your name, location, and contact information for follow-up.'],
           ['Current class information', 'Ask what the class is learning now and how to join.'],
-          ['Speak to Rabbi Scheller', 'Send a short question or contact request.'],
+          ['Question for Rabbi Scheller', 'Send a short question or contact request.'],
         ],
         prompts: [
           'I want to sign up for the One Time Mishnayos class.',
-          'Please send me the current class information.',
+          'Please send me the current class information. My name is and I am located in ',
           'What is the schedule?',
           'I want to speak to Rabbi Scheller.',
         ],
@@ -389,20 +389,20 @@
   function oneTimePublicHelperData() {
     return {
       intro:
-        "Hi - I'm Robot Scheller, Rabbi Scheller's automated assistant. Would you like the current class information or help signing up?",
+        "Hi - this is Rabbi Scheller's class assistant. Send your name, location, and contact information and the One Time team will follow up.",
       choices: [
-        { id: 'trial', label: 'Sign Up Now' },
+        { id: 'trial', label: 'Share basic details' },
         { id: 'current_info', label: 'Current class information' },
         { id: 'schedule', label: 'Class schedule' },
-        { id: 'rabbi_question', label: 'Speak to Rabbi Scheller' },
+        { id: 'rabbi_question', label: 'Question for Rabbi Scheller' },
         { id: 'member_access', label: 'Member login' },
       ],
       nudges: {
         first: {
-          body: "Hi - I'm Robot Scheller. Want the current free-class details?",
+          body: "Want class details? WhatsApp your name and location and the One Time team will follow up.",
           actions: [
             { type: 'signup', label: 'Sign Up Now' },
-            { type: 'link', href: '/api/one-time/public-whatsapp/redirect?intent=free_class', label: 'WhatsApp' },
+            { type: 'link', href: '/api/one-time/public-whatsapp/redirect?intent=lead_capture', label: 'WhatsApp' },
           ],
         },
         second: {
@@ -422,7 +422,7 @@
           ],
         },
         current_info: {
-          body: `${oneTimeJoinMomentCopy()} Leave your name and contact information and the One Time team will send the current free-class details.`,
+          body: `${oneTimeJoinMomentCopy()} Leave your name, location, and contact information and the One Time team will send the current class details.`,
           actions: [
             { type: 'signup', label: 'Sign Up Now' },
             { type: 'link', href: '/api/one-time/public-whatsapp/redirect?intent=current_info', label: 'Open WhatsApp' },
@@ -435,10 +435,10 @@
           ],
         },
         trial: {
-          body: 'Tell us who to contact and the One Time team will follow up with the current free-class details. No charge today.',
+          body: 'Tell us your name, location, and contact information. The One Time team will follow up with the current class details.',
           actions: [
             { type: 'signup', label: 'Sign Up Now' },
-            { type: 'link', href: '/api/one-time/public-whatsapp/redirect?intent=free_class', label: 'Open WhatsApp' },
+            { type: 'link', href: '/api/one-time/public-whatsapp/redirect?intent=lead_capture', label: 'Open WhatsApp' },
           ],
         },
         member_access: {
@@ -826,7 +826,7 @@
       animation: bnaBotLauncherPop 520ms ease 420ms both;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-launcher::before {
-      content: "Ask Robot Scheller";
+      content: "WhatsApp";
       position: absolute;
       right: calc(100% + 12px);
       bottom: 24px;
@@ -1273,7 +1273,7 @@
   document.body.classList.add('bna-universal-assistant-active');
   document.body.classList.add(`bna-assistant-surface-${surface.replace(/_/g, '-')}`);
   const copy = surfaceConfig();
-  const isOneTimeAssistantSurface = surface.startsWith('one_time_');
+  const isOneTimeAssistantSurface = surface.startsWith('one_time_') && surface !== 'one_time_public';
   const oneTimeAssistantAvatar = '<img class="bna-bot-avatar" src="/assets/one-time/robot/robot-scheller-whatsapp.png" alt="" aria-hidden="true" width="108" height="108" loading="lazy" decoding="async">';
 
   const launcher = document.createElement('button');
@@ -1282,7 +1282,7 @@
   launcher.setAttribute('aria-expanded', 'false');
   launcher.setAttribute('aria-controls', 'bnaBotPanel');
   const launcherLabel = surface === 'one_time_public'
-    ? 'Ask Robot Scheller'
+    ? 'Open One Time WhatsApp lead capture'
     : copy.helperTitle;
   launcher.setAttribute('aria-label', launcherLabel);
   launcher.setAttribute('title', launcherLabel);

@@ -391,7 +391,7 @@ test('public One Time launch page is indexable, interest-only, and has no checko
   assert.match(oneTimeSignupHtml, /signup_mode/);
   assert.match(oneTimeSignupHtml, /REQ-20260712-106/);
   assert.match(oneTimeSignupHtml, /\/api\/one-time\/interest/);
-  assert.doesNotMatch(oneTimeHtml, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
+  assert.match(oneTimeHtml, /\/api\/one-time\/public-whatsapp\/redirect\?intent=lead_capture/);
   assert.doesNotMatch(oneTimeHtml, /WhatsApp Robot Scheller/);
   assert.doesNotMatch(oneTimeHtml, /Consent is required before submitting/);
   assert.doesNotMatch(oneTimeHtml, /You're on the list\. We will follow up with the current One Time class details\./);

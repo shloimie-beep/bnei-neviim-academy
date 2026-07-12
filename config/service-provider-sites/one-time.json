@@ -26,16 +26,18 @@
   "lead_bot": {
     "profile_key": "one_time_whatsapp_lead_bot",
     "config_path": "config/service-provider-bots/one-time.json",
-    "public_name": "Robot Scheller",
-    "public_subtitle": "Rabbi Scheller's digital assistant",
-    "launcher_asset": "/assets/one-time/robot/robot-scheller-whatsapp.png",
+    "public_name": "One Time WhatsApp",
+    "public_subtitle": "Rabbi Scheller class lead capture",
+    "launcher_asset": null,
+    "launcher_icon": "whatsapp",
     "primary_channel": "whatsapp",
     "activation": "runtime_controlled"
   },
   "assets": {
     "logo": "/images/one-time/brand/onetimelogo.webp",
     "hero_portrait": "/images/one-time/brand/onetime-hero-vertical.webp",
-    "robot_scheller": "/assets/one-time/robot/robot-scheller-whatsapp.png",
+    "whatsapp_launcher": "inline_svg_icon",
+    "robot_scheller": null,
     "vimeo_promo_embed": "placeholder_until_final_hero_media_is_approved",
     "social_og": "/images/one-time/social/one-time-og-20260622.jpg",
     "press_logos": [

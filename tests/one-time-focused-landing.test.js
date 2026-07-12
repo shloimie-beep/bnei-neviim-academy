@@ -50,6 +50,9 @@ test('One Time focused landing copy uses launch funnel offer and safe CTAs', () 
   assert.match(html, /Teaching Torah Across the Jewish World/);
   assert.match(html, /\/one-time\/privacy\.html/);
   assert.match(html, /\/one-time\/terms\.html/);
+  assert.match(html, /class="whatsapp-lead-launcher"/);
+  assert.match(html, /\/api\/one-time\/public-whatsapp\/redirect\?intent=lead_capture/);
+  assert.match(html, /ACTION-ONETIME-PUBLIC-WHATSAPP/);
   assert.doesNotMatch(html, /TODO: replace with final hero video\/image/);
   assert.doesNotMatch(html, /hero-media-placeholder|image-placeholder/);
   assert.doesNotMatch(html, /Teaching Torah Across The World/);
@@ -94,7 +97,6 @@ test('One Time focused offer route and registries are declared', () => {
   const routeRegistry = JSON.parse(fs.readFileSync('ops/route-registry.json', 'utf8'));
   const actionRegistry = JSON.parse(fs.readFileSync('ops/action-registry.json', 'utf8'));
   const siteConfig = JSON.parse(fs.readFileSync('config/service-provider-sites/one-time.json', 'utf8'));
-  const robotAsset = fs.statSync('public/assets/one-time/robot/robot-scheller-whatsapp.png');
 
   assert.match(server, /'\/one-time\/mishnayos'/);
   assert.match(server, /function isOneTimeSingleTenantRuntime\(\)/);
@@ -116,17 +118,20 @@ test('One Time focused offer route and registries are declared', () => {
 
   assert.equal(siteConfig.assets.teaching_gallery.length, 8);
   assert.ok(siteConfig.assets.teaching_gallery.every((entry) => entry.src.startsWith('/assets/one-time/rabbi/teaching-locations/')));
-  assert.equal(siteConfig.assets.robot_scheller, '/assets/one-time/robot/robot-scheller-whatsapp.png');
-  assert.ok(robotAsset.size < 500_000, `expected optimized Robot PNG below 500 KB, got ${robotAsset.size}`);
-  assert.match(botWidget, /<img class="bna-bot-avatar" src="\/assets\/one-time\/robot\/robot-scheller-whatsapp\.png"/);
+  assert.equal(siteConfig.lead_bot.public_name, 'One Time WhatsApp');
+  assert.equal(siteConfig.lead_bot.launcher_asset, null);
+  assert.equal(siteConfig.lead_bot.launcher_icon, 'whatsapp');
+  assert.equal(siteConfig.assets.whatsapp_launcher, 'inline_svg_icon');
+  assert.equal(siteConfig.assets.robot_scheller, null);
+  assert.match(botWidget, /const isOneTimeAssistantSurface = surface\.startsWith\('one_time_'\) && surface !== 'one_time_public'/);
   assert.match(botWidget, /\.bna-bot-avatar[\s\S]*object-fit: contain;[\s\S]*object-position: center;/);
-  assert.match(botWidget, /body\.bna-assistant-surface-one-time-public \.bna-bot-launcher \.bna-bot-avatar[\s\S]*width: 100px;[\s\S]*height: 100px;/);
-  assert.match(botWidget, /body\.bna-assistant-surface-one-time-public \.bna-bot-head \.bna-bot-avatar[\s\S]*width: 84px;[\s\S]*height: 84px;/);
-  assert.match(botWidget, /@media \(max-width: 520px\)[\s\S]*width: 88px;[\s\S]*min-height: 88px;[\s\S]*width: 80px;[\s\S]*height: 80px;/);
+  assert.match(botWidget, /Open One Time WhatsApp lead capture/);
+  assert.match(botWidget, /name, location, and contact information/);
 
   const actions = new Set(actionRegistry.actions.map((action) => action.action_id));
   assert.ok(actions.has('ACTION-ONETIME-JOIN-SHIR-CTA'));
   assert.ok(actions.has('ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT'));
+  assert.ok(actions.has('ACTION-ONETIME-PUBLIC-WHATSAPP'));
   assert.ok(actions.has('ACTION-ONETIME-PUBLIC-MOBILE-MENU'));
   assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-PREV'));
   assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-NEXT'));

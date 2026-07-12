@@ -8446,10 +8446,14 @@ function oneTimePublicWhatsAppMessage(intent = '') {
   const normalizedIntent = String(intent || '').trim().toLowerCase();
   const base = [
     "Hi, I'm interested in Rabbi Scheller's One Time Mishnayos class.",
-    'Please send me the current free-class information.',
+    'My name is:',
+    'My location is:',
+    'My email or phone is:',
+    'Please send me the class details.',
   ];
   if (normalizedIntent.includes('schedule')) base.push('I also have a schedule question.');
   if (normalizedIntent.includes('rabbi')) base.push('I would like to speak to Rabbi Scheller.');
+  if (normalizedIntent.includes('lead')) base.push('If I leave something blank, please ask me for it instead of guessing.');
   return base.join('\n');
 }
 
@@ -8460,8 +8464,8 @@ function oneTimePublicWhatsAppReadiness() {
     configured,
     workspace_key: 'rabbi_sheller_provider',
     project_key: 'one_time_mishnah_class',
-    assistant_name: 'Robot Scheller',
-    assistant_subtitle: "Rabbi Scheller's digital assistant",
+    assistant_name: 'One Time WhatsApp',
+    assistant_subtitle: 'Rabbi Scheller class lead capture',
     redirect_path: configured ? '/api/one-time/public-whatsapp/redirect' : '',
     missing_runtime: configured ? [] : ['ONE_TIME_PUBLIC_WHATSAPP_NUMBER'],
     class_link_configured: Boolean(ONE_TIME_WHATSAPP_CLASS_LINK),
@@ -82150,7 +82154,7 @@ app.get(['/api/one-time/public-whatsapp/redirect', '/api/bna/one-time/public-wha
     ONE_TIME_PUBLIC_WHATSAPP_NUMBER,
     oneTimePublicWhatsAppMessage(req.query?.intent || '')
   );
-  if (!composeUrl) return res.redirect(302, '/one-time#start-free');
+  if (!composeUrl) return res.redirect(302, '/one-time/signup');
   res.redirect(302, composeUrl);
 });
 
