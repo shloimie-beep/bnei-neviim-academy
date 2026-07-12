@@ -46,4 +46,12 @@
   - Deployed Operations HTML included shared CRM workbench markers.
   - Scoped CRM contacts API returned 12 cards with no external-write flags.
   - Selected CRM timeline API was read-only.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js` (32/32) after CRM URL-state slice.
+- PASS `node scripts/smoke-onetime-operations-crm-workbench-local.mjs` after CRM URL-state slice; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run operations:check-generated` after CRM URL-state slice.
+- PASS `npm run watchdog:actions` finding_count `0` after CRM URL-state slice.
+- PASS `npm run watchdog:protocol-drift` after CRM URL-state slice.
+- PASS `npm run secrets:audit` after CRM URL-state slice.
+- PASS `npm run bna:run:validate` after CRM URL-state slice.
+- PASS `git diff --check` with line-ending warnings only after CRM URL-state slice.
 - BLOCKED `npm run production:readiness:gate -- --json` only on full-launch external Stripe/campaign setup fields.

@@ -1170,19 +1170,23 @@ let selectedLeadId = null;
 let selectedPersonKey = null;
 let firstPartyCrmContactsPayload = null;
 let firstPartyCrmTimelinePayload = null;
-let selectedFirstPartyCrmContactId = null;
+let selectedFirstPartyCrmContactId = currentView === 'contacts' && contactSection === 'crm_contacts'
+    ? String(initialParams.get('crm_contact') || '').trim() || null
+    : null;
 let firstPartyCrmLoading = false;
 let firstPartyCrmError = '';
 let firstPartyCrmNotice = '';
 let firstPartyCrmSaving = false;
+const initialCrmSort = String(initialParams.get('crm_sort') || '').trim();
 let firstPartyCrmFilters = {
-    contact_type: 'all',
-    status: 'all',
-    source: 'all',
-    tag: 'all',
-    sort_key: 'last_contact_desc',
-    search: ''
+    contact_type: String(initialParams.get('crm_type') || 'all').trim() || 'all',
+    status: String(initialParams.get('crm_status') || 'all').trim() || 'all',
+    source: String(initialParams.get('crm_source') || 'all').trim() || 'all',
+    tag: String(initialParams.get('crm_tag') || 'all').trim() || 'all',
+    sort_key: ['last_contact_desc', 'next_follow_up_asc', 'name_asc'].includes(initialCrmSort) ? initialCrmSort : 'last_contact_desc',
+    search: String(initialParams.get('crm_search') || '').slice(0, 160)
 };
+let firstPartyCrmListScrollTop = Number(initialParams.get('crm_scroll') || 0) || 0;
 const FIRST_PARTY_CRM_PAGE_LIMIT = 50;
 const FIRST_PARTY_CRM_SEARCH_DEBOUNCE_MS = 320;
 let firstPartyCrmContactsAbortController = null;
@@ -7066,6 +7070,49 @@ function resetFirstPartyCrmRequestState(options = {}) {
     if (options.clearCache) firstPartyCrmContactsCache.clear();
 }
 
+function firstPartyCrmUrlStateActive() {
+    return currentView === 'contacts' && contactSection === 'crm_contacts';
+}
+
+function captureFirstPartyCrmListScroll() {
+    const list = document.querySelector('.crm-workbench-list');
+    firstPartyCrmListScrollTop = Number(list?.scrollTop || window.scrollY || 0) || 0;
+}
+
+function restoreFirstPartyCrmListScroll() {
+    if (!firstPartyCrmListScrollTop || selectedFirstPartyCrmContactId) return;
+    window.setTimeout(() => {
+        const list = document.querySelector('.crm-workbench-list');
+        if (list) list.scrollTop = firstPartyCrmListScrollTop;
+        else window.scrollTo({ top: firstPartyCrmListScrollTop, behavior: 'auto' });
+    }, 0);
+}
+
+function syncFirstPartyCrmUrlParams(url) {
+    const keys = ['crm_contact', 'crm_search', 'crm_type', 'crm_status', 'crm_source', 'crm_tag', 'crm_sort', 'crm_scroll'];
+    if (!firstPartyCrmUrlStateActive()) {
+        keys.forEach(key => url.searchParams.delete(key));
+        return;
+    }
+    if (selectedFirstPartyCrmContactId) url.searchParams.set('crm_contact', selectedFirstPartyCrmContactId);
+    else url.searchParams.delete('crm_contact');
+    const filterParamMap = {
+        crm_search: ['search', ''],
+        crm_type: ['contact_type', 'all'],
+        crm_status: ['status', 'all'],
+        crm_source: ['source', 'all'],
+        crm_tag: ['tag', 'all'],
+        crm_sort: ['sort_key', 'last_contact_desc']
+    };
+    Object.entries(filterParamMap).forEach(([param, [filterKey, defaultValue]]) => {
+        const value = String(firstPartyCrmFilters[filterKey] || '').trim();
+        if (value && value !== defaultValue) url.searchParams.set(param, value);
+        else url.searchParams.delete(param);
+    });
+    if (firstPartyCrmListScrollTop > 0) url.searchParams.set('crm_scroll', String(Math.round(firstPartyCrmListScrollTop)));
+    else url.searchParams.delete('crm_scroll');
+}
+
 function firstPartyCrmQueryFilters() {
     const workspace = currentWorkspaceKey();
     const projectKey = projectKeyForWorkspaceKey(workspace);
@@ -7123,6 +7170,7 @@ function updateFirstPartyCrmPanel() {
     if (!root) return false;
     root.outerHTML = renderFirstPartyCrmContactsPanel(firstPartyCrmRenderOptions);
     instrumentOneTimeOperationsUi();
+    restoreFirstPartyCrmListScroll();
     return true;
 }
 
@@ -7425,6 +7473,9 @@ async function loadFirstPartyCrmContacts(event, options = {}) {
         if (selectedFirstPartyCrmContactId && !cards.some(card => String(card.id) === String(selectedFirstPartyCrmContactId))) {
             selectedFirstPartyCrmContactId = null;
             firstPartyCrmTimelinePayload = null;
+            syncOperationsUrl();
+        } else if (selectedFirstPartyCrmContactId && !firstPartyCrmTimelinePayload && !firstPartyCrmTimelineAbortController) {
+            await openFirstPartyCrmContact(selectedFirstPartyCrmContactId, { captureScroll: false, syncUrl: false });
         }
     } catch (error) {
         if (isAbortError(error)) return;
@@ -7439,7 +7490,8 @@ async function loadFirstPartyCrmContacts(event, options = {}) {
     }
 }
 
-async function openFirstPartyCrmContact(contactId) {
+async function openFirstPartyCrmContact(contactId, options = {}) {
+    if (options.captureScroll !== false) captureFirstPartyCrmListScroll();
     selectedFirstPartyCrmContactId = contactId;
     firstPartyCrmTimelinePayload = null;
     if (firstPartyCrmTimelineAbortController) firstPartyCrmTimelineAbortController.abort();
@@ -7447,6 +7499,7 @@ async function openFirstPartyCrmContact(contactId) {
     firstPartyCrmTimelineRequestSeq = requestSeq;
     const controller = new AbortController();
     firstPartyCrmTimelineAbortController = controller;
+    if (options.syncUrl !== false) syncOperationsUrl();
     updateFirstPartyCrmPanel();
 
     try {
@@ -7471,6 +7524,7 @@ function clearFirstPartyCrmSelection(event) {
         firstPartyCrmTimelineAbortController.abort();
         firstPartyCrmTimelineAbortController = null;
     }
+    syncOperationsUrl();
     updateFirstPartyCrmPanel();
 }
 
@@ -7550,8 +7604,11 @@ function setFirstPartyCrmFilter(key, value) {
     firstPartyCrmFilters = { ...firstPartyCrmFilters, [key]: value };
     selectedFirstPartyCrmContactId = null;
     firstPartyCrmTimelinePayload = null;
+    firstPartyCrmListScrollTop = 0;
     if (firstPartyCrmTimelineAbortController) firstPartyCrmTimelineAbortController.abort();
     if (firstPartyCrmSearchDebounceTimer) clearTimeout(firstPartyCrmSearchDebounceTimer);
+    if (key === 'search') suppressOperationsHistoryPush = true;
+    syncOperationsUrl();
     if (key === 'search') {
         firstPartyCrmSearchDebounceTimer = setTimeout(() => {
             firstPartyCrmSearchDebounceTimer = null;
@@ -16704,6 +16761,7 @@ function syncOperationsUrl() {
     } else {
         url.searchParams.delete('inbox');
     }
+    syncFirstPartyCrmUrlParams(url);
     const nextUrl = `${url.pathname}${url.search}${url.hash}`;
     const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     const shouldReplace = !operationsUrlInitialized || suppressOperationsHistoryPush;

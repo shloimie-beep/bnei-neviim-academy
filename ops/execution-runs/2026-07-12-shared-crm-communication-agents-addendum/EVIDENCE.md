@@ -19,3 +19,5 @@
 - BNA post-deploy doctor - Railway deployment `b7363013-f56e-4a27-80bc-0c4d3f5ab2c4` reached `SUCCESS`.
 - One Time post-deploy doctor - Railway deployment `3132ec38-3b28-4583-a2b9-0aab261ef112` reached `SUCCESS`.
 - `ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped CRM cards, external-write flags false, and selected timeline read-only.
+- `public/operations.html` / `public/js/operations-shell.js` - CRM contact selection and filters now write URL state with `crm_contact`, `crm_search`, `crm_type`, `crm_status`, `crm_source`, `crm_tag`, `crm_sort`, and `crm_scroll`.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local Playwright CRM workbench proof after URL-state wiring.

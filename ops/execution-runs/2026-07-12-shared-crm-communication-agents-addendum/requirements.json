@@ -78,9 +78,9 @@
         "REQ-20260712-305"
       ],
       "status": "in_progress",
-      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked: canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, and the One Time Operations CRM workbench API/timeline smoke passed.",
+      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked: canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, and the One Time Operations CRM workbench API/timeline smoke passed. A follow-up URL-state slice for crm_contact/filter/search/sort/list-scroll is locally verified and pending deploy.",
       "can_continue_without_operator": true,
-      "next_action": "Continue the dedicated contact workspace/actions and deeper parity batches without reintroducing workspace leakage or internal CRM copy.",
+      "next_action": "Commit, push, deploy, and live-smoke the CRM URL-state slice; then continue the dedicated contact workspace/actions and deeper parity batches without reintroducing workspace leakage or internal CRM copy.",
       "acceptance_criteria": [
         "BNA and One Time use shared CRM shell/index/workspace/inbox/actions/components with only theme, logo, title, allowed fields/actions, channels, agents, and records varying by workspace."
       ],
@@ -90,7 +90,9 @@
         "public/js/crm/crm-api.js, crm-store.js, contacts-index.js, contact-workspace.js, crm-actions.js, and crm-inbox.js provide shared browser CRM primitives loaded by Operations.",
         "public/operations.html and generated operations shell assets load the shared CRM modules and mark contacts index, contact workspace, and inspector components with shared CRM data attributes.",
         "ops/action-registry.json registers the scoped email navigation, WhatsApp no-send link, and disabled Create Task placeholder actions.",
-        "ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md records the deployed One Time Operations CRM workbench smoke with 12 scoped CRM cards and read-only timeline proof."
+        "ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md records the deployed One Time Operations CRM workbench smoke with 12 scoped CRM cards and read-only timeline proof.",
+        "public/operations.html now maps crm_contact, crm_search, crm_type, crm_status, crm_source, crm_tag, crm_sort, and crm_scroll into URL state for the CRM workbench.",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records the local split-shell and monolith CRM workbench smoke after URL-state wiring."
       ],
       "verification": [
         "node --check server.js PASS",
@@ -110,7 +112,13 @@
         "BNA deploy-info returned commit_sha=bf0ec619b5ed10b2c057d5cf4f1553362d6614f4 and health status ok",
         "One Time deploy-info returned commit_sha=bf0ec619b5ed10b2c057d5cf4f1553362d6614f4",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha bf0ec619b5ed10b2c057d5cf4f1553362d6614f4 PASS",
-        "npm run app:smoke:onetime-operations-crm-workbench PASS with scoped contacts API, zero external-write flags, and read-only selected timeline"
+        "npm run app:smoke:onetime-operations-crm-workbench PASS with scoped contacts API, zero external-write flags, and read-only selected timeline",
+        "node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js PASS 32/32 after URL-state slice",
+        "node scripts/smoke-onetime-operations-crm-workbench-local.mjs PASS after URL-state slice",
+        "npm run operations:check-generated PASS after URL-state slice",
+        "npm run watchdog:actions PASS finding_count 0 after URL-state slice",
+        "npm run watchdog:protocol-drift PASS after URL-state slice",
+        "npm run secrets:audit PASS after URL-state slice"
       ],
       "implementation_files": [
         "src/lib/bna/crm/contact-service.js",
@@ -128,6 +136,8 @@
         "src/lib/bna/crm-contact-model.js",
         "server.js",
         "ops/action-registry.json",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json",
         "tests/crm-contact-service.test.js",
         "tests/shared-crm-workbench-contract.test.js",
         "tests/rabbi-scheller-tenant-isolation-contract.test.js"
@@ -139,7 +149,7 @@
         "One Time production deploy-info readback commit_sha=bf0ec619b5ed10b2c057d5cf4f1553362d6614f4.",
         "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md."
       ],
-      "updated_at": "2026-07-13T00:26:00+03:00",
+      "updated_at": "2026-07-13T00:34:00+03:00",
       "blocker": ""
     },
     {

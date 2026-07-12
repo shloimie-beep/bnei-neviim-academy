@@ -38952,3 +38952,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   external-write flags, and selected timeline read-only.
 - Evidence:
   `ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md`.
+
+## 2026-07-13 - Shared CRM URL-state slice local verification
+
+- Added CRM URL state for selected contact, search, filters, sort, and list
+  scroll using `crm_contact`, `crm_search`, `crm_type`, `crm_status`,
+  `crm_source`, `crm_tag`, `crm_sort`, and `crm_scroll`.
+- Contact row selection now syncs URL state; Back to contacts clears
+  `crm_contact`; initial reload/share with `crm_contact` reopens the contact
+  workspace after the scoped list loads.
+- Added static contract coverage in `tests/shared-crm-workbench-contract.test.js`.
+- Verification passed: generated-shell check, focused CRM/isolation tests
+  `32/32`, local Playwright CRM workbench smoke, action watchdog, protocol
+  drift watchdog, secret audit, execution-run validation, and `git diff --check`
+  with line-ending warnings only.
+- Deployment/live smoke is still pending for this URL-state slice.

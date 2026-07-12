@@ -41,6 +41,18 @@ test('Operations loads the shared CRM browser modules before the shell', () => {
   assert.match(operations, /data-shared-crm-component="contact-inspector"/);
 });
 
+test('Operations CRM contact workspace keeps URL state for reload and browser Back', () => {
+  assert.match(operations, /let selectedFirstPartyCrmContactId = currentView === 'contacts' && contactSection === 'crm_contacts'[\s\S]*initialParams\.get\('crm_contact'\)/);
+  assert.match(operations, /function syncFirstPartyCrmUrlParams\(url\)/);
+  assert.match(operations, /url\.searchParams\.set\('crm_contact', selectedFirstPartyCrmContactId\)/);
+  assert.match(operations, /crm_search: \['search', ''\]/);
+  assert.match(operations, /crm_sort: \['sort_key', 'last_contact_desc'\]/);
+  assert.match(operations, /syncFirstPartyCrmUrlParams\(url\);/);
+  assert.match(operations, /await openFirstPartyCrmContact\(selectedFirstPartyCrmContactId, \{ captureScroll: false, syncUrl: false \}\);/);
+  assert.match(operations, /if \(options\.syncUrl !== false\) syncOperationsUrl\(\);/);
+  assert.match(operations, /function clearFirstPartyCrmSelection\(event\)[\s\S]*syncOperationsUrl\(\);[\s\S]*updateFirstPartyCrmPanel\(\);/);
+});
+
 test('Shared CRM modules expose paths, empty states, actions, and inbox scope', () => {
   const global = runBrowserModule('public/js/crm/crm-api.js');
   runBrowserModule('public/js/crm/crm-store.js', { window: global });
