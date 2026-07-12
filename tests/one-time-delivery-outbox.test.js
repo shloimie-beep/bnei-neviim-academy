@@ -114,7 +114,8 @@ test('class reminder WhatsApp request uses phone recipient and worldwide class i
   assert.equal(request.kind, 'class_reminder');
   assert.equal(request.provider, 'one_time_wapi');
   assert.equal(request.to, '17325550101');
-  assert.match(request.text, /Rabbi Scheller's Mishnah class starts in 30 minutes/);
+  assert.match(request.text, /Hi, this is Rabbi Scheller's digital assistant\./);
+  assert.match(request.text, /awesome class today/);
   assert.match(request.text, /Your local time: .*12:00 p\.m\./);
   assert.match(request.text, /Israel time: 7:00 p\.m\./);
   assert.match(request.text, /Join Zoom:\nhttps:\/\/join\.example\.invalid\/one-time-class/);

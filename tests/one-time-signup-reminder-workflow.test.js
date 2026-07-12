@@ -300,16 +300,18 @@ test('reminder idempotency and readiness gates are explicit', () => {
     ONE_TIME_WHAPI_INSTANCE_ID: 'instance',
     ONE_TIME_WHAPI_PHONE: '+972500000000',
     ONE_TIME_WAPI_WEBHOOK_SECRET: 'secret',
-    ONE_TIME_PUBLIC_WHATSAPP_NUMBER: '+972500000000',
     ONE_TIME_WHATSAPP_CLASS_LINK: 'https://join.example.test',
-    ONE_TIME_WAPI_AUTO_REPLY_ENABLED: 'true',
-    ONE_TIME_WAPI_AUTO_REPLY_CONFIRM: 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY',
-    ONE_TIME_PROVIDER_LEAD_BOT_MODE: 'live',
+    ONE_TIME_WAPI_REQUIRED_SENDER_DIGITS: '5000',
+    ONE_TIME_WHATSAPP_CLASS_REMINDERS_ENABLED: 'true',
+    ONE_TIME_WHATSAPP_CLASS_REMINDERS_CONFIRM: 'APPROVE_ONE_TIME_WHATSAPP_CLASS_REMINDERS',
   });
   assert.equal(wapi.ready, true);
+  assert.equal(wapi.enabled, true);
+  assert.equal(wapi.approved, true);
   assert.equal(wapi.qr_action_if_auth_expired, 'Rabbi Scheller must scan the Whapi channel QR from his WhatsApp phone.');
   assert.equal(JSON.stringify(wapi).includes('token'), false);
   assert.equal(JSON.stringify(wapi).includes('secret'), false);
+  assert.equal(JSON.stringify(wapi).includes('5000'), false);
 });
 
 test('server declares protected cron and local-class preview without portal/payment paths in the signup route', () => {
