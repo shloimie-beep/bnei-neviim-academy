@@ -78,9 +78,9 @@
         "REQ-20260712-305"
       ],
       "status": "in_progress",
-      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked: canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, the One Time Operations CRM workbench API/timeline smoke passed, and the crm_contact/filter/search/sort/list-scroll URL-state slice is deployed and live-smoked. A local CRM update form and explicit no-auto-task policy slice is locally verified and pending deploy.",
+      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked: canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, the One Time Operations CRM workbench API/timeline smoke passed, the crm_contact/filter/search/sort/list-scroll URL-state slice is deployed and live-smoked, and the local CRM update form/no-auto-task policy slice is deployed and live-smoked.",
       "can_continue_without_operator": true,
-      "next_action": "Commit, push, deploy, and live-smoke the local CRM update/no-auto-task slice; then continue deeper dedicated contact workspace/actions without reintroducing workspace leakage or internal CRM copy.",
+      "next_action": "Continue deeper dedicated contact workspace/actions without reintroducing workspace leakage or internal CRM copy.",
       "acceptance_criteria": [
         "BNA and One Time use shared CRM shell/index/workspace/inbox/actions/components with only theme, logo, title, allowed fields/actions, channels, agents, and records varying by workspace."
       ],
@@ -95,7 +95,8 @@
         "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records the local split-shell and monolith CRM workbench smoke after URL-state wiring.",
         "ops/live-smokes/2026-07-12T21-39-03-428Z-one-time-operations-crm-workbench-live-smoke.md records the deployed URL-state slice live smoke at commit f818822bb3969dca5d27f7c5a70d4dbf0baa8744.",
         "public/operations.html exposes a local CRM update form for lifecycle, owner, follow-up, tags, and notes with ACTION-CRM-CONTACT-SAFE-UPDATE.",
-        "server.js now creates CRM follow-up tasks only when create_follow_up_task is explicitly true."
+        "server.js now creates CRM follow-up tasks only when create_follow_up_task is explicitly true.",
+        "ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md records the deployed local update/no-auto-task slice live smoke at commit 224bc077919c624f115c264d35e35092ed4144da."
       ],
       "verification": [
         "node --check server.js PASS",
@@ -132,7 +133,12 @@
         "npm run operations:check-generated PASS after local update/no-auto-task slice",
         "npm run watchdog:actions PASS finding_count 0 after local update/no-auto-task slice",
         "npm run watchdog:protocol-drift PASS after local update/no-auto-task slice",
-        "npm run secrets:audit PASS after local update/no-auto-task slice"
+        "npm run secrets:audit PASS after local update/no-auto-task slice",
+        "BNA Railway redeploy uploaded local update/no-auto-task slice and post-deploy doctor passed for deployment cb4febee-2ddc-4ae7-97e8-fa207196b8c4",
+        "One Time Railway redeploy uploaded local update/no-auto-task slice and post-deploy doctor passed for deployment 13eed8ec-cf2a-4c65-ace5-a3d8522816c4",
+        "BNA and One Time deploy-info returned commit_sha=224bc077919c624f115c264d35e35092ed4144da",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 224bc077919c624f115c264d35e35092ed4144da PASS",
+        "npm run app:smoke:onetime-operations-crm-workbench PASS after local update/no-auto-task slice with 12 scoped cards and read-only selected timeline"
       ],
       "implementation_files": [
         "src/lib/bna/crm/contact-service.js",
@@ -163,9 +169,10 @@
         "BNA production deploy-info readback commit_sha=bf0ec619b5ed10b2c057d5cf4f1553362d6614f4.",
         "One Time production deploy-info readback commit_sha=bf0ec619b5ed10b2c057d5cf4f1553362d6614f4.",
         "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md.",
-        "URL-state slice deployed at f818822bb3969dca5d27f7c5a70d4dbf0baa8744 with live smoke report ops/live-smokes/2026-07-12T21-39-03-428Z-one-time-operations-crm-workbench-live-smoke.md."
+        "URL-state slice deployed at f818822bb3969dca5d27f7c5a70d4dbf0baa8744 with live smoke report ops/live-smokes/2026-07-12T21-39-03-428Z-one-time-operations-crm-workbench-live-smoke.md.",
+        "Local update/no-auto-task slice deployed at 224bc077919c624f115c264d35e35092ed4144da with live smoke report ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md."
       ],
-      "updated_at": "2026-07-13T00:44:00+03:00",
+      "updated_at": "2026-07-13T00:49:00+03:00",
       "blocker": ""
     },
     {

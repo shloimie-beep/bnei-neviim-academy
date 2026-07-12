@@ -23,3 +23,4 @@
 - `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local Playwright CRM workbench proof after URL-state wiring.
 - `ops/live-smokes/2026-07-12T21-39-03-428Z-one-time-operations-crm-workbench-live-smoke.md` - deployed URL-state slice live smoke at `f818822bb3969dca5d27f7c5a70d4dbf0baa8744`, with 12 scoped cards and read-only selected timeline.
 - `public/operations.html` / `server.js` - local CRM update form saves first-party fields/notes and disables automatic task creation unless `create_follow_up_task` is explicitly true.
+- `ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md` - deployed local update/no-auto-task slice live smoke at `224bc077919c624f115c264d35e35092ed4144da`, with 12 scoped cards and read-only selected timeline.

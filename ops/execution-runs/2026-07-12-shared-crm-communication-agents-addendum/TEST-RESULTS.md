@@ -70,4 +70,12 @@
 - PASS `npm run secrets:audit` after local update/no-auto-task slice.
 - PASS `npm run bna:run:validate` after local update/no-auto-task slice.
 - PASS `git diff --check` with line-ending warnings only after local update/no-auto-task slice.
+- PASS `git push origin master` for local update/no-auto-task commit `224bc077919c624f115c264d35e35092ed4144da`
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `cb4febee-2ddc-4ae7-97e8-fa207196b8c4`
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `13eed8ec-cf2a-4c65-ace5-a3d8522816c4`
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `224bc077919c624f115c264d35e35092ed4144da`
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 224bc077919c624f115c264d35e35092ed4144da`
+- PASS `npm run app:smoke:onetime-operations-crm-workbench` after local update/no-auto-task deploy
+  - Scoped CRM contacts API returned 12 cards with no external-write flags.
+  - Selected CRM timeline API was read-only.
 - BLOCKED `npm run production:readiness:gate -- --json` only on full-launch external Stripe/campaign setup fields.

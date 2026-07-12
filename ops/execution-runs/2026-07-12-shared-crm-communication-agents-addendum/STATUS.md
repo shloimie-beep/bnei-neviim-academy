@@ -47,6 +47,7 @@ Current status: `active`
 - Verification for URL-state slice passed: generated-shell check, focused CRM/isolation tests `32/32`, local Playwright CRM workbench smoke across split shell and monolith, action watchdog, protocol drift watchdog, secret audit, execution-run validation, and whitespace diff check.
 - URL-state slice is deployed at `f818822bb3969dca5d27f7c5a70d4dbf0baa8744`; BNA and One Time deploy-info match, post-deploy Railway doctors passed, One Time separate-instance smoke passed, and One Time Operations CRM workbench live smoke passed with 12 scoped cards and selected timeline read-only.
 - Local CRM update/no-auto-task slice is locally verified and pending deploy: selected contact workspace now exposes a local first-party update form, the client sends `create_follow_up_task: false`, and the server creates CRM follow-up tasks only when `create_follow_up_task` is explicitly true.
+- Local CRM update/no-auto-task slice is deployed at `224bc077919c624f115c264d35e35092ed4144da`; BNA and One Time deploy-info match, post-deploy Railway doctors passed, One Time separate-instance smoke passed, and One Time Operations CRM workbench live smoke passed with 12 scoped cards and selected timeline read-only.
 
 ## Identity Isolation Batch
 

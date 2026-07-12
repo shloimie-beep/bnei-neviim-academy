@@ -38987,4 +38987,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `33/33`, local Playwright CRM workbench smoke, action watchdog, protocol
   drift watchdog, secret audit, execution-run validation, and `git diff --check`
   with line-ending warnings only.
-- Deployment/live smoke is still pending for this local update slice.
+- Deployed `224bc077919c624f115c264d35e35092ed4144da` to BNA and One Time;
+  BNA deployment `cb4febee-2ddc-4ae7-97e8-fa207196b8c4` and One Time
+  deployment `13eed8ec-cf2a-4c65-ace5-a3d8522816c4` both reached `SUCCESS`.
+- Live proof passed: BNA and One Time deploy-info both returned the local
+  update/no-auto-task SHA; One Time separate-instance smoke passed; One Time
+  Operations CRM workbench smoke passed with 12 scoped CRM cards and selected
+  timeline read-only.
