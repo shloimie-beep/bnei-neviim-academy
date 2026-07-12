@@ -1,27 +1,27 @@
 # Universal Action Parity
 
-Generated at 2026-07-09T12:16:41.485Z.
+Generated at 2026-07-12T13:53:29.251Z.
 
 Requirement: REQ-20260623-013
 
 ## Release Gate
 
 - Status: passed
-- all_visible_controls_classified: pass (51/51)
+- all_visible_controls_classified: pass (53/53)
 - zero_visible_missing_contracts: pass (0)
 - zero_missing_handlers: pass (0)
 - zero_missing_tests: pass (0)
 - zero_risky_actions_without_approval: pass (0)
 - telegram_request_parity_present: pass (80)
-- website_assistant_request_parity_present: pass (200)
+- website_assistant_request_parity_present: pass (212)
 - agent_work_handoff_parity_present: pass (100)
 
 ## Summary
 
-- Root registry actions: 120
+- Root registry actions: 132
 - Detailed typed actions: 80
-- Visible UI hooks: 51
-- Visible UI hooks classified: 51
+- Visible UI hooks: 53
+- Visible UI hooks classified: 53
 - Missing contracts: 0
 - Missing handlers: 0
 - Missing tests: 0
@@ -31,11 +31,11 @@ Requirement: REQ-20260623-013
 
 | Source | Count |
 | --- | ---: |
-| ui_button | 51 |
+| ui_button | 53 |
 | telegram_request | 80 |
-| website_assistant_request | 200 |
-| operations_helper_request | 180 |
-| automation_action | 85 |
+| website_assistant_request | 212 |
+| operations_helper_request | 182 |
+| automation_action | 88 |
 | agent_work_handoff | 100 |
 
 ## Visible Control Classifications
@@ -44,7 +44,7 @@ Requirement: REQ-20260623-013
 | --- | ---: |
 | read_only | 8 |
 | secure_deep_link_only | 5 |
-| preview_then_approve | 28 |
+| preview_then_approve | 30 |
 | blocked_connector | 4 |
 | not_applicable | 2 |
 | executable | 4 |
@@ -57,10 +57,10 @@ Requirement: REQ-20260623-013
 | provider_listing | covered_by_canonical_registry | request_provider_contact |
 | provider_website | covered_by_canonical_registry | ACTION-STUDIO-AI-VIDEO-WORKER-HANDOFF<br>ACTION-STUDIO-APPLY-CORRECTION<br>ACTION-STUDIO-COMPILE-PROMPT<br>ACTION-STUDIO-CREATE-PROJECT<br>ACTION-STUDIO-GENERATE-STORYBOARD<br>ACTION-STUDIO-HANDOFF-CONTENT |
 | brand | not_applicable_current_surface | No current visible control in this category; future work must add a typed registry row before exposing UI or assistant execution. |
-| landing_page | covered_by_canonical_registry | ACTION-ONETIME-PUBLIC-HELPER-OPEN |
+| landing_page | covered_by_canonical_registry | ACTION-ONETIME-PUBLIC-HELPER-OPEN<br>ACTION-ONETIME-PUBLIC-WHATSAPP |
 | seo | covered_by_canonical_registry | capture_provider_google_business_link<br>google_business_list_locations_preview<br>google_business_place_id_lookup |
 | course | covered_by_canonical_registry | ACTION-ONETIME-CLASS-PACKAGE-PREVIEW<br>ACTION-PROVIDER-CLASSROOM-DRAFT<br>classroom_topic_material_preview<br>create_provider_class_session<br>create_provider_classroom_draft<br>create_rabbi_shiur_idea |
-| class | covered_by_canonical_registry | ACTION-AGENT-REVIEW-COPY-SESSION<br>ACTION-AGENT-REVIEW-EXIT<br>ACTION-AGENT-REVIEW-RETURN-HUB<br>ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED<br>ACTION-ONETIME-CLASS-PACKAGE-PREVIEW<br>ACTION-ONETIME-JOIN-SHIR-CTA |
+| class | covered_by_canonical_registry | ACTION-AGENT-REVIEW-COPY-SESSION<br>ACTION-AGENT-REVIEW-EXIT<br>ACTION-AGENT-REVIEW-RETURN-HUB<br>ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED<br>ACTION-ONETIME-CLASS-PACKAGE-PREVIEW<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN |
 | lesson | covered_by_canonical_registry | create_one_time_video_library_item<br>create_rabbi_shiur_idea |
 | video | covered_by_canonical_registry | ACTION-STUDIO-AI-VIDEO-WORKER-HANDOFF<br>create_one_time_video_library_item |
 | worksheet | covered_by_canonical_registry | generate_student_worksheet |
@@ -72,12 +72,12 @@ Requirement: REQ-20260623-013
 | drip_sequence | covered_by_canonical_registry | draft_drip_sequence |
 | template_version | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-LIBRARY-APPROVE<br>ACTION-PROVIDER-CLASSROOM-DRAFT<br>ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT<br>ACTION-PROVIDER-MAILBOX-DRAFT<br>ACTION-STUDIO-SIDEKICK-PATCH-PREVIEW<br>approve_email |
 | automation | covered_by_canonical_registry | ACTION-HELPER-CREATE-AUTOMATION<br>draft_automation |
-| segment | covered_by_canonical_registry | ACTION-CRM-CONTACT-CARD-EXPAND<br>ACTION-CRM-CONTACTS-FILTER<br>create_referral_ledger_entry<br>move_lead_stage<br>preview_campaign_segment<br>request_provider_contact |
+| segment | covered_by_canonical_registry | ACTION-CRM-CONTACT-CARD-EXPAND<br>ACTION-CRM-CONTACT-MAILBOX-OPEN<br>ACTION-CRM-CONTACT-SAFE-UPDATE<br>ACTION-CRM-CONTACTS-FILTER<br>create_referral_ledger_entry<br>move_lead_stage |
 | reminder | covered_by_canonical_registry | create_calendar_event<br>create_student_schedule_item<br>delete_calendar_event<br>open_calendar_event<br>pause_scheduled_email<br>preview_social_schedule_package |
 | ticket | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>create_report_problem_ticket<br>create_ticket<br>route_bug_to_codex |
 | support | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>create_help_request<br>create_report_problem_ticket<br>create_ticket<br>request_provider_contact<br>route_bug_to_codex |
 | file_intake | covered_by_canonical_registry | ACTION-HELPER-CAPTURE-RAW-INTAKE<br>ACTION-ONETIME-DRIVE-BRIEF-PREVIEW<br>google_drive_create_doc_preview<br>google_drive_create_folder_preview<br>google_drive_find_file_preview<br>google_drive_move_file_preview |
-| integration | covered_by_canonical_registry | ACTION-INTEGRATION-SETUP-OPEN<br>ACTION-INTEGRATION-SETUP-VALIDATE<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN<br>ACTION-ONETIME-LIVE-ZOOM-LINK-SEND<br>ACTION-PARENT-ACCESS-LINK-WHATSAPP<br>ACTION-PROVIDER-API-USAGE-PREVIEW-NAV |
+| integration | covered_by_canonical_registry | ACTION-INTEGRATION-SETUP-OPEN<br>ACTION-INTEGRATION-SETUP-VALIDATE<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN<br>ACTION-ONETIME-LIVE-ZOOM-LINK-SEND<br>ACTION-ONETIME-PUBLIC-HELPER-OPEN<br>ACTION-ONETIME-PUBLIC-WHATSAPP |
 | billing | covered_by_canonical_registry | ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS |
 | agent_work | covered_by_canonical_registry | ACTION-AGENT-RESULT-RECORD<br>ACTION-AGENT-REVIEW-COPY-PROMPT<br>ACTION-AGENT-REVIEW-COPY-SESSION<br>ACTION-AGENT-REVIEW-EXIT<br>ACTION-AGENT-REVIEW-MARK-BLOCKED<br>ACTION-AGENT-REVIEW-OPEN-CONTEXT |
 | deployment_status | covered_by_canonical_registry | ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS<br>ACTION-ONETIME-MEMBER-LIBRARY-SMOKE<br>ACTION-ONETIME-SCOPED-AGENT-STATUS<br>ACTION-PROVIDER-SECTION-NAVIGATION |

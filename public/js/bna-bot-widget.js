@@ -581,8 +581,8 @@
       width: 10px;
       height: 10px;
       border-radius: 999px;
-      background: #e3b848;
-      box-shadow: 0 0 0 4px rgba(227, 184, 72, 0.22);
+      background: #f0ff32;
+      box-shadow: 0 0 0 4px rgba(240, 255, 50, 0.22);
     }
     .bna-bot-avatar {
       display: block;
@@ -688,7 +688,7 @@
     body.bna-assistant-surface-one-time-student .bna-bot-launcher,
     body.bna-assistant-surface-one-time-member .bna-bot-launcher,
     body.bna-assistant-surface-one-time-provider .bna-bot-launcher {
-      border: 1px solid rgba(237, 229, 24, 0.48);
+      border: 1px solid rgba(240, 255, 50, 0.52);
       background: #080910;
       color: #ffffff;
       box-shadow: 0 16px 34px rgba(8, 9, 16, 0.34);
@@ -704,23 +704,25 @@
       height: 48px;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-launcher .bna-bot-avatar {
-      width: 88px;
-      height: 88px;
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      object-position: center;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-launcher-dot,
     body.bna-assistant-surface-one-time-parent .bna-bot-launcher-dot,
     body.bna-assistant-surface-one-time-student .bna-bot-launcher-dot,
     body.bna-assistant-surface-one-time-member .bna-bot-launcher-dot,
     body.bna-assistant-surface-one-time-provider .bna-bot-launcher-dot {
-      background: #ede518;
-      box-shadow: 0 0 0 4px rgba(237, 229, 24, 0.22);
+      background: #f0ff32;
+      box-shadow: 0 0 0 4px rgba(240, 255, 50, 0.22);
     }
     body.bna-assistant-surface-one-time-public .bna-bot-head,
     body.bna-assistant-surface-one-time-parent .bna-bot-head,
     body.bna-assistant-surface-one-time-student .bna-bot-head,
     body.bna-assistant-surface-one-time-member .bna-bot-head,
     body.bna-assistant-surface-one-time-provider .bna-bot-head {
-      border-bottom: 1px solid rgba(237, 229, 24, 0.36);
+      border-bottom: 1px solid rgba(240, 255, 50, 0.36);
       background: #080910;
       color: #ffffff;
     }
@@ -736,7 +738,7 @@
     body.bna-assistant-surface-one-time-student .bna-bot-panel,
     body.bna-assistant-surface-one-time-member .bna-bot-panel,
     body.bna-assistant-surface-one-time-provider .bna-bot-panel {
-      border-color: rgba(237, 229, 24, 0.28);
+      border-color: rgba(240, 255, 50, 0.28);
       background: #15171d;
       color: #ffffff;
     }
@@ -751,7 +753,7 @@
     body.bna-assistant-surface-one-time-member .bna-bot-history,
     body.bna-assistant-surface-one-time-provider .bna-bot-history {
       background: #0f1117;
-      border-color: rgba(237, 229, 24, 0.18);
+      border-color: rgba(240, 255, 50, 0.18);
     }
     body.bna-assistant-surface-one-time-public .bna-bot-message.assistant,
     body.bna-assistant-surface-one-time-parent .bna-bot-message.assistant,
@@ -763,7 +765,7 @@
     body.bna-assistant-surface-one-time-student .bna-bot-history-state,
     body.bna-assistant-surface-one-time-member .bna-bot-history-state,
     body.bna-assistant-surface-one-time-provider .bna-bot-history-state {
-      border-color: rgba(237, 229, 24, 0.18);
+      border-color: rgba(240, 255, 50, 0.18);
       background: #080910;
       color: #ffffff;
     }
@@ -777,8 +779,8 @@
     body.bna-assistant-surface-one-time-student .bna-helper-action,
     body.bna-assistant-surface-one-time-member .bna-helper-action,
     body.bna-assistant-surface-one-time-provider .bna-helper-action {
-      border-color: rgba(237, 229, 24, 0.6);
-      background: #ede518;
+      border-color: rgba(240, 255, 50, 0.66);
+      background: #f0ff32;
       color: #080910;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-send,
@@ -786,7 +788,7 @@
     body.bna-assistant-surface-one-time-student .bna-bot-send,
     body.bna-assistant-surface-one-time-member .bna-bot-send,
     body.bna-assistant-surface-one-time-provider .bna-bot-send {
-      background: #ede518;
+      background: #f0ff32;
       color: #080910;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-launcher,
@@ -807,9 +809,61 @@
       top: auto;
       right: 22px;
       bottom: calc(22px + env(safe-area-inset-bottom, 0px));
-      width: 84px;
-      min-width: 84px;
-      min-height: 84px;
+      width: 108px;
+      min-width: 108px;
+      min-height: 108px;
+      padding: 0;
+      border: 2px solid rgba(240, 255, 50, 0.82);
+      border-radius: 999px;
+      overflow: visible;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(223, 248, 255, 0.12), transparent 62%),
+        #050505;
+      box-shadow:
+        0 0 0 4px rgba(134, 232, 255, 0.16),
+        0 0 36px rgba(240, 255, 50, 0.3),
+        0 20px 50px rgba(0, 0, 0, 0.46);
+      animation: bnaBotLauncherPop 520ms ease 420ms both;
+    }
+    body.bna-assistant-surface-one-time-public .bna-bot-launcher::before {
+      content: "Ask Robot Scheller";
+      position: absolute;
+      right: calc(100% + 12px);
+      bottom: 24px;
+      width: max-content;
+      max-width: min(220px, calc(100vw - 150px));
+      padding: 0.55rem 0.72rem;
+      border: 1px solid rgba(223, 248, 255, 0.28);
+      border-radius: 6px;
+      background: rgba(5, 5, 5, 0.94);
+      color: #dff8ff;
+      font: 900 0.84rem "Trebuchet MS", Verdana, sans-serif;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(4px);
+      transition: opacity 160ms ease, transform 160ms ease;
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.32);
+    }
+    body.bna-assistant-surface-one-time-public .bna-bot-launcher:hover::before,
+    body.bna-assistant-surface-one-time-public .bna-bot-launcher:focus-visible::before {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    body.bna-assistant-surface-one-time-public .bna-bot-launcher::after {
+      content: "WA";
+      position: absolute;
+      right: 4px;
+      bottom: 8px;
+      width: 27px;
+      height: 27px;
+      display: grid;
+      place-items: center;
+      border: 2px solid #ffffff;
+      border-radius: 999px;
+      background: #25d366;
+      color: #ffffff;
+      font: 950 0.58rem Arial, sans-serif;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
     }
     body.bna-assistant-surface-one-time-public .bna-bot-nudge {
       top: auto;
@@ -847,13 +901,24 @@
         top: auto;
         right: 12px;
         bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-        width: 82px;
-        min-width: 82px;
-        min-height: 82px;
+        width: 88px;
+        min-width: 88px;
+        min-height: 88px;
       }
       body.bna-assistant-surface-one-time-public .bna-bot-launcher .bna-bot-avatar {
-        width: 74px;
-        height: 74px;
+        width: 80px;
+        height: 80px;
+      }
+      body.bna-assistant-surface-one-time-public .bna-bot-launcher::before {
+        right: 0;
+        bottom: calc(100% + 10px);
+        max-width: calc(100vw - 24px);
+      }
+      body.bna-assistant-surface-one-time-public .bna-bot-launcher::after {
+        width: 23px;
+        height: 23px;
+        right: 2px;
+        bottom: 7px;
       }
       body.bna-assistant-surface-one-time-public .bna-bot-head .bna-bot-avatar,
       body.one-time-review-active.bna-assistant-surface-one-time-parent .bna-bot-head .bna-bot-avatar,
@@ -885,7 +950,7 @@
     }
     body.bna-assistant-surface-one-time-public .bna-bot-nudge,
     body.bna-assistant-surface-one-time-public .bna-bot-nudge-close {
-      border-color: rgba(237, 229, 24, 0.28);
+      border-color: rgba(240, 255, 50, 0.28);
       background: #080910;
       color: #ffffff;
     }
@@ -921,6 +986,12 @@
       height: 84px;
       max-width: 24vw;
       margin: -10px 0 -12px;
+      object-fit: contain;
+      object-position: center;
+    }
+    @keyframes bnaBotLauncherPop {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     @media (max-width: 520px) {
       body.bna-assistant-surface-one-time-public .bna-bot-head .bna-bot-avatar,
@@ -1132,7 +1203,7 @@
       min-width: 52px;
       border: 0;
       border-radius: 8px;
-      background: #e3b848;
+      background: #f0ff32;
       color: #172019;
       font: 900 0.88rem "Trebuchet MS", Verdana, sans-serif;
       cursor: pointer;
@@ -1203,7 +1274,7 @@
   document.body.classList.add(`bna-assistant-surface-${surface.replace(/_/g, '-')}`);
   const copy = surfaceConfig();
   const isOneTimeAssistantSurface = surface.startsWith('one_time_');
-  const oneTimeAssistantAvatar = '<img class="bna-bot-avatar" src="/assets/one-time/robot/robot-scheller-whatsapp.png" alt="" aria-hidden="true" width="88" height="88" loading="lazy" decoding="async">';
+  const oneTimeAssistantAvatar = '<img class="bna-bot-avatar" src="/assets/one-time/robot/robot-scheller-whatsapp.png" alt="" aria-hidden="true" width="108" height="108" loading="lazy" decoding="async">';
 
   const launcher = document.createElement('button');
   launcher.type = 'button';
@@ -1211,7 +1282,7 @@
   launcher.setAttribute('aria-expanded', 'false');
   launcher.setAttribute('aria-controls', 'bnaBotPanel');
   const launcherLabel = surface === 'one_time_public'
-    ? 'Open Rabbi Scheller’s WhatsApp assistant.'
+    ? 'Ask Robot Scheller'
     : copy.helperTitle;
   launcher.setAttribute('aria-label', launcherLabel);
   launcher.setAttribute('title', launcherLabel);

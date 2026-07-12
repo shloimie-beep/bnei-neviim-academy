@@ -36,12 +36,12 @@ test('One Time focused landing copy uses launch funnel offer and safe CTAs', () 
   assert.match(html, /<h3>Parent portal<\/h3>/);
   assert.match(html, /<h3>Student portal<\/h3>/);
   assert.match(html, /<h3>Review sheets<\/h3>/);
-  assert.match(html, /<h3>Daily email and WhatsApp reminders<\/h3>/);
+  assert.match(html, /<h3>Daily reminders<\/h3>/);
   assert.match(html, /<h3>Monitored online platform<\/h3>/);
   assert.match(html, /<h3>Questions with Rabbi Scheller<\/h3>/);
   assert.match(html, /<h3>Sign up<\/h3>/);
   assert.match(html, /<h3>Receive the class link<\/h3>/);
-  assert.match(html, /<h3>Join the live class<\/h3>/);
+  assert.match(html, /<h3>Enjoy the live class<\/h3>/);
   assert.match(html, /<h3>Families<\/h3>/);
   assert.match(html, /<h3>English-speaking homeschoolers<\/h3>/);
   assert.match(html, /<h3>Schools<\/h3>/);
@@ -114,14 +114,15 @@ test('One Time focused offer route and registries are declared', () => {
   assert.ok(routes.has('/one-time-onboarding'));
   assert.ok(routes.has('/one-time-preview'));
 
-  assert.deepEqual(siteConfig.assets.teaching_gallery, []);
+  assert.equal(siteConfig.assets.teaching_gallery.length, 8);
+  assert.ok(siteConfig.assets.teaching_gallery.every((entry) => entry.src.startsWith('/assets/one-time/rabbi/teaching-locations/')));
   assert.equal(siteConfig.assets.robot_scheller, '/assets/one-time/robot/robot-scheller-whatsapp.png');
   assert.ok(robotAsset.size < 500_000, `expected optimized Robot PNG below 500 KB, got ${robotAsset.size}`);
   assert.match(botWidget, /<img class="bna-bot-avatar" src="\/assets\/one-time\/robot\/robot-scheller-whatsapp\.png"/);
   assert.match(botWidget, /\.bna-bot-avatar[\s\S]*object-fit: contain;[\s\S]*object-position: center;/);
-  assert.match(botWidget, /body\.bna-assistant-surface-one-time-public \.bna-bot-launcher \.bna-bot-avatar[\s\S]*width: 88px;[\s\S]*height: 88px;/);
+  assert.match(botWidget, /body\.bna-assistant-surface-one-time-public \.bna-bot-launcher \.bna-bot-avatar[\s\S]*width: 100px;[\s\S]*height: 100px;/);
   assert.match(botWidget, /body\.bna-assistant-surface-one-time-public \.bna-bot-head \.bna-bot-avatar[\s\S]*width: 84px;[\s\S]*height: 84px;/);
-  assert.match(botWidget, /@media \(max-width: 520px\)[\s\S]*width: 82px;[\s\S]*min-height: 82px;[\s\S]*width: 74px;[\s\S]*height: 74px;/);
+  assert.match(botWidget, /@media \(max-width: 520px\)[\s\S]*width: 88px;[\s\S]*min-height: 88px;[\s\S]*width: 80px;[\s\S]*height: 80px;/);
 
   const actions = new Set(actionRegistry.actions.map((action) => action.action_id));
   assert.ok(actions.has('ACTION-ONETIME-JOIN-SHIR-CTA'));
@@ -137,8 +138,8 @@ test('One Time focused offer route and registries are declared', () => {
     'ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE',
   ]) {
     const action = actionRegistry.actions.find((entry) => entry.action_id === id);
-    assert.equal(action.status, 'active_placeholder_carousel');
-    assert.match(action.expected_behavior, /placeholder teaching-location slides/);
+    assert.equal(action.status, 'active');
+    assert.match(action.expected_behavior, /selected .*teaching/i);
   }
   const joinAction = actionRegistry.actions.find((action) => action.action_id === 'ACTION-ONETIME-JOIN-SHIR-CTA');
   assert.match(joinAction.selector_hint, /\/one-time\/signup/);

@@ -15,8 +15,9 @@
       --white: #ffffff;
       --paper: #f8f7f1;
       --muted-dark: #5b6268;
-      --yellow: #f2e53b;
-      --chrome: linear-gradient(135deg, #fff9b7 0%, #f2e53b 34%, #f6fbff 52%, #caa900 76%, #fff58c 100%);
+      --yellow: #f0ff32;
+      --yellow-soft: #faff82;
+      --chrome: linear-gradient(115deg, rgba(255, 255, 255, 0.72) 0%, transparent 18%, transparent 58%, rgba(223, 248, 255, 0.68) 72%, transparent 100%), linear-gradient(180deg, #faff82 0%, #f0ff32 48%, #e8f525 100%);
       --ice: #dff8ff;
       --ice-strong: #8ee5ff;
       --line: rgba(255, 255, 255, 0.16);
@@ -583,36 +584,48 @@
     }
 
     .one-time-site-footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.14);
-      background: rgba(5, 5, 5, 0.88);
+      border-top: 1px solid rgba(223, 248, 255, 0.16);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(134, 232, 255, 0.12), transparent 18rem),
+        linear-gradient(180deg, #071117, #050505);
       color: var(--white);
     }
 
     .footer-inner {
       width: min(1180px, calc(100% - 36px));
+      min-height: 172px;
       margin: 0 auto;
-      padding: 24px 0;
+      padding: 34px 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .footer-brand {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 18px;
+      gap: 16px;
+      min-width: 0;
     }
 
     .one-time-site-footer img {
-      width: 104px;
+      width: 112px;
       height: auto;
+      flex: 0 0 auto;
     }
 
     .one-time-site-footer p {
-      margin: 5px 0 0;
-      color: rgba(255, 255, 255, 0.7);
+      max-width: 380px;
+      margin: 0;
+      color: rgba(223, 248, 255, 0.74);
       font-weight: 720;
     }
 
     .footer-links {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px 16px;
+      gap: 18px;
       align-items: center;
       justify-content: flex-end;
       color: rgba(255, 255, 255, 0.78);
@@ -621,7 +634,7 @@
 
     .footer-links a:hover,
     .footer-links a:focus-visible {
-      color: var(--yellow);
+      color: var(--yellow-soft);
       outline: none;
     }
 
@@ -721,14 +734,20 @@
         grid-template-columns: 1fr;
       }
 
-      .footer-inner {
+      .footer-inner,
+      .footer-brand {
         width: min(100% - 28px, 1180px);
-        align-items: flex-start;
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+      }
+
+      .footer-brand {
+        display: grid;
       }
 
       .footer-links {
-        justify-content: flex-start;
+        justify-content: center;
       }
 
       .robot-cue {
@@ -744,7 +763,7 @@
       <div class="header-inner">
         <a class="brand-lockup" href="/one-time" aria-label="One Time home">
           <img src="/assets/one-time/brand/one-time-logo-white.webp" width="120" height="76" alt="One Time">
-          <span>Mishnayos with Rabbi Eli Scheller</span>
+          <span>Worldwide Mishnah Learning</span>
         </a>
         <div class="header-title">Sign Up Now</div>
         <a class="back-link" href="/one-time" data-action-id="ACTION-ONETIME-SIGNUP-BACK-HOME">Back to Home</a>
@@ -876,11 +895,13 @@
 
     <footer class="one-time-site-footer" data-one-time-canonical-footer>
       <div class="footer-inner">
-        <div>
-          <img src="/assets/one-time/brand/one-time-logo-white.webp" width="104" height="66" alt="One Time">
-          <p>One Time Mishnayos with Rabbi Eli Scheller.</p>
+        <div class="footer-brand">
+          <img src="/assets/one-time/brand/one-time-logo-white.webp" width="112" height="70" alt="One Time">
+          <p>Worldwide Mishnah learning with Rabbi Eli Scheller.</p>
         </div>
         <nav class="footer-links" aria-label="Footer">
+          <a href="/one-time" data-action-id="ACTION-ONETIME-SIGNUP-BACK-HOME">Home</a>
+          <a href="/one-time/signup">Sign Up Now</a>
           <a href="/one-time/privacy.html">Privacy</a>
           <a href="/one-time/terms.html">Terms</a>
           <a href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>

@@ -56,7 +56,40 @@
         "src": "/images/one-time/press/mishpacha.webp"
       }
     ],
-    "teaching_gallery": []
+    "teaching_gallery": [
+      {
+        "label": "Atlanta, Georgia",
+        "src": "/assets/one-time/rabbi/teaching-locations/rabbi-scheller-atlanta-georgia.webp"
+      },
+      {
+        "label": "Baltimore, Maryland",
+        "src": "/assets/one-time/rabbi/teaching-locations/rabbi-scheller-baltimore-maryland.webp"
+      },
+      {
+        "label": "Flatbush, New York",
+        "src": "/assets/one-time/rabbi/teaching-locations/rabbi-scheller-flatbush-ny.webp"
+      },
+      {
+        "label": "Hollywood, Florida",
+        "src": "/assets/one-time/rabbi/teaching-locations/rabbi-scheller-hollywood-florida.webp"
+      },
+      {
+        "label": "Lakewood, New Jersey",
+        "src": "/assets/one-time/rabbi/teaching-locations/rabbi-scheller-lakewood-nj.webp"
+      },
+      {
+        "label": "Miami, Florida",
+        "src": "/assets/one-time/rabbi/teaching-locations/rabbi-scheller-miami-florida.webp"
+      },
+      {
+        "label": "Philadelphia, Pennsylvania",
+        "src": "/assets/one-time/rabbi/teaching-locations/rabbi-scheller-philadelphia.webp"
+      },
+      {
+        "label": "Silver Spring, Maryland",
+        "src": "/assets/one-time/rabbi/teaching-locations/rabbi-scheller-silver-spring.webp"
+      }
+    ]
   },
   "copy": {
     "campaign_bar": "Live every day at 7:00 p.m. Israel time.",

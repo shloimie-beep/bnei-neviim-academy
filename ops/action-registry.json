@@ -464,16 +464,16 @@
     },
     {
       "action_id": "ACTION-ONETIME-PUBLIC-MOBILE-MENU",
-      "label": "Mobile Navigation",
+      "label": "Navigation drawer",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-PUBLIC-MOBILE-MENU\"]",
-      "expected_behavior": "Toggles the mobile navigation panel, updates aria-expanded, and closes on section-link click, outside click, or Escape without navigating to private data.",
+      "expected_behavior": "Toggles the public One Time right-side navigation drawer at every viewport, updates aria-expanded, traps focus while open, restores focus on close, and closes on section-link click, overlay click, or Escape without navigating to private data.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "browser_static",
-        "expected_result": "At mobile widths the menu opens, exposes only public section links plus Member Login and Sign Up Now, and closes predictably."
+        "expected_result": "At desktop and mobile widths the menu opens, exposes public section links plus Member Login, traps focus, restores focus to the hamburger, and closes predictably."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -584,12 +584,12 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-PREV\"]",
-      "expected_behavior": "Moves the public teaching-location carousel to the previous placeholder teaching-location slides, updates the active pagination state, remains keyboard accessible, and performs no external writes.",
+      "expected_behavior": "Moves the public teaching-location carousel to the previous selected Rabbi Scheller teaching photo, updates the active pagination state and desktop next-preview frame, remains keyboard accessible, and performs no external writes.",
       "permission": "public",
-      "status": "active_placeholder_carousel",
+      "status": "active",
       "test": {
         "type": "static_and_browser",
-        "expected_result": "The One Time landing page renders the previous carousel control, rotates only among public placeholder location slides, and does not expose private data."
+        "expected_result": "The One Time landing page renders the previous carousel control, rotates only among public optimized teaching-location images, and does not expose private data."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -602,12 +602,12 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-NEXT\"]",
-      "expected_behavior": "Moves the public teaching-location carousel to the next placeholder teaching-location slides, updates the active pagination state, remains keyboard accessible, and performs no external writes.",
+      "expected_behavior": "Moves the public teaching-location carousel to the next selected Rabbi Scheller teaching photo, updates the active pagination state and desktop next-preview frame, remains keyboard accessible, and performs no external writes.",
       "permission": "public",
-      "status": "active_placeholder_carousel",
+      "status": "active",
       "test": {
         "type": "static_and_browser",
-        "expected_result": "The One Time landing page renders the next carousel control, rotates only among public placeholder location slides, and does not expose private data."
+        "expected_result": "The One Time landing page renders the next carousel control, rotates only among public optimized teaching-location images, and does not expose private data."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -620,9 +620,9 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE\"]",
-      "expected_behavior": "Pauses and resumes the public teaching-location carousel auto-advance across placeholder teaching-location slides without changing route, writing data, or exposing private information.",
+      "expected_behavior": "Pauses and resumes the public teaching-location carousel auto-advance across selected public Rabbi Scheller teaching-location photos without changing route, writing data, or exposing private information.",
       "permission": "public",
-      "status": "active_placeholder_carousel",
+      "status": "active",
       "test": {
         "type": "static_and_browser",
         "expected_result": "The pause control toggles the carousel auto-advance state and stays accessible with keyboard/focus and reduced-motion handling."

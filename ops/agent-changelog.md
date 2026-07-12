@@ -38685,3 +38685,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `ops/live-smokes/2026-07-12-onetime-landing-live-*.png`.
 - No email, WhatsApp/WAPI, Telegram, payment, access, DNS/account, credential,
   provider-data, or production CRM mutation was performed.
+
+## 2026-07-12 - One Time neon landing polish locally verified for production deploy
+
+- Implemented the focused neon/chrome One Time landing polish on branch
+  `codex/onetime-landing-visual-20260712`.
+- Added the smiling-student asset at
+  `public/assets/one-time/students/smiley-kid.png` and selected eight Rabbi
+  teaching photos under
+  `public/assets/one-time/rabbi/teaching-locations/`.
+- Updated the landing header/drawer, top Rosh Hashanah ticker, full-grid hero,
+  feature/benefit/how/audience sections, Rabbi carousel, final CTA, footer,
+  signup footer, Robot Scheller launcher, action registry, and tests.
+- Local visual proof lives under
+  `ops/ui-audits/2026-07-12-onetime-neon-landing-polish/`.
+- Local gates passed: `npm run test:onetime:focused` 73/73,
+  `node --test tests/release-captain.test.js` 6/6, `npm run pqc:validate`,
+  `npm run watchdog:actions`, `npm run watchdog:protocol-drift`,
+  `node --test tests/watchdog-action-registry.test.js`, and
+  `git diff --check`.
+- Production deployment outcome is pending in the same Codex task.
