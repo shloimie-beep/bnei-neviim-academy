@@ -38885,3 +38885,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verification passed: direct proof smoke, syntax checks, and focused
   identity/Resend/Whapi tests. Full production readiness remains blocked by
   external Stripe/campaign setup fields and final deploy/live readback.
+
+## 2026-07-12 - Shared CRM addendum first deploy and signup proof
+
+- Pushed and deployed `966ded41b517433533f24370949426cfd1200213` to both BNA
+  production and One Time production.
+- Verified BNA and One Time live `/api/deploy-info` endpoints both report the
+  exact deployed SHA.
+- Ran One Time separate-instance live smoke at the deployed SHA.
+- Verified the One Time Mishnah signup form Family/School path with a no-write
+  Playwright browser intercept and live API dry-run proof for both choices.
+- Remaining blocker: `REQ-20260712-305` still needs controlled same-email /
+  same-phone workspace-isolation proof before terminal Done; full production
+  readiness still blocks on external Stripe/campaign setup fields.

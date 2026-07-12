@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-12T23:31:00+03:00",
+  "updated_at": "2026-07-12T23:38:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -19,21 +19,26 @@
       "priority": "P0",
       "batch_id": "0-collision-proof",
       "depends_on": [],
-      "status": "in_progress",
-      "implementation_status": "partial",
+      "status": "done",
+      "implementation_status": "Committed, pushed, deployed to BNA and One Time, and live-readback verified.",
       "can_continue_without_operator": true,
-      "next_action": "Commit/push proof batch after validation, then continue REQ-20260712-305.",
+      "next_action": "Continue REQ-20260712-305 live isolation proof, then proceed through the next implementation batch.",
       "acceptance_criteria": [
         "Fetch origin/master, record HEAD/deploy state/dirty files, preserve current work, register run, prove Rabbi Telegram, and replace runnable Agent Mode prompts with Codex-run verification when safe."
       ],
       "evidence": [
         "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md",
         "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md",
-        "tasks-pending/2026-07-12-shared-crm-communication-agents-addendum.md"
+        "tasks-pending/2026-07-12-shared-crm-communication-agents-addendum.md",
+        "BNA live /api/deploy-info commit_sha=966ded41b517433533f24370949426cfd1200213",
+        "One Time live /api/deploy-info commit_sha=966ded41b517433533f24370949426cfd1200213"
       ],
       "verification": [
         "npm run app:smoke:rabbi-agent-review-direct-proof",
-        "npm run production:readiness:gate -- --json --allow-dirty"
+        "npm run production:readiness:gate -- --json --allow-dirty",
+        "git push origin master",
+        "BNA: npm run railway:doctor with BNA_RAILWAY_USE_ACCOUNT_AUTH=1",
+        "One Time: npm run railway:doctor with BNA_RAILWAY_USE_ACCOUNT_AUTH=1 and BNA_RAILWAY_TARGET_PROFILE=one-time"
       ],
       "implementation_files": [
         "scripts/smoke-rabbi-agent-review-direct-proof.mjs",
@@ -43,8 +48,16 @@
         "package.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:18:00+03:00",
-      "blocker": "Commit/push/deploy/readback for this batch still pending."
+      "implementation_commit": "966ded41b517433533f24370949426cfd1200213",
+      "pushed_commit": "966ded41b517433533f24370949426cfd1200213",
+      "deployed_commit": "966ded41b517433533f24370949426cfd1200213",
+      "deployment_evidence": [
+        "BNA production verified at https://bneineviimacademy.org/api/deploy-info with commit_sha=966ded41b517433533f24370949426cfd1200213",
+        "One Time production verified at https://join.onetimeonetime.com/api/deploy-info with commit_sha=966ded41b517433533f24370949426cfd1200213",
+        "One Time live smoke passed: npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 966ded41b517433533f24370949426cfd1200213"
+      ],
+      "updated_at": "2026-07-12T23:38:00+03:00",
+      "blocker": ""
     },
     {
       "id": "REQ-20260712-302",
@@ -171,9 +184,9 @@
       "batch_id": "1-identity-isolation",
       "depends_on": [],
       "status": "needs_verification",
-      "implementation_status": "Local schema and lookup patches applied for workspace-scoped contact identities; focused tests pass.",
+      "implementation_status": "Schema and lookup patches for workspace-scoped contact identities are committed, pushed, deployed to BNA and One Time, and focused contract tests pass.",
       "can_continue_without_operator": true,
-      "next_action": "Run broader focused suites, secrets audit, commit/push, deploy exact tested SHA, then live-readback schema/contact isolation before marking done.",
+      "next_action": "Run a controlled live or staging same-email/same-phone isolation proof before marking done.",
       "acceptance_criteria": [
         "Contact identity lookup/upsert is scoped by workspace_id, global identity uniqueness is removed, same email/phone can exist in BNA and One Time, and unauthorized contact/thread URLs cannot reveal other-workspace records."
       ],
@@ -182,12 +195,19 @@
         "src/lib/integrations/resend-inbound-crm.js",
         "tests/resend-inbound-crm.test.js",
         "tests/assistant-portal-communications-contract.test.js",
-        "tests/whapi-log-sync-contract.test.js"
+        "tests/whapi-log-sync-contract.test.js",
+        "BNA live /api/deploy-info commit_sha=966ded41b517433533f24370949426cfd1200213",
+        "One Time live /api/deploy-info commit_sha=966ded41b517433533f24370949426cfd1200213"
       ],
       "verification": [
         "PASS node --check server.js",
         "PASS node --check src/lib/integrations/resend-inbound-crm.js",
-        "PASS node --test tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js"
+        "PASS node --test tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js",
+        "PASS node --test tests/rabbi-telegram-notifications.test.js tests/agent-review-hub.test.js tests/bna-helper-tools.test.js tests/production-readiness-gate.test.js tests/production-unblocker.test.js tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js",
+        "PASS npm run secrets:audit",
+        "PASS git diff --check",
+        "PASS BNA live health/deploy-info/operations-login readback at deployed SHA",
+        "PASS One Time live separate-instance smoke at deployed SHA"
       ],
       "implementation_files": [
         "server.js",
@@ -197,7 +217,7 @@
         "tests/whapi-log-sync-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:31:00+03:00",
+      "updated_at": "2026-07-12T23:38:00+03:00",
       "blocker": ""
     },
     {
@@ -218,8 +238,8 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "not_started",
-      "implementation_status": "partial",
+      "status": "in_progress",
+      "implementation_status": "Partial release proof completed for the first bounded batch: commit, push, BNA deploy, One Time deploy, Railway doctors, live deploy-info, One Time signup no-write browser proof, and dry-run API proof.",
       "can_continue_without_operator": true,
       "next_action": "Continue REQ-20260712-306 after dependent earlier batches are validated.",
       "acceptance_criteria": [
@@ -508,22 +528,30 @@
       "status": "not_started",
       "implementation_status": "partial",
       "can_continue_without_operator": true,
-      "next_action": "Continue REQ-20260712-314 after dependent earlier batches are validated.",
+      "next_action": "Continue REQ-20260712-314 after the remaining implementation batches are validated; full final matrix/screenshots still pending.",
       "acceptance_criteria": [
         "Run the full required matrix, push bounded commits, deploy exact tested SHA, run Railway doctor, capture responsive screenshots and redacted receipts, update ledgers/changelog, and report exact blockers."
       ],
       "evidence": [
-        "ops/production-readiness/latest-production-readiness-snapshot.md"
+        "ops/production-readiness/latest-production-readiness-snapshot.md",
+        "BNA live /api/deploy-info commit_sha=966ded41b517433533f24370949426cfd1200213",
+        "One Time live /api/deploy-info commit_sha=966ded41b517433533f24370949426cfd1200213",
+        "One Time signup browser intercept proof: Family and School payloads preserved with production_write=false",
+        "One Time /api/one-time/interest?dry_run=true proof: Family and School normalize correctly"
       ],
       "verification": [
-        "npm run production:readiness:gate -- --json --allow-dirty"
+        "npm run production:readiness:gate -- --json --allow-dirty",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 966ded41b517433533f24370949426cfd1200213",
+        "BNA live health/deploy-info/operations-login fetch readback",
+        "Playwright no-write browser intercept on https://join.onetimeonetime.com/one-time/signup for Family and School",
+        "Direct live dry-run POST to /api/one-time/interest?dry_run=true for Family and School"
       ],
       "implementation_files": [
         "ops/production-readiness/latest-production-readiness-snapshot.md",
         "ops/production-readiness/latest-production-unblocker.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:18:00+03:00",
+      "updated_at": "2026-07-12T23:38:00+03:00",
       "blocker": "External Stripe/campaign setup fields currently block full production readiness."
     }
   ],

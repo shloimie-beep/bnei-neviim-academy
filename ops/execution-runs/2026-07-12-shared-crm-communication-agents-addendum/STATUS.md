@@ -10,6 +10,11 @@ Current status: `active`
 - Implemented `scripts/smoke-rabbi-agent-review-direct-proof.mjs`.
 - Ran `npm run app:smoke:rabbi-agent-review-direct-proof`; result `direct_codex_verified`, two terminal prompt states, zero proof blockers.
 - Ran `npm run production:readiness:gate -- --json --allow-dirty`; Agent Mode proof blocker is gone.
+- Committed and pushed `966ded41b517433533f24370949426cfd1200213` to `origin/master`.
+- Deployed `966ded41b517433533f24370949426cfd1200213` to BNA production and verified live `/api/deploy-info`.
+- Deployed `966ded41b517433533f24370949426cfd1200213` to One Time production and verified live `/api/deploy-info`.
+- Ran One Time separate-instance live smoke at the deployed SHA.
+- Verified the One Time Mishnah signup form bug path directly: Family and School button clicks set the hidden form value and submit the correct no-write intercepted payload; API dry-run normalizes both choices correctly.
 
 ## Current Blockers
 
@@ -21,6 +26,7 @@ Current status: `active`
   `suppression_unsubscribe_proof`,
   `explicit_seed_packet_approval`.
 - Main addendum implementation is not complete; identity isolation is the first active implementation batch.
+- `REQ-20260712-305` remains `needs_verification` until a controlled live/staging same-email and same-phone workspace-isolation proof is completed.
 
 ## Identity Isolation Batch
 
@@ -28,3 +34,4 @@ Current status: `active`
 - `bna_contact_identities` now has `workspace_id`, backfill from `bna_contacts`, a dropped legacy global uniqueness constraint, and workspace-scoped uniqueness/indexes.
 - Contact identity upserts now insert/conflict on `(workspace_id, identity_type, normalized_value)`.
 - Signup contact dedupe, Resend inbound sender contact lookup, WAPI correction lookup, and Whapi history contact import matching now scope identity joins by workspace.
+- The identity patch is deployed to both BNA and One Time at SHA `966ded41b517433533f24370949426cfd1200213`.
