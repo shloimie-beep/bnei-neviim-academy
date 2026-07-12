@@ -63537,7 +63537,10 @@ async function findWapiCommunicationContact(normalized, db = pool, { projectId =
 
   const phoneParams = [phoneDigits, phoneSuffix, projectId || null];
   const phoneCondition = projectId
-    ? `($1::text <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $1::text)`
+    ? `
+      ($1::text <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $1::text)
+      OR ($2::text <> '' AND right(regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g'), 9) = $2::text)
+    `
     : `
       ($1::text <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $1::text)
       OR ($2::text <> '' AND right(regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g'), 9) = $2::text)
@@ -63549,7 +63552,7 @@ async function findWapiCommunicationContact(normalized, db = pool, { projectId =
       SELECT 1
       FROM unnest(COALESCE(other_phones, '{}'::text[])) AS phone_values(value)
       WHERE ($1::text <> '' AND regexp_replace(COALESCE(phone_values.value, ''), '\\D', '', 'g') = $1::text)
-         OR ($3::int IS NULL AND $2::text <> '' AND right(regexp_replace(COALESCE(phone_values.value, ''), '\\D', '', 'g'), 9) = $2::text)
+         OR ($2::text <> '' AND right(regexp_replace(COALESCE(phone_values.value, ''), '\\D', '', 'g'), 9) = $2::text)
     )
   `;
 
@@ -63557,7 +63560,10 @@ async function findWapiCommunicationContact(normalized, db = pool, { projectId =
     const member = (await db.query(
       `SELECT id, signup_id, student_id, project_id, display_name, phone, access_status, access_enabled
        FROM bna_members
-       WHERE ($1 <> '' AND regexp_replace(COALESCE(phone, ''), '\\D', '', 'g') = $1)
+       WHERE (
+           ($1::text <> '' AND regexp_replace(COALESCE(phone, ''), '\\D', '', 'g') = $1::text)
+           OR ($2::text <> '' AND right(regexp_replace(COALESCE(phone, ''), '\\D', '', 'g'), 9) = $2::text)
+         )
          AND project_id = $3
          AND access_enabled = TRUE
          AND access_status IN ('active', 'trial')
