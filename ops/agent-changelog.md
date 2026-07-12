@@ -38440,3 +38440,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
   mutation, portal/account/payment/access mutation, local-class activation, or
   parallel PR was performed.
+
+## 2026-07-12 - One Time public no-write readiness smoke refreshed
+
+- Reran the public no-write launch smoke set against the live public surfaces:
+  `app:smoke:onetime-separate-instance`,
+  `app:smoke:rabbi-onetime-landing`,
+  `app:smoke:one-time-interest-dry-run`, and `app:smoke:public-privacy`.
+- Added a fresh tracked readback under `ops/production-readiness/` showing
+  4/4 commands passed, `external_write_performed=false`, and
+  `production_data_mutation_performed=false`.
+- Refreshed the production readiness snapshot; public launch smoke is now
+  fresh and ready, while production remains blocked by external setup,
+  Rabbi Telegram runtime, Agent Mode proof, and release/operator gates.
+- No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
+  mutation, payment/access mutation, credential/DNS mutation, local-class
+  activation, or parallel PR was performed.

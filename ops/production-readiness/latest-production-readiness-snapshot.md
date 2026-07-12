@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-10T17:27:07.036Z
+# Production Readiness Snapshot - 2026-07-12T08:37:40.721Z
 
 Result: not_production_complete
 Production ready: no
@@ -6,34 +6,44 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Why Not Done Yet
 - full One Time launch has external Stripe/WAPI/campaign blockers
-- Rabbi Telegram runtime is local_runtime_ready_live_smoke_pending
+- Rabbi Telegram runtime is blocked_missing_bot_token
 - Rabbi Agent Review still needs terminal Agent Mode proof
 - active execution run has no unblocked executable batch
 
 ## Git
-- Branch: unknown
-- HEAD: fd04d006
-- origin/master: fd04d006
-- Worktree clean when sampled: yes
+- Branch: codex/onetime-p0p1-corrective-20260711
+- HEAD: ba515bf9
+- origin/master: d68e3f9a
+- Worktree clean when sampled: no
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: fd04d006
-- Sampled origin/master: fd04d006
-- Sampled worktree clean: yes
+- Sampled git head: ba515bf9
+- Sampled origin/master: d68e3f9a
+- Sampled worktree clean: no
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
 
 ## Active Execution Run
-- Run: ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation
-- Status counts: blocked 2, done 8
+- Run: ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion
+- Status counts: in_progress 7, blocked 2, needs_operator_decision 10, verified 4
 - Work remains: yes
 - Validation passed: yes
 - Next unblocked executable batch: none
 
 ## Remaining External Blockers
-- REQ-20260702-108: Full provider/campaign setup remains incomplete in current read-only setup check; Railway target context is resolved. Owner: Shloimie / provider account owners. Next: Provide or label the exact missing setup values for full launch: Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, WAPI auto-reply enable/approval flags if auto-reply is intended, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet.
-- REQ-20260702-110: Full OneTime launch remains blocked by external setup values, not Railway target context. The immediate lead-capture/free-class lane is unblocked and tracked in RAW-20260709-008. Owner: Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane. Next: Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags if auto-reply is intended, and campaign approvals, then rerun setup and WAPI readiness checks.
+- REQ-20260712-002: GitHub rejected push of .github/workflows/onetime-corrective.yml because the OAuth App lacks workflow scope. Owner: GitHub credential owner / operator. Next: Push the CI workflow with a GitHub token that has workflow scope, or have an authorized maintainer add .github/workflows/onetime-corrective.yml separately.
+- REQ-20260712-013: Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet. Owner: Operator / reviewer. Next: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
+- REQ-20260712-014: Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet. Owner: Operator / reviewer. Next: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
+- REQ-20260712-020: Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet. Owner: Operator / reviewer. Next: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
+- REQ-20260712-021: Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet. Owner: Operator / reviewer. Next: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
+- REQ-20260712-022: The operator must approve release/deployment and personally submit exactly one test signup before Codex can verify real external-send evidence or activate the exact three-contact local segment. Owner: Operator / reviewer. Next: After local implementation and no-send validation pass, approve deployment and submit the personal test through https://join.onetimeonetime.com/one-time/signup, then report when the page confirms signup.
+- REQ-20260712-005: Missing BNA_ONETIME_CRM_TEST_DATABASE_URL for the required real local/test Postgres CRM journey. Production DATABASE_URL is intentionally ignored by the smoke. Owner: Operator / local test environment. Next: Set BNA_ONETIME_CRM_TEST_DATABASE_URL to an approved local/test Postgres URL, then run npm run one-time:smoke:crm-journey-local-db and attach the generated report.
+- REQ-20260712-006: BNA_ONETIME_CRM_TEST_DATABASE_URL is missing for the real local/test Postgres persistence journey, and deployment/live smoke is not authorized. Owner: Operator / local test environment. Next: Provide an approved non-production BNA_ONETIME_CRM_TEST_DATABASE_URL, rerun the real persistence journey, then authorize PR #129 release/deploy/live smoke for terminal proof.
+- REQ-20260712-007: Terminal Done requires release authorization, deployment of the exact PR #129 SHA, and live-smoke proof. Local browser proof is complete, but no deploy/live external write is authorized. Owner: Operator / reviewer. Next: Authorize PR #129 release, deploy the exact approved SHA, then run live screenshots/readback against the deployed URL.
+- REQ-20260712-008: Deployment/live-smoke evidence is required before this server-visible requirement can be terminal Done. Owner: release_owner. Next: After release authorization, deploy the approved PR SHA and run live smoke/readback for the intake/dropoff path.
+- REQ-20260712-009: Deployment/live-smoke evidence is required before this server-visible regression batch can be terminal Done. Owner: release_owner. Next: After release authorization, deploy the approved PR SHA and run live smoke/readback for the intake/dropoff path.
+- REQ-20260712-011: Explicit authorization is required before merge, deployment, or production live smoke. Owner: Operator / reviewer. Next: Review PR #129 after local verification and explicitly approve or reject release through the approved pipeline.
 
 ## One Time Setup Buckets
 - Checklist: ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
@@ -43,14 +53,14 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Setup ready count: 5/8
 - Operator blocker count: 3
 - SETUP-ONETIME-STRIPE-001: Rabbi Stripe sandbox (blocked_external_input). Missing now: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias. Required: rabbi_stripe_test_secret_key_alias, stripe_publishable_key_alias_if_needed, stripe_webhook_secret_alias_if_needed, 67_month_product_price_ids_or_sandbox_create_permission, confirm_sandbox_only
-- SETUP-ONETIME-WHAPI-001: Whapi/WAPI provider details (blocked_external_input). Missing now: whapi_wapi_instance_id, whapi_wapi_phone_number. Required: provider_account, phone_number, instance_id_or_alias, webhook_url_status, safe_test_recipient_for_later_packet, ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended, ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval
+- SETUP-ONETIME-WHAPI-001: Whapi/WAPI provider details (blocked_external_input). Missing now: whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number. Required: provider_account, phone_number, instance_id_or_alias, webhook_url_status, safe_test_recipient_for_later_packet, ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended, ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval
 - SETUP-ONETIME-CAMPAIGN-001: Campaign seed / real campaign (blocked_external_input). Missing now: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval. Required: final_campaign_copy, exact_recipient_segment_or_list_source, suppression_unsubscribe_proof, final_join_member_links, seed_recipient_sdratler_gmail, explicit_seed_packet_approval, separate_explicit_real_send_command_if_seed_passes
 
 ## Public Launch No-Write Smoke
-- Path: ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
+- Path: ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json
 - Status: passed
 - Ready: yes
-- Fresh for launch gate: yes (0.73h old, max 24h)
+- Fresh for launch gate: yes (0.02h old, max 24h)
 - Commands passed: 4/4
 - External write performed: no
 - Production data mutation performed: no
@@ -58,24 +68,24 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Rabbi Telegram Runtime
 - Readiness report: ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
-- Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (available locally)
-- Status: local_runtime_ready_live_smoke_pending
-- Local ready: yes
-- Token configured: yes
-- Chat ID configured: yes
-- Ops credentials configured: yes
+- Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (missing locally)
+- Status: blocked_missing_bot_token
+- Local ready: no
+- Token configured: no
+- Chat ID configured: no
+- Ops credentials configured: no
 - Candidate count: 0
 - Unique masked chat count: 0
 - No masked chat candidates reported.
 - Live delivery smoke: not_exercised_by_readiness_report
-- Next: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
+- Next: Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness.
 
 ## Agent Fleet
-- Supervisor: running PID 36560
-- Claimable observable jobs: 0
-- Ready to claim: observable jobs 0, fallback task candidates 0
-- Queue health: fresh 0, stale 515, blocked 155, unknown 221, do-not-redo 830
-- Kimi fallback: quota_only / kimi-k2.7-code-highspeed
+- Supervisor: unknown
+- Claimable observable jobs: unknown
+- Ready to claim: unknown
+- Queue health: unknown
+- Kimi fallback: kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
 - Auto-deploy blocked reason: production_readiness_gate_blocked
@@ -85,14 +95,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - No running launch collision lanes reported.
 
 ## Other Agent Policy Rows
-- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=196.8 path=.runtime/agent-fleet/task-1736.lock.json)
-- job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)
-- job #443 / task #2258 [failed] Turn Rabbi meeting drop into One Time build brief (local_lock=missing path=.runtime/agent-fleet/task-2258.lock.json)
-- job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json)
-- job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json)
-- job #238 / task #1141 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1141.lock.json)
-- job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json)
-- job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json)
+- No queued, failed, or non-collision policy rows reported.
 
 ## ChatGPT Dropoff
 - Packet count: 3
@@ -109,12 +112,22 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - rabbi-helper-tool-scope-map: terminal proof missing (https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md; dropoff https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-helper-tool-scope-map&requirement_id=REQ-20260708-093&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-helper-tool-scope-map&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-helper-tool-scope-map%3Aall-contexts&autosave=1)
 
 ## Next Actions
-1. Shloimie / provider account owners: Provide or label the exact missing setup values for full launch: Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, WAPI auto-reply enable/approval flags if auto-reply is intended, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet.
-2. Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane: Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags if auto-reply is intended, and campaign approvals, then rerun setup and WAPI readiness checks.
-3. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md
-4. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md
-5. Codex / operator: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
-6. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
+1. GitHub credential owner / operator: Push the CI workflow with a GitHub token that has workflow scope, or have an authorized maintainer add .github/workflows/onetime-corrective.yml separately.
+2. Operator / reviewer: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
+3. Operator / reviewer: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
+4. Operator / reviewer: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
+5. Operator / reviewer: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
+6. Operator / reviewer: After local implementation and no-send validation pass, approve deployment and submit the personal test through https://join.onetimeonetime.com/one-time/signup, then report when the page confirms signup.
+7. Operator / local test environment: Set BNA_ONETIME_CRM_TEST_DATABASE_URL to an approved local/test Postgres URL, then run npm run one-time:smoke:crm-journey-local-db and attach the generated report.
+8. Operator / local test environment: Provide an approved non-production BNA_ONETIME_CRM_TEST_DATABASE_URL, rerun the real persistence journey, then authorize PR #129 release/deploy/live smoke for terminal proof.
+9. Operator / reviewer: Authorize PR #129 release, deploy the exact approved SHA, then run live screenshots/readback against the deployed URL.
+10. release_owner: After release authorization, deploy the approved PR SHA and run live smoke/readback for the intake/dropoff path.
+11. release_owner: After release authorization, deploy the approved PR SHA and run live smoke/readback for the intake/dropoff path.
+12. Operator / reviewer: Review PR #129 after local verification and explicitly approve or reject release through the approved pipeline.
+13. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md
+14. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md
+15. Codex / operator: Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness.
+16. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
 
 ## Evidence
 - tasks-pending/2026-07-09-production-readiness-goal.md
@@ -122,10 +135,9 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - ops/production-readiness/latest-production-readiness-snapshot.json
 - ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json
 - ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
-- .runtime/rabbi-telegram-chat-id-candidates.json
 - ops/agent-fleet-hardening/latest-agent-fleet-readiness.json
 - ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
-- ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
+- ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json
 - ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md
 
 ## Guardrails
