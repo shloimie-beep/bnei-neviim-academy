@@ -158,6 +158,27 @@ if (Test-Path $deployRoot) {
 }
 
 New-Item -ItemType Directory -Path $deployRoot | Out-Null
+$gitHead = ""
+$gitBranch = ""
+try {
+  $gitHead = (& git -C $repoRoot rev-parse HEAD 2>$null).Trim()
+  $gitBranch = (& git -C $repoRoot rev-parse --abbrev-ref HEAD 2>$null).Trim()
+} catch {
+  $gitHead = ""
+  $gitBranch = ""
+}
+$deployMetadata = [ordered]@{
+  commit_sha = $gitHead
+  source_branch = $gitBranch
+  generated_at = (Get-Date).ToUniversalTime().ToString("o")
+  deployment_source = "railway:redeploy"
+  target_app = [string]$targetGuard.target.app
+  target_project = [string]$targetGuard.target.project_name
+  target_service = [string]$railwayService
+}
+$deployMetadataJson = $deployMetadata | ConvertTo-Json -Depth 4
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[System.IO.File]::WriteAllText((Join-Path $deployRoot "deployment-metadata.json"), $deployMetadataJson + "`n", $utf8NoBom)
 Copy-Item -LiteralPath (Join-Path $repoRoot "server.js") -Destination $deployRoot
 Copy-Item -LiteralPath (Join-Path $repoRoot "package.json") -Destination $deployRoot
 if (Test-Path (Join-Path $repoRoot "package-lock.json")) {

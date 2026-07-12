@@ -43967,6 +43967,48 @@ async function sendTelegramNotification(message) {
 
 // Routes
 
+function readDeploymentMetadata() {
+  const candidates = [
+    path.join(process.cwd(), 'deployment-metadata.json'),
+    path.join(__dirname, 'deployment-metadata.json'),
+  ];
+  for (const filePath of candidates) {
+    try {
+      if (!fs.existsSync(filePath)) continue;
+      const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      if (parsed && typeof parsed === 'object') return parsed;
+    } catch {
+      // Metadata is proof-only; never fail app health because a local file is absent or malformed.
+    }
+  }
+  return {};
+}
+
+function buildDeploymentInfo() {
+  const metadata = readDeploymentMetadata();
+  return {
+    status: 'ok',
+    commit_sha: process.env.BNA_RELEASE_SHA
+      || process.env.RAILWAY_GIT_COMMIT_SHA
+      || process.env.GIT_COMMIT_SHA
+      || metadata.commit_sha
+      || '',
+    source_branch: process.env.BNA_RELEASE_BRANCH
+      || process.env.RAILWAY_GIT_BRANCH
+      || metadata.source_branch
+      || '',
+    generated_at: metadata.generated_at || '',
+    deployment_source: metadata.deployment_source || 'runtime',
+    target_app: metadata.target_app || process.env.BNA_DEPLOY_APP || '',
+    target_project: metadata.target_project || '',
+    target_service: metadata.target_service || '',
+  };
+}
+
+app.get('/api/deploy-info', (req, res) => {
+  res.json(buildDeploymentInfo());
+});
+
 // Health check
 app.get('/api/health', async (req, res) => {
   try {
