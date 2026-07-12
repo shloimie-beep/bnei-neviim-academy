@@ -84,7 +84,7 @@ test('release captain renders a concise markdown report without implying externa
 
 test('one-time public target gate verifies join domain routes and instance config', async () => {
   const mod = await loadReleaseCaptain();
-  const landingHtml = '<!doctype html><title>Your Child Can Love Learning Mishnayos | One Time</title><body>One Time Mishnayos Sign Up Now</body>';
+  const landingHtml = '<!doctype html><title>Give Your Son A Love For Torah | One Time Mishnayos</title><body><h1>Give your son a love for Torah you never thought possible.</h1><p>One Time Mishnayos</p><a>Sign Up Now</a></body>';
   const fetchCalls = [];
   const fetchFn = async (url) => {
     fetchCalls.push(url);
@@ -145,7 +145,7 @@ test('one-time public target gate verifies join domain routes and instance confi
 
 test('one-time public target gate treats mismatched local Railway link as a warning after live checks pass', async () => {
   const mod = await loadReleaseCaptain();
-  const landingHtml = '<!doctype html><title>Your Child Can Love Learning Mishnayos | One Time</title><body>One Time Mishnayos Sign Up Now</body>';
+  const landingHtml = '<!doctype html><title>Give Your Son A Love For Torah | One Time Mishnayos</title><body><h1>Give your son a love for Torah you never thought possible.</h1><p>One Time Mishnayos</p><a>Sign Up Now</a></body>';
   const fetchFn = async (url) => {
     if (url.endsWith('/api/one-time/instance-config')) {
       return {
