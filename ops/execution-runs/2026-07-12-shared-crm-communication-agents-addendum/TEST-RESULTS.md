@@ -110,6 +110,12 @@
 - PASS `npm run secrets:audit` after enabled CRM workspace tabs slice.
 - PASS `npm run bna:run:validate` after enabled CRM workspace tabs slice; work remains on the broader addendum.
 - PASS `git diff --check` with line-ending warnings only after enabled CRM workspace tabs slice.
+- PASS `git push origin master` for enabled CRM workspace tabs commit `1c4880418954d984c08683ba0955a32549eb33aa`.
+- PASS BNA Railway post-deploy doctor; deployment `d580fdf6-535a-42e4-bfab-aff27fc0ce7b` reached `SUCCESS`.
+- PASS One Time Railway post-deploy doctor; deployment `e66f0964-6752-4c20-8eac-adec647b58dd` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `1c4880418954d984c08683ba0955a32549eb33aa`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1c4880418954d984c08683ba0955a32549eb33aa`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T22-41-20-271Z-one-time-operations-crm-workbench-live-smoke.md`, 12 scoped cards, selected timeline read-only.
 - PASS `node --check src/lib/bna/provider-lead-bot.js` after One Time bot knowledge/landing polish slice.
 - PASS `npm run pqc:validate -- tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json`.
 - PASS `node --test tests\service-provider-lead-bot.test.js tests\one-time-focused-landing.test.js tests\one-time-canonical-journey.test.js tests\one-time-brand-helper-isolation.test.js tests\one-time-shared-review-branding.test.js` (33/33) after One Time bot knowledge/landing polish slice.

@@ -78,9 +78,9 @@
         "REQ-20260712-305"
       ],
       "status": "in_progress",
-      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked through the explicit Create task action slice; enabled workspace tabs slice is locally verified and pending deploy. Canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, the One Time Operations CRM workbench API/timeline smoke passed, the crm_contact/filter/search/sort/list-scroll URL-state slice is deployed and live-smoked, the local CRM update form/no-auto-task policy slice is deployed and live-smoked, the dead-end Create task placeholder is replaced by deployed explicit ACTION-CRM-CREATE-TASK at commit ded53274e31f91abff7944c094bdcdfaa9c55c5e, and Overview/Activity/Conversations/Tasks/Access tabs are locally enabled with real customer-facing panels.",
+      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked through the enabled workspace tabs slice. Canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, the One Time Operations CRM workbench API/timeline smoke passed, the crm_contact/filter/search/sort/list-scroll URL-state slice is deployed and live-smoked, the local CRM update form/no-auto-task policy slice is deployed and live-smoked, the dead-end Create task placeholder is replaced by deployed explicit ACTION-CRM-CREATE-TASK at commit ded53274e31f91abff7944c094bdcdfaa9c55c5e, and Overview/Activity/Conversations/Tasks/Access tabs are deployed at commit 1c4880418954d984c08683ba0955a32549eb33aa with real customer-facing panels.",
       "can_continue_without_operator": true,
-      "next_action": "Commit, push, deploy the enabled workspace tabs slice, then continue deeper dedicated contact workspace/actions without reintroducing workspace leakage or internal CRM copy.",
+      "next_action": "Continue deeper dedicated contact workspace/actions without reintroducing workspace leakage or internal CRM copy.",
       "acceptance_criteria": [
         "BNA and One Time use shared CRM shell/index/workspace/inbox/actions/components with only theme, logo, title, allowed fields/actions, channels, agents, and records varying by workspace."
       ],
@@ -105,7 +105,10 @@
         "ops/live-smokes/2026-07-12T22-30-27-405Z-one-time-operations-crm-workbench-live-smoke.md records deployed One Time Operations CRM workbench smoke after explicit Create task action slice.",
         "public/js/crm/contact-workspace.js enables Overview, Activity, Conversations, Tasks, and Access tabs.",
         "public/operations.html renders customer-facing tab panels for overview, conversations, tasks, and access.",
-        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records local smoke PASS after clicking all workspace tabs across split-shell and monolith at 1440, 1024, 768, 430, and 390."
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records local smoke PASS after clicking all workspace tabs across split-shell and monolith at 1440, 1024, 768, 430, and 390.",
+        "BNA deployment d580fdf6-535a-42e4-bfab-aff27fc0ce7b SUCCESS at commit 1c4880418954d984c08683ba0955a32549eb33aa.",
+        "One Time deployment e66f0964-6752-4c20-8eac-adec647b58dd SUCCESS at commit 1c4880418954d984c08683ba0955a32549eb33aa.",
+        "ops/live-smokes/2026-07-12T22-41-20-271Z-one-time-operations-crm-workbench-live-smoke.md records deployed One Time Operations CRM workbench smoke after enabled workspace tabs slice."
       ],
       "verification": [
         "node --check server.js PASS",
@@ -168,7 +171,13 @@
         "npm run watchdog:actions PASS finding_count 0 after enabled workspace tabs slice",
         "npm run watchdog:protocol-drift PASS after enabled workspace tabs slice",
         "npm run secrets:audit PASS after enabled workspace tabs slice",
-        "npm run bna:run:validate PASS after enabled workspace tabs slice"
+        "npm run bna:run:validate PASS after enabled workspace tabs slice",
+        "git push origin master PASS for enabled workspace tabs commit 1c4880418954d984c08683ba0955a32549eb33aa",
+        "BNA Railway post-deploy doctor PASS deployment d580fdf6-535a-42e4-bfab-aff27fc0ce7b",
+        "One Time Railway post-deploy doctor PASS deployment e66f0964-6752-4c20-8eac-adec647b58dd",
+        "BNA and One Time deploy-info returned commit_sha=1c4880418954d984c08683ba0955a32549eb33aa",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1c4880418954d984c08683ba0955a32549eb33aa PASS",
+        "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com PASS after enabled workspace tabs slice"
       ],
       "implementation_files": [
         "src/lib/bna/crm/contact-service.js",
@@ -201,11 +210,11 @@
         "One Time production deploy-info readback commit_sha=bf0ec619b5ed10b2c057d5cf4f1553362d6614f4.",
         "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md.",
         "URL-state slice deployed at f818822bb3969dca5d27f7c5a70d4dbf0baa8744 with live smoke report ops/live-smokes/2026-07-12T21-39-03-428Z-one-time-operations-crm-workbench-live-smoke.md.",
-    "Local update/no-auto-task slice deployed at 224bc077919c624f115c264d35e35092ed4144da with live smoke report ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md."
-    ,
-    "Explicit Create task action slice deployed at ded53274e31f91abff7944c094bdcdfaa9c55c5e with live smoke report ops/live-smokes/2026-07-12T22-30-27-405Z-one-time-operations-crm-workbench-live-smoke.md."
-  ],
-  "updated_at": "2026-07-13T01:47:00+03:00",
+        "Local update/no-auto-task slice deployed at 224bc077919c624f115c264d35e35092ed4144da with live smoke report ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md.",
+        "Explicit Create task action slice deployed at ded53274e31f91abff7944c094bdcdfaa9c55c5e with live smoke report ops/live-smokes/2026-07-12T22-30-27-405Z-one-time-operations-crm-workbench-live-smoke.md.",
+        "Enabled workspace tabs slice deployed at 1c4880418954d984c08683ba0955a32549eb33aa with live smoke report ops/live-smokes/2026-07-12T22-41-20-271Z-one-time-operations-crm-workbench-live-smoke.md."
+      ],
+      "updated_at": "2026-07-13T01:52:00+03:00",
       "blocker": ""
     },
     {

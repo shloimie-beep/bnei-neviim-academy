@@ -39064,4 +39064,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   across split shell and monolith at 1440/1024/768/430/390, action watchdog 0
   findings, protocol drift watchdog, secret audit, execution run validation,
   and diff check with line-ending warnings only.
-- Deployment/live proof remains next for this slice.
+- Deployed commit `1c4880418954d984c08683ba0955a32549eb33aa` to BNA and One
+  Time production.
+- BNA Railway deployment `d580fdf6-535a-42e4-bfab-aff27fc0ce7b` and One Time
+  deployment `e66f0964-6752-4c20-8eac-adec647b58dd` reached `SUCCESS`.
+- BNA and One Time live `/api/deploy-info` both returned
+  `1c4880418954d984c08683ba0955a32549eb33aa`.
+- Live proof passed: One Time separate-instance SHA smoke and One Time
+  Operations CRM workbench smoke with 12 scoped cards and read-only selected
+  timeline.

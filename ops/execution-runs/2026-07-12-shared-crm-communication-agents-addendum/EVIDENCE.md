@@ -33,6 +33,11 @@
 - `ops/live-smokes/2026-07-12T22-30-27-405Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the explicit Create task action slice with 12 scoped cards and read-only selected timeline.
 - `public/operations.html` / `public/js/crm/contact-workspace.js` - CRM contact workspace tabs are enabled for Overview, Activity, Conversations, Tasks, and Access with customer-facing panels instead of disabled placeholders.
 - `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local Operations CRM workbench smoke passed after the enabled-tabs slice and clicks all workspace tabs across split shell and monolith viewport coverage.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=1c4880418954d984c08683ba0955a32549eb33aa`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=1c4880418954d984c08683ba0955a32549eb33aa`.
+- BNA post-deploy doctor - Railway deployment `d580fdf6-535a-42e4-bfab-aff27fc0ce7b` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `e66f0964-6752-4c20-8eac-adec647b58dd` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T22-41-20-271Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the enabled workspace tabs slice with 12 scoped cards and read-only selected timeline.
 - `raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md` - operator correction requiring the WhatsApp bot knowledge to state no portal/member/library access is being granted yet plus One Time landing header/button/mobile CTA polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md` - scoped local-verified handoff for bot knowledge and landing polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json` - focused Product Quality Compiler packet for the One Time header/CTA/spacing/mobile correction and bot access-fact guardrail.
