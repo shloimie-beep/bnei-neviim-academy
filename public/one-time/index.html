@@ -76,29 +76,84 @@
       top: 0;
       z-index: 1200;
       min-height: var(--header-height);
-      border-bottom: 1px solid rgba(223, 248, 255, 0.16);
+      border-bottom: 1px solid rgba(237, 229, 24, 0.24);
       background:
-        linear-gradient(90deg, rgba(5, 5, 5, 0.96), rgba(7, 17, 23, 0.94)),
-        radial-gradient(circle at 90% 0%, rgba(134, 232, 255, 0.16), transparent 18rem);
-      backdrop-filter: blur(18px);
-      box-shadow: 0 14px 38px rgba(0, 0, 0, 0.32);
+        radial-gradient(circle at 84% 0%, rgba(237, 229, 24, 0.12), transparent 20rem),
+        rgba(8, 9, 16, 0.96);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
     }
     .header-inner {
       min-height: var(--header-height);
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto auto;
+      display: flex;
       align-items: center;
-      gap: 14px;
+      justify-content: flex-end;
+      gap: 8px;
     }
-    .brand-lockup { min-width: 0; display: inline-flex; align-items: center; gap: 13px; }
-    .brand-lockup img { width: 124px; height: auto; flex: 0 0 auto; filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.38)); }
-    .brand-lockup span {
-      color: var(--ice);
-      font-size: 0.8rem;
+    .brand-lockup {
+      flex: 0 0 auto;
+      margin-right: auto;
+      min-width: min(100%, 240px);
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--white);
       font-weight: 950;
       line-height: 1.08;
-      text-transform: uppercase;
-      text-shadow: 0 0 18px rgba(134, 232, 255, 0.28);
+    }
+    .brand-lockup img {
+      width: 56px;
+      height: 56px;
+      flex: 0 0 auto;
+      padding: 4px;
+      border-radius: 8px;
+      background: var(--yellow);
+      object-fit: contain;
+      filter: none;
+    }
+    .brand-lockup span {
+      color: var(--white);
+      font-size: 0.92rem;
+      font-weight: 950;
+      line-height: 1.08;
+      text-shadow: none;
+    }
+    .brand-lockup small {
+      display: block;
+      margin-top: 2px;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 0.68rem;
+      font-weight: 850;
+    }
+    .site-nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: 0;
+    }
+    .site-nav a {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(237, 229, 24, 0.2);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 9px 11px;
+      font-size: 0.82rem;
+      font-weight: 900;
+      white-space: nowrap;
+      transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+    }
+    .site-nav a[aria-current="page"],
+    .site-nav a:hover,
+    .site-nav a:focus-visible {
+      outline: none;
+      color: var(--black);
+      border-color: var(--yellow);
+      background: var(--yellow);
     }
 
     .chrome-button {
@@ -120,8 +175,7 @@
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.92),
         inset 0 -2px 0 rgba(5, 5, 5, 0.28),
-        0 13px 0 rgba(0, 0, 0, 0.48),
-        0 22px 45px rgba(240, 255, 50, 0.21);
+        0 10px 24px rgba(237, 229, 24, 0.22);
       font-weight: 950;
       white-space: nowrap;
       transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
@@ -142,8 +196,7 @@
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.95),
         inset 0 -2px 0 rgba(5, 5, 5, 0.28),
-        0 15px 0 rgba(0, 0, 0, 0.54),
-        0 28px 58px rgba(240, 255, 50, 0.28),
+        0 14px 28px rgba(237, 229, 24, 0.28),
         0 0 0 4px rgba(134, 232, 255, 0.18);
     }
     .chrome-button:hover::before, .chrome-button:focus-visible::before { transform: translateX(130%); }
@@ -160,6 +213,7 @@
       cursor: pointer;
       transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
     }
+    .menu-button { display: none; }
     .icon-button:hover, .icon-button:focus-visible {
       outline: none;
       border-color: var(--yellow);
@@ -263,7 +317,7 @@
       display: grid;
       align-items: center;
       overflow: hidden;
-      padding: 86px 0 104px;
+      padding: 78px 0 100px;
       background:
         radial-gradient(circle at 78% 34%, rgba(134, 232, 255, 0.24), transparent 24rem),
         radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.13), transparent 18rem),
@@ -311,11 +365,11 @@
       background: linear-gradient(90deg, transparent, var(--yellow), transparent);
       box-shadow: 0 0 18px rgba(240, 255, 50, 0.52);
     }
-    .hero-schedule { margin: 0 0 34px; color: rgba(223, 248, 255, 0.9); font-size: clamp(1.2rem, 2.2vw, 1.65rem); font-weight: 800; }
+    .hero-schedule { margin: 0 0 26px; color: rgba(223, 248, 255, 0.9); font-size: clamp(1.2rem, 2.2vw, 1.65rem); font-weight: 800; }
     .hero-actions, .final-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
     @keyframes hero-in { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
 
-    .section { position: relative; overflow: hidden; padding: clamp(74px, 8vw, 112px) 0; }
+    .section { position: relative; overflow: hidden; padding: clamp(62px, 7vw, 96px) 0; }
     .section.dark {
       background:
         radial-gradient(circle at 18% 18%, rgba(134, 232, 255, 0.14), transparent 22rem),
@@ -456,7 +510,7 @@
     .press-logo { width: 138px; height: 46px; display: grid; place-items: center; opacity: 0.72; filter: grayscale(1) brightness(1.24); }
     .press-logo img { max-width: 124px; max-height: 34px; object-fit: contain; background: transparent; }
     @keyframes press-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-    .final-cta { padding: 76px 0; background: radial-gradient(circle at 50% 0%, rgba(240, 255, 50, 0.16), transparent 20rem), radial-gradient(circle at 80% 80%, rgba(134, 232, 255, 0.16), transparent 22rem), linear-gradient(180deg, #050505, #071117); text-align: center; }
+    .final-cta { padding: 64px 0; background: radial-gradient(circle at 50% 0%, rgba(240, 255, 50, 0.16), transparent 20rem), radial-gradient(circle at 80% 80%, rgba(134, 232, 255, 0.16), transparent 22rem), linear-gradient(180deg, #050505, #071117); text-align: center; }
     .final-cta h2 { margin-bottom: 24px; }
     .final-actions { justify-content: center; }
     .one-time-site-footer { border-top: 1px solid rgba(223, 248, 255, 0.16); background: radial-gradient(circle at 20% 0%, rgba(134, 232, 255, 0.12), transparent 18rem), linear-gradient(180deg, #071117, #050505); }
@@ -470,7 +524,8 @@
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
     @media (max-width: 920px) {
-      .brand-lockup img { width: 112px; }
+      .site-nav { display: none; }
+      .menu-button { display: inline-grid; }
       .receive-composition, .rabbi-layout, .carousel-shell { grid-template-columns: 1fr; }
       .student-orbit { width: 240px; }
       .feature-grid::before, .carousel-preview { display: none; }
@@ -480,14 +535,17 @@
       :root { --header-height: 68px; }
       .wrap { width: min(100% - 28px, 1180px); }
       .header-inner { gap: 10px; }
-      .brand-lockup { gap: 9px; }
-      .brand-lockup img { width: 88px; }
-      .brand-lockup span { max-width: 118px; font-size: 0.68rem; line-height: 1.03; }
+      .brand-lockup { gap: 9px; min-width: 0; }
+      .brand-lockup img { width: 54px; height: 54px; }
+      .brand-lockup span { max-width: 138px; font-size: 0.8rem; line-height: 1.05; }
+      .brand-lockup small { font-size: 0.62rem; }
       .header-cta { min-height: 42px; padding: 0 11px; font-size: 0.82rem; }
       .icon-button { width: 42px; height: 42px; }
       .rosh-link { min-height: 36px; font-size: 0.82rem; }
-      .hero { min-height: calc(100svh - var(--header-height) - 36px); padding: 64px 0 82px; }
+      .hero { min-height: calc(100svh - var(--header-height) - 36px); align-items: start; padding: 52px 0 112px; }
       .hero .eyebrow { grid-template-columns: 36px minmax(0, auto) 36px; gap: 10px; font-size: clamp(0.95rem, 4vw, 1.06rem); text-align: center; }
+      .hero-schedule { margin-bottom: 22px; }
+      .hero-actions { margin-top: -4px; }
       h1 { font-size: clamp(3.1rem, 16vw, 4.75rem); }
       .feature-grid, .benefit-grid, .audience-grid, .step-flow { grid-template-columns: 1fr; }
       .step-flow::before { top: 42px; bottom: 42px; left: 50%; right: auto; width: 2px; height: auto; background: linear-gradient(180deg, transparent, var(--blue), var(--yellow), var(--blue), transparent); }
@@ -496,8 +554,8 @@
       .footer-links { justify-content: center; }
     }
     @media (max-width: 420px) {
-      .brand-lockup img { width: 78px; }
-      .brand-lockup span { max-width: 96px; font-size: 0.62rem; }
+      .brand-lockup img { width: 50px; height: 50px; }
+      .brand-lockup span { max-width: 108px; font-size: 0.72rem; }
       .header-cta { padding: 0 9px; }
     }
     .one-time-whatsapp-launcher {
@@ -584,9 +642,16 @@
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="brand-lockup" href="/one-time" aria-label="One Time Mishnayos home">
-        <img src="/assets/one-time/brand/one-time-logo-white.webp" width="124" height="78" alt="One Time">
-        <span>Worldwide Mishnah Learning</span>
+        <img src="/images/one-time/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
+        <span>One Time Mishnayos<small>Worldwide Mishnah learning</small></span>
       </a>
+      <nav class="site-nav" aria-label="One Time public navigation">
+        <a href="/one-time" aria-current="page" data-action-id="ACTION-ONETIME-PUBLIC-SECTION-NAV">Home</a>
+        <a href="#receive" data-action-id="ACTION-ONETIME-PUBLIC-SECTION-NAV">What You Receive</a>
+        <a href="#gain" data-action-id="ACTION-ONETIME-PUBLIC-SECTION-NAV">What He&rsquo;ll Gain</a>
+        <a href="#rabbi" data-action-id="ACTION-ONETIME-PUBLIC-SECTION-NAV">Rabbi Scheller</a>
+        <a href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
+      </nav>
       <a class="chrome-button cta-large header-cta" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
       <button class="icon-button menu-button" type="button" aria-label="Open navigation" aria-controls="siteDrawer" aria-expanded="false" data-menu-button data-action-id="ACTION-ONETIME-PUBLIC-MOBILE-MENU">
         <span class="menu-lines" aria-hidden="true"></span>
@@ -610,11 +675,11 @@
       <button class="icon-button" type="button" aria-label="Close navigation" data-drawer-close>&times;</button>
     </div>
     <nav class="drawer-links" aria-label="One Time page sections">
-      <a href="#receive">What You Receive</a>
-      <a href="#gain">What He&rsquo;ll Gain</a>
-      <a href="#how-it-works">How It Works</a>
-      <a href="#who">Who It&rsquo;s For</a>
-      <a href="#rabbi">Rabbi Scheller</a>
+      <a href="#receive" data-action-id="ACTION-ONETIME-PUBLIC-SECTION-NAV">What You Receive</a>
+      <a href="#gain" data-action-id="ACTION-ONETIME-PUBLIC-SECTION-NAV">What He&rsquo;ll Gain</a>
+      <a href="#how-it-works" data-action-id="ACTION-ONETIME-PUBLIC-SECTION-NAV">How It Works</a>
+      <a href="#who" data-action-id="ACTION-ONETIME-PUBLIC-SECTION-NAV">Who It&rsquo;s For</a>
+      <a href="#rabbi" data-action-id="ACTION-ONETIME-PUBLIC-SECTION-NAV">Rabbi Scheller</a>
       <a href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
     </nav>
     <p class="drawer-note">Live Mishnayos with Rabbi Eli Scheller from Eretz Yisrael.</p>

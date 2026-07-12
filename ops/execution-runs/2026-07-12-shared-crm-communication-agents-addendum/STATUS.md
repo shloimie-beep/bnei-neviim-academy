@@ -49,6 +49,17 @@ Current status: `active`
 - Local CRM update/no-auto-task slice is locally verified and pending deploy: selected contact workspace now exposes a local first-party update form, the client sends `create_follow_up_task: false`, and the server creates CRM follow-up tasks only when `create_follow_up_task` is explicitly true.
 - Local CRM update/no-auto-task slice is deployed at `224bc077919c624f115c264d35e35092ed4144da`; BNA and One Time deploy-info match, post-deploy Railway doctors passed, One Time separate-instance smoke passed, and One Time Operations CRM workbench live smoke passed with 12 scoped cards and selected timeline read-only.
 
+## One Time Bot Knowledge / Landing Polish Slice
+
+- Operator correction captured as `RAW-20260713-001`: the One Time WhatsApp bot must know portal/member/library/parent-login/student-login access is not being granted yet, and the public landing header/buttons/hero CTA need a focused polish pass.
+- `REQ-20260712-310` is now in progress with a bounded local slice: the existing WhatsApp provider-bot profile/runtime no longer publishes stale portal/member/library/trial/pricing claims as approved facts.
+- `config/service-provider-bots/one-time.json` version `2026-07-13-v1` marks offer terms as `not_published_for_bot`, removes portal/library/accountability claims from approved bot benefits, and adds explicit access-policy copy saying portal, library, student-login, parent-login, and member access are not being opened or promised yet.
+- `src/lib/bna/provider-lead-bot.js` now treats trial/pricing/access facts as unpublished unless the profile explicitly publishes them, and the deterministic replies/system prompt avoid the old `30-day` / `$67` bot claims.
+- One Time public landing header now uses the member-section-style black/yellow lockup and public section nav; yellow button shadows are softened; section/final CTA spacing is tighter; the mobile hero CTA is top-weighted so it clears the bottom browser/launcher zone.
+- Product Quality Compiler packet `PKT-20260713-001` validates for this focused public landing/bot-knowledge correction.
+- Local verification passed: focused One Time/bot tests `33/33`, local responsive landing smoke with 1440/1024/768/430/390 screenshots, action watchdog, protocol drift watchdog, secret audit, execution-run validation, provider-lead-bot syntax check, and whitespace diff check with line-ending warnings only.
+- Deployment/live proof is still pending for this slice; the full channel-independent WhatsApp/email communication-agent model remains open.
+
 ## Identity Isolation Batch
 
 - `REQ-20260712-305` local code patch is applied and moved to `needs_verification`.

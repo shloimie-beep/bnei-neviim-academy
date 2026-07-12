@@ -23,13 +23,14 @@ test('One Time has one canonical public-to-member route flow', () => {
   assert.match(server, /\/member-library\?code=\$\{encodeURIComponent\(code\)\}/);
 
   assert.doesNotMatch(oneTime, /\/one-time\/member-login/);
-  assert.match(oneTime, /href="\/rabbi-member">Member Login/);
+  assert.match(oneTime, /href="\/rabbi-member"[^>]*>Member Login/);
 });
 
 test('One Time member pages expose app modules without public-site escape links', () => {
-  assert.match(rabbiMember, /aria-label="Member home"[\s\S]*>Home<[\s\S]*Library[\s\S]*Classroom[\s\S]*aria-label="Questions\/support"[\s\S]*>Support<[\s\S]*aria-label="Account\/logout"[\s\S]*>Logout</);
-  assert.match(memberLibrary, /aria-label="Member home"[\s\S]*>Home<[\s\S]*Library[\s\S]*Classroom[\s\S]*aria-label="Questions\/support"[\s\S]*>Support<[\s\S]*aria-label="Account\/logout"[\s\S]*>Logout</);
-  assert.match(classroom, /aria-label="Member home"[\s\S]*>Home<[\s\S]*Library[\s\S]*Classroom[\s\S]*aria-label="Questions\/support"[\s\S]*>Support<[\s\S]*aria-label="Account\/logout"[\s\S]*>Logout</);
+  const familyPortalNav = /aria-label="Family Portal"[\s\S]*>Family Portal<[\s\S]*Library[\s\S]*Classroom[\s\S]*aria-label="Questions\/support"[\s\S]*>Support<[\s\S]*aria-label="Account\/logout"[\s\S]*>Logout</;
+  assert.match(rabbiMember, familyPortalNav);
+  assert.match(memberLibrary, familyPortalNav);
+  assert.match(classroom, familyPortalNav);
   assert.doesNotMatch(classroom, /<body class="one-time-review-active/);
   assert.match(classroom, /document\.body\.classList\.add\('one-time-review-active', 'one-time-classroom-review-shell'\)/);
   assert.match(participant, /Provider login[\s\S]*aria-label="Member home"[\s\S]*>Home<[\s\S]*Library[\s\S]*aria-label="Account\/logout"[\s\S]*>Logout</);

@@ -522,6 +522,24 @@
       ]
     },
     {
+      "action_id": "ACTION-ONETIME-PUBLIC-SECTION-NAV",
+      "label": "Public section navigation",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": ".site-nav a[data-action-id=\"ACTION-ONETIME-PUBLIC-SECTION-NAV\"], .drawer-links a[data-action-id=\"ACTION-ONETIME-PUBLIC-SECTION-NAV\"]",
+      "expected_behavior": "Navigates only among public One Time landing sections or the public landing home state; it must not expose private member-library data, portal accounts, class links, checkout, or Operations data.",
+      "permission": "public",
+      "status": "active_navigation",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Desktop header exposes member-style public section links; mobile drawer exposes the same public sections; no private data, external writes, sends, checkout, portal grant, or class link release occurs."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
       "action_id": "ACTION-ONETIME-SIGNUP-MODAL-CLOSE",
       "label": "Close signup modal",
       "surface": "one_time_public_focused_offer",

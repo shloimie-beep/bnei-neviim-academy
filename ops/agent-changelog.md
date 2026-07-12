@@ -38994,3 +38994,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   update/no-auto-task SHA; One Time separate-instance smoke passed; One Time
   Operations CRM workbench smoke passed with 12 scoped CRM cards and selected
   timeline read-only.
+
+## 2026-07-13 - One Time bot portal knowledge and landing polish local proof
+
+- Captured `RAW-20260713-001` and created
+  `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md` for the
+  operator correction that the WhatsApp bot must not claim portal access is
+  being granted yet, plus the separate public landing header/button/mobile CTA
+  polish.
+- Updated the One Time WhatsApp provider-bot profile/runtime so portal,
+  member-area, library, parent-login, student-login, trial, and renewal pricing
+  facts are not bot-published unless a future profile explicitly publishes
+  them.
+- Updated the One Time public landing header to match the member-section
+  black/yellow lockup family, softened the yellow button shadow, tightened
+  section/final CTA spacing, and moved the mobile hero CTA above the bottom
+  browser/launcher zone.
+- Verification passed: provider-lead-bot syntax check, focused One Time/bot
+  tests `33/33`, local responsive landing smoke with 1440/1024/768/430/390
+  screenshots and CTA/launcher bounding-box proof, action watchdog, and
+  `git diff --check` with line-ending warnings only.

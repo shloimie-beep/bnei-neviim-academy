@@ -79,3 +79,15 @@
   - Scoped CRM contacts API returned 12 cards with no external-write flags.
   - Selected CRM timeline API was read-only.
 - BLOCKED `npm run production:readiness:gate -- --json` only on full-launch external Stripe/campaign setup fields.
+- PASS `node --check src/lib/bna/provider-lead-bot.js` after One Time bot knowledge/landing polish slice.
+- PASS `npm run pqc:validate -- tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json`.
+- PASS `node --test tests\service-provider-lead-bot.test.js tests\one-time-focused-landing.test.js tests\one-time-canonical-journey.test.js tests\one-time-brand-helper-isolation.test.js tests\one-time-shared-review-branding.test.js` (33/33) after One Time bot knowledge/landing polish slice.
+- PASS `node scripts\smoke-onetime-landing-whatsapp-local.mjs`
+  - Captured local screenshots at 1440, 1024, 768, 430, and 390.
+  - Confirmed no helper script requests, no write requests, no missing assets/API routes, no console errors, and no HTTP errors.
+  - Confirmed hero CTA does not overlap the WhatsApp launcher and is above the mobile bottom safe zone.
+- PASS `npm run watchdog:actions` finding_count `0` after One Time public section nav registration.
+- PASS `npm run watchdog:protocol-drift` findings `0` after One Time bot knowledge/landing polish slice.
+- PASS `npm run secrets:audit` after One Time bot knowledge/landing polish slice.
+- PASS `npm run bna:run:validate` after One Time bot knowledge/landing polish slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after One Time bot knowledge/landing polish slice.

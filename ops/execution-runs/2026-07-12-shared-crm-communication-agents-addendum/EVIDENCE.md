@@ -24,3 +24,12 @@
 - `ops/live-smokes/2026-07-12T21-39-03-428Z-one-time-operations-crm-workbench-live-smoke.md` - deployed URL-state slice live smoke at `f818822bb3969dca5d27f7c5a70d4dbf0baa8744`, with 12 scoped cards and read-only selected timeline.
 - `public/operations.html` / `server.js` - local CRM update form saves first-party fields/notes and disables automatic task creation unless `create_follow_up_task` is explicitly true.
 - `ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md` - deployed local update/no-auto-task slice live smoke at `224bc077919c624f115c264d35e35092ed4144da`, with 12 scoped cards and read-only selected timeline.
+- `raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md` - operator correction requiring the WhatsApp bot knowledge to state no portal/member/library access is being granted yet plus One Time landing header/button/mobile CTA polish.
+- `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md` - scoped local-verified handoff for bot knowledge and landing polish.
+- `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json` - focused Product Quality Compiler packet for the One Time header/CTA/spacing/mobile correction and bot access-fact guardrail.
+- `config/service-provider-bots/one-time.json` / `src/lib/bna/provider-lead-bot.js` - existing WhatsApp provider-bot profile/runtime now treats trial/pricing/access facts as unpublished unless explicitly published, and does not claim portal, library, parent-login, student-login, or member access is being granted yet.
+- `public/one-time/index.html` - public landing header now follows the member-section black/yellow lockup pattern, yellow CTA shadows are softened, section spacing is tightened, and mobile hero CTA is moved above the bottom browser/launcher zone.
+- `ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md` - local responsive landing smoke with screenshots at 1440, 1024, 768, 430, and 390; report records hero CTA and WhatsApp launcher bounding boxes with no overlap and no write requests.
+- `ops/product-quality-compiler/validation/latest-product-quality-validation.md` - focused PQC validation passed for `PKT-20260713-001`.
+- `ops/watchdog-audits/2026-07-12T22-12-watchdog-action-audit.md` - action watchdog passed with `finding_count=0` after adding public section navigation coverage.
+- `ops/watchdog-audits/2026-07-12-product-quality-drift.md` - protocol drift watchdog passed with `Findings: 0`.

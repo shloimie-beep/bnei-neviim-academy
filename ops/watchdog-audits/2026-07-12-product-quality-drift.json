@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T21:44:38.093Z",
+  "generated_at": "2026-07-12T22:12:14.766Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -643,6 +643,7 @@
     "tasks-pending/2026-07-12-onetime-signup-reminder-workflow-addendum.md",
     "tasks-pending/2026-07-12-onetime-wapi-webhook-bot-not-responding.md",
     "tasks-pending/2026-07-12-shared-crm-communication-agents-addendum.md",
+    "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"
   ],

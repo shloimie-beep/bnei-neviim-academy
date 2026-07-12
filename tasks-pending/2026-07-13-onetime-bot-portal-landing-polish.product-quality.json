@@ -1,0 +1,731 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260713-001",
+  "parent_raw_id": "RAW-20260713-001",
+  "source_statement_ids": [
+    "RAW-20260713-001:S1",
+    "RAW-20260713-001:S2"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260712-300",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260712-104"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md",
+      "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md"
+    ],
+    "produces": [
+      "public/one-time/index.html",
+      "config/service-provider-bots/one-time.json",
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md"
+    ],
+    "validation_command": "npm run pqc:validate -- tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json",
+    "terminal_condition": "deployed SHA serves the revised One Time public header, button shadow, spacing, mobile CTA clearance, and bot portal-access guardrail",
+    "handoff_target": "Continue the broader shared CRM and communication-agent addendum after this focused deploy."
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "in_progress",
+  "title": "One Time header CTA spacing corrective packet",
+  "created_at": "2026-07-13T01:02:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "PUBLIC_MARKETING"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260713-001",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "COMMUNICATIONS_EMAIL"
+    ],
+    "confidence": "high",
+    "reasons": [
+      "Operator requested a visible One Time public page header, button, spacing, and mobile CTA correction.",
+      "Operator also requested a One Time bot knowledge guardrail about portal access not being available yet."
+    ],
+    "affected_product_surfaces": [
+      "/one-time public landing",
+      "One Time communication bot knowledge base"
+    ],
+    "likely_external_provider_blockers": [
+      "No WhatsApp, Telegram, email, access, payment, DNS, or credential mutation is approved by this packet."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "Preserve raw intake.",
+      "Compile the focused visual and bot-knowledge requirements.",
+      "Apply bounded site and knowledge edits.",
+      "Run local tests, screenshots, watchdogs, commit, push, deploy, live smoke."
+    ],
+    "next_exact_packet": "Resume the shared CRM and channel-assigned communication-agent addendum after deploy proof."
+  },
+  "operator_intent_summary": "Make the One Time bot avoid promising portal/member access and make the public landing header, yellow buttons, section spacing, and mobile hero CTA match the current One Time experience better.",
+  "raw_quotes": [
+    "we're not giving access yet to the portal",
+    "make the top header the same as when you click on the member section",
+    "the yellow buttons are like this black ugly Shadow underneath",
+    "get rid of some of the spacing in between",
+    "move up the yellow button to call to action under the hero"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260713-001",
+      "decision": "The bot may not claim portal, library, member, parent-login, or student-login access is currently being granted.",
+      "owner": "operator",
+      "source": "RAW-20260713-001:S1"
+    },
+    {
+      "id": "DEC-20260713-002",
+      "decision": "The public header should visually align with the member-area One Time lockup and black/yellow family.",
+      "owner": "operator",
+      "source": "RAW-20260713-001:S2"
+    }
+  ],
+  "out_of_scope": [
+    "No portal/member/library access grant.",
+    "No checkout/payment change.",
+    "No WhatsApp, Telegram, or email send.",
+    "No WAPI token, webhook secret, Resend key, or OPENAI_API_KEY change.",
+    "No broad CRM or Agents UI completion in this packet.",
+    "No contradictory pricing, trial, portal, library, or class-link publication."
+  ],
+  "affected_surfaces": [
+    "One Time public acquisition landing page",
+    "One Time communication bot knowledge/runtime guardrails"
+  ],
+  "affected_routes": [
+    "/one-time",
+    "/one-time/signup",
+    "/rabbi-member"
+  ],
+  "affected_files": [
+    "public/one-time/index.html",
+    "config/service-provider-bots/one-time.json",
+    "src/lib/bna/provider-lead-bot.js",
+    "tests/service-provider-lead-bot.test.js",
+    "tests/one-time-canonical-journey.test.js",
+    "tests/one-time-shared-review-branding.test.js",
+    "scripts/smoke-onetime-landing-whatsapp-local.mjs",
+    "ops/action-registry.json"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/one-time/index.html",
+      "public/rabbi-member.html",
+      "config/service-provider-bots/one-time.json",
+      "src/lib/bna/provider-lead-bot.js",
+      "ops/action-registry.json"
+    ],
+    "known_current_defects": [
+      "Public landing header did not use the same One Time member-style black/yellow lockup family.",
+      "Yellow CTA buttons used a heavy black slab shadow.",
+      "Public landing vertical section spacing needed a small tightening.",
+      "The mobile hero signup CTA sat too low relative to bottom browser chrome and the WhatsApp launcher zone.",
+      "The bot knowledge still carried stale access-adjacent claims unless guarded by runtime policy."
+    ],
+    "before_screenshot_paths": [
+      "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/before-landing-1440.png",
+      "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/before-landing-390.png"
+    ],
+    "after_screenshot_plan": "Capture 1440, 1024, 768, 430, and 390 screenshots through the One Time local landing WhatsApp smoke."
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "ugly",
+      "spacing",
+      "same as member section",
+      "phone is blocking it",
+      "not giving access yet to the portal"
+    ],
+    "expanded_phrases": {
+      "ugly": "Replace the heavy black slab shadow under yellow CTA buttons with a softer, professional elevation that keeps the yellow/black brand.",
+      "spacing": "Reduce vertical section padding slightly without collapsing content hierarchy or breaking responsive layout.",
+      "same as member section": "Use the One Time member-style brand lockup, black topbar, compact logo tile, and yellow accents on the public header.",
+      "phone is blocking it": "Raise the mobile hero primary signup CTA enough that it does not overlap bottom browser chrome or the WhatsApp launcher.",
+      "portal": "Bot and page copy must not promise portal, member, library, parent-login, or student-login access until separately approved."
+    },
+    "user_facing_goal": "The One Time public page should feel like the same product family as the member area, with the primary signup CTA readable and reachable on phones.",
+    "information_architecture": [
+      "Keep the public landing as the first screen.",
+      "Keep signup as the primary CTA.",
+      "Keep member login as navigation, not as a promised access grant."
+    ],
+    "visible_layout_rules": [
+      "Header remains sticky and compact.",
+      "Desktop shows public section navigation and signup CTA.",
+      "Mobile uses the existing drawer control and keeps the signup CTA in the hero clear of the bottom floating launcher."
+    ]
+  },
+  "design_pattern_references": [
+    "One Time member-area black/yellow header treatment",
+    "Existing One Time public brand tokens",
+    "Existing One Time mobile drawer behavior"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260713-001",
+      "statement": "Update the One Time bot knowledge/runtime so it does not state that portal, member, library, parent-login, or student-login access is available yet.",
+      "expected_result": "Program, signup, trial, pricing, portal, and access replies use only approved safe facts and route unknown access questions to a human.",
+      "acceptance_criteria": [
+        "Bot profile marks offer terms as not_published_for_bot.",
+        "Runtime does not say 30-day trial or $67 unless future explicit published data exists.",
+        "Runtime does not promise portal, member, library, parent-login, or student-login access.",
+        "Focused bot tests assert the safe unpublished policy."
+      ]
+    },
+    {
+      "id": "REQ-20260713-002",
+      "statement": "Revise the One Time public landing header, yellow CTA elevation, section rhythm, and mobile hero CTA clearance.",
+      "expected_result": "The /one-time header matches the member-style One Time family, CTA shadows are softer, section spacing is tighter, and the mobile hero signup CTA clears the bottom browser and launcher zone.",
+      "acceptance_criteria": [
+        "Header uses a One Time logo lockup, compact black/yellow bar, desktop section navigation, member login link, and signup CTA.",
+        "Yellow CTA buttons no longer use a heavy black slab shadow.",
+        "Public landing sections have reduced vertical padding while preserving readability.",
+        "390px and 430px screenshots prove the hero signup CTA does not overlap the WhatsApp launcher and remains above the bottom safe zone.",
+        "Public section navigation action is registered."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "met_for_bounded_slice",
+    "criteria": [
+      "Raw intake preserved at raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md.",
+      "Affected One Time public page, member header reference, bot profile, runtime, tests, and action registry were inspected.",
+      "Implementation is limited to one public landing visual slice plus one bot-knowledge guardrail.",
+      "External sends, payments, access grants, credentials, CRM broad work, and full communication-agent runtime are explicitly out of scope.",
+      "Screenshot proof requirements are defined before closeout."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/one-time",
+      "viewport": 390,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Navigate to /one-time before assets finish loading.",
+      "expected_visible_title": "One Time Mishnayos",
+      "expected_visible_message": "Initial page shell keeps brand and signup link readable.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": [
+        "Menu",
+        "Member Login"
+      ],
+      "forbidden_content": [
+        "portal access promised",
+        "30-day trial",
+        "$67"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Header and main landmarks remain present.",
+      "accessibility_expectation": "Primary CTA is reachable by keyboard and touch.",
+      "test_smoke_assertion": "Local smoke loads the page without console errors.",
+      "requirement_id": "REQ-20260713-002"
+    },
+    "empty": {
+      "route": "/one-time",
+      "viewport": 430,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Load the public landing with no user data.",
+      "expected_visible_title": "One Time Mishnayos",
+      "expected_visible_message": "Public acquisition content is visible without private data.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": [
+        "WhatsApp launcher",
+        "Member Login"
+      ],
+      "forbidden_content": [
+        "private contact data",
+        "portal access promised"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Navigation links have accessible labels.",
+      "accessibility_expectation": "CTA and menu targets meet 44px touch target guidance.",
+      "test_smoke_assertion": "Hero CTA bounding box clears launcher and bottom safe zone.",
+      "requirement_id": "REQ-20260713-002"
+    },
+    "populated": {
+      "route": "/one-time",
+      "viewport": 1440,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Load the public landing on desktop.",
+      "expected_visible_title": "Mishnayos. Gemara skill. Real accountability.",
+      "expected_visible_message": "Desktop header, section navigation, and signup CTA are visible.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": [
+        "Home",
+        "What You Receive",
+        "What He'll Gain",
+        "Rabbi Scheller",
+        "Member Login"
+      ],
+      "forbidden_content": [
+        "heavy black slab button shadow",
+        "BNA Academy header"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Header nav and main content are semantic.",
+      "accessibility_expectation": "Desktop nav links have visible focus treatment.",
+      "test_smoke_assertion": "Smoke captures 1440 screenshot and finds no console errors.",
+      "requirement_id": "REQ-20260713-002"
+    },
+    "filtered_empty": {
+      "route": "/one-time#receive",
+      "viewport": 1024,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Use a public section navigation link.",
+      "expected_visible_title": "What You Receive",
+      "expected_visible_message": "Section navigation scrolls to the expected public section.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": [
+        "Member Login"
+      ],
+      "forbidden_content": [
+        "unregistered navigation action"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Anchor navigation preserves focusable links.",
+      "accessibility_expectation": "Sticky header does not hide the section heading.",
+      "test_smoke_assertion": "Action registry covers ACTION-ONETIME-PUBLIC-SECTION-NAV.",
+      "requirement_id": "REQ-20260713-002"
+    },
+    "error": {
+      "route": "/one-time",
+      "viewport": 768,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Simulate public WhatsApp readiness fallback or missing external configuration.",
+      "expected_visible_title": "One Time Mishnayos",
+      "expected_visible_message": "Public page remains usable and signup CTA remains same-origin.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": [
+        "Member Login"
+      ],
+      "forbidden_content": [
+        "raw provider error",
+        "secret",
+        "phone number leak"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error fallback does not remove page landmarks.",
+      "accessibility_expectation": "Fallback link remains keyboard reachable.",
+      "test_smoke_assertion": "Local smoke checks public WhatsApp metadata without sending.",
+      "requirement_id": "REQ-20260713-002"
+    },
+    "blocked_setup": {
+      "route": "/one-time",
+      "viewport": 390,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Ask the bot about portal or member access.",
+      "expected_visible_title": "Rabbi Scheller's Digital Assistant",
+      "expected_visible_message": "Portal, member, library, parent-login, and student-login access are not being opened or promised yet.",
+      "expected_primary_action": "Collect signup interest",
+      "expected_secondary_actions": [
+        "Needs human"
+      ],
+      "forbidden_content": [
+        "access granted",
+        "portal is available",
+        "library is available"
+      ],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Bot UI remains readable if displayed.",
+      "accessibility_expectation": "No disabled action is presented as a real access grant.",
+      "test_smoke_assertion": "service-provider-lead-bot test rejects stale access claims.",
+      "requirement_id": "REQ-20260713-001"
+    },
+    "preview_only": {
+      "route": "/one-time",
+      "viewport": 430,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Run local screenshot smoke before deploy.",
+      "expected_visible_title": "One Time Mishnayos",
+      "expected_visible_message": "Local preview shows revised header and CTA placement.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": [
+        "WhatsApp launcher"
+      ],
+      "forbidden_content": [
+        "CTA overlapped by launcher"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview matches production semantic structure.",
+      "accessibility_expectation": "No text overlap or offscreen CTA.",
+      "test_smoke_assertion": "Smoke report records hero_cta_box and whatsapp_launcher_box.",
+      "requirement_id": "REQ-20260713-002"
+    },
+    "success_readback": {
+      "route": "/one-time",
+      "viewport": 390,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Load deployed exact SHA after release.",
+      "expected_visible_title": "One Time Mishnayos",
+      "expected_visible_message": "Deployed page returns the tested SHA and revised public page.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": [
+        "Member Login",
+        "WhatsApp launcher"
+      ],
+      "forbidden_content": [
+        "old header",
+        "heavy black slab button shadow"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Live route matches local semantic expectations.",
+      "accessibility_expectation": "Live mobile CTA remains clear of bottom overlay.",
+      "test_smoke_assertion": "app smoke validates live SHA and public landing behavior.",
+      "requirement_id": "REQ-20260713-002"
+    },
+    "permission_denied": {
+      "route": "/rabbi-member",
+      "viewport": 390,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Open member login from the public header without an authenticated member session.",
+      "expected_visible_title": "One Time Mishnayos",
+      "expected_visible_message": "Member login remains a login route, not an access promise.",
+      "expected_primary_action": "Member Login",
+      "expected_secondary_actions": [
+        "Back to public landing"
+      ],
+      "forbidden_content": [
+        "automatic access grant",
+        "class link released"
+      ],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Login link has a clear label.",
+      "accessibility_expectation": "No hidden access is implied by navigation.",
+      "test_smoke_assertion": "Canonical journey test accepts the member-style header/link.",
+      "requirement_id": "REQ-20260713-001"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time",
+      "viewport": 430,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Tap the mobile menu button.",
+      "expected_visible_title": "One Time Mishnayos",
+      "expected_visible_message": "Drawer shows public section links, member login, and signup without covering the brand state incorrectly.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": [
+        "Close menu",
+        "Member Login"
+      ],
+      "forbidden_content": [
+        "unregistered menu action",
+        "portal access promised"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Menu button exposes aria-expanded and aria-controls.",
+      "accessibility_expectation": "Drawer links remain tappable and visible.",
+      "test_smoke_assertion": "Local smoke captures drawer state at mobile width.",
+      "requirement_id": "REQ-20260713-002"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "viewport": 1440,
+        "route": "/one-time",
+        "path": "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-1440.png"
+      },
+      {
+        "viewport": 1024,
+        "route": "/one-time",
+        "path": "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-1024.png"
+      },
+      {
+        "viewport": 768,
+        "route": "/one-time",
+        "path": "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-768.png"
+      },
+      {
+        "viewport": 430,
+        "route": "/one-time",
+        "path": "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-430.png"
+      },
+      {
+        "viewport": 390,
+        "route": "/one-time",
+        "path": "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-390.png"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-HEADER-001",
+        "route": "/one-time",
+        "viewport": 1440,
+        "screenshot_before": "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/before-landing-1440.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-1440.png",
+        "defect_codes": [
+          "VQ-HEADER-001"
+        ],
+        "severity": "P2",
+        "user_impact": "Public header felt disconnected from the member-area One Time family.",
+        "expected_fix": "Use member-style logo lockup, black/yellow topbar, public section navigation, signup CTA, and member login link.",
+        "requirement_id": "REQ-20260713-002"
+      },
+      {
+        "finding_id": "VQ-SHADOW-001",
+        "route": "/one-time",
+        "viewport": 1440,
+        "screenshot_before": "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/before-landing-1440.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-1440.png",
+        "defect_codes": [
+          "VQ-SHADOW-001"
+        ],
+        "severity": "P3",
+        "user_impact": "CTA elevation looked too heavy under the yellow brand buttons.",
+        "expected_fix": "Remove the black slab shadow and keep a softer elevation/glow.",
+        "requirement_id": "REQ-20260713-002"
+      },
+      {
+        "finding_id": "VQ-SPACING-001",
+        "route": "/one-time",
+        "viewport": 1024,
+        "screenshot_before": "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/before-landing-1440.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-1024.png",
+        "defect_codes": [
+          "VQ-SPACING-001"
+        ],
+        "severity": "P3",
+        "user_impact": "Section rhythm had more vertical air than requested for the revised page.",
+        "expected_fix": "Reduce section and final CTA padding slightly while keeping readable hierarchy.",
+        "requirement_id": "REQ-20260713-002"
+      },
+      {
+        "finding_id": "VQ-MOBILE-001",
+        "route": "/one-time",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/before-landing-390.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-390.png",
+        "defect_codes": [
+          "VQ-MOBILE-001"
+        ],
+        "severity": "P2",
+        "user_impact": "Hero signup CTA could sit too low on phone viewports.",
+        "expected_fix": "Raise the hero CTA and verify it clears the bottom chrome/launcher zone.",
+        "requirement_id": "REQ-20260713-002"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Public header has an accessible brand home link.",
+      "Mobile menu control keeps aria-expanded and aria-controls state.",
+      "CTA and navigation touch targets stay at least 44px tall.",
+      "Focus-visible treatment remains visible for links and buttons.",
+      "Text does not overlap or clip on 390px and 430px widths."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Sign Up Now",
+      "selector_or_action_key": "ACTION-ONETIME-JOIN-SHIR-CTA",
+      "action_state": "WORKS_NOW",
+      "owner": "BNA platform",
+      "external_write": false,
+      "handler_or_blocker": "same-origin navigation to /one-time/signup",
+      "registry_required": true
+    },
+    {
+      "label": "Member Login",
+      "selector_or_action_key": "ACTION-ONETIME-MEMBER-LOGIN-LINK",
+      "action_state": "WORKS_NOW",
+      "owner": "BNA platform",
+      "external_write": false,
+      "handler_or_blocker": "same-origin navigation to /rabbi-member",
+      "registry_required": true
+    },
+    {
+      "label": "Public section navigation",
+      "selector_or_action_key": "ACTION-ONETIME-PUBLIC-SECTION-NAV",
+      "action_state": "WORKS_NOW",
+      "owner": "BNA platform",
+      "external_write": false,
+      "handler_or_blocker": "same-page anchor navigation",
+      "registry_required": true
+    },
+    {
+      "label": "WhatsApp launcher",
+      "selector_or_action_key": "ACTION-ONETIME-PUBLIC-WHATSAPP",
+      "action_state": "WORKS_NOW",
+      "owner": "BNA platform",
+      "external_write": false,
+      "handler_or_blocker": "same-origin redirect/readiness endpoint; no server-side send",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "public_page_data": [
+      "No private CRM or contact data is required for /one-time.",
+      "Logo asset is served from /images/one-time/brand/onetimelogo.webp.",
+      "Signup links remain same-origin."
+    ],
+    "bot_data": [
+      "Offer terms remain unpublished for bot use unless future explicit operator approval changes them.",
+      "Portal/member/library/access status is represented as not currently granted."
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "private_data_policy": "The public landing must not expose contact records, message bodies, class links, secrets, provider tokens, or member-only data.",
+    "access_policy": "No access grant or class-link release is part of this packet."
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260713-001",
+      "scope": "One Time public landing visual correction and bot access-fact guardrail.",
+      "instructions": [
+        "Apply a member-style public header treatment on /one-time.",
+        "Replace heavy yellow CTA slab shadow with softer elevation.",
+        "Reduce landing section vertical padding slightly.",
+        "Raise mobile hero CTA and assert no overlap with WhatsApp launcher or bottom safe zone.",
+        "Update bot knowledge/runtime so portal/member/library access is not promised."
+      ],
+      "verification": [
+        "Focused node tests",
+        "Local One Time landing Playwright smoke and screenshots",
+        "Action registry watchdog",
+        "PQC validation",
+        "Protocol drift watchdog",
+        "Deployment and live smoke before Done"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "small_focused_slice",
+    "source_files_to_read": [
+      "public/one-time/index.html",
+      "public/rabbi-member.html",
+      "config/service-provider-bots/one-time.json",
+      "src/lib/bna/provider-lead-bot.js",
+      "ops/action-registry.json"
+    ],
+    "files_allowed_to_edit": [
+      "public/one-time/index.html",
+      "config/service-provider-bots/one-time.json",
+      "src/lib/bna/provider-lead-bot.js",
+      "tests/service-provider-lead-bot.test.js",
+      "tests/one-time-canonical-journey.test.js",
+      "tests/one-time-shared-review-branding.test.js",
+      "scripts/smoke-onetime-landing-whatsapp-local.mjs",
+      "ops/action-registry.json",
+      "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json"
+    ],
+    "max_files_to_edit": 9,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "A broader CRM/Agents launch remains split into the active addendum; this packet is only a deployable One Time landing/bot guardrail slice.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate -- tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json",
+      "expected_result": "Focused product-quality packet validates."
+    },
+    {
+      "command": "node --check src/lib/bna/provider-lead-bot.js",
+      "expected_result": "Bot runtime syntax is valid."
+    },
+    {
+      "command": "node --test tests/service-provider-lead-bot.test.js tests/one-time-focused-landing.test.js tests/one-time-canonical-journey.test.js tests/one-time-brand-helper-isolation.test.js tests/one-time-shared-review-branding.test.js",
+      "expected_result": "Focused One Time bot and landing tests pass."
+    },
+    {
+      "command": "node scripts/smoke-onetime-landing-whatsapp-local.mjs",
+      "expected_result": "Local browser smoke passes and captures 1440/1024/768/430/390 screenshots plus CTA/launcher boxes."
+    },
+    {
+      "command": "npm run watchdog:actions",
+      "expected_result": "Visible actions are covered by the action registry."
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "expected_result": "Protocol drift report is recorded before closeout."
+    }
+  ],
+  "evidence": {
+    "local_smoke_report": "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md",
+    "local_smoke_json": "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.json",
+    "screenshots": [
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-1440.png",
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-1024.png",
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-768.png",
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-430.png",
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-390.png"
+    ],
+    "focused_tests": "node --test tests/service-provider-lead-bot.test.js tests/one-time-focused-landing.test.js tests/one-time-canonical-journey.test.js tests/one-time-brand-helper-isolation.test.js tests/one-time-shared-review-branding.test.js",
+    "action_watchdog": "ops/watchdog-audits/2026-07-12T22-01-watchdog-action-audit.md",
+    "live_evidence_status": "pending_commit_push_deploy_live_smoke"
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Focused tests pass.",
+      "Local smoke captures required desktop/tablet/mobile screenshots and CTA/launcher box proof.",
+      "Action watchdog and protocol drift watchdog run.",
+      "Exact tested SHA is committed, pushed, deployed, and live-smoked.",
+      "Execution run evidence, ledger, and changelog record the deployed SHA and any remaining blockers.",
+      "Full shared CRM and communication-agent addendum remains open after this focused slice."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md",
+    "compiled_packet_path": "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "local tests",
+      "local browser smoke",
+      "commit",
+      "push",
+      "deploy",
+      "live smoke"
+    ],
+    "skipped_actions_policy": [
+      "No WhatsApp send.",
+      "No Telegram send.",
+      "No email send.",
+      "No access grant.",
+      "No payment/account/DNS/credential mutation."
+    ],
+    "blocker_decisions": [],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md",
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.json"
+    ],
+    "final_status_path": "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md",
+    "next_packet_path": "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "Report generated and any scoped drift finding mapped before closeout."
+  },
+  "next_packet": "Continue the active shared CRM and communication-agent addendum, especially full channel-independent communication-agent model and live WAPI/Resend convergence proof.",
+  "app_visible": true
+}

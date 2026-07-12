@@ -181,6 +181,28 @@ function currentLearningText(dynamicKnowledge = {}) {
   return parts.join(', ');
 }
 
+function providerLeadBotOfferPublished(profile = {}) {
+  const status = compactText(profile.offer?.status || 'published', 80).toLowerCase();
+  return ['published', 'approved', 'active'].includes(status)
+    && Number(profile.offer?.trial_days) > 0
+    && Number(profile.offer?.renewal?.amount) > 0
+    && !/not[_ -]?published|unknown|pending/i.test(String(profile.offer?.renewal?.cadence || ''));
+}
+
+function providerLeadBotOfferText(profile = {}) {
+  if (providerLeadBotOfferPublished(profile)) {
+    return `${profile.offer.trial_days}-day trial, then $${profile.offer.renewal.amount} per ${profile.offer.renewal.cadence}`;
+  }
+  return compactText(
+    profile.offer?.safe_summary,
+    500
+  ) || 'Trial terms, pricing, renewal, payment flow, and access are being confirmed; do not guess.';
+}
+
+function providerLeadBotAccessPolicyText(profile = {}) {
+  return compactText(profile.knowledge_base?.access_policy?.safe_public_answer, 500);
+}
+
 function mergedCaptureState(profile, contact = {}, capturedFields = {}) {
   const previous = contact.bot_state && typeof contact.bot_state === 'object' ? contact.bot_state : {};
   const stored = previous.captured_fields && typeof previous.captured_fields === 'object' ? previous.captured_fields : {};
@@ -217,7 +239,9 @@ function renderProviderLeadBotReply({ profile, intent, capture, dynamicKnowledge
   const subtitle = profile.identity.assistant_subtitle;
   const signupUrl = sameOriginLink(publicBaseUrl, profile.knowledge_base?.links?.signup?.path || '/one-time#start-free');
   const offer = profile.offer || {};
-  const price = offer.renewal || {};
+  const offerPublished = providerLeadBotOfferPublished(profile);
+  const offerText = providerLeadBotOfferText(profile);
+  const accessPolicyText = providerLeadBotAccessPolicyText(profile);
   const schedule = formatDynamicSchedule(dynamicKnowledge);
   const learning = currentLearningText(dynamicKnowledge);
   const classLinkAllowed = providerLeadBotClassLinkAllowed(profile, accessState, classJoinUrl);
@@ -235,7 +259,8 @@ function renderProviderLeadBotReply({ profile, intent, capture, dynamicKnowledge
   if (intent === 'signup_or_trial_start') {
     if (capture.complete) return `Thanks, I saved those details for the One Time team to verify. You can also review the signup page here: ${signupUrl}`;
     const prompt = profile.lead_capture?.field_prompts?.[capture.awaiting_field] || 'What parent contact detail should we use?';
-    return `Great, I can help start the ${offer.trial_days}-day trial. After that it is $${price.amount}/${price.cadence}. ${prompt}`;
+    if (offerPublished) return `Great, I can help start the ${offer.trial_days}-day trial. After that it is $${offer.renewal.amount}/${offer.renewal.cadence}. ${prompt}`;
+    return `Great, I can help pass your signup details to the One Time team. ${prompt}`;
   }
   if (intent === 'schedule') {
     return schedule || `I don't have the confirmed class time in front of me, so I won't guess. I asked the One Time team to confirm the current schedule.`;
@@ -243,9 +268,11 @@ function renderProviderLeadBotReply({ profile, intent, capture, dynamicKnowledge
   if (intent === 'current_learning') {
     return learning ? `The current approved learning is ${learning}.` : `I don't want to guess the current masechta. I asked Rabbi Scheller's team to confirm it.`;
   }
-  if (intent === 'price_or_trial') return `The introductory trial is ${offer.trial_days} days. After that, the approved price is $${price.amount} per ${price.cadence}. The bot does not charge or activate access.`;
+  if (intent === 'price_or_trial') return `${offerText} The bot does not charge, create checkout, or activate access.`;
   if (intent === 'program_benefits') {
-    return `The program includes ${profile.knowledge_base.approved_benefits.join('; ')}. Want help starting the ${offer.trial_days}-day trial?`;
+    const accessNote = accessPolicyText ? ` ${accessPolicyText}` : '';
+    const nextStep = offerPublished ? `Want help starting the ${offer.trial_days}-day trial?` : 'Want me to collect safe signup details for the One Time team?';
+    return `Approved facts: ${profile.knowledge_base.approved_benefits.join('; ')}.${accessNote} ${nextStep}`;
   }
   if (intent === 'greeting') return `Hi, I'm ${name}, ${subtitle}. I can explain the class, help with the trial, or pass a question to Rabbi Scheller. What would you like to know?`;
   return `Thanks, I got your message. I'm ${name}, ${subtitle}. Are you asking about joining, the schedule, the current Mishnah, or a question for Rabbi Scheller?`;
@@ -337,6 +364,7 @@ function buildProviderLeadBotPlan({
       deterministic_natural_reply: true,
       no_charge: true,
       no_access_grant: true,
+      portal_access_not_granted_by_bot: true,
       no_raw_link_in_metadata: true,
       no_raw_link_in_persisted_reply_body: true,
       class_link_requires_active_member: true,
@@ -350,12 +378,18 @@ function buildProviderLeadBotSystemPrompt(profile, dynamicKnowledge = {}) {
   if (!validation.valid) throw new Error(`Invalid provider lead-bot profile: ${validation.errors.join('; ')}`);
   const schedule = formatDynamicSchedule(dynamicKnowledge) || 'Schedule is not currently confirmed; do not guess.';
   const learning = currentLearningText(dynamicKnowledge) || 'Current learning is not currently confirmed; do not guess.';
+  const offerPublished = providerLeadBotOfferPublished(selectedProfile);
+  const offerLine = offerPublished
+    ? `Approved offer: ${selectedProfile.offer.trial_days}-day trial, then $${selectedProfile.offer.renewal.amount} per ${selectedProfile.offer.renewal.cadence}.`
+    : `Offer terms: ${providerLeadBotOfferText(selectedProfile)} Do not state a trial length, price, renewal term, payment flow, portal availability, library availability, or member access as an approved fact.`;
+  const accessPolicy = providerLeadBotAccessPolicyText(selectedProfile);
   return [
     `Identity: ${selectedProfile.identity.assistant_name}, ${selectedProfile.identity.assistant_subtitle}.`,
     `Personality: ${selectedProfile.personality.tone.join(', ')}.`,
     `Goals: ${[...selectedProfile.goals].sort((a, b) => a.priority - b.priority).map((goal) => goal.instruction).join(' ')}`,
-    `Approved offer: ${selectedProfile.offer.trial_days}-day trial, then $${selectedProfile.offer.renewal.amount} per ${selectedProfile.offer.renewal.cadence}.`,
+    offerLine,
     `Approved benefits: ${selectedProfile.knowledge_base.approved_benefits.join('; ')}.`,
+    accessPolicy ? `Access policy: ${accessPolicy}` : 'Access policy: do not promise or grant portal, library, member, parent-login, or student-login access.',
     `Dynamic schedule: ${schedule}`,
     `Dynamic current learning: ${learning}`,
     `Boundaries: ${selectedProfile.personality.boundaries.join(' ')}`,

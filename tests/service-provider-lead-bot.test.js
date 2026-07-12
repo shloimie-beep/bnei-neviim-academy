@@ -23,10 +23,13 @@ test('One Time provider-bot profile has explicit GHL-style sections without priv
   assert.equal(profile.identity.may_impersonate_owner, false);
   assert.ok(profile.personality.tone.includes('warm'));
   assert.ok(profile.goals.length >= 5);
-  assert.equal(profile.offer.trial_days, 30);
-  assert.equal(profile.offer.renewal.amount, 67);
-  assert.ok(profile.knowledge_base.approved_benefits.some((item) => /parent portal/i.test(item)));
-  assert.ok(profile.knowledge_base.approved_benefits.some((item) => /accountability/i.test(item)));
+  assert.equal(profile.offer.status, 'not_published_for_bot');
+  assert.equal(profile.offer.trial_days, 0);
+  assert.equal(profile.offer.renewal.amount, 0);
+  assert.ok(profile.knowledge_base.approved_benefits.some((item) => /live hybrid Mishnayos/i.test(item)));
+  assert.ok(profile.knowledge_base.approved_benefits.every((item) => !/parent portal|student portal|library|accountability/i.test(item)));
+  assert.equal(profile.knowledge_base.access_policy.portal_access_status, 'not_currently_granted');
+  assert.match(profile.knowledge_base.access_policy.safe_public_answer, /not being opened or promised yet/i);
   assert.equal(profile.policies.activation_mode, 'observe_only');
   assert.equal(schema.$id, 'bna.provider_lead_bot.v1');
   assert.equal(site.lead_bot.profile_key, profile.profile_key);
@@ -57,6 +60,7 @@ test('signup flow asks one missing question at a time and never claims enrollmen
   assert.equal(first.intent, 'signup_or_trial_start');
   assert.equal(first.capture.awaiting_field, 'parent_email');
   assert.match(first.reply_body, /What email/i);
+  assert.doesNotMatch(first.reply_body, /30-day|\$67|per month/i);
   assert.doesNotMatch(first.reply_body, /you are enrolled|membership is active/i);
   assert.deepEqual(first.route_aliases, ['one_time_rabbi_operator']);
 
@@ -199,6 +203,28 @@ test('natural WhatsApp replies stay deterministic and safety-gated', () => {
   assert.doesNotMatch(blockedLink.reply_body, /private\.example\.invalid/);
 });
 
+test('program, portal, trial, and price replies use only safe unpublished bot facts', () => {
+  const benefits = buildProviderLeadBotPlan({
+    profile,
+    message: 'Do we get a parent portal and library?',
+    contact: { contact_type: 'lead', lead_id: 19 },
+  });
+  assert.equal(benefits.intent, 'program_benefits');
+  assert.match(benefits.reply_body, /Portal, library, student-login, parent-login, and member access are not being opened or promised yet/);
+  assert.doesNotMatch(benefits.reply_body, /A parent portal and a student portal|Online class library|30-day|\$67/i);
+  assert.equal(benefits.guardrails.portal_access_not_granted_by_bot, true);
+
+  const price = buildProviderLeadBotPlan({
+    profile,
+    message: 'How much is it after the trial?',
+    contact: { contact_type: 'lead', lead_id: 19 },
+  });
+  assert.equal(price.intent, 'price_or_trial');
+  assert.match(price.reply_body, /Trial terms, renewal pricing, payment flow, portal access, library access, and member access are not currently approved facts/i);
+  assert.match(price.reply_body, /does not charge, create checkout, or activate access/i);
+  assert.doesNotMatch(price.reply_body, /30-day|\$67|per month/i);
+});
+
 test('tech routes only to platform support, Torah routes to Rabbi, and opt-out suppresses all replies', () => {
   const tech = buildProviderLeadBotPlan({
     profile,
@@ -240,8 +266,10 @@ test('natural-language prompt is knowledge-scoped and never receives the raw joi
     current_learning: { masechta: 'Example Masechta' },
   });
   assert.match(prompt, /Robot Scheller/);
-  assert.match(prompt, /30-day trial/);
-  assert.match(prompt, /\$67/);
+  assert.match(prompt, /Offer terms:/);
+  assert.match(prompt, /Do not state a trial length, price, renewal term, payment flow, portal availability, library availability, or member access as an approved fact/);
+  assert.match(prompt, /Portal, library, student-login, parent-login, and member access are not being opened or promised yet/);
+  assert.doesNotMatch(prompt, /30-day trial|\$67/);
   assert.match(prompt, /may not authorize a send/i);
   assert.doesNotMatch(prompt, /server_secret_alias|ONE_TIME_WHATSAPP_CLASS_LINK|zoom\.us/i);
 });

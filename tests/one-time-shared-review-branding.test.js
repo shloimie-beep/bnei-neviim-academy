@@ -185,9 +185,10 @@ test('One Time static chrome keeps footer, active nav, and compact helper covera
   }
 
   const landing = fs.readFileSync('public/one-time/index.html', 'utf8');
-  assert.match(landing, /\.brand-lockup img \{\s*width: 132px;/);
-  assert.match(landing, /\.site-nav a \{\s*padding: 10px 0;/);
+  assert.match(landing, /\.brand-lockup img \{[\s\S]*width: 56px;[\s\S]*height: 56px;/);
+  assert.match(landing, /\.site-nav a \{[\s\S]*min-height: 44px;[\s\S]*padding: 9px 11px;/);
   assert.match(landing, /\.site-nav a:hover,\s*\.site-nav a:focus-visible/);
+  assert.match(landing, /data-action-id="ACTION-ONETIME-PUBLIC-SECTION-NAV"/);
 
   const member = fs.readFileSync('public/rabbi-member.html', 'utf8');
   assert.match(member, /\.member-brand-lockup img \{\s*width: 56px;\s*height: 56px;/);

@@ -474,21 +474,32 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "not_started",
-      "implementation_status": "missing",
-      "can_continue_without_operator": true,
-      "next_action": "Continue REQ-20260712-310 after dependent earlier batches are validated.",
+    "status": "in_progress",
+    "implementation_status": "Partial local verification completed for the existing WhatsApp provider-bot profile/runtime: stale portal/member/library/trial/pricing claims are no longer bot-published, access facts are marked not currently granted, and the deterministic replies/system prompt avoid the old 30-day/$67 bot claims unless a future profile explicitly publishes them. Full channel-independent WhatsApp/email agent versioning remains open.",
+    "can_continue_without_operator": true,
+    "next_action": "Commit, push, deploy exact tested SHA for this bot-knowledge slice, live-readback One Time, then continue the full shared WhatsApp/email communication-agent knowledge bundle and channel bindings.",
       "acceptance_criteria": [
         "One published agent version and knowledge snapshot power One Time WhatsApp and inbound email with channel-specific formatting and no stale claims."
       ],
-      "evidence": [],
-      "verification": [],
+    "evidence": [
+      "raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md",
+      "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md",
+      "config/service-provider-bots/one-time.json version 2026-07-13-v1",
+      "src/lib/bna/provider-lead-bot.js unpublished-offer/access-policy runtime gates",
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md"
+    ],
+    "verification": [
+      "node --test tests\\service-provider-lead-bot.test.js tests\\one-time-focused-landing.test.js tests\\one-time-canonical-journey.test.js tests\\one-time-brand-helper-isolation.test.js tests\\one-time-shared-review-branding.test.js PASS 33/33",
+      "node scripts\\smoke-onetime-landing-whatsapp-local.mjs PASS",
+      "npm run watchdog:actions PASS finding_count 0",
+      "git diff --check PASS with line-ending warnings only"
+    ],
       "implementation_files": [
         "config/service-provider-bots/one-time.json",
         "src/lib/bna/provider-lead-bot.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:18:00+03:00",
+    "updated_at": "2026-07-13T01:02:00+03:00",
       "blocker": ""
     },
     {

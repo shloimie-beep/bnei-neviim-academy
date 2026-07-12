@@ -125,6 +125,31 @@ async function assertLauncher(page) {
   assert.match(await launcher.getAttribute('aria-label'), /Open WhatsApp/i);
   const box = await launcher.boundingBox();
   assert.ok(box && box.width >= 44 && box.height >= 44, `launcher target should be at least 44px, got ${JSON.stringify(box)}`);
+  return box;
+}
+
+function boxesOverlap(a, b) {
+  if (!a || !b) return false;
+  return a.x < b.x + b.width
+    && a.x + a.width > b.x
+    && a.y < b.y + b.height
+    && a.y + a.height > b.y;
+}
+
+async function assertHeroCtaClear(page, launcherBox) {
+  const cta = page.locator('.hero-cta').first();
+  assert.equal(await cta.count(), 1, 'landing should render exactly one hero CTA');
+  const ctaBox = await cta.boundingBox();
+  assert.ok(ctaBox && ctaBox.width >= 44 && ctaBox.height >= 44, `hero CTA should have a usable target, got ${JSON.stringify(ctaBox)}`);
+  assert.equal(boxesOverlap(ctaBox, launcherBox), false, `hero CTA should not overlap WhatsApp launcher: ${JSON.stringify({ ctaBox, launcherBox })}`);
+  const viewport = page.viewportSize();
+  if (viewport && viewport.width <= 430) {
+    assert.ok(
+      ctaBox.y + ctaBox.height < viewport.height - 160,
+      `mobile hero CTA should sit above the bottom browser/launcher zone: ${JSON.stringify({ ctaBox, viewport })}`
+    );
+  }
+  return ctaBox;
 }
 
 async function run() {
@@ -182,7 +207,8 @@ async function run() {
 
     await page.goto(`${baseUrl}${item.path}`, { waitUntil: 'domcontentloaded' });
     await waitForText(page, 'Give your son a love for learning Torah');
-    await assertLauncher(page);
+    const launcherBox = await assertLauncher(page);
+    const heroCtaBox = await assertHeroCtaClear(page, launcherBox);
     const pageHtml = await page.content();
     assert.doesNotMatch(pageHtml, /bna-helper-knowledge\.js|bna-bot-widget\.js|Robot Scheller|https:\/\/wa\.me\//);
 
@@ -196,7 +222,7 @@ async function run() {
     const screenshotName = `${item.id}.png`;
     await page.screenshot({ path: path.join(outDir, screenshotName), fullPage: true });
     assert.deepEqual(httpErrors, [], `${item.id} should not load missing local assets or API routes`);
-    results.push({ ...item, screenshot: screenshotName, console_errors: consoleErrors, http_errors: httpErrors });
+    results.push({ ...item, screenshot: screenshotName, hero_cta_box: heroCtaBox, whatsapp_launcher_box: launcherBox, console_errors: consoleErrors, http_errors: httpErrors });
     await page.close();
   }
 
@@ -229,6 +255,7 @@ async function run() {
     '- PASS /one-time renders one direct WhatsApp launcher at 1440, 1024, 768, 430, and 390 widths.',
     '- PASS no bna-helper-knowledge.js, bna-bot-widget.js, Robot Scheller asset, or hard-coded wa.me link appears on the served landing page.',
     '- PASS launcher uses /api/one-time/public-whatsapp/redirect?intent=free_class and has accessible labeling plus 44px+ target size.',
+    '- PASS hero CTA is accessible, above the mobile bottom safe zone, and does not overlap the WhatsApp launcher.',
     '- PASS readiness returns no full number and no_send/no_external_write metadata; redirect uses only a smoke fake number.',
     '- PASS no POST/write requests occurred.',
     '',

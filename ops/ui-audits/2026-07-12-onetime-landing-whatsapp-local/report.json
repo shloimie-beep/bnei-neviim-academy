@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-12T18:08:47.882Z",
-  "base_url": "http://127.0.0.1:53050",
+  "generated_at": "2026-07-12T22:12:05.756Z",
+  "base_url": "http://127.0.0.1:50149",
   "requirement_id": "REQ-20260712-109",
   "fake_whatsapp_number_used": true,
   "full_number_returned_by_readiness": false,
@@ -20,6 +20,18 @@
       "height": 960,
       "path": "/one-time",
       "screenshot": "landing-whatsapp-1440.png",
+      "hero_cta_box": {
+        "x": 130,
+        "y": 750.1416625976562,
+        "width": 129.8125,
+        "height": 48
+      },
+      "whatsapp_launcher_box": {
+        "x": 1358,
+        "y": 878,
+        "width": 64,
+        "height": 64
+      },
       "console_errors": [],
       "http_errors": []
     },
@@ -29,6 +41,18 @@
       "height": 900,
       "path": "/one-time",
       "screenshot": "landing-whatsapp-1024.png",
+      "hero_cta_box": {
+        "x": 18,
+        "y": 628.938232421875,
+        "width": 129.8125,
+        "height": 48
+      },
+      "whatsapp_launcher_box": {
+        "x": 942,
+        "y": 818,
+        "width": 64,
+        "height": 64
+      },
       "console_errors": [],
       "http_errors": []
     },
@@ -38,6 +62,18 @@
       "height": 1024,
       "path": "/one-time",
       "screenshot": "landing-whatsapp-768.png",
+      "hero_cta_box": {
+        "x": 18,
+        "y": 666.1251831054688,
+        "width": 129.8125,
+        "height": 48
+      },
+      "whatsapp_launcher_box": {
+        "x": 686,
+        "y": 942,
+        "width": 64,
+        "height": 64
+      },
       "console_errors": [],
       "http_errors": []
     },
@@ -48,6 +84,18 @@
       "path": "/one-time",
       "openMenu": true,
       "screenshot": "landing-whatsapp-430.png",
+      "hero_cta_box": {
+        "x": 14,
+        "y": 623.158203125,
+        "width": 129.8125,
+        "height": 47.99993896484375
+      },
+      "whatsapp_launcher_box": {
+        "x": 348,
+        "y": 778,
+        "width": 64,
+        "height": 64
+      },
       "console_errors": [],
       "http_errors": []
     },
@@ -57,6 +105,18 @@
       "height": 844,
       "path": "/one-time",
       "screenshot": "landing-whatsapp-390.png",
+      "hero_cta_box": {
+        "x": 14,
+        "y": 607.157958984375,
+        "width": 129.8125,
+        "height": 48
+      },
+      "whatsapp_launcher_box": {
+        "x": 318,
+        "y": 772,
+        "width": 58,
+        "height": 58
+      },
       "console_errors": [],
       "http_errors": []
     }

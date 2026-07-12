@@ -60,3 +60,9 @@
 - As of 2026-07-12, Rabbi Telegram token/chat/ops runtime config is present by
   readiness check. Live Telegram-send proof still requires an exact scoped send
   approval and recorded no-secret evidence.
+- As of 2026-07-13, the One Time WhatsApp bot knowledge/runtime must not say
+  that portal, member-area, library, parent-login, or student-login access is
+  being granted yet. Pricing/trial placeholders may remain internal product
+  configuration, but the bot may not publish trial, renewal, portal, library,
+  or member-access claims unless a newer explicit access/product decision
+  publishes them.

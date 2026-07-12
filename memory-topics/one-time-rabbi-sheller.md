@@ -53,6 +53,11 @@
   cards. Non-actionable Super Admin/configuration/readiness cards such as
   "configured" or "not configured" belong in Super Admin/support surfaces or a
   role-gated support drawer, not the normal Rabbi provider view.
+- As of 2026-07-13, the One Time WhatsApp bot knowledge/runtime must not claim
+  portal, member-area, library, parent-login, or student-login access is
+  available or being granted yet. Unknown or unpublished access, trial, renewal,
+  pricing, portal, and library facts should be represented as unapproved and
+  routed safely rather than phrased as program promises.
 - The next UI cleanup work must start with `00-control-tower` and
   `01-current-state-visual-audit`, then split into focused implementation
   packets after audit and Definition of Ready.
