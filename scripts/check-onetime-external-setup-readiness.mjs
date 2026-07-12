@@ -249,6 +249,22 @@ function redactedVariableSummary(variables = {}, { source, service, environment,
       variables.WAPI_PHONE ||
       variables.BNA_WHATSAPP_NUMBER,
     )),
+    one_time_wapi_webhook_secret_present: Boolean(normalizeValue(
+      variables.ONE_TIME_WAPI_WEBHOOK_SECRET ||
+      variables.ONETIME_WAPI_WEBHOOK_SECRET ||
+      variables.RABBI_SHELLER_WAPI_WEBHOOK_SECRET ||
+      variables.RABBI_SCHELLER_WAPI_WEBHOOK_SECRET ||
+      variables.WAPI_WEBHOOK_SECRET,
+    )),
+    one_time_wapi_auto_reply_enabled_true: /^(?:1|true|yes|live)$/i.test(normalizeValue(
+      variables.ONE_TIME_WAPI_AUTO_REPLY_ENABLED,
+    )),
+    one_time_wapi_auto_reply_confirm_approved:
+      normalizeValue(variables.ONE_TIME_WAPI_AUTO_REPLY_CONFIRM) === 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY',
+    one_time_provider_lead_bot_mode_live:
+      normalizeValue(variables.ONE_TIME_PROVIDER_LEAD_BOT_MODE).toLowerCase() === 'live',
+    one_time_provider_lead_bot_telegram_confirm_approved:
+      normalizeValue(variables.ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM) === 'APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM',
     vimeo_access_token_present: Boolean(normalizeValue(
       variables.VIMEO_ACCESS_TOKEN ||
       variables.ONE_TIME_VIMEO_ACCESS_TOKEN_ALIAS,
@@ -676,7 +692,17 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
 
   const whapiToken = configuredFromEnvOrSecret(
     env,
-    ['WHAPI_TOKEN', 'WAPI_API_KEY', 'WHAPI_API_TOKEN', 'WAPI_API_TOKEN', 'ONE_TIME_WHAPI_TOKEN_ALIAS'],
+    [
+      'ONE_TIME_WAPI_API_TOKEN',
+      'ONETIME_WAPI_API_TOKEN',
+      'RABBI_SHELLER_WAPI_API_TOKEN',
+      'RABBI_SCHELLER_WAPI_API_TOKEN',
+      'WHAPI_TOKEN',
+      'WAPI_API_KEY',
+      'WHAPI_API_TOKEN',
+      'WAPI_API_TOKEN',
+      'ONE_TIME_WHAPI_TOKEN_ALIAS',
+    ],
     [
       {
         envName: 'WHAPI_API_TOKEN',
@@ -702,7 +728,7 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
   );
   const whapiPhone = configuredFromEnvOrSecret(
     env,
-    ['ONE_TIME_WHAPI_PHONE', 'WHAPI_PHONE', 'WAPI_PHONE', 'BNA_WHATSAPP_NUMBER'],
+    ['ONE_TIME_WHAPI_PHONE', 'ONE_TIME_WAPI_PHONE', 'WHAPI_PHONE', 'WAPI_PHONE', 'BNA_WHATSAPP_NUMBER'],
     [
       {
         envName: 'ONE_TIME_WHAPI_PHONE',
@@ -713,6 +739,15 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
     repoRoot,
     inspectKeyholder,
   );
+  const whapiTokenReady =
+    whapiToken.configured ||
+    railway.current_variables?.one_time_wapi_token_present === true;
+  const whapiInstanceReady =
+    whapiInstance.configured ||
+    railway.current_variables?.one_time_whapi_instance_present === true;
+  const whapiPhoneReady =
+    whapiPhone.configured ||
+    railway.current_variables?.one_time_whapi_phone_present === true;
 
   const items = [
     makeItem({
@@ -827,11 +862,22 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
     makeItem({
       id: 'SETUP-ONETIME-WHAPI-001',
       title: 'Whapi/WAPI provider details',
-      ready: whapiToken.configured && whapiInstance.configured && whapiPhone.configured,
+      ready: whapiTokenReady && whapiInstanceReady && whapiPhoneReady,
       missing: [
-        whapiToken.configured ? '' : 'whapi_wapi_token_alias',
-        whapiInstance.configured ? '' : 'whapi_wapi_instance_id',
-        whapiPhone.configured ? '' : 'whapi_wapi_phone_number',
+        whapiTokenReady ? '' : 'whapi_wapi_token_alias',
+        whapiInstanceReady ? '' : 'whapi_wapi_instance_id',
+        whapiPhoneReady ? '' : 'whapi_wapi_phone_number',
+      ],
+      warnings: [
+        !whapiToken.configured && whapiTokenReady
+          ? 'WAPI token is present by redacted One Time Railway readback; raw credential is not written to evidence.'
+          : '',
+        !whapiInstance.configured && whapiInstanceReady
+          ? 'Whapi/WAPI instance id is present by redacted One Time Railway readback; raw value is not written to evidence.'
+          : '',
+        !whapiPhone.configured && whapiPhoneReady
+          ? 'Whapi/WAPI phone metadata is present by redacted One Time Railway readback; raw phone is not written to evidence.'
+          : '',
       ],
       verification: ['safe test send only in later exact packet'],
     }),

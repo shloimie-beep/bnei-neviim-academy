@@ -1,6 +1,6 @@
 {
   "success": true,
-  "checked_at": "2026-07-12T11:21:56.219Z",
+  "checked_at": "2026-07-12T18:33:41.405Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "external_write_performed": false,
@@ -12,65 +12,62 @@
     "configured": true,
     "credential_scope": "one_time_scoped",
     "one_time_token_present": true,
-    "default_token_present": false,
+    "default_token_present": true,
     "one_time_token_source": ".secrets",
-    "default_token_source": "not configured",
+    "default_token_source": ".secrets",
     "base_url_configured": true,
-    "base_url_source": "env",
+    "base_url_source": "default",
     "railway_readback": {
       "attempted": true,
       "ok": true,
-      "source": "railway_token_or_env",
-      "key_count": 60,
+      "source": "railway_cli_session_fallback",
+      "key_count": 73,
       "class_link_present": true,
       "instance_id_present": true,
-      "phone_metadata_present": true
+      "phone_metadata_present": true,
+      "webhook_secret_present": true,
+      "auto_reply_enabled": true,
+      "auto_reply_confirm_approved": true,
+      "provider_bot_mode_live": true,
+      "telegram_confirm_approved": false
     }
   },
   "provider_setup": {
     "ready": true,
     "instance_id_present": true,
-    "instance_id_source": "env",
+    "instance_id_source": "railway_cli_session_fallback:one_time_whapi_instance_present",
     "phone_metadata_present": true,
-    "phone_metadata_source": "env",
+    "phone_metadata_source": "railway_cli_session_fallback:one_time_whapi_phone_present",
     "blockers": []
   },
   "auto_reply": {
-    "ready": false,
-    "enabled": false,
-    "approved": false,
+    "ready": true,
+    "enabled": true,
+    "approved": true,
     "class_link_configured": true,
-    "class_link_source": "railway_token_or_env:one_time_class_link_present",
+    "class_link_source": "railway_cli_session_fallback:one_time_class_link_present",
     "credential_scope": "one_time_scoped",
     "provider_bot_profile": "one_time_whatsapp_lead_bot",
     "provider_bot_profile_version": "2026-07-10-v1",
     "provider_bot_profile_valid": true,
-    "provider_bot_mode": "observe_only",
+    "provider_bot_mode": "live",
     "webhook_secret_present": true,
     "webhook_header_auth_only_required": true,
     "instance_binding_required": true,
     "destination_number_binding_required": true,
     "telegram_notifications_approved": false,
-    "blockers": [
-      "ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled",
-      "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY",
-      "ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live"
-    ],
+    "blockers": [],
     "copy_version": "2026-07-10-v1"
   },
   "telegram_notifications": {
     "ready": false,
     "approved": false,
-    "provider_bot_mode": "observe_only",
+    "provider_bot_mode": "live",
     "blockers": [
-      "ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live",
       "ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM"
     ]
   },
   "required_next_actions": [
-    "ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled",
-    "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY",
-    "ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live",
     "ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM"
   ],
   "guardrails": [

@@ -249,6 +249,11 @@ test('One Time railway readback can use an isolated temp link when the local Rai
             ONE_TIME_WAPI_API_TOKEN: 'scoped-wapi-token',
             ONE_TIME_WHAPI_INSTANCE_ID: 'instance-id',
             ONE_TIME_WHAPI_PHONE: '+972500000000',
+            ONE_TIME_WAPI_WEBHOOK_SECRET: 'wapi-webhook-secret',
+            ONE_TIME_WAPI_AUTO_REPLY_ENABLED: 'true',
+            ONE_TIME_WAPI_AUTO_REPLY_CONFIRM: 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY',
+            ONE_TIME_PROVIDER_LEAD_BOT_MODE: 'live',
+            ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM: 'APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM',
           }),
         };
       }
@@ -271,8 +276,13 @@ test('One Time railway readback can use an isolated temp link when the local Rai
   assert.equal(result.one_time_wapi_token_present, true);
   assert.equal(result.one_time_whapi_instance_present, true);
   assert.equal(result.one_time_whapi_phone_present, true);
+  assert.equal(result.one_time_wapi_webhook_secret_present, true);
+  assert.equal(result.one_time_wapi_auto_reply_enabled_true, true);
+  assert.equal(result.one_time_wapi_auto_reply_confirm_approved, true);
+  assert.equal(result.one_time_provider_lead_bot_mode_live, true);
+  assert.equal(result.one_time_provider_lead_bot_telegram_confirm_approved, true);
   assert.ok(calls.some((call) => call.args.join(' ').includes('link --project ce55ef20-1418-4ad3-aafa-f877fb992dc8')));
-  assert.doesNotMatch(JSON.stringify(result), /secret-value|postgres:\/\/|example\.test|scoped-wapi-token|cron-secret-value|\+972500000000/);
+  assert.doesNotMatch(JSON.stringify(result), /secret-value|postgres:\/\/|example\.test|scoped-wapi-token|cron-secret-value|wapi-webhook-secret|\+972500000000/);
 });
 
 test('One Time setup readiness can satisfy Zoom session from redacted Railway class-link readback', async () => {
@@ -302,4 +312,34 @@ test('One Time setup readiness can satisfy Zoom session from redacted Railway cl
   assert.deepEqual(zoom.missing_fields, []);
   assert.match(zoom.warnings.join(' '), /redacted One Time Railway readback/);
   assert.doesNotMatch(JSON.stringify(report), /zoom\.us|example\.test/);
+});
+
+test('One Time setup readiness can satisfy WAPI provider details from redacted Railway readback', async () => {
+  const { buildOneTimeExternalSetupReadiness } = await import(setupUrl);
+  const report = buildOneTimeExternalSetupReadiness({
+    repoRoot: path.join(__dirname, '..'),
+    env: {
+      ONE_TIME_PUBLIC_DOMAIN: 'join.onetimeonetime.com',
+      ONE_TIME_JOIN_DOMAIN_ATTACHED: 'true',
+      ONE_TIME_JOIN_DNS_CONFIGURED: 'true',
+      ONE_TIME_APEX_ROOT_UNTOUCHED: 'true',
+    },
+    railwayProvisioningReport: 'ops/one-time-mishnah/onetime-railway-provisioning-report.json',
+    railwayVariables: {
+      ok: true,
+      database_url_usable: true,
+      one_time_public_domain_matches: true,
+      default_workspace_matches: true,
+      default_project_matches: true,
+      one_time_wapi_token_present: true,
+      one_time_whapi_instance_present: true,
+      one_time_whapi_phone_present: true,
+    },
+  });
+
+  const wapi = report.items.find((item) => item.id === 'SETUP-ONETIME-WHAPI-001');
+  assert.equal(wapi.ready, true);
+  assert.deepEqual(wapi.missing_fields, []);
+  assert.match(wapi.warnings.join(' '), /redacted One Time Railway readback/);
+  assert.doesNotMatch(JSON.stringify(report), /scoped-wapi-token|instance-id|\+972500000000/);
 });

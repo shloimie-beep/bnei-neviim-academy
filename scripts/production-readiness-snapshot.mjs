@@ -438,7 +438,8 @@ function summarizeOneTimeSetupChecklist(setupCheckCommand = {}) {
         required_fields: item.required_fields || [],
         forbidden: item.forbidden || [],
       };
-    });
+    })
+    .filter((item) => item.setup_check_ready !== true);
   return {
     path: oneTimeSetupChecklistPath,
     available: true,
@@ -644,7 +645,7 @@ function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, one
     avoidCollidingWith.push(lane);
   }
   const reason = [
-    hasExternalBlockers ? 'full One Time launch has external Stripe/WAPI/campaign blockers' : '',
+    hasExternalBlockers ? 'full One Time launch has external setup blockers' : '',
     publicLaunchSmokeBlocked ? `public launch no-write smoke is ${publicLaunchSmoke?.status || 'missing'}` : '',
     rabbiTelegramRuntimeBlocked ? `Rabbi Telegram runtime is ${rabbiTelegramRuntime.status}` : '',
     missingProofCount > 0 ? 'Rabbi Agent Review still needs terminal Agent Mode proof' : '',

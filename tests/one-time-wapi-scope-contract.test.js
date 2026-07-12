@@ -134,4 +134,34 @@ test('One Time WAPI readiness script reports blockers without sends or secrets',
   assert.ok(railwayClassLink.required_next_actions.some((item) => /instance id missing/.test(item)));
   assert.equal(railwayClassLink.outbound.railway_readback.class_link_present, true);
   assert.doesNotMatch(JSON.stringify(railwayClassLink), /scoped-token|zoom\.us|example\.test/);
+
+  const railwayProviderSetup = buildOneTimeWapiReadiness({
+    inspectKeyholder: false,
+    env: {
+      ONE_TIME_WAPI_API_TOKEN: 'scoped-token',
+    },
+    railwayVariables: {
+      attempted: true,
+      ok: true,
+      source: 'railway_temp_link_account_auth',
+      key_count: 53,
+      one_time_class_link_present: true,
+      one_time_whapi_instance_present: true,
+      one_time_whapi_phone_present: true,
+      one_time_wapi_webhook_secret_present: true,
+      one_time_wapi_auto_reply_enabled_true: true,
+      one_time_wapi_auto_reply_confirm_approved: true,
+      one_time_provider_lead_bot_mode_live: true,
+    },
+  });
+  assert.equal(railwayProviderSetup.provider_setup.ready, true);
+  assert.equal(railwayProviderSetup.auto_reply.ready, true);
+  assert.equal(railwayProviderSetup.auto_reply.webhook_secret_present, true);
+  assert.equal(railwayProviderSetup.outbound.railway_readback.webhook_secret_present, true);
+  assert.equal(railwayProviderSetup.outbound.railway_readback.auto_reply_enabled, true);
+  assert.equal(railwayProviderSetup.outbound.railway_readback.auto_reply_confirm_approved, true);
+  assert.equal(railwayProviderSetup.outbound.railway_readback.provider_bot_mode_live, true);
+  assert.equal(railwayProviderSetup.whatsapp_send_performed, false);
+  assert.equal(railwayProviderSetup.crm_mutation_performed, false);
+  assert.doesNotMatch(JSON.stringify(railwayProviderSetup), /scoped-token|webhook-secret|\+972/);
 });

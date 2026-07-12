@@ -13,7 +13,7 @@ As of regenerated current-state visual audit:
 - `REQ-20260712-109`: done locally. The public One Time landing page now uses one accessible fixed WhatsApp launcher backed by the same-origin runtime redirect, and no longer loads the public helper scripts, Robot Scheller helper chrome, or hard-coded `wa.me` links. Local screenshots cover 1440, 1024, 768, 430, and 390 px with no HTTP errors, helper-script requests, POSTs, or writes. Production public-number readback/release/live-smoke is centralized in `REQ-20260712-112`.
 - `REQ-20260712-110`: done locally. WhatsApp assistant deterministic natural replies and WAPI safety gates pass local tests; production WAPI readback/no-unapproved-send proof is centralized in `REQ-20260712-112`.
 - `REQ-20260712-111`: done locally. Operations split delivery is under the 1.2 MB shell budget, CRM first-page/list/detail metrics pass locally, local cache policy passes, and member-library Vimeo loads only after Play Video. Production Brotli/gzip, `Vary`, long-cache/fingerprint readback, commit/push/deploy, and live smoke remain under `REQ-20260712-112`.
-- `REQ-20260712-112`: blocked. Clean launch-consolidation commit `71c9f7d78` exists and production readiness was resampled from a clean tree. No deploy/mutation/live verification was performed; production readiness remains blocked by external Stripe/WAPI/campaign setup fields, Rabbi Telegram runtime token/chat readiness, Agent Mode terminal proof, and exact push/merge/deploy/readback requirements.
+- `REQ-20260712-112`: blocked. No deploy/mutation/live verification was performed. Production readiness remains blocked by Stripe sandbox/campaign setup fields, Rabbi Telegram live-smoke proof, Agent Mode terminal proof, dirty local readiness-fix changes until committed, and exact push/merge/deploy/readback requirements. WAPI provider setup/auto-reply and Rabbi Telegram token/chat runtime are ready by redacted readback.
 
 Next expected step after this local batch:
 
@@ -22,7 +22,7 @@ npm run bna:run:next
 ```
 
 There is no next unblocked implementation requirement in this run. To resume,
-clear or explicitly defer the external setup/readback gates, configure Rabbi
-Telegram runtime through secret-safe channels, save the two required Agent Mode
-terminal proofs, push/merge the exact clean release commit, then rerun
+clear or explicitly defer the Stripe/campaign setup gates, save the two
+required Agent Mode terminal proofs, schedule/approve any Rabbi Telegram live
+smoke, push/merge the exact clean release commit, then rerun
 `npm run bna:release-gate -- --json` and the approved deploy/live verification.

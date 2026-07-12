@@ -6,6 +6,29 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-12T21:38:00+03:00 - WAPI and Rabbi Telegram launch blockers corrected
+
+- Captured `RAW-20260712-011` from Shloimie's correction that WAPI information
+  was already provided and Rabbi Telegram works.
+- Updated WAPI readiness to consume redacted Railway booleans for provider
+  token, Whapi/WAPI instance, sender metadata, webhook secret, auto-reply
+  enabled/approval flags, and provider bot live mode without printing secrets.
+- Updated production snapshot/unblocker logic so setup rows proven ready by the
+  live setup checker do not remain as external setup blockers.
+- Refreshed readiness reports: WAPI provider setup and auto-reply are ready;
+  Rabbi Telegram token/chat/ops runtime is ready; no WhatsApp/WAPI or Telegram
+  send was performed.
+- Remaining launch blockers: Stripe sandbox setup, campaign proof/approval,
+  Agent Mode terminal proof, Rabbi Telegram live-smoke proof with exact send
+  approval, and clean merge/deploy/readback proof.
+- Verification passed: `node --test tests/one-time-external-setup-readiness.test.js
+  tests/one-time-wapi-scope-contract.test.js tests/production-unblocker.test.js
+  tests/production-readiness-gate.test.js`, `npm run bna:run:validate`,
+  `npm run one-time:wapi:readiness`, `npm run telegram:rabbi:readiness`,
+  `npm run production:readiness:snapshot`, `npm run production:unblocker`, and
+  `npm run production:readiness:gate -- --json` blocked only on the remaining
+  true launch gates.
+
 ## 2026-07-09T17:40:00+03:00 - Railway target profiles hardened
 
 - Added `config/railway-targets.json` with non-secret BNA and OneTime Railway

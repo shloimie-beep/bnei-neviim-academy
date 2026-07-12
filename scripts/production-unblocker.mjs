@@ -163,7 +163,8 @@ function setupItemsFromChecklist(checklist = {}, setupReadiness = {}) {
           ...(item.verification_commands_after_setup || []),
         ],
       };
-    }));
+    })
+    .filter((item) => item.setup_check_ready !== true));
 }
 
 function proofItemsFromReadiness(proof = {}) {
@@ -500,7 +501,7 @@ export function buildProductionUnblocker({
     operator_actions,
     after_operator_update: [
       'Do not paste raw secrets into chat or tracked repo files; provide aliases, status labels, or keyholder/provider-dashboard confirmation.',
-      'Rerun `npm run one-time:setup:check` after Stripe/WAPI/campaign setup changes.',
+      'Rerun `npm run one-time:setup:check` after Stripe/campaign setup changes or WAPI/Whapi runtime changes.',
       'Rerun `npm run one-time:wapi:readiness` after WAPI/Whapi changes.',
       'Rerun `npm run telegram:rabbi:readiness` and `npm run telegram:rabbi:chat-id` after Rabbi Telegram runtime changes.',
       'Rerun `npm run app:smoke:rabbi-agent-review-proof-readiness` after Agent Mode proof is saved.',

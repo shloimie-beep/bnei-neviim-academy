@@ -1,4 +1,4 @@
-# Rabbi Agent Review Proof Readiness Live Smoke - 2026-07-10T17:34:53.773Z
+# Rabbi Agent Review Proof Readiness Live Smoke - 2026-07-12T18:31:28.653Z
 
 BNA app: https://bneineviimacademy.org
 One Time app: https://join.onetimeonetime.com
@@ -27,7 +27,7 @@ Result: proof_blocked_or_pending
 - No Telegram, email, WhatsApp/WAPI, payment, access, Drive, Vimeo, Zoom, DNS, credential, public publish, or external provider mutation is performed.
 
 ## Steps
-- PASS public Rabbi Agent Review prompts are live (1582ms)
-- PASS public Rabbi helper scope artifacts are live and current (1412ms)
-- PASS owner login for Agent Review hub readback (592ms)
-- PASS Agent Review hub exposes current Rabbi proof state (1079ms)
+- PASS public Rabbi Agent Review prompts are live (1146ms)
+- PASS public Rabbi helper scope artifacts are live and current (1300ms)
+- PASS owner login for Agent Review hub readback (719ms)
+- PASS Agent Review hub exposes current Rabbi proof state (1879ms)

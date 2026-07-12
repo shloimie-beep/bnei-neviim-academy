@@ -1,16 +1,16 @@
-# Production Unblocker - 2026-07-12T18:17:44.067Z
+# Production Unblocker - 2026-07-12T18:39:50.838Z
 Snapshot status: not_production_complete
 Production ready: no
 Source snapshot: node scripts/production-readiness-snapshot.mjs --no-write --json (live_no_write_command)
-Source snapshot generated at: 2026-07-12T18:17:30.389Z
-Snapshot git head: 2ce45ec5f (origin/master: e5efbb15a, worktree clean: yes)
+Source snapshot generated at: 2026-07-12T18:39:38.982Z
+Snapshot git head: b34298615 (origin/master: e5efbb15a, worktree clean: no)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
-One Time setup check: 5/8 ready (live_no_write_command_expected_blocked, exit 1)
+One Time setup check: 6/8 ready (live_no_write_command_expected_blocked, exit 1)
 ## What Blocks Production
-- External setup items: 3
+- External setup items: 2
 - Public launch no-write smoke: passed (ready)
-- Rabbi Telegram runtime: blocked_missing_bot_token
+- Rabbi Telegram runtime: local_runtime_ready_live_smoke_pending
 - Agent Mode terminal proof items: 2
 - Active collision lanes: 0 (stale/missing local locks: 0)
 - ChatGPT packets queued: 0
@@ -24,21 +24,20 @@ Evidence:
 Next action: Clear the external setup, terminal Agent Mode proof, and active collision-lane blockers; then rerun `npm run bna:run:next`.
 ### external_setup_blockers - External One Time setup values or approvals are missing
 Owner: Shloimie / provider account owners
-Count: 3
+Count: 2
 Evidence:
   - SETUP-ONETIME-STRIPE-001: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias
-  - SETUP-ONETIME-WHAPI-001: whapi_wapi_instance_id, whapi_wapi_phone_number
   - SETUP-ONETIME-CAMPAIGN-001: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval
-Next action: Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.
+Next action: Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.
 ### rabbi_telegram_runtime_configuration - Rabbi Telegram runtime is not production-verified
 Owner: Codex / operator
 Count: 1
 Evidence:
-  - status=blocked_missing_bot_token
-  - chat_id_configured=false
+  - status=local_runtime_ready_live_smoke_pending
+  - chat_id_configured=true
   - candidate_count=0
   - unique_chat_count=0
-Next action: Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness.
+Next action: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
 ### agent_mode_terminal_proof_missing - Rabbi Agent Review terminal proof is missing
 Owner: Shloimie / Agent Mode runner
 Count: 2
@@ -71,28 +70,6 @@ Verification after setup:
   - sandbox_checkout_subscription_access_smoke
   - webhook_readback_smoke_if_configured
   - TEST_prefixed_reversible_access_grant_or_extension
-### SETUP-ONETIME-WHAPI-001 - Whapi/WAPI provider details
-Owner: Shloimie / provider account owners
-Status: provider_setup_ready_live_send_gated
-Current evidence: One Time-scoped outbound token, Whapi instance ID, sender metadata, webhook secret, and hosted class link are configured in ignored local secret storage and Railway by redacted readiness readback. Auto-reply/live Telegram flags and one approved no-broad-send provider proof remain gated.
-Setup check ready: no
-Current missing fields from setup check:
-  - whapi_wapi_instance_id
-  - whapi_wapi_phone_number
-Setup check warnings:
-  - none
-Static checklist fields:
-  - provider_account
-  - phone_number
-  - instance_id_or_alias
-  - webhook_url_status
-  - safe_test_recipient_for_later_packet
-  - ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended
-  - ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval
-Forbidden in this packet:
-  - real_whatsapp_send_without_later_exact_packet
-Verification after setup:
-  - safe test send only in later exact packet
 ### SETUP-ONETIME-CAMPAIGN-001 - Campaign seed / real campaign
 Owner: Shloimie / provider account owners
 Status: blocked_external_input
@@ -120,24 +97,24 @@ Verification after setup:
 Status: passed
 Ready: yes
 Fresh for launch gate: yes
-Age hours: 9.68
+Age hours: 10.05
 Commands passed: 4/4
 External write performed: no
 Production data mutation performed: no
 Evidence path: ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json
 Blocker: none
 ## Rabbi Telegram Runtime
-Status: blocked_missing_bot_token
-Local ready: no
+Status: local_runtime_ready_live_smoke_pending
+Local ready: yes
 Readiness report: ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
 Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (available locally)
-Chat ID configured: no
+Chat ID configured: yes
 Candidate count: 0
 Unique masked chat count: 0
 Masked candidates:
   - none
 Live delivery smoke: not_exercised_by_readiness_report
-Next action: Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness.
+Next action: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
 ## Agent Mode Proof To Save
 ### rabbi-telegram-helper-ticket-smoke
 Owner: Shloimie / Agent Mode runner
@@ -157,7 +134,7 @@ Required result: save terminal PASS, FAIL, or BLOCKED proof for only this prompt
 - None reported.
 ## After Operator Update
 - Do not paste raw secrets into chat or tracked repo files; provide aliases, status labels, or keyholder/provider-dashboard confirmation.
-- Rerun `npm run one-time:setup:check` after Stripe/WAPI/campaign setup changes.
+- Rerun `npm run one-time:setup:check` after Stripe/campaign setup changes or WAPI/Whapi runtime changes.
 - Rerun `npm run one-time:wapi:readiness` after WAPI/Whapi changes.
 - Rerun `npm run telegram:rabbi:readiness` and `npm run telegram:rabbi:chat-id` after Rabbi Telegram runtime changes.
 - Rerun `npm run app:smoke:rabbi-agent-review-proof-readiness` after Agent Mode proof is saved.

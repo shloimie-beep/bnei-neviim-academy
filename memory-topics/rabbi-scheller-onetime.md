@@ -53,3 +53,11 @@
   concise Telegram dings; Rabbi receives One Time communication alerts when his
   Telegram chat ID is configured. External sends, Drive/Vimeo/Zoom/WAPI writes,
   payments, access grants, credentials, and cross-workspace data remain gated.
+- 2026-07-12 correction: WAPI provider setup and One Time WhatsApp auto-reply
+  readiness are present by redacted Railway readback; do not list WAPI token,
+  instance, sender metadata, webhook secret, auto-reply enabled/approval flags,
+  or provider bot live mode as missing when the readiness script reports those
+  booleans ready. Rabbi Telegram token/chat/ops runtime is also configured and
+  Shloimie observed Rabbi Scheller use the bot. Live Telegram smoke still needs
+  exact send approval/proof, and provider lead-bot Telegram notifications remain
+  separate from WhatsApp auto-reply approval unless explicitly approved.
