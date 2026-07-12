@@ -38748,3 +38748,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining: Shloimie's email reminder is pending an exact email address.
   Actual email/WhatsApp provider acceptance must be inspected after the
   6:30 p.m. dispatcher run.
+
+## 2026-07-12 - One Time 6:30 reminder delivery verified
+
+- Post-window live readback at 2026-07-12T15:48:03.555Z confirmed outbox
+  IDs `16`, `17`, and `18` for local contacts `4`, `5`, and `6` were `sent`
+  email reminders through `resend`, each with provider message id present and
+  no failure recorded.
+- The same readback confirmed outbox IDs `19` and `20` for personal contacts
+  `21` and `20` were `sent` WhatsApp reminders through `one_time_wapi`, each
+  with provider message id present and no failure recorded.
+- Protected delivery-outbox dry-run after the send window returned
+  `due_count: 0`, so no manual retry or duplicate send was needed.
+- The redacted readback returned no raw join URL or message body. Shloimie's
+  email reminder remains pending only on the exact email address.

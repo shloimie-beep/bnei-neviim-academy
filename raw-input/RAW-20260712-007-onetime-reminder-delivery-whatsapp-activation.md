@@ -36,3 +36,12 @@ The operator asked Codex to verify and run the One Time signup/reminder automati
 - No raw phone numbers, raw email addresses, raw Zoom link, message body, or secret values were written to tracked files.
 - No immediate WhatsApp, email, Telegram, payment/access, Zoom, DNS, or provider-account mutation was performed during enrollment/queueing.
 - Actual provider acceptance must be verified after the 6:30 p.m. Israel dispatcher run.
+
+## Post-Window Delivery Verification
+
+- Checked at 2026-07-12T15:48:03.555Z, after the 6:30 p.m. Israel reminder window.
+- Protected delivery-outbox dry-run returned `due_count: 0`, so no missed queued rows required manual retry.
+- Outbox IDs `16`, `17`, and `18` for local contacts `4`, `5`, and `6` are `sent` email reminders through `resend`, each with provider message id present and no failure recorded.
+- Outbox IDs `19` and `20` for personal contacts `21` and `20` are `sent` WhatsApp reminders through `one_time_wapi`, each with provider message id present and no failure recorded.
+- All five rows have `raw_join_url_returned: false` and `message_body_returned: false` in the redacted readback.
+- Shloimie's email reminder remains blocked only on the exact email address.
