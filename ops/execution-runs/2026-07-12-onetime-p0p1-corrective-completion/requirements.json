@@ -5,7 +5,7 @@
   "git_refs": {
     "expected_branch": "codex/onetime-p0p1-corrective-20260711",
     "branch": "codex/onetime-p0p1-corrective-20260711",
-    "current_head": "efcafcb85cad3d77bb754f3e18c784ba5ff9182f",
+    "current_head": "5621a2d74a9f3cfb29b5fc83b0a99d6a4171a20d",
     "pr_number": 129,
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
     "pr_branch": "codex/onetime-p0p1-corrective-20260711",
@@ -14,7 +14,9 @@
     "existing_corrective_commits": [
       "e49bd3b00291818bb44e4a483fdd69b35f599c28",
       "ee264c5a4b8329719b5420ffb6f99ccae93e1a60",
-      "efcafcb85cad3d77bb754f3e18c784ba5ff9182f"
+      "efcafcb85cad3d77bb754f3e18c784ba5ff9182f",
+      "11c956f141dce0f46883e7549f56f31045c0b07c",
+      "5621a2d74a9f3cfb29b5fc83b0a99d6a4171a20d"
     ],
     "current_priority_addendum": "RAW-20260712-002",
     "current_p0_batch": "crm-confirmation-outbox"
@@ -1138,7 +1140,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T10:52:00+03:00",
+      "updated_at": "2026-07-12T11:03:00+03:00",
       "id": "REQ-20260712-023",
       "title": "Run required signup/reminder test matrix and evidence closeout",
       "source_statement_ids": [
@@ -1158,7 +1160,7 @@
         "REQ-20260712-021"
       ],
       "status": "in_progress",
-      "implementation_status": "Local test matrix is partially complete: direct route, Back to Home, styling smoke, internal-copy removal, city/timezone validation, DST conversion, worldwide instant, phone gating, consent, dedupe/idempotency helpers, outbox, cron gates, WAPI gates, Rabbi Telegram payload, local-class preview, and no-portal negatives are covered. Deployment, readiness checks, live smoke, operator personal test, and provider evidence remain required.",
+      "implementation_status": "Local test matrix is partially complete and now mapped in ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md: direct route, Back to Home, styling smoke, internal-copy removal, city/timezone validation, DST conversion, worldwide instant, phone gating, consent, dedupe/idempotency helpers, outbox, cron gates, paused/canceled class suppression guardrails, email unsubscribe and WhatsApp STOP/wrong-number suppression guardrails, WAPI gates, Rabbi Telegram payload, local-class preview, and no-portal negatives are covered. Deployment, readiness checks, live smoke, operator personal test, and provider evidence remain required.",
       "next_action": "Complete hosted readiness/deploy/live-smoke/provider evidence and operator personal test before terminal closeout.",
       "acceptance_criteria": [
         "Family/School, route/back link, styling, internal-copy removal, city autocomplete, timezone validation, DST, worldwide instant, local display, phone validation, no-reminder confirmation, consent, CRM dedupe, outbox retry, reminder idempotency, suppression, missing/changed Zoom link, Telegram, WAPI failure, local-contact preview, no portal/payment/access, cross-workspace isolation, and .invalid no-send cases are covered."
@@ -1175,13 +1177,17 @@
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
+        "node --test tests/one-time-signup-reminder-workflow.test.js PASS 10/10 with paused/canceled and STOP/wrong-number static guardrail assertions",
+        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
+        "ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md created with requirement-by-requirement proof and blocker mapping"
       ],
       "implementation_files": [
         "tests/one-time-direct-signup-page.test.js",
         "tests/one-time-focused-landing.test.js",
         "tests/one-time-signup-reminder-workflow.test.js",
-        "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json"
+        "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json",
+        "ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md"
       ],
       "expected_result": "The PR includes deterministic no-send proof and evidence for the complete signup/reminder workflow without claiming final Done before personal deployed test."
     },
@@ -1666,32 +1672,38 @@
         "REQ-20260712-007",
         "REQ-20260712-009"
       ],
-      "status": "not_started",
-      "implementation_status": "Pending code implementation and browser/runtime verification.",
+      "status": "in_progress",
+      "implementation_status": "Partially advanced for the urgent signup/reminder slice: local signup screenshots exist at 1440, 1024, 768, 430, and 390, and ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md maps the P0 signup/reminder requirements to source files, tests, screenshots, readiness reports, and remaining blockers. The older broader screenshot set for landing, Family/School continuation, provider login, Operations, CRM, mailbox, and Robot remains incomplete or release-gated.",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
       "blocker_next_action": "",
-      "next_action": "After implementation/tests, capture required screenshots and write a requirement matrix without claiming deployment/live proof prematurely.",
+      "next_action": "After the remaining local/release-gated surfaces are ready, capture the broader screenshot set and extend the matrix without claiming deployment/live proof prematurely.",
       "acceptance_criteria": [
         "Screenshots exist at 1440, 768, 430, and 390 for required public, onboarding, login, Operations, CRM, mailbox, and Robot views.",
         "Matrix links each requirement to source statement, code files, test, screenshot, PR/commit, and deployment/live proof status.",
         "No screenshot/proof uses synthetic fixtures as final completion evidence."
       ],
-      "evidence": [],
+      "evidence": [
+        "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json records local /one-time/signup screenshots and DOM checks at 1440, 1024, 768, 430, and 390 widths.",
+        "ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md maps the urgent signup/reminder requirements to implementation files, tests, screenshots, readiness reports, and explicit live/provider/operator blockers."
+      ],
       "verification": [
         "Playwright screenshot capture",
         "requirement matrix review",
-        "npm run bna:run:validate"
+        "npm run bna:run:validate",
+        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
       ],
       "implementation_files": [
+        "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json",
+        "ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md",
         "ops/ui-audits/",
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/EVIDENCE.md",
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/TEST-RESULTS.md",
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/STATUS.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-12T08:31:00+03:00",
+      "updated_at": "2026-07-12T11:03:00+03:00",
       "expected_result": "The PR has independent visual/runtime proof and a source-to-code-to-proof matrix for review."
     },
     {
