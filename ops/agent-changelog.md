@@ -38782,3 +38782,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `58`.
 - Automatic live replies remain in observe-only mode and require explicit
   operator approval before enabling outbound WhatsApp auto-replies.
+
+## 2026-07-12 - One Time inbound WhatsApp auto-replies enabled
+
+- Captured Shloimie's explicit live approval in
+  `raw-input/RAW-20260712-010-onetime-wapi-auto-reply-live-approval.md`.
+- Set the scoped One Time Railway flags for live provider lead-bot mode,
+  WhatsApp auto-reply enablement, and WhatsApp auto-reply approval without
+  printing or storing secret values in tracked files.
+- Redeployed One Time Railway service deployment
+  `ee81b96e-a5a3-4645-b922-13cf237e3200`; service status reached `SUCCESS`.
+- Redacted live diagnostics report inbound webhook configured, provider
+  channel binding configured, credential scope `one_time_scoped`,
+  `auto_reply_readiness.ready=true`, empty blockers, live send approved,
+  class link configured, webhook secret configured, instance binding
+  configured, and sender binding configured.
+- Public live smokes passed for the One Time separate instance and Rabbi One
+  Time landing/signup surfaces.
+- Telegram notifications remain disabled and unapproved; no manual WhatsApp
+  message was sent during the flag enablement.
