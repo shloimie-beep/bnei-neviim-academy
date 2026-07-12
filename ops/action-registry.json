@@ -2726,6 +2726,44 @@
       ]
     },
     {
+      "action_id": "ACTION-CRM-COMPLETE-TASK",
+      "label": "Complete task",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-COMPLETE-TASK\"]",
+      "expected_behavior": "Marks the selected contact's linked first-party CRM follow-up task complete only after an explicit click; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs. The action is disabled in read-only preview or when the linked task is already complete.",
+      "permission": "super_admin or scoped provider workspace role with CRM/task entitlement",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the action calls PATCH /api/bna/tasks/:id with stage=done/completed_at and no external-write copy; the One Time CRM workbench local smoke verifies the button is visible for a linked task."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-REOPEN-TASK",
+      "label": "Reopen task",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-REOPEN-TASK\"]",
+      "expected_behavior": "Reopens the selected contact's completed linked first-party CRM follow-up task only after an explicit click; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs. The action is disabled in read-only preview or when the linked task is not complete.",
+      "permission": "super_admin or scoped provider workspace role with CRM/task entitlement",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the action calls PATCH /api/bna/tasks/:id with stage=assigned, clears completion fields, and preserves no external-write copy; the One Time CRM workbench local smoke verifies the button is visible for a linked task."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-CRM-ARCHIVE-CONTACT",
       "label": "Archive contact",
       "surface": "operations_contacts",

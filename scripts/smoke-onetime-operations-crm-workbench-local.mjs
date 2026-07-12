@@ -42,6 +42,12 @@ const crmSeedCards = [
     last_contact_at: '2026-07-10T08:20:00.000Z',
     next_follow_up_at: '2026-07-11T12:00:00.000Z',
     summary: 'One Time free-class public signup captured. Wants current free-class details after approval gates are ready.',
+    follow_up_task: {
+      task_id: 9001,
+      assigned_to: 'Rabbi Scheller team',
+      due_date: '2026-07-11T12:00:00.000Z',
+      status: 'assigned',
+    },
     linked: { parent_lead_id: 501, signup_id: null, student_id: null, contact_id: null, provider_profile_id: null },
   },
   {
@@ -516,13 +522,14 @@ async function captureViewport(browser, baseUrl, viewport, target) {
   const workspaceTabs = [
     { id: 'overview', label: 'Overview', pattern: /Lifecycle|Owner|Class \/ Trial \/ Access/i },
     { id: 'conversations', label: 'Conversations', pattern: /No conversations yet|email messages|Open email thread/i },
-    { id: 'tasks', label: 'Tasks', pattern: /No tasks assigned|Task #|Create task/i },
+    { id: 'tasks', label: 'Tasks', pattern: /No tasks assigned|Task #|Create task|Complete task|Reopen task/i },
     { id: 'access', label: 'Access', pattern: /Membership|Class Activity|Linked Records/i },
     { id: 'identity', label: 'Identity', pattern: /Communication Preference|Consent \/ Suppression|Email is not available|WhatsApp is not available/i },
     { id: 'family', label: 'Family', pattern: /Family \/ School|No membership linked|No follow-up scheduled|Linked Records/i },
     { id: 'activity', label: 'Activity', pattern: /Local CRM update|Safe next actions/i },
   ];
   const workspaceTabMetrics = {};
+  let taskTabActionMetrics = { hasLinkedTaskPanel: false, hasCompleteTaskAction: false, hasReopenTaskAction: false };
   for (const tab of workspaceTabs) {
     await page.locator('.crm-workbench-tabs [role="tab"]', { hasText: tab.label }).click();
     await page.waitForFunction((label) => {
@@ -537,6 +544,13 @@ async function captureViewport(browser, baseUrl, viewport, target) {
         text,
       };
     }, tab.label).then((result) => result.active && tab.pattern.test(result.text));
+    if (tab.id === 'tasks') {
+      taskTabActionMetrics = await page.evaluate(() => ({
+        hasLinkedTaskPanel: Boolean(document.querySelector('[data-crm-linked-task-state]')),
+        hasCompleteTaskAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-COMPLETE-TASK"]:not([disabled])')),
+        hasReopenTaskAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-REOPEN-TASK"]')),
+      }));
+    }
   }
   let mobileBackMetrics = { checked: viewport.width <= 700, restoredList: true, clearedSelectedState: true };
   if (viewport.width <= 700) {
@@ -644,6 +658,9 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       addContactMetrics.formVisible &&
       addContactMetrics.noExternalCopy &&
       selectedMetrics.hasCreateTaskAction &&
+      taskTabActionMetrics.hasLinkedTaskPanel &&
+      taskTabActionMetrics.hasCompleteTaskAction &&
+      taskTabActionMetrics.hasReopenTaskAction &&
       selectedMetrics.hasArchiveContactAction &&
       selectedMetrics.mobileBackControlHeight >= 40 &&
       Object.values(workspaceTabMetrics).every(Boolean) &&
@@ -696,6 +713,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     hasAddContactActionAfterSelect: selectedMetrics.hasAddContactAction,
     addContactMetrics,
     hasCreateTaskActionAfterSelect: selectedMetrics.hasCreateTaskAction,
+    taskTabActionMetrics,
     hasArchiveContactActionAfterSelect: selectedMetrics.hasArchiveContactAction,
     mobileBackControlHeightAfterSelect: selectedMetrics.mobileBackControlHeight,
     workspaceTabMetrics,

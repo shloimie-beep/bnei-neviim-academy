@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "generated_at": "2026-07-12T23:29:28.929Z",
+  "generated_at": "2026-07-12T23:44:33.201Z",
   "target": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts + /operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
   "scope": "Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.",
   "guardrails": {
@@ -46,6 +46,11 @@
         "noExternalCopy": true
       },
       "hasCreateTaskActionAfterSelect": true,
+      "taskTabActionMetrics": {
+        "hasLinkedTaskPanel": true,
+        "hasCompleteTaskAction": true,
+        "hasReopenTaskAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -130,6 +135,11 @@
         "noExternalCopy": true
       },
       "hasCreateTaskActionAfterSelect": true,
+      "taskTabActionMetrics": {
+        "hasLinkedTaskPanel": true,
+        "hasCompleteTaskAction": true,
+        "hasReopenTaskAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -214,6 +224,11 @@
         "noExternalCopy": true
       },
       "hasCreateTaskActionAfterSelect": true,
+      "taskTabActionMetrics": {
+        "hasLinkedTaskPanel": true,
+        "hasCompleteTaskAction": true,
+        "hasReopenTaskAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -298,6 +313,11 @@
         "noExternalCopy": true
       },
       "hasCreateTaskActionAfterSelect": true,
+      "taskTabActionMetrics": {
+        "hasLinkedTaskPanel": true,
+        "hasCompleteTaskAction": true,
+        "hasReopenTaskAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -382,6 +402,11 @@
         "noExternalCopy": true
       },
       "hasCreateTaskActionAfterSelect": true,
+      "taskTabActionMetrics": {
+        "hasLinkedTaskPanel": true,
+        "hasCompleteTaskAction": true,
+        "hasReopenTaskAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -466,6 +491,11 @@
         "noExternalCopy": true
       },
       "hasCreateTaskActionAfterSelect": true,
+      "taskTabActionMetrics": {
+        "hasLinkedTaskPanel": true,
+        "hasCompleteTaskAction": true,
+        "hasReopenTaskAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -550,6 +580,11 @@
         "noExternalCopy": true
       },
       "hasCreateTaskActionAfterSelect": true,
+      "taskTabActionMetrics": {
+        "hasLinkedTaskPanel": true,
+        "hasCompleteTaskAction": true,
+        "hasReopenTaskAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -634,6 +669,11 @@
         "noExternalCopy": true
       },
       "hasCreateTaskActionAfterSelect": true,
+      "taskTabActionMetrics": {
+        "hasLinkedTaskPanel": true,
+        "hasCompleteTaskAction": true,
+        "hasReopenTaskAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -718,6 +758,11 @@
         "noExternalCopy": true
       },
       "hasCreateTaskActionAfterSelect": true,
+      "taskTabActionMetrics": {
+        "hasLinkedTaskPanel": true,
+        "hasCompleteTaskAction": true,
+        "hasReopenTaskAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -802,6 +847,11 @@
         "noExternalCopy": true
       },
       "hasCreateTaskActionAfterSelect": true,
+      "taskTabActionMetrics": {
+        "hasLinkedTaskPanel": true,
+        "hasCompleteTaskAction": true,
+        "hasReopenTaskAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -870,7 +920,7 @@
       "pageErrors": [],
       "failedRequests": [],
       "badResponses": [],
-      "mailboxUrl": "http://127.0.0.1:51549/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
+      "mailboxUrl": "http://127.0.0.1:56968/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
       "passed": true
     }
   ]

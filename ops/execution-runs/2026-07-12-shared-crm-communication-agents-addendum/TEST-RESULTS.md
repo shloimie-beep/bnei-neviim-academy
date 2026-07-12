@@ -203,3 +203,12 @@
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha d1c0d3a596ad420876941445faad9f1e60c7ce48`.
 - PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-34-34-660Z-one-time-operations-crm-workbench-live-smoke.md`.
 - PASS read-only deployed HTML marker check: `https://join.onetimeonetime.com/operations.html` contains Identity and Family tab panel markers.
+- PASS `node --check public\js\operations-shell.js public\js\operations-deferred-renderers.js scripts\smoke-onetime-operations-crm-workbench-local.mjs` after Complete/Reopen task slice.
+- PASS `npm run operations:check-generated` after Complete/Reopen task slice.
+- PASS `node --test tests\shared-crm-workbench-contract.test.js tests\crm-contact-service.test.js tests\crm-contact-model.test.js` (23/23) after Complete/Reopen task slice.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local` after Complete/Reopen task slice; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions` finding_count `0` after Complete/Reopen task slice.
+- PASS `npm run watchdog:protocol-drift` after Complete/Reopen task slice.
+- PASS `npm run secrets:audit` after Complete/Reopen task slice.
+- PASS `npm run bna:run:validate` after Complete/Reopen task slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after Complete/Reopen task slice.

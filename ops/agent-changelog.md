@@ -39166,3 +39166,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Live proof passed: One Time separate-instance SHA smoke and One Time
   Operations CRM workbench smoke with 12 scoped cards and read-only selected
   timeline.
+
+## 2026-07-13 - Shared CRM Complete/Reopen task local verification
+
+- Added a linked follow-up task panel to the CRM contact workspace Tasks tab
+  with `ACTION-CRM-COMPLETE-TASK` and `ACTION-CRM-REOPEN-TASK`.
+- Both actions use the existing scoped first-party `PATCH /api/bna/tasks/:id`
+  path through `api.updateTask`; no message, WhatsApp/WAPI send, Telegram send,
+  payment, access grant, import, or external CRM write runs from either action.
+- Verification passed: generated-shell check, focused CRM tests `23/23`, local
+  Operations CRM workbench smoke at 1440/1024/768/430/390 with linked-task
+  controls visible on the Tasks tab and no task-state click/write, action
+  watchdog 0 findings, protocol drift watchdog, secret audit, execution run
+  validation, and diff check with line-ending warnings only.
+- Deployment is pending for this slice; the implementation needs commit, push,
+  BNA/One Time redeploy, and live One Time Operations CRM smoke before deployed
+  proof is recorded.

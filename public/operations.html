@@ -1722,6 +1722,30 @@
             padding-top: 12px;
         }
 
+        .crm-linked-task-card {
+            color: #cbd5e1;
+            display: grid;
+            gap: 12px;
+        }
+
+        .crm-linked-task-meta {
+            display: grid;
+            gap: 8px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            min-width: 0;
+        }
+
+        .crm-linked-task-meta span {
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 8px;
+            color: #cbd5e1;
+            font-size: 12px;
+            line-height: 1.35;
+            min-width: 0;
+            padding: 9px 10px;
+            overflow-wrap: anywhere;
+        }
+
         .crm-timeline-list {
             display: grid;
             gap: 10px;
@@ -15969,6 +15993,54 @@
             `;
         }
 
+        function firstPartyCrmFollowUpTaskId(task = {}) {
+            return task.task_id || task.id || '';
+        }
+
+        function firstPartyCrmFollowUpTaskIsDone(task = {}) {
+            const state = String(task.stage || task.status || '').toLowerCase();
+            return Boolean(task.completed_at || task.verified_at || ['done', 'completed', 'archive', 'archived'].includes(state));
+        }
+
+        function renderFirstPartyCrmLinkedTaskPanel(card = {}, readOnly = false) {
+            const task = card.follow_up_task || {};
+            const taskId = firstPartyCrmFollowUpTaskId(task);
+            if (!taskId) {
+                return `
+                    <div class="contact-empty-card" data-crm-tab-panel="tasks">
+                        ${window.BnaCrmContactWorkspace?.emptyState?.('tasks') || 'No tasks assigned.'}
+                    </div>
+                `;
+            }
+            const taskDone = firstPartyCrmFollowUpTaskIsDone(task);
+            const taskStatus = contactStatusLabel(task.stage || task.status || (taskDone ? 'done' : 'assigned'));
+            const owner = task.assigned_to || card.assigned_owner || 'Unassigned';
+            const dueDate = task.due_date || task.next_follow_up_at || card.next_follow_up_at || '';
+            const readOnlyTitle = 'Task state changes are unavailable in read-only preview.';
+            const completeDisabled = readOnly || firstPartyCrmSaving || taskDone;
+            const reopenDisabled = readOnly || firstPartyCrmSaving || !taskDone;
+            return `
+                <div class="contact-empty-card crm-linked-task-card" data-crm-tab-panel="tasks" data-crm-linked-task-state="${taskDone ? 'completed' : 'open'}">
+                    <div class="task-section-header compact">
+                        <div>
+                            <h3>Linked follow-up task</h3>
+                            <p class="notification-lock-note">Task state changes are first-party CRM updates only. No message, payment, access grant, import, or external CRM write runs.</p>
+                        </div>
+                        <span class="status-chip">${escapeHtml(taskStatus)}</span>
+                    </div>
+                    <div class="crm-linked-task-meta">
+                        <span>Task #${escapeHtml(taskId)}</span>
+                        <span>Owner: ${escapeHtml(owner)}</span>
+                        <span>Due: ${dueDate ? escapeHtml(formatDate(dueDate)) : 'No follow-up scheduled.'}</span>
+                    </div>
+                    <div class="task-actions">
+                        <button class="task-action primary" type="button" onclick="updateFirstPartyCrmLinkedTask(event, ${attrJson(card.id)}, 'complete')" data-action-id="ACTION-CRM-COMPLETE-TASK" ${completeDisabled ? `disabled aria-disabled="true" title="${escapeHtml(readOnly ? readOnlyTitle : 'Task is already complete.')}"` : ''}>${firstPartyCrmSaving ? 'Saving...' : 'Complete task'}</button>
+                        <button class="task-action" type="button" onclick="updateFirstPartyCrmLinkedTask(event, ${attrJson(card.id)}, 'reopen')" data-action-id="ACTION-CRM-REOPEN-TASK" ${reopenDisabled ? `disabled aria-disabled="true" title="${escapeHtml(readOnly ? readOnlyTitle : 'Only completed tasks can be reopened.')}"` : ''}>${firstPartyCrmSaving ? 'Saving...' : 'Reopen task'}</button>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderFirstPartyCrmDetail(card = null) {
             if (!card) {
                 return `
@@ -16125,11 +16197,7 @@
             if (activeTab === 'tasks') {
                 return `
                     ${renderFirstPartyCrmSafeActions(card)}
-                    <div class="contact-empty-card" data-crm-tab-panel="tasks">
-                        ${card.follow_up_task?.task_id
-                            ? `Task #${escapeHtml(card.follow_up_task.task_id)}${card.follow_up_task.assigned_to ? ` / ${escapeHtml(card.follow_up_task.assigned_to)}` : ''}`
-                            : (window.BnaCrmContactWorkspace?.emptyState?.('tasks') || 'No tasks assigned.')}
-                    </div>
+                    ${renderFirstPartyCrmLinkedTaskPanel(card, readOnly)}
                 `;
             }
             if (activeTab === 'access') {
@@ -16412,6 +16480,59 @@
                 if (!firstPartyCrmTimelinePayload) await openFirstPartyCrmContact(contactId);
             } catch (error) {
                 firstPartyCrmError = error.message || 'Could not create CRM task.';
+            } finally {
+                firstPartyCrmSaving = false;
+                render();
+            }
+        }
+
+        async function updateFirstPartyCrmLinkedTask(event, contactId, mode = 'complete') {
+            event.preventDefault();
+            if (!contactId || oneTimeViewAsRabbiActive()) return;
+            const card = selectedFirstPartyCrmCard() || {};
+            const task = card.follow_up_task || {};
+            const taskId = firstPartyCrmFollowUpTaskId(task);
+            if (!taskId) {
+                firstPartyCrmError = 'No linked CRM task is available for this contact.';
+                render();
+                return;
+            }
+            const completing = mode === 'complete';
+            const payload = completing
+                ? {
+                    stage: 'done',
+                    completed_at: new Date().toISOString(),
+                    verification_notes: 'Completed by an explicit Complete task click in the CRM contact workspace. No message, payment, access grant, import, or external CRM write was performed.',
+                    next_action: 'Completed from CRM contact workspace.'
+                }
+                : {
+                    stage: 'assigned',
+                    completed_at: null,
+                    verified_at: null,
+                    verification_notes: 'Reopened by an explicit Reopen task click in the CRM contact workspace. No message, payment, access grant, import, or external CRM write was performed.',
+                    item_type: 'task',
+                    task_kind: 'task',
+                    decision_required: false,
+                    agent_status: 'none',
+                    next_action: 'Follow up from CRM contact workspace.'
+                };
+            firstPartyCrmSaving = true;
+            firstPartyCrmError = '';
+            firstPartyCrmNotice = '';
+            render();
+            try {
+                await api.updateTask(taskId, payload);
+                firstPartyCrmNotice = completing
+                    ? `Task #${taskId} completed locally. No external message, charge, import, or access change ran.`
+                    : `Task #${taskId} reopened locally. No external message, charge, import, or access change ran.`;
+                firstPartyCrmContactsCache.clear();
+                selectedFirstPartyCrmContactId = contactId;
+                firstPartyCrmActiveTab = 'tasks';
+                firstPartyCrmTimelinePayload = null;
+                await loadFirstPartyCrmContacts(null, { force: true });
+                await openFirstPartyCrmContact(contactId, { captureScroll: false, syncUrl: false });
+            } catch (error) {
+                firstPartyCrmError = error.message || 'Could not update CRM task.';
             } finally {
                 firstPartyCrmSaving = false;
                 render();

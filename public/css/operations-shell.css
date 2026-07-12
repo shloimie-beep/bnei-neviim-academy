@@ -1698,6 +1698,30 @@
             padding-top: 12px;
         }
 
+        .crm-linked-task-card {
+            color: #cbd5e1;
+            display: grid;
+            gap: 12px;
+        }
+
+        .crm-linked-task-meta {
+            display: grid;
+            gap: 8px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            min-width: 0;
+        }
+
+        .crm-linked-task-meta span {
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 8px;
+            color: #cbd5e1;
+            font-size: 12px;
+            line-height: 1.35;
+            min-width: 0;
+            padding: 9px 10px;
+            overflow-wrap: anywhere;
+        }
+
         .crm-timeline-list {
             display: grid;
             gap: 10px;

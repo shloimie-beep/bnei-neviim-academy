@@ -101,6 +101,29 @@ test('Operations CRM Create task action is explicit and first-party only', () =>
   assert.match(server, /No email, WhatsApp, payment, access, import, or external CRM write was performed by creating this task\./);
 });
 
+test('Operations CRM linked task state actions are explicit first-party updates', () => {
+  assert.match(operations, /function renderFirstPartyCrmLinkedTaskPanel\(card = \{\}, readOnly = false\)/);
+  assert.match(operations, /data-action-id="ACTION-CRM-COMPLETE-TASK"/);
+  assert.match(operations, /data-action-id="ACTION-CRM-REOPEN-TASK"/);
+  assert.match(operations, /function updateFirstPartyCrmLinkedTask\(event, contactId, mode = 'complete'\)/);
+  assert.match(operations, /await api\.updateTask\(taskId, payload\)/);
+  assert.match(operations, /stage: 'done'/);
+  assert.match(operations, /completed_at: new Date\(\)\.toISOString\(\)/);
+  assert.match(operations, /Completed by an explicit Complete task click in the CRM contact workspace/);
+  assert.match(operations, /stage: 'assigned'/);
+  assert.match(operations, /completed_at: null/);
+  assert.match(operations, /verified_at: null/);
+  assert.match(operations, /Reopened by an explicit Reopen task click in the CRM contact workspace/);
+  assert.match(operations, /agent_status: 'none'/);
+  assert.match(operations, /Task state changes are first-party CRM updates only\. No message, payment, access grant, import, or external CRM write runs\./);
+  assert.match(server, /app\.patch\('\/api\/bna\/tasks\/:id', requireAdmin, async \(req, res\) =>/);
+  assert.match(server, /await assertTaskAccess\(req, id\)/);
+  assert.match(server, /'completed_at'/);
+  assert.match(server, /'verified_at'/);
+  assert.match(server, /'verification_notes'/);
+  assert.match(server, /'agent_status'/);
+});
+
 test('Operations CRM Archive Contact action is explicit and first-party only', () => {
   assert.match(operations, /data-action-id="ACTION-CRM-ARCHIVE-CONTACT"/);
   assert.match(operations, /function archiveFirstPartyCrmContact\(event, contactId\)/);
