@@ -38973,3 +38973,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   SHA; One Time separate-instance smoke passed; One Time Operations CRM
   workbench smoke passed with 12 scoped CRM cards and selected timeline
   read-only.
+
+## 2026-07-13 - Shared CRM local update/no-auto-task slice local verification
+
+- Added a selected-contact local CRM update form for name, lifecycle, owner,
+  follow-up date, tags, and note capture.
+- The form uses the registered `ACTION-CRM-CONTACT-SAFE-UPDATE` first-party
+  local write action and sends `create_follow_up_task: false`.
+- Tightened the server task policy so CRM follow-up tasks are created only when
+  `create_follow_up_task` is explicitly true, matching the addendum's
+  no-automatic-task rule.
+- Verification passed: generated-shell check, focused CRM/isolation tests
+  `33/33`, local Playwright CRM workbench smoke, action watchdog, protocol
+  drift watchdog, secret audit, execution-run validation, and `git diff --check`
+  with line-ending warnings only.
+- Deployment/live smoke is still pending for this local update slice.

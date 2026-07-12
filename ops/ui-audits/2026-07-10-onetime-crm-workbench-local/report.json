@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "generated_at": "2026-07-12T21:33:15.344Z",
+  "generated_at": "2026-07-12T21:44:28.679Z",
   "target": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts + /operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
   "scope": "Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.",
   "guardrails": {
@@ -640,7 +640,7 @@
       "pageErrors": [],
       "failedRequests": [],
       "badResponses": [],
-      "mailboxUrl": "http://127.0.0.1:65135/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
+      "mailboxUrl": "http://127.0.0.1:62616/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
       "passed": true
     }
   ]

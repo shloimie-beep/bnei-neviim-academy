@@ -15837,6 +15837,43 @@
 
         }
 
+        function renderFirstPartyCrmLocalUpdateForm(card = {}, readOnly = false) {
+            if (readOnly) {
+                return `
+                    <div class="contact-empty-card" data-crm-local-update-readonly>
+                        Local CRM updates are paused in read-only preview.
+                    </div>
+                `;
+            }
+            const statusOptions = ['new', 'follow_up', 'active', 'signed_up', 'archived'];
+            const currentStatus = card.status || 'new';
+            const tagsValue = Array.isArray(card.tags) ? card.tags.join(', ') : '';
+            const followUpValue = card.next_follow_up_at ? String(card.next_follow_up_at).slice(0, 10) : '';
+            return `
+                <form class="crm-local-update-form" onsubmit="saveFirstPartyCrmAction(event, ${attrJson(card.id)})" data-crm-local-update-form>
+                    <div class="task-section-header compact">
+                        <div>
+                            <h3>Local CRM update</h3>
+                            <p class="notification-lock-note">Saves only first-party CRM fields and notes. External sends, access changes, imports, and task creation stay off.</p>
+                        </div>
+                    </div>
+                    <div class="settings-control-grid compact">
+                        <label>Name<input name="display_name" value="${escapeHtml(card.display_name || '')}" autocomplete="off"></label>
+                        <label>Lifecycle<select name="status">
+                            ${statusOptions.map(status => `<option value="${escapeHtml(status)}" ${status === currentStatus ? 'selected' : ''}>${escapeHtml(contactStatusLabel(status))}</option>`).join('')}
+                        </select></label>
+                        <label>Owner<input name="assigned_owner" value="${escapeHtml(card.assigned_owner || '')}" autocomplete="off"></label>
+                        <label>Follow-up<input name="next_follow_up_at" type="date" value="${escapeHtml(followUpValue)}"></label>
+                    </div>
+                    <label class="crm-local-update-wide">Tags<input name="tags" value="${escapeHtml(tagsValue)}" autocomplete="off" placeholder="Comma separated"></label>
+                    <label class="crm-local-update-wide">Add note<textarea name="note_body" rows="3" placeholder="No notes yet."></textarea></label>
+                    <div class="task-actions">
+                        <button class="task-action primary" type="submit" data-action-id="ACTION-CRM-CONTACT-SAFE-UPDATE" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>${firstPartyCrmSaving ? 'Saving...' : 'Save CRM update'}</button>
+                    </div>
+                </form>
+            `;
+        }
+
         function renderFirstPartyCrmDetail(card = null) {
             if (!card) {
                 return `
@@ -15869,6 +15906,7 @@
                         ]).map(tab => `<button class="ops-filter-tab ${tab.id === 'activity' ? 'active' : ''}" type="button" role="tab" aria-selected="${tab.id === 'activity' ? 'true' : 'false'}" ${tab.enabled ? '' : `disabled aria-disabled="true" title="${escapeHtml(tab.empty_state || '')}"`}>${escapeHtml(tab.label)}</button>`).join('')}
                     </div>
                     ${renderFirstPartyCrmSafeActions(card)}
+                    ${renderFirstPartyCrmLocalUpdateForm(card, viewAsReadOnly)}
                 </section>
                 ${timeline}
             `;
@@ -16056,7 +16094,7 @@
                     next_follow_up_at: data.get('next_follow_up_at') || '',
                     assigned_owner: data.get('assigned_owner') || '',
                     tags,
-                    create_follow_up_task: Boolean(data.get('next_follow_up_at') || data.get('assigned_owner')),
+                    create_follow_up_task: false,
                     note_summary: noteBody ? `CRM note for selected contact` : 'CRM contact updated',
                     note_body: noteBody,
                     no_send: true,

@@ -53,6 +53,15 @@ test('Operations CRM contact workspace keeps URL state for reload and browser Ba
   assert.match(operations, /function clearFirstPartyCrmSelection\(event\)[\s\S]*syncOperationsUrl\(\);[\s\S]*updateFirstPartyCrmPanel\(\);/);
 });
 
+test('Operations CRM local update form is first-party only and does not auto-create tasks', () => {
+  assert.match(operations, /function renderFirstPartyCrmLocalUpdateForm\(card = \{\}, readOnly = false\)/);
+  assert.match(operations, /data-crm-local-update-form/);
+  assert.match(operations, /data-action-id="ACTION-CRM-CONTACT-SAFE-UPDATE"/);
+  assert.match(operations, /Saves only first-party CRM fields and notes\. External sends, access changes, imports, and task creation stay off\./);
+  assert.match(operations, /create_follow_up_task: false/);
+  assert.match(server, /const shouldCreateFollowUpTask = body\.create_follow_up_task === true \|\| String\(body\.create_follow_up_task \|\| ''\)\.toLowerCase\(\) === 'true';/);
+});
+
 test('Shared CRM modules expose paths, empty states, actions, and inbox scope', () => {
   const global = runBrowserModule('public/js/crm/crm-api.js');
   runBrowserModule('public/js/crm/crm-store.js', { window: global });

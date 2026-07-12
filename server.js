@@ -49929,7 +49929,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
   const displayNameUpdate = limitText(String(body.display_name || body.full_name || body.parent_name || body.name || '').trim(), 180);
   const emailUpdate = normalizeEmail(body.email || body.parent_email || body.primary_email || '');
   const phoneUpdate = limitText(String(body.phone || body.parent_phone || body.primary_phone || '').trim(), 80);
-  const shouldCreateFollowUpTask = body.create_follow_up_task !== false && Boolean(nextFollowUpAt || assignedOwner || body.create_follow_up_task === true);
+  const shouldCreateFollowUpTask = body.create_follow_up_task === true || String(body.create_follow_up_task || '').toLowerCase() === 'true';
   const tags = normalizeTextArray(body.tags);
 
   try {

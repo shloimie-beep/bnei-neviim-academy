@@ -62,4 +62,12 @@
 - PASS `npm run app:smoke:onetime-operations-crm-workbench` after CRM URL-state deploy
   - Scoped CRM contacts API returned 12 cards with no external-write flags.
   - Selected CRM timeline API was read-only.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js` (33/33) after local update/no-auto-task slice.
+- PASS `node scripts/smoke-onetime-operations-crm-workbench-local.mjs` after local update/no-auto-task slice.
+- PASS `npm run operations:check-generated` after local update/no-auto-task slice.
+- PASS `npm run watchdog:actions` finding_count `0` after local update/no-auto-task slice.
+- PASS `npm run watchdog:protocol-drift` after local update/no-auto-task slice.
+- PASS `npm run secrets:audit` after local update/no-auto-task slice.
+- PASS `npm run bna:run:validate` after local update/no-auto-task slice.
+- PASS `git diff --check` with line-ending warnings only after local update/no-auto-task slice.
 - BLOCKED `npm run production:readiness:gate -- --json` only on full-launch external Stripe/campaign setup fields.

@@ -9,3 +9,16 @@
 .crm-channel-empty {
     color: inherit;
 }
+
+.crm-local-update-form {
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 12px;
+}
+
+.crm-local-update-wide {
+    display: grid;
+    gap: 6px;
+}
