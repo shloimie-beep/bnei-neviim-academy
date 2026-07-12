@@ -38815,4 +38815,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verification passed: focused branch tests 17/17, `npm run
   test:onetime:focused` 73/73, action watchdog 0 findings, and protocol drift
   watchdog 0 findings.
-- Deployment and live smoke remain pending.
+- Deployed code commit `692b20ed06b832093a64a628a7a9731c1c5824ac` to Railway
+  `one-time-production / production / one-time-web`; deployment
+  `e26ebaa2-7d71-49a6-9abd-50f94e128ecf` reached `SUCCESS`.
+- Live smokes passed: One Time separate instance with expected SHA, One Time
+  interest dry-run with no database write, and Rabbi One Time landing/signup.
+- A live production-JS browser intercept loaded `/one-time/signup`, submitted
+  Family and School, intercepted `/api/one-time/interest` locally, and captured
+  the correct normalized `family` and `school` payloads without a live lead
+  write or external send.
