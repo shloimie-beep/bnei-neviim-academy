@@ -39053,6 +39053,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Operations CRM workbench smoke with 12 scoped cards and read-only selected
   timeline.
 
+## 2026-07-13 - Shared CRM Archive Contact local verification
+
+- Added `ACTION-CRM-ARCHIVE-CONTACT` to the selected CRM contact workspace with
+  read-only preview disabled state and explicit confirmation copy.
+- The action uses the existing scoped CRM PATCH route with `status=archived`,
+  `create_follow_up_task=false`, no-send/no-access/no-import/no-external-write
+  flags, then clears selection and reloads the active contact list.
+- Verification passed: generated-shell check, focused CRM tests `37/37`, local
+  Operations CRM workbench smoke at 1440/1024/768/430/390 with archive action
+  visibility and no archive click/write, action watchdog 0 findings, protocol
+  drift watchdog, secret audit, execution run validation, and diff check with
+  line-ending warnings only.
+- Status: local verified, pending commit, push, BNA/One Time deploy, and live
+  One Time Operations CRM smoke before this slice is deployed.
+
 ## 2026-07-13 - Shared CRM workspace tabs local verification
 
 - Enabled Overview, Activity, Conversations, Tasks, and Access tabs in the

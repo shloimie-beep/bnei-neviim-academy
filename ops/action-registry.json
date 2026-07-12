@@ -2726,6 +2726,25 @@
       ]
     },
     {
+      "action_id": "ACTION-CRM-ARCHIVE-CONTACT",
+      "label": "Archive contact",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-ARCHIVE-CONTACT\"]",
+      "expected_behavior": "Archives the selected workspace-scoped first-party CRM contact only after an explicit click and confirmation, hides it from active CRM lists, records a local pipeline event through the CRM PATCH route, and performs no email, WhatsApp, Telegram, payment, access grant, import, automatic task creation, historical sync, or external CRM write. The action is disabled in read-only preview.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies Archive Contact uses status=archived, create_follow_up_task=false, and no external-write flags; the One Time CRM workbench local smoke verifies the action is visible without clicking it."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-CRM-CONTACT-SAFE-UPDATE",
       "label": "Save CRM update",
       "surface": "operations_contacts",

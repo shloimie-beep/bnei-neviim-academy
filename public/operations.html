@@ -15877,6 +15877,9 @@
             const taskAction = readOnlyPreview
                 ? `<button class="task-action" type="button" data-action-id="ACTION-CRM-CREATE-TASK" disabled aria-disabled="true" title="Create task is unavailable in read-only preview.">Create task</button>`
                 : `<button class="task-action" type="button" onclick="createFirstPartyCrmTask(event, ${attrJson(card?.id || '')})" data-action-id="ACTION-CRM-CREATE-TASK" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>${firstPartyCrmSaving ? 'Saving...' : 'Create task'}</button>`;
+            const archiveAction = readOnlyPreview
+                ? `<button class="task-action" type="button" data-action-id="ACTION-CRM-ARCHIVE-CONTACT" disabled aria-disabled="true" title="Archive contact is unavailable in read-only preview.">Archive contact</button>`
+                : `<button class="task-action" type="button" onclick="archiveFirstPartyCrmContact(event, ${attrJson(card?.id || '')})" data-action-id="ACTION-CRM-ARCHIVE-CONTACT" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>Archive contact</button>`;
             return `
                 <div class="crm-safe-action-panel" data-crm-safe-actions>
                     <div class="task-section-header compact">
@@ -15890,6 +15893,7 @@
                         ${inboxAction}
                         ${whatsappAction}
                         ${taskAction}
+                        ${archiveAction}
                     </div>
                 </div>
             `;
@@ -16347,6 +16351,43 @@
                 if (!firstPartyCrmTimelinePayload) await openFirstPartyCrmContact(contactId);
             } catch (error) {
                 firstPartyCrmError = error.message || 'Could not create CRM task.';
+            } finally {
+                firstPartyCrmSaving = false;
+                render();
+            }
+        }
+
+        async function archiveFirstPartyCrmContact(event, contactId) {
+            event.preventDefault();
+            if (!contactId || oneTimeViewAsRabbiActive()) return;
+            const card = selectedFirstPartyCrmCard() || {};
+            const name = card.display_name || card.email || card.phone || 'this CRM contact';
+            if (!window.confirm(`Archive ${name}? The local record will be hidden from active CRM lists. No message, payment, access change, import, or external CRM write will run.`)) return;
+            firstPartyCrmSaving = true;
+            firstPartyCrmError = '';
+            firstPartyCrmNotice = '';
+            render();
+            try {
+                await api.updateCrmContact(contactId, {
+                    ...firstPartyCrmQueryFilters(),
+                    status: 'archived',
+                    lifecycle_stage: 'archived',
+                    tags: Array.isArray(card.tags) ? card.tags : [],
+                    create_follow_up_task: false,
+                    note_summary: 'CRM contact archived',
+                    note_body: 'Archived by an explicit Archive contact click in the CRM contact workspace. No message, payment, access grant, import, or external CRM write was performed.',
+                    no_send: true,
+                    external_write_performed: false
+                });
+                firstPartyCrmNotice = 'Contact archived locally. No external message, charge, import, or access change ran.';
+                selectedFirstPartyCrmContactId = null;
+                firstPartyCrmTimelinePayload = null;
+                firstPartyCrmActiveTab = 'activity';
+                firstPartyCrmContactsCache.clear();
+                syncOperationsUrl();
+                await loadFirstPartyCrmContacts(null, { force: true });
+            } catch (error) {
+                firstPartyCrmError = error.message || 'Could not archive CRM contact.';
             } finally {
                 firstPartyCrmSaving = false;
                 render();

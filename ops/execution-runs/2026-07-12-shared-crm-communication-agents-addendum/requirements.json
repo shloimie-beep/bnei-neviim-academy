@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-12T23:48:00+03:00",
+  "updated_at": "2026-07-13T02:06:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -236,9 +236,9 @@
         "REQ-20260712-305"
       ],
       "status": "in_progress",
-      "implementation_status": "Add Contact slice implemented, pushed, deployed to BNA and One Time, and live-smoked: Operations exposes ACTION-CRM-ADD-CONTACT, POST /api/bna/crm/contacts creates or updates one workspace-scoped first-party bna_contacts record, upserts workspace-scoped email/phone/WhatsApp identities, writes a local pipeline event, returns the stable bna_contacts:<id> contact key, and opens the saved contact workspace without external sends, access grants, imports, checkout, or automatic task creation. Remaining actions include complete/reopen task, archive contact, and family/member linking.",
+      "implementation_status": "Add Contact slice implemented, pushed, deployed to BNA and One Time, and live-smoked: Operations exposes ACTION-CRM-ADD-CONTACT, POST /api/bna/crm/contacts creates or updates one workspace-scoped first-party bna_contacts record, upserts workspace-scoped email/phone/WhatsApp identities, writes a local pipeline event, returns the stable bna_contacts:<id> contact key, and opens the saved contact workspace without external sends, access grants, imports, checkout, or automatic task creation. Archive Contact slice is locally verified: Operations exposes ACTION-CRM-ARCHIVE-CONTACT, the explicit click archives through the scoped CRM PATCH route with status=archived and create_follow_up_task=false, and local smoke verifies visibility without clicking the write action. Remaining actions include complete/reopen task and family/member linking.",
       "can_continue_without_operator": true,
-      "next_action": "Continue complete/reopen task, archive contact, and family/member linking.",
+      "next_action": "Commit, push, deploy, and live-smoke Archive Contact; then continue complete/reopen task and family/member linking.",
       "acceptance_criteria": [
         "Contact index opens a full workspace with URL/back-state persistence, mobile one-pane behavior, and persisted add/edit/tag/owner/lifecycle/follow-up/task/thread/family/archive actions."
       ],
@@ -254,7 +254,12 @@
         "ops/watchdog-audits/2026-07-12T22-54-watchdog-action-audit.md records action watchdog PASS finding_count 0.",
         "BNA deployment e3f91da7-ed02-4554-8b05-7ea11606cf2e SUCCESS at commit de48d8aef8b4764b5144a89edef9e269c102c25f.",
         "One Time deployment 4cd41025-343f-488a-bf07-4f6550fa2a0d SUCCESS at commit de48d8aef8b4764b5144a89edef9e269c102c25f.",
-        "ops/live-smokes/2026-07-12T23-00-18-923Z-one-time-operations-crm-workbench-live-smoke.md records deployed One Time Operations CRM workbench smoke after Add Contact slice."
+        "ops/live-smokes/2026-07-12T23-00-18-923Z-one-time-operations-crm-workbench-live-smoke.md records deployed One Time Operations CRM workbench smoke after Add Contact slice.",
+        "public/operations.html exposes ACTION-CRM-ARCHIVE-CONTACT with a read-only disabled state, explicit confirmation, and no-send/no-task archive PATCH path.",
+        "public/js/operations-shell.js regenerated after adding ACTION-CRM-ARCHIVE-CONTACT.",
+        "ops/action-registry.json registers ACTION-CRM-ARCHIVE-CONTACT.",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records Archive Contact visibility without clicking the archive/write action.",
+        "ops/watchdog-audits/2026-07-12T23-08-watchdog-action-audit.md records action watchdog PASS finding_count 0 after registering ACTION-CRM-ARCHIVE-CONTACT."
       ],
       "verification": [
         "node --check server.js public/js/operations-shell.js scripts/smoke-onetime-operations-crm-workbench-local.mjs PASS after Add Contact slice",
@@ -272,7 +277,17 @@
         "One Time Railway post-deploy doctor PASS deployment 4cd41025-343f-488a-bf07-4f6550fa2a0d",
         "BNA and One Time deploy-info returned commit_sha=de48d8aef8b4764b5144a89edef9e269c102c25f",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha de48d8aef8b4764b5144a89edef9e269c102c25f PASS",
-        "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com PASS after Add Contact slice"
+        "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com PASS after Add Contact slice",
+        "node --check public/js/operations-shell.js scripts/smoke-onetime-operations-crm-workbench-local.mjs PASS after Archive Contact slice",
+        "npm run operations:check-generated PASS after Archive Contact slice",
+        "node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js PASS 12/12 after Archive Contact slice",
+        "node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js PASS 37/37 after Archive Contact slice",
+        "node scripts/smoke-onetime-operations-crm-workbench-local.mjs PASS after Archive Contact slice",
+        "npm run watchdog:actions PASS finding_count 0 after Archive Contact slice",
+        "npm run watchdog:protocol-drift PASS after Archive Contact slice",
+        "npm run secrets:audit PASS after Archive Contact slice",
+        "npm run bna:run:validate PASS after Archive Contact slice",
+        "git diff --check PASS with line-ending warnings only after Archive Contact slice"
       ],
       "implementation_files": [
         "public/js/operations-shell.js",
@@ -285,16 +300,18 @@
         "tests/shared-crm-workbench-contract.test.js",
         "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
         "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json",
-        "ops/watchdog-audits/2026-07-12T22-54-watchdog-action-audit.md"
+        "ops/watchdog-audits/2026-07-12T22-54-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-07-12T23-08-watchdog-action-audit.md"
       ],
       "deployment_required": true,
       "deployment_evidence": [
         "Add Contact slice deployed at de48d8aef8b4764b5144a89edef9e269c102c25f.",
         "BNA production deploy-info readback commit_sha=de48d8aef8b4764b5144a89edef9e269c102c25f.",
         "One Time production deploy-info readback commit_sha=de48d8aef8b4764b5144a89edef9e269c102c25f.",
-        "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T23-00-18-923Z-one-time-operations-crm-workbench-live-smoke.md."
+        "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T23-00-18-923Z-one-time-operations-crm-workbench-live-smoke.md.",
+        "Archive Contact local verification completed; deployment/live smoke pending for this slice."
       ],
-      "updated_at": "2026-07-13T02:02:00+03:00",
+      "updated_at": "2026-07-13T02:06:00+03:00",
       "blocker": ""
     },
     {

@@ -152,3 +152,13 @@
 - PASS BNA and One Time live `/api/deploy-info`; deployed SHA `de48d8aef8b4764b5144a89edef9e269c102c25f`.
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha de48d8aef8b4764b5144a89edef9e269c102c25f`.
 - PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-00-18-923Z-one-time-operations-crm-workbench-live-smoke.md`, 12 scoped cards, selected timeline read-only.
+- PASS `node --check public\js\operations-shell.js scripts\smoke-onetime-operations-crm-workbench-local.mjs` after Archive Contact slice.
+- PASS `npm run operations:check-generated` after Archive Contact slice.
+- PASS `node --test tests\shared-crm-workbench-contract.test.js tests\crm-contact-service.test.js` (12/12) after Archive Contact slice.
+- PASS `node --test tests\crm-contact-service.test.js tests\shared-crm-workbench-contract.test.js tests\crm-contact-model.test.js tests\rabbi-scheller-tenant-isolation-contract.test.js tests\one-time-communications-workspace.test.js tests\operations-contacts-intake-cleanup.test.js` (37/37) after Archive Contact slice.
+- PASS `node scripts\smoke-onetime-operations-crm-workbench-local.mjs` after Archive Contact slice; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions` finding_count `0` after Archive Contact slice; report `ops/watchdog-audits/2026-07-12T23-08-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift` after Archive Contact slice.
+- PASS `npm run secrets:audit` after Archive Contact slice.
+- PASS `npm run bna:run:validate` after Archive Contact slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after Archive Contact slice.

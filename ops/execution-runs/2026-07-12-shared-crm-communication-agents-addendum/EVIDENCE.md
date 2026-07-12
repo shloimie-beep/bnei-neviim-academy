@@ -47,6 +47,9 @@
 - BNA post-deploy doctor - Railway deployment `e3f91da7-ed02-4554-8b05-7ea11606cf2e` reached `SUCCESS`.
 - One Time post-deploy doctor - Railway deployment `4cd41025-343f-488a-bf07-4f6550fa2a0d` reached `SUCCESS`.
 - `ops/live-smokes/2026-07-12T23-00-18-923Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the Add Contact slice with 12 scoped cards and read-only selected timeline.
+- `public/operations.html` / `public/js/operations-shell.js` - Operations CRM workspace exposes `ACTION-CRM-ARCHIVE-CONTACT`, a read-only preview disabled state, explicit confirmation copy, and a no-send/no-task archive PATCH path that clears selection and reloads the active contact list.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local CRM workbench smoke passed after verifying explicit Create task and Archive contact actions are visible without clicking the archive/write action.
+- `ops/watchdog-audits/2026-07-12T23-08-watchdog-action-audit.md` - action watchdog passed with `finding_count=0` after registering `ACTION-CRM-ARCHIVE-CONTACT`.
 - `raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md` - operator correction requiring the WhatsApp bot knowledge to state no portal/member/library access is being granted yet plus One Time landing header/button/mobile CTA polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md` - scoped local-verified handoff for bot knowledge and landing polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json` - focused Product Quality Compiler packet for the One Time header/CTA/spacing/mobile correction and bot access-fact guardrail.

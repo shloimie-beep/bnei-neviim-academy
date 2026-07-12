@@ -503,6 +503,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       hasSafeActionPanel: Boolean(document.querySelector('[data-crm-safe-actions]')),
       hasAddContactAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-ADD-CONTACT"]')),
       hasCreateTaskAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-CREATE-TASK"]:not([disabled])')),
+      hasArchiveContactAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-ARCHIVE-CONTACT"]:not([disabled])')),
       disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-CREATE-TASK"][disabled], [data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
       hasOpenScopedInboxAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]')),
     };
@@ -632,6 +633,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       addContactMetrics.formVisible &&
       addContactMetrics.noExternalCopy &&
       selectedMetrics.hasCreateTaskAction &&
+      selectedMetrics.hasArchiveContactAction &&
       Object.values(workspaceTabMetrics).every(Boolean) &&
       selectedMetrics.hasOpenScopedInboxAction &&
       mobileBackMetrics.restoredList &&
@@ -678,6 +680,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     hasAddContactActionAfterSelect: selectedMetrics.hasAddContactAction,
     addContactMetrics,
     hasCreateTaskActionAfterSelect: selectedMetrics.hasCreateTaskAction,
+    hasArchiveContactActionAfterSelect: selectedMetrics.hasArchiveContactAction,
     workspaceTabMetrics,
     disabledCrmActionCountAfterSelect: selectedMetrics.disabledCrmActionCount,
     hasOpenScopedInboxActionAfterSelect: selectedMetrics.hasOpenScopedInboxAction,
@@ -851,7 +854,7 @@ async function main() {
     '',
     '- One Time Operations CRM route renders the API-backed workbench.',
     '- Split shell and monolith fallback render the API-backed workbench.',
-    '- Search/filter/sort controls, Add Contact form, cards, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe actions, explicit Create task action, and timeline readback are visible.',
+    '- Search/filter/sort controls, Add Contact form, cards, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe actions, explicit Create task/archive actions, and timeline readback are visible.',
     '- Overview, Activity, Conversations, Tasks, and Access tabs are clickable and render non-disabled workspace panels.',
     '- Mobile selected-contact state hides the list and Back to contacts restores it.',
     '- Scoped One Time Inbox retains selected CRM contact context and keeps send gates visible.',

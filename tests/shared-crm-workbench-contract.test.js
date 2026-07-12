@@ -94,6 +94,17 @@ test('Operations CRM Create task action is explicit and first-party only', () =>
   assert.match(server, /No email, WhatsApp, payment, access, import, or external CRM write was performed by creating this task\./);
 });
 
+test('Operations CRM Archive Contact action is explicit and first-party only', () => {
+  assert.match(operations, /data-action-id="ACTION-CRM-ARCHIVE-CONTACT"/);
+  assert.match(operations, /function archiveFirstPartyCrmContact\(event, contactId\)/);
+  assert.match(operations, /status: 'archived'/);
+  assert.match(operations, /lifecycle_stage: 'archived'/);
+  assert.match(operations, /Archived by an explicit Archive contact click in the CRM contact workspace/);
+  assert.match(operations, /create_follow_up_task: false/);
+  assert.match(operations, /external_write_performed: false/);
+  assert.match(operations, /Archive contact is unavailable in read-only preview\./);
+});
+
 test('Operations CRM workspace tabs are enabled surfaces, not disabled placeholders', () => {
   assert.match(operations, /let firstPartyCrmActiveTab = 'activity';/);
   assert.match(operations, /function setFirstPartyCrmWorkspaceTab\(tabId\)/);
