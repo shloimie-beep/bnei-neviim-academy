@@ -39089,8 +39089,15 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Family tabs clicked, action watchdog 0 findings, protocol drift watchdog,
   secret audit, execution run validation, and diff check with line-ending
   warnings only.
-- Status: local verified, pending commit, push, BNA/One Time deploy, and live
-  One Time Operations CRM smoke before this slice is deployed.
+- Deployed commit `d1c0d3a596ad420876941445faad9f1e60c7ce48` to BNA and One
+  Time production.
+- BNA Railway deployment `32cd90dd-38cf-4398-93db-6af86939deeb` and One Time
+  deployment `00290796-3917-4269-b573-981cf0ff7206` reached `SUCCESS`.
+- BNA and One Time live `/api/deploy-info` both returned
+  `d1c0d3a596ad420876941445faad9f1e60c7ce48`.
+- Live proof passed: One Time separate-instance SHA smoke, One Time Operations
+  CRM workbench smoke with 12 scoped cards and read-only selected timeline,
+  and a read-only deployed HTML marker check for Identity and Family tab panels.
 
 ## 2026-07-13 - Shared CRM Archive Contact local verification
 

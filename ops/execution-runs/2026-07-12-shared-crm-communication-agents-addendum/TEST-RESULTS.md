@@ -196,3 +196,10 @@
 - PASS `npm run secrets:audit` after Identity/Family workspace slice.
 - PASS `npm run bna:run:validate` after Identity/Family workspace slice; work remains on the broader addendum.
 - PASS `git diff --check` with line-ending warnings only after Identity/Family workspace slice.
+- PASS `git push origin master` for Identity/Family workspace commit `d1c0d3a596ad420876941445faad9f1e60c7ce48`.
+- PASS BNA Railway post-deploy doctor for deployment `32cd90dd-38cf-4398-93db-6af86939deeb`.
+- PASS One Time Railway post-deploy doctor for deployment `00290796-3917-4269-b573-981cf0ff7206`.
+- PASS BNA and One Time deploy-info readbacks returned `commit_sha=d1c0d3a596ad420876941445faad9f1e60c7ce48`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha d1c0d3a596ad420876941445faad9f1e60c7ce48`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-34-34-660Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only deployed HTML marker check: `https://join.onetimeonetime.com/operations.html` contains Identity and Family tab panel markers.
