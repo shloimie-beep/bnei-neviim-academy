@@ -6,8 +6,8 @@
 | delivery-truth-ci | REQ-20260712-002 | Needs operator decision | Add/push the CI workflow with a GitHub credential that has `workflow` scope. |
 | canonical-operations-proof | REQ-20260712-003 | Verified | None. |
 | rabbi-provider-login | REQ-20260712-004 | Verified | None. |
-| first-party-crm | REQ-20260712-005 | Blocked | Provide `BNA_ONETIME_CRM_TEST_DATABASE_URL` and rerun `npm run one-time:smoke:crm-journey-local-db`. |
-| onboarding-linkage | REQ-20260712-006 | Blocked | Rerun real local/test DB persistence proof after the CRM test database URL is available. |
+| first-party-crm | REQ-20260712-005 | Verified | None. |
+| onboarding-linkage | REQ-20260712-006 | Verified | None. |
 | landing-robot-config | REQ-20260712-007 | Needs verification | Complete the remaining non-landing live screenshot/matrix evidence. |
 | ramble-to-done-service | REQ-20260712-008 | Needs operator decision | Decide whether to run a scoped production intake/dropoff write-smoke packet. |
 | regression-suite | REQ-20260712-009 | Needs operator decision | Same production write-smoke decision as REQ-008. |
@@ -23,5 +23,5 @@
 | rabbi-telegram-alert | REQ-20260712-019 | In progress | Hosted worker/live single-alert smoke remains; do not send without exact approval. |
 | no-portal-negative-tests | REQ-20260712-020 | Needs operator decision | Terminal proof depends on real persistence/operator-test evidence. |
 | local-class-preview-gate | REQ-20260712-021 | Needs operator decision | Terminal proof depends on real persistence/operator-test evidence. |
-| readiness-deploy-operator-test | REQ-20260712-022 | Needs operator decision | Operator personal deployed signup and hosted reminder-provider readiness remain open. |
+| readiness-deploy-operator-test | REQ-20260712-022 | Needs operator decision | Exact live-send behavior/copy and hosted scheduler/CRON readiness remain open. |
 | signup-test-matrix | REQ-20260712-023 | In progress | Extend the matrix beyond the signup/reminder slice. |

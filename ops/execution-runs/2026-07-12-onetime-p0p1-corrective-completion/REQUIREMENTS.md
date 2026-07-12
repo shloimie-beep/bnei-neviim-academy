@@ -25,10 +25,6 @@ Open implementation/provider-evidence requirements:
 - `REQ-20260712-019`: exactly one scoped Rabbi Telegram alert per genuine
   signup.
 - `REQ-20260712-023`: complete signup/reminder test matrix and evidence.
-- `REQ-20260712-005`: complete first-party CRM DTO/actions/mailbox journey with
-  real API persistence and cross-workspace denial.
-- `REQ-20260712-006`: complete signup and Family/School continuation lead
-  linkage.
 - `REQ-20260712-007`: complete public landing hierarchy, Robot launcher, and
   One Time config.
 - `REQ-20260712-008`: implement canonical ramble-to-done ingestion service.
@@ -37,7 +33,7 @@ Open implementation/provider-evidence requirements:
 
 Release-gated:
 
-- `REQ-20260712-022`: deployed personal operator test and local-class
+- `REQ-20260712-022`: exact live-send behavior/copy plus local-class
   activation after operator confirmation.
 - `REQ-20260712-011`: deploy/live smoke exact SHA only after explicit operator
   or reviewer authorization.

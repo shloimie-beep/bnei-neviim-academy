@@ -29,17 +29,18 @@ uncommitted change that breaks `node --check server.js`.
 - `REQ-20260712-005`: CRM persistence proof is complete through the approved
   production fake-contact write-smoke. Do not recreate this blocker unless the
   production fake-contact evidence is superseded.
-- `REQ-20260712-006`: rerun/record the real local/test DB onboarding linkage
-  proof after the database URL exists.
+- `REQ-20260712-006`: Family/School continuation proof is complete through the
+  approved production personal-contact smoke. Do not recreate this blocker
+  unless the evidence is superseded.
 - `REQ-20260712-008` / `REQ-20260712-009`: decide whether to run a production
   intake/dropoff write-smoke packet, since it creates live raw/parse records.
 - `REQ-20260712-010`: complete the remaining live screenshot/matrix set for
   provider login, canonical Rabbi dashboard, CRM list/detail, persisted CRM
   edit, targeted mailbox, and Robot launcher.
-- `REQ-20260712-022`: operator personal deployed signup, live WAPI auto-reply/
-  Telegram approval, and scheduler/CRON readiness remain open. One Time WAPI
-  provider setup is configured and deployed. Do not send externally until the
-  exact send scope is approved.
+- `REQ-20260712-022`: exact live WAPI/email/Telegram send behavior, message
+  copy, and scheduler/CRON readiness remain open. One Time WAPI provider setup
+  is configured and deployed. Do not send externally until the exact send scope
+  and copy are approved.
 
 ## First Commands
 

@@ -10196,7 +10196,7 @@ Verification:
 ## 2026-06-10T14:11:00+03:00 - Built and emailed BNA laptop installer
 
 Codex built a Windows one-click laptop installer package for the BNA workspace
-and emailed it to `sdratler@gmail.com`.
+and emailed it to `[operator-email]`.
 
 Completed:
 - Added `scripts/build-laptop-install-package.ps1` for repeatable installer
@@ -31183,7 +31183,7 @@ Actions: 1. Active machine tasks: 0.
   but broken: it pointed at missing
   `scripts\one-time-drive-dropoff-email-watch.mjs` and returned last result
   `1`.
-- Dry-ran the canonical notifier with recipient `sdratler@gmail.com`; it
+- Dry-ran the canonical notifier with recipient `[operator-email]`; it
   checked the two approved Rabbi-facing folders, found 0 current items, and
   sent 0 emails.
 - Hardened `scripts/register-one-time-drive-dropoff-notifier.ps1` to register
@@ -31191,7 +31191,7 @@ Actions: 1. Active machine tasks: 0.
   fragile `schtasks.exe` quoting.
 - Re-registered the task. Readback now executes `wscript.exe` with
   `scripts\run-one-time-drive-dropoff-notifier.vbs` and
-  `sdratler@gmail.com`; forced run returned `LastTaskResult=0`.
+  `[operator-email]`; forced run returned `LastTaskResult=0`.
 - Verification passed: focused notifier test 5/5, notifier script syntax
   checks, dry-run Drive readback, scheduler action readback, and forced
   scheduled-task run. No email, Drive write, payment/access/DNS/provider/CRM
@@ -38615,3 +38615,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   return-to-contact state.
 - No real email, WhatsApp/WAPI, Telegram, payment, access, DNS, external CRM,
   or import mutation was performed.
+
+## 2026-07-12 - One Time personal Family/School continuation proof completed
+
+- Captured the operator personal-contact test approval as a redacted raw input:
+  `RAW-20260712-004`.
+- Added `scripts/smoke-one-time-personal-continuation-live.mjs` and
+  `npm run app:smoke:one-time-personal-continuation`.
+- Ran the production proof with the operator contact supplied at runtime only;
+  generated reports redact the email and phone.
+- Live proof passed for Family and School: direct signup, exact
+  `product_lead_id` / `crm_lead_id` continuation linkage, UTM/referrer/source
+  preservation, required branch fields, classification, Operations CRM
+  readback, outbox presence, and cleanup readback.
+- Cleanup cancelled queued email/WhatsApp/Telegram outbox rows, archived the
+  product/CRM leads, deleted generated onboarding tasks, and closed support
+  tickets. No dispatchable queued rows remained.
+- No external email, WhatsApp/WAPI, Telegram, payment, access, DNS, import, or
+  external CRM write was performed.

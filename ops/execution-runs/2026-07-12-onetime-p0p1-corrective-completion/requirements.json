@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-onetime-p0p1-corrective-completion",
   "title": "One Time P0/P1 Corrective Completion",
-  "updated_at": "2026-07-12T14:58:00+03:00",
+  "updated_at": "2026-07-12T15:26:00+03:00",
   "git_refs": {
     "delivery_branch": "codex/onetime-p0p1-corrective-20260711",
     "release_worktree": "detached HEAD from origin/master at deployed commit",
@@ -70,6 +70,16 @@
       "workspace": "rabbi_sheller_provider",
       "project": "one_time_mishnah_class",
       "source_type": "operator_form_ui_correction"
+    },
+    {
+      "source_id": "RAW-20260712-004",
+      "source_path": "raw-input/RAW-20260712-004-onetime-personal-test-approval-redacted.md",
+      "captured_at": "2026-07-12T15:24:00+03:00",
+      "content_fingerprint": "sha256:e96f1da6463eebf8be040a1a5fe4f2815ffdca045ca5871727148675f677f311",
+      "privacy_classification": "operator_personal_contact_redacted",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_personal_test_approval_redacted"
     }
   ],
   "source_statements": [
@@ -352,6 +362,20 @@
       "source_statement": "The signup form should not show phone-optional wording; required fields need red dots, phone becomes required only for WhatsApp reminder choices, and the visitor must click a checkbox acknowledging reminders and selected location/class-time use.",
       "classification": "requirement",
       "requirement_id": "REQ-20260712-013"
+    },
+    {
+      "statement_id": "RAW-20260712-004:S41",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Operator approved using the operator personal email and phone as redacted runtime-only test inputs for the remaining One Time production tests.",
+      "classification": "decision",
+      "requirement_id": "REQ-20260712-006"
+    },
+    {
+      "statement_id": "RAW-20260712-004:S42",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Exact external email, WhatsApp/WAPI, Telegram, scheduler, payment, access, DNS, import, or other provider-send actions still require their own scoped send behavior and copy approval.",
+      "classification": "guardrail",
+      "requirement_id": "REQ-20260712-022"
     }
   ],
   "requirements": [
@@ -1121,9 +1145,9 @@
       "owner": "Codex",
       "priority": "P0",
       "can_continue_without_operator": false,
-      "blocker": "Release/deploy/live SHA proof is complete. Terminal proof still requires the dependent real persistence/operator personal test evidence before this requirement can close.",
+      "blocker": "Release/deploy/live SHA proof is complete. Terminal proof still requires the dependent real persistence/remaining authorized live evidence before this requirement can close.",
       "blocker_owner": "Operator / local test environment",
-      "blocker_next_action": "After BNA_ONETIME_CRM_TEST_DATABASE_URL and/or the operator personal deployed signup test is available, rerun the no-portal/payment/access persistence proof and attach evidence.",
+      "blocker_next_action": "Rerun the no-portal/payment/access persistence proof and attach evidence.",
       "evidence": [
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed.",
         "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
@@ -1135,10 +1159,11 @@
         "Final Railway deployment 64ab8814-c984-4618-b808-5e762914f3eb reached SUCCESS for one-time-production / production / one-time-web.",
         "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha fc147ded1ee0e12325111382fa8e460134a8ce3d.",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d PASS.",
-        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment.",
+        "Operator personal deployed signup/continuation proof completed by npm run app:smoke:one-time-personal-continuation with cleanup and no sends."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T14:16:00+03:00",
+      "updated_at": "2026-07-12T15:26:00+03:00",
       "id": "REQ-20260712-020",
       "title": "Prove signup does not trigger portal, account, payment, or access paths",
       "source_statement_ids": [
@@ -1151,7 +1176,7 @@
       ],
       "status": "needs_operator_decision",
       "implementation_status": "Local negative tests and route checks prove the direct signup path does not call portal, login-token, password, payment, Stripe, checkout, access-grant, or member onboarding functions. Live deployed replay/no-side-effect proof remains required.",
-      "next_action": "After BNA_ONETIME_CRM_TEST_DATABASE_URL and/or the operator personal deployed signup test is available, rerun the no-portal/payment/access persistence proof and attach evidence.",
+      "next_action": "Rerun the no-portal/payment/access persistence proof and attach evidence.",
       "acceptance_criteria": [
         "No parent/student portal records.",
         "No member login/password/setup/recovery/classroom code.",
@@ -1211,9 +1236,9 @@
       "owner": "Codex",
       "priority": "P0",
       "can_continue_without_operator": false,
-      "blocker": "Release/deploy/live SHA proof is complete. Terminal proof still requires the dependent real persistence/operator personal test evidence before this requirement can close.",
+      "blocker": "Release/deploy/live SHA proof is complete. Terminal proof still requires the dependent real persistence/remaining authorized live evidence before this requirement can close.",
       "blocker_owner": "Operator / reviewer",
-      "blocker_next_action": "After the operator personal deployed signup test is complete and exact-three local-class contacts are verified, rerun the local-class preview/activation gate and attach proof.",
+      "blocker_next_action": "After exact-three local-class contacts are verified, rerun the local-class preview/activation gate and attach proof.",
       "evidence": [
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed.",
         "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
@@ -1225,10 +1250,11 @@
         "Final Railway deployment 64ab8814-c984-4618-b808-5e762914f3eb reached SUCCESS for one-time-production / production / one-time-web.",
         "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha fc147ded1ee0e12325111382fa8e460134a8ce3d.",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d PASS.",
-        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment.",
+        "Operator personal deployed signup/continuation proof completed by npm run app:smoke:one-time-personal-continuation with cleanup and no sends."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T14:16:00+03:00",
+      "updated_at": "2026-07-12T15:26:00+03:00",
       "id": "REQ-20260712-021",
       "title": "Build exact-three local-class contact preview and activation gate",
       "source_statement_ids": [
@@ -1241,7 +1267,7 @@
       ],
       "status": "needs_operator_decision",
       "implementation_status": "Admin-only local-class preview route is implemented for the scoped One Time project and expected tag set, returning a redacted preview and blocking activation unless the segment has exactly three unique, unsuppressed, non-archived contacts with valid email addresses. A pure local activation-plan helper now refuses to produce updates until the operator personal test is marked passed and APPROVE_ONE_TIME_LOCAL_CLASS_EMAIL_REMINDERS is supplied, then produces email-only, no-portal/no-payment metadata patches for the exact three contacts. Live readback of the real three-contact segment remains required before activation.",
-      "next_action": "After the operator personal deployed signup test is complete and exact-three local-class contacts are verified, rerun the local-class preview/activation gate and attach proof.",
+      "next_action": "After exact-three local-class contacts are verified, rerun the local-class preview/activation gate and attach proof.",
       "acceptance_criteria": [
         "Only rabbi_sheller_provider / one_time_mishnah_class contacts are inspected.",
         "Approved tags are local_class_attendee, zoom_mishnayos_class, local_student.",
@@ -1304,9 +1330,9 @@
       "owner": "Codex",
       "priority": "P0",
       "can_continue_without_operator": false,
-      "blocker": "Operator personal deployed signup, GitHub workflow scope, scheduler/CRON readiness, Telegram live approval, and explicit WAPI auto-reply/live-send approval remain open. WAPI token/instance/phone/webhook setup is no longer the blocker.",
+      "blocker": "GitHub workflow scope, scheduler/CRON readiness, Telegram live approval, and explicit WAPI/email live-send approval remain open. Operator personal deployed signup/continuation proof is complete. WAPI token/instance/phone/webhook setup is no longer the blocker.",
       "blocker_owner": "Operator / provider setup owner",
-      "blocker_next_action": "Complete the operator personal deployed signup and decide whether to approve exact live WAPI auto-reply/Telegram behavior; do not send broadly.",
+      "blocker_next_action": "Approve exact live WAPI/email/Telegram send behavior and message copy, configure scheduler/CRON readiness, and provide workflow-scope GitHub credential if CI workflow push is still desired. Do not send broadly.",
       "evidence": [
         "scripts/simulate-one-time-class-reminder.mjs requires --confirm APPROVE_ONE_TIME_SINGLE_RECIPIENT_REMINDER_TEST, one positive numeric --contact-id, and CRON_SECRET before calling the protected reminder endpoint.",
         "scripts/simulate-one-time-class-reminder.mjs rejects broad audience flags including --all, --audience, --segment, --workspace, and --project.",
@@ -1329,14 +1355,18 @@
         "Generated One Time WAPI webhook secret and stored it locally and in Railway.",
         "npm run one-time:railway-target:guard PASS: one_time_wapi_token_present=true, one_time_whapi_instance_present=true, one_time_whapi_phone_present=true.",
         "npm run one-time:wapi:readiness report: provider_setup.ready=true, outbound configured=true, credential_scope=one_time_scoped, auto_reply.ready=false pending explicit live-send flags.",
-        "npm run secrets:audit PASS after readiness report update."
+        "npm run secrets:audit PASS after readiness report update.",
+        "RAW-20260712-004 records the operator personal test approval with raw contact details redacted from tracked files.",
+        "npm run app:smoke:one-time-personal-continuation PASS: operator personal deployed Family/School signup/continuation proof completed and cleaned up without sends."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T14:16:00+03:00",
+      "updated_at": "2026-07-12T15:24:00+03:00",
       "id": "REQ-20260712-022",
       "title": "Gate deployed personal end-to-end operator test",
       "source_statement_ids": [
-        "RAW-20260712-002:S38"
+        "RAW-20260712-002:S38",
+        "RAW-20260712-004:S41",
+        "RAW-20260712-004:S42"
       ],
       "category": "operator_test",
       "batch_id": "readiness-deploy-operator-test",
@@ -1344,8 +1374,8 @@
         "REQ-20260712-023"
       ],
       "status": "needs_operator_decision",
-      "implementation_status": "Deployment/live SHA proof is complete and One Time WAPI provider setup is now configured. The operator-test handoff remains suppressed until CI workflow scope, scheduler/CRON readiness, Telegram live approval, explicit WAPI auto-reply/live-send approval, and the operator personal deployed signup proof are complete.",
-      "next_action": "Complete the operator personal deployed signup and decide whether to approve exact live WAPI auto-reply/Telegram behavior; do not send broadly.",
+      "implementation_status": "Guarded reminder simulation and readiness checks are implemented locally; One Time WAPI provider setup is configured and deployed; the operator personal deployed signup/continuation proof is complete with redacted runtime-only contact input and cleanup. Exact external live-send behavior, Telegram approval, scheduler/CRON readiness, and GitHub workflow scope remain gated.",
+      "next_action": "Approve exact live WAPI/email/Telegram send behavior and message copy, configure scheduler/CRON readiness, and provide workflow-scope GitHub credential if CI workflow push is still desired. Do not send broadly.",
       "acceptance_criteria": [
         "Automation deployed and ready message is given only after implementation/tests/readiness/deploy/visual proof.",
         "Only operator-submitted recipient is used.",
@@ -1372,7 +1402,8 @@
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d PASS.",
         "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment.",
         "npm run one-time:railway-target:guard PASS after WAPI env update",
-        "npm run one-time:wapi:readiness provider_setup.ready=true with auto-reply still gated"
+        "npm run one-time:wapi:readiness provider_setup.ready=true with auto-reply still gated",
+        "npm run app:smoke:one-time-personal-continuation PASS with no email/WhatsApp/WAPI/Telegram send and no dispatchable queued rows left after cleanup"
       ],
       "implementation_files": [
         "scripts/simulate-one-time-class-reminder.mjs",
@@ -1658,7 +1689,8 @@
       "source_id": "RAW-20260712-001",
       "source_statement_ids": [
         "RAW-20260712-001:S13",
-        "RAW-20260712-001:S14"
+        "RAW-20260712-001:S14",
+        "RAW-20260712-004:S41"
       ],
       "source_path": "raw-input/RAW-20260712-001-onetime-pr129-completion-followup.md",
       "workspace_key": "rabbi_sheller_provider",
@@ -1670,13 +1702,13 @@
       "depends_on": [
         "REQ-20260712-005"
       ],
-      "status": "blocked",
-      "implementation_status": "Local implementation is complete for exact signup-to-continuation linkage: direct signup stores product_lead_id, crm_lead_id, UTM/referrer/source context; continuation validates both IDs and Family/School required fields; server verifies the product lead and CRM lead match the original One Time capture before local review writes. Public signup and continuation surfaces are deployed and live-smoked by exact SHA. Terminal real persistence proof remains blocked because the approved local/test CRM database URL is missing.",
-      "can_continue_without_operator": false,
-      "blocker": "Family/School continuation exact-linkage production persistence proof remains open. The generic BNA_ONETIME_CRM_TEST_DATABASE_URL blocker no longer applies to REQ-20260712-005, which was verified through approved production fake-contact proof.",
-      "blocker_owner": "Operator / local test environment",
-      "blocker_next_action": "Run an approved fake Family and/or School continuation persistence proof, or leave REQ-20260712-006 open if that production write-smoke is not desired yet.",
-      "next_action": "Run an approved fake Family and/or School continuation persistence proof, or leave REQ-20260712-006 open if that production write-smoke is not desired yet.",
+      "status": "verified",
+      "implementation_status": "Direct signup and Family/School continuation exact-linkage are implemented, deployed, and verified with operator-approved production personal-contact proof. The live smoke used the operator personal contact as runtime-only input, created a Family direct signup and continuation plus a School direct signup and continuation, verified exact product_lead_id/crm_lead_id linkage, UTM/referrer/source preservation, branch-specific required fields, family/school classification, Operations CRM readback, queued outbox rows, and cleanup. Cleanup cancelled the queued email/WhatsApp/Telegram outbox rows, archived the product and CRM leads, deleted generated onboarding tasks, closed support tickets, and archived the test contact row. No email, WhatsApp/WAPI, Telegram, checkout, payment, access, DNS, import, or external CRM write was performed.",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "next_action": "No Family/School continuation database action remains for REQ-20260712-006. Continue separate open live-send/scheduler/final-matrix items.",
       "acceptance_criteria": [
         "Quick signup requires contact name, email, and Family/School choice.",
         "Phone is optional and student name is not requested in first capture.",
@@ -1702,7 +1734,14 @@
         "Final Railway deployment 64ab8814-c984-4618-b808-5e762914f3eb reached SUCCESS for one-time-production / production / one-time-web.",
         "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha fc147ded1ee0e12325111382fa8e460134a8ce3d.",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d PASS.",
-        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment.",
+        "RAW-20260712-004 records the operator personal test approval with the raw email and phone redacted from tracked files.",
+        "scripts/smoke-one-time-personal-continuation-live.mjs added as the reusable guarded production proof harness; package.json exposes npm run app:smoke:one-time-personal-continuation.",
+        "npm run app:smoke:one-time-personal-continuation PASS on 2026-07-12 using runtime-only operator personal contact inputs and redacted evidence.",
+        "Live proof report: ops/live-smokes/2026-07-12T12-20-37-269Z-one-time-personal-continuation-live-smoke.md.",
+        "Family path proof: product_lead_id 11, crm_lead_id 7, task_id 99, ticket_id 11; cleanup cancelled dispatchable outbox rows, archived product/CRM leads, deleted task, and closed ticket.",
+        "School path proof: product_lead_id 12, crm_lead_id 17, task_id 100, ticket_id 12; cleanup cancelled dispatchable outbox rows, archived product/CRM leads, deleted task, and closed ticket.",
+        "The first DB-readback attempt exposed that the one-time-web DATABASE_URL used a Railway private hostname; the final proof used the Postgres-j9Pi DATABASE_PUBLIC_URL privately without printing or committing it."
       ],
       "verification": [
         "node --check server.js PASS",
@@ -1724,7 +1763,11 @@
         "Live /api/deploy-info readback PASS: commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
         "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha fc147ded1ee0e12325111382fa8e460134a8ce3d.",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d PASS.",
-        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment.",
+        "node --check scripts/smoke-one-time-personal-continuation-live.mjs PASS",
+        "npm run app:smoke:one-time-personal-continuation PASS with redacted operator personal contact proof and cleanup",
+        "Family and School DB readback PASS: exact product/CRM linkage, family_school_classification, exact_original_capture_verified, UTM/source preservation, communication metadata, and outbox rows present before cleanup",
+        "Family and School cleanup readback PASS: no dispatchable outbox rows remained; product and CRM leads archived; generated tasks deleted"
       ],
       "implementation_files": [
         "server.js",
@@ -1733,15 +1776,18 @@
         "tests/one-time-direct-signup-page.test.js",
         "tests/one-time-onboarding-intake.test.js",
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/EVIDENCE.md",
-        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/TEST-RESULTS.md"
+        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/TEST-RESULTS.md",
+        "scripts/smoke-one-time-personal-continuation-live.mjs",
+        "package.json",
+        "raw-input/RAW-20260712-004-onetime-personal-test-approval-redacted.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T14:56:00+03:00",
+      "updated_at": "2026-07-12T15:24:00+03:00",
       "expected_result": "Public signup becomes a clean no-send lead capture that continues through exact Family/School onboarding records.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
-      "deployment_id": "64ab8814-c984-4618-b808-5e762914f3eb",
-      "deployed_commit": "fc147ded1ee0e12325111382fa8e460134a8ce3d",
-      "live_smoke": "PASS https://join.onetimeonetime.com at fc147ded1ee0e12325111382fa8e460134a8ce3d",
+      "deployment_id": "af80ca76-063d-44ab-9582-f2bda60e1967",
+      "deployed_commit": "f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c",
+      "live_smoke": "live smoke PASS: npm run app:smoke:one-time-personal-continuation with redacted operator personal Family/School continuation proof and cleanup",
       "deployment_evidence": [
         "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
         "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
@@ -1752,7 +1798,9 @@
         "Final Railway deployment 64ab8814-c984-4618-b808-5e762914f3eb reached SUCCESS for one-time-production / production / one-time-web.",
         "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha fc147ded1ee0e12325111382fa8e460134a8ce3d.",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d PASS.",
-        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment.",
+        "Railway deployment af80ca76-063d-44ab-9582-f2bda60e1967 SUCCESS for f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c.",
+        "live smoke PASS at https://join.onetimeonetime.com: npm run app:smoke:one-time-personal-continuation."
       ]
     },
     {

@@ -36,6 +36,7 @@ Passed after deployment:
 - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`
 - `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
 - `npm run app:smoke:one-time-interest-crm-e2e`
+- `npm run app:smoke:one-time-personal-continuation`
 - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`
 - `npm run app:smoke:one-time-interest-dry-run`
 
@@ -54,6 +55,12 @@ to `POST /api/cron/one-time/delivery-outbox` returned HTTP 503, which proves
 the route exists and refuses to run without hosted cron/provider readiness. No
 delivery was attempted.
 
+The personal continuation live smoke used the operator-approved personal
+contact only as runtime input and wrote redacted evidence. It verified Family
+and School direct signup to continuation linkage, then cancelled queued
+test outbox rows, archived product/CRM leads, deleted generated onboarding
+tasks, and closed support tickets.
+
 ## Not Performed
 
 No email, WhatsApp, Telegram, campaign send, payment/charge/refund, access
@@ -64,10 +71,7 @@ external-provider write was performed.
 
 - `REQ-20260712-002`: `.github/workflows/onetime-corrective.yml` still needs a
   GitHub credential or maintainer action with `workflow` scope.
-- `REQ-20260712-006`: the Family/School continuation persistence journey
-  remains open. `REQ-20260712-005` CRM persistence was verified through the
-  approved production fake-contact write-smoke with cleanup.
-- `REQ-20260712-022`: operator personal deployed signup and hosted reminder
+- `REQ-20260712-022`: exact live-send behavior/copy and hosted reminder
   provider readiness remain open; no external sends were performed. The
   handoff guard now marks deployment complete from live smoke but still
   suppresses the ready message because CI, live-send approval, Telegram, and
