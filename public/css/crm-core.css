@@ -1,0 +1,11 @@
+.crm-workbench-shell[data-shared-crm-workbench="true"] {
+    --crm-core-gap: 12px;
+}
+
+.crm-workbench-shell[data-shared-crm-workbench="true"] [data-shared-crm-component] {
+    min-width: 0;
+}
+
+.crm-channel-empty {
+    color: inherit;
+}

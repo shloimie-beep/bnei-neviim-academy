@@ -1,0 +1,556 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260712-302",
+  "parent_raw_id": "RAW-20260712-014",
+  "source_statement_ids": [
+    "SRC-20260712-014-002",
+    "SRC-20260712-014-003",
+    "SRC-20260712-014-004"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [
+      "PKT-20260712-303",
+      "PKT-20260712-304"
+    ],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json",
+      "public/operations.html",
+      "server.js",
+      "src/lib/bna/crm-contact-model.js"
+    ],
+    "produces": [
+      "src/lib/bna/crm/contact-service.js",
+      "public/js/crm/crm-api.js",
+      "public/js/crm/crm-store.js",
+      "public/js/crm/contacts-index.js",
+      "public/js/crm/contact-workspace.js",
+      "public/js/crm/crm-actions.js",
+      "public/js/crm/crm-inbox.js",
+      "public/css/crm-core.css",
+      "tests/shared-crm-workbench-contract.test.js",
+      "tests/crm-contact-service.test.js"
+    ],
+    "validation_command": "npm run pqc:validate -- tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json",
+    "terminal_condition": "REQ-20260712-302 has shared module and service evidence; dedicated workspace actions remain split to later requirements.",
+    "handoff_target": "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/NEXT-SESSION.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "in_progress",
+  "title": "Shared CRM workbench module and service slice",
+  "created_at": "2026-07-12T23:58:00+03:00",
+  "workspace_key": "multi_workspace",
+  "project_key": "shared_crm",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260712-014",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "CRM_PIPELINE",
+      "SECURITY_PRIVACY",
+      "VERIFIER_CLOSEOUT",
+      "DEPLOY_RELEASE"
+    ],
+    "confidence": 0.94,
+    "reasons": [
+      "The addendum requires one shared CRM implementation for BNA, One Time, and future provider workspaces.",
+      "The current state already has a first-party CRM workbench, so this packet is a bounded extraction and contract-hardening slice.",
+      "The broad dedicated-contact workspace and persisted-action build remains too large for one safe UI batch."
+    ],
+    "affected_product_surfaces": [
+      "Operations Contacts CRM Workbench"
+    ],
+    "likely_external_provider_blockers": [
+      "live email and WhatsApp sends remain out of scope",
+      "full visual screenshot matrix remains required before claiming the whole CRM UI complete"
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "current-state source audit",
+      "shared CRM module/service extraction",
+      "focused contract tests",
+      "deploy/live smoke",
+      "next dedicated workspace packet"
+    ],
+    "next_exact_packet": "REQ-20260712-303 dedicated contact workspace"
+  },
+  "operator_intent_summary": "Make the existing BNA and One Time CRM workbench use one shared first-party CRM contract, remove internal/dead-end copy from the shared panel, and create reusable module/service boundaries without starting a second CRM app.",
+  "raw_quotes": [
+    "Build one CRM product used by BNA School workspace; One Time Mishnah Class workspace; future service-provider workspaces.",
+    "Do not create a second CRM application, second Inbox, or second agent runtime.",
+    "Normal BNA and Rabbi CRM users must not see internal dead-end information."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260712-302",
+      "decision": "This packet extracts and wires the shared CRM workbench contract only; persisted action breadth stays in REQ-20260712-303.",
+      "status": "accepted"
+    }
+  ],
+  "out_of_scope": [
+    "No external email, WhatsApp, Telegram, payment, DNS, access-grant, import, or provider-account write.",
+    "No second CRM app or framework migration.",
+    "No broad visual redesign beyond shared workbench contract copy and module wiring.",
+    "No claim that all dedicated contact workspace actions are complete in this slice."
+  ],
+  "affected_surfaces": [
+    "Operations Contacts > CRM Contacts",
+    "One Time Operations Contacts > CRM Contacts"
+  ],
+  "affected_routes": [
+    "/operations?view=contacts&section=crm_contacts",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+    "/api/bna/crm/contacts",
+    "/api/bna/crm/contacts/:id/timeline"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "public/js/operations-shell.js",
+    "public/css/operations-shell.css",
+    "public/js/crm/crm-api.js",
+    "public/js/crm/crm-store.js",
+    "public/js/crm/contacts-index.js",
+    "public/js/crm/contact-workspace.js",
+    "public/js/crm/crm-actions.js",
+    "public/js/crm/crm-inbox.js",
+    "public/css/crm-core.css",
+    "src/lib/bna/crm/contact-service.js",
+    "server.js"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "server.js CRM routes and SQL helper functions",
+      "public/operations.html first-party CRM workbench block",
+      "public/js/operations-shell.js generated split shell",
+      "tests/one-time-communications-workspace.test.js",
+      "tests/rabbi-scheller-tenant-isolation-contract.test.js"
+    ],
+    "known_current_defects": [
+      "CRM route DTO construction is embedded in server routes instead of a reusable contact service.",
+      "Shared browser CRM workbench helpers are embedded inside the Operations monolith.",
+      "The profile panel uses internal empty copy such as Not loaded.",
+      "The workbench still displays no-send/locked language where a normal empty state should appear."
+    ],
+    "before_screenshot_plan": "Source-level audit completed for this module slice. Full visual screenshot capture remains required before closing the full shared CRM UI requirement."
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "CRM",
+      "clean",
+      "professional",
+      "working",
+      "launch-ready"
+    ],
+    "expanded_phrases": {
+      "CRM": "One first-party BNA CRM contract for contacts, contact rows, contact workspace, timeline, inbox context, empty states, and safe action states across BNA and One Time.",
+      "clean": "No duplicate CRM app, no stale internal copy in the shared panel, and generated split shell remains synchronized.",
+      "professional": "Customer-facing empty states use concise text and actions instead of implementation explanations.",
+      "working": "Shared modules are loaded by the actual Operations page, server routes delegate to the contact service, and focused tests prove the contract.",
+      "launch-ready": "This slice requires deploy and live smoke before being marked done; the broader CRM launch remains open."
+    }
+  },
+  "design_pattern_references": [
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/BROWSER-AGENT-SECURITY.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260712-302",
+      "statement": "Extract the existing Operations CRM workbench into shared browser and server contracts used by BNA and One Time.",
+      "expected_result": "BNA and One Time render through the same shared CRM module hooks and API response service.",
+      "acceptance_criteria": [
+        "Shared CRM browser modules are loaded by /operations.",
+        "The CRM API routes delegate list and timeline DTOs through a contact service.",
+        "BNA and One Time workbench roots expose the same shared CRM component hierarchy.",
+        "Exact customer-facing empty states replace internal Not loaded copy in the shared panel."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "met_for_bounded_slice",
+    "criteria": [
+      "Raw addendum is registered in the active execution run.",
+      "REQ-20260712-305 identity isolation dependency is done.",
+      "Existing CRM routes, workbench block, and generated split behavior were inspected.",
+      "Implementation is limited to one major surface and does not include broad CRM visual redesign.",
+      "External writes and persisted action breadth are out of scope for this packet."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "viewport": 1440,
+      "auth_role": "operations_admin",
+      "workspace_project": "bna / bna",
+      "how_to_enter_state": "Open CRM Contacts before /api/bna/crm/contacts returns.",
+      "expected_visible_title": "First-party CRM Contacts",
+      "expected_visible_message": "Loading CRM contacts...",
+      "expected_primary_action": "Refresh",
+      "expected_secondary_actions": ["Search", "Type", "Status", "Source", "Tag", "Sort"],
+      "forbidden_content": ["raw database table names", "secrets", "private One Time records in BNA workspace"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM workbench has an aria-label and readable status text.",
+      "accessibility_expectation": "Filter controls remain keyboard reachable while loading.",
+      "test_smoke_assertion": "Shared modules load before the shell and status text comes from shared contacts-index helper.",
+      "requirement_id": "REQ-20260712-302"
+    },
+    "empty": {
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "viewport": 1024,
+      "auth_role": "operations_admin",
+      "workspace_project": "bna / bna",
+      "how_to_enter_state": "Load CRM Contacts with zero contacts in the selected workspace.",
+      "expected_visible_title": "First-party CRM Contacts",
+      "expected_visible_message": "No conversations yet.",
+      "expected_primary_action": "Refresh",
+      "expected_secondary_actions": ["Search"],
+      "forbidden_content": ["not scoped", "not loaded", "database table names"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state is plain text, not an unlabeled diagnostic panel.",
+      "accessibility_expectation": "Refresh and filter inputs remain reachable.",
+      "test_smoke_assertion": "Shared empty state helper exposes No conversations yet.",
+      "requirement_id": "REQ-20260712-302"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open One Time CRM Contacts after contacts load.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Rows show names, status, source, tags, and timeline metadata from first-party records.",
+      "expected_primary_action": "Open contact row",
+      "expected_secondary_actions": ["Refresh", "Open email thread", "Start WhatsApp conversation"],
+      "forbidden_content": ["BNA school-private contacts", "provider token", "raw WAPI payload"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Contacts index, workspace, and inspector expose shared component markers.",
+      "accessibility_expectation": "Selected row state is announced with aria-expanded.",
+      "test_smoke_assertion": "Shared workbench contract test finds the same hierarchy for BNA and One Time.",
+      "requirement_id": "REQ-20260712-302"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 768,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Apply a CRM search/filter with no matching records.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "No conversations yet.",
+      "expected_primary_action": "Refresh",
+      "expected_secondary_actions": ["change filters"],
+      "forbidden_content": ["not scoped", "not loaded", "BNA-only source labels"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filter controls retain labels.",
+      "accessibility_expectation": "No horizontal clipping at tablet width.",
+      "test_smoke_assertion": "The shared empty state is used for filtered CRM workbench states.",
+      "requirement_id": "REQ-20260712-302"
+    },
+    "error": {
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "viewport": 430,
+      "auth_role": "operations_admin",
+      "workspace_project": "bna / bna",
+      "how_to_enter_state": "Simulate /api/bna/crm/contacts error.",
+      "expected_visible_title": "First-party CRM Contacts",
+      "expected_visible_message": "Could not load CRM contacts.",
+      "expected_primary_action": "Refresh",
+      "expected_secondary_actions": ["Search"],
+      "forbidden_content": ["stack trace", "SQL text", "secret"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error banner text is visible.",
+      "accessibility_expectation": "Refresh remains usable on mobile.",
+      "test_smoke_assertion": "CRM load errors are caught and rendered without raw internals.",
+      "requirement_id": "REQ-20260712-302"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 1024,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Select a contact with no email or WhatsApp identity.",
+      "expected_visible_title": "Contact profile",
+      "expected_visible_message": "Email is not available for this contact.",
+      "expected_primary_action": "Open email thread",
+      "expected_secondary_actions": ["Start WhatsApp conversation"],
+      "forbidden_content": ["external actions locked as a large card", "raw provider failure"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Unavailable actions use disabled controls with concise titles.",
+      "accessibility_expectation": "Disabled controls do not trap focus.",
+      "test_smoke_assertion": "Shared action helper returns the exact unavailable channel tooltip.",
+      "requirement_id": "REQ-20260712-302"
+    },
+    "preview_only": {
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "viewport": 1440,
+      "auth_role": "operations_admin",
+      "workspace_project": "bna / bna",
+      "how_to_enter_state": "Select any CRM contact in this bounded module slice.",
+      "expected_visible_title": "Safe next actions",
+      "expected_visible_message": "No external send is performed from this view.",
+      "expected_primary_action": "Open scoped inbox",
+      "expected_secondary_actions": ["Start WhatsApp conversation"],
+      "forbidden_content": ["fake success", "external CRM write"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Action buttons have labels and disabled reason titles when unavailable.",
+      "accessibility_expectation": "Buttons fit at 390px and 430px widths.",
+      "test_smoke_assertion": "No POST/send action is added by this module slice.",
+      "requirement_id": "REQ-20260712-302"
+    },
+    "success_readback": {
+      "route": "/api/bna/crm/contacts",
+      "viewport": 1440,
+      "auth_role": "operations_admin",
+      "workspace_project": "multi_workspace / shared_crm",
+      "how_to_enter_state": "Authenticated GET returns CRM contact list DTO.",
+      "expected_visible_title": "aggregate_service",
+      "expected_visible_message": "bna_crm_contact_service_v1",
+      "expected_primary_action": "none",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["raw provider secret", "unscoped contact identity"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "API readback is not a visual surface.",
+      "accessibility_expectation": "Not applicable to JSON API.",
+      "test_smoke_assertion": "CRM contact-service test asserts the redacted DTO envelope.",
+      "requirement_id": "REQ-20260712-302"
+    },
+    "permission_denied": {
+      "route": "/api/bna/crm/contacts",
+      "viewport": 390,
+      "auth_role": "wrong_workspace_user",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Request One Time CRM contacts from an unauthorized BNA-only scope.",
+      "expected_visible_title": "403 or 404",
+      "expected_visible_message": "No cross-workspace metadata is exposed.",
+      "expected_primary_action": "none",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["other workspace contact name", "thread id", "email", "phone"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "API denial is not a visual surface.",
+      "accessibility_expectation": "Not applicable to JSON API.",
+      "test_smoke_assertion": "Existing tenant-isolation tests still assert server-side scope before CRM queries.",
+      "requirement_id": "REQ-20260712-302"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Select a CRM contact at mobile width.",
+      "expected_visible_title": "Contact activity",
+      "expected_visible_message": "Back to contacts",
+      "expected_primary_action": "Back to contacts",
+      "expected_secondary_actions": ["Open email thread", "Start WhatsApp conversation"],
+      "forbidden_content": ["overlapping panes", "hidden sidebar", "text overflow"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Back control is a real button.",
+      "accessibility_expectation": "One pane at a time on mobile.",
+      "test_smoke_assertion": "Existing CRM workbench smoke verifies mobile selection and no app-root mutation after select.",
+      "requirement_id": "REQ-20260712-302"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "/operations?view=contacts&section=crm_contacts", "viewport": 1440, "required": true },
+      { "route": "/operations?view=contacts&section=crm_contacts", "viewport": 1024, "required": true },
+      { "route": "/operations?view=contacts&section=crm_contacts", "viewport": 768, "required": true },
+      { "route": "/operations?view=contacts&section=crm_contacts", "viewport": 430, "required": true },
+      { "route": "/operations?view=contacts&section=crm_contacts", "viewport": 390, "required": true }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-CRM-302-001",
+        "route": "/operations?view=contacts&section=crm_contacts",
+        "viewport": 390,
+        "screenshot_before": "blocked_auth_required",
+        "screenshot_after_or_blocker": "blocked_until_live_authenticated_visual_smoke",
+        "defect_codes": ["VQ-LAYOUT-001"],
+        "severity": "P2",
+        "user_impact": "The full visual matrix still needs authenticated screenshots before the full shared CRM UI requirement can close.",
+        "expected_fix": "Capture authenticated BNA and One Time CRM workbench screenshots after deploy.",
+        "requirement_id": "REQ-20260712-302"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "CRM workbench panes retain aria-labels.",
+      "Contact rows keep aria-expanded selected state.",
+      "Disabled channel controls carry concise tooltip/title text.",
+      "Mobile selected-contact state includes a real Back to contacts button."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Refresh",
+      "selector_or_action_key": "ACTION-CRM-CONTACTS-FILTER",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "loadFirstPartyCrmContacts",
+      "registry_required": true
+    },
+    {
+      "label": "Open contact row",
+      "selector_or_action_key": "ACTION-CRM-CONTACT-CARD-EXPAND",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "openFirstPartyCrmContact",
+      "registry_required": true
+    },
+    {
+      "label": "Open email thread",
+      "selector_or_action_key": "ACTION-CRM-OPEN-SCOPED-INBOX",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "openFirstPartyCrmInboxContext",
+      "registry_required": true
+    },
+    {
+      "label": "Start WhatsApp conversation",
+      "selector_or_action_key": "ACTION-CRM-OPEN-WHATSAPP-THREAD",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "wa.me link only when phone exists; no message body or send",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "records": [
+      "bna_contacts",
+      "workspace-scoped identities",
+      "bna_parent_leads",
+      "communications",
+      "timeline events",
+      "tasks",
+      "members/access summaries"
+    ],
+    "api_contract": "GET /api/bna/crm/contacts and GET /api/bna/crm/contacts/:id/timeline return redacted bna_crm_contact_service_v1 envelopes.",
+    "workspace_isolation": "Server scope is resolved before row loaders execute; browser never unions independent datasets."
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "workspace_isolation_required": true,
+    "secrets_committed": false
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "id": "BATCH-REQ-302-A",
+      "scope": "Shared CRM workbench module and contact-service extraction",
+      "instructions": [
+        "Add shared CRM browser modules and load them in Operations.",
+        "Delegate CRM list/timeline DTO envelopes through a server contact service.",
+        "Use exact customer-facing empty states in the shared panel.",
+        "Regenerate Operations split assets and run focused tests."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "bounded current-turn implementation",
+    "source_files_to_read": [
+      "public/operations.html",
+      "server.js",
+      "src/lib/bna/crm-contact-model.js",
+      "tests/rabbi-scheller-tenant-isolation-contract.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "server.js",
+      "src/lib/bna/crm/contact-service.js",
+      "public/js/crm/*.js",
+      "public/css/crm-core.css",
+      "tests/*.test.js",
+      "execution run closeout docs"
+    ],
+    "max_files_to_edit": 12,
+    "max_routes_to_touch": 2,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Dedicated contact workspace and persisted CRM actions are separate requirements.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    "npm run pqc:validate -- tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json",
+    "npm run operations:build",
+    "npm run operations:check-generated",
+    "node --check server.js",
+    "node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js",
+    "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com"
+  ],
+  "evidence": {
+    "expected_paths": [
+      "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/TEST-RESULTS.md",
+      "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/EVIDENCE.md",
+      "ops/live-smokes/"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Shared CRM modules are loaded by Operations and tested.",
+      "CRM routes delegate through the contact service and focused API/model tests pass.",
+      "Operations split shell is regenerated and check-generated passes.",
+      "Commit is pushed, deployed, and live CRM smoke/readback passes.",
+      "REQ-20260712-302 is updated with exact implementation, verification, deployment, and remaining-scope notes."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+    "compiled_packet_path": "tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "npm run operations:build",
+      "node --test",
+      "git commit",
+      "git push",
+      "Railway deploy and live smoke"
+    ],
+    "skipped_actions_policy": "No live sends, payment/access grants, DNS/account changes, external CRM writes, or production data mutation.",
+    "blocker_decisions": [
+      "Full dedicated CRM workspace actions continue under REQ-20260712-303."
+    ],
+    "evidence_paths": [
+      "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/EVIDENCE.md"
+    ],
+    "final_status_path": "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/STATUS.md",
+    "next_packet_path": "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/NEXT-SESSION.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No product-quality protocol drift findings introduced by the shared CRM module slice."
+  },
+  "next_packet": {
+    "id": "REQ-20260712-303",
+    "title": "Dedicated contact workspace and persisted CRM actions",
+    "status": "open_after_this_slice"
+  },
+  "app_visible": true
+}

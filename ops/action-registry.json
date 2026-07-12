@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-07-12T19:35:00+03:00",
+  "updated_at": "2026-07-12T23:59:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -2624,6 +2624,64 @@
       "test": {
         "type": "browser_static_and_local_smoke",
         "expected_result": "One Time CRM workbench exposes a mailbox shortcut that routes to the Rabbi inbox with workspace=rabbi_sheller_provider and project_key=one_time_mishnah_class."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-OPEN-SCOPED-INBOX",
+      "label": "Open email thread",
+      "surface": "operations_contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-OPEN-SCOPED-INBOX\"]",
+      "expected_behavior": "Moves from a selected local CRM contact to the scoped email inbox context while preserving selected contact state; no email is sent.",
+      "permission": "super_admin or scoped provider workspace role with CRM and communications entitlements",
+      "status": "active_navigation_only",
+      "test": {
+        "type": "browser_static_and_local_smoke",
+        "expected_result": "Shared CRM workbench contract verifies the scoped inbox action is registered and visible only as navigation."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-OPEN-WHATSAPP-THREAD",
+      "label": "Start WhatsApp conversation",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-OPEN-WHATSAPP-THREAD\"]",
+      "expected_behavior": "Opens a wa.me link for the selected contact only when a phone identity exists; it does not prefill or send a WhatsApp message.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlement",
+      "status": "active_navigation_no_send",
+      "test": {
+        "type": "node_test",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the shared CRM action helper builds a wa.me link and unavailable tooltip."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-CREATE-TASK-PENDING",
+      "label": "Create task",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-CREATE-TASK-PENDING\"]",
+      "expected_behavior": "Disabled placeholder for the dedicated persisted CRM task action in REQ-20260712-303; no task is created from this control.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlement",
+      "status": "disabled_not_in_scope",
+      "disabled_reason": "Persisted CRM task creation is implemented in the dedicated contact workspace/actions packet, not this shared-module slice.",
+      "test": {
+        "type": "static_contract",
+        "expected_result": "The control is disabled and carries a concise title; no POST handler is attached in this packet."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

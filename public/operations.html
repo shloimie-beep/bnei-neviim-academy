@@ -8474,6 +8474,7 @@
     <link rel="stylesheet" href="/css/bna-app-shell.css">
     <link rel="stylesheet" href="/css/platform-ui/platform-ui.css">
     <link rel="stylesheet" href="/css/one-time-operations.css">
+    <link rel="stylesheet" href="/css/crm-core.css">
 </head>
 <body class="bna-shell bna-ops-shell-page">
     <div id="app">
@@ -8483,6 +8484,12 @@
     <script src="/js/platform-ui/platform-ui-fixtures.js"></script>
     <script src="/js/platform-ui/platform-ui.js"></script>
     <script src="/js/one-time-rabbi-dashboard-ia.generated.js"></script>
+    <script src="/js/crm/crm-api.js"></script>
+    <script src="/js/crm/crm-store.js"></script>
+    <script src="/js/crm/contacts-index.js"></script>
+    <script src="/js/crm/contact-workspace.js"></script>
+    <script src="/js/crm/crm-actions.js"></script>
+    <script src="/js/crm/crm-inbox.js"></script>
     <script>
         // API Client
         const api = {
@@ -8760,18 +8767,16 @@
                 return this.request('GET', '/communications' + (params.toString() ? '?' + params.toString() : ''));
             },
             getCrmContacts(filters = {}, requestOptions = {}) {
-                const params = new URLSearchParams();
-                Object.entries(filters).forEach(([key, value]) => {
-                    if (value !== undefined && value !== null && value !== '') params.set(key, value);
-                });
-                return this.request('GET', '/crm/contacts' + (params.toString() ? '?' + params.toString() : ''), null, requestOptions);
+                const path = window.BnaCrmApi?.contactListPath
+                    ? window.BnaCrmApi.contactListPath(filters)
+                    : '/crm/contacts';
+                return this.request('GET', path, null, requestOptions);
             },
             getCrmContactTimeline(id, filters = {}, requestOptions = {}) {
-                const params = new URLSearchParams();
-                Object.entries(filters).forEach(([key, value]) => {
-                    if (value !== undefined && value !== null && value !== '') params.set(key, value);
-                });
-                return this.request('GET', '/crm/contacts/' + encodeURIComponent(id) + '/timeline' + (params.toString() ? '?' + params.toString() : ''), null, requestOptions);
+                const path = window.BnaCrmApi?.contactTimelinePath
+                    ? window.BnaCrmApi.contactTimelinePath(id, filters)
+                    : '/crm/contacts/' + encodeURIComponent(id) + '/timeline';
+                return this.request('GET', path, null, requestOptions);
             },
             updateCrmContact(id, payload = {}) { return this.request('PATCH', '/crm/contacts/' + encodeURIComponent(id), payload); },
             createContactCommunication(note) { return this.request('POST', '/contact-communications', note); },
@@ -15566,6 +15571,7 @@
         }
 
         function firstPartyCrmQueryKey(filters = firstPartyCrmQueryFilters()) {
+            if (window.BnaCrmStore?.stableQueryKey) return window.BnaCrmStore.stableQueryKey(filters);
             return JSON.stringify(Object.keys(filters).sort().reduce((acc, key) => {
                 acc[key] = filters[key];
                 return acc;
@@ -15573,6 +15579,9 @@
         }
 
         function normalizeFirstPartyCrmPayload(payload = {}) {
+            if (window.BnaCrmContactsIndex?.normalizePayload) {
+                return window.BnaCrmContactsIndex.normalizePayload(payload, FIRST_PARTY_CRM_PAGE_LIMIT);
+            }
             const cards = Array.isArray(payload.cards) ? payload.cards.slice(0, FIRST_PARTY_CRM_PAGE_LIMIT) : [];
             return {
                 ...payload,
@@ -15620,7 +15629,7 @@
                 .filter(Boolean)
                 .sort((a, b) => String(a).localeCompare(String(b)));
             const title = options.title || 'First-party CRM Contacts';
-            const description = options.description || 'Workspace-scoped local CRM records only. This view reads BNA contacts, parent leads, and local timelines; it does not send or write to external CRM.';
+            const description = options.description || window.BnaCrmContactWorkspace?.workspaceDescription?.(options.oneTime ? 'one_time' : 'workspace') || 'Search, filter, sort, open, and read local CRM contact timelines from first-party records only.';
             const extraAttrs = options.oneTime ? ' data-one-time-crm-api-workbench data-requirement-id="REQ-20260710-020"' : '';
             return `
                 <section class="focus-panel compact-panel" data-action-id="ACTION-CRM-CONTACTS-FILTER"${extraAttrs}>
@@ -15656,26 +15665,30 @@
             const cards = Array.isArray(payload.cards) ? payload.cards : [];
             const selectedCard = selectedFirstPartyCrmCard(cards);
             const workbenchAttrs = options.oneTime ? ' data-one-time-crm-workbench data-requirement-id="REQ-20260710-020"' : '';
+            const statusText = window.BnaCrmContactsIndex?.statusText
+                ? window.BnaCrmContactsIndex.statusText({ loading: firstPartyCrmLoading, cards, payload })
+                : (firstPartyCrmLoading ? 'Loading CRM contacts...' : `${cards.length.toLocaleString()} visible / ${Number(payload.filtered_total || cards.length).toLocaleString()} matching / ${Number(payload.total || cards.length).toLocaleString()} total.`);
+            const filteredEmptyText = window.BnaCrmContactsIndex?.filteredEmptyText?.() || 'No conversations yet.';
             return `
                 <div data-first-party-crm-panel data-one-time-crm-mode="${options.oneTime ? 'one_time' : 'workspace'}">
                     ${renderFirstPartyCrmFilterControls(payload, options)}
                     ${firstPartyCrmError ? `<div class="error-banner">${escapeHtml(firstPartyCrmError)}</div>` : ''}
                     <div class="contact-empty-card" data-first-party-crm-status>
-                        ${firstPartyCrmLoading ? 'Loading CRM contacts...' : `${cards.length.toLocaleString()} visible / ${Number(payload.filtered_total || cards.length).toLocaleString()} matching / ${Number(payload.total || cards.length).toLocaleString()} total. Read-only / no-send.`}
+                        ${escapeHtml(statusText)}
                     </div>
                     ${cards.length ? `
-                        <section class="crm-workbench-shell"${workbenchAttrs} data-selected-contact="${selectedCard ? 'true' : 'false'}" data-crm-pane-count="3" aria-label="${escapeHtml(options.title || 'CRM contact workbench')}">
-                            <div class="contact-list crm-workbench-list" aria-label="CRM contact list">
+                        <section class="crm-workbench-shell"${workbenchAttrs} data-shared-crm-workbench="true" data-selected-contact="${selectedCard ? 'true' : 'false'}" data-crm-pane-count="3" aria-label="${escapeHtml(options.title || 'CRM contact workbench')}">
+                            <div class="contact-list crm-workbench-list" data-shared-crm-component="contacts-index" aria-label="CRM contact list">
                                 ${cards.map(renderFirstPartyCrmCard).join('')}
                             </div>
-                            <div class="crm-workbench-activity" data-crm-contact-detail aria-label="CRM contact activity">
+                            <div class="crm-workbench-activity" data-crm-contact-detail data-shared-crm-component="contact-workspace" aria-label="CRM contact activity">
                                 ${renderFirstPartyCrmDetail(selectedCard)}
                             </div>
-                            <aside class="crm-workbench-profile" data-crm-contact-profile aria-label="CRM contact profile">
+                            <aside class="crm-workbench-profile" data-crm-contact-profile data-shared-crm-component="contact-inspector" aria-label="CRM contact profile">
                                 ${renderFirstPartyCrmProfile(selectedCard)}
                             </aside>
                         </section>
-                    ` : !firstPartyCrmLoading ? '<div class="contact-empty-card">No CRM contacts match this workspace/filter.</div>' : ''}
+                    ` : !firstPartyCrmLoading ? `<div class="contact-empty-card">${escapeHtml(filteredEmptyText)}</div>` : ''}
 
                 </div>
             `;
@@ -15744,29 +15757,32 @@
 
         function firstPartyCrmPreviewLabel() {
             if (opsMe?.view_as || opsMe?.viewAs || opsMe?.view_as_rabbi || opsMe?.viewAsRabbi) return 'Read-only preview';
-            if (opsMe?.scope?.type === 'project') return 'Scoped no-send';
-            return 'No-send locked';
+            if (opsMe?.scope?.type === 'project') return 'Scoped review';
+            return 'Review mode';
         }
 
         function renderFirstPartyCrmSafeActions(card = null) {
             const lockLabel = firstPartyCrmPreviewLabel();
             const inboxAction = card?.id
-                ? `<button class="task-action" type="button" onclick="openFirstPartyCrmInboxContext(${attrJson(card.id)})" data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX">Open scoped inbox</button>`
-                : '<button class="task-action" type="button" disabled aria-disabled="true">Select contact first</button>';
+                ? `<button class="task-action" type="button" onclick="openFirstPartyCrmInboxContext(${attrJson(card.id)})" data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX">Open email thread</button>`
+                : `<button class="task-action" type="button" disabled aria-disabled="true" title="${escapeHtml(window.BnaCrmContactWorkspace?.emptyState?.('email_unavailable') || 'Email is not available for this contact.')}">Start email</button>`;
+            const whatsappHref = window.BnaCrmActions?.whatsappHref?.(card?.phone || '') || '';
+            const whatsappAction = whatsappHref
+                ? `<a class="task-action" href="${escapeHtml(whatsappHref)}" target="_blank" rel="noopener" data-action-id="ACTION-CRM-OPEN-WHATSAPP-THREAD">Start WhatsApp conversation</a>`
+                : `<button class="task-action" type="button" disabled aria-disabled="true" title="${escapeHtml(window.BnaCrmActions?.unavailableTooltip?.('whatsapp') || 'WhatsApp is not available for this contact.')}">Start WhatsApp conversation</button>`;
             return `
                 <div class="crm-safe-action-panel" data-crm-safe-actions>
                     <div class="task-section-header compact">
                         <div>
                             <h3>Safe next actions</h3>
-                            <p class="notification-lock-note">This packet does not send email, WhatsApp, payment, access, or external CRM updates. Write controls stay disabled until an approved scoped write packet exists.</p>
+                            <p class="notification-lock-note">Open existing threads or channel views for this contact. Disabled channel actions show one concise reason.</p>
                         </div>
-                        <span class="status-chip blocked" data-crm-read-only-preview>${escapeHtml(lockLabel)}</span>
+                        <span class="status-chip" data-crm-read-only-preview>${escapeHtml(lockLabel)}</span>
                     </div>
                     <div class="task-actions">
                         ${inboxAction}
-                        <button class="task-action" type="button" data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED" disabled aria-disabled="true" title="Recipient, copy, sender identity, and exact send approval are required before reply drafting is enabled.">Reply draft locked</button>
-                        <button class="task-action" type="button" data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED" disabled aria-disabled="true" title="A scoped local note endpoint and audit row must be approved before CRM notes can be written here.">Internal note preview</button>
-                        <button class="task-action" type="button" data-action-id="ACTION-CRM-TASK-BLOCKED" disabled aria-disabled="true" title="Task creation from CRM detail must be mapped to the task ledger before enabling this control.">Task preview</button>
+                        ${whatsappAction}
+                        <button class="task-action" type="button" data-action-id="ACTION-CRM-CREATE-TASK-PENDING" disabled aria-disabled="true" title="Create task is enabled in the dedicated Tasks packet.">Create task</button>
                     </div>
                 </div>
             `;
@@ -15800,9 +15816,9 @@
                         <span class="page-status-pill">${escapeHtml(contactStatusLabel(card.status || 'new'))}</span>
                     </div>
                     <div class="crm-workbench-tabs" role="tablist" aria-label="CRM contact sections">
-                        <button class="ops-filter-tab active" type="button" role="tab" aria-selected="true">Activity</button>
-                        <button class="ops-filter-tab" type="button" role="tab" aria-selected="false" disabled aria-disabled="true">Notes</button>
-                        <button class="ops-filter-tab" type="button" role="tab" aria-selected="false" disabled aria-disabled="true">Tasks</button>
+                        ${(window.BnaCrmContactWorkspace?.workspaceTabs?.() || [
+                            { id: 'activity', label: 'Activity', enabled: true }
+                        ]).map(tab => `<button class="ops-filter-tab ${tab.id === 'activity' ? 'active' : ''}" type="button" role="tab" aria-selected="${tab.id === 'activity' ? 'true' : 'false'}" ${tab.enabled ? '' : `disabled aria-disabled="true" title="${escapeHtml(tab.empty_state || '')}"`}>${escapeHtml(tab.label)}</button>`).join('')}
                     </div>
                     ${renderFirstPartyCrmSafeActions(card)}
                 </section>
@@ -15829,20 +15845,20 @@
                         <span class="page-status-pill">${escapeHtml(contactStatusLabel(card.status || 'new'))}</span>
                     </div>
                     <div class="contact-detail-grid">
-                        ${renderContactDetailItem('Email', card.email || 'Not loaded')}
-                        ${renderContactDetailItem('Phone', card.phone || 'Not loaded')}
+                        ${renderContactDetailItem('Email', window.BnaCrmContactWorkspace?.profileValue?.('email', card.email) || (card.email || 'Email is not available for this contact.'))}
+                        ${renderContactDetailItem('WhatsApp', window.BnaCrmContactWorkspace?.profileValue?.('whatsapp', card.phone) || (card.phone || 'WhatsApp is not available for this contact.'))}
                         ${renderContactDetailItem('Family / School', contactStatusLabel(card.family_school_classification || 'family'))}
                         ${renderContactDetailItem('Lifecycle / Source', [contactStatusLabel(card.status || 'new'), contactStatusLabel(card.source_label || card.source || 'first party')].filter(Boolean).join(' / '))}
-                        ${renderContactDetailItem('Last Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : 'No local activity yet')}
-                        ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : 'Not scheduled')}
+                        ${renderContactDetailItem('Last Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : (window.BnaCrmContactWorkspace?.emptyState?.('class_activity') || 'No class activity recorded.'))}
+                        ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : (window.BnaCrmContactWorkspace?.emptyState?.('follow_up') || 'No follow-up scheduled.'))}
                         ${renderContactDetailItem('Assigned Owner', card.assigned_owner || 'Unassigned')}
                         ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
                         ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
-                        ${renderContactDetailItem('Membership / Access', [card.membership_access?.access_tier, card.membership_access?.access_status].filter(Boolean).join(' / ') || 'No member access linked')}
-                        ${renderContactDetailItem('Mailbox', card.mailbox?.message_count ? `${Number(card.mailbox.message_count)} messages${card.mailbox.latest_subject ? ` / ${card.mailbox.latest_subject}` : ''}` : 'No mailbox thread linked')}
+                        ${renderContactDetailItem('Membership / Access', [card.membership_access?.access_tier, card.membership_access?.access_status].filter(Boolean).join(' / ') || (window.BnaCrmContactWorkspace?.emptyState?.('membership') || 'No membership linked.'))}
+                        ${renderContactDetailItem('Mailbox', card.mailbox?.message_count ? `${Number(card.mailbox.message_count)} messages${card.mailbox.latest_subject ? ` / ${card.mailbox.latest_subject}` : ''}` : (window.BnaCrmContactWorkspace?.emptyState?.('conversations') || 'No conversations yet.'))}
                         ${renderContactDetailItem('Support', card.support?.open_ticket_count ? `${Number(card.support.open_ticket_count)} open support threads` : 'No open support threads')}
-                        ${renderContactDetailItem('Follow-up Task', card.follow_up_task?.task_id ? `Task #${card.follow_up_task.task_id}${card.follow_up_task.assigned_to ? ` / ${card.follow_up_task.assigned_to}` : ''}` : 'No follow-up task assigned')}
-                        ${renderContactDetailItem('Notes', card.summary || 'No notes loaded yet')}
+                        ${renderContactDetailItem('Follow-up Task', card.follow_up_task?.task_id ? `Task #${card.follow_up_task.task_id}${card.follow_up_task.assigned_to ? ` / ${card.follow_up_task.assigned_to}` : ''}` : (window.BnaCrmContactWorkspace?.emptyState?.('tasks') || 'No tasks assigned.'))}
+                        ${renderContactDetailItem('Notes', card.summary || (window.BnaCrmContactWorkspace?.emptyState?.('notes') || 'No notes yet.'))}
                     </div>
 
                 </section>
@@ -15867,7 +15883,7 @@
                             <div class="content-card-meta">${escapeHtml([item.direction, item.occurred_at ? formatDateTime(item.occurred_at) : ''].filter(Boolean).join(' - '))}</div>
                             <p class="event-meta">${escapeHtml(item.body || '')}</p>
                         </article>
-                    `).join('') : '<div class="contact-empty-card">No timeline records found.</div>'}
+                    `).join('') : `<div class="contact-empty-card">${escapeHtml(window.BnaCrmContactWorkspace?.emptyState?.('class_activity') || 'No class activity recorded.')}</div>`}
                     </div>
                 </section>
             `;
@@ -15952,7 +15968,7 @@
 
         async function openFirstPartyCrmInboxContext(contactId = '') {
             if (contactId) selectedFirstPartyCrmContactId = contactId;
-            emailInboxScope = 'rabbi';
+            emailInboxScope = window.BnaCrmInbox?.scopeForWorkspace?.('rabbi_sheller_provider') || 'rabbi';
             currentWorkspaceId = 'rabbi_sheller_provider';
             taskProjectFilter = 'one_time_mishnah_class';
             currentView = 'communications';
@@ -16363,10 +16379,10 @@
         function renderOneTimeCrmContactCard(row = {}) {
             const details = [
                 ['Status', row.status],
-                ['No-send', `${row.noSend?.label || 'Review'} - ${row.noSend?.detail || 'Approval required.'}`],
-                ['Dedupe', `${row.dedupe?.label || 'Review'} - ${row.dedupe?.detail || 'No duplicate data loaded.'}`],
-                ['Source', `${row.source?.label || 'Source'} - ${row.source?.detail || 'No source detail loaded.'}`],
-                ['Communications', `${row.communications?.label || 'None'} - ${row.communications?.detail || 'No communication readback loaded.'}`],
+                ['Channel status', `${row.noSend?.label || 'Review'} - ${row.noSend?.detail || 'Approval required.'}`],
+                ['Dedupe', `${row.dedupe?.label || 'Review'} - ${row.dedupe?.detail || 'No duplicate contacts found.'}`],
+                ['Source', `${row.source?.label || 'Source'} - ${row.source?.detail || 'No source detail available.'}`],
+                ['Communications', `${row.communications?.label || 'None'} - ${row.communications?.detail || 'No conversations yet.'}`],
                 ['Next Action', row.nextAction || 'Review before any action.'],
             ];
             return `
@@ -16377,7 +16393,7 @@
                     ${details.map(([label, value]) => `
                         <div>
                             <span>${escapeHtml(label)}</span>
-                            <p>${escapeHtml(value || 'Not loaded')}</p>
+                            <p>${escapeHtml(value || 'No details yet.')}</p>
                         </div>
                     `).join('')}
                     <div class="task-actions compact-actions">${row.actionHtml || '<span class="status-chip blocked">No action</span>'}</div>

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T19:32:57.161Z",
+  "generated_at": "2026-07-12T21:16:39.951Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -240,6 +240,12 @@
     "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/REQUIREMENTS.md",
     "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/STATUS.md",
     "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/requirements.json",
+    "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/BATCH-STATUS.md",
+    "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/EVIDENCE.md",
+    "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/PLAN.md",
+    "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/REQUIREMENTS.md",
+    "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/STATUS.md",
+    "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json",
     "ops/prompt-packets/2026-07-01-provider-config-readback/09-resend-send-enabled-smoke.md",
     "ops/prompt-packets/2026-07-01-provider-config-readback/10-stripe-sandbox-smoke.md",
     "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/00-control-tower.md",
@@ -636,6 +642,7 @@
     "tasks-pending/2026-07-12-onetime-signup-location-hotfix.md",
     "tasks-pending/2026-07-12-onetime-signup-reminder-workflow-addendum.md",
     "tasks-pending/2026-07-12-onetime-wapi-webhook-bot-not-responding.md",
+    "tasks-pending/2026-07-12-shared-crm-communication-agents-addendum.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"
   ],

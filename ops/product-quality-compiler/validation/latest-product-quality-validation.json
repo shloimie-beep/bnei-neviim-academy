@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T19:04:41.804Z",
+  "generated_at": "2026-07-12T21:15:17.824Z",
   "mode": "default",
   "files_scanned": [
     "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/manifest.json",
@@ -89,10 +89,11 @@
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/manifest.sample.json",
     "tasks-pending/2026-07-10-onetime-public-landing-production-rebuild.product-quality.json",
     "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.product-quality.json",
-    "tasks-pending/2026-07-12-onetime-landing-visual-revision.product-quality.json"
+    "tasks-pending/2026-07-12-onetime-landing-visual-revision.product-quality.json",
+    "tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json"
   ],
-  "total": 77,
-  "passed": 77,
+  "total": 78,
+  "passed": 78,
   "failed": 0,
   "results": [
     {
@@ -553,6 +554,12 @@
     },
     {
       "file": "tasks-pending/2026-07-12-onetime-landing-visual-revision.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json",
       "passed": true,
       "error_codes": [],
       "errors": []

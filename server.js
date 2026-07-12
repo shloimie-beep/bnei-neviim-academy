@@ -89,6 +89,7 @@ const studioSidekick = require('./src/lib/bna/service-provider-studio-sidekick')
 const openArtMcpAdapter = require('./src/lib/bna/studio-openart-mcp-adapter');
 const accountScope = require('./src/lib/bna/account-scope-entitlements');
 const crmContactModel = require('./src/lib/bna/crm-contact-model');
+const { createContactService } = require('./src/lib/bna/crm/contact-service');
 const assistantScopePolicy = require('./src/lib/bna/assistant-scope-policy');
 const {
   LATEST_ONE_TIME_DRIVE_BRIEF_SOURCE,
@@ -29628,6 +29629,13 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
   return result.rows;
 }
 
+const operationsCrmContactService = createContactService({
+  model: crmContactModel,
+  listContactRows: operationsCrmContactRows,
+  timelineRows: operationsCrmTimelineRows,
+  parseContactRef: parseCrmContactRef,
+});
+
 async function createOperationsCrmFollowUpTask({
   req,
   scope = {},
@@ -49884,14 +49892,8 @@ app.get('/api/bna/crm/contacts', requireAdmin, async (req, res) => {
       limit: req.query.limit,
       cursor: req.query.cursor,
     };
-    const rows = await operationsCrmContactRows(scope, pool, filters);
-    const payload = crmContactModel.filterCrmContacts(rows, filters, scope);
-    res.json({
-      success: true,
-      ...payload,
-      no_send: true,
-      external_write_performed: false,
-    });
+    const payload = await operationsCrmContactService.listContacts(scope, filters);
+    res.json(payload);
   } catch (err) {
     res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
   }
@@ -49905,13 +49907,8 @@ app.get('/api/bna/crm/contacts/:id/timeline', requireAdmin, async (req, res) => 
     scope.project_key = scope.project_key || workspaceProjectKey(workspaceKey) || opsScopeProjectKey(req) || null;
     scope.feature_overrides = await featureOverridesForScope(scope);
     accountScope.assertEntitlement(scope, accountScope.ENTITLEMENTS.CONTACT_TIMELINE);
-    const rows = await operationsCrmTimelineRows(parseCrmContactRef(req.params.id), scope);
-    res.json({
-      success: true,
-      timeline: crmContactModel.buildTimeline(rows),
-      no_send: true,
-      external_write_performed: false,
-    });
+    const payload = await operationsCrmContactService.getContactTimeline(req.params.id, scope);
+    res.json(payload);
   } catch (err) {
     res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
   }
@@ -50114,16 +50111,16 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
       }
     }
 
-    const rows = await operationsCrmContactRows(scope);
-    const card = crmContactModel.filterCrmContacts(rows, {}, scope).cards
+    const listPayload = await operationsCrmContactService.listContacts(scope, {});
+    const card = (listPayload.cards || [])
       .find((item) => String(item.id) === String(req.params.id)) || null;
-    const timeline = await operationsCrmTimelineRows(contactRef, scope);
+    const timelinePayload = await operationsCrmContactService.getContactTimeline(req.params.id, scope);
     res.json({
       success: true,
       contact: card || updated,
       local_event: localEvent,
       follow_up_task: followUpTask,
-      timeline: crmContactModel.buildTimeline(timeline),
+      timeline: timelinePayload.timeline || [],
       no_send: true,
       no_checkout: true,
       no_access_granted: true,

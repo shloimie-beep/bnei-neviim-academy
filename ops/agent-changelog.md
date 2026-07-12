@@ -38911,3 +38911,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   the unique index; rollback left zero synthetic contacts and identities.
 - Evidence:
   `ops/live-smokes/2026-07-12T20-48-11-384Z-crm-identity-isolation-live-smoke.md`.
+
+## 2026-07-13 - Shared CRM product slice local verification
+
+- Added `src/lib/bna/crm/contact-service.js`, a canonical contact-service
+  wrapper for CRM contacts list and timeline DTO envelopes.
+- Added shared browser CRM modules under `public/js/crm/` plus
+  `public/css/crm-core.css`, and loaded them through the Operations shell.
+- Updated Operations CRM rendering to expose shared CRM component markers,
+  reuse shared path/query/status/empty-state/action helpers, and replace
+  internal/dead-end copy with customer-facing empty states and concise disabled
+  channel tooltips.
+- Registered scoped CRM email navigation, WhatsApp no-send link, and disabled
+  Create Task placeholder actions in the action registry.
+- Added a bounded Product Quality Compiler packet for this slice plus contact
+  service and shared workbench contract tests.
+- Verification passed: syntax checks, focused CRM/isolation tests `31/31`,
+  `npm run operations:check-generated`, PQC validation, secret audit, action
+  watchdog, protocol drift watchdog, execution-run validation, and
+  `git diff --check` with line-ending warnings only.
+- Deployment/live Operations CRM workbench smoke remains the next step before
+  calling this shared CRM slice deployed.

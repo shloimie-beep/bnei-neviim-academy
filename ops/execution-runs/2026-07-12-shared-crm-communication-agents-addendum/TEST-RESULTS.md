@@ -22,4 +22,16 @@
   - Workspace-filtered email and phone lookups returned one row per workspace.
   - Same-workspace duplicate email identity was blocked with unique violation `23505`.
   - Transaction rollback left zero synthetic contacts and zero synthetic identities.
+- PASS `node --check server.js`
+- PASS `node --check src/lib/bna/crm/contact-service.js`
+- PASS `node --check public/js/crm/crm-api.js public/js/crm/crm-store.js public/js/crm/contacts-index.js public/js/crm/contact-workspace.js public/js/crm/crm-actions.js public/js/crm/crm-inbox.js`
+- PASS `node --check public/js/operations-shell.js`
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js` (31/31)
+- PASS `npm run operations:check-generated`
+- PASS `npm run pqc:validate -- tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json`
+- PASS `npm run secrets:audit`
+- PASS `npm run watchdog:actions` finding_count `0`
+- PASS `npm run watchdog:protocol-drift` findings `0`
+- PASS `npm run bna:run:validate`
+- PASS `git diff --check` with line-ending warnings only
 - BLOCKED `npm run production:readiness:gate -- --json` only on full-launch external Stripe/campaign setup fields.

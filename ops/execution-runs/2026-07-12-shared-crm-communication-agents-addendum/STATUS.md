@@ -30,6 +30,17 @@ Current status: `active`
 - Main addendum implementation is not complete; identity isolation is the first active implementation batch.
 - `REQ-20260712-305` is complete. Continue `REQ-20260712-306` next.
 
+## Shared CRM Product Slice
+
+- `REQ-20260712-302` is now in progress with a bounded shared-module slice locally verified.
+- Added canonical CRM contact service wiring for list/timeline DTO envelopes.
+- Added shared browser CRM modules under `public/js/crm/` and core CRM styling under `public/css/crm-core.css`.
+- Operations now loads the shared CRM modules before the shell and marks the contacts index, contact workspace, and inspector with shared CRM component attributes.
+- Replaced internal/dead-end CRM copy in this slice with customer-facing empty states and concise disabled-channel tooltips.
+- Registered the scoped email navigation, WhatsApp no-send link, and disabled Create Task placeholder actions.
+- Local verification passed: syntax checks, focused CRM/isolation tests `31/31`, generated-shell check, PQC validation, secret audit, action watchdog, protocol drift watchdog, execution-run validation, and whitespace diff check.
+- Deployment and live workbench smoke are pending for this slice.
+
 ## Identity Isolation Batch
 
 - `REQ-20260712-305` local code patch is applied and moved to `needs_verification`.

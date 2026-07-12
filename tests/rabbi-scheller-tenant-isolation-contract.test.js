@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const test = require('node:test');
 
 const server = fs.readFileSync('server.js', 'utf8');
+const contactService = fs.readFileSync('src/lib/bna/crm/contact-service.js', 'utf8');
 
 function serverSlice(startNeedle, endNeedle) {
   const start = server.indexOf(startNeedle);
@@ -81,14 +82,15 @@ test('One Time CRM and communications routes derive scope server-side before que
   );
   assert.match(contactsRoute, /const workspaceKey = assertWorkspaceAccess\(req, scope\.workspace_key \|\| defaultWorkspaceKeyForRequest\(req\)\);/);
   assert.match(contactsRoute, /scope\.project_key = scope\.project_key \|\| workspaceProjectKey\(workspaceKey\) \|\| opsScopeProjectKey\(req\) \|\| null;/);
-  assert.match(contactsRoute, /const rows = await operationsCrmContactRows\(scope, pool, filters\);/);
+  assert.match(contactsRoute, /const payload = await operationsCrmContactService\.listContacts\(scope, filters\);/);
 
   const timelineRoute = serverSlice(
     "app.get('/api/bna/crm/contacts/:id/timeline', requireAdmin",
     "app.post('/api/bna/assistant/scope-plan'"
   );
   assert.match(timelineRoute, /const workspaceKey = assertWorkspaceAccess\(req, scope\.workspace_key \|\| defaultWorkspaceKeyForRequest\(req\)\);/);
-  assert.match(timelineRoute, /const rows = await operationsCrmTimelineRows\(parseCrmContactRef\(req\.params\.id\), scope\);/);
+  assert.match(timelineRoute, /const payload = await operationsCrmContactService\.getContactTimeline\(req\.params\.id, scope\);/);
+  assert.match(server, /const operationsCrmContactService = createContactService\({[\s\S]*listContactRows: operationsCrmContactRows,[\s\S]*timelineRows: operationsCrmTimelineRows,[\s\S]*parseContactRef: parseCrmContactRef,[\s\S]*}\);/);
 
   const communicationsFilters = serverSlice(
     'function buildCommunicationsQueryFilters',
@@ -115,6 +117,6 @@ test('One Time CRM list API is bounded and cursor-paginated', () => {
   );
   assert.match(contactsRoute, /limit: req\.query\.limit/);
   assert.match(contactsRoute, /cursor: req\.query\.cursor/);
-  assert.match(contactsRoute, /const rows = await operationsCrmContactRows\(scope, pool, filters\);/);
-  assert.match(contactsRoute, /const payload = crmContactModel\.filterCrmContacts\(rows, filters, scope\);/);
+  assert.match(contactsRoute, /const payload = await operationsCrmContactService\.listContacts\(scope, filters\);/);
+  assert.match(contactService, /aggregate_service: 'bna_crm_contact_service_v1'/);
 });

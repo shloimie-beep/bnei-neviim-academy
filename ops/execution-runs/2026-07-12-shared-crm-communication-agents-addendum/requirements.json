@@ -77,22 +77,56 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "not_started",
-      "implementation_status": "partial",
+      "status": "in_progress",
+      "implementation_status": "Partial shared CRM product slice implemented and locally verified: canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, and deployment/live smoke is pending.",
       "can_continue_without_operator": true,
-      "next_action": "Continue REQ-20260712-302 after dependent earlier batches are validated.",
+      "next_action": "Commit, push, deploy the exact tested SHA, live-smoke the Operations CRM workbench, then continue the dedicated contact workspace/actions and deeper parity batches.",
       "acceptance_criteria": [
         "BNA and One Time use shared CRM shell/index/workspace/inbox/actions/components with only theme, logo, title, allowed fields/actions, channels, agents, and records varying by workspace."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json defines the bounded product-quality slice for this UI/server batch.",
+        "src/lib/bna/crm/contact-service.js provides the canonical CRM contact service wrapper for list DTOs and timeline DTOs.",
+        "public/js/crm/crm-api.js, crm-store.js, contacts-index.js, contact-workspace.js, crm-actions.js, and crm-inbox.js provide shared browser CRM primitives loaded by Operations.",
+        "public/operations.html and generated operations shell assets load the shared CRM modules and mark contacts index, contact workspace, and inspector components with shared CRM data attributes.",
+        "ops/action-registry.json registers the scoped email navigation, WhatsApp no-send link, and disabled Create Task placeholder actions."
+      ],
+      "verification": [
+        "node --check server.js PASS",
+        "node --check src/lib/bna/crm/contact-service.js PASS",
+        "node --check public/js/crm/crm-api.js public/js/crm/crm-store.js public/js/crm/contacts-index.js public/js/crm/contact-workspace.js public/js/crm/crm-actions.js public/js/crm/crm-inbox.js PASS",
+        "node --check public/js/operations-shell.js PASS",
+        "node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js PASS 31/31",
+        "npm run operations:check-generated PASS",
+        "npm run pqc:validate -- tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json PASS",
+        "npm run secrets:audit PASS",
+        "npm run watchdog:actions PASS finding_count 0",
+        "npm run watchdog:protocol-drift PASS findings 0",
+        "npm run bna:run:validate PASS",
+        "git diff --check PASS with line-ending warnings only"
+      ],
       "implementation_files": [
+        "src/lib/bna/crm/contact-service.js",
+        "public/js/crm/crm-api.js",
+        "public/js/crm/crm-store.js",
+        "public/js/crm/contacts-index.js",
+        "public/js/crm/contact-workspace.js",
+        "public/js/crm/crm-actions.js",
+        "public/js/crm/crm-inbox.js",
+        "public/css/crm-core.css",
+        "public/operations.html",
         "public/js/operations-shell.js",
         "public/js/operations-deferred-renderers.js",
-        "src/lib/bna/crm-contact-model.js"
+        "public/operations-bootstrap.html",
+        "src/lib/bna/crm-contact-model.js",
+        "server.js",
+        "ops/action-registry.json",
+        "tests/crm-contact-service.test.js",
+        "tests/shared-crm-workbench-contract.test.js",
+        "tests/rabbi-scheller-tenant-isolation-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:18:00+03:00",
+      "updated_at": "2026-07-13T00:14:00+03:00",
       "blocker": ""
     },
     {
