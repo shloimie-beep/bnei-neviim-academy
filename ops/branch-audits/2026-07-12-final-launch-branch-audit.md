@@ -3,7 +3,9 @@
 Status: active closeout / no blind merge
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Base branch: `master`
-Base inspected HEAD before this audit closeout: `0d050e592`
+Final audit commit: `2784847df`
+GitHub PR closeout: PR #130 closed as stale/unsafe after this audit; remote
+branches were not deleted.
 
 ## Summary
 
@@ -29,13 +31,13 @@ closeout evidence, and current run state.
 | `codex/onetime-signup-form-hotfix-20260712` | Merged to `master`; deployed and live-smoked. | Commits `692b20ed`, `48c52797`; One Time deployment `e26ebaa2-7d71-49a6-9abd-50f94e128ecf`; live Family/School browser intercept no-write proof. |
 | One Time CRM portal correction release | Merged to `master`; deployed and live-smoked. | Merge commit `b61db37a`; deployed app SHA `22cc6b88`; Railway deployment `89c697ad-3f72-4d4f-96a2-46f0b2c2d740`; focused suite `76/76`; live smokes passed. |
 | `codex/onetime-post-agent-delta-20260712-v3` | Safe code slice harvested only. Branch itself remains stale. | Commit `0d050e592` adds `scripts/run-one-time-delivery-outbox-cron.mjs`, `railway.one-time-delivery-cron.json`, package script, env example, and focused tests. |
-| `codex/launch-consolidation-20260712` / PR #130 | Safe WAPI/Rabbi readiness correction harvested only. PR remains stale/unsafe. | Raw correction `RAW-20260712-011`; readiness script/test updates; Rabbi Telegram watchdog readback now reports ready without sending. |
+| `codex/launch-consolidation-20260712` / PR #130 | Safe WAPI/Rabbi readiness correction harvested only. Draft PR #130 closed as stale/unsafe; remote branch retained. | Raw correction `RAW-20260712-011`; readiness script/test updates; Rabbi Telegram watchdog readback now reports ready without sending. |
 
 ## Blocked Or Superseded Branches
 
 | Branch | Status | Reason |
 | --- | --- | --- |
-| `origin/codex/launch-consolidation-20260712` | Blocked / stale draft PR. | Topic diff is too broad (`633` files from merge-base) and includes old launch artifacts. Safe WAPI/Rabbi readiness changes were ported; the rest requires scoped revival packets. |
+| `origin/codex/launch-consolidation-20260712` | Blocked / stale draft PR closed. | Topic diff is too broad (`633` files from merge-base) and includes old launch artifacts. Safe WAPI/Rabbi readiness changes were ported; the rest requires scoped revival packets. |
 | `origin/codex/onetime-signup-location-hotfix-20260712` | Superseded / do not merge wholesale. | Contains older direct-signup edits and proof. Current `master` already has the deployed Family/School branch fix; wholesale merge would collide with current signup payload handling and release evidence. |
 | `origin/codex/onetime-post-agent-delta-20260712`, `-v2`, `-v3` | Superseded after safe slice harvest. | V3 cron runner was ported to `master`; branch run-pointer/evidence changes are stale and would rewrite current closeout state. |
 | `origin/codex/shipping-gate-20260706` | Blocked pending scoped revival. | Includes parent reminder send packet / One Time Studio sidekick scope and external-send-adjacent work. Must not be merged into launch without a fresh packet and proof. |

@@ -38857,6 +38857,8 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Added `ops/branch-audits/2026-07-12-final-launch-branch-audit.md` classifying
   merged, harvested, already satisfied, blocked, superseded, and revival-only
   branches.
+- Closed stale draft PR #130 with a GitHub comment pointing to the branch audit;
+  remote branches were not deleted.
 - Verification passed: WAPI/setup tests `12/12`, `npm run secrets:audit`, and
   read-only readiness checks. Production readiness remains blocked by Stripe
   sandbox fields, campaign proof/approval, Rabbi Telegram live-smoke proof,
