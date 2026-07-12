@@ -9,52 +9,34 @@ const server = fs.readFileSync('server.js', 'utf8');
 const actionRegistry = JSON.parse(fs.readFileSync('ops/action-registry.json', 'utf8'));
 const routeRegistry = JSON.parse(fs.readFileSync('ops/route-registry.json', 'utf8'));
 
-test('One Time landing mounts helper without BNA nav or language toggle chrome', () => {
+test('One Time landing uses direct WhatsApp launcher without BNA helper chrome', () => {
   assert.match(oneTime, /<html lang="en" data-app-select-surface="one-time" data-one-time-current-masechta="Maseches Berachos">/);
-  assert.match(oneTime, /<script src="\/js\/bna-helper-knowledge\.js" defer><\/script>\s*<script src="\/js\/bna-bot-widget\.js" defer><\/script>/);
+  assert.match(oneTime, /class="one-time-whatsapp-launcher"/);
+  assert.match(oneTime, /href="\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class"/);
+  assert.match(oneTime, /aria-label="Open WhatsApp for One Time Mishnayos class information"/);
+  assert.match(oneTime, /data-action-id="ACTION-ONETIME-PUBLIC-WHATSAPP"/);
+  assert.doesNotMatch(oneTime, /<script src="\/js\/bna-helper-knowledge\.js"/);
+  assert.doesNotMatch(oneTime, /<script src="\/js\/bna-bot-widget\.js"/);
+  assert.doesNotMatch(oneTime, /href="https:\/\/wa\.me/);
+  assert.doesNotMatch(oneTime, /Robot Scheller/);
   assert.doesNotMatch(oneTime, /data-bna-site-nav/);
   assert.doesNotMatch(oneTime, /\/js\/bna-site-nav\.js/);
   assert.doesNotMatch(oneTime, /\/js\/app-select\.js/);
   assert.doesNotMatch(oneTime, /id="languageToggle"|data-language-toggle/);
 });
 
-test('One Time public helper has separate surface, copy, actions, and black-yellow skin', () => {
-  assert.match(widget, /const isOneTimePublic = /);
-  assert.match(widget, /const isOneTimePublicDocument = /);
-  assert.match(widget, /\['\/rabbi-preview', '\/one-time-mishnayos'\]\.includes\(path\)/);
-  assert.match(widget, /document\.documentElement\?\.dataset\?\.appSelectSurface === 'one-time'/);
-  assert.match(widget, /&& !isParent\s+&& !isStudent\s+&& !isProvider\s+&& !\/\^\(\?:\\\/rabbi-member\|\\\/member-library\|\\\/one-time-classroom/);
-  assert.match(widget, /\? 'one_time_public'/);
-  assert.match(widget, /surface === 'one_time_public'/);
-  assert.match(widget, /Robot Scheller/);
-  assert.match(widget, /Rabbi Scheller's digital assistant/);
-  assert.match(widget, /ONE_TIME_PUBLIC_FIRST_NUDGE_DELAY_MS = 10000/);
-  assert.match(widget, /ONE_TIME_PUBLIC_SECOND_NUDGE_DELAY_MS = 20000/);
-  assert.match(widget, /help signing up/);
-  assert.match(widget, /Leave the minimum details and the One Time team will follow up/);
-  assert.match(widget, /Sign Up Now/);
-  assert.match(widget, /type: 'signup'/);
-  assert.match(widget, /Speak to Rabbi Scheller/);
-  assert.match(widget, /Current class information/);
-  assert.match(widget, /Open WhatsApp/);
-  assert.match(widget, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
-  assert.match(widget, /bna-assistant-surface-one-time-public/);
-  assert.match(widget, /body\.bna-assistant-surface-one-time-public \.bna-bot-launcher/);
-
-  const oneTimePublicDataBlock = widget.slice(
-    widget.indexOf('function oneTimePublicHelperData()'),
-    widget.indexOf('function fallbackPublicHelperData()')
-  );
-  assert.match(oneTimePublicDataBlock, /Robot Scheller/);
-  assert.match(oneTimePublicDataBlock, /Sign Up Now/);
-  assert.match(oneTimePublicDataBlock, /type: 'signup'/);
-  assert.match(oneTimePublicDataBlock, /oneTimeJoinMomentCopy\(\)/);
-  assert.doesNotMatch(oneTimePublicDataBlock, /Join the free class/);
-  assert.doesNotMatch(oneTimePublicDataBlock, /approved free Zoom/);
-  assert.doesNotMatch(oneTimePublicDataBlock, /Do you want your son to love Torah/);
-  assert.doesNotMatch(oneTimePublicDataBlock, /I only answer public One Time questions/);
-  assert.doesNotMatch(oneTimePublicDataBlock, /private parent billing, attendance, student transcripts, access codes, raw class transcripts, or admin data/);
-  assert.doesNotMatch(oneTimePublicDataBlock, /Learn about BNA|How BNA works|BNA model path|Service-provider ecosystem path/);
+test('One Time public WhatsApp launcher uses same-origin runtime redirect and black-yellow landing skin', () => {
+  assert.match(oneTime, /\.one-time-whatsapp-launcher/);
+  assert.match(oneTime, /background: #25d366/);
+  assert.match(oneTime, /\.one-time-whatsapp-launcher:focus-visible/);
+  assert.match(oneTime, /body\.modal-open \.one-time-whatsapp-launcher/);
+  assert.match(oneTime, /target="_blank"/);
+  assert.match(oneTime, /rel="noopener noreferrer"/);
+  assert.match(server, /function oneTimePublicWhatsAppReadiness\(\)/);
+  assert.match(server, /ONE_TIME_PUBLIC_WHATSAPP_NUMBER/);
+  assert.match(server, /redirect_path: configured \? '\/api\/one-time\/public-whatsapp\/redirect'/);
+  assert.match(server, /no_whatsapp_sent: true/);
+  assert.match(server, /external_write_performed: false/);
 });
 
 test('One Time select controls do not use the default BNA-blue app-select theme', () => {
@@ -120,28 +102,27 @@ test('One Time student login route hides legacy access-code fallback and mounts 
   assert.match(widget, /bna-assistant-surface-one-time-student/);
 });
 
-test('One Time public helper launcher is registered as a visible action', () => {
+test('One Time public helper launcher is archived from the visible landing action set', () => {
   const action = actionRegistry.actions.find((item) => item.action_id === 'ACTION-ONETIME-PUBLIC-HELPER-OPEN');
   assert.ok(action);
   assert.equal(action.route, '/one-time');
-  assert.equal(action.label, 'Robot Scheller WhatsApp Assistant');
-  assert.match(action.expected_behavior, /bottom-corner Robot Scheller public assistant/);
-  assert.match(action.expected_behavior, /WhatsApp assistant entry/);
-  assert.match(action.expected_behavior, /One Time only/);
+  assert.equal(action.label, 'Robot Scheller public helper');
+  assert.equal(action.status, 'removed_from_public_landing');
+  assert.match(action.selector_hint, /removed from public\/one-time\/index\.html/);
+  assert.match(action.expected_behavior, /ACTION-ONETIME-PUBLIC-WHATSAPP/);
 });
 
 test('One Time public WhatsApp action is registry-covered and no-send at runtime', () => {
   const action = actionRegistry.actions.find((item) => item.action_id === 'ACTION-ONETIME-PUBLIC-WHATSAPP');
   assert.ok(action);
   assert.equal(action.route, '/one-time');
-  assert.equal(action.label, 'Open WhatsApp Assistant');
+  assert.equal(action.label, 'Open WhatsApp');
   assert.match(action.handler, /\/api\/one-time\/public-whatsapp\/redirect/);
-  assert.match(action.status, /blocked_external_setup_until_runtime_number_configured/);
+  assert.match(action.status, /active_runtime_redirect_with_setup_fallback/);
   assert.match(action.expected_behavior, /ONE_TIME_PUBLIC_WHATSAPP_NUMBER/);
   assert.match(action.expected_behavior, /performs no WhatsApp send by itself/);
-  assert.doesNotMatch(oneTime, /ACTION-ONETIME-PUBLIC-WHATSAPP/);
-  assert.match(widget, /\/api\/one-time\/public-whatsapp\/redirect\?intent=current_info/);
-  assert.match(widget, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
+  assert.match(oneTime, /ACTION-ONETIME-PUBLIC-WHATSAPP/);
+  assert.match(oneTime, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
   assert.match(server, /const ONE_TIME_PUBLIC_WHATSAPP_NUMBER/);
   assert.match(server, /app\.get\(\['\/api\/one-time\/public-whatsapp', '\/api\/bna\/one-time\/public-whatsapp'\]/);
   assert.match(server, /full_number_returned: false/);

@@ -957,6 +957,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/css/one-time-portal-shell.css">
 </head>
 <body data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
   <div class="shell">
@@ -970,7 +971,7 @@
           </div>
         </div>
         <div class="top-actions">
-          <a href="/rabbi-member" aria-label="Member home" data-one-time-action-state="navigate" data-button-state="working">Home</a>
+          <a href="/rabbi-member" aria-label="Family Portal" data-one-time-action-state="navigate" data-button-state="working">Family Portal</a>
           <a href="/member-library" data-one-time-action-state="navigate" data-button-state="working">Library</a>
           <a href="/one-time-classroom" aria-current="page" data-one-time-action-state="navigate" data-button-state="working">Classroom</a>
           <button type="button" data-bna-assistant-open aria-label="Assistant/help" aria-controls="bnaBotPanel" data-one-time-action-state="preview" data-button-state="preview">Helper</button>
@@ -1002,7 +1003,7 @@
           <input id="accessCode" type="hidden" autocomplete="one-time-code">
           <div class="actions">
             <a class="button-link" href="/rabbi-member">Log in</a>
-            <a class="button-link secondary" href="/one-time-parent">Forgot parent password?</a>
+            <a class="button-link secondary" href="/one-time-parent">Parent account setup/reset</a>
           </div>
           <div class="status" id="statusText">Secure link/current access keeps this classroom private.</div>
         </form>
@@ -1096,7 +1097,7 @@
           <p>Copyright 2026 One Time Mishnayos. Classroom access stays private and Rabbi-scoped.</p>
         </div>
         <nav class="footer-links" aria-label="One Time footer navigation">
-          <a href="/rabbi-member">Member Home</a>
+          <a href="/rabbi-member">Family Portal</a>
           <a href="/one-time/privacy.html">Privacy</a>
           <a href="/one-time/terms.html">Terms</a>
           <a href="/member-library">Library</a>
@@ -1169,7 +1170,7 @@
           : 'Your secure link opened the classroom.');
       } else if (mode === 'error') {
         els.accessTitle.textContent = 'Access help';
-        els.accessHelp.textContent = message || 'Log in again or use Forgot parent password to get a fresh link by email.';
+        els.accessHelp.textContent = message || 'Log in again or use parent account setup/reset to get a fresh link by email.';
       } else {
         els.accessTitle.textContent = 'Open your classroom';
         els.accessHelp.textContent = message || 'Use your member login or the secure classroom link from your One Time email. There is no separate classroom password.';
@@ -1487,7 +1488,7 @@
       const sessionToken = currentMemberSessionToken();
       if (!trimmed && !sessionToken && !reviewMode) {
         setAccessPanelState('needs_code');
-        els.status.textContent = 'Log in to your member area, use your secure invite link, or use Forgot parent password for a fresh email link.';
+        els.status.textContent = 'Log in to your Family Portal, use your secure invite link, or use parent account setup/reset for a fresh email link.';
         return;
       }
       els.status.textContent = 'Opening classroom...';
@@ -1516,7 +1517,7 @@
         await loadClassroom(code);
       } catch (error) {
         els.status.textContent = error.message;
-        setAccessPanelState('error', 'Log in again or use Forgot parent password to get a fresh link by email.');
+        setAccessPanelState('error', 'Log in again or use parent account setup/reset to get a fresh link by email.');
       }
     });
 
@@ -1564,18 +1565,19 @@
       els.code.value = state.code;
       loadClassroom(state.code).catch((error) => {
         els.status.textContent = error.message;
-        setAccessPanelState('error', 'Log in again or use Forgot parent password to get a fresh link by email.');
+        setAccessPanelState('error', 'Log in again or use parent account setup/reset to get a fresh link by email.');
       });
     } else if (currentMemberSessionToken()) {
       loadClassroom('').catch((error) => {
         els.status.textContent = error.message;
-        setAccessPanelState('error', 'Log in again or use Forgot parent password to get a fresh link by email.');
+        setAccessPanelState('error', 'Log in again or use parent account setup/reset to get a fresh link by email.');
       });
     } else {
       setAccessPanelState('needs_code');
     }
   </script>
   <script src="/js/bna-helper-knowledge.js"></script>
+  <script src="/js/one-time-portal-shell.js"></script>
   <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

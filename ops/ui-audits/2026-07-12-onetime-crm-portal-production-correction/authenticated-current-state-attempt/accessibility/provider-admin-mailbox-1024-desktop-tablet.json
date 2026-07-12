@@ -1,0 +1,13 @@
+{
+  "route": "/provider.html?admin_provider=one-time&section=mailbox",
+  "viewport": "1024-desktop-tablet",
+  "checks": {
+    "has_h1": true,
+    "horizontal_overflow": false,
+    "visible_action_count": 0,
+    "unlabeled_action_count": 0,
+    "visible_control_count": 0,
+    "controls_without_labels": 0,
+    "browser_content_untrusted": true
+  }
+}

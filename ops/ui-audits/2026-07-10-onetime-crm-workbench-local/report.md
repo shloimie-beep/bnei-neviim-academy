@@ -1,21 +1,37 @@
 # One Time Operations CRM Workbench Local Smoke
 
 Status: PASS
-Generated: 2026-07-10T16:51:26.035Z
+Generated: 2026-07-12T17:25:52.311Z
 
 Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.
 
-| Viewport | Passed | Overflow | Cards | Detail | Timeline | Screenshot |
-|---|---:|---:|---:|---:|---:|---|
-| 1440x960 | true | false | 6 | true | true | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1440-crm-workbench.png |
-| 1024x900 | true | false | 6 | true | true | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1024-crm-workbench.png |
-| 768x1024 | true | false | 6 | true | true | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/tablet-768-crm-workbench.png |
-| 430x932 | true | false | 6 | true | true | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-430-crm-workbench.png |
-| 390x844 | true | false | 6 | true | true | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-390-crm-workbench.png |
+| Target | Viewport | Passed | CRM calls | Initial cards | Root rerenders | Search requests | Legacy table closed/open | Screenshot |
+|---|---|---:|---:|---:|---:|---:|---:|---|
+| split-shell | 1440x960 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1440-crm-workbench.png |
+| monolith | 1440x960 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1440-crm-workbench.png |
+| split-shell | 1024x900 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1024-crm-workbench.png |
+| monolith | 1024x900 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1024-crm-workbench.png |
+| split-shell | 768x1024 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-tablet-768-crm-workbench.png |
+| monolith | 768x1024 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-tablet-768-crm-workbench.png |
+| split-shell | 430x932 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-430-crm-workbench.png |
+| monolith | 430x932 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-430-crm-workbench.png |
+| split-shell | 390x844 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-390-crm-workbench.png |
+| monolith | 390x844 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-390-crm-workbench.png |
+
+Inbox context:
+
+| Target | Viewport | Passed | One Time Inbox | Context | Scope | Send gate | Screenshot |
+|---|---|---:|---:|---:|---:|---:|---|
+| split-shell | 1024x900 | true | true | true | true | true | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1024-one-time-inbox.png |
 
 Checks:
 
 - One Time Operations CRM route renders the API-backed workbench.
-- Search/filter/sort controls, cards, selected detail, class/trial/access context, no-send guard, and timeline readback are visible.
+- Split shell and monolith fallback render the API-backed workbench.
+- Search/filter/sort controls, cards, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe action locks, and timeline readback are visible.
+- Mobile selected-contact state hides the list and Back to contacts restores it.
+- Scoped One Time Inbox retains selected CRM contact context and keeps send gates visible.
+- Initial CRM API calls after auth are <= 3, initial cards are <= 50, contact selection does not replace the app root, and debounced search sends one list request.
+- Legacy CRM review/source table is absent while the details panel is closed and present after it is opened.
 - Desktop, tablet, and mobile screenshots have no horizontal overflow.
 - Synthetic data only; no external sends, payments, access grants, or external CRM writes.

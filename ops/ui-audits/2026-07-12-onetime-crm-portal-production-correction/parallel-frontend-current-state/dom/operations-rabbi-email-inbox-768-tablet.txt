@@ -1,0 +1,82 @@
+Email
+Provider Workspace Admin / Comms / Email
+Ask
+12 Jul
+Announce
+0
+Email Previews
+0
+Support Replies
+0
+No-send Log
+0
+MESSAGES
+Communications
+
+Parent, student, provider, internal, WhatsApp, email, and bot conversations are separated by permission-aware lanes.
+
+Email Workspace
+
+Drafts, logged emails, sender readiness, DNS tasks, and approval gates stay first-party. No email is sent from this lane without the exact SEND_RESEND_EMAIL phrase.
+
+Ready after review + SEND_RESEND_EMAIL
+Now Viewing: Rabbi / One Time Inbox
+
+[redacted-email] / rabbi_sheller_provider / one_time_mishnah_class
+
+BNA / Shloimie (0)
+Rabbi / One Time (67)
+View One Time as Rabbi
+Provider account
+
+Resend API readiness is checked separately from sender and domain readiness.
+
+Connected
+Connected
+Sender identity
+
+From identity must be explicitly configured for this workspace before send.
+
+Configured
+[redacted-email]
+Domain readiness
+
+Verified domain or explicit fallback approval is required before send.
+
+Allowed
+Verified
+Recipients
+
+Recipient validation uses workspace/project filters to prevent accidental cross-workspace sends.
+
+Scoped
+one_time_mishnah_class
+Send confirmation
+
+The send endpoint rejects requests without the exact approval phrase.
+
+Required
+SEND_RESEND_EMAIL
+Inbox/imported
+18
+Drafts
+0
+Approved
+0
+Sent/logged
+7
+Failed
+0
+Templates
+4
+Domain readiness
+1
+DNS setup
+0
+Draft Editor
+Preview only
+
+Manual template
+   Create draft
+Draft creation stores a local review item and readiness blocker only. It does not send email.
+No emails match this view.

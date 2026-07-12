@@ -1,0 +1,73 @@
+{
+  "packet_id": "telegram-sidekick-super-package-20260712",
+  "schema_version": "bna.chatgpt_dropoff_manifest.v1",
+  "generated_by": "chatgpt",
+  "target_repo": "shloimie-beep/bnei-neviim-academy",
+  "target_branch": "master",
+  "target_commit_audited": "d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a",
+  "packet_type": "implementation_bundle",
+  "packet_role": "architecture_contract_code_prep_and_acceptance_suite",
+  "lane_key": "platform-assistant-telegram-sidekick-v2",
+  "files": [
+    {"path": "RAW.md", "purpose": "Preserves the operator request, audit truth, fixed decisions, and boundaries."},
+    {"path": "CODEX_PROMPT.md", "purpose": "Master Codex pickup and execution instruction."},
+    {"path": "PATCHES.md", "purpose": "Maps prepared schemas, migration, scaffolds, and adaptation rules."},
+    {"path": "VALIDATION.md", "purpose": "Records completed package-level validation and explicit unrun live steps."},
+    {"path": "attachments/00-PACKAGE-OVERVIEW.md", "purpose": "Outcome, invariants, and completion definition."},
+    {"path": "attachments/01-TARGET-ARCHITECTURE.md", "purpose": "Shared-kernel architecture and repository seams."},
+    {"path": "attachments/02-IDENTITY-SCOPE-POLICY.md", "purpose": "Four-surface identity, tenant, and permission contract."},
+    {"path": "attachments/03-CAPABILITY-TOOL-CONTRACT.md", "purpose": "Canonical capability manifest, routing, approval, and external-tool model."},
+    {"path": "attachments/04-MEMORY-LOOP.md", "purpose": "Durable memory/preferences lifecycle and namespaces."},
+    {"path": "attachments/05-QUESTION-RETRIEVAL.md", "purpose": "Canonical question read model and exact-query behavior."},
+    {"path": "attachments/06-SECURITY-RELIABILITY.md", "purpose": "Threat model, runtime safety, queues, retries, and observability."},
+    {"path": "attachments/07-IMPLEMENTATION-DAG.md", "purpose": "Sequenced, non-overlapping implementation lanes."},
+    {"path": "attachments/08-ACCEPTANCE-GATES.md", "purpose": "Automated and live release gates."},
+    {"path": "attachments/09-CURRENT-CAPABILITY-GAPS.md", "purpose": "Exact audited registry, routing, permission, and planner gap inventory."},
+    {"path": "attachments/REPO-CHANGE-MANIFEST.json", "purpose": "Exact add/modify/retire inventory."},
+    {"path": "attachments/contracts/", "purpose": "Strict JSON schemas and profile manifests."},
+    {"path": "attachments/migrations/", "purpose": "Idempotent additive migration draft."},
+    {"path": "attachments/scaffolds/", "purpose": "Repository-style starter modules that Codex must audit and adapt."},
+    {"path": "attachments/test-fixtures/", "purpose": "English/Hebrew behavioral fixtures and negative cases."},
+    {"path": "attachments/codex-lanes/", "purpose": "Small implementation prompts with dependencies and file ownership."}
+  ],
+  "proposed_repo_changes": [
+    "route Telegram ingress through a canonical assistant turn orchestrator",
+    "server-bind Telegram identities and scope grants",
+    "add a compiled capability manifest covering typed actions, UI actions, routes, queries, and external tools",
+    "add a normalized question read model and list_questions tool",
+    "add durable scoped memory/preference records and lifecycle events",
+    "add safe web search and connector policy adapters",
+    "add restart-safe ingress/outbox processing and worker heartbeats",
+    "remove or disable legacy webhook and direct Telegram bypasses after shadow parity",
+    "add generated parity, language, scope, no-write, approval, reliability, and live-smoke tests"
+  ],
+  "tests_expected": [
+    "node --check for every changed JavaScript/MJS file",
+    "focused sidekick-v2 unit and integration tests",
+    "existing Telegram/helper/assistant/action/scope/One Time/privacy test groups",
+    "npm test",
+    "action and route watchdogs",
+    "credential-free shadow comparison",
+    "separately approved hosted smoke for Shloimie and Rabbi"
+  ],
+  "known_blockers": [
+    "Current master and live worker versions must be refreshed at pickup.",
+    "Production migration/deployment/live messaging require separate approval.",
+    "Some UI actions need an explicit assistant mapping or intentional exclusion decision."
+  ],
+  "risk_notes": [
+    "server.js is a high-collision file and must not be edited in parallel lanes",
+    "super-admin authority must never be inferred from a Telegram request body",
+    "private data must be filtered before model or web-search egress",
+    "memory sharing means policy-controlled namespaces, never a global transcript pool",
+    "legacy Telegram direct commands must not survive as hidden approval bypasses"
+  ],
+  "handoff_rules": [
+    "Audit current repo and local dirty state before applying.",
+    "Execute the prepared lanes in dependency order; do not solve the whole system in one unreviewable patch.",
+    "Use additive idempotent migrations and preserve compatibility until shadow parity passes.",
+    "Do not perform external effects without exact operator approval.",
+    "Do not mark Done without pushed code, correct deployment, runtime version proof, and approved live smoke for server-visible behavior."
+  ],
+  "handback_required": true
+}

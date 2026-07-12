@@ -129,6 +129,7 @@ const {
 } = require('./src/lib/bna/provider-api-usage');
 const {
   buildTelegramRuntimeReadiness,
+  TELEGRAM_SIDEKICK_RUNTIME_KEYS,
 } = require('./src/lib/bna/telegram-runtime-status');
 const {
   notifyRabbiCommunication,
@@ -10614,6 +10615,12 @@ async function requireProviderSession(req, res, next) {
 
 // Admin auth middleware - case insensitive
 async function requireAdmin(req, res, next) {
+  const viewAsAuth = applyOneTimeViewAsRabbiRequest(req, res);
+  if (viewAsAuth.handled) {
+    if (viewAsAuth.authenticated) return next();
+    return;
+  }
+
   const cookies = parseCookies(req);
   const session = await getValidSession(cookies[SESSION_COOKIE_NAME]);
   if (session) {
@@ -10681,6 +10688,16 @@ async function identifyAdminRequest(req) {
 
 async function identifyOpsAssistantRequest(req) {
   if (req?.opsIdentity) return req.opsIdentity;
+  const viewAsToken = oneTimeViewAsTokenFromRequest(req);
+  if (viewAsToken && !isOneTimeViewAsControlEndpoint(req)) {
+    const payload = verifyOneTimeViewAsToken(viewAsToken);
+    try {
+      assertOneTimeViewAsRequestScope(req);
+    } catch (err) {
+      return null;
+    }
+    if (payload) return oneTimeViewAsRabbiIdentity(payload);
+  }
   const cookies = parseCookies(req);
   const session = await getValidSession(cookies[SESSION_COOKIE_NAME]);
   if (session) return identifyOpsUser(session.username) || null;
@@ -11055,8 +11072,113 @@ function verifyOneTimeViewAsToken(token = '') {
   }
   if (!payload?.exp || Date.now() > Number(payload.exp)) return null;
   if (payload.typ !== 'one_time_view_as_rabbi' || payload.read_only !== true) return null;
-  if (payload.workspace_key !== 'rabbi_sheller_provider' || payload.target_role !== 'workspace_owner') return null;
+  if (payload.workspace_key !== ONE_TIME_PROVIDER_WORKSPACE_KEY || payload.project_key !== ONE_TIME_PROJECT_KEY || payload.target_role !== 'workspace_owner') return null;
   return payload;
+}
+
+function oneTimeViewAsTokenFromRequest(req = {}) {
+  const query = req.query || {};
+  const body = req.body && typeof req.body === 'object' ? req.body : {};
+  const headers = req.headers || {};
+  return String(
+    query.view_as_rabbi ||
+    query.viewAsRabbi ||
+    body.view_as_rabbi ||
+    body.viewAsRabbi ||
+    headers['x-one-time-view-as-token'] ||
+    headers['x-view-as-rabbi-token'] ||
+    ''
+  ).trim();
+}
+
+function isOneTimeViewAsControlEndpoint(req = {}) {
+  return [
+    '/api/bna/one-time/view-as-rabbi/start',
+    '/api/bna/one-time/view-as-rabbi/session',
+    '/api/bna/one-time/view-as-rabbi/end',
+  ].includes(String(req.path || ''));
+}
+
+function oneTimeViewAsRabbiIdentity(payload = {}) {
+  return decorateOneTimeIdentity({
+    username: 'view_as_rabbi_scheller',
+    role: 'project_owner',
+    scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
+    allowedViews: ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'],
+    displayName: 'Rabbi Ellie Scheller',
+    read_only: true,
+    writes_disabled: true,
+    view_as: {
+      mode: 'view_as_rabbi',
+      read_only: true,
+      writes_disabled: true,
+      return_label: 'Return to Super Admin',
+      workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      project_key: ONE_TIME_PROJECT_KEY,
+      expires_at: payload.expires_at || payload.exp || null,
+    },
+  });
+}
+
+function requestValuesForKeys(req = {}, keys = []) {
+  const query = req.query || {};
+  const body = req.body && typeof req.body === 'object' ? req.body : {};
+  return keys
+    .flatMap((key) => [query[key], body[key]])
+    .filter((value) => value !== undefined && value !== null && String(value).trim());
+}
+
+function assertOneTimeViewAsRequestScope(req = {}) {
+  const workspaceValues = requestValuesForKeys(req, ['workspace', 'workspace_key', 'workspaceKey'])
+    .map((value) => normalizeWorkspaceKey(value))
+    .filter(Boolean);
+  const badWorkspace = workspaceValues.find((workspaceKey) => workspaceKey !== ONE_TIME_PROVIDER_WORKSPACE_KEY);
+  if (badWorkspace) {
+    const error = new Error('View-as Rabbi can only access the One Time provider workspace.');
+    error.statusCode = 403;
+    throw error;
+  }
+
+  const projectValues = requestValuesForKeys(req, ['project', 'project_key', 'projectKey'])
+    .map((value) => workspaceProjectKey(normalizeWorkspaceKey(value)) || normalizeProjectKey(value))
+    .filter(Boolean);
+  const badProject = projectValues.find((projectKey) => projectKey !== ONE_TIME_PROJECT_KEY);
+  if (badProject) {
+    const error = new Error('View-as Rabbi can only access One Time Mishnah Class records.');
+    error.statusCode = 403;
+    throw error;
+  }
+}
+
+function applyOneTimeViewAsRabbiRequest(req, res) {
+  if (isOneTimeViewAsControlEndpoint(req)) return { handled: false };
+  const token = oneTimeViewAsTokenFromRequest(req);
+  if (!token) return { handled: false };
+  const payload = verifyOneTimeViewAsToken(token);
+  if (!payload) {
+    res.status(401).json({ error: 'Invalid or expired View-as Rabbi token.' });
+    return { handled: true, authenticated: false };
+  }
+  try {
+    assertOneTimeViewAsRequestScope(req);
+  } catch (err) {
+    res.status(err.statusCode || 403).json({ error: err.message });
+    return { handled: true, authenticated: false };
+  }
+  const method = String(req.method || 'GET').toUpperCase();
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    res.status(403).json({ error: 'View-as Rabbi is read-only.' });
+    return { handled: true, authenticated: false };
+  }
+  const identity = oneTimeViewAsRabbiIdentity(payload);
+  if (!isScopedOpsPathAllowed(req, identity)) {
+    res.status(403).json({ error: 'View-as Rabbi cannot access this Operations surface.' });
+    return { handled: true, authenticated: false };
+  }
+  req.oneTimeViewAsRabbi = payload;
+  req.opsUser = identity.username;
+  req.opsIdentity = identity;
+  return { handled: true, authenticated: true, identity };
 }
 
 function agentReviewSigningSecret() {
@@ -28720,9 +28842,16 @@ function parseCrmContactRef(value = '') {
   };
 }
 
-async function operationsCrmContactRows(scope = {}, db = pool) {
+function crmListSourceFetchLimit(options = {}) {
+  const limit = crmContactModel.crmListLimit(options.limit);
+  const cursor = crmContactModel.decodeCrmCursor(options.cursor);
+  return Math.min(500, cursor.offset + limit + 1);
+}
+
+async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
   const workspaceKey = normalizeWorkspaceKey(scope.workspace_key);
   const projectKey = normalizeProjectKey(scope.project_key || workspaceProjectKey(workspaceKey));
+  const sourceFetchLimit = crmListSourceFetchLimit(options);
   const rows = [];
 
   const contactParams = [];
@@ -28731,6 +28860,8 @@ async function operationsCrmContactRows(scope = {}, db = pool) {
     contactParams.push(workspaceKey);
     contactConditions.push(`ws.workspace_key = $${contactParams.length}`);
   }
+  contactParams.push(sourceFetchLimit);
+  const contactLimitParam = contactParams.length;
 
   const contacts = await db.query(
     `SELECT
@@ -28751,7 +28882,7 @@ async function operationsCrmContactRows(scope = {}, db = pool) {
      LEFT JOIN bna_workspace_settings ws ON ws.id = c.workspace_id
      WHERE ${contactConditions.join(' AND ')}
      ORDER BY c.updated_at DESC NULLS LAST, c.id DESC
-     LIMIT 500`,
+     LIMIT $${contactLimitParam}`,
     contactParams
   ).catch(() => ({ rows: [] }));
 
@@ -28767,6 +28898,8 @@ async function operationsCrmContactRows(scope = {}, db = pool) {
     leadParams.push(projectKey);
     leadConditions.push(`p.project_key = $${leadParams.length}`);
   }
+  leadParams.push(sourceFetchLimit);
+  const leadLimitParam = leadParams.length;
 
   const leads = await db.query(
     `SELECT
@@ -28789,7 +28922,7 @@ async function operationsCrmContactRows(scope = {}, db = pool) {
      LEFT JOIN bna_projects p ON p.id = l.project_id
      WHERE ${leadConditions.join(' AND ')}
      ORDER BY COALESCE(l.last_inbound_at, l.last_outbound_at, l.updated_at, l.created_at) DESC NULLS LAST, l.id DESC
-     LIMIT 500`,
+     LIMIT $${leadLimitParam}`,
     leadParams
   ).catch(() => ({ rows: [] }));
 
@@ -37685,6 +37818,7 @@ async function resolveProjectFromInput(input = {}, db = pool) {
 }
 
 function opsScopeProjectKey(req) {
+  if (req?.oneTimeViewAsRabbi) return ONE_TIME_PROJECT_KEY;
   return req?.opsIdentity?.scope?.type === 'project'
     ? req.opsIdentity.scope.projectKey
     : '';
@@ -44579,16 +44713,17 @@ async function buildTelegramStatusCard() {
   const runtimeDir = path.join(__dirname, '.runtime');
   const lock = runtimeFileStatSafe(path.join(runtimeDir, 'telegram-kimi-bridge.lock'));
   const log = runtimeFileStatSafe(path.join(runtimeDir, 'telegram-kimi-bridge.log'));
-  const hostedRuntime = await loadAgentRuntimeStatus('telegram-academy-bridge');
+  const hostedRuntime = await loadAgentRuntimeStatus(TELEGRAM_SIDEKICK_RUNTIME_KEYS.shloimie)
+    || await loadAgentRuntimeStatus(TELEGRAM_SIDEKICK_RUNTIME_KEYS.legacyAcademy);
   const runtimeReadiness = buildTelegramRuntimeReadiness({
     tokenConfigured: token.configured || profileToken.configured,
     allowedChatIdsConfigured,
     localLock: lock,
     localLog: log,
     hostedRuntime,
-    runtimeAgentKey: 'telegram-academy-bridge',
+    runtimeAgentKey: TELEGRAM_SIDEKICK_RUNTIME_KEYS.shloimie,
     activeSource: 'scripts/telegram-kimi-bridge.mjs',
-    legacyWebhookRoute: '/api/bna/telegram',
+    legacyWebhookRoute: '/api/bna/telegram (410 disabled)',
   });
   return integrationStatusCard({
     provider: 'telegram',
@@ -49020,15 +49155,18 @@ app.get('/api/bna/crm/contacts', requireAdmin, async (req, res) => {
     scope.project_key = scope.project_key || workspaceProjectKey(workspaceKey) || opsScopeProjectKey(req) || null;
     scope.feature_overrides = await featureOverridesForScope(scope);
     accountScope.assertEntitlement(scope, accountScope.ENTITLEMENTS.CRM_CONTACTS);
-    const rows = await operationsCrmContactRows(scope);
-    const payload = crmContactModel.filterCrmContacts(rows, {
+    const filters = {
       contact_type: req.query.contact_type || 'all',
       status: req.query.status || 'all',
       source: req.query.source || 'all',
       tag: req.query.tag || 'all',
       search: req.query.search || '',
       sort_key: req.query.sort_key || 'last_contact_desc',
-    }, scope);
+      limit: req.query.limit,
+      cursor: req.query.cursor,
+    };
+    const rows = await operationsCrmContactRows(scope, pool, filters);
+    const payload = crmContactModel.filterCrmContacts(rows, filters, scope);
     res.json({
       success: true,
       ...payload,
@@ -54791,6 +54929,13 @@ app.get('/api/parent/me', async (req, res) => {
 
 app.get('/api/bna/auth/me', async (req, res) => {
   try {
+    const viewAsAuth = applyOneTimeViewAsRabbiRequest(req, res);
+    if (viewAsAuth.handled) {
+      if (viewAsAuth.authenticated) {
+        return res.json(await buildBnaIdentityPayload({ identity: viewAsAuth.identity, req, actor: 'admin' }));
+      }
+      return;
+    }
     const opsIdentity = await identifyOpsAssistantRequest(req).catch(() => null);
     if (opsIdentity) {
       return res.json(await buildBnaIdentityPayload({ identity: opsIdentity, req, actor: 'admin' }));
@@ -87674,21 +87819,12 @@ app.get(['/operations', '/operations/agents/runs/:runKey'], requireAdmin, sendOp
 
 // Telegram webhook handler
 app.post('/api/bna/telegram', async (req, res) => {
-  const update = req.body;
-  
-  // Handle callback queries (button clicks)
-  if (update.callback_query) {
-    await handleTelegramCallback(update.callback_query);
-    return res.json({ ok: true });
-  }
-  
-  // Handle messages
-  if (update.message) {
-    await handleTelegramMessage(update.message);
-    return res.json({ ok: true });
-  }
-  
-  res.json({ ok: true });
+  res.setHeader('Cache-Control', 'no-store');
+  return res.status(410).json({
+    ok: false,
+    error: 'telegram_legacy_webhook_disabled',
+    message: 'Legacy unsigned Telegram webhook is disabled. Use the signed private sidekick bridge runtime.',
+  });
 });
 
 async function handleTelegramCallback(query) {

@@ -49,6 +49,51 @@ export const KEYHOLDER_FILES = [
     env_name: 'KIMI_API_KEY',
     optional: true,
   },
+  {
+    name: 'vimeo-client-id.txt',
+    label: 'Vimeo client ID',
+    repo_secret: '.secrets/vimeo-client-id.txt',
+    env_name: 'VIMEO_CLIENT_ID',
+    optional: true,
+  },
+  {
+    name: 'vimeo-client-secret.txt',
+    label: 'Vimeo client secret',
+    repo_secret: '.secrets/vimeo-client-secret.txt',
+    env_name: 'VIMEO_CLIENT_SECRET',
+    optional: true,
+  },
+  {
+    name: 'vimeo-access-token.txt',
+    aliases: ['one-time-vimeo-access-token.txt'],
+    label: 'Vimeo access token',
+    repo_secret: '.secrets/vimeo-access-token.txt',
+    env_name: 'VIMEO_ACCESS_TOKEN',
+    optional: true,
+  },
+  {
+    name: 'vimeo-webhook-secret.txt',
+    label: 'Vimeo webhook secret',
+    repo_secret: '.secrets/vimeo-webhook-secret.txt',
+    env_name: 'VIMEO_WEBHOOK_SECRET',
+    optional: true,
+  },
+  {
+    name: 'vimeo-test-project-uri.txt',
+    aliases: ['one-time-vimeo-test-project-uri.txt'],
+    label: 'Vimeo private test project URI',
+    repo_secret: '.secrets/vimeo-test-project-uri.txt',
+    env_name: 'VIMEO_TEST_PROJECT_URI',
+    optional: true,
+  },
+  {
+    name: 'vimeo-test-project-name.txt',
+    aliases: ['one-time-vimeo-test-project-name.txt'],
+    label: 'Vimeo private test project name',
+    repo_secret: '.secrets/vimeo-test-project-name.txt',
+    env_name: 'VIMEO_TEST_PROJECT_NAME',
+    optional: true,
+  },
 ];
 
 export function defaultKeyholderDir(env = process.env) {

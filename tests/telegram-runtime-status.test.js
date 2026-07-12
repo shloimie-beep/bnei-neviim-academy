@@ -4,6 +4,9 @@ const test = require('node:test');
 const vm = require('node:vm');
 
 const {
+  TELEGRAM_SIDEKICK_RUNTIME_KEYS,
+  assertTelegramBridgeStartupPolicy,
+  buildTelegramPrivateIdentityProfile,
   buildTelegramRuntimeReadiness,
 } = require('../src/lib/bna/telegram-runtime-status');
 
@@ -14,7 +17,7 @@ test('Telegram runtime readiness prefers fresh hosted academy worker heartbeat',
     localLock: { present: false, updated_at: null, age_minutes: null },
     localLog: { present: false, updated_at: null, age_minutes: null },
     hostedRuntime: {
-      agent_key: 'telegram-academy-bridge',
+      agent_key: TELEGRAM_SIDEKICK_RUNTIME_KEYS.shloimie,
       status: 'running',
       stale: false,
       last_seen_at: '2026-06-17T14:30:00.000Z',
@@ -41,7 +44,7 @@ test('Telegram runtime readiness marks stale hosted worker as blocked', () => {
     localLock: { present: false, updated_at: null, age_minutes: null },
     localLog: { present: false, updated_at: null, age_minutes: null },
     hostedRuntime: {
-      agent_key: 'telegram-academy-bridge',
+      agent_key: TELEGRAM_SIDEKICK_RUNTIME_KEYS.shloimie,
       status: 'running',
       stale: true,
       last_seen_at: '2026-06-17T12:00:00.000Z',
@@ -72,12 +75,125 @@ test('academy bridge source files wire hosted heartbeat reporting and status rea
   const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
   const server = fs.readFileSync('server.js', 'utf8');
 
-  assert.match(bridge, /runtimeAgentKey: isRabbiElieProfile \? '' : 'telegram-academy-bridge'/);
+  assert.match(bridge, /TELEGRAM_SIDEKICK_RUNTIME_KEYS\.rabbi/);
+  assert.match(bridge, /TELEGRAM_SIDEKICK_RUNTIME_KEYS\.shloimie/);
+  assert.match(bridge, /assertTelegramBridgeStartupPolicy\(config, botIdentity\)/);
+  assert.doesNotMatch(bridge, /AllowedChats=\$\{config\.allowedChatIds\.join/);
+  assert.doesNotMatch(bridge, /Allowed chats: \$\{config\.allowedChatIds\.join/);
   assert.match(bridge, /\/api\/bna\/agent-fleet\/status/);
   assert.match(bridge, /process_selector: process\.env\.BNA_RAILWAY_PROCESS/);
   assert.match(server, /async function buildTelegramStatusCard\(/);
-  assert.match(server, /loadAgentRuntimeStatus\('telegram-academy-bridge'\)/);
+  assert.match(server, /loadAgentRuntimeStatus\(TELEGRAM_SIDEKICK_RUNTIME_KEYS\.shloimie\)/);
+  assert.match(server, /loadAgentRuntimeStatus\(TELEGRAM_SIDEKICK_RUNTIME_KEYS\.legacyAcademy\)/);
   assert.match(server, /await buildTelegramStatusCard\(\)/);
+});
+
+test('Telegram private sidekick profiles are server-derived and fail closed', () => {
+  const shloimie = buildTelegramPrivateIdentityProfile({
+    bridgeProfile: 'bna',
+    botToken: 'token',
+    allowedChatIds: ['123', '123', '456'],
+  }, { id: 'bot-1', username: 'academy_bot' });
+  assert.equal(shloimie.profile_key, 'telegram_shloimie_super_admin');
+  assert.equal(shloimie.role, 'super_admin');
+  assert.equal(shloimie.scope.type, 'all');
+  assert.equal(shloimie.allowed_chat_ids_count, 2);
+  assert.equal(shloimie.runtime_agent_key, TELEGRAM_SIDEKICK_RUNTIME_KEYS.shloimie);
+
+  const rabbi = buildTelegramPrivateIdentityProfile({
+    bridgeProfile: 'rabbi-elie-scheller',
+    botToken: 'token',
+    allowedChatIds: ['789'],
+  }, { id: 'bot-2', username: 'rabbi_bot' });
+  assert.equal(rabbi.profile_key, 'telegram_rabbi_scheller_provider');
+  assert.equal(rabbi.role, 'provider_admin');
+  assert.equal(rabbi.scope.workspace_key, 'rabbi_sheller_provider');
+  assert.equal(rabbi.scope.project_key, 'one_time_mishnah_class');
+  assert.equal(rabbi.runtime_agent_key, TELEGRAM_SIDEKICK_RUNTIME_KEYS.rabbi);
+
+  assert.throws(
+    () => assertTelegramBridgeStartupPolicy({
+      bridgeProfile: 'bna',
+      botToken: 'token',
+      allowedChatIds: [],
+    }, { id: 'bot-1', username: 'academy_bot' }),
+    /telegram_private_chat_allowlist_missing/
+  );
+
+  assert.throws(
+    () => assertTelegramBridgeStartupPolicy({
+      bridgeProfile: 'rabbi-elie-scheller',
+      botToken: 'token',
+      allowedChatIds: ['789'],
+      opsUsername: '',
+      opsPassword: '',
+    }, { id: 'bot-2', username: 'rabbi_bot' }),
+    /rabbi_scoped_operations_credentials_missing/
+  );
+
+  assert.throws(
+    () => assertTelegramBridgeStartupPolicy({
+      bridgeProfile: 'bna',
+      botToken: 'token',
+      allowedChatIds: ['123'],
+      expectedBotUsername: 'expected_bot',
+    }, { id: 'bot-1', username: 'other_bot' }),
+    /expected_bot_username_mismatch/
+  );
+});
+
+test('legacy unsigned Telegram webhook is disabled in server route', () => {
+  const server = fs.readFileSync('server.js', 'utf8');
+  assert.match(server, /app\.post\('\/api\/bna\/telegram'/);
+  assert.match(server, /res\.status\(410\)\.json\(\{/);
+  assert.match(server, /telegram_legacy_webhook_disabled/);
+  assert.doesNotMatch(server, /app\.post\('\/api\/bna\/telegram'[\s\S]{0,260}handleTelegramMessage/);
+  assert.doesNotMatch(server, /app\.post\('\/api\/bna\/telegram'[\s\S]{0,260}handleTelegramCallback/);
+});
+
+test('Telegram bridge blocks direct Zoom link mutation and send routes', () => {
+  const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
+  const start = bridge.indexOf('async function handleLiveClassTelegramCommand');
+  const end = bridge.indexOf('async function handleTypedOperationsAction', start);
+  assert.ok(start > 0 && end > start, 'live class Telegram command handler should be present');
+  const handler = bridge.slice(start, end);
+
+  assert.match(handler, /Zoom link changes are blocked from Telegram/);
+  assert.match(handler, /Live class link sends are blocked from Telegram/);
+  assert.doesNotMatch(handler, /appRequest\(config, 'PATCH', `\/api\/bna\/live-sessions/);
+  assert.doesNotMatch(handler, /send-zoom-link/);
+  assert.doesNotMatch(handler, /dryRun: false/);
+  assert.doesNotMatch(handler, /Zoom: \$\{session\.zoom_meeting_url\}/);
+});
+
+test('Telegram bridge blocks raw Codex CLI execution paths', () => {
+  const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
+  const runCodexStart = bridge.indexOf('function runCodex(prompt, config)');
+  const runCodexEnd = bridge.indexOf('function runKimi', runCodexStart);
+  assert.ok(runCodexStart > 0 && runCodexEnd > runCodexStart, 'runCodex slice should be present');
+  const runCodex = bridge.slice(runCodexStart, runCodexEnd);
+
+  assert.match(bridge, /const codexEnabled = false/);
+  assert.match(bridge, /rawAgentExecutionEnabled: false/);
+  assert.match(bridge, /function canRunTelegramRawAgent\(config = \{\}\)/);
+  assert.match(bridge, /TELEGRAM_RAW_AGENT_EXECUTION_DISABLED_MESSAGE/);
+  assert.match(runCodex, /assertTelegramRawAgentExecutionAllowed\(config\);[\s\S]*spawn\(config\.codexCommand/);
+
+  const planningStart = bridge.indexOf('if (activePlanningSession && hasExplicitPromptImplementationStart(text))');
+  const planningEnd = bridge.indexOf('if (activePlanningSession && !hasPromptPlanningIntent(text)', planningStart);
+  assert.ok(planningStart > 0 && planningEnd > planningStart, 'planning apply slice should be present');
+  const planningApply = bridge.slice(planningStart, planningEnd);
+  assert.match(planningApply, /if \(!canRunTelegramRawAgent\(config\)\)/);
+  assert.match(planningApply, /captureRambleToApp\(config, codexWorkText, chatId, messageId\)/);
+
+  const taskRoutingStart = bridge.indexOf('const replyRouting = selectTelegramReplyMode(config, chatId, text);');
+  const taskRoutingEnd = bridge.indexOf('const replyParts = [reply];', taskRoutingStart);
+  assert.ok(taskRoutingStart > 0 && taskRoutingEnd > taskRoutingStart, 'task routing slice should be present');
+  const taskRouting = bridge.slice(taskRoutingStart, taskRoutingEnd);
+  assert.match(taskRouting, /trackedCodexTasks\.length && canRunRawAgent/);
+  assert.match(taskRouting, /replyRouting\.mode === 'codex' && config\.asyncAgentReplies && canRunRawAgent/);
+  assert.match(taskRouting, /trackedCodexTasks\.length && config\.asyncAgentReplies && canRunRawAgent/);
+  assert.doesNotMatch(taskRouting, /Kimi CLI fallback/);
 });
 
 test('academy bridge can use env-based Google Drive auth on hosted worker', () => {

@@ -312,6 +312,8 @@ function loadVimeoToken(repoRoot = process.cwd(), options = {}) {
     names: ['vimeo-access-token', 'vimeo'],
     fileNames: ['vimeo-access-token.txt', 'vimeo.txt'],
     repoRoot,
+    ...(options.keyholderRoots !== undefined ? { keyholderRoots: options.keyholderRoots } : {}),
+    ...(options.secretsRoot !== undefined ? { secretsRoot: options.secretsRoot } : {}),
   });
   const normalized = vimeo.normalizeVimeoTokenInput(loaded.value);
   return {
@@ -321,6 +323,50 @@ function loadVimeoToken(repoRoot = process.cwd(), options = {}) {
     length: normalized.length,
     fingerprint: normalized ? sha256(normalized).slice(0, 12) : '',
     blocker: normalized ? null : loaded.blocker,
+  };
+}
+
+function loadFirstConfigValue(repoRoot, loaders = [], options = {}) {
+  for (const loader of loaders) {
+    const loaded = loadSecret({
+      repoRoot,
+      ...loader,
+      ...(options.keyholderRoots !== undefined ? { keyholderRoots: options.keyholderRoots } : {}),
+      ...(options.secretsRoot !== undefined ? { secretsRoot: options.secretsRoot } : {}),
+    });
+    if (loaded.configured && String(loaded.value || '').trim()) return loaded;
+  }
+  return { configured: false, value: '', source_type: null, blocker: null };
+}
+
+function loadVimeoTestProjectTarget(repoRoot = process.cwd(), options = {}) {
+  const provided = compactText(options.vimeoProjectUri || options.testProjectUri || '', 4000);
+  if (provided) {
+    return {
+      configured: true,
+      value: provided,
+      source: 'provided',
+      fingerprint: sha256(provided).slice(0, 12),
+    };
+  }
+  const loaded = loadFirstConfigValue(repoRoot, [
+    {
+      envName: 'VIMEO_TEST_PROJECT_URI',
+      names: ['vimeo-test-project-uri', 'one-time-vimeo-test-project-uri'],
+      fileNames: ['vimeo-test-project-uri.txt', 'VIMEO_TEST_PROJECT_URI.txt', 'one-time-vimeo-test-project-uri.txt'],
+    },
+    {
+      envName: 'BNA_VIMEO_TEST_PROJECT_URI',
+      names: ['bna-vimeo-test-project-uri'],
+      fileNames: ['BNA_VIMEO_TEST_PROJECT_URI.txt'],
+    },
+  ], options);
+  const value = compactText(loaded.value || '', 4000);
+  return {
+    configured: Boolean(value),
+    value,
+    source: loaded.configured ? safeSecretSourceLabel(loaded) : 'not configured',
+    fingerprint: value ? sha256(value).slice(0, 12) : '',
   };
 }
 
@@ -689,6 +735,7 @@ async function runFolderLibraryWorkflow(options = {}) {
   const folder = resolveDropFolder(options.folder, repoRoot);
   if (options.ensureFolder !== false && !fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
   const tokenStatus = loadVimeoToken(repoRoot, options);
+  const testProjectTarget = loadVimeoTestProjectTarget(repoRoot, options);
   const secrets = tokenStatus.value ? [tokenStatus.value] : [];
   const runId = options.runId || new Date().toISOString();
   const discovered = discoverVideoFiles(folder, { recursive: options.recursive === true });
@@ -717,6 +764,11 @@ async function runFolderLibraryWorkflow(options = {}) {
       length: tokenStatus.length,
       fingerprint: tokenStatus.fingerprint,
     },
+    vimeo_test_target_status: {
+      configured: testProjectTarget.configured,
+      source: testProjectTarget.source,
+      fingerprint: testProjectTarget.fingerprint,
+    },
     gates: {
       upload_confirmation_required: VIMEO_UPLOAD_CONFIRMATION,
       upload_confirmation_present: options.uploadConfirmation === VIMEO_UPLOAD_CONFIRMATION,
@@ -733,7 +785,10 @@ async function runFolderLibraryWorkflow(options = {}) {
   if (!tokenStatus.configured) report.blockers.push(tokenStatus.blocker || 'Vimeo access token is not configured.');
   for (const filePath of limited) {
     const candidate = buildCandidate(filePath, folder, { secrets });
-    const uploadResult = await maybeUploadCandidate(candidate, options, tokenStatus);
+    const uploadResult = await maybeUploadCandidate(candidate, {
+      ...options,
+      testProjectUri: options.testProjectUri || options.vimeoProjectUri || testProjectTarget.value,
+    }, tokenStatus);
     const packagePayload = uploadResult.media || buildClassPackagePayload(candidate);
     let databaseResult = { status: 'not_requested', mutation_performed: false, blockers: [] };
     let publishResult = { status: 'not_requested', member_visibility_performed: false, blockers: [] };

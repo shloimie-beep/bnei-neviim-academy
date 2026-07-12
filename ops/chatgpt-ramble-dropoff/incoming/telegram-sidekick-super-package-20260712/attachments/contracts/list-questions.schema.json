@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bneineviimacademy.org/schemas/list-questions-v1.json",
+  "title": "List Questions Input Or Output",
+  "oneOf": [
+    {"$ref": "#/$defs/input"},
+    {"$ref": "#/$defs/output"}
+  ],
+  "$defs": {
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "to", "timezone"],
+      "properties": {
+        "from": {"type": "string", "format": "date-time"},
+        "to": {"type": "string", "format": "date-time"},
+        "timezone": {"const": "Asia/Jerusalem"},
+        "question_origin": {"enum": ["asked", "class_extracted", "member_submitted", "course_assigned", "all"], "default": "asked"},
+        "source_types": {"type": "array", "uniqueItems": true, "items": {"enum": ["accountability_event", "class_session", "one_time_review", "course_question", "parser_candidate"]}},
+        "statuses": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "student_id": {"type": ["integer", "null"], "minimum": 1},
+        "class_session_id": {"type": ["integer", "null"], "minimum": 1},
+        "course_id": {"type": ["integer", "null"], "minimum": 1},
+        "topic": {"type": ["string", "null"], "maxLength": 240},
+        "text_query": {"type": ["string", "null"], "maxLength": 500},
+        "visibility": {"enum": ["actor_visible", "private", "member", "parent", "student", "community", "public"], "default": "actor_visible"},
+        "sort": {"enum": ["newest", "oldest"], "default": "newest"},
+        "limit": {"type": "integer", "minimum": 1, "maximum": 100, "default": 50},
+        "cursor": {"type": ["string", "null"], "maxLength": 2000}
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["range", "scope", "interpretation", "items", "pagination", "source_counts", "warnings"],
+      "properties": {
+        "range": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["from", "to", "timezone", "local_from_date", "local_to_date"],
+          "properties": {
+            "from": {"type": "string", "format": "date-time"},
+            "to": {"type": "string", "format": "date-time"},
+            "timezone": {"const": "Asia/Jerusalem"},
+            "local_from_date": {"type": "string", "format": "date"},
+            "local_to_date": {"type": "string", "format": "date"}
+          }
+        },
+        "scope": {"type": "object"},
+        "interpretation": {"type": "string"},
+        "items": {"type": "array", "items": {"$ref": "#/$defs/question"}},
+        "pagination": {"type": "object"},
+        "source_counts": {"type": "object"},
+        "warnings": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["question_ref", "origin", "source_type", "source_id", "workspace_key", "project_key", "asked_at", "asked_at_local", "text", "status", "visibility", "provenance"],
+      "properties": {
+        "question_ref": {"type": "string"},
+        "origin": {"enum": ["asked", "class_extracted", "member_submitted", "course_assigned", "unreviewed_candidate"]},
+        "source_type": {"enum": ["accountability_event", "class_session", "one_time_review", "course_question", "parser_candidate"]},
+        "source_id": {"type": "string"},
+        "workspace_key": {"type": "string"},
+        "project_key": {"type": "string"},
+        "asked_at": {"type": "string", "format": "date-time"},
+        "asked_at_local": {"type": "string"},
+        "text": {"type": "string"},
+        "topic": {"type": ["string", "null"]},
+        "status": {"type": "string"},
+        "visibility": {"type": "string"},
+        "asker_visible_label": {"type": ["string", "null"]},
+        "student_id": {"type": ["integer", "null"]},
+        "class_session_id": {"type": ["integer", "null"]},
+        "course_id": {"type": ["integer", "null"]},
+        "context_ref": {"type": ["string", "null"]},
+        "duplicate_refs": {"type": "array", "items": {"type": "string"}},
+        "provenance": {"type": "object"}
+      }
+    }
+  }
+}

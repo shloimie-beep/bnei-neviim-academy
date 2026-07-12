@@ -1,0 +1,141 @@
+One Time Mishnah Class
+Provider workspace for members, classes, Studio, communications, payments, tasks, and setup.
+CURRENT WORKSPACE
+One Time Mishnah Class
+Provider / Provider Workspace Admin
+Scoped
+Overview
+Workspace Setup
+Overview
+O
+Members
+M
+Content
+C
+Live
+L
+Schedule
+S
+Community
+C
+Comms
+C
+Auto
+A
+Payments
+P
+Tasks
+T
+Reports
+R
+Connectors
+C
+Setup
+S
+Back to all modules
+COMMUNICATIONS SECTIONS
+Comms
+Choose a section for this workspace.
+Announcements
+0
+Email Previews
+0
+Support Replies
+0
+No-send Log
+0
+Platform Support
+Help
+Logout
+ONE TIME MISHNAH CLASS / COMMS / EMAIL
+Email
+CRM
+1
+Classes
+0
+Setup
+0
+One Time Mishnah Class / Provider Workspace Admin
+Ask / Search
+Sun 12 Jul
+New Message
+Comms
+Email Previews
+Announce
+0
+Email Previews
+0
+Support Replies
+0
+No-send Log
+0
+MESSAGES
+Communications
+
+Parent, student, provider, internal, WhatsApp, email, and bot conversations are separated by permission-aware lanes.
+
+Email Workspace
+
+Drafts, logged emails, sender readiness, DNS tasks, and approval gates stay first-party. No email is sent from this lane without the exact SEND_RESEND_EMAIL phrase.
+
+Locked until sender/domain readiness
+Now Viewing: Rabbi / One Time Inbox
+
+[redacted-email] / rabbi_sheller_provider / one_time_mishnah_class
+
+BNA / Shloimie (0)
+Rabbi / One Time (0)
+View One Time as Rabbi
+Provider account
+
+Resend API readiness is checked separately from sender and domain readiness.
+
+Blocked
+Missing
+Sender identity
+
+From identity must be explicitly configured for this workspace before send.
+
+Blocked
+Not finalized
+Domain readiness
+
+Verified domain or explicit fallback approval is required before send.
+
+Blocked
+No domain
+Recipients
+
+Recipient validation uses workspace/project filters to prevent accidental cross-workspace sends.
+
+Scoped
+one_time_mishnah_class
+Send confirmation
+
+The send endpoint rejects requests without the exact approval phrase.
+
+Required
+SEND_RESEND_EMAIL
+Inbox/imported
+0
+Drafts
+0
+Approved
+0
+Sent/logged
+0
+Failed
+0
+Templates
+4
+Domain readiness
+0
+DNS setup
+0
+Draft Editor
+Preview only
+
+Manual template
+   Create draft
+Draft creation stores a local review item and readiness blocker only. It does not send email.
+No emails match this view.

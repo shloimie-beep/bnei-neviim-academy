@@ -37937,6 +37937,52 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   but external setup, live sends, billing/access/DNS/provider actions, or Agent
   Mode proof remain blocked.
 
+## 2026-07-10T15:02:00+03:00 - One Time meeting drop #3 build brief created
+
+- Registered `RAW-20260710-005` for Meeting artifact #3 / Content job #103,
+  Learning Motivation and Commandments Discussion, with transcript body
+  withheld from Git and source media/content-job provenance preserved.
+- Created
+  `tasks-pending/2026-07-10-onetime-learning-motivation-commandments-build-brief.md`
+  with `REQ-20260710-031` through `REQ-20260710-035` and visible Decisions
+  `DEC-20260710-005` through `DEC-20260710-009`.
+- The brief preserves the internal-first / first-party One Time direction,
+  treats legacy CRM as optional infrastructure only, and maps the meeting
+  signal into scoped classroom/content, motivation/reward, access-model,
+  discovery, and integration follow-up slices.
+- Guardrail: no transcript import, Drive/Vimeo/Zoom write, email/WhatsApp send,
+  payment/access mutation, credential mutation, production-data mutation, GHL,
+  LeadConnector, or external CRM runtime was performed.
+
+## 2026-07-10T12:04:50+03:00 - Agent task #2258 blocked: Turn Rabbi meeting drop into One Time build brief
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because the coding agent, verification, or the deployment gate failed.
+
+Agent result:
+Provider: codex_cli
+
+STATUS: done
+
+SUMMARY: Created the redacted raw intake and One Time build brief for Meeting artifact #3 / Content job #103, preserving internal-first direction, class/content implications, Rabbi discovery checklist, and decision gates `DEC-20260710-005` through `DEC-20260710-009`. I did not mark the live task done and did not commit/push because the worktree already has unrelated dirty files.
+
+VERIFICATION: `npm run bna:run:status` passed; `npm run bna:run:next` passed earlier with no unblocked batch; JSONL ledger parse passed for 1960 records; `git diff --check` passed with existing LF/CRLF warnings; grep confirmed the Hebrew transcript preview was not copied into the new repo artifacts.
+
+FILES: changed `raw-input/RAW-20260710-005-onetime-meeting-drop-3-learning-motivation-build-brief.md`, `tasks-pending/2026-07-10-onetime-learning-motivation-commandments-build-brief.md`, `MEMORY.md`, `memory-topics/one-time-rabbi-sheller.md`, `TASKS.md`, `memory/2026-07-10.md`, `ops/agent-changelog.md`, and `ops/agent-task-ledger.jsonl`.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-10T12-04-50-705Z-task-2258.md
+
+- source: agent_fleet
+- worker: Codex
+
 ## 2026-07-10 - One Time historical source third batch mapped
 
 - Mapped the June 22-24 historical source batch: `HIST-SRC-0015` through `HIST-SRC-0026`.
@@ -38094,10 +38140,171 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Produced `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md` and `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.json` for `REQ-20260710-029`.
 - Verdict: `ONE_TIME_VERDICT: not_ready`. Historical source mapping is complete for all non-active rows, but production readiness remains blocked by external setup, two missing Agent Mode terminal proofs, hosted Rabbi Telegram live-smoke proof, dirty-tree readiness sampling, and no unblocked executable batch.
 - Verification: `npm run production:readiness:gate -- --json` returned expected blocked status; `npm run bna:run:status` reported 8 done / 2 blocked; `npm run bna:run:next` found no unblocked executable batch; `npm run app:smoke:rabbi-agent-review-proof-readiness` passed live prompt/artifact readback with 2 missing terminal proofs. No external mutation was performed.
+## 2026-07-10 - One Time public landing rebuild locally verified
 
-## 2026-07-10 - One Time layered readiness verdict refreshed
+- Rebuilt `public/one-time/index.html` for the One Time Mishnayos public landing page: compact sticky header, image-free premium hero, only `Sign Up Now` signup CTAs, rebuilt Rabbi/press/teaching/outcomes/benefits/how-it-works/audience/footer sections, and no legacy inline form, student quick field, FAQ, old CTA labels, or unverified hero/photo content.
+- Copied verified addendum assets into `public/assets/one-time/`, added `public/assets/one-time/one-time-asset-manifest.json`, and recorded the required asset table at `ops/ui-audits/2026-07-10-onetime-public-landing-production-rebuild/asset-report.md`.
+- Connected the signup modal to the existing `/api/one-time/interest` path with required parent/contact name and email, optional phone, no student field, first-party metadata, family/school continuation, and no contact PII in the continuation URL.
+- Updated the scoped One Time assistant launcher in `public/js/bna-bot-widget.js`, action registry coverage/parity reports, One Time static tests, and related member/Operations route contracts touched by the rebuild.
+- Verification: PASS `npm test` 1735/1735; PASS `verify-after.mjs` 9-viewport screenshots/modal flow; PASS `npm run pqc:validate`; PASS `npm run watchdog:actions`; PASS `npm run watchdog:protocol-drift`; PASS syntax checks for `server.js`, `bna-bot-widget.js`, and `verify-after.mjs`.
+- Blockers: Robot Scheller image was not attached; verified public teaching-location photos/social URLs/address permission are still missing; deploy/live smoke was not run because this prompt/addendum did not explicitly authorize deployment. No external send, payment/access change, provider mutation, production data write, or deploy was performed.
 
-- Refreshed production readiness snapshot/unblocker at sampled head `abce44b5` and updated the final owner verdict package with the required layered verdicts plus ordered owner-tour URLs.
-- Added a production-readiness snapshot guardrail so dirty worktree evidence records counts and `paths redacted` instead of raw local file paths.
-- Verdicts: `PUBLIC_FREE_CLASS_LANE: ready` for the no-write/free-class scope; `OWNER_AND_ROLE_INTERFACE: not_ready`; `FULL_COMMERCIAL_AUTOMATION: blocked`; overall `ONE_TIME_VERDICT: not_ready`.
-- Verification: staged JSON parsed; source matrix counts remain 291 total / 290 terminal / 1 active / 0 non-active unmapped; production readiness gate remains expected-blocked. No external mutation was performed.
+## 2026-07-10 - One Time Robot Scheller bubble image imported
+
+- Registered Shloimie's follow-up as `RAW-20260710-009` and resolved `DEC-20260710-011` for the Robot Scheller visual asset.
+- Imported the newest downloaded Robot Scheller image, `ChatGPT Image Jul 10, 2026, 06_43_03 PM.png`, as `public/assets/one-time/robot/robot-scheller-whatsapp.png`.
+- Tightly cropped the 512px launcher asset so the green WhatsApp body, green glasses, and green kippah read inside the small circular assistant bubble.
+- Verification: PASS `node --check public/js/bna-bot-widget.js`; PASS asset manifest JSON parse; PASS local visual verifier; PASS visual inspection of `focus-robot-scheller-launcher-1440.png`; PASS focused One Time/helper/action-registry tests with 20/20 passing.
+- No external send, WhatsApp/WAPI send, payment/access change, provider mutation, production data write, deploy, or live-smoke was performed.
+
+## 2026-07-12 - One Time signup email/reminder automation verified to dispatch blocker
+
+- Registered Shloimie's verification request as `RAW-20260712-003` with the current Zoom link redacted from tracked files.
+- Verified live `/one-time/signup` page availability, reminder preference fields, and `/api/one-time/interest` target.
+- Verified live dry-run direct signup behavior for `email`, `none`, and `both` reminder choices. Dry-run previews queue the confirmation email and Rabbi alert; `both` also queues WhatsApp confirmation. The class link stays server-side rather than in public/outbox payloads.
+- Verification: PASS focused signup/reminder/outbox tests 20/20; PASS live dry-run signup choices; EXPECTED BLOCKED live delivery outbox and class reminder cron endpoints because `CRON_SECRET` is not configured.
+- No external email, WhatsApp/WAPI, Telegram, CRM/database write, payment/access mutation, Zoom mutation, DNS change, provider-account mutation, or raw Zoom URL tracking was performed.
+
+## 2026-07-12 - One Time scheduler, tags, and timing test run
+
+- Generated and configured a private `CRON_SECRET` in Railway and enabled One Time class reminder scheduler flags without printing or tracking the secret value.
+- Added the missing live `bna_parent_leads.parent_whatsapp` column with an idempotent additive schema change; no lead rows were changed. Added `railway-migration-2026-07-12-one-time-parent-whatsapp-column.sql` for durable repo coverage.
+- Ran a synthetic live direct signup with `reminder_preference=both`, verified it landed in the One Time CRM with the expected project, source, tags, city/timezone, consent metadata, reminder channels, and no-checkout/no-access guardrails.
+- Verified delivery outbox dry-run would send the confirmation email, Rabbi alert, and WhatsApp confirmation without returning the raw class link or message body.
+- Verified class reminder dry-run schedules email 30 minutes before the 7:00 p.m. Israel class and displays the selected city local time correctly. For the Lakewood/New York synthetic test, the local display was 12:00 p.m.
+- Cleaned up the synthetic test by cancelling the queued outbox rows and archiving the synthetic product/CRM leads; post-cleanup outbox dry-run returned due count 0.
+- Remaining blocker: recurring WhatsApp class reminders are still gated by WAPI readiness (`one_time_whapi_not_ready`). No real email, WhatsApp/WAPI, Telegram, payment/access, Zoom, DNS, or provider-account mutation was performed.
+
+## 2026-07-12 - One Time local class contacts activated for email reminders
+
+- Verified the three existing non-archived local One Time/Rabbi Scheller contacts from the prior approved setup without writing raw email addresses to tracked files.
+- Activated email reminders for contact IDs `4`, `5`, and `6`, preserving local class tags and adding `one-time-local-reminders-active`.
+- Queued today's `email:one_time_class_reminder` outbox rows for those three contacts only, scheduled for 6:30 p.m. Israel time, 30 minutes before the 7:00 p.m. class.
+- Verification: PASS class-reminder dry-run returned `would_queue` for all three local contacts; PASS outbox readback showed queued rows with the expected schedule and no raw join URL in payload; PASS delivery-outbox dry-run before 6:30 p.m. returned due count 0 as expected.
+- No real external email, WhatsApp/WAPI, Telegram, payment/access, Zoom, DNS, or provider-account mutation was performed during this activation step.
+
+## 2026-07-12 - One Time WhatsApp class reminders enabled for approved personal contacts
+
+- Deployed source commit `e9f9441a` to Railway deployment `97a1213e-7d38-48b1-9f05-74ffe9bbf3c4` with WhatsApp class reminder copy, reminder-specific WAPI readiness, and sender binding guardrails for Rabbi Scheller's 443 WhatsApp identity.
+- Set live reminder-specific WAPI flags and public sender alias without printing raw sender values; confirmed the unrelated One Time lead-bot auto-reply flags remain disabled.
+- Live DB enrollment found contacts `4`, `5`, and `6` have email reminders but no stored WhatsApp/phone values, so they remain email-only.
+- Created personal WhatsApp reminder contacts `20` and `21`, queued outbox IDs `19` and `20` for 6:30 p.m. Israel time, and kept local email outbox IDs `16`, `17`, and `18`.
+- Verification: PASS focused reminder/WAPI tests 19/19; PASS post-deploy signup page check; PASS protected class-reminder dry-run with `wapi_readiness.ready=true`; PASS enqueue returned queued WhatsApp rows and already-queued email rows; PASS delivery dry-run before 6:30 p.m. returned due count 0; PASS outbox readback checked WhatsApp copy flags without returning message body or raw join URL.
+- Remaining: Shloimie's email reminder is pending an exact email address. Actual email/WhatsApp provider acceptance must be inspected after the 6:30 p.m. dispatcher run.
+
+## 2026-07-12 - Telegram sidekick Lane 01 local security foundation verified
+
+- Queued packet `telegram-sidekick-super-package-20260712` as dropoff task `#2266` and created `RAW-20260712-005` plus the Lane 01 requirement register.
+- Implemented local fail-closed Telegram sidekick guardrails: fixed Shloimie/Rabbi identity profiles, immutable Rabbi One Time scope, nonempty private allowlists, expected bot identity checks, sidekick runtime keys, redacted readiness/log fields, legacy unsigned webhook 410, direct Zoom command blocking, and raw Codex CLI disablement from Telegram.
+- Verification: PASS syntax checks for `src/lib/bna/telegram-runtime-status.js`, `scripts/telegram-kimi-bridge.mjs`, and `server.js`; PASS focused assistant/Telegram contract tests 50/50; PASS `npm run watchdog:security` with finding_count 0; PASS `git diff --check` for touched Lane 01 files with CRLF warnings only.
+- Guardrail: No deployment, worker restart, live Telegram smoke, real identity binding, production migration, external send, payment/access mutation, DNS/credential mutation, or provider-account mutation was performed. Production proof remains blocked pending explicit operator approval.
+
+## 2026-07-12 - One Time CRM/portal production correction local batch
+
+- Registered `RAW-20260712-004`, created the active execution run and requirement register, and generated the PQC/control-tower/current-state audit scaffolding for the One Time production correction packet.
+- Completed local backend/non-visual fixes for signed Rabbi view-as scoping, One Time CRM source labeling/tenant isolation, cursor-bounded CRM list pagination, and warmer deterministic WhatsApp assistant replies without enabling live sends.
+- Verification: PASS PQC validation; PASS `node --check` for touched server/model/bot files; PASS One Time view-as/provider tests 27/27; PASS CRM pagination/isolation tests 15/15 including a 10,000-contact fixture; PASS provider lead bot/WAPI tests 12/12; PASS run validation; PASS protocol-drift watchdog.
+- Blocked/open: source screenshot/design-reference files from the packet were missing, so `REQ-20260712-102` is blocked and the UI/landing/portal/performance/deploy/live-smoke requirements remain open. No commit, push, deploy, live smoke, external send, production data write, GHL runtime, payment/access, DNS, or provider-account mutation was performed.
+
+## 2026-07-12 - Watchdog warning soft repair reverified for task 2266
+
+- Audited task `#2266` against packet `telegram-sidekick-super-package-20260712` and the current watchdog supervisor code. The obvious task-warning soft repair is already implemented in `scripts/agent-fleet-supervisor.mjs`, so no code change was needed.
+- Verification: PASS `node --check scripts/agent-fleet-supervisor.mjs`; PASS focused tests `node --test tests/agent-fleet-hardening.test.js tests/action-registry-telegram-ui-bot.test.js` (42/42); PASS dropoff scan/tower readback with packet status `codex_lane_01_local_verified`.
+- Audit-only watchdog proof: `node scripts/agent-fleet-supervisor.mjs --watchdog --once --no-telegram --no-repair --dry-run` wrote `ops/system-audits/2026-07-12T14-53-15-000Z-watchdog.md` and confirmed the repair path suggests `Add watchdog soft repair for obvious task warnings` for a misrouted watchdog task. Repairs were disabled.
+- Remaining blockers are unrelated to the repair: Railway doctor is unauthorized, stale local watchdog/Academy bridge locks exist, and unrelated raw-looking titles remain. No live task patch, deploy, worker restart, Telegram send, production migration, credential mutation, or external action was performed.
+
+## 2026-07-12T14:58:15+03:00 - Agent task #2266 blocked: Add watchdog soft repair for obvious task warnings
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because the coding agent, verification, or the deployment gate failed.
+
+Agent result:
+Provider: codex_cli
+
+STATUS: done
+
+SUMMARY: The watchdog soft repair for obvious task warnings was already present in `scripts/agent-fleet-supervisor.mjs`, so I made no code changes. I verified the behavior, recorded this attempt in packet status, the Lane 01 register, ledger, and changelog, and did not patch live tasks, deploy, restart workers, send Telegram messages, or perform external actions.
+
+VERIFICATION: `node --check scripts/agent-fleet-supervisor.mjs` passed. `node --test tests/agent-fleet-hardening.test.js tests/action-registry-telegram-ui-bot.test.js` passed 42/42. Dropoff scan/tower passed readback with packet already `codex_lane_01_local_verified`. Watchdog audit-only/no-repair run confirmed the repair suggestion path, but stayed critical due unrelated Railway auth, stale locks, and unrelated raw-title warnings.
+
+FILES: Updated `status.json`, `tasks-pending/2026-07-12-telegram-sidekick-super-package-lane-01.md`, `ops/agent-task-ledger.jsonl`, `ops/agent-changelog.md`, and refreshed `ops/chatgpt-ramble-dropoff/CONTROL-TOWER.*`. Inspected `scripts/agent-fleet-supervisor.mjs` and related tests.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-12T14-58-15-897Z-task-2266.md
+
+- source: agent_fleet
+- worker: Codex
+
+## 2026-07-12 - One Time CRM frontend loader local proof
+
+- Created and validated focused packet `PKT-20260712-106` for `REQ-20260712-106` before touching CRM frontend code.
+- Updated `public/operations.html` and `public/js/operations-shell.js` so the One Time CRM workbench uses scoped panel refresh, AbortController-backed list/timeline requests, debounced search, query cache, a 50-card render cap, and lazy legacy review table construction while closed.
+- Extended `scripts/smoke-onetime-operations-crm-workbench-local.mjs` to exercise both the real split `/operations` shell and the monolith fallback across 1440, 1024, 768, 430, and 390 px.
+- Verification: PASS focused PQC validation; PASS shell/smoke syntax checks; PASS CRM workbench smoke with initial CRM calls after auth = 1, initial rendered cards = 50, app-root mutations on contact selection = 0, debounced search requests = 1, and legacy table closed/open = 0/1; PASS 13-test service-provider/communications/contact subset.
+- Caveat: the broader operations-shell static suite still fails the pre-existing 1.2 MB shell-size assertion (`HEAD` is already about 1.211 MB; this local batch is about 1.227 MB). Track that under `REQ-20260712-111`.
+- Guardrails: no deploy, commit, push, live smoke, external send, WhatsApp/WAPI send, payment/access mutation, DNS/provider-account mutation, production data mutation, or GHL/LeadConnector runtime.
+
+## 2026-07-12 - One Time CRM and Inbox UI local proof
+
+- Created and validated focused packet `PKT-20260712-107` for `REQ-20260712-107` before editing the CRM/inbox UI.
+- Updated `public/operations.html`, `public/js/operations-shell.js`, `public/js/operations-deferred-renderers.js`, and `public/css/operations-shell.css` so the One Time CRM uses a three-pane list/activity/profile layout, mobile selected-contact Back flow, disabled/no-send reply/note/task controls, and a scoped One Time Inbox contact context.
+- Added action registry coverage for the CRM contact Back action, scoped inbox open action, and disabled reply/note/task controls.
+- Verification: PASS focused PQC validation; PASS syntax checks; PASS CRM workbench smoke across split shell and monolith with desktop/tablet/mobile CRM states plus scoped inbox context; PASS 13-test service-provider/communications/contact subset; PASS protocol drift watchdog with 0 findings.
+- Caveats: scoped commit/push/deploy/live-smoke remains under `REQ-20260712-112`; the pre-existing operations split-shell byte-budget failure remains under `REQ-20260712-111`.
+- Guardrails: no external email, WhatsApp/WAPI, Telegram, payment/access, DNS, provider-account mutation, production data mutation, or GHL/LeadConnector runtime.
+
+## 2026-07-12 - One Time portal shell local proof
+
+- Created and validated focused packet `PKT-20260712-108` for `REQ-20260712-108` before editing portal routes.
+- Added a shared One Time portal shell for Family Portal, Student, Classroom, Library, and parent setup/reset surfaces, including Family Portal/account setup labels, TEST preview banner, preserved review links, real accessible mobile menu button, Escape close/focus return, and action registry coverage.
+- Updated the Library preview path so TEST review mode loads from the shared review fixture and blocks progress writes/local writes during preview.
+- Verification: PASS focused PQC validation; PASS portal shell/Rabbi member/smoke syntax checks; PASS action registry JSON parse; PASS local portal shell smoke across 1440/1024/768/430/390 widths with no HTTP errors, console errors, POSTs, or writes; PASS 23-test One Time review/navigation/scope subset.
+- Caveats: scoped commit/push/deploy/live-smoke remains under `REQ-20260712-112`; bundle/performance budgets remain under `REQ-20260712-111`.
+- Guardrails: no external email, WhatsApp/WAPI, Telegram, payment/access, DNS, provider-account mutation, production data mutation, or GHL/LeadConnector runtime.
+
+## 2026-07-12 - One Time landing WhatsApp launcher local proof
+
+- Created and validated focused packet `PKT-20260712-109` for `REQ-20260712-109` before editing the public landing launcher.
+- Updated `public/one-time/index.html` so the public One Time landing page uses one accessible fixed WhatsApp launcher backed by the same-origin runtime redirect, and no longer loads public BNA helper scripts, Robot Scheller helper chrome, or hard-coded `wa.me` links.
+- Updated `ops/action-registry.json` and `tests/one-time-brand-helper-isolation.test.js` so the public helper action is archived from the landing action set and the runtime WhatsApp launcher/no-send contract is covered.
+- Verification: PASS focused PQC validation; PASS smoke syntax check; PASS action registry JSON parse; PASS 19-test One Time landing/helper/static subset; PASS local landing smoke across 1440/1024/768/430/390 widths with one same-origin launcher, no helper scripts/assets, no hard-coded `wa.me`, redacted readiness/no-send metadata, and no POST/write requests.
+- Caveats: scoped commit/push/deploy/live-smoke and live public WhatsApp number readback remain under `REQ-20260712-112`; performance budgets remain under `REQ-20260712-111`.
+- Guardrails: no external email, WhatsApp/WAPI, Telegram, payment/access, DNS, provider-account mutation, production data mutation, or GHL/LeadConnector runtime.
+
+## 2026-07-12 - One Time performance budget local proof
+
+- Created and validated focused packet `PKT-20260712-111` for `REQ-20260712-111` before editing performance/bundle behavior.
+- Updated `scripts/split-operations-shell.mjs` so generated Operations split assets are deindented and the startup shell keeps only the small shared helpers needed for CRM/inbox startup paths.
+- Regenerated split delivery assets: `public/operations-bootstrap.html` 1,688 bytes, `public/js/operations-shell.js` 1,059,582 bytes, `public/js/operations-deferred-renderers.js` 820,475 bytes, and `public/css/operations-shell.css` 221,457 bytes.
+- Updated `public/member-library.html` and `scripts/smoke-onetime-portal-shell-local.mjs` so the member library preserves `vimeo_id`, loads Vimeo Player API lazily, and locally proves zero Vimeo iframe/request before Play Video with `player.vimeo.com` loading only after opening media.
+- Verification: PASS focused PQC validation; PASS split generator and generated JS syntax checks; PASS member-library inline script syntax check; PASS Operations shell/cache tests; PASS CRM workbench smoke with initial CRM request count 1, initial rendered cards 50, app-root mutations after selection 0, and debounced search delta 1; PASS portal shell smoke with Vimeo lazy-load proof and no writes.
+- Caveats: scoped commit/push/deploy/live-smoke, exact SHA readback, production Brotli/gzip + `Vary`, and live static/fingerprinted cache readback remain under `REQ-20260712-112`.
+- Guardrails: no external email, WhatsApp/WAPI, Telegram, payment/access, DNS, provider-account mutation, production data mutation, provider upload, deploy, or GHL/LeadConnector runtime.
+
+## 2026-07-12 - One Time release gate blocked
+
+- Ran the `REQ-20260712-112` release gate dry-run and saved evidence under `ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/release-gate-dry-run/`.
+- Result: BLOCKED before deploy/live verification. No deploy, production mutation, external write, or live verification was performed.
+- Blockers: local HEAD `d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a` is not confirmed pushed to `origin/master`; the workspace has 100 dirty/untracked paths; Railway and Drive external readback gates are not ready.
+- Recommended unblock path: isolate the One Time run in a clean scoped release lane, push the exact commit/branch, complete or explicitly defer Railway/Drive readback through approved release-gate options, then rerun deploy/live verification.
+
+## 2026-07-12 - Launch consolidation lane registered
+
+- Created `RAW-20260712-006` and `tasks-pending/2026-07-12-launch-consolidation-merge-deploy.md` for the operator request to merge, stabilize, and deploy all eligible in-progress branch work.
+- Initial inventory found local `master` behind `origin/master` by 54 commits, zero open GitHub PRs, one active One Time run blocked at deploy closeout, and three local branches not merged into `origin/master`.
+- Safety rule recorded: merge eligible current work one branch at a time with tests and evidence; stale/historical/unsafe remote branches must be classified instead of blindly merged.
+
+## 2026-07-12 - One Time release blocker refined
+
+- Added a release-lane scope audit for `REQ-20260712-112` under `ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/release-lane-scope-audit/`.
+- Confirmed `master` is 0 commits ahead and 54 commits behind `origin/master`, so the release blocker is a stale local base plus uncommitted mixed work rather than a simple unpushed commit.
+- Updated the One Time run evidence, register, status, next-session note, and packet manifest to require a clean release lane from current `origin/master` before deploy/live smoke.
+- Verification: PASS JSON parse checks; PASS `npm run bna:run:validate`; PASS `npm run bna:run:next` with no unblocked executable batch.
+- Guardrails: no deploy, commit, push, production mutation, external write, live smoke, or unrelated dirty-work cleanup was performed.

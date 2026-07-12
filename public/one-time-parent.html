@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow,noarchive">
-  <title>One Time Parent Setup</title>
+  <title>One Time Parent Account Setup / Reset</title>
   <style>
     :root {
       color-scheme: dark;
@@ -345,24 +345,28 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/css/one-time-portal-shell.css">
 </head>
-<body>
+<body class="one-time-parent-setup-shell" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
   <main class="shell">
-    <header class="topbar" aria-label="One Time parent setup">
-      <div class="brand" aria-label="One Time parent setup">
+    <header class="topbar" aria-label="One Time parent account setup/reset">
+      <div class="brand" aria-label="One Time parent account setup/reset">
         <span class="brand-mark" aria-hidden="true"><img src="/images/one-time/brand/onetimelogo.webp" alt=""></span>
         <span class="brand-text">
           <span class="brand-title">One Time Mishnayos</span>
-          <span class="brand-subtitle">Parent access setup</span>
+          <span class="brand-subtitle">Parent account setup/reset</span>
         </span>
       </div>
-      <span class="route-pill">Private setup link</span>
+      <nav class="one-time-parent-nav" aria-label="One Time parent navigation">
+        <a class="route-pill" href="/rabbi-member">Family Portal</a>
+        <span class="route-pill">Private setup/reset link</span>
+      </nav>
     </header>
 
     <section class="layout">
       <div class="intro">
         <span class="eyebrow">30-day parent trial</span>
-        <h1>Your One Time access starts here.</h1>
+        <h1>Set or reset your One Time parent password.</h1>
         <p class="lead">Create your parent password, then use the class and library links from your invite email to open the live class, schedule, recordings, worksheets, and student access tools.</p>
         <ul class="quick-list">
           <li><span class="check">1</span><span>Set a parent password for this email address.</span></li>
@@ -373,8 +377,8 @@
 
       <aside class="card" aria-live="polite">
         <div>
-          <h2>Set parent password</h2>
-          <p id="setupCopy">Use the newest setup link from your One Time invite email. This link can only be used once.</p>
+          <h2>Set or reset parent password</h2>
+          <p id="setupCopy">Use the newest account setup/reset link from your One Time invite email. This link can only be used once.</p>
         </div>
 
         <div id="status" class="status"></div>
@@ -408,7 +412,7 @@
           <a class="button secondary" href="/one-time-parent">Send another password link</a>
         </div>
 
-        <p class="fine-print">If a parent forgets the password, use this page to send a new setup link to the signup email. Student login is parent-managed, and parents can reset a child's password from the parent area.</p>
+        <p class="fine-print">If a parent forgets the password, use this page to send a new setup/reset link to the signup email. Student login is parent-managed, and parents can reset a child's password from the parent area.</p>
       </aside>
     </section>
   </main>
@@ -445,7 +449,7 @@
       form.hidden = true;
       forgotForm.hidden = false;
       forgotEmail.value = String(params.get('email') || '').trim();
-      showStatus('ok', 'Enter the parent email used at signup and we will send a fresh One Time password link.');
+      showStatus('ok', 'Enter the parent email used at signup and we will send a fresh One Time account setup/reset link.');
     }
 
     form.addEventListener('submit', async (event) => {
@@ -504,5 +508,6 @@
       }
     });
   </script>
+  <script src="/js/one-time-portal-shell.js"></script>
 </body>
 </html>

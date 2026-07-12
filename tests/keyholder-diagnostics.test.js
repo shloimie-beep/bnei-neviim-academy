@@ -50,6 +50,10 @@ test('keyholder diagnostics inspect expected files and never include secret cont
       .every((name) => names.includes(name)),
     true
   );
+  assert.equal(names.includes('vimeo-client-id.txt'), true);
+  assert.equal(names.includes('vimeo-client-secret.txt'), true);
+  assert.equal(names.includes('vimeo-access-token.txt'), true);
+  assert.equal(names.includes('vimeo-test-project-uri.txt'), true);
 
   const openai = report.files.find((file) => file.name === 'openai-api-key.txt');
   assert.equal(openai.keyholder.present, true);
@@ -57,6 +61,32 @@ test('keyholder diagnostics inspect expected files and never include secret cont
   assert.equal(openai.matches_repo_secret, true);
   assert.deepEqual(openai.aliases, ['openaiv2.txt']);
   assert.doesNotMatch(JSON.stringify(report), new RegExp(secret));
+
+  fs.rmSync(tempRoot, { recursive: true, force: true });
+});
+
+test('keyholder diagnostics include Vimeo files without exposing values', async () => {
+  const { fingerprintSecret, inspectKeyholder } = await loadDiagnostics();
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'bna-keyholder-vimeo-test-'));
+  const keyholderDir = path.join(tempRoot, 'BNA-Keyholder');
+  const repoRoot = path.join(tempRoot, 'repo');
+  fs.mkdirSync(keyholderDir, { recursive: true });
+  fs.mkdirSync(path.join(repoRoot, '.secrets'), { recursive: true });
+
+  const secret = 'vimeo-placeholder-client-secret-never-print'; // watchdog-secret-scan: allow-placeholder
+  const projectUri = '/users/12345/projects/67890';
+  fs.writeFileSync(path.join(keyholderDir, 'vimeo-client-secret.txt'), `${secret}\n`);
+  fs.writeFileSync(path.join(keyholderDir, 'vimeo-test-project-uri.txt'), `${projectUri}\n`);
+
+  const report = inspectKeyholder({ keyholderDir, repoRoot });
+  const vimeoSecret = report.files.find((file) => file.name === 'vimeo-client-secret.txt');
+  const vimeoTarget = report.files.find((file) => file.name === 'vimeo-test-project-uri.txt');
+  assert.equal(vimeoSecret.keyholder.present, true);
+  assert.equal(vimeoSecret.keyholder.fingerprint, fingerprintSecret(secret));
+  assert.equal(vimeoTarget.keyholder.present, true);
+  assert.equal(vimeoTarget.keyholder.fingerprint, fingerprintSecret(projectUri));
+  assert.doesNotMatch(JSON.stringify(report), new RegExp(secret));
+  assert.doesNotMatch(JSON.stringify(report), /\/users\/12345\/projects\/67890/);
 
   fs.rmSync(tempRoot, { recursive: true, force: true });
 });

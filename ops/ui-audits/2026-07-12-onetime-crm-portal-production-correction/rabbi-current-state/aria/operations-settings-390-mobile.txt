@@ -1,0 +1,32 @@
+- main:
+  - button "Open navigation"
+  - heading "Workspace Settings" [level=1]
+  - text: Provider Workspace Admin / Setup / Workspace Settings
+  - button "Ask about One Time Mishnah Class / Setup / Workspace Settings": Ask
+  - text: 12 Jul
+  - navigation "Setup sections":
+    - tablist "Setup sections":
+      - tab "Workspace" [selected]: Workspace 0
+      - tab "Users & Access": Users & Access 0
+      - tab "Brand & Site": Brand & Site 0
+      - tab "Integration Setup": Integration Setup 0
+      - tab "Guardrails": Guardrails 0
+  - text: Configuration
+  - heading "Workspace Settings" [level=2]
+  - paragraph: Routine configuration belongs in the app. Controls without safe persistence are disabled and labeled instead of hidden behind Codex work.
+  - region "Settings category controls":
+    - text: Settings Category
+    - strong: Workspace
+    - paragraph: Open one focused setting group at a time. Disabled controls stay visible when backend persistence is not ready.
+    - button "Save"
+    - button "Test Connection setup"
+    - button "Reset setup"
+    - button "Overview"
+    - button "Workspace Settings 2"
+    - button "Branding 1"
+  - strong: Current workspace
+  - paragraph: Service provider workspace for the One Time Mishnah Class and related 7:00 class work.
+  - text: Persisted One Time Mishnah Class
+  - strong: Workspace type
+  - paragraph: Platform, school, and provider workspaces remain separate contexts.
+  - text: Persisted service_provider

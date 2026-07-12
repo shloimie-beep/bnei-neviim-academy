@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bneineviimacademy.org/schemas/assistant-capability-v2.json",
+  "title": "BNA Assistant Capability V2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "capability_id",
+    "version",
+    "kind",
+    "title",
+    "description",
+    "domains",
+    "aliases",
+    "intent_examples",
+    "negative_examples",
+    "input_schema",
+    "output_schema",
+    "effect",
+    "authorization",
+    "connector",
+    "execution",
+    "presentation",
+    "audit_event",
+    "tests"
+  ],
+  "properties": {
+    "capability_id": {"type": "string", "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9_]*){1,5}$"},
+    "version": {"type": "integer", "minimum": 1},
+    "kind": {"enum": ["answer", "query", "navigation", "draft", "command", "external_tool"]},
+    "title": {"type": "string", "minLength": 1, "maxLength": 160},
+    "description": {"type": "string", "minLength": 10, "maxLength": 1200},
+    "domains": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}},
+    "status": {"enum": ["implemented", "preview_only", "blocked", "unavailable", "deprecated"], "default": "implemented"},
+    "aliases": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["typed_action_ids", "helper_tools", "ui_action_ids", "route_keys"],
+      "properties": {
+        "typed_action_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "helper_tools": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "ui_action_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "route_keys": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+      }
+    },
+    "intent_examples": {"$ref": "#/$defs/bilingualExamples"},
+    "negative_examples": {"$ref": "#/$defs/bilingualExamples"},
+    "input_schema": {"type": "object"},
+    "output_schema": {"type": "object"},
+    "effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class", "reversibility", "preview", "approval"],
+      "properties": {
+        "class": {"enum": ["read_only", "navigation", "draft_only", "internal_write", "sensitive_internal_write", "external_write", "financial", "access_grant", "destructive", "deployment"]},
+        "reversibility": {"enum": ["none_needed", "reversible", "compensating", "irreversible"]},
+        "preview": {"enum": ["none", "optional", "required"]},
+        "approval": {"enum": ["none", "explicit_intent", "one_tap", "step_up"]}
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roles", "scope_modes", "workspaces", "projects", "channels", "data_classes", "public_allowed"],
+      "properties": {
+        "roles": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "scope_modes": {"type": "array", "uniqueItems": true, "items": {"enum": ["all", "workspace", "project", "relationship", "public"]}},
+        "workspaces": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "projects": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "channels": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "data_classes": {"type": "array", "uniqueItems": true, "items": {"enum": ["public", "internal", "confidential", "restricted"]}},
+        "public_allowed": {"type": "boolean"}
+      }
+    },
+    "connector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "required", "readiness_probe", "unavailable_behavior"],
+      "properties": {
+        "name": {"type": ["string", "null"]},
+        "required": {"type": "boolean"},
+        "readiness_probe": {"type": ["string", "null"]},
+        "unavailable_behavior": {"enum": ["not_applicable", "explain_setup_blocker", "omit_from_manifest", "preview_only"]}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["handler", "timeout_ms", "idempotent", "idempotency_scope", "transactional"],
+      "properties": {
+        "handler": {"type": ["string", "null"]},
+        "timeout_ms": {"type": "integer", "minimum": 100, "maximum": 120000},
+        "idempotent": {"type": "boolean"},
+        "idempotency_scope": {"type": ["string", "null"]},
+        "transactional": {"type": "boolean"}
+      }
+    },
+    "presentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["telegram_renderer", "deep_link_route_key"],
+      "properties": {
+        "telegram_renderer": {"type": ["string", "null"]},
+        "deep_link_route_key": {"type": ["string", "null"]}
+      }
+    },
+    "audit_event": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "related_routes": {"type": "array", "items": {"type": "string"}},
+        "source_files": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "tests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "routing_corpus_key"],
+      "properties": {
+        "contract": {"type": "string", "minLength": 1},
+        "routing_corpus_key": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "$defs": {
+    "bilingualExamples": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["en", "he"],
+      "properties": {
+        "en": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "he": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}

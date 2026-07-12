@@ -1,0 +1,92 @@
+[
+  {
+    "route": "/provider.html",
+    "viewport": "1440-desktop",
+    "url": "https://bneineviimacademy.org/api/provider-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/provider.html",
+    "viewport": "1024-desktop-tablet",
+    "url": "https://bneineviimacademy.org/api/provider-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/provider.html",
+    "viewport": "768-tablet",
+    "url": "https://bneineviimacademy.org/api/provider-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/provider.html",
+    "viewport": "430-mobile",
+    "url": "https://bneineviimacademy.org/api/provider-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/provider.html",
+    "viewport": "390-mobile",
+    "url": "https://bneineviimacademy.org/api/provider-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student/login",
+    "viewport": "1440-desktop",
+    "url": "https://bneineviimacademy.org/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student/login",
+    "viewport": "1024-desktop-tablet",
+    "url": "https://bneineviimacademy.org/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student/login",
+    "viewport": "768-tablet",
+    "url": "https://bneineviimacademy.org/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student/login",
+    "viewport": "430-mobile",
+    "url": "https://bneineviimacademy.org/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student/login",
+    "viewport": "390-mobile",
+    "url": "https://bneineviimacademy.org/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student.html",
+    "viewport": "1440-desktop",
+    "url": "https://bneineviimacademy.org/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student.html",
+    "viewport": "1024-desktop-tablet",
+    "url": "https://bneineviimacademy.org/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student.html",
+    "viewport": "768-tablet",
+    "url": "https://bneineviimacademy.org/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student.html",
+    "viewport": "430-mobile",
+    "url": "https://bneineviimacademy.org/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student.html",
+    "viewport": "390-mobile",
+    "url": "https://bneineviimacademy.org/api/student-portal/session",
+    "status": 401
+  }
+]

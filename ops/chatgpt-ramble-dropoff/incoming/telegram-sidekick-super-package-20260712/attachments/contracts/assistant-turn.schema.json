@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bneineviimacademy.org/schemas/assistant-turn-v2.json",
+  "title": "BNA Assistant Turn V2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request", "plan", "results"],
+  "properties": {
+    "request": {"$ref": "#/$defs/request"},
+    "plan": {"$ref": "#/$defs/plan"},
+    "results": {"type": "array", "items": {"$ref": "#/$defs/result"}}
+  },
+  "$defs": {
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request_id", "channel", "channel_instance_key", "channel_message_id", "locale", "timezone", "text", "attachments", "client_metadata"],
+      "properties": {
+        "request_id": {"type": "string", "minLength": 1},
+        "channel": {"enum": ["telegram", "website_assistant", "operations_helper", "provider_portal_assistant", "parent_portal_assistant", "student_portal_assistant", "internal_agent"]},
+        "channel_instance_key": {"type": "string", "minLength": 1},
+        "channel_message_id": {"type": "string", "minLength": 1},
+        "reply_to_message_id": {"type": ["string", "null"]},
+        "conversation_key": {"type": ["string", "null"]},
+        "locale": {"enum": ["en", "he"]},
+        "timezone": {"type": "string", "minLength": 1},
+        "text": {"type": "string", "maxLength": 12000},
+        "attachments": {"type": "array", "maxItems": 20, "items": {"type": "object"}},
+        "client_metadata": {"type": "object"}
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plan_id", "request_id", "mode", "planner_version", "resolved_scope", "resolved_time_range", "intent", "calls", "clarification_questions", "response_language"],
+      "properties": {
+        "plan_id": {"type": "string"},
+        "request_id": {"type": "string"},
+        "mode": {"enum": ["answer", "read", "navigate", "draft", "act", "research"]},
+        "planner_version": {"type": "string"},
+        "resolved_scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["workspace_keys", "project_keys", "source", "timezone"],
+          "properties": {
+            "workspace_keys": {"type": "array", "items": {"type": "string"}},
+            "project_keys": {"type": "array", "items": {"type": "string"}},
+            "source": {"enum": ["explicit", "conversation", "profile_default", "relationship"]},
+            "timezone": {"type": "string"}
+          }
+        },
+        "resolved_time_range": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["from", "to", "timezone", "interpretation", "original_text"],
+          "properties": {
+            "from": {"type": "string", "format": "date-time"},
+            "to": {"type": "string", "format": "date-time"},
+            "timezone": {"type": "string"},
+            "interpretation": {"type": "string"},
+            "original_text": {"type": "string"}
+          }
+        },
+        "intent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["summary", "confidence"],
+          "properties": {"summary": {"type": "string"}, "confidence": {"type": "number", "minimum": 0, "maximum": 1}}
+        },
+        "calls": {"type": "array", "maxItems": 8, "items": {"$ref": "#/$defs/call"}},
+        "clarification_questions": {"type": "array", "maxItems": 3, "items": {"type": "string"}},
+        "response_language": {"enum": ["en", "he"]}
+      }
+    },
+    "call": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["call_id", "capability_id", "args", "resource_refs", "effect_class", "preview_required", "approval_required", "idempotency_key", "status"],
+      "properties": {
+        "call_id": {"type": "string"},
+        "capability_id": {"type": "string"},
+        "args": {"type": "object"},
+        "resource_refs": {"type": "array", "items": {"type": "string"}},
+        "effect_class": {"enum": ["read_only", "navigation", "draft_only", "internal_write", "sensitive_internal_write", "external_write", "financial", "access_grant", "destructive", "deployment"]},
+        "preview_required": {"type": "boolean"},
+        "approval_required": {"type": "boolean"},
+        "idempotency_key": {"type": "string"},
+        "status": {"enum": ["planned", "needs_input", "validated", "denied", "blocked"]}
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["call_id", "capability_id", "status", "executed", "dry_run", "scope", "data", "pagination", "provenance", "citations", "preview", "approval", "audit_event_id", "idempotency_key", "warnings", "connector_status", "undo"],
+      "properties": {
+        "call_id": {"type": "string"},
+        "capability_id": {"type": "string"},
+        "status": {"enum": ["succeeded", "needs_input", "preview_ready", "approval_pending", "denied", "blocked", "failed"]},
+        "executed": {"type": "boolean"},
+        "dry_run": {"type": "boolean"},
+        "scope": {"type": "object"},
+        "data": {},
+        "pagination": {"type": ["object", "null"]},
+        "provenance": {"type": "array", "items": {"type": "object"}},
+        "citations": {"type": "array", "items": {"type": "object"}},
+        "preview": {"type": ["object", "null"]},
+        "approval": {"type": ["object", "null"]},
+        "audit_event_id": {"type": ["string", "null"]},
+        "idempotency_key": {"type": "string"},
+        "warnings": {"type": "array", "items": {"type": "string"}},
+        "connector_status": {"type": ["object", "null"]},
+        "undo": {"type": "object"}
+      }
+    }
+  }
+}

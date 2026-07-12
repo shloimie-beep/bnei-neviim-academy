@@ -1,0 +1,100 @@
+{
+  "audit_id": "UIA-20260712-004",
+  "raw_id": "RAW-20260712-004",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "status": "captured_with_open_findings",
+  "generated_at": "2026-07-12T18:03:00+03:00",
+  "prior_blocker_id": "DEC-20260712-101",
+  "prior_blocker_resolution": "Original attachment/source PNGs are still unavailable, but authenticated and credential-free current-state audits regenerated route/state evidence for this packet.",
+  "source_screenshots_still_missing": true,
+  "source_screenshot_paths": [
+    "/workspace/scratch/ffef2e71fe52/upload/4de51c45-64fc-4124-b99c-d5a790304463.png",
+    "/workspace/scratch/ffef2e71fe52/upload/c70ebeda-51be-4668-b38f-e666b6c14959.png",
+    "/workspace/scratch/ffef2e71fe52/upload/39058efb-670b-4899-bb90-6ad60a9c187e.png",
+    "/workspace/scratch/ffef2e71fe52/upload/33c8153d-68d3-40fb-b910-5202c95a2755.png",
+    "/workspace/scratch/ffef2e71fe52/upload/553de7f7-dbe3-4e02-8083-4ab6797a765c.png",
+    "/workspace/scratch/ffef2e71fe52/upload/33b4e006-097a-4e21-8aac-44bf2dc269d2.png"
+  ],
+  "regenerated_evidence": {
+    "authenticated_current_state": {
+      "report": "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/authenticated-current-state-attempt/report.md",
+      "screenshots": 35,
+      "findings": 5,
+      "notes": "Operations login and admin-provider session were available; some route captures remained permission-denied or loading and are treated as evidence limitations."
+    },
+    "rabbi_current_state": {
+      "report": "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state/report.md",
+      "screenshots": 80,
+      "routes": 16,
+      "findings": 5
+    },
+    "parallel_frontend": {
+      "report": "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/parallel-frontend-current-state/report.md",
+      "checks": 45,
+      "screenshots_and_crops": 140,
+      "findings": 28,
+      "finding_summary": {
+        "VQ-TYPE-006": 14,
+        "VQ-LAYOUT-003": 14,
+        "VQ-IA-006": 10,
+        "VQ-CRED-006": 10,
+        "VQ-RESP-005": 4,
+        "VQ-A11Y-008": 4
+      }
+    },
+    "local_smokes": [
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/operations-ui-local/report.md",
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/final-ui-local/qa-harness-local-report.md"
+    ],
+    "performance_baseline": {
+      "report": "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/live-performance-baseline/report.md",
+      "needs_attention_count": 0
+    }
+  },
+  "manual_spot_check_findings": [
+    {
+      "finding_id": "VQF-20260712-004-MANUAL-001",
+      "route": "/one-time",
+      "viewport": "390-mobile",
+      "severity": "P1",
+      "defect_codes": [
+        "VQ-LAYOUT-005",
+        "VQ-ACTION-007"
+      ],
+      "evidence": "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state/screenshots/one-time-public-390-mobile.png",
+      "summary": "Public landing first page has a very large blank dark vertical area after hero and still shows the old assistant/Robot launcher instead of a standard WhatsApp launcher."
+    },
+    {
+      "finding_id": "VQF-20260712-004-MANUAL-002",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "390-mobile",
+      "severity": "P1",
+      "defect_codes": [
+        "VQ-TYPE-006",
+        "VQ-LAYOUT-003"
+      ],
+      "evidence": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-390-crm-workbench.png",
+      "summary": "CRM contact cards have washed out low-contrast text, and top filter tabs can clip labels on mobile."
+    },
+    {
+      "finding_id": "VQF-20260712-004-MANUAL-003",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "390-mobile",
+      "severity": "P1",
+      "defect_codes": [
+        "VQ-STATE-001",
+        "VQ-CRM-001"
+      ],
+      "evidence": "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state/screenshots/operations-crm-contacts-390-mobile.png",
+      "summary": "Live/current CRM screenshot remains on Loading CRM contacts after audit wait; local synthetic workbench does populate, so frontend/API loading behavior needs focused implementation proof."
+    }
+  ],
+  "browser_content_untrusted": true,
+  "external_write_performed": false,
+  "production_data_mutation_performed": false,
+  "terminal_status_for_req_102": "done",
+  "downstream_ui_status": "open_findings_feed_REQ_106_to_REQ_109"
+}

@@ -1,0 +1,21 @@
+:root {
+  --one-time-black: #050505;
+  --one-time-yellow: #f3e63d;
+  --one-time-ice: #dff8ff;
+  --one-time-paper: #f9f7ee;
+}
+
+.one-time-landing {
+  color: #fff;
+  background: var(--one-time-black);
+}
+
+.one-time-landing :focus-visible {
+  outline: 3px solid var(--one-time-ice);
+  outline-offset: 3px;
+}
+
+.one-time-landing [data-primary-action] {
+  color: var(--one-time-black);
+  background: var(--one-time-yellow);
+}

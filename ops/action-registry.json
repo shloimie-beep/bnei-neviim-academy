@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-07-10T12:00:00+03:00",
+  "updated_at": "2026-07-12T19:35:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -31,16 +31,17 @@
     },
     {
       "action_id": "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
-      "label": "Robot Scheller WhatsApp Assistant",
+      "label": "Robot Scheller public helper",
       "surface": "one_time_public_landing",
       "route": "/one-time",
-      "selector_hint": "body.bna-assistant-surface-one-time-public .bna-bot-launcher",
-      "expected_behavior": "Opens the bottom-corner Robot Scheller public assistant for Rabbi Scheller's One Time public page, with tooltip/ARIA text that identifies it as the WhatsApp assistant entry. Internal scope guardrails remain One Time only and do not expose BNA Academy or private portal data.",
+      "selector_hint": "removed from public/one-time/index.html",
+      "expected_behavior": "Archived public landing helper action. The served /one-time route now uses ACTION-ONETIME-PUBLIC-WHATSAPP as the visible bottom-corner contact launcher and does not load the public helper widget scripts.",
       "permission": "anonymous public visitor",
-      "status": "active",
+      "status": "removed_from_public_landing",
+      "disabled_reason": "REQ-20260712-109 replaces the public helper widget with a standard WhatsApp launcher.",
       "test": {
         "type": "contract",
-        "expected_result": "tests/one-time-brand-helper-isolation.test.js verifies Robot Scheller scripts, surface, copy, styling, no generic BNA helper choices, and server project scoping."
+        "expected_result": "tests/one-time-brand-helper-isolation.test.js verifies /one-time no longer loads the public helper scripts and keeps parent/student/provider helper surfaces scoped separately."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -50,18 +51,18 @@
     },
     {
       "action_id": "ACTION-ONETIME-PUBLIC-WHATSAPP",
-      "label": "Open WhatsApp Assistant",
+      "label": "Open WhatsApp",
       "surface": "one_time_public_landing",
       "route": "/one-time",
-      "selector_hint": "a[href^=\"/api/one-time/public-whatsapp/redirect\"], helper action href /api/one-time/public-whatsapp/redirect",
-      "expected_behavior": "Opens a same-origin runtime redirect for the One Time public WhatsApp business line. The server reads ONE_TIME_PUBLIC_WHATSAPP_NUMBER or aliases at runtime, never commits or returns the full number in repo evidence, and performs no WhatsApp send by itself. If runtime config is missing, the redirect falls back to the public form and readiness reports the exact missing env var.",
+      "selector_hint": ".one-time-whatsapp-launcher[href^=\"/api/one-time/public-whatsapp/redirect\"]",
+      "expected_behavior": "Opens a same-origin runtime redirect for the One Time public WhatsApp business line from a standard bottom-right WhatsApp launcher. The server reads ONE_TIME_PUBLIC_WHATSAPP_NUMBER or aliases at runtime, never commits or returns the full number in repo evidence, and performs no WhatsApp send by itself. If runtime config is missing, the redirect falls back to the public form and readiness reports the exact missing env var.",
       "permission": "anonymous public visitor",
-      "status": "blocked_external_setup_until_runtime_number_configured",
-      "disabled_reason": "Direct WhatsApp chat requires ONE_TIME_PUBLIC_WHATSAPP_NUMBER in runtime/keyholder configuration.",
+      "status": "active_runtime_redirect_with_setup_fallback",
+      "disabled_reason": "Live WhatsApp chat requires ONE_TIME_PUBLIC_WHATSAPP_NUMBER in runtime/keyholder configuration; missing config falls back to /one-time#start-free.",
       "handler": "GET /api/one-time/public-whatsapp/redirect",
       "test": {
         "type": "api_and_static",
-        "expected_result": "GET /api/one-time/public-whatsapp returns configured/readiness metadata without the full number; public page and Robot Scheller actions link to the same-origin redirect and perform no server-side send."
+        "expected_result": "GET /api/one-time/public-whatsapp returns configured/readiness metadata without the full number; public page launcher links to the same-origin redirect and performs no server-side send."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

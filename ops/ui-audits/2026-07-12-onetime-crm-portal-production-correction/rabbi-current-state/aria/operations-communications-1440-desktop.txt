@@ -1,0 +1,69 @@
+- complementary "BNA Operations navigation":
+  - text: One Time Mishnah Class Provider workspace for members, classes, Studio, communications, payments, tasks, and setup. Current Workspace
+  - strong: One Time Mishnah Class
+  - text: Provider / Provider Workspace Admin Scoped
+  - button "Overview"
+  - button "Workspace Setup"
+  - navigation:
+    - button "Overview O"
+    - button "Members M"
+    - button "Content C"
+    - button "Live L"
+    - button "Schedule S"
+    - button "Community C"
+    - button "Comms C"
+    - button "Auto A"
+    - button "Payments P"
+    - button "Tasks T"
+    - button "Reports R"
+    - button "Connectors C"
+    - button "Setup S"
+  - button "Back to all modules"
+  - text: Communications Sections Comms Choose a section for this workspace.
+  - button "Announcements 0"
+  - button "Email Previews 0"
+  - button "Support Replies 0"
+  - button "No-send Log 0"
+  - button "Platform Support"
+  - button "Help"
+  - link "Logout":
+    - /url: /operations-login.html
+- main:
+  - text: One Time Mishnah Class / Comms / Provider Messages
+  - heading "Provider Messages" [level=1]
+  - 'button "CRM: 1. One Time participants, leads, and CRM records scoped to this provider."':
+    - text: CRM
+    - strong: "1"
+  - 'button "Classes: 0. One Time classes, source material, and library items."':
+    - text: Classes
+    - strong: "0"
+  - 'button "Setup: 0. Provider setup, connectors, and access items."':
+    - text: Setup
+    - strong: "0"
+  - text: One Time Mishnah Class / Provider Workspace Admin
+  - button "Ask or search within One Time Mishnah Class / Comms / Provider Messages": Ask / Search
+  - text: Sun 12 Jul
+  - button "New Message"
+  - navigation "Comms sections":
+    - text: Comms
+    - strong: Announcements
+    - tablist "Comms sections":
+      - tab "Announcements" [selected]: Announce 0
+      - tab "Email Previews": Email Previews 0
+      - tab "Support Replies": Support Replies 0
+      - tab "No-send Log": No-send Log 0
+  - text: Messages
+  - heading "Communications" [level=2]
+  - paragraph: Parent, student, provider, internal, WhatsApp, email, and bot conversations are separated by permission-aware lanes.
+  - heading "Provider Messages" [level=3]
+  - text: 0 records
+  - group:
+    - text: Date
+    - button "All dates"
+    - button "Today"
+    - button "Last 7 days"
+    - button "Last 30 days"
+    - text: Tags
+    - button "Communication tag filter": All tags (0)
+    - text: Showing 0 of 0 notes.
+  - text: No messages match this lane.

@@ -109,6 +109,7 @@ function summarize(report) {
     `One Time Vimeo folder workflow: ${summary.candidate_count || 0} candidate(s).`,
     `Dry run: ${report.dry_run === true}.`,
     `Vimeo access: ${report.vimeo_access_status?.configured ? 'configured' : 'missing'} (${report.vimeo_access_status?.source || 'not configured'}).`,
+    `Vimeo test target: ${report.vimeo_test_target_status?.configured ? 'configured' : 'missing'} (${report.vimeo_test_target_status?.source || 'not configured'}).`,
     `External Vimeo write: ${report.external_write_performed === true}.`,
     `Review package DB write: ${report.production_mutation_performed === true}.`,
     `Member visibility: ${report.member_visibility_performed === true}.`,

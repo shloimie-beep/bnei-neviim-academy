@@ -143,6 +143,48 @@ test('synthetic upload can run through a mocked private Vimeo client without lea
   assert.doesNotMatch(JSON.stringify(report), /secret-token/);
 });
 
+test('folder workflow loads Vimeo upload target from keyholder without leaking it', async () => {
+  const folder = tempDrop();
+  makeVideo(folder);
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'one-time-vimeo-keyholder-'));
+  const repoRoot = path.join(tempRoot, 'repo');
+  const keyholder = path.join(tempRoot, 'BNA-Keyholder');
+  fs.mkdirSync(repoRoot, { recursive: true });
+  fs.mkdirSync(keyholder, { recursive: true });
+  fs.writeFileSync(path.join(keyholder, 'vimeo-access-token.txt'), 'secret-token');
+  fs.writeFileSync(path.join(keyholder, 'vimeo-test-project-uri.txt'), '/users/12345/projects/67890');
+  const client = makeClient([
+    {
+      uri: '/videos/123456789',
+      link: 'https://vimeo.com/123456789',
+      upload: { upload_link: 'https://upload.vimeo.test/tus/1' },
+      privacy: { view: 'nobody', embed: 'private' },
+    },
+    {},
+    {},
+    {},
+  ]);
+
+  const report = await workflow.runFolderLibraryWorkflow({
+    folder,
+    repoRoot,
+    keyholderRoots: [keyholder],
+    apply: true,
+    upload: true,
+    uploadConfirmation: workflow.VIMEO_UPLOAD_CONFIRMATION,
+    client,
+  });
+
+  assert.equal(report.vimeo_access_status.configured, true);
+  assert.equal(report.vimeo_test_target_status.configured, true);
+  assert.equal(report.vimeo_test_target_status.source, 'keyholder');
+  assert.equal(client.requests.some((request) => request.path === '/users/12345/projects/67890/videos/123456789'), true);
+  assert.doesNotMatch(JSON.stringify(report), /secret-token/);
+  assert.doesNotMatch(JSON.stringify(report), /\/users\/12345\/projects\/67890/);
+
+  fs.rmSync(tempRoot, { recursive: true, force: true });
+});
+
 test('member-library publish stays blocked without the existing One Time approval flag', async () => {
   const folder = tempDrop();
   makeVideo(folder, 'manual-vimeo-synthetic-test.mp4', {

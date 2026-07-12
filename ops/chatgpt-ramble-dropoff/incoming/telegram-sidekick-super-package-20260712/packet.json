@@ -1,0 +1,90 @@
+{
+  "packet_id": "telegram-sidekick-super-package-20260712",
+  "schema_version": "bna.chatgpt_dropoff.v1",
+  "created_at": "2026-07-12T10:00:00+03:00",
+  "source": "chatgpt",
+  "packet_type": "implementation_bundle",
+  "packet_role": "architecture_contract_code_prep_and_acceptance_suite",
+  "lane_key": "platform-assistant-telegram-sidekick-v2",
+  "owner": "ChatGPT",
+  "source_thread": "Full Telegram audit and complete super-sidekick implementation package",
+  "operator_raw_id": "RAW-20260712-TELEGRAM-SIDEKICK",
+  "workspace": "platform_and_rabbi_sheller_provider",
+  "project": "assistant_control_plane_and_one_time_mishnah_class",
+  "status": "ready_for_codex_audit",
+  "priority": "critical",
+  "scope_summary": "Replace the standalone regex/snapshot Telegram assistant with a secure adapter over the canonical assistant control plane, add durable scoped memory and preferences, route natural language to all registered app capabilities, add safe web search and connector tools, and deliver verified Shloimie super-admin and Rabbi provider-admin profiles while preserving public lead-agent isolation.",
+  "next_action": "Codex must refresh repository/control-tower truth, create the dated requirement register, validate this package, and implement Lane 01 security/identity before enabling any broader capability.",
+  "out_of_scope": [
+    "raw shell, Codex CLI, deployment, migration execution, secret access, or unrestricted diagnostics from Telegram or portal assistants",
+    "automatic live email, WhatsApp, Telegram, social, Zoom, Drive, billing, DNS, access-grant, or provider mutations",
+    "merging private Telegram assistants with anonymous landing-page lead agents",
+    "a second action registry, memory system, intake pipeline, agent queue, or provider backend",
+    "destructive migration or production data backfill without a separately approved dry-run and rollback plan"
+  ],
+  "source_statements_covered": [
+    "The Telegram bot must again behave as a useful sidekick and reach essentially every legitimate in-app capability from natural language.",
+    "The exact request for questions from the last two weeks must work, including real date interpretation and app data retrieval.",
+    "Rabbi Elie Scheller needs the same sidekick quality but only inside his provider workspace and One Time project.",
+    "Landing-page agents are lead-capture assistants, not private operational sidekicks.",
+    "Capabilities and the memory/preference loop should be shared across approved assistant surfaces without cross-workspace leakage.",
+    "The sidekick should support safe external tools such as cited web search.",
+    "Codex should receive a complete prepared package, not a vague recommendation list."
+  ],
+  "expected_outputs": [
+    "one shared assistant turn orchestrator used by Telegram and approved in-app assistants",
+    "server-verified Telegram identities and scope grants for Shloimie and Rabbi",
+    "canonical capability manifest generated from typed actions, UI actions, and route registry with zero enabled unhandled capabilities",
+    "durable scoped conversation, preference, and memory retrieval with correction and forgetting controls",
+    "read-only list_questions capability with Israel-time date ranges and provenance across normalized question sources",
+    "safe web search with citations and private-data egress prevention",
+    "preview, approval, idempotency, outbox, audit, heartbeat, retry, and dead-letter behavior",
+    "English and Hebrew natural-language evaluation suite",
+    "shadow-mode, canary, and separately approved live-smoke rollout for both Telegram profiles",
+    "retirement of unsafe legacy webhook paths and direct Telegram action bypasses"
+  ],
+  "acceptance_criteria": [
+    "The exact phrase 'Give me the questions from the last two weeks' produces a scoped read plan, performs zero writes, states the exact Asia/Jerusalem date interval, and returns normalized questions with provenance.",
+    "Shloimie's identity is server-derived super_admin and all-workspace output is explicit; cross-workspace writes require an acting-on scope and audit record.",
+    "Rabbi's identity cannot read or write BNA/private platform data even when the prompt asks, tool arguments are manipulated, or conversation memory previously mentioned BNA.",
+    "Anonymous BNA and Robot Scheller lead agents expose no private capability, private route, private memory, or broad internal tool.",
+    "Every enabled capability has a real handler, scope policy, side-effect class, approval policy, audit result, and generated test; documentation examples alone never count as parity.",
+    "Read intents do not create intake, tickets, tasks, or any other write.",
+    "No action is claimed successful unless its typed handler returns a persisted result/audit record.",
+    "Memory survives worker restarts and deploys, remains namespace-scoped, can be viewed/corrected/forgotten, and never stores secrets or unredacted sensitive payloads.",
+    "No Telegram worker starts without a verified identity mapping and nonempty allowlist; no legacy webhook accepts unsigned/unmapped traffic.",
+    "No irreversible or external action runs from a natural-language turn without a fresh, bound, expiring approval.",
+    "Both workers expose process heartbeat, queue depth, last successful turn, last error class, and version/commit readback.",
+    "Focused tests, full test suite, static capability parity, shadow comparison, deployment proof, and separately approved live smoke all pass before legacy removal."
+  ],
+  "tests_expected": [
+    "new unit tests for date parsing, identity, scope, memory namespaces, capability compilation, approval binding, and no-write read intents",
+    "new integration tests for Telegram ingress -> shared orchestrator -> query/action -> outbox",
+    "English/Hebrew natural-language fixtures for every enabled capability",
+    "cross-role and prompt-injection scope tests for super-admin, Rabbi, public BNA, and Robot Scheller",
+    "restart/idempotency/retry/dead-letter/duplicate-worker tests",
+    "existing Telegram, assistant, helper, action, route, One Time, privacy, and provider tests",
+    "credential-free shadow mode followed by separately approved hosted live smoke"
+  ],
+  "known_blockers": [
+    "The current production commit and worker state must be re-read before deployment; this package is grounded to master d68e3f9 only.",
+    "Live Telegram sends, hosted restarts, and production migrations require separate operator approval.",
+    "External connector credentials and provider readiness must be discovered at runtime without exposing secrets.",
+    "Broad UI action parity requires explicit mapping decisions where an interface button is navigation-only, local-only, disabled, or intentionally unavailable to assistants."
+  ],
+  "local_state_warning": "This package was prepared from a clean detached checkout of origin/master at d68e3f9. Codex must refresh CONTROL-TOWER.md, git status, active agent jobs, and current master before editing shared files such as server.js.",
+  "files_included": [
+    "packet.json",
+    "RAW.md",
+    "CODEX_PROMPT.md",
+    "MANIFEST.json",
+    "status.json",
+    "PATCHES.md",
+    "attachments/"
+  ],
+  "requires_operator_decision": false,
+  "external_write_required": false,
+  "external_writes_performed": false,
+  "secrets_included": false,
+  "private_data_included": false
+}

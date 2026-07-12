@@ -1,0 +1,155 @@
+{
+  "schema_version": "bna.telegram_sidekick_repo_change_manifest.v1",
+  "audited_commit": "d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a",
+  "current_state_counts": {
+    "typed_actions": 80,
+    "helper_tools": 169,
+    "helper_typed_overlap": 69,
+    "helper_only": 100,
+    "typed_without_helper_wrapper": 11,
+    "ui_action_records": 127,
+    "route_records": 140,
+    "telegram_hardcoded_action_ids": 24,
+    "shared_planner_examples_en": 123,
+    "shared_planner_expected_matches": 56,
+    "shared_planner_examples_he": 0
+  },
+  "add": [
+    "src/platform/assistant/runtime/index.js",
+    "src/platform/assistant/runtime/turn-orchestrator.js",
+    "src/platform/assistant/runtime/contracts.js",
+    "src/platform/assistant/runtime/identity-store.js",
+    "src/platform/assistant/runtime/scope-context.js",
+    "src/platform/assistant/runtime/conversation-store.js",
+    "src/platform/assistant/runtime/memory-store.js",
+    "src/platform/assistant/runtime/capability-catalog.js",
+    "src/platform/assistant/runtime/planner.js",
+    "src/platform/assistant/runtime/effect-policy.js",
+    "src/platform/assistant/runtime/approval-service.js",
+    "src/platform/assistant/runtime/executor.js",
+    "src/platform/assistant/runtime/result-envelope.js",
+    "src/platform/assistant/runtime/response-composer.js",
+    "src/platform/assistant/runtime/time-range.js",
+    "src/platform/assistant/runtime/retention.js",
+    "src/platform/assistant/runtime/tools/questions.js",
+    "src/platform/assistant/runtime/external-tools/web-search.js",
+    "src/platform/assistant/adapters/telegram.js",
+    "src/platform/assistant/adapters/http.js",
+    "src/routes/assistant-control-plane.js",
+    "src/lib/bna/questions/query-service.js",
+    "src/platform/assistant/capabilities/registry.js",
+    "src/platform/assistant/capabilities/contract.js",
+    "scripts/telegram-assistant-worker.mjs",
+    "scripts/generate-assistant-capability-manifest.mjs",
+    "scripts/preflight-assistant-control-plane-migration.mjs",
+    "config/assistant-profiles/schema.json",
+    "config/assistant-profiles/shloimie-telegram.json",
+    "config/assistant-profiles/rabbi-one-time-telegram.json",
+    "config/assistant-profiles/bna-public-lead.json",
+    "config/assistant-profiles/one-time-public-lead.json",
+    "migrations/20260712-assistant-sidekick-v2.sql",
+    "ops/assistant-capabilities/ui-exclusions.json",
+    "tests/assistant-control-plane-runtime.test.js",
+    "tests/assistant-profile-isolation.test.js",
+    "tests/assistant-memory-loop.test.js",
+    "tests/assistant-question-query.test.js",
+    "tests/assistant-capability-handler-parity.test.js",
+    "tests/assistant-approval-idempotency.test.js",
+    "tests/assistant-natural-language-routing.test.js",
+    "tests/telegram-adapter-contract.test.js",
+    "tests/telegram-restart-recovery.test.js",
+    "tests/assistant-migration-postgres.test.js",
+    "scripts/smoke-telegram-sidekick.mjs"
+  ],
+  "modify": [
+    {
+      "path": "server.js",
+      "purpose": "Mount extracted control-plane routes, use server-bound identity/scope, reconcile canonical schema, and delegate compatibility endpoints. Keep changes thin after extracting modules."
+    },
+    {
+      "path": "src/platform/assistant/control-plane.js",
+      "purpose": "Export runtime contract/version and include memory/runtime layers; stop treating it as constants-only architecture."
+    },
+    {
+      "path": "src/lib/actions/registry.js",
+      "purpose": "Add explicit capability aliases/effect/authorization/schema metadata or an adapter that compiles it without duplicating execution."
+    },
+    {
+      "path": "src/lib/actions/runner.js",
+      "purpose": "Accept immutable server ScopeContext only, enforce idempotency/audit, and stop request payload from overriding role/workspace."
+    },
+    {
+      "path": "src/lib/actions/permissions.js",
+      "purpose": "Replace interchangeable admin shortcut with explicit role inheritance and single-target write scope."
+    },
+    {
+      "path": "src/lib/bna/helper/tool-registry.js",
+      "purpose": "Convert overlapping tools to canonical capability/action aliases and give helper-only tools real contracts or blocked state."
+    },
+    {
+      "path": "src/lib/bna/helper/permissions.js",
+      "purpose": "Delegate to the unified ScopeContext permission engine."
+    },
+    {
+      "path": "src/lib/bna/helper/confirmation-gates.js",
+      "purpose": "Use explicit effect metadata and the central approval service instead of name inference."
+    },
+    {
+      "path": "src/lib/bna/helper/destination-resolver.js",
+      "purpose": "Expose secure navigation capabilities from the canonical route registry."
+    },
+    {
+      "path": "src/lib/bna/assistant-scope-policy.js",
+      "purpose": "Preserve raw CLI/shell/deploy/migration/secret prohibition and align all profiles."
+    },
+    {
+      "path": "scripts/telegram-kimi-bridge.mjs",
+      "purpose": "First make it a shadow/compatibility wrapper, then remove business logic after cutover. Do not add more keyword snapshots."
+    },
+    {
+      "path": "scripts/railway-start.mjs",
+      "purpose": "Start the thin worker for Academy/Rabbi profiles and report correct runtime keys."
+    },
+    {
+      "path": "package.json",
+      "purpose": "Point Telegram scripts at the new worker and add manifest/preflight/test commands."
+    },
+    {
+      "path": "ops/action-registry.json",
+      "purpose": "Add generated capability foreign keys only through the compiler or a separately maintained source field; eliminate stale derived artifacts."
+    },
+    {
+      "path": "ops/route-registry.json",
+      "purpose": "Add route keys/capability classification where missing and preserve secure destinations."
+    },
+    {
+      "path": "docs/architecture/telegram-control-plane.md",
+      "purpose": "Record implemented runtime seams, profile policy, memory, and rollout truth."
+    }
+  ],
+  "generated_only": [
+    "ops/assistant-capabilities/manifest.json",
+    "ops/assistant-capabilities/ui-action-map.json",
+    "ops/assistant-capabilities/route-map.json",
+    "ops/assistant-capabilities/profile-manifests/*.json",
+    "ops/assistant-capabilities/parity-report.json",
+    "ops/assistant-capabilities/parity-report.md"
+  ],
+  "deprecate_after_shadow_parity": [
+    "src/lib/bna/telegram-action-router.js",
+    "Telegram snapshot keyword/context attachment path",
+    "Telegram direct capture-before-read path",
+    "Telegram local Markdown runtime memory",
+    "Telegram local offset/mode/approval/planning correctness state",
+    "hardcoded universal assistant regex tool planner",
+    "duplicate Helper execution definitions for typed actions",
+    "unsigned legacy /api/bna/telegram webhook",
+    "direct Telegram Codex CLI/deploy/Zoom/connector side-effect commands"
+  ],
+  "legacy_data_policy": [
+    "Do not auto-import local Markdown memory.",
+    "Import legacy database summaries/preferences only as candidates after identity/scope reconciliation.",
+    "Keep legacy tables read-only for a bounded rollback window; never dual-write indefinitely.",
+    "No table drop until at least two verified releases and a separately reviewed destructive migration."
+  ]
+}

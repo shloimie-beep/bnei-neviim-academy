@@ -34,6 +34,12 @@
   class transcript/session context and must not leak BNA Academy, unrelated
   provider, private student, or raw transcript evidence into member/student
   surfaces.
+- Meeting artifact #3 / Content job #103, Learning Motivation and Commandments
+  Discussion, has a repo-visible build brief at
+  `tasks-pending/2026-07-10-onetime-learning-motivation-commandments-build-brief.md`.
+  Treat it as a class/content handoff and decision-gate brief, not permission
+  to publish transcript-derived content, promote bot knowledge, send messages,
+  upload to Vimeo/Drive, or mutate external systems.
 - The One Time AI Studio operator role is `one_time_ai_studio_operator`: only
   Studio + Tasks, Studio prompt/image-observation patching, OpenArt prompt
   export/readiness, and mediated Studio-only repair plans. No raw shell/Codex

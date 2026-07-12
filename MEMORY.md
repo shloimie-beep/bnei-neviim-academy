@@ -943,12 +943,15 @@
   structure the relevant Drive/content job into a meeting summary, decision
   list, linked tasks, source-media provenance, and project-scoped follow-up
   under `one_time_mishnah_class`.
-- Meeting artifact #1 / Content job #57 is the current One Time build-brief
-  seed: next work should start with Rabbi software-stack discovery around his
+- Meeting artifact #1 / Content job #57 is the initial One Time build-brief
+  seed. Meeting artifact #3 / Content job #103 now adds the Learning
+  Motivation and Commandments build brief at
+  `tasks-pending/2026-07-10-onetime-learning-motivation-commandments-build-brief.md`:
+  next work should still start with Rabbi software-stack discovery around his
   library/Vimeo analytics, Google Classroom/Workspace account strategy, Zoom
   scheduling, WhatsApp provider, current website/product tiers, and
   ownership/revenue terms, then build the internal-first parent/student/Rabbi
-  admin MVP in first-party BNA Operations.
+  admin/classroom MVP in first-party BNA Operations.
 - One Time user access should stay project-scoped: Rabbi Elie Scheller is the
   One Time project owner, Shloimie is One Time project admin/manager while also
   retaining global super-admin authority, and future BNA versus One Time

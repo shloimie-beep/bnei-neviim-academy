@@ -65,6 +65,11 @@ const {
 const {
   maskIdentifier,
 } = require('../src/lib/bna/telegram-chat-id-readback');
+const {
+  TELEGRAM_SIDEKICK_RUNTIME_KEYS,
+  assertTelegramBridgeStartupPolicy,
+  normalizeTelegramChatIdList,
+} = require('../src/lib/bna/telegram-runtime-status');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -95,6 +100,8 @@ const RABBI_ELIE_AGENT_FILES = [
   'agents/rabbi-elie-scheller/MEMORY.md',
   'agents/rabbi-elie-scheller/SETUP.md',
 ];
+const TELEGRAM_RAW_AGENT_EXECUTION_DISABLED_MESSAGE =
+  'Raw Codex CLI execution is disabled from Telegram. File or claim a tracked Codex task from the repo or Operations queue instead.';
 
 function normalizeBridgeProfile(value) {
   const normalized = String(value || '')
@@ -159,7 +166,7 @@ fs.mkdirSync(opsCompletedDir, { recursive: true });
 const agentReplyQueue = [];
 let agentReplyRunning = false;
 let agentReplySequence = 0;
-let activeTelegramCodexEnabled = true;
+let activeTelegramCodexEnabled = false;
 let activeBridgeConfig = null;
 let activeBridgeBotIdentity = null;
 let stopBridgeRuntimeHeartbeat = null;
@@ -337,7 +344,7 @@ function loadConfig() {
         env.TELEGRAM_BOT_TOKEN_AHUVA ||
         ''
       );
-  const allowedChatIds = (isRabbiElieProfile
+  const allowedChatIds = normalizeTelegramChatIdList(isRabbiElieProfile
     ? [
         env.TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER,
         env.RABBI_ELIE_SCHELLER_TELEGRAM_CHAT_ID,
@@ -348,34 +355,36 @@ function loadConfig() {
         env.TELEGRAM_CHAT_ID,
         env.TELEGRAM_CHAT_ID_SHLOIMIE,
         env.TELEGRAM_CHAT_ID_AHUVA,
-      ])
-    .filter(Boolean)
-    .map((value) => String(value).trim())
-    .filter(Boolean)
-    .filter((value, index, values) => values.indexOf(value) === index);
-  const requestedPrimaryAgent = String(env.TELEGRAM_PRIMARY_AGENT || 'codex').trim().toLowerCase();
-  const primaryAgent = requestedPrimaryAgent === 'kimi' ? 'codex' : (requestedPrimaryAgent || 'codex');
+      ]);
+  const primaryAgent = 'disabled';
   const scopedOpsUsername = env.ONE_TIME_OPS_USERNAME || env.RABBI_ELIE_SCHELLER_OPS_USERNAME || '';
   const scopedOpsPassword = env.ONE_TIME_OPS_PASSWORD || env.RABBI_ELIE_SCHELLER_OPS_PASSWORD || '';
-  const codexEnabled = isRabbiElieProfile
-    ? String(env.RABBI_ELIE_SCHELLER_CODEX_ENABLED || 'false').toLowerCase() === 'true'
-    : true;
+  const codexEnabled = false;
 
   return {
     bridgeProfile,
     bridgeProfileLabel: isRabbiElieProfile ? 'Rabbi Elie Scheller / One Time' : 'BNA academy',
     scopedProjectKey: isRabbiElieProfile ? ONE_TIME_PROJECT_KEY : '',
-    runtimeAgentKey: isRabbiElieProfile ? '' : 'telegram-academy-bridge',
+    runtimeAgentKey: isRabbiElieProfile
+      ? TELEGRAM_SIDEKICK_RUNTIME_KEYS.rabbi
+      : TELEGRAM_SIDEKICK_RUNTIME_KEYS.shloimie,
     agentDisplayName: isRabbiElieProfile ? 'Rabbi Elie Scheller' : 'Shloimie',
     agentContextFiles: isRabbiElieProfile ? RABBI_ELIE_AGENT_FILES : [],
     codexEnabled,
     botToken,
     academyToken,
     allowedChatIds,
+    expectedBotId: isRabbiElieProfile
+      ? env.RABBI_ELIE_SCHELLER_TELEGRAM_BOT_ID || env.TELEGRAM_BOT_ID_RABBI_ELIE_SCHELLER || ''
+      : env.TELEGRAM_BOT_ID_BNA || env.TELEGRAM_BOT_ID_SHLOIMIE || env.TELEGRAM_BOT_ID || '',
+    expectedBotUsername: isRabbiElieProfile
+      ? env.RABBI_ELIE_SCHELLER_TELEGRAM_BOT_USERNAME || env.TELEGRAM_BOT_USERNAME_RABBI_ELIE_SCHELLER || ''
+      : env.TELEGRAM_BOT_USERNAME_BNA || env.TELEGRAM_BOT_USERNAME_SHLOIMIE || env.TELEGRAM_BOT_USERNAME || '',
     appUrl: env.BNA_APP_URL || env.NEXT_PUBLIC_APP_URL || 'https://bneineviimacademy.org',
     opsUsername: isRabbiElieProfile ? scopedOpsUsername : env.OPS_USERNAME || '',
     opsPassword: isRabbiElieProfile ? scopedOpsPassword : env.OPS_PASSWORD || '',
     primaryAgent,
+    rawAgentExecutionEnabled: false,
     codexCommand: env.CODEX_CLI_COMMAND || 'codex',
     codexModel: env.CODEX_CLI_MODEL || '',
     codexTimeoutMs: Number(env.CODEX_BRIDGE_TIMEOUT_MS || env.KIMI_BRIDGE_TIMEOUT_MS || 15 * 60 * 1000),
@@ -2606,7 +2615,19 @@ function cleanCodexOutput(text) {
     .trim();
 }
 
+function canRunTelegramRawAgent(config = {}) {
+  return Boolean(config.rawAgentExecutionEnabled && config.codexEnabled);
+}
+
+function assertTelegramRawAgentExecutionAllowed(config = {}) {
+  if (canRunTelegramRawAgent(config)) return;
+  const error = new Error(TELEGRAM_RAW_AGENT_EXECUTION_DISABLED_MESSAGE);
+  error.code = 'telegram_raw_agent_execution_disabled';
+  throw error;
+}
+
 function runCodex(prompt, config) {
+  assertTelegramRawAgentExecutionAllowed(config);
   const lastMessageDir = ensureDirectory(path.join(runtimeDir, 'codex-last-messages'));
   const lastMessagePath = path.join(
     lastMessageDir,
@@ -3727,7 +3748,7 @@ async function handleLiveClassTelegramCommand(config, msg) {
           `${session.title || 'Tonight class'}`,
           `Start: ${compactDateForContext(session.start_at) || 'not set'}`,
           `Link version: ${session.link_version || session.zoom_link_version || 1}`,
-          session.zoom_meeting_url ? `Zoom: ${session.zoom_meeting_url}` : 'Zoom: not set',
+          session.zoom_meeting_url ? 'Zoom: protected member link configured' : 'Zoom: not set',
         ].join('\n'),
         messageId
       );
@@ -3753,62 +3774,22 @@ async function handleLiveClassTelegramCommand(config, msg) {
   }
 
   if (/\b(change|replace|update)\b/i.test(text) && /\b(link|zoom)\b/i.test(text)) {
-    const zoomUrl = extractTelegramUrl(text);
-    const session = await resolveLiveSessionForTelegram(config, text).catch(() => null);
-    if (!zoomUrl || !/zoom/i.test(zoomUrl) || !session?.id) {
-      const task = await createLiveClassClarificationTask(
-        config,
-        msg,
-        'Clarify live class Zoom link change',
-        `Telegram asked to change a live class Zoom link, but the request was missing ${!zoomUrl ? 'the new Zoom URL' : 'a specific session/tonight reference'}.\n\nOriginal message: ${redactZoomLinksForTelegram(text)}`
-      );
-      await sendReply(config.botToken, chatId, task?.id ? `I need the exact session and new Zoom URL. I opened task #${task.id} to clarify it.` : 'I need the exact session and new Zoom URL before changing anything.', messageId);
-      return true;
-    }
-    try {
-      const result = await appRequest(config, 'PATCH', `/api/bna/live-sessions/${session.id}`, {
-        zoom_meeting_url: zoomUrl,
-      });
-      await sendReply(
-        config.botToken,
-        chatId,
-        `Updated ${result?.session?.title || `session #${session.id}`} to link version ${result?.session?.link_version || result?.session?.zoom_link_version || 'new'}. Send the updated link when ready.`,
-        messageId
-      );
-    } catch (error) {
-      await sendReply(config.botToken, chatId, error.message || 'I could not update the Zoom link.', messageId);
-    }
+    await sendReply(
+      config.botToken,
+      chatId,
+      'Zoom link changes are blocked from Telegram. Use the Operations preview/approval path so the target session, rollback, and audit record are explicit.',
+      messageId
+    );
     return true;
   }
 
   if (/\bsend\b/i.test(text) && /\b(member|email|zoom|link)\b/i.test(text) && /\bzoom|link\b/i.test(text)) {
-    const session = await resolveLiveSessionForTelegram(config, text).catch(() => null);
-    const member = await resolveLiveMemberForTelegram(config, text).catch(() => null);
-    if (!session?.id || !member?.id) {
-      const task = await createLiveClassClarificationTask(
-        config,
-        msg,
-        'Clarify live class Zoom send request',
-        `Telegram asked to send a member their Zoom link, but the request did not clearly identify both member and session.\n\nOriginal message: ${redactZoomLinksForTelegram(text)}`
-      );
-      await sendReply(config.botToken, chatId, task?.id ? `I need the exact member and session before sending. I opened task #${task.id} to clarify it.` : 'I need the exact member and session before sending.', messageId);
-      return true;
-    }
-    try {
-      const result = await appRequest(config, 'POST', `/api/bna/live-sessions/${session.id}/send-zoom-link`, {
-        member_id: member.id,
-        dryRun: false,
-      });
-      const summary = result?.summary || {};
-      await sendReply(
-        config.botToken,
-        chatId,
-        `Zoom send attempted for ${member.display_name || member.email || `member #${member.id}`}. Result: ${Object.entries(summary).map(([key, value]) => `${value} ${key}`).join(', ') || 'no recipients'}.`,
-        messageId
-      );
-    } catch (error) {
-      await sendReply(config.botToken, chatId, error.message || 'I could not send the Zoom link.', messageId);
-    }
+    await sendReply(
+      config.botToken,
+      chatId,
+      'Live class link sends are blocked from Telegram. Use the approved Operations send workflow with recipient, copy, and audit preview before any external message is sent.',
+      messageId
+    );
     return true;
   }
 
@@ -6038,8 +6019,8 @@ async function maybeTaskStatusWatch(config) {
 function codexQueueStartedText(tasks = []) {
   if (!tasks.length) return '';
   return [
-    `Codex work started: ${taskListSummary(tasks)}.`,
-    'I will send Telegram reminders as tracked tasks are marked done.',
+    `Codex work queued: ${taskListSummary(tasks)}.`,
+    'Raw CLI execution is disabled from Telegram; a repo-connected Codex lane must claim the tracked task.',
   ].join('\n');
 }
 
@@ -6078,27 +6059,35 @@ async function processAgentReplyQueue() {
 
 async function runAgentReplyJob(job) {
   const { config, text, chatId, messageId, prompt, trackedTasks = [] } = job;
-  log(`Starting Codex reply job ${job.id} for chat ${chatId} message ${messageId}`);
+  log(`Starting Codex reply job ${job.id} for chat ${maskIdentifier(chatId)} message ${maskIdentifier(messageId)}`);
   await telegramRequest(config.botToken, 'sendChatAction', {
     chat_id: chatId,
     action: 'typing',
   });
 
   let reply;
-  let replyProvider = 'Codex CLI';
-  try {
-    if (String(config.primaryAgent || '').toLowerCase() === 'kimi') {
-      replyProvider = 'Kimi CLI';
-      reply = await runKimi(buildKimiPrompt(config, text, chatId, messageId), config.kimiModel, config.kimiTimeoutMs);
-    } else {
-      reply = await runCodex(prompt, config);
+  let replyProvider = 'Raw agent execution blocked';
+  if (!canRunTelegramRawAgent(config)) {
+    reply = [
+      'Codex work was captured for the tracked queue.',
+      TELEGRAM_RAW_AGENT_EXECUTION_DISABLED_MESSAGE,
+    ].join('\n');
+  } else {
+    try {
+      if (String(config.primaryAgent || '').toLowerCase() === 'kimi') {
+        replyProvider = 'Kimi CLI';
+        reply = await runKimi(buildKimiPrompt(config, text, chatId, messageId), config.kimiModel, config.kimiTimeoutMs);
+      } else {
+        replyProvider = 'Codex CLI';
+        reply = await runCodex(prompt, config);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      log(`${replyProvider} failed, using API fallback: ${message}`);
+      const fallback = await runApiFallback(config, text, chatId, messageId);
+      replyProvider = `${fallback.provider} API fallback`;
+      reply = fallback.reply;
     }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    log(`${replyProvider} failed, using API fallback: ${message}`);
-    const fallback = await runApiFallback(config, text, chatId, messageId);
-    replyProvider = `${fallback.provider} API fallback`;
-    reply = fallback.reply;
   }
 
   const delivery = await sendReply(
@@ -6115,7 +6104,7 @@ async function runAgentReplyJob(job) {
     telegram_message_ids: delivery.message_ids.join(','),
   });
   await sendTaskCompletionReminders(config, chatId, messageId, trackedTasks);
-  log(`Completed Codex reply job ${job.id} for chat ${chatId} message ${messageId} via ${replyProvider}`);
+  log(`Completed Codex reply job ${job.id} for chat ${maskIdentifier(chatId)} message ${maskIdentifier(messageId)} via ${replyProvider}`);
 
   const decisionOptions = extractDecisionOptions(reply);
   if (decisionOptions.length) {
@@ -10581,7 +10570,7 @@ async function handleTextMessage(config, msg) {
   const messageId = msg.message_id;
 
   if (!text) return;
-  log(`Text message received from chat ${chatId} message ${messageId}: ${text.slice(0, 120).replace(/\s+/g, ' ')}`);
+  log(`Text message received from chat ${maskIdentifier(chatId)} message ${maskIdentifier(messageId)} chars=${text.length}`);
 
   if (config.allowedChatIds.length > 0 && !config.allowedChatIds.includes(chatId)) {
     await sendReply(config.botToken, chatId, 'This bot is private.', messageId);
@@ -10599,7 +10588,7 @@ async function handleTextMessage(config, msg) {
       await sendReply(
         config.botToken,
         chatId,
-        'Codex mode is not enabled for this scoped bot. One Time chat stays on Assistant with scoped task access.',
+        `${TELEGRAM_RAW_AGENT_EXECUTION_DISABLED_MESSAGE} Telegram stays on Assistant chat with tracked task capture.`,
         messageId
       );
       return;
@@ -10630,7 +10619,7 @@ async function handleTextMessage(config, msg) {
         `Mode: ${chatMode === 'codex' ? 'Codex' : 'Assistant chat'}`,
         `API path: ${apiProviderPathLabel(config)}`,
         `API keys: OpenAI ${config.openaiApiKey ? 'configured' : 'missing'}, Kimi ${config.kimiApiKey ? 'configured' : 'missing'}`,
-        `Codex: ${config.codexEnabled ? 'enabled' : 'disabled'}`,
+        `Raw agent execution: ${canRunTelegramRawAgent(config) ? 'enabled' : 'disabled'}`,
       ].join('\n'),
       messageId
     );
@@ -10651,7 +10640,7 @@ async function handleTextMessage(config, msg) {
           `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'Assistant chat'}`,
           `Assistant chat: ${apiProviderConfigs(config).length ? 'configured' : 'not configured'}`,
           `Scoped Operations login: ${config.opsUsername && config.opsPassword ? 'configured' : 'missing'}`,
-          `Allowed chats: ${config.allowedChatIds.join(',') || 'all'}`,
+          `Allowed private chats: ${config.allowedChatIds.length}`,
         ].join('\n'),
         messageId,
       );
@@ -10664,7 +10653,7 @@ async function handleTextMessage(config, msg) {
         'Bridge status: online',
         `Profile: ${config.bridgeProfileLabel}`,
         `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'Assistant chat'}`,
-        `Codex CLI: ${config.codexCommand}${config.codexModel ? ` (${config.codexModel})` : ''}`,
+        `Raw agent execution: ${canRunTelegramRawAgent(config) ? 'enabled' : 'disabled'}`,
         `Assistant chat: ${apiProviderConfigs(config).length ? 'configured' : 'not configured'}`,
         'Workspace: BNA v2.0',
         `Drive watcher: every ${Math.round(config.driveWatchIntervalMs / 1000)}s`,
@@ -10777,6 +10766,22 @@ async function handleTextMessage(config, msg) {
       planning_prompt_id: appliedSession.id,
     });
 
+    if (!canRunTelegramRawAgent(config)) {
+      let captureSummary = null;
+      try {
+        captureSummary = await captureRambleToApp(config, codexWorkText, chatId, messageId);
+      } catch (error) {
+        log(`Planning prompt capture failed: ${error instanceof Error ? error.message : String(error)}`);
+      }
+      const reply = [
+        'Planning prompt applied and captured for Codex review.',
+        captureSummary && hasStructuredCapture(captureSummary) ? captureSummaryText(captureSummary) : '',
+        TELEGRAM_RAW_AGENT_EXECUTION_DISABLED_MESSAGE,
+      ].filter(Boolean).join('\n\n');
+      await sendReply(config.botToken, chatId, reply, messageId);
+      return;
+    }
+
     if (config.asyncAgentReplies) {
       enqueueAgentReplyJob({
         config,
@@ -10882,6 +10887,7 @@ async function handleTextMessage(config, msg) {
   }
 
   const replyRouting = selectTelegramReplyMode(config, chatId, text);
+  const canRunRawAgent = canRunTelegramRawAgent(config);
   const canStartCodexWork = !blocksAutomaticCodexWork(text);
   let trackedCodexTasks = canStartCodexWork ? runnableCodexTasksFromCapture(captureSummary) : [];
   let trackedTaskSource = trackedCodexTasks.length ? 'captured_telegram_tasks' : '';
@@ -10893,7 +10899,7 @@ async function handleTextMessage(config, msg) {
       log(`Active Codex task lookup failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
-  if (trackedCodexTasks.length) {
+  if (trackedCodexTasks.length && canRunRawAgent) {
     trackedCodexTasks = await markCodexTasksInProgress(config, trackedCodexTasks, chatId, messageId, trackedTaskSource);
   }
 
@@ -10902,7 +10908,7 @@ async function handleTextMessage(config, msg) {
     : text;
   const prompt = buildCodexPrompt(config, codexWorkText, chatId, messageId);
 
-  if (replyRouting.mode === 'codex' && config.asyncAgentReplies) {
+  if (replyRouting.mode === 'codex' && config.asyncAgentReplies && canRunRawAgent) {
     const queued = enqueueAgentReplyJob({
       config,
       text: codexWorkText,
@@ -10941,7 +10947,7 @@ async function handleTextMessage(config, msg) {
   let reply;
   let replyProvider = replyRouting.mode === 'openai' ? 'Assistant' : 'Codex CLI';
   let autoQueuedCodexWork = null;
-  if (replyRouting.mode === 'openai' && trackedCodexTasks.length && config.asyncAgentReplies) {
+  if (replyRouting.mode === 'openai' && trackedCodexTasks.length && config.asyncAgentReplies && canRunRawAgent) {
     autoQueuedCodexWork = enqueueAgentReplyJob({
       config,
       text: codexWorkText,
@@ -10960,21 +10966,13 @@ async function handleTextMessage(config, msg) {
       reply = apiReply.reply;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      log(`Hosted assistant reply failed, trying CLI fallback without Codex: ${message}`);
-      try {
-        replyProvider = 'Kimi CLI fallback';
-        const kimiReply = await runKimi(buildKimiPrompt(config, text, chatId, messageId), config.kimiModel, config.kimiTimeoutMs);
-        reply = kimiReply;
-      } catch (fallbackError) {
-        const fallbackMessage = fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
-        log(`Kimi CLI fallback also failed: ${fallbackMessage}`);
-        replyProvider = 'Hosted chat unavailable';
-        reply = [
-          'The hosted chat engine is temporarily unavailable for this reply.',
-          'To keep Telegram fast, I did not fall back to Codex for this normal chat message.',
-          'Press Codex or send a clear build/fix/deploy request if you want coding mode.',
-        ].join('\n');
-      }
+      log(`Hosted assistant reply failed; raw CLI fallback disabled: ${message}`);
+      replyProvider = 'Hosted chat unavailable';
+      reply = [
+        'The hosted chat engine is temporarily unavailable for this reply.',
+        'Raw CLI fallbacks are disabled from Telegram.',
+        'File implementation work as a tracked task for a repo-connected Codex lane.',
+      ].join('\n');
     }
   } else {
     try {
@@ -11517,17 +11515,6 @@ async function main() {
   });
 
   const config = loadConfig();
-  if (!config.botToken) {
-    throw new Error(isScopedProjectBot(config)
-      ? 'No Rabbi Elie Telegram bot token found. Set TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER or add .secrets/telegram-rabbi-elie-scheller-bot-token.txt.'
-      : 'No Telegram bot token found. Set TELEGRAM_BOT_TOKEN or add .secrets/telegram-bot-token.txt.');
-  }
-  if (isScopedProjectBot(config) && (!config.opsUsername || !config.opsPassword)) {
-    throw new Error('Rabbi Elie scoped bot requires ONE_TIME_OPS_USERNAME and ONE_TIME_OPS_PASSWORD (or RABBI_ELIE_SCHELLER_OPS_USERNAME/PASSWORD aliases).');
-  }
-  if (isScopedProjectBot(config) && !config.allowedChatIds.length) {
-    throw new Error('Rabbi Elie scoped bot requires TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER (or RABBI_ELIE_SCHELLER_TELEGRAM_CHAT_ID / ONE_TIME_TELEGRAM_CHAT_ID) before startup.');
-  }
   activeTelegramCodexEnabled = Boolean(config.codexEnabled);
   activeBridgeConfig = config;
   activeTokenFingerprint = config.botToken.slice(0, 10).replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -11541,15 +11528,17 @@ async function main() {
   if (!isScopedProjectBot(config) && config.academyToken && config.botToken !== config.academyToken) {
     throw new Error('Bridge refused to start because the selected Telegram token is not the academy token.');
   }
+  const privateIdentityProfile = assertTelegramBridgeStartupPolicy(config, botIdentity);
 
   updateBridgeLock({
     profile: config.bridgeProfileLabel,
+    identity_profile: privateIdentityProfile.profile_key,
     bot_id: botIdentity.id || null,
     bot_username: botIdentity.username || '',
     academy_bot_username: academyIdentity?.username || '',
     default_reply_mode: config.telegramDefaultReplyMode || 'openai',
     build_agent: config.codexEnabled ? (config.primaryAgent || 'codex') : 'disabled',
-    allowed_chat_ids: config.allowedChatIds,
+    allowed_chat_ids_count: config.allowedChatIds.length,
   });
 
   await ensurePollingMode(config.botToken);
@@ -11561,7 +11550,7 @@ async function main() {
   let nextTaskWatchAt = Date.now() + 5000;
   let consecutiveGetUpdatesConflicts = 0;
   log(
-    `Bridge starting. Profile=${config.bridgeProfileLabel} Bot=${botIdentity.username || botIdentity.firstName || botIdentity.id} TelegramDefault=${config.telegramDefaultReplyMode || 'openai'} BuildAgent=${config.codexEnabled ? (config.primaryAgent || 'codex') : 'disabled'} CodexModel=${config.codexModel || 'default'} ApiPath=${apiProviderPathLabel(config)} OpenAIKey=${config.openaiApiKey ? 'yes' : 'no'} KimiKey=${config.kimiApiKey ? 'yes' : 'no'} AllowedChats=${config.allowedChatIds.join(',') || 'all'}`
+    `Bridge starting. Profile=${config.bridgeProfileLabel} Identity=${privateIdentityProfile.profile_key} Bot=${botIdentity.username || botIdentity.firstName || botIdentity.id} TelegramDefault=${config.telegramDefaultReplyMode || 'openai'} BuildAgent=${config.codexEnabled ? (config.primaryAgent || 'codex') : 'disabled'} CodexModel=${config.codexModel || 'default'} ApiPath=${apiProviderPathLabel(config)} OpenAIKey=${config.openaiApiKey ? 'yes' : 'no'} KimiKey=${config.kimiApiKey ? 'yes' : 'no'} AllowedPrivateChats=${config.allowedChatIds.length}`
   );
   if (academyIdentity) {
     log(`Academy token resolves to ${academyIdentity.username || academyIdentity.firstName || academyIdentity.id}`);

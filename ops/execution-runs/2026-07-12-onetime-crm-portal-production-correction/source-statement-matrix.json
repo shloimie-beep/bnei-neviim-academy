@@ -1,0 +1,116 @@
+{
+  "raw_id": "RAW-20260712-004",
+  "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "created_at": "2026-07-12T17:05:00+03:00",
+  "matrix": [
+    {
+      "statement_id": "SRC-20260712-004-001",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Create the required raw intake, requirement register, Product Quality Compiler packet, state matrix, execution run, screenshots/audit evidence, deployment verification, and do not stop after planning documents.",
+      "requirement_id": "REQ-20260712-101",
+      "additional_requirement_ids": ["REQ-20260712-102", "REQ-20260712-112"],
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-002",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Operations must show unmistakable Super Admin, actual Rabbi, and read-only view-as identity states; signed view-as must force workspace/project scope, deny conflicting scope, project /api/bna/auth/me as Rabbi owner identity, and block writes without broadening reads.",
+      "requirement_id": "REQ-20260712-103",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-003",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "One Time CRM must show only explicitly owned One Time records; missing ownership fails closed, ambiguous records are quarantined, cross-workspace email matches are insufficient, and enrichment for mailbox, support, tasks, membership, communications, and timeline must apply workspace/project restrictions.",
+      "requirement_id": "REQ-20260712-104",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-004",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Customer-facing UI must not display internal storage names such as bna_contacts or bna_parent_leads; use human-facing One Time source labels and produce a redacted dry-run production scope report over the approximately 503 visible records without exposing private contact information.",
+      "requirement_id": "REQ-20260712-104",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-005",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Replace CRM fetch-all/filter-in-JavaScript architecture with database-side scoped search, filters, sort, cursor pagination, list/detail endpoints, facets/summary, indexes, EXPLAIN proof, and representative 10,000-contact fixture performance.",
+      "requirement_id": "REQ-20260712-105",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-006",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "CRM frontend must avoid the giant global data loader/root rerender on contact selection, use AbortController, debounced search, cached detail, scoped refresh, hidden legacy table avoidance, and retire duplicate legacy renderer after parity.",
+      "requirement_id": "REQ-20260712-106",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-007",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Build a professional first-party One Time CRM with desktop three-pane list/conversation/profile, mobile list-to-detail flow, tabs, notes, tasks, profile fields, valid Rabbi updates, and read-only view-as disabled writes.",
+      "requirement_id": "REQ-20260712-107",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-008",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Create a scoped One Time Inbox with thread list, active conversation, contact context, filters, One Time-only workspace behavior, selected-contact retention, replies updating timeline, internal-note separation, and provider/channel audit metadata.",
+      "requirement_id": "REQ-20260712-107",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-009",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Normalize portal information architecture: /rabbi-member user-facing Family Portal, /student Student Portal, /one-time-classroom shared Classroom, /member-library Library, and /one-time-parent account setup/reset, with clear preview action labels.",
+      "requirement_id": "REQ-20260712-108",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-010",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Create a shared One Time portal shell across Family, Student, Classroom, Library, parent setup/reset, and preview modes with same logo, tokens, fonts, header, navigation, buttons, focus styles, footer, and role-appropriate links.",
+      "requirement_id": "REQ-20260712-108",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-011",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Replace the CSS pseudo-element hamburger with one real focusable/clickable accessible button supporting aria-controls, aria-expanded, Escape/backdrop close, focus trap, focus return, and responsive behavior.",
+      "requirement_id": "REQ-20260712-108",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-012",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Preview mode must show TEST PREVIEW / SAMPLE DATA / NO WRITES, preserve review mode across Family/Student/Classroom/Library, provide Exit Preview, enforce support boundaries, and use safe TEST synthetic student fixtures that never enter production CRM, reminders, sends, or metrics.",
+      "requirement_id": "REQ-20260712-108",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-013",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Preserve latest deployed landing design but remove Robot Scheller character and public quick-command widget/scripts, replacing them with an accessible standard WhatsApp wa.me launcher using ONE_TIME_PUBLIC_WHATSAPP_NUMBER without hardcoded credentials.",
+      "requirement_id": "REQ-20260712-109",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-014",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Make the One Time WhatsApp assistant natural using the existing provider-bot profile and buildProviderLeadBotSystemPrompt while preserving deterministic security decisions, scoped retrieval, response validation, fallback behavior, and multi-turn tests.",
+      "requirement_id": "REQ-20260712-110",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "SRC-20260712-004-015",
+      "source_id": "RAW-20260712-004",
+      "source_statement": "Meet performance budgets, split Operations bundles, minify/fingerprint assets, enable compression/caching, add required behavioral tests, capture screenshots, commit/push/merge/deploy both services, verify exact SHA, and run live smokes before Done.",
+      "requirement_id": "REQ-20260712-111",
+      "additional_requirement_ids": ["REQ-20260712-112"],
+      "classification": "mapped"
+    }
+  ]
+}

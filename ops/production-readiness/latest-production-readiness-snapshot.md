@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-10T17:27:07.036Z
+# Production Readiness Snapshot - 2026-07-12T17:39:15.420Z
 
 Result: not_production_complete
 Production ready: no
@@ -6,34 +6,34 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Why Not Done Yet
 - full One Time launch has external Stripe/WAPI/campaign blockers
+- public launch no-write smoke is passed
 - Rabbi Telegram runtime is local_runtime_ready_live_smoke_pending
 - Rabbi Agent Review still needs terminal Agent Mode proof
 - active execution run has no unblocked executable batch
 
 ## Git
-- Branch: unknown
-- HEAD: fd04d006
-- origin/master: fd04d006
-- Worktree clean when sampled: yes
+- Branch: master
+- HEAD: d68e3f9a3
+- origin/master: e5efbb15a
+- Worktree clean when sampled: no
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: fd04d006
-- Sampled origin/master: fd04d006
-- Sampled worktree clean: yes
+- Sampled git head: d68e3f9a3
+- Sampled origin/master: e5efbb15a
+- Sampled worktree clean: no
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
 
 ## Active Execution Run
-- Run: ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation
-- Status counts: blocked 2, done 8
+- Run: ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction
+- Status counts: blocked 1, done 11
 - Work remains: yes
 - Validation passed: yes
 - Next unblocked executable batch: none
 
 ## Remaining External Blockers
-- REQ-20260702-108: Full provider/campaign setup remains incomplete in current read-only setup check; Railway target context is resolved. Owner: Shloimie / provider account owners. Next: Provide or label the exact missing setup values for full launch: Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, WAPI auto-reply enable/approval flags if auto-reply is intended, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet.
-- REQ-20260702-110: Full OneTime launch remains blocked by external setup values, not Railway target context. The immediate lead-capture/free-class lane is unblocked and tracked in RAW-20260709-008. Owner: Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane. Next: Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags if auto-reply is intended, and campaign approvals, then rerun setup and WAPI readiness checks.
+- REQ-20260712-112: Release gate blocked: local master is 0 commits ahead and 54 commits behind origin/master, One Time correction work is uncommitted in a mixed dirty tree, and Railway/Drive external readback readiness gaps remain. Owner: Codex/operator release lane. Next: Start from current origin/master in a clean scoped release lane, reapply only the One Time correction files, push the exact One Time release commit, complete or explicitly defer Railway/Drive readback through approved release-gate options, then rerun deploy/live verification.
 
 ## One Time Setup Buckets
 - Checklist: ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
@@ -49,12 +49,12 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 ## Public Launch No-Write Smoke
 - Path: ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
 - Status: passed
-- Ready: yes
-- Fresh for launch gate: yes (0.73h old, max 24h)
+- Ready: no
+- Fresh for launch gate: no (48.93h old, max 24h)
 - Commands passed: 4/4
 - External write performed: no
 - Production data mutation performed: no
-- Blocker: none
+- Blocker: stale_or_unparseable_age_hours=48.93
 
 ## Rabbi Telegram Runtime
 - Readiness report: ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
@@ -74,7 +74,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: observable jobs 0, fallback task candidates 0
-- Queue health: fresh 0, stale 515, blocked 155, unknown 221, do-not-redo 830
+- Queue health: fresh 1, stale 523, blocked 132, unknown 192, do-not-redo 894
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
@@ -85,7 +85,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - No running launch collision lanes reported.
 
 ## Other Agent Policy Rows
-- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=196.8 path=.runtime/agent-fleet/task-1736.lock.json)
+- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=245 path=.runtime/agent-fleet/task-1736.lock.json)
 - job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)
 - job #443 / task #2258 [failed] Turn Rabbi meeting drop into One Time build brief (local_lock=missing path=.runtime/agent-fleet/task-2258.lock.json)
 - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json)
@@ -95,11 +95,12 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json)
 
 ## ChatGPT Dropoff
-- Packet count: 3
+- Packet count: 4
 - Queued for Codex pickup: 0
 - chatgpt-dropoff-smoke-test-20260705-001: skipped
 - onetime-agent-prompt-series-20260706-911: skipped
 - onetime-launch-priority-ui-crm-automation-20260710-001: skipped
+- telegram-sidekick-super-package-20260712: skipped
 
 ## Rabbi Agent Review Proof
 - Latest proof file: ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json
@@ -109,12 +110,11 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - rabbi-helper-tool-scope-map: terminal proof missing (https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md; dropoff https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-helper-tool-scope-map&requirement_id=REQ-20260708-093&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-helper-tool-scope-map&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-helper-tool-scope-map%3Aall-contexts&autosave=1)
 
 ## Next Actions
-1. Shloimie / provider account owners: Provide or label the exact missing setup values for full launch: Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, WAPI auto-reply enable/approval flags if auto-reply is intended, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet.
-2. Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane: Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags if auto-reply is intended, and campaign approvals, then rerun setup and WAPI readiness checks.
-3. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md
-4. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md
-5. Codex / operator: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
-6. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
+1. Codex/operator release lane: Start from current origin/master in a clean scoped release lane, reapply only the One Time correction files, push the exact One Time release commit, complete or explicitly defer Railway/Drive readback through approved release-gate options, then rerun deploy/live verification.
+2. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md
+3. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md
+4. Codex / operator: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
+5. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
 
 ## Evidence
 - tasks-pending/2026-07-09-production-readiness-goal.md

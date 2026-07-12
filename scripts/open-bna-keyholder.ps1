@@ -19,7 +19,13 @@ $secretFiles = @(
   "resend-api-key.txt",
   "stripe-secret-key.txt",
   "railway-token.txt",
-  "kimi-api-key.txt"
+  "kimi-api-key.txt",
+  "vimeo-client-id.txt",
+  "vimeo-client-secret.txt",
+  "vimeo-access-token.txt",
+  "vimeo-webhook-secret.txt",
+  "vimeo-test-project-uri.txt",
+  "vimeo-test-project-name.txt"
 )
 
 foreach ($fileName in $secretFiles) {
@@ -45,6 +51,12 @@ Files:
 - stripe-secret-key.txt
 - railway-token.txt
 - kimi-api-key.txt
+- vimeo-client-id.txt
+- vimeo-client-secret.txt
+- vimeo-access-token.txt
+- vimeo-webhook-secret.txt
+- vimeo-test-project-uri.txt
+- vimeo-test-project-name.txt
 
 Rules:
 - One secret per file.

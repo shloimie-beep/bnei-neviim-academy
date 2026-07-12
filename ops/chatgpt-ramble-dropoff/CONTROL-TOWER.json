@@ -1,9 +1,57 @@
 {
-  "generated_at": "2026-07-10T10:57:31.914Z",
+  "generated_at": "2026-07-12T17:38:58.230Z",
   "git": {
     "branch": "master",
     "dirty": true,
     "dirty_files": [
+      {
+        "status": "M",
+        "path": "MEMORY.md"
+      },
+      {
+        "status": "M",
+        "path": "TASKS.md"
+      },
+      {
+        "status": "M",
+        "path": "memory-topics/one-time-rabbi-sheller.md"
+      },
+      {
+        "status": "M",
+        "path": "memory/2026-07-10.md"
+      },
+      {
+        "status": "M",
+        "path": "ops/action-registry.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/action-registry/actions.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/action-registry/one-time-action-coverage.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/action-registry/one-time-action-coverage.md"
+      },
+      {
+        "status": "M",
+        "path": "ops/action-registry/universal-action-parity.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/action-registry/universal-action-parity.md"
+      },
+      {
+        "status": "M",
+        "path": "ops/agent-changelog.md"
+      },
+      {
+        "status": "M",
+        "path": "ops/agent-task-ledger.jsonl"
+      },
       {
         "status": "M",
         "path": "ops/audit-governance/latest.json"
@@ -13,21 +61,361 @@
         "path": "ops/audit-governance/latest.md"
       },
       {
+        "status": "M",
+        "path": "ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation/run.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/execution-runs/latest.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
+      },
+      {
+        "status": "M",
+        "path": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md"
+      },
+      {
+        "status": "M",
+        "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1024-crm-workbench.png"
+      },
+      {
+        "status": "M",
+        "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1440-crm-workbench.png"
+      },
+      {
+        "status": "M",
+        "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-390-crm-workbench.png"
+      },
+      {
+        "status": "M",
+        "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-430-crm-workbench.png"
+      },
+      {
+        "status": "M",
+        "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md"
+      },
+      {
+        "status": "M",
+        "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/tablet-768-crm-workbench.png"
+      },
+      {
+        "status": "M",
+        "path": "public/css/operations-shell.css"
+      },
+      {
+        "status": "M",
+        "path": "public/js/operations-deferred-renderers.js"
+      },
+      {
+        "status": "M",
+        "path": "public/js/operations-shell.js"
+      },
+      {
+        "status": "M",
+        "path": "public/js/rabbi-member.js"
+      },
+      {
+        "status": "M",
+        "path": "public/member-library.html"
+      },
+      {
+        "status": "M",
+        "path": "public/one-time-classroom.html"
+      },
+      {
+        "status": "M",
+        "path": "public/one-time-parent-review.html"
+      },
+      {
+        "status": "M",
+        "path": "public/one-time-parent.html"
+      },
+      {
+        "status": "M",
+        "path": "public/one-time/index.html"
+      },
+      {
+        "status": "M",
+        "path": "public/operations-bootstrap.html"
+      },
+      {
+        "status": "M",
+        "path": "public/operations.html"
+      },
+      {
+        "status": "M",
+        "path": "public/provider.html"
+      },
+      {
+        "status": "M",
+        "path": "public/rabbi-member.html"
+      },
+      {
+        "status": "M",
+        "path": "public/student.html"
+      },
+      {
+        "status": "M",
+        "path": "scripts/keyholder-diagnostics.mjs"
+      },
+      {
+        "status": "M",
+        "path": "scripts/one-time-vimeo-folder-library.mjs"
+      },
+      {
+        "status": "M",
+        "path": "scripts/open-bna-keyholder.ps1"
+      },
+      {
+        "status": "M",
+        "path": "scripts/smoke-onetime-operations-crm-workbench-local.mjs"
+      },
+      {
+        "status": "M",
+        "path": "scripts/split-operations-shell.mjs"
+      },
+      {
+        "status": "M",
+        "path": "scripts/telegram-kimi-bridge.mjs"
+      },
+      {
+        "status": "M",
+        "path": "scripts/vimeo-private-smoke.mjs"
+      },
+      {
+        "status": "M",
+        "path": "server.js"
+      },
+      {
+        "status": "M",
+        "path": "src/lib/bna/crm-contact-model.js"
+      },
+      {
+        "status": "M",
+        "path": "src/lib/bna/one-time-vimeo-folder-library.js"
+      },
+      {
+        "status": "M",
+        "path": "src/lib/bna/provider-lead-bot.js"
+      },
+      {
+        "status": "M",
+        "path": "src/lib/bna/telegram-runtime-status.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/crm-contact-model.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/keyholder-diagnostics.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/one-time-brand-helper-isolation.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/one-time-vimeo-folder-library-workflow.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/one-time-vimeo-studio-pipeline.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/rabbi-scheller-tenant-isolation-contract.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/service-provider-lead-bot.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/telegram-runtime-status.test.js"
+      },
+      {
+        "status": "??",
+        "path": "START-HERE.md"
+      },
+      {
+        "status": "??",
+        "path": "features/"
+      },
+      {
+        "status": "??",
+        "path": "memory/2026-07-12.md"
+      },
+      {
         "status": "??",
         "path": "ops/audit-governance/2026-07-10T07-49-27-587Z-audit-governance.json"
       },
       {
         "status": "??",
         "path": "ops/audit-governance/2026-07-10T07-49-27-587Z-audit-governance.md"
+      },
+      {
+        "status": "??",
+        "path": "ops/audit-governance/2026-07-10T15-54-44-927Z-audit-governance.json"
+      },
+      {
+        "status": "??",
+        "path": "ops/audit-governance/2026-07-10T15-54-44-927Z-audit-governance.md"
+      },
+      {
+        "status": "??",
+        "path": "ops/audit-governance/2026-07-10T16-00-27-822Z-audit-governance.json"
+      },
+      {
+        "status": "??",
+        "path": "ops/audit-governance/2026-07-10T16-00-27-822Z-audit-governance.md"
+      },
+      {
+        "status": "??",
+        "path": "ops/audit-governance/2026-07-12T14-40-34-370Z-audit-governance.json"
+      },
+      {
+        "status": "??",
+        "path": "ops/audit-governance/2026-07-12T14-40-34-370Z-audit-governance.md"
+      },
+      {
+        "status": "??",
+        "path": "ops/audit-governance/2026-07-12T17-04-34-949Z-audit-governance.json"
+      },
+      {
+        "status": "??",
+        "path": "ops/audit-governance/2026-07-12T17-04-34-949Z-audit-governance.md"
+      },
+      {
+        "status": "??",
+        "path": "ops/chatgpt-ramble-dropoff/incoming/telegram-sidekick-super-package-20260712/"
+      },
+      {
+        "status": "??",
+        "path": "ops/crm-scope-reports/"
+      },
+      {
+        "status": "??",
+        "path": "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/"
+      },
+      {
+        "status": "??",
+        "path": "ops/performance-audits/2026-07-12-onetime-performance-budget-local/"
+      },
+      {
+        "status": "??",
+        "path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/"
+      },
+      {
+        "status": "??",
+        "path": "ops/surface-maps/2026-07-12-onetime-crm-portal-surface-map.json"
+      },
+      {
+        "status": "??",
+        "path": "ops/surface-maps/2026-07-12-onetime-crm-portal-surface-map.md"
+      },
+      {
+        "status": "??",
+        "path": "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/"
+      },
+      {
+        "status": "??",
+        "path": "ops/watchdog-audits/2026-07-12-product-quality-drift.json"
+      },
+      {
+        "status": "??",
+        "path": "ops/watchdog-audits/2026-07-12-product-quality-drift.md"
+      },
+      {
+        "status": "??",
+        "path": "public/css/one-time-portal-shell.css"
+      },
+      {
+        "status": "??",
+        "path": "public/js/one-time-portal-shell.js"
+      },
+      {
+        "status": "??",
+        "path": "railway-migration-2026-07-12-one-time-parent-whatsapp-column.sql"
+      },
+      {
+        "status": "??",
+        "path": "raw-input/RAW-20260710-005-onetime-meeting-drop-3-learning-motivation-build-brief.md"
+      },
+      {
+        "status": "??",
+        "path": "raw-input/RAW-20260712-003-onetime-form-email-reminder-verification.md"
+      },
+      {
+        "status": "??",
+        "path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt"
+      },
+      {
+        "status": "??",
+        "path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction.md"
+      },
+      {
+        "status": "??",
+        "path": "raw-input/RAW-20260712-005-telegram-sidekick-super-package.md"
+      },
+      {
+        "status": "??",
+        "path": "raw-input/RAW-20260712-006-launch-consolidation-merge-deploy-source.txt"
+      },
+      {
+        "status": "??",
+        "path": "raw-input/RAW-20260712-006-launch-consolidation-merge-deploy.md"
+      },
+      {
+        "status": "??",
+        "path": "scripts/smoke-onetime-landing-whatsapp-local.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/smoke-onetime-portal-shell-local.mjs"
+      },
+      {
+        "status": "??",
+        "path": "tasks-pending/2026-07-10-onetime-learning-motivation-commandments-build-brief.md"
+      },
+      {
+        "status": "??",
+        "path": "tasks-pending/2026-07-12-launch-consolidation-merge-deploy.md"
+      },
+      {
+        "status": "??",
+        "path": "tasks-pending/2026-07-12-onetime-crm-portal-production-correction.md"
+      },
+      {
+        "status": "??",
+        "path": "tasks-pending/2026-07-12-telegram-sidekick-super-package-lane-01.md"
+      },
+      {
+        "status": "??",
+        "path": "tests/one-time-view-as-scope-contract.test.js"
       }
     ],
     "collision_warning": "Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files."
   },
   "packets": {
-    "count": 3,
+    "count": 4,
     "counts": {
       "terminal": 2,
-      "draft": 1
+      "draft": 2
     },
     "items": [
       {
@@ -180,10 +568,74 @@
           "ops/live-smokes/2026-07-10T09-28-02-072Z-one-time-operations-crm-workbench-live-smoke.md"
         ],
         "updated_at": "2026-07-10T12:28:44+03:00"
+      },
+      {
+        "packet_id": "telegram-sidekick-super-package-20260712",
+        "path": "ops/chatgpt-ramble-dropoff/incoming/telegram-sidekick-super-package-20260712",
+        "state": "draft",
+        "status": "codex_lane_01_local_verified",
+        "implementation_status": "lane_01_local_verified_production_blocked",
+        "packet_type": "implementation_bundle",
+        "packet_role": "architecture_contract_code_prep_and_acceptance_suite",
+        "owner": "ChatGPT",
+        "lane_key": "platform-assistant-telegram-sidekick-v2",
+        "workspace": "platform_and_rabbi_sheller_provider",
+        "project": "assistant_control_plane_and_one_time_mishnah_class",
+        "scope_summary": "Replace the standalone regex/snapshot Telegram assistant with a secure adapter over the canonical assistant control plane, add durable scoped memory and preferences, route natural language to all registered app capabilities, add safe web search and connector tools, and deliver verified Shloimie super-admin and Rabbi provider-admin profiles while preserving public lead-agent isolation.",
+        "next_action": "Lane 02/shared orchestrator work can start from the local Lane 01 guardrails. Production deploy, worker restart, live Telegram smoke, real identity binding, migrations, or external actions still require explicit operator approval.",
+        "blockers": [
+          "Production deploy, worker restart, live Telegram smoke, real identity binding, production migration apply, and external actions require separate explicit operator approval.",
+          "Shared turn orchestrator, thin Telegram adapter, read/query foundation, durable memory, capability parity compiler, and safe external tools remain later packet lanes and were not claimed complete in Lane 01."
+        ],
+        "findings": [
+          {
+            "severity": "skip",
+            "code": "not_ready_status",
+            "message": "Packet status is not ready: codex_lane_01_local_verified"
+          }
+        ],
+        "ready_for_pickup": false,
+        "terminal": false,
+        "picked_up_by": "chatgpt-dropoff-ingestor",
+        "picked_up_at": "2026-07-12T14:19:17.258Z",
+        "task_ids_created": [
+          "2266"
+        ],
+        "requirement_ids_created": [
+          "REQ-20260712-201",
+          "REQ-20260712-202",
+          "REQ-20260712-203",
+          "REQ-20260712-204",
+          "REQ-20260712-205",
+          "REQ-20260712-206"
+        ],
+        "evidence": [
+          "docs/architecture/telegram-control-plane.md",
+          "src/platform/assistant/control-plane.js",
+          "src/lib/actions/registry.js",
+          "src/lib/bna/helper/tool-registry.js",
+          "src/lib/bna/helper/permissions.js",
+          "src/lib/bna/assistant-scope-policy.js",
+          "scripts/telegram-kimi-bridge.mjs",
+          "server.js assistant and question schemas/routes",
+          "ops/action-registry.json",
+          "ops/route-registry.json"
+        ],
+        "updated_at": "2026-07-12T17:33:23+03:00"
       }
     ]
   },
   "latest_pickup_reports": [
+    {
+      "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-12T14-19-17-258Z-telegram-sidekick-super-package-20260712.md",
+      "updated_at": "2026-07-12T14:19:17.259Z",
+      "size": 240
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-12T14-18-56-534Z-telegram-sidekick-super-package-20260712.md",
+      "updated_at": "2026-07-12T14:18:56.535Z",
+      "size": 234
+    },
     {
       "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-10T07-27-19-148Z-onetime-launch-priority-ui-crm-automation-20260710-001.md",
       "updated_at": "2026-07-10T07:27:19.149Z",
@@ -213,58 +665,48 @@
       "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-46-24-030Z-onetime-agent-prompt-series-20260706-911.md",
       "updated_at": "2026-07-09T05:46:24.032Z",
       "size": 296
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-46-24-027Z-chatgpt-dropoff-smoke-test-20260705-001.md",
-      "updated_at": "2026-07-09T05:46:24.028Z",
-      "size": 294
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-45-01-124Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-09T05:45:01.125Z",
-      "size": 296
     }
   ],
   "latest_comment_pickup_reports": [
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-56-11-001Z-4893596622.md",
-      "updated_at": "2026-07-10T10:56:11.003Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-12T17-38-05-351Z-4893651840.md",
+      "updated_at": "2026-07-12T17:38:05.354Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-56-11-002Z-4893651840.md",
-      "updated_at": "2026-07-10T10:56:11.003Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-12T17-38-05-349Z-4893596622.md",
+      "updated_at": "2026-07-12T17:38:05.352Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-56-11-000Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-10T10:56:11.002Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-12T17-38-05-348Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-12T17:38:05.350Z",
       "size": 495
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-56-10-998Z-4893586910.md",
-      "updated_at": "2026-07-10T10:56:11.000Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-12T17-38-05-346Z-4893586910.md",
+      "updated_at": "2026-07-12T17:38:05.347Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-56-10-996Z-onetime-launch-priority-ui-crm-automation-20260710-001.md",
-      "updated_at": "2026-07-10T10:56:10.999Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-12T17-38-05-344Z-onetime-launch-priority-ui-crm-automation-20260710-001.md",
+      "updated_at": "2026-07-12T17:38:05.346Z",
       "size": 365
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-54-48-598Z-4893651840.md",
-      "updated_at": "2026-07-10T10:54:48.600Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-12T17-36-40-819Z-4893651840.md",
+      "updated_at": "2026-07-12T17:36:40.820Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-54-48-597Z-4893596622.md",
-      "updated_at": "2026-07-10T10:54:48.599Z",
-      "size": 743
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-54-48-596Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-10T10:54:48.598Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-12T17-36-40-816Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-12T17:36:40.818Z",
       "size": 495
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-12T17-36-40-818Z-4893596622.md",
+      "updated_at": "2026-07-12T17:36:40.818Z",
+      "size": 743
     }
   ],
   "agent_fleet": {
@@ -272,35 +714,35 @@
     "ok": true,
     "summary": [
       "- Supervisor: running PID 36560",
-      "- Observable Codex jobs: 28",
+      "- Observable Codex jobs: 30",
       "- Claimable observable jobs: 0",
-      "- Active Codex task fallback: 28",
+      "- Active Codex task fallback: 30",
       "- Ready to claim: observable jobs 0, fallback task candidates 0",
-      "- Queue health: fresh 0, stale 496, blocked 129, unknown 194, do-not-redo 885",
+      "- Queue health: fresh 1, stale 523, blocked 132, unknown 192, do-not-redo 894",
       "- ChatGPT dropoff ingest: enabled",
       "- ChatGPT comment collect: enabled"
     ],
     "not_claimable": [
-      "- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=190.31 path=.runtime/agent-fleet/task-1736.lock.json)",
+      "- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=245 path=.runtime/agent-fleet/task-1736.lock.json)",
       "- job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)",
+      "- job #443 / task #2258 [failed] Turn Rabbi meeting drop into One Time build brief (local_lock=missing path=.runtime/agent-fleet/task-2258.lock.json)",
       "- job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json)",
       "- job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json)",
       "- job #238 / task #1141 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1141.lock.json)",
-      "- job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json)",
       "- job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json)",
-      "- job #296 / task #1436 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1436.lock.json)"
+      "- job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json)"
     ],
     "fallback_candidates": [],
     "raw_excerpt": [
       "Agent fleet status:",
       "- Supervisor: running PID 36560",
-      "- Observable Codex jobs: 28",
+      "- Observable Codex jobs: 30",
       "- Claimable observable jobs: 0",
       "- Stale observable job candidates: 0",
       "- Linked observable task lookup: fetched 0, missing 0",
-      "- Active Codex task fallback: 28",
+      "- Active Codex task fallback: 30",
       "- Ready to claim: observable jobs 0, fallback task candidates 0",
-      "- Queue health: fresh 0, stale 496, blocked 129, unknown 194, do-not-redo 885",
+      "- Queue health: fresh 1, stale 523, blocked 132, unknown 192, do-not-redo 894",
       "- Max retries: 2",
       "- Baseline smoke: enabled",
       "- Auto deploy gate: disabled",
@@ -312,21 +754,21 @@
       "Observable jobs not claimable by active-task policy:",
       "- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167",
       "- job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there?",
+      "- job #443 / task #2258 [failed] Turn Rabbi meeting drop into One Time build brief",
       "- job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess.",
       "- job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess.",
       "- job #238 / task #1141 [failed] Repair follow-up after Drive transcription reprocess.",
-      "- job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy",
       "- job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy",
-      "- job #296 / task #1436 [failed] Repair follow-up after Drive transcription reprocess.",
+      "- job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy",
       "Local task lock evidence for not-claimable jobs:",
-      "- task #1736 for job #344: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=190.31 path=.runtime/agent-fleet/task-1736.lock.json",
+      "- task #1736 for job #344: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=245 path=.runtime/agent-fleet/task-1736.lock.json",
       "- task #2181 for job #426: local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json",
+      "- task #2258 for job #443: local_lock=missing path=.runtime/agent-fleet/task-2258.lock.json",
       "- task #1130 for job #236: local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json",
       "- task #1136 for job #237: local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json",
       "- task #1141 for job #238: local_lock=missing path=.runtime/agent-fleet/task-1141.lock.json",
-      "- task #1392 for job #289: local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json",
       "- task #1393 for job #290: local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json",
-      "- task #1436 for job #296: local_lock=missing path=.runtime/agent-fleet/task-1436.lock.json"
+      "- task #1392 for job #289: local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json"
     ],
     "error": ""
   },

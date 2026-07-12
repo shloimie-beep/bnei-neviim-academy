@@ -4314,5 +4314,320 @@
     "audit_log_event": "assistant_reminder_planned",
     "success_message": "Reminder plan previewed.",
     "failure_message": "Reminder could not be planned."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "contact_id",
+      "workspace_key",
+      "project_key"
+    ],
+    "validation": {
+      "project_key": "one_time_mishnah_class"
+    },
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+    ],
+    "ui_button_labels": [
+      "Back to contacts"
+    ],
+    "telegram_intent_examples": [],
+    "action_id": "ACTION-CRM-CONTACT-BACK",
+    "label": "Back to CRM contact list",
+    "description": "Clear the selected One Time CRM contact in the local UI and restore the mobile contact list; no data is written.",
+    "category": "crm",
+    "page_contexts": [
+      "contacts",
+      "one_time_crm"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "project_owner",
+      "one_time_admin",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "ui.clearFirstPartyCrmSelection",
+    "audit_log_event": "ui_only_no_write",
+    "success_message": "Contact list restored.",
+    "failure_message": "Could not restore the contact list."
+  },
+  {
+    "required_inputs": [
+      "contact_id"
+    ],
+    "optional_inputs": [
+      "workspace_key",
+      "project_key"
+    ],
+    "validation": {
+      "project_key": "one_time_mishnah_class"
+    },
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi"
+    ],
+    "ui_button_labels": [
+      "Open scoped inbox"
+    ],
+    "telegram_intent_examples": [],
+    "action_id": "ACTION-CRM-OPEN-SCOPED-INBOX",
+    "label": "Open scoped One Time inbox",
+    "description": "Navigate from a selected One Time CRM contact to the Rabbi/One Time email inbox while retaining selected contact context; no message is sent.",
+    "category": "crm",
+    "page_contexts": [
+      "contacts",
+      "communications",
+      "one_time_crm"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "project_owner",
+      "one_time_admin",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "ui.openFirstPartyCrmInboxContext",
+    "audit_log_event": "ui_navigation_no_write",
+    "success_message": "Scoped inbox opened.",
+    "failure_message": "Could not open the scoped inbox."
+  },
+  {
+    "required_inputs": [
+      "contact_id"
+    ],
+    "optional_inputs": [
+      "workspace_key",
+      "project_key"
+    ],
+    "validation": {
+      "project_key": "one_time_mishnah_class"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+    ],
+    "ui_button_labels": [
+      "Reply draft locked"
+    ],
+    "telegram_intent_examples": [],
+    "action_id": "ACTION-CRM-REPLY-DRAFT-BLOCKED",
+    "label": "CRM reply draft locked",
+    "description": "Disabled CRM reply affordance; recipient, copy, sender identity, and exact send approval are required before any reply draft or send action is enabled.",
+    "category": "crm",
+    "page_contexts": [
+      "contacts",
+      "one_time_crm"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "project_owner",
+      "one_time_admin",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "blocked.externalSendApprovalRequired",
+    "audit_log_event": "crm_reply_draft_blocked",
+    "success_message": "Reply remains locked.",
+    "failure_message": "Reply action is blocked pending approval."
+  },
+  {
+    "required_inputs": [
+      "contact_id"
+    ],
+    "optional_inputs": [
+      "workspace_key",
+      "project_key"
+    ],
+    "validation": {
+      "project_key": "one_time_mishnah_class"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+    ],
+    "ui_button_labels": [
+      "Internal note preview"
+    ],
+    "telegram_intent_examples": [],
+    "action_id": "ACTION-CRM-INTERNAL-NOTE-BLOCKED",
+    "label": "CRM internal note preview",
+    "description": "Disabled CRM note affordance until a scoped local note endpoint and audit row are approved for One Time CRM.",
+    "category": "crm",
+    "page_contexts": [
+      "contacts",
+      "one_time_crm"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "project_owner",
+      "one_time_admin",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "blocked.localCrmNoteWriteNotInPacket",
+    "audit_log_event": "crm_note_write_blocked",
+    "success_message": "Note remains preview-only.",
+    "failure_message": "Note action is blocked pending scoped write approval."
+  },
+  {
+    "required_inputs": [
+      "contact_id"
+    ],
+    "optional_inputs": [
+      "workspace_key",
+      "project_key"
+    ],
+    "validation": {
+      "project_key": "one_time_mishnah_class"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+    ],
+    "ui_button_labels": [
+      "Task preview"
+    ],
+    "telegram_intent_examples": [],
+    "action_id": "ACTION-CRM-TASK-BLOCKED",
+    "label": "CRM task preview",
+    "description": "Disabled CRM task affordance until task creation is mapped to the task ledger with scoped One Time ownership.",
+    "category": "crm",
+    "page_contexts": [
+      "contacts",
+      "one_time_crm"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "project_owner",
+      "one_time_admin",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "blocked.localCrmTaskWriteNotInPacket",
+    "audit_log_event": "crm_task_write_blocked",
+    "success_message": "Task remains preview-only.",
+    "failure_message": "Task action is blocked pending scoped task mapping."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "route",
+      "workspace_key",
+      "project_key"
+    ],
+    "validation": {
+      "project_key": "one_time_mishnah_class"
+    },
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/rabbi-member",
+      "/member-library",
+      "/one-time-classroom",
+      "/one-time-parent",
+      "/parent.html?review=one-time",
+      "/student.html?review=one-time"
+    ],
+    "ui_button_labels": [
+      "Menu",
+      "Close One Time portal menu"
+    ],
+    "telegram_intent_examples": [],
+    "action_id": "ACTION-ONETIME-PORTAL-MENU-TOGGLE",
+    "label": "Toggle One Time portal menu",
+    "description": "Open or close the local One Time portal navigation menu with accessible focus handling; no data is written.",
+    "category": "navigation",
+    "page_contexts": [
+      "one_time_family_portal",
+      "one_time_student_portal",
+      "one_time_classroom",
+      "one_time_member_library",
+      "one_time_parent_setup",
+      "one_time_preview"
+    ],
+    "allowed_roles": [
+      "member",
+      "parent",
+      "student",
+      "provider_admin",
+      "super_admin",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "ui.toggleOneTimePortalMenu",
+    "audit_log_event": "ui_navigation_no_write",
+    "success_message": "One Time portal menu toggled.",
+    "failure_message": "One Time portal menu could not be toggled."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "route",
+      "workspace_key",
+      "project_key"
+    ],
+    "validation": {
+      "project_key": "one_time_mishnah_class"
+    },
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/rabbi-member?review=one-time",
+      "/member-library?review=one-time",
+      "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "/parent.html?review=one-time",
+      "/student.html?review=one-time"
+    ],
+    "ui_button_labels": [
+      "Exit Preview"
+    ],
+    "telegram_intent_examples": [],
+    "action_id": "ACTION-ONETIME-PORTAL-EXIT-PREVIEW",
+    "label": "Exit One Time preview",
+    "description": "Navigate from a TEST-only One Time review route back to the non-preview route; no record, send, metric, payment, or access write is performed.",
+    "category": "navigation",
+    "page_contexts": [
+      "one_time_preview"
+    ],
+    "allowed_roles": [
+      "member",
+      "parent",
+      "student",
+      "provider_admin",
+      "super_admin",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "ui.exitOneTimePreview",
+    "audit_log_event": "ui_navigation_no_write",
+    "success_message": "Exited One Time preview.",
+    "failure_message": "One Time preview exit failed."
   }
 ]

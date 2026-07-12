@@ -6,6 +6,10 @@ const assert = require('node:assert/strict');
 const {
   normalizeEmail,
   normalizePhone,
+  humanCrmSourceLabel,
+  crmListLimit,
+  decodeCrmCursor,
+  encodeCrmCursor,
   toContactCard,
   filterCrmContacts,
   filterProviderContactInbox,
@@ -37,6 +41,23 @@ test('maps mixed source row into contact card', () => {
   assert.deepEqual(card.tags, ['hot', 'phonebook']);
 });
 
+test('CRM source labels hide internal table names', () => {
+  assert.equal(humanCrmSourceLabel('bna_parent_leads'), 'Lead intake');
+  assert.equal(humanCrmSourceLabel('bna_contacts'), 'First-party contact');
+  assert.equal(humanCrmSourceLabel('bna_contact_pipeline_events'), 'Timeline note');
+  assert.equal(humanCrmSourceLabel('one_time_free_class'), 'One Time free class');
+  assert.equal(humanCrmSourceLabel('bna_unknown_private_table'), 'First-party CRM');
+
+  const card = toContactCard({
+    id: 11,
+    source_table: 'bna_parent_leads',
+    parent_name: 'Parent Lead',
+    parent_email: 'lead@example.test',
+  });
+  assert.equal(card.source_label, 'Lead intake');
+  assert.doesNotMatch(card.source_label, /^bna_/);
+});
+
 test('free provider cannot access full CRM filters', () => {
   const scope = { tenant_type: 'service_provider', entitlement_plan: 'free_provider' };
   assert.throws(() => filterCrmContacts([], {}, scope), /Entitlement denied: crm_contacts/);
@@ -54,6 +75,65 @@ test('provider plus can filter CRM contacts', () => {
   assert.equal(result.filtered_total, 1);
   assert.equal(result.cards[0].display_name, 'Parent A');
   assert.ok(result.filters.contact_types.includes('parent'));
+});
+
+test('CRM contacts paginate with default and capped limits', () => {
+  const rows = Array.from({ length: 120 }, (_, index) => ({
+    id: index + 1,
+    display_name: `Parent ${String(index + 1).padStart(3, '0')}`,
+    contact_type: 'parent',
+    status: 'new',
+    tags: ['hot'],
+    updated_at: new Date(Date.UTC(2026, 0, 1, 0, index)).toISOString(),
+  }));
+  const scope = {
+    tenant_type: 'service_provider',
+    entitlement_plan: 'service_provider_plus',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  };
+  const firstPage = filterCrmContacts(rows, {}, scope);
+
+  assert.equal(firstPage.cards.length, 50);
+  assert.equal(firstPage.limit, 50);
+  assert.equal(firstPage.returned_count, 50);
+  assert.equal(firstPage.has_more, true);
+  assert.ok(firstPage.next_cursor);
+
+  const secondPage = filterCrmContacts(rows, { cursor: firstPage.next_cursor, limit: 200 }, scope);
+  assert.equal(secondPage.limit, 100);
+  assert.equal(secondPage.cards.length, 70);
+  assert.equal(secondPage.has_more, false);
+  assert.equal(secondPage.next_cursor, null);
+
+  assert.equal(crmListLimit(0), 50);
+  assert.equal(crmListLimit(999), 100);
+  assert.deepEqual(decodeCrmCursor(encodeCrmCursor(25)), { offset: 25 });
+});
+
+test('CRM pagination keeps 10000-contact fixture payload page-sized', () => {
+  const rows = Array.from({ length: 10000 }, (_, index) => ({
+    id: index + 1,
+    display_name: `Contact ${index + 1}`,
+    contact_type: index % 2 === 0 ? 'parent' : 'student',
+    status: 'new',
+    tags: index % 3 === 0 ? ['trial'] : [],
+    updated_at: new Date(Date.UTC(2026, 0, 1, 0, 0, index % 60)).toISOString(),
+  }));
+  const scope = {
+    tenant_type: 'service_provider',
+    entitlement_plan: 'service_provider_plus',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  };
+  const result = filterCrmContacts(rows, { limit: 50 }, scope);
+
+  assert.equal(result.total, 10000);
+  assert.equal(result.filtered_total, 10000);
+  assert.equal(result.cards.length, 50);
+  assert.equal(result.returned_count, 50);
+  assert.equal(result.has_more, true);
+  assert.ok(result.next_cursor);
 });
 
 test('free provider can access limited contact inquiry inbox', () => {

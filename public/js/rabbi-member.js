@@ -173,17 +173,17 @@
   function applyMemberReviewChrome() {
     if (!ONE_TIME_MEMBER_REVIEW_MODE) return;
     document.body.classList.add('one-time-member-review-active');
-    document.title = 'One Time Member Preview';
+    document.title = 'One Time Family Portal Preview';
     const brandSmall = document.querySelector('.member-brand-lockup small');
-    if (brandSmall) brandSmall.textContent = 'Member preview';
+    if (brandSmall) brandSmall.textContent = 'Family portal preview';
     const loginTitle = document.querySelector('#member-access h2');
-    if (loginTitle) loginTitle.textContent = 'Member preview';
+    if (loginTitle) loginTitle.textContent = 'Family Portal preview';
     const loginForm = $('loginForm');
     if (loginForm) {
       loginForm.querySelectorAll('input, button').forEach((control) => {
         control.disabled = true;
         control.dataset.buttonState = 'blocked';
-        control.title = 'Member preview mode uses TEST data and does not request or send login links.';
+        control.title = 'Family Portal preview mode uses TEST data and does not request or send login links.';
       });
     }
   }
@@ -198,7 +198,7 @@
       state.sessions = data.live_sessions || [];
       state.questions = data.questions || [];
       state.supportTickets = data.support_tickets || [];
-      state.notice = 'Member preview mode is read-only. Question and support submits are simulated locally; no external send or database write runs.';
+      state.notice = 'Family Portal preview mode is read-only. Question and support submits are simulated locally; no external send or database write runs.';
     } catch (error) {
       state.notice = error.message || 'Could not load member preview.';
     }
@@ -208,7 +208,7 @@
   async function requestLogin(event) {
     event?.preventDefault?.();
     if (state.previewMode) {
-      state.notice = 'Member preview mode does not request or send login links.';
+      state.notice = 'Family Portal preview mode does not request or send login links.';
       renderAll();
       return;
     }

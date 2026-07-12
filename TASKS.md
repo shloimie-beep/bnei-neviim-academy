@@ -90,6 +90,17 @@ not authorize active GHL runtime paths.
   in Railway deployment `bd86c313-3987-4b8e-b90d-5baee483659e`; live email UX
   smoke passed at 1024px and 390px; Buffer channel provider-auth failure now
   safe-blocks without forcing Operations logout.
+- [x] `RAW-20260710-005` / `REQ-20260710-031` through
+  `REQ-20260710-035`: Turn One Time meeting artifact #3 / Content job #103
+  into a Learning Motivation and Commandments build brief. Register:
+  `tasks-pending/2026-07-10-onetime-learning-motivation-commandments-build-brief.md`.
+  Current status: redacted raw fallback and build brief are created; the
+  internal-first/first-party direction is preserved; `DEC-20260710-005`
+  through `DEC-20260710-009` keep platform stack, parent/student login,
+  ownership/revenue, Google Workspace/Classroom, and Rabbi software integration
+  choices visible. No transcript body, Drive/Vimeo/Zoom write, email/WhatsApp
+  send, access/payment mutation, credential mutation, production data write,
+  GHL, LeadConnector, or external CRM runtime was introduced.
 - [x] `RAW-20260710-002` / `REQ-20260710-013` through
   `REQ-20260710-025`: One Time launch-priority landing, Robot Scheller, CRM,
   inbox, follow-up, and Rabbi backend closeout. Register:
@@ -158,13 +169,10 @@ not authorize active GHL runtime paths.
   leaving 1 row without terminal status, and it is the active owner objective.
   `REQ-20260710-028` is Done - no unblocked split packets from mapping;
   unresolved work is already represented by terminal blockers/decisions.
-  Layered owner readiness verdict is refreshed under
-  `REQ-20260710-029` with `ONE_TIME_VERDICT: not_ready`: `PUBLIC_FREE_CLASS_LANE`
-  is ready for the no-write/free-class scope, `OWNER_AND_ROLE_INTERFACE` is
-  not ready, and `FULL_COMMERCIAL_AUTOMATION` is blocked. Remaining blockers
+  Final owner walkthrough/readiness verdict is produced under
+  `REQ-20260710-029` with `ONE_TIME_VERDICT: not_ready`; remaining blockers
   are Agent Mode proof, external setup, hosted Rabbi Telegram live-smoke, and
-  clean production-readiness gate sampling; dirty-tree path details are redacted
-  in tracked readiness JSON.
+  production-readiness gate cleanup.
 - [x] `RAW-20260709-013` / `REQ-20260709-070`: OneTime app lag and UI
   follow-up. Register:
   `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`. Current

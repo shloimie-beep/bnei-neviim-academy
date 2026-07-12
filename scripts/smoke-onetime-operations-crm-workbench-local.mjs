@@ -9,7 +9,11 @@ const __filename = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(__filename), '..');
 const publicDir = path.join(repoRoot, 'public');
 const outDir = path.join(repoRoot, 'ops', 'ui-audits', '2026-07-10-onetime-crm-workbench-local');
-const route = '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts';
+const routeQuery = '?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts';
+const routeTargets = [
+  { id: 'split-shell', route: `/operations${routeQuery}` },
+  { id: 'monolith', route: `/operations.html${routeQuery}` },
+];
 
 const viewports = [
   { id: 'desktop-1440', width: 1440, height: 960 },
@@ -19,7 +23,7 @@ const viewports = [
   { id: 'mobile-390', width: 390, height: 844 },
 ];
 
-const crmCards = [
+const crmSeedCards = [
   {
     id: 'bna_parent_leads:501',
     source: 'bna_parent_leads',
@@ -58,6 +62,30 @@ const crmCards = [
   },
 ];
 
+const generatedCrmCards = Array.from({ length: 78 }, (_, index) => {
+  const id = 600 + index;
+  return {
+    id: `bna_parent_leads:${id}`,
+    source: 'bna_parent_leads',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    display_name: `One Time Fixture Contact ${String(index + 1).padStart(2, '0')}`,
+    contact_type: index % 2 ? 'group_member' : 'school_interest',
+    status: index % 3 ? 'follow_up' : 'active',
+    interest_level: index % 2 ? 'warm' : 'hot',
+    email: `fixture-${id}@redacted.invalid`,
+    phone: index % 4 === 0 ? '' : `+1555010${String(id).padStart(4, '0')}`,
+    tags: index % 2 ? ['member-library', 'access-review'] : ['free-class-interest', 'trial-review'],
+    source_label: index % 2 ? 'Member access' : 'Public One Time form',
+    last_contact_at: '2026-07-09T16:15:00.000Z',
+    next_follow_up_at: index % 3 ? '2026-07-12T12:00:00.000Z' : '',
+    summary: 'Generated synthetic CRM fixture for frontend pagination and card-cap smoke.',
+    linked: { parent_lead_id: id, signup_id: null, student_id: null, contact_id: null, provider_profile_id: null },
+  };
+});
+
+const crmCards = [...crmSeedCards, ...generatedCrmCards];
+
 function contentType(filePath) {
   if (filePath.endsWith('.html')) return 'text/html; charset=utf-8';
   if (filePath.endsWith('.css')) return 'text/css; charset=utf-8';
@@ -84,7 +112,7 @@ function filterCrmCards(url) {
   const status = String(url.searchParams.get('status') || 'all');
   const tag = String(url.searchParams.get('tag') || 'all');
   const source = String(url.searchParams.get('source') || 'all');
-  return crmCards
+  const filtered = crmCards
     .filter((card) => type === 'all' || card.contact_type === type)
     .filter((card) => status === 'all' || card.status === status)
     .filter((card) => tag === 'all' || card.tags.includes(tag))
@@ -94,6 +122,8 @@ function filterCrmCards(url) {
       const blob = [card.display_name, card.email, card.phone, card.summary, card.tags.join(' '), card.source_label].join(' ').toLowerCase();
       return blob.includes(search);
     });
+  const limit = Math.max(1, Math.min(Number(url.searchParams.get('limit') || crmCards.length), crmCards.length));
+  return { filtered, cards: filtered.slice(0, limit), limit };
 }
 
 function apiPayload(url) {
@@ -166,12 +196,13 @@ function apiPayload(url) {
     };
   }
   if (pathname === '/api/bna/crm/contacts') {
-    const cards = filterCrmCards(url);
+    const { filtered, cards, limit } = filterCrmCards(url);
     return {
       success: true,
       cards,
       total: crmCards.length,
-      filtered_total: cards.length,
+      filtered_total: filtered.length,
+      limit,
       filters: {
         contact_types: ['all', 'group_member', 'school_interest'],
         statuses: ['all', 'active', 'follow_up'],
@@ -237,7 +268,11 @@ async function serve(req, res, baseUrl) {
     json(res, apiPayload(url));
     return;
   }
-  const requested = url.pathname === '/' || url.pathname === '/operations' ? '/operations.html' : url.pathname;
+  const requested = url.pathname === '/'
+    ? '/operations-bootstrap.html'
+    : url.pathname === '/operations'
+      ? '/operations-bootstrap.html'
+      : url.pathname;
   const safePath = path.normalize(decodeURIComponent(requested)).replace(/^(\.\.[\\/])+/, '');
   const filePath = path.join(publicDir, safePath);
   if (!filePath.startsWith(publicDir)) {
@@ -265,7 +300,235 @@ function close(server) {
   return new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
 }
 
-async function captureViewport(browser, baseUrl, viewport) {
+async function captureViewport(browser, baseUrl, viewport, target) {
+  const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
+  const consoleErrors = [];
+  const pageErrors = [];
+  const failedRequests = [];
+  const badResponses = [];
+  const crmRequests = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') consoleErrors.push(message.text());
+  });
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  page.on('requestfailed', (request) => {
+    failedRequests.push(`${request.method()} ${request.url()} ${request.failure()?.errorText || ''}`.trim());
+  });
+  page.on('response', (response) => {
+    if (response.status() >= 400) badResponses.push(`${response.status()} ${response.url()}`);
+  });
+  page.on('request', (request) => {
+    const requestUrl = new URL(request.url());
+    if (requestUrl.pathname.startsWith('/api/bna/crm/contacts')) {
+      crmRequests.push({
+        method: request.method(),
+        pathname: requestUrl.pathname,
+        search: requestUrl.search,
+      });
+    }
+  });
+
+  await page.goto(`${baseUrl}${target.route}`, { waitUntil: 'domcontentloaded' });
+  await page.waitForSelector('[data-one-time-crm-workbench]', { timeout: 15000 });
+  await page.waitForFunction(() => /Sample One Time Parent/.test(document.body.textContent || ''), null, { timeout: 15000 });
+  const initialMetrics = await page.evaluate(() => ({
+    cardCount: document.querySelectorAll('[data-first-party-crm-card]').length,
+    paneCount: document.querySelectorAll('[data-crm-pane-count="3"]').length,
+    listPaneVisible: Boolean(document.querySelector('.crm-workbench-list')?.getBoundingClientRect?.().width),
+    activityPaneVisible: Boolean(document.querySelector('[data-crm-contact-detail]')?.getBoundingClientRect?.().width),
+    profilePaneVisible: Boolean(document.querySelector('[data-crm-contact-profile]')?.getBoundingClientRect?.().width),
+    legacyTableClosedCount: document.querySelectorAll('[data-one-time-crm-review-context]:not([open]) [data-one-time-crm-contact-table]').length,
+    legacyPlaceholderCount: document.querySelectorAll('[data-one-time-crm-review-placeholder]').length,
+  }));
+  const initialCrmRequestCount = crmRequests.length;
+  const initialListRequestCount = crmRequests.filter((item) => item.pathname === '/api/bna/crm/contacts').length;
+  const initialLimitRequests = crmRequests
+    .filter((item) => item.pathname === '/api/bna/crm/contacts')
+    .map((item) => new URLSearchParams(item.search).get('limit'));
+
+  await page.evaluate(() => {
+    window.__crmSmokeAppRootMutations = 0;
+    const app = document.getElementById('app');
+    if (!app) return;
+    window.__crmSmokeRootObserver = new MutationObserver((mutations) => {
+      window.__crmSmokeAppRootMutations += mutations.filter((mutation) => mutation.target === app && mutation.type === 'childList').length;
+    });
+    window.__crmSmokeRootObserver.observe(app, { childList: true });
+  });
+
+  await page.locator('[data-first-party-crm-card] [data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND"]').first().click();
+  await page.waitForFunction(() => /Contact Timeline/.test(document.body.textContent || '') && /One Time free-class public signup captured/.test(document.body.textContent || ''), null, { timeout: 15000 });
+  const selectedMetrics = await page.evaluate(() => {
+    const text = document.body.innerText.replace(/\s+/g, ' ').trim();
+    const detail = document.querySelector('[data-crm-contact-detail]');
+    const profile = document.querySelector('[data-crm-contact-profile]');
+    const list = document.querySelector('.crm-workbench-list');
+    const detailRect = detail?.getBoundingClientRect();
+    const profileRect = profile?.getBoundingClientRect();
+    const listRect = list?.getBoundingClientRect();
+    return {
+      selectedDetailVisible: Boolean(detail && detailRect && detailRect.width > 0 && detailRect.height > 0),
+      selectedProfileVisible: Boolean(profile && profileRect && profileRect.width > 0 && profileRect.height > 0),
+      selectedListHiddenOnMobile: window.innerWidth <= 700 ? Boolean(!list || listRect.width === 0 || window.getComputedStyle(list).display === 'none') : true,
+      hasContactTimeline: /Contact Timeline/.test(text),
+      hasClassTrialAccess: /Class \/ Trial \/ Access/i.test(text),
+      hasNoSendLock: /No-send locked|Scoped no-send|Read-only preview|Read-only \/ no-send|No email, WhatsApp, payment, access, or external CRM write/.test(text),
+      hasSafeActionPanel: Boolean(document.querySelector('[data-crm-safe-actions]')),
+      disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
+      hasOpenScopedInboxAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]')),
+    };
+  });
+  let mobileBackMetrics = { checked: viewport.width <= 700, restoredList: true, clearedSelectedState: true };
+  if (viewport.width <= 700) {
+    await page.locator('[data-action-id="ACTION-CRM-CONTACT-BACK"]').click();
+    await page.waitForFunction(() => document.querySelector('[data-one-time-crm-workbench]')?.getAttribute('data-selected-contact') === 'false', null, { timeout: 15000 });
+    mobileBackMetrics = await page.evaluate(() => {
+      const list = document.querySelector('.crm-workbench-list');
+      const listRect = list?.getBoundingClientRect();
+      return {
+        checked: true,
+        restoredList: Boolean(list && listRect && listRect.width > 0 && listRect.height > 0 && window.getComputedStyle(list).display !== 'none'),
+        clearedSelectedState: document.querySelector('[data-one-time-crm-workbench]')?.getAttribute('data-selected-contact') === 'false',
+      };
+    });
+    await page.locator('[data-first-party-crm-card] [data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND"]').first().click();
+    await page.waitForFunction(() => /Contact Timeline/.test(document.body.textContent || '') && /One Time free-class public signup captured/.test(document.body.textContent || ''), null, { timeout: 15000 });
+  }
+  const listRequestsAfterSelect = crmRequests.filter((item) => item.pathname === '/api/bna/crm/contacts').length;
+  const timelineRequestsAfterSelect = crmRequests.filter((item) => item.pathname.startsWith('/api/bna/crm/contacts/')).length;
+  const appRootMutationsAfterSelect = await page.evaluate(() => window.__crmSmokeAppRootMutations || 0);
+
+  const listRequestsBeforeSearch = crmRequests.filter((item) => item.pathname === '/api/bna/crm/contacts').length;
+  await page.evaluate(() => {
+    const input = document.querySelector('[data-first-party-crm-search]');
+    if (!input) throw new Error('CRM search input not found.');
+    ['C', 'Cu', 'Curr', 'Current'].forEach((value) => {
+      input.value = value;
+      input.dispatchEvent(new InputEvent('input', { bubbles: true, data: value }));
+    });
+  });
+  await page.waitForFunction(() => /Current Library Member/.test(document.body.textContent || ''), null, { timeout: 15000 });
+  await page.waitForTimeout(420);
+  const searchListRequestDelta = crmRequests.filter((item) => item.pathname === '/api/bna/crm/contacts').length - listRequestsBeforeSearch;
+
+  await page.evaluate(() => {
+    const details = document.querySelector('[data-one-time-crm-review-context]');
+    if (!details) throw new Error('CRM review/source details panel not found.');
+    details.open = true;
+    if (typeof window.toggleOneTimeCrmReviewContext === 'function') window.toggleOneTimeCrmReviewContext(details);
+    else details.dispatchEvent(new Event('toggle', { bubbles: true }));
+  });
+  await page.waitForFunction(() => document.querySelectorAll('[data-one-time-crm-review-context][open] [data-one-time-crm-contact-table]').length > 0, null, { timeout: 15000 });
+  const legacyTableOpenCount = await page.locator('[data-one-time-crm-review-context][open] [data-one-time-crm-contact-table]').count();
+
+  const metrics = await page.evaluate(() => {
+    const text = document.body.innerText.replace(/\s+/g, ' ').trim();
+    const detail = document.querySelector('[data-crm-contact-detail]');
+    const profile = document.querySelector('[data-crm-contact-profile]');
+    const detailRect = detail?.getBoundingClientRect();
+    const profileRect = profile?.getBoundingClientRect();
+    return {
+      title: document.title,
+      workbenchCount: document.querySelectorAll('[data-one-time-crm-workbench]').length,
+      apiWorkbenchCount: document.querySelectorAll('[data-one-time-crm-api-workbench]').length,
+      paneCount: document.querySelectorAll('[data-crm-pane-count="3"]').length,
+      cardCount: document.querySelectorAll('[data-first-party-crm-card]').length,
+      selectedDetailVisible: Boolean(detail && detailRect && detailRect.width > 0 && detailRect.height > 0),
+      selectedProfileVisible: Boolean(profile && profileRect && profileRect.width > 0 && profileRect.height > 0),
+      hasContactTimeline: /Contact Timeline/.test(text),
+      hasClassTrialAccess: /Class \/ Trial \/ Access/i.test(text),
+      hasNoSendLock: /No-send locked|Scoped no-send|Read-only preview|Read-only \/ no-send|No email, WhatsApp, payment, access, or external CRM write/.test(text),
+      hasSafeActionPanel: Boolean(document.querySelector('[data-crm-safe-actions]')),
+      disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
+      hasWrongWorkspaceLeak: /BNA Academy/i.test(text),
+      hasForbiddenExternalTerm: /LeadConnector|GHL runtime/i.test(text),
+      horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+      bodyTextLength: text.length,
+    };
+  });
+
+  const screenshot = path.join(outDir, `${target.id}-${viewport.id}-crm-workbench.png`);
+  await page.screenshot({ path: screenshot, fullPage: true, type: 'png', animations: 'disabled' });
+  await page.close();
+
+  const passed = Boolean(
+    metrics.workbenchCount >= 1 &&
+      metrics.apiWorkbenchCount >= 1 &&
+      initialMetrics.paneCount >= 1 &&
+      initialMetrics.listPaneVisible &&
+      initialMetrics.activityPaneVisible &&
+      initialMetrics.profilePaneVisible &&
+      initialMetrics.cardCount > 0 &&
+      initialMetrics.cardCount <= 50 &&
+      initialCrmRequestCount <= 3 &&
+      initialListRequestCount <= 1 &&
+      initialLimitRequests.every((value) => value === '50') &&
+      selectedMetrics.selectedDetailVisible &&
+      selectedMetrics.selectedProfileVisible &&
+      selectedMetrics.selectedListHiddenOnMobile &&
+      selectedMetrics.hasContactTimeline &&
+      selectedMetrics.hasClassTrialAccess &&
+      selectedMetrics.hasNoSendLock &&
+      selectedMetrics.hasSafeActionPanel &&
+      selectedMetrics.disabledCrmActionCount >= 3 &&
+      selectedMetrics.hasOpenScopedInboxAction &&
+      mobileBackMetrics.restoredList &&
+      mobileBackMetrics.clearedSelectedState &&
+      listRequestsAfterSelect === initialListRequestCount &&
+      timelineRequestsAfterSelect >= 1 &&
+      appRootMutationsAfterSelect === 0 &&
+      searchListRequestDelta === 1 &&
+      initialMetrics.legacyTableClosedCount === 0 &&
+      initialMetrics.legacyPlaceholderCount >= 1 &&
+      legacyTableOpenCount >= 1 &&
+      !metrics.hasWrongWorkspaceLeak &&
+      !metrics.horizontalOverflow &&
+      consoleErrors.length === 0 &&
+      pageErrors.length === 0 &&
+      failedRequests.length === 0 &&
+      badResponses.length === 0
+  );
+
+  return {
+    viewport,
+    route: target.route,
+    target: target.id,
+    screenshot: rel(screenshot),
+    initialCrmRequestCount,
+    initialListRequestCount,
+    initialRenderedCardCount: initialMetrics.cardCount,
+    initialPaneCount: initialMetrics.paneCount,
+    initialListPaneVisible: initialMetrics.listPaneVisible,
+    initialActivityPaneVisible: initialMetrics.activityPaneVisible,
+    initialProfilePaneVisible: initialMetrics.profilePaneVisible,
+    initialLimitRequests,
+    selectedDetailVisibleAfterSelect: selectedMetrics.selectedDetailVisible,
+    selectedProfileVisibleAfterSelect: selectedMetrics.selectedProfileVisible,
+    selectedListHiddenOnMobile: selectedMetrics.selectedListHiddenOnMobile,
+    hasContactTimelineAfterSelect: selectedMetrics.hasContactTimeline,
+    hasClassTrialAccessAfterSelect: selectedMetrics.hasClassTrialAccess,
+    hasNoSendLockAfterSelect: selectedMetrics.hasNoSendLock,
+    hasSafeActionPanelAfterSelect: selectedMetrics.hasSafeActionPanel,
+    disabledCrmActionCountAfterSelect: selectedMetrics.disabledCrmActionCount,
+    hasOpenScopedInboxActionAfterSelect: selectedMetrics.hasOpenScopedInboxAction,
+    mobileBackMetrics,
+    listRequestsAfterSelect,
+    timelineRequestsAfterSelect,
+    appRootMutationsAfterSelect,
+    searchListRequestDelta,
+    legacyTableClosedCount: initialMetrics.legacyTableClosedCount,
+    legacyTableOpenCount,
+    ...metrics,
+    consoleErrors,
+    pageErrors,
+    failedRequests,
+    badResponses,
+    passed,
+  };
+}
+
+async function captureInboxContext(browser, baseUrl) {
+  const viewport = { id: 'desktop-1024', width: 1024, height: 900 };
   const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
   const consoleErrors = [];
   const pageErrors = [];
@@ -282,55 +545,44 @@ async function captureViewport(browser, baseUrl, viewport) {
     if (response.status() >= 400) badResponses.push(`${response.status()} ${response.url()}`);
   });
 
-  await page.goto(`${baseUrl}${route}`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${baseUrl}/operations${routeQuery}`, { waitUntil: 'domcontentloaded' });
   await page.waitForSelector('[data-one-time-crm-workbench]', { timeout: 15000 });
   await page.waitForFunction(() => /Sample One Time Parent/.test(document.body.textContent || ''), null, { timeout: 15000 });
-  await page.locator('[data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND"]').first().click();
-  await page.waitForFunction(() => /Contact Timeline/.test(document.body.textContent || '') && /One Time free-class public signup captured/.test(document.body.textContent || ''), null, { timeout: 15000 });
-
+  await page.locator('[data-first-party-crm-card] [data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND"]').first().click();
+  await page.waitForFunction(() => /Contact Timeline/.test(document.body.textContent || ''), null, { timeout: 15000 });
+  await page.locator('[data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]').click();
+  await page.waitForSelector('[data-email-operator-workspace][data-one-time-inbox-workspace="true"]', { timeout: 20000 });
+  await page.waitForFunction(() => /One Time Inbox/.test(document.body.textContent || '') && /One Time Inbox context/.test(document.body.textContent || ''), null, { timeout: 20000 });
+  const screenshot = path.join(outDir, 'split-shell-desktop-1024-one-time-inbox.png');
+  await page.screenshot({ path: screenshot, fullPage: true, type: 'png', animations: 'disabled' });
   const metrics = await page.evaluate(() => {
     const text = document.body.innerText.replace(/\s+/g, ' ').trim();
-    const detail = document.querySelector('[data-crm-contact-detail]');
-    const detailRect = detail?.getBoundingClientRect();
     return {
-      title: document.title,
-      workbenchCount: document.querySelectorAll('[data-one-time-crm-workbench]').length,
-      apiWorkbenchCount: document.querySelectorAll('[data-one-time-crm-api-workbench]').length,
-      cardCount: document.querySelectorAll('[data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND"]').length,
-      selectedDetailVisible: Boolean(detail && detailRect && detailRect.width > 0 && detailRect.height > 0),
-      hasContactTimeline: /Contact Timeline/.test(text),
-      hasClassTrialAccess: /Class \/ Trial \/ Access/i.test(text),
-      hasNoSendLock: /No-send locked|Read-only \/ no-send|No email, WhatsApp, payment, access, or external CRM write/.test(text),
-      hasWrongWorkspaceLeak: /BNA Academy/i.test(text),
-      hasForbiddenExternalTerm: /LeadConnector|GHL runtime/i.test(text),
+      hasOneTimeInbox: /One Time Inbox/.test(text),
+      hasInboxContext: Boolean(document.querySelector('[data-email-selected-crm-context]')) && /Sample One Time Parent/.test(text),
+      hasRabbiScope: /Rabbi \/ One Time|one_time_mishnah_class|rabbi_sheller_provider/.test(text),
+      hasSendGate: /SEND_RESEND_EMAIL|Locked until sender\/domain readiness|No email is sent/i.test(text),
+      hasWrongInboxDefault: /Now Viewing: BNA \/ Shloimie Inbox/.test(text),
       horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-      bodyTextLength: text.length,
     };
   });
-
-  const screenshot = path.join(outDir, `${viewport.id}-crm-workbench.png`);
-  await page.screenshot({ path: screenshot, fullPage: true, type: 'png', animations: 'disabled' });
   await page.close();
-
   const passed = Boolean(
-    metrics.workbenchCount >= 1 &&
-      metrics.apiWorkbenchCount >= 1 &&
-      metrics.cardCount >= 2 &&
-      metrics.selectedDetailVisible &&
-      metrics.hasContactTimeline &&
-      metrics.hasClassTrialAccess &&
-      metrics.hasNoSendLock &&
-      !metrics.hasWrongWorkspaceLeak &&
+    metrics.hasOneTimeInbox &&
+      metrics.hasInboxContext &&
+      metrics.hasRabbiScope &&
+      metrics.hasSendGate &&
+      !metrics.hasWrongInboxDefault &&
       !metrics.horizontalOverflow &&
       consoleErrors.length === 0 &&
       pageErrors.length === 0 &&
       failedRequests.length === 0 &&
       badResponses.length === 0
   );
-
   return {
+    target: 'split-shell',
+    route: `/operations${routeQuery} -> communications/email?inbox=rabbi`,
     viewport,
-    route,
     screenshot: rel(screenshot),
     ...metrics,
     consoleErrors,
@@ -356,17 +608,21 @@ async function main() {
   let results = [];
   try {
     for (const viewport of viewports) {
-      results.push(await captureViewport(browser, baseUrl, viewport));
+      for (const target of routeTargets) {
+        results.push(await captureViewport(browser, baseUrl, viewport, target));
+      }
     }
+    var inboxContextResult = await captureInboxContext(browser, baseUrl);
   } finally {
     await browser.close();
     await close(server);
   }
 
+  const inboxResults = [inboxContextResult].filter(Boolean);
   const report = {
-    status: results.every((result) => result.passed) ? 'PASS' : 'FAIL',
+    status: results.every((result) => result.passed) && inboxResults.every((result) => result.passed) ? 'PASS' : 'FAIL',
     generated_at: new Date().toISOString(),
-    target: route,
+    target: routeTargets.map((target) => target.route).join(' + '),
     scope: 'Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.',
     guardrails: {
       external_write_performed: false,
@@ -374,6 +630,7 @@ async function main() {
       raw_private_data_committed: false,
     },
     results,
+    inbox_context_results: inboxResults,
   };
   await writeFile(path.join(outDir, 'report.json'), `${JSON.stringify(report, null, 2)}\n`);
   await writeFile(path.join(outDir, 'report.md'), [
@@ -384,22 +641,44 @@ async function main() {
     '',
     report.scope,
     '',
-    '| Viewport | Passed | Overflow | Cards | Detail | Timeline | Screenshot |',
-    '|---|---:|---:|---:|---:|---:|---|',
+    '| Target | Viewport | Passed | CRM calls | Initial cards | Root rerenders | Search requests | Legacy table closed/open | Screenshot |',
+    '|---|---|---:|---:|---:|---:|---:|---:|---|',
     ...results.map((result) => [
-      `| ${result.viewport.width}x${result.viewport.height}`,
+      `| ${result.target}`,
+      `${result.viewport.width}x${result.viewport.height}`,
       String(result.passed),
-      String(result.horizontalOverflow),
-      String(result.cardCount),
-      String(result.selectedDetailVisible),
-      String(result.hasContactTimeline),
+      String(result.initialCrmRequestCount),
+      String(result.initialRenderedCardCount),
+      String(result.appRootMutationsAfterSelect),
+      String(result.searchListRequestDelta),
+      `${result.legacyTableClosedCount}/${result.legacyTableOpenCount}`,
+      result.screenshot,
+    ].join(' | ') + ' |'),
+    '',
+    'Inbox context:',
+    '',
+    '| Target | Viewport | Passed | One Time Inbox | Context | Scope | Send gate | Screenshot |',
+    '|---|---|---:|---:|---:|---:|---:|---|',
+    ...inboxResults.map((result) => [
+      `| ${result.target}`,
+      `${result.viewport.width}x${result.viewport.height}`,
+      String(result.passed),
+      String(result.hasOneTimeInbox),
+      String(result.hasInboxContext),
+      String(result.hasRabbiScope),
+      String(result.hasSendGate),
       result.screenshot,
     ].join(' | ') + ' |'),
     '',
     'Checks:',
     '',
     '- One Time Operations CRM route renders the API-backed workbench.',
-    '- Search/filter/sort controls, cards, selected detail, class/trial/access context, no-send guard, and timeline readback are visible.',
+    '- Split shell and monolith fallback render the API-backed workbench.',
+    '- Search/filter/sort controls, cards, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe action locks, and timeline readback are visible.',
+    '- Mobile selected-contact state hides the list and Back to contacts restores it.',
+    '- Scoped One Time Inbox retains selected CRM contact context and keeps send gates visible.',
+    '- Initial CRM API calls after auth are <= 3, initial cards are <= 50, contact selection does not replace the app root, and debounced search sends one list request.',
+    '- Legacy CRM review/source table is absent while the details panel is closed and present after it is opened.',
     '- Desktop, tablet, and mobile screenshots have no horizontal overflow.',
     '- Synthetic data only; no external sends, payments, access grants, or external CRM writes.',
     '',

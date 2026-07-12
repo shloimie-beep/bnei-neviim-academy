@@ -1,0 +1,80 @@
+{
+  "schema_version": "bna.assistant_profiles.v2",
+  "profiles": [
+    {
+      "profile_key": "telegram_shloimie_super_admin",
+      "surface_class": "internal_sidekick",
+      "channel": "telegram",
+      "identity_required": true,
+      "private_chat_required": true,
+      "role_keys": ["super_admin"],
+      "max_scope": {"type": "all", "workspace_key": null, "project_key": null},
+      "default_scope_behavior": "active_workspace_else_group_all_visible",
+      "cross_workspace_read_behavior": "group_and_label",
+      "cross_workspace_write_behavior": "single_explicit_target_with_acting_on_preview",
+      "memory_namespaces": ["identity_private", "conversation", "workspace", "project", "provider", "platform_policy"],
+      "allowed_capability_classes": ["answer", "query", "navigation", "draft", "command", "external_tool"],
+      "forbidden_effect_classes": ["financial", "access_grant", "destructive", "deployment"],
+      "raw_cli_allowed": false,
+      "external_web_read_allowed": true
+    },
+    {
+      "profile_key": "telegram_rabbi_scheller_provider",
+      "surface_class": "internal_sidekick",
+      "channel": "telegram",
+      "identity_required": true,
+      "private_chat_required": true,
+      "role_keys": ["provider_owner", "provider_admin"],
+      "max_scope": {"type": "project", "workspace_key": "rabbi_sheller_provider", "project_key": "one_time_mishnah_class"},
+      "default_scope_behavior": "fixed_profile_scope",
+      "cross_workspace_read_behavior": "deny_before_retrieval",
+      "cross_workspace_write_behavior": "deny_before_planning",
+      "memory_namespaces": ["identity_private", "conversation", "workspace", "project", "provider", "platform_policy"],
+      "allowed_capability_classes": ["answer", "query", "navigation", "draft", "command", "external_tool"],
+      "forbidden_effect_classes": ["financial", "access_grant", "destructive", "deployment"],
+      "raw_cli_allowed": false,
+      "external_web_read_allowed": true
+    },
+    {
+      "profile_key": "public_bna_lead",
+      "surface_class": "public_lead",
+      "channel": "website_assistant",
+      "identity_required": false,
+      "private_chat_required": false,
+      "role_keys": ["public"],
+      "max_scope": {"type": "public", "workspace_key": "bna", "project_key": "bna"},
+      "default_scope_behavior": "fixed_public_scope",
+      "memory_namespaces": ["public_session"],
+      "allowed_capability_classes": ["answer", "navigation", "command"],
+      "allowed_domains": ["public_faq", "lead_capture", "public_support"],
+      "private_capabilities_allowed": false,
+      "agent_delegation_allowed": false,
+      "external_web_read_allowed": false
+    },
+    {
+      "profile_key": "public_robot_scheller_lead",
+      "surface_class": "public_lead",
+      "channel": "website_assistant",
+      "identity_required": false,
+      "private_chat_required": false,
+      "role_keys": ["public"],
+      "max_scope": {"type": "public", "workspace_key": "rabbi_sheller_provider", "project_key": "one_time_mishnah_class"},
+      "default_scope_behavior": "fixed_public_scope",
+      "memory_namespaces": ["public_session"],
+      "allowed_capability_classes": ["answer", "navigation", "command"],
+      "allowed_domains": ["public_faq", "lead_capture", "public_support"],
+      "private_capabilities_allowed": false,
+      "agent_delegation_allowed": false,
+      "external_web_read_allowed": false,
+      "protected_class_link_policy": "existing_verified_active_or_trial_member_policy"
+    }
+  ],
+  "global_forbidden_capabilities": [
+    "system.shell.execute",
+    "system.codex_cli.execute",
+    "system.deployment.execute",
+    "system.migration.execute",
+    "system.secrets.read",
+    "system.credentials.write"
+  ]
+}

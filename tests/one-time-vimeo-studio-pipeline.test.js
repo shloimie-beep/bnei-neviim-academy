@@ -261,5 +261,8 @@ test('Vimeo private smoke script loads Vimeo token through keyholder helper', ()
   const cli = fs.readFileSync('scripts/vimeo-private-smoke.mjs', 'utf8');
   assert.match(cli, /loadSecret/);
   assert.match(cli, /vimeo-access-token/);
+  assert.match(cli, /vimeo-test-project-uri/);
+  assert.match(cli, /vimeo-test-project-name/);
+  assert.match(cli, /safeConfigSource/);
   assert.match(cli, /vimeo_access_token_source/);
 });
