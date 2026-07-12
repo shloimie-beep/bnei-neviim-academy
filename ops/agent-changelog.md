@@ -38596,3 +38596,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   sends; it remains gated only by live auto-reply/Telegram approval flags.
 - No WhatsApp message, Telegram message, email, CRM mutation, payment/access
   mutation, DNS/account mutation, or raw secret commit was performed.
+
+## 2026-07-12 - One Time CRM production fake-contact proof completed
+
+- With operator approval, ran the actual One Time production CRM journey using
+  synthetic `TEST` / `example.invalid` contacts only.
+- The first production attempts exposed two real CRM edit bugs in
+  `bna_contact_communications` inserts: invalid `contact_type` and invalid
+  `direction`. Both were fixed in `server.js`, covered by
+  `tests/one-time-crm-live-smoke-contract.test.js`, and deployed.
+- Railway deployment `af80ca76-063d-44ab-9582-f2bda60e1967` reached `SUCCESS`
+  for deployed commit `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`.
+- Live proof passed:
+  `npm run app:smoke:one-time-interest-crm-e2e`; synthetic lead `16` was
+  archived and fake follow-up task `97` was deleted.
+- The proof covered search, select, edit, internal note, follow-up task,
+  reload persistence, cross-workspace visibility, targeted mailbox open, and
+  return-to-contact state.
+- No real email, WhatsApp/WAPI, Telegram, payment, access, DNS, external CRM,
+  or import mutation was performed.

@@ -11,9 +11,9 @@ Run remains active with release/live proof recorded and a short blocker list.
 - Merge commit:
   `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
 - Deployed/live-smoked master SHA:
-  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
+  `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`
 - Railway deployment id:
-  `079c53ca-cb65-4cf9-af06-286a7705e7a1`
+  `af80ca76-063d-44ab-9582-f2bda60e1967`
 - Production URL:
   https://join.onetimeonetime.com
 
@@ -39,10 +39,10 @@ Run remains active with release/live proof recorded and a short blocker list.
 
 ## Implemented But Still Open
 
-- `REQ-20260712-005`: first-party One Time CRM DTO/API/UI, responsive local
-  browser/API smoke, cross-workspace denial, and targeted mailbox flow are
-  implemented locally. Terminal proof is blocked by the missing real local/test
-  Postgres URL.
+- `REQ-20260712-005`: first-party One Time CRM DTO/API/UI is verified with the
+  approved production fake-contact journey: signup capture, search/select,
+  edit, note, follow-up task, reload persistence, cross-workspace isolation,
+  targeted mailbox, return-to-contact state, task cleanup, and lead archive.
 - `REQ-20260712-006`: direct signup and Family/School continuation linkage are
   implemented locally and deployed, but terminal persistence proof still needs
   the real local/test database journey.
@@ -79,9 +79,9 @@ Run remains active with release/live proof recorded and a short blocker list.
 
 - `REQ-20260712-002`: GitHub token lacks `workflow` scope, so
   `.github/workflows/onetime-corrective.yml` still cannot be pushed.
-- `REQ-20260712-005` / `REQ-20260712-006`: missing
-  `BNA_ONETIME_CRM_TEST_DATABASE_URL` for the required real local/test
-  Postgres persistence journey.
+- `REQ-20260712-006`: Family/School continuation exact-linkage proof still
+  needs a real persistence journey. `REQ-20260712-005` CRM proof was completed
+  through approved production fake-contact write-smoke with cleanup.
 - `REQ-20260712-008` / `REQ-20260712-009`: production intake/dropoff
   write-smoke requires a separately scoped production test packet because it
   creates live raw/parse records.

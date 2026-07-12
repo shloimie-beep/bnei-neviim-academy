@@ -17,23 +17,25 @@ live-smoked.
   `4a6951643eebb341dcc495d5f306417e1621a07a` smoke-harness fix,
   `63243c915b2774c59faf980e027efc8e546a3f1e` delivery outbox dispatcher,
   `fc147ded1ee0e12325111382fa8e460134a8ce3d` release-proof commit,
-  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435` WAPI readiness setup.
+  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435` WAPI readiness setup,
+  `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c` CRM live edit fix.
 
 ## Railway
 
 - Target: `one-time-production / production / one-time-web`
 - Public URL: https://join.onetimeonetime.com
-- Final deployment id: `079c53ca-cb65-4cf9-af06-286a7705e7a1`
+- Final deployment id: `af80ca76-063d-44ab-9582-f2bda60e1967`
 - Deployment status: `SUCCESS`
 - Live deployed SHA from `/api/deploy-info`:
-  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
+  `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`
 
 ## Live Smoke
 
 Passed after deployment:
 
-- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`
 - `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
+- `npm run app:smoke:one-time-interest-crm-e2e`
 - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`
 - `npm run app:smoke:one-time-interest-dry-run`
 
@@ -62,8 +64,9 @@ external-provider write was performed.
 
 - `REQ-20260712-002`: `.github/workflows/onetime-corrective.yml` still needs a
   GitHub credential or maintainer action with `workflow` scope.
-- `REQ-20260712-005` / `REQ-20260712-006`: the required real local/test
-  Postgres persistence journey still needs `BNA_ONETIME_CRM_TEST_DATABASE_URL`.
+- `REQ-20260712-006`: the Family/School continuation persistence journey
+  remains open. `REQ-20260712-005` CRM persistence was verified through the
+  approved production fake-contact write-smoke with cleanup.
 - `REQ-20260712-022`: operator personal deployed signup and hosted reminder
   provider readiness remain open; no external sends were performed. The
   handoff guard now marks deployment complete from live smoke but still

@@ -15,9 +15,9 @@ uncommitted change that breaks `node --check server.js`.
 - PR state: merged
 - Merge commit: `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
 - Deployed/live-smoked SHA:
-  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
+  `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`
 - Railway deployment:
-  `079c53ca-cb65-4cf9-af06-286a7705e7a1`
+  `af80ca76-063d-44ab-9582-f2bda60e1967`
 - Live URL:
   https://join.onetimeonetime.com
 
@@ -26,8 +26,9 @@ uncommitted change that breaks `node --check server.js`.
 - `REQ-20260712-002`: add/push
   `.github/workflows/onetime-corrective.yml` with a GitHub credential that has
   `workflow` scope.
-- `REQ-20260712-005`: provide `BNA_ONETIME_CRM_TEST_DATABASE_URL` and run
-  `npm run one-time:smoke:crm-journey-local-db`.
+- `REQ-20260712-005`: CRM persistence proof is complete through the approved
+  production fake-contact write-smoke. Do not recreate this blocker unless the
+  production fake-contact evidence is superseded.
 - `REQ-20260712-006`: rerun/record the real local/test DB onboarding linkage
   proof after the database URL exists.
 - `REQ-20260712-008` / `REQ-20260712-009`: decide whether to run a production

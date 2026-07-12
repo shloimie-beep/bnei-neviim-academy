@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-onetime-p0p1-corrective-completion",
   "title": "One Time P0/P1 Corrective Completion",
-  "updated_at": "2026-07-12T14:22:00+03:00",
+  "updated_at": "2026-07-12T14:58:00+03:00",
   "git_refs": {
     "delivery_branch": "codex/onetime-p0p1-corrective-20260711",
     "release_worktree": "detached HEAD from origin/master at deployed commit",
@@ -32,13 +32,13 @@
     "pr_state": "merged",
     "pr_head_at_merge": "598f66238f68293575d5f9e6195bb6b032ebb156",
     "merge_commit": "8e22e5d79844e994e94c4f3ed92ac51422649b8c",
-    "master_release_commit": "8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435",
-    "deployed_commit": "8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435",
-    "deployment_id": "079c53ca-cb65-4cf9-af06-286a7705e7a1",
+    "master_release_commit": "f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c",
+    "deployed_commit": "f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c",
+    "deployment_id": "af80ca76-063d-44ab-9582-f2bda60e1967",
     "deployment_target": "one-time-production / production / one-time-web",
     "deployment_url": "https://join.onetimeonetime.com",
-    "live_smoke_at": "2026-07-12T11:21:36Z",
-    "final_evidence_commit": "8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435"
+    "live_smoke_at": "2026-07-12T11:55:57Z",
+    "final_evidence_commit": "f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c"
   },
   "sources": [
     {
@@ -1576,13 +1576,13 @@
       "depends_on": [
         "REQ-20260712-004"
       ],
-      "status": "blocked",
-      "implementation_status": "Local CRM DTO/API/UI implementation and browser/API visual journey are complete. Terminal verification is blocked because this environment has no local/test Postgres URL for the required real persistence journey.",
+      "status": "verified",
+      "implementation_status": "First-party One Time CRM DTO/API/UI and live production persistence proof are complete. After operator approval to use production fake contacts, the live smoke created one synthetic TEST/example.invalid contact, searched/selected it, edited name/email/phone/lifecycle/follow-up/owner/tags, added an internal note, created a fake follow-up task, reloaded to confirm persistence, proved the fake One Time contact did not appear in BNA workspace CRM, opened the targeted Rabbi / One Time mailbox, returned to the same selected contact, deleted the fake follow-up task, and archived the fake lead. The live proof also exposed and fixed two CRM edit defects in bna_contact_communications contact_type/direction handling.",
       "can_continue_without_operator": false,
-      "blocker": "Missing BNA_ONETIME_CRM_TEST_DATABASE_URL for the required real local/test Postgres CRM journey. Production DATABASE_URL is intentionally ignored by the smoke.",
-      "blocker_owner": "Operator / local test environment",
-      "blocker_next_action": "Set BNA_ONETIME_CRM_TEST_DATABASE_URL to an approved local/test Postgres URL, then run npm run one-time:smoke:crm-journey-local-db and attach the generated report.",
-      "next_action": "Set BNA_ONETIME_CRM_TEST_DATABASE_URL to an approved local/test Postgres URL, then run npm run one-time:smoke:crm-journey-local-db and attach the generated report.",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "next_action": "No CRM database action needed. Continue remaining open requirements outside REQ-20260712-005.",
       "acceptance_criteria": [
         "DTO reconciles first-party contact, lead, access, parent/student, message, support, task, class/trial, and timeline sources.",
         "Compact responsive list/detail CRM works at required widths.",
@@ -1600,7 +1600,15 @@
         "ops/evidence/one-time-crm-journey/2026-07-12/report.md",
         "scripts/smoke-onetime-crm-journey-local-db.mjs added; blocked report written because BNA_ONETIME_CRM_TEST_DATABASE_URL is missing",
         "ops/evidence/one-time-crm-journey-local-db/2026-07-12T06-54-16-286Z-report.md",
-        "ops/evidence/one-time-crm-journey-local-db/2026-07-12T07-01-41-946Z-report.md"
+        "ops/evidence/one-time-crm-journey-local-db/2026-07-12T07-01-41-946Z-report.md",
+        "Operator approved scoped production fake-contact CRM proof in Codex chat on 2026-07-12.",
+        "server.js CRM PATCH fixed for parent-lead timeline rows: bna_contact_communications contact_type=lead and direction=internal_note.",
+        "tests/one-time-crm-live-smoke-contract.test.js added and included in npm run test:onetime:focused.",
+        "npm run test:onetime:focused PASS 73/73 after CRM edit fixes.",
+        "Railway deployment af80ca76-063d-44ab-9582-f2bda60e1967 SUCCESS for f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c PASS.",
+        "npm run app:smoke:one-time-interest-crm-e2e PASS: synthetic CRM lead 16 archived and fake follow-up task 97 deleted.",
+        "ops/live-smokes/2026-07-12T11-55-57-123Z-one-time-interest-crm-e2e-live-smoke.md"
       ],
       "verification": [
         "node --check server.js PASS",
@@ -1616,7 +1624,11 @@
         "npm run one-time:smoke:crm-journey-local-db BLOCKED missing BNA_ONETIME_CRM_TEST_DATABASE_URL (2026-07-12T07-01-41-946Z-report.md)",
         "npm run watchdog:actions PASS",
         "npm run watchdog:protocol-drift PASS",
-        "npm run secrets:audit PASS"
+        "npm run secrets:audit PASS",
+        "node --check scripts/smoke-one-time-interest-crm-e2e-live.mjs PASS",
+        "node --test tests/one-time-crm-live-smoke-contract.test.js PASS",
+        "npm run test:onetime:focused PASS 73/73",
+        "npm run app:smoke:one-time-interest-crm-e2e PASS after deployment"
       ],
       "implementation_files": [
         "src/lib/bna/crm-contact-model.js",
@@ -1628,11 +1640,17 @@
         "tests/service-provider-scope-routes.test.js",
         "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
         "scripts/smoke-onetime-crm-journey-local-db.mjs",
-        "package.json"
+        "package.json",
+        "scripts/smoke-one-time-interest-crm-e2e-live.mjs",
+        "tests/one-time-crm-live-smoke-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T14:16:00+03:00",
-      "expected_result": "The One Time CRM is a useful first-party operational CRM with safe scoped mutations and mailbox continuity."
+      "updated_at": "2026-07-12T14:58:00+03:00",
+      "expected_result": "The One Time CRM is a useful first-party operational CRM with safe scoped mutations and mailbox continuity.",
+      "deployment_id": "af80ca76-063d-44ab-9582-f2bda60e1967",
+      "deployed_commit": "f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c",
+      "live_smoke": "live smoke PASS: npm run app:smoke:one-time-interest-crm-e2e with synthetic lead archived and fake task deleted",
+      "deployment_evidence": "Railway deployment af80ca76-063d-44ab-9582-f2bda60e1967 SUCCESS for f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c; live smoke PASS at https://join.onetimeonetime.com."
     },
     {
       "id": "REQ-20260712-006",
@@ -1655,10 +1673,10 @@
       "status": "blocked",
       "implementation_status": "Local implementation is complete for exact signup-to-continuation linkage: direct signup stores product_lead_id, crm_lead_id, UTM/referrer/source context; continuation validates both IDs and Family/School required fields; server verifies the product lead and CRM lead match the original One Time capture before local review writes. Public signup and continuation surfaces are deployed and live-smoked by exact SHA. Terminal real persistence proof remains blocked because the approved local/test CRM database URL is missing.",
       "can_continue_without_operator": false,
-      "blocker": "BNA_ONETIME_CRM_TEST_DATABASE_URL is missing for the required real local/test Postgres persistence journey. Production DATABASE_URL remains intentionally ignored for this proof.",
+      "blocker": "Family/School continuation exact-linkage production persistence proof remains open. The generic BNA_ONETIME_CRM_TEST_DATABASE_URL blocker no longer applies to REQ-20260712-005, which was verified through approved production fake-contact proof.",
       "blocker_owner": "Operator / local test environment",
-      "blocker_next_action": "Set BNA_ONETIME_CRM_TEST_DATABASE_URL to an approved local/test Postgres URL, rerun npm run one-time:smoke:crm-journey-local-db, and attach the generated report.",
-      "next_action": "Set BNA_ONETIME_CRM_TEST_DATABASE_URL to an approved local/test Postgres URL, rerun npm run one-time:smoke:crm-journey-local-db, and attach the generated report.",
+      "blocker_next_action": "Run an approved fake Family and/or School continuation persistence proof, or leave REQ-20260712-006 open if that production write-smoke is not desired yet.",
+      "next_action": "Run an approved fake Family and/or School continuation persistence proof, or leave REQ-20260712-006 open if that production write-smoke is not desired yet.",
       "acceptance_criteria": [
         "Quick signup requires contact name, email, and Family/School choice.",
         "Phone is optional and student name is not requested in first capture.",
@@ -1718,7 +1736,7 @@
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/TEST-RESULTS.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T14:16:00+03:00",
+      "updated_at": "2026-07-12T14:56:00+03:00",
       "expected_result": "Public signup becomes a clean no-send lead capture that continues through exact Family/School onboarding records.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
       "deployment_id": "64ab8814-c984-4618-b808-5e762914f3eb",

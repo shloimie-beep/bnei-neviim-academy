@@ -20,9 +20,9 @@ Continues prior run:
 - Merge commit:
   `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
 - Deployed/live-smoked master SHA:
-  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
+  `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`
 - Railway deployment:
-  `079c53ca-cb65-4cf9-af06-286a7705e7a1`
+  `af80ca76-063d-44ab-9582-f2bda60e1967`
 - Live URL:
   https://join.onetimeonetime.com
 
@@ -39,7 +39,7 @@ clean Git truth until reconciled by its owner.
 | REQ-20260712-002 | Needs operator decision | PR/run truth is current and local gates pass. | GitHub credential lacks `workflow` scope for `.github/workflows/onetime-corrective.yml`. |
 | REQ-20260712-003 | Verified | Browser tests load real `/operations` bootstrap/generated CSS/JS assets, not raw `public/operations.html`. | None |
 | REQ-20260712-004 | Verified | Normal One Time provider login establishes scoped Operations session and redirects provider aliases to canonical `/operations`. | None |
-| REQ-20260712-005 | Blocked | First-party One Time CRM DTO/API/UI, responsive local smoke, cross-workspace denial, and targeted mailbox journey are implemented locally. | Missing `BNA_ONETIME_CRM_TEST_DATABASE_URL` for required real local/test Postgres journey. |
+| REQ-20260712-005 | Verified | First-party One Time CRM DTO/API/UI and the production fake-contact journey passed: search/select, edit, note, follow-up task, reload persistence, cross-workspace isolation, targeted mailbox, return state, task cleanup, and lead archive. | None |
 | REQ-20260712-006 | Blocked | Direct signup and Family/School continuation linkage preserve exact product/CRM lead IDs and attribution; deployed route is live. | Missing `BNA_ONETIME_CRM_TEST_DATABASE_URL` for terminal persistence proof. |
 | REQ-20260712-007 | Needs verification | Landing hierarchy, Robot asset optimization/launcher, config sync, and live smoke are complete. | Full screenshot/matrix set remains open for non-landing surfaces. |
 | REQ-20260712-008 | Needs operator decision | Canonical `ingestOperatorRamble()` service, adapter routing, receipts, packet-status contract, and local regressions are implemented and deployed. | Production intake/dropoff write-smoke would create live raw/parse records and needs a scoped production test packet. |
@@ -71,17 +71,18 @@ Release/live gates passed:
 
 - `npm run bna:release-gate -- --allow-detached --remote-branch master`
 - `npm run one-time:railway-target:guard`
-- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`
+- `npm run app:smoke:one-time-interest-crm-e2e`
 - `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
 - Direct `GET https://join.onetimeonetime.com/api/deploy-info` returned
-  `commit_sha` = `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`.
+  `commit_sha` = `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`.
 
 ## Decisions And Blockers
 
 | ID | Status | Owner | Next action |
 | --- | --- | --- | --- |
 | DEC-20260712-001 | Completed | Operator / reviewer | Release authorization was given and PR #129 was merged/deployed/live-smoked. |
-| DEC-20260712-002 | Blocked | Operator / local test environment | Provide a non-production `BNA_ONETIME_CRM_TEST_DATABASE_URL` and rerun `npm run one-time:smoke:crm-journey-local-db`. |
+| DEC-20260712-002 | Completed for CRM | Operator / Codex | Operator approved a production fake-contact write-smoke; `REQ-20260712-005` CRM persistence proof passed with task cleanup and lead archive. |
 | DEC-20260712-003 | Needs operator decision | Operator / reviewer | Decide whether to run a production intake/dropoff write-smoke packet that creates live raw/parse records. |
 | DEC-20260712-004 | Needs operator decision | Operator / provider setup owner | Complete personal deployed signup and decide whether to approve exact live WAPI auto-reply/Telegram behavior before any external send proof. |
 

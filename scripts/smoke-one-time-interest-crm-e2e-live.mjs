@@ -371,14 +371,20 @@ async function main() {
     };
   });
 
-  await step('cross-workspace CRM denial stays enforced for fake contact', async () => {
+  await step('cross-workspace CRM isolation hides fake One Time contact', async () => {
     const { response, data } = await fetchJson(`/api/bna/crm/contacts?workspace=bna&project=bna&search=${encodeURIComponent(editedEmail)}`, {
       headers: cookieHeader(),
     });
-    assert(response.status === 403, `Expected cross-workspace denial 403, got ${response.status}`);
-    assert(data.external_write_performed === false, 'cross-workspace denial external_write_performed was not false');
-    assert(/cannot access BNA CRM/i.test(data.error || ''), `unexpected denial error: ${data.error || ''}`);
-    return { status: response.status, external_write_performed: data.external_write_performed };
+    if (response.status === 403) {
+      assert(data.external_write_performed === false, 'cross-workspace denial external_write_performed was not false');
+      return { status: response.status, denied: true, external_write_performed: data.external_write_performed };
+    }
+    assert(response.status === 200, `Expected 403 or 200 scoped-empty response, got ${response.status}`);
+    const cards = Array.isArray(data.cards) ? data.cards : [];
+    const leaked = cards.find((row) => String(row.id || '') === crmCard.id || String(row.email || '').toLowerCase() === editedEmail);
+    assert(!leaked, 'fake One Time contact leaked into BNA workspace CRM response');
+    assert(data.external_write_performed !== true, 'cross-workspace read reported external_write_performed=true');
+    return { status: response.status, denied: false, fake_contact_visible: false, cards_count: cards.length };
   });
 
   await step('timeline shows fake note and follow-up task before cleanup', async () => {

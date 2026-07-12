@@ -224,10 +224,25 @@ REQ-20260712-005 evidence:
   `npm run one-time:smoke:operations-crm-workbench-local` PASS with report
   `ops/evidence/one-time-crm-journey/2026-07-12/report.md` and screenshots at
   1440, 1024, 768, 430, and 390.
-- Required real local/test DB proof is blocked, not claimed:
+- Earlier required local/test DB proof was blocked before operator approval for
+  a production fake-contact proof:
   `scripts/smoke-onetime-crm-journey-local-db.mjs` was added and run; it wrote
   `ops/evidence/one-time-crm-journey-local-db/2026-07-12T06-54-16-286Z-report.md`
   with blocker `BNA_ONETIME_CRM_TEST_DATABASE_URL` missing.
+- Operator then approved a scoped production fake-contact write-smoke. Live
+  proof passed through the actual One Time production database and APIs:
+  `npm run app:smoke:one-time-interest-crm-e2e`.
+- The live proof created one synthetic `TEST` / `example.invalid` contact,
+  searched and selected it in CRM, edited the contact, added an internal note,
+  created a fake follow-up task, reloaded and confirmed persistence, proved the
+  fake One Time contact did not appear in BNA workspace CRM, opened the targeted
+  Rabbi / One Time mailbox, returned to the same selected contact, deleted the
+  fake follow-up task, and archived the fake lead.
+- Live proof report:
+  `ops/live-smokes/2026-07-12T11-55-57-123Z-one-time-interest-crm-e2e-live-smoke.md`.
+- During this live proof, two real CRM edit defects were found and fixed:
+  parent-lead CRM notes now use valid `bna_contact_communications`
+  `contact_type = 'lead'` and `direction = 'internal_note'`.
 
 REQ-20260712-008 evidence:
 
@@ -390,8 +405,9 @@ Remaining evidence blockers:
 
 - `REQ-20260712-002`: workflow CI file still needs a GitHub credential with
   `workflow` scope.
-- `REQ-20260712-005` / `REQ-20260712-006`: real local/test Postgres journey
-  still needs `BNA_ONETIME_CRM_TEST_DATABASE_URL`.
+- `REQ-20260712-006`: Family/School continuation persistence proof remains
+  open. `REQ-20260712-005` CRM persistence proof is complete through the
+  approved production fake-contact write-smoke.
 - `REQ-20260712-008` / `REQ-20260712-009`: production intake/dropoff
   write-smoke was not run because it would create live raw/parse records
   without a separately scoped production test packet.
