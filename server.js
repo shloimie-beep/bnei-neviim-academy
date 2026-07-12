@@ -1,4 +1,5 @@
 const express = require('express');
+const compression = require('compression');
 const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
@@ -10846,6 +10847,7 @@ app.use(express.json({
   },
 }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+app.use(compression({ threshold: 1024 }));
 
 function isOneTimeSingleTenantRuntime() {
   return INSTANCE_RUNTIME_FLAGS.single_tenant === true

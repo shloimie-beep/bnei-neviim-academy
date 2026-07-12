@@ -38,7 +38,8 @@ test('Operations top filter rail is current-module subview navigation', () => {
   assert.match(operations, /function topFilterRailItems/);
   assert.match(operations, /const config = currentSubnavConfig\(\)/);
   assert.match(operations, /tabsWithCounts\(config\.tabs \|\| \[\], config\.countSource \|\| \{\}\)/);
-  assert.match(operations, /onclick="setCurrentSection\(\$\{attrJson\(tab\.id\)\}\)"/);
+  assert.match(operations, /tab\.source_view \? `openSidebarNavItem\(\$\{attrJson\(tab\.source_view\)\}/);
+  assert.match(operations, /: `setCurrentSection\(\$\{attrJson\(tab\.id\)\}\)`/);
   assert.match(operations, /currentView === 'agents'/);
   assert.match(operations, /AGENT_RUN_TABS/);
   assert.match(server, /const platformAllowedViews = \['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents'/);

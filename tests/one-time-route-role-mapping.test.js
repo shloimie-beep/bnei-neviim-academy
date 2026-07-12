@@ -143,7 +143,7 @@ test('One Time single-tenant parent login redirects to One Time parent setup ins
 
 test('member route is a member entry shell and never redirects to provider login', () => {
   assert.match(serverJs, /app\.get\(\['\/rabbi-member', '\/rabbi\/member'\]/);
-  assert.match(memberHtml, /Request member link/);
+  assert.match(memberHtml, /Request family portal link/);
   assert.match(memberJs, /\/api\/rabbi\/member\/request-login/);
   assert.match(memberJs, /\/api\/one-time-review\/member/);
   assert.doesNotMatch(memberHtml, /href="\/provider\/login"/);
