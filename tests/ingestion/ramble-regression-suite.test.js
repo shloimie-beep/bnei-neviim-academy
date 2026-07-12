@@ -31,6 +31,11 @@ test('long rambles map every source statement to stable requirements and jobs', 
     workspace_key: 'rabbi_sheller_provider',
     project_key: 'one_time_mishnah_class',
     created_at: '2026-07-12T08:30:00.000Z',
+    structured_compilation: {
+      status: 'validated',
+      schema_valid: true,
+      requirements: lines.map((line, index) => ({ id: `REQ-${index + 1}`, title: line })),
+    },
   }, {
     generated_at: '2026-07-12T08:30:00.000Z',
     worker_status: {

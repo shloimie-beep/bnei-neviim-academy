@@ -38848,3 +38848,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No live scheduler was created or changed in this batch. Railway service
   creation, two redacted execution proofs, scheduler overlap proof, and old
   dispatcher automation disablement remain open under `REQ-20260712-804`.
+
+## 2026-07-12 - One Time ramble-to-done hardening locally verified
+
+- Hardened `src/platform/ingestion/operator-ramble-service.js` so nontrivial
+  operator rambles require validated structured compilation before
+  implementation jobs materialize. Invalid or unavailable compiler output now
+  leaves rows `specification_pending` instead of pretending they are ready for
+  Codex implementation.
+- Added ordered Telegram/raw message-part reconstruction, source
+  reconstruction receipts, and honest status receipt states including
+  `live_verified`, `superseded`, and `done`.
+- Verified that validated structured compilation still materializes jobs and
+  that ChatGPT dropoff plus One Time intake API readback paths remain green.
+- Verification passed: ingestion suite 16/16, ChatGPT/API readback 10/10,
+  protocol/watchdog tests 4/4, `node --check` for the service, and
+  `npm run watchdog:protocol-drift` with 0 findings.
+- This is a server-visible change, so `REQ-20260712-802` remains
+  deploy/live-smoke pending rather than terminal.

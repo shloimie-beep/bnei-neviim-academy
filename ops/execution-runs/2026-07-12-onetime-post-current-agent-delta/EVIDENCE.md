@@ -46,8 +46,43 @@
   PASS JSON parse for `package.json` and
   `railway.one-time-delivery-cron.json`.
 
+## REQ-20260712-802
+
+- Shared service:
+  `src/platform/ingestion/operator-ramble-service.js`
+- Focused tests:
+  `tests/ingestion/operator-ramble-service.test.js`
+  and `tests/ingestion/ramble-regression-suite.test.js`
+- Watchdog report:
+  `ops/watchdog-audits/2026-07-12-product-quality-drift.md`
+- Implemented local hardening:
+  nontrivial operator rambles require validated structured compilation before
+  implementation jobs materialize; invalid/unavailable compilation leaves rows
+  `specification_pending`; validated compilation still materializes jobs;
+  Telegram/raw message parts reconstruct before statement mapping; source
+  reconstruction and honest status receipts are emitted.
+- Verification:
+  PASS `node --check src/platform/ingestion/operator-ramble-service.js`.
+- Verification:
+  PASS `node --test tests/ingestion/operator-ramble-service.test.js
+  tests/ingestion/ramble-regression-suite.test.js
+  tests/ingestion/w3-intake-service.test.js` 16/16.
+- Verification:
+  PASS `node --test tests/chatgpt-dropoff-ingestor.test.js
+  tests/one-time-intake-api-readback.test.js` 10/10.
+- Verification:
+  PASS `node --test tests/ramble-protocol-hardening.test.js
+  tests/watchdog-raw-intake-drift.test.js` 4/4.
+- Verification:
+  PASS `npm run watchdog:protocol-drift` with 0 findings.
+- Local dependency note:
+  after rebasing onto `22cc6b88b`, `npm install` was required in this isolated
+  worktree because upstream added the declared `compression` dependency.
+
 ## Pending Evidence
 
+- `REQ-20260712-802`: production deploy/live-smoke proof for the server-visible
+  ramble-to-done change.
 - `REQ-20260712-804`: Railway cron service readback, redacted execution proof,
   scheduler overlap proof, Codex dispatcher automation disablement proof.
 - `REQ-20260712-805` / `REQ-20260712-806`: CRM blueprint/gap matrix and

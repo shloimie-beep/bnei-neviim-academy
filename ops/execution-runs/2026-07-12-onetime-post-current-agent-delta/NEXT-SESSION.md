@@ -20,8 +20,8 @@ Next requirements:
   `one-time-delivery-cron` Railway service, prove two redacted executions,
   verify no class-reminders job ran, then disable/delete the old Codex
   dispatcher automation only after no-overlap proof.
-- `REQ-20260712-802`: audit and harden automatic ramble-to-done
-  compiler/materialization/status behavior if this lane is non-colliding.
+- `REQ-20260712-802`: deploy/live-smoke the locally verified ramble-to-done
+  hardening before marking it terminal.
 - `REQ-20260712-805`: create the canonical One Time CRM Contacts/Inbox
   blueprint and gap matrix before any CRM UI/product edits.
 
@@ -34,6 +34,7 @@ npm run bna:run:next
 node --check scripts/run-one-time-delivery-outbox-cron.mjs
 node --test tests/one-time-delivery-outbox-cron.test.js
 node --test tests/one-time-delivery-outbox.test.js
+node --test tests/ingestion/operator-ramble-service.test.js tests/ingestion/ramble-regression-suite.test.js tests/ingestion/w3-intake-service.test.js
 ```
 
 Do not resume

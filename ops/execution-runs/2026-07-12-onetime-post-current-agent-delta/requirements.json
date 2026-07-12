@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-onetime-post-current-agent-delta",
   "title": "One Time post-current-agent delta",
-  "updated_at": "2026-07-12T22:35:00+03:00",
+  "updated_at": "2026-07-12T22:46:00+03:00",
   "git_refs": {
     "working_branch": "codex/onetime-post-agent-delta-20260712-v3",
     "starting_head": "593b85c7ffe975dc5eff6f38b684f375385952dc",
@@ -95,10 +95,10 @@
       "priority": "P0",
       "batch_id": "delta-A",
       "depends_on": ["REQ-20260712-801"],
-      "status": "not_started",
-      "implementation_status": "Existing ingestion/ramble services and tests need current-state audit before targeted edits.",
+      "status": "needs_verification",
+      "implementation_status": "Local hardening implemented and verified. Nontrivial operator rambles now require a validated structured compilation before implementation jobs materialize; invalid/unavailable compilation leaves requirements specification_pending. Telegram/raw text parts reconstruct before statement mapping, source reconstruction and honest status receipts are emitted, and validated structured compilation still materializes jobs. Production deploy/live proof is still pending because this server-visible change is only pushed on the feature branch.",
       "can_continue_without_operator": true,
-      "next_action": "Inspect src/platform/ingestion, src/lib/bna/ramble-source-coverage.js, server intake routes, Telegram bridge, ChatGPT ingestor, and agent fleet materialization paths.",
+      "next_action": "Merge/deploy the branch through the approved release path and run live readback/smoke before marking this requirement terminal; non-deploy CRM blueprint work may continue separately.",
       "acceptance_criteria": [
         "No generic placeholder requirement can become implementation_ready.",
         "Invalid/unavailable OpenAI structured compilation remains specification_pending.",
@@ -106,20 +106,28 @@
         "Long Telegram rambles reconstruct exactly or split into linked child intakes.",
         "Status receipt distinguishes registered, implemented, deployed, live_verified, blocked, failed, superseded, and done."
       ],
-      "evidence": [],
-      "verification": ["PENDING targeted ramble/ingestion regression tests"],
+      "evidence": [
+        "src/platform/ingestion/operator-ramble-service.js",
+        "tests/ingestion/operator-ramble-service.test.js",
+        "tests/ingestion/ramble-regression-suite.test.js",
+        "ops/watchdog-audits/2026-07-12-product-quality-drift.md"
+      ],
+      "verification": [
+        "PASS node --check src/platform/ingestion/operator-ramble-service.js",
+        "PASS node --test tests/ingestion/operator-ramble-service.test.js tests/ingestion/ramble-regression-suite.test.js tests/ingestion/w3-intake-service.test.js (16/16)",
+        "PASS node --test tests/chatgpt-dropoff-ingestor.test.js tests/one-time-intake-api-readback.test.js (10/10)",
+        "PASS node --test tests/ramble-protocol-hardening.test.js tests/watchdog-raw-intake-drift.test.js (4/4)",
+        "PASS npm run watchdog:protocol-drift (0 findings)"
+      ],
       "implementation_files": [
-        "src/lib/bna/ramble-source-coverage.js",
-        "src/platform/ingestion/",
-        "server.js",
-        "scripts/telegram-kimi-bridge.mjs",
-        "scripts/chatgpt-dropoff-ingestor.mjs",
-        "scripts/agent-fleet-supervisor.mjs",
-        "scripts/lib/chatgpt-dropoff-context.mjs",
-        "tests/ingestion/"
+        "src/platform/ingestion/operator-ramble-service.js",
+        "tests/ingestion/operator-ramble-service.test.js",
+        "tests/ingestion/ramble-regression-suite.test.js",
+        "ops/watchdog-audits/2026-07-12-product-quality-drift.md",
+        "ops/watchdog-audits/2026-07-12-product-quality-drift.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T22:35:00+03:00"
+      "updated_at": "2026-07-12T22:46:00+03:00"
     },
     {
       "id": "REQ-20260712-803",

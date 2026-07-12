@@ -14,6 +14,14 @@ const {
 } = require('../../lib/bna/ramble-protocol');
 
 const OPERATOR_RAMBLE_SERVICE_VERSION = 'bna-operator-ramble-service-v1';
+const STRUCTURED_COMPILATION_VALID_STATUSES = new Set([
+  'valid',
+  'validated',
+  'schema_valid',
+  'compiled',
+  'ready',
+  'implementation_ready',
+]);
 
 const RAW_LIFECYCLE_STATUSES = [
   'captured',
@@ -23,11 +31,41 @@ const RAW_LIFECYCLE_STATUSES = [
   'registered',
   'queued',
   'running',
+  'specification_pending',
   'implemented',
   'verified',
   'deployed',
+  'live_verified',
+  'done',
   'blocked',
   'failed',
+  'superseded',
+  'archived',
+];
+
+const HONEST_STATUS_RECEIPT_STATES = [
+  'registered',
+  'specification_pending',
+  'implementation_ready',
+  'queued',
+  'running',
+  'implemented',
+  'verified',
+  'deployed',
+  'live_verified',
+  'blocked',
+  'failed',
+  'superseded',
+  'done',
+  'archived',
+];
+
+const TERMINAL_STATUS_RECEIPT_STATES = [
+  'live_verified',
+  'blocked',
+  'failed',
+  'superseded',
+  'done',
   'archived',
 ];
 
@@ -75,7 +113,28 @@ function normalizeKey(value = '') {
 }
 
 function rawTextFromInput(input = {}) {
-  return String(input.raw_text || input.rawText || input.raw_input || input.rawInput || input.ramble || input.text || '').trim();
+  const direct = String(input.raw_text || input.rawText || input.raw_input || input.rawInput || input.ramble || input.text || '').trim();
+  if (direct) return direct;
+  const parts = input.raw_text_parts
+    || input.rawTextParts
+    || input.text_parts
+    || input.textParts
+    || input.telegram_message_parts
+    || input.telegramMessageParts
+    || input.message_parts
+    || input.messageParts
+    || [];
+  if (!Array.isArray(parts) || !parts.length) return '';
+  const sortable = parts.every((part, index) => Number.isFinite(Number(part?.part_index ?? part?.partIndex ?? part?.sequence ?? part?.index ?? index)));
+  const ordered = sortable
+    ? [...parts].sort((a, b) => Number(a?.part_index ?? a?.partIndex ?? a?.sequence ?? a?.index ?? 0) - Number(b?.part_index ?? b?.partIndex ?? b?.sequence ?? b?.index ?? 0))
+    : parts;
+  return ordered
+    .map((part) => (typeof part === 'string' ? part : (part?.raw_text || part?.rawText || part?.text || part?.caption || '')))
+    .map((part) => String(part || '').trim())
+    .filter(Boolean)
+    .join('\n')
+    .trim();
 }
 
 function dateStamp(value = null) {
@@ -129,6 +188,85 @@ function classifyStatement(text = '') {
   return 'requirement';
 }
 
+function structuredCompilationFromInput(input = {}) {
+  const candidate = input.structured_compilation
+    || input.structuredCompilation
+    || input.compiled_spec
+    || input.compiledSpec
+    || input.structured_spec
+    || input.structuredSpec
+    || input.ai_structured_spec
+    || input.aiStructuredSpec
+    || input.aiStructuredJson
+    || null;
+  if (!candidate || typeof candidate !== 'object') {
+    return {
+      present: false,
+      status: 'missing',
+      valid: false,
+      reason: 'structured_compilation_missing',
+    };
+  }
+  const status = normalizeKey(candidate.status || candidate.state || candidate.compiler_status || candidate.compilerStatus || '');
+  const schemaValid = candidate.schema_valid !== false
+    && candidate.schemaValid !== false
+    && !candidate.error
+    && !candidate.errors?.length
+    && !candidate.schema_errors?.length
+    && !candidate.schemaErrors?.length;
+  const hasSpecPayload = Boolean(
+    candidate.requirements?.length
+    || candidate.source_statements?.length
+    || candidate.sourceStatements?.length
+    || candidate.tasks?.length
+    || candidate.decisions?.length
+    || candidate.spec
+    || candidate.payload
+  );
+  const valid = schemaValid && hasSpecPayload && STRUCTURED_COMPILATION_VALID_STATUSES.has(status || 'valid');
+  return {
+    present: true,
+    status: status || (valid ? 'validated' : 'unknown'),
+    valid,
+    reason: valid ? 'structured_compilation_validated' : 'structured_compilation_invalid_or_unavailable',
+    schema_valid: schemaValid,
+    has_spec_payload: hasSpecPayload,
+  };
+}
+
+function requiresStructuredCompilation({ input = {}, rawText = '', statements = [], source = {} } = {}) {
+  if (input.allow_heuristic_requirements === true || input.allowHeuristicRequirements === true) return false;
+  if (
+    input.require_structured_compilation === true
+    || input.requires_structured_compilation === true
+    || input.structured_compilation_required === true
+    || input.require_structured_spec === true
+    || input.structured_spec_required === true
+  ) return true;
+  const adapter = source.adapter_key || normalizeRambleSource(input).adapter_key;
+  const operatorRambleAdapter = ['codex_chat', 'telegram_ramble', 'telegram_scoped_task', 'chatgpt', 'operations_ui'].includes(adapter);
+  if (!operatorRambleAdapter) return false;
+  const raw = String(rawText || '');
+  if (/\bBNA_GOAL_MODE_EXECUTION_PACKET\b/i.test(raw)) return true;
+  if (/\b(goal\s*mode|finish everything|work through the whole|do all (?:those|these|the) things|set (?:it|this|that) as a goal)\b/i.test(raw)) return true;
+  if (/\b(million-dollar app|launch-ready|GHL-like|CRM|pipeline|community section|make it work|clean|professional|sloppy|all over the place)\b/i.test(raw) && statements.length >= 3) return true;
+  return statements.length >= 12 || raw.length >= 6000;
+}
+
+function buildStructuredCompilationGate(input = {}, { rawText = '', statements = [], source = {} } = {}) {
+  const compilation = structuredCompilationFromInput(input);
+  const required = requiresStructuredCompilation({ input, rawText, statements, source });
+  return {
+    required,
+    present: compilation.present,
+    status: required && !compilation.valid ? 'specification_pending' : 'implementation_ready',
+    implementation_ready: !required || compilation.valid,
+    compiler_status: compilation.status,
+    compiler_valid: compilation.valid,
+    reason: required && !compilation.valid ? compilation.reason : 'structured_compilation_not_required_or_validated',
+  };
+}
+
 function splitSourceStatements(rawText = '', options = {}) {
   const raw = String(rawText || '').trim();
   if (!raw) return [];
@@ -178,12 +316,13 @@ function requirementTitle(statement = {}) {
   return `${slice.slice(0, cut > 45 ? cut : 93).trim()}...`;
 }
 
-function buildRequirementRows({ statements = [], source = {}, rawId = '', createdAt = null, workspaceKey = 'bna', projectKey = null } = {}) {
+function buildRequirementRows({ statements = [], source = {}, rawId = '', createdAt = null, workspaceKey = 'bna', projectKey = null, structuredGate = {} } = {}) {
   const stamp = dateStamp(createdAt);
   return statements.map((statement, index) => {
     const suffix = hash6(`${rawId}|${statement.statement_id}|${statement.text}`);
     const decision = statement.classification === 'decision';
     const blocked = statement.classification === 'blocked_requirement';
+    const implementationReady = structuredGate.implementation_ready !== false;
     return {
       requirement_id: `REQ-${stamp}-${String(index + 1).padStart(3, '0')}-${suffix}`,
       execution_requirement_id: `REQ-${stamp}-${String(index + 1).padStart(3, '0')}`,
@@ -194,15 +333,19 @@ function buildRequirementRows({ statements = [], source = {}, rawId = '', create
       source_statement_ids: [statement.statement_id],
       source_statement: statement.text,
       statement_hash: statement.text_hash,
-      status: decision ? 'needs_operator_decision' : blocked ? 'blocked' : 'queued',
+      status: implementationReady ? (decision ? 'needs_operator_decision' : blocked ? 'blocked' : 'queued') : 'specification_pending',
       workspace_key: workspaceKey || 'bna',
       project_key: projectKey || null,
-      owner: decision || blocked ? 'Shloimie' : 'Codex',
+      owner: implementationReady && (decision || blocked) ? 'Shloimie' : 'Codex',
       expected_result: statement.text,
-      next_action: decision || blocked
+      next_action: !implementationReady
+        ? 'Run a validated structured ramble compiler before creating implementation work.'
+        : decision || blocked
         ? 'Resolve the operator decision or blocker; independent executable requirements may continue.'
         : 'Implement or verify this requirement and record evidence.',
-      can_continue_without_operator: !(decision || blocked),
+      can_continue_without_operator: !implementationReady || !(decision || blocked),
+      implementation_ready: implementationReady,
+      materialization_status: implementationReady ? 'implementation_ready' : 'specification_pending',
       deployment_required: /\b(ui|page|route|public|deploy|live|landing|portal|dashboard|operations|server|api)\b/i.test(statement.text || ''),
       source_adapter_key: source.adapter_key,
     };
@@ -211,7 +354,9 @@ function buildRequirementRows({ statements = [], source = {}, rawId = '', create
 
 function buildJobs(requirementRows = [], createdAt = null, rawId = '') {
   const stamp = dateStamp(createdAt);
-  return requirementRows.map((row, index) => ({
+  return requirementRows
+    .filter((row) => row.implementation_ready !== false)
+    .map((row, index) => ({
     job_id: `JOB-${stamp}-${String(index + 1).padStart(3, '0')}-${hash6(`${rawId}|${row.requirement_id}|job`)}`,
     job_uid: `ramble:${rawId}:${row.requirement_id}`,
     requirement_id: row.requirement_id,
@@ -247,14 +392,17 @@ function buildWorkerHealthReceipt(input = {}, options = {}) {
   };
 }
 
-function buildStatusPropagation({ requirementRows = [], jobs = [], workerHealth = {}, packetStatus = {} } = {}) {
+function buildStatusPropagation({ requirementRows = [], jobs = [], workerHealth = {}, packetStatus = {}, structuredGate = {} } = {}) {
   const hasDecision = requirementRows.some((row) => row.item_type === 'decision' || row.status === 'needs_operator_decision');
-  const hasExecutable = requirementRows.some((row) => row.can_continue_without_operator);
-  const rawStatus = hasDecision ? 'needs_review' : hasExecutable ? 'queued' : 'registered';
+  const hasSpecificationPending = requirementRows.some((row) => row.status === 'specification_pending') || structuredGate.status === 'specification_pending';
+  const hasExecutable = requirementRows.some((row) => row.can_continue_without_operator && row.implementation_ready !== false);
+  const rawStatus = hasSpecificationPending ? 'needs_review' : hasDecision ? 'needs_review' : hasExecutable ? 'queued' : 'registered';
   return {
     raw_intake_status: rawStatus,
     packet_status: packetStatus.normalized_status || 'queued',
-    execution_run_status: workerHealth.status === 'offline' && jobs.some((job) => job.status === 'queued')
+    execution_run_status: hasSpecificationPending
+      ? 'specification_pending'
+      : workerHealth.status === 'offline' && jobs.some((job) => job.status === 'queued')
       ? 'active_worker_offline'
       : hasExecutable
         ? 'queued'
@@ -272,6 +420,48 @@ function buildStatusPropagation({ requirementRows = [], jobs = [], workerHealth 
   };
 }
 
+function buildSourceReconstructionReceipt(input = {}, { rawText = '', statements = [], generatedAt = null } = {}) {
+  const parts = input.raw_text_parts
+    || input.rawTextParts
+    || input.text_parts
+    || input.textParts
+    || input.telegram_message_parts
+    || input.telegramMessageParts
+    || input.message_parts
+    || input.messageParts
+    || [];
+  return {
+    receipt_type: 'source_reconstruction',
+    generated_at: generatedAt || new Date().toISOString(),
+    raw_text_hash: hash(rawText),
+    raw_text_length: String(rawText || '').length,
+    statement_count: statements.length,
+    reconstructed_from_parts: Array.isArray(parts) && parts.length > 0,
+    source_part_count: Array.isArray(parts) ? parts.length : 0,
+    offset_map_valid: statements.every((statement) => String(rawText || '').slice(statement.start_offset, statement.end_offset) === statement.text),
+    truncated: false,
+    external_write_performed: false,
+  };
+}
+
+function buildHonestStatusReceipt({ statusPropagation = {}, requirementRows = [], structuredGate = {}, generatedAt = null } = {}) {
+  return {
+    receipt_type: 'honest_status_contract',
+    generated_at: generatedAt || new Date().toISOString(),
+    current_status: statusPropagation.execution_run_status || statusPropagation.raw_intake_status || 'registered',
+    raw_intake_status: statusPropagation.raw_intake_status || 'registered',
+    packet_status: statusPropagation.packet_status || 'queued',
+    allowed_statuses: HONEST_STATUS_RECEIPT_STATES,
+    terminal_statuses: TERMINAL_STATUS_RECEIPT_STATES,
+    specification_pending_count: requirementRows.filter((row) => row.status === 'specification_pending').length,
+    implementation_ready_count: requirementRows.filter((row) => row.implementation_ready !== false).length,
+    structured_compilation_status: structuredGate.status || 'implementation_ready',
+    done_requires_evidence: true,
+    live_verified_requires_deployment_and_live_smoke: true,
+    external_write_performed: false,
+  };
+}
+
 function ingestOperatorRamble(input = {}, options = {}) {
   const rawText = rawTextFromInput(input);
   if (!rawText) {
@@ -284,6 +474,7 @@ function ingestOperatorRamble(input = {}, options = {}) {
   const rawId = input.raw_id || input.rawId || formatStableId('raw', createdAt, 1);
   const source = normalizeRambleSource(input);
   const statements = splitSourceStatements(rawText, { raw_id: rawId });
+  const structuredGate = buildStructuredCompilationGate(input, { rawText, statements, source });
   const requirementRows = buildRequirementRows({
     statements,
     source,
@@ -291,6 +482,7 @@ function ingestOperatorRamble(input = {}, options = {}) {
     createdAt,
     workspaceKey: input.workspace_key || input.workspaceKey || 'bna',
     projectKey: input.project_key || input.projectKey || null,
+    structuredGate,
   });
   const jobs = buildJobs(requirementRows, createdAt, rawId);
   const packetStatus = normalizePacketLifecycleStatus(input.packet_status || input.packetStatus || 'queued');
@@ -304,7 +496,21 @@ function ingestOperatorRamble(input = {}, options = {}) {
     mapped_statement_count: requirementRows.filter((row) => row.source_statement_id).length,
     unmapped_statement_ids: requirementRows.filter((row) => !row.source_statement_id).map((row) => row.requirement_id),
   };
+  const statusPropagation = buildStatusPropagation({ requirementRows, jobs, workerHealth, packetStatus, structuredGate });
   const receipts = [
+    buildSourceReconstructionReceipt(input, { rawText, statements, generatedAt }),
+    {
+      receipt_type: 'structured_compilation_gate',
+      generated_at: generatedAt,
+      required: structuredGate.required,
+      status: structuredGate.status,
+      implementation_ready: structuredGate.implementation_ready,
+      compiler_status: structuredGate.compiler_status,
+      compiler_valid: structuredGate.compiler_valid,
+      reason: structuredGate.reason,
+      external_write_performed: false,
+    },
+    buildHonestStatusReceipt({ statusPropagation, requirementRows, structuredGate, generatedAt }),
     {
       receipt_type: 'source_statements_mapped',
       generated_at: generatedAt,
@@ -330,7 +536,6 @@ function ingestOperatorRamble(input = {}, options = {}) {
       external_write_performed: false,
     });
   }
-  const statusPropagation = buildStatusPropagation({ requirementRows, jobs, workerHealth, packetStatus });
   const registerPath = requirementRegisterPathFor({
     source,
     rawId,
@@ -360,18 +565,23 @@ function ingestOperatorRamble(input = {}, options = {}) {
       project_key: row.project_key,
       owner: row.owner,
       status: row.status,
+      implementation_ready: row.implementation_ready,
+      materialization_status: row.materialization_status,
       can_continue_without_operator: row.can_continue_without_operator,
       deployment_required: row.deployment_required,
     })),
     jobs,
     receipts,
     worker_health: workerHealth,
+    structured_compilation_gate: structuredGate,
     packet_status: packetStatus,
     status_propagation: statusPropagation,
     receipt: {
       raw_id: rawId,
       statement_count: statements.length,
       requirements: requirementRows.length,
+      implementation_ready_requirements: requirementRows.filter((row) => row.implementation_ready !== false).length,
+      specification_pending_requirements: requirementRows.filter((row) => row.implementation_ready === false).length,
       tasks: jobs.filter((job) => job.status === 'queued').length,
       queued_jobs: jobs.filter((job) => job.status === 'queued').length,
       blockers: requirementRows.filter((row) => !row.can_continue_without_operator).map((row) => ({
@@ -380,7 +590,7 @@ function ingestOperatorRamble(input = {}, options = {}) {
         blocker: row.status,
         next_action: row.next_action,
       })),
-      message: `Raw ID: ${rawId} | Statements: ${statements.length} | Requirements: ${requirementRows.length} | Queued jobs: ${jobs.filter((job) => job.status === 'queued').length}`,
+      message: `Raw ID: ${rawId} | Statements: ${statements.length} | Requirements: ${requirementRows.length} | Queued jobs: ${jobs.filter((job) => job.status === 'queued').length} | Specification pending: ${requirementRows.filter((row) => row.implementation_ready === false).length}`,
     },
   };
 }
@@ -523,7 +733,8 @@ function buildOperatorRambleGraph(input = {}, existingState = {}) {
       ...(workflow.status_propagation || {}),
       independent_work_continues: executableTasks.length > 0 && requirements.some((row) => !row.can_continue_without_operator),
       queued_job_count: executableTasks.length,
-      blocked_decision_count: requirements.filter((row) => !row.can_continue_without_operator).length,
+      blocked_decision_count: requirements.filter((row) => row.status === 'needs_operator_decision' || row.status === 'blocked').length,
+      specification_pending_count: requirements.filter((row) => row.status === 'specification_pending').length,
     },
     canonical_intake_packet: buildCanonicalIntakePacket({
       ...input,
@@ -545,6 +756,7 @@ function buildOperatorRambleGraph(input = {}, existingState = {}) {
       raw_input: rawText,
     }, existingState),
     worker_health: workflow.worker_health,
+    structured_compilation_gate: workflow.structured_compilation_gate,
     receipt: workflow.receipt,
   };
 }
@@ -604,6 +816,8 @@ module.exports = {
   applyRequirementResult,
   buildOperatorRambleGraph,
   buildWorkerHealthReceipt,
+  buildStructuredCompilationGate,
+  buildSourceReconstructionReceipt,
   ingestOperatorRamble,
   normalizeOperatorRambleSource,
   normalizePacketLifecycleStatus,

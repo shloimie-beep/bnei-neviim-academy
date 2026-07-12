@@ -1,6 +1,6 @@
 # Status
 
-As of 2026-07-12T22:35:00+03:00:
+As of 2026-07-12T22:46:00+03:00:
 
 - Goal-mode packet captured as `RAW-20260712-013`.
 - Fresh execution run initialized and `latest.json` points here.
@@ -24,6 +24,13 @@ Current implementation focus:
 delivery outbox Railway cron runner, separate Railway config, package command,
 env example, and focused tests.
 
+`REQ-20260712-802` is locally verified but still open for deployment/live
+verification. The branch now hardens the shared ramble-to-done service so
+nontrivial operator rambles cannot become implementation jobs from a generic
+heuristic fallback when structured compilation is missing or invalid. It also
+adds Telegram/raw part reconstruction, source reconstruction receipts, and
+honest status receipt states.
+
 Next implementation/cutover focus:
 
 - Commit and push the runner batch.
@@ -31,5 +38,5 @@ Next implementation/cutover focus:
   `one-time-delivery-cron` Railway service, prove two redacted executions, rule
   out class-reminders execution, and only then disable/delete the old Codex
   dispatcher automation.
-- `REQ-20260712-802` and `REQ-20260712-805` are still available non-cutover
-  follow-up lanes if they do not collide with active agents.
+- `REQ-20260712-805` remains available as a non-cutover follow-up lane if it
+  does not collide with active agents.

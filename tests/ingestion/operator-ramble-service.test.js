@@ -71,6 +71,15 @@ test('operator ramble service maps raw source statements, requirements, jobs, an
   assert.equal(result.jobs.length, result.requirement_rows.length);
   assert.ok(result.jobs.every((job) => /^JOB-20260712-\d{3}-[A-F0-9]{6}$/.test(job.job_id)));
   assert.ok(result.receipts.some((item) => item.receipt_type === 'source_statements_mapped' && item.no_lost_sentence_gate_ok === true));
+  assert.ok(result.receipts.some((item) => item.receipt_type === 'source_reconstruction' && item.offset_map_valid === true));
+  assert.ok(result.receipts.some((item) => item.receipt_type === 'structured_compilation_gate' && item.status === 'implementation_ready'));
+  const statusReceipt = result.receipts.find((item) => item.receipt_type === 'honest_status_contract');
+  assert.ok(statusReceipt);
+  for (const status of ['registered', 'implemented', 'deployed', 'live_verified', 'blocked', 'failed', 'superseded', 'done']) {
+    assert.ok(statusReceipt.allowed_statuses.includes(status), `${status} should be an honest status receipt state`);
+  }
+  assert.equal(statusReceipt.done_requires_evidence, true);
+  assert.equal(statusReceipt.live_verified_requires_deployment_and_live_smoke, true);
   assert.ok(result.receipts.some((item) => item.receipt_type === 'requirements_projected'));
   assert.ok(result.receipts.some((item) => item.receipt_type === 'worker_health' && item.status === 'online'));
   assert.equal(result.status_propagation.raw_intake_status, 'needs_review');
@@ -84,6 +93,108 @@ test('operator ramble service maps raw source statements, requirements, jobs, an
     'packet',
     'execution_run',
   ]);
+});
+
+test('nontrivial rambles stay specification_pending when structured compilation is unavailable', () => {
+  const result = ingestOperatorRamble({
+    raw_id: 'RAW-20260712-055',
+    source_type: 'codex_chat',
+    raw_text: [
+      'Task: Build the million-dollar app CRM contact workspace.',
+      'Task: Make the pipeline professional and launch-ready.',
+      'Task: Fix the community section so it is not sloppy.',
+    ].join('\n'),
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    created_at: '2026-07-12T08:00:00.000Z',
+    structured_compilation: {
+      status: 'unavailable',
+      error: 'model_unavailable',
+    },
+  }, {
+    generated_at: '2026-07-12T08:00:00.000Z',
+    worker_status: {
+      name: 'ramble-compiler',
+      status: 'online',
+      last_seen_at: '2026-07-12T07:59:59.000Z',
+    },
+  });
+
+  assert.equal(result.structured_compilation_gate.required, true);
+  assert.equal(result.structured_compilation_gate.status, 'specification_pending');
+  assert.equal(result.jobs.length, 0);
+  assert.ok(result.requirement_rows.every((row) => row.status === 'specification_pending'));
+  assert.ok(result.requirement_rows.every((row) => row.implementation_ready === false));
+  assert.equal(result.status_propagation.execution_run_status, 'specification_pending');
+  assert.ok(result.receipts.some((receipt) => (
+    receipt.receipt_type === 'structured_compilation_gate'
+    && receipt.status === 'specification_pending'
+    && receipt.implementation_ready === false
+  )));
+});
+
+test('validated structured compilation unlocks nontrivial ramble job materialization', () => {
+  const result = ingestOperatorRamble({
+    raw_id: 'RAW-20260712-056',
+    source_type: 'codex_chat',
+    raw_text: [
+      'Task: Build the million-dollar app CRM contact workspace.',
+      'Task: Make the pipeline professional and launch-ready.',
+      'Task: Fix the community section so it is not sloppy.',
+    ].join('\n'),
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    created_at: '2026-07-12T08:00:00.000Z',
+    structured_compilation: {
+      status: 'validated',
+      schema_valid: true,
+      requirements: [
+        { id: 'REQ-A' },
+        { id: 'REQ-B' },
+        { id: 'REQ-C' },
+      ],
+    },
+  }, {
+    generated_at: '2026-07-12T08:00:00.000Z',
+    worker_status: {
+      name: 'ramble-compiler',
+      status: 'online',
+      last_seen_at: '2026-07-12T07:59:59.000Z',
+    },
+  });
+
+  assert.equal(result.structured_compilation_gate.required, true);
+  assert.equal(result.structured_compilation_gate.status, 'implementation_ready');
+  assert.equal(result.jobs.length, result.requirement_rows.length);
+  assert.ok(result.requirement_rows.every((row) => row.implementation_ready === true));
+  assert.equal(result.status_propagation.execution_run_status, 'queued');
+});
+
+test('Telegram ramble message parts reconstruct before statement mapping', () => {
+  const result = ingestOperatorRamble({
+    raw_id: 'RAW-20260712-057',
+    source_type: 'telegram_ramble',
+    telegram_message_parts: [
+      { part_index: 2, text: 'Task: second chunk should stay second.' },
+      { part_index: 1, text: 'Task: first chunk should stay first.' },
+    ],
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    created_at: '2026-07-12T08:00:00.000Z',
+  }, {
+    generated_at: '2026-07-12T08:00:00.000Z',
+  });
+
+  assert.deepEqual(
+    result.source_statements.map((statement) => statement.normalized_text),
+    ['Task: first chunk should stay first.', 'Task: second chunk should stay second.']
+  );
+  assert.ok(result.receipts.some((receipt) => (
+    receipt.receipt_type === 'source_reconstruction'
+    && receipt.reconstructed_from_parts === true
+    && receipt.source_part_count === 2
+    && receipt.offset_map_valid === true
+  )));
 });
 
 test('operator ramble graph keeps independent executable work open when a decision is blocked', () => {

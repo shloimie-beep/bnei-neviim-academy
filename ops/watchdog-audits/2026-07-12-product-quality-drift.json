@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T19:32:57.161Z",
+  "generated_at": "2026-07-12T19:46:39.546Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -240,6 +240,12 @@
     "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/REQUIREMENTS.md",
     "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/STATUS.md",
     "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/requirements.json",
+    "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/BATCH-STATUS.md",
+    "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/EVIDENCE.md",
+    "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/PLAN.md",
+    "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/REQUIREMENTS.md",
+    "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/STATUS.md",
+    "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/requirements.json",
     "ops/prompt-packets/2026-07-01-provider-config-readback/09-resend-send-enabled-smoke.md",
     "ops/prompt-packets/2026-07-01-provider-config-readback/10-stripe-sandbox-smoke.md",
     "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/00-control-tower.md",
@@ -633,6 +639,7 @@
     "tasks-pending/2026-07-12-onetime-mishnah-signup-family-school-hotfix.md",
     "tasks-pending/2026-07-12-onetime-neon-landing-polish-deploy.md",
     "tasks-pending/2026-07-12-onetime-p0p1-corrective-completion.md",
+    "tasks-pending/2026-07-12-onetime-post-current-agent-delta.md",
     "tasks-pending/2026-07-12-onetime-signup-location-hotfix.md",
     "tasks-pending/2026-07-12-onetime-signup-reminder-workflow-addendum.md",
     "tasks-pending/2026-07-12-onetime-wapi-webhook-bot-not-responding.md",

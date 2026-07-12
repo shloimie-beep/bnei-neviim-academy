@@ -7,6 +7,11 @@ itself mutate a live scheduler. The live Railway service creation, redacted
 execution proof, scheduler overlap check, and old Codex dispatcher automation
 disable/delete step remain open under `REQ-20260712-804`.
 
+`REQ-20260712-802` changes the server-side ramble-to-done ingestion service.
+It is locally verified on the feature branch only. It must not be marked
+terminal until the approved release path deploys it and live readback/smoke
+evidence is recorded.
+
 Current live One Time readback before implementation:
 
 - URL: `https://join.onetimeonetime.com`
