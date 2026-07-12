@@ -71,21 +71,25 @@ try {
     assertText(route, result.text, /Give your son a love for Torah you never thought possible\./i, 'canonical launch funnel headline missing');
     assertText(route, result.text, /One Time Mishnayos/i, 'One Time focused brand missing');
     assertText(route, result.text, /Sign Up Now/i, 'signup CTA missing');
-    assertText(route, result.text, /data-signup-modal/i, 'signup modal missing');
-    assertText(route, result.text, /name="parent_name"/i, 'signup parent/contact name input missing');
-    assertText(route, result.text, /name="email"/i, 'signup email input missing');
-    assertText(route, result.text, /name="phone"/i, 'optional phone input missing');
-    assertText(route, result.text, /name="signup_audience"\s+value="family"/i, 'family audience choice missing');
-    assertText(route, result.text, /name="signup_audience"\s+value="school"/i, 'school audience choice missing');
-    assertText(route, result.text, /\/api\/one-time\/interest/i, 'signup form does not target One Time interest endpoint');
+    assertText(route, result.text, /href="\/one-time\/signup"/i, 'direct signup page link missing');
     assertNoText(route, result.text, /Your Child Can Love Learning Mishnayos/i, 'retired launch headline is still visible');
-    assertNoText(route, result.text, /signup-strip|id="interestForm"|id="signupStudentName"|name="student/i, 'retired inline/student signup field is still visible');
+    assertNoText(route, result.text, /data-signup-modal|signup-strip|id="interestForm"|id="signupStudentName"|name="student/i, 'retired inline/modal/student signup field is still visible');
     assertNoText(route, result.text, /name="parentName"|name="region"|name="notes"/i, 'retired lead-capture field naming is still visible');
     assertNoText(route, result.text, /parent access next steps|Parent portal setup instructions/i, 'old portal-access promise leaked into public funnel');
     assertNoText(route, result.text, /classroom code|recovery code|fallback classroom password/i, 'retired classroom/recovery-code copy leaked into public funnel');
     assertNoText(route, result.text, /Learn Mishnayos Live with Rabbi Eli Scheller/i, 'stale Rabbi preview page is still being served');
     assertNoText(route, result.text, /Bnei Nevi'?im Academy|Torah Learning for Boys/i, 'BNA public homepage leaked into One Time target');
   }
+
+  const signup = await fetchText('/one-time/signup');
+  assertText('/one-time/signup', signup.text, /name="contact_name"/i, 'signup contact name input missing');
+  assertText('/one-time/signup', signup.text, /name="signup_as"/i, 'Family/School selector missing');
+  assertText('/one-time/signup', signup.text, /<option value="Family">Family<\/option>/i, 'Family signup option missing');
+  assertText('/one-time/signup', signup.text, /<option value="School">School<\/option>/i, 'School signup option missing');
+  assertText('/one-time/signup', signup.text, /name="email"/i, 'signup email input missing');
+  assertText('/one-time/signup', signup.text, /name="phone"/i, 'optional phone input missing');
+  assertText('/one-time/signup', signup.text, /\/api\/one-time\/interest/i, 'signup form does not target One Time interest endpoint');
+  assertNoText('/one-time/signup', signup.text, /name="student|student_name|signupStudentName/i, 'first lightweight signup asks for student name');
 
   for (const route of ['/operations-login.html', '/parent.html', '/student.html', '/provider.html', '/one-time-classroom.html']) {
     const result = await fetchText(route);

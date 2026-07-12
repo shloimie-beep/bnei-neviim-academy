@@ -99,14 +99,26 @@ async function main() {
       'One Time',
       'Rabbi Eli Scheller',
       'Sign Up Now',
-      'data-signup-modal',
-      'name="parent_name"',
-      'name="email"',
+      'href="/one-time/signup"',
       '/js/bna-bot-widget.js',
     ], '/rabbi');
-    expectNotMatches(page.text, /signup-strip|id="interestForm"|signupStudentName|name="student/i, '/rabbi');
+    expectNotMatches(page.text, /data-signup-modal|signup-strip|id="interestForm"|signupStudentName|name="student/i, '/rabbi');
     expectNotMatches(page.text, /Bnei Neviim Academy|BNA Academy|Hebrew|data-language-toggle/i, '/rabbi');
-    pass('/rabbi has focused One Time branding and no Academy chrome');
+    pass('/rabbi has focused One Time branding, direct signup CTA, and no Academy chrome');
+
+    const signup = await fetchText(options.baseUrl, '/one-time/signup');
+    assert(signup.response.status === 200, `/one-time/signup expected 200, got ${signup.response.status}`);
+    expectIncludes(signup.text, [
+      'name="contact_name"',
+      'name="signup_as"',
+      '<option value="Family">Family</option>',
+      '<option value="School">School</option>',
+      'name="email"',
+      'name="phone"',
+      '/api/one-time/interest',
+    ], '/one-time/signup');
+    expectNotMatches(signup.text, /name="student|student_name|signupStudentName/i, '/one-time/signup');
+    pass('/one-time/signup has lightweight Family/School signup fields');
 
     const configResponse = await fetch(`${options.baseUrl}/api/one-time/instance-config`, {
       headers: {
