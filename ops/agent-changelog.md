@@ -38507,3 +38507,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Telegram readiness. No deploy, email/WhatsApp/Telegram send, provider
   mutation, production-data mutation, portal/account/payment/access mutation,
   local-class activation, or parallel PR was performed.
+
+## 2026-07-12 - One Time delivery outbox dispatcher added
+
+- Added a scoped One Time delivery-outbox helper for confirmation email,
+  WhatsApp confirmation/reminder, class-reminder email, and Rabbi Telegram
+  alert rows.
+- Added protected `/api/cron/one-time/delivery-outbox` dispatching with
+  `CRON_SECRET`, scoped channel keys, `FOR UPDATE SKIP LOCKED` claiming,
+  retry/dead-letter handling, redacted public responses, and CRM timeline
+  logging.
+- Registered the protected cron route and added focused tests for request
+  building, Zoom/body redaction, Telegram Zoom rejection, and retry timing.
+- Verification passed: helper/server syntax checks, delivery outbox 5/5,
+  reminder workflow plus delivery outbox 16/16, focused One Time suite 72/72,
+  `bna:run:validate`, `secrets:audit`, `watchdog:actions`,
+  `watchdog:protocol-drift`, and `git diff --check`.
+- No deploy, email/WhatsApp/Telegram send, provider mutation,
+  production-data mutation, portal/account/payment/access mutation,
+  local-class activation, or parallel PR was performed.

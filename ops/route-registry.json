@@ -581,6 +581,25 @@
       ]
     },
     {
+      "route": "/api/cron/one-time/delivery-outbox",
+      "surface": "one_time_delivery_outbox_dispatcher",
+      "access": "protected_cron",
+      "required_role": "cron_secret",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_without_cron_secret",
+      "expected_logged_in_behavior": "deliver_due_scoped_one_time_confirmation_reminder_and_rabbi_alert_outbox_rows_with_retries",
+      "privacy_risk": "high",
+      "security_expectation": "Protected One Time delivery dispatcher requires CRON_SECRET, drains only scoped One Time delivery outbox channel keys, uses server-side class link aliases, redacts Zoom/message bodies from API responses, records retries/dead letters, and must not create portal, payment, password, or access records.",
+      "smoke_expectation": "tests/one-time-delivery-outbox.test.js and tests/one-time-signup-reminder-workflow.test.js verify channel scope, redaction, retry/dead-letter behavior, cron protection, and no portal/payment/access paths.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/api/bna/one-time/local-class-reminder-preview",
       "surface": "one_time_local_class_reminder_preview",
       "access": "admin",

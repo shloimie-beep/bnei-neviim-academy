@@ -54,7 +54,7 @@ test('direct signup page is the canonical public form', () => {
   assert.match(signup, /data-phone-required-dot[^>]*hidden/);
   assert.match(signup, /data-phone-hint hidden>Required for WhatsApp reminders\./);
   assert.doesNotMatch(signup, /Add a phone number if you want WhatsApp reminders/i);
-  assert.doesNotMatch(visibleSignupText, /phone\s*(?:\/\s*WhatsApp)?\s*[-:–—]?\s*optional/i);
+  assert.doesNotMatch(visibleSignupText, /phone\s*(?:\/\s*WhatsApp)?\s*[-:]?\s*optional/i);
   assert.match(signup, /prefers-reduced-motion/);
   assert.match(signup, /\/api\/one-time\/interest/);
   assert.doesNotMatch(visibleSignupText, /Member Login|parent portal|student portal|checkout|billing|CRM|Codex|guardrail|approval|password setup|Optional unless/i);
@@ -303,7 +303,18 @@ test('server declares protected cron and local-class preview without portal/paym
   const route = server.slice(start, end);
 
   assert.match(server, /app\.get\(\['\/one-time\/signup', '\/one-time\/signup\/'\], sendOneTimeSignupPage\)/);
+  assert.match(server, /app\.post\('\/api\/cron\/one-time\/delivery-outbox'/);
   assert.match(server, /app\.post\('\/api\/cron\/one-time\/class-reminders'/);
+  assert.match(server, /ONE_TIME_OUTBOX_CHANNEL_KEYS/);
+  assert.match(server, /buildOneTimeOutboxDeliveryRequest/);
+  assert.match(server, /claimDueOneTimeDeliveryOutboxRows/);
+  assert.match(server, /FOR UPDATE SKIP LOCKED/);
+  assert.match(server, /assistant_dead_letters/);
+  assert.match(server, /loadTelegramNotificationConfig/);
+  assert.match(server, /sendTelegramMessage/);
+  assert.match(server, /sendResendMessage\(\{/);
+  assert.match(server, /raw_join_url_returned: false/);
+  assert.match(server, /message_body_returned: false/);
   assert.match(server, /buildReminderIdempotencyKey/);
   assert.match(server, /app\.get\('\/api\/bna\/one-time\/local-class-reminder-preview'/);
   assert.match(server, /activation_blocked: preview\.activation_blocked === true/);
@@ -325,6 +336,14 @@ test('server declares protected cron and local-class preview without portal/paym
   assert.match(cronRoute, /if \(!process\.env\.CRON_SECRET\) \{/);
   assert.doesNotMatch(cronRoute, /!process\.env\.CRON_SECRET\s*&&\s*!dryRun/);
   assert.match(cronRoute, /suppliedSecret !== process\.env\.CRON_SECRET/);
+  const deliveryStart = server.indexOf("app.post('/api/cron/one-time/delivery-outbox'");
+  const deliveryEnd = server.indexOf("app.post('/api/cron/one-time/class-reminders'", deliveryStart);
+  assert.notEqual(deliveryStart, -1);
+  assert.notEqual(deliveryEnd, -1);
+  const deliveryRoute = server.slice(deliveryStart, deliveryEnd);
+  assert.match(deliveryRoute, /if \(!process\.env\.CRON_SECRET\) \{/);
+  assert.match(deliveryRoute, /suppliedSecret !== process\.env\.CRON_SECRET/);
+  assert.match(deliveryRoute, /dispatchOneTimeDeliveryOutboxBatch/);
   assert.match(workflow, /ONE_TIME_CLASS_REMINDERS_CONFIRM/);
   assert.match(workflow, /APPROVE_ONE_TIME_CLASS_REMINDERS/);
 

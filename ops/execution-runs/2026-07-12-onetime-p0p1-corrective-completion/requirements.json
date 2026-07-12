@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-onetime-p0p1-corrective-completion",
   "title": "One Time P0/P1 Corrective Completion",
-  "updated_at": "2026-07-12T11:59:00+03:00",
+  "updated_at": "2026-07-12T13:35:00+03:00",
   "git_refs": {
     "expected_branch": "codex/onetime-p0p1-corrective-20260711",
     "branch": "codex/onetime-p0p1-corrective-20260711",
@@ -786,7 +786,7 @@
         "REQ-20260712-015"
       ],
       "status": "in_progress",
-      "implementation_status": "Confirmation email template and outbox event are locally implemented with One Time sender/reply-to contract and server-side class-link alias protection. Hosted outbox delivery, Resend retry proof, and live received-email evidence remain required.",
+      "implementation_status": "Confirmation email template, signup outbox event, and protected One Time delivery-outbox dispatcher are locally implemented. The dispatcher claims only scoped One Time outbox rows, renders confirmation email through the server-side class-link alias, sends through the One Time email identity, redacts class link/message body from public results, and records retry/dead-letter/timeline metadata. Hosted Resend delivery and live received-email evidence remain required.",
       "next_action": "Complete hosted readiness/deploy/live-smoke/provider evidence and operator personal test before terminal closeout.",
       "acceptance_criteria": [
         "Every valid signup, including No daily reminders, receives one confirmation.",
@@ -805,12 +805,20 @@
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
+        "node --check src/lib/bna/one-time-delivery-outbox.js PASS",
+        "node --test tests/one-time-delivery-outbox.test.js PASS 5/5",
+        "node --test tests/one-time-signup-reminder-workflow.test.js tests/one-time-delivery-outbox.test.js PASS 16/16",
+        "npm run test:onetime:focused PASS 72/72",
+        "npm run secrets:audit PASS 8379 tracked paths checked, 0 tracked secret-risk files found"
       ],
       "implementation_files": [
         "src/lib/bna/one-time-signup-workflow.js",
+        "src/lib/bna/one-time-delivery-outbox.js",
         "server.js",
-        "tests/one-time-signup-reminder-workflow.test.js"
+        "tests/one-time-signup-reminder-workflow.test.js",
+        "tests/one-time-delivery-outbox.test.js",
+        "ops/route-registry.json"
       ],
       "expected_result": "Signup confirmation email is reliable, transactional, idempotent, and server-side link safe."
     },
@@ -829,7 +837,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T11:10:00+03:00",
+      "updated_at": "2026-07-12T13:31:00+03:00",
       "id": "REQ-20260712-017",
       "title": "Build dedicated One Time class reminder dispatcher",
       "source_statement_ids": [
@@ -841,7 +849,7 @@
         "REQ-20260712-016"
       ],
       "status": "in_progress",
-      "implementation_status": "Protected /api/cron/one-time/class-reminders endpoint locally enqueues dedicated One Time reminder outbox rows using class-date/contact/channel/30-minute-window/schedule-version idempotency. The guarded operator test command now requires APPROVE_ONE_TIME_SINGLE_RECIPIENT_REMINDER_TEST, one positive --contact-id, CRON_SECRET, rejects broad audience flags, and is covered by the focused One Time gate. Hosted cron, delivery processor, provider logs, and live retry/suppression proof remain required.",
+      "implementation_status": "Protected /api/cron/one-time/class-reminders locally enqueues dedicated One Time reminder outbox rows using class-date/contact/channel/30-minute-window/schedule-version idempotency. Protected /api/cron/one-time/delivery-outbox now drains only scoped One Time confirmation/reminder/Telegram channel keys, claims rows with FOR UPDATE SKIP LOCKED, sends via the One Time email/WAPI/Rabbi Telegram providers, and records sent/failed/dead-letter/timeline metadata with redacted public results. The guarded operator test command still requires APPROVE_ONE_TIME_SINGLE_RECIPIENT_REMINDER_TEST, one positive --contact-id, CRON_SECRET, and rejects broad audience flags. Hosted cron/provider logs and live retry/suppression proof remain required.",
       "next_action": "Complete hosted readiness/deploy/live-smoke/provider evidence and operator personal test before terminal closeout.",
       "acceptance_criteria": [
         "Uses ONE_TIME_CLASS_REMINDERS_ENABLED, ONE_TIME_CLASS_REMINDERS_CONFIRM, and CRON_SECRET gates.",
@@ -862,14 +870,23 @@
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
         "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
         "node --test tests/one-time-reminder-simulation-command.test.js PASS 4/4",
-        "node --check scripts/simulate-one-time-class-reminder.mjs PASS"
+        "node --check scripts/simulate-one-time-class-reminder.mjs PASS",
+        "node --check src/lib/bna/one-time-delivery-outbox.js PASS",
+        "node --test tests/one-time-delivery-outbox.test.js PASS 5/5",
+        "node --test tests/one-time-signup-reminder-workflow.test.js tests/one-time-delivery-outbox.test.js PASS 16/16",
+        "npm run test:onetime:focused PASS 72/72",
+        "npm run bna:run:validate PASS with work remaining",
+        "git diff --check PASS with line-ending warnings only"
       ],
       "implementation_files": [
         "server.js",
         "scripts/simulate-one-time-class-reminder.mjs",
         "src/lib/bna/one-time-signup-workflow.js",
+        "src/lib/bna/one-time-delivery-outbox.js",
         "tests/one-time-signup-reminder-workflow.test.js",
         "tests/one-time-reminder-simulation-command.test.js",
+        "tests/one-time-delivery-outbox.test.js",
+        "ops/route-registry.json",
         "package.json"
       ],
       "expected_result": "Daily reminders can be dispatched exactly once per eligible recipient/channel/class event."
@@ -889,7 +906,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T10:52:00+03:00",
+      "updated_at": "2026-07-12T13:31:00+03:00",
       "id": "REQ-20260712-018",
       "title": "Gate WhatsApp reminders on explicit consent and Rabbi Whapi readiness",
       "source_statement_ids": [
@@ -901,7 +918,7 @@
         "REQ-20260712-017"
       ],
       "status": "in_progress",
-      "implementation_status": "WhatsApp reminder eligibility is locally gated by explicit WhatsApp/Both preference, valid phone, suppression state, and One Time Whapi readiness settings. Live Whapi readiness/readback and STOP/wrong-number provider proof remain required.",
+      "implementation_status": "WhatsApp reminder eligibility is locally gated by explicit WhatsApp/Both preference, valid phone, suppression state, and One Time Whapi readiness settings. The delivery-outbox helper builds WAPI requests only for WhatsApp confirmation/reminder channel rows, uses the One Time WAPI scope, normalizes the phone recipient from the linked CRM contact, and keeps public delivery results redacted. Live Whapi readiness/readback and STOP/wrong-number provider proof remain required.",
       "next_action": "Complete hosted readiness/deploy/live-smoke/provider evidence and operator personal test before terminal closeout.",
       "acceptance_criteria": [
         "WhatsApp sends only for WhatsApp or Both selections.",
@@ -920,12 +937,16 @@
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
+        "node --test tests/one-time-delivery-outbox.test.js PASS 5/5",
+        "npm run test:onetime:focused PASS 72/72"
       ],
       "implementation_files": [
         "server.js",
+        "src/lib/bna/one-time-delivery-outbox.js",
         "src/lib/bna/one-time-signup-workflow.js",
-        "tests/one-time-signup-reminder-workflow.test.js"
+        "tests/one-time-signup-reminder-workflow.test.js",
+        "tests/one-time-delivery-outbox.test.js"
       ],
       "expected_result": "WhatsApp reminders are explicit-consent only and provider-scope safe."
     },
@@ -944,7 +965,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T10:52:00+03:00",
+      "updated_at": "2026-07-12T13:31:00+03:00",
       "id": "REQ-20260712-019",
       "title": "Send exactly one scoped Rabbi Telegram signup alert",
       "source_statement_ids": [
@@ -956,7 +977,7 @@
         "REQ-20260712-015"
       ],
       "status": "in_progress",
-      "implementation_status": "Direct signup now queues one scoped telegram:one_time_rabbi_operator outbox alert payload with contact, Family/School, city/country, reminder preference, CRM reference, and no Zoom URL. Live Rabbi Telegram readiness, hosted worker restart, and single-alert smoke remain required.",
+      "implementation_status": "Direct signup now queues one scoped telegram:one_time_rabbi_operator outbox alert payload with contact, Family/School, city/country, reminder preference, CRM reference, and no Zoom URL. The delivery-outbox dispatcher targets Rabbi Scheller's scoped Telegram bot/chat via the one_time_rabbi_operator role, rejects alert text containing Zoom/class-link data, and redacts public results. Live Rabbi Telegram readiness, hosted worker restart, and single-alert smoke remain required.",
       "next_action": "Complete hosted readiness/deploy/live-smoke/provider evidence and operator personal test before terminal closeout.",
       "acceptance_criteria": [
         "Exactly one alert per genuine signup.",
@@ -975,13 +996,18 @@
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
+        "node --test tests/one-time-delivery-outbox.test.js PASS 5/5",
+        "node --test tests/one-time-signup-reminder-workflow.test.js tests/one-time-delivery-outbox.test.js PASS 16/16",
+        "npm run test:onetime:focused PASS 72/72"
       ],
       "implementation_files": [
         "server.js",
         "src/lib/bna/telegram-notifications.js",
+        "src/lib/bna/one-time-delivery-outbox.js",
         "src/lib/bna/one-time-signup-workflow.js",
-        "tests/one-time-signup-reminder-workflow.test.js"
+        "tests/one-time-signup-reminder-workflow.test.js",
+        "tests/one-time-delivery-outbox.test.js"
       ],
       "expected_result": "Rabbi Scheller receives one internal signup alert per real signup with safe scoped routing."
     },
@@ -1195,7 +1221,7 @@
         "REQ-20260712-021"
       ],
       "status": "in_progress",
-      "implementation_status": "Local test matrix is expanded and mapped in ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md: direct route, Back to Home, styling smoke, internal-copy removal, no-phone-optional regression, city/timezone validation, DST conversion, worldwide instant, phone gating, required reminder/location acknowledgement, consent, dedupe/idempotency helpers, outbox, cron gates, guarded single-recipient simulation command, guarded operator-test handoff suppression, paused/canceled class suppression guardrails, email unsubscribe and WhatsApp STOP/wrong-number suppression guardrails, WAPI gates, Rabbi Telegram payload, local-class preview, and no-portal negatives are covered. Deployment, readiness checks, live smoke, operator personal test, and provider evidence remain required.",
+      "implementation_status": "Local test matrix is expanded and mapped in ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md: direct route, Back to Home, styling smoke, internal-copy removal, no-phone-optional regression, city/timezone validation, DST conversion, worldwide instant, phone gating, required reminder/location acknowledgement, consent, dedupe/idempotency helpers, confirmation/reminder/Rabbi Telegram outbox events, protected delivery-outbox dispatcher, retry/dead-letter redaction, cron gates, guarded single-recipient simulation command, guarded operator-test handoff suppression, paused/canceled class suppression guardrails, email unsubscribe and WhatsApp STOP/wrong-number suppression guardrails, WAPI gates, Rabbi Telegram payload, local-class preview, and no-portal negatives are covered. Deployment, readiness checks, live smoke, operator personal test, and provider evidence remain required.",
       "next_action": "Complete hosted readiness/deploy/live-smoke/provider evidence and operator personal test before terminal closeout.",
       "acceptance_criteria": [
         "Family/School, route/back link, styling, internal-copy removal, city autocomplete, timezone validation, DST, worldwide instant, local display, phone validation, no-reminder confirmation, consent, CRM dedupe, outbox retry, reminder idempotency, suppression, missing/changed Zoom link, Telegram, WAPI failure, local-contact preview, no portal/payment/access, cross-workspace isolation, and .invalid no-send cases are covered."
@@ -1222,13 +1248,26 @@
         "node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js PASS 13/13",
         "npm run test:onetime:focused PASS 67/67",
         "node scripts/one-time-operator-test-handoff.mjs --json BLOCKED as expected with ready_message_suppressed=true",
-        "npm run secrets:audit PASS tracked paths checked, 0 tracked secret-risk files found"
+        "npm run secrets:audit PASS tracked paths checked, 0 tracked secret-risk files found",
+        "node --check src/lib/bna/one-time-delivery-outbox.js PASS",
+        "node --check server.js PASS",
+        "node --test tests/one-time-delivery-outbox.test.js PASS 5/5",
+        "node --test tests/one-time-signup-reminder-workflow.test.js tests/one-time-delivery-outbox.test.js PASS 16/16",
+        "npm run test:onetime:focused PASS 72/72",
+        "npm run bna:run:validate PASS with work remaining",
+        "npm run watchdog:actions PASS finding_count 0",
+        "npm run watchdog:protocol-drift PASS findings 0",
+        "git diff --check PASS with line-ending warnings only"
       ],
       "implementation_files": [
         "tests/one-time-direct-signup-page.test.js",
         "tests/one-time-focused-landing.test.js",
         "tests/one-time-signup-reminder-workflow.test.js",
+        "tests/one-time-delivery-outbox.test.js",
         "tests/one-time-reminder-simulation-command.test.js",
+        "src/lib/bna/one-time-delivery-outbox.js",
+        "server.js",
+        "ops/route-registry.json",
         "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json",
         "ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md",
         "tests/one-time-operator-test-handoff.test.js",
