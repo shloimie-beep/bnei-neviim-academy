@@ -100,11 +100,31 @@ async function main() {
       'Rabbi Eli Scheller',
       'Sign Up Now',
       'href="/one-time/signup"',
-      '/js/bna-bot-widget.js',
+      'class="one-time-whatsapp-launcher"',
+      'href="/api/one-time/public-whatsapp/redirect?intent=free_class"',
+      'data-action-id="ACTION-ONETIME-PUBLIC-WHATSAPP"',
     ], '/rabbi');
     expectNotMatches(page.text, /data-signup-modal|signup-strip|id="interestForm"|signupStudentName|name="student/i, '/rabbi');
     expectNotMatches(page.text, /Bnei Neviim Academy|BNA Academy|Hebrew|data-language-toggle/i, '/rabbi');
-    pass('/rabbi has focused One Time branding, direct signup CTA, and no Academy chrome');
+    expectNotMatches(page.text, /bna-helper-knowledge\.js|bna-bot-widget\.js|Robot Scheller|https:\/\/wa\.me\//i, '/rabbi');
+    pass('/rabbi has focused One Time branding, direct signup CTA, WhatsApp launcher, and no Academy chrome');
+
+    const whatsappResponse = await fetch(`${options.baseUrl}/api/one-time/public-whatsapp`, {
+      headers: {
+        accept: 'application/json',
+        'cache-control': 'no-cache',
+      },
+    });
+    const whatsapp = await whatsappResponse.json();
+    assert(whatsappResponse.status === 200, `/api/one-time/public-whatsapp expected 200, got ${whatsappResponse.status}`);
+    assert(whatsapp.configured === true, 'expected public WhatsApp readiness to be configured');
+    assert(whatsapp.workspace_key === 'rabbi_sheller_provider', `expected rabbi_sheller_provider, got ${whatsapp.workspace_key}`);
+    assert(whatsapp.project_key === 'one_time_mishnah_class', `expected one_time_mishnah_class, got ${whatsapp.project_key}`);
+    assert(whatsapp.redirect_path === '/api/one-time/public-whatsapp/redirect', `unexpected redirect_path ${whatsapp.redirect_path}`);
+    assert(whatsapp.full_number_returned === false, 'public WhatsApp readiness must not return the full number');
+    assert(whatsapp.no_whatsapp_sent === true, 'public WhatsApp readiness must not send WhatsApp');
+    assert(whatsapp.external_write_performed === false, 'public WhatsApp readiness must not perform external writes');
+    pass('One Time public WhatsApp readiness is configured, scoped, and no-send');
 
     const signup = await fetchText(options.baseUrl, '/one-time/signup');
     assert(signup.response.status === 200, `/one-time/signup expected 200, got ${signup.response.status}`);
