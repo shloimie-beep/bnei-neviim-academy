@@ -377,21 +377,51 @@
     .consent-check {
       display: grid;
       grid-template-columns: auto minmax(0, 1fr);
-      gap: 10px;
-      align-items: start;
-      margin: 0;
+      gap: 12px;
+      align-items: center;
+      margin: 2px 0 0;
+      padding: 13px;
+      border: 1px solid rgba(5, 5, 5, 0.14);
+      border-radius: 8px;
+      background: var(--white);
       color: var(--muted-dark);
       font-size: 0.9rem;
       font-weight: 680;
       line-height: 1.35;
+      cursor: pointer;
     }
 
     .consent-check input {
-      width: 19px;
-      height: 19px;
-      min-height: 19px;
-      margin: 1px 0 0;
-      accent-color: var(--black);
+      appearance: none;
+      display: grid;
+      place-content: center;
+      width: 22px;
+      height: 22px;
+      min-height: 22px;
+      margin: 0;
+      border: 2px solid rgba(5, 5, 5, 0.62);
+      border-radius: 5px;
+      background: #ffffff;
+      color: var(--black);
+    }
+
+    .consent-check input::before {
+      content: "";
+      width: 11px;
+      height: 11px;
+      transform: scale(0);
+      transition: transform 120ms ease-in-out;
+      background: var(--black);
+      clip-path: polygon(14% 48%, 0 62%, 40% 100%, 100% 18%, 85% 4%, 37% 66%);
+    }
+
+    .consent-check input:checked {
+      border-color: var(--black);
+      background: var(--yellow);
+    }
+
+    .consent-check input:checked::before {
+      transform: scale(1);
     }
 
     .consent-check:focus-within {
@@ -728,7 +758,7 @@
             </div>
             <label class="consent-check" for="signupAcknowledgement">
               <input id="signupAcknowledgement" name="signup_acknowledgement" type="checkbox" value="yes" required>
-              <span class="consent-copy">Use my selected city for class times. By choosing reminders, I agree to receive class updates and can stop them at any time.</span>
+              <span class="consent-copy">Use my selected city for class times. By choosing reminders, I agree to receive class updates and can stop them at any time. <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></span>
             </label>
             <span class="field-error" data-error-for="signup_acknowledgement">Check the box to confirm your class-time and reminder preferences.</span>
             <span class="field-error" data-error-for="reminder_preference">Choose a reminder option.</span>
@@ -998,13 +1028,32 @@
             throw new Error(result.error || 'Could not save the signup.');
           }
 
+          const productLeadId = result.product_lead_id || result.productLeadId || result.lead?.id || result.lead_id || '';
+          const crmLeadId = result.crm_lead_id || result.crmLeadId || result.lead?.crm_lead_id || '';
           const lead = {
+            parent_name: contactName,
             contact_name: contactName,
             email,
             phone,
             signup_as: signupAs,
             city: city.label,
-            reminder_preference: reminder
+            city_context: {
+              id: city.id,
+              label: city.label,
+              name: city.city,
+              region: city.region,
+              country: city.country,
+              country_code: city.countryCode,
+              timezone: city.timezone
+            },
+            timezone: city.timezone,
+            browser_timezone: form.elements.browser_timezone?.value || '',
+            reminder_preference: reminder,
+            product_lead_id: productLeadId ? String(productLeadId) : '',
+            crm_lead_id: crmLeadId ? String(crmLeadId) : '',
+            source_landing_page: '/one-time/signup',
+            referrer: document.referrer || '',
+            utm: utmParams()
           };
           try {
             window.sessionStorage.setItem('oneTimeSignupLead', JSON.stringify(lead));

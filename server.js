@@ -57274,16 +57274,32 @@ function oneTimeOnboardingIntentLabel(intent) {
   })[normalizeOneTimeOnboardingIntent(intent)] || 'Live Mishnah membership';
 }
 
-function oneTimeOnboardingTags(intent) {
+function oneTimePositiveIntegerId(value) {
+  const text = String(value || '').trim();
+  if (!/^[1-9]\d*$/.test(text)) return null;
+  const parsed = Number(text);
+  return Number.isSafeInteger(parsed) ? parsed : null;
+}
+
+function oneTimeJsonObject(value, fallback = {}) {
+  const parsed = parseJsonMaybe(value);
+  return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : fallback;
+}
+
+function oneTimeOnboardingTags(intent, audienceType = '') {
   const normalizedIntent = normalizeOneTimeOnboardingIntent(intent);
+  const normalizedAudience = ['family', 'school'].includes(normalizeOneTimeOnboardingIntent(audienceType))
+    ? normalizeOneTimeOnboardingIntent(audienceType)
+    : '';
   return [
     'one-time-lead',
     'one-time-source:onboarding',
     `one-time-intent:${normalizedIntent}`,
+    normalizedAudience ? `one-time-audience:${normalizedAudience}` : '',
     'one-time-needs-first-response',
     'one-time-no-payment-created',
     'one-time-access-not-granted',
-  ];
+  ].filter(Boolean);
 }
 
 function oneTimeOptionalAge(value) {
@@ -57311,6 +57327,19 @@ function buildOneTimeOnboardingFields(body = {}) {
   const rawIntake = limitText(body.raw_intake || body.rawIntake || body.intake_text || body.intakeText, 4000);
   const language = normalizeLanguage(body.language || '') || 'en';
   const sourceRoute = limitText(body.route || body.path_name || body.pathName || body.page_path || body.pagePath || '', 300);
+  const originalCapture = oneTimeJsonObject(body.original_capture || body.originalCapture || body.capture || {});
+  const productLeadId = oneTimePositiveIntegerId(
+    body.product_lead_id || body.productLeadId || originalCapture.product_lead_id || originalCapture.productLeadId
+  );
+  const crmLeadId = oneTimePositiveIntegerId(
+    body.crm_lead_id || body.crmLeadId || body.lead_id || body.leadId || originalCapture.crm_lead_id || originalCapture.crmLeadId
+  );
+  const sourceLandingPage = limitText(
+    body.source_landing_page || body.sourceLandingPage || originalCapture.source_landing_page || originalCapture.sourceLandingPage || '',
+    300
+  );
+  const referrer = limitText(body.referrer || body.referrer_url || body.referrerUrl || originalCapture.referrer || '', 500);
+  const utm = oneTimeJsonObject(body.utm || body.utm_json || body.utmJson || originalCapture.utm || {});
   const viewport = body.viewport && typeof body.viewport === 'object'
     ? {
         width: Number(body.viewport.width || 0) || null,
@@ -57330,6 +57359,11 @@ function buildOneTimeOnboardingFields(body = {}) {
     city ? `Location: ${city}` : '',
     timezone ? `Time zone: ${timezone}` : '',
     `Interest path: ${oneTimeOnboardingIntentLabel(intent)}`,
+    productLeadId ? `Product lead ID: ${productLeadId}` : '',
+    crmLeadId ? `CRM lead ID: ${crmLeadId}` : '',
+    sourceLandingPage ? `Source landing page: ${sourceLandingPage}` : '',
+    referrer ? `Referrer: ${referrer}` : '',
+    Object.keys(utm).length ? `UTM: ${JSON.stringify(utm)}` : '',
     scheduleNotes ? `Schedule notes: ${scheduleNotes}` : '',
     learningGoals ? `Learning goals: ${learningGoals}` : '',
     questions ? `Questions/notes: ${questions}` : '',
@@ -57353,12 +57387,36 @@ function buildOneTimeOnboardingFields(body = {}) {
     questions,
     referralSource,
     rawIntake,
+    productLeadId,
+    crmLeadId,
+    sourceLandingPage,
+    referrer,
+    utm,
+    originalCapture: {
+      product_lead_id: productLeadId,
+      crm_lead_id: crmLeadId,
+      source_landing_page: sourceLandingPage || null,
+      referrer: referrer || null,
+      utm,
+    },
     language,
     sourceRoute,
     viewport,
     transcript: limitText(transcript, 5000),
-    tags: oneTimeOnboardingTags(intent),
+    tags: oneTimeOnboardingTags(intent, audienceType),
   };
+}
+
+function oneTimeOnboardingValidationError(fields = {}) {
+  if (!fields.parentName || !fields.parentEmail) return 'Contact name and email are required.';
+  if (!fields.productLeadId || !fields.crmLeadId) return 'Saved product and CRM lead IDs are required to continue onboarding.';
+  if (fields.audienceType === 'family' && (!fields.learnerName || !fields.learnerStage)) {
+    return "Son's name and age or grade are required for family onboarding.";
+  }
+  if (fields.audienceType === 'school' && (!fields.learnerName || !fields.learnerStage)) {
+    return 'School name and contact role are required for school onboarding.';
+  }
+  return '';
 }
 
 function oneTimeOnboardingPreview(fields = {}) {
@@ -57413,6 +57471,14 @@ async function upsertOneTimePreviewContact(fields = {}, db = pool) {
     project_key: ONE_TIME_PROJECT_KEY,
     intent: fields.intent,
     audience_type: fields.audienceType,
+    family_school_classification: fields.audienceType,
+    product_lead_id: fields.productLeadId || null,
+    crm_lead_id: fields.crmLeadId || null,
+    source_landing_page: fields.sourceLandingPage || null,
+    referrer: fields.referrer || null,
+    utm: fields.utm || {},
+    original_capture: fields.originalCapture || null,
+    exact_original_capture_required: true,
     learner_name: fields.learnerName || null,
     learner_age: fields.learnerAgeRaw || null,
     city: fields.city || null,
@@ -57450,29 +57516,85 @@ async function upsertOneTimePreviewContact(fields = {}, db = pool) {
   return result.rows[0] || null;
 }
 
-async function upsertOneTimePreviewLead(fields = {}, project, db = pool) {
-  const email = normalizeEmail(fields.parentEmail);
-  const phoneDigits = normalizePhoneDigits(fields.parentPhone);
-  const existing = (await db.query(
+async function resolveOneTimeOnboardingOriginalCapture(fields = {}, project, db = pool) {
+  if (!fields.productLeadId || !fields.crmLeadId) {
+    const error = new Error('Saved product and CRM lead IDs are required to continue onboarding.');
+    error.statusCode = 400;
+    throw error;
+  }
+  const productLead = (await db.query(
+    `SELECT *
+     FROM bna_product_leads
+     WHERE id = $1
+       AND project_id = $2
+       AND COALESCE(program_key, product_key, '') = $3
+       AND COALESCE(status, 'new') <> 'archived'
+     LIMIT 1`,
+    [fields.productLeadId, project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+  )).rows[0] || null;
+  if (!productLead) {
+    const error = new Error('The saved product lead was not found for this One Time signup.');
+    error.statusCode = 400;
+    throw error;
+  }
+  const crmLead = (await db.query(
     `SELECT *
      FROM bna_parent_leads
-     WHERE project_id = $1
+     WHERE id = $1
+       AND project_id = $2
        AND COALESCE(status, 'interested') <> 'archived'
-       AND (
-         ($2 <> '' AND lower(COALESCE(parent_email, '')) = $2)
-         OR ($3 <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $3)
-         OR ($4 <> '' AND lower(COALESCE(parent_name, '')) = lower($4))
-       )
-     ORDER BY updated_at DESC NULLS LAST, created_at ASC
      LIMIT 1`,
-    [project.id, email || '', phoneDigits || '', fields.parentName || '']
+    [fields.crmLeadId, project.id]
   )).rows[0] || null;
+  if (!crmLead) {
+    const error = new Error('The saved CRM lead was not found for this One Time signup.');
+    error.statusCode = 400;
+    throw error;
+  }
+  const crmMetadata = oneTimeJsonObject(crmLead.metadata || {});
+  const linkedProductLeadId = oneTimePositiveIntegerId(crmMetadata.product_lead_id || crmMetadata.productLeadId);
+  if (linkedProductLeadId !== fields.productLeadId) {
+    const error = new Error('The saved product lead and CRM lead do not match the original capture.');
+    error.statusCode = 400;
+    throw error;
+  }
+  return { productLead, crmLead };
+}
+
+async function upsertOneTimePreviewLead(fields = {}, project, db = pool, options = {}) {
+  const email = normalizeEmail(fields.parentEmail);
+  const phoneDigits = normalizePhoneDigits(fields.parentPhone);
+  let existing = options.crmLead || null;
+  if (!existing) {
+    existing = (await db.query(
+      `SELECT *
+       FROM bna_parent_leads
+       WHERE project_id = $1
+         AND COALESCE(status, 'interested') <> 'archived'
+         AND (
+           ($2 <> '' AND lower(COALESCE(parent_email, '')) = $2)
+           OR ($3 <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $3)
+           OR ($4 <> '' AND lower(COALESCE(parent_name, '')) = lower($4))
+         )
+       ORDER BY updated_at DESC NULLS LAST, created_at ASC
+       LIMIT 1`,
+      [project.id, email || '', phoneDigits || '', fields.parentName || '']
+    )).rows[0] || null;
+  }
   const metadata = {
     source: 'one_time_onboarding',
     project_key: ONE_TIME_PROJECT_KEY,
     intent: fields.intent,
     intent_label: oneTimeOnboardingIntentLabel(fields.intent),
     audience_type: fields.audienceType,
+    family_school_classification: fields.audienceType,
+    product_lead_id: fields.productLeadId || null,
+    crm_lead_id: fields.crmLeadId || null,
+    source_landing_page: fields.sourceLandingPage || null,
+    referrer: fields.referrer || null,
+    utm: fields.utm || {},
+    original_capture: fields.originalCapture || null,
+    exact_original_capture_verified: Boolean(options.productLead && options.crmLead),
     learner_age_raw: fields.learnerAgeRaw || null,
     learner_stage: fields.learnerStage || null,
     city: fields.city || null,
@@ -57562,8 +57684,9 @@ async function upsertOneTimePreviewLead(fields = {}, project, db = pool) {
 
 app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
   const fields = buildOneTimeOnboardingFields(req.body || {});
-  if (!fields.transcript || (!fields.parentName && !fields.parentEmail && !fields.parentPhone && !fields.learnerName && !fields.rawIntake)) {
-    return res.status(400).json({ error: 'Name, email, phone, learner name, or intake details are required' });
+  const validationError = oneTimeOnboardingValidationError(fields);
+  if (validationError) {
+    return res.status(400).json({ error: validationError });
   }
   const dryRun = req.body?.dry_run === true || req.body?.dryRun === true || /^(?:1|true|yes)$/i.test(String(req.body?.dry_run || req.body?.dryRun || ''));
   const preview = oneTimeOnboardingPreview(fields);
@@ -57582,7 +57705,8 @@ app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
   try {
     await client.query('BEGIN');
     const project = await getProjectByKey(ONE_TIME_PROJECT_KEY, client);
-    const { lead, merged_existing: mergedLead } = await upsertOneTimePreviewLead(fields, project, client);
+    const originalCapture = await resolveOneTimeOnboardingOriginalCapture(fields, project, client);
+    const { lead, merged_existing: mergedLead } = await upsertOneTimePreviewLead(fields, project, client, originalCapture);
     const contact = await upsertOneTimePreviewContact(fields, client);
     const sourceContext = {
       source: 'one_time_onboarding',
@@ -57591,6 +57715,13 @@ app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
       viewport: fields.viewport,
       intent: fields.intent,
       audience_type: fields.audienceType,
+      family_school_classification: fields.audienceType,
+      product_lead_id: fields.productLeadId,
+      crm_lead_id: fields.crmLeadId,
+      source_landing_page: fields.sourceLandingPage || null,
+      referrer: fields.referrer || null,
+      utm: fields.utm || {},
+      exact_original_capture_verified: true,
       lead_id: lead.id,
       contact_id: contact?.id || null,
       no_send: true,
@@ -57618,6 +57749,10 @@ app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
           intent: fields.intent,
           language: fields.language,
           contact_id: contact?.id || null,
+          product_lead_id: fields.productLeadId,
+          crm_lead_id: fields.crmLeadId,
+          family_school_classification: fields.audienceType,
+          exact_original_capture_verified: true,
           no_send: true,
           external_write_performed: false,
         }),
@@ -57669,7 +57804,11 @@ app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
         communication_id: communication.id,
         support_ticket_id: ticket.id,
         project: ONE_TIME_PROJECT_KEY,
+        product_lead_id: fields.productLeadId,
+        crm_lead_id: fields.crmLeadId,
         audience_type: fields.audienceType,
+        family_school_classification: fields.audienceType,
+        exact_original_capture_verified: true,
         no_send: true,
         no_checkout: true,
         no_access_granted: true,
@@ -57703,6 +57842,10 @@ app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
         task_id: task.id,
         intent: fields.intent,
         audience_type: fields.audienceType,
+        family_school_classification: fields.audienceType,
+        product_lead_id: fields.productLeadId,
+        crm_lead_id: fields.crmLeadId,
+        exact_original_capture_verified: true,
         no_send: true,
         no_checkout: true,
         no_access_granted: true,
@@ -80170,6 +80313,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
       crm_capture: true,
       free_class_follow_up: !directSignup,
       direct_signup_workflow: directSignup,
+      one_time_direct_signup: directSignup,
       no_checkout: true,
       no_access_granted: true,
       no_external_send: !directSignup,
@@ -80303,6 +80447,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
       free_class_follow_up: !directSignup,
       free_zoom_follow_up: !directSignup,
       direct_signup_workflow: directSignup,
+      one_time_direct_signup: directSignup,
       city: lead.metadata?.city || null,
       timezone: lead.timezone || null,
       signup_as: lead.metadata?.signup_as || null,
@@ -81533,7 +81678,7 @@ app.post('/api/cron/one-time/class-reminders', async (req, res) => {
       || req.body?.dryRun === true
       || /^(?:1|true|yes)$/i.test(String(req.query.dry_run || req.query.dryRun || ''));
     const suppliedSecret = String(req.query.secret || req.headers['x-cron-secret'] || req.headers.authorization?.replace(/^Bearer\s+/i, '') || '').trim();
-    if (!process.env.CRON_SECRET && !dryRun) {
+    if (!process.env.CRON_SECRET) {
       return res.status(503).json({
         success: false,
         error: 'CRON_SECRET is required before One Time class reminder dispatch can run.',

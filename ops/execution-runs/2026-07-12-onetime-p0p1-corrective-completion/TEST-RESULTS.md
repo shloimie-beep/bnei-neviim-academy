@@ -60,6 +60,21 @@ REQ-20260712-013 local gate:
 - `npm run watchdog:actions` PASS: finding_count 0.
 - `npm run bna:run:validate` PASS.
 
+REQ-20260712-013 required-marker rerun:
+
+- `node --test tests/one-time-direct-signup-page.test.js` PASS: 2 tests, 2
+  passed. The browser proof now asserts the acknowledgement checkbox is
+  required, not prechecked, mentions selected city and reminders, and that the
+  phone marker/hint stays hidden until WhatsApp is selected.
+- Local Playwright visual smoke for `/one-time/signup` PASS at 1440, 1024,
+  768, 430, and 390 widths; refreshed
+  `ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json` records
+  six visible required dots, no visible optional-phone wording, and no
+  horizontal overflow.
+- `npm run test:onetime:focused` PASS: 62 tests, 62 passed.
+- `node --test tests/one-time-product-system.test.js` PASS: 8 tests, 8
+  passed.
+
 Readiness/no-send rerun:
 
 - `node --check scripts/check-onetime-external-setup-readiness.mjs` PASS.
@@ -83,6 +98,56 @@ Readiness/no-send rerun:
 - `npm run secrets:audit` PASS: 8363 tracked paths checked, 0 tracked
   secret-risk files found.
 - `npm run bna:run:next` PASS: no next unblocked executable batch.
+
+REQ-20260712-010 / REQ-20260712-023 matrix refresh:
+
+- `ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md`
+  added.
+- `node --test tests/one-time-signup-reminder-workflow.test.js` PASS: 10
+  tests, 10 passed, including paused/canceled class suppression and
+  unsubscribe/STOP/wrong-number guardrail assertions.
+- `node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js`
+  PASS: 12 tests, 12 passed.
+- `node --check scripts/simulate-one-time-class-reminder.mjs` PASS.
+- `node --test tests/one-time-reminder-simulation-command.test.js` PASS: 4
+  tests, 4 passed.
+- `node --test tests/one-time-reminder-simulation-command.test.js tests/one-time-signup-reminder-workflow.test.js tests/one-time-direct-signup-page.test.js`
+  PASS: 16 tests, 16 passed.
+- `npm run test:onetime:focused` PASS: 62 tests, 62 passed, including the
+  guarded single-recipient reminder simulation command.
+- JSON evidence integrity check PASS for `requirements.json` and
+  `ops/agent-task-ledger.jsonl`.
+- `npm run bna:run:validate` PASS after updating `git_refs.current_head` to
+  the current PR-lane HEAD.
+
+REQ-20260712-006 local gate:
+
+- `node --check server.js` PASS.
+- `node --test tests/one-time-direct-signup-page.test.js tests/one-time-onboarding-intake.test.js`
+  PASS: 6 tests, 6 passed.
+- `npm run test:onetime:focused` PASS: 62 tests, 62 passed.
+- `npm run operations:build` PASS.
+- `npm run operations:check-generated` PASS.
+- `npm run operations:check-canonical` PASS.
+- `npm run watchdog:actions` PASS: finding_count 0.
+- `npm run watchdog:protocol-drift` PASS and refreshed
+  `ops/watchdog-audits/2026-07-12-product-quality-drift.*`.
+- `npm run secrets:audit` PASS: 8373 tracked paths checked, 0 tracked
+  secret-risk files found.
+- `npm run bna:run:validate` PASS: counts verified 4, blocked 2,
+  needs_operator_decision 10, in_progress 7; work remains by design.
+- `npm run bna:run:next` PASS: no next unblocked executable batch.
+- `public/one-time/signup.html` stores exact product/CRM IDs and attribution
+  returned by `/api/one-time/interest` without requesting a student name in the
+  first signup.
+- `public/one-time-preview.html` blocks missing IDs, requires Family
+  learner/stage fields and School name/role fields, and posts attribution plus
+  `original_capture`.
+- `server.js` verifies `bna_product_leads` and `bna_parent_leads` are linked by
+  CRM metadata `product_lead_id` before local no-send onboarding writes.
+- `npm run one-time:smoke:crm-journey-local-db` remains BLOCKED by missing
+  `BNA_ONETIME_CRM_TEST_DATABASE_URL`; deployed live proof remains blocked by
+  release authorization.
 
 REQ-20260712-005 local gate:
 

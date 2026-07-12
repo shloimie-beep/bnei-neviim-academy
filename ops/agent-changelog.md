@@ -38371,3 +38371,59 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
   mutation, portal/account/payment/access mutation, local-class activation, or
   parallel PR was performed.
+
+## 2026-07-12 - One Time guarded single-recipient reminder command hardened
+
+- Hardened `scripts/simulate-one-time-class-reminder.mjs` so the operator
+  reminder test command requires the exact
+  `APPROVE_ONE_TIME_SINGLE_RECIPIENT_REMINDER_TEST` phrase, one positive
+  `--contact-id`, and `CRON_SECRET`.
+- The command now explicitly rejects broad audience flags such as `--all`,
+  `--audience`, `--segment`, `--workspace`, and `--project`.
+- Added `tests/one-time-reminder-simulation-command.test.js` and included it
+  in `npm run test:onetime:focused`.
+- Verification passed: command test 4/4, direct signup/reminder/simulation
+  bundle 16/16, `node --check scripts/simulate-one-time-class-reminder.mjs`,
+  and focused One Time gate 62/62.
+- No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
+  mutation, portal/account/payment/access mutation, local-class activation, or
+  parallel PR was performed.
+
+## 2026-07-12 - One Time signup continuation exact-linkage implemented
+
+- Updated the One Time direct signup success path to preserve returned
+  `product_lead_id`, `crm_lead_id`, source landing page, referrer, UTM, city
+  context, and browser timezone for the continuation form.
+- Updated the public onboarding continuation to require exact product/CRM lead
+  IDs, Family son name plus age/grade, and School name plus contact role before
+  posting the no-send onboarding payload.
+- Added server-side validation and exact original-capture verification: the
+  onboarding API now checks that the product lead and CRM lead are scoped to
+  `one_time_mishnah_class` and linked by CRM metadata `product_lead_id` before
+  local review writes.
+- Added/updated focused browser tests for session-storage linkage, Family and
+  School continuation validation, and no-send payload classification.
+- Verification passed: `node --check server.js`,
+  `node --test tests/one-time-direct-signup-page.test.js tests/one-time-onboarding-intake.test.js`
+  (6/6), and `npm run test:onetime:focused` (62/62).
+- Terminal proof remains blocked on `BNA_ONETIME_CRM_TEST_DATABASE_URL` for the
+  real local/test DB persistence journey and on release authorization for
+  deployed live smoke. No deploy, email/WhatsApp/Telegram send,
+  provider/production-data mutation, payment, access grant, local-class
+  activation, or parallel PR was performed.
+
+## 2026-07-12 - One Time signup checkbox and required-marker visual proof refreshed
+
+- Styled the required acknowledgement on `public/one-time/signup.html` as a
+  deliberate checkmark control and added the red required marker to the
+  acknowledgement line.
+- Kept the phone field free of visible optional wording; its required marker
+  and hint remain hidden until WhatsApp or Email and WhatsApp reminders are
+  selected.
+- Refreshed local `/one-time/signup` visual-smoke evidence at 1440, 1024, 768,
+  430, and 390 widths.
+- Verification passed: direct signup page test 2/2, `npm run
+  test:onetime:focused` 62/62, and One Time product-system test 8/8.
+- No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
+  mutation, portal/account/payment/access mutation, local-class activation, or
+  parallel PR was performed.

@@ -383,6 +383,9 @@
           <form id="one-time-onboarding" class="onboarding-form" data-one-time-onboarding data-onetime-onboarding-form>
             <input type="hidden" name="product_lead_id">
             <input type="hidden" name="crm_lead_id">
+            <input type="hidden" name="utm_json">
+            <input type="hidden" name="referrer">
+            <input type="hidden" name="source_landing_page">
             <div class="branch-grid" role="radiogroup" aria-label="Onboarding type">
               <label class="branch-card">
                 <input type="radio" name="audience_type" value="family" checked data-branch-radio data-action-id="ACTION-ONETIME-ONBOARDING-AUDIENCE">
@@ -422,11 +425,11 @@
             <div class="branch-fields active" data-branch-fields="family">
               <div class="field-grid">
                 <label>
-                  <span>Son's name <small>optional</small></span>
+                  <span>Son's name</span>
                   <input name="family_learner_name">
                 </label>
                 <label>
-                  <span>Age or grade <small>optional</small></span>
+                  <span>Age or grade</span>
                   <input name="family_learner_stage">
                 </label>
                 <label class="full">
@@ -509,11 +512,39 @@
         if (node && value) node.value = value;
       }
 
+      function queryUtm() {
+        const utm = {};
+        params.forEach((value, key) => {
+          if (/^(utm_|gclid|fbclid)/i.test(key)) utm[key] = value;
+        });
+        return utm;
+      }
+
+      function parseObject(value) {
+        if (value && typeof value === 'object' && !Array.isArray(value)) return value;
+        if (!value) return {};
+        try {
+          const parsed = JSON.parse(String(value));
+          return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+        } catch {
+          return {};
+        }
+      }
+
+      function parseHiddenJson(name) {
+        return parseObject(field(name)?.value || '{}');
+      }
+
       setValue('parent_name', storedLead.parent_name || params.get('parent_name'));
       setValue('parent_email', storedLead.email || params.get('email'));
       setValue('parent_phone', storedLead.phone || params.get('phone'));
+      setValue('city', params.get('city') || storedLead.city || storedLead.city_context?.label);
       setValue('product_lead_id', params.get('product_lead_id') || storedLead.product_lead_id);
       setValue('crm_lead_id', params.get('crm_lead_id') || storedLead.crm_lead_id);
+      const attributionUtm = { ...queryUtm(), ...parseObject(storedLead.utm) };
+      setValue('utm_json', JSON.stringify(attributionUtm));
+      setValue('referrer', params.get('referrer') || storedLead.referrer || document.referrer || '');
+      setValue('source_landing_page', params.get('source_landing_page') || storedLead.source_landing_page || '/one-time/signup');
 
       const requestedAudience = params.get('audience');
       if (requestedAudience === 'school' || requestedAudience === 'family') {
@@ -540,9 +571,13 @@
 
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
-        showStatus('', 'Saving onboarding details...');
         const data = new FormData(form);
         const audience = selectedAudience();
+        const productLeadId = String(data.get('product_lead_id') || '').trim();
+        const crmLeadId = String(data.get('crm_lead_id') || '').trim();
+        const sourceLandingPage = String(data.get('source_landing_page') || '').trim() || '/one-time/signup';
+        const referrer = String(data.get('referrer') || '').trim();
+        const utm = parseHiddenJson('utm_json');
         const payload = {
           parent_name: String(data.get('parent_name') || '').trim(),
           parent_email: String(data.get('parent_email') || '').trim().toLowerCase(),
@@ -561,12 +596,24 @@
             : String(data.get('family_questions') || '').trim(),
           source_detail: 'One Time public landing onboarding continuation',
           route: window.location.pathname,
-          product_lead_id: String(data.get('product_lead_id') || '').trim(),
-          crm_lead_id: String(data.get('crm_lead_id') || '').trim(),
+          product_lead_id: productLeadId,
+          crm_lead_id: crmLeadId,
+          source_landing_page: sourceLandingPage,
+          referrer,
+          utm,
+          original_capture: {
+            product_lead_id: productLeadId,
+            crm_lead_id: crmLeadId,
+            source_landing_page: sourceLandingPage,
+            referrer,
+            utm
+          },
           raw_intake: [
-            data.get('product_lead_id') ? `Product lead: ${data.get('product_lead_id')}` : '',
-            data.get('crm_lead_id') ? `CRM lead: ${data.get('crm_lead_id')}` : '',
-            `Landing source: ${params.get('source') || 'direct'}`
+            productLeadId ? `Product lead: ${productLeadId}` : '',
+            crmLeadId ? `CRM lead: ${crmLeadId}` : '',
+            `Landing source: ${params.get('source') || sourceLandingPage || 'direct'}`,
+            referrer ? `Referrer: ${referrer}` : '',
+            Object.keys(utm).length ? `UTM: ${JSON.stringify(utm)}` : ''
           ].filter(Boolean).join('\n'),
           viewport: {
             width: window.innerWidth,
@@ -583,7 +630,20 @@
           showStatus('error', 'Please enter a contact name and email.');
           return;
         }
+        if (!/^[1-9]\d*$/.test(productLeadId) || !/^[1-9]\d*$/.test(crmLeadId)) {
+          showStatus('error', 'Please continue from your saved signup so this stays linked to the original capture.');
+          return;
+        }
+        if (audience === 'family' && (!payload.learner_name || !payload.learner_stage)) {
+          showStatus('error', "Please enter your son's name and age or grade.");
+          return;
+        }
+        if (audience === 'school' && (!payload.learner_name || !payload.learner_stage)) {
+          showStatus('error', 'Please enter the school name and your role.');
+          return;
+        }
 
+        showStatus('', 'Saving onboarding details...');
         const button = form.querySelector('button[type="submit"]');
         if (button) button.disabled = true;
         try {

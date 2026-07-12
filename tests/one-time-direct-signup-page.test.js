@@ -79,6 +79,8 @@ test('One Time direct signup route, registries, and landing CTAs are canonical',
   assert.match(signupHtml, /name="reminder_preference" value="both"/);
   assert.match(signupHtml, /name="reminder_preference" value="none"/);
   assert.match(signupHtml, /Use my selected city for class times\. By choosing reminders, I agree to receive class updates and can stop them at any time\./);
+  assert.match(signupHtml, /\.consent-check input:checked::before/);
+  assert.match(signupHtml, /id="signupAcknowledgement"[^>]+required/);
   assert.match(signupHtml, /Required for WhatsApp reminders/);
   assert.match(signupHtml, /class="required-dot"/);
   assert.doesNotMatch(signupHtml, /Add a phone number if you want WhatsApp reminders/i);
@@ -127,12 +129,19 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
         requiredDotCount: document.querySelectorAll('.required-dot:not([hidden])').length,
         phoneDotVisible: !document.querySelector('[data-phone-required-dot]')?.hidden,
         phoneHintVisible: !document.querySelector('[data-phone-hint]')?.hidden,
+        acknowledgementRequired: Boolean(document.querySelector('input[name="signup_acknowledgement"]')?.required),
+        acknowledgementChecked: Boolean(document.querySelector('input[name="signup_acknowledgement"]')?.checked),
+        consentText: document.querySelector('.consent-copy')?.textContent || '',
       }));
       assert.equal(metrics.formVisible, true, `form visible at ${width}`);
       assert.equal(metrics.checkedReminderCount, 0, `no preselected reminder at ${width}`);
       assert.ok(metrics.requiredDotCount >= 5, `required dots visible at ${width}`);
       assert.equal(metrics.phoneDotVisible, false, `phone dot hidden before WhatsApp selection at ${width}`);
       assert.equal(metrics.phoneHintVisible, false, `phone hint hidden before WhatsApp selection at ${width}`);
+      assert.equal(metrics.acknowledgementRequired, true, `acknowledgement required at ${width}`);
+      assert.equal(metrics.acknowledgementChecked, false, `acknowledgement not prechecked at ${width}`);
+      assert.match(metrics.consentText, /selected city/i, `consent line mentions selected city at ${width}`);
+      assert.match(metrics.consentText, /reminders/i, `consent line mentions reminders at ${width}`);
       assert.ok(metrics.scrollWidth <= metrics.clientWidth + 1, `no horizontal overflow at ${width}`);
     }
 
@@ -183,6 +192,18 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
     assert.equal(payload.metadata.reminder_consent_policy_version, 'one-time-class-reminders-v1-2026-07-12');
     assert.equal(Object.prototype.hasOwnProperty.call(payload, 'student_name'), false);
     assert.equal(await page.locator('[data-continue-link]').count(), 0);
+    const storedLead = JSON.parse(await page.evaluate(() => window.sessionStorage.getItem('oneTimeSignupLead')));
+    assert.equal(storedLead.parent_name, 'Leah Cohen');
+    assert.equal(storedLead.contact_name, 'Leah Cohen');
+    assert.equal(storedLead.email, 'leah@example.invalid');
+    assert.equal(storedLead.phone, '+1 732 555 0100');
+    assert.equal(storedLead.signup_as, 'Family');
+    assert.equal(storedLead.product_lead_id, '123');
+    assert.equal(storedLead.crm_lead_id, '456');
+    assert.equal(storedLead.source_landing_page, '/one-time/signup');
+    assert.equal(storedLead.city_context.id, 'lakewood-nj-us');
+    assert.equal(storedLead.city_context.timezone, 'America/New_York');
+    assert.deepEqual(storedLead.utm, {});
   } finally {
     await browser.close();
     await new Promise((resolve) => srv.close(resolve));

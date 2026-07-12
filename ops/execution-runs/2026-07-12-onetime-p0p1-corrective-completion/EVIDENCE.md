@@ -102,11 +102,12 @@ REQ-20260712-013 evidence:
   city/timezone metadata, email, phone required only for WhatsApp/Both
   reminders, required no-preselected reminder choice, red required markers, and
   a clicked acknowledgment checkbox for selected-city class-time use and
-  selected reminder consent. The customer-facing form does not say "phone
-  optional" or show optional-style phone guidance. The phone required marker
-  and "Required for WhatsApp reminders" hint are hidden until WhatsApp/Both is
-  selected. It does not ask for student name and does not show Member Login or
-  portal actions.
+  selected reminder consent. The acknowledgement uses a visible checkmark
+  control and is required but not prechecked. The customer-facing form does not
+  say "phone optional" or show optional-style phone guidance. The phone
+  required marker and "Required for WhatsApp reminders" hint are hidden until
+  WhatsApp/Both is selected. It does not ask for student name and does not show
+  Member Login or portal actions.
 - Route/action/config coverage updated:
   `ops/route-registry.json`, `ops/action-registry.json`, and
   `config/service-provider-sites/one-time.json`.
@@ -139,13 +140,38 @@ REQ-20260712-013 evidence:
   (12/12),
   `node --test tests/one-time-direct-signup-page.test.js tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js tests/one-time-brand-helper-isolation.test.js tests/one-time-signup-reminder-workflow.test.js`
   (33/33),
-  `npm run test:onetime:focused` (57/57),
+  `npm run test:onetime:focused` (62/62, including the guarded
+  single-recipient reminder simulation command),
   `npm run watchdog:actions` (finding_count 0), and
   `npm run watchdog:protocol-drift`, and
   `npm run bna:run:validate` after statuses were corrected to open
   non-terminal deployment-required work.
 - Production deploy/live proof is not claimed. It remains gated by
   `REQ-20260712-011` and `REQ-20260712-022`.
+
+REQ-20260712-006 local onboarding-linkage evidence:
+
+- `public/one-time/signup.html` now stores returned `product_lead_id`,
+  `crm_lead_id`, source landing page, referrer, UTM, city context, and browser
+  timezone in `oneTimeSignupLead` after the first lightweight signup.
+- `public/one-time-preview.html` validates that continuation has positive
+  product/CRM lead IDs, preserves attribution, requires son's name plus
+  age/grade for Family, and requires school name plus contact role for School.
+- `server.js` carries exact-capture fields through transcript, metadata,
+  source context, communications, task parse payload, and notifications.
+- `server.js` verifies the `bna_product_leads` record and `bna_parent_leads`
+  record are scoped to `one_time_mishnah_class` and linked by CRM metadata
+  `product_lead_id` before local onboarding writes.
+- Direct-signup metadata now includes `one_time_direct_signup: true` for the
+  direct signup capture path, so dedupe/original-capture recognition is
+  consistent with existing queries.
+- Verification passed:
+  `node --test tests/one-time-direct-signup-page.test.js tests/one-time-onboarding-intake.test.js`
+  (6/6), `node --check server.js`, and `npm run test:onetime:focused` (62/62).
+- Remaining blocker: real local/test DB persistence proof still needs
+  `BNA_ONETIME_CRM_TEST_DATABASE_URL`; deployed/live proof still needs release
+  authorization. No production deploy, external send, payment, access grant, or
+  production data mutation was performed.
 
 REQ-20260712-010 / REQ-20260712-023 matrix evidence:
 
@@ -154,19 +180,26 @@ REQ-20260712-010 / REQ-20260712-023 matrix evidence:
 - The matrix covers Family/School, direct route/Back to Home, responsive
   signup screenshots, internal-copy removal, city/timezone/DST behavior,
   worldwide instant, local display, phone gating, no-reminder confirmation,
-  explicit consent, CRM/outbox/idempotency, paused/canceled class suppression,
-  unsubscribe/STOP/wrong-number suppression, missing/changed class-link
-  handling, Rabbi Telegram, WAPI readiness, local-class preview/activation
-  gate, no portal/payment/access paths, cross-workspace isolation, `.invalid`
-  no-send tests, and operator-test blockers.
+  explicit consent, CRM/outbox/idempotency, guarded single-recipient reminder
+  simulation, paused/canceled class suppression, unsubscribe/STOP/wrong-number
+  suppression, missing/changed class-link handling, Rabbi Telegram, WAPI
+  readiness, local-class preview/activation gate, no portal/payment/access
+  paths, cross-workspace isolation, `.invalid` no-send tests, and
+  operator-test blockers.
 - `tests/one-time-signup-reminder-workflow.test.js` now explicitly asserts the
   dedicated reminder path contains `ONE_TIME_CLASS_ACTIVE`,
   `class_paused_or_canceled`, `oneTimeReminderSuppressionReason`,
   `email_unsubscribed`, `whatsapp_stop`, and `wrong_number` guardrails.
+- `scripts/simulate-one-time-class-reminder.mjs` now refuses broad audience
+  flags and requires exact confirmation, a positive `--contact-id`, and
+  `CRON_SECRET` before calling the protected cron endpoint. The command is
+  covered by `tests/one-time-reminder-simulation-command.test.js` and the
+  focused One Time gate.
 - The broader older REQ-20260712-010 screenshot/matrix requirement remains
-  in progress, because landing, Family/School continuation, provider login,
-  Operations, CRM, mailbox, and Robot live/deployed screenshots are not all
-  complete in this urgent signup/reminder slice.
+  in progress, because provider login, Operations, CRM, mailbox, and Robot
+  live/deployed screenshots are not all complete in this urgent signup/reminder
+  slice. Local Family/School continuation browser payload proof is present, but
+  real DB/live proof is still blocked.
 
 REQ-20260712-005 evidence:
 

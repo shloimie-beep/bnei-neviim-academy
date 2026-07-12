@@ -32,6 +32,13 @@ Run created and active.
   browser/API smoke, cross-workspace denial, and targeted mailbox proof are
   local-pass, but the required real persistence journey cannot run until
   `BNA_ONETIME_CRM_TEST_DATABASE_URL` is provided.
+- `REQ-20260712-006` is locally implemented but blocked on terminal proof:
+  direct signup now stores exact product/CRM IDs and attribution, continuation
+  validates those IDs plus Family/School required fields, and the server
+  verifies the product lead and CRM lead match the original One Time capture
+  before local writes. Real local/test DB persistence still needs
+  `BNA_ONETIME_CRM_TEST_DATABASE_URL`, and live proof still needs release
+  authorization.
 - `REQ-20260712-008` needs operator decision for release/live proof but is
   verified locally: canonical ramble-to-done service,
   Operations API receipts, ChatGPT dropoff canonical preview, `codex_done`
@@ -43,8 +50,8 @@ Run created and active.
   blocked-decision independence, failed verification staying open, UI
   release/live gating, intake API readback, packet-status migration/rejection,
   and worker-offline truth.
-- `REQ-20260712-006`, `REQ-20260712-007`, and `REQ-20260712-010` remain open;
-  `REQ-20260712-006` depends on the blocked CRM persistence proof.
+- `REQ-20260712-007` and `REQ-20260712-010` remain open; `REQ-20260712-006`
+  remains blocked only for the real persistence/live proof gates above.
 - `REQ-20260712-022` is blocked on release authorization and the operator's
   personal deployed end-to-end test.
 - `REQ-20260712-011` is blocked on explicit release authorization.

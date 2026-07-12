@@ -15,13 +15,30 @@ const contactId = argValue('--contact-id') || argValue('--contactId');
 const baseUrl = (argValue('--base-url') || process.env.ONE_TIME_APP_BASE_URL || process.env.PUBLIC_BASE_URL || 'http://127.0.0.1:3000').replace(/\/+$/, '');
 const now = argValue('--now');
 const dryRun = hasFlag('--dry-run') || hasFlag('--dryRun');
+const forbiddenAudienceFlags = [
+  '--all',
+  '--audience',
+  '--audience-id',
+  '--audienceId',
+  '--segment',
+  '--segment-id',
+  '--segmentId',
+  '--workspace',
+  '--project',
+];
 
 if (confirm !== 'APPROVE_ONE_TIME_SINGLE_RECIPIENT_REMINDER_TEST') {
   console.error('Refusing to run. Pass --confirm APPROVE_ONE_TIME_SINGLE_RECIPIENT_REMINDER_TEST.');
   process.exit(1);
 }
 
-if (!/^\d+$/.test(contactId)) {
+const suppliedForbiddenAudienceFlag = forbiddenAudienceFlags.find((flag) => hasFlag(flag));
+if (suppliedForbiddenAudienceFlag) {
+  console.error(`Refusing to run. ${suppliedForbiddenAudienceFlag} is not allowed; this command only accepts one --contact-id.`);
+  process.exit(1);
+}
+
+if (!/^[1-9]\d*$/.test(contactId)) {
   console.error('Refusing to run. Pass one numeric --contact-id for the operator-submitted test contact.');
   process.exit(1);
 }

@@ -313,6 +313,14 @@ test('server declares protected cron and local-class preview without portal/paym
   assert.match(server, /email_unsubscribed/);
   assert.match(server, /whatsapp_stop/);
   assert.match(server, /wrong_number/);
+  const cronStart = server.indexOf("app.post('/api/cron/one-time/class-reminders'");
+  const cronEnd = server.indexOf("app.post(['/api/bna/product-leads', '/api/one-time/interest']", cronStart);
+  assert.notEqual(cronStart, -1);
+  assert.notEqual(cronEnd, -1);
+  const cronRoute = server.slice(cronStart, cronEnd);
+  assert.match(cronRoute, /if \(!process\.env\.CRON_SECRET\) \{/);
+  assert.doesNotMatch(cronRoute, /!process\.env\.CRON_SECRET\s*&&\s*!dryRun/);
+  assert.match(cronRoute, /suppliedSecret !== process\.env\.CRON_SECRET/);
   assert.match(workflow, /ONE_TIME_CLASS_REMINDERS_CONFIRM/);
   assert.match(workflow, /APPROVE_ONE_TIME_CLASS_REMINDERS/);
 

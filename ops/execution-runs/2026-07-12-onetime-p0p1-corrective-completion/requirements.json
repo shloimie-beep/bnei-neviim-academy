@@ -1,11 +1,11 @@
 {
   "run_id": "2026-07-12-onetime-p0p1-corrective-completion",
   "title": "One Time P0/P1 Corrective Completion",
-  "updated_at": "2026-07-12T10:36:00+03:00",
+  "updated_at": "2026-07-12T11:42:00+03:00",
   "git_refs": {
     "expected_branch": "codex/onetime-p0p1-corrective-20260711",
     "branch": "codex/onetime-p0p1-corrective-20260711",
-    "current_head": "5621a2d74a9f3cfb29b5fc83b0a99d6a4171a20d",
+    "current_head": "de601c82290110bbf7029364cecca834f8f3440d",
     "pr_number": 129,
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
     "pr_branch": "codex/onetime-p0p1-corrective-20260711",
@@ -16,7 +16,11 @@
       "ee264c5a4b8329719b5420ffb6f99ccae93e1a60",
       "efcafcb85cad3d77bb754f3e18c784ba5ff9182f",
       "11c956f141dce0f46883e7549f56f31045c0b07c",
-      "5621a2d74a9f3cfb29b5fc83b0a99d6a4171a20d"
+      "5621a2d74a9f3cfb29b5fc83b0a99d6a4171a20d",
+      "7bdc5519d167ea560f3f8d383cd771f7f1e540c5",
+      "a7e75ebaa4f495a9e201109222c3a1acd7ef3214",
+      "0df0300ab1e1d3701a4fa3489c9fc9cfc9eabcfb",
+      "de601c82290110bbf7029364cecca834f8f3440d"
     ],
     "current_priority_addendum": "RAW-20260712-002",
     "current_p0_batch": "crm-confirmation-outbox"
@@ -819,7 +823,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T10:52:00+03:00",
+      "updated_at": "2026-07-12T11:10:00+03:00",
       "id": "REQ-20260712-017",
       "title": "Build dedicated One Time class reminder dispatcher",
       "source_statement_ids": [
@@ -831,7 +835,7 @@
         "REQ-20260712-016"
       ],
       "status": "in_progress",
-      "implementation_status": "Protected /api/cron/one-time/class-reminders endpoint locally enqueues dedicated One Time reminder outbox rows using class-date/contact/channel/30-minute-window/schedule-version idempotency. Hosted cron, delivery processor, provider logs, and live retry/suppression proof remain required.",
+      "implementation_status": "Protected /api/cron/one-time/class-reminders endpoint locally enqueues dedicated One Time reminder outbox rows using class-date/contact/channel/30-minute-window/schedule-version idempotency. The guarded operator test command now requires APPROVE_ONE_TIME_SINGLE_RECIPIENT_REMINDER_TEST, one positive --contact-id, CRON_SECRET, rejects broad audience flags, and is covered by the focused One Time gate. Hosted cron, delivery processor, provider logs, and live retry/suppression proof remain required.",
       "next_action": "Complete hosted readiness/deploy/live-smoke/provider evidence and operator personal test before terminal closeout.",
       "acceptance_criteria": [
         "Uses ONE_TIME_CLASS_REMINDERS_ENABLED, ONE_TIME_CLASS_REMINDERS_CONFIRM, and CRON_SECRET gates.",
@@ -845,18 +849,22 @@
         "idempotency tests",
         "suppression tests",
         "node --check server.js PASS",
-        "npm run test:onetime:focused PASS 57/57",
+        "npm run test:onetime:focused PASS 62/62",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
+        "node --test tests/one-time-reminder-simulation-command.test.js PASS 4/4",
+        "node --check scripts/simulate-one-time-class-reminder.mjs PASS"
       ],
       "implementation_files": [
         "server.js",
         "scripts/simulate-one-time-class-reminder.mjs",
         "src/lib/bna/one-time-signup-workflow.js",
-        "tests/one-time-signup-reminder-workflow.test.js"
+        "tests/one-time-signup-reminder-workflow.test.js",
+        "tests/one-time-reminder-simulation-command.test.js",
+        "package.json"
       ],
       "expected_result": "Daily reminders can be dispatched exactly once per eligible recipient/channel/class event."
     },
@@ -1093,9 +1101,13 @@
       "blocker": "The operator must approve release/deployment and personally submit exactly one test signup before Codex can verify real external-send evidence or activate the exact three-contact local segment.",
       "blocker_owner": "Operator / reviewer",
       "blocker_next_action": "After local implementation and no-send validation pass, approve deployment and submit the personal test through https://join.onetimeonetime.com/one-time/signup, then report when the page confirms signup.",
-      "evidence": [],
+      "evidence": [
+        "scripts/simulate-one-time-class-reminder.mjs requires --confirm APPROVE_ONE_TIME_SINGLE_RECIPIENT_REMINDER_TEST, one positive numeric --contact-id, and CRON_SECRET before calling the protected reminder endpoint.",
+        "scripts/simulate-one-time-class-reminder.mjs rejects broad audience flags including --all, --audience, --segment, --workspace, and --project.",
+        "tests/one-time-reminder-simulation-command.test.js covers missing confirmation, missing/zero contact, unrestricted audience refusal, missing CRON_SECRET refusal, and contact-scoped request/output assertions."
+      ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T09:20:00+03:00",
+      "updated_at": "2026-07-12T11:10:00+03:00",
       "id": "REQ-20260712-022",
       "title": "Gate deployed personal end-to-end operator test",
       "source_statement_ids": [
@@ -1107,7 +1119,7 @@
         "REQ-20260712-023"
       ],
       "status": "needs_operator_decision",
-      "implementation_status": "Pending implementation, tests, deployment authorization, readiness, scheduler health, visual proof, and operator personal signup submission.",
+      "implementation_status": "Guarded single-recipient reminder simulation command is locally implemented and tested. Deployment authorization, hosted readiness, scheduler health, visual proof on the deployed URL, real provider evidence, and operator personal signup submission remain required before terminal closeout.",
       "next_action": "After approval and operator submission, verify product lead, CRM contact, location/timezone, consent, email, optional WhatsApp, one Telegram alert, no portal/access records, replay idempotency, and guarded reminder simulation.",
       "acceptance_criteria": [
         "Automation deployed and ready message is given only after implementation/tests/readiness/deploy/visual proof.",
@@ -1117,10 +1129,14 @@
       ],
       "verification": [
         "deployed personal E2E readback after authorization",
-        "guarded single-recipient reminder simulation"
+        "guarded single-recipient reminder simulation",
+        "node --test tests/one-time-reminder-simulation-command.test.js PASS 4/4",
+        "npm run test:onetime:focused PASS 62/62"
       ],
       "implementation_files": [
         "scripts/simulate-one-time-class-reminder.mjs",
+        "tests/one-time-reminder-simulation-command.test.js",
+        "package.json",
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/DEPLOYMENT.md"
       ],
       "expected_result": "Real-send workflow remains gated until the operator personally performs and confirms the deployed test."
@@ -1140,7 +1156,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T11:03:00+03:00",
+      "updated_at": "2026-07-12T11:10:00+03:00",
       "id": "REQ-20260712-023",
       "title": "Run required signup/reminder test matrix and evidence closeout",
       "source_statement_ids": [
@@ -1160,7 +1176,7 @@
         "REQ-20260712-021"
       ],
       "status": "in_progress",
-      "implementation_status": "Local test matrix is partially complete and now mapped in ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md: direct route, Back to Home, styling smoke, internal-copy removal, city/timezone validation, DST conversion, worldwide instant, phone gating, consent, dedupe/idempotency helpers, outbox, cron gates, paused/canceled class suppression guardrails, email unsubscribe and WhatsApp STOP/wrong-number suppression guardrails, WAPI gates, Rabbi Telegram payload, local-class preview, and no-portal negatives are covered. Deployment, readiness checks, live smoke, operator personal test, and provider evidence remain required.",
+      "implementation_status": "Local test matrix is partially complete and now mapped in ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md: direct route, Back to Home, styling smoke, internal-copy removal, city/timezone validation, DST conversion, worldwide instant, phone gating, consent, dedupe/idempotency helpers, outbox, cron gates, guarded single-recipient simulation command, paused/canceled class suppression guardrails, email unsubscribe and WhatsApp STOP/wrong-number suppression guardrails, WAPI gates, Rabbi Telegram payload, local-class preview, and no-portal negatives are covered. Deployment, readiness checks, live smoke, operator personal test, and provider evidence remain required.",
       "next_action": "Complete hosted readiness/deploy/live-smoke/provider evidence and operator personal test before terminal closeout.",
       "acceptance_criteria": [
         "Family/School, route/back link, styling, internal-copy removal, city autocomplete, timezone validation, DST, worldwide instant, local display, phone validation, no-reminder confirmation, consent, CRM dedupe, outbox retry, reminder idempotency, suppression, missing/changed Zoom link, Telegram, WAPI failure, local-contact preview, no portal/payment/access, cross-workspace isolation, and .invalid no-send cases are covered."
@@ -1172,7 +1188,7 @@
         "watchdog:protocol-drift",
         "npm run bna:run:validate",
         "node --check server.js PASS",
-        "npm run test:onetime:focused PASS 57/57",
+        "npm run test:onetime:focused PASS 62/62",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
@@ -1180,12 +1196,15 @@
         "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
         "node --test tests/one-time-signup-reminder-workflow.test.js PASS 10/10 with paused/canceled and STOP/wrong-number static guardrail assertions",
         "node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
+        "node --test tests/one-time-reminder-simulation-command.test.js PASS 4/4",
+        "node --test tests/one-time-reminder-simulation-command.test.js tests/one-time-signup-reminder-workflow.test.js tests/one-time-direct-signup-page.test.js PASS 16/16",
         "ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md created with requirement-by-requirement proof and blocker mapping"
       ],
       "implementation_files": [
         "tests/one-time-direct-signup-page.test.js",
         "tests/one-time-focused-landing.test.js",
         "tests/one-time-signup-reminder-workflow.test.js",
+        "tests/one-time-reminder-simulation-command.test.js",
         "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json",
         "ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md"
       ],
@@ -1352,13 +1371,13 @@
       "depends_on": [
         "REQ-20260712-005"
       ],
-      "status": "not_started",
-      "implementation_status": "Pending signup/onboarding API inspection and Family/School persistence proof.",
-      "can_continue_without_operator": true,
-      "blocker": "",
-      "blocker_owner": "",
-      "blocker_next_action": "",
-      "next_action": "Inspect public signup/onboarding APIs, enforce first-step fields, preserve lead IDs/context, and test Family/School continuations.",
+      "status": "blocked",
+      "implementation_status": "Local implementation is complete for exact signup-to-continuation linkage: direct signup stores product_lead_id, crm_lead_id, UTM/referrer/source context; continuation validates both IDs and Family/School required fields; server verifies the product lead and CRM lead match the original One Time capture before local review writes. Terminal persistence proof is blocked because the approved local/test CRM database URL is missing, and live proof is blocked until PR #129 release is authorized.",
+      "can_continue_without_operator": false,
+      "blocker": "BNA_ONETIME_CRM_TEST_DATABASE_URL is missing for the real local/test Postgres persistence journey, and deployment/live smoke is not authorized.",
+      "blocker_owner": "Operator / local test environment",
+      "blocker_next_action": "Provide an approved non-production BNA_ONETIME_CRM_TEST_DATABASE_URL, rerun the real persistence journey, then authorize PR #129 release/deploy/live smoke for terminal proof.",
+      "next_action": "Rerun the real Family/School continuation persistence journey against an approved test database, then deployed live smoke after release authorization.",
       "acceptance_criteria": [
         "Quick signup requires contact name, email, and Family/School choice.",
         "Phone is optional and student name is not requested in first capture.",
@@ -1367,21 +1386,40 @@
         "Family and School branches require their relevant fields and classify leads correctly.",
         "No external send, payment, or access mutation occurs."
       ],
-      "evidence": [],
+      "evidence": [
+        "public/one-time/signup.html stores returned product_lead_id, crm_lead_id, source_landing_page, referrer, UTM, city context, and browser timezone in oneTimeSignupLead without requesting student name in the first capture.",
+        "public/one-time-preview.html validates product_lead_id and crm_lead_id, preserves UTM/referrer/source attribution, requires son name plus age/grade for Family, and requires school name plus role for School.",
+        "server.js buildOneTimeOnboardingFields() carries productLeadId, crmLeadId, sourceLandingPage, referrer, UTM, and originalCapture into transcript, metadata, tasks, communications, and notifications.",
+        "server.js resolveOneTimeOnboardingOriginalCapture() verifies bna_product_leads and bna_parent_leads are scoped to one_time_mishnah_class and linked by crm metadata product_lead_id before local writes.",
+        "server.js direct signup metadata now records one_time_direct_signup=true for direct signup dedupe/original-capture recognition.",
+        "tests/one-time-direct-signup-page.test.js asserts first signup stores exact IDs and attribution in session storage.",
+        "tests/one-time-onboarding-intake.test.js asserts continuation validation and Family/School browser payload classification without external sends."
+      ],
       "verification": [
-        "public signup API test",
-        "Family continuation API/browser test",
-        "School continuation API/browser test"
+        "node --check server.js PASS",
+        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-onboarding-intake.test.js PASS 6/6",
+        "npm run test:onetime:focused PASS 62/62",
+        "Real local/test database persistence journey BLOCKED: missing BNA_ONETIME_CRM_TEST_DATABASE_URL",
+        "Deployment/live smoke BLOCKED: release authorization unavailable",
+        "npm run operations:build PASS",
+        "npm run operations:check-generated PASS",
+        "npm run operations:check-canonical PASS",
+        "npm run watchdog:actions PASS finding_count 0",
+        "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
+        "npm run secrets:audit PASS 8373 tracked paths checked, 0 tracked secret-risk files found",
+        "npm run bna:run:validate PASS with work remaining by design"
       ],
       "implementation_files": [
         "server.js",
-        "public/one-time/index.html",
+        "public/one-time/signup.html",
         "public/one-time-preview.html",
-        "config/service-provider-sites/one-time.json",
-        "scripts/smoke-onetime-public-onboarding-local.mjs"
+        "tests/one-time-direct-signup-page.test.js",
+        "tests/one-time-onboarding-intake.test.js",
+        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/TEST-RESULTS.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T08:31:00+03:00",
+      "updated_at": "2026-07-12T11:42:00+03:00",
       "expected_result": "Public signup becomes a clean no-send lead capture that continues through exact Family/School onboarding records."
     },
     {
@@ -1673,7 +1711,7 @@
         "REQ-20260712-009"
       ],
       "status": "in_progress",
-      "implementation_status": "Partially advanced for the urgent signup/reminder slice: local signup screenshots exist at 1440, 1024, 768, 430, and 390, and ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md maps the P0 signup/reminder requirements to source files, tests, screenshots, readiness reports, and remaining blockers. The older broader screenshot set for landing, Family/School continuation, provider login, Operations, CRM, mailbox, and Robot remains incomplete or release-gated.",
+      "implementation_status": "Partially advanced for the urgent signup/reminder slice: local signup screenshots exist at 1440, 1024, 768, 430, and 390, and ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md maps the P0 signup/reminder requirements to source files, tests, screenshots, readiness reports, and remaining blockers. The older broader screenshot set for provider login, Operations, CRM, mailbox, and deployed/live proof remains incomplete or release-gated; local Family/School continuation browser payload proof is now present.",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
@@ -1686,13 +1724,16 @@
       ],
       "evidence": [
         "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json records local /one-time/signup screenshots and DOM checks at 1440, 1024, 768, 430, and 390 widths.",
-        "ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md maps the urgent signup/reminder requirements to implementation files, tests, screenshots, readiness reports, and explicit live/provider/operator blockers."
+        "ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md maps the urgent signup/reminder requirements to implementation files, tests, screenshots, readiness reports, and explicit live/provider/operator blockers.",
+        "tests/one-time-onboarding-intake.test.js preserves exact Family/School continuation payload proof for product_lead_id, crm_lead_id, UTM/referrer/source, and branch-required fields."
       ],
       "verification": [
         "Playwright screenshot capture",
         "requirement matrix review",
         "npm run bna:run:validate",
-        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
+        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
+        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-onboarding-intake.test.js PASS 6/6",
+        "npm run test:onetime:focused PASS 62/62"
       ],
       "implementation_files": [
         "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json",
@@ -1703,7 +1744,7 @@
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/STATUS.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-12T11:03:00+03:00",
+      "updated_at": "2026-07-12T11:34:00+03:00",
       "expected_result": "The PR has independent visual/runtime proof and a source-to-code-to-proof matrix for review."
     },
     {
