@@ -38898,3 +38898,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blocker: `REQ-20260712-305` still needs controlled same-email /
   same-phone workspace-isolation proof before terminal Done; full production
   readiness still blocks on external Stripe/campaign setup fields.
+
+## 2026-07-12 - Shared CRM identity isolation live proof
+
+- Added `npm run app:smoke:crm-identity-isolation`, a transactional live DB
+  smoke that refuses to run without `--allow-transactional-live-proof`.
+- Ran the smoke against the live BNA database with synthetic data inside a
+  transaction and rolled it back.
+- Proof passed: the same synthetic email and phone coexist separately in the
+  `bna` and `rabbi_sheller_provider` workspaces; workspace-filtered lookups
+  return one row each; a duplicate same-workspace email identity is blocked by
+  the unique index; rollback left zero synthetic contacts and identities.
+- Evidence:
+  `ops/live-smokes/2026-07-12T20-48-11-384Z-crm-identity-isolation-live-smoke.md`.

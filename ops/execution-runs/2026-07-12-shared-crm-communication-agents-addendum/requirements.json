@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-12T23:38:00+03:00",
+  "updated_at": "2026-07-12T23:48:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -183,10 +183,10 @@
       "priority": "P0",
       "batch_id": "1-identity-isolation",
       "depends_on": [],
-      "status": "needs_verification",
-      "implementation_status": "Schema and lookup patches for workspace-scoped contact identities are committed, pushed, deployed to BNA and One Time, and focused contract tests pass.",
+      "status": "done",
+      "implementation_status": "Workspace-scoped contact identity schema and lookup patches are committed, pushed, deployed, and live transaction-rollback proof passed for same email and same phone across BNA and One Time workspaces.",
       "can_continue_without_operator": true,
-      "next_action": "Run a controlled live or staging same-email/same-phone isolation proof before marking done.",
+      "next_action": "Continue with REQ-20260712-306 canonical contact aggregate service.",
       "acceptance_criteria": [
         "Contact identity lookup/upsert is scoped by workspace_id, global identity uniqueness is removed, same email/phone can exist in BNA and One Time, and unauthorized contact/thread URLs cannot reveal other-workspace records."
       ],
@@ -197,27 +197,41 @@
         "tests/assistant-portal-communications-contract.test.js",
         "tests/whapi-log-sync-contract.test.js",
         "BNA live /api/deploy-info commit_sha=966ded41b517433533f24370949426cfd1200213",
-        "One Time live /api/deploy-info commit_sha=966ded41b517433533f24370949426cfd1200213"
+        "One Time live /api/deploy-info commit_sha=966ded41b517433533f24370949426cfd1200213",
+        "ops/live-smokes/2026-07-12T20-48-11-384Z-crm-identity-isolation-live-smoke.md",
+        "ops/live-smokes/2026-07-12T20-48-11-384Z-crm-identity-isolation-live-smoke.json"
       ],
       "verification": [
         "PASS node --check server.js",
         "PASS node --check src/lib/integrations/resend-inbound-crm.js",
+        "PASS node --check scripts/smoke-crm-identity-isolation-live.mjs",
         "PASS node --test tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js",
         "PASS node --test tests/rabbi-telegram-notifications.test.js tests/agent-review-hub.test.js tests/bna-helper-tools.test.js tests/production-readiness-gate.test.js tests/production-unblocker.test.js tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js",
         "PASS npm run secrets:audit",
         "PASS git diff --check",
         "PASS BNA live health/deploy-info/operations-login readback at deployed SHA",
-        "PASS One Time live separate-instance smoke at deployed SHA"
+        "PASS One Time live separate-instance smoke at deployed SHA",
+        "PASS npm run app:smoke:crm-identity-isolation -- --allow-transactional-live-proof --write-report"
       ],
       "implementation_files": [
         "server.js",
         "src/lib/integrations/resend-inbound-crm.js",
+        "scripts/smoke-crm-identity-isolation-live.mjs",
+        "package.json",
         "tests/resend-inbound-crm.test.js",
         "tests/assistant-portal-communications-contract.test.js",
         "tests/whapi-log-sync-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:38:00+03:00",
+      "implementation_commit": "966ded41b517433533f24370949426cfd1200213",
+      "pushed_commit": "7fee7ca15874e1964da8d59671322130fe9ed2e0",
+      "deployed_commit": "7fee7ca15874e1964da8d59671322130fe9ed2e0",
+      "deployment_evidence": [
+        "BNA production verified at https://bneineviimacademy.org/api/deploy-info with commit_sha=7fee7ca15874e1964da8d59671322130fe9ed2e0",
+        "One Time production verified at https://join.onetimeonetime.com/api/deploy-info with commit_sha=7fee7ca15874e1964da8d59671322130fe9ed2e0",
+        "Live database transaction-rollback smoke passed: ops/live-smokes/2026-07-12T20-48-11-384Z-crm-identity-isolation-live-smoke.md"
+      ],
+      "updated_at": "2026-07-12T23:48:00+03:00",
       "blocker": ""
     },
     {

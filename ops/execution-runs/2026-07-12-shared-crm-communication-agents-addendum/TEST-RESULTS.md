@@ -15,4 +15,11 @@
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 966ded41b517433533f24370949426cfd1200213`
 - PASS One Time signup no-write Playwright proof: Family and School clicks set the hidden value and intercepted payload classification correctly.
 - PASS One Time signup API dry-run proof: Family and School normalize to the expected signup type.
+- PASS `node --check scripts/smoke-crm-identity-isolation-live.mjs`
+- PASS `npm run app:smoke:crm-identity-isolation -- --allow-transactional-live-proof --write-report`
+  - Same synthetic email coexisted across `bna` and `rabbi_sheller_provider`.
+  - Same synthetic phone coexisted across `bna` and `rabbi_sheller_provider`.
+  - Workspace-filtered email and phone lookups returned one row per workspace.
+  - Same-workspace duplicate email identity was blocked with unique violation `23505`.
+  - Transaction rollback left zero synthetic contacts and zero synthetic identities.
 - BLOCKED `npm run production:readiness:gate -- --json` only on full-launch external Stripe/campaign setup fields.
