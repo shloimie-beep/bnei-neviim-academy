@@ -16,3 +16,18 @@ Record deploy/live-smoke proof or blockers.
 - One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 966ded41b517433533f24370949426cfd1200213` passed.
 
 Global production readiness remains blocked only by known external full-launch fields for Stripe and campaign send approval; deploy/readback for this bounded batch is complete.
+
+## 2026-07-13 Complete/Reopen Task Slice Deploy
+
+- Commit: `ec1e893848f12242a30fd1fc59c236442997f30e`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=1`.
+- BNA Railway doctor: deployment `3b43615c-3fde-4fad-bb1c-326baed500aa` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=ec1e893848f12242a30fd1fc59c236442997f30e`, `target_app=bna`.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=1` and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- One Time Railway doctor: deployment `8f022587-8b8e-474e-8c59-886b68e18faa` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=ec1e893848f12242a30fd1fc59c236442997f30e`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha ec1e893848f12242a30fd1fc59c236442997f30e` passed.
+- One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com` passed; report `ops/live-smokes/2026-07-12T23-51-23-358Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Deployed asset marker checks passed for `ACTION-CRM-COMPLETE-TASK`, `ACTION-CRM-REOPEN-TASK`, `updateFirstPartyCrmLinkedTask`, `.crm-linked-task-card`, and `.crm-linked-task-meta`.

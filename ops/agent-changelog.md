@@ -39179,6 +39179,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   controls visible on the Tasks tab and no task-state click/write, action
   watchdog 0 findings, protocol drift watchdog, secret audit, execution run
   validation, and diff check with line-ending warnings only.
-- Deployment is pending for this slice; the implementation needs commit, push,
-  BNA/One Time redeploy, and live One Time Operations CRM smoke before deployed
-  proof is recorded.
+- Deployed commit `ec1e893848f12242a30fd1fc59c236442997f30e` to BNA and One
+  Time production.
+- BNA Railway deployment `3b43615c-3fde-4fad-bb1c-326baed500aa` and One Time
+  deployment `8f022587-8b8e-474e-8c59-886b68e18faa` reached `SUCCESS`.
+- BNA and One Time live `/api/deploy-info` both returned
+  `ec1e893848f12242a30fd1fc59c236442997f30e`.
+- Live proof passed: One Time separate-instance SHA smoke, One Time Operations
+  CRM workbench smoke with 12 scoped cards and read-only selected timeline, and
+  deployed JS/CSS marker checks for Complete/Reopen task controls.

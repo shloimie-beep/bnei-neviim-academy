@@ -80,6 +80,12 @@
 - The Complete/Reopen task actions call the scoped first-party `PATCH /api/bna/tasks/:id` route through `api.updateTask`, with no message, payment, access grant, import, or external CRM write.
 - `ops/action-registry.json` - registers `ACTION-CRM-COMPLETE-TASK` and `ACTION-CRM-REOPEN-TASK`.
 - `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local CRM workbench smoke passed after verifying linked task controls on the Tasks tab across split shell and monolith.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=ec1e893848f12242a30fd1fc59c236442997f30e`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=ec1e893848f12242a30fd1fc59c236442997f30e`.
+- BNA post-deploy doctor - Railway deployment `3b43615c-3fde-4fad-bb1c-326baed500aa` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `8f022587-8b8e-474e-8c59-886b68e18faa` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T23-51-23-358Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the Complete/Reopen task slice with 12 scoped cards and read-only selected timeline.
+- Read-only deployed JS/CSS marker checks confirmed `ACTION-CRM-COMPLETE-TASK`, `ACTION-CRM-REOPEN-TASK`, `updateFirstPartyCrmLinkedTask`, `.crm-linked-task-card`, and `.crm-linked-task-meta` on `https://join.onetimeonetime.com`.
 - `raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md` - operator correction requiring the WhatsApp bot knowledge to state no portal/member/library access is being granted yet plus One Time landing header/button/mobile CTA polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md` - scoped local-verified handoff for bot knowledge and landing polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json` - focused Product Quality Compiler packet for the One Time header/CTA/spacing/mobile correction and bot access-fact guardrail.

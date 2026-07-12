@@ -212,3 +212,10 @@
 - PASS `npm run secrets:audit` after Complete/Reopen task slice.
 - PASS `npm run bna:run:validate` after Complete/Reopen task slice; work remains on the broader addendum.
 - PASS `git diff --check` with line-ending warnings only after Complete/Reopen task slice.
+- PASS `git push origin master` for Complete/Reopen task commit `ec1e893848f12242a30fd1fc59c236442997f30e`.
+- PASS BNA Railway post-deploy doctor for deployment `3b43615c-3fde-4fad-bb1c-326baed500aa`.
+- PASS One Time Railway post-deploy doctor for deployment `8f022587-8b8e-474e-8c59-886b68e18faa`.
+- PASS BNA and One Time deploy-info readbacks returned `commit_sha=ec1e893848f12242a30fd1fc59c236442997f30e`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha ec1e893848f12242a30fd1fc59c236442997f30e`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-51-23-358Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only deployed JS/CSS marker checks for Complete/Reopen task controls and linked-task CSS.
