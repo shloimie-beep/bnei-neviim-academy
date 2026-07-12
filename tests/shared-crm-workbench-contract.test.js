@@ -62,6 +62,20 @@ test('Operations CRM local update form is first-party only and does not auto-cre
   assert.match(server, /const shouldCreateFollowUpTask = body\.create_follow_up_task === true \|\| String\(body\.create_follow_up_task \|\| ''\)\.toLowerCase\(\) === 'true';/);
 });
 
+test('Operations CRM Create task action is explicit and first-party only', () => {
+  assert.doesNotMatch(operations, /ACTION-CRM-CREATE-TASK-PENDING/);
+  assert.match(operations, /data-action-id="ACTION-CRM-CREATE-TASK"/);
+  assert.match(operations, /function createFirstPartyCrmTask\(event, contactId\)/);
+  assert.match(operations, /create_follow_up_task: true/);
+  assert.match(operations, /Created by an explicit Create task click in the CRM contact workspace/);
+  assert.match(operations, /No message, payment, access grant, import, or external CRM write was performed/);
+  assert.match(operations, /no_send: true/);
+  assert.match(operations, /external_write_performed: false/);
+  assert.match(operations, /Create task is unavailable in read-only preview\./);
+  assert.match(server, /if \(shouldCreateFollowUpTask\) \{[\s\S]*followUpTask = await createOperationsCrmFollowUpTask/);
+  assert.match(server, /No email, WhatsApp, payment, access, import, or external CRM write was performed by creating this task\./);
+});
+
 test('Shared CRM modules expose paths, empty states, actions, and inbox scope', () => {
   const global = runBrowserModule('public/js/crm/crm-api.js');
   runBrowserModule('public/js/crm/crm-store.js', { window: global });
@@ -77,6 +91,7 @@ test('Shared CRM modules expose paths, empty states, actions, and inbox scope', 
   assert.equal(global.BnaCrmContactWorkspace.emptyState('conversations'), 'No conversations yet.');
   assert.equal(global.BnaCrmContactWorkspace.profileValue('email', ''), 'Email is not available for this contact.');
   assert.equal(global.BnaCrmActions.whatsappHref('+1 (555) 100-2000'), 'https://wa.me/15551002000');
+  assert.equal(global.BnaCrmActions.followUpTaskSummary({ display_name: 'Sara Parent' }), 'Manual CRM follow-up task for Sara Parent');
   assert.equal(global.BnaCrmInbox.scopeForWorkspace('rabbi_sheller_provider'), 'rabbi');
 });
 

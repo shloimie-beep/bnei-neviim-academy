@@ -15811,6 +15811,7 @@
 
         function renderFirstPartyCrmSafeActions(card = null) {
             const lockLabel = firstPartyCrmPreviewLabel();
+            const readOnlyPreview = oneTimeViewAsRabbiActive();
             const inboxAction = card?.id
                 ? `<button class="task-action" type="button" onclick="openFirstPartyCrmInboxContext(${attrJson(card.id)})" data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX">Open email thread</button>`
                 : `<button class="task-action" type="button" disabled aria-disabled="true" title="${escapeHtml(window.BnaCrmContactWorkspace?.emptyState?.('email_unavailable') || 'Email is not available for this contact.')}">Start email</button>`;
@@ -15818,6 +15819,9 @@
             const whatsappAction = whatsappHref
                 ? `<a class="task-action" href="${escapeHtml(whatsappHref)}" target="_blank" rel="noopener" data-action-id="ACTION-CRM-OPEN-WHATSAPP-THREAD">Start WhatsApp conversation</a>`
                 : `<button class="task-action" type="button" disabled aria-disabled="true" title="${escapeHtml(window.BnaCrmActions?.unavailableTooltip?.('whatsapp') || 'WhatsApp is not available for this contact.')}">Start WhatsApp conversation</button>`;
+            const taskAction = readOnlyPreview
+                ? `<button class="task-action" type="button" data-action-id="ACTION-CRM-CREATE-TASK" disabled aria-disabled="true" title="Create task is unavailable in read-only preview.">Create task</button>`
+                : `<button class="task-action" type="button" onclick="createFirstPartyCrmTask(event, ${attrJson(card?.id || '')})" data-action-id="ACTION-CRM-CREATE-TASK" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>${firstPartyCrmSaving ? 'Saving...' : 'Create task'}</button>`;
             return `
                 <div class="crm-safe-action-panel" data-crm-safe-actions>
                     <div class="task-section-header compact">
@@ -15830,7 +15834,7 @@
                     <div class="task-actions">
                         ${inboxAction}
                         ${whatsappAction}
-                        <button class="task-action" type="button" data-action-id="ACTION-CRM-CREATE-TASK-PENDING" disabled aria-disabled="true" title="Create task is enabled in the dedicated Tasks packet.">Create task</button>
+                        ${taskAction}
                     </div>
                 </div>
             `;
@@ -16109,6 +16113,44 @@
                 if (!firstPartyCrmTimelinePayload) await openFirstPartyCrmContact(contactId);
             } catch (error) {
                 firstPartyCrmError = error.message || 'Could not save CRM update.';
+            } finally {
+                firstPartyCrmSaving = false;
+                render();
+            }
+        }
+
+        async function createFirstPartyCrmTask(event, contactId) {
+            event.preventDefault();
+            if (!contactId || oneTimeViewAsRabbiActive()) return;
+            const card = selectedFirstPartyCrmCard() || {};
+            const dueDate = card.next_follow_up_at ? String(card.next_follow_up_at).slice(0, 10) : '';
+            const owner = card.assigned_owner || card.owner || '';
+            firstPartyCrmSaving = true;
+            firstPartyCrmError = '';
+            firstPartyCrmNotice = '';
+            render();
+            try {
+                const result = await api.updateCrmContact(contactId, {
+                    ...firstPartyCrmQueryFilters(),
+                    next_follow_up_at: dueDate,
+                    assigned_owner: owner,
+                    create_follow_up_task: true,
+                    note_summary: window.BnaCrmActions?.followUpTaskSummary?.(card) || 'Manual CRM follow-up task',
+                    note_body: 'Created by an explicit Create task click in the CRM contact workspace. No message, payment, access grant, import, or external CRM write was performed.',
+                    no_send: true,
+                    external_write_performed: false
+                });
+                const taskId = result?.follow_up_task?.id || result?.follow_up_task?.task_id || '';
+                firstPartyCrmNotice = taskId
+                    ? `Task #${taskId} created locally. No external message, charge, import, or access change ran.`
+                    : 'Task created locally. No external message, charge, import, or access change ran.';
+                firstPartyCrmContactsCache.clear();
+                await loadFirstPartyCrmContacts(null, { force: true });
+                selectedFirstPartyCrmContactId = contactId;
+                firstPartyCrmTimelinePayload = result?.timeline ? { timeline: result.timeline } : null;
+                if (!firstPartyCrmTimelinePayload) await openFirstPartyCrmContact(contactId);
+            } catch (error) {
+                firstPartyCrmError = error.message || 'Could not create CRM task.';
             } finally {
                 firstPartyCrmSaving = false;
                 render();

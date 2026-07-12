@@ -39029,3 +39029,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrail: no email, WhatsApp/WAPI, Telegram, payment, access, DNS/account,
   credential, provider-data, production CRM mutation, or external connector
   write was performed by the verification.
+
+## 2026-07-13 - Shared CRM explicit task action local verification
+
+- Replaced the disabled `ACTION-CRM-CREATE-TASK-PENDING` placeholder with an
+  active first-party `ACTION-CRM-CREATE-TASK` control in the selected CRM
+  contact workspace.
+- The action calls the existing scoped CRM PATCH route with
+  `create_follow_up_task: true` only after an explicit click, and keeps
+  no-send/no-payment/no-access/no-import/no-external-write guardrails.
+- Read-only preview keeps Create task disabled with a concise tooltip.
+- Verification passed: generated-shell check, focused CRM/isolation tests
+  `34/34`, local Operations CRM workbench smoke at 1440/1024/768/430/390,
+  action watchdog 0 findings, protocol drift watchdog, secret audit, execution
+  run validation, and diff check with line-ending warnings only.
+- Deployment/live proof remains next for this slice.

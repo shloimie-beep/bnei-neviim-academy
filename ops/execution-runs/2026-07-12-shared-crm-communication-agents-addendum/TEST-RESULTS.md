@@ -79,6 +79,18 @@
   - Scoped CRM contacts API returned 12 cards with no external-write flags.
   - Selected CRM timeline API was read-only.
 - BLOCKED `npm run production:readiness:gate -- --json` only on full-launch external Stripe/campaign setup fields.
+- PASS `npm run operations:check-generated` after explicit CRM Create task action slice.
+- PASS `node --check public\js\crm\crm-actions.js public\js\operations-shell.js` after explicit CRM Create task action slice.
+- PASS `node --test tests\crm-contact-service.test.js tests\shared-crm-workbench-contract.test.js tests\crm-contact-model.test.js tests\rabbi-scheller-tenant-isolation-contract.test.js tests\one-time-communications-workspace.test.js tests\operations-contacts-intake-cleanup.test.js` (34/34) after explicit CRM Create task action slice.
+- PASS `node scripts\smoke-onetime-operations-crm-workbench-local.mjs` after explicit CRM Create task action slice.
+  - Split-shell and monolith checks passed at 1440, 1024, 768, 430, and 390.
+  - Each selected contact workspace showed active `ACTION-CRM-CREATE-TASK` and no horizontal overflow.
+  - No external sends, payments, access grants, or external CRM writes occurred.
+- PASS `npm run watchdog:actions` finding_count `0` after replacing the disabled Create task placeholder with the explicit first-party action.
+- PASS `npm run watchdog:protocol-drift` after explicit CRM Create task action slice.
+- PASS `npm run secrets:audit` after explicit CRM Create task action slice.
+- PASS `npm run bna:run:validate` after explicit CRM Create task action slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after explicit CRM Create task action slice.
 - PASS `node --check src/lib/bna/provider-lead-bot.js` after One Time bot knowledge/landing polish slice.
 - PASS `npm run pqc:validate -- tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json`.
 - PASS `node --test tests\service-provider-lead-bot.test.js tests\one-time-focused-landing.test.js tests\one-time-canonical-journey.test.js tests\one-time-brand-helper-isolation.test.js tests\one-time-shared-review-branding.test.js` (33/33) after One Time bot knowledge/landing polish slice.

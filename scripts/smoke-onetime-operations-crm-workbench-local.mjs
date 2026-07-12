@@ -483,7 +483,8 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       hasClassTrialAccess: /Class \/ Trial \/ Access/i.test(text),
       hasNoSendLock: /Review mode|Scoped review|Read-only preview|No email, WhatsApp, payment, access, or external CRM write/.test(text),
       hasSafeActionPanel: Boolean(document.querySelector('[data-crm-safe-actions]')),
-      disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-CREATE-TASK-PENDING"][disabled], [data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
+      hasCreateTaskAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-CREATE-TASK"]:not([disabled])')),
+      disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-CREATE-TASK"][disabled], [data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
       hasOpenScopedInboxAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]')),
     };
   });
@@ -549,7 +550,8 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       hasClassTrialAccess: /Class \/ Trial \/ Access/i.test(text),
       hasNoSendLock: /Review mode|Scoped review|Read-only preview|No email, WhatsApp, payment, access, or external CRM write/.test(text),
       hasSafeActionPanel: Boolean(document.querySelector('[data-crm-safe-actions]')),
-      disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-CREATE-TASK-PENDING"][disabled], [data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
+      hasCreateTaskAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-CREATE-TASK"]:not([disabled])')),
+      disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-CREATE-TASK"][disabled], [data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
 
       hasWrongWorkspaceLeak: /BNA Academy/i.test(text),
       hasForbiddenExternalTerm: /LeadConnector|GHL runtime/i.test(text),
@@ -583,7 +585,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       selectedMetrics.hasClassTrialAccess &&
       selectedMetrics.hasNoSendLock &&
       selectedMetrics.hasSafeActionPanel &&
-      selectedMetrics.disabledCrmActionCount >= 1 &&
+      selectedMetrics.hasCreateTaskAction &&
       selectedMetrics.hasOpenScopedInboxAction &&
       mobileBackMetrics.restoredList &&
       mobileBackMetrics.clearedSelectedState &&
@@ -626,6 +628,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     hasClassTrialAccessAfterSelect: selectedMetrics.hasClassTrialAccess,
     hasNoSendLockAfterSelect: selectedMetrics.hasNoSendLock,
     hasSafeActionPanelAfterSelect: selectedMetrics.hasSafeActionPanel,
+    hasCreateTaskActionAfterSelect: selectedMetrics.hasCreateTaskAction,
     disabledCrmActionCountAfterSelect: selectedMetrics.disabledCrmActionCount,
     hasOpenScopedInboxActionAfterSelect: selectedMetrics.hasOpenScopedInboxAction,
     mobileBackMetrics,
@@ -764,14 +767,15 @@ async function main() {
     '',
     report.scope,
     '',
-    '| Target | Viewport | Passed | CRM calls | Initial cards | Root rerenders | Search requests | Legacy table closed/open | Screenshot |',
-    '|---|---|---:|---:|---:|---:|---:|---:|---|',
+    '| Target | Viewport | Passed | CRM calls | Initial cards | Task action | Root rerenders | Search requests | Legacy table closed/open | Screenshot |',
+    '|---|---|---:|---:|---:|---:|---:|---:|---:|---|',
     ...results.map((result) => [
       `| ${result.target}`,
       `${result.viewport.width}x${result.viewport.height}`,
       String(result.passed),
       String(result.initialCrmRequestCount),
       String(result.initialRenderedCardCount),
+      String(result.hasCreateTaskActionAfterSelect),
       String(result.appRootMutationsAfterSelect),
       String(result.searchListRequestDelta),
       `${result.legacyTableClosedCount}/${result.legacyTableOpenCount}`,
@@ -797,7 +801,7 @@ async function main() {
     '',
     '- One Time Operations CRM route renders the API-backed workbench.',
     '- Split shell and monolith fallback render the API-backed workbench.',
-    '- Search/filter/sort controls, cards, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe action locks, and timeline readback are visible.',
+    '- Search/filter/sort controls, cards, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe actions, explicit Create task action, and timeline readback are visible.',
     '- Mobile selected-contact state hides the list and Back to contacts restores it.',
     '- Scoped One Time Inbox retains selected CRM contact context and keeps send gates visible.',
     '- Initial CRM API calls after auth are <= 3, initial cards are <= 50, contact selection does not replace the app root, and debounced search sends one list request.',

@@ -20,10 +20,16 @@
         return 'This action is not available for this contact.';
     }
 
+    function followUpTaskSummary(card = {}) {
+        const name = String(card.display_name || card.full_name || card.parent_name || card.email || 'CRM contact').trim();
+        return `Manual CRM follow-up task for ${name || 'CRM contact'}`;
+    }
+
     global.BnaCrmActions = Object.freeze({
         whatsappHref,
         emailAvailable,
         whatsappAvailable,
-        unavailableTooltip
+        unavailableTooltip,
+        followUpTaskSummary
     });
 })(window);

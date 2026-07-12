@@ -24,6 +24,8 @@
 - `ops/live-smokes/2026-07-12T21-39-03-428Z-one-time-operations-crm-workbench-live-smoke.md` - deployed URL-state slice live smoke at `f818822bb3969dca5d27f7c5a70d4dbf0baa8744`, with 12 scoped cards and read-only selected timeline.
 - `public/operations.html` / `server.js` - local CRM update form saves first-party fields/notes and disables automatic task creation unless `create_follow_up_task` is explicitly true.
 - `ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md` - deployed local update/no-auto-task slice live smoke at `224bc077919c624f115c264d35e35092ed4144da`, with 12 scoped cards and read-only selected timeline.
+- `public/operations.html` / `public/js/crm/crm-actions.js` - the CRM contact workspace now exposes an explicit active `ACTION-CRM-CREATE-TASK` button that calls the scoped first-party PATCH route with `create_follow_up_task=true`, no-send flags, and read-only preview disabled state.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local Operations CRM workbench smoke passed after the explicit task action slice; all 1440/1024/768/430/390 split-shell and monolith checks show `Task action=true`.
 - `raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md` - operator correction requiring the WhatsApp bot knowledge to state no portal/member/library access is being granted yet plus One Time landing header/button/mobile CTA polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md` - scoped local-verified handoff for bot knowledge and landing polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json` - focused Product Quality Compiler packet for the One Time header/CTA/spacing/mobile correction and bot access-fact guardrail.

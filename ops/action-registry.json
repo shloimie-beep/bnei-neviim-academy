@@ -2688,18 +2688,17 @@
       ]
     },
     {
-      "action_id": "ACTION-CRM-CREATE-TASK-PENDING",
+      "action_id": "ACTION-CRM-CREATE-TASK",
       "label": "Create task",
       "surface": "operations_contacts",
       "route": "/operations?view=contacts&section=crm_contacts",
-      "selector_hint": "[data-action-id=\"ACTION-CRM-CREATE-TASK-PENDING\"]",
-      "expected_behavior": "Disabled placeholder for the dedicated persisted CRM task action in REQ-20260712-303; no task is created from this control.",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-CREATE-TASK\"]",
+      "expected_behavior": "Creates exactly one first-party local CRM follow-up task for the selected contact only after an explicit click; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs. The action is disabled only in read-only preview.",
       "permission": "super_admin or scoped provider workspace role with CRM entitlement",
-      "status": "disabled_not_in_scope",
-      "disabled_reason": "Persisted CRM task creation is implemented in the dedicated contact workspace/actions packet, not this shared-module slice.",
+      "status": "active_first_party_local_write",
       "test": {
-        "type": "static_contract",
-        "expected_result": "The control is disabled and carries a concise title; no POST handler is attached in this packet."
+        "type": "static_contract_and_api",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the active Create task action calls the scoped CRM PATCH path with create_follow_up_task=true and no-send/no-external-write flags."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
