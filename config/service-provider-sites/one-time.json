@@ -11,6 +11,7 @@
     "/one-time/uk",
     "/one-time/israel",
     "/one-time/interest",
+    "/one-time/signup",
     "/one-time-onboarding",
     "/one-time/member-login"
   ],
@@ -77,11 +78,12 @@
     "subhead": "A live Mishnayos class with Rabbi Eli Scheller that makes learning exciting, clear, and unforgettable - for boys around the world.",
     "schedule": "Live from Israel. Every day at 7 p.m. Israel time.",
     "primary_cta": "Sign Up Now",
+    "primary_cta_href": "/one-time/signup",
     "secondary_cta": null,
     "member_cta": "Member Login",
-    "offer": "Signup creates a first-party One Time follow-up record before any payment or member access opens.",
-    "campaign_contract": "No public countdown or free-class contract is active in this approved landing hierarchy.",
-    "no_send_note": "Signup interest creates a first-party One Time CRM follow-up only. No email, WhatsApp, Telegram, payment, or member access action is performed automatically."
+    "offer": "Sign up for Rabbi Scheller's daily live Mishnah class and choose the reminders that fit you.",
+    "campaign_contract": "Daily live class signup at 7 p.m. Israel time.",
+    "no_send_note": "Daily class reminders are available by email, WhatsApp, both, or not at all."
   },
   "nav": [
     {

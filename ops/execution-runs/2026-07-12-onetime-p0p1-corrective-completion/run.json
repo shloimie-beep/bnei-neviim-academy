@@ -1,0 +1,18 @@
+{
+  "run_id": "2026-07-12-onetime-p0p1-corrective-completion",
+  "title": "One Time P0/P1 Corrective Completion",
+  "created_at": "2026-07-12T05:31:05.890Z",
+  "updated_at": "2026-07-12T10:36:00+03:00",
+  "active": true,
+  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
+  "requirements_file": "requirements.json",
+  "branch": "codex/onetime-p0p1-corrective-20260711",
+  "pr_number": 129,
+  "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
+  "pr_status": "draft_open",
+  "continues_run_id": "2026-07-11-onetime-p0p1-owner-crm-landing-corrective",
+  "deployment_status": "blocked_pending_review_approval",
+  "current_requirement": "REQ-20260712-015",
+  "current_p0_addendum": "RAW-20260712-002",
+  "current_p0_batch": "crm-confirmation-outbox"
+}

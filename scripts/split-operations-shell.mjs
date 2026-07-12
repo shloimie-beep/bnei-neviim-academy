@@ -92,6 +92,52 @@ if (
 
 const emailScopeHelperBlock = normalizeGeneratedText(scriptBody.slice(emailScopeHelperStart + 1, emailScopeHelperEnd));
 const communicationsBundleBlock = normalizeGeneratedText(scriptBody.slice(communicationsBundleStart + 1, communicationsBundleEnd));
+
+function requiredSharedBlock(startMarker, endMarker, label) {
+  const start = scriptBody.indexOf(startMarker, deferredStart);
+  const end = scriptBody.indexOf(endMarker, start);
+  if (start < 0 || end < 0) throw new Error(`Could not find Operations shared shell helper block: ${label}`);
+  return normalizeGeneratedText(scriptBody.slice(start + 1, end));
+}
+
+const sharedShellHelperBlock = normalizeGeneratedText([
+  requiredSharedBlock(
+    '\n        function renderPipelineBoard(cards = []) {',
+    '\n        function renderStaleTaskSweeper(items = []) {',
+    'pipeline board',
+  ),
+  requiredSharedBlock(
+    '\n        function communicationMetadata(item = {}) {',
+    '\n        function communicationPipelineCounts(items = contactCommunications) {',
+    'communication display helpers',
+  ),
+  requiredSharedBlock(
+    '\n        function normalizePhoneDigitsClient(value = \'\') {',
+    '\n        function wapiPhonebookGroupsSorted() {',
+    'communication scope helpers',
+  ),
+  requiredSharedBlock(
+    '\n        function communicationPhoneTokens(item = {}) {',
+    '\n        function communicationMatchesWapiGroup(item = {}, group = {}) {',
+    'communication phone helpers',
+  ),
+  requiredSharedBlock(
+    '\n        function communicationAttachmentSummary(item = {}) {',
+    '\n        function renderWapiSendReadiness(group = {}) {',
+    'communication attachment helper',
+  ),
+  requiredSharedBlock(
+    '\n        function renderSettingsControlRow(label, value, note, status = \'Read-only\') {',
+    '\n        function latestAutomationEvidence(match) {',
+    'settings control row',
+  ),
+  requiredSharedBlock(
+    '\n        function renderNotConfiguredPanel(title, description) {',
+    '\n        function renderAccounting() {',
+    'not-configured panel',
+  ),
+].join('\n'));
+
 let deferredRendererBlock = scriptBody.slice(deferredStart + 1, deferredCommandBotStart);
 deferredRendererBlock = deferredRendererBlock
   .replace(scriptBody.slice(emailScopeHelperStart, emailScopeHelperEnd), '')
@@ -239,7 +285,7 @@ mainScriptBody = replaceRequired(
 mainScriptBody = replaceRequired(
   mainScriptBody,
   '\n        async function loadData(options = {}) {',
-  `\n${emailScopeHelperBlock}\n${communicationsBundleBlock}\n        async function loadData(options = {}) {`,
+  `\n${emailScopeHelperBlock}\n${communicationsBundleBlock}\n${sharedShellHelperBlock}\n        async function loadData(options = {}) {`,
 );
 
 [

@@ -37,6 +37,64 @@ test('maps mixed source row into contact card', () => {
   assert.deepEqual(card.tags, ['hot', 'phonebook']);
 });
 
+test('maps first-party CRM reconciled context into one contact DTO', () => {
+  const card = toContactCard({
+    id: 'bna_parent_leads:88',
+    parent_lead_id: 88,
+    parent_name: 'Mrs. Levi',
+    parent_email: 'levi@example.test',
+    parent_phone: '+1 555 010 1188',
+    student_name: 'Levi Student',
+    lead_type: 'school_interest',
+    status: 'follow_up',
+    owner: 'Rabbi Scheller team',
+    next_follow_up_at: '2026-07-20',
+    tags: ['free-class-interest', 'trial-review'],
+    membership_access: {
+      member_id: 14,
+      access_status: 'active',
+      access_tier: 'library_only',
+      access_enabled: true,
+    },
+    mailbox: {
+      message_count: 3,
+      latest_thread_key: 'thread-levi',
+      latest_subject: 'Class details',
+    },
+    support: {
+      open_ticket_count: 1,
+      latest_ticket_id: 22,
+      latest_ticket_title: 'Portal question',
+    },
+    follow_up_task: {
+      task_id: 31,
+      assigned_to: 'Rabbi Scheller team',
+      due_date: '2026-07-20',
+      status: 'assigned',
+    },
+    class_context: {
+      trial_status: 'trial_or_free_class_interest',
+      access_context: 'parent portal pending',
+    },
+    timeline_activity: {
+      activity_count: 5,
+      latest_activity_type: 'dashboard',
+    },
+  }, { source: 'bna_parent_leads', workspace_key: 'rabbi_sheller_provider', project_key: 'one_time_mishnah_class' });
+
+  assert.equal(card.family_school_classification, 'school');
+  assert.equal(card.linked.parent_lead_id, 88);
+  assert.equal(card.linked.parent_name, 'Mrs. Levi');
+  assert.equal(card.linked.student_name, 'Levi Student');
+  assert.equal(card.membership_access.member_id, 14);
+  assert.equal(card.mailbox.message_count, 3);
+  assert.equal(card.support.open_ticket_count, 1);
+  assert.equal(card.follow_up_task.task_id, 31);
+  assert.equal(card.class_context.trial_status, 'trial_or_free_class_interest');
+  assert.equal(card.timeline_activity.activity_count, 5);
+  assert.ok(card.editable_fields.includes('email'));
+});
+
 test('free provider cannot access full CRM filters', () => {
   const scope = { tenant_type: 'service_provider', entitlement_plan: 'free_provider' };
   assert.throws(() => filterCrmContacts([], {}, scope), /Entitlement denied: crm_contacts/);

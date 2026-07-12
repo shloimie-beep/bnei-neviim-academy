@@ -28,7 +28,7 @@ Prior One Time reports and requirement rows that claim Done are evidence inputs 
 | REQ-20260711-006 | P1 | wave-4-public-landing | Needs operator decision | Public landing/signup/onboarding must match approved hierarchy and content, use the approved Robot Scheller image in the bubble, and remove preview/TBD/stale CTA contracts. | Local public/onboarding smoke passes; production deploy/live smoke waits for review approval. |
 | REQ-20260711-007 | P1 | wave-4-config-registries | Needs operator decision | Synchronize One Time site config, route registry, and action registry with actual public/CRM/owner actions. | Local registry/watchdog proof passes; production deploy/live smoke waits for review approval. |
 | REQ-20260711-008 | P1 | wave-5-verification | Needs operator decision | Capture focused tests, browser screenshots, accessibility/readability evidence, no BNA leakage proof, and watchdog/protocol drift closeout. | Local smokes/tests pass with evidence paths; terminal verification waits for review-approved deploy/live smoke. |
-| REQ-20260711-009 | P1 | wave-6-pr-deploy | Needs operator decision | Push one corrective branch/PR and deploy only through the approved review pipeline. | PR is opened and reviewed; production deploy/live smoke is performed only after review approval or remains blocked with exact next action. |
+| REQ-20260711-009 | P1 | wave-6-pr-deploy | Needs operator decision | Keep the existing corrective PR #129 as the only delivery lane and deploy only through the approved review pipeline. | PR #129 is opened and reviewed; production deploy/live smoke is performed only after review approval or remains blocked with exact next action. |
 
 ## Decisions And Blockers
 
@@ -46,4 +46,4 @@ Prior One Time reports and requirement rows that claim Done are evidence inputs 
 
 ## Remaining Release Gate
 
-Push/open the corrective PR, review the evidence, and deploy only after explicit review approval. Production live smoke/readback remains required before app-visible requirements can become Done.
+Review draft PR #129, keep the evidence current, and deploy only after explicit review approval. Production live smoke/readback remains required before app-visible requirements can become Done.

@@ -1,0 +1,126 @@
+{
+  "generated_at": "2026-07-12T06:47:04.353Z",
+  "route": "/one-time/signup",
+  "local_only": true,
+  "screenshot_state": "initial form state before reminder selection",
+  "checks": [
+    "form visible",
+    "Back to Home visible",
+    "One Time logo loaded",
+    "no preselected reminder",
+    "red required dots visible",
+    "phone required dot hidden until WhatsApp selected",
+    "acknowledgement checkbox visible",
+    "customer-facing optional-phone wording absent",
+    "WhatsApp selection makes phone required",
+    "no horizontal overflow"
+  ],
+  "results": [
+    {
+      "width": 1440,
+      "height": 940,
+      "screenshot": "ops/evidence/one-time-signup-reminder/2026-07-12/signup-1440.png",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "formVisible": true,
+      "backToHomeVisible": true,
+      "logoLoaded": true,
+      "checkedReminderCount": 0,
+      "requiredDotCount": 5,
+      "phoneDotVisible": false,
+      "acknowledgementVisible": true,
+      "optionalWordingPresent": false,
+      "afterWhatsApp": {
+        "phoneDotVisible": true,
+        "phoneRequired": true,
+        "phoneHint": "Required for WhatsApp reminders."
+      },
+      "passed": true
+    },
+    {
+      "width": 1024,
+      "height": 940,
+      "screenshot": "ops/evidence/one-time-signup-reminder/2026-07-12/signup-1024.png",
+      "scrollWidth": 1024,
+      "clientWidth": 1024,
+      "formVisible": true,
+      "backToHomeVisible": true,
+      "logoLoaded": true,
+      "checkedReminderCount": 0,
+      "requiredDotCount": 5,
+      "phoneDotVisible": false,
+      "acknowledgementVisible": true,
+      "optionalWordingPresent": false,
+      "afterWhatsApp": {
+        "phoneDotVisible": true,
+        "phoneRequired": true,
+        "phoneHint": "Required for WhatsApp reminders."
+      },
+      "passed": true
+    },
+    {
+      "width": 768,
+      "height": 940,
+      "screenshot": "ops/evidence/one-time-signup-reminder/2026-07-12/signup-768.png",
+      "scrollWidth": 768,
+      "clientWidth": 768,
+      "formVisible": true,
+      "backToHomeVisible": true,
+      "logoLoaded": true,
+      "checkedReminderCount": 0,
+      "requiredDotCount": 5,
+      "phoneDotVisible": false,
+      "acknowledgementVisible": true,
+      "optionalWordingPresent": false,
+      "afterWhatsApp": {
+        "phoneDotVisible": true,
+        "phoneRequired": true,
+        "phoneHint": "Required for WhatsApp reminders."
+      },
+      "passed": true
+    },
+    {
+      "width": 430,
+      "height": 940,
+      "screenshot": "ops/evidence/one-time-signup-reminder/2026-07-12/signup-430.png",
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "formVisible": true,
+      "backToHomeVisible": true,
+      "logoLoaded": true,
+      "checkedReminderCount": 0,
+      "requiredDotCount": 5,
+      "phoneDotVisible": false,
+      "acknowledgementVisible": true,
+      "optionalWordingPresent": false,
+      "afterWhatsApp": {
+        "phoneDotVisible": true,
+        "phoneRequired": true,
+        "phoneHint": "Required for WhatsApp reminders."
+      },
+      "passed": true
+    },
+    {
+      "width": 390,
+      "height": 940,
+      "screenshot": "ops/evidence/one-time-signup-reminder/2026-07-12/signup-390.png",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "formVisible": true,
+      "backToHomeVisible": true,
+      "logoLoaded": true,
+      "checkedReminderCount": 0,
+      "requiredDotCount": 5,
+      "phoneDotVisible": false,
+      "acknowledgementVisible": true,
+      "optionalWordingPresent": false,
+      "afterWhatsApp": {
+        "phoneDotVisible": true,
+        "phoneRequired": true,
+        "phoneHint": "Required for WhatsApp reminders."
+      },
+      "passed": true
+    }
+  ],
+  "passed": true
+}

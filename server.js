@@ -219,6 +219,11 @@ const {
   stableHash: intakeStableHash,
 } = require('./src/lib/bna/intake-parser');
 const {
+  buildOperatorRambleGraph,
+  ingestOperatorRamble,
+  normalizeOperatorRambleSource,
+} = require('./src/platform/ingestion/operator-ramble-service');
+const {
   broadCorrectionRegisterNeeded,
   extractedItemCounts,
   formatStableId,
@@ -342,6 +347,21 @@ const {
   buildOneTimePaymentAccessClassLinkConfiguration,
   oneTimeProductReadinessView,
 } = require('./src/lib/bna/one-time-product-system');
+const {
+  buildClassTimeDisplay,
+  buildLocalClassSegmentPreview,
+  buildOneTimeSignupLeadInput,
+  buildOneTimeSignupOutboxEvents,
+  buildRabbiSignupTelegramAlert,
+  buildReminderIdempotencyKey,
+  nextOneTimeClassSchedule,
+  normalizeReminderPreference,
+  oneTimeClassReminderEnvReadiness,
+  oneTimeWapiReminderEnvReadiness,
+  reminderChannelsForPreference,
+  resolveOneTimeCitySelection,
+  safeRecipientHash,
+} = require('./src/lib/bna/one-time-signup-workflow');
 const {
   LIVE_ACCESS_TIERS,
   LIVE_ACCESS_TIER_VALUES,
@@ -10597,6 +10617,24 @@ async function getValidProviderSession(sessionId, db = pool) {
   };
 }
 
+async function identifyOneTimeProviderOpsSession(req, db = pool) {
+  const cookies = parseCookies(req);
+  const session = await getValidProviderSession(cookies[PROVIDER_SESSION_COOKIE_NAME], db).catch(() => null);
+  if (!session) return null;
+  const provider = await serviceProviderWithProject(session.providerId, db).catch(() => null);
+  if (!provider || !isOneTimeClassMediaProvider(provider)) return null;
+  return decorateOneTimeIdentity({
+    username: provider.login_username || `provider-${provider.id}`,
+    role: 'project_owner',
+    scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
+    allowedViews: oneTimeDashboardAllowedViews(),
+    displayName: provider.provider_name || provider.display_name || session.providerName || 'Rabbi Eli Scheller',
+    provider_session: true,
+    provider_id: Number(provider.id),
+    provider_name: provider.provider_name || provider.display_name || session.providerName || null,
+  });
+}
+
 async function clearProviderSession(sessionId, db = pool) {
   if (sessionId) {
     await db.query(`DELETE FROM bna_provider_sessions WHERE session_id = $1`, [sessionId]);
@@ -10655,6 +10693,16 @@ async function requireAdmin(req, res, next) {
     return next();
   }
 
+  const providerOpsIdentity = await identifyOneTimeProviderOpsSession(req).catch(() => null);
+  if (providerOpsIdentity) {
+    if (providerOpsIdentity.scope.type !== 'all' && !isScopedOpsPathAllowed(req, providerOpsIdentity)) {
+      return res.status(403).json({ error: 'This login is scoped to One Time Mishnah Class records.' });
+    }
+    req.opsUser = providerOpsIdentity.username;
+    req.opsIdentity = providerOpsIdentity;
+    return next();
+  }
+
   const authHeader = req.headers.authorization;
 
   // If no auth header, redirect to login page
@@ -10709,6 +10757,8 @@ async function identifyOpsAssistantRequest(req) {
   const cookies = parseCookies(req);
   const session = await getValidSession(cookies[SESSION_COOKIE_NAME]);
   if (session) return identifyOpsUser(session.username) || null;
+  const providerOpsIdentity = await identifyOneTimeProviderOpsSession(req).catch(() => null);
+  if (providerOpsIdentity) return providerOpsIdentity;
 
   const authHeader = req.headers?.authorization;
   if (!authHeader || !authHeader.startsWith('Basic ')) return null;
@@ -10776,6 +10826,11 @@ function sendOneTimePublicLanding(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'));
 }
 
+function sendOneTimeSignupPage(req, res) {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'one-time', 'signup.html'));
+}
+
 function wantsOneTimeProviderShell(req) {
   const query = req?.query || {};
   return isOneTimeSingleTenantRuntime()
@@ -10831,10 +10886,15 @@ function oneTimeProviderCanonicalOperationsUrl(req) {
   return `/operations?${target.toString()}`;
 }
 
-function shouldRedirectOneTimeProviderToOperations(req) {
+async function shouldRedirectOneTimeProviderToOperations(req) {
   const query = req?.query || {};
-  return ['one-time', 'onetime'].includes(String(query.admin_provider || query.adminProvider || '').toLowerCase())
-    || Boolean(query.view_as_rabbi || query.viewAsRabbi);
+  if (
+    ['one-time', 'onetime'].includes(String(query.admin_provider || query.adminProvider || '').toLowerCase())
+    || Boolean(query.view_as_rabbi || query.viewAsRabbi)
+  ) {
+    return true;
+  }
+  return Boolean(await identifyOneTimeProviderOpsSession(req).catch(() => null));
 }
 
 function wantsOneTimeStudentShell(req) {
@@ -10902,8 +10962,8 @@ app.get(['/', '/index.html', '/public', '/public/'], (req, res, next) => {
 
 app.get(['/rabbi.html'], sendOneTimePublicLanding);
 
-app.get('/provider.html', (req, res, next) => {
-  if (shouldRedirectOneTimeProviderToOperations(req)) return res.redirect(302, oneTimeProviderCanonicalOperationsUrl(req));
+app.get('/provider.html', async (req, res, next) => {
+  if (await shouldRedirectOneTimeProviderToOperations(req)) return res.redirect(302, oneTimeProviderCanonicalOperationsUrl(req));
   if (!wantsOneTimeProviderShell(req)) return next();
   return sendOneTimeProviderShell(req, res);
 });
@@ -19300,7 +19360,7 @@ CREATE TABLE IF NOT EXISTS bna_raw_intake (
   transcript_text TEXT,
   media_url TEXT,
   intake_type TEXT DEFAULT 'general',
-  parse_status TEXT NOT NULL DEFAULT 'raw' CHECK (parse_status IN ('raw', 'parsed', 'needs_review', 'registered', 'implemented', 'archived', 'failed')),
+  parse_status TEXT NOT NULL DEFAULT 'raw' CHECK (parse_status IN ('captured', 'raw', 'parsed', 'needs_review', 'registered', 'queued', 'running', 'implemented', 'verified', 'deployed', 'blocked', 'archived', 'failed')),
   parsed_payload JSONB DEFAULT '{}'::jsonb,
   created_requirement_ids TEXT[] DEFAULT '{}',
   created_task_ids TEXT[] DEFAULT '{}',
@@ -19322,6 +19382,9 @@ CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_source_channel ON bna_raw_intake(s
 CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_parse_status ON bna_raw_intake(parse_status);
 CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_created_at ON bna_raw_intake(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_register_path ON bna_raw_intake(requirement_register_path);
+ALTER TABLE bna_raw_intake DROP CONSTRAINT IF EXISTS bna_raw_intake_parse_status_check;
+ALTER TABLE bna_raw_intake ADD CONSTRAINT bna_raw_intake_parse_status_check
+  CHECK (parse_status IN ('captured', 'raw', 'parsed', 'needs_review', 'registered', 'queued', 'running', 'implemented', 'verified', 'deployed', 'blocked', 'archived', 'failed'));
 
 CREATE TABLE IF NOT EXISTS bna_intake_parse_runs (
   id SERIAL PRIMARY KEY,
@@ -23242,6 +23305,61 @@ function rawIntakeIdsFromCanonical(canonical = {}) {
   };
 }
 
+function rambleToDoneIngestionView(workflow = {}) {
+  if (!workflow) return null;
+  return {
+    contract_version: workflow.contract_version || null,
+    adapter_key: workflow.adapter_key || null,
+    raw_intake_stable_id: workflow.raw_intake_stable_id || null,
+    requirement_register_path: workflow.requirement_register_path || null,
+    source_statements: (workflow.source_statements || []).map((statement) => ({
+      statement_id: statement.statement_id,
+      text: statement.text,
+      source_excerpt: statement.source_excerpt || statement.text,
+      start_offset: statement.start_offset,
+      end_offset: statement.end_offset,
+      text_hash: statement.text_hash,
+      classification: statement.classification,
+    })),
+    source_statement_ids: (workflow.source_statements || []).map((statement) => statement.statement_id),
+    source_statement_count: (workflow.source_statements || []).length,
+    no_lost_sentence_gate: workflow.no_lost_sentence_gate || null,
+    requirement_rows: (workflow.requirement_rows || []).map((row) => ({
+      requirement_id: row.requirement_id,
+      source_statement_id: row.source_statement_id,
+      item_type: row.item_type,
+      status: row.status,
+      workspace_key: row.workspace_key,
+      project_key: row.project_key,
+      owner: row.owner,
+    })),
+    jobs: (workflow.jobs || []).map((job) => ({
+      job_id: job.job_id,
+      requirement_id: job.requirement_id,
+      parent_prompt_id: job.parent_prompt_id,
+      status: job.status,
+      owner: job.owner,
+      target_lane: job.target_lane,
+    })),
+    receipts: (workflow.receipts || []).map((receipt) => ({
+      receipt_type: receipt.receipt_type,
+      generated_at: receipt.generated_at || receipt.checked_at || null,
+      status: receipt.status || null,
+      reason: receipt.reason || null,
+      adapter_key: receipt.adapter_key || null,
+      requirement_count: receipt.requirement_count || null,
+      job_count: receipt.job_count || null,
+      statement_count: receipt.statement_count || null,
+      no_lost_sentence_gate_ok: receipt.no_lost_sentence_gate_ok ?? null,
+      external_write_performed: receipt.external_write_performed === true ? true : false,
+    })),
+    worker_health: workflow.worker_health || null,
+    packet_status: workflow.packet_status || null,
+    status_propagation: workflow.status_propagation || null,
+    external_write_performed: workflow.external_write_performed === true ? true : false,
+  };
+}
+
 async function createRawIntakeRecord({
   rawInput,
   transcriptText = '',
@@ -23265,16 +23383,42 @@ async function createRawIntakeRecord({
     throw error;
   }
   const sourceDate = isoDate(metadata.source_date || metadata.created_at || metadata.recorded_at || null);
-  const channel = normalizeRawIntakeSourceChannel(source_channel || source_type || 'manual');
-  const registerPath = requirement_register_path || (broadCorrectionRegisterNeeded(raw) ? requirementRegisterPath(sourceDate) : null);
-  const sourceMessageId = source_message_id || source_id || null;
-  const baseMetadata = {
+  const normalizedSource = normalizeOperatorRambleSource({
+    raw_text: raw || transcriptText,
     source_type,
+    source_channel,
+    source_id,
+    source_message_id,
+    source_table,
+  });
+  const channel = normalizeRawIntakeSourceChannel(normalizedSource.source_channel || source_channel || source_type || 'manual');
+  const sourceMessageId = source_message_id || source_id || null;
+  const sourceMessageIdText = sourceMessageId === null || sourceMessageId === undefined ? null : String(sourceMessageId);
+  const rawTextHash = intakeStableHash([raw, String(transcriptText || '').trim()].filter(Boolean).join('\n'));
+  const baseMetadata = {
+    source_type: normalizedSource.source_type || source_type,
     source_table,
     source_id: source_id === null || source_id === undefined ? null : String(source_id),
+    source_provider: normalizedSource.source_provider,
+    source_channel: channel,
+    raw_text_hash: rawTextHash,
     route: req?.originalUrl || null,
     ...metadata,
   };
+  if (sourceMessageIdText) {
+    const existing = await db.query(
+      `SELECT *
+       FROM bna_raw_intake
+       WHERE source_channel = $1
+         AND source_message_id = $2
+         AND COALESCE(raw_text, '') = COALESCE($3, '')
+         AND COALESCE(transcript_text, '') = COALESCE($4, '')
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [channel, sourceMessageIdText, raw || '', String(transcriptText || '').trim() || '']
+    );
+    if (existing.rows[0]) return existing.rows[0];
+  }
   const prefix = `RAW-${sourceDate.replace(/-/g, '')}-`;
   const latest = await db.query(
     `SELECT stable_id
@@ -23288,6 +23432,33 @@ async function createRawIntakeRecord({
   const start = match ? Number(match[1]) + 1 : 1;
   for (let offset = 0; offset < 1000; offset += 1) {
     const stableId = formatStableId('raw', sourceDate, start + offset);
+    const operatorGraph = buildOperatorRambleGraph({
+      raw_text: raw || String(transcriptText || '').trim(),
+      raw_id: stableId,
+      source_type: normalizedSource.source_type || source_type,
+      source_channel: channel,
+      source_id: normalizedSource.source_id || source_id || sourceMessageIdText,
+      source_table,
+      source_date: sourceDate,
+      workspace_key: metadata.scoped_workspace_key || metadata.workspace_key || metadata.workspaceKey || null,
+      project_key: metadata.scoped_project_key || metadata.project_key || metadata.projectKey || null,
+      requirement_register_path,
+      generated_at: new Date().toISOString(),
+    });
+    const registerPath = requirement_register_path || operatorGraph.requirement_register_path || (broadCorrectionRegisterNeeded(raw) ? requirementRegisterPath(sourceDate) : null);
+    const metadataWithGraph = {
+      ...baseMetadata,
+      operator_ramble_service: {
+        contract_version: operatorGraph.contract_version,
+        raw_id: stableId,
+        no_lost_sentence_gate: operatorGraph.no_lost_sentence_gate,
+        source_statement_count: operatorGraph.source_statements.length,
+        requirement_ids: operatorGraph.requirements.map((item) => item.id),
+        executable_task_count: operatorGraph.executable_tasks.length,
+        worker_status: operatorGraph.worker_health.status,
+        receipt: operatorGraph.receipt,
+      },
+    };
     try {
       const inserted = await db.query(
         `INSERT INTO bna_raw_intake (
@@ -23295,19 +23466,19 @@ async function createRawIntakeRecord({
            transcript_text, media_url, intake_type, parse_status,
            requirement_register_path, metadata
          )
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'raw', $9, $10::jsonb)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'captured', $9, $10::jsonb)
          RETURNING *`,
         [
           stableId,
           channel,
-          sourceMessageId === null || sourceMessageId === undefined ? null : String(sourceMessageId),
+          sourceMessageIdText,
           source_user || null,
           raw || null,
           String(transcriptText || '').trim() || null,
           media_url || null,
           intake_type || 'general',
           registerPath,
-          JSON.stringify(baseMetadata),
+          JSON.stringify(metadataWithGraph),
         ]
       );
       return inserted.rows[0];
@@ -23443,7 +23614,7 @@ function canonicalItemsFromParse(canonical = {}) {
         status: needsReview ? 'needs_review' : 'parsed',
         review_reason: needsReview ? (itemType === 'custom_section' ? 'Custom sections require review before filing.' : 'Confidence is below automatic filing threshold.') : null,
         source_excerpt: payload.source_excerpt || payload.raw_excerpt || payload.source_span?.excerpt || canonical.raw_input?.slice(0, 500) || '',
-        target_table: plan.target_table || (itemType === 'task' || itemType === 'decision' ? 'bna_tasks' : itemType === 'ticket' ? 'bna_support_tickets' : itemType === 'class_session_note' ? 'bna_class_sessions' : itemType === 'custom_section' ? 'bna_section_definitions' : 'bna_section_records'),
+        target_table: plan.target_table || (['task', 'decision', 'requirement'].includes(itemType) ? 'bna_tasks' : itemType === 'ticket' ? 'bna_support_tickets' : itemType === 'class_session_note' ? 'bna_class_sessions' : itemType === 'custom_section' ? 'bna_section_definitions' : 'bna_section_records'),
       });
       index += 1;
     }
@@ -23686,6 +23857,39 @@ async function createCanonicalIntakeParseRun({
     console.warn(`[raw-intake] failed before parsing; raw input was not parsed. ${error.message}`);
     throw error;
   }
+  let rambleWorkflow = null;
+  let rambleWorkflowView = null;
+  try {
+    rambleWorkflow = ingestOperatorRamble({
+      raw_text: raw,
+      raw_id: rawIntake?.stable_id || null,
+      source_type,
+      source_channel: source_channel || source_type,
+      source_id,
+      source_message_id,
+      filename,
+      title: source_title || filename,
+      created_at: rawIntake?.created_at || new Date().toISOString(),
+      actor: created_by,
+      workspace_key,
+      project_key,
+      requirement_register_path: requirement_register_path || rawIntake?.requirement_register_path || null,
+      packet_status: dry_run ? 'queued' : 'in_progress',
+      metadata,
+    }, {
+      generated_at: new Date().toISOString(),
+      agent: created_by,
+      worker_status: metadata.worker_status || metadata.workerHealth || {
+        name: 'operations-intake-api',
+        status: 'online',
+        last_seen_at: new Date().toISOString(),
+      },
+    });
+    rambleWorkflowView = rambleToDoneIngestionView(rambleWorkflow);
+  } catch (error) {
+    await markRawIntakeFailed(rawIntake, error, db).catch(() => {});
+    throw error;
+  }
   try {
     const aiJson = aiStructuredJson === undefined
       ? await createIntakeAiStructuredJson(raw, { source_type, source_id, source_table })
@@ -23703,6 +23907,88 @@ async function createCanonicalIntakeParseRun({
       project_key,
       aiStructuredJson: aiJson,
     });
+    canonical.ramble_to_done = rambleWorkflowView;
+    canonical.source_statements = rambleWorkflowView?.source_statements || [];
+    canonical.execution_run_projection = {
+      requirements: (rambleWorkflow?.execution_requirements || []).map((item) => ({
+        ...item,
+        source_path: rawIntake?.requirement_register_path || rambleWorkflow?.requirement_register_path || '',
+        batch_id: 'ramble-to-done',
+        depends_on: [],
+        implementation_status: item.status === 'queued' ? 'not_started' : item.status,
+        acceptance_criteria: [item.expected_result],
+        evidence: [],
+        verification: [],
+        implementation_files: [],
+        implementation_commit: '',
+        pushed_commit: '',
+        pull_request: '',
+        deployment_id: '',
+        deployed_commit: '',
+        live_smoke: '',
+        deployment_evidence: [],
+        superseded_by: '',
+      })),
+      source_statements: (rambleWorkflow?.source_statements || []).map((statement, index) => ({
+        statement_id: statement.statement_id,
+        source_id: rawIntake?.stable_id || rambleWorkflow?.raw_intake_stable_id || null,
+        source_statement: statement.text,
+        source_excerpt: statement.source_excerpt || statement.text,
+        offset_start: statement.start_offset,
+        offset_end: statement.end_offset,
+        statement_hash: statement.text_hash,
+        classification: statement.classification,
+        requirement_id: rambleWorkflow?.execution_requirements?.[index]?.id || '',
+      })),
+      requirement_register_path: rambleWorkflow?.requirement_register_path || null,
+    };
+    const existingRequirementKeys = new Set((canonical.requirements || []).map((item) => item.stable_id || item.id || item.item_key).filter(Boolean));
+    const graphRequirements = (rambleWorkflow?.requirement_rows || [])
+      .filter((item) => !existingRequirementKeys.has(item.requirement_id))
+      .map((item) => ({
+        stable_id: item.execution_requirement_id || item.requirement_id,
+        item_key: `requirement:${item.execution_requirement_id || item.requirement_id}`,
+        item_type: 'requirement',
+        title: item.title,
+        short_title: item.title,
+        source_quote: item.source_statement,
+        source_excerpt: item.source_statement,
+        source_statement_ids: item.source_statement_ids || [item.source_statement_id].filter(Boolean),
+        workspace_key: item.workspace_key,
+        project_key: item.project_key,
+        related_raw_id: rawIntake?.stable_id || item.source_id,
+        confidence: 0.95,
+        needs_review: false,
+        expected_result: item.expected_result,
+        done_definition: item.expected_result,
+        verification_method: 'Run the mapped implementation/test/evidence gate and record proof or a blocker.',
+        target_lane: item.can_continue_without_operator ? 'Tasks' : 'Decisions',
+        evidence_paths: [],
+        status: 'parsed',
+        owner: item.owner,
+        assigned_to: item.owner,
+        agent_executable: item.owner === 'Codex',
+        task_kind: item.owner === 'Codex' ? 'agent_job' : 'decision',
+        decision_required: item.owner !== 'Codex',
+        next_action: item.next_action,
+        metadata: {
+          source: 'operator_ramble_service',
+          requirement_id: item.execution_requirement_id || item.requirement_id,
+          legacy_requirement_id: item.requirement_id,
+          source_statement_ids: item.source_statement_ids || [item.source_statement_id].filter(Boolean),
+          source_statement_hash: item.statement_hash,
+          deployment_required: item.deployment_required,
+          can_continue_without_operator: item.can_continue_without_operator,
+        },
+      }));
+    canonical.requirements = [...(canonical.requirements || []), ...graphRequirements];
+    canonical.ramble_protocol = {
+      ...(canonical.ramble_protocol || {}),
+      requirement_register_path: rambleWorkflow?.requirement_register_path || canonical.ramble_protocol?.requirement_register_path || null,
+      source_statement_count: rambleWorkflow?.source_statements?.length || 0,
+      no_lost_sentence_gate: rambleWorkflow?.no_lost_sentence_gate || null,
+      receipt: rambleWorkflow?.receipt || null,
+    };
     const inputHash = intakeStableHash(raw);
     const sourceIdText = source_id === null || source_id === undefined ? null : String(source_id);
     const sourceIdKey = sourceIdText || '';
@@ -23715,6 +24001,7 @@ async function createCanonicalIntakeParseRun({
       project_key: project_key || null,
       filename: filename || null,
       source_title: source_title || filename || null,
+      ramble_to_done: rambleWorkflowView,
     };
   const runResult = await db.query(
     `INSERT INTO bna_intake_parse_runs (
@@ -23795,6 +24082,7 @@ async function createCanonicalIntakeParseRun({
     parsed: canonical,
     items: itemRows,
     review_items: (await fetchIntakeReviewItems({ parseRunId: run.id, db })).reviews,
+    ramble_to_done: rambleWorkflowView,
   };
   } catch (error) {
     await markRawIntakeFailed(rawIntake, error, db).catch(() => {});
@@ -23913,12 +24201,16 @@ function contentRecordingTaskIsExplicitSystemWork(payload = {}, item = {}, run =
 
 async function fileTaskIntakeItem(item, run, project, personMap, db) {
   const payload = item.payload || {};
+  const requirementId = payload.stable_id || payload.id || payload.metadata?.requirement_id || null;
+  const sourceStatementIds = payload.source_statement_ids || payload.metadata?.source_statement_ids || [];
+  const payloadDecisionRequired = Boolean(payload.decision_required || payload.decisionRequired || payload.owner === 'Shloimie');
   const shaped = shapeTaskFromText({
     ...payload,
     text: payload.raw_excerpt || payload.source_excerpt || item.source_excerpt || payload.summary || item.summary || payload.title || item.title,
   });
   const explicitSystemWork = contentRecordingTaskIsExplicitSystemWork(payload, item, run);
   const recordingReviewTask = contentRecordingRunLooksLikeSource(run) && item.item_type !== 'decision' && !explicitSystemWork;
+  const filedAsDecision = item.item_type === 'decision' || (item.item_type === 'requirement' && payloadDecisionRequired);
   const ownerPersonId = await resolvePersonIdByAlias(recordingReviewTask ? null : (payload.owner || shaped.owner), db);
   const task = await createTaskFromText({
     title: shaped.title,
@@ -23932,17 +24224,24 @@ async function fileTaskIntakeItem(item, run, project, personMap, db) {
     next_action: recordingReviewTask
       ? 'Review parsed recording item and either promote it to work, file it as class/student context, or archive it.'
       : (payload.next_action || shaped.next_action),
-    item_type: item.item_type === 'decision' ? 'decision' : 'task',
-    decision_required: item.item_type === 'decision',
+    item_type: filedAsDecision ? 'decision' : 'task',
+    decision_required: filedAsDecision,
     assigned_to: recordingReviewTask ? null : (payload.assigned_to || payload.owner || shaped.assigned_to || shaped.owner),
     owner_person_id: ownerPersonId,
-    decision_owner: payload.decision_owner || (item.item_type === 'decision' ? (payload.owner || 'Shloimie') : null),
+    decision_owner: payload.decision_owner || (filedAsDecision ? (payload.owner || 'Shloimie') : null),
     category: payload.category || shaped.category || 'operations',
     source: intakeTaskSource(run.source_type),
-    source_context: { intake_parse_run_id: run.id, intake_parse_item_id: item.id, source_type: run.source_type, source_id: run.source_id },
+    source_context: {
+      intake_parse_run_id: run.id,
+      intake_parse_item_id: item.id,
+      source_type: run.source_type,
+      source_id: run.source_id,
+      requirement_id: requirementId,
+      source_statement_ids: sourceStatementIds,
+    },
     created_by: run.created_by || 'intake_parser',
     project: project.project_key,
-    task_kind: recordingReviewTask ? 'task' : (payload.task_kind || payload.taskKind || undefined),
+    task_kind: recordingReviewTask ? 'task' : (payload.task_kind || payload.taskKind || (payload.agent_executable || payload.agentExecutable ? 'agent_job' : filedAsDecision ? 'decision' : undefined)),
     agent_executable: recordingReviewTask ? false : Boolean(payload.agent_executable || payload.agentExecutable),
     suppress_agent_inference: recordingReviewTask,
     needs_review: recordingReviewTask || Boolean(payload.needs_review || payload.needsReview),
@@ -23953,6 +24252,8 @@ async function fileTaskIntakeItem(item, run, project, personMap, db) {
       intake_parse_run_id: run.id,
       intake_parse_item_id: item.id,
       canonical_item_type: item.item_type,
+      requirement_id: requirementId,
+      source_statement_ids: sourceStatementIds,
       recording_review_task: recordingReviewTask,
       agent_executable: !recordingReviewTask && Boolean(payload.agent_executable || payload.agentExecutable),
       payload,
@@ -24113,7 +24414,7 @@ async function fileIntakeParseRun(parseRunId, { req = null, force_review = false
 
       try {
         let filed;
-        if (item.item_type === 'task' || item.item_type === 'decision') {
+        if (item.item_type === 'task' || item.item_type === 'decision' || item.item_type === 'requirement') {
           filed = await fileTaskIntakeItem(item, run, project, personMap, client);
           created.tasks.push(filed.record);
         } else if (item.item_type === 'ticket') {
@@ -24167,7 +24468,7 @@ async function fileIntakeParseRun(parseRunId, { req = null, force_review = false
     const rawIntakeStableId = run.metadata?.raw_intake_stable_id || null;
     if (rawIntakeStableId) {
       const rawParseStatus = finalStatus === 'filed'
-        ? 'implemented'
+        ? (created.tasks.length || created.tickets.length ? 'queued' : 'registered')
         : finalStatus === 'partially_filed'
           ? 'registered'
           : 'needs_review';
@@ -28819,6 +29120,77 @@ async function operationsCrmContactRows(scope = {}, db = pool) {
        COALESCE(NULLIF(c.metadata->>'assigned_owner', ''), NULLIF(c.metadata->>'owner', '')) AS assigned_owner,
        COALESCE(NULLIF(c.metadata->>'summary', ''), NULLIF(c.metadata->>'notes', '')) AS summary,
        c.updated_at AS last_contact_at,
+       COALESCE(NULLIF(c.metadata->>'next_follow_up_at', ''), NULLIF(c.metadata->>'follow_up_at', '')) AS next_follow_up_at,
+       COALESCE(NULLIF(c.metadata->>'family_school_classification', ''), NULLIF(c.metadata->>'signup_as', '')) AS family_school_classification,
+       (
+         SELECT jsonb_build_object(
+           'message_count', COUNT(*),
+           'latest_thread_key', (ARRAY_AGG(cm.thread_key ORDER BY cm.occurred_at DESC NULLS LAST, cm.id DESC))[1],
+           'latest_subject', (ARRAY_AGG(cm.subject ORDER BY cm.occurred_at DESC NULLS LAST, cm.id DESC))[1],
+           'latest_at', MAX(cm.occurred_at)
+         )
+         FROM bna_communications cm
+         WHERE cm.contact_id = c.id
+            OR (
+              COALESCE(c.primary_email, '') <> ''
+              AND lower(COALESCE(cm.from_address, cm.to_address, '')) = lower(c.primary_email)
+            )
+       ) AS mailbox,
+       (
+         SELECT jsonb_build_object(
+           'ticket_count', COUNT(*),
+           'open_ticket_count', COUNT(*) FILTER (WHERE st.status NOT IN ('resolved', 'closed')),
+           'latest_ticket_id', (ARRAY_AGG(st.id ORDER BY st.updated_at DESC NULLS LAST, st.id DESC))[1],
+           'latest_ticket_title', (ARRAY_AGG(st.title ORDER BY st.updated_at DESC NULLS LAST, st.id DESC))[1]
+         )
+         FROM bna_support_tickets st
+         WHERE COALESCE(c.primary_email, '') <> ''
+           AND lower(st.requester_email) = lower(c.primary_email)
+       ) AS support,
+       (
+         SELECT jsonb_build_object(
+           'task_count', COUNT(*),
+           'task_id', (ARRAY_AGG(t.id ORDER BY t.due_date ASC NULLS LAST, t.updated_at DESC NULLS LAST, t.id DESC))[1],
+           'assigned_to', (ARRAY_AGG(t.assigned_to ORDER BY t.due_date ASC NULLS LAST, t.updated_at DESC NULLS LAST, t.id DESC))[1],
+           'due_date', (ARRAY_AGG(t.due_date ORDER BY t.due_date ASC NULLS LAST, t.updated_at DESC NULLS LAST, t.id DESC))[1],
+           'status', (ARRAY_AGG(t.stage ORDER BY t.due_date ASC NULLS LAST, t.updated_at DESC NULLS LAST, t.id DESC))[1]
+         )
+         FROM bna_tasks t
+         WHERE COALESCE(c.primary_email, '') <> ''
+           AND lower(t.related_contact_email) = lower(c.primary_email)
+           AND t.stage <> 'archive'
+       ) AS follow_up_task,
+       (
+         SELECT jsonb_build_object(
+           'member_id', m.id,
+           'access_status', m.access_status,
+           'access_tier', m.access_tier,
+           'access_enabled', m.access_enabled,
+           'source', 'bna_members'
+         )
+         FROM bna_members m
+         WHERE COALESCE(c.primary_email, '') <> ''
+           AND lower(m.email) = lower(c.primary_email)
+         ORDER BY m.updated_at DESC NULLS LAST, m.id DESC
+         LIMIT 1
+       ) AS membership_access,
+       jsonb_build_object(
+         'class_type', COALESCE(NULLIF(c.metadata->>'class_type', ''), NULLIF(c.metadata->>'contact_type', ''), 'general_contact'),
+         'trial_status', NULLIF(c.metadata->>'trial_status', ''),
+         'access_context', NULLIF(c.metadata->>'access_context', ''),
+         'live_class_context', NULLIF(c.metadata->>'live_class_context', '')
+       ) AS class_context,
+       jsonb_build_object(
+         'activity_count',
+           COALESCE((SELECT COUNT(*) FROM bna_communications cm WHERE cm.contact_id = c.id), 0)
+           + COALESCE((SELECT COUNT(*) FROM bna_contact_pipeline_events pe WHERE pe.contact_id = c.id), 0),
+         'latest_activity_at',
+           GREATEST(
+             COALESCE((SELECT MAX(cm.occurred_at) FROM bna_communications cm WHERE cm.contact_id = c.id), '1970-01-01'::timestamp),
+             COALESCE((SELECT MAX(pe.created_at) FROM bna_contact_pipeline_events pe WHERE pe.contact_id = c.id), '1970-01-01'::timestamp),
+             COALESCE(c.updated_at, c.created_at, '1970-01-01'::timestamp)
+           )
+       ) AS timeline_activity,
        c.created_at
      FROM bna_contacts c
      LEFT JOIN bna_workspace_settings ws ON ws.id = c.workspace_id
@@ -28859,6 +29231,78 @@ async function operationsCrmContactRows(scope = {}, db = pool) {
        l.notes AS summary,
        COALESCE(l.last_inbound_at, l.last_outbound_at, l.updated_at, l.created_at) AS last_contact_at,
        l.next_follow_up_date AS next_follow_up_at,
+       CASE
+         WHEN lower(COALESCE(l.metadata->>'signup_as', l.metadata->>'audience_type', l.metadata->>'family_school_classification', l.lead_type, '')) LIKE '%school%' THEN 'school'
+         WHEN lower(COALESCE(l.metadata->>'signup_as', l.metadata->>'audience_type', l.metadata->>'family_school_classification', l.lead_type, '')) LIKE '%family%' THEN 'family'
+         WHEN l.lead_type = 'school_interest' THEN 'school'
+         ELSE 'family'
+       END AS family_school_classification,
+       l.parent_name,
+       l.student_name,
+       (
+         SELECT jsonb_build_object(
+           'message_count', COUNT(*),
+           'latest_thread_key', (ARRAY_AGG(cm.thread_key ORDER BY cm.occurred_at DESC NULLS LAST, cm.id DESC))[1],
+           'latest_subject', (ARRAY_AGG(cm.subject ORDER BY cm.occurred_at DESC NULLS LAST, cm.id DESC))[1],
+           'latest_at', MAX(cm.occurred_at)
+         )
+         FROM bna_communications cm
+         WHERE cm.project_id = l.project_id
+           AND COALESCE(l.parent_email, '') <> ''
+           AND lower(COALESCE(cm.from_address, cm.to_address, '')) = lower(l.parent_email)
+       ) AS mailbox,
+       (
+         SELECT jsonb_build_object(
+           'ticket_count', COUNT(*),
+           'open_ticket_count', COUNT(*) FILTER (WHERE st.status NOT IN ('resolved', 'closed')),
+           'latest_ticket_id', (ARRAY_AGG(st.id ORDER BY st.updated_at DESC NULLS LAST, st.id DESC))[1],
+           'latest_ticket_title', (ARRAY_AGG(st.title ORDER BY st.updated_at DESC NULLS LAST, st.id DESC))[1]
+         )
+         FROM bna_support_tickets st
+         WHERE st.project_id = l.project_id
+           AND COALESCE(l.parent_email, '') <> ''
+           AND lower(st.requester_email) = lower(l.parent_email)
+       ) AS support,
+       (
+         SELECT jsonb_build_object(
+           'task_count', COUNT(*),
+           'task_id', (ARRAY_AGG(t.id ORDER BY t.due_date ASC NULLS LAST, t.updated_at DESC NULLS LAST, t.id DESC))[1],
+           'assigned_to', (ARRAY_AGG(t.assigned_to ORDER BY t.due_date ASC NULLS LAST, t.updated_at DESC NULLS LAST, t.id DESC))[1],
+           'due_date', (ARRAY_AGG(t.due_date ORDER BY t.due_date ASC NULLS LAST, t.updated_at DESC NULLS LAST, t.id DESC))[1],
+           'status', (ARRAY_AGG(t.stage ORDER BY t.due_date ASC NULLS LAST, t.updated_at DESC NULLS LAST, t.id DESC))[1]
+         )
+         FROM bna_tasks t
+         WHERE t.project_id = l.project_id
+           AND COALESCE(l.parent_email, '') <> ''
+           AND lower(t.related_contact_email) = lower(l.parent_email)
+           AND t.stage <> 'archive'
+       ) AS follow_up_task,
+       (
+         SELECT jsonb_build_object(
+           'member_id', m.id,
+           'access_status', m.access_status,
+           'access_tier', m.access_tier,
+           'access_enabled', m.access_enabled,
+           'source', 'bna_members'
+         )
+         FROM bna_members m
+         WHERE m.project_id = l.project_id
+           AND COALESCE(l.parent_email, '') <> ''
+           AND lower(m.email) = lower(l.parent_email)
+         ORDER BY m.updated_at DESC NULLS LAST, m.id DESC
+         LIMIT 1
+       ) AS membership_access,
+       jsonb_build_object(
+         'class_type', l.lead_type,
+         'trial_status', COALESCE(NULLIF(l.metadata->>'trial_status', ''), CASE WHEN l.tags && ARRAY['free-class-interest','trial-review'] THEN 'trial_or_free_class_interest' ELSE NULL END),
+         'access_context', COALESCE(NULLIF(l.metadata->>'access_context', ''), NULLIF(l.metadata->>'access_status', '')),
+         'live_class_context', COALESCE(NULLIF(l.metadata->>'live_class_context', ''), NULLIF(l.source_detail, ''))
+       ) AS class_context,
+       jsonb_build_object(
+         'activity_count', COALESCE((SELECT COUNT(*) FROM bna_contact_communications cc WHERE cc.lead_id = l.id), 0),
+         'latest_activity_at', COALESCE((SELECT MAX(cc.occurred_at) FROM bna_contact_communications cc WHERE cc.lead_id = l.id), COALESCE(l.last_inbound_at, l.last_outbound_at, l.updated_at, l.created_at)),
+         'latest_activity_type', COALESCE((SELECT cc.source FROM bna_contact_communications cc WHERE cc.lead_id = l.id ORDER BY cc.occurred_at DESC NULLS LAST, cc.id DESC LIMIT 1), l.source)
+       ) AS timeline_activity,
        l.created_at
      FROM bna_parent_leads l
      LEFT JOIN bna_projects p ON p.id = l.project_id
@@ -28885,27 +29329,56 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
   if (contactRef.source === 'bna_parent_leads') {
     const params = [contactRef.id];
     const conditions = [`c.lead_id = $1`];
+    const taskConditions = [`l.id = $1`, `t.stage <> 'archive'`];
     if (projectKey && !['platform', 'super_admin'].includes(projectKey)) {
       params.push(projectKey);
       conditions.push(`p.project_key = $${params.length}`);
+      taskConditions.push(`p.project_key = $${params.length}`);
     }
     const result = await db.query(
-      `SELECT
-         c.id,
-         c.channel,
-         c.direction,
-         c.summary AS body,
-         c.body AS notes,
-         c.source,
-         c.source_context,
-         c.occurred_at,
-         c.created_at,
-         'contact_note' AS communication_type
-       FROM bna_contact_communications c
-       LEFT JOIN bna_parent_leads l ON l.id = c.lead_id
-       LEFT JOIN bna_projects p ON p.id = l.project_id
-       WHERE ${conditions.join(' AND ')}
-       ORDER BY c.occurred_at DESC NULLS LAST, c.created_at DESC
+      `SELECT *
+       FROM (
+         SELECT
+           c.id,
+           c.channel,
+           c.direction,
+           c.summary AS body,
+           c.body AS notes,
+           c.source,
+           c.source_context,
+           c.occurred_at,
+           c.created_at,
+           'contact_note' AS communication_type
+         FROM bna_contact_communications c
+         LEFT JOIN bna_parent_leads l ON l.id = c.lead_id
+         LEFT JOIN bna_projects p ON p.id = l.project_id
+         WHERE ${conditions.join(' AND ')}
+         UNION ALL
+         SELECT
+           t.id,
+           'task' AS channel,
+           'internal' AS direction,
+           COALESCE(t.title, 'CRM follow-up task') AS body,
+           t.notes,
+           'operations_crm_workbench' AS source,
+           jsonb_build_object(
+             'crm_contact_id', ('bna_parent_leads:' || l.id::text),
+             'task_id', t.id,
+             'assigned_to', t.assigned_to,
+             'due_date', t.due_date,
+             'stage', t.stage,
+             'no_send', true,
+             'external_write_performed', false
+           ) AS source_context,
+           COALESCE(t.due_date::timestamp, t.updated_at, t.created_at) AS occurred_at,
+           t.created_at,
+           'follow_up_task' AS communication_type
+         FROM bna_tasks t
+         JOIN bna_parent_leads l ON lower(t.related_contact_email) = lower(l.parent_email)
+         LEFT JOIN bna_projects p ON p.id = l.project_id
+         WHERE ${taskConditions.join(' AND ')}
+       ) timeline
+       ORDER BY occurred_at DESC NULLS LAST, created_at DESC
        LIMIT 200`,
       params
     );
@@ -28915,10 +29388,16 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
   const params = [contactRef.id];
   const communicationConditions = [`contact_id = $1`];
   const pipelineConditions = [`contact_id = $1`];
+  const taskConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(t.related_contact_email) = lower(bc.primary_email)`, `t.stage <> 'archive'`];
   if (workspaceKey && !['platform', 'super_admin'].includes(workspaceKey)) {
     params.push(workspaceKey);
     communicationConditions.push(`workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     pipelineConditions.push(`workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
+    taskConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
+  }
+  if (projectKey && !['platform', 'super_admin'].includes(projectKey)) {
+    params.push(projectKey);
+    taskConditions.push(`t.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
   }
 
   const result = await db.query(
@@ -28949,12 +29428,97 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
          event_type AS communication_type
        FROM bna_contact_pipeline_events
        WHERE ${pipelineConditions.join(' AND ')}
+       UNION ALL
+       SELECT
+         t.id,
+         'task' AS channel,
+         'internal' AS direction,
+         COALESCE(t.title, 'CRM follow-up task') AS body,
+         'operations_crm_workbench' AS source,
+         jsonb_build_object(
+           'crm_contact_id', ('bna_contacts:' || bc.id::text),
+           'task_id', t.id,
+           'assigned_to', t.assigned_to,
+           'due_date', t.due_date,
+           'stage', t.stage,
+           'no_send', true,
+           'external_write_performed', false
+         ) AS source_context,
+         COALESCE(t.due_date::timestamp, t.updated_at, t.created_at) AS occurred_at,
+         t.created_at,
+         'follow_up_task' AS communication_type
+       FROM bna_tasks t
+       JOIN bna_contacts bc ON ${taskConditions.join(' AND ')}
      ) timeline
      ORDER BY occurred_at DESC NULLS LAST, created_at DESC
      LIMIT 200`,
     params
   );
   return result.rows;
+}
+
+async function createOperationsCrmFollowUpTask({
+  req,
+  scope = {},
+  contactRef = {},
+  contact = {},
+  summary = '',
+  body = '',
+  dueDate = '',
+  assignedTo = '',
+} = {}, db = pool) {
+  const email = normalizeEmail(contact.parent_email || contact.primary_email || contact.email || contact.contact_email || '');
+  const displayName = limitText(String(contact.parent_name || contact.full_name || contact.display_name || contact.name || email || 'CRM contact').trim(), 120);
+  const projectKey = normalizeProjectKey(scope.project_key || workspaceProjectKey(scope.workspace_key) || ONE_TIME_PROJECT_KEY);
+  const due = String(dueDate || '').trim() || null;
+  const owner = limitText(String(assignedTo || contact.owner || contact.assigned_owner || 'Rabbi Scheller team').trim(), 120);
+  const taskTitle = limitText(`Follow up with ${displayName}`, 180);
+  const taskNotes = limitText([
+    summary || 'First-party CRM follow-up created from the Operations CRM workbench.',
+    body ? `Internal note: ${body}` : '',
+    'No email, WhatsApp, payment, access, import, or external CRM write was performed by creating this task.',
+  ].filter(Boolean).join('\n\n'), 4000);
+  const sourceContext = JSON.stringify({
+    source: 'operations_crm_workbench',
+    crm_contact_id: `${contactRef.source || 'bna_contacts'}:${contactRef.id || ''}`,
+    workspace_key: scope.workspace_key || null,
+    project_key: projectKey || null,
+    no_send: true,
+    external_write_performed: false,
+  });
+
+  const result = await db.query(
+    `WITH project AS (
+       SELECT id FROM bna_projects WHERE project_key = $1 LIMIT 1
+     )
+     INSERT INTO bna_tasks (
+       title, notes, stage, category, urgency, due_date, source, source_context,
+       related_contact_email, project_id, created_by, assigned_to, ai_parsed
+     ) VALUES (
+       $2, $3, 'assigned', 'communications', 'this_week', $4::date, 'manual', $5,
+       $6, (SELECT id FROM project), $7, $8, $9::jsonb
+     )
+     RETURNING *`,
+    [
+      projectKey,
+      taskTitle,
+      taskNotes,
+      due,
+      sourceContext,
+      email || null,
+      req?.opsUser || 'operations',
+      owner || null,
+      JSON.stringify({
+        task_kind: 'crm_follow_up',
+        crm_contact_id: `${contactRef.source || 'bna_contacts'}:${contactRef.id || ''}`,
+        workspace_key: scope.workspace_key || null,
+        project_key: projectKey || null,
+        no_send: true,
+        external_write_performed: false,
+      }),
+    ]
+  );
+  return result.rows[0] || null;
 }
 
 async function getProviderPortalPayload(providerId, db = pool) {
@@ -49147,6 +49711,10 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
   const nextFollowUpAt = String(body.next_follow_up_at || body.next_follow_up_date || '').trim();
   const lifecycleStage = limitText(String(body.lifecycle_stage || body.status || '').trim(), 80);
   const assignedOwner = limitText(String(body.assigned_owner || body.owner || '').trim(), 120);
+  const displayNameUpdate = limitText(String(body.display_name || body.full_name || body.parent_name || body.name || '').trim(), 180);
+  const emailUpdate = normalizeEmail(body.email || body.parent_email || body.primary_email || '');
+  const phoneUpdate = limitText(String(body.phone || body.parent_phone || body.primary_phone || '').trim(), 80);
+  const shouldCreateFollowUpTask = body.create_follow_up_task !== false && Boolean(nextFollowUpAt || assignedOwner || body.create_follow_up_task === true);
   const tags = normalizeTextArray(body.tags);
 
   try {
@@ -49159,6 +49727,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
 
     let updated = null;
     let localEvent = null;
+    let followUpTask = null;
 
     if (contactRef.source === 'bna_parent_leads') {
       await assertProjectOwnedRowAccess(req, 'bna_parent_leads', contactRef.id);
@@ -49172,9 +49741,9 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
       if (nextFollowUpAt) addField('next_follow_up_date', nextFollowUpAt);
       if (assignedOwner) addField('owner', assignedOwner);
       if (tags.length) addField('tags', tags);
-      if (body.parent_name) addField('parent_name', limitText(String(body.parent_name), 180));
-      if (body.email || body.parent_email) addField('parent_email', normalizeEmail(body.email || body.parent_email));
-      if (body.phone || body.parent_phone) addField('parent_phone', limitText(String(body.phone || body.parent_phone), 80));
+      if (displayNameUpdate) addField('parent_name', displayNameUpdate);
+      if (emailUpdate) addField('parent_email', emailUpdate);
+      if (phoneUpdate) addField('parent_phone', phoneUpdate);
       if (body.contact_notes || body.notes) addField('notes', limitText(String(body.contact_notes || body.notes), 4000));
 
       if (fields.length) {
@@ -49199,7 +49768,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
            )
            SELECT
              l.project_id, COALESCE(l.lead_type, 'lead'), l.id, 'internal_note', 'internal',
-             $2, $3, $4, NOW(), $5, 'operations_crm_workbench',
+             $2, $3, $4, NOW(), $5, 'dashboard',
              $6::jsonb, $7::jsonb
            FROM bna_parent_leads l
            WHERE l.id = $1
@@ -49229,6 +49798,19 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
         );
         localEvent = result.rows[0] || null;
       }
+
+      if (shouldCreateFollowUpTask) {
+        followUpTask = await createOperationsCrmFollowUpTask({
+          req,
+          scope,
+          contactRef,
+          contact: updated || {},
+          summary: noteSummary || 'CRM follow-up task',
+          body: noteText,
+          dueDate: nextFollowUpAt,
+          assignedTo: assignedOwner,
+        });
+      }
     } else {
       const workspaceResult = await pool.query('SELECT id FROM bna_workspace_settings WHERE workspace_key = $1 LIMIT 1', [workspaceKey]);
       const workspaceId = workspaceResult.rows[0]?.id || null;
@@ -49241,9 +49823,9 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
       };
       if (lifecycleStage) addField('status', lifecycleStage);
       if (tags.length) addField('tags', tags);
-      if (body.full_name || body.parent_name || body.display_name) addField('full_name', limitText(String(body.full_name || body.parent_name || body.display_name), 180));
-      if (body.email || body.primary_email) addField('primary_email', normalizeEmail(body.email || body.primary_email));
-      if (body.phone || body.primary_phone) addField('primary_phone', limitText(String(body.phone || body.primary_phone), 80));
+      if (displayNameUpdate) addField('full_name', displayNameUpdate);
+      if (emailUpdate) addField('primary_email', emailUpdate);
+      if (phoneUpdate) addField('primary_phone', phoneUpdate);
       if (assignedOwner) metadata.assigned_owner = assignedOwner;
       if (nextFollowUpAt) metadata.next_follow_up_at = nextFollowUpAt;
       if (body.contact_notes || body.notes) metadata.summary = limitText(String(body.contact_notes || body.notes), 4000);
@@ -49299,6 +49881,19 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
         );
         localEvent = result.rows[0] || null;
       }
+
+      if (shouldCreateFollowUpTask) {
+        followUpTask = await createOperationsCrmFollowUpTask({
+          req,
+          scope,
+          contactRef,
+          contact: updated || {},
+          summary: noteSummary || 'CRM follow-up task',
+          body: noteText,
+          dueDate: nextFollowUpAt,
+          assignedTo: assignedOwner,
+        });
+      }
     }
 
     const rows = await operationsCrmContactRows(scope);
@@ -49309,6 +49904,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
       success: true,
       contact: card || updated,
       local_event: localEvent,
+      follow_up_task: followUpTask,
       timeline: crmContactModel.buildTimeline(timeline),
       no_send: true,
       no_checkout: true,
@@ -49409,6 +50005,23 @@ app.post('/api/provider-portal/login', async (req, res) => {
     const sessionId = await issueProviderSession(provider.id);
     await pool.query(`UPDATE bna_service_providers SET last_login_at = NOW(), updated_at = NOW() WHERE id = $1`, [provider.id]);
     setProviderSessionCookie(res, sessionId);
+    const providerWithProject = await serviceProviderWithProject(provider.id).catch(() => provider);
+    if (isOneTimeClassMediaProvider(providerWithProject || provider)) {
+      return res.json({
+        success: true,
+        sessionId,
+        portal_redirect: true,
+        redirect_to: oneTimeProviderCanonicalOperationsUrl({ query: {} }),
+        role: 'project_owner',
+        provider_id: provider.id,
+        provider_name: provider.provider_name || provider.display_name || null,
+        workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+        project_key: ONE_TIME_PROJECT_KEY,
+        operations_shell: true,
+        legacy_provider_dashboard_replaced: true,
+        external_write_performed: false,
+      });
+    }
     const payload = await getProviderPortalPayload(provider.id);
     res.json({ success: true, sessionId, ...payload });
   } catch (err) {
@@ -78949,6 +79562,218 @@ function isOneTimeSyntheticLead(input = {}, lead = {}) {
     || /one_time_interest_crm_e2e/i.test(haystack);
 }
 
+function isOneTimeDirectSignupInput(input = {}, lead = {}) {
+  const metadata = oneTimeProductJson(input.metadata || lead.metadata || {});
+  const source = String(input.source_landing_page || input.sourceLandingPage || lead.source_landing_page || '').trim();
+  return metadata.one_time_direct_signup === true
+    || String(input.signup_mode || input.signupMode || '').trim() === 'one_time_class_signup'
+    || source === '/one-time/signup';
+}
+
+function normalizeOneTimeLeadCaptureInput(input = {}) {
+  if (isOneTimeDirectSignupInput(input)) {
+    return buildOneTimeSignupLeadInput(input);
+  }
+  return input;
+}
+
+function oneTimeSignupCityFromLead(lead = {}) {
+  const metadata = oneTimeProductJson(lead.metadata || {});
+  const city = metadata.city && typeof metadata.city === 'object' && !Array.isArray(metadata.city)
+    ? metadata.city
+    : {};
+  try {
+    return resolveOneTimeCitySelection({
+      city_id: city.id || lead.city_id || '',
+      city_label: city.label || lead.city_label || '',
+      city: city.label || city.name || lead.city || lead.city_name || '',
+      browser_timezone: metadata.browser_timezone || '',
+    });
+  } catch {
+    return city?.timezone
+      ? {
+          id: city.id || '',
+          label: city.label || city.name || '',
+          city: city.name || '',
+          region: city.region || '',
+          country: city.country || '',
+          country_code: city.country_code || '',
+          timezone: city.timezone,
+        }
+      : null;
+  }
+}
+
+function oneTimeSignupCrmDeepLink(crmLeadId) {
+  const id = String(crmLeadId || '').trim();
+  return id
+    ? `/provider.html?admin_provider=one-time&section=crm&lead=${encodeURIComponent(id)}`
+    : '/provider.html?admin_provider=one-time&section=crm';
+}
+
+async function upsertAssistantDeliveryOutboxEvent(db, event = {}) {
+  if (!db || !event.delivery_key || !event.channel_key) return null;
+  const row = (await db.query(
+    `WITH inserted AS (
+       INSERT INTO assistant_delivery_outbox (
+         delivery_key, conversation_key, channel_key, recipient_identity_key,
+         payload, idempotency_key, status, next_attempt_at, updated_at
+       ) VALUES (
+         $1, $2, $3, $4,
+         $5::jsonb, $6, 'queued', COALESCE($7::timestamptz, NOW()), NOW()
+       )
+       ON CONFLICT (delivery_key) DO NOTHING
+       RETURNING id, delivery_key, channel_key, status, idempotency_key, TRUE AS created
+     )
+     SELECT id, delivery_key, channel_key, status, idempotency_key, created FROM inserted
+     UNION ALL
+     SELECT id, delivery_key, channel_key, status, idempotency_key, FALSE AS created
+     FROM assistant_delivery_outbox
+     WHERE delivery_key = $1
+     LIMIT 1`,
+    [
+      event.delivery_key,
+      event.conversation_key || null,
+      event.channel_key,
+      event.recipient_identity_key || null,
+      JSON.stringify(event.payload || {}),
+      event.idempotency_key || event.delivery_key,
+      event.next_attempt_at || null,
+    ]
+  )).rows[0] || null;
+  return row
+    ? {
+        id: Number(row.id),
+        delivery_key: row.delivery_key,
+        channel_key: row.channel_key,
+        status: row.status,
+        idempotency_key: row.idempotency_key,
+        created: row.created === true || row.created === 't',
+      }
+    : null;
+}
+
+async function enqueueOneTimeDirectSignupOutbox({
+  db,
+  project,
+  productLead,
+  crmLead,
+  lead,
+}) {
+  const city = oneTimeSignupCityFromLead(lead);
+  const metadata = oneTimeProductJson(lead.metadata || {});
+  const preferenceValue = metadata.reminder_preference || lead.reminder_preference || 'none';
+  const preference = normalizeReminderPreference(preferenceValue);
+  const crmLeadId = crmLead?.id ? Number(crmLead.id) : null;
+  const productLeadId = productLead?.id ? Number(productLead.id) : null;
+  const events = buildOneTimeSignupOutboxEvents({
+    productLeadId,
+    crmLeadId,
+    contactName: lead.parent_name || lead.contact_name || '',
+    signupAs: metadata.signup_as || lead.signup_as || 'Family',
+    email: lead.email || lead.parent_email || '',
+    phone: lead.phone || lead.whatsapp || lead.parent_phone || '',
+    city,
+    reminderPreference: preference.value,
+    sourceLandingPage: lead.source_landing_page || '/one-time/signup',
+  }).map((event) => {
+    if (event.channel_key !== 'telegram:one_time_rabbi_operator') return event;
+    return {
+      ...event,
+      payload: {
+        ...event.payload,
+        role_alias: 'one_time_rabbi_operator',
+        text: buildRabbiSignupTelegramAlert({
+          contactName: lead.parent_name || lead.contact_name || '',
+          signupAs: metadata.signup_as || lead.signup_as || 'Family',
+          city,
+          reminderPreference: preference.value,
+          crmLeadId,
+          crmDeepLink: oneTimeSignupCrmDeepLink(crmLeadId),
+        }),
+        zoom_url_included: false,
+      },
+    };
+  });
+  const outboxRows = [];
+  for (const event of events) {
+    outboxRows.push(await upsertAssistantDeliveryOutboxEvent(db, {
+      ...event,
+      conversation_key: `one-time-direct-signup:${crmLeadId || productLeadId || safeRecipientHash(lead.email || lead.phone || '')}`,
+    }));
+  }
+  const createdRows = outboxRows.filter((row) => row && row.created);
+  if (project?.id && crmLeadId) {
+    const summary = createdRows.length
+      ? 'One Time signup automation queued'
+      : 'One Time signup automation already queued';
+    const display = city?.timezone
+      ? buildClassTimeDisplay({
+          classInstant: nextOneTimeClassSchedule().class_instant,
+          city,
+        })
+      : null;
+    await db.query(
+      `INSERT INTO bna_contact_communications (
+         project_id, contact_type, lead_id, channel, direction,
+         summary, body, follow_up_required, occurred_at, created_by, source,
+         source_context, metadata
+       ) VALUES (
+         $1, 'lead', $2, 'internal_note', 'outbound',
+         $3, $4, FALSE, NOW(), 'one_time_signup_workflow', 'web_assistant',
+         $5::jsonb, $6::jsonb
+       )
+       ON CONFLICT DO NOTHING`,
+      [
+        project.id,
+        crmLeadId,
+        summary,
+        limitText(`Direct One Time signup captured for ${lead.parent_name || 'contact'}. Confirmation email and Rabbi signup alert are queued with idempotent delivery keys. Reminder preference: ${preference.label}. No member login, password setup, checkout, payment, classroom, entitlement, or access workflow was started.`, 2000),
+        JSON.stringify({
+          raw_intake_id: 'RAW-20260712-002',
+          product_lead_id: productLeadId,
+          crm_lead_id: crmLeadId,
+          class_time_display: display,
+          outbox_delivery_keys: events.map((event) => event.delivery_key),
+        }),
+        JSON.stringify({
+          source: 'one_time_direct_signup_workflow',
+          product_lead_id: productLeadId,
+          crm_lead_id: crmLeadId,
+          reminder_preference: preference.value,
+          reminder_channels: preference.channels,
+          outbox: outboxRows.filter(Boolean),
+          no_portal_onboarding: true,
+          no_member_login_created: true,
+          no_password_setup: true,
+          no_checkout: true,
+          no_payment: true,
+          no_access_granted: true,
+          zoom_url_in_timeline: false,
+        }),
+      ]
+    );
+  }
+  return {
+    source: 'one_time_direct_signup_workflow',
+    confirmation_email_queued: true,
+    whatsapp_confirmation_queued: preference.channels.includes('whatsapp'),
+    rabbi_telegram_alert_queued: true,
+    queued_count: createdRows.length,
+    existing_count: outboxRows.filter((row) => row && !row.created).length,
+    outbox: outboxRows.filter(Boolean),
+    reminder_preference: preference.value,
+    reminder_channels: preference.channels,
+    reminder_consent_required: preference.recurring_consent_required,
+    no_portal_onboarding: true,
+    no_member_login_created: true,
+    no_password_setup: true,
+    no_checkout: true,
+    no_payment: true,
+    no_access_granted: true,
+  };
+}
+
 async function sendOneTimeSignupTelegramReminder(lead = {}) {
   const result = await sendTelegramNotification(buildOneTimeSignupTelegramReminder(lead));
   if (result && !result.sent && !result.skipped) {
@@ -79315,7 +80140,9 @@ async function oneTimeCalendarRows({ projectId, view = 'week', audience = 'admin
 }
 
 async function createOneTimeProductLead(input = {}, db = pool) {
-  const lead = validateOneTimeLead(input);
+  const normalizedInput = normalizeOneTimeLeadCaptureInput(input);
+  const lead = validateOneTimeLead(normalizedInput);
+  const directSignup = isOneTimeDirectSignupInput(input, lead);
   const syntheticTestLead = isOneTimeSyntheticLead(input, lead);
   const client = db.connect ? await db.connect() : null;
   const runner = client || db;
@@ -79335,60 +80162,137 @@ async function createOneTimeProductLead(input = {}, db = pool) {
       'one-time-public-signup',
       'free-class-interest',
       'free-zoom-follow-up',
+      ...(directSignup ? ['one-time-direct-signup', `signup-as-${String(lead.metadata?.signup_as || 'family').toLowerCase()}`] : []),
     ];
     const productMetadata = {
       ...lead.metadata,
-      source: 'one_time_product_interest',
+      source: directSignup ? 'one_time_direct_signup' : 'one_time_product_interest',
       crm_capture: true,
-      free_class_follow_up: true,
+      free_class_follow_up: !directSignup,
+      direct_signup_workflow: directSignup,
       no_checkout: true,
       no_access_granted: true,
-      no_external_send: true,
+      no_external_send: !directSignup,
+      external_send_enqueued: directSignup,
       synthetic_test_lead: syntheticTestLead,
       external_write_performed: false,
     };
-    const productRow = (await runner.query(
-      `INSERT INTO bna_product_leads (
-         project_id, program_id, program_key, product_key, region, audience,
-         interested_tiers, parent_name, parent_email, parent_phone,
-         parent_whatsapp, student_name, student_age, student_grade,
-         timezone, preferred_class_format, source_landing_page, consent,
-         notes, status, no_send, external_write_performed, metadata, updated_at
-       ) VALUES (
-         $1, $2, $3, $4, $5, $6,
-         $7::text[], $8, $9, $10,
-         $11, $12, $13, $14,
-         $15, $16, $17, $18,
-         $19, $20, TRUE, FALSE, $21::jsonb, NOW()
-       )
-       RETURNING *`,
-      [
-        project.id,
-        program?.id || null,
-        ONE_TIME_PRODUCT_PROGRAM_KEY,
-        ONE_TIME_PRODUCT_PROGRAM_KEY,
-        lead.region,
-        lead.audience,
-        lead.interested_tiers,
-        limitText(lead.parent_name, 180),
-        parentEmail,
-        limitText(lead.phone || '', 80) || null,
-        limitText(lead.whatsapp || '', 80) || null,
-        limitText(lead.student_name || '', 180) || null,
-        lead.student_age === null || lead.student_age === undefined ? null : limitText(String(lead.student_age), 40),
-        limitText(lead.student_grade || '', 80) || null,
-        limitText(lead.timezone || '', 100) || null,
-        limitText(lead.preferred_class_format || 'free_zoom_intro', 120) || null,
-        limitText(lead.source_landing_page || '/one-time', 220),
-        lead.consent,
-        limitText(lead.notes || '', 2000) || null,
-        lead.status,
-        JSON.stringify(productMetadata),
-      ]
-    )).rows[0];
+    let existingProductLead = null;
+    if (directSignup && (parentEmail || parentPhoneDigits)) {
+      const lookupParts = [];
+      const lookupParams = [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY];
+      if (parentEmail) {
+        lookupParams.push(parentEmail);
+        lookupParts.push(`lower(COALESCE(parent_email, '')) = lower($${lookupParams.length})`);
+      }
+      if (parentPhoneDigits) {
+        lookupParams.push(parentPhone);
+        lookupParts.push(`regexp_replace(COALESCE(parent_phone, parent_whatsapp, ''), '[^0-9]+', '', 'g') = regexp_replace($${lookupParams.length}, '[^0-9]+', '', 'g')`);
+      }
+      if (lookupParts.length) {
+        existingProductLead = (await runner.query(
+          `SELECT *
+           FROM bna_product_leads
+           WHERE project_id = $1
+             AND program_key = $2
+             AND COALESCE(status, 'new') <> 'archived'
+             AND COALESCE(metadata->>'one_time_direct_signup', 'false') = 'true'
+             AND (${lookupParts.join(' OR ')})
+           ORDER BY updated_at DESC NULLS LAST, created_at DESC NULLS LAST, id DESC
+           LIMIT 1`,
+          lookupParams
+        )).rows[0] || null;
+      }
+    }
+    const productLeadCreated = !existingProductLead;
+    const productRow = existingProductLead
+      ? (await runner.query(
+        `UPDATE bna_product_leads
+         SET region = $2,
+             audience = $3,
+             interested_tiers = $4::text[],
+             parent_name = COALESCE(NULLIF($5, ''), parent_name),
+             parent_email = COALESCE($6, parent_email),
+             parent_phone = COALESCE(NULLIF($7, ''), parent_phone),
+             parent_whatsapp = COALESCE(NULLIF($8, ''), parent_whatsapp),
+             student_name = COALESCE(NULLIF($9, ''), student_name),
+             student_age = COALESCE($10, student_age),
+             student_grade = COALESCE(NULLIF($11, ''), student_grade),
+             timezone = COALESCE(NULLIF($12, ''), timezone),
+             preferred_class_format = COALESCE(NULLIF($13, ''), preferred_class_format),
+             source_landing_page = COALESCE(NULLIF($14, ''), source_landing_page),
+             consent = $15,
+             notes = COALESCE(NULLIF($16, ''), notes),
+             status = $17,
+             no_send = TRUE,
+             external_write_performed = FALSE,
+             metadata = COALESCE(metadata, '{}'::jsonb) || $18::jsonb,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [
+          existingProductLead.id,
+          lead.region,
+          lead.audience,
+          lead.interested_tiers,
+          limitText(lead.parent_name, 180),
+          parentEmail,
+          limitText(lead.phone || '', 80) || null,
+          limitText(lead.whatsapp || '', 80) || null,
+          limitText(lead.student_name || '', 180) || null,
+          lead.student_age === null || lead.student_age === undefined ? null : limitText(String(lead.student_age), 40),
+          limitText(lead.student_grade || '', 80) || null,
+          limitText(lead.timezone || '', 100) || null,
+          limitText(lead.preferred_class_format || 'free_zoom_intro', 120) || null,
+          limitText(lead.source_landing_page || '/one-time', 220),
+          lead.consent,
+          limitText(lead.notes || '', 2000) || null,
+          lead.status,
+          JSON.stringify(productMetadata),
+        ]
+      )).rows[0]
+      : (await runner.query(
+        `INSERT INTO bna_product_leads (
+           project_id, program_id, program_key, product_key, region, audience,
+           interested_tiers, parent_name, parent_email, parent_phone,
+           parent_whatsapp, student_name, student_age, student_grade,
+           timezone, preferred_class_format, source_landing_page, consent,
+           notes, status, no_send, external_write_performed, metadata, updated_at
+         ) VALUES (
+           $1, $2, $3, $4, $5, $6,
+           $7::text[], $8, $9, $10,
+           $11, $12, $13, $14,
+           $15, $16, $17, $18,
+           $19, $20, TRUE, FALSE, $21::jsonb, NOW()
+         )
+         RETURNING *`,
+        [
+          project.id,
+          program?.id || null,
+          ONE_TIME_PRODUCT_PROGRAM_KEY,
+          ONE_TIME_PRODUCT_PROGRAM_KEY,
+          lead.region,
+          lead.audience,
+          lead.interested_tiers,
+          limitText(lead.parent_name, 180),
+          parentEmail,
+          limitText(lead.phone || '', 80) || null,
+          limitText(lead.whatsapp || '', 80) || null,
+          limitText(lead.student_name || '', 180) || null,
+          lead.student_age === null || lead.student_age === undefined ? null : limitText(String(lead.student_age), 40),
+          limitText(lead.student_grade || '', 80) || null,
+          limitText(lead.timezone || '', 100) || null,
+          limitText(lead.preferred_class_format || 'free_zoom_intro', 120) || null,
+          limitText(lead.source_landing_page || '/one-time', 220),
+          lead.consent,
+          limitText(lead.notes || '', 2000) || null,
+          lead.status,
+          JSON.stringify(productMetadata),
+        ]
+      )).rows[0];
 
     const crmMetadata = {
-      source: 'one_time_public_interest_form',
+      source: directSignup ? 'one_time_direct_signup_form' : 'one_time_public_interest_form',
       product_lead_id: productRow.id,
       program_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
       project_key: ONE_TIME_PROJECT_KEY,
@@ -79396,11 +80300,20 @@ async function createOneTimeProductLead(input = {}, db = pool) {
       region: productRow.region || 'worldwide',
       preferred_class_format: lead.preferred_class_format || 'free_zoom_intro',
       interested_tiers: lead.interested_tiers,
-      free_class_follow_up: true,
-      free_zoom_follow_up: true,
+      free_class_follow_up: !directSignup,
+      free_zoom_follow_up: !directSignup,
+      direct_signup_workflow: directSignup,
+      city: lead.metadata?.city || null,
+      timezone: lead.timezone || null,
+      signup_as: lead.metadata?.signup_as || null,
+      reminder_preference: lead.metadata?.reminder_preference || null,
+      reminder_channels: lead.metadata?.reminder_channels || [],
+      reminder_consent_at: lead.metadata?.reminder_consent_at || null,
+      reminder_consent_policy_version: lead.metadata?.reminder_consent_policy_version || null,
       no_checkout: true,
       no_access_granted: true,
-      no_external_send: true,
+      no_external_send: !directSignup,
+      external_send_enqueued: directSignup,
       synthetic_test_lead: syntheticTestLead,
       external_write_performed: false,
     };
@@ -79445,7 +80358,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
              status = 'follow_up',
              interest_level = 'warm',
              source = 'website_form',
-             source_detail = 'One Time public free-class interest form',
+             source_detail = $11,
              next_follow_up_date = COALESCE(next_follow_up_date, CURRENT_DATE),
              owner = 'Shloimie',
              tags = (
@@ -79471,6 +80384,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
           leadTags,
           limitText(lead.notes || 'Public One Time free-class interest form submitted. Follow up with current free-class details.', 2000),
           JSON.stringify(crmMetadata),
+          directSignup ? 'One Time direct signup form' : 'One Time public free-class interest form',
         ]
       )).rows[0];
     } else {
@@ -79482,7 +80396,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
          ) VALUES (
            $1, $2, $3, $4, $5,
            $6, $7, 'group_member', 'follow_up', 'warm',
-           'website_form', 'One Time public free-class interest form', CURRENT_DATE, 'Shloimie', $8::text[], $9, $10::jsonb
+           'website_form', $11, CURRENT_DATE, 'Shloimie', $8::text[], $9, $10::jsonb
          )
          RETURNING *`,
         [
@@ -79496,6 +80410,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
           leadTags,
           limitText(lead.notes || 'Public One Time free-class interest form submitted. Follow up with current free-class details.', 2000),
           JSON.stringify(crmMetadata),
+          directSignup ? 'One Time direct signup form' : 'One Time public free-class interest form',
         ]
       )).rows[0];
     }
@@ -79513,40 +80428,57 @@ async function createOneTimeProductLead(input = {}, db = pool) {
       [
         project.id,
         crmLead.id,
-        limitText(`Public One Time signup captured for ${lead.parent_name}. Follow up with current free-class details. No checkout, access grant, external send, Zoom meeting creation, Vimeo, Drive, or portal action was triggered.`, 2000),
+        directSignup
+          ? limitText(`Direct One Time signup captured for ${lead.parent_name}. Confirmation email and Rabbi signup alert are queued. No member login, password setup, checkout, payment, classroom, entitlement, or access workflow was started.`, 2000)
+          : limitText(`Public One Time signup captured for ${lead.parent_name}. Follow up with current free-class details. No checkout, access grant, external send, Zoom meeting creation, Vimeo, Drive, or portal action was triggered.`, 2000),
         JSON.stringify({
-          raw_intake_id: 'RAW-20260709-008',
+          raw_intake_id: directSignup ? 'RAW-20260712-002' : 'RAW-20260709-008',
           product_lead_id: productRow.id,
           source_landing_page: productRow.source_landing_page || '/one-time',
-          free_zoom_alias_required_before_automated_send: true,
+          free_zoom_alias_required_before_automated_send: !directSignup,
           synthetic_test_lead: syntheticTestLead,
         }),
         JSON.stringify({
           ...crmMetadata,
-          internal_follow_up_required: true,
+          internal_follow_up_required: !directSignup,
         }),
       ]
     );
-    const transactionalFollowUp = await ensureOneTimeFreeClassTransactionalFollowUp({
-      db: runner,
-      project,
-      productLead: productRow,
-      crmLead,
-      lead,
-      syntheticTestLead,
-    });
+    const transactionalFollowUp = directSignup
+      ? await enqueueOneTimeDirectSignupOutbox({
+        db: runner,
+        project,
+        productLead: productRow,
+        crmLead,
+        lead,
+      })
+      : await ensureOneTimeFreeClassTransactionalFollowUp({
+        db: runner,
+        project,
+        productLead: productRow,
+        crmLead,
+        lead,
+        syntheticTestLead,
+      });
     if (client) await client.query('COMMIT');
     return {
       ...oneTimeProductLeadView(productRow),
+      product_lead_created: productLeadCreated,
       crm_lead_id: crmLead.id ? Number(crmLead.id) : null,
       crm_source_table: 'bna_parent_leads',
       internal_crm_recorded: true,
-      internal_follow_up_required: true,
+      internal_follow_up_required: !directSignup,
+      direct_signup_workflow: directSignup,
       transactional_follow_up: transactionalFollowUp,
-      transactional_follow_up_logged: transactionalFollowUp.logged_count > 0 || transactionalFollowUp.existing_count > 0,
-      transactional_follow_up_send_blocked: true,
-      no_email_sent: true,
-      no_whatsapp_or_wapi_sent: true,
+      transactional_follow_up_logged: directSignup
+        ? transactionalFollowUp.queued_count > 0 || transactionalFollowUp.existing_count > 0
+        : transactionalFollowUp.logged_count > 0 || transactionalFollowUp.existing_count > 0,
+      transactional_follow_up_send_blocked: !directSignup,
+      confirmation_email_queued: directSignup ? transactionalFollowUp.confirmation_email_queued === true : false,
+      whatsapp_confirmation_queued: directSignup ? transactionalFollowUp.whatsapp_confirmation_queued === true : false,
+      rabbi_telegram_alert_queued: directSignup ? transactionalFollowUp.rabbi_telegram_alert_queued === true : false,
+      no_email_sent: !directSignup,
+      no_whatsapp_or_wapi_sent: !directSignup,
       synthetic_test_lead: syntheticTestLead,
       telegram_reminder_allowed: !syntheticTestLead,
     };
@@ -79561,7 +80493,9 @@ async function createOneTimeProductLead(input = {}, db = pool) {
 }
 
 async function previewOneTimeProductLeadCapture(input = {}, db = pool) {
-  const lead = validateOneTimeLead(input);
+  const normalizedInput = normalizeOneTimeLeadCaptureInput(input);
+  const lead = validateOneTimeLead(normalizedInput);
+  const directSignup = isOneTimeDirectSignupInput(input, lead);
   const project = await getRabbiProject(db);
   const program = await getOneTimeProductProgram(project.id, db);
   const parentEmail = normalizeEmail(lead.email || '') || null;
@@ -79575,6 +80509,7 @@ async function previewOneTimeProductLeadCapture(input = {}, db = pool) {
     'one-time-public-signup',
     'free-class-interest',
     'free-zoom-follow-up',
+    ...(directSignup ? ['one-time-direct-signup', `signup-as-${String(lead.metadata?.signup_as || 'family').toLowerCase()}`] : []),
   ];
   return {
     dry_run: true,
@@ -79584,6 +80519,7 @@ async function previewOneTimeProductLeadCapture(input = {}, db = pool) {
     project_id_present: Boolean(project.id),
     program_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
     program_id_present: Boolean(program?.id),
+    direct_signup_workflow: directSignup,
     product_lead_preview: {
       project_id: project.id ? 'resolved' : 'missing',
       program_id: program?.id ? 'resolved' : 'missing',
@@ -79603,6 +80539,12 @@ async function previewOneTimeProductLeadCapture(input = {}, db = pool) {
       source_landing_page: limitText(lead.source_landing_page || '/one-time', 220),
       consent: lead.consent,
       status: lead.status,
+      signup_as: lead.metadata?.signup_as || null,
+      city: lead.metadata?.city || null,
+      reminder_preference: lead.metadata?.reminder_preference || null,
+      reminder_channels: lead.metadata?.reminder_channels || [],
+      reminder_consent_at: lead.metadata?.reminder_consent_at || null,
+      reminder_consent_policy_version: lead.metadata?.reminder_consent_policy_version || null,
       no_send: true,
       external_write_performed: false,
     },
@@ -79619,11 +80561,11 @@ async function previewOneTimeProductLeadCapture(input = {}, db = pool) {
       status: 'follow_up',
       interest_level: 'warm',
       source: 'website_form',
-      source_detail: 'One Time public free-class interest form',
+      source_detail: directSignup ? 'One Time direct signup form' : 'One Time public free-class interest form',
       next_follow_up_date: 'CURRENT_DATE',
       owner: 'Shloimie',
       tags: leadTags,
-      internal_follow_up_required: true,
+      internal_follow_up_required: !directSignup,
     },
     communication_preview: {
       table: 'bna_contact_communications',
@@ -79633,9 +80575,25 @@ async function previewOneTimeProductLeadCapture(input = {}, db = pool) {
       follow_up_required: true,
       created_by: 'public_one_time_form',
       source: 'web_assistant',
-      free_zoom_alias_required_before_automated_send: true,
+      free_zoom_alias_required_before_automated_send: !directSignup,
     },
-    transactional_follow_up_preview: buildOneTimeTransactionalFollowUpPlan(lead),
+    transactional_follow_up_preview: directSignup
+      ? buildOneTimeSignupOutboxEvents({
+        productLeadId: 'preview',
+        crmLeadId: 'preview',
+        contactName: lead.parent_name,
+        signupAs: lead.metadata?.signup_as || 'Family',
+        email: lead.email,
+        phone: lead.phone || lead.whatsapp,
+        city: oneTimeSignupCityFromLead(lead),
+        reminderPreference: lead.metadata?.reminder_preference || 'none',
+        sourceLandingPage: lead.source_landing_page || '/one-time/signup',
+      }).map((event) => ({
+        channel_key: event.channel_key,
+        idempotency_key: event.idempotency_key,
+        raw_join_url_in_payload: event.payload.raw_join_url_in_payload === true,
+      }))
+      : buildOneTimeTransactionalFollowUpPlan(lead),
     guardrails: {
       no_database_write_performed: true,
       no_product_lead_created: true,
@@ -79650,6 +80608,259 @@ async function previewOneTimeProductLeadCapture(input = {}, db = pool) {
       no_zoom_meeting_created: true,
       external_write_performed: false,
     },
+  };
+}
+
+function oneTimeReminderSuppressionReason(row = {}, channel = 'email') {
+  const metadata = oneTimeProductJson(row.metadata || {});
+  const status = String(row.status || '').trim().toLowerCase();
+  if (['archived', 'invalid', 'suppressed', 'unsubscribed'].includes(status)) return `contact_${status}`;
+  if (metadata.archived === true) return 'metadata_archived';
+  if (channel === 'email') {
+    const state = String(metadata.email_suppression_state || '').trim().toLowerCase();
+    if (['unsubscribed', 'suppressed', 'invalid', 'bounced', 'stopped'].includes(state)) return `email_${state}`;
+    if (metadata.email_unsubscribed === true || metadata.unsubscribed === true) return 'email_unsubscribed';
+  }
+  if (channel === 'whatsapp') {
+    const state = String(metadata.whatsapp_suppression_state || '').trim().toLowerCase();
+    if (['stop', 'stopped', 'unsubscribed', 'suppressed', 'invalid', 'wrong_number'].includes(state)) return `whatsapp_${state}`;
+    if (metadata.whatsapp_stop === true || metadata.whatsapp_unsubscribed === true) return 'whatsapp_stop';
+  }
+  return '';
+}
+
+function oneTimeReminderEnrollmentForLeadRow(row = {}) {
+  const metadata = oneTimeProductJson(row.metadata || {});
+  const directSignup = metadata.direct_signup_workflow === true || metadata.one_time_direct_signup === true;
+  if (directSignup) {
+    const preference = String(metadata.reminder_preference || 'none').trim() || 'none';
+    let channels = [];
+    try {
+      channels = reminderChannelsForPreference(preference);
+    } catch {
+      channels = [];
+    }
+    return {
+      source: 'one_time_direct_signup',
+      approved: channels.length === 0 || Boolean(metadata.reminder_consent_at),
+      preference,
+      channels,
+      consent_at: metadata.reminder_consent_at || null,
+      consent_policy_version: metadata.reminder_consent_policy_version || null,
+    };
+  }
+  const localApproved = metadata.reminder_source === 'operator_approved_local_class_tag'
+    && metadata.local_class_reminders_active === true;
+  if (localApproved) {
+    return {
+      source: 'operator_approved_local_class_tag',
+      approved: true,
+      preference: 'email',
+      channels: ['email'],
+      consent_at: metadata.operator_approved_at || null,
+      consent_policy_version: metadata.operator_approval_policy_version || null,
+    };
+  }
+  return {
+    source: 'none',
+    approved: false,
+    preference: 'none',
+    channels: [],
+    consent_at: null,
+    consent_policy_version: null,
+  };
+}
+
+function oneTimeReminderCityForLeadRow(row = {}) {
+  const metadata = oneTimeProductJson(row.metadata || {});
+  const city = metadata.city && typeof metadata.city === 'object' && !Array.isArray(metadata.city)
+    ? metadata.city
+    : null;
+  if (!city?.timezone) return null;
+  return {
+    id: city.id || '',
+    label: city.label || city.name || '',
+    city: city.name || city.city || '',
+    region: city.region || '',
+    country: city.country || '',
+    country_code: city.country_code || '',
+    timezone: city.timezone,
+  };
+}
+
+function oneTimeReminderRecipientForChannel(row = {}, channel = 'email') {
+  if (channel === 'email') return normalizeEmail(row.parent_email || row.email || '');
+  return normalizePhoneDigits(row.parent_phone || row.parent_whatsapp || row.phone || row.whatsapp || '');
+}
+
+async function oneTimeReminderCandidateRows({ db = pool, projectId } = {}) {
+  if (!projectId) return [];
+  return (await db.query(
+    `SELECT id, parent_name, parent_email, parent_phone, parent_whatsapp, status, tags, metadata, updated_at
+     FROM bna_parent_leads
+     WHERE project_id = $1
+       AND COALESCE(status, 'follow_up') <> 'archived'
+       AND (
+         COALESCE(metadata->>'direct_signup_workflow', 'false') = 'true'
+         OR COALESCE(metadata->>'one_time_direct_signup', 'false') = 'true'
+         OR COALESCE(metadata->>'reminder_source', '') = 'operator_approved_local_class_tag'
+         OR tags && ARRAY['local_class_attendee', 'zoom_mishnayos_class', 'local_student']::text[]
+       )
+     ORDER BY updated_at DESC NULLS LAST, id DESC
+     LIMIT 1000`,
+    [projectId]
+  )).rows;
+}
+
+function oneTimeClassReminderSkip(row = {}, channel = 'email', enrollment = {}) {
+  if (!enrollment.approved) return 'not_consented_or_not_approved';
+  const recipient = oneTimeReminderRecipientForChannel(row, channel);
+  if (!recipient) return channel === 'email' ? 'missing_email' : 'missing_whatsapp_phone';
+  if (channel === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)) return 'invalid_email';
+  const suppression = oneTimeReminderSuppressionReason(row, channel);
+  if (suppression) return suppression;
+  return '';
+}
+
+async function enqueueOneTimeClassReminderBatch({
+  db = pool,
+  now = new Date(),
+  dryRun = false,
+  forceContactId = null,
+} = {}) {
+  const project = await getRabbiProject(db);
+  const schedule = nextOneTimeClassSchedule({ now });
+  const remindersReady = oneTimeClassReminderEnvReadiness(process.env);
+  const wapiReady = oneTimeWapiReminderEnvReadiness(process.env);
+  const classActive = !/^(?:0|false|no|paused|canceled|cancelled)$/i.test(String(process.env.ONE_TIME_CLASS_ACTIVE || 'true').trim());
+  const classLinkConfigured = Boolean(ONE_TIME_WHATSAPP_CLASS_LINK);
+  const candidates = await oneTimeReminderCandidateRows({ db, projectId: project.id });
+  const results = [];
+  for (const row of candidates) {
+    if (forceContactId && Number(row.id) !== Number(forceContactId)) continue;
+    const enrollment = oneTimeReminderEnrollmentForLeadRow(row);
+    for (const channel of enrollment.channels) {
+      const skip = oneTimeClassReminderSkip(row, channel, enrollment)
+        || (!classActive ? 'class_paused_or_canceled' : '')
+        || (!classLinkConfigured ? 'class_join_link_missing' : '')
+        || (channel === 'whatsapp' && !wapiReady.ready ? 'one_time_whapi_not_ready' : '');
+      const idempotencyKey = buildReminderIdempotencyKey({
+        classDate: schedule.class_date,
+        contactId: row.id,
+        channel,
+        scheduleVersion: schedule.schedule_version,
+      });
+      const city = oneTimeReminderCityForLeadRow(row);
+      const payload = {
+        workflow: 'one_time_class_reminder',
+        workflow_version: 'v1',
+        class_date: schedule.class_date,
+        class_instant_iso: schedule.class_instant_iso,
+        reminder_instant_iso: schedule.reminder_instant_iso,
+        schedule_version: schedule.schedule_version,
+        channel,
+        contact_id: Number(row.id),
+        contact_name: limitText(row.parent_name || '', 180),
+        recipient_hash: safeRecipientHash(oneTimeReminderRecipientForChannel(row, channel)),
+        city,
+        display: city ? buildClassTimeDisplay({ classInstant: schedule.class_instant, city }) : null,
+        enrollment_source: enrollment.source,
+        reminder_preference: enrollment.preference,
+        class_link_source: 'server_side_one_time_class_link_alias',
+        raw_join_url_in_payload: false,
+        no_portal_onboarding: true,
+        no_member_login_created: true,
+        no_checkout: true,
+        no_payment: true,
+        no_access_granted: true,
+      };
+      if (skip) {
+        results.push({
+          contact_id: Number(row.id),
+          channel,
+          status: 'skipped',
+          skip_reason: skip,
+          idempotency_key: idempotencyKey,
+        });
+        continue;
+      }
+      if (dryRun) {
+        results.push({
+          contact_id: Number(row.id),
+          channel,
+          status: 'would_queue',
+          idempotency_key: idempotencyKey,
+          payload_preview: {
+            class_date: payload.class_date,
+            display: payload.display,
+            raw_join_url_in_payload: false,
+          },
+        });
+        continue;
+      }
+      const outbox = await upsertAssistantDeliveryOutboxEvent(db, {
+        delivery_key: `one-time:class-reminder:${idempotencyKey}`,
+        conversation_key: `one-time-class-reminder:${schedule.class_date}`,
+        channel_key: `${channel}:one_time_class_reminder`,
+        recipient_identity_key: payload.recipient_hash,
+        idempotency_key: idempotencyKey,
+        next_attempt_at: schedule.reminder_instant_iso,
+        payload,
+      });
+      results.push({
+        contact_id: Number(row.id),
+        channel,
+        status: outbox?.created ? 'queued' : 'already_queued',
+        idempotency_key: idempotencyKey,
+        outbox_id: outbox?.id || null,
+      });
+    }
+  }
+  return {
+    success: true,
+    dry_run: dryRun,
+    readiness: remindersReady,
+    wapi_readiness: wapiReady,
+    class_active: classActive,
+    class_link_configured: classLinkConfigured,
+    schedule: {
+      class_date: schedule.class_date,
+      class_instant_iso: schedule.class_instant_iso,
+      reminder_instant_iso: schedule.reminder_instant_iso,
+      class_timezone: schedule.class_timezone,
+      schedule_version: schedule.schedule_version,
+    },
+    candidate_count: candidates.length,
+    queued_count: results.filter((row) => row.status === 'queued').length,
+    already_queued_count: results.filter((row) => row.status === 'already_queued').length,
+    skipped_count: results.filter((row) => row.status === 'skipped').length,
+    results,
+    external_send_performed: false,
+  };
+}
+
+async function previewOneTimeLocalClassReminderSegment({ db = pool } = {}) {
+  const project = await getRabbiProject(db);
+  const rows = (await db.query(
+    `SELECT id, parent_name, parent_email, parent_phone, parent_whatsapp, status, tags, metadata
+     FROM bna_parent_leads
+     WHERE project_id = $1
+       AND COALESCE(status, 'follow_up') <> 'archived'
+       AND tags && ARRAY['local_class_attendee', 'zoom_mishnayos_class', 'local_student']::text[]
+     ORDER BY id ASC`,
+    [project.id]
+  )).rows;
+  const preview = buildLocalClassSegmentPreview(rows);
+  return {
+    success: true,
+    workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+    expected_tags: ['local_class_attendee', 'zoom_mishnayos_class', 'local_student'],
+    activation_blocked: preview.actual_count !== 3,
+    operator_personal_test_required_before_activation: true,
+    preview,
+    no_mutation_performed: true,
+    external_send_performed: false,
   };
 }
 
@@ -80307,6 +81518,54 @@ app.get(['/api/one-time/public-whatsapp/redirect', '/api/bna/one-time/public-wha
   res.redirect(302, composeUrl);
 });
 
+app.get('/api/bna/one-time/local-class-reminder-preview', requireAdmin, async (req, res) => {
+  try {
+    const preview = await previewOneTimeLocalClassReminderSegment();
+    res.status(preview.activation_blocked ? 409 : 200).json(preview);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/cron/one-time/class-reminders', async (req, res) => {
+  try {
+    const dryRun = req.body?.dry_run === true
+      || req.body?.dryRun === true
+      || /^(?:1|true|yes)$/i.test(String(req.query.dry_run || req.query.dryRun || ''));
+    const suppliedSecret = String(req.query.secret || req.headers['x-cron-secret'] || req.headers.authorization?.replace(/^Bearer\s+/i, '') || '').trim();
+    if (!process.env.CRON_SECRET && !dryRun) {
+      return res.status(503).json({
+        success: false,
+        error: 'CRON_SECRET is required before One Time class reminder dispatch can run.',
+      });
+    }
+    if (process.env.CRON_SECRET && suppliedSecret !== process.env.CRON_SECRET) {
+      return res.status(401).json({ success: false, error: 'Unauthorized cron request' });
+    }
+    const readiness = oneTimeClassReminderEnvReadiness(process.env);
+    if (!dryRun && !readiness.ready) {
+      return res.status(503).json({
+        success: false,
+        error: 'One Time class reminders are not enabled.',
+        readiness,
+      });
+    }
+    const requestedNow = req.body?.now || req.query.now || '';
+    const now = requestedNow ? new Date(requestedNow) : new Date();
+    if (Number.isNaN(now.getTime())) {
+      return res.status(400).json({ success: false, error: 'Invalid now timestamp' });
+    }
+    const result = await enqueueOneTimeClassReminderBatch({
+      dryRun,
+      now,
+      forceContactId: req.body?.contact_id || req.body?.contactId || req.query.contact_id || req.query.contactId || null,
+    });
+    return res.json(result);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
 app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) => {
   try {
     const dryRun = req.body?.dry_run === true
@@ -80332,13 +81591,14 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
       });
     }
     const lead = await createOneTimeProductLead(req.body || {});
+    const directSignup = lead.direct_signup_workflow === true || isOneTimeDirectSignupInput(req.body || {}, lead);
     const suppressExternalReminder = req.body?.suppress_external_notifications === true
       || req.body?.suppressExternalNotifications === true
       || req.body?.metadata?.no_external_send === true
       || req.body?.metadata?.external_write_performed === false
       || String(req.body?.source_landing_page || req.body?.sourceLandingPage || '').startsWith('/one-time');
     const syntheticNoExternalReminder = lead.synthetic_test_lead === true || isOneTimeSyntheticLead(req.body || {}, lead);
-    const skipTelegramReminder = syntheticNoExternalReminder || suppressExternalReminder;
+    const skipTelegramReminder = directSignup || syntheticNoExternalReminder || suppressExternalReminder;
     if (!skipTelegramReminder) {
       sendOneTimeSignupTelegramReminder(lead)
         .catch((err) => console.error('One Time signup Telegram reminder error:', err));
@@ -80355,16 +81615,30 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
       transactional_follow_up: lead.transactional_follow_up || null,
       transactional_follow_up_logged: lead.transactional_follow_up_logged === true,
       transactional_follow_up_send_blocked: lead.transactional_follow_up_send_blocked === true,
-      no_email_sent: true,
-      no_whatsapp_or_wapi_sent: true,
+      direct_signup_workflow: directSignup,
+      confirmation_email_queued: lead.confirmation_email_queued === true,
+      whatsapp_confirmation_queued: lead.whatsapp_confirmation_queued === true,
+      rabbi_telegram_alert_queued: lead.rabbi_telegram_alert_queued === true,
+      no_portal_onboarding: true,
+      no_member_login_created: true,
+      no_password_setup: true,
+      no_checkout_started: true,
+      no_payment_started: true,
+      no_access_granted: true,
+      ...(directSignup ? {} : {
+        no_email_sent: true,
+        no_whatsapp_or_wapi_sent: true,
+      }),
       no_telegram_reminder_sent: skipTelegramReminder,
       telegram_reminder_skipped: skipTelegramReminder,
       telegram_reminder_skip_reason: skipTelegramReminder
-        ? (suppressExternalReminder ? 'public_landing_no_external_send_guardrail' : 'synthetic_test_lead_no_external_reminder')
+        ? (directSignup ? 'direct_signup_alert_queued_in_outbox' : (suppressExternalReminder ? 'public_landing_no_external_send_guardrail' : 'synthetic_test_lead_no_external_reminder'))
         : null,
       internal_operator_notification_attempted: !skipTelegramReminder,
       external_write_performed: false,
-      message: 'Your One Time signup was saved. Continue onboarding so the team can review the right next step.',
+      message: directSignup
+        ? "You're signed up. Check your email for the class link."
+        : 'Your One Time signup was saved. Continue onboarding so the team can review the right next step.',
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ success: false, error: err.message });
@@ -87866,9 +89140,9 @@ app.get(['/family', '/household'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'parent.html'));
 });
 
-app.get(['/provider', '/provider/login', '/provider-dashboard'], (req, res) => {
+app.get(['/provider', '/provider/login', '/provider-dashboard'], async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  if (shouldRedirectOneTimeProviderToOperations(req)) {
+  if (await shouldRedirectOneTimeProviderToOperations(req)) {
     return res.redirect(302, oneTimeProviderCanonicalOperationsUrl(req));
   }
   if (wantsOneTimeProviderShell(req)) {
@@ -87892,6 +89166,7 @@ app.get(['/one-time-onboarding', '/preview/one-time-mishnah', '/one-time-preview
   res.sendFile(path.join(__dirname, 'public', 'one-time-preview.html'));
 });
 
+app.get(['/one-time/signup', '/one-time/signup/'], sendOneTimeSignupPage);
 app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest'], sendOneTimePublicLanding);
 app.get('/one-time/', sendOneTimePublicLanding);
 

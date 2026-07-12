@@ -8,7 +8,14 @@
     "pr_number": 129,
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
     "pr_branch": "codex/onetime-p0p1-corrective-20260711",
-    "pushed_implementation_commit": "e49bd3b00291818bb44e4a483fdd69b35f599c28"
+    "pushed_implementation_commit": "ee264c5a4b8329719b5420ffb6f99ccae93e1a60",
+    "implementation_commit": "e49bd3b00291818bb44e4a483fdd69b35f599c28",
+    "evidence_commit": "ee264c5a4b8329719b5420ffb6f99ccae93e1a60",
+    "pr_head_at_reconciliation": "ee264c5a4b8329719b5420ffb6f99ccae93e1a60",
+    "existing_corrective_commits": [
+      "e49bd3b00291818bb44e4a483fdd69b35f599c28",
+      "ee264c5a4b8329719b5420ffb6f99ccae93e1a60"
+    ]
   },
   "sources": [
     {
@@ -187,7 +194,7 @@
       "status": "needs_operator_decision",
       "implementation_status": "Local implementation and verification are complete in the corrective branch; production deploy/live smoke is intentionally blocked pending review approval.",
       "can_continue_without_operator": true,
-      "next_action": "Push/open the corrective PR, review the local evidence, then approve or reject production deployment through the approved pipeline.",
+      "next_action": "Review draft PR #129 and the local evidence, then approve or reject production deployment through the approved pipeline.",
       "acceptance_criteria": [
         "operations:build regenerates assets.",
         "operations:check-generated fails on drift.",
@@ -265,7 +272,7 @@
       "status": "needs_operator_decision",
       "implementation_status": "Local implementation and verification are complete in the corrective branch; production deploy/live smoke is intentionally blocked pending review approval.",
       "can_continue_without_operator": true,
-      "next_action": "Push/open the corrective PR, review the local evidence, then approve or reject production deployment through the approved pipeline.",
+      "next_action": "Review draft PR #129 and the local evidence, then approve or reject production deployment through the approved pipeline.",
       "acceptance_criteria": [
         "Rabbi owner login bridges to canonical Operations URL.",
         "Provider/review route bridges or redirects as required.",
@@ -343,7 +350,7 @@
       "status": "needs_operator_decision",
       "implementation_status": "Local implementation and verification are complete in the corrective branch; production deploy/live smoke is intentionally blocked pending review approval.",
       "can_continue_without_operator": true,
-      "next_action": "Push/open the corrective PR, review the local evidence, then approve or reject production deployment through the approved pipeline.",
+      "next_action": "Review draft PR #129 and the local evidence, then approve or reject production deployment through the approved pipeline.",
       "acceptance_criteria": [
         "Canonical DTO includes first-party sources.",
         "Search/filter/list/detail/timeline/mailbox pipeline are usable.",
@@ -418,7 +425,7 @@
       "status": "needs_operator_decision",
       "implementation_status": "Local implementation and verification are complete in the corrective branch; production deploy/live smoke is intentionally blocked pending review approval.",
       "can_continue_without_operator": true,
-      "next_action": "Push/open the corrective PR, review the local evidence, then approve or reject production deployment through the approved pipeline.",
+      "next_action": "Review draft PR #129 and the local evidence, then approve or reject production deployment through the approved pipeline.",
       "acceptance_criteria": [
         "Hero content and schedule match approved text.",
         "Only large public CTA text is Sign Up Now.",
@@ -495,7 +502,7 @@
       "status": "needs_operator_decision",
       "implementation_status": "Local implementation and verification are complete in the corrective branch; production deploy/live smoke is intentionally blocked pending review approval.",
       "can_continue_without_operator": true,
-      "next_action": "Push/open the corrective PR, review the local evidence, then approve or reject production deployment through the approved pipeline.",
+      "next_action": "Review draft PR #129 and the local evidence, then approve or reject production deployment through the approved pipeline.",
       "acceptance_criteria": [
         "Config has approved public hierarchy.",
         "Route registry includes onboarding alias and canonical expectations.",
@@ -643,19 +650,21 @@
         "REQ-20260711-008"
       ],
       "status": "needs_operator_decision",
-      "implementation_status": "Branch-local corrective implementation is verified. Push/PR and production deployment closeout remain to be completed; deploy is gated by review approval.",
+      "implementation_status": "Branch-local corrective implementation is verified and draft PR #129 is open at head ee264c5a4b8329719b5420ffb6f99ccae93e1a60. Production deployment closeout remains gated by review approval.",
       "can_continue_without_operator": false,
-      "next_action": "Stage, commit, push corrective branch, open PR if GitHub auth permits, then wait for explicit deployment approval before production deploy/live smoke.",
+      "next_action": "Review draft PR #129, then wait for explicit deployment approval before production deploy/live smoke.",
       "acceptance_criteria": [
         "One corrective branch is pushed.",
         "One corrective PR is opened.",
         "Production deploy/live smoke occur only after review approval."
       ],
       "evidence": [
+        "Draft PR #129 is open: https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
+        "PR #129 head at reconciliation: ee264c5a4b8329719b5420ffb6f99ccae93e1a60",
         "Local verification complete; no production deploy performed."
       ],
       "verification": [
-        "git push",
+        "gh pr view 129 --repo shloimie-beep/bnei-neviim-academy",
         "PR URL",
         "deploy/live smoke after approval"
       ],

@@ -12264,14 +12264,16 @@
             const statusTitle = healthy
                 ? 'Agent work has a fresh heartbeat'
                 : queued > 0
-                    ? 'Agent work is queued, but the worker is not reporting a fresh heartbeat'
+                    ? 'Stored; worker offline'
                     : 'No queued agent work is waiting right now';
             const note = latestTitle
                 ? `Next visible item: ${taskDisplayTitle({ title: latestTitle })}`
                 : 'Machine work appears in Codex Queue, never as human Blocked.';
             const heartbeat = fleet.last_seen_at
                 ? `Last seen ${formatDateTime(fleet.last_seen_at)}`
-                : 'No heartbeat recorded yet';
+                : queued > 0
+                    ? 'Stored; worker offline until an agent-fleet heartbeat is present'
+                    : 'No heartbeat recorded yet';
 
             return `
                 <div class="agent-status-panel" data-health="${health}">
@@ -13250,7 +13252,7 @@
                         <div class="task-section-header">
                             <div>
                                 <h3>Queue Heartbeat</h3>
-                                <span>${escapeHtml(fleet.last_seen_at ? `Last seen ${formatDateTime(fleet.last_seen_at)}` : 'No worker heartbeat loaded')}</span>
+                                <span>${escapeHtml(fleet.last_seen_at ? `Last seen ${formatDateTime(fleet.last_seen_at)}` : Number(queue.pending ?? counts.queued) > 0 ? 'Stored; worker offline' : 'No worker heartbeat loaded')}</span>
                             </div>
                             <span class="page-status-pill">${escapeHtml(String(fleet.status || 'unknown').replace(/_/g, ' '))}</span>
                         </div>
@@ -14344,7 +14346,7 @@
             const staleJobs = Array.isArray(queue.stale_candidates) ? queue.stale_candidates : [];
             const queued = Number(queue.pending ?? (buckets.tasks || []).filter(task => taskIsMachine(task) && String(task.agent_status || '').toLowerCase() === 'queued').length ?? 0);
             const inProgress = Number(queue.in_progress ?? 0);
-            const heartbeat = fleet.last_seen_at ? `Last seen ${formatDateTime(fleet.last_seen_at)}.` : 'No heartbeat recorded yet.';
+            const heartbeat = fleet.last_seen_at ? `Last seen ${formatDateTime(fleet.last_seen_at)}.` : queued > 0 ? 'Stored; worker offline until an agent-fleet heartbeat is present.' : 'No heartbeat recorded yet.';
             const renderJob = (job) => {
                 const ids = [
                     job.ticket_id ? `ticket #${job.ticket_id}` : '',
@@ -15652,12 +15654,17 @@
                     <div class="contact-detail-grid">
                         ${renderContactDetailItem('Email', card.email || 'Not loaded')}
                         ${renderContactDetailItem('Phone', card.phone || 'Not loaded')}
+                        ${renderContactDetailItem('Family / School', contactStatusLabel(card.family_school_classification || 'family'))}
                         ${renderContactDetailItem('Lifecycle / Source', [contactStatusLabel(card.status || 'new'), contactStatusLabel(card.source_label || card.source || 'first party')].filter(Boolean).join(' / '))}
                         ${renderContactDetailItem('Last Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : 'No local activity yet')}
                         ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : 'Not scheduled')}
                         ${renderContactDetailItem('Assigned Owner', card.assigned_owner || 'Unassigned')}
                         ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
                         ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
+                        ${renderContactDetailItem('Membership / Access', [card.membership_access?.access_tier, card.membership_access?.access_status].filter(Boolean).join(' / ') || 'No member access linked')}
+                        ${renderContactDetailItem('Mailbox', card.mailbox?.message_count ? `${Number(card.mailbox.message_count)} messages${card.mailbox.latest_subject ? ` / ${card.mailbox.latest_subject}` : ''}` : 'No mailbox thread linked')}
+                        ${renderContactDetailItem('Support', card.support?.open_ticket_count ? `${Number(card.support.open_ticket_count)} open support threads` : 'No open support threads')}
+                        ${renderContactDetailItem('Follow-up Task', card.follow_up_task?.task_id ? `Task #${card.follow_up_task.task_id}${card.follow_up_task.assigned_to ? ` / ${card.follow_up_task.assigned_to}` : ''}` : 'No follow-up task assigned')}
                         ${renderContactDetailItem('Notes', card.summary || 'No notes loaded yet')}
                     </div>
                     <div class="task-actions" style="margin-top:14px;">
@@ -15666,6 +15673,15 @@
                         <span class="status-chip blocked" title="Email, WhatsApp, payment, access, and external CRM actions require approval.">External actions locked</span>
                     </div>
                     <form class="settings-control-grid compact crm-action-form" style="margin-top:14px;" onsubmit="saveFirstPartyCrmAction(event, ${attrJson(card.id)})" data-crm-contact-action-form data-action-id="ACTION-CRM-CONTACT-SAFE-UPDATE">
+                        <label>Name
+                            <input name="display_name" value="${escapeHtml(card.display_name || '')}" placeholder="Contact name">
+                        </label>
+                        <label>Email
+                            <input name="email" type="email" value="${escapeHtml(card.email || '')}" placeholder="email@example.com">
+                        </label>
+                        <label>Phone
+                            <input name="phone" value="${escapeHtml(card.phone || '')}" placeholder="+1 555 010 0000">
+                        </label>
                         <label>Lifecycle
                             <select name="status">${firstPartyCrmLifecycleOptions(card.status || card.lifecycle_stage)}</select>
                         </label>
@@ -15760,11 +15776,15 @@
             try {
                 const result = await api.updateCrmContact(contactId, {
                     ...firstPartyCrmQueryFilters(),
+                    display_name: data.get('display_name') || '',
+                    email: data.get('email') || '',
+                    phone: data.get('phone') || '',
                     status: data.get('status') || '',
                     lifecycle_stage: data.get('status') || '',
                     next_follow_up_at: data.get('next_follow_up_at') || '',
                     assigned_owner: data.get('assigned_owner') || '',
                     tags,
+                    create_follow_up_task: Boolean(data.get('next_follow_up_at') || data.get('assigned_owner')),
                     note_summary: noteBody ? `CRM note for selected contact` : 'CRM contact updated',
                     note_body: noteBody,
                     no_send: true,
@@ -19729,7 +19749,7 @@
                 communities: 'Community/course-builder UI is not assumed. Add this only after the provider stack decision proves it is needed.',
                 marketing: 'Marketing and funnel setup can be managed here after provider billing/admin-fee terms and campaign workflows are approved.',
                 leads: 'Provider-specific lead and signup tracking will connect after the first provider workspace workflow is mapped.',
-                settings: 'Provider workspace settings need persistence before normal users can edit them here.',
+                settings: 'Provider workspace settings become editable after the workspace setup and review steps are complete.',
             })[section] || 'This provider section is ready for backend wiring but is not configured yet.';
         }
 
@@ -20708,7 +20728,7 @@
                     ${section === 'support_threads' ? renderSupportThreadsPanel() : ''}
                     ${section === 'announcements' ? renderAnnouncementPanel() : ''}
                     ${section === 'settings' ? renderCommunicationsIntegrationPanel() : ''}
-                    ${section === 'templates' ? renderNotConfiguredPanel(COMMUNICATIONS_SUBTABS.find(tab => tab.id === section)?.label || 'Communications', 'This lane needs template persistence before editing is exposed to normal users.') : ''}
+                    ${section === 'templates' ? renderNotConfiguredPanel(COMMUNICATIONS_SUBTABS.find(tab => tab.id === section)?.label || 'Communications', 'Template editing is not enabled for this account yet. Current communication history and mailbox views remain available.') : ''}
                 </div>
             `;
         }
@@ -21474,6 +21494,39 @@
             }
         }
 
+        function crmMailboxTargetEmail() {
+            return String(window.sessionStorage?.getItem?.('oneTimeSelectedCrmContactEmail') || '').trim().toLowerCase();
+        }
+
+        function emailRecordMatchesCrmTarget(item = {}, targetEmail = crmMailboxTargetEmail()) {
+            if (!targetEmail) return true;
+            const metadata = parseObjectMaybe(item.metadata);
+            const sourceContext = parseObjectMaybe(item.source_context);
+            const addresses = [
+                item.contact_email,
+                item.from_email,
+                item.from_address,
+                item.to_email,
+                item.to_address,
+                item.reply_to,
+                metadata.email,
+                metadata.contact_email,
+                metadata.parent_email,
+                metadata.reply_to,
+                sourceContext.email,
+                sourceContext.contact_email,
+                sourceContext.parent_email,
+                ...(Array.isArray(item.to) ? item.to : []),
+                ...(Array.isArray(item.recipients) ? item.recipients : []),
+            ].map(value => String(value || '').toLowerCase());
+            return addresses.some(value => value.includes(targetEmail));
+        }
+
+        function clearCrmMailboxTarget() {
+            window.sessionStorage?.removeItem?.('oneTimeSelectedCrmContactEmail');
+            rerenderOperationsApp();
+        }
+
         function renderEmailInboxSelector(emailRecords = [], drafts = []) {
             const activeScope = emailInboxScopeRecord();
             const bnaScope = emailInboxScopeRecord('bna');
@@ -21698,6 +21751,13 @@
             const resendEvents = state.resendEvents || [];
             const dnsTasks = state.dnsTasks || [];
             const workspaceFilters = emailInboxFilters();
+            const targetEmail = crmMailboxTargetEmail();
+            const visibleEmailRecords = targetEmail
+                ? scopedEmailRecords.filter(item => emailRecordMatchesCrmTarget(item, targetEmail))
+                : scopedEmailRecords;
+            const visibleDrafts = targetEmail
+                ? filterEmailRecordsForInboxScope(allDrafts, activeInboxScope).filter(item => emailRecordMatchesCrmTarget(item, targetEmail)).slice(0, 8)
+                : filterEmailRecordsForInboxScope(allDrafts, activeInboxScope).slice(0, 8);
             const sendGate = resend.send_allowed ? 'Ready after review + SEND_RESEND_EMAIL' : 'Locked until sender/domain readiness';
             return `
                 <section class="focus-panel" data-email-operator-workspace>
@@ -21709,6 +21769,7 @@
                         <span>${escapeHtml(sendGate)}</span>
                     </div>
                     ${renderEmailInboxSelector(emailRecords, allDrafts)}
+                    ${targetEmail ? `<div class="success-banner" data-crm-targeted-mailbox>Mailbox filtered to ${escapeHtml(targetEmail)}. <button type="button" class="task-action" onclick="clearCrmMailboxTarget()">Clear filter</button></div>` : ''}
                     <div class="settings-control-grid compact" data-email-readiness-gates>
                         ${renderSettingsControlRow('Provider account', resend.connected ? 'Connected' : (resend.configured ? 'Configured / blocked' : 'Missing'), 'Resend API readiness is checked separately from sender and domain readiness.', resend.connected ? 'Connected' : 'Blocked')}
                         ${renderSettingsControlRow('Sender identity', resend.from_email || 'Not finalized', 'From identity must be explicitly configured for this workspace before send.', resend.sender_configured || resend.from_email ? 'Configured' : 'Blocked')}
@@ -21716,7 +21777,7 @@
                         ${renderSettingsControlRow('Recipients', workspaceFilters.project_key || 'All workspaces', 'Recipient validation uses workspace/project filters to prevent accidental cross-workspace sends.', 'Scoped')}
                         ${renderSettingsControlRow('Send confirmation', 'SEND_RESEND_EMAIL', 'The send endpoint rejects requests without the exact approval phrase.', 'Required')}
                     </div>
-                    ${renderEmailViewRail(scopedEmailRecords, drafts, resendEvents, dnsTasks, resendDomains)}
+                    ${renderEmailViewRail(visibleEmailRecords, visibleDrafts, resendEvents, dnsTasks, resendDomains)}
                     <div class="email-operator-grid">
                         <div class="email-draft-card">
                             <div class="task-section-header"><h3>Draft Editor</h3><span>Preview only</span></div>
@@ -21738,14 +21799,14 @@
                             </form>
                             <div class="settings-disabled-note">Draft creation stores a local review item and readiness blocker only. It does not send email.</div>
                         </div>
-                        ${renderEmailWorkspaceView(emailOperationsView, { emailRecords: scopedEmailRecords, drafts, resend, resendDomains, resendEvents, dnsTasks })}
+                        ${renderEmailWorkspaceView(emailOperationsView, { emailRecords: visibleEmailRecords, drafts: visibleDrafts, resend, resendDomains, resendEvents, dnsTasks })}
                     </div>
                 </section>
             `;
         }
 
         function renderBotConversationPlaceholder() {
-            return renderNotConfiguredPanel('Bot Conversations', 'Bot conversation storage and per-role transcript visibility are not persisted as a first-class dashboard feed yet. Existing bot/API issues are visible through support tickets and API Usage.');
+            return renderNotConfiguredPanel('Bot Conversations', 'Bot conversation history is not available in this account view yet. Existing bot/API issues are visible through support tickets and API Usage.');
         }
 
         function renderSupportThreadsPanel() {
@@ -23527,7 +23588,7 @@
                             ${errorTickets.length ? `<div class="task-list">${errorTickets.map(renderSupportTicketCard).join('')}</div>` : '<div class="empty-state">No open bot/API support records are loaded.</div>'}
                         </section>
                     ` : ''}
-                    ${apiUsageSection !== 'errors' && apiUsageSection !== 'overview' ? renderNotConfiguredPanel(API_USAGE_SUBTABS.find(tab => tab.id === apiUsageSection)?.label || 'API Usage', 'Detailed token, model, cost, budget, and export controls need backend metering before they can be enabled. Next implementation step: add usage-event persistence and aggregation endpoints.') : ''}
+                    ${apiUsageSection !== 'errors' && apiUsageSection !== 'overview' ? renderNotConfiguredPanel(API_USAGE_SUBTABS.find(tab => tab.id === apiUsageSection)?.label || 'API Usage', 'Detailed token, model, cost, budget, and export controls are not enabled for this account view yet.') : ''}
                 </div>
             `;
         }
@@ -23564,7 +23625,7 @@
                     ${adminSection === 'users' ? renderAdminUsersPanel() : ''}
                     ${adminSection === 'roles' ? renderAdminRolesPolicyPanel() : ''}
                     ${adminSection === 'workspaces' ? renderAdminWorkspacesPanel() : ''}
-                    ${['invitations', 'messages', 'settings'].includes(adminSection) ? renderNotConfiguredPanel(ADMIN_SUBTABS.find(tab => tab.id === adminSection)?.label || 'Admin', 'This admin workflow needs a dedicated persistence endpoint before normal users can change it from the UI.') : ''}
+                    ${['invitations', 'messages', 'settings'].includes(adminSection) ? renderNotConfiguredPanel(ADMIN_SUBTABS.find(tab => tab.id === adminSection)?.label || 'Admin', 'This admin workflow is not enabled for this account view yet.') : ''}
                 </div>
             `;
         }
@@ -24845,7 +24906,7 @@
                 ],
                 branding: [
                     ['Brand name', workspace.display_name || 'BNA Operations', 'Brand text is editable through workspace settings; logo upload storage is not enabled yet.', 'Partial'],
-                    ['Logo upload', 'Not configured', 'Requires file storage and branding asset persistence endpoint.', 'Disabled']
+                    ['Logo upload', 'Not enabled', 'Logo changes are locked for this account view.', 'Disabled']
                 ],
                 language: [
                     ['Parent/student portals', 'English LTR and Hebrew RTL', 'Portal screens must remain usable in both directions.', 'Configured'],
@@ -27117,7 +27178,7 @@
 
         function renderNotConfiguredPanel(title, description) {
             const heading = title || 'Configuration required';
-            const copy = description || 'This area is visible in the shell, but it needs persistence, role checks, and audit logging before normal users can change it.';
+            const copy = description || 'This area is visible for orientation, but editing is not enabled for this account yet.';
             return `
                 <section class="focus-panel not-configured-panel">
                     <div class="not-configured-icon">Off</div>
@@ -27125,11 +27186,11 @@
                         <h3>${escapeHtml(heading)}</h3>
                         <p>${escapeHtml(copy)}</p>
                         <div class="settings-control-grid" style="margin-top:12px;">
-                            ${renderSettingsControlRow('Persistence', 'Not connected', 'Requires a scoped settings endpoint before edits can be saved.', 'Disabled')}
-                            ${renderSettingsControlRow('Audit trail', 'Required', 'Writes stay locked until changes can be attributed and reviewed.', 'Disabled')}
+                            ${renderSettingsControlRow('Availability', 'Not enabled', 'This control is locked for the current account view.', 'Disabled')}
+                            ${renderSettingsControlRow('Changes', 'Locked', 'No changes are saved from this screen.', 'Disabled')}
                         </div>
                         <div class="task-actions">
-                            <button class="task-action" disabled title="Requires settings persistence and audit logging">Configure after backend is ready</button>
+                            <button class="task-action" disabled title="Not available for this account yet">Not available yet</button>
                         </div>
                     </div>
                 </section>
@@ -27145,12 +27206,12 @@
             modal.innerHTML = `
                 <div class="modal">
                     <div class="modal-header">
-                        <h2>Not configured yet</h2>
+                        <h2>Not available yet</h2>
                         <button class="modal-close" type="button" aria-label="Close" onclick="document.getElementById('notConfiguredModal')?.remove()">Close</button>
                     </div>
                     <div class="modal-body">
-                        <p>${escapeHtml(label)} is intentionally visible in the new SaaS shell, but it is disabled until the backend settings, role checks, and audit trail are wired.</p>
-                        <p class="event-meta">Implementation note: add a persistence endpoint, role-scoped writes, and verification before enabling this for normal users.</p>
+                        <p>${escapeHtml(label)} is visible for orientation, but it is not enabled for this account yet.</p>
+                        <p class="event-meta">No changes are saved from this screen.</p>
                     </div>
                     <div class="modal-footer">
                         <button class="btn" type="button" onclick="document.getElementById('notConfiguredModal')?.remove()">Close</button>

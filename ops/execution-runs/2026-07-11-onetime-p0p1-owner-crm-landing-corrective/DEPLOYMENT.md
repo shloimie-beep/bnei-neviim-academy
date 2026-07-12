@@ -6,6 +6,10 @@ No production deploy, email/WhatsApp/Telegram send, campaign send, charge, acces
 
 Local deployable proof is ready for review:
 
+- Draft PR #129 is open:
+  https://github.com/shloimie-beep/bnei-neviim-academy/pull/129
+- Current PR head at reconciliation:
+  `ee264c5a4b8329719b5420ffb6f99ccae93e1a60`
 - Canonical Operations artifact build/check passed.
 - Public landing/onboarding smoke passed.
 - Operations owner shell and CRM smokes passed.

@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-07-08T14:24:17+03:00",
+  "updated_at": "2026-07-12T09:05:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -540,6 +540,63 @@
       "related_goal_ids": [
         "GOAL-CORE-003",
         "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/one-time/signup",
+      "surface": "one_time_public_direct_signup",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_public_one_time_direct_signup_without_private_member_student_provider_or_operations_data",
+      "expected_logged_in_behavior": "load_public_one_time_direct_signup_without_starting_private_portal_payment_or_access_workflows",
+      "privacy_risk": "normal",
+      "canonical_target": "/one-time/signup",
+      "security_expectation": "Public One Time direct signup only: collects contact name, Family or School choice, unambiguous city/timezone metadata, email, optional phone unless WhatsApp reminders are selected, and class reminder preference. It must not expose private records, open member login, start checkout/payment, grant access, create a Zoom meeting, or perform an external send from the page route.",
+      "smoke_expectation": "tests/one-time-direct-signup-page.test.js verifies route registration, responsive form behavior, no student-name field, WhatsApp-only phone requirement, and no portal/payment/access actions.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/cron/one-time/class-reminders",
+      "surface": "one_time_class_reminder_cron",
+      "access": "protected_cron",
+      "required_role": "cron_secret",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_without_cron_secret",
+      "expected_logged_in_behavior": "enqueue_scoped_one_time_class_reminders_only_when_runtime_gates_pass",
+      "privacy_risk": "high",
+      "security_expectation": "Protected One Time reminder dispatcher requires CRON_SECRET plus ONE_TIME_CLASS_REMINDERS_ENABLED=true and ONE_TIME_CLASS_REMINDERS_CONFIRM=APPROVE_ONE_TIME_CLASS_REMINDERS for live enqueue. It uses class-date/contact/channel/window/schedule-version idempotency, never exposes raw class links, and must not create portal, payment, password, or access records.",
+      "smoke_expectation": "tests/one-time-signup-reminder-workflow.test.js verifies env gates, idempotency key shape, single-recipient simulation guard, and no portal/payment/access paths.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/local-class-reminder-preview",
+      "surface": "one_time_local_class_reminder_preview",
+      "access": "admin",
+      "required_role": "admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_admin_required",
+      "expected_logged_in_behavior": "return_redacted_exact_three_local_class_preview_without_mutation",
+      "privacy_risk": "high",
+      "security_expectation": "Admin-only preview for scoped rabbi_sheller_provider / one_time_mishnah_class contacts tagged local_class_attendee, zoom_mishnayos_class, or local_student. It must block activation unless exactly three contacts are found and must not send reminders or create portal/access records.",
+      "smoke_expectation": "tests/one-time-signup-reminder-workflow.test.js verifies exact-three and mismatch blocker behavior.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
       ]
     },
     {

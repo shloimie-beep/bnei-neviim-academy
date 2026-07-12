@@ -10,7 +10,7 @@ const root = path.resolve(__dirname, '..');
 const outDir = process.env.BNA_ONE_TIME_OPERATIONS_UI_SMOKE_DIR
   ? path.resolve(process.env.BNA_ONE_TIME_OPERATIONS_UI_SMOKE_DIR)
   : fs.mkdtempSync(path.join(os.tmpdir(), 'bna-one-time-operations-ui-smoke-'));
-const operationsHtmlPath = path.join(root, 'public', 'operations.html');
+const operationsBootstrapPath = path.join(root, 'public', 'operations-bootstrap.html');
 
 const ownerAllowedViews = [
   'contacts',
@@ -244,7 +244,7 @@ function json(res, body, status = 200) {
   res.end(JSON.stringify(body));
 }
 
-function serveStatic(res, requestPath) {
+function serveStatic(res, requestPath, servedPaths = []) {
   const publicRoot = path.join(root, 'public');
   const filePath = path.normalize(path.join(publicRoot, requestPath.replace(/^\/+/, '')));
   if (!filePath.startsWith(publicRoot) || !fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) return false;
@@ -260,6 +260,7 @@ function serveStatic(res, requestPath) {
   }[ext] || 'text/plain';
   res.writeHead(200, { 'Content-Type': contentType });
   res.end(fs.readFileSync(filePath));
+  servedPaths.push(requestPath);
   return true;
 }
 
@@ -442,12 +443,14 @@ function previewPayload(body) {
 test('One Time Operations UI exposes scoped owner modules, integrations, and no-write Drive preview', async () => {
   fs.mkdirSync(outDir, { recursive: true });
   const previewRequests = [];
+  const servedPaths = [];
   let activePort = 0;
   const server = http.createServer(async (req, res) => {
     const url = new URL(req.url || '/', `http://127.0.0.1:${activePort || 0}`);
     if (url.pathname === '/operations') {
       res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(fs.readFileSync(operationsHtmlPath));
+      res.end(fs.readFileSync(operationsBootstrapPath));
+      servedPaths.push('/operations');
       return;
     }
     if (url.pathname === '/api/bna/project-meetings/one-time-drive-brief/preview') {
@@ -458,7 +461,7 @@ test('One Time Operations UI exposes scoped owner modules, integrations, and no-
     if (url.pathname.startsWith('/api/bna/')) {
       return json(res, defaultApiPayload(url.pathname));
     }
-    if (serveStatic(res, url.pathname)) return;
+    if (serveStatic(res, url.pathname, servedPaths)) return;
     res.writeHead(404);
     res.end('not found');
   });
@@ -481,6 +484,16 @@ test('One Time Operations UI exposes scoped owner modules, integrations, and no-
     await page.goto(`http://127.0.0.1:${activePort}/operations?workspace=rabbi_sheller_provider&view=content&section=meetings&nav=modules`, { waitUntil: 'networkidle' });
     await page.waitForSelector('[data-top-filter-rail][data-current-module="content"]', { timeout: 15000 });
     await page.waitForSelector('[data-preview-one-time-drive-brief]', { timeout: 15000 });
+
+    for (const expectedAsset of [
+      '/operations',
+      '/css/operations-shell.css',
+      '/js/one-time-rabbi-dashboard-ia.generated.js',
+      '/js/operations-shell.js',
+    ]) {
+      assert.ok(servedPaths.includes(expectedAsset), `canonical smoke did not load ${expectedAsset}`);
+    }
+    assert.equal(servedPaths.includes('/operations.html'), false, 'canonical smoke must not serve raw public/operations.html');
 
     const initialContract = await page.evaluate(() => {
       const navItems = window.workspaceNavItems().map((item) => ({
@@ -603,6 +616,10 @@ test('One Time Operations UI exposes scoped owner modules, integrations, and no-
       window.setCurrentSection('meetings');
     });
     await page.waitForSelector('[data-top-filter-rail][data-current-module="content"] [data-top-filter-id="meeting_drops"].active', { timeout: 10000 });
+    assert.ok(
+      servedPaths.includes('/js/operations-deferred-renderers.js'),
+      'canonical smoke did not load generated deferred Operations renderers',
+    );
 
     await page.getByRole('button', { name: 'Preview Drive Brief' }).click();
     await page.waitForSelector('[data-one-time-drive-brief-preview]', { timeout: 10000 });
@@ -713,6 +730,7 @@ test('One Time Operations UI exposes scoped owner modules, integrations, and no-
         path.relative(root, path.join(outDir, 'desktop.png')).replace(/\\/g, '/'),
         path.relative(root, path.join(outDir, 'mobile-content.png')).replace(/\\/g, '/'),
       ],
+      servedPaths: [...new Set(servedPaths)].filter((servedPath) => /^\/(?:operations|css\/operations|js\/(?:one-time-rabbi|operations))/.test(servedPath)),
       guardrails: {
         productionWrites: false,
         secretsInFixture: false,

@@ -102,6 +102,22 @@ export function buildRawIntakeDriftAudit() {
     recommended_fix: 'Restore the shared source/parse/parent-prompt/persistence packet service before adapters bypass it.',
   });
   requireCanonicalContract({
+    file: 'src/platform/ingestion/operator-ramble-service.js',
+    label: 'Operator ramble-to-done ingestion service',
+    patterns: [
+      ['ingestOperatorRamble export', /\bingestOperatorRamble\b/],
+      ['canonical packet service import', /\bbuildCanonicalIntakePacket\b/],
+      ['source statement map', /\bsource_statements\b/],
+      ['no lost sentence gate', /\bno_lost_sentence_gate\b/],
+      ['requirement projection', /\brequirement_rows\b/],
+      ['job projection', /\bjobs\b/],
+      ['worker health receipt', /\bworker_health\b/],
+      ['codex_done migration', /\bcodex_done\b/],
+      ['no external write flag', /external_write_performed:\s*false/],
+    ],
+    recommended_fix: 'Route Operations, Telegram, ChatGPT/Codex, and file intake through the canonical ramble-to-done service before specialized extraction.',
+  });
+  requireCanonicalContract({
     file: 'src/platform/ingestion/intake-persistence.js',
     label: 'Canonical intake persistence readback',
     patterns: [

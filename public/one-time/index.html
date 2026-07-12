@@ -1431,7 +1431,7 @@
 
       <div class="header-actions mobile-direct" aria-label="Primary actions">
         <a class="member-link" href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
-        <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
+        <a class="button primary" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
         <button class="icon-button menu-button" type="button" aria-label="Open navigation" aria-controls="siteNavShell" aria-expanded="false" data-menu-button data-action-id="ACTION-ONETIME-PUBLIC-MOBILE-MENU">
           <span class="menu-lines" aria-hidden="true"><span></span></span>
         </button>
@@ -1447,7 +1447,7 @@
         </nav>
         <div class="header-actions" aria-label="Secondary actions">
           <a class="member-link" href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
-          <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
+          <a class="button primary" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
         </div>
       </div>
     </div>
@@ -1462,7 +1462,7 @@
           <p class="hero-copy">A live Mishnayos class with Rabbi Eli Scheller that makes learning exciting, clear, and unforgettable &mdash; for boys around the world.</p>
           <p class="hero-schedule">Live from Israel. Every day at 7 p.m. Israel time.</p>
           <div class="hero-actions">
-            <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
+            <a class="button primary" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
           </div>
           <div class="hero-proof" aria-label="One Time Mishnayos highlights">
             <div class="proof-item">
@@ -1489,7 +1489,7 @@
           <strong id="promoTitle">Join free until Rosh Hashanah.</strong>
         </div>
         <p>Give your son a chance to experience the class, feel the excitement, and see what changes when Mishnayos finally clicks.</p>
-        <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
+        <a class="button primary" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
       </div>
     </section>
 
@@ -1680,21 +1680,21 @@
             <p class="eyebrow">How It Works</p>
             <h2 id="howTitle">Simple enough to start. Strong enough to keep going.</h2>
           </div>
-          <p>No complicated public checkout or portal promise from this page. The first step is a clean signup, then the full onboarding flow collects what is needed.</p>
+          <p>Start with a short signup, get the class link by email, and choose daily reminders if you want them.</p>
         </div>
 
         <div class="step-grid">
           <article class="step">
-            <h3>Sign up with parent contact details.</h3>
-            <p>Quick capture asks only for the contact name, email, and optional phone number.</p>
+            <h3>Sign up with your contact details.</h3>
+            <p>Share the best name, email, city, and whether this is for a family or school.</p>
           </article>
           <article class="step">
-            <h3>Choose family or school onboarding.</h3>
-            <p>After the first step, continue into the existing onboarding path for the right setup.</p>
+            <h3>Choose reminders.</h3>
+            <p>Select email, WhatsApp, both, or no daily reminders.</p>
           </article>
           <article class="step">
             <h3>Receive the next class details.</h3>
-            <p>The signup creates a first-party follow-up record; it does not charge, send, or grant access automatically.</p>
+            <p>Your confirmation email includes the current class link.</p>
           </article>
           <article class="step">
             <h3>Your son joins the learning rhythm.</h3>
@@ -1710,7 +1710,7 @@
           <p class="eyebrow">Who It&rsquo;s For</p>
           <h2 id="whoTitle">For parents and schools who want boys to love learning.</h2>
           <p>One Time Mishnayos is built for families, rebbeim, and schools looking for a serious, warm, exciting way to bring Mishnayos into a boy&rsquo;s daily life.</p>
-          <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
+          <a class="button primary" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
         </div>
         <div class="audience-cards">
           <article class="audience-card">
@@ -1738,60 +1738,6 @@
       </div>
     </section>
 
-    <section class="modal-backdrop" aria-hidden="true" data-signup-modal>
-      <div class="signup-dialog" role="dialog" aria-modal="true" aria-labelledby="signupTitle" aria-describedby="signupDescription">
-        <div class="modal-head">
-          <div>
-            <h2 id="signupTitle">Sign Up Now</h2>
-            <p id="signupDescription">Start with parent contact details. The next step asks whether this is for a family or a school.</p>
-          </div>
-          <button class="icon-button modal-close" type="button" aria-label="Close signup modal" data-modal-close data-action-id="ACTION-ONETIME-SIGNUP-MODAL-CLOSE">&times;</button>
-        </div>
-        <div class="modal-body">
-          <form class="form-grid" data-signup-form novalidate>
-            <label>
-              Parent or contact name
-              <input type="text" name="parent_name" autocomplete="name" required data-required-field>
-              <span class="field-error" data-error-for="parent_name">Enter the parent or contact name.</span>
-            </label>
-            <label>
-              Email
-              <input type="email" name="email" autocomplete="email" inputmode="email" required data-required-field>
-              <span class="field-error" data-error-for="email">Enter a valid email address.</span>
-            </label>
-            <label>
-              Phone <span>Optional</span>
-              <input type="tel" name="phone" autocomplete="tel" inputmode="tel">
-            </label>
-            <p class="form-note">This page records a first-party interest request only. It does not charge, send a message, create a meeting, or grant access automatically.</p>
-            <button class="button primary full" type="submit" data-action-id="ACTION-ONETIME-INTEREST-FORM">Sign Up Now</button>
-            <div class="form-status" role="status" aria-live="polite" data-form-status></div>
-          </form>
-
-          <div class="success-step" data-success-step>
-            <h3>Choose the right onboarding path.</h3>
-            <p class="form-note">Your first step was captured. Tell us which setup fits, then continue to the existing onboarding page.</p>
-            <div class="choice-grid" role="radiogroup" aria-label="Signup type">
-              <label class="choice-card">
-                <input type="radio" name="signup_audience" value="family">
-                <span>
-                  <strong>Family</strong>
-                  <span>For a parent signing up a son at home.</span>
-                </span>
-              </label>
-              <label class="choice-card">
-                <input type="radio" name="signup_audience" value="school">
-                <span>
-                  <strong>School</strong>
-                  <span>For a rebbi, principal, or school contact.</span>
-                </span>
-              </label>
-            </div>
-            <button class="button primary full" type="button" data-continue-onboarding data-action-id="ACTION-ONETIME-SIGNUP-CONTINUE-ONBOARDING" disabled>Continue</button>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer class="one-time-site-footer" data-one-time-canonical-footer>
@@ -1814,18 +1760,6 @@
     (() => {
       const navShell = document.querySelector('[data-nav-shell]');
       const menuButton = document.querySelector('[data-menu-button]');
-      const signupTriggers = Array.from(document.querySelectorAll('[data-signup-trigger]'));
-      const modal = document.querySelector('[data-signup-modal]');
-      const dialog = modal?.querySelector('.signup-dialog');
-      const closeButton = modal?.querySelector('[data-modal-close]');
-      const form = modal?.querySelector('[data-signup-form]');
-      const status = modal?.querySelector('[data-form-status]');
-      const successStep = modal?.querySelector('[data-success-step]');
-      const continueButton = modal?.querySelector('[data-continue-onboarding]');
-      const audienceRadios = modal ? Array.from(modal.querySelectorAll('input[name="signup_audience"]')) : [];
-      const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-      let lastFocused = null;
-      let latestLead = null;
 
       function setMenu(open) {
         if (!navShell || !menuButton) return;
@@ -1848,193 +1782,10 @@
         setMenu(false);
       });
 
-      function showStatus(type, message) {
-        if (!status) return;
-        status.className = `form-status visible ${type || ''}`.trim();
-        status.textContent = message;
-      }
-
-      function clearErrors() {
-        modal?.querySelectorAll('.field-error.visible').forEach((node) => node.classList.remove('visible'));
-        modal?.querySelectorAll('[aria-invalid="true"]').forEach((node) => node.removeAttribute('aria-invalid'));
-      }
-
-      function showFieldError(name) {
-        const input = form?.elements[name];
-        const error = modal?.querySelector(`[data-error-for="${name}"]`);
-        input?.setAttribute('aria-invalid', 'true');
-        error?.classList.add('visible');
-      }
-
-      function isValidEmail(value) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
-      }
-
-      function buildMetadata() {
-        const params = new URLSearchParams(window.location.search);
-        const utm = {};
-        params.forEach((value, key) => {
-          if (/^(utm_|gclid|fbclid)/i.test(key)) utm[key] = value;
-        });
-        return {
-          raw_intake_id: 'RAW-20260710-007',
-          addendum_raw_intake_id: 'RAW-20260710-008',
-          route: window.location.pathname,
-          page_hash: window.location.hash || '',
-          referrer: document.referrer || '',
-          utm,
-          viewport: {
-            width: window.innerWidth,
-            height: window.innerHeight,
-            device_scale_factor: window.devicePixelRatio || 1
-          },
-          no_external_send: true,
-          external_write_performed: false
-        };
-      }
-
-      function openModal(trigger) {
-        if (!modal || !dialog) return;
-        lastFocused = trigger || document.activeElement;
-        modal.classList.add('open');
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('modal-open');
-        const firstInput = modal.querySelector('input[name="parent_name"]');
-        window.setTimeout(() => firstInput?.focus(), 40);
-      }
-
-      function closeModal() {
-        if (!modal) return;
-        modal.classList.remove('open');
-        modal.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('modal-open');
-        if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
-      }
-
-      signupTriggers.forEach((trigger) => {
-        trigger.addEventListener('click', (event) => {
-          event.preventDefault();
-          openModal(trigger);
-        });
-      });
-
-      closeButton?.addEventListener('click', closeModal);
-
-      modal?.addEventListener('click', (event) => {
-        if (event.target === modal) closeModal();
-      });
-
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
-          if (modal?.classList.contains('open')) closeModal();
           setMenu(false);
         }
-
-        if (event.key !== 'Tab' || !modal?.classList.contains('open')) return;
-        const focusable = Array.from(modal.querySelectorAll(focusableSelector)).filter((node) => node.offsetParent !== null);
-        if (!focusable.length) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first.focus();
-        }
-      });
-
-      form?.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        clearErrors();
-        const formData = new FormData(form);
-        const parentName = String(formData.get('parent_name') || '').trim();
-        const email = String(formData.get('email') || '').trim().toLowerCase();
-        const phone = String(formData.get('phone') || '').trim();
-        let invalid = false;
-
-        if (!parentName) {
-          showFieldError('parent_name');
-          invalid = true;
-        }
-        if (!isValidEmail(email)) {
-          showFieldError('email');
-          invalid = true;
-        }
-        if (invalid) {
-          showStatus('error', 'Please fix the highlighted fields.');
-          const firstInvalid = form.querySelector('[aria-invalid="true"]');
-          firstInvalid?.focus();
-          return;
-        }
-
-        const submitButton = form.querySelector('button[type="submit"]');
-        submitButton.disabled = true;
-        showStatus('', 'Capturing your signup...');
-
-        const payload = {
-          parent_name: parentName,
-          email,
-          phone,
-          audience: 'parents',
-          preferred_class_format: 'live_mishnayos_intro',
-          source_landing_page: window.location.pathname,
-          suppress_external_notifications: true,
-          consent: true,
-          notes: 'Public One Time Mishnayos landing page quick capture. Continue onboarding asks family or school.',
-          metadata: buildMetadata()
-        };
-
-        try {
-          const response = await fetch('/api/one-time/interest', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          const result = await response.json().catch(() => ({}));
-          if (!response.ok || result.success === false) {
-            throw new Error(result.error || 'Could not capture the signup.');
-          }
-          latestLead = {
-            parent_name: parentName,
-            email,
-            phone,
-            crm_lead_id: result.crm_lead_id || result.lead?.crm_lead_id || '',
-            product_lead_id: result.lead?.id || result.product_lead_id || ''
-          };
-          try {
-            window.sessionStorage.setItem('oneTimeSignupLead', JSON.stringify(latestLead));
-          } catch {}
-          form.style.display = 'none';
-          successStep?.classList.add('active');
-          audienceRadios.forEach((radio) => { radio.checked = false; });
-          if (continueButton) continueButton.disabled = true;
-          showStatus('', '');
-          window.setTimeout(() => audienceRadios[0]?.focus(), 40);
-        } catch (error) {
-          showStatus('error', error.message || 'Could not capture the signup.');
-        } finally {
-          submitButton.disabled = false;
-        }
-      });
-
-      audienceRadios.forEach((radio) => {
-        radio.addEventListener('change', () => {
-          if (continueButton) continueButton.disabled = !audienceRadios.some((item) => item.checked);
-        });
-      });
-
-      continueButton?.addEventListener('click', () => {
-        const selected = audienceRadios.find((item) => item.checked)?.value;
-        if (!selected) return;
-        const params = new URLSearchParams({
-          audience: selected,
-          source: 'one_time_public_landing',
-          lead_hint: 'captured'
-        });
-        if (latestLead?.product_lead_id) params.set('product_lead_id', latestLead.product_lead_id);
-        if (latestLead?.crm_lead_id) params.set('crm_lead_id', latestLead.crm_lead_id);
-        window.location.href = `/one-time-onboarding?${params.toString()}`;
       });
 
       const carousel = document.querySelector('[data-carousel]');

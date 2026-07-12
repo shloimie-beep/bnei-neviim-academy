@@ -38108,3 +38108,201 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Updated action/route registries, run evidence, PQC/run records, screenshots, and watchdog reports. App-visible requirements remain review/deploy-gated, not Done.
 - Verification: `operations:build`, `operations:check-generated`, `operations:check-canonical`, focused One Time test batch (`42` tests), public onboarding smoke, Operations owner smoke, CRM workbench smoke, provider CRM layout smoke, `watchdog:actions`, `watchdog:protocol-drift`, `pqc:validate`, and `bna:run:validate` passed.
 - Guardrail: no production deploy, email/WhatsApp/Telegram/campaign send, charge, access grant, historical import, DNS/credential mutation, external provider write, or GHL/LeadConnector runtime was performed.
+
+## 2026-07-12 - One Time PR #129 completion follow-up registered
+
+- Captured the July 12 operator continuation prompt as `RAW-20260712-001` with
+  the clean PR #129 lane, exact head SHA, prior July 11 run context, and Robot
+  correction context.
+- Created the continuation register
+  `tasks-pending/2026-07-12-onetime-p0p1-corrective-completion.md` and active
+  execution run
+  `ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/`.
+- Marked the July 11 run as continued by the July 12 run and pointed
+  `ops/execution-runs/latest.json` to the continuation.
+- Next executable requirement is `REQ-20260712-002`: reconcile delivery truth
+  and add CI enforcement. No deploy or external mutation was performed.
+
+## 2026-07-12 - One Time PR #129 delivery truth and CI gate verified
+
+- Added `.github/workflows/onetime-corrective.yml` to enforce Operations
+  generated drift checks, canonical route artifact checks, focused One Time
+  tests, and tracked secrets audit on relevant PR changes.
+- Added `npm run test:onetime:focused` for the exact focused One Time batch.
+- Reconciled the July 11 run/register records so they now say PR #129 is
+  already open at
+  `ee264c5a4b8329719b5420ffb6f99ccae93e1a60`, not waiting to be opened.
+- Verification passed locally: `operations:check-generated`,
+  `operations:check-canonical`, `operations:build` with generated asset diff
+  clean, `test:onetime:focused` (`42/42`), and `secrets:audit`.
+
+## 2026-07-12 - One Time PR #129 canonical Operations route proof
+
+- Verified `REQ-20260712-003`: the One Time Operations UI smoke now serves canonical `/operations` from `public/operations-bootstrap.html`, asserts generated CSS/IA/shell/deferred JS load, and rejects raw `public/operations.html` as proof.
+- Rebuilt generated Operations assets after updating `scripts/split-operations-shell.mjs` to include shared shell helpers required before deferred renderer loading.
+- Verification passed: `npm run operations:build`, `npm run operations:check-generated`, `npm run operations:check-canonical`, and `npm run test:onetime:focused` (42/42).
+
+## 2026-07-12 - One Time PR #129 provider login to canonical Operations
+
+- Verified `REQ-20260712-004` locally: normal One Time provider credentials now create a provider session that bridges into a project-scoped Operations identity and redirects to canonical `/operations`.
+- Redirected signed One Time provider sessions away from `/provider`, `/provider.html`, and `/provider-dashboard` to the canonical Operations shell; BNA Super Admin auth remains first in `requireAdmin`.
+- Added `tests/one-time-provider-operations-login.test.js` for typed provider credentials, provider-session cookie, canonical Operations asset load, alias redirects, and cross-workspace denial.
+- Cleaned targeted disabled-state implementation language from normal Operations account views and rebuilt generated Operations assets.
+- Verification passed: `node --check server.js`, `npm run operations:check-generated`, `npm run operations:check-canonical`, and `npm run test:onetime:focused` (44/44).
+
+## 2026-07-12 - One Time direct signup page local proof recorded
+
+- Recorded local proof for `REQ-20260712-013`: added canonical `/one-time/signup`,
+  routed public Sign Up Now actions to it, and registered the route/actions in
+  the One Time config and registries.
+- The direct signup page now uses contact name, Family/School, unambiguous
+  city/timezone metadata, email, optional phone with WhatsApp/Both reminder
+  gating, and a required no-preselected reminder choice. It does not request a
+  student name or show Member Login/portal actions on the form.
+- Added responsive Playwright coverage for 1440, 1024, 768, 430, and 390
+  widths plus payload and copy/registry checks.
+- Verification passed: `node --check server.js`,
+  `node --check public/js/bna-bot-widget.js`, focused signup/reminder tests
+  (30/30), `npm run test:onetime:focused` (53/53),
+  `npm run watchdog:actions`, and `npm run bna:run:validate`.
+- No deploy, external send, payment/access mutation, historical import,
+  DNS/account/credential mutation, or external provider write was performed.
+- Requirement status remains `needs_operator_decision` until deployment, live
+  smoke, and the operator personal test are authorized and completed.
+
+## 2026-07-12 - One Time signup/reminder workflow local implementation expanded
+
+- Added the shared One Time signup workflow helper for city/timezone validation,
+  DST-safe 7 p.m. Israel class conversion, reminder preferences, confirmation
+  copy, reminder idempotency keys, WAPI readiness gates, and exact-three local
+  segment preview logic.
+- Extended `/api/one-time/interest` for direct signup normalization, scoped
+  product-lead/CRM dedupe, consent/location/reminder metadata, idempotent
+  confirmation/WhatsApp/Rabbi Telegram outbox records, and no-portal/no-payment
+  safeguards.
+- Added protected `/api/cron/one-time/class-reminders`, admin
+  `/api/bna/one-time/local-class-reminder-preview`, and guarded
+  `npm run onetime:reminder:test-contact`.
+- Visual evidence saved under
+  `ops/evidence/one-time-signup-reminder/2026-07-12/` for 1440, 1024, 768,
+  430, and 390 widths.
+- Verification passed: `node --check server.js`,
+  `node --test tests/one-time-direct-signup-page.test.js`,
+  `node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js`,
+  `npm run test:onetime:focused` (53/53), `npm run watchdog:actions`,
+  `npm run watchdog:protocol-drift`, and `npm run bna:run:validate`.
+- Run status remains open: deployment, live smoke, Resend/WAPI/Telegram
+  readiness, operator personal test, and real provider/CRM evidence are still
+  required before Done.
+
+## 2026-07-12 - One Time signup required markers and acknowledgment UX
+
+- Captured `RAW-20260712-003` for the operator correction that the public
+  signup form should not say phone optional, should show red required markers,
+  and should include a clicked reminder/location acknowledgment.
+- Updated `public/one-time/signup.html` so required fields display red dots,
+  the Phone / WhatsApp red dot appears only after WhatsApp/Both reminders are
+  selected, customer-facing optional-phone wording is removed, and the visitor
+  checks one acknowledgment for selected-city class time and selected reminder
+  consent.
+- Updated `src/lib/bna/one-time-signup-workflow.js` so recurring reminder
+  consent is accepted only when the acknowledgment and reminder-consent payload
+  are explicit.
+- Refreshed local responsive evidence at 1440, 1024, 768, 430, and 390 widths:
+  `ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json`.
+- Verification passed: `node --check src/lib/bna/one-time-signup-workflow.js`,
+  `node --test tests/one-time-signup-reminder-workflow.test.js`,
+  `node --test tests/one-time-direct-signup-page.test.js`, and
+  `npm run test:onetime:focused` (53/53).
+- No deploy, external send, provider mutation, payment/access mutation, portal
+  onboarding, or local-class activation was performed.
+
+## 2026-07-12 - One Time first-party CRM local implementation blocked on DB proof
+
+- Implemented the `REQ-20260712-005` local CRM slice: enriched the first-party
+  contact DTO, added local membership/access/mailbox/support/follow-up/timeline
+  context, made the detail form edit name/email/phone/lifecycle/follow-up/
+  owner/tags/note, and added scoped local follow-up task creation.
+- Corrected the CRM note write path to use allowed first-party dashboard source
+  metadata instead of a source value that would violate the
+  `bna_contact_communications` source constraint.
+- Added targeted mailbox continuity from the selected CRM contact and a local/
+  test DB journey smoke script that refuses production-style database URLs.
+- Verification passed: `node --test tests/crm-contact-model.test.js
+  tests/service-provider-scope-routes.test.js`, `npm run operations:build`,
+  `npm run operations:check-generated`, `npm run operations:check-canonical`,
+  `npm run test:onetime:focused` (54/54), `npm run
+  one-time:smoke:operations-crm-workbench-local`, `npm run watchdog:actions`,
+  `npm run watchdog:protocol-drift`, and `npm run secrets:audit`.
+- Requirement status is `blocked`, not Done: the required real local/test
+  Postgres persistence journey needs `BNA_ONETIME_CRM_TEST_DATABASE_URL`, then
+  `npm run one-time:smoke:crm-journey-local-db`.
+
+## 2026-07-12 - One Time ramble-to-done ingestion service verified locally
+
+- Implemented `REQ-20260712-008` with canonical
+  `src/platform/ingestion/operator-ramble-service.js` coverage for
+  `ingestOperatorRamble()`, source statement offsets/hashes/classification,
+  stable requirement/job projections, receipts, worker-health truth, status
+  propagation, and `codex_done` migration/rejection.
+- Wired `/api/bna/intake/parse` to attach compact `ramble_to_done` receipts to
+  raw-intake parse results and metadata without replacing the existing
+  persistence path.
+- Updated `scripts/chatgpt-dropoff-ingestor.mjs` so ChatGPT/Codex dropoff task
+  payloads include a canonical-ingestion receipt and legacy completed packet
+  statuses do not queue as ready.
+- Corrected the stale duplicate `task #1945` claim in
+  `ops/chatgpt-ramble-dropoff/incoming/onetime-launch-priority-ui-crm-automation-20260710-001/status.json`;
+  task `#1945` remains owned by
+  `onetime-agent-prompt-series-20260706-911`.
+- Verification passed: syntax checks, ingestion/dropoff/API suite (56/56),
+  focused REQ-008 suite (15/15), `npm run test:onetime:focused` (54/54),
+  `npm run chatgpt:dropoff:tower`, raw/action/protocol watchdogs,
+  `npm run secrets:audit`, and `npm run bna:run:validate`.
+- No deploy, external send, provider mutation, production-data mutation, or
+  payment/access/DNS/account mutation was performed.
+
+## 2026-07-12 - One Time ramble-to-done packet status and regressions finalized locally
+
+- Added shared packet-status handling in
+  `src/platform/ingestion/packet-status.js` and wired both the ChatGPT dropoff
+  ingestor and control tower through it, including `codex_done` migration and
+  unknown-status rejection.
+- Extended `src/platform/ingestion/operator-ramble-service.js` so the
+  compatibility graph exposes independent-work continuation, exact execution
+  requirement IDs, and release-gated verification propagation.
+- Updated Operations worker-health copy to truthfully show queued work without
+  a heartbeat as `Stored; worker offline`, then rebuilt generated Operations
+  assets.
+- Added/confirmed regression coverage for adapter recognition, statement
+  offsets/hashes, no-lost mapping, blocked-decision independence, failed
+  verification staying open, UI release/live gating, intake API readback,
+  packet-status migration/rejection, and worker-offline truth.
+- Verification passed: service syntax and test 6/6; dropoff/control-tower/
+  intake readback tests 12/12; Operations build/check/canonical; focused One
+  Time tests 54/54; raw/action/protocol watchdogs; secrets audit; run
+  validator.
+- `REQ-20260712-008` and `REQ-20260712-009` remain non-terminal and
+  release-gated. No deploy, external send, provider mutation, production-data
+  mutation, payment/access/DNS/account mutation, or parallel PR was performed.
+
+## 2026-07-12 - One Time ramble regression suite evidence refreshed
+
+- Added the dedicated `tests/ingestion/ramble-regression-suite.test.js` record
+  to the REQ-20260712-009 evidence tables and retained release-gated status.
+- Verification passed: `node --check tests/ingestion/ramble-regression-suite.test.js`
+  and the combined ingestion/dropoff/intake/watchdog regression run 41/41.
+- No deploy, external send, provider mutation, production-data mutation,
+  payment/access/DNS/account mutation, or parallel PR was performed.
+
+## 2026-07-12 - One Time CI workflow publishing blocked by GitHub scope
+
+- Attempted to push PR #129 updates with `.github/workflows/onetime-corrective.yml`
+  included for CI enforcement.
+- GitHub rejected the push because the OAuth App does not have `workflow`
+  scope, which is required to create or update workflow files.
+- Removed the workflow file from the pushed commit candidate and recorded
+  `REQ-20260712-002` as needs-operator-decision for CI workflow publishing.
+- Local gates remain verified through `package.json` scripts and recorded test
+  output; an authorized maintainer or workflow-scope token must add the CI
+  workflow before this requirement is terminal.

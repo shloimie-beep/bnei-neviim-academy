@@ -12,7 +12,8 @@ Source and protocol artifacts:
 Local proof:
 
 - Corrective branch: `codex/onetime-p0p1-corrective-20260711`
-- Corrective commit: `e49bd3b00291818bb44e4a483fdd69b35f599c28`
+- Implementation commit: `e49bd3b00291818bb44e4a483fdd69b35f599c28`
+- Current PR head / evidence commit: `ee264c5a4b8329719b5420ffb6f99ccae93e1a60`
 - Draft PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/129
 - Operations artifact gate: `npm run operations:build`, `npm run operations:check-generated`, `npm run operations:check-canonical`
 - Focused tests: `42` passing One Time/CRM/owner-shell tests

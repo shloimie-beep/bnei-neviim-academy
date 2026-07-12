@@ -3824,14 +3824,16 @@
             const statusTitle = healthy
                 ? 'Agent work has a fresh heartbeat'
                 : queued > 0
-                    ? 'Agent work is queued, but the worker is not reporting a fresh heartbeat'
+                    ? 'Stored; worker offline'
                     : 'No queued agent work is waiting right now';
             const note = latestTitle
                 ? `Next visible item: ${taskDisplayTitle({ title: latestTitle })}`
                 : 'Machine work appears in Codex Queue, never as human Blocked.';
             const heartbeat = fleet.last_seen_at
                 ? `Last seen ${formatDateTime(fleet.last_seen_at)}`
-                : 'No heartbeat recorded yet';
+                : queued > 0
+                    ? 'Stored; worker offline until an agent-fleet heartbeat is present'
+                    : 'No heartbeat recorded yet';
 
             return `
                 <div class="agent-status-panel" data-health="${health}">
@@ -4810,7 +4812,7 @@
                         <div class="task-section-header">
                             <div>
                                 <h3>Queue Heartbeat</h3>
-                                <span>${escapeHtml(fleet.last_seen_at ? `Last seen ${formatDateTime(fleet.last_seen_at)}` : 'No worker heartbeat loaded')}</span>
+                                <span>${escapeHtml(fleet.last_seen_at ? `Last seen ${formatDateTime(fleet.last_seen_at)}` : Number(queue.pending ?? counts.queued) > 0 ? 'Stored; worker offline' : 'No worker heartbeat loaded')}</span>
                             </div>
                             <span class="page-status-pill">${escapeHtml(String(fleet.status || 'unknown').replace(/_/g, ' '))}</span>
                         </div>
@@ -5904,7 +5906,7 @@
             const staleJobs = Array.isArray(queue.stale_candidates) ? queue.stale_candidates : [];
             const queued = Number(queue.pending ?? (buckets.tasks || []).filter(task => taskIsMachine(task) && String(task.agent_status || '').toLowerCase() === 'queued').length ?? 0);
             const inProgress = Number(queue.in_progress ?? 0);
-            const heartbeat = fleet.last_seen_at ? `Last seen ${formatDateTime(fleet.last_seen_at)}.` : 'No heartbeat recorded yet.';
+            const heartbeat = fleet.last_seen_at ? `Last seen ${formatDateTime(fleet.last_seen_at)}.` : queued > 0 ? 'Stored; worker offline until an agent-fleet heartbeat is present.' : 'No heartbeat recorded yet.';
             const renderJob = (job) => {
                 const ids = [
                     job.ticket_id ? `ticket #${job.ticket_id}` : '',
@@ -7212,12 +7214,17 @@
                     <div class="contact-detail-grid">
                         ${renderContactDetailItem('Email', card.email || 'Not loaded')}
                         ${renderContactDetailItem('Phone', card.phone || 'Not loaded')}
+                        ${renderContactDetailItem('Family / School', contactStatusLabel(card.family_school_classification || 'family'))}
                         ${renderContactDetailItem('Lifecycle / Source', [contactStatusLabel(card.status || 'new'), contactStatusLabel(card.source_label || card.source || 'first party')].filter(Boolean).join(' / '))}
                         ${renderContactDetailItem('Last Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : 'No local activity yet')}
                         ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : 'Not scheduled')}
                         ${renderContactDetailItem('Assigned Owner', card.assigned_owner || 'Unassigned')}
                         ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
                         ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
+                        ${renderContactDetailItem('Membership / Access', [card.membership_access?.access_tier, card.membership_access?.access_status].filter(Boolean).join(' / ') || 'No member access linked')}
+                        ${renderContactDetailItem('Mailbox', card.mailbox?.message_count ? `${Number(card.mailbox.message_count)} messages${card.mailbox.latest_subject ? ` / ${card.mailbox.latest_subject}` : ''}` : 'No mailbox thread linked')}
+                        ${renderContactDetailItem('Support', card.support?.open_ticket_count ? `${Number(card.support.open_ticket_count)} open support threads` : 'No open support threads')}
+                        ${renderContactDetailItem('Follow-up Task', card.follow_up_task?.task_id ? `Task #${card.follow_up_task.task_id}${card.follow_up_task.assigned_to ? ` / ${card.follow_up_task.assigned_to}` : ''}` : 'No follow-up task assigned')}
                         ${renderContactDetailItem('Notes', card.summary || 'No notes loaded yet')}
                     </div>
                     <div class="task-actions" style="margin-top:14px;">
@@ -7226,6 +7233,15 @@
                         <span class="status-chip blocked" title="Email, WhatsApp, payment, access, and external CRM actions require approval.">External actions locked</span>
                     </div>
                     <form class="settings-control-grid compact crm-action-form" style="margin-top:14px;" onsubmit="saveFirstPartyCrmAction(event, ${attrJson(card.id)})" data-crm-contact-action-form data-action-id="ACTION-CRM-CONTACT-SAFE-UPDATE">
+                        <label>Name
+                            <input name="display_name" value="${escapeHtml(card.display_name || '')}" placeholder="Contact name">
+                        </label>
+                        <label>Email
+                            <input name="email" type="email" value="${escapeHtml(card.email || '')}" placeholder="email@example.com">
+                        </label>
+                        <label>Phone
+                            <input name="phone" value="${escapeHtml(card.phone || '')}" placeholder="+1 555 010 0000">
+                        </label>
                         <label>Lifecycle
                             <select name="status">${firstPartyCrmLifecycleOptions(card.status || card.lifecycle_stage)}</select>
                         </label>
@@ -7320,11 +7336,15 @@
             try {
                 const result = await api.updateCrmContact(contactId, {
                     ...firstPartyCrmQueryFilters(),
+                    display_name: data.get('display_name') || '',
+                    email: data.get('email') || '',
+                    phone: data.get('phone') || '',
                     status: data.get('status') || '',
                     lifecycle_stage: data.get('status') || '',
                     next_follow_up_at: data.get('next_follow_up_at') || '',
                     assigned_owner: data.get('assigned_owner') || '',
                     tags,
+                    create_follow_up_task: Boolean(data.get('next_follow_up_at') || data.get('assigned_owner')),
                     note_summary: noteBody ? `CRM note for selected contact` : 'CRM contact updated',
                     note_body: noteBody,
                     no_send: true,
@@ -11289,7 +11309,7 @@
                 communities: 'Community/course-builder UI is not assumed. Add this only after the provider stack decision proves it is needed.',
                 marketing: 'Marketing and funnel setup can be managed here after provider billing/admin-fee terms and campaign workflows are approved.',
                 leads: 'Provider-specific lead and signup tracking will connect after the first provider workspace workflow is mapped.',
-                settings: 'Provider workspace settings need persistence before normal users can edit them here.',
+                settings: 'Provider workspace settings become editable after the workspace setup and review steps are complete.',
             })[section] || 'This provider section is ready for backend wiring but is not configured yet.';
         }
 
@@ -15418,6 +15438,363 @@
                 notice: errors.length ? 'Needs setup' : 'Checked',
                 schedulePreview: communicationsIntegrationState.schedulePreview
             };
+        }
+
+        function renderPipelineBoard(cards = []) {
+            const stages = [
+                { id: 'inbox', label: 'Inbox' },
+                { id: 'interested', label: 'Interested' },
+                { id: 'follow_up', label: 'Follow-up' },
+                { id: 'needs_decision', label: 'Decision' },
+                { id: 'in_progress', label: 'In Progress' },
+                { id: 'won', label: 'Won / Member' }
+            ];
+            const normalized = (card) => {
+                const value = String(card.stage_key || card.stage || '').toLowerCase();
+                if (/paid|accepted|won|member|participant|done/.test(value)) return 'won';
+                if (/progress|assigned|scheduled|application/.test(value)) return 'in_progress';
+                if (/decision|blocked|review/.test(value)) return 'needs_decision';
+                if (/follow/.test(value)) return 'follow_up';
+                if (/interest|lead|new/.test(value)) return 'interested';
+                return 'inbox';
+            };
+            return `
+                <div class="pipeline-board">
+                    ${stages.map(stage => {
+                        const stageCards = cards.filter(card => normalized(card) === stage.id);
+                        return `
+                            <div class="pipeline-column">
+                                <div class="pipeline-column-header"><strong>${escapeHtml(stage.label)}</strong><span>${stageCards.length}</span></div>
+                                ${stageCards.length ? stageCards.map(renderPipelineCard).join('') : '<div class="empty-state compact">No cards.</div>'}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        function renderPipelineCard(card = {}) {
+            const sourceLabel = card.derived ? `${card.source || 'derived'} read-only` : card.source || 'internal';
+            return `
+                <article class="pipeline-card">
+                    <div class="pipeline-card-title">${escapeHtml(card.title || 'Untitled card')}</div>
+                    <div class="event-meta">${escapeHtml([sourceLabel, card.owner_name, card.pipeline_key].filter(Boolean).join(' / '))}</div>
+                    ${card.summary ? `<p>${escapeHtml(limitTextClient(card.summary, 180))}</p>` : ''}
+                    ${card.next_action ? `<div class="settings-disabled-note">Next: ${escapeHtml(card.next_action)}</div>` : ''}
+                    <div class="task-actions">
+                        ${card.task_id ? `<button class="task-action" onclick="openTaskDetail(event, ${Number(card.task_id)})">Open Task</button>` : ''}
+                        ${!card.derived ? `<button class="task-action" onclick="advancePipelineCard(${Number(card.id)}, 'in_progress')">Start</button><button class="task-action primary" onclick="advancePipelineCard(${Number(card.id)}, 'won')">Won</button>` : '<button class="task-action" disabled title="Derived from existing lead/signup/task record">Derived</button>'}
+                    </div>
+                </article>
+            `;
+        }
+
+        function communicationMetadata(item = {}) {
+            return parseObjectMaybe(item.metadata);
+        }
+
+        function communicationSourceContext(item = {}) {
+            return parseObjectMaybe(item.source_context);
+        }
+
+        function communicationSubject(item = {}) {
+            const context = communicationSourceContext(item);
+            const metadata = communicationMetadata(item);
+            return item.subject || metadata.subject || context.subject || item.summary || 'Communication';
+        }
+
+        function communicationPriority(item = {}) {
+            const metadata = communicationMetadata(item);
+            if (metadata.communication_priority) return String(metadata.communication_priority).toLowerCase();
+            if (item.follow_up_required) return 'high';
+            if (/urgent|failed|payment|accountability|unsafe|asap/i.test(`${item.summary || ''} ${item.body || ''}`)) return 'high';
+            return 'normal';
+        }
+
+        function baseCommunicationTags(item = {}) {
+            const metadata = communicationMetadata(item);
+            const sourceContext = communicationSourceContext(item);
+            return [
+                item.contact_type || 'general',
+                metadata.communication_pipeline,
+                ...(Array.isArray(metadata.communication_tags) ? metadata.communication_tags : []),
+                ...(Array.isArray(metadata.internal_tags) ? metadata.internal_tags : []),
+                sourceContext.raw_intake_id ? `raw ${sourceContext.raw_intake_id}` : '',
+            ].filter(Boolean).map(tag => String(tag).replace(/_/g, ' '));
+        }
+
+        function contactTagsForCommunication(item = {}) {
+            const linkedSignupTags = (signups || [])
+                .filter(signup => communicationMatchesSignup(item, signup))
+                .flatMap(contactTags);
+            const linkedLeadTags = (parentLeads || [])
+                .filter(lead => communicationMatchesLead(item, lead))
+                .flatMap(leadTags);
+            return uniqueSortedTags([...linkedSignupTags, ...linkedLeadTags]);
+        }
+
+        function communicationTags(item = {}) {
+            return uniqueSortedTags([
+                ...baseCommunicationTags(item),
+                ...contactTagsForCommunication(item),
+            ]).slice(0, 10);
+        }
+
+        function communicationMatchesContactFilters(item = {}) {
+            return matchesRecentDate(item.occurred_at || item.created_at, contactDateFilter)
+                && contactTagMatches(communicationTags(item));
+        }
+
+        function communicationAddressLine(item = {}) {
+            const context = communicationSourceContext(item);
+            const metadata = communicationMetadata(item);
+            const from = context.from_address || context.from_number || metadata.from_address || metadata.from_number || metadata.push_name || '';
+            const to = context.to_address || context.to_number || metadata.to_address || metadata.to_number || '';
+            return [from ? `From ${from}` : '', to ? `To ${to}` : ''].filter(Boolean).join(' / ') || 'No address loaded';
+        }
+
+        function communicationStatusLine(item = {}) {
+            const context = communicationSourceContext(item);
+            const metadata = communicationMetadata(item);
+            const status = context.status || context.delivery_status || metadata.delivery_status || metadata.status || '';
+            const opened = metadata.opened_at || metadata.open_at || metadata.opened || context.opened_at || '';
+            const clicked = metadata.clicked_at || metadata.click_at || metadata.clicked || context.clicked_at || '';
+            const parts = [
+                status ? contactStatusLabel(status) : '',
+                opened ? 'Opened' : '',
+                clicked ? 'Clicked' : '',
+            ].filter(Boolean);
+            return parts.join(' / ') || (item.follow_up_required ? 'Follow-up required' : 'Logged');
+        }
+
+        function communicationSourceLabel(item = {}) {
+            const context = communicationSourceContext(item);
+            const metadata = communicationMetadata(item);
+            return [
+                item.source || metadata.source || context.source || 'dashboard',
+                metadata.import_source || '',
+                context.unified_communication_id ? `email log #${context.unified_communication_id}` : '',
+                context.message_id ? `message #${context.message_id}` : '',
+            ].filter(Boolean).join(' / ');
+        }
+
+        function communicationAssociatedContext(item = {}) {
+            const metadata = communicationMetadata(item);
+            const project = item.project_name || item.project_key || metadata.workspace_key || '';
+            const person = communicationContactName(item);
+            const student = item.student_name || item.signup_student_name || metadata.student_name || '';
+            return [
+                project || currentWorkspaceRecord()?.display_name || 'Workspace',
+                person && person !== 'General contact' ? person : '',
+                student ? `Student ${student}` : '',
+            ].filter(Boolean).join(' / ') || 'Operations';
+        }
+
+        function communicationActionLabel(item = {}) {
+            const metadata = communicationMetadata(item);
+            if (metadata.action_label) return metadata.action_label;
+            if (item.follow_up_required) return 'Review follow-up';
+            if (communicationPriority(item) === 'high' || communicationPriority(item) === 'urgent') return 'Review';
+            return 'Logged';
+        }
+
+        function communicationIsTopNews(item = {}) {
+            const metadata = communicationMetadata(item);
+            const context = communicationSourceContext(item);
+            const text = `${item.summary || ''} ${item.body || ''} ${metadata.communication_pipeline || ''} ${metadata.communication_priority || ''}`.toLowerCase();
+            return Boolean(
+                metadata.top_news ||
+                context.communication_screening?.top_news ||
+                item.follow_up_required ||
+                ['urgent', 'high'].includes(communicationPriority(item)) ||
+                /\b(form filled|portal link clicked|payment issue|failed email|urgent whatsapp|parent reply|accountability)\b/i.test(text)
+            );
+        }
+
+        function communicationTopNewsItems(limit = 6) {
+            return [...contactCommunications]
+                .filter(communicationIsTopNews)
+                .sort((a, b) => {
+                    const priorityWeight = { urgent: 3, high: 2, normal: 1, low: 0 };
+                    const diff = (priorityWeight[communicationPriority(b)] || 0) - (priorityWeight[communicationPriority(a)] || 0);
+                    if (diff) return diff;
+                    return Date.parse(b.occurred_at || b.created_at || 0) - Date.parse(a.occurred_at || a.created_at || 0);
+                })
+                .slice(0, limit);
+        }
+
+        function renderCommunicationTopNewsPanel(items = communicationTopNewsItems(6), compact = false) {
+            return `
+                <section class="focus-panel" data-communication-top-news>
+                    <div class="task-section-header"><h3>Top News</h3><span>${items.length} events</span></div>
+                    ${items.length ? `<div class="communication-top-news-grid">
+                        ${items.map(item => `
+                            <article class="communication-top-news-card">
+                                <div class="task-card-meta">
+                                    <span class="badge badge-urgency-${escapeHtml(communicationPriority(item) === 'urgent' ? 'urgent' : 'today')}">${escapeHtml(communicationPriority(item))}</span>
+                                    <span class="badge">${escapeHtml(communicationChannelLabel(item.channel))}</span>
+                                    <span class="badge">${escapeHtml(communicationDirectionLabel(item.direction))}</span>
+                                </div>
+                                <div class="task-title">${escapeHtml(communicationSubject(item))}</div>
+                                <p class="task-notes">${escapeHtml(limitTextClient(item.body || item.summary || '', compact ? 160 : 260))}</p>
+                                <div class="task-detail">${escapeHtml(communicationAssociatedContext(item))}</div>
+                            </article>
+                        `).join('')}
+                    </div>` : '<div class="empty-state">No high-priority communication events are loaded.</div>'}
+                </section>
+            `;
+        }
+
+        function normalizePhoneDigitsClient(value = '') {
+            return String(value || '').replace(/[^0-9]/g, '');
+        }
+
+        function parseObjectMaybe(value) {
+            if (!value) return {};
+            if (typeof value === 'object') return value;
+            if (typeof value !== 'string') return {};
+            try {
+                const parsed = JSON.parse(value);
+                return parsed && typeof parsed === 'object' ? parsed : {};
+            } catch {
+                return {};
+            }
+        }
+
+        function firstNonEmptyValue(values = []) {
+            return (values || []).find(value => String(value || '').trim()) || '';
+        }
+
+        function communicationProjectKey(item = {}) {
+            const sourceContext = parseObjectMaybe(item.source_context);
+            const metadata = parseObjectMaybe(item.metadata);
+            const rawProjectKey = firstNonEmptyValue([
+                item.project_key,
+                item.project,
+                item.workspace_project_key,
+                sourceContext.project_key,
+                sourceContext.project,
+                sourceContext.workspace_project_key,
+                metadata.project_key,
+                metadata.project,
+                metadata.workspace_project_key,
+            ]);
+            if (rawProjectKey) return normalizeProjectKey(rawProjectKey);
+            const rawWorkspaceKey = firstNonEmptyValue([
+                item.workspace_key,
+                item.workspace,
+                sourceContext.workspace_key,
+                sourceContext.workspace,
+                metadata.workspace_key,
+                metadata.workspace,
+            ]);
+            return rawWorkspaceKey ? projectKeyForWorkspaceKey(rawWorkspaceKey) : '';
+        }
+
+        function communicationAllowedForCurrentWorkspace(item = {}) {
+            const currentProjectKey = projectKeyForWorkspaceKey(currentWorkspaceKey());
+            if (!currentProjectKey || currentProjectKey === 'all') return true;
+            const itemProjectKey = communicationProjectKey(item);
+            if (itemProjectKey) return itemProjectKey === currentProjectKey;
+            if (currentProjectKey === 'one_time_mishnah_class') return false;
+            return currentProjectKey === 'bna';
+        }
+
+        function communicationPhoneTokens(item = {}) {
+            const sourceContext = parseObjectMaybe(item.source_context);
+            const metadata = parseObjectMaybe(item.metadata);
+            return phoneTokensFromValues([
+                sourceContext.from_number,
+                sourceContext.to_number,
+                sourceContext.phone,
+                sourceContext.recipient,
+                sourceContext.chat_id,
+                sourceContext.wapi_chat_id,
+                sourceContext.matched_phone,
+                metadata.from_number,
+                metadata.to_number,
+                metadata.phone,
+                item.contact_phone,
+            ]);
+        }
+
+        function communicationAttachmentSummary(item = {}) {
+            const metadata = parseObjectMaybe(item.metadata);
+            const sourceContext = parseObjectMaybe(item.source_context);
+            const attachments = [
+                ...(Array.isArray(metadata.attachments) ? metadata.attachments : []),
+                ...(Array.isArray(sourceContext.attachments) ? sourceContext.attachments : []),
+                ...(Array.isArray(metadata.media) ? metadata.media : []),
+                ...(Array.isArray(sourceContext.media) ? sourceContext.media : []),
+            ];
+            const count = Number(metadata.attachment_count || sourceContext.attachment_count || attachments.length || 0);
+            const kinds = [...new Set(attachments.map(item => item?.type || item?.mime_type || item?.kind).filter(Boolean))];
+            if (!count && !kinds.length) return '';
+            return `${count || kinds.length} attachment${(count || kinds.length) === 1 ? '' : 's'}${kinds.length ? `: ${kinds.slice(0, 3).join(', ')}` : ''}`;
+        }
+
+        function renderSettingsControlRow(label, value, note, status = 'Read-only') {
+            const statusText = String(status || '');
+            const statusHtml = statusText.trim().startsWith('<')
+                ? statusText
+                : `<span class="status-pill">${escapeHtml(statusText)}</span>`;
+            return `
+                <div class="settings-control-row">
+                    <div>
+                        <strong>${escapeHtml(label)}</strong>
+                        <p>${escapeHtml(note || '')}</p>
+                    </div>
+                    <div class="settings-control-side">
+                        ${statusHtml}
+                        <span>${escapeHtml(String(value || ''))}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderNotConfiguredPanel(title, description) {
+            const heading = title || 'Configuration required';
+            const copy = description || 'This area is visible for orientation, but editing is not enabled for this account yet.';
+            return `
+                <section class="focus-panel not-configured-panel">
+                    <div class="not-configured-icon">Off</div>
+                    <div>
+                        <h3>${escapeHtml(heading)}</h3>
+                        <p>${escapeHtml(copy)}</p>
+                        <div class="settings-control-grid" style="margin-top:12px;">
+                            ${renderSettingsControlRow('Availability', 'Not enabled', 'This control is locked for the current account view.', 'Disabled')}
+                            ${renderSettingsControlRow('Changes', 'Locked', 'No changes are saved from this screen.', 'Disabled')}
+                        </div>
+                        <div class="task-actions">
+                            <button class="task-action" disabled title="Not available for this account yet">Not available yet</button>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function showNotConfigured(label = 'This feature') {
+            const existing = document.getElementById('notConfiguredModal');
+            if (existing) existing.remove();
+            const modal = document.createElement('div');
+            modal.id = 'notConfiguredModal';
+            modal.className = 'modal-overlay show';
+            modal.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <h2>Not available yet</h2>
+                        <button class="modal-close" type="button" aria-label="Close" onclick="document.getElementById('notConfiguredModal')?.remove()">Close</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>${escapeHtml(label)} is visible for orientation, but it is not enabled for this account yet.</p>
+                        <p class="event-meta">No changes are saved from this screen.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" type="button" onclick="document.getElementById('notConfiguredModal')?.remove()">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
 
         async function loadData(options = {}) {

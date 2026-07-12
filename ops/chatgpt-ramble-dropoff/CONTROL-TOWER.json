@@ -1,20 +1,260 @@
 {
-  "generated_at": "2026-07-11T20:17:32.354Z",
+  "generated_at": "2026-07-12T07:31:14.274Z",
   "git": {
     "branch": "codex/onetime-p0p1-corrective-20260711",
     "dirty": true,
     "dirty_files": [
       {
         "status": "M",
+        "path": "config/service-provider-sites/one-time.json"
+      },
+      {
+        "status": "M",
+        "path": "content-memory/website-blog-posts.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/action-registry.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/agent-changelog.md"
+      },
+      {
+        "status": "M",
+        "path": "ops/agent-task-ledger.jsonl"
+      },
+      {
+        "status": "M",
+        "path": "ops/chatgpt-ramble-dropoff/incoming/onetime-launch-priority-ui-crm-automation-20260710-001/status.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/DEPLOYMENT.md"
+      },
+      {
+        "status": "M",
+        "path": "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/EVIDENCE.md"
+      },
+      {
+        "status": "M",
+        "path": "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/requirements.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/run.json"
+      },
+      {
+        "status": "M",
         "path": "ops/execution-runs/latest.json"
       },
       {
-        "status": "??",
-        "path": "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/"
+        "status": "M",
+        "path": "ops/route-registry.json"
+      },
+      {
+        "status": "M",
+        "path": "package.json"
+      },
+      {
+        "status": "M",
+        "path": "public/data/website-blog-posts.json"
+      },
+      {
+        "status": "M",
+        "path": "public/js/bna-bot-widget.js"
+      },
+      {
+        "status": "M",
+        "path": "public/js/operations-deferred-renderers.js"
+      },
+      {
+        "status": "M",
+        "path": "public/js/operations-shell.js"
+      },
+      {
+        "status": "M",
+        "path": "public/one-time/index.html"
+      },
+      {
+        "status": "M",
+        "path": "public/one-time/privacy.html"
+      },
+      {
+        "status": "M",
+        "path": "public/one-time/terms.html"
+      },
+      {
+        "status": "M",
+        "path": "public/operations.html"
+      },
+      {
+        "status": "M",
+        "path": "scripts/chatgpt-dropoff-control-tower.mjs"
+      },
+      {
+        "status": "M",
+        "path": "scripts/chatgpt-dropoff-ingestor.mjs"
+      },
+      {
+        "status": "M",
+        "path": "scripts/smoke-onetime-operations-crm-workbench-local.mjs"
+      },
+      {
+        "status": "M",
+        "path": "scripts/split-operations-shell.mjs"
+      },
+      {
+        "status": "M",
+        "path": "scripts/watchdog-raw-intake-drift.mjs"
+      },
+      {
+        "status": "M",
+        "path": "server.js"
+      },
+      {
+        "status": "M",
+        "path": "src/lib/bna/crm-contact-model.js"
+      },
+      {
+        "status": "M",
+        "path": "src/lib/bna/intake-schema.js"
+      },
+      {
+        "status": "M",
+        "path": "src/lib/bna/ramble-routing.js"
+      },
+      {
+        "status": "M",
+        "path": "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.md"
+      },
+      {
+        "status": "M",
+        "path": "tests/chatgpt-dropoff-control-tower.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/chatgpt-dropoff-ingestor.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/crm-contact-model.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/one-time-focused-landing.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/one-time-intake-api-readback.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/one-time-operations-ui-smoke.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/one-time-product-system.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/one-time-route-role-mapping.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/service-provider-scope-routes.test.js"
+      },
+      {
+        "status": "M",
+        "path": "tests/watchdog-raw-intake-drift.test.js"
       },
       {
         "status": "??",
-        "path": "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md"
+        "path": ".github/"
+      },
+      {
+        "status": "??",
+        "path": "memory/2026-07-12.md"
+      },
+      {
+        "status": "??",
+        "path": "ops/evidence/"
+      },
+      {
+        "status": "??",
+        "path": "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/"
+      },
+      {
+        "status": "??",
+        "path": "ops/watchdog-audits/2026-07-12-product-quality-drift.json"
+      },
+      {
+        "status": "??",
+        "path": "ops/watchdog-audits/2026-07-12-product-quality-drift.md"
+      },
+      {
+        "status": "??",
+        "path": "public/one-time/signup.html"
+      },
+      {
+        "status": "??",
+        "path": "raw-input/RAW-20260712-001-onetime-pr129-completion-followup.md"
+      },
+      {
+        "status": "??",
+        "path": "raw-input/RAW-20260712-002-onetime-signup-reminder-workflow-addendum.md"
+      },
+      {
+        "status": "??",
+        "path": "raw-input/RAW-20260712-003-onetime-signup-required-markers-consent.md"
+      },
+      {
+        "status": "??",
+        "path": "scripts/simulate-one-time-class-reminder.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/smoke-onetime-crm-journey-local-db.mjs"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/bna/one-time-signup-workflow.js"
+      },
+      {
+        "status": "??",
+        "path": "src/platform/ingestion/operator-ramble-service.js"
+      },
+      {
+        "status": "??",
+        "path": "src/platform/ingestion/packet-status.js"
+      },
+      {
+        "status": "??",
+        "path": "tasks-pending/2026-07-12-onetime-p0p1-corrective-completion.md"
+      },
+      {
+        "status": "??",
+        "path": "tasks-pending/2026-07-12-onetime-signup-reminder-workflow-addendum.md"
+      },
+      {
+        "status": "??",
+        "path": "tests/ingestion/operator-ramble-service.test.js"
+      },
+      {
+        "status": "??",
+        "path": "tests/ingestion/ramble-regression-suite.test.js"
+      },
+      {
+        "status": "??",
+        "path": "tests/one-time-direct-signup-page.test.js"
+      },
+      {
+        "status": "??",
+        "path": "tests/one-time-provider-operations-login.test.js"
+      },
+      {
+        "status": "??",
+        "path": "tests/one-time-signup-reminder-workflow.test.js"
       }
     ],
     "collision_warning": "Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files."
@@ -22,8 +262,7 @@
   "packets": {
     "count": 3,
     "counts": {
-      "terminal": 2,
-      "draft": 1
+      "terminal": 3
     },
     "items": [
       {
@@ -104,8 +343,8 @@
       {
         "packet_id": "onetime-launch-priority-ui-crm-automation-20260710-001",
         "path": "ops/chatgpt-ramble-dropoff/incoming/onetime-launch-priority-ui-crm-automation-20260710-001",
-        "state": "draft",
-        "status": "codex_done",
+        "state": "terminal",
+        "status": "done_verified",
         "implementation_status": "terminal_statuses_recorded_launch_priority_complete_with_operator_runtime_blockers",
         "packet_type": "implementation_bundle",
         "packet_role": "goal_mode_correction_and_code_package_compiler",
@@ -123,17 +362,20 @@
         "findings": [
           {
             "severity": "skip",
-            "code": "not_ready_status",
-            "message": "Packet status is not ready: codex_done"
+            "code": "packet_status_migrated",
+            "message": "Packet status codex_done migrates to done_verified."
+          },
+          {
+            "severity": "skip",
+            "code": "terminal_status",
+            "message": "Packet is already terminal: done_verified"
           }
         ],
         "ready_for_pickup": false,
-        "terminal": false,
+        "terminal": true,
         "picked_up_by": "chatgpt-dropoff-ingestor",
         "picked_up_at": "2026-07-10T07:27:19.147Z",
-        "task_ids_created": [
-          "1945"
-        ],
+        "task_ids_created": [],
         "requirement_ids_created": [
           "REQ-20260710-013",
           "REQ-20260710-014",

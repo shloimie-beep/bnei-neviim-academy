@@ -1562,11 +1562,9 @@
       return;
     }
     if (action.type === 'signup') {
-      const signupTrigger = document.querySelector('[data-signup-trigger]');
-      if (signupTrigger) {
-        setOpen(false);
-        signupTrigger.click();
-      }
+      const signupLink = document.querySelector('[data-signup-link]')?.getAttribute('href') || '/one-time/signup';
+      setOpen(false);
+      window.location.href = signupLink;
       return;
     }
     if (action.type === 'prefill') {

@@ -4,19 +4,25 @@ const test = require('node:test');
 
 test('One Time focused landing copy uses launch funnel offer and safe CTAs', () => {
   const html = fs.readFileSync('public/one-time/index.html', 'utf8');
+  const signup = fs.readFileSync('public/one-time/signup.html', 'utf8');
 
   assert.match(html, /One Time Mishnayos/);
   assert.match(html, /Give your son a love for Torah you never thought possible/);
   assert.match(html, /Sign Up Now/);
-  assert.match(html, /data-signup-modal/);
-  assert.match(html, /data-signup-form/);
-  assert.match(html, /name="parent_name"/);
-  assert.match(html, /name="email"/);
-  assert.match(html, /name="phone"/);
+  assert.match(html, /href="\/one-time\/signup"/);
+  assert.doesNotMatch(html, /data-signup-modal/);
+  assert.doesNotMatch(html, /data-signup-form/);
+  assert.match(signup, /name="contact_name"/);
+  assert.match(signup, /name="signup_as"/);
+  assert.match(signup, /name="city_label"/);
+  assert.match(signup, /name="email"/);
+  assert.match(signup, /name="phone"/);
+  assert.match(signup, /name="reminder_preference"/);
   assert.doesNotMatch(html, /name="student_name"|name="studentName"|name="learner_name"|name="learnerName"/);
-  assert.match(html, /preferred_class_format/);
-  assert.match(html, /data-continue-onboarding/);
-  assert.match(html, /window\.location\.href = `\/one-time-onboarding\?\$\{params\.toString\(\)\}`/);
+  assert.doesNotMatch(signup, /name="student_name"|name="studentName"|name="learner_name"|name="learnerName"/);
+  assert.doesNotMatch(signup, /preferred_class_format/);
+  assert.doesNotMatch(signup, /data-continue-link|data-continue-onboarding/);
+  assert.doesNotMatch(signup, /\/one-time-onboarding\?\$\{params\.toString\(\)\}/);
   assert.match(html, /Member Login/);
   assert.match(html, /Join free until Rosh Hashanah/);
   assert.match(html, /Meet Rabbi Eli Scheller/);
@@ -47,6 +53,7 @@ test('One Time focused landing copy uses launch funnel offer and safe CTAs', () 
   assert.doesNotMatch(html, /player\.vimeo\.com/);
   assert.doesNotMatch(html, /approved launch configuration/i);
   assert.doesNotMatch(html, /No charge or external send was performed/i);
+  assert.doesNotMatch(html, /The next step asks whether|Choose the right onboarding path|does not charge|external send|grant access/i);
   assert.doesNotMatch(html, /raw external page/i);
   assert.doesNotMatch(html, /CAPTCHA/i);
   assert.doesNotMatch(html, /\/provider\.html\?review=one-time/);
@@ -73,6 +80,7 @@ test('One Time focused offer route and registries are declared', () => {
 
   const routes = new Set(routeRegistry.routes.map((route) => route.route));
   assert.ok(routes.has('/one-time'));
+  assert.ok(routes.has('/one-time/signup'));
   assert.ok(routes.has('/public'));
   assert.ok(routes.has('/one-time/mishnayos'));
   assert.ok(routes.has('/one-time/privacy.html'));
@@ -82,21 +90,20 @@ test('One Time focused offer route and registries are declared', () => {
 
   const actions = new Set(actionRegistry.actions.map((action) => action.action_id));
   assert.ok(actions.has('ACTION-ONETIME-JOIN-SHIR-CTA'));
-  assert.ok(actions.has('ACTION-ONETIME-INTEREST-FORM'));
-  assert.ok(actions.has('ACTION-ONETIME-SIGNUP-CONTINUE-ONBOARDING'));
+  assert.ok(actions.has('ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT'));
   assert.ok(actions.has('ACTION-ONETIME-PUBLIC-MOBILE-MENU'));
   assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-PREV'));
   assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-NEXT'));
   assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE'));
   assert.ok(actions.has('ACTION-ONETIME-MEMBER-LOGIN-LINK'));
   const joinAction = actionRegistry.actions.find((action) => action.action_id === 'ACTION-ONETIME-JOIN-SHIR-CTA');
-  assert.match(joinAction.selector_hint, /data-signup-trigger/);
-  assert.match(joinAction.expected_behavior, /signup modal/);
-  const formAction = actionRegistry.actions.find((action) => action.action_id === 'ACTION-ONETIME-INTEREST-FORM');
+  assert.match(joinAction.selector_hint, /\/one-time\/signup/);
+  assert.match(joinAction.expected_behavior, /\/one-time\/signup/);
+  const formAction = actionRegistry.actions.find((action) => action.action_id === 'ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT');
+  assert.equal(formAction.route, '/one-time/signup');
   assert.match(formAction.expected_behavior, /email/i);
-  assert.match(formAction.expected_behavior, /CRM lead/i);
+  assert.match(formAction.expected_behavior, /CRM/i);
+  assert.match(formAction.expected_behavior, /Rabbi Telegram/i);
   assert.match(formAction.expected_behavior, /no student name/i);
-  assert.match(formAction.expected_behavior, /no checkout/i);
-  const continueAction = actionRegistry.actions.find((action) => action.action_id === 'ACTION-ONETIME-SIGNUP-CONTINUE-ONBOARDING');
-  assert.match(continueAction.expected_behavior, /one-time-onboarding/);
+  assert.match(formAction.expected_behavior, /does not create checkout|no checkout/i);
 });
