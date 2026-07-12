@@ -8,6 +8,7 @@ function parseArgs(argv) {
   const options = {
     baseUrl: process.env.BNA_SMOKE_BASE_URL || process.env.BNA_LIVE_BASE_URL || DEFAULT_BASE_URL,
     reportDir: path.join('ops', 'live-smokes'),
+    expectedSha: '',
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -19,6 +20,9 @@ function parseArgs(argv) {
       index += 1;
     } else if (arg === '--no-report') {
       options.reportDir = '';
+    } else if (arg === '--expected-sha') {
+      options.expectedSha = argv[index + 1] || '';
+      index += 1;
     } else if (/^https?:\/\//i.test(arg)) {
       options.baseUrl = arg;
     }
@@ -92,6 +96,19 @@ async function main() {
   }
 
   try {
+    if (options.expectedSha) {
+      const deployInfoResponse = await fetch(`${options.baseUrl}/api/deploy-info`, {
+        headers: {
+          accept: 'application/json',
+          'cache-control': 'no-cache',
+        },
+      });
+      const deployInfo = await deployInfoResponse.json();
+      assert(deployInfoResponse.status === 200, `/api/deploy-info expected 200, got ${deployInfoResponse.status}`);
+      assert(deployInfo.commit_sha === options.expectedSha, `expected deployed SHA ${options.expectedSha}, got ${deployInfo.commit_sha}`);
+      pass('deploy-info matches expected SHA', options.expectedSha);
+    }
+
     const page = await fetchText(options.baseUrl, '/rabbi');
     assert(page.response.status === 200, `/rabbi expected 200, got ${page.response.status}`);
     expectIncludes(page.text, [
@@ -100,11 +117,14 @@ async function main() {
       'Rabbi Eli Scheller',
       'Sign Up Now',
       'href="/one-time/signup"',
-      '/js/bna-bot-widget.js',
+      'class="whatsapp-lead-launcher"',
+      'ACTION-ONETIME-PUBLIC-WHATSAPP',
+      '/api/one-time/public-whatsapp/redirect?intent=lead_capture',
     ], '/rabbi');
     expectNotMatches(page.text, /data-signup-modal|signup-strip|id="interestForm"|signupStudentName|name="student/i, '/rabbi');
     expectNotMatches(page.text, /Bnei Neviim Academy|BNA Academy|Hebrew|data-language-toggle/i, '/rabbi');
-    pass('/rabbi has focused One Time branding, direct signup CTA, and no Academy chrome');
+    expectNotMatches(page.text, /\/js\/bna-bot-widget\.js|robot-scheller-whatsapp\.png|WhatsApp Robot Scheller/i, '/rabbi');
+    pass('/rabbi has focused One Time branding, direct signup CTA, WhatsApp icon, and no Academy/helper chrome');
 
     const signup = await fetchText(options.baseUrl, '/one-time/signup');
     assert(signup.response.status === 200, `/one-time/signup expected 200, got ${signup.response.status}`);
