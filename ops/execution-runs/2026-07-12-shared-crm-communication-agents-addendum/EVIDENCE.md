@@ -42,6 +42,12 @@
 - `public/operations.html` / `public/js/operations-shell.js` / `public/css/operations-shell.css` - Operations emits shared CRM contract data attributes and applies an explicit 40px mobile Back to contacts target without changing workspace-specific records or themes.
 - `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local CRM workbench smoke passed after asserting shared CRM contract attributes and 40px mobile selected-contact back control across split shell and monolith.
 - `ops/watchdog-audits/2026-07-12T23-18-watchdog-action-audit.md` - action watchdog passed with `finding_count=0` after the shared CRM contract/geometry slice.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd`.
+- BNA post-deploy doctor - Railway deployment `d5771dd9-f35a-4610-b382-e15afe4a885e` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `279b82a0-a726-4493-a4f6-23ed409b487d` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T23-25-19-779Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the shared CRM contract/geometry slice with 12 scoped cards and read-only selected timeline.
+- Live deployed Operations HTML readback on `https://join.onetimeonetime.com/operations.html` confirmed `data-crm-contract-version`, `shared-crm-v1`, `data-crm-component-order`, `data-crm-back-control-height`, and the 40px back-control CSS marker are present.
 - `server.js` - POST `/api/bna/crm/contacts` creates or updates a workspace-scoped `bna_contacts` record, upserts workspace-scoped email/phone/WhatsApp identities, writes a local CRM pipeline event, returns a stable `bna_contacts:<id>` key, and returns no-send/no-checkout/no-access/no-import/external-write flags.
 - `public/operations.html` / `public/js/operations-shell.js` - Operations CRM index exposes `ACTION-CRM-ADD-CONTACT`, a compact Add Contact form, read-only preview disabled state, and opens the saved contact workspace after local save.
 - `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local CRM workbench smoke passed after opening and closing the Add Contact form without submitting a write; report covers split shell and monolith at 1440, 1024, 768, 430, and 390.

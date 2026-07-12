@@ -39066,8 +39066,15 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   attributes and mobile back-control height checks, action watchdog 0 findings,
   protocol drift watchdog, secret audit, execution run validation, and diff
   check with line-ending warnings only.
-- Status: local verified, pending commit, push, BNA/One Time deploy, and live
-  One Time Operations CRM smoke before this slice is deployed.
+- Deployed commit `909cb26d9a21a1e505ee30835ff31646b7c1c9cd` to BNA and One
+  Time production.
+- BNA Railway deployment `d5771dd9-f35a-4610-b382-e15afe4a885e` and One Time
+  deployment `279b82a0-a726-4493-a4f6-23ed409b487d` reached `SUCCESS`.
+- BNA and One Time live `/api/deploy-info` both returned
+  `909cb26d9a21a1e505ee30835ff31646b7c1c9cd`.
+- Live proof passed: One Time separate-instance SHA smoke, One Time Operations
+  CRM workbench smoke with 12 scoped cards and read-only selected timeline,
+  and a read-only deployed HTML marker check for shared CRM contract attributes.
 
 ## 2026-07-13 - Shared CRM Archive Contact local verification
 

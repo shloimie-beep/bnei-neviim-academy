@@ -179,3 +179,10 @@
 - PASS `npm run secrets:audit` after shared CRM contract/geometry slice.
 - PASS `npm run bna:run:validate` after shared CRM contract/geometry slice; work remains on the broader addendum.
 - PASS `git diff --check` with line-ending warnings only after shared CRM contract/geometry slice.
+- PASS `git push origin master` for shared CRM contract/geometry commit `909cb26d9a21a1e505ee30835ff31646b7c1c9cd`.
+- PASS BNA Railway post-deploy doctor for deployment `d5771dd9-f35a-4610-b382-e15afe4a885e`.
+- PASS One Time Railway post-deploy doctor for deployment `279b82a0-a726-4493-a4f6-23ed409b487d`.
+- PASS BNA and One Time deploy-info readbacks returned `commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 909cb26d9a21a1e505ee30835ff31646b7c1c9cd`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-25-19-779Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only deployed HTML marker check: `https://join.onetimeonetime.com/operations.html` contains shared CRM contract attributes and the 40px back-control CSS marker.
