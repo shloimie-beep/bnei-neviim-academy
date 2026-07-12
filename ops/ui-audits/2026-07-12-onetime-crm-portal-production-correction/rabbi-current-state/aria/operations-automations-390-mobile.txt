@@ -1,0 +1,70 @@
+- main:
+  - button "Open navigation"
+  - heading "Center" [level=1]
+  - text: Provider Workspace Admin / Auto / Center
+  - button "Ask about One Time Mishnah Class / Auto / Center": Ask
+  - text: 12 Jul
+  - navigation "Auto sections":
+    - tablist "Auto sections":
+      - tab "Enrollment" [selected]: Enrollment 0
+      - tab "Class Reminders": Class Reminders 0
+      - tab "Content Publishing": Content Publishing 0
+      - tab "Retention & Support": Retention & Support 0
+  - text: Operations Registry
+  - heading "Automation Center" [level=2]
+  - paragraph: Compact automation metadata across packages, services, owners, setup blockers, logs, and related tasks.
+  - button "Create automation with helper"
+  - region "Automation filters":
+    - text: Automation Center
+    - strong: 2 visible automations
+    - paragraph: 2 registry items loaded. Run controls stay outside this read/write metadata surface.
+    - text: Package
+    - button "Package": All
+    - text: Service
+    - button "Service": All
+    - text: Workspace
+    - button "Workspace": All
+    - text: Owner
+    - button "Owner": All
+    - text: Status
+    - button "Status": All
+    - text: Channel
+    - button "Channel": All
+    - text: Type
+    - button "Type": All
+    - text: Search
+    - textbox "Search":
+      - /placeholder: Name, owner, trigger
+    - button "Apply"
+    - button "Refresh"
+  - region "Automation registry":
+    - article:
+      - text: One Time Private Question Digest
+      - strong: "Purpose:"
+      - text: Builds a private Rabbi-facing review digest for One Time student questions without public answers, notifications, or rewards.
+      - strong: "Trigger:"
+      - text: Operations private question moderation / Dashboard
+      - strong: "Action:"
+      - text: Workflow / Question Moderation Package
+      - strong: One Time
+      - text: Question Moderation Workspace
+      - strong: One Time
+      - text: Project Enabled
+      - strong: Enabled
+      - text: "Status: Active / Workflow Edit / Toggle"
+      - button "Edit / Details"
+    - article:
+      - text: One Time Member Library Package Review
+      - strong: "Purpose:"
+      - text: Previews One Time class media packages, blockers, and member-library visibility without publishing until approval exists.
+      - strong: "Trigger:"
+      - text: Operations One Time Library review / Dashboard
+      - strong: "Action:"
+      - text: Content / Member Library Package
+      - strong: One Time
+      - text: Member Library Workspace
+      - strong: One Time
+      - text: Project Enabled
+      - strong: Enabled / guarded
+      - text: "Status: Guarded / Content Edit / Toggle"
+      - button "Edit / Details"

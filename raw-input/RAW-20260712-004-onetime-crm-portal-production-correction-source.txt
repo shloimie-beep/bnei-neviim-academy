@@ -1,0 +1,918 @@
+BNA_GOAL_MODE_EXECUTION_PACKET
+
+PROJECT
+
+One Time Mishnah Class
+
+WORKSPACE
+
+workspace_key=rabbi_sheller_provider
+project_key=one_time_mishnah_class
+
+OBJECTIVE
+
+Complete and deploy a production correction covering:
+
+1. One Time CRM isolation, performance, inbox, and contact management
+2. Super-admin versus Rabbi identity truth
+3. One Time parent/student/classroom route clarity
+4. Shared One Time portal header/footer/navigation
+5. Working preview fixtures
+6. Landing-page WhatsApp launcher
+7. Natural conversational One Time WhatsApp assistant
+8. Production performance and deployment verification
+
+This is an implementation task, not an audit-only task.
+
+Create the required raw intake, requirement register, Product Quality Compiler packet, state matrix, and execution run first. Then continue immediately through implementation, testing, deployment, and live verification.
+
+Do not stop after creating planning documents.
+
+SCREENSHOT EVIDENCE
+
+Inspect all six screenshots:
+
+1. /workspace/scratch/ffef2e71fe52/upload/4de51c45-64fc-4124-b99c-d5a790304463.png
+2. /workspace/scratch/ffef2e71fe52/upload/c70ebeda-51be-4668-b38f-e666b6c14959.png
+3. /workspace/scratch/ffef2e71fe52/upload/39058efb-670b-4899-bb90-6ad60a9c187e.png
+4. /workspace/scratch/ffef2e71fe52/upload/33c8153d-68d3-40fb-b910-5202c95a2755.png
+5. /workspace/scratch/ffef2e71fe52/upload/553de7f7-dbe3-4e02-8083-4ab6797a765c.png
+6. /workspace/scratch/ffef2e71fe52/upload/33b4e006-097a-4e21-8aac-44bf2dc269d2.png
+
+CURRENT-STATE TRUTH
+
+The audit established the following facts:
+
+- An Operations URL with workspace=rabbi_sheller_provider but no view_as_rabbi token is normally the existing authenticated user—often the platform super-admin—viewing the One Time workspace.
+- A URL containing view_as_rabbi=<signed token> is a super-admin-created, read-only impersonation preview.
+- The read-only token currently blocks non-GET requests but does not fully replace the underlying super-admin identity or force every GET request to remain in the One Time workspace.
+- The One Time CRM currently renders approximately 503 contacts simultaneously.
+- CRM contact selection calls the application-wide render function before and after loading the timeline.
+- The contact route also loads many unrelated datasets.
+- “Bna Contacts” and “Bna Parent Leads” are internal source-table names leaking into customer-facing UI.
+- Some contact-card enrichment queries match communication, support, task, or membership records by email without consistently applying workspace/project restrictions.
+- The faded contact text is caused by a CSS cascade: a later stylesheet turns cards white while child text remains nearly white.
+- The apparent mobile hamburger on several preview pages is a CSS pseudo-element, not a real clickable button.
+- Parent, student, member, classroom, and library pages use several unrelated headers and footers.
+- `/one-time-parent` is currently password setup/reset, not a complete parent portal.
+- `/rabbi-member` is functioning as the family/member home but is ambiguously named.
+- Preview navigation sometimes drops review mode and lands on production/login routes.
+- Fake One Time identities already exist, but only one student is wired into the visible review flow.
+
+P0 — IDENTITY AND VIEW-AS TRUTH
+
+Create an unmistakable persistent identity bar in Operations.
+
+Exact states:
+
+Super-admin scoped to One Time:
+
+“SUPER ADMIN • ONE TIME WORKSPACE”
+
+Actual Rabbi login:
+
+“RABBI SCHELLER • ONE TIME WORKSPACE”
+
+Read-only impersonation:
+
+“VIEWING AS RABBI SCHELLER • READ ONLY”
+
+The read-only state must include:
+
+- Return to Super Admin
+- Expiration indication
+- Clearly disabled write controls
+- No ambiguous “Scoped” label by itself
+
+Server requirements:
+
+1. When req.oneTimeViewAsRabbi exists, forcibly derive workspace and project from the signed token.
+2. Ignore or reject query/body attempts to request another workspace.
+3. A conflicting workspace or project must return HTTP 403.
+4. Project `/api/bna/auth/me` as Rabbi’s project_owner identity during view-as.
+5. Use the same allowed views, navigation, entitlements, and data counts as the real Rabbi owner account.
+6. The only permitted difference between real Rabbi and view-as is that mutations, sends, charges, uploads, and access changes remain disabled.
+7. Do not let the underlying super-admin identity broaden read access while view-as is active.
+8. Do not expose the signed view-as token in logs, evidence, screenshots, or committed files.
+
+Add integration tests proving a valid Rabbi view-as token cannot read:
+
+- workspace=bna CRM
+- BNA contact timeline
+- BNA mailbox
+- BNA tasks
+- BNA students
+- BNA workspace directory records
+
+P0 — ONE TIME CRM DATA ISOLATION
+
+The actual Rabbi workspace must contain only records explicitly belonging to:
+
+workspace_key=rabbi_sheller_provider
+project_key=one_time_mishnah_class
+
+Do not use fuzzy text, names, tags, or words such as “Mishnah,” “Rabbi,” or “Scheller” as the production authorization rule.
+
+Required explicit ownership sources include:
+
+- One Time landing-page signup
+- One Time product lead
+- One Time member/access record
+- One Time local-class record
+- One Time school inquiry
+- Explicit One Time import batch
+- Explicit One Time workspace/project linkage
+
+Fail closed:
+
+- A row missing explicit workspace/project ownership must not be shown to Rabbi.
+- Do not fill missing row scope from the current request merely to make it appear scoped.
+- Quarantine ambiguous records from Rabbi view and report them to Super Admin.
+- Shared database primitives may remain, but tenant ownership must be explicit.
+- Do not delete production contacts.
+
+Fix contact enrichment:
+
+- Mailbox records must match the same workspace/project.
+- Support tickets must match the same workspace/project.
+- Tasks must match the same workspace/project.
+- Membership/access must match the same workspace/project.
+- Communications and timeline events must match the same workspace/project.
+- Matching an identical email address is not sufficient across workspaces.
+
+Add a database-backed isolation test containing the same email address in:
+
+- BNA
+- One Time
+- Another provider
+
+Prove that the One Time Rabbi session returns only the One Time contact, messages, notes, tasks, membership, and counts.
+
+SOURCE LABELS
+
+Never display internal storage names such as:
+
+- bna_contacts
+- Bna Contacts
+- bna_parent_leads
+- Bna Parent Leads
+
+Use human-facing provenance labels:
+
+- One Time signup
+- Website inquiry
+- Local class
+- School inquiry
+- One Time member
+- WhatsApp inquiry
+- Imported One Time contact
+- Manual One Time contact
+
+Run a dry-run production scope report over the approximately 503 currently visible records.
+
+Group by:
+
+- workspace
+- project
+- source
+- import batch
+- tags
+- explicit One Time linkage
+- test status
+- ambiguous ownership
+- likely duplicate
+
+Store a redacted report. Do not expose private contact information in committed evidence.
+
+P0 — CRM API PERFORMANCE
+
+Replace the current fetch-all/filter-in-JavaScript architecture.
+
+CONTACT LIST ENDPOINT
+
+Implement database-side:
+
+- workspace enforcement
+- project enforcement
+- search
+- lifecycle filter
+- source filter
+- tag filter
+- owner filter
+- reminder preference filter
+- sort
+- cursor pagination
+
+Contract:
+
+- Default limit: 50
+- Maximum limit: 100
+- Return current page only
+- Return next_cursor
+- Return has_more
+- Return total count separately
+- Return filter facets separately or through a cached summary endpoint
+- Do not fetch full timelines/mailboxes for list rows
+
+The list payload should contain only:
+
+- ID
+- display name
+- email
+- phone
+- family/school
+- lifecycle
+- source label
+- tags
+- assigned owner
+- last activity
+- next follow-up
+- unread count
+- reminder preference
+- membership/access summary
+
+CONTACT DETAIL ENDPOINT
+
+Load after selection:
+
+- Full identity
+- Linked One Time records
+- Timeline
+- Notes
+- Email conversation
+- WhatsApp conversation
+- Follow-up tasks
+- Membership/access
+- Reminder preference
+- City/timezone
+- Attribution/source
+
+SQL requirements:
+
+- Eliminate per-row correlated subqueries across hundreds of rows.
+- Use scoped aggregate joins/CTEs for the current 50-row page.
+- Load expensive detail only for the selected contact.
+- Add normalized/indexed email fields where required.
+- Add appropriate workspace/project/status/date indexes.
+- Verify with EXPLAIN (ANALYZE, BUFFERS).
+- Test with a representative 10,000-contact fixture.
+
+P0 — CRM FRONT-END PERFORMANCE
+
+The CRM route must not invoke the giant global data loader.
+
+On initial CRM navigation, request only:
+
+1. Authenticated identity/scope
+2. Paginated CRM contact list
+3. Lightweight filter facets if not included in the list response
+
+After contact selection, request only that contact’s detail/timeline.
+
+Required changes:
+
+- Remove data loading side effects from render functions.
+- Do not call the application-wide render function when selecting a contact.
+- Render the contact list once.
+- Update only the selected row and detail panes.
+- Use AbortController to cancel stale search/detail requests.
+- Debounce search by 250–300ms.
+- Cache recently opened contact details.
+- Do not refresh the full application every 30 seconds.
+- Pause background refresh while the tab is hidden or the user is editing.
+- Do not construct the legacy CRM review table while its details element is closed.
+- Retire the duplicate legacy CRM renderer after parity is confirmed.
+
+P1 — GHL-LIKE CRM EXPERIENCE
+
+Build a professional three-pane One Time CRM.
+
+DESKTOP
+
+Left pane: Contact list
+
+- Width approximately 320–380px
+- Search
+- Compact filters
+- Pagination/infinite continuation
+- Contact name
+- Email/phone
+- Lifecycle stage
+- Source
+- Unread indicator
+- Last activity
+- Selected state
+- Clear hover/focus state
+
+Center pane: Conversation and activity
+
+Tabs:
+
+- All activity
+- Email
+- WhatsApp
+- Internal notes
+- Tasks
+
+Features:
+
+- Chronological conversation
+- Incoming/outgoing direction
+- Channel icon
+- Timestamp
+- Delivery status
+- Email subject
+- Internal-note styling
+- Empty states
+- Message composer
+- Channel selector
+- Attachments only if existing secure attachment handling supports them
+
+Do not navigate away to a separate mailbox when “Open mailbox” is clicked.
+
+Remove the disconnected Open Mailbox workflow. Keep the selected contact open and show the conversation inside the CRM.
+
+Right pane: Contact profile
+
+- Name
+- Email
+- Phone
+- Family/School
+- City
+- Timezone
+- Reminder preference
+- Lifecycle stage
+- Source
+- Tags
+- Assigned owner
+- Next follow-up
+- Membership/access
+- Related student/parent/school
+- Signup attribution
+- Edit action
+- Save state
+- Success/error state
+
+Dedicated actions:
+
+- Add internal note
+- Assign follow-up
+- Change lifecycle
+- Add/remove tag
+- Assign owner
+- Open linked student/member record
+- View reminder preference
+- Draft email
+- Draft WhatsApp
+- Send only when the existing provider/readiness/confirmation requirements are satisfied
+
+Actual Rabbi login:
+
+- Enable valid scoped CRM updates.
+- Enable configured communication actions through existing safe provider workflows.
+
+View-as Rabbi:
+
+- Display exactly the same UI.
+- Disable mutation/send actions.
+- Label them “Read-only preview.”
+
+MOBILE
+
+Use:
+
+Contact list → full-screen selected contact → Back to contacts
+
+Within the contact:
+
+- Conversation
+- Profile
+- Notes
+- Tasks
+
+Do not squeeze three desktop panes into a narrow viewport.
+
+VISUAL DESIGN
+
+Use the One Time system:
+
+- Black
+- Deep blue-black
+- Neon yellow
+- Ice blue
+- White
+
+Fix the confirmed CSS collision.
+
+Every card state must explicitly define:
+
+- Background
+- Primary text
+- Secondary text
+- Border
+- Hover
+- Selected
+- Disabled
+- Focus
+
+Do not allow generic BNA shell CSS to override One Time CRM card tokens.
+
+Meet WCAG AA contrast. The white-on-white/faded state shown in the screenshots must be impossible.
+
+Use:
+
+- Consistent spacing
+- Compact controls
+- Sticky list/filter header
+- Sticky contact profile header
+- Strong active states
+- One border-radius system
+- One shadow system
+- One button-height system
+
+Remove giant filter fields and excessive vertical spacing.
+
+P1 — CRM INBOX
+
+Create a first-class scoped One Time Inbox.
+
+Inbox layout:
+
+- Thread list
+- Active conversation
+- Contact context
+
+Filters:
+
+- All
+- Unread
+- Email
+- WhatsApp
+- Needs reply
+- Follow-up due
+
+Rules:
+
+- One Time only
+- No BNA inbox switch inside Rabbi’s workspace
+- Super Admin may switch workspaces from the global Operations environment
+- Rabbi cannot see or select BNA
+- Opening a message retains the selected contact
+- Reply updates the same timeline
+- Internal notes never send externally
+- All sends retain provider/channel audit metadata
+
+P1 — PORTAL INFORMATION ARCHITECTURE
+
+Use these canonical customer journeys:
+
+Family Portal:
+
+- Existing route may remain `/rabbi-member`
+- User-facing label becomes “Family Portal”
+- Home
+- Linked children
+- Progress/attendance
+- Library
+- Classroom
+- Reminders
+- Questions
+- Support
+
+Student Portal:
+
+- `/student`
+- Today
+- Classroom
+- Library
+- Worksheets
+- Progress badges
+- Questions for Rabbi
+- Profile/logout
+
+Classroom:
+
+- `/one-time-classroom`
+- Shared learning destination reached from Family and Student portals
+- Live/current class
+- Recorded class
+- Worksheet
+- Approved question flow
+- Progress
+
+Library:
+
+- `/member-library`
+- Recorded classes and approved materials
+
+Parent setup/reset:
+
+- `/one-time-parent`
+- Clearly label as account setup/reset
+- Do not present it as the full Parent Portal
+
+Remove the unexplained generic “Member Preview” label from Super Admin.
+
+Use these preview actions:
+
+- View as Rabbi
+- Preview Family Portal
+- Preview Student Portal
+- Preview Classroom
+
+If `/rabbi-member?review=one-time` remains technically, label it:
+
+“Family Portal Preview”
+
+P1 — SHARED ONE TIME PORTAL SHELL
+
+Create a single shared portal shell, for example:
+
+- public/css/one-time-portal-shell.css
+- public/js/one-time-portal-shell.js
+
+Apply it to:
+
+- Family Portal
+- Student Portal
+- Classroom
+- Library
+- Parent setup/reset
+- All preview modes
+
+The shared shell must provide:
+
+- Same One Time logo
+- Same black/yellow/ice-blue tokens
+- Same fonts
+- Same header height
+- Same navigation style
+- Same button styles
+- Same focus styles
+- Same canonical footer
+- Same mobile behavior
+
+Use role-appropriate links. Do not copy the marketing-site navigation into authenticated portals.
+
+FOOTER
+
+Put the same One Time footer structure on every portal:
+
+- One Time logo
+- Family Portal or Student Portal link as appropriate
+- Classroom
+- Library
+- Privacy
+- Terms
+- Logout where authenticated
+
+P1 — REAL MOBILE MENU
+
+Delete the CSS pseudo-element hamburger.
+
+Implement one real `<button>`:
+
+- Focusable
+- Clickable
+- aria-controls
+- aria-expanded
+- Visible label for screen readers
+- Escape closes
+- Backdrop closes
+- Focus is trapped inside the menu
+- Closing returns focus to the button
+- Mobile and desktop responsive behavior
+
+The current “One Time” button that appears to do nothing must be replaced by this real menu control.
+
+P1 — PREVIEW MODE
+
+Every preview page must show:
+
+“TEST PREVIEW • SAMPLE DATA • NO WRITES”
+
+Provide one explicit:
+
+“Exit Preview”
+
+Preview navigation must preserve review mode across:
+
+- Family Portal
+- Student Portal
+- Classroom
+- Library
+
+A normal preview navigation click must not drop the reviewer into a production login or private route.
+
+Production navigation must never accidentally enter preview mode.
+
+P1 — SUPPORT BOUNDARIES
+
+Family Portal:
+
+- May open and review support tickets.
+
+Student Portal:
+
+- May ask a private learning question for Rabbi Scheller.
+- Must not show a general technical support-ticket form.
+- Must not show unrelated support-ticket history.
+
+Classroom and Library:
+
+- Show a small “Need help?” link to Family Portal support.
+- Do not embed the full ticket form.
+
+Rabbi workspace:
+
+- Shows scoped One Time questions and support.
+
+Super Admin:
+
+- Shows internal diagnostics and complete scoped support metadata.
+
+P1 — PREVIEW STUDENTS
+
+Use safe synthetic preview fixtures only.
+
+Create visible preview personas:
+
+1. Active student
+   - Recent attendance
+   - Video progress
+   - Completed worksheet
+   - Progress badge
+
+2. New student
+   - No attendance
+   - No completed materials
+   - Getting-started state
+
+3. Follow-up student
+   - Missed class
+   - Pending question
+   - Incomplete worksheet
+
+4. One preview parent linked to two students
+   - Proves child switching
+
+Requirements:
+
+- IDs begin with TEST-
+- Emails use example.test
+- Clearly marked synthetic
+- Never inserted into production CRM
+- Never included in reminders
+- Never included in email/WhatsApp sends
+- Never counted in production metrics
+
+P1 — LANDING-PAGE WHATSAPP
+
+Preserve the latest deployed landing-page design.
+
+Remove the Robot Scheller character and public quick-command widget from the landing page.
+
+Remove landing-only loading of:
+
+- bna-bot-widget.js
+- bna-helper-knowledge.js
+- Robot Scheller PNG
+
+Replace it with a standard WhatsApp launcher:
+
+- Recognizable WhatsApp icon
+- WhatsApp green
+- Circular floating button
+- Bottom-right
+- Accessible label: “Chat with One Time on WhatsApp”
+- Clear hover/focus state
+- Mobile safe-area support
+- No character face
+- No robot artwork
+- No quick-command popup
+
+The launcher should open the configured One Time WhatsApp conversation through:
+
+ONE_TIME_PUBLIC_WHATSAPP_NUMBER
+
+Use a standard `wa.me` deep link with a concise prefilled greeting.
+
+Do not hardcode a private credential or token into client code.
+
+P1 — NATURAL WHATSAPP ASSISTANT
+
+The current provider lead bot is primarily regex classification plus canned replies. Keep its deterministic security decisions, but make the customer conversation natural.
+
+Use the existing One Time provider-bot profile and `buildProviderLeadBotSystemPrompt`.
+
+Architecture:
+
+1. Deterministic layer handles:
+   - Opt-out/STOP
+   - Wrong number
+   - Access verification
+   - Class-link authorization
+   - Payment/access restrictions
+   - Human escalation
+   - Safety/support routing
+   - Consent and suppression
+   - Send approval
+
+2. Scoped knowledge retrieval provides:
+   - Class schedule
+   - 7:00 p.m. Israel time
+   - Signup process
+   - Family/school path
+   - Reminder choices
+   - What students receive
+   - Rabbi Scheller overview
+   - Local class information
+   - Current approved learning
+   - Portal help
+   - Trial/offer information only when approved and current
+
+3. The language model creates the natural wording:
+   - Use recent scoped conversation history
+   - Answer the actual free-form question
+   - Ask one helpful clarifying question when needed
+   - Do not force users into a menu
+   - Do not repeatedly say “Are you asking about class, signup, schedule, or Rabbi?”
+   - Do not claim to be Rabbi Scheller
+   - Identify itself as the automated One Time assistant when appropriate
+
+4. Validate the generated response:
+   - No private Zoom link unless active membership is verified
+   - No credential leakage
+   - No cross-workspace information
+   - No invented schedule/current learning
+   - No charge
+   - No access grant
+   - No send after opt-out
+
+5. Fallback:
+   - If model generation fails, use the deterministic approved reply.
+   - Record the failure without exposing private conversation data.
+
+Add multi-turn tests for:
+
+- Unstructured natural question
+- Follow-up question using previous context
+- Schedule
+- Signup
+- Portal help
+- Rabbi question handoff
+- Unknown question
+- Opt-out
+- Wrong number
+- Link request without access
+- Link request with verified access
+- Cross-workspace data attempt
+
+PERFORMANCE BUDGETS
+
+Meet and record:
+
+- Operations shell visible: ≤1.5 seconds p75, ≤2.5 seconds p95
+- CRM first page visible: ≤2.0 seconds p75, ≤3.0 seconds p95
+- CRM list API for 50 contacts: ≤300ms p95
+- CRM list response: ≤150KB
+- Contact click feedback: ≤100ms
+- Contact detail/timeline complete: ≤500ms p95
+- Initial CRM API calls after authentication: ≤3
+- Initial CRM rows rendered: ≤50
+- CRM page DOM nodes: ≤1,500
+- No long browser task over 100ms
+- Total blocking time: ≤200ms
+- Route-specific initial compressed JavaScript: ≤150KB
+- Public/mobile LCP: ≤2.5s
+- INP: ≤200ms
+- CLS: ≤0.1
+- Representative 10,000-contact database list query: ≤150ms p95
+
+OPERATIONS BUNDLE
+
+Current bundles are excessively large.
+
+Required:
+
+- Split Operations by route/module
+- Separate CRM, Communications, Students, Studio, and other deferred modules
+- Minify production JavaScript/CSS
+- Generate fingerprinted assets
+- Serve fingerprinted assets with long immutable caching
+- Keep authenticated HTML non-cacheable
+- Guarantee Brotli/gzip on both One Time and BNA production domains
+- Add `Vary: Accept-Encoding`
+- Do not download unrelated deferred modules when entering CRM
+- Cache provider-session lookup briefly
+- Do not update provider last_seen_at on every parallel API request
+- Lazy-load Vimeo only when a video is opened
+
+TESTS
+
+Update/add real behavioral tests rather than string-only tests.
+
+Required suites include:
+
+- DB-backed CRM tenant isolation
+- Same-email cross-workspace isolation
+- CRM pagination
+- CRM performance with 500 and 10,000 fixtures
+- Contact selection without root rerender
+- View-as read-scope denial
+- Real Rabbi versus View-as role/navigation parity
+- CRM keyboard/mobile behavior
+- Shared portal shell
+- Working hamburger
+- Preview-context preservation
+- Preview fixture isolation
+- Parent/student support boundaries
+- Landing WhatsApp launcher
+- Natural WhatsApp conversation
+- Existing focused One Time regression suite
+- Secrets audit
+- Protocol drift watchdog
+- Accessibility checks
+- Desktop/mobile visual tests
+
+SCREENSHOTS
+
+Capture at:
+
+- 1440px
+- 1024px
+- 768px
+- 430px
+- 390px
+
+Capture:
+
+- Super Admin One Time CRM
+- View as Rabbi CRM
+- Actual Rabbi CRM test session
+- Contact selected
+- Notes tab
+- Email conversation
+- WhatsApp conversation
+- Mobile contact list
+- Mobile contact detail
+- Family Portal
+- Student Portal
+- Classroom
+- Library
+- Hamburger open
+- Landing WhatsApp launcher
+
+DEPLOYMENT
+
+After implementation and passing tests:
+
+1. Commit all scoped changes.
+2. Push the implementation branch.
+3. Merge into the production branch.
+4. Deploy the BNA Operations/portal service.
+5. Deploy the One Time public service.
+6. Verify the exact commit SHA on both deployments.
+7. Verify:
+   - https://bneineviimacademy.org/operations
+   - https://join.onetimeonetime.com/one-time/
+   - Family Portal
+   - Student Portal
+   - Classroom
+   - Library
+8. Run authenticated live CRM smoke.
+9. Run cross-workspace negative smoke.
+10. Run landing and portal live smoke.
+11. If a deployment or smoke test fails, fix it, redeploy, and repeat.
+12. Complete the deployment in this execution; do not wait for an additional visual-approval step.
+
+PRODUCTION DATA RULE
+
+Deploy the fail-closed scope correction immediately.
+
+Generate the production contact audit report, but do not destructively delete records. Ambiguous records should disappear from Rabbi view until explicitly classified. Any later reclassification must be auditable and reversible.
+
+DEFINITION OF DONE
+
+Done requires:
+
+- Rabbi and BNA records cannot cross workspaces
+- View-as reads are cryptographically and server-side scoped
+- Identity mode is unmistakable
+- Rabbi CRM shows only One Time records
+- No internal BNA table names appear in Rabbi UI
+- Contact list is fast and paginated
+- Contact click opens a coherent GHL-like profile/conversation experience
+- Notes and follow-up work
+- Inbox stays inside the selected contact
+- Cards have readable contrast
+- Parent/student/classroom/library share one shell
+- Hamburger works
+- Preview routes are understandable and remain in preview
+- Fake students are preview-only
+- Landing uses a standard WhatsApp bubble
+- WhatsApp assistant handles natural free-form conversation
+- Performance budgets are recorded
+- Changes are deployed
+- Live smoke passes on the deployed SHA
+- Evidence, ledger, changelog, and requirement statuses are updated

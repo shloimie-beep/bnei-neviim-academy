@@ -1378,6 +1378,7 @@
     </style>
     <link rel="stylesheet" href="/css/bna-app-shell.css">
     <link rel="stylesheet" href="/css/one-time-shared-review.css">
+    <link rel="stylesheet" href="/css/one-time-portal-shell.css">
 </head>
 <body class="bna-shell bna-portal-page bna-student-page" data-one-time-rabbi-dashboard="student-review" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
     <header class="brand-topbar">
@@ -1445,7 +1446,7 @@
             <div class="status" id="loginStatus"></div>
         </section>
 
-        <button class="portal-menu-toggle hidden" id="portalMenuToggle" type="button" aria-controls="portalSidebar" aria-expanded="false" data-one-time-action-state="navigate" data-button-state="working">
+        <button class="portal-menu-toggle hidden" id="portalMenuToggle" type="button" aria-controls="portalSidebar" aria-expanded="false" data-action-id="ACTION-ONETIME-PORTAL-MENU-TOGGLE" data-one-time-action-state="navigate" data-button-state="working">
             <span aria-hidden="true">&#9776;</span>
             Menu
         </button>
@@ -3828,6 +3829,8 @@
                 actions.innerHTML = `
                     <a class="portal-topbar-link" href="/one-time">One Time</a>
                     <a class="portal-topbar-link secondary-link" href="/parent.html?review=one-time">Parent</a>
+                    <a class="portal-topbar-link secondary-link" href="/rabbi-member?review=one-time">Family Portal</a>
+                    <a class="portal-topbar-link secondary-link" href="/member-library?review=one-time">Library</a>
                     <a class="portal-topbar-link secondary-link" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
                     <span class="brand-chip">No bot / no BNA goals</span>
                 `;
@@ -4465,6 +4468,7 @@
     </script>
     <script src="/js/app-select.js"></script>
     <script src="/js/one-time-single-tenant.js"></script>
+    <script src="/js/one-time-portal-shell.js"></script>
     <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

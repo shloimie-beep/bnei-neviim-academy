@@ -500,6 +500,60 @@
       .brand-lockup span { max-width: 96px; font-size: 0.62rem; }
       .header-cta { padding: 0 9px; }
     }
+    .one-time-whatsapp-launcher {
+      position: fixed;
+      right: max(18px, env(safe-area-inset-right));
+      bottom: max(18px, env(safe-area-inset-bottom));
+      z-index: 1400;
+      width: 64px;
+      height: 64px;
+      display: inline-grid;
+      place-items: center;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      border-radius: 999px;
+      color: #04170b;
+      background: #25d366;
+      box-shadow: 0 18px 38px rgba(0, 0, 0, 0.32);
+      font-size: 0.92rem;
+      font-weight: 950;
+      letter-spacing: 0;
+      text-decoration: none;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+    .one-time-whatsapp-launcher:hover {
+      transform: translateY(-2px);
+      background: #2ee671;
+      box-shadow: 0 22px 46px rgba(0, 0, 0, 0.38);
+    }
+    .one-time-whatsapp-launcher:focus-visible {
+      outline: 3px solid var(--ice);
+      outline-offset: 4px;
+    }
+    .one-time-whatsapp-launcher span[aria-hidden="true"] {
+      display: inline-grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border: 2px solid currentColor;
+      border-radius: 999px;
+    }
+    body.modal-open .one-time-whatsapp-launcher,
+    body.drawer-open .one-time-whatsapp-launcher {
+      display: none;
+    }
+    @media (max-width: 420px) {
+      .one-time-whatsapp-launcher {
+        right: max(14px, env(safe-area-inset-right));
+        bottom: max(14px, env(safe-area-inset-bottom));
+        width: 58px;
+        height: 58px;
+        font-size: 0.82rem;
+      }
+      .one-time-whatsapp-launcher span[aria-hidden="true"] {
+        width: 40px;
+        height: 40px;
+      }
+    }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
@@ -743,8 +797,18 @@
     </div>
   </footer>
 
-  <script src="/js/bna-helper-knowledge.js" defer></script>
-  <script src="/js/bna-bot-widget.js" defer></script>
+  <a
+    class="one-time-whatsapp-launcher"
+    href="/api/one-time/public-whatsapp/redirect?intent=free_class"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Open WhatsApp for One Time Mishnayos class information"
+    title="Open WhatsApp"
+    data-action-id="ACTION-ONETIME-PUBLIC-WHATSAPP"
+  >
+    <span aria-hidden="true">WA</span>
+  </a>
+
   <script>
     (() => {
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');

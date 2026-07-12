@@ -1,0 +1,58 @@
+- main:
+  - button "Open navigation"
+  - heading "One Time Tasks" [level=1]
+  - text: Provider Workspace Admin / Tasks / One Time Tasks
+  - button "Ask about One Time Mishnah Class / Tasks / One Time Tasks": Ask
+  - text: 12 Jul
+  - navigation "Tasks sections":
+    - tablist "Tasks sections":
+      - tab "Decisions" [selected]: Decisions 0
+      - tab "Tasks": Tasks 0
+      - tab "Pending External": Pending External 0
+      - tab "Activity": Activity 0
+  - text: Rabbi / One Time Workspace
+  - heading "Task Dialogue Board" [level=2]
+  - paragraph: Decisions, blockers, task work, and completion history stay separated from provider schedule items.
+  - region "Task status and filters":
+    - text: Workspace Status
+    - strong: One Time Tasks
+    - paragraph: 0 visible items after 1 filter. Blocked is only for human or outside-service blockers; Codex Queue is separate.
+    - button "Add Task"
+    - button "Create Decision"
+    - button "Clear filters"
+    - button "My Tasks 0"
+    - button "One Time Tasks 0"
+    - button "All Tasks 0"
+    - button "Codex Queue 0"
+    - button "Blocked 0"
+    - button "Due Soon 0"
+    - button "Schedule 0"
+    - button "Done / Activity 0"
+    - button "Full History / Search 0"
+    - button "Archived 0"
+    - button "Decisions 0"
+    - button "Needs My Decision 0"
+    - button "Needs Rabbi Scheller 0"
+    - button "Needs External Owner 0"
+    - button "Decided 0"
+    - button "Superseded 0"
+    - button "Archived Decisions 0"
+    - group: Filter
+  - region "Rabbi One Time task dialogue board":
+    - heading "Rabbi / One Time Dialogue" [level=3]
+    - text: Bot-created cards are labeled. Blocked means access or outside input, not Codex queue work.
+    - region "Decisions":
+      - heading "Decisions" [level=3]
+      - text: Human choices that unlock the next step. 0 No decisions match these filters.
+    - region "Blocked/access":
+      - heading "Blocked/access" [level=3]
+      - text: Missing access, assets, or outside systems. 0 No blocked items match these filters.
+    - region "Codex / Agent":
+      - heading "Codex / Agent" [level=3]
+      - text: Observable agent jobs and machine-owned work. 0 No Codex Queue items match these filters.
+    - region "Tasks":
+      - heading "Tasks" [level=3]
+      - text: Human work that can move. 0 No actionable tasks match these filters.
+    - region "Done / Activity":
+      - heading "Done / Activity" [level=3]
+      - text: Completed and verified trail. 0 No completed or recent activity items match these filters.

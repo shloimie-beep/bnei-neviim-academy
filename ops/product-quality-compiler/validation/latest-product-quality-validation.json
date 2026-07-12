@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T13:52:46.129Z",
+  "generated_at": "2026-07-12T19:04:41.804Z",
   "mode": "default",
   "files_scanned": [
     "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/manifest.json",
@@ -78,13 +78,21 @@
     "ops/prompt-packets/2026-07-10-onetime-launch-priority/02-crm-list-detail.product-quality.json",
     "ops/prompt-packets/2026-07-10-onetime-launch-priority/06-rabbi-backend-launch-readiness.product-quality.json",
     "ops/prompt-packets/2026-07-10-onetime-ui-gap-implementation/manifest.json",
+    "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/00-control-tower.product-quality.json",
+    "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/01-current-state-visual-audit.product-quality.json",
+    "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/02-crm-frontend-performance.product-quality.json",
+    "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.product-quality.json",
+    "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/04-portal-shell-preview.product-quality.json",
+    "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.product-quality.json",
+    "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.product-quality.json",
+    "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/manifest.json",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/manifest.sample.json",
     "tasks-pending/2026-07-10-onetime-public-landing-production-rebuild.product-quality.json",
     "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.product-quality.json",
     "tasks-pending/2026-07-12-onetime-landing-visual-revision.product-quality.json"
   ],
-  "total": 70,
-  "passed": 70,
+  "total": 77,
+  "passed": 77,
   "failed": 0,
   "results": [
     {
@@ -490,6 +498,48 @@
       "errors": []
     },
     {
+      "file": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/00-control-tower.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/01-current-state-visual-audit.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/02-crm-frontend-performance.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/04-portal-shell-preview.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
       "file": "tasks-pending/2026-07-10-onetime-public-landing-production-rebuild.product-quality.json",
       "passed": true,
       "error_codes": [],
@@ -518,6 +568,7 @@
     "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/manifest.json",
     "ops/prompt-packets/2026-07-08-onetime-brand-helper-toolbar-agent-audit/agent-mode-prompt-series.json",
     "ops/prompt-packets/2026-07-10-onetime-ui-gap-implementation/manifest.json",
+    "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/manifest.json",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/manifest.sample.json"
   ]
 }

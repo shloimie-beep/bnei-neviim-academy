@@ -1647,20 +1647,28 @@
 
         .crm-workbench-shell {
             display: grid;
-            grid-template-columns: minmax(280px, 0.95fr) minmax(0, 1.35fr);
+            grid-template-columns: minmax(260px, 0.78fr) minmax(0, 1.12fr) minmax(240px, 0.8fr);
             gap: 12px;
             align-items: start;
             margin-top: 12px;
         }
 
         .crm-workbench-list,
-        .crm-workbench-detail {
+        .crm-workbench-activity,
+        .crm-workbench-profile {
             min-width: 0;
         }
 
-        .crm-workbench-detail {
+        .crm-workbench-activity,
+        .crm-workbench-profile {
             display: grid;
             gap: 12px;
+        }
+
+        .crm-workbench-list {
+            max-height: 760px;
+            overflow: auto;
+            padding-right: 2px;
         }
 
         .crm-selected-card {
@@ -1684,6 +1692,28 @@
             line-height: 1.45;
             margin-top: 4px;
             overflow-wrap: anywhere;
+        }
+
+        .crm-mobile-selected-actions {
+            display: none;
+            gap: 8px;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .crm-workbench-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .crm-safe-action-panel {
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+            display: grid;
+            gap: 10px;
+            margin-top: 14px;
+            padding-top: 12px;
         }
 
         .crm-timeline-list {
@@ -1729,6 +1759,21 @@
         @media (max-width: 900px) {
             .crm-workbench-shell {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .crm-workbench-shell[data-selected-contact="true"] .crm-workbench-list {
+                display: none;
+            }
+
+            .crm-workbench-shell[data-selected-contact="true"] .crm-mobile-selected-actions {
+                display: flex;
+            }
+
+            .crm-workbench-shell[data-selected-contact="true"] .crm-workbench-activity,
+            .crm-workbench-shell[data-selected-contact="true"] .crm-workbench-profile {
+                min-height: 70vh;
             }
         }
 
@@ -8441,7 +8486,7 @@
     <script>
         // API Client
         const api = {
-            async request(method, path, body) {
+            async request(method, path, body, requestOptions = {}) {
                 const options = {
                     method,
                     credentials: 'same-origin',
@@ -8452,6 +8497,7 @@
                 const oneTimeViewAsToken = new URLSearchParams(window.location.search).get('view_as_rabbi') || '';
                 if (oneTimeViewAsToken) options.headers['X-One-Time-View-As-Token'] = oneTimeViewAsToken;
                 if (body) options.body = JSON.stringify(body);
+                if (requestOptions.signal) options.signal = requestOptions.signal;
 
                 const response = await fetch('/api/bna' + path, options);
                 if (response.status === 401) {
@@ -8713,19 +8759,19 @@
                 if (filters.limit) params.set('limit', filters.limit);
                 return this.request('GET', '/communications' + (params.toString() ? '?' + params.toString() : ''));
             },
-            getCrmContacts(filters = {}) {
+            getCrmContacts(filters = {}, requestOptions = {}) {
                 const params = new URLSearchParams();
                 Object.entries(filters).forEach(([key, value]) => {
                     if (value !== undefined && value !== null && value !== '') params.set(key, value);
                 });
-                return this.request('GET', '/crm/contacts' + (params.toString() ? '?' + params.toString() : ''));
+                return this.request('GET', '/crm/contacts' + (params.toString() ? '?' + params.toString() : ''), null, requestOptions);
             },
-            getCrmContactTimeline(id, filters = {}) {
+            getCrmContactTimeline(id, filters = {}, requestOptions = {}) {
                 const params = new URLSearchParams();
                 Object.entries(filters).forEach(([key, value]) => {
                     if (value !== undefined && value !== null && value !== '') params.set(key, value);
                 });
-                return this.request('GET', '/crm/contacts/' + encodeURIComponent(id) + '/timeline' + (params.toString() ? '?' + params.toString() : ''));
+                return this.request('GET', '/crm/contacts/' + encodeURIComponent(id) + '/timeline' + (params.toString() ? '?' + params.toString() : ''), null, requestOptions);
             },
             updateCrmContact(id, payload = {}) { return this.request('PATCH', '/crm/contacts/' + encodeURIComponent(id), payload); },
             createContactCommunication(note) { return this.request('POST', '/contact-communications', note); },
@@ -9624,6 +9670,17 @@
             sort_key: 'last_contact_desc',
             search: ''
         };
+        const FIRST_PARTY_CRM_PAGE_LIMIT = 50;
+        const FIRST_PARTY_CRM_SEARCH_DEBOUNCE_MS = 320;
+        let firstPartyCrmContactsAbortController = null;
+        let firstPartyCrmTimelineAbortController = null;
+        let firstPartyCrmContactsRequestSeq = 0;
+        let firstPartyCrmTimelineRequestSeq = 0;
+        let firstPartyCrmSearchDebounceTimer = null;
+        let firstPartyCrmAutoLoadScheduled = false;
+        let firstPartyCrmRenderOptions = {};
+        let firstPartyCrmContactsCache = new Map();
+        let oneTimeCrmReviewContextOpen = false;
         let contactDetailSection = 'overview';
         let leadDetailSection = 'overview';
         let personDetailSection = 'overview';
@@ -10735,8 +10792,8 @@
             firstPartyCrmTimelinePayload = null;
             selectedFirstPartyCrmContactId = null;
             firstPartyCrmError = '';
-            firstPartyCrmNotice = '';
-            firstPartyCrmSaving = false;
+            resetFirstPartyCrmRequestState({ clearCache: true });
+
             const nextProjectFilter = projectKeyForWorkspaceKey(currentWorkspaceId);
             taskProjectFilter = nextProjectFilter === 'all' ? 'all' : nextProjectFilter;
             normalizeCurrentRouteForWorkspace();
@@ -15481,16 +15538,75 @@
             `;
         }
 
+        function resetFirstPartyCrmRequestState(options = {}) {
+            if (firstPartyCrmContactsAbortController) firstPartyCrmContactsAbortController.abort();
+            if (firstPartyCrmTimelineAbortController) firstPartyCrmTimelineAbortController.abort();
+            firstPartyCrmContactsAbortController = null;
+            firstPartyCrmTimelineAbortController = null;
+            firstPartyCrmContactsRequestSeq += 1;
+            firstPartyCrmTimelineRequestSeq += 1;
+            firstPartyCrmAutoLoadScheduled = false;
+            if (firstPartyCrmSearchDebounceTimer) {
+                clearTimeout(firstPartyCrmSearchDebounceTimer);
+                firstPartyCrmSearchDebounceTimer = null;
+            }
+            if (options.clearCache) firstPartyCrmContactsCache.clear();
+        }
+
         function firstPartyCrmQueryFilters() {
             const workspace = currentWorkspaceKey();
-            const project = projectKeyForWorkspaceKey(workspace);
+            const projectKey = projectKeyForWorkspaceKey(workspace);
             return {
                 ...firstPartyCrmFilters,
                 workspace,
-                workspace_key: workspace,
-                project,
-                project_key: project
+                project: projectKey,
+                project_key: projectKey,
+                limit: FIRST_PARTY_CRM_PAGE_LIMIT
             };
+        }
+
+        function firstPartyCrmQueryKey(filters = firstPartyCrmQueryFilters()) {
+            return JSON.stringify(Object.keys(filters).sort().reduce((acc, key) => {
+                acc[key] = filters[key];
+                return acc;
+            }, {}));
+        }
+
+        function normalizeFirstPartyCrmPayload(payload = {}) {
+            const cards = Array.isArray(payload.cards) ? payload.cards.slice(0, FIRST_PARTY_CRM_PAGE_LIMIT) : [];
+            return {
+                ...payload,
+                cards,
+                visible_limit: FIRST_PARTY_CRM_PAGE_LIMIT
+
+            };
+        }
+
+        function firstPartyCrmListIsVisible() {
+            return currentView === 'contacts' && ['overview', 'crm_contacts'].includes(contactSection);
+        }
+
+        function isAbortError(error) {
+            return error?.name === 'AbortError' || /abort/i.test(error?.message || '');
+        }
+
+        function scheduleFirstPartyCrmAutoLoad() {
+            if (firstPartyCrmAutoLoadScheduled) return;
+            firstPartyCrmAutoLoadScheduled = true;
+            setTimeout(() => {
+                firstPartyCrmAutoLoadScheduled = false;
+                if (firstPartyCrmListIsVisible() && !firstPartyCrmContactsPayload && !firstPartyCrmLoading && !firstPartyCrmError) {
+                    loadFirstPartyCrmContacts();
+                }
+            }, 0);
+        }
+
+        function updateFirstPartyCrmPanel() {
+            const root = document.querySelector('[data-first-party-crm-panel]');
+            if (!root) return false;
+            root.outerHTML = renderFirstPartyCrmContactsPanel(firstPartyCrmRenderOptions);
+            instrumentOneTimeOperationsUi();
+            return true;
         }
 
         function firstPartyCrmOptionList(values = [], current = 'all') {
@@ -15513,10 +15629,10 @@
                             <h3>${escapeHtml(title)}</h3>
                             <p class="notification-lock-note">${escapeHtml(description)}</p>
                         </div>
-                        <button class="task-action primary crm-workbench-refresh" type="button" onclick="loadFirstPartyCrmContacts(event)" data-action-id="ACTION-CRM-CONTACTS-FILTER">Refresh</button>
+                        <button class="task-action primary crm-workbench-refresh" type="button" onclick="loadFirstPartyCrmContacts(event, { force: true })" data-action-id="ACTION-CRM-CONTACTS-FILTER">Refresh</button>
                     </div>
                     <div class="settings-control-grid compact" style="margin-top:12px;">
-                        <label class="crm-filter-search">Search<input value="${escapeHtml(firstPartyCrmFilters.search || '')}" onchange="setFirstPartyCrmFilter('search', this.value)" placeholder="Name, email, phone, tag"></label>
+                        <label class="crm-filter-search">Search<input value="${escapeHtml(firstPartyCrmFilters.search || '')}" oninput="setFirstPartyCrmFilter('search', this.value)" data-first-party-crm-search autocomplete="off" placeholder="Name, email, phone, tag"></label>
                         <label>Type<select onchange="setFirstPartyCrmFilter('contact_type', this.value)">${firstPartyCrmOptionList(filters.contact_types, firstPartyCrmFilters.contact_type)}</select></label>
                         <label>Status<select onchange="setFirstPartyCrmFilter('status', this.value)">${firstPartyCrmOptionList(filters.statuses, firstPartyCrmFilters.status)}</select></label>
                         <label>Source<select onchange="setFirstPartyCrmFilter('source', this.value)">${firstPartyCrmOptionList(filters.sources, firstPartyCrmFilters.source)}</select></label>
@@ -15532,44 +15648,43 @@
         }
 
         function renderFirstPartyCrmContactsPanel(options = {}) {
+            firstPartyCrmRenderOptions = { ...options };
             if (!firstPartyCrmContactsPayload && !firstPartyCrmLoading && !firstPartyCrmError) {
-                setTimeout(() => loadFirstPartyCrmContacts(), 0);
+                scheduleFirstPartyCrmAutoLoad();
             }
             const payload = firstPartyCrmContactsPayload || { cards: [], filters: {}, total: 0, filtered_total: 0 };
             const cards = Array.isArray(payload.cards) ? payload.cards : [];
-            if (!selectedFirstPartyCrmContactId) {
-                const restoredId = window.sessionStorage?.getItem?.('oneTimeSelectedCrmContactId') || '';
-                if (restoredId && cards.some(card => String(card.id) === String(restoredId))) {
-                    selectedFirstPartyCrmContactId = restoredId;
-                    if (!firstPartyCrmTimelinePayload) setTimeout(() => openFirstPartyCrmContact(restoredId), 0);
-                }
-            }
-            const selectedCard = cards.find(card => String(card.id) === String(selectedFirstPartyCrmContactId)) || null;
+            const selectedCard = selectedFirstPartyCrmCard(cards);
             const workbenchAttrs = options.oneTime ? ' data-one-time-crm-workbench data-requirement-id="REQ-20260710-020"' : '';
             return `
-                ${renderFirstPartyCrmFilterControls(payload, options)}
-                ${firstPartyCrmError ? `<div class="error-banner">${escapeHtml(firstPartyCrmError)}</div>` : ''}
-                ${firstPartyCrmNotice ? `<div class="success-banner">${escapeHtml(firstPartyCrmNotice)}</div>` : ''}
-                <div class="contact-empty-card">
-                    ${firstPartyCrmLoading ? 'Loading CRM contacts...' : `${Number(payload.filtered_total || cards.length).toLocaleString()} of ${Number(payload.total || cards.length).toLocaleString()} contacts shown. Local CRM actions only; no external send.`}
+                <div data-first-party-crm-panel data-one-time-crm-mode="${options.oneTime ? 'one_time' : 'workspace'}">
+                    ${renderFirstPartyCrmFilterControls(payload, options)}
+                    ${firstPartyCrmError ? `<div class="error-banner">${escapeHtml(firstPartyCrmError)}</div>` : ''}
+                    <div class="contact-empty-card" data-first-party-crm-status>
+                        ${firstPartyCrmLoading ? 'Loading CRM contacts...' : `${cards.length.toLocaleString()} visible / ${Number(payload.filtered_total || cards.length).toLocaleString()} matching / ${Number(payload.total || cards.length).toLocaleString()} total. Read-only / no-send.`}
+                    </div>
+                    ${cards.length ? `
+                        <section class="crm-workbench-shell"${workbenchAttrs} data-selected-contact="${selectedCard ? 'true' : 'false'}" data-crm-pane-count="3" aria-label="${escapeHtml(options.title || 'CRM contact workbench')}">
+                            <div class="contact-list crm-workbench-list" aria-label="CRM contact list">
+                                ${cards.map(renderFirstPartyCrmCard).join('')}
+                            </div>
+                            <div class="crm-workbench-activity" data-crm-contact-detail aria-label="CRM contact activity">
+                                ${renderFirstPartyCrmDetail(selectedCard)}
+                            </div>
+                            <aside class="crm-workbench-profile" data-crm-contact-profile aria-label="CRM contact profile">
+                                ${renderFirstPartyCrmProfile(selectedCard)}
+                            </aside>
+                        </section>
+                    ` : !firstPartyCrmLoading ? '<div class="contact-empty-card">No CRM contacts match this workspace/filter.</div>' : ''}
+
                 </div>
-                ${cards.length ? `
-                    <section class="crm-workbench-shell"${workbenchAttrs} aria-label="${escapeHtml(options.title || 'CRM contact workbench')}">
-                        <div class="contact-list crm-workbench-list">
-                            ${cards.map(renderFirstPartyCrmCard).join('')}
-                        </div>
-                        <div class="crm-workbench-detail" data-crm-contact-detail>
-                            ${renderFirstPartyCrmDetail(selectedCard)}
-                        </div>
-                    </section>
-                ` : !firstPartyCrmLoading ? '<div class="contact-empty-card">No CRM contacts match this workspace/filter.</div>' : ''}
             `;
         }
 
         function renderFirstPartyCrmCard(card = {}) {
             const isActive = selectedFirstPartyCrmContactId === card.id;
             return `
-                <article class="contact-card ${isActive ? 'active' : ''}">
+                <article class="contact-card ${isActive ? 'active' : ''}" data-first-party-crm-card>
                     <button class="contact-card-summary" type="button" onclick="openFirstPartyCrmContact(${attrJson(card.id)})" aria-expanded="${isActive ? 'true' : 'false'}" data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">
                         <div class="contact-card-top">
                             <div class="contact-card-copy">
@@ -15615,26 +15730,55 @@
             return 'No class/trial/access context loaded yet';
         }
 
-        function firstPartyCrmLifecycleOptions(current = '') {
-            const stages = ['new', 'interested', 'follow_up', 'trial', 'accepted_not_paid', 'member', 'not_now', 'not_fit', 'archived'];
-            const selected = String(current || 'new');
-            return stages.map(stage => `<option value="${escapeHtml(stage)}" ${stage === selected ? 'selected' : ''}>${escapeHtml(contactStatusLabel(stage))}</option>`).join('');
-        }
-
-        function firstPartyCrmTagsInput(card = {}) {
-            return (card.tags || []).join(', ');
+        function selectedFirstPartyCrmCard(cards = null) {
+            const list = Array.isArray(cards)
+                ? cards
+                : (Array.isArray(firstPartyCrmContactsPayload?.cards) ? firstPartyCrmContactsPayload.cards : []);
+            return list.find(card => String(card.id) === String(selectedFirstPartyCrmContactId)) || null;
         }
 
         function oneTimeViewAsRabbiActive() {
+            if (opsMe?.view_as || opsMe?.viewAs || opsMe?.view_as_rabbi || opsMe?.viewAsRabbi) return true;
             return Boolean(new URLSearchParams(window.location.search).get('view_as_rabbi'));
+        }
+
+        function firstPartyCrmPreviewLabel() {
+            if (opsMe?.view_as || opsMe?.viewAs || opsMe?.view_as_rabbi || opsMe?.viewAsRabbi) return 'Read-only preview';
+            if (opsMe?.scope?.type === 'project') return 'Scoped no-send';
+            return 'No-send locked';
+        }
+
+        function renderFirstPartyCrmSafeActions(card = null) {
+            const lockLabel = firstPartyCrmPreviewLabel();
+            const inboxAction = card?.id
+                ? `<button class="task-action" type="button" onclick="openFirstPartyCrmInboxContext(${attrJson(card.id)})" data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX">Open scoped inbox</button>`
+                : '<button class="task-action" type="button" disabled aria-disabled="true">Select contact first</button>';
+            return `
+                <div class="crm-safe-action-panel" data-crm-safe-actions>
+                    <div class="task-section-header compact">
+                        <div>
+                            <h3>Safe next actions</h3>
+                            <p class="notification-lock-note">This packet does not send email, WhatsApp, payment, access, or external CRM updates. Write controls stay disabled until an approved scoped write packet exists.</p>
+                        </div>
+                        <span class="status-chip blocked" data-crm-read-only-preview>${escapeHtml(lockLabel)}</span>
+                    </div>
+                    <div class="task-actions">
+                        ${inboxAction}
+                        <button class="task-action" type="button" data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED" disabled aria-disabled="true" title="Recipient, copy, sender identity, and exact send approval are required before reply drafting is enabled.">Reply draft locked</button>
+                        <button class="task-action" type="button" data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED" disabled aria-disabled="true" title="A scoped local note endpoint and audit row must be approved before CRM notes can be written here.">Internal note preview</button>
+                        <button class="task-action" type="button" data-action-id="ACTION-CRM-TASK-BLOCKED" disabled aria-disabled="true" title="Task creation from CRM detail must be mapped to the task ledger before enabling this control.">Task preview</button>
+                    </div>
+                </div>
+            `;
+
         }
 
         function renderFirstPartyCrmDetail(card = null) {
             if (!card) {
                 return `
-                    <section class="crm-selected-card" aria-label="CRM contact detail">
+                    <section class="crm-selected-card" aria-label="CRM contact activity">
                         <div class="crm-selected-title">Select a CRM contact</div>
-                        <div class="crm-selected-subtitle">Open a row to review identity, source, lifecycle, local timeline, notes, and safe next action. No email, WhatsApp, payment, access, or external CRM write runs from this detail panel.</div>
+                        <div class="crm-selected-subtitle">Open a row to review activity, conversation history, notes/tasks affordances, and safe next action. No email, WhatsApp, payment, access, or external CRM write runs from this panel.</div>
                     </section>
                 `;
             }
@@ -15643,7 +15787,40 @@
                 : '<div class="contact-empty-card">Loading selected contact timeline...</div>';
             const viewAsReadOnly = oneTimeViewAsRabbiActive();
             return `
-                <section class="crm-selected-card" aria-label="CRM contact detail">
+                <section class="crm-selected-card" aria-label="CRM contact activity">
+                    <div class="crm-mobile-selected-actions">
+                        <button class="task-action" type="button" onclick="clearFirstPartyCrmSelection(event)" data-action-id="ACTION-CRM-CONTACT-BACK">Back to contacts</button>
+                        <span class="status-chip blocked">${escapeHtml(firstPartyCrmPreviewLabel())}</span>
+                    </div>
+                    <div class="contact-detail-header">
+                        <div>
+                            <div class="crm-selected-title">Contact activity</div>
+                            <div class="crm-selected-subtitle">${escapeHtml(card.display_name || 'CRM contact')} - ${escapeHtml([contactStatusLabel(card.contact_type), contactStatusLabel(card.source_label || card.source), contactStatusLabel(card.status || 'new')].filter(Boolean).join(' - '))}</div>
+                        </div>
+                        <span class="page-status-pill">${escapeHtml(contactStatusLabel(card.status || 'new'))}</span>
+                    </div>
+                    <div class="crm-workbench-tabs" role="tablist" aria-label="CRM contact sections">
+                        <button class="ops-filter-tab active" type="button" role="tab" aria-selected="true">Activity</button>
+                        <button class="ops-filter-tab" type="button" role="tab" aria-selected="false" disabled aria-disabled="true">Notes</button>
+                        <button class="ops-filter-tab" type="button" role="tab" aria-selected="false" disabled aria-disabled="true">Tasks</button>
+                    </div>
+                    ${renderFirstPartyCrmSafeActions(card)}
+                </section>
+                ${timeline}
+            `;
+        }
+
+        function renderFirstPartyCrmProfile(card = null) {
+            if (!card) {
+                return `
+                    <section class="crm-selected-card" aria-label="CRM contact profile">
+                        <div class="crm-selected-title">Contact profile</div>
+                        <div class="crm-selected-subtitle">Select a contact to see identity, lifecycle, linked records, class/trial/access context, and local notes.</div>
+                    </section>
+                `;
+            }
+            return `
+                <section class="crm-selected-card" aria-label="CRM contact profile">
                     <div class="contact-detail-header">
                         <div>
                             <div class="crm-selected-title">${escapeHtml(card.display_name || 'CRM contact')}</div>
@@ -15667,43 +15844,8 @@
                         ${renderContactDetailItem('Follow-up Task', card.follow_up_task?.task_id ? `Task #${card.follow_up_task.task_id}${card.follow_up_task.assigned_to ? ` / ${card.follow_up_task.assigned_to}` : ''}` : 'No follow-up task assigned')}
                         ${renderContactDetailItem('Notes', card.summary || 'No notes loaded yet')}
                     </div>
-                    <div class="task-actions" style="margin-top:14px;">
-                        <button class="task-action primary" type="button" onclick="openFirstPartyCrmContact(${attrJson(card.id)})" data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">Refresh timeline</button>
-                        <button class="task-action" type="button" onclick="openFirstPartyCrmMailbox(${attrJson(card.id)}, ${attrJson(card.email || '')})" data-action-id="ACTION-CRM-CONTACT-MAILBOX-OPEN">Open mailbox</button>
-                        <span class="status-chip blocked" title="Email, WhatsApp, payment, access, and external CRM actions require approval.">External actions locked</span>
-                    </div>
-                    <form class="settings-control-grid compact crm-action-form" style="margin-top:14px;" onsubmit="saveFirstPartyCrmAction(event, ${attrJson(card.id)})" data-crm-contact-action-form data-action-id="ACTION-CRM-CONTACT-SAFE-UPDATE">
-                        <label>Name
-                            <input name="display_name" value="${escapeHtml(card.display_name || '')}" placeholder="Contact name">
-                        </label>
-                        <label>Email
-                            <input name="email" type="email" value="${escapeHtml(card.email || '')}" placeholder="email@example.com">
-                        </label>
-                        <label>Phone
-                            <input name="phone" value="${escapeHtml(card.phone || '')}" placeholder="+1 555 010 0000">
-                        </label>
-                        <label>Lifecycle
-                            <select name="status">${firstPartyCrmLifecycleOptions(card.status || card.lifecycle_stage)}</select>
-                        </label>
-                        <label>Next follow-up
-                            <input name="next_follow_up_at" type="date" value="${escapeHtml(String(card.next_follow_up_at || '').slice(0, 10))}">
-                        </label>
-                        <label>Assigned owner
-                            <input name="assigned_owner" value="${escapeHtml(card.assigned_owner || '')}" placeholder="Rabbi Scheller team">
-                        </label>
-                        <label>Tags
-                            <input name="tags" value="${escapeHtml(firstPartyCrmTagsInput(card))}" placeholder="Comma-separated tags">
-                        </label>
-                        <label style="grid-column:1/-1;">Internal note
-                            <textarea name="note_body" rows="3" placeholder="Add a local note. This does not send email, WhatsApp, Telegram, payment, access, or external CRM messages."></textarea>
-                        </label>
-                        <div class="task-actions" style="grid-column:1/-1;">
-                            <button class="task-action primary" type="submit" ${firstPartyCrmSaving || viewAsReadOnly ? 'disabled' : ''}>${viewAsReadOnly ? 'Read-only View-as' : firstPartyCrmSaving ? 'Saving...' : 'Save CRM Update'}</button>
-                            <span class="status-chip">${viewAsReadOnly ? 'Server-enforced read-only' : 'First-party local write'}</span>
-                        </div>
-                    </form>
+
                 </section>
-                ${timeline}
             `;
         }
 
@@ -15731,33 +15873,93 @@
             `;
         }
 
-        async function loadFirstPartyCrmContacts(event) {
+        async function loadFirstPartyCrmContacts(event, options = {}) {
             if (event) event.preventDefault();
+            const filters = firstPartyCrmQueryFilters();
+            const queryKey = firstPartyCrmQueryKey(filters);
+            if (!options.force && firstPartyCrmContactsCache.has(queryKey)) {
+                firstPartyCrmContactsPayload = firstPartyCrmContactsCache.get(queryKey);
+                firstPartyCrmError = '';
+                firstPartyCrmLoading = false;
+                updateFirstPartyCrmPanel();
+                return;
+            }
+            if (firstPartyCrmContactsAbortController) firstPartyCrmContactsAbortController.abort();
+            const requestSeq = firstPartyCrmContactsRequestSeq + 1;
+            firstPartyCrmContactsRequestSeq = requestSeq;
+            const controller = new AbortController();
+            firstPartyCrmContactsAbortController = controller;
             firstPartyCrmLoading = true;
             firstPartyCrmError = '';
-            render();
+            updateFirstPartyCrmPanel();
             try {
-                firstPartyCrmContactsPayload = await api.getCrmContacts(firstPartyCrmQueryFilters());
+                const payload = normalizeFirstPartyCrmPayload(await api.getCrmContacts(filters, { signal: controller.signal }));
+                if (controller.signal.aborted || requestSeq !== firstPartyCrmContactsRequestSeq) return;
+                firstPartyCrmContactsPayload = payload;
+                firstPartyCrmContactsCache.set(queryKey, payload);
+                const cards = Array.isArray(payload.cards) ? payload.cards : [];
+                if (selectedFirstPartyCrmContactId && !cards.some(card => String(card.id) === String(selectedFirstPartyCrmContactId))) {
+                    selectedFirstPartyCrmContactId = null;
+                    firstPartyCrmTimelinePayload = null;
+                }
             } catch (error) {
+                if (isAbortError(error)) return;
                 firstPartyCrmError = error.message || 'Could not load CRM contacts.';
                 firstPartyCrmContactsPayload = null;
             } finally {
-                firstPartyCrmLoading = false;
-                render();
+                if (requestSeq === firstPartyCrmContactsRequestSeq) {
+                    firstPartyCrmLoading = false;
+                    firstPartyCrmContactsAbortController = null;
+                    updateFirstPartyCrmPanel();
+                }
             }
         }
 
         async function openFirstPartyCrmContact(contactId) {
             selectedFirstPartyCrmContactId = contactId;
             firstPartyCrmTimelinePayload = null;
-            firstPartyCrmNotice = '';
-            render();
+            if (firstPartyCrmTimelineAbortController) firstPartyCrmTimelineAbortController.abort();
+            const requestSeq = firstPartyCrmTimelineRequestSeq + 1;
+            firstPartyCrmTimelineRequestSeq = requestSeq;
+            const controller = new AbortController();
+            firstPartyCrmTimelineAbortController = controller;
+            updateFirstPartyCrmPanel();
+
             try {
-                firstPartyCrmTimelinePayload = await api.getCrmContactTimeline(contactId, firstPartyCrmQueryFilters());
+                const timelinePayload = await api.getCrmContactTimeline(contactId, firstPartyCrmQueryFilters(), { signal: controller.signal });
+                if (controller.signal.aborted || requestSeq !== firstPartyCrmTimelineRequestSeq) return;
+                firstPartyCrmTimelinePayload = timelinePayload;
             } catch (error) {
+                if (isAbortError(error)) return;
                 firstPartyCrmTimelinePayload = { timeline: [{ channel: 'error', type: 'readback_error', body: error.message || 'Could not load timeline.' }] };
             }
-            render();
+            if (requestSeq === firstPartyCrmTimelineRequestSeq) {
+                firstPartyCrmTimelineAbortController = null;
+                updateFirstPartyCrmPanel();
+            }
+        }
+
+        function clearFirstPartyCrmSelection(event) {
+            event?.preventDefault?.();
+            selectedFirstPartyCrmContactId = null;
+            firstPartyCrmTimelinePayload = null;
+            if (firstPartyCrmTimelineAbortController) {
+                firstPartyCrmTimelineAbortController.abort();
+                firstPartyCrmTimelineAbortController = null;
+            }
+            updateFirstPartyCrmPanel();
+        }
+
+        async function openFirstPartyCrmInboxContext(contactId = '') {
+            if (contactId) selectedFirstPartyCrmContactId = contactId;
+            emailInboxScope = 'rabbi';
+            currentWorkspaceId = 'rabbi_sheller_provider';
+            taskProjectFilter = 'one_time_mishnah_class';
+            currentView = 'communications';
+            communicationsSection = 'email';
+            syncOperationsUrl();
+            rerenderOperationsApp();
+            await loadData({ background: true });
         }
 
         async function saveFirstPartyCrmAction(event, contactId) {
@@ -15824,8 +16026,17 @@
             firstPartyCrmFilters = { ...firstPartyCrmFilters, [key]: value };
             selectedFirstPartyCrmContactId = null;
             firstPartyCrmTimelinePayload = null;
-            window.sessionStorage?.removeItem?.('oneTimeSelectedCrmContactId');
-            loadFirstPartyCrmContacts();
+            if (firstPartyCrmTimelineAbortController) firstPartyCrmTimelineAbortController.abort();
+            if (firstPartyCrmSearchDebounceTimer) clearTimeout(firstPartyCrmSearchDebounceTimer);
+            if (key === 'search') {
+                firstPartyCrmSearchDebounceTimer = setTimeout(() => {
+                    firstPartyCrmSearchDebounceTimer = null;
+                    loadFirstPartyCrmContacts(null, { force: true });
+                }, FIRST_PARTY_CRM_SEARCH_DEBOUNCE_MS);
+                return;
+            }
+            loadFirstPartyCrmContacts(null, { force: true });
+
         }
 
         function renderUnifiedContactSystemPanel() {
@@ -16001,6 +16212,87 @@
             `;
         }
 
+        function renderOneTimeCrmReviewPlaceholder(count = 0) {
+            return `
+                <div class="contact-empty-card" data-one-time-crm-review-placeholder>
+                    Review/source safeguards are collapsed. Open this panel to construct the legacy ${Number(count || 0).toLocaleString()}-row review table.
+                </div>
+            `;
+        }
+
+        function renderOneTimeCrmReviewContextBody(sectionLeads = [], visibleLeads = [], rows = []) {
+            return `
+                <section class="focus-panel compact-panel" data-one-time-crm-contacts-ux data-requirement-id="REQ-20260621-905" aria-label="One Time CRM Contacts UX">
+                    <div class="task-section-header">
+                        <div>
+                            <h3>One Time CRM Review Context</h3>
+                            <p class="notification-lock-note">Workspace-scoped One Time/Rabbi leads and members only. Lead status, source, no-send, dedupe/review state, and local communications are visible before any campaign decision.</p>
+                        </div>
+                        <span>${rows.length} scoped records</span>
+                    </div>
+                    <div class="settings-control-grid compact" style="margin-top:12px;">
+                        ${renderSettingsControlRow('Workspace scope', 'One Time / Rabbi Scheller', 'Parent-lead data is requested with the selected workspace/project filter and excludes BNA school-only records.', 'Scoped')}
+                        ${renderSettingsControlRow('No-send guard', 'No email, WhatsApp, payment, or external CRM write', 'Campaign sends remain locked until Shloimie approves copy, sender, suppressions, and test recipients.', 'Guarded')}
+                        ${renderSettingsControlRow('Dedupe / review', 'Explicit row state', 'Dedupe keys, possible duplicates, manual-review tags, and preview-only import states are surfaced for admin review.', 'Visible')}
+                        ${renderSettingsControlRow('Privacy', 'Private BNA data absent', 'Private BNA goals, check-ins, admin notes, and school-only student data are not shown in One Time Contacts.', 'Protected')}
+                    </div>
+                </section>
+                ${renderLeadFilterPanel(sectionLeads, visibleLeads)}
+                ${rows.length === 0 ? `
+                    ${renderOneTimeCrmEmptyState('no_rows')}
+                ` : sectionLeads.length > 0 && visibleLeads.length === 0 ? `
+                    ${renderOneTimeCrmEmptyState('filtered_empty')}
+                ` : `
+                    <section class="focus-panel">
+                        <div class="task-section-header"><h3>CRM Contact Review</h3><span>${rows.length} shown</span></div>
+                        <div class="data-table compact-table" data-one-time-crm-contact-table>
+                            <table>
+                                <thead>
+                                    <tr><th>Name</th><th>Record Status</th><th>No-send</th><th>Dedupe / review</th><th>Source</th><th>Communications</th><th>Next Action</th><th>Direct Action</th></tr>
+                                </thead>
+                                <tbody>
+                                    ${rows.map(row => `
+                                        <tr data-one-time-crm-contact-row data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">
+                                            <td>
+                                                <strong>${escapeHtml(row.name)}</strong>
+                                                <div class="event-meta">${escapeHtml(row.contact)}</div>
+                                            </td>
+                                            <td>${escapeHtml(row.status)}</td>
+                                            <td><span class="status-chip ${escapeHtml(row.noSend.locked ? 'blocked' : 'ready')}">${escapeHtml(row.noSend.label)}</span><div class="event-meta">${escapeHtml(row.noSend.detail)}</div></td>
+                                            <td><span class="status-chip ${escapeHtml(row.dedupe.needsReview ? 'needs-review' : 'ready')}">${escapeHtml(row.dedupe.label)}</span><div class="event-meta">${escapeHtml(row.dedupe.detail)}</div></td>
+                                            <td>${escapeHtml(row.source.label)}<div class="event-meta">${escapeHtml(row.source.detail)}</div></td>
+                                            <td>${escapeHtml(row.communications.label)}<div class="event-meta">${escapeHtml(row.communications.detail)}</div></td>
+                                            <td>${escapeHtml(row.nextAction)}</td>
+                                            <td><div class="task-actions compact-actions">${row.actionHtml}</div></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                        ${renderOneTimeCrmContactCards(rows)}
+                    </section>
+                `}
+            `;
+        }
+
+        function toggleOneTimeCrmReviewContext(details) {
+            oneTimeCrmReviewContextOpen = Boolean(details?.open);
+            const body = details?.querySelector?.('[data-one-time-crm-review-lazy]');
+            if (!body) return;
+            if (!oneTimeCrmReviewContextOpen) {
+                const rows = oneTimeCrmContactRows();
+                body.innerHTML = renderOneTimeCrmReviewPlaceholder(rows.length);
+                delete body.dataset.loaded;
+                return;
+            }
+            const sectionLeads = oneTimeCrmLeadRows();
+            const visibleLeads = sectionLeads.filter(leadMatchesFilters);
+            const rows = oneTimeCrmContactRows({ leads: visibleLeads });
+            body.innerHTML = renderOneTimeCrmReviewContextBody(sectionLeads, visibleLeads, rows);
+            body.dataset.loaded = 'true';
+            instrumentOneTimeOperationsUi();
+        }
+
         function renderOneTimeCrmContactsPanel() {
             const sectionLeads = oneTimeCrmLeadRows();
             const visibleLeads = sectionLeads.filter(leadMatchesFilters);
@@ -16014,61 +16306,15 @@
                 title: 'One Time CRM Workbench',
                 description: 'Search, filter, sort, open, and read local One Time CRM contact timelines from first-party BNA records only. No email, WhatsApp, payment, access, or external CRM write runs from this workbench.'
             });
+            const reviewBody = oneTimeCrmReviewContextOpen
+                ? renderOneTimeCrmReviewContextBody(sectionLeads, visibleLeads, rows)
+                : renderOneTimeCrmReviewPlaceholder(rows.length);
             return `
                 ${apiWorkbench}
-                <details class="filter-details collapsible-details" data-one-time-crm-review-context>
+                <details class="filter-details collapsible-details" data-one-time-crm-review-context ${oneTimeCrmReviewContextOpen ? 'open' : ''} ontoggle="toggleOneTimeCrmReviewContext(this)">
                     <summary>Review/source safeguards</summary>
-                    <div class="filter-details-body">
-                        <section class="focus-panel compact-panel" data-one-time-crm-contacts-ux data-requirement-id="REQ-20260621-905" aria-label="One Time CRM Contacts UX">
-                            <div class="task-section-header">
-                                <div>
-                                    <h3>One Time CRM Review Context</h3>
-                                    <p class="notification-lock-note">Workspace-scoped One Time/Rabbi leads and members only. Lead status, source, no-send, dedupe/review state, and local communications are visible before any campaign decision.</p>
-                                </div>
-                                <span>${rows.length} scoped records</span>
-                            </div>
-                            <div class="settings-control-grid compact" style="margin-top:12px;">
-                                ${renderSettingsControlRow('Workspace scope', 'One Time / Rabbi Scheller', 'Parent-lead data is requested with the selected workspace/project filter and excludes BNA school-only records.', 'Scoped')}
-                                ${renderSettingsControlRow('No-send guard', 'No email, WhatsApp, payment, or external CRM write', 'Campaign sends remain locked until Shloimie approves copy, sender, suppressions, and test recipients.', 'Guarded')}
-                                ${renderSettingsControlRow('Dedupe / review', 'Explicit row state', 'Dedupe keys, possible duplicates, manual-review tags, and preview-only import states are surfaced for admin review.', 'Visible')}
-                                ${renderSettingsControlRow('Privacy', 'Private BNA data absent', 'Private BNA goals, check-ins, admin notes, and school-only student data are not shown in One Time Contacts.', 'Protected')}
-                            </div>
-                        </section>
-                        ${renderLeadFilterPanel(sectionLeads, visibleLeads)}
-                        ${rows.length === 0 ? `
-                            ${renderOneTimeCrmEmptyState('no_rows')}
-                        ` : sectionLeads.length > 0 && visibleLeads.length === 0 ? `
-                            ${renderOneTimeCrmEmptyState('filtered_empty')}
-                        ` : `
-                            <section class="focus-panel">
-                                <div class="task-section-header"><h3>CRM Contact Review</h3><span>${rows.length} shown</span></div>
-                                <div class="data-table compact-table" data-one-time-crm-contact-table>
-                                    <table>
-                                        <thead>
-                                            <tr><th>Name</th><th>Record Status</th><th>No-send</th><th>Dedupe / review</th><th>Source</th><th>Communications</th><th>Next Action</th><th>Direct Action</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            ${rows.map(row => `
-                                                <tr data-one-time-crm-contact-row data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">
-                                                    <td>
-                                                        <strong>${escapeHtml(row.name)}</strong>
-                                                        <div class="event-meta">${escapeHtml(row.contact)}</div>
-                                                    </td>
-                                                    <td>${escapeHtml(row.status)}</td>
-                                                    <td><span class="status-chip ${escapeHtml(row.noSend.locked ? 'blocked' : 'ready')}">${escapeHtml(row.noSend.label)}</span><div class="event-meta">${escapeHtml(row.noSend.detail)}</div></td>
-                                                    <td><span class="status-chip ${escapeHtml(row.dedupe.needsReview ? 'needs-review' : 'ready')}">${escapeHtml(row.dedupe.label)}</span><div class="event-meta">${escapeHtml(row.dedupe.detail)}</div></td>
-                                                    <td>${escapeHtml(row.source.label)}<div class="event-meta">${escapeHtml(row.source.detail)}</div></td>
-                                                    <td>${escapeHtml(row.communications.label)}<div class="event-meta">${escapeHtml(row.communications.detail)}</div></td>
-                                                    <td>${escapeHtml(row.nextAction)}</td>
-                                                    <td><div class="task-actions compact-actions">${row.actionHtml}</div></td>
-                                                </tr>
-                                            `).join('')}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                ${renderOneTimeCrmContactCards(rows)}
-                            </section>
-                        `}
+                    <div class="filter-details-body" data-one-time-crm-review-lazy>
+                        ${reviewBody}
                     </div>
                 </details>
             `;
@@ -21740,6 +21986,44 @@
             `;
         }
 
+        function renderEmailCrmContextCard(activeInboxScope = emailInboxScopeRecord()) {
+            const selectedCard = typeof selectedFirstPartyCrmCard === 'function' ? selectedFirstPartyCrmCard() : null;
+            const isRabbiInbox = activeInboxScope.id === 'rabbi';
+            const title = isRabbiInbox ? 'One Time Inbox context' : 'Inbox context';
+            if (!selectedCard) {
+                return `
+                    <article class="email-draft-card one-time-inbox-context" data-email-selected-crm-context>
+                        <div class="task-section-header">
+                            <div>
+                                <h3>${escapeHtml(title)}</h3>
+                                <p class="settings-disabled-note">No CRM contact is pinned yet. Open CRM Contacts, select a contact, then use Open scoped inbox to retain the context here.</p>
+                            </div>
+                            <span class="status-pill">${escapeHtml(activeInboxScope.project_key || 'workspace')}</span>
+                        </div>
+                    </article>
+                `;
+            }
+            return `
+                <article class="email-draft-card one-time-inbox-context" data-email-selected-crm-context>
+                    <div class="task-section-header">
+                        <div>
+                            <h3>${escapeHtml(title)}</h3>
+                            <p class="settings-disabled-note">Selected CRM contact retained for inbox review. Drafting remains preview-only and no message is sent from this context card.</p>
+                        </div>
+                        <span class="status-pill">${escapeHtml(firstPartyCrmPreviewLabel())}</span>
+                    </div>
+                    <div class="email-draft-meta">
+                        <span><strong>Contact</strong><br>${escapeHtml(selectedCard.display_name || 'CRM contact')}</span>
+                        <span><strong>Email</strong><br>${escapeHtml(selectedCard.email || 'No email loaded')}</span>
+                        <span><strong>Phone</strong><br>${escapeHtml(selectedCard.phone || 'No phone loaded')}</span>
+                        <span><strong>Source</strong><br>${escapeHtml(contactStatusLabel(selectedCard.source_label || selectedCard.source || 'first party'))}</span>
+                        <span><strong>Last activity</strong><br>${escapeHtml(selectedCard.last_contact_at ? formatDateTime(selectedCard.last_contact_at) : 'No local activity yet')}</span>
+                        <span><strong>Class / Trial / Access</strong><br>${escapeHtml(firstPartyCrmClassAccessSummary(selectedCard))}</span>
+                    </div>
+                </article>
+            `;
+        }
+
         function renderEmailOperatorWorkspace(emailRecords = []) {
             const state = communicationsIntegrationState || {};
             const resend = state.resendHealth || {};
@@ -21759,17 +22043,19 @@
                 ? filterEmailRecordsForInboxScope(allDrafts, activeInboxScope).filter(item => emailRecordMatchesCrmTarget(item, targetEmail)).slice(0, 8)
                 : filterEmailRecordsForInboxScope(allDrafts, activeInboxScope).slice(0, 8);
             const sendGate = resend.send_allowed ? 'Ready after review + SEND_RESEND_EMAIL' : 'Locked until sender/domain readiness';
+            const inboxTitle = activeInboxScope.id === 'rabbi' ? 'One Time Inbox' : 'Email Workspace';
             return `
-                <section class="focus-panel" data-email-operator-workspace>
+                <section class="focus-panel" data-email-operator-workspace data-one-time-inbox-workspace="${activeInboxScope.id === 'rabbi' ? 'true' : 'false'}">
                     <div class="task-section-header">
                         <div>
-                            <h3>Email Workspace</h3>
-                            <p class="settings-disabled-note one-time-email-workspace-intro">Drafts, logged emails, sender readiness, DNS tasks, and approval gates stay first-party. No email is sent from this lane without the exact SEND_RESEND_EMAIL phrase.</p>
+                            <h3>${escapeHtml(inboxTitle)}</h3>
+                            <p class="settings-disabled-note one-time-email-workspace-intro">Drafts, logged emails, sender readiness, DNS tasks, selected CRM context, and approval gates stay first-party. No email is sent from this lane without the exact SEND_RESEND_EMAIL phrase.</p>
                         </div>
                         <span>${escapeHtml(sendGate)}</span>
                     </div>
                     ${renderEmailInboxSelector(emailRecords, allDrafts)}
-                    ${targetEmail ? `<div class="success-banner" data-crm-targeted-mailbox>Mailbox filtered to ${escapeHtml(targetEmail)}. <button type="button" class="task-action" onclick="clearCrmMailboxTarget()">Clear filter</button></div>` : ''}
+                    ${renderEmailCrmContextCard(activeInboxScope)}
+
                     <div class="settings-control-grid compact" data-email-readiness-gates>
                         ${renderSettingsControlRow('Provider account', resend.connected ? 'Connected' : (resend.configured ? 'Configured / blocked' : 'Missing'), 'Resend API readiness is checked separately from sender and domain readiness.', resend.connected ? 'Connected' : 'Blocked')}
                         ${renderSettingsControlRow('Sender identity', resend.from_email || 'Not finalized', 'From identity must be explicitly configured for this workspace before send.', resend.sender_configured || resend.from_email ? 'Configured' : 'Blocked')}

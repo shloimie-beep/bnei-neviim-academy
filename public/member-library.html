@@ -709,6 +709,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/css/one-time-portal-shell.css">
 </head>
 <body class="one-time-member-shell" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
   <header>
@@ -722,7 +723,7 @@
       </div>
       <div>
         <nav class="member-nav" aria-label="One Time member navigation">
-          <a href="/rabbi-member" aria-label="Member home">Home</a>
+          <a href="/rabbi-member" aria-label="Family Portal">Family Portal</a>
           <a href="/member-library" aria-current="page">Library</a>
           <a href="/one-time-classroom">Classroom</a>
           <a href="#bnaBotPanel" data-bna-assistant-open aria-label="Assistant/help" aria-controls="bnaBotPanel">Helper</a>
@@ -743,8 +744,8 @@
       </div>
       <input id="accessCode" name="code" type="hidden" autocomplete="off">
       <div class="actions">
-        <a class="button" href="/rabbi-member">Log in</a>
-        <a class="button secondary" href="/one-time-parent">Forgot parent password?</a>
+        <a class="button" href="/rabbi-member">Open Family Portal</a>
+        <a class="button secondary" href="/one-time-parent">Parent account setup/reset</a>
       </div>
     </form>
     <div class="status" id="status"></div>
@@ -766,7 +767,7 @@
         <p>Copyright 2026 One Time Mishnayos. Library access is private and workspace-scoped.</p>
       </div>
       <nav class="footer-links" aria-label="One Time footer navigation">
-        <a href="/rabbi-member">Member Home</a>
+        <a href="/rabbi-member">Family Portal</a>
         <a href="/one-time/privacy.html">Privacy</a>
         <a href="/one-time/terms.html">Terms</a>
         <a href="/member-library" aria-current="page">Library</a>
@@ -774,7 +775,6 @@
     </div>
   </footer>
 
-  <script src="https://player.vimeo.com/api/player.js"></script>
   <script>
     const form = document.getElementById('accessForm');
     const codeInput = document.getElementById('accessCode');
@@ -794,8 +794,15 @@
     let searchRenderTimer = null;
     const progressSyncTimers = new Map();
     const vimeoPlayers = new Map();
+    let vimeoPlayerApiPromise = null;
     const activeMediaItems = new Set();
     const params = new URLSearchParams(window.location.search);
+    const reviewMode = ['one-time', 'onetime', '1', 'true'].includes(String(params.get('review') || '').toLowerCase());
+    const reviewAccessCode = 'TEST-ONETIME-REVIEW-ACCESS';
+    if (reviewMode) {
+      document.body.classList.add('one-time-review-active');
+      document.body.dataset.oneTimeRabbiDashboard = 'library-review';
+    }
 
     const filters = [
       ['all', 'All'],
@@ -877,6 +884,7 @@
     }
 
     function currentAccessCode() {
+      if (reviewMode) return reviewAccessCode;
       return String(codeInput.value || localStorage.getItem('one_time_member_library_code') || '').trim();
     }
 
@@ -895,7 +903,7 @@
         accessHelp.textContent = message || 'Your secure link opened the member library.';
       } else if (mode === 'error') {
         accessTitle.textContent = 'Access help';
-        accessHelp.textContent = message || 'Log in again or use Forgot parent password to get a fresh link by email.';
+        accessHelp.textContent = message || 'Log in again or use parent account setup/reset to get a fresh link by email.';
       } else {
         accessTitle.textContent = 'Open your library';
         accessHelp.textContent = message || 'Use your member login or the secure library link from your One Time email. There is no separate classroom or library password.';
@@ -907,9 +915,14 @@
       if (!item?.id) return null;
       const normalizedPercent = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
       const normalizedSeconds = Math.max(0, Math.round(Number(seconds) || 0));
-      localStorage.setItem(progressKey(item), String(normalizedPercent));
       item.watch_progress_percent = Math.max(Number(item.watch_progress_percent || 0), normalizedPercent);
       item.watch_progress_seconds = Math.max(Number(item.watch_progress_seconds || 0), normalizedSeconds);
+      if (reviewMode) {
+        renderFilterRail(currentPayload?.member_library?.items || []);
+        renderLibraryItems();
+        return { preview_only: true, external_write_performed: false };
+      }
+      localStorage.setItem(progressKey(item), String(normalizedPercent));
       const code = currentAccessCode();
       const sessionToken = currentMemberSessionToken();
       if (!code && !sessionToken) return null;
@@ -1178,37 +1191,59 @@
       });
     }
 
+    function loadVimeoPlayerApi() {
+      if (window.Vimeo?.Player) return Promise.resolve(window.Vimeo);
+      if (vimeoPlayerApiPromise) return vimeoPlayerApiPromise;
+      vimeoPlayerApiPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://player.vimeo.com/api/player.js';
+        script.async = true;
+        script.onload = () => resolve(window.Vimeo);
+        script.onerror = () => {
+          vimeoPlayerApiPromise = null;
+          reject(new Error('Vimeo player API could not load.'));
+        };
+        document.head.appendChild(script);
+      });
+      return vimeoPlayerApiPromise;
+    }
+
     function attachVimeoTracking(item, iframe) {
-      if (!item || iframe.dataset.progressBound === '1' || !window.Vimeo?.Player) return;
-      iframe.dataset.progressBound = '1';
-      try {
-        const player = new window.Vimeo.Player(iframe);
-        vimeoPlayers.set(Number(item.id), player);
-        player.on('play', () => {
-          throttledProgressSync(item, {
-            percent: itemProgress(item),
-            seconds: Number(item.watch_progress_seconds || 0),
-            eventType: 'open_media',
-            player: 'vimeo',
+      if (!item || iframe.dataset.progressBound === '1' || iframe.dataset.progressBound === 'loading') return;
+      iframe.dataset.progressBound = 'loading';
+      loadVimeoPlayerApi()
+        .then(() => {
+          if (!iframe.isConnected || iframe.dataset.progressBound === '1') return;
+          iframe.dataset.progressBound = '1';
+          const player = new window.Vimeo.Player(iframe);
+          vimeoPlayers.set(Number(item.id), player);
+          player.on('play', () => {
+            throttledProgressSync(item, {
+              percent: itemProgress(item),
+              seconds: Number(item.watch_progress_seconds || 0),
+              eventType: 'open_media',
+              player: 'vimeo',
+            });
           });
-        });
-        player.on('timeupdate', (event) => {
-          const seconds = Math.round(Number(event.seconds || 0));
-          const percent = Math.round(Number(event.percent || 0) * 100);
-          throttledProgressSync(item, { percent, seconds, eventType: 'timeupdate', player: 'vimeo' });
-        });
-        player.on('ended', async () => {
-          const seconds = await player.getCurrentTime().catch(() => item.duration_seconds || 0);
-          throttledProgressSync(item, {
-            percent: 100,
-            seconds: Math.round(Number(seconds || item.duration_seconds || 0)),
-            eventType: 'mark_complete',
-            player: 'vimeo',
+          player.on('timeupdate', (event) => {
+            const seconds = Math.round(Number(event.seconds || 0));
+            const percent = Math.round(Number(event.percent || 0) * 100);
+            throttledProgressSync(item, { percent, seconds, eventType: 'timeupdate', player: 'vimeo' });
           });
+          player.on('ended', async () => {
+            const seconds = await player.getCurrentTime().catch(() => item.duration_seconds || 0);
+            throttledProgressSync(item, {
+              percent: 100,
+              seconds: Math.round(Number(seconds || item.duration_seconds || 0)),
+              eventType: 'mark_complete',
+              player: 'vimeo',
+            });
+          });
+        })
+        .catch((error) => {
+          iframe.dataset.progressBound = '';
+          console.warn('Vimeo progress tracking unavailable:', error.message);
         });
-      } catch (error) {
-        console.warn('Vimeo progress tracking unavailable:', error.message);
-      }
     }
 
     function attachProgressObservers() {
@@ -1231,17 +1266,80 @@
       libraryToolbar.classList.add('visible');
       classroomStrip.innerHTML = `
         <p>Classroom: ${Number((classroom.calendar_items || []).length)} calendar item${Number((classroom.calendar_items || []).length) === 1 ? '' : 's'}, ${Number((classroom.threads || []).length)} Rabbi thread${Number((classroom.threads || []).length) === 1 ? '' : 's'}, ${Number((classroom.leaderboard || []).length)} leaderboard row${Number((classroom.leaderboard || []).length) === 1 ? '' : 's'}.</p>
-        <a href="${currentAccessCode() ? `/one-time-classroom?code=${encodeURIComponent(currentAccessCode())}` : '/one-time-classroom'}">Open Classroom</a>
+        <a href="${reviewMode ? `/one-time-classroom.html?review=one-time&code=${encodeURIComponent(reviewAccessCode)}` : (currentAccessCode() ? `/one-time-classroom?code=${encodeURIComponent(currentAccessCode())}` : '/one-time-classroom')}">Open Classroom</a>
       `;
       renderLibraryItems();
     }
 
+    function normalizeReviewLibraryPayload(data) {
+      const libraryItems = (data.library || []).map((item, index) => ({
+        id: 9000 + index,
+        class_session_id: data.live_sessions?.[0]?.id || 'TEST-OT-CLASS-001',
+        title: item.title || 'TEST One Time Review Video',
+        description: item.description || 'Review-only library item.',
+        item_type: item.item_type || 'video',
+        media_url: item.media_url || '',
+        media_provider: item.media_provider || 'preview',
+        vimeo_id: item.vimeo_id || item.vimeo_video_id || '',
+        thumbnail_url: item.thumbnail_url || '',
+        masechta: item.masechta || 'Pesachim',
+        perek: item.perek || '10',
+        mishnah_range: item.mishnah_range || '1-2',
+        class_date: item.class_date || '2026-06-25',
+        duration_seconds: Number(item.duration_seconds || 0),
+        review_state: 'review_ready',
+        assets: [],
+        watch_progress_percent: 0,
+        watch_progress_seconds: 0,
+      }));
+      return {
+        member: data.member,
+        member_library: {
+          access: {
+            member_label: data.member?.display_name || 'TEST One Time Member',
+            tier: 'TEST preview',
+            preview_only: true,
+            no_writes: true,
+          },
+          items: libraryItems,
+        },
+        classroom: {
+          calendar_items: data.live_sessions || [],
+          threads: [],
+          leaderboard: [],
+        },
+        write_policy: data.write_policy || { external_write_performed: false, no_send: true },
+      };
+    }
+
     async function loadLibrary(code) {
+      if (reviewMode) {
+        statusEl.textContent = 'Loading TEST preview library...';
+        statusEl.className = 'status';
+        setAccessPanelState('loading');
+        try {
+          const response = await fetch('/api/one-time-review/member', { credentials: 'same-origin', headers: { accept: 'application/json' } });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Could not open review library.');
+          statusEl.textContent = 'TEST preview library opened. No progress, reminder, support, send, or metric write was performed.';
+          setAccessPanelState('connected');
+          renderLibrary(normalizeReviewLibraryPayload(payload));
+        } catch (error) {
+          currentPayload = null;
+          memberMeta.textContent = 'TEST preview unavailable';
+          libraryToolbar.classList.remove('visible');
+          grid.innerHTML = '';
+          statusEl.textContent = error.message || 'Could not open review library.';
+          statusEl.className = 'status error';
+          setAccessPanelState('error', 'Review mode could not load the TEST-only fixture.');
+        }
+        return;
+      }
       const trimmed = String(code || '').trim();
       const sessionToken = currentMemberSessionToken();
       if (!trimmed && !sessionToken) {
         setAccessPanelState('needs_code');
-        statusEl.textContent = 'Log in to your member area, use your secure invite link, or use Forgot parent password for a fresh email link.';
+        statusEl.textContent = 'Log in to your Family Portal, use your secure invite link, or use parent account setup/reset for a fresh email link.';
         statusEl.className = 'status error';
         return;
       }
@@ -1266,7 +1364,7 @@
         grid.innerHTML = '';
         statusEl.textContent = error.message || 'Could not open library.';
         statusEl.className = 'status error';
-        setAccessPanelState('error', 'Log in again or use Forgot parent password to get a fresh link by email.');
+        setAccessPanelState('error', 'Log in again or use parent account setup/reset to get a fresh link by email.');
       }
     }
 
@@ -1287,8 +1385,8 @@
       localStorage.removeItem('rabbi_member_session');
     });
 
-    const initialCode = params.get('code') || localStorage.getItem('one_time_member_library_code') || '';
-    if (initialCode || currentMemberSessionToken()) {
+    const initialCode = reviewMode ? reviewAccessCode : (params.get('code') || localStorage.getItem('one_time_member_library_code') || '');
+    if (reviewMode || initialCode || currentMemberSessionToken()) {
       codeInput.value = initialCode;
       loadLibrary(initialCode);
     } else {
@@ -1296,6 +1394,7 @@
     }
   </script>
   <script src="/js/bna-helper-knowledge.js"></script>
+  <script src="/js/one-time-portal-shell.js"></script>
   <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

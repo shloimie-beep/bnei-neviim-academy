@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-07-12T18:08:47.882Z",
+  "base_url": "http://127.0.0.1:53050",
+  "requirement_id": "REQ-20260712-109",
+  "fake_whatsapp_number_used": true,
+  "full_number_returned_by_readiness": false,
+  "write_requests": [],
+  "helper_script_requests": [],
+  "screenshots": [
+    "landing-whatsapp-1440.png",
+    "landing-whatsapp-1024.png",
+    "landing-whatsapp-768.png",
+    "landing-whatsapp-430.png",
+    "landing-whatsapp-390.png"
+  ],
+  "results": [
+    {
+      "id": "landing-whatsapp-1440",
+      "width": 1440,
+      "height": 960,
+      "path": "/one-time",
+      "screenshot": "landing-whatsapp-1440.png",
+      "console_errors": [],
+      "http_errors": []
+    },
+    {
+      "id": "landing-whatsapp-1024",
+      "width": 1024,
+      "height": 900,
+      "path": "/one-time",
+      "screenshot": "landing-whatsapp-1024.png",
+      "console_errors": [],
+      "http_errors": []
+    },
+    {
+      "id": "landing-whatsapp-768",
+      "width": 768,
+      "height": 1024,
+      "path": "/one-time",
+      "screenshot": "landing-whatsapp-768.png",
+      "console_errors": [],
+      "http_errors": []
+    },
+    {
+      "id": "landing-whatsapp-430",
+      "width": 430,
+      "height": 860,
+      "path": "/one-time",
+      "openMenu": true,
+      "screenshot": "landing-whatsapp-430.png",
+      "console_errors": [],
+      "http_errors": []
+    },
+    {
+      "id": "landing-whatsapp-390",
+      "width": 390,
+      "height": 844,
+      "path": "/one-time",
+      "screenshot": "landing-whatsapp-390.png",
+      "console_errors": [],
+      "http_errors": []
+    }
+  ]
+}

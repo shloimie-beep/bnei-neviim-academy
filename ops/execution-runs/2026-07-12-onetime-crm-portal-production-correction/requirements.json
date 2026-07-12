@@ -1,0 +1,792 @@
+{
+  "run_id": "2026-07-12-onetime-crm-portal-production-correction",
+  "title": "One Time CRM, portal, assistant, performance production correction",
+  "updated_at": "2026-07-12T20:35:00+03:00",
+  "sources": [
+    {
+      "source_id": "RAW-20260712-004",
+      "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+      "captured_at": "2026-07-12T17:05:00+03:00",
+      "content_fingerprint": "sha256:90FDE085DD41BDE6AFC47AB586C7840DC51A8EAEDE9989ADF9DC9CBA2641D86C",
+      "privacy_classification": "internal_sensitive_redacted_required",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_goal_mode_packet"
+    }
+  ],
+  "source_statement_matrices": [
+    {
+      "path": "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/source-statement-matrix.json",
+      "source_id": "RAW-20260712-004"
+    }
+  ],
+  "canonical_tasks": [
+    {
+      "canonical_task_id": "TASK-20260712-101",
+      "canonical_task_key": "rabbi_sheller_provider|one_time_mishnah_class|RAW-20260712-004|goal-mode-production-correction",
+      "title": "Execute One Time CRM/portal production correction through terminal statuses",
+      "owner": "Codex",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "source_id": "RAW-20260712-004",
+      "requirement_id": "REQ-20260712-101",
+      "visible": false,
+      "status": "in_progress"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260712-101",
+      "title": "Register the One Time production correction lane",
+      "expected_result": "Raw intake, requirement register, Product Quality Compiler packets, source matrix, execution run, and packet DAG exist and validate.",
+      "source_id": "RAW-20260712-004",
+      "source_statement_ids": [
+        "SRC-20260712-004-001"
+      ],
+      "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "BATCH-00-INTAKE",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "Raw source copy, register, surface map, control tower, visual-audit packet, source matrix, PQC validation, and execution-run validation are complete.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue the next unblocked batch: REQ-20260712-103 identity/view-as server scope hardening.",
+      "acceptance_criteria": [
+        "Raw source is repo-visible and fingerprinted.",
+        "Requirement register and execution run exist.",
+        "Source statement matrix maps source statements to requirements.",
+        "Product Quality Compiler packets validate.",
+        "Execution-run validator passes."
+      ],
+      "evidence": [
+        "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction.md",
+        "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+        "tasks-pending/2026-07-12-onetime-crm-portal-production-correction.md",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/MANIFEST.md",
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/source-statement-matrix.json",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.json"
+      ],
+      "verification": [
+        "PASS npm run pqc:validate ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/00-control-tower.product-quality.json ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/01-current-state-visual-audit.product-quality.json",
+        "PASS npm run bna:run:validate"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction.md",
+        "tasks-pending/2026-07-12-onetime-crm-portal-production-correction.md",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/MANIFEST.md",
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/requirements.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-12T17:17:00+03:00"
+    },
+    {
+      "id": "REQ-20260712-102",
+      "title": "Complete current-state visual audit and design evidence readback",
+      "expected_result": "Current CRM, inbox, portal, preview, mobile menu, and landing states are audited with screenshots or an exact screenshot/auth blocker.",
+      "source_id": "RAW-20260712-004",
+      "source_statement_ids": [
+        "SRC-20260712-004-001"
+      ],
+      "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "audit",
+      "priority": "P0",
+      "batch_id": "BATCH-01-AUDIT",
+      "depends_on": [
+        "REQ-20260712-101"
+      ],
+      "status": "done",
+      "implementation_status": "Current-state visual audit evidence regenerated. The original six source screenshots are still unavailable, but authenticated/read-only audit runs captured Operations, CRM, inbox, provider, public landing, parent/student, classroom, library/member, email-review, and mobile states with redacted screenshots, ARIA/DOM artifacts, VQ-coded findings, and exact residual limitations.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue BATCH-05 / REQ-20260712-106 with focused CRM frontend performance work. Treat VQ findings as inputs; broad UI polish still requires focused PQC/Definition of Ready per child packet.",
+      "acceptance_criteria": [
+        "Required routes/states/viewports are captured or precisely blocked.",
+        "Findings use VQ defect codes and map to requirement IDs.",
+        "Browser/page content is treated as untrusted evidence.",
+        "Downstream UI packets pass Definition of Ready before code."
+      ],
+      "evidence": [
+        "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/report.md",
+        "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/report.json",
+        "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/authenticated-current-state-attempt/report.md",
+        "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state/report.md",
+        "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/parallel-frontend-current-state/report.md",
+        "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/operations-ui-local/report.md",
+        "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/final-ui-local/qa-harness-local-report.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/live-performance-baseline/report.md"
+      ],
+      "verification": [
+        "PASS node scripts/audit-onetime-role-ui-current-state.mjs --out-dir ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/authenticated-current-state-attempt (35 screenshots; Operations auth and admin-provider session available; redacted evidence only)",
+        "PASS node scripts/audit-rabbi-onetime-current-state.mjs --out ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state (80 screenshots across 16 routes and 5 viewports; 5 VQ findings)",
+        "PASS node scripts/audit-onetime-parallel-frontend.mjs --out-dir ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/parallel-frontend-current-state (45 checks, 140 screenshots/crops, 28 VQ findings)",
+        "PASS node scripts/smoke-onetime-operations-crm-workbench-local.mjs (desktop/tablet/mobile synthetic CRM screenshots; no external writes)",
+        "PASS node scripts/smoke-onetime-provider-crm-layout-local.mjs (provider CRM layout screenshots; no external writes)",
+        "PASS node --test tests/one-time-operations-ui-smoke.test.js with BNA_ONE_TIME_OPERATIONS_UI_SMOKE_DIR under this audit folder",
+        "PASS node --test tests/one-time-rabbi-ui-final-local-smoke.test.js with BNA_ONE_TIME_UI_REVIEW_REPORT_DIR under this audit folder",
+        "PASS node scripts/audit-onetime-live-performance.mjs --out-dir ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/live-performance-baseline --screenshots (0 samples needing attention)",
+        "Manual screenshot spot-check: public landing still has oversized blank vertical space/old launcher; CRM/mobile contact cards show low-contrast washed text; mobile top rails can clip labels; live CRM route can remain in loading state; student review has one unlabeled action finding."
+      ],
+      "implementation_files": [
+        "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/",
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/live-performance-baseline/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-12T18:03:00+03:00",
+      "notes": "Original source PNG files from /workspace/scratch remain unavailable, but the requirement allowed authenticated regeneration or precise blockers. Regeneration now exists. Open VQ findings are implementation inputs, not Done proof for downstream UI requirements."
+    },
+    {
+      "id": "REQ-20260712-103",
+      "title": "Harden identity and signed view-as scope truth",
+      "expected_result": "Super Admin, actual Rabbi, and read-only view-as states are unmistakable in Operations, and server reads/mutations honor signed One Time scope without underlying super-admin broadening.",
+      "source_id": "RAW-20260712-004",
+      "source_statement_ids": [
+        "SRC-20260712-004-002"
+      ],
+      "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "security_privacy",
+      "priority": "P0",
+      "batch_id": "BATCH-02-IDENTITY",
+      "depends_on": [
+        "REQ-20260712-101"
+      ],
+      "status": "done",
+      "implementation_status": "Locally implemented. Signed view-as tokens now require the One Time project key, view-as requests become a project-scoped Rabbi owner identity before normal admin auth, conflicting workspace/project hints are rejected, non-read API methods are blocked, /api/bna/auth/me returns the view-as identity, and provider-page API calls forward the signed token in a request header.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-104. Production deploy/live-smoke is centralized in REQ-20260712-112 and remains open.",
+      "acceptance_criteria": [
+        "View-as token forcibly derives workspace/project.",
+        "Conflicting workspace/project query/body attempts return HTTP 403.",
+        "/api/bna/auth/me projects Rabbi owner identity in view-as.",
+        "View-as uses real Rabbi allowed views/navigation/data counts with writes disabled.",
+        "Integration tests deny BNA CRM/timeline/mailbox/tasks/students/directory reads under view-as."
+      ],
+      "evidence": [
+        "server.js",
+        "public/provider.html",
+        "tests/one-time-view-as-scope-contract.test.js"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --test tests/one-time-view-as-scope-contract.test.js tests/one-time-shared-review-branding.test.js tests/one-time-safe-view-as-navigation.test.js tests/one-time-provider-review-navigation.test.js tests/one-time-route-role-mapping.test.js (27 tests passed)"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "public/js/operations-shell.js",
+        "tests/"
+      ],
+      "deployment_required": false,
+      "notes": "This requirement is locally done only. No production release is claimed here; scoped commit/push/deploy/live-smoke are tracked by REQ-20260712-112.",
+      "updated_at": "2026-07-12T17:26:00+03:00"
+    },
+    {
+      "id": "REQ-20260712-104",
+      "title": "Enforce CRM tenant isolation and source label cleanup",
+      "expected_result": "One Time Rabbi CRM shows only explicitly owned One Time records, enrichment is same-workspace/project scoped, internal table labels are hidden, ambiguous records are quarantined, and a redacted production scope report exists.",
+      "source_id": "RAW-20260712-004",
+      "source_statement_ids": [
+        "SRC-20260712-004-003",
+        "SRC-20260712-004-004"
+      ],
+      "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "crm_isolation",
+      "priority": "P0",
+      "batch_id": "BATCH-03-CRM-ISOLATION",
+      "depends_on": [
+        "REQ-20260712-101"
+      ],
+      "status": "done",
+      "implementation_status": "Locally implemented. One Time CRM contact/timeline/communications scope contracts now pin explicit workspace/project ownership, internal CRM source keys are mapped to human-facing labels, and a redacted local scope report exists without private contact data.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-105. Production deploy/live-smoke is centralized in REQ-20260712-112 and remains open.",
+      "acceptance_criteria": [
+        "Rows missing explicit workspace/project ownership are not shown to Rabbi.",
+        "Same-email cross-workspace records do not leak contacts, messages, notes, tasks, membership, or counts.",
+        "Human-facing source labels replace internal table names.",
+        "Redacted dry-run production scope report groups visible records without private contact data.",
+        "No production contacts are deleted."
+      ],
+      "evidence": [
+        "src/lib/bna/crm-contact-model.js",
+        "tests/crm-contact-model.test.js",
+        "tests/rabbi-scheller-tenant-isolation-contract.test.js",
+        "ops/crm-scope-reports/2026-07-12-onetime-crm-isolation-local.md",
+        "ops/crm-scope-reports/2026-07-12-onetime-crm-isolation-local.json"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check src/lib/bna/crm-contact-model.js",
+        "PASS node --test tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-view-as-scope-contract.test.js (12 tests passed)"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/crm-contact-model.js",
+        "tests/",
+        "ops/crm-scope-reports/"
+      ],
+      "deployment_required": false,
+      "notes": "This requirement is locally done only. No production release is claimed here; scoped commit/push/deploy/live-smoke are tracked by REQ-20260712-112.",
+      "updated_at": "2026-07-12T17:34:00+03:00"
+    },
+    {
+      "id": "REQ-20260712-105",
+      "title": "Implement paginated CRM API and database-side performance contract",
+      "expected_result": "The CRM list endpoint enforces workspace/project in SQL with filters/sort/cursor pagination and the detail endpoint loads expensive timeline/conversation data only for the selected contact.",
+      "source_id": "RAW-20260712-004",
+      "source_statement_ids": [
+        "SRC-20260712-004-005"
+      ],
+      "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "crm_api_performance",
+      "priority": "P0",
+      "batch_id": "BATCH-04-CRM-API",
+      "depends_on": [
+        "REQ-20260712-104"
+      ],
+      "status": "done",
+      "implementation_status": "Locally implemented. The CRM list API accepts limit/cursor, defaults to 50 rows, caps at 100 rows, returns next_cursor/has_more metadata, caps source fetches by cursor window, keeps list payloads lightweight, and leaves expensive timeline data on the selected-contact timeline endpoint.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue the next unblocked batch. Production DB EXPLAIN/readback, deploy, and live smoke are centralized in REQ-20260712-112.",
+      "acceptance_criteria": [
+        "List payload contains only lightweight row fields.",
+        "Detail payload loads timeline, notes, email, WhatsApp, tasks, membership/access, attribution, city/timezone after selection.",
+        "No per-row correlated subqueries across hundreds of rows.",
+        "Representative 10,000-contact list query meets the budget or records exact blocker."
+      ],
+      "evidence": [
+        "server.js",
+        "src/lib/bna/crm-contact-model.js",
+        "tests/crm-contact-model.test.js",
+        "tests/rabbi-scheller-tenant-isolation-contract.test.js",
+        "ops/crm-scope-reports/2026-07-12-onetime-crm-api-pagination-local.md",
+        "ops/crm-scope-reports/2026-07-12-onetime-crm-api-pagination-local.json"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check src/lib/bna/crm-contact-model.js",
+        "PASS node --test tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-view-as-scope-contract.test.js (15 tests passed, including 10,000-contact fixture)"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/crm-contact-model.js",
+        "tests/"
+      ],
+      "deployment_required": false,
+      "notes": "This requirement is locally done only. Production DB EXPLAIN/readback and live performance smoke are tracked by REQ-20260712-112.",
+      "updated_at": "2026-07-12T17:42:00+03:00"
+    },
+    {
+      "id": "REQ-20260712-106",
+      "title": "Remove CRM root rerender and global data-loader side effects",
+      "expected_result": "Initial CRM navigation requests only identity/scope, paginated list, and lightweight facets; contact selection loads selected detail only without global rerender.",
+      "source_id": "RAW-20260712-004",
+      "source_statement_ids": [
+        "SRC-20260712-004-006"
+      ],
+      "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "crm_frontend_performance",
+      "priority": "P0",
+      "batch_id": "BATCH-05-CRM-FRONTEND",
+      "depends_on": [
+        "REQ-20260712-105",
+        "REQ-20260712-102"
+      ],
+      "status": "done",
+      "implementation_status": "Locally implemented. Operations CRM list/detail loading now uses a scoped CRM panel refresh instead of application-wide render on contact selection, sends CRM list/timeline fetches with AbortController signals, debounces search, caches normalized list queries, requests and renders at most 50 initial cards, keeps stale responses from painting, updates both the monolith fallback and split /operations shell, and lazy-constructs the legacy review/source table only when its details panel is opened.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue the next unblocked packet. Broad CRM/inbox UI remains REQ-20260712-107; shell/bundle performance budget remains REQ-20260712-111; commit/push/deploy/live-smoke remains REQ-20260712-112.",
+      "acceptance_criteria": [
+        "Contact selection does not call the application-wide render function.",
+        "Initial CRM API calls after auth are no more than 3.",
+        "Initial rows rendered are no more than 50.",
+        "Stale requests are aborted and search is debounced.",
+        "Legacy CRM review table is not constructed while closed."
+      ],
+      "evidence": [
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/02-crm-frontend-performance.product-quality.json",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/02-crm-frontend-performance.md",
+        "public/operations.html",
+        "public/js/operations-shell.js",
+        "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
+      ],
+      "verification": [
+        "PASS npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/02-crm-frontend-performance.product-quality.json",
+        "PASS node --check public/js/operations-shell.js",
+        "PASS node --check scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "PASS node scripts/smoke-onetime-operations-crm-workbench-local.mjs (split shell + monolith across 5 viewports; initial CRM API calls after auth = 1; initial rendered cards = 50; contact selection app-root mutations = 0; debounced search list requests = 1; legacy table closed/open = 0/1; no external writes)",
+        "PASS node --test tests/service-provider-scope-routes.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js (13 tests passed)",
+        "CAVEAT node --test tests/operations-shell-navigation-contract.test.js tests/service-provider-scope-routes.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js: 16 passed, 1 failed on the pre-existing initial operations-shell.js size budget. Clean HEAD is approximately 1.211 MB against the 1.2 MB test ceiling; this working tree is approximately 1.227 MB. Track under REQ-20260712-111 performance budget rather than REQ-106 loader behavior."
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "public/js/operations-shell.js",
+        "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/02-crm-frontend-performance.product-quality.json",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/02-crm-frontend-performance.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-12T18:29:00+03:00",
+      "notes": "Local frontend implementation proof is complete. Production Done still requires scoped commit/push/deploy/live-smoke in REQ-20260712-112. The shell byte-budget assertion is recorded for REQ-20260712-111.",
+      "release_required_under": "REQ-20260712-112",
+      "performance_budget_followup": "REQ-20260712-111"
+    },
+    {
+      "id": "REQ-20260712-107",
+      "title": "Build scoped first-party One Time CRM and Inbox experience",
+      "expected_result": "One Time has a professional desktop/mobile CRM and scoped inbox with list, conversation/activity, contact profile, notes, tasks, safe send states, and read-only view-as parity.",
+      "source_id": "RAW-20260712-004",
+      "source_statement_ids": [
+        "SRC-20260712-004-007",
+        "SRC-20260712-004-008"
+      ],
+      "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "crm_inbox_ui",
+      "priority": "P1",
+      "batch_id": "BATCH-06-CRM-INBOX",
+      "depends_on": [
+        "REQ-20260712-105",
+        "REQ-20260712-102"
+      ],
+      "status": "done",
+      "implementation_status": "Locally implemented. One Time CRM now renders as a three-pane operator workspace with contact list, activity/conversation, and profile panes; mobile selection hides the list and exposes a Back to contacts flow; CRM safe reply, internal-note, and task controls are visibly disabled/no-send; the scoped One Time Inbox shows selected CRM contact context, Rabbi/One Time scope, provider/project metadata, and send gates; split-shell and monolith smoke evidence covers desktop/tablet/mobile states without external writes.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-108 portal shell/preview/menu packet. Production commit/push/deploy/live-smoke remains centralized in REQ-20260712-112; shell byte-budget work remains REQ-20260712-111.",
+      "acceptance_criteria": [
+        "Desktop uses left contact list, center activity/conversation, right profile.",
+        "Mobile uses contact list to full-screen selected contact to back flow.",
+        "Inbox stays scoped to One Time and retains selected contact context.",
+        "View-as displays same UI with mutation/send controls disabled and labeled read-only preview.",
+        "Action registry and screenshots cover visible controls."
+      ],
+      "evidence": [
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.product-quality.json",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.md",
+        "public/operations.html",
+        "public/js/operations-shell.js",
+        "public/js/operations-deferred-renderers.js",
+        "public/css/operations-shell.css",
+        "ops/action-registry/actions.json",
+        "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
+      ],
+      "verification": [
+        "PASS npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.product-quality.json",
+        "PASS node --check public/js/operations-shell.js",
+        "PASS node --check public/js/operations-deferred-renderers.js",
+        "PASS node --check scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "PASS node scripts/smoke-onetime-operations-crm-workbench-local.mjs (split shell + monolith CRM across 5 viewports; 3-pane CRM panes visible; mobile selected-contact Back flow passes; disabled CRM reply/note/task controls present; scoped One Time Inbox context screenshot passes; initial CRM API calls after auth = 1; initial cards = 50; contact-selection app-root mutations = 0; debounced search list requests = 1; legacy table closed/open = 0/1; no external writes)",
+        "PASS node --test tests/service-provider-scope-routes.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js (13 tests passed)",
+        "PASS npm run bna:run:validate",
+        "PASS npm run watchdog:protocol-drift (0 findings)"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "public/js/operations-shell.js",
+        "public/js/operations-deferred-renderers.js",
+        "public/css/operations-shell.css",
+        "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "ops/action-registry/actions.json",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.product-quality.json",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-12T18:53:00+03:00",
+      "notes": "Local app-visible proof is complete with synthetic data only and no external writes. Production Done still requires scoped commit/push/deploy/live-smoke in REQ-20260712-112. The split-shell byte-budget assertion remains REQ-20260712-111.",
+      "release_required_under": "REQ-20260712-112",
+      "performance_budget_followup": "REQ-20260712-111"
+    },
+    {
+      "id": "REQ-20260712-108",
+      "title": "Normalize portal IA, shared shell, mobile menu, preview mode, support boundaries, and preview fixtures",
+      "expected_result": "Family, Student, Classroom, Library, and parent setup/reset use clear labels, shared One Time shell, real accessible mobile menu, preserved preview mode, scoped support boundaries, and TEST-only preview personas.",
+      "source_id": "RAW-20260712-004",
+      "source_statement_ids": [
+        "SRC-20260712-004-009",
+        "SRC-20260712-004-010",
+        "SRC-20260712-004-011",
+        "SRC-20260712-004-012"
+      ],
+      "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "portal_ui",
+      "priority": "P1",
+      "batch_id": "BATCH-07-PORTALS",
+      "depends_on": [
+        "REQ-20260712-102"
+      ],
+      "status": "done",
+      "implementation_status": "Locally implemented. One Time Family, Student, Classroom, Library, and parent setup/reset surfaces now share the One Time portal shell, user-facing labels, preview banner, TEST-only review links, accessible mobile menu button, and no-write preview boundaries. Local screenshots cover 1440, 1024, 768, 430, and 390 px states with no console errors, HTTP errors, or POST/write requests.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-109 landing WhatsApp launcher packet. Production commit/push/deploy/live-smoke remains centralized in REQ-20260712-112; performance/bundle budgets remain REQ-20260712-111.",
+      "acceptance_criteria": [
+        "/rabbi-member is labeled Family Portal where user-facing.",
+        "/one-time-parent is clearly account setup/reset.",
+        "Shared shell applies to all One Time portal and preview routes.",
+        "A real accessible menu button replaces the pseudo-element hamburger.",
+        "Preview fixtures are TEST/example.test only and excluded from production sends/reminders/metrics."
+      ],
+      "evidence": [
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/04-portal-shell-preview.product-quality.json",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/04-portal-shell-preview.md",
+        "public/css/one-time-portal-shell.css",
+        "public/js/one-time-portal-shell.js",
+        "public/rabbi-member.html",
+        "public/js/rabbi-member.js",
+        "public/member-library.html",
+        "public/one-time-classroom.html",
+        "public/one-time-parent.html",
+        "public/one-time-parent-review.html",
+        "public/student.html",
+        "ops/action-registry/actions.json",
+        "scripts/smoke-onetime-portal-shell-local.mjs",
+        "ops/ui-audits/2026-07-12-onetime-portal-shell-local/report.md",
+        "ops/ui-audits/2026-07-12-onetime-portal-shell-local/report.json",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
+      ],
+      "verification": [
+        "PASS npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/04-portal-shell-preview.product-quality.json",
+        "PASS node --check public/js/one-time-portal-shell.js",
+        "PASS node --check public/js/rabbi-member.js",
+        "PASS node --check scripts/smoke-onetime-portal-shell-local.mjs",
+        "PASS node -e JSON.parse(...) for ops/action-registry/actions.json",
+        "PASS node scripts/smoke-onetime-portal-shell-local.mjs (Family Portal 1440, Library 1024, Classroom 768, parent setup/reset 430, Student 390, Family mobile menu 390; TEST preview banner; preview links preserved; real menu button aria-expanded/Escape focus return; example.test fixture emails; no HTTP/console errors; no POST/write requests)",
+        "PASS node --test tests/one-time-shared-review-branding.test.js tests/one-time-safe-view-as-navigation.test.js tests/one-time-provider-review-navigation.test.js tests/workspace-scope-guardrails.test.js (23 tests passed)"
+      ],
+      "implementation_files": [
+        "public/css/one-time-portal-shell.css",
+        "public/js/one-time-portal-shell.js",
+        "public/rabbi-member.html",
+        "public/js/rabbi-member.js",
+        "public/member-library.html",
+        "public/one-time-classroom.html",
+        "public/one-time-parent.html",
+        "public/one-time-parent-review.html",
+        "public/student.html",
+        "ops/action-registry/actions.json",
+        "scripts/smoke-onetime-portal-shell-local.mjs",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/04-portal-shell-preview.product-quality.json",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/04-portal-shell-preview.md",
+        "ops/ui-audits/2026-07-12-onetime-portal-shell-local/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-12T19:23:00+03:00",
+      "notes": "Local app-visible proof is complete with synthetic TEST/example.test data only and no external writes. Production Done still requires scoped commit/push/deploy/live-smoke in REQ-20260712-112. Bundle/performance budgets remain REQ-20260712-111.",
+      "release_required_under": "REQ-20260712-112",
+      "performance_budget_followup": "REQ-20260712-111"
+    },
+    {
+      "id": "REQ-20260712-109",
+      "title": "Replace landing helper widget with standard WhatsApp launcher",
+      "expected_result": "The One Time landing page preserves the latest deployed design while replacing Robot Scheller/quick-command widget assets with an accessible WhatsApp bubble using runtime-configured public number.",
+      "source_id": "RAW-20260712-004",
+      "source_statement_ids": [
+        "SRC-20260712-004-013"
+      ],
+      "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "public_landing",
+      "priority": "P1",
+      "batch_id": "BATCH-08-LANDING-WHATSAPP",
+      "depends_on": [
+        "REQ-20260712-102"
+      ],
+      "status": "done",
+      "implementation_status": "Locally implemented. The public One Time landing page no longer loads bna-helper-knowledge.js, bna-bot-widget.js, Robot Scheller helper chrome, or hard-coded wa.me links. It now renders one accessible fixed WhatsApp launcher that uses the same-origin runtime redirect endpoint, keeps the public number server-configured, hides behind modals, and performs no send/write action during local proof.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-111 performance budget work. Production commit/push/deploy/live-smoke and runtime public-number readback remain centralized in REQ-20260712-112.",
+      "acceptance_criteria": [
+        "No landing-only bna-bot-widget.js, bna-helper-knowledge.js, or Robot Scheller PNG load remains.",
+        "Launcher uses WhatsApp green circular bottom-right button with accessible label and focus state.",
+        "wa.me link uses ONE_TIME_PUBLIC_WHATSAPP_NUMBER and no client-side private credential/token.",
+        "Public/mobile smoke passes."
+      ],
+      "evidence": [
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.product-quality.json",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.md",
+        "public/one-time/index.html",
+        "ops/action-registry.json",
+        "tests/one-time-brand-helper-isolation.test.js",
+        "scripts/smoke-onetime-landing-whatsapp-local.mjs",
+        "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md",
+        "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.json",
+        "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-1440.png",
+        "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-430.png",
+        "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/landing-whatsapp-390.png",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
+      ],
+      "verification": [
+        "PASS npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.product-quality.json",
+        "PASS node --check scripts/smoke-onetime-landing-whatsapp-local.mjs",
+        "PASS node -e JSON.parse(...) for ops/action-registry.json",
+        "PASS node --test tests/one-time-brand-helper-isolation.test.js tests/one-time-focused-landing.test.js tests/one-time-shared-review-branding.test.js (19 tests passed)",
+        "PASS node scripts/smoke-onetime-landing-whatsapp-local.mjs (1440, 1024, 768, 430, and 390 px screenshots; one launcher; no helper scripts/assets; no hard-coded wa.me; runtime readiness redacts full number; no POST/write requests)"
+      ],
+      "implementation_files": [
+        "public/one-time/index.html",
+        "ops/action-registry.json",
+        "tests/one-time-brand-helper-isolation.test.js",
+        "scripts/smoke-onetime-landing-whatsapp-local.mjs",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.product-quality.json",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.md",
+        "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-12T20:00:00+03:00",
+      "notes": "Local app-visible proof is complete with a smoke fake WhatsApp number only; the launcher uses the existing server runtime redirect and does not perform a send. Production public-number configuration/readback, commit/push/deploy, and live smoke remain under REQ-20260712-112.",
+      "release_required_under": "REQ-20260712-112",
+      "performance_budget_followup": "REQ-20260712-111"
+    },
+    {
+      "id": "REQ-20260712-110",
+      "title": "Make the One Time WhatsApp assistant natural within deterministic safety gates",
+      "expected_result": "The One Time WhatsApp assistant answers free-form/multi-turn questions naturally using scoped knowledge and model wording while deterministic layers enforce opt-out, access, class-link, payment, privacy, escalation, and send gates.",
+      "source_id": "RAW-20260712-004",
+      "source_statement_ids": [
+        "SRC-20260712-004-014"
+      ],
+      "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "whatsapp_assistant",
+      "priority": "P1",
+      "batch_id": "BATCH-09-WHATSAPP-ASSISTANT",
+      "depends_on": [
+        "REQ-20260712-103",
+        "REQ-20260712-104"
+      ],
+      "status": "done",
+      "implementation_status": "Locally implemented. One Time provider lead-bot replies are warmer and more natural while remaining deterministic and safety-gated; tests cover greeting, unknown intent, technology support, class-link denial, opt-out suppression, Rabbi/Torah routing, active-member-only class link release, and WAPI approval gates without live sends.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue remaining unblocked performance/release work where dependencies allow. Production WAPI readback/live-send gates remain centralized in REQ-20260712-112.",
+      "acceptance_criteria": [
+        "Deterministic layer still handles STOP, wrong number, access verification, class-link authorization, payment/access restrictions, escalation, consent, suppression, and send approval.",
+        "Generated wording uses scoped history/knowledge and does not claim to be Rabbi.",
+        "Validation prevents Zoom link leakage, credentials, cross-workspace data, invented current learning, charges, access grants, and sends after opt-out.",
+        "Multi-turn tests cover required natural question scenarios."
+      ],
+      "evidence": [
+        "src/lib/bna/provider-lead-bot.js",
+        "tests/service-provider-lead-bot.test.js",
+        "ops/crm-scope-reports/2026-07-12-onetime-whatsapp-assistant-natural-local.md",
+        "ops/crm-scope-reports/2026-07-12-onetime-whatsapp-assistant-natural-local.json"
+      ],
+      "verification": [
+        "PASS node --check src/lib/bna/provider-lead-bot.js",
+        "PASS node --test tests/service-provider-lead-bot.test.js tests/one-time-wapi-scope-contract.test.js (12 tests passed; no live send)"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/provider-lead-bot.js",
+        "tests/service-provider-lead-bot.test.js"
+      ],
+      "deployment_required": false,
+      "notes": "This requirement is locally done only. Production WAPI/live readback and no-unapproved-send proof are tracked by REQ-20260712-112.",
+      "updated_at": "2026-07-12T17:50:00+03:00"
+    },
+    {
+      "id": "REQ-20260712-111",
+      "title": "Meet One Time performance budgets and bundle delivery requirements",
+      "expected_result": "Operations shell, CRM first page/list/detail, public landing, and large-fixture CRM query budgets are measured and met or blocked with exact evidence; Operations bundles are split/minified/fingerprinted/compressed/cached as required.",
+      "source_id": "RAW-20260712-004",
+      "source_statement_ids": [
+        "SRC-20260712-004-015"
+      ],
+      "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "performance_release",
+      "priority": "P0",
+      "batch_id": "BATCH-10-PERFORMANCE",
+      "depends_on": [
+        "REQ-20260712-105",
+        "REQ-20260712-106"
+      ],
+      "status": "done",
+      "implementation_status": "Locally implemented. Operations split delivery is under the 1.2 MB shell budget, CRM first-page/list/detail budgets are measured and pass locally, HTML/private shell cache policy is verified locally, member-library Vimeo loading is gated until Play Video, and release/live compression/cache proof is explicitly carried by REQ-20260712-112.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-112 for scoped commit/push/deploy, live smokes, production compression/cache/header readback, and final closeout.",
+      "acceptance_criteria": [
+        "CRM list API for 50 contacts is within budget or exact blocker recorded.",
+        "Initial CRM calls/rows/DOM/long-task budgets are recorded.",
+        "Authenticated HTML is non-cacheable while fingerprinted assets are long-cacheable.",
+        "Brotli/gzip and Vary: Accept-Encoding are verified on One Time and BNA production domains.",
+        "Vimeo loads only when a video is opened."
+      ],
+      "evidence": [
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.product-quality.json",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.md",
+        "ops/performance-audits/2026-07-12-onetime-performance-budget-local/report.md",
+        "ops/performance-audits/2026-07-12-onetime-performance-budget-local/report.json",
+        "scripts/split-operations-shell.mjs",
+        "public/operations-bootstrap.html",
+        "public/css/operations-shell.css",
+        "public/js/operations-shell.js",
+        "public/js/operations-deferred-renderers.js",
+        "public/member-library.html",
+        "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "scripts/smoke-onetime-portal-shell-local.mjs",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json",
+        "ops/ui-audits/2026-07-12-onetime-portal-shell-local/report.md",
+        "ops/ui-audits/2026-07-12-onetime-portal-shell-local/report.json",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
+      ],
+      "verification": [
+        "PASS npm run pqc:validate -- ops\\prompt-packets\\2026-07-12-onetime-crm-portal-production-correction\\06-performance-budgets.product-quality.json",
+        "PASS node --check scripts\\split-operations-shell.mjs",
+        "PASS node scripts\\split-operations-shell.mjs (operations-shell.js 1,059,582 bytes under 1,200,000 byte budget; bootstrap 1,688 bytes; deferred renderer 820,475 bytes; CSS 221,457 bytes)",
+        "PASS node --check public\\js\\operations-shell.js",
+        "PASS node --check public\\js\\operations-deferred-renderers.js",
+        "PASS member-library inline script syntax check",
+        "PASS node --check scripts\\smoke-onetime-portal-shell-local.mjs",
+        "PASS node --test tests\\operations-shell-navigation-contract.test.js tests\\one-time-intake-api-readback.test.js (8 tests passed)",
+        "PASS node scripts\\smoke-onetime-operations-crm-workbench-local.mjs (CRM first-page request count 1, initial cards 50, app-root mutations after selection 0, debounced search list request delta 1, scoped inbox context passed)",
+        "PASS node scripts\\smoke-onetime-portal-shell-local.mjs (Vimeo zero requests before Play Video, playable fixture loads player.vimeo.com only after Play Video, no POST/write requests)"
+      ],
+      "implementation_files": [
+        "scripts/split-operations-shell.mjs",
+        "public/operations-bootstrap.html",
+        "public/css/operations-shell.css",
+        "public/js/operations-shell.js",
+        "public/js/operations-deferred-renderers.js",
+        "public/member-library.html",
+        "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "scripts/smoke-onetime-portal-shell-local.mjs",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.product-quality.json",
+        "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.md",
+        "ops/performance-audits/2026-07-12-onetime-performance-budget-local/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-12T20:28:00+03:00",
+      "release_required_under": "REQ-20260712-112",
+      "notes": "Local performance proof is complete with synthetic data only and no external writes. Production Brotli/gzip, Vary, long-cache/fingerprint readback, commit/push/deploy, and live smokes remain under REQ-20260712-112."
+    },
+    {
+      "id": "REQ-20260712-112",
+      "title": "Verify, deploy, live-smoke, and close out the production correction",
+      "expected_result": "Required tests, screenshots, accessibility checks, protocol drift watchdog, commit/push/merge/deploy, exact SHA readback, authenticated live CRM smoke, cross-workspace negative smoke, landing/portal live smoke, ledger, changelog, and terminal statuses are complete.",
+      "source_id": "RAW-20260712-004",
+      "source_statement_ids": [
+        "SRC-20260712-004-015"
+      ],
+      "source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "verifier_deploy",
+      "priority": "P0",
+      "batch_id": "BATCH-11-VERIFY-DEPLOY",
+      "depends_on": [
+        "REQ-20260712-103",
+        "REQ-20260712-104",
+        "REQ-20260712-105",
+        "REQ-20260712-106",
+        "REQ-20260712-107",
+        "REQ-20260712-108",
+        "REQ-20260712-109",
+        "REQ-20260712-110",
+        "REQ-20260712-111"
+      ],
+      "status": "blocked",
+      "implementation_status": "Clean release branch is pushed, draft PR #131 is open and mergeable/clean, and release-gate dry-run is ready. No production deploy, production mutation, external write, or live verification was performed.",
+      "can_continue_without_operator": false,
+      "next_action": "Unblock by reviewing/merging PR #131 or otherwise confirming the production release path, then run the approved deploy/live-verify gate commands and complete or explicitly defer Railway/Drive external readbacks through the approved release gate options.",
+      "acceptance_criteria": [
+        "Required behavioral tests and existing One Time regression suite pass.",
+        "Screenshots at required viewport/state matrix exist where UI work is done.",
+        "Secrets audit, protocol drift watchdog, accessibility, and visual tests run.",
+        "Scoped changes are committed, pushed, merged, deployed, and exact SHA verified on both relevant services.",
+        "Live smokes pass for Operations, landing, Family Portal, Student Portal, Classroom, Library, CRM positive, and cross-workspace negative cases."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/release-gate-dry-run/report.json",
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/release-gate-dry-run/report.md",
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/release-lane-scope-audit/report.json",
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/release-lane-scope-audit/report.md",
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/requirements.json",
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/NEXT-SESSION.md",
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/DEPLOYMENT.md",
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/TEST-RESULTS.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/131"
+      ],
+      "verification": [
+        "SUPERSEDED BLOCKER npm run bna:release-gate -- --json (dry run) on stale local master: current HEAD was not confirmed pushed to origin/master; working tree had 100 dirty/untracked paths; Railway and Drive external readback gates were not ready",
+        "SUPERSEDED BLOCKER release lane scope audit: master was 0 commits ahead and 54 commits behind origin/master; One Time correction work was uncommitted in a 100-path mixed dirty tree",
+        "PASS clean release branch codex/onetime-crm-portal-release-20260712 created from current origin/master and pushed with implementation commit 833cac222",
+        "PASS npm run pqc:validate for all 7 One Time product-quality packets",
+        "PASS npm run bna:run:validate on the clean release branch",
+        "PASS npm run operations:check-generated",
+        "PASS focused One Time scope/CRM/assistant/helper regression subset (36 tests passed)",
+        "PASS local Operations CRM workbench, portal shell, and landing WhatsApp smokes on the clean release branch",
+        "PASS npm run watchdog:protocol-drift",
+        "PASS npm run audit:governance exit 0; current One Time audit packages mapped, historical repo-wide audit debt remains",
+        "PASS npm run bna:release-gate -- --expected-branch codex/onetime-crm-portal-release-20260712 (dry run): ready, HEAD pushed yes, dirty files 0, production mutation performed no",
+        "PASS draft PR #131 opened against master: https://github.com/shloimie-beep/bnei-neviim-academy/pull/131",
+        "PASS PR #131 readiness readback: open, draft, mergeable, merge state CLEAN, and no status checks reported on the branch",
+        "BLOCKED / NEEDS OPERATOR RELEASE DECISION: PR review/release approval is required; deploy requires DEPLOY_BNA_PRODUCTION_CLOSEOUT, live verification requires VERIFY_BNA_LIVE_CLOSEOUT, and Railway/Drive readbacks must be completed or explicitly deferred"
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/",
+        "ops/live-smokes/",
+        "ops/performance-audits/",
+        "ops/ui-audits/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T21:22:41+03:00",
+      "blocker": "Production Done is blocked until PR review/release approval and explicit deploy/live-verify approval are given, and Railway/Drive readbacks are completed or explicitly deferred through approved release-gate options. The stale master / dirty worktree blocker is superseded by the clean pushed release branch and mergeable/clean draft PR #131.",
+      "blocker_owner": "Codex/operator release lane",
+      "blocker_next_action": "Review/merge PR #131 or otherwise confirm the production release path, then run the approved deploy/live-verify gate commands and complete or explicitly defer Railway/Drive readback through approved release-gate options.",
+      "blocker_detail": {
+        "id": "DEC-20260712-112",
+        "reason": "The scoped release branch is clean, pushed, draft PR #131 is open and mergeable/clean, and release-gate dry-run ready, but production deploy/live verification would mutate release state and requires PR review/release approval plus explicit approval tokens. Railway/Drive external readbacks also need completion or approved deferral before production Done can be claimed.",
+        "owner": "Codex/operator release lane",
+        "recommended_option": "Review/merge PR #131, approve the production release path, run the deploy gate, verify exact SHA on the BNA Operations/portal and One Time public services, then run the required live smokes.",
+        "alternatives": [
+          "Explicitly defer optional integrations/external readback using the approved release-gate flags after deploy approval is present.",
+          "Pause release and keep REQ-20260712-112 blocked until the operator is ready for production deploy/live verification."
+        ],
+        "consequences": "No production Done can be claimed; live app may still be on older code until deployed and smoke-tested.",
+        "exact_next_action": "Review PR #131, then from the approved release ref run the deploy command with DEPLOY_BNA_PRODUCTION_CLOSEOUT, followed by live verification with VERIFY_BNA_LIVE_CLOSEOUT, exact SHA readback, and the required live smokes."
+      }
+    }
+  ]
+}

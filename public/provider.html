@@ -1499,10 +1499,14 @@
         }
 
         async function api(path, options = {}) {
+            const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+            if (oneTimeViewAsRabbiToken && !headers['X-One-Time-View-As-Token']) {
+                headers['X-One-Time-View-As-Token'] = oneTimeViewAsRabbiToken;
+            }
             const response = await fetch(path, {
                 credentials: 'same-origin',
-                headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-                ...options
+                ...options,
+                headers
             });
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.error || data.message || 'Request failed');

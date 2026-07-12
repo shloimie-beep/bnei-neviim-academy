@@ -1,0 +1,27 @@
+- main:
+  - button "Open navigation"
+  - heading "Provider Messages" [level=1]
+  - text: Provider Workspace Admin / Comms / Provider Messages
+  - button "Ask about One Time Mishnah Class / Comms / Provider Messages": Ask
+  - text: 12 Jul
+  - navigation "Comms sections":
+    - tablist "Comms sections":
+      - tab "Announcements" [selected]: Announce 0
+      - tab "Email Previews": Email Previews 0
+      - tab "Support Replies": Support Replies 0
+      - tab "No-send Log": No-send Log 0
+  - text: Messages
+  - heading "Communications" [level=2]
+  - paragraph: Parent, student, provider, internal, WhatsApp, email, and bot conversations are separated by permission-aware lanes.
+  - heading "Provider Messages" [level=3]
+  - text: 0 records
+  - group:
+    - text: Filters Date
+    - button "All dates"
+    - button "Today"
+    - button "Last 7 days"
+    - button "Last 30 days"
+    - text: Tags
+    - button "Communication tag filter": All tags (0)
+    - text: Showing 0 of 0 notes.
+  - text: No messages match this lane.
