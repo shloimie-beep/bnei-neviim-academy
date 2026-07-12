@@ -38937,3 +38937,8 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   requires `BNA_ONETIME_CRM_TEST_DATABASE_URL`; it intentionally ignores
   production `DATABASE_URL`. The blocker report is
   `ops/evidence/one-time-crm-journey-local-db/2026-07-12T20-46-07-389Z-report.md`.
+- Follow-up blocker audit at 2026-07-12T23:54:03+03:00 confirmed there is
+  still no local/test DB URL, no local Postgres tooling, no Docker, no installed
+  in-process DB adapter, and no usable local env/secret file in this worktree.
+  Evidence:
+  `ops/evidence/one-time-crm-journey-local-db/2026-07-12T23-54-03-blocker-audit.md`.

@@ -30,6 +30,10 @@ Current completed batches:
   canonical `/operations` browser proof. The blocker is isolated mutation/reload
   proof: set `BNA_ONETIME_CRM_TEST_DATABASE_URL` to a local/test Postgres URL,
   then rerun `node scripts/smoke-onetime-crm-journey-local-db.mjs`.
+  A second blocker audit at
+  `ops/evidence/one-time-crm-journey-local-db/2026-07-12T23-54-03-blocker-audit.md`
+  found no local DB URL, no Postgres tools, no Docker, and no installed
+  in-process DB adapter.
 
 Next requirements:
 

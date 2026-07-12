@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-07-12T23:54:03+03:00",
+  "requirement_id": "REQ-20260712-806",
+  "status": "blocked_audit_repeat_2",
+  "blocker": "BNA_ONETIME_CRM_TEST_DATABASE_URL is not set and this environment has no local Postgres or Docker tooling available to provision a disposable test database.",
+  "checks": [
+    { "check": "git status", "result": "clean branch codex/onetime-post-agent-delta-20260712-v3 tracking origin" },
+    { "check": "npm run bna:run:next", "result": "no unblocked executable batch; counts not_started=1, blocked=1, done=5" },
+    { "check": "environment variable presence", "result": "BNA_ONETIME_CRM_TEST_DATABASE_URL not present; DATABASE_URL not present in this shell" },
+    { "check": "local Postgres tooling", "result": "psql, initdb, and pg_ctl not found" },
+    { "check": "Docker tooling", "result": "docker not found" },
+    { "check": "in-process database adapters", "result": "pg-mem, @electric-sql/pglite, postgres, and better-sqlite3 are not installed" },
+    { "check": "credential-free variable-name search", "result": "only docs/reports/scripts and .env.example mention BNA_ONETIME_CRM_TEST_DATABASE_URL; no usable local secret/env file was found in this worktree" }
+  ],
+  "guardrails": [
+    "No production DATABASE_URL was used.",
+    "No secret values were printed or recorded.",
+    "No external provider, send, payment, access, DNS, account, or credential mutation was performed."
+  ],
+  "next_action": "Provide an approved local/test Postgres URL in BNA_ONETIME_CRM_TEST_DATABASE_URL, then rerun node scripts/smoke-onetime-crm-journey-local-db.mjs."
+}

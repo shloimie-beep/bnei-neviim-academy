@@ -209,6 +209,21 @@ Result: BLOCKED. The script requires `BNA_ONETIME_CRM_TEST_DATABASE_URL` and
 intentionally ignores production `DATABASE_URL`. Report:
 `ops/evidence/one-time-crm-journey-local-db/2026-07-12T20-46-07-389Z-report.md`.
 
+```powershell
+where.exe psql; where.exe initdb; where.exe pg_ctl; where.exe docker
+```
+
+Result: BLOCKED. None of those tools are available in this shell.
+
+```bash
+node -e "for (const name of ['pg-mem','@electric-sql/pglite','postgres','better-sqlite3']) { try { require.resolve(name); console.log(name+':found') } catch { console.log(name+':not_found') } }"
+```
+
+Result: BLOCKED. No in-process Postgres-compatible adapter is installed.
+
+Blocker audit report:
+`ops/evidence/one-time-crm-journey-local-db/2026-07-12T23-54-03-blocker-audit.md`.
+
 ```bash
 npm run watchdog:actions
 ```

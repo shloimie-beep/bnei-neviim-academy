@@ -214,3 +214,8 @@
   `BNA_ONETIME_CRM_TEST_DATABASE_URL` is not set. Report:
   `ops/evidence/one-time-crm-journey-local-db/2026-07-12T20-46-07-389Z-report.md`.
   The script intentionally ignores production `DATABASE_URL`.
+- Blocker audit:
+  `ops/evidence/one-time-crm-journey-local-db/2026-07-12T23-54-03-blocker-audit.md`
+  confirms this environment has no `BNA_ONETIME_CRM_TEST_DATABASE_URL`, no
+  `psql`/`initdb`/`pg_ctl`, no Docker, no installed in-process Postgres
+  adapter, and no usable local env/secret file in the worktree.

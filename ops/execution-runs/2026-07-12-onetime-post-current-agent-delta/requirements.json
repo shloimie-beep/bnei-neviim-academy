@@ -343,7 +343,8 @@
         "PASS node --test tests/service-provider-scope-routes.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/crm-contact-model.test.js (18/18)",
         "PASS node scripts/smoke-onetime-operations-crm-workbench-local.mjs with canonical /operations -> operations-bootstrap.html proof and screenshots at 1440, 1024, 768, 430, and 390 widths",
         "PASS npm run watchdog:actions with 0 findings",
-        "BLOCKED node scripts/smoke-onetime-crm-journey-local-db.mjs because BNA_ONETIME_CRM_TEST_DATABASE_URL is not set"
+        "BLOCKED node scripts/smoke-onetime-crm-journey-local-db.mjs because BNA_ONETIME_CRM_TEST_DATABASE_URL is not set",
+        "BLOCKER AUDIT 2026-07-12T23:54:03+03:00 confirmed no BNA_ONETIME_CRM_TEST_DATABASE_URL, no psql/initdb/pg_ctl, no Docker, no installed in-process Postgres adapter, and no usable local env/secret file in this worktree"
       ],
       "verification": [
         "PASS node --check server.js",
@@ -351,7 +352,8 @@
         "PASS node --test tests/service-provider-scope-routes.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/crm-contact-model.test.js",
         "PASS node scripts/smoke-onetime-operations-crm-workbench-local.mjs",
         "PASS npm run watchdog:actions",
-        "BLOCKED isolated DB mutation/reload proof: ops/evidence/one-time-crm-journey-local-db/2026-07-12T20-46-07-389Z-report.md"
+        "BLOCKED isolated DB mutation/reload proof: ops/evidence/one-time-crm-journey-local-db/2026-07-12T20-46-07-389Z-report.md",
+        "BLOCKER AUDIT repeat 2: ops/evidence/one-time-crm-journey-local-db/2026-07-12T23-54-03-blocker-audit.md"
       ],
       "implementation_files": [
         "src/lib/bna/crm-contact-model.js",
@@ -370,7 +372,7 @@
       "blocker_owner": "Operator / local test environment",
       "blocker_next_action": "Set BNA_ONETIME_CRM_TEST_DATABASE_URL to a local/test Postgres URL, then rerun node scripts/smoke-onetime-crm-journey-local-db.mjs from this branch.",
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:48:00+03:00"
+      "updated_at": "2026-07-12T23:54:03+03:00"
     },
     {
       "id": "REQ-20260712-807",
