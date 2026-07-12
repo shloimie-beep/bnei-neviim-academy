@@ -39052,3 +39052,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Live proof passed: One Time separate-instance SHA smoke and One Time
   Operations CRM workbench smoke with 12 scoped cards and read-only selected
   timeline.
+
+## 2026-07-13 - Shared CRM workspace tabs local verification
+
+- Enabled Overview, Activity, Conversations, Tasks, and Access tabs in the
+  shared CRM contact workspace instead of rendering disabled tab placeholders.
+- Added customer-facing panels for overview, conversations, tasks, and access;
+  Activity remains the default timeline/update surface.
+- Verification passed: generated-shell check, focused CRM/isolation tests
+  `35/35`, local Operations CRM workbench smoke that clicks each workspace tab
+  across split shell and monolith at 1440/1024/768/430/390, action watchdog 0
+  findings, protocol drift watchdog, secret audit, execution run validation,
+  and diff check with line-ending warnings only.
+- Deployment/live proof remains next for this slice.

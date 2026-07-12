@@ -1,7 +1,7 @@
 # One Time Operations CRM Workbench Local Smoke
 
 Status: PASS
-Generated: 2026-07-12T22:25:48.367Z
+Generated: 2026-07-12T22:36:31.598Z
 
 Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.
 
@@ -29,6 +29,7 @@ Checks:
 - One Time Operations CRM route renders the API-backed workbench.
 - Split shell and monolith fallback render the API-backed workbench.
 - Search/filter/sort controls, cards, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe actions, explicit Create task action, and timeline readback are visible.
+- Overview, Activity, Conversations, Tasks, and Access tabs are clickable and render non-disabled workspace panels.
 - Mobile selected-contact state hides the list and Back to contacts restores it.
 - Scoped One Time Inbox retains selected CRM contact context and keeps send gates visible.
 - Initial CRM API calls after auth are <= 3, initial cards are <= 50, contact selection does not replace the app root, and debounced search sends one list request.

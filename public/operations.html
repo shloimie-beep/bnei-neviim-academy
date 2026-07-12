@@ -9669,6 +9669,7 @@
         let firstPartyCrmError = '';
         let firstPartyCrmNotice = '';
         let firstPartyCrmSaving = false;
+        let firstPartyCrmActiveTab = 'activity';
         const initialCrmSort = String(initialParams.get('crm_sort') || '').trim();
         let firstPartyCrmFilters = {
             contact_type: String(initialParams.get('crm_type') || 'all').trim() || 'all',
@@ -15887,9 +15888,11 @@
                     </section>
                 `;
             }
-            const timeline = selectedFirstPartyCrmContactId && firstPartyCrmTimelinePayload
+            const timeline = firstPartyCrmActiveTab === 'activity' && selectedFirstPartyCrmContactId && firstPartyCrmTimelinePayload
                 ? renderFirstPartyCrmTimeline(card)
-                : '<div class="contact-empty-card">Loading selected contact timeline...</div>';
+                : firstPartyCrmActiveTab === 'activity'
+                    ? '<div class="contact-empty-card">Loading selected contact timeline...</div>'
+                    : '';
             const viewAsReadOnly = oneTimeViewAsRabbiActive();
             return `
                 <section class="crm-selected-card" aria-label="CRM contact activity">
@@ -15905,12 +15908,9 @@
                         <span class="page-status-pill">${escapeHtml(contactStatusLabel(card.status || 'new'))}</span>
                     </div>
                     <div class="crm-workbench-tabs" role="tablist" aria-label="CRM contact sections">
-                        ${(window.BnaCrmContactWorkspace?.workspaceTabs?.() || [
-                            { id: 'activity', label: 'Activity', enabled: true }
-                        ]).map(tab => `<button class="ops-filter-tab ${tab.id === 'activity' ? 'active' : ''}" type="button" role="tab" aria-selected="${tab.id === 'activity' ? 'true' : 'false'}" ${tab.enabled ? '' : `disabled aria-disabled="true" title="${escapeHtml(tab.empty_state || '')}"`}>${escapeHtml(tab.label)}</button>`).join('')}
+                        ${firstPartyCrmWorkspaceTabs().map(tab => `<button class="ops-filter-tab ${tab.id === firstPartyCrmActiveTab ? 'active' : ''}" type="button" role="tab" aria-selected="${tab.id === firstPartyCrmActiveTab ? 'true' : 'false'}" onclick="setFirstPartyCrmWorkspaceTab(${attrJson(tab.id)})">${escapeHtml(tab.label)}</button>`).join('')}
                     </div>
-                    ${renderFirstPartyCrmSafeActions(card)}
-                    ${renderFirstPartyCrmLocalUpdateForm(card, viewAsReadOnly)}
+                    ${renderFirstPartyCrmTabContent(card, viewAsReadOnly)}
                 </section>
                 ${timeline}
             `;
@@ -15976,6 +15976,75 @@
                     `).join('') : `<div class="contact-empty-card">${escapeHtml(window.BnaCrmContactWorkspace?.emptyState?.('class_activity') || 'No class activity recorded.')}</div>`}
                     </div>
                 </section>
+            `;
+        }
+
+        function firstPartyCrmWorkspaceTabs() {
+            return window.BnaCrmContactWorkspace?.workspaceTabs?.() || [
+                { id: 'overview', label: 'Overview', enabled: true },
+                { id: 'activity', label: 'Activity', enabled: true },
+                { id: 'conversations', label: 'Conversations', enabled: true },
+                { id: 'tasks', label: 'Tasks', enabled: true },
+                { id: 'access', label: 'Access', enabled: true }
+            ];
+        }
+
+        function setFirstPartyCrmWorkspaceTab(tabId) {
+            const allowed = firstPartyCrmWorkspaceTabs().map(tab => tab.id);
+            firstPartyCrmActiveTab = allowed.includes(tabId) ? tabId : 'activity';
+            updateFirstPartyCrmPanel();
+        }
+
+        function renderFirstPartyCrmTabContent(card = {}, readOnly = false) {
+            const activeTab = firstPartyCrmWorkspaceTabs().some(tab => tab.id === firstPartyCrmActiveTab) ? firstPartyCrmActiveTab : 'activity';
+            if (activeTab === 'overview') {
+                return `
+                    <div class="contact-detail-grid">
+                        ${renderContactDetailItem('Lifecycle', contactStatusLabel(card.status || 'new'))}
+                        ${renderContactDetailItem('Source', contactStatusLabel(card.source_label || card.source || 'first party'))}
+                        ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : (window.BnaCrmContactWorkspace?.emptyState?.('follow_up') || 'No follow-up scheduled.'))}
+                        ${renderContactDetailItem('Owner', card.assigned_owner || 'Unassigned')}
+                        ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
+                        ${renderContactDetailItem('Notes', card.summary || (window.BnaCrmContactWorkspace?.emptyState?.('notes') || 'No notes yet.'))}
+                    </div>
+                    ${renderFirstPartyCrmSafeActions(card)}
+                    ${renderFirstPartyCrmLocalUpdateForm(card, readOnly)}
+                `;
+            }
+            if (activeTab === 'conversations') {
+                const hasEmail = Boolean(card.mailbox?.message_count);
+                return `
+                    ${renderFirstPartyCrmSafeActions(card)}
+                    <div class="contact-empty-card" data-crm-tab-panel="conversations">
+                        ${hasEmail
+                            ? `${Number(card.mailbox.message_count)} email messages${card.mailbox.latest_subject ? ` / ${escapeHtml(card.mailbox.latest_subject)}` : ''}`
+                            : (window.BnaCrmContactWorkspace?.emptyState?.('conversations') || 'No conversations yet.')}
+                    </div>
+                `;
+            }
+            if (activeTab === 'tasks') {
+                return `
+                    ${renderFirstPartyCrmSafeActions(card)}
+                    <div class="contact-empty-card" data-crm-tab-panel="tasks">
+                        ${card.follow_up_task?.task_id
+                            ? `Task #${escapeHtml(card.follow_up_task.task_id)}${card.follow_up_task.assigned_to ? ` / ${escapeHtml(card.follow_up_task.assigned_to)}` : ''}`
+                            : (window.BnaCrmContactWorkspace?.emptyState?.('tasks') || 'No tasks assigned.')}
+                    </div>
+                `;
+            }
+            if (activeTab === 'access') {
+                return `
+                    <div class="contact-detail-grid" data-crm-tab-panel="access">
+                        ${renderContactDetailItem('Membership', [card.membership_access?.access_tier, card.membership_access?.access_status].filter(Boolean).join(' / ') || (window.BnaCrmContactWorkspace?.emptyState?.('membership') || 'No membership linked.'))}
+                        ${renderContactDetailItem('Class Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : (window.BnaCrmContactWorkspace?.emptyState?.('class_activity') || 'No class activity recorded.'))}
+                        ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
+                        ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
+                    </div>
+                `;
+            }
+            return `
+                ${renderFirstPartyCrmSafeActions(card)}
+                ${renderFirstPartyCrmLocalUpdateForm(card, readOnly)}
             `;
         }
 
@@ -16054,6 +16123,7 @@
             event?.preventDefault?.();
             selectedFirstPartyCrmContactId = null;
             firstPartyCrmTimelinePayload = null;
+            firstPartyCrmActiveTab = 'activity';
             if (firstPartyCrmTimelineAbortController) {
                 firstPartyCrmTimelineAbortController.abort();
                 firstPartyCrmTimelineAbortController = null;

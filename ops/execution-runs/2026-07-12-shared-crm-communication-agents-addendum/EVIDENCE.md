@@ -31,6 +31,8 @@
 - BNA post-deploy doctor - Railway deployment `ab35f8b9-9670-486b-9b4a-94719e01098d` reached `SUCCESS`.
 - One Time post-deploy doctor - Railway deployment `988210a8-3fbf-41f5-aa52-f7f54b69bdc8` reached `SUCCESS`.
 - `ops/live-smokes/2026-07-12T22-30-27-405Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the explicit Create task action slice with 12 scoped cards and read-only selected timeline.
+- `public/operations.html` / `public/js/crm/contact-workspace.js` - CRM contact workspace tabs are enabled for Overview, Activity, Conversations, Tasks, and Access with customer-facing panels instead of disabled placeholders.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local Operations CRM workbench smoke passed after the enabled-tabs slice and clicks all workspace tabs across split shell and monolith viewport coverage.
 - `raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md` - operator correction requiring the WhatsApp bot knowledge to state no portal/member/library access is being granted yet plus One Time landing header/button/mobile CTA polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md` - scoped local-verified handoff for bot knowledge and landing polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json` - focused Product Quality Compiler packet for the One Time header/CTA/spacing/mobile correction and bot access-fact guardrail.

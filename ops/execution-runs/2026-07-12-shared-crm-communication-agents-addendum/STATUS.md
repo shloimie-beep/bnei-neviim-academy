@@ -49,6 +49,7 @@ Current status: `active`
 - Local CRM update/no-auto-task slice is locally verified and pending deploy: selected contact workspace now exposes a local first-party update form, the client sends `create_follow_up_task: false`, and the server creates CRM follow-up tasks only when `create_follow_up_task` is explicitly true.
 - Local CRM update/no-auto-task slice is deployed at `224bc077919c624f115c264d35e35092ed4144da`; BNA and One Time deploy-info match, post-deploy Railway doctors passed, One Time separate-instance smoke passed, and One Time Operations CRM workbench live smoke passed with 12 scoped cards and selected timeline read-only.
 - Explicit CRM Create task action slice is deployed at `ded53274e31f91abff7944c094bdcdfaa9c55c5e`: the dead-end `ACTION-CRM-CREATE-TASK-PENDING` placeholder is replaced by active `ACTION-CRM-CREATE-TASK`, the client only creates a task after an explicit click with `create_follow_up_task: true`, read-only preview disables the action, BNA/One Time deploy-info match, and One Time Operations CRM workbench live smoke passed with 12 scoped cards and read-only selected timeline.
+- Enabled CRM workspace tabs slice is locally verified and pending deploy: Overview, Activity, Conversations, Tasks, and Access are enabled click targets with customer-facing panels, the Activity timeline remains the default, and the local Operations CRM workbench smoke clicks the tabs across split shell and monolith at 1440/1024/768/430/390.
 
 ## One Time Bot Knowledge / Landing Polish Slice
 

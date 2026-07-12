@@ -76,6 +76,17 @@ test('Operations CRM Create task action is explicit and first-party only', () =>
   assert.match(server, /No email, WhatsApp, payment, access, import, or external CRM write was performed by creating this task\./);
 });
 
+test('Operations CRM workspace tabs are enabled surfaces, not disabled placeholders', () => {
+  assert.match(operations, /let firstPartyCrmActiveTab = 'activity';/);
+  assert.match(operations, /function setFirstPartyCrmWorkspaceTab\(tabId\)/);
+  assert.match(operations, /function renderFirstPartyCrmTabContent\(card = \{\}, readOnly = false\)/);
+  assert.match(operations, /onclick="setFirstPartyCrmWorkspaceTab\(\$\{attrJson\(tab\.id\)\}\)"/);
+  assert.match(operations, /data-crm-tab-panel="conversations"/);
+  assert.match(operations, /data-crm-tab-panel="tasks"/);
+  assert.match(operations, /data-crm-tab-panel="access"/);
+  assert.doesNotMatch(operations, /tab\.enabled \? '' : `disabled aria-disabled="true"/);
+});
+
 test('Shared CRM modules expose paths, empty states, actions, and inbox scope', () => {
   const global = runBrowserModule('public/js/crm/crm-api.js');
   runBrowserModule('public/js/crm/crm-store.js', { window: global });
@@ -90,6 +101,13 @@ test('Shared CRM modules expose paths, empty states, actions, and inbox scope', 
   assert.equal(global.BnaCrmContactsIndex.statusText({ cards: [{}, {}], payload: { filtered_total: 4, total: 9 } }), '2 visible / 4 matching / 9 total.');
   assert.equal(global.BnaCrmContactWorkspace.emptyState('conversations'), 'No conversations yet.');
   assert.equal(global.BnaCrmContactWorkspace.profileValue('email', ''), 'Email is not available for this contact.');
+  assert.equal(JSON.stringify(global.BnaCrmContactWorkspace.workspaceTabs().map((tab) => [tab.id, tab.enabled])), JSON.stringify([
+    ['overview', true],
+    ['activity', true],
+    ['conversations', true],
+    ['tasks', true],
+    ['access', true],
+  ]));
   assert.equal(global.BnaCrmActions.whatsappHref('+1 (555) 100-2000'), 'https://wa.me/15551002000');
   assert.equal(global.BnaCrmActions.followUpTaskSummary({ display_name: 'Sara Parent' }), 'Manual CRM follow-up task for Sara Parent');
   assert.equal(global.BnaCrmInbox.scopeForWorkspace('rabbi_sheller_provider'), 'rabbi');

@@ -13,11 +13,11 @@
     });
 
     const WORKSPACE_TABS = Object.freeze([
-        { id: 'overview', label: 'Overview', enabled: false, empty_state: 'No class activity recorded.' },
+        { id: 'overview', label: 'Overview', enabled: true },
         { id: 'activity', label: 'Activity', enabled: true },
-        { id: 'conversations', label: 'Conversations', enabled: false, empty_state: EMPTY_STATES.conversations },
-        { id: 'tasks', label: 'Tasks', enabled: false, empty_state: EMPTY_STATES.tasks },
-        { id: 'access', label: 'Access', enabled: false, empty_state: EMPTY_STATES.membership }
+        { id: 'conversations', label: 'Conversations', enabled: true },
+        { id: 'tasks', label: 'Tasks', enabled: true },
+        { id: 'access', label: 'Access', enabled: true }
     ]);
 
     function emptyState(key) {

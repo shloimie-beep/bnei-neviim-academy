@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "generated_at": "2026-07-12T22:25:48.367Z",
+  "generated_at": "2026-07-12T22:36:31.598Z",
   "target": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts + /operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
   "scope": "Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.",
   "guardrails": {
@@ -36,6 +36,13 @@
       "hasNoSendLockAfterSelect": true,
       "hasSafeActionPanelAfterSelect": true,
       "hasCreateTaskActionAfterSelect": true,
+      "workspaceTabMetrics": {
+        "overview": true,
+        "conversations": true,
+        "tasks": true,
+        "access": true,
+        "activity": true
+      },
       "disabledCrmActionCountAfterSelect": 0,
       "hasOpenScopedInboxActionAfterSelect": true,
       "mobileBackMetrics": {
@@ -99,6 +106,13 @@
       "hasNoSendLockAfterSelect": true,
       "hasSafeActionPanelAfterSelect": true,
       "hasCreateTaskActionAfterSelect": true,
+      "workspaceTabMetrics": {
+        "overview": true,
+        "conversations": true,
+        "tasks": true,
+        "access": true,
+        "activity": true
+      },
       "disabledCrmActionCountAfterSelect": 0,
       "hasOpenScopedInboxActionAfterSelect": true,
       "mobileBackMetrics": {
@@ -162,6 +176,13 @@
       "hasNoSendLockAfterSelect": true,
       "hasSafeActionPanelAfterSelect": true,
       "hasCreateTaskActionAfterSelect": true,
+      "workspaceTabMetrics": {
+        "overview": true,
+        "conversations": true,
+        "tasks": true,
+        "access": true,
+        "activity": true
+      },
       "disabledCrmActionCountAfterSelect": 0,
       "hasOpenScopedInboxActionAfterSelect": true,
       "mobileBackMetrics": {
@@ -225,6 +246,13 @@
       "hasNoSendLockAfterSelect": true,
       "hasSafeActionPanelAfterSelect": true,
       "hasCreateTaskActionAfterSelect": true,
+      "workspaceTabMetrics": {
+        "overview": true,
+        "conversations": true,
+        "tasks": true,
+        "access": true,
+        "activity": true
+      },
       "disabledCrmActionCountAfterSelect": 0,
       "hasOpenScopedInboxActionAfterSelect": true,
       "mobileBackMetrics": {
@@ -288,6 +316,13 @@
       "hasNoSendLockAfterSelect": true,
       "hasSafeActionPanelAfterSelect": true,
       "hasCreateTaskActionAfterSelect": true,
+      "workspaceTabMetrics": {
+        "overview": true,
+        "conversations": true,
+        "tasks": true,
+        "access": true,
+        "activity": true
+      },
       "disabledCrmActionCountAfterSelect": 0,
       "hasOpenScopedInboxActionAfterSelect": true,
       "mobileBackMetrics": {
@@ -351,6 +386,13 @@
       "hasNoSendLockAfterSelect": true,
       "hasSafeActionPanelAfterSelect": true,
       "hasCreateTaskActionAfterSelect": true,
+      "workspaceTabMetrics": {
+        "overview": true,
+        "conversations": true,
+        "tasks": true,
+        "access": true,
+        "activity": true
+      },
       "disabledCrmActionCountAfterSelect": 0,
       "hasOpenScopedInboxActionAfterSelect": true,
       "mobileBackMetrics": {
@@ -414,6 +456,13 @@
       "hasNoSendLockAfterSelect": true,
       "hasSafeActionPanelAfterSelect": true,
       "hasCreateTaskActionAfterSelect": true,
+      "workspaceTabMetrics": {
+        "overview": true,
+        "conversations": true,
+        "tasks": true,
+        "access": true,
+        "activity": true
+      },
       "disabledCrmActionCountAfterSelect": 0,
       "hasOpenScopedInboxActionAfterSelect": true,
       "mobileBackMetrics": {
@@ -477,6 +526,13 @@
       "hasNoSendLockAfterSelect": true,
       "hasSafeActionPanelAfterSelect": true,
       "hasCreateTaskActionAfterSelect": true,
+      "workspaceTabMetrics": {
+        "overview": true,
+        "conversations": true,
+        "tasks": true,
+        "access": true,
+        "activity": true
+      },
       "disabledCrmActionCountAfterSelect": 0,
       "hasOpenScopedInboxActionAfterSelect": true,
       "mobileBackMetrics": {
@@ -540,6 +596,13 @@
       "hasNoSendLockAfterSelect": true,
       "hasSafeActionPanelAfterSelect": true,
       "hasCreateTaskActionAfterSelect": true,
+      "workspaceTabMetrics": {
+        "overview": true,
+        "conversations": true,
+        "tasks": true,
+        "access": true,
+        "activity": true
+      },
       "disabledCrmActionCountAfterSelect": 0,
       "hasOpenScopedInboxActionAfterSelect": true,
       "mobileBackMetrics": {
@@ -603,6 +666,13 @@
       "hasNoSendLockAfterSelect": true,
       "hasSafeActionPanelAfterSelect": true,
       "hasCreateTaskActionAfterSelect": true,
+      "workspaceTabMetrics": {
+        "overview": true,
+        "conversations": true,
+        "tasks": true,
+        "access": true,
+        "activity": true
+      },
       "disabledCrmActionCountAfterSelect": 0,
       "hasOpenScopedInboxActionAfterSelect": true,
       "mobileBackMetrics": {
@@ -660,7 +730,7 @@
       "pageErrors": [],
       "failedRequests": [],
       "badResponses": [],
-      "mailboxUrl": "http://127.0.0.1:60612/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
+      "mailboxUrl": "http://127.0.0.1:52975/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
       "passed": true
     }
   ]

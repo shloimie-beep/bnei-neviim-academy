@@ -488,6 +488,29 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       hasOpenScopedInboxAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]')),
     };
   });
+  const workspaceTabs = [
+    { id: 'overview', label: 'Overview', pattern: /Lifecycle|Owner|Class \/ Trial \/ Access/i },
+    { id: 'conversations', label: 'Conversations', pattern: /No conversations yet|email messages|Open email thread/i },
+    { id: 'tasks', label: 'Tasks', pattern: /No tasks assigned|Task #|Create task/i },
+    { id: 'access', label: 'Access', pattern: /Membership|Class Activity|Linked Records/i },
+    { id: 'activity', label: 'Activity', pattern: /Local CRM update|Safe next actions/i },
+  ];
+  const workspaceTabMetrics = {};
+  for (const tab of workspaceTabs) {
+    await page.locator('.crm-workbench-tabs [role="tab"]', { hasText: tab.label }).click();
+    await page.waitForFunction((label) => {
+      const active = document.querySelector('.crm-workbench-tabs [role="tab"][aria-selected="true"]');
+      return active && active.textContent.includes(label);
+    }, tab.label, { timeout: 5000 });
+    workspaceTabMetrics[tab.id] = await page.evaluate((label) => {
+      const active = document.querySelector('.crm-workbench-tabs [role="tab"][aria-selected="true"]');
+      const text = document.body.innerText.replace(/\s+/g, ' ').trim();
+      return {
+        active: Boolean(active && active.textContent.includes(label)),
+        text,
+      };
+    }, tab.label).then((result) => result.active && tab.pattern.test(result.text));
+  }
   let mobileBackMetrics = { checked: viewport.width <= 700, restoredList: true, clearedSelectedState: true };
   if (viewport.width <= 700) {
     await page.locator('[data-action-id="ACTION-CRM-CONTACT-BACK"]').click();
@@ -586,6 +609,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       selectedMetrics.hasNoSendLock &&
       selectedMetrics.hasSafeActionPanel &&
       selectedMetrics.hasCreateTaskAction &&
+      Object.values(workspaceTabMetrics).every(Boolean) &&
       selectedMetrics.hasOpenScopedInboxAction &&
       mobileBackMetrics.restoredList &&
       mobileBackMetrics.clearedSelectedState &&
@@ -629,6 +653,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     hasNoSendLockAfterSelect: selectedMetrics.hasNoSendLock,
     hasSafeActionPanelAfterSelect: selectedMetrics.hasSafeActionPanel,
     hasCreateTaskActionAfterSelect: selectedMetrics.hasCreateTaskAction,
+    workspaceTabMetrics,
     disabledCrmActionCountAfterSelect: selectedMetrics.disabledCrmActionCount,
     hasOpenScopedInboxActionAfterSelect: selectedMetrics.hasOpenScopedInboxAction,
     mobileBackMetrics,
@@ -802,6 +827,7 @@ async function main() {
     '- One Time Operations CRM route renders the API-backed workbench.',
     '- Split shell and monolith fallback render the API-backed workbench.',
     '- Search/filter/sort controls, cards, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe actions, explicit Create task action, and timeline readback are visible.',
+    '- Overview, Activity, Conversations, Tasks, and Access tabs are clickable and render non-disabled workspace panels.',
     '- Mobile selected-contact state hides the list and Back to contacts restores it.',
     '- Scoped One Time Inbox retains selected CRM contact context and keeps send gates visible.',
     '- Initial CRM API calls after auth are <= 3, initial cards are <= 50, contact selection does not replace the app root, and debounced search sends one list request.',

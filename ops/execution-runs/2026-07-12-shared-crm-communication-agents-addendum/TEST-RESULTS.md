@@ -99,6 +99,17 @@
 - PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com` after explicit CRM Create task action deploy.
   - Scoped CRM contacts API returned 12 cards with no external-write flags.
   - Selected CRM timeline API was read-only.
+- PASS `npm run operations:check-generated` after enabled CRM workspace tabs slice.
+- PASS `node --check public\js\crm\contact-workspace.js public\js\operations-shell.js scripts\smoke-onetime-operations-crm-workbench-local.mjs` after enabled CRM workspace tabs slice.
+- PASS `node --test tests\crm-contact-service.test.js tests\shared-crm-workbench-contract.test.js tests\crm-contact-model.test.js tests\rabbi-scheller-tenant-isolation-contract.test.js tests\one-time-communications-workspace.test.js tests\operations-contacts-intake-cleanup.test.js` (35/35) after enabled CRM workspace tabs slice.
+- PASS `node scripts\smoke-onetime-operations-crm-workbench-local.mjs` after enabled CRM workspace tabs slice.
+  - Split-shell and monolith checks passed at 1440, 1024, 768, 430, and 390.
+  - Overview, Activity, Conversations, Tasks, and Access tabs are clickable and render non-disabled workspace panels.
+- PASS `npm run watchdog:actions` finding_count `0` after enabled CRM workspace tabs slice.
+- PASS `npm run watchdog:protocol-drift` after enabled CRM workspace tabs slice.
+- PASS `npm run secrets:audit` after enabled CRM workspace tabs slice.
+- PASS `npm run bna:run:validate` after enabled CRM workspace tabs slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after enabled CRM workspace tabs slice.
 - PASS `node --check src/lib/bna/provider-lead-bot.js` after One Time bot knowledge/landing polish slice.
 - PASS `npm run pqc:validate -- tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json`.
 - PASS `node --test tests\service-provider-lead-bot.test.js tests\one-time-focused-landing.test.js tests\one-time-canonical-journey.test.js tests\one-time-brand-helper-isolation.test.js tests\one-time-shared-review-branding.test.js` (33/33) after One Time bot knowledge/landing polish slice.
