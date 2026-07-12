@@ -39089,5 +39089,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   coverage and no submit/write, action watchdog 0 findings, protocol drift
   watchdog, secret audit, execution run validation, and diff check with
   line-ending warnings only.
-- Status: local verified, pending commit, push, BNA/One Time deploy, and live
-  One Time Operations CRM smoke before this slice is deployed.
+- Deployed commit `de48d8aef8b4764b5144a89edef9e269c102c25f` to BNA and One
+  Time production.
+- BNA Railway deployment `e3f91da7-ed02-4554-8b05-7ea11606cf2e` and One Time
+  deployment `4cd41025-343f-488a-bf07-4f6550fa2a0d` reached `SUCCESS`.
+- BNA and One Time live `/api/deploy-info` both returned
+  `de48d8aef8b4764b5144a89edef9e269c102c25f`.
+- Live proof passed: One Time separate-instance SHA smoke and One Time
+  Operations CRM workbench smoke with 12 scoped cards and read-only selected
+  timeline.

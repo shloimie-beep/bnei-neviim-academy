@@ -146,3 +146,9 @@
 - PASS `npm run secrets:audit` after Add Contact slice.
 - PASS `npm run bna:run:validate` after Add Contact slice; work remains on the broader addendum.
 - PASS `git diff --check` with line-ending warnings only after Add Contact slice.
+- PASS `git push origin master` for Add Contact commit `de48d8aef8b4764b5144a89edef9e269c102c25f`.
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `e3f91da7-ed02-4554-8b05-7ea11606cf2e` reached `SUCCESS`.
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `4cd41025-343f-488a-bf07-4f6550fa2a0d` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `de48d8aef8b4764b5144a89edef9e269c102c25f`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha de48d8aef8b4764b5144a89edef9e269c102c25f`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-00-18-923Z-one-time-operations-crm-workbench-live-smoke.md`, 12 scoped cards, selected timeline read-only.

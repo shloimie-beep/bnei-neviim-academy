@@ -236,9 +236,9 @@
         "REQ-20260712-305"
       ],
       "status": "in_progress",
-      "implementation_status": "Add Contact slice local verified and pending deploy: Operations exposes ACTION-CRM-ADD-CONTACT, POST /api/bna/crm/contacts creates or updates one workspace-scoped first-party bna_contacts record, upserts workspace-scoped email/phone/WhatsApp identities, writes a local pipeline event, returns the stable bna_contacts:<id> contact key, and opens the saved contact workspace without external sends, access grants, imports, checkout, or automatic task creation. Remaining actions include complete/reopen task, archive contact, and family/member linking.",
+      "implementation_status": "Add Contact slice implemented, pushed, deployed to BNA and One Time, and live-smoked: Operations exposes ACTION-CRM-ADD-CONTACT, POST /api/bna/crm/contacts creates or updates one workspace-scoped first-party bna_contacts record, upserts workspace-scoped email/phone/WhatsApp identities, writes a local pipeline event, returns the stable bna_contacts:<id> contact key, and opens the saved contact workspace without external sends, access grants, imports, checkout, or automatic task creation. Remaining actions include complete/reopen task, archive contact, and family/member linking.",
       "can_continue_without_operator": true,
-      "next_action": "Commit, push, deploy the Add Contact slice, live-smoke One Time Operations CRM workbench, then continue complete/reopen task, archive contact, and family/member linking.",
+      "next_action": "Continue complete/reopen task, archive contact, and family/member linking.",
       "acceptance_criteria": [
         "Contact index opens a full workspace with URL/back-state persistence, mobile one-pane behavior, and persisted add/edit/tag/owner/lifecycle/follow-up/task/thread/family/archive actions."
       ],
@@ -251,7 +251,10 @@
         "public/js/operations-shell.js regenerated from public/operations.html.",
         "ops/action-registry.json registers ACTION-CRM-ADD-CONTACT.",
         "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records Add Contact form coverage without submitting a write.",
-        "ops/watchdog-audits/2026-07-12T22-54-watchdog-action-audit.md records action watchdog PASS finding_count 0."
+        "ops/watchdog-audits/2026-07-12T22-54-watchdog-action-audit.md records action watchdog PASS finding_count 0.",
+        "BNA deployment e3f91da7-ed02-4554-8b05-7ea11606cf2e SUCCESS at commit de48d8aef8b4764b5144a89edef9e269c102c25f.",
+        "One Time deployment 4cd41025-343f-488a-bf07-4f6550fa2a0d SUCCESS at commit de48d8aef8b4764b5144a89edef9e269c102c25f.",
+        "ops/live-smokes/2026-07-12T23-00-18-923Z-one-time-operations-crm-workbench-live-smoke.md records deployed One Time Operations CRM workbench smoke after Add Contact slice."
       ],
       "verification": [
         "node --check server.js public/js/operations-shell.js scripts/smoke-onetime-operations-crm-workbench-local.mjs PASS after Add Contact slice",
@@ -263,7 +266,13 @@
         "npm run watchdog:protocol-drift PASS after Add Contact slice",
         "npm run secrets:audit PASS after Add Contact slice",
         "npm run bna:run:validate PASS after Add Contact slice",
-        "git diff --check PASS with line-ending warnings only after Add Contact slice"
+        "git diff --check PASS with line-ending warnings only after Add Contact slice",
+        "git push origin master PASS for Add Contact commit de48d8aef8b4764b5144a89edef9e269c102c25f",
+        "BNA Railway post-deploy doctor PASS deployment e3f91da7-ed02-4554-8b05-7ea11606cf2e",
+        "One Time Railway post-deploy doctor PASS deployment 4cd41025-343f-488a-bf07-4f6550fa2a0d",
+        "BNA and One Time deploy-info returned commit_sha=de48d8aef8b4764b5144a89edef9e269c102c25f",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha de48d8aef8b4764b5144a89edef9e269c102c25f PASS",
+        "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com PASS after Add Contact slice"
       ],
       "implementation_files": [
         "public/js/operations-shell.js",
@@ -280,9 +289,12 @@
       ],
       "deployment_required": true,
       "deployment_evidence": [
-        "Add Contact slice local verified; deployment/live smoke pending."
+        "Add Contact slice deployed at de48d8aef8b4764b5144a89edef9e269c102c25f.",
+        "BNA production deploy-info readback commit_sha=de48d8aef8b4764b5144a89edef9e269c102c25f.",
+        "One Time production deploy-info readback commit_sha=de48d8aef8b4764b5144a89edef9e269c102c25f.",
+        "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T23-00-18-923Z-one-time-operations-crm-workbench-live-smoke.md."
       ],
-      "updated_at": "2026-07-13T01:55:00+03:00",
+      "updated_at": "2026-07-13T02:02:00+03:00",
       "blocker": ""
     },
     {
