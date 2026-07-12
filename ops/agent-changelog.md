@@ -38762,3 +38762,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `due_count: 0`, so no manual retry or duplicate send was needed.
 - The redacted readback returned no raw join URL or message body. Shloimie's
   email reminder remains pending only on the exact email address.
+
+## 2026-07-12 - One Time inbound WhatsApp webhook fixed
+
+- Investigated Shloimie's report that the One Time WhatsApp bot was not
+  responding and confirmed inbound bot handling is separate from the already
+  verified 6:30 reminder delivery.
+- Configured the scoped One Time Whapi channel webhook for inbound message
+  callbacks with a verification header; settings readbacks redacted the header
+  value and all credentials.
+- Fixed the live app webhook path for provider binding, pooled database client
+  handling, and project-scoped phone matching. Pushed commits `e23a02bb`,
+  `66ab1aa2`, `8b24c3c`, and `92bcc2e` to `master`.
+- Deployed successful Railway fixes through deployment
+  `5417ad1f-5974-4f8d-871d-2366c655cb2b`.
+- Verification passed: focused WAPI/reminder tests 16/16, `node --check
+  server.js`, redacted leak scans, final provider webhook test HTTP 200, and
+  live DB readback showing webhook log ID `4` processed into communication ID
+  `58`.
+- Automatic live replies remain in observe-only mode and require explicit
+  operator approval before enabling outbound WhatsApp auto-replies.
