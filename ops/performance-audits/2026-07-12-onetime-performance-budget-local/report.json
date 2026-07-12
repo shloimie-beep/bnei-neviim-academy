@@ -1,0 +1,102 @@
+{
+  "status": "PASS_WITH_RELEASE_GATE",
+  "generated_at": "2026-07-12T20:24:14.7279528+03:00",
+  "requirement_id": "REQ-20260712-111",
+  "scope": "Local One Time performance budget and delivery audit. No external sends, payments, access grants, DNS changes, provider mutations, production database writes, or live deploys were performed.",
+  "guardrails": {
+    "external_write_performed": false,
+    "test_data_only": true,
+    "raw_private_data_committed": false,
+    "live_deploy_performed": false
+  },
+  "bundle_delivery": {
+    "source_html_bytes": 2389844,
+    "bootstrap_html_bytes": 1688,
+    "operations_shell_js_bytes": 1059582,
+    "operations_shell_budget_bytes": 1200000,
+    "operations_shell_within_budget": true,
+    "operations_deferred_renderers_js_bytes": 820475,
+    "operations_shell_css_bytes": 221457,
+    "strategy": "Split public/operations.html into a small bootstrap, extracted CSS, startup shell, and deferred heavy renderer chunk. Generated scripts are deindented to avoid shipping source HTML indentation."
+  },
+  "crm_budget": {
+    "report": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+    "generated_at": "2026-07-12T17:25:52.311Z",
+    "status": "PASS",
+    "initial_crm_request_count": 1,
+    "initial_list_request_count": 1,
+    "initial_rendered_card_count": 50,
+    "initial_limit": 50,
+    "app_root_mutations_after_select": 0,
+    "debounced_search_list_request_delta": 1,
+    "scoped_inbox_context_passed": true
+  },
+  "cache_policy": {
+    "report": "tests/one-time-intake-api-readback.test.js",
+    "local_result": "PASS",
+    "html_and_private_shells": "no-store/private no-cache",
+    "public_assets": "cacheable with route-specific max-age",
+    "fingerprinted_asset_long_cache_live_gate": "REQ-20260712-112"
+  },
+  "vimeo_lazy_load": {
+    "report": "ops/ui-audits/2026-07-12-onetime-portal-shell-local/report.md",
+    "generated_at": "2026-07-12T17:25:29.968Z",
+    "playable_fixture_present": true,
+    "requests_after_play": 3,
+    "request_hosts": [
+      "player.vimeo.com"
+    ],
+    "before_play_assertion": "Member library had zero Vimeo iframes and zero Vimeo requests before Play Video.",
+    "after_play_assertion": "Member library mounted the Vimeo iframe/API only after Play Video."
+  },
+  "release_gate": {
+    "requirement_id": "REQ-20260712-112",
+    "needed_for": [
+      "Brotli/gzip and Vary header proof on One Time/BNA production domains",
+      "live fingerprinted/static cache readback",
+      "deployment/live smoke evidence for app-visible generated shell assets"
+    ],
+    "status": "pending"
+  },
+  "verification": [
+    {
+      "command": "npm run pqc:validate -- ops\\prompt-packets\\2026-07-12-onetime-crm-portal-production-correction\\06-performance-budgets.product-quality.json",
+      "status": "PASS"
+    },
+    {
+      "command": "node --check scripts\\split-operations-shell.mjs",
+      "status": "PASS"
+    },
+    {
+      "command": "node scripts\\split-operations-shell.mjs",
+      "status": "PASS"
+    },
+    {
+      "command": "node --check public\\js\\operations-shell.js",
+      "status": "PASS"
+    },
+    {
+      "command": "node --check public\\js\\operations-deferred-renderers.js",
+      "status": "PASS"
+    },
+    {
+      "command": "node --test tests\\operations-shell-navigation-contract.test.js tests\\one-time-intake-api-readback.test.js",
+      "status": "PASS"
+    },
+    {
+      "command": "node scripts\\smoke-onetime-operations-crm-workbench-local.mjs",
+      "status": "PASS"
+    },
+    {
+      "command": "node scripts\\smoke-onetime-portal-shell-local.mjs",
+      "status": "PASS"
+    }
+  ],
+  "known_unrelated_test_failures": [
+    {
+      "command": "node --test tests\\one-time-classroom-calendar-community-bot.test.js tests\\one-time-canonical-journey.test.js",
+      "status": "FAIL",
+      "reason": "Pre-existing/unrelated static expectations for rabbi-member navigation text and classroom Forgot parent password copy failed; these files were already dirty outside REQ111 and are not caused by the performance split or Vimeo lazy-load change."
+    }
+  ]
+}

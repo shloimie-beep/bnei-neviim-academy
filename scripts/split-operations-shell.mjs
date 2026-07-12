@@ -26,6 +26,14 @@ function normalizeGeneratedText(value) {
     .replace(/\n*$/, '\n');
 }
 
+function dedentGeneratedScript(value) {
+  return normalizeGeneratedText(value)
+    .split('\n')
+    .map((line) => (line.startsWith('        ') ? line.slice(8) : line))
+    .join('\n')
+    .replace(/\n*$/, '\n');
+}
+
 const source = fs.readFileSync(sourcePath, 'utf8');
 const styleMatch = source.match(/\n    <style>\r?\n([\s\S]*?)\r?\n    <\/style>/);
 if (!styleMatch) throw new Error('Could not find the inline Operations style block.');
@@ -67,10 +75,22 @@ const emailScopeHelperStartMarker = '\n        const EMAIL_INBOX_SCOPES = [';
 const emailScopeHelperEndMarker = '\n        function emailRecordProjectKey(record = {}) {';
 const communicationsBundleStartMarker = '\n        async function fetchCommunicationsIntegrationBundle(filters = workspaceDataProjectFilters()) {';
 const communicationsBundleEndMarker = '\n        async function refreshCommunicationsIntegrations() {';
+const parseObjectMaybeStartMarker = '\n        function parseObjectMaybe(value) {';
+const parseObjectMaybeEndMarker = '\n        function firstNonEmptyValue(values = []) {';
+const settingsControlRowStartMarker = '\n        function renderSettingsControlRow(label, value, note, status = \'Read-only\') {';
+const settingsControlRowEndMarker = '\n        function latestAutomationEvidence(match) {';
+const rerenderOperationsStartMarker = '\n        function rerenderOperationsApp() {';
+const rerenderOperationsEndMarker = '\n        async function setEmailInboxScope(scopeId) {';
 const emailScopeHelperStart = scriptBody.indexOf(emailScopeHelperStartMarker, deferredStart);
 const emailScopeHelperEnd = scriptBody.indexOf(emailScopeHelperEndMarker, emailScopeHelperStart);
 const communicationsBundleStart = scriptBody.indexOf(communicationsBundleStartMarker, deferredStart);
 const communicationsBundleEnd = scriptBody.indexOf(communicationsBundleEndMarker, communicationsBundleStart);
+const parseObjectMaybeStart = scriptBody.indexOf(parseObjectMaybeStartMarker, deferredStart);
+const parseObjectMaybeEnd = scriptBody.indexOf(parseObjectMaybeEndMarker, parseObjectMaybeStart);
+const settingsControlRowStart = scriptBody.indexOf(settingsControlRowStartMarker, deferredStart);
+const settingsControlRowEnd = scriptBody.indexOf(settingsControlRowEndMarker, settingsControlRowStart);
+const rerenderOperationsStart = scriptBody.indexOf(rerenderOperationsStartMarker, deferredStart);
+const rerenderOperationsEnd = scriptBody.indexOf(rerenderOperationsEndMarker, rerenderOperationsStart);
 if (
   deferredStart < 0
   || deferredCommandBotStart < 0
@@ -86,6 +106,12 @@ if (
   || emailScopeHelperEnd < 0
   || communicationsBundleStart < 0
   || communicationsBundleEnd < 0
+  || parseObjectMaybeStart < 0
+  || parseObjectMaybeEnd < 0
+  || settingsControlRowStart < 0
+  || settingsControlRowEnd < 0
+  || rerenderOperationsStart < 0
+  || rerenderOperationsEnd < 0
 ) {
   throw new Error('Could not find Operations deferred renderer chunk boundaries.');
 }
@@ -138,6 +164,9 @@ const sharedShellHelperBlock = normalizeGeneratedText([
   ),
 ].join('\n'));
 
+const parseObjectMaybeBlock = normalizeGeneratedText(scriptBody.slice(parseObjectMaybeStart + 1, parseObjectMaybeEnd));
+const settingsControlRowBlock = normalizeGeneratedText(scriptBody.slice(settingsControlRowStart + 1, settingsControlRowEnd));
+const rerenderOperationsBlock = normalizeGeneratedText(scriptBody.slice(rerenderOperationsStart + 1, rerenderOperationsEnd));
 let deferredRendererBlock = scriptBody.slice(deferredStart + 1, deferredCommandBotStart);
 deferredRendererBlock = deferredRendererBlock
   .replace(scriptBody.slice(emailScopeHelperStart, emailScopeHelperEnd), '')
@@ -285,7 +314,7 @@ mainScriptBody = replaceRequired(
 mainScriptBody = replaceRequired(
   mainScriptBody,
   '\n        async function loadData(options = {}) {',
-  `\n${emailScopeHelperBlock}\n${communicationsBundleBlock}\n${sharedShellHelperBlock}\n        async function loadData(options = {}) {`,
+  `\n${parseObjectMaybeBlock}\n${settingsControlRowBlock}\n${rerenderOperationsBlock}\n${emailScopeHelperBlock}\n${communicationsBundleBlock}\n${sharedShellHelperBlock}\n        async function loadData(options = {}) {`,
 );
 
 [
@@ -365,6 +394,9 @@ mainScriptBody = normalizeGeneratedText(
   `${mainScriptBody.slice(0, objectAssignStart)}${objectAssignReplacement}${mainScriptBody.slice(objectAssignEnd + '\n        });'.length)}`,
 );
 
+const generatedMainScriptBody = dedentGeneratedScript(mainScriptBody);
+const generatedDeferredBlock = dedentGeneratedScript(deferredBlock);
+
 let bootstrap = `${source.slice(0, scriptStart)}
     <script src="/js/operations-shell.js"></script>${source.slice(scriptClose + '\n    </script>'.length)}`;
 bootstrap = bootstrap.replace(styleMatch[0], '\n    <link rel="stylesheet" href="/css/operations-shell.css">');
@@ -384,12 +416,12 @@ const generatedOutputs = [
   {
     label: 'js',
     path: jsPath,
-    content: `// Extracted from public/operations.html for split /operations delivery.\n${mainScriptBody}`,
+    content: `// Extracted from public/operations.html for split /operations delivery.\n${generatedMainScriptBody}`,
   },
   {
     label: 'deferredJs',
     path: deferredJsPath,
-    content: `// Deferred renderers extracted from public/operations.html for lighter initial /operations delivery.\n${deferredBlock}\nwindow.__operationsDeferredRenderersLoaded = true;\nif (typeof exposeOperationsDeferredHandlers === 'function') exposeOperationsDeferredHandlers();\n`,
+    content: `// Deferred renderers extracted from public/operations.html for lighter initial /operations delivery.\n${generatedDeferredBlock}\nwindow.__operationsDeferredRenderersLoaded = true;\nif (typeof exposeOperationsDeferredHandlers === 'function') exposeOperationsDeferredHandlers();\n`,
   },
   {
     label: 'oneTimeIa',

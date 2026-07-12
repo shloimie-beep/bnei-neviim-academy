@@ -1,0 +1,778 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260712-108",
+  "parent_raw_id": "RAW-20260712-004",
+  "source_statement_ids": [
+    "SRC-20260712-004-009",
+    "SRC-20260712-004-010",
+    "SRC-20260712-004-011",
+    "SRC-20260712-004-012"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260712-101",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260712-102"
+    ],
+    "blocks_packet_ids": [
+      "PKT-20260712-111",
+      "PKT-20260712-112"
+    ],
+    "consumes": [
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state/report.md",
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/parallel-frontend-current-state/",
+      "public/rabbi-member.html",
+      "public/member-library.html",
+      "public/one-time-classroom.html",
+      "public/one-time-parent.html",
+      "public/one-time-parent-review.html",
+      "public/student.html",
+      "src/platform/instances/one-time-shared-review-data.js",
+      "ops/action-registry/actions.json",
+      "ops/route-registry.json"
+    ],
+    "produces": [
+      "public/css/one-time-portal-shell.css",
+      "public/js/one-time-portal-shell.js",
+      "scripts/smoke-onetime-portal-shell-local.mjs",
+      "ops/ui-audits/2026-07-12-onetime-portal-shell-local/report.md",
+      "ops/action-registry/actions.json",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/04-portal-shell-preview.product-quality.json",
+    "terminal_condition": "REQ-20260712-108 is locally implemented with shared One Time portal shell assets, Family Portal/account setup labels, accessible mobile menu behavior, review-preview banner/exit flow, TEST-only fixture proof, action registry coverage, and local screenshot smoke evidence.",
+    "handoff_target": "REQ-20260712-109 landing WhatsApp launcher or REQ-20260712-111 performance budget packet after local proof."
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "One Time portal shell and preview boundaries",
+  "created_at": "2026-07-12T19:05:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL",
+    "RABBI_PROVIDER_ADMIN"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260712-004",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "COMMUNITY_CLASSROOM",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": "high",
+    "reasons": [
+      "The source explicitly requests normalized One Time portal information architecture and a shared portal shell.",
+      "The current audit captured Family, Student, Classroom, Library, parent setup/reset, and review states across required viewports.",
+      "The work is app-visible and requires screenshots, action registry coverage, TEST-only preview proof, and no-write guardrails."
+    ],
+    "affected_product_surfaces": [
+      "One Time Family Portal",
+      "One Time Student Portal",
+      "One Time Classroom",
+      "One Time Member Library",
+      "One Time parent account setup/reset",
+      "One Time review preview routes"
+    ],
+    "likely_external_provider_blockers": [
+      "No external send, access grant, payment, Zoom, Drive, provider-account, DNS, WAPI, or deployment work is allowed in this packet."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "validate this focused packet",
+      "add shared portal shell CSS and JS",
+      "wire Family, Library, Classroom, parent setup/reset, parent review, and Student review routes to the shell",
+      "replace pseudo-element hamburger affordances with a real menu button",
+      "prove TEST preview boundaries and local screenshots"
+    ],
+    "next_exact_packet": "Implement REQ-20260712-108 only; do not modify landing WhatsApp, bundle delivery, deploy, external sends, payment/access, or provider setup."
+  },
+  "operator_intent_summary": "Normalize One Time portal labels and shared shell behavior so families, students, classroom/library users, and preview reviewers see the same One Time brand frame, a real accessible mobile menu, clear account setup/reset copy, and explicit TEST preview/no-write boundaries.",
+  "raw_quotes": [
+    "Normalize portal information architecture: /rabbi-member user-facing Family Portal, /student Student Portal, /one-time-classroom shared Classroom, /member-library Library, and /one-time-parent account setup/reset, with clear preview action labels.",
+    "Create a shared One Time portal shell across Family, Student, Classroom, Library, parent setup/reset, and preview modes with same logo, tokens, fonts, header, navigation, buttons, focus styles, footer, and role-appropriate links.",
+    "Replace the CSS pseudo-element hamburger with one real focusable/clickable accessible button supporting aria-controls, aria-expanded, Escape/backdrop close, focus trap, focus return, and responsive behavior.",
+    "Preview mode must show TEST PREVIEW / SAMPLE DATA / NO WRITES, preserve review mode across Family/Student/Classroom/Library, provide Exit Preview, enforce support boundaries, and use safe TEST synthetic student fixtures that never enter production CRM, reminders, sends, or metrics."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260712-101",
+      "decision": "Original source screenshots are unavailable locally, so regenerated current-state audit and smoke screenshots are the implementation baseline.",
+      "status": "resolved_by_regeneration_with_direct_source_png_limitation"
+    }
+  ],
+  "out_of_scope": [
+    "No public landing WhatsApp launcher work.",
+    "No bundle split/minification/cache/compression work.",
+    "No live email, WhatsApp, Telegram, Zoom, Drive, Vimeo, payment, access grant, DNS, provider-account, production-data, GHL, LeadConnector, or external CRM writes.",
+    "No change to class access policy, real parent/student data, production reminders, live sends, or metrics ingestion.",
+    "No production Done claim before REQ-20260712-112 release/live-smoke proof."
+  ],
+  "affected_surfaces": [
+    "One Time portal shared shell",
+    "Family Portal entry",
+    "Member Library",
+    "Classroom",
+    "Parent account setup/reset",
+    "Parent review preview",
+    "Student review preview"
+  ],
+  "affected_routes": [
+    "/rabbi-member",
+    "/rabbi-member?review=one-time",
+    "/member-library",
+    "/member-library?review=one-time",
+    "/one-time-classroom",
+    "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+    "/one-time-parent",
+    "/parent.html?review=one-time",
+    "/student.html?review=one-time"
+  ],
+  "affected_files": [
+    "public/css/one-time-portal-shell.css",
+    "public/js/one-time-portal-shell.js",
+    "public/rabbi-member.html",
+    "public/member-library.html",
+    "public/one-time-classroom.html",
+    "public/one-time-parent.html",
+    "public/one-time-parent-review.html",
+    "public/student.html",
+    "scripts/smoke-onetime-portal-shell-local.mjs",
+    "ops/action-registry/actions.json",
+    "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/"
+  ],
+  "current_state": {
+    "inspected": [
+      "Current-state audit exists under ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/ with desktop/tablet/mobile portal and review evidence.",
+      "public/rabbi-member.html and public/member-library.html use CSS pseudo-element hamburger drawings in mobile navigation.",
+      "public/one-time-classroom.html uses a top-actions pseudo-element hamburger in review/mobile state.",
+      "public/one-time-parent.html is already a password setup/reset route but needs stronger account setup/reset labeling.",
+      "public/student.html already has a real portal menu toggle for the student sidebar and One Time review mode, but the shared shell can add consistent preview banner/link preservation.",
+      "src/platform/instances/one-time-shared-review-data.js already uses TEST ids and @example.test emails for shared review fixtures."
+    ],
+    "known_gaps": [
+      "/rabbi-member still reads as Member area instead of Family Portal in user-facing labels.",
+      "The One Time mobile menu affordance is sometimes a CSS pseudo-element rather than a focusable button.",
+      "Review mode is not consistently bannered as TEST PREVIEW / SAMPLE DATA / NO WRITES across portal routes.",
+      "Member Library does not yet have a simple review-mode bridge to the existing TEST member fixture.",
+      "Preview navigation can lose review mode when moving between Family, Student, Classroom, and Library."
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state/report.md",
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/parallel-frontend-current-state/"
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "shared One Time portal shell",
+      "Family Portal",
+      "real accessible menu",
+      "TEST preview",
+      "support boundaries"
+    ],
+    "expanded_phrases": {
+      "professional": "For this packet, professional means restrained portal UI consistency: same One Time logo, black/yellow token alignment, readable labels, keyboard focus, bounded actions, and no marketing-style rebuild.",
+      "working": "For this packet, working means local navigation/menu/preview assertions pass without external writes or production data mutation.",
+      "shared One Time portal shell": "A shared CSS/JS layer that normalizes labels, menu behavior, focus styles, preview banners, and review-link preservation while leaving page-specific content intact.",
+      "Family Portal": "The user-facing name for /rabbi-member and its review entry; it includes library, live class, private questions, and support without calling the family-facing route a generic member page.",
+      "real accessible menu": "A focusable button with aria-controls, aria-expanded, Escape close, outside/backdrop close, focus return, and keyboard containment while open.",
+      "TEST preview": "Review mode must visibly declare TEST PREVIEW, SAMPLE DATA, and NO WRITES, and all fixture identities must remain TEST or @example.test.",
+      "support boundaries": "Support UI can collect or simulate scoped member/parent/student support only; it must not expose admin diagnostics, raw private data, payment/access mutation, or external sends."
+    },
+    "first_party_pattern_interpretation": "Use the existing first-party One Time portal pages and review fixture API. Do not add GHL, LeadConnector, external CRM, or external provider runtimes."
+  },
+  "design_pattern_references": [
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260712-108",
+      "title": "Normalize portal IA, shared shell, mobile menu, preview mode, support boundaries, and preview fixtures",
+      "status": "ready_for_codex",
+      "expected_result": "Family, Student, Classroom, Library, and parent setup/reset use clear labels, shared One Time shell, real accessible mobile menu, preserved preview mode, scoped support boundaries, and TEST-only preview personas.",
+      "acceptance_criteria": [
+        "/rabbi-member is labeled Family Portal where user-facing.",
+        "/one-time-parent is clearly account setup/reset.",
+        "Shared shell applies to all One Time portal and preview routes.",
+        "A real accessible menu button replaces the pseudo-element hamburger.",
+        "Preview fixtures are TEST/example.test only and excluded from production sends/reminders/metrics."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "REQ-20260712-102 current-state visual audit is Done with regenerated portal and review evidence.",
+      "This packet is limited to portal shell labels, menu behavior, preview/no-write banners, fixture-proof smoke, and registry evidence.",
+      "No external provider, payment/access, send, deploy, or production data mutation is in scope.",
+      "The existing review fixture source has been inspected for TEST ids and @example.test emails."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/member-library?review=one-time",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load the review library bridge while the TEST member fixture is requested.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "TEST PREVIEW / SAMPLE DATA / NO WRITES banner remains visible while content loads.",
+      "expected_primary_action": "Wait for library",
+      "expected_secondary_actions": [
+        "Menu",
+        "Exit Preview"
+      ],
+      "forbidden_content": [
+        "real member email",
+        "production reminder metric",
+        "external send"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The preview banner and menu button are reachable before content loads.",
+      "accessibility_expectation": "Loading text is visible and not color-only.",
+      "test_smoke_assertion": "Smoke opens review library and sees preview/no-write banner.",
+      "requirement_id": "REQ-20260712-108"
+    },
+    "empty": {
+      "route": "/rabbi-member",
+      "viewport": "1024",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Family Portal without a member session.",
+      "expected_visible_title": "One Time Family Portal",
+      "expected_visible_message": "Request family portal link and safe empty library/support states.",
+      "expected_primary_action": "Request login link",
+      "expected_secondary_actions": [
+        "Menu",
+        "Library",
+        "Classroom",
+        "Support"
+      ],
+      "forbidden_content": [
+        "private library rows",
+        "other family data",
+        "admin diagnostics"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Family Portal title and navigation are announced with meaningful labels.",
+      "accessibility_expectation": "Empty states are text-visible.",
+      "test_smoke_assertion": "Smoke asserts /rabbi-member visible text includes Family Portal and not generic Member area as the primary route label.",
+      "requirement_id": "REQ-20260712-108"
+    },
+    "populated": {
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open classroom review mode with TEST fixture access code.",
+      "expected_visible_title": "One Time Mishnah Classroom",
+      "expected_visible_message": "Shared shell, review banner, classroom content, and no-write support copy are visible.",
+      "expected_primary_action": "Open menu",
+      "expected_secondary_actions": [
+        "Family Portal",
+        "Library",
+        "Classroom",
+        "Support",
+        "Exit Preview"
+      ],
+      "forbidden_content": [
+        "real Zoom join URL",
+        "live send",
+        "production member metrics"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Menu and preview controls are accessible.",
+      "accessibility_expectation": "Header and buttons remain readable at desktop.",
+      "test_smoke_assertion": "Smoke asserts TEST/no-write banner and review links are preserved.",
+      "requirement_id": "REQ-20260712-108"
+    },
+    "filtered_empty": {
+      "route": "/student.html?review=one-time",
+      "viewport": "768",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Student review and navigate without a real student session.",
+      "expected_visible_title": "One Time student review",
+      "expected_visible_message": "Student view uses TEST review data and excludes BNA accountability/general school rows.",
+      "expected_primary_action": "Open menu",
+      "expected_secondary_actions": [
+        "Parent",
+        "Classroom",
+        "Exit Preview"
+      ],
+      "forbidden_content": [
+        "BNA school accountability goals",
+        "other student records",
+        "production metric write"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Student topbar actions are labeled.",
+      "accessibility_expectation": "No icon-only or empty action remains unlabeled.",
+      "test_smoke_assertion": "Smoke asserts review banner and no empty unlabeled action in topbar/menu.",
+      "requirement_id": "REQ-20260712-108"
+    },
+    "error": {
+      "route": "/one-time-parent",
+      "viewport": "430",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open parent account setup/reset without a reset token.",
+      "expected_visible_title": "One Time parent account setup/reset",
+      "expected_visible_message": "The route explains that it emails a fresh setup/reset link without showing private records.",
+      "expected_primary_action": "Email me a new password link",
+      "expected_secondary_actions": [
+        "Menu"
+      ],
+      "forbidden_content": [
+        "private student details before validation",
+        "admin diagnostics",
+        "payment/access mutation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Status message is visible and tied to the form.",
+      "accessibility_expectation": "Error/setup states are readable on mobile.",
+      "test_smoke_assertion": "Smoke asserts setup/reset wording and no private data before token validation.",
+      "requirement_id": "REQ-20260712-108"
+    },
+    "blocked_setup": {
+      "route": "/parent.html?review=one-time",
+      "viewport": "430",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open parent review support form.",
+      "expected_visible_title": "Parent Review Portal",
+      "expected_visible_message": "Preview-only parent support submit is locally simulated with no database write or email send.",
+      "expected_primary_action": "Submit preview",
+      "expected_secondary_actions": [
+        "Menu",
+        "Exit Preview"
+      ],
+      "forbidden_content": [
+        "real charge",
+        "payment link creation",
+        "support ticket database write"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Submit preview has visible status text after submit.",
+      "accessibility_expectation": "Preview-only state is text-labeled.",
+      "test_smoke_assertion": "Smoke asserts preview-only/no-write text and no network POST for review submit.",
+      "requirement_id": "REQ-20260712-108"
+    },
+    "preview_only": {
+      "route": "/rabbi-member?review=one-time",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Family Portal review mode.",
+      "expected_visible_title": "One Time Family Portal",
+      "expected_visible_message": "TEST PREVIEW / SAMPLE DATA / NO WRITES banner and Exit Preview link are visible.",
+      "expected_primary_action": "Exit Preview",
+      "expected_secondary_actions": [
+        "Menu",
+        "Student preview",
+        "Classroom",
+        "Library"
+      ],
+      "forbidden_content": [
+        "real login link send",
+        "support ticket write",
+        "private member session token"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview banner is a status region and Exit Preview is a link.",
+      "accessibility_expectation": "Preview/no-write text is not color-only.",
+      "test_smoke_assertion": "Smoke asserts TEST PREVIEW, SAMPLE DATA, NO WRITES, Exit Preview, and review link preservation.",
+      "requirement_id": "REQ-20260712-108"
+    },
+    "success_readback": {
+      "route": "/member-library?review=one-time",
+      "viewport": "1024",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load TEST member library review data.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "TEST member library item and classroom summary render without production session or writes.",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": [
+        "Menu",
+        "Exit Preview"
+      ],
+      "forbidden_content": [
+        "production email",
+        "real progress metric write",
+        "live Vimeo write"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Library filters and media controls remain labeled.",
+      "accessibility_expectation": "Cards do not overflow at tablet width.",
+      "test_smoke_assertion": "Smoke asserts TEST fixture renders and progress POST is not called in preview mode.",
+      "requirement_id": "REQ-20260712-108"
+    },
+    "permission_denied": {
+      "route": "/one-time-parent",
+      "viewport": "390",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open account setup/reset with no token or invalid token.",
+      "expected_visible_title": "One Time parent account setup/reset",
+      "expected_visible_message": "The page offers a fresh setup/reset link request and does not reveal private records.",
+      "expected_primary_action": "Email me a new password link",
+      "expected_secondary_actions": [
+        "Menu"
+      ],
+      "forbidden_content": [
+        "parent record details before validation",
+        "student private data",
+        "support admin diagnostics"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Form and status text are visible.",
+      "accessibility_expectation": "Mobile setup form has usable touch targets.",
+      "test_smoke_assertion": "Smoke asserts no private data appears before token validation.",
+      "requirement_id": "REQ-20260712-108"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/rabbi-member?review=one-time",
+      "viewport": "390",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Activate the shared One Time portal menu button on mobile.",
+      "expected_visible_title": "One Time portal menu",
+      "expected_visible_message": "A real menu panel opens, traps focus, closes with Escape/backdrop, and returns focus to the button.",
+      "expected_primary_action": "Close menu",
+      "expected_secondary_actions": [
+        "Family Portal",
+        "Student Portal",
+        "Classroom",
+        "Library",
+        "Exit Preview"
+      ],
+      "forbidden_content": [
+        "CSS-only pseudo hamburger",
+        "unfocusable menu",
+        "lost review mode"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Menu button updates aria-expanded and aria-controls.",
+      "accessibility_expectation": "Menu can be closed with Escape and focus returns to the button.",
+      "test_smoke_assertion": "Smoke asserts aria-expanded true/false, Escape close, and focus return.",
+      "requirement_id": "REQ-20260712-108"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/rabbi-member?review=one-time",
+        "viewport": 1440,
+        "auth_role": "MEMBER_PARENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-108"
+      },
+      {
+        "route": "/member-library?review=one-time",
+        "viewport": 1024,
+        "auth_role": "MEMBER_PARENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-108"
+      },
+      {
+        "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 768,
+        "auth_role": "MEMBER_PARENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-108"
+      },
+      {
+        "route": "/one-time-parent",
+        "viewport": 430,
+        "auth_role": "MEMBER_PARENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-108"
+      },
+      {
+        "route": "/student.html?review=one-time",
+        "viewport": 390,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-108"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260712-108-001",
+        "route": "/rabbi-member",
+        "viewport": "390",
+        "screenshot_before": "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/parallel-frontend-current-state/dom/rabbi-member-390-mobile.txt",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-12-onetime-portal-shell-local/report.md",
+        "defect_codes": [
+          "VQ-ACTION-003",
+          "VQ-RESP-005"
+        ],
+        "severity": "P1",
+        "user_impact": "Mobile users see a drawn hamburger that cannot receive focus, announce state, close with Escape, or return focus.",
+        "expected_fix": "Replace pseudo hamburger affordance with a real shared portal menu button.",
+        "requirement_id": "REQ-20260712-108"
+      },
+      {
+        "finding_id": "VQF-20260712-108-002",
+        "route": "/student.html?review=one-time",
+        "viewport": "430",
+        "screenshot_before": "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state/report.md",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-12-onetime-portal-shell-local/report.md",
+        "defect_codes": [
+          "VQ-LABEL-004",
+          "VQ-ACTION-003"
+        ],
+        "severity": "P2",
+        "user_impact": "Review routes need explicit preview/no-write action labels and no empty icon-only controls.",
+        "expected_fix": "Add shared preview banner and assert labeled menu/topbar controls.",
+        "requirement_id": "REQ-20260712-108"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Shared menu button uses aria-controls and aria-expanded.",
+      "Menu opens and closes with click, Escape, and backdrop/outside close where practical.",
+      "Focus remains inside the open menu panel and returns to the menu button when closed.",
+      "Preview banner is text-visible and not color-only.",
+      "All added controls have visible text or aria-label/title.",
+      "No route has text overlap or horizontal overflow at 390, 430, 768, 1024, and 1440 widths."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Open or close One Time portal menu",
+      "selector_or_action_key": "ACTION-ONETIME-PORTAL-MENU-TOGGLE",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Shared one-time-portal-shell.js toggles a local menu only; no data write occurs.",
+      "registry_required": true
+    },
+    {
+      "label": "Exit One Time preview",
+      "selector_or_action_key": "ACTION-ONETIME-PORTAL-EXIT-PREVIEW",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Shared preview banner link removes review/test query state and navigates to the non-review route.",
+      "registry_required": true
+    },
+    {
+      "label": "Request family portal login link",
+      "selector_or_action_key": "ACTION-ONETIME-FAMILY-PORTAL-LOGIN-LINK",
+      "action_state": "DISABLED_NOT_IN_SCOPE",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing login-link request behavior is not changed by this UI shell packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Parent account setup/reset link request",
+      "selector_or_action_key": "ACTION-ONETIME-PARENT-ACCOUNT-RESET-REQUEST",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing /api/one-time/parent-password/request endpoint remains unchanged; this packet only clarifies UI labels.",
+      "registry_required": false
+    },
+    {
+      "label": "Preview-only support submit",
+      "selector_or_action_key": "ACTION-ONETIME-PREVIEW-SUPPORT-SUBMIT",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Review pages simulate locally and display no-write status.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "api_calls": [
+      "GET /api/one-time-review/member in member-library review mode only",
+      "GET /api/one-time-review/student in student review mode",
+      "GET /api/one-time-review/parent in parent review mode",
+      "GET /api/one-time-review/classroom in classroom review mode"
+    ],
+    "limits": [
+      "Review mode uses only TEST ids and @example.test fixture emails.",
+      "Review mode does not write progress, support, question, reminder, send, payment, access, or metrics rows."
+    ],
+    "caching": [
+      "Do not persist TEST review access into production localStorage keys."
+    ],
+    "abort_debounce": [
+      "Not applicable to this shell packet."
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Portal and review routes must remain scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+      "Review mode must visibly state TEST PREVIEW, SAMPLE DATA, and NO WRITES.",
+      "TEST fixture data must not enter production CRM, reminders, external sends, access grants, payment flows, or metrics.",
+      "Support/admin diagnostics must not appear in family, student, member, classroom, or public views unless role-gated."
+    ],
+    "forbidden_content": [
+      "raw private family data",
+      "raw student transcript",
+      "real member session token in evidence",
+      "real email or phone values in screenshots",
+      "external provider credentials",
+      "GHL or LeadConnector runtime"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-07-PORTALS",
+      "scope": "Shared One Time portal shell, labels, mobile menu, preview/no-write boundaries",
+      "instructions": [
+        "Create shared One Time portal shell CSS/JS without rebuilding route content.",
+        "Rename /rabbi-member user-facing labels to Family Portal.",
+        "Clarify /one-time-parent as account setup/reset.",
+        "Replace mobile pseudo hamburger affordances with one real menu button and shared menu behavior.",
+        "Preserve review mode links across Family, Student, Classroom, and Library where preview routes exist.",
+        "Add TEST PREVIEW / SAMPLE DATA / NO WRITES banner and Exit Preview link.",
+        "Prove review fixtures remain TEST/@example.test and no external writes occur."
+      ],
+      "requirements": [
+        "REQ-20260712-108"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "focused_multi_file_shared_shell",
+    "source_files_to_read": [
+      "public/rabbi-member.html",
+      "public/member-library.html",
+      "public/one-time-classroom.html",
+      "public/one-time-parent.html",
+      "public/one-time-parent-review.html",
+      "public/student.html",
+      "src/platform/instances/one-time-shared-review-data.js",
+      "ops/action-registry/actions.json"
+    ],
+    "files_allowed_to_edit": [
+      "public/css/one-time-portal-shell.css",
+      "public/js/one-time-portal-shell.js",
+      "public/rabbi-member.html",
+      "public/member-library.html",
+      "public/one-time-classroom.html",
+      "public/one-time-parent.html",
+      "public/one-time-parent-review.html",
+      "public/student.html",
+      "scripts/smoke-onetime-portal-shell-local.mjs",
+      "ops/action-registry/actions.json",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/*"
+    ],
+    "max_files_to_edit": 10,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "This packet touches one shared portal-shell behavior surface. If content IA, backend access, landing, performance, or release work expands, split into a follow-up packet.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "commands": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/04-portal-shell-preview.product-quality.json",
+      "node --check public/js/one-time-portal-shell.js",
+      "node --check scripts/smoke-onetime-portal-shell-local.mjs",
+      "node scripts/smoke-onetime-portal-shell-local.mjs",
+      "node --test tests/one-time-shared-review-branding.test.js tests/one-time-safe-view-as-navigation.test.js tests/one-time-provider-review-navigation.test.js tests/workspace-scope-guardrails.test.js",
+      "npm run bna:run:validate",
+      "npm run watchdog:protocol-drift"
+    ],
+    "manual_checks": [
+      "Inspect generated portal screenshots for desktop/tablet/mobile states.",
+      "Confirm pseudo-element hamburger affordance no longer appears as the menu control.",
+      "Confirm no external writes occurred."
+    ]
+  },
+  "evidence": {
+    "required": [
+      "PQC validation PASS",
+      "shared shell CSS/JS files",
+      "action registry rows for added menu and exit-preview controls",
+      "local portal shell smoke screenshots/report",
+      "execution-run status/evidence update"
+    ],
+    "paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/ui-audits/2026-07-12-onetime-portal-shell-local/report.md",
+      "ops/action-registry/actions.json",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/STATUS.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/TEST-RESULTS.md"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "DEPLOY_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "/rabbi-member user-facing labels read Family Portal.",
+      "/one-time-parent reads as parent account setup/reset.",
+      "Shared One Time portal shell CSS/JS loads on Family, Student review, Classroom, Library, parent setup/reset, and parent review surfaces.",
+      "Mobile pseudo hamburger affordances are replaced by a real menu button with aria-expanded, aria-controls, Escape/backdrop close, focus trap, and focus return.",
+      "Review mode visibly shows TEST PREVIEW / SAMPLE DATA / NO WRITES and provides Exit Preview.",
+      "Review navigation preserves review mode across Family, Student, Classroom, and Library routes where review mode exists.",
+      "TEST fixture proof confirms preview data is TEST/@example.test only and no production CRM/reminder/send/metric write is performed.",
+      "Local smoke screenshots and assertions pass.",
+      "Production deploy/live-smoke remains open under REQ-20260712-112."
+    ],
+    "actual_status": "ready_for_local_implementation"
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/04-portal-shell-preview.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "node smoke",
+      "node tests"
+    ],
+    "skipped_actions_policy": "No external sends/writes/deploy in this local batch.",
+    "blocker_decisions": [
+      "DEC-20260712-101 direct source screenshots missing but regenerated audit evidence is usable."
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state/report.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/requirements.json"
+    ],
+    "final_status_path": "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/STATUS.md",
+    "next_packet_path": "tasks-pending/2026-07-12-onetime-crm-portal-production-correction.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No protocol drift findings introduced by the portal shell/preview packet or closeout records."
+  },
+  "next_packet": {
+    "id": "PKT-20260712-109",
+    "condition": "Continue landing WhatsApp launcher packet after REQ-20260712-108 is locally done, unless REQ-20260712-111 performance budget must be pulled forward.",
+    "status": "pending"
+  }
+}

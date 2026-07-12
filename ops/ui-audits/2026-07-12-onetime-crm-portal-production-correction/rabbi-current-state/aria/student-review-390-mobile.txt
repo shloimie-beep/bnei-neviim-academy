@@ -1,0 +1,115 @@
+- banner:
+  - link "One Time":
+    - /url: /one-time
+  - link "Parent":
+    - /url: /parent.html?review=one-time
+  - link "Classroom":
+    - /url: /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+- main:
+  - paragraph: One Time Mishnayos
+  - heading "Student One Time" [level=1]
+  - paragraph: Live Mishnayos, review videos, worksheets, attendance, questions, badges, and rewards in one clean One Time classroom view.
+  - button "One Time"
+  - complementary "Student navigation":
+    - text: One Time Classroom
+    - strong: Student One Time
+    - text: Weekly Mishnah Live Class
+    - article:
+      - strong: 39/45 min
+      - text: Attendance
+    - article:
+      - strong: 42%
+      - text: Progress
+    - article:
+      - strong: active for review
+      - text: Trial/access
+    - text: This Week
+    - article:
+      - strong: Weekly Mishnah Live Class
+      - text: Pesachim Perek 10 Mishnah 1-2
+    - navigation "Student portal sections":
+      - link "Overview":
+        - /url: "#reviewOverview"
+      - link "Class":
+        - /url: "#reviewClass"
+      - link "Library":
+        - /url: "#reviewLibrary"
+      - link "Progress":
+        - /url: "#reviewProgress"
+      - link "Questions/support":
+        - /url: "#reviewQuestions"
+  - paragraph: One Time student review
+  - heading "Student One Time" [level=2]
+  - paragraph: This view focuses the student on live class, review video, worksheet, badges, attendance, and reward progress using only this student's One Time records.
+  - article:
+    - strong: 42%
+    - text: Course progress
+  - article:
+    - strong: 87%
+    - text: Attendance
+  - article:
+    - strong: First Class
+    - text: Achievement
+  - article:
+    - strong: ready for rabbi review
+    - text: Reward
+  - text: Portal boundary
+  - heading "One Time only" [level=2]
+  - paragraph: This student portal shows Mishnayos class records, classroom/library progress, worksheets, private Rabbi questions, badges, achievements, and rewards for One Time.
+  - text: No bot / no BNA goals This view stays inside the Rabbi Scheller One Time workspace. Live class
+  - heading "Weekly Mishnah Live Class" [level=2]
+  - paragraph: Pesachim / Perek 10 / Mishnah 1-2
+  - text: Protected join class ready for review The portal shows readiness and access rules. No real Zoom meeting was created for this preview.
+  - article:
+    - heading "Lesson" [level=2]
+    - paragraph:
+      - strong: Pesachim Perek 10 - Seder Night Review
+    - paragraph: Pesachim Foundations
+  - article:
+    - heading "Video/library" [level=2]
+    - paragraph:
+      - strong: Pesachim Perek 10 Review Class
+    - paragraph: Vimeo manual/sample reference
+    - paragraph:
+      - link "Open classroom/library":
+        - /url: https://bneineviimacademy.org/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+  - article:
+    - heading "Worksheet/resource" [level=2]
+    - paragraph:
+      - strong: Pesachim Perek 10 Worksheet
+    - paragraph:
+      - link "Open resource":
+        - /url: /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS#worksheets
+  - article:
+    - heading "Attendance" [level=2]
+    - paragraph:
+      - strong: 39 exact minutes
+    - paragraph: partial present / late approved
+  - article:
+    - heading "Announcement" [level=2]
+    - paragraph:
+      - strong: Welcome to the One Time cohort
+    - paragraph: This announcement is safe content for the review walkthrough.
+  - article:
+    - heading "Achievement and reward" [level=2]
+    - paragraph:
+      - strong: First Class
+    - paragraph: Individual Review Reward / ready for rabbi review
+  - article:
+    - heading "Private question" [level=2]
+    - paragraph:
+      - strong: Private question about the Mishnah
+    - paragraph: Can Rabbi explain why this time is used for Shema?
+    - text: Ask Rabbi / support
+    - textbox "Ask Rabbi / support":
+      - /placeholder: Type a review-only question
+    - button "Submit preview"
+  - article:
+    - heading "Support ticket" [level=2]
+    - paragraph:
+      - strong: Worksheet link question
+    - paragraph: parent asked where the worksheet is located.
+    - text: open for review
+  - article:
+    - heading "Not shown" [level=2]
+    - paragraph: General study assistants, accountability-goal tooling, and unrelated student records are not included in this review mode.

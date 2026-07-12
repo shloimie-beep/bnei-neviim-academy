@@ -1,0 +1,79 @@
+- banner:
+  - link "Provider":
+    - /url: /provider.html?review=one-time
+  - link "One Time":
+    - /url: /one-time
+  - link "Parent":
+    - /url: /parent.html?review=one-time
+  - link "Student":
+    - /url: /student.html?review=one-time
+  - link "Member":
+    - /url: /rabbi-member?review=one-time
+  - link "Classroom":
+    - /url: /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+  - link "Email Review":
+    - /url: /one-time-email-review.html
+- main:
+  - heading "Eli Scheller Workspace" [level=1]
+  - paragraph: Scoped One Time CRM, inbox, content, users, messages, class, and support.
+  - button "Close Preview"
+  - button "Workspace Menu"
+  - navigation "Provider workspace sections":
+    - strong: One Time Mishnah Class
+    - text: rabbi_sheller_provider one_time_mishnah_class Scoped provider workspace
+    - strong: Rabbi Eli Scheller
+    - text: "Login: ELISHELLER whatsapp_handoff_pending"
+    - link "Landing Open":
+      - /url: https://bneineviimacademy.org/one-time
+    - link "Parent View Open":
+      - /url: https://bneineviimacademy.org/parent.html?review=one-time
+    - link "Student View Open":
+      - /url: https://bneineviimacademy.org/student.html?review=one-time
+    - link "Member View Open":
+      - /url: https://bneineviimacademy.org/rabbi-member?review=one-time
+    - link "Classroom Open":
+      - /url: https://bneineviimacademy.org/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+    - text: Workspace
+    - button "Dashboard"
+    - button "CRM"
+    - button "Mailbox"
+    - button "Messages"
+    - text: Program
+    - button "Content"
+    - button "Live Class"
+    - button "Library"
+    - button "Badges"
+    - text: Admin
+    - button "Users"
+    - button "Support"
+  - heading "Overview" [level=2]
+  - paragraph: Your provider workspace summary. Public profile and service changes stay pending review until BNA approves them.
+  - strong: One Time
+  - text: Branded review workspace
+  - strong: "[redacted-email]"
+  - text: CRM inbox
+  - strong: "4"
+  - text: Workspace users
+  - strong: "2"
+  - text: CRM/support items
+  - strong: 39/45
+  - text: Attendance minutes
+  - strong: "21"
+  - text: Email previews
+  - article:
+    - heading "CRM inbox" [level=3]
+    - paragraph: Emails to [redacted-email] live in the One Time mailbox and CRM thread list.
+    - text: Open Mailbox
+  - article:
+    - heading "Parent and student" [level=3]
+    - paragraph: Parent record is linked to student record.
+    - text: One Time only
+  - article:
+    - heading "Live class" [level=3]
+    - paragraph: Weekly Mishnah Live Class / Pesachim Perek 10
+    - text: review_ready
+  - article:
+    - heading "Support queue" [level=3]
+    - paragraph: Parent support and private questions appear in CRM/Messages.
+    - text: open_for_review
+- button "Robot Scheller"

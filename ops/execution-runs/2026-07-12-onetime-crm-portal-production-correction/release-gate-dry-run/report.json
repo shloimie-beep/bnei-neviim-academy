@@ -1,0 +1,486 @@
+﻿{
+  "ok": false,
+  "mode": "dry_run",
+  "generated_at": "2026-07-12T17:31:13.287Z",
+  "production_mutation_performed": false,
+  "deploy_performed": false,
+  "live_verification_performed": false,
+  "secrets_redacted": true,
+  "blockers": [
+    "Current HEAD is not confirmed pushed to origin/master.",
+    "Working tree has dirty or untracked files; do not deploy from a mixed dirty worktree."
+  ],
+  "git": {
+    "branch": "master",
+    "expected_branch": null,
+    "allow_detached": false,
+    "detached_allowed": false,
+    "branch_matches_expected": true,
+    "head": "d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a",
+    "upstream": "origin/master",
+    "remote_branch": "origin/master",
+    "remote_head": "e5efbb15adcab66ca93f1baa28442fbd131710cd",
+    "head_pushed": false,
+    "dirty": {
+      "total": 100,
+      "staged": 0,
+      "modified": 63,
+      "untracked": 37,
+      "sample": [
+        {
+          "status": " M",
+          "path": "MEMORY.md"
+        },
+        {
+          "status": " M",
+          "path": "TASKS.md"
+        },
+        {
+          "status": " M",
+          "path": "memory-topics/one-time-rabbi-sheller.md"
+        },
+        {
+          "status": " M",
+          "path": "memory/2026-07-10.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/action-registry.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/action-registry/actions.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/action-registry/one-time-action-coverage.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/action-registry/one-time-action-coverage.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/action-registry/universal-action-parity.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/action-registry/universal-action-parity.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/agent-changelog.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/agent-task-ledger.jsonl"
+        },
+        {
+          "status": " M",
+          "path": "ops/audit-governance/latest.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/audit-governance/latest.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/chatgpt-ramble-dropoff/CONTROL-TOWER.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation/run.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/execution-runs/latest.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1024-crm-workbench.png"
+        },
+        {
+          "status": " M",
+          "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1440-crm-workbench.png"
+        },
+        {
+          "status": " M",
+          "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-390-crm-workbench.png"
+        },
+        {
+          "status": " M",
+          "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-430-crm-workbench.png"
+        },
+        {
+          "status": " M",
+          "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/tablet-768-crm-workbench.png"
+        },
+        {
+          "status": " M",
+          "path": "public/css/operations-shell.css"
+        },
+        {
+          "status": " M",
+          "path": "public/js/operations-deferred-renderers.js"
+        },
+        {
+          "status": " M",
+          "path": "public/js/operations-shell.js"
+        },
+        {
+          "status": " M",
+          "path": "public/js/rabbi-member.js"
+        },
+        {
+          "status": " M",
+          "path": "public/member-library.html"
+        },
+        {
+          "status": " M",
+          "path": "public/one-time-classroom.html"
+        },
+        {
+          "status": " M",
+          "path": "public/one-time-parent-review.html"
+        },
+        {
+          "status": " M",
+          "path": "public/one-time-parent.html"
+        },
+        {
+          "status": " M",
+          "path": "public/one-time/index.html"
+        },
+        {
+          "status": " M",
+          "path": "public/operations-bootstrap.html"
+        },
+        {
+          "status": " M",
+          "path": "public/operations.html"
+        }
+      ]
+    }
+  },
+  "run": {
+    "run_dir": "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction",
+    "run_id": "2026-07-12-onetime-crm-portal-production-correction",
+    "active": true,
+    "expected_branch": null,
+    "pr_number": null,
+    "pr_url": null,
+    "status_counts": {
+      "done": 11,
+      "not_started": 1
+    },
+    "open_requirements": [
+      {
+        "id": "REQ-20260712-112",
+        "status": "not_started",
+        "owner": "Codex",
+        "next_action": "Run after all implementation packets are terminal or precisely blocked.",
+        "blocker": ""
+      }
+    ]
+  },
+  "external_readback_gate": {
+    "ok": false,
+    "mode": "dry_run",
+    "scopes": [
+      {
+        "scope": "database",
+        "ready": true,
+        "secrets_configured": 1,
+        "secrets_required": 1,
+        "config_configured": 0,
+        "config_required": 0
+      },
+      {
+        "scope": "railway",
+        "ready": false,
+        "secrets_configured": 1,
+        "secrets_required": 1,
+        "config_configured": 0,
+        "config_required": 6
+      },
+      {
+        "scope": "drive",
+        "ready": false,
+        "secrets_configured": 1,
+        "secrets_required": 6,
+        "config_configured": 0,
+        "config_required": 4,
+        "auth_paths": [
+          {
+            "path": "application_credentials",
+            "ready": false,
+            "configured_count": 0,
+            "required_count": 1
+          },
+          {
+            "path": "service_account_pair",
+            "ready": false,
+            "configured_count": 0,
+            "required_count": 2
+          },
+          {
+            "path": "oauth_refresh_token",
+            "ready": false,
+            "configured_count": 1,
+            "required_count": 3
+          }
+        ]
+      }
+    ],
+    "job_range": null,
+    "external_read_performed": false,
+    "production_mutation_performed": false,
+    "safe_apply_performed": false,
+    "deploy_performed": false,
+    "secrets_redacted": true,
+    "blockers": [
+      "railway readback gate is not ready; required configured state is missing.",
+      "drive readback gate is not ready; required configured state is missing."
+    ],
+    "approval_gates": {
+      "readback": {
+        "requested": false,
+        "approved": false
+      },
+      "backfill_apply": {
+        "requested": false,
+        "approved": false
+      }
+    },
+    "next_command_plan": [
+      "npm run bna:external-readback-gate -- --readback --all --confirm-readback READ_EXTERNAL_PRODUCTION_STATE",
+      "npm run bna:external-readback-gate -- --backfill-apply --database --job-range 64-74 --confirm-readback READ_EXTERNAL_PRODUCTION_STATE --confirm-backfill APPLY_GUARDED_CLASS_BACKFILL",
+      "npm run drive:intake:truth",
+      "npm run bna:intake:postgres -- --readback --confirm READ_CANONICAL_INTAKE_POSTGRES",
+      "npm run bna:release-gate -- --json"
+    ]
+  },
+  "production_readiness_gate": {
+    "ok": null,
+    "status": "not_required_for_dry_run",
+    "blockers": [],
+    "blocker_groups": [],
+    "warnings": [],
+    "snapshot_summary": {},
+    "production_mutation_performed": false,
+    "external_write_performed": false
+  },
+  "integration_readiness": {
+    "generated_at": "2026-07-12T17:31:13.280Z",
+    "variable_state_only": true,
+    "secret_values_printed": false,
+    "external_read_performed": false,
+    "groups": [
+      {
+        "integration": "openai",
+        "label": "OpenAI transcription/parser",
+        "deploy_required": true,
+        "ready": true,
+        "fields": [
+          {
+            "name": "OPENAI_API_KEY",
+            "configured": true,
+            "source": "keyholder"
+          }
+        ],
+        "blockers": []
+      },
+      {
+        "integration": "vimeo",
+        "label": "Vimeo video/member library",
+        "deploy_required": false,
+        "ready": true,
+        "fields": [
+          {
+            "name": "VIMEO_CLIENT_ID",
+            "configured": true,
+            "source": "keyholder"
+          },
+          {
+            "name": "VIMEO_CLIENT_SECRET",
+            "configured": true,
+            "source": "keyholder"
+          },
+          {
+            "name": "VIMEO_ACCESS_TOKEN",
+            "configured": true,
+            "source": "keyholder"
+          }
+        ],
+        "blockers": []
+      },
+      {
+        "integration": "resend",
+        "label": "Resend email sending/domain",
+        "deploy_required": true,
+        "ready": true,
+        "fields": [
+          {
+            "name": "RESEND_API_KEY",
+            "configured": true,
+            "source": "keyholder"
+          },
+          {
+            "name": "RESEND_FROM",
+            "configured": false,
+            "source": "not configured"
+          },
+          {
+            "name": "RESEND_FROM_EMAIL",
+            "configured": true,
+            "source": "keyholder"
+          },
+          {
+            "name": "RESEND_DOMAIN",
+            "configured": true,
+            "source": "keyholder"
+          },
+          {
+            "name": "RESEND_WEBHOOK_SECRET",
+            "configured": true,
+            "source": "keyholder"
+          }
+        ],
+        "blockers": []
+      },
+      {
+        "integration": "stripe",
+        "label": "Stripe payment mode",
+        "deploy_required": true,
+        "ready": false,
+        "fields": [
+          {
+            "name": "STRIPE_SECRET_KEY",
+            "configured": true,
+            "source": "keyholder"
+          },
+          {
+            "name": "RABBI_STRIPE_SECRET_KEY",
+            "configured": false,
+            "source": "not configured"
+          },
+          {
+            "name": "RABBI_STRIPE_MODE",
+            "configured": false,
+            "source": "not configured"
+          }
+        ],
+        "blockers": [
+          "RABBI_STRIPE_SECRET_KEY is not configured.",
+          "RABBI_STRIPE_MODE is not configured."
+        ]
+      },
+      {
+        "integration": "rabbi_telegram",
+        "label": "Rabbi Telegram worker",
+        "deploy_required": false,
+        "ready": false,
+        "fields": [
+          {
+            "name": "TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER",
+            "configured": true,
+            "source": ".secrets"
+          }
+        ],
+        "blockers": [
+          "Worker deployment state is not verified by local readiness scanning."
+        ]
+      }
+    ]
+  },
+  "deferred_readiness": {
+    "integration": [],
+    "external_readback": []
+  },
+  "package_scripts": {
+    "required": [
+      "bna:run:validate",
+      "bna:run:source-coverage",
+      "bna:intake:postgres",
+      "production:readiness:gate",
+      "app:smoke",
+      "railway:doctor",
+      "watchdog:raw",
+      "secrets:audit"
+    ],
+    "missing": []
+  },
+  "approval_gates": {
+    "deploy": {
+      "requested": false,
+      "confirmation_phrase": "DEPLOY_BNA_PRODUCTION_CLOSEOUT",
+      "approval_env": "BNA_PRODUCTION_DEPLOY_APPROVED",
+      "approved": false
+    },
+    "live_verify": {
+      "requested": false,
+      "confirmation_phrase": "VERIFY_BNA_LIVE_CLOSEOUT",
+      "approval_env": "BNA_LIVE_VERIFY_APPROVED",
+      "approved": false
+    },
+    "defer_optional_integrations": {
+      "requested": false,
+      "approval_env": "BNA_PRODUCTION_DEPLOY_APPROVED",
+      "legacy_approval_env": "BNA_DEFER_OPTIONAL_INTEGRATIONS_APPROVED",
+      "approved": false,
+      "performed": false
+    },
+    "defer_external_readback": {
+      "requested": false,
+      "approval_env": "BNA_PRODUCTION_DEPLOY_APPROVED",
+      "legacy_approval_env": "BNA_DEFER_EXTERNAL_READBACK_APPROVED",
+      "approved": false,
+      "performed": false
+    }
+  },
+  "next_command_plan": [
+    "npm test",
+    "npm run bna:run:validate",
+    "npm run production:readiness:gate -- --json",
+    "npm run bna:run:source-coverage",
+    "npm run bna:run:stale-evidence",
+    "npm run watchdog:actions",
+    "npm run watchdog:security",
+    "npm run watchdog:raw",
+    "node scripts/audit-secrets.mjs",
+    "git diff --check",
+    "npm run bna:external-readback-gate -- --readback --all --confirm-readback READ_EXTERNAL_PRODUCTION_STATE",
+    "npm run bna:external-readback-gate -- --backfill-apply --database --job-range 64-74 --confirm-readback READ_EXTERNAL_PRODUCTION_STATE --confirm-backfill APPLY_GUARDED_CLASS_BACKFILL",
+    "npm run bna:release-gate -- --deploy --confirm-deploy DEPLOY_BNA_PRODUCTION_CLOSEOUT",
+    "npm run bna:release-gate -- --deploy --confirm-deploy DEPLOY_BNA_PRODUCTION_CLOSEOUT --defer-optional-integrations --defer-external-readback",
+    "npm run bna:release-gate -- --live-verify --confirm-live VERIFY_BNA_LIVE_CLOSEOUT"
+  ]
+}

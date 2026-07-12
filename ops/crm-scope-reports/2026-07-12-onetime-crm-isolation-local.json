@@ -1,0 +1,58 @@
+{
+  "report_id": "CRM-SCOPE-20260712-ONETIME-LOCAL",
+  "created_at": "2026-07-12T17:31:00+03:00",
+  "run_id": "2026-07-12-onetime-crm-portal-production-correction",
+  "requirement_id": "REQ-20260712-104",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "privacy": {
+    "redacted": true,
+    "production_contact_rows_returned": false,
+    "message_bodies_returned": false,
+    "emails_returned": false,
+    "phones_returned": false,
+    "external_crm_write_performed": false,
+    "production_delete_performed": false
+  },
+  "checked_boundaries": [
+    {
+      "surface": "crm_contacts_bna_contacts",
+      "required_scope": "bna_workspace_settings.workspace_key = rabbi_sheller_provider"
+    },
+    {
+      "surface": "crm_contacts_bna_parent_leads",
+      "required_scope": "bna_projects.project_key = one_time_mishnah_class"
+    },
+    {
+      "surface": "crm_timeline_parent_leads",
+      "required_scope": "lead project must match one_time_mishnah_class"
+    },
+    {
+      "surface": "crm_timeline_contacts",
+      "required_scope": "communication/pipeline workspace must match rabbi_sheller_provider"
+    },
+    {
+      "surface": "communications",
+      "required_scope": "requestedProjectKeyForScopedList(req)"
+    }
+  ],
+  "same_email_broadening_allowed": false,
+  "source_label_mapping": {
+    "bna_contacts": "First-party contact",
+    "bna_parent_leads": "Lead intake",
+    "bna_contact_communications": "Contact timeline",
+    "bna_communications": "Message history",
+    "bna_contact_pipeline_events": "Timeline note"
+  },
+  "evidence": [
+    "server.js",
+    "src/lib/bna/crm-contact-model.js",
+    "tests/crm-contact-model.test.js",
+    "tests/rabbi-scheller-tenant-isolation-contract.test.js"
+  ],
+  "release_evidence_required": [
+    "scoped_commit_push",
+    "deploy",
+    "live_redacted_crm_scope_smoke"
+  ]
+}

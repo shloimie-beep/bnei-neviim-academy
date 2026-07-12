@@ -1,0 +1,75 @@
+- complementary "BNA Operations navigation":
+  - text: One Time Mishnah Class Provider workspace for members, classes, Studio, communications, payments, tasks, and setup. Current Workspace
+  - strong: One Time Mishnah Class
+  - text: Provider / Provider Workspace Admin Scoped
+  - button "Overview"
+  - button "Workspace Setup"
+  - navigation:
+    - button "Overview O"
+    - button "Members M"
+    - button "Content C"
+    - button "Live L"
+    - button "Schedule S"
+    - button "Community C"
+    - button "Comms C"
+    - button "Auto A"
+    - button "Payments P"
+    - button "Tasks T"
+    - button "Reports R"
+    - button "Connectors C"
+    - button "Setup S"
+  - button "Back to all modules"
+  - text: Settings / Setup Sections Setup Choose a section for this workspace.
+  - button "Workspace 0"
+  - button "Users & Access 0"
+  - button "Brand & Site 0"
+  - button "Integration Setup 0"
+  - button "Guardrails 0"
+  - button "Platform Support"
+  - button "Help"
+  - link "Logout":
+    - /url: /operations-login.html
+- main:
+  - text: One Time Mishnah Class / Setup / Workspace Settings
+  - heading "Workspace Settings" [level=1]
+  - 'button "CRM: 1. One Time participants, leads, and CRM records scoped to this provider."':
+    - text: CRM
+    - strong: "1"
+  - 'button "Classes: 0. One Time classes, source material, and library items."':
+    - text: Classes
+    - strong: "0"
+  - 'button "Setup: 0. Provider setup, connectors, and access items."':
+    - text: Setup
+    - strong: "0"
+  - text: One Time Mishnah Class / Provider Workspace Admin
+  - button "Ask or search within One Time Mishnah Class / Setup / Workspace Settings": Ask / Search
+  - text: Sun 12 Jul
+  - button "Save Settings"
+  - navigation "Setup sections":
+    - text: Setup
+    - strong: Workspace
+    - tablist "Setup sections":
+      - tab "Workspace" [selected]: Workspace 0
+      - tab "Users & Access": Users & Access 0
+      - tab "Brand & Site": Brand & Site 0
+      - tab "Integration Setup": Integration Setup 0
+      - tab "Guardrails": Guardrails 0
+  - text: Configuration
+  - heading "Workspace Settings" [level=2]
+  - paragraph: Routine configuration belongs in the app. Controls without safe persistence are disabled and labeled instead of hidden behind Codex work.
+  - region "Settings category controls":
+    - text: Settings Category
+    - strong: Workspace
+    - paragraph: Open one focused setting group at a time. Disabled controls stay visible when backend persistence is not ready.
+    - button "Save"
+    - button "Test Connection setup"
+    - button "Reset setup"
+    - button "Overview"
+    - button "Workspace Settings 2"
+    - button "Branding 1"
+  - strong: Current workspace
+  - paragraph: Service provider workspace for the One Time Mishnah Class and related 7:00 class work.
+  - text: Persisted One Time Mishnah Class
+  - strong: Workspace type
+  - paragraph: Platform, school, and provider workspaces remain separate contexts.
+  - text: Persisted service_provider

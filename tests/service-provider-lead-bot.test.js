@@ -94,7 +94,7 @@ test('class link is denied to anonymous, lead, and signup states and allowed onl
   assert.equal(anonymous.class_link_released, false);
   assert.equal(anonymous.class_link_blocked, true);
   assert.doesNotMatch(anonymous.reply_body, /private\.example\.invalid/);
-  assert.match(anonymous.reply_body, /after active membership is verified/i);
+  assert.match(anonymous.reply_body, /until active membership is verified/i);
 
   const unverifiedSignup = buildProviderLeadBotPlan({
     profile,
@@ -141,7 +141,7 @@ test('class link is denied to anonymous, lead, and signup states and allowed onl
 
 test('dynamic schedule/current learning answer only from supplied approved facts', () => {
   const missing = buildProviderLeadBotPlan({ profile, message: 'When is class?', contact: { contact_type: 'lead' } });
-  assert.match(missing.reply_body, /don.t want to guess/i);
+  assert.match(missing.reply_body, /so I won.t guess/i);
 
   const known = buildProviderLeadBotPlan({
     profile,
@@ -152,6 +152,51 @@ test('dynamic schedule/current learning answer only from supplied approved facts
     },
   });
   assert.match(known.reply_body, /Example Masechta, Perek 2, Mishnayos 1-3/);
+});
+
+test('natural WhatsApp replies stay deterministic and safety-gated', () => {
+  const greeting = buildProviderLeadBotPlan({
+    profile,
+    message: 'Hi',
+    contact: { contact_type: 'lead', lead_id: 19 },
+  });
+  assert.equal(greeting.intent, 'greeting');
+  assert.match(greeting.reply_body, /^Hi, I'm Robot Scheller/);
+  assert.match(greeting.reply_body, /What would you like to know\?/);
+  assert.equal(greeting.guardrails.deterministic_natural_reply, true);
+  assert.equal(greeting.guardrails.no_charge, true);
+  assert.equal(greeting.guardrails.no_access_grant, true);
+
+  const unknown = buildProviderLeadBotPlan({
+    profile,
+    message: 'Can you help me with this?',
+    contact: { contact_type: 'lead', lead_id: 19 },
+  });
+  assert.match(unknown.reply_body, /Thanks, I got your message/);
+  assert.match(unknown.reply_body, /joining, the schedule, the current Mishnah, or a question for Rabbi Scheller/);
+  assert.doesNotMatch(unknown.reply_body, /as an ai|dear user|ticket has been closed/i);
+
+  const tech = buildProviderLeadBotPlan({
+    profile,
+    message: 'The login is not working',
+    contact: { contact_type: 'lead', lead_id: 19 },
+  });
+  assert.match(tech.reply_body, /Sorry, that sounds frustrating/);
+  assert.match(tech.reply_body, /What device are you using/);
+  assert.equal(tech.create_support_ticket, true);
+  assert.equal(tech.notify_platform_support, true);
+  assert.equal(tech.notify_rabbi, false);
+
+  const blockedLink = buildProviderLeadBotPlan({
+    profile,
+    message: 'Please send the class link',
+    contact: { contact_type: 'lead', lead_id: 19 },
+    classJoinUrl: 'https://private.example.invalid/class',
+    publicBaseUrl: 'https://example.invalid',
+  });
+  assert.equal(blockedLink.class_link_released, false);
+  assert.match(blockedLink.reply_body, /I can't send the live-class link until active membership is verified/);
+  assert.doesNotMatch(blockedLink.reply_body, /private\.example\.invalid/);
 });
 
 test('tech routes only to platform support, Torah routes to Rabbi, and opt-out suppresses all replies', () => {

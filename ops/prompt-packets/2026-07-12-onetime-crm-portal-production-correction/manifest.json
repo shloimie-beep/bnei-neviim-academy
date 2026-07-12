@@ -1,0 +1,166 @@
+{
+  "parent_raw_id": "RAW-20260712-004",
+  "parent_raw_source_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt",
+  "requirement_register_path": "tasks-pending/2026-07-12-onetime-crm-portal-production-correction.md",
+  "execution_run_path": "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "status": "blocked",
+  "packets": [
+    {
+      "packet_id": "PKT-20260712-101",
+      "path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/00-control-tower.md",
+      "product_quality_path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/00-control-tower.product-quality.json",
+      "role": "CONTROL_TOWER",
+      "status": "generated",
+      "depends_on": []
+    },
+    {
+      "packet_id": "PKT-20260712-102",
+      "path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/01-current-state-visual-audit.md",
+      "product_quality_path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/01-current-state-visual-audit.product-quality.json",
+      "role": "VISUAL_AUDITOR",
+      "status": "done",
+      "depends_on": [
+        "PKT-20260712-101"
+      ],
+      "blocker": "DEC-20260712-101",
+      "scope": "Regenerated current-state audit evidence"
+    },
+    {
+      "packet_id": "PKT-20260712-103",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "done_locally",
+      "depends_on": [
+        "PKT-20260712-101"
+      ],
+      "scope": "Identity/view-as server scope hardening - local proof complete"
+    },
+    {
+      "packet_id": "PKT-20260712-104",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "done_locally",
+      "depends_on": [
+        "PKT-20260712-101"
+      ],
+      "scope": "CRM explicit tenant ownership and source-label cleanup - local proof complete"
+    },
+    {
+      "packet_id": "PKT-20260712-105",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "done_locally",
+      "depends_on": [
+        "PKT-20260712-104"
+      ],
+      "scope": "CRM paginated API, cursor metadata, source fetch caps, and 10000-contact fixture - local proof complete"
+    },
+    {
+      "packet_id": "PKT-20260712-106",
+      "path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/02-crm-frontend-performance.md",
+      "product_quality_path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/02-crm-frontend-performance.product-quality.json",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "done_locally",
+      "depends_on": [
+        "PKT-20260712-102",
+        "PKT-20260712-105"
+      ],
+      "scope": "CRM frontend loading/rerender performance only"
+    },
+    {
+      "packet_id": "PKT-20260712-107",
+      "path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.md",
+      "product_quality_path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.product-quality.json",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "done_locally",
+      "depends_on": [
+        "PKT-20260712-102",
+        "PKT-20260712-105",
+        "PKT-20260712-106"
+      ],
+      "scope": "Scoped One Time CRM and Inbox UI - local proof complete"
+    },
+    {
+      "packet_id": "PKT-20260712-108",
+      "path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/04-portal-shell-preview.md",
+      "product_quality_path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/04-portal-shell-preview.product-quality.json",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "done_locally",
+      "depends_on": [
+        "PKT-20260712-102"
+      ],
+      "scope": "Portal IA, shared shell, real mobile menu, preview preservation, TEST fixtures - local proof complete"
+    },
+    {
+      "packet_id": "PKT-20260712-109",
+      "path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.md",
+      "product_quality_path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.product-quality.json",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "done_locally",
+      "depends_on": [
+        "PKT-20260712-102"
+      ],
+      "scope": "Public landing WhatsApp launcher replacement - local proof complete"
+    },
+    {
+      "packet_id": "PKT-20260712-110",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "done_locally",
+      "depends_on": [
+        "PKT-20260712-103",
+        "PKT-20260712-104"
+      ],
+      "scope": "Natural One Time WhatsApp assistant with deterministic safety validation - local proof complete"
+    },
+    {
+      "packet_id": "PKT-20260712-111",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "done_locally",
+      "depends_on": [
+        "PKT-20260712-105",
+        "PKT-20260712-106"
+      ],
+      "scope": "Performance budgets, split shell delivery, cache policy, and Vimeo lazy-load local proof complete; live compression/cache proof moves to PKT-20260712-112",
+      "path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.md",
+      "product_quality_path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.product-quality.json"
+    },
+    {
+      "packet_id": "PKT-20260712-112",
+      "role": "VERIFIER_PACKET",
+      "status": "blocked",
+      "depends_on": [
+        "PKT-20260712-103",
+        "PKT-20260712-104",
+        "PKT-20260712-105",
+        "PKT-20260712-106",
+        "PKT-20260712-107",
+        "PKT-20260712-108",
+        "PKT-20260712-109",
+        "PKT-20260712-110",
+        "PKT-20260712-111"
+      ],
+      "scope": "Final release gate blocked by stale local branch, uncommitted One Time work in a mixed dirty tree, and Railway/Drive external readback readiness gaps",
+      "blocker": "DEC-20260712-112"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "DEC-20260712-101",
+      "blocks": [
+        "direct_before_after_source_comparison_only"
+      ],
+      "owner": "Operator if exact original screenshots are needed",
+      "next_action": "Use regenerated current-state audit evidence unless direct source-PNG comparison is specifically needed."
+    },
+    {
+      "id": "DEC-20260712-112",
+      "blocks": [
+        "PKT-20260712-112",
+        "REQ-20260712-112",
+        "production_deploy_live_smoke_closeout"
+      ],
+      "owner": "Codex/operator release lane",
+      "next_action": "Start from current origin/master in a clean scoped release lane, reapply only the One Time correction files, push the exact release commit, and complete or explicitly defer Railway/Drive readback through the approved release gate."
+    }
+  ],
+  "next_packet": null
+}

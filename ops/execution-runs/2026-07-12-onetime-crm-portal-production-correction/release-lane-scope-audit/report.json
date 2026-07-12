@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-07-12T20:37:23+03:00",
+  "requirement_id": "REQ-20260712-112",
+  "status": "blocked",
+  "branch": "master",
+  "head": "d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a",
+  "origin_master": "e5efbb15adcab66ca93f1baa28442fbd131710cd",
+  "ahead_of_origin_master": 0,
+  "behind_origin_master": 54,
+  "dirty_tree": {
+    "total_paths": 100,
+    "modified_paths": 63,
+    "untracked_paths": 37,
+    "path_groups": {
+      "active_run": 1,
+      "active_prompt_packets": 1,
+      "ui_audits": 10,
+      "other_ops": 33,
+      "public": 16,
+      "scripts": 9,
+      "src": 4,
+      "tests": 9,
+      "memory": 3,
+      "raw_input": 5,
+      "tasks_pending": 3,
+      "features": 1,
+      "other": 5
+    }
+  },
+  "finding": "The local checkout has no commits ahead of origin/master and is 54 commits behind it. The One Time correction work is mixed into uncommitted changes across 100 dirty/untracked paths, so pushing current HEAD would not publish the correction and deploying from this tree would mix stale-base and unrelated dirty-work risk.",
+  "safe_unblock_path": [
+    "Start from current origin/master in a clean release lane.",
+    "Reapply or cherry-pick only the One Time correction files required for REQ-20260712-101 through REQ-20260712-111, excluding unrelated Telegram/keyholder/provider/other-lane changes.",
+    "Run the local validation and release-gate dry run on that clean lane.",
+    "Push the exact release commit, complete or explicitly defer Railway/Drive readback through approved release-gate options, then run deploy and live smoke."
+  ],
+  "commands": [
+    "git status -sb",
+    "git log --oneline --left-right HEAD...origin/master",
+    "git status --porcelain=v1",
+    "npm run bna:run:next"
+  ],
+  "external_writes": "none",
+  "deploy_performed": false,
+  "live_smoke_performed": false
+}

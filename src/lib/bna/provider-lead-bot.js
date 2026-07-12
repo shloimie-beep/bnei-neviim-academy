@@ -223,32 +223,32 @@ function renderProviderLeadBotReply({ profile, intent, capture, dynamicKnowledge
   const classLinkAllowed = providerLeadBotClassLinkAllowed(profile, accessState, classJoinUrl);
 
   if (intent === 'opt_out_or_wrong_number') return '';
-  if (intent === 'urgent_or_safety_handoff') return `I'm ${name}, ${subtitle}. I've flagged this for a human to review right away.`;
-  if (intent === 'technology_support') return `I'm ${name}, ${subtitle}. I've sent this to platform support. Please tell me what device you're using and what happened.`;
+  if (intent === 'urgent_or_safety_handoff') return `I'm ${name}, ${subtitle}. I flagged this for a human to review right away. If anyone may be unsafe, please use local emergency help now too.`;
+  if (intent === 'technology_support') return `Sorry, that sounds frustrating. I'm ${name}, ${subtitle}, and I sent this to platform support. What device are you using, and what do you see on the screen?`;
   if (['rabbi_or_torah_question', 'parent_or_student_question', 'human_handoff'].includes(intent)) {
-    return `I'm ${name}, ${subtitle}. I've saved your question for Rabbi Scheller. I won't answer in his name.`;
+    return `Got it. I'm ${name}, ${subtitle}. I saved your question for Rabbi Scheller, and I won't answer in his name.`;
   }
   if (intent === 'class_join_link_request') {
     if (classLinkAllowed) return `Your One Time member access is verified. Here are the approved live-class join instructions: ${String(classJoinUrl).trim()}`;
-    return `The live-class link is sent only after active membership is verified. You can start here: ${signupUrl}`;
+    return `I can't send the live-class link until active membership is verified. You can start here: ${signupUrl}`;
   }
   if (intent === 'signup_or_trial_start') {
-    if (capture.complete) return `Thanks - I saved your details for the One Time team to verify. You can also review the signup page here: ${signupUrl}`;
+    if (capture.complete) return `Thanks, I saved those details for the One Time team to verify. You can also review the signup page here: ${signupUrl}`;
     const prompt = profile.lead_capture?.field_prompts?.[capture.awaiting_field] || 'What parent contact detail should we use?';
-    return `Great. The trial is ${offer.trial_days} days, then $${price.amount}/${price.cadence}. ${prompt}`;
+    return `Great, I can help start the ${offer.trial_days}-day trial. After that it is $${price.amount}/${price.cadence}. ${prompt}`;
   }
   if (intent === 'schedule') {
-    return schedule || `I don't want to guess the class time. I've asked the One Time team to confirm the current schedule.`;
+    return schedule || `I don't have the confirmed class time in front of me, so I won't guess. I asked the One Time team to confirm the current schedule.`;
   }
   if (intent === 'current_learning') {
-    return learning ? `The current approved learning is ${learning}.` : `I don't want to guess the current masechta. I've asked Rabbi Scheller's team to confirm it.`;
+    return learning ? `The current approved learning is ${learning}.` : `I don't want to guess the current masechta. I asked Rabbi Scheller's team to confirm it.`;
   }
   if (intent === 'price_or_trial') return `The introductory trial is ${offer.trial_days} days. After that, the approved price is $${price.amount} per ${price.cadence}. The bot does not charge or activate access.`;
   if (intent === 'program_benefits') {
     return `The program includes ${profile.knowledge_base.approved_benefits.join('; ')}. Want help starting the ${offer.trial_days}-day trial?`;
   }
-  if (intent === 'greeting') return `Hi - I'm ${name}, ${subtitle}. I can explain the class, help with the trial, or pass a question to Rabbi Scheller. What would you like to know?`;
-  return `I'm ${name}, ${subtitle}. I saved your message for the One Time team. Are you asking about the class, signup, schedule, or Rabbi Scheller?`;
+  if (intent === 'greeting') return `Hi, I'm ${name}, ${subtitle}. I can explain the class, help with the trial, or pass a question to Rabbi Scheller. What would you like to know?`;
+  return `Thanks, I got your message. I'm ${name}, ${subtitle}. Are you asking about joining, the schedule, the current Mishnah, or a question for Rabbi Scheller?`;
 }
 
 function buildProviderLeadBotPlan({
@@ -334,6 +334,7 @@ function buildProviderLeadBotPlan({
     },
     guardrails: {
       deterministic_privileged_actions: true,
+      deterministic_natural_reply: true,
       no_charge: true,
       no_access_grant: true,
       no_raw_link_in_metadata: true,

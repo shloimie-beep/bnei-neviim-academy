@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>One Time Mishnayos Member</title>
-  <meta name="description" content="Member preview page for One Time Mishnayos access.">
+  <title>One Time Family Portal</title>
+  <meta name="description" content="Family portal page for One Time Mishnayos access.">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <style>
     :root {
@@ -435,14 +435,15 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/css/one-time-portal-shell.css">
 </head>
 <body class="one-time-member-shell" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
   <nav class="member-topbar" aria-label="One Time member navigation">
-    <div class="member-brand-lockup" aria-label="One Time Mishnayos member area">
+    <div class="member-brand-lockup" aria-label="One Time Mishnayos family portal">
       <img src="/images/one-time/brand/onetimelogo.webp" alt="" aria-hidden="true">
-      <span>One Time Mishnayos<small>Member area</small></span>
+      <span>One Time Mishnayos<small>Family portal</small></span>
     </div>
-    <a href="/rabbi-member" aria-label="Member home" aria-current="page">Home</a>
+    <a href="/rabbi-member" aria-label="Family Portal" aria-current="page">Family Portal</a>
     <a href="/member-library">Library</a>
     <a href="/one-time-classroom">Classroom</a>
     <a href="/student.html?review=one-time" data-review-only hidden>Student preview</a>
@@ -454,7 +455,7 @@
     <div>
       <img class="member-hero-logo" src="/images/one-time/brand/onetimelogo.webp" alt="" aria-hidden="true">
       <span class="eyebrow">Member Area</span>
-      <h1 id="memberAreaTitle">One Time Mishnayos</h1>
+      <h1 id="memberAreaTitle">One Time Family Portal</h1>
       <p>Library and live class access are shown only when an active grant exists.</p>
     </div>
   </section>
@@ -462,10 +463,10 @@
   <main>
     <aside class="panel" id="member-access">
       <span class="eyebrow">Login</span>
-      <h2>Request member link</h2>
+      <h2>Request family portal link</h2>
       <form id="loginForm">
         <label>Email <input id="loginEmail" type="email" autocomplete="email" required></label>
-        <button type="submit">Request login</button>
+        <button type="submit">Request family portal link</button>
       </form>
       <div id="memberNotice" class="notice" hidden></div>
       <div id="memberState" style="margin-top:14px;"></div>
@@ -533,7 +534,7 @@
         <p>Copyright 2026 One Time Mishnayos. Member access is scoped to the One Time Mishnayos workspace.</p>
       </div>
       <nav class="footer-links" aria-label="One Time footer navigation">
-        <a href="/rabbi-member" aria-current="page">Member Home</a>
+        <a href="/rabbi-member" aria-current="page">Family Portal</a>
         <a href="/one-time/privacy.html">Privacy</a>
         <a href="/one-time/terms.html">Terms</a>
         <a href="/member-library">Library</a>
@@ -543,6 +544,7 @@
 
   <script src="/js/app-select.js"></script>
   <script src="/js/rabbi-member.js"></script>
+  <script src="/js/one-time-portal-shell.js"></script>
   <script src="/js/bna-helper-knowledge.js"></script>
   <script src="/js/bna-bot-widget.js"></script>
 </body>

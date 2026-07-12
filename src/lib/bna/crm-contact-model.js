@@ -99,6 +99,47 @@ function deriveFamilySchoolClassification(row = {}, contactType = '') {
   return 'family';
 }
 
+const SOURCE_LABELS = Object.freeze({
+  bna_contacts: 'First-party contact',
+  bna_parent_leads: 'Lead intake',
+  bna_contact_communications: 'Contact timeline',
+  bna_communications: 'Message history',
+  bna_contact_pipeline_events: 'Timeline note',
+  bna_email_log: 'Email history',
+  bna_whatsapp_messages: 'WhatsApp history',
+  whatsapp: 'WhatsApp',
+  wapi: 'WhatsApp',
+  email: 'Email',
+  signup: 'Signup form',
+  signup_form: 'Signup form',
+  one_time_public_interest: 'One Time public interest',
+  one_time_free_class: 'One Time free class',
+  one_time_trial: 'One Time trial',
+  payment: 'Payment',
+  stripe: 'Stripe payment',
+  green_invoice: 'Green Invoice',
+});
+
+function normalizeSourceKey(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+function humanCrmSourceLabel(value, fallback = '') {
+  const raw = firstNonEmpty(value, fallback, 'First-party CRM');
+  const key = normalizeSourceKey(raw);
+  if (SOURCE_LABELS[key]) return SOURCE_LABELS[key];
+  if (key.startsWith('bna_')) return 'First-party CRM';
+  return String(raw)
+    .replace(/_/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 function toContactCard(row = {}, options = {}) {
   const source = options.source || row.source_table || row.source || 'unknown';
   const id = firstNonEmpty(row.id, row.contact_id, row.person_id, row.lead_id, row.provider_id);
@@ -144,7 +185,7 @@ function toContactCard(row = {}, options = {}) {
     email,
     phone,
     tags,
-    source_label: firstNonEmpty(row.source_label, row.source_channel, row.lead_source, source),
+    source_label: humanCrmSourceLabel(firstNonEmpty(row.source_label, row.source_channel, row.lead_source, row.source), source),
     last_contact_at: firstNonEmpty(row.last_contact_at, row.last_communication_at, row.updated_at, row.created_at),
     next_follow_up_at: firstNonEmpty(row.next_follow_up_at, row.follow_up_at, row.due_at),
     summary: firstNonEmpty(row.summary, row.notes, row.internal_notes, row.last_message_snippet, row.body),
@@ -262,6 +303,48 @@ function sortCards(cards, sortKey = 'last_contact_desc') {
   return rows.sort(byDate('last_contact_at', 'desc'));
 }
 
+function crmListLimit(value, fallback = 50) {
+  const parsed = Number(value);
+  const integer = Number.isFinite(parsed) ? Math.floor(parsed) : fallback;
+  return Math.max(1, Math.min(integer || fallback, 100));
+}
+
+function decodeCrmCursor(value = '') {
+  const raw = String(value || '').trim();
+  if (!raw) return { offset: 0 };
+  try {
+    const parsed = JSON.parse(Buffer.from(raw, 'base64url').toString('utf8'));
+    const offset = Math.max(0, Math.floor(Number(parsed.offset || 0)));
+    return { offset };
+  } catch (_) {
+    return { offset: 0 };
+  }
+}
+
+function encodeCrmCursor(offset = 0) {
+  return Buffer.from(JSON.stringify({ offset: Math.max(0, Math.floor(Number(offset || 0))) })).toString('base64url');
+}
+
+function paginateCards(cards = [], filters = {}) {
+  const limit = crmListLimit(filters.limit);
+  const cursor = decodeCrmCursor(filters.cursor);
+  const offset = cursor.offset;
+  const pageCards = cards.slice(offset, offset + limit);
+  const nextOffset = offset + pageCards.length;
+  const hasMore = nextOffset < cards.length;
+  return {
+    cards: pageCards,
+    page: {
+      limit,
+      cursor: filters.cursor || null,
+      offset,
+      returned_count: pageCards.length,
+      has_more: hasMore,
+      next_cursor: hasMore ? encodeCrmCursor(nextOffset) : null,
+    },
+  };
+}
+
 function buildFilterOptions(cards = []) {
   const options = {
     contact_types: new Set(['all']),
@@ -302,11 +385,17 @@ function filterCrmContacts(rows = [], filters = {}, scope = {}) {
 
   const filtered = cards.filter((card) => matchesFilters(card, filters));
   const sorted = sortCards(filtered, filters.sort_key);
+  const paged = paginateCards(sorted, filters);
   return {
-    cards: sorted,
+    cards: paged.cards,
     filters: buildFilterOptions(cards),
     total: cards.length,
     filtered_total: sorted.length,
+    returned_count: paged.page.returned_count,
+    limit: paged.page.limit,
+    has_more: paged.page.has_more,
+    next_cursor: paged.page.next_cursor,
+    page: paged.page,
     scope: {
       workspace_key: scope.workspace_key || null,
       project_key: scope.project_key || null,
@@ -361,6 +450,11 @@ module.exports = {
   normalizePhone,
   splitTags,
   deriveContactType,
+  humanCrmSourceLabel,
+  crmListLimit,
+  decodeCrmCursor,
+  encodeCrmCursor,
+  paginateCards,
   toContactCard,
   matchesFilters,
   sortCards,

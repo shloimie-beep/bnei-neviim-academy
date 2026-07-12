@@ -1,0 +1,34 @@
+{
+  "report_id": "ONETIME-WHATSAPP-ASSISTANT-20260712-NATURAL-LOCAL",
+  "created_at": "2026-07-12T17:50:00+03:00",
+  "run_id": "2026-07-12-onetime-crm-portal-production-correction",
+  "requirement_id": "REQ-20260712-110",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "privacy": {
+    "redacted": true,
+    "raw_whatsapp_payloads_returned": false,
+    "private_message_bodies_returned": false,
+    "phones_returned": false,
+    "class_links_returned": false,
+    "api_tokens_returned": false,
+    "external_send_performed": false
+  },
+  "implemented": {
+    "deterministic_natural_reply": true,
+    "no_charge": true,
+    "no_access_grant": true,
+    "no_owner_impersonation": true,
+    "class_link_requires_active_member": true,
+    "opt_out_suppresses_reply": true
+  },
+  "verification": [
+    "PASS node --check src/lib/bna/provider-lead-bot.js",
+    "PASS node --test tests/service-provider-lead-bot.test.js tests/one-time-wapi-scope-contract.test.js"
+  ],
+  "release_evidence_required": [
+    "scoped_commit_push_deploy",
+    "live_no_unapproved_send_readback",
+    "redacted_wapi_gate_smoke"
+  ]
+}
