@@ -39014,3 +39014,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   tests `33/33`, local responsive landing smoke with 1440/1024/768/430/390
   screenshots and CTA/launcher bounding-box proof, action watchdog, and
   `git diff --check` with line-ending warnings only.
+
+## 2026-07-13 - One Time bot portal knowledge and landing polish deployed
+
+- Pushed commit `301b408b36fa982d4562d06f30de56758cd0e168` to `origin/master`.
+- Deployed the same SHA to BNA and One Time production.
+- BNA Railway deployment `640fc22a-5172-4729-ab92-7882426a13e0` reached
+  `SUCCESS`; One Time Railway deployment
+  `2c2c7631-a004-4019-bf3f-328cd61cd905` reached `SUCCESS`.
+- BNA and One Time live `/api/deploy-info` both returned
+  `301b408b36fa982d4562d06f30de56758cd0e168`.
+- Live One Time smokes passed: separate-instance SHA smoke and
+  `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.
+- Guardrail: no email, WhatsApp/WAPI, Telegram, payment, access, DNS/account,
+  credential, provider-data, production CRM mutation, or external connector
+  write was performed by the verification.

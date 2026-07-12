@@ -33,3 +33,8 @@
 - `ops/product-quality-compiler/validation/latest-product-quality-validation.md` - focused PQC validation passed for `PKT-20260713-001`.
 - `ops/watchdog-audits/2026-07-12T22-12-watchdog-action-audit.md` - action watchdog passed with `finding_count=0` after adding public section navigation coverage.
 - `ops/watchdog-audits/2026-07-12-product-quality-drift.md` - protocol drift watchdog passed with `Findings: 0`.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=301b408b36fa982d4562d06f30de56758cd0e168`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=301b408b36fa982d4562d06f30de56758cd0e168`.
+- BNA post-deploy doctor - Railway deployment `640fc22a-5172-4729-ab92-7882426a13e0` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `2c2c7631-a004-4019-bf3f-328cd61cd905` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T22-17-11-356Z-rabbi-onetime-landing-smoke.md` - live One Time public landing/signup/WhatsApp readiness smoke passed on `https://join.onetimeonetime.com` with no external send, payment, access grant, DNS write, or connector write.

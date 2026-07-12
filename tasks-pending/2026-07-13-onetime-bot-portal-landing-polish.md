@@ -3,13 +3,13 @@
 - Raw input: `raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md`
 - Workspace: `rabbi_sheller_provider`
 - Project: `one_time_mishnah_class`
-- Status: `local_verified_deploy_pending`
+- Status: `deployed_verified`
 
 ## Requirements
 
 ### REQ-20260713-001 - Bot must not claim portal access is available yet
 
-Status: `local_verified_deploy_pending`
+Status: `deployed_verified`
 
 Implemented:
 
@@ -26,12 +26,12 @@ Verification:
 
 Remaining:
 
-- Commit, push, deploy exact tested SHA, and live-readback the One Time bot/site SHA.
+- Deployed and live-read back at SHA `301b408b36fa982d4562d06f30de56758cd0e168`.
 - Full channel-independent communication-agent model, shared WhatsApp/email knowledge bundle, and Agents UI remain governed by the larger addendum.
 
 ### REQ-20260713-002 - One Time public header/button/mobile CTA polish
 
-Status: `local_verified_deploy_pending`
+Status: `deployed_verified`
 
 Implemented:
 
@@ -53,4 +53,14 @@ Verification:
 
 Remaining:
 
-- Commit, push, deploy exact tested SHA, and run live One Time landing smoke.
+- Deployed and live-verified at SHA `301b408b36fa982d4562d06f30de56758cd0e168`.
+- Full shared CRM/communication-agent launch continues under the active execution run.
+
+Deployment proof:
+
+- Commit/push: `301b408b36fa982d4562d06f30de56758cd0e168`.
+- BNA Railway deployment `640fc22a-5172-4729-ab92-7882426a13e0` reached `SUCCESS`.
+- One Time Railway deployment `2c2c7631-a004-4019-bf3f-328cd61cd905` reached `SUCCESS`.
+- BNA and One Time `/api/deploy-info` both returned the deployed SHA.
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 301b408b36fa982d4562d06f30de56758cd0e168` passed.
+- `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com` passed; report: `ops/live-smokes/2026-07-12T22-17-11-356Z-rabbi-onetime-landing-smoke.md`.

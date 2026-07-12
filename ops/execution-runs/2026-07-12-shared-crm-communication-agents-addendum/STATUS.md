@@ -58,7 +58,9 @@ Current status: `active`
 - One Time public landing header now uses the member-section-style black/yellow lockup and public section nav; yellow button shadows are softened; section/final CTA spacing is tighter; the mobile hero CTA is top-weighted so it clears the bottom browser/launcher zone.
 - Product Quality Compiler packet `PKT-20260713-001` validates for this focused public landing/bot-knowledge correction.
 - Local verification passed: focused One Time/bot tests `33/33`, local responsive landing smoke with 1440/1024/768/430/390 screenshots, action watchdog, protocol drift watchdog, secret audit, execution-run validation, provider-lead-bot syntax check, and whitespace diff check with line-ending warnings only.
-- Deployment/live proof is still pending for this slice; the full channel-independent WhatsApp/email communication-agent model remains open.
+- The focused slice is deployed at `301b408b36fa982d4562d06f30de56758cd0e168`; BNA deployment `640fc22a-5172-4729-ab92-7882426a13e0` and One Time deployment `2c2c7631-a004-4019-bf3f-328cd61cd905` reached `SUCCESS`.
+- BNA and One Time deploy-info both returned `301b408b36fa982d4562d06f30de56758cd0e168`; One Time separate-instance smoke and live Rabbi/One Time landing smoke passed.
+- The full channel-independent WhatsApp/email communication-agent model remains open.
 
 ## Identity Isolation Batch
 

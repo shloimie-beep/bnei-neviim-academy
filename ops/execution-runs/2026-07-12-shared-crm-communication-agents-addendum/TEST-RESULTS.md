@@ -91,3 +91,10 @@
 - PASS `npm run secrets:audit` after One Time bot knowledge/landing polish slice.
 - PASS `npm run bna:run:validate` after One Time bot knowledge/landing polish slice; work remains on the broader addendum.
 - PASS `git diff --check` with line-ending warnings only after One Time bot knowledge/landing polish slice.
+- PASS `git push origin master` for One Time bot knowledge/landing polish commit `301b408b36fa982d4562d06f30de56758cd0e168`.
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `640fc22a-5172-4729-ab92-7882426a13e0`.
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `2c2c7631-a004-4019-bf3f-328cd61cd905`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `301b408b36fa982d4562d06f30de56758cd0e168`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 301b408b36fa982d4562d06f30de56758cd0e168`.
+- PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
+  - Verified `/rabbi` One Time branding, direct signup CTA, WhatsApp launcher, no Academy chrome, public WhatsApp readiness configured/scoped/no-send, lightweight Family/School signup fields, and scoped One Time instance config.

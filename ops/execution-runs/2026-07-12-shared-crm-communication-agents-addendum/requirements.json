@@ -475,9 +475,9 @@
         "REQ-20260712-305"
       ],
     "status": "in_progress",
-    "implementation_status": "Partial local verification completed for the existing WhatsApp provider-bot profile/runtime: stale portal/member/library/trial/pricing claims are no longer bot-published, access facts are marked not currently granted, and the deterministic replies/system prompt avoid the old 30-day/$67 bot claims unless a future profile explicitly publishes them. Full channel-independent WhatsApp/email agent versioning remains open.",
+      "implementation_status": "Partial deployed verification completed for the existing WhatsApp provider-bot profile/runtime and One Time public landing: stale portal/member/library/trial/pricing claims are no longer bot-published, access facts are marked not currently granted, deterministic replies/system prompt avoid the old 30-day/$67 bot claims unless a future profile explicitly publishes them, and the public landing header/button/mobile CTA polish is live at commit 301b408b36fa982d4562d06f30de56758cd0e168. Full channel-independent WhatsApp/email agent versioning remains open.",
     "can_continue_without_operator": true,
-    "next_action": "Commit, push, deploy exact tested SHA for this bot-knowledge slice, live-readback One Time, then continue the full shared WhatsApp/email communication-agent knowledge bundle and channel bindings.",
+      "next_action": "Continue the full shared WhatsApp/email communication-agent knowledge bundle, channel-independent agent model, and channel bindings.",
       "acceptance_criteria": [
         "One published agent version and knowledge snapshot power One Time WhatsApp and inbound email with channel-specific formatting and no stale claims."
       ],
@@ -486,20 +486,31 @@
       "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md",
       "config/service-provider-bots/one-time.json version 2026-07-13-v1",
       "src/lib/bna/provider-lead-bot.js unpublished-offer/access-policy runtime gates",
-      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md"
+        "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md",
+        "commit 301b408b36fa982d4562d06f30de56758cd0e168 pushed to origin/master",
+        "BNA deployment 640fc22a-5172-4729-ab92-7882426a13e0 SUCCESS",
+        "One Time deployment 2c2c7631-a004-4019-bf3f-328cd61cd905 SUCCESS",
+        "BNA and One Time live deploy-info commit_sha=301b408b36fa982d4562d06f30de56758cd0e168",
+        "ops/live-smokes/2026-07-12T22-17-11-356Z-rabbi-onetime-landing-smoke.md"
     ],
     "verification": [
       "node --test tests\\service-provider-lead-bot.test.js tests\\one-time-focused-landing.test.js tests\\one-time-canonical-journey.test.js tests\\one-time-brand-helper-isolation.test.js tests\\one-time-shared-review-branding.test.js PASS 33/33",
       "node scripts\\smoke-onetime-landing-whatsapp-local.mjs PASS",
-      "npm run watchdog:actions PASS finding_count 0",
-      "git diff --check PASS with line-ending warnings only"
+        "npm run watchdog:actions PASS finding_count 0",
+        "npm run watchdog:protocol-drift PASS findings 0",
+        "npm run secrets:audit PASS",
+        "git diff --check PASS with line-ending warnings only",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 301b408b36fa982d4562d06f30de56758cd0e168 PASS",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS"
     ],
       "implementation_files": [
         "config/service-provider-bots/one-time.json",
-        "src/lib/bna/provider-lead-bot.js"
+        "src/lib/bna/provider-lead-bot.js",
+        "public/one-time/index.html",
+        "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json"
       ],
       "deployment_required": true,
-    "updated_at": "2026-07-13T01:02:00+03:00",
+      "updated_at": "2026-07-13T01:22:00+03:00",
       "blocker": ""
     },
     {
@@ -520,7 +531,7 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "implementation_status": "missing",
       "can_continue_without_operator": true,
       "next_action": "Continue REQ-20260712-311 after dependent earlier batches are validated.",
@@ -642,21 +653,28 @@
         "BNA live /api/deploy-info commit_sha=966ded41b517433533f24370949426cfd1200213",
         "One Time live /api/deploy-info commit_sha=966ded41b517433533f24370949426cfd1200213",
         "One Time signup browser intercept proof: Family and School payloads preserved with production_write=false",
-        "One Time /api/one-time/interest?dry_run=true proof: Family and School normalize correctly"
+        "One Time /api/one-time/interest?dry_run=true proof: Family and School normalize correctly",
+        "BNA live /api/deploy-info commit_sha=301b408b36fa982d4562d06f30de56758cd0e168",
+        "One Time live /api/deploy-info commit_sha=301b408b36fa982d4562d06f30de56758cd0e168",
+        "BNA Railway deployment 640fc22a-5172-4729-ab92-7882426a13e0 SUCCESS",
+        "One Time Railway deployment 2c2c7631-a004-4019-bf3f-328cd61cd905 SUCCESS",
+        "ops/live-smokes/2026-07-12T22-17-11-356Z-rabbi-onetime-landing-smoke.md"
       ],
       "verification": [
         "npm run production:readiness:gate -- --json --allow-dirty",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 966ded41b517433533f24370949426cfd1200213",
         "BNA live health/deploy-info/operations-login fetch readback",
         "Playwright no-write browser intercept on https://join.onetimeonetime.com/one-time/signup for Family and School",
-        "Direct live dry-run POST to /api/one-time/interest?dry_run=true for Family and School"
+        "Direct live dry-run POST to /api/one-time/interest?dry_run=true for Family and School",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 301b408b36fa982d4562d06f30de56758cd0e168 PASS",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS"
       ],
       "implementation_files": [
         "ops/production-readiness/latest-production-readiness-snapshot.md",
         "ops/production-readiness/latest-production-unblocker.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:38:00+03:00",
+      "updated_at": "2026-07-13T01:22:00+03:00",
       "blocker": "External Stripe/campaign setup fields currently block full production readiness."
     }
   ],
