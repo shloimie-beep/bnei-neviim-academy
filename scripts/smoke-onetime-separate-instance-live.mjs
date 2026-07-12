@@ -84,8 +84,12 @@ try {
   const signup = await fetchText('/one-time/signup');
   assertText('/one-time/signup', signup.text, /name="contact_name"/i, 'signup contact name input missing');
   assertText('/one-time/signup', signup.text, /name="signup_as"/i, 'Family/School selector missing');
-  assertText('/one-time/signup', signup.text, /<option value="Family">Family<\/option>/i, 'Family signup option missing');
-  assertText('/one-time/signup', signup.text, /<option value="School">School<\/option>/i, 'School signup option missing');
+  assertText('/one-time/signup', signup.text, /data-signup-type-trigger/i, 'Family/School in-page selector missing');
+  assertText('/one-time/signup', signup.text, /data-value="Family"/i, 'Family selector choice missing');
+  assertText('/one-time/signup', signup.text, /data-value="School"/i, 'School selector choice missing');
+  assertText('/one-time/signup', signup.text, /ACTION-ONETIME-SIGNUP-AS-FAMILY/i, 'Family selector action missing');
+  assertText('/one-time/signup', signup.text, /ACTION-ONETIME-SIGNUP-AS-SCHOOL/i, 'School selector action missing');
+  assertNoText('/one-time/signup', signup.text, /<select\b[^>]*name="signup_as"/i, 'native Family/School select should not render');
   assertText('/one-time/signup', signup.text, /name="email"/i, 'signup email input missing');
   assertText('/one-time/signup', signup.text, /name="phone"/i, 'optional phone input missing');
   assertText('/one-time/signup', signup.text, /\/api\/one-time\/interest/i, 'signup form does not target One Time interest endpoint');

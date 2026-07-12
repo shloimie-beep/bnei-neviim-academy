@@ -1,0 +1,59 @@
+{
+  "created_at": "2026-07-12T16:12:33.631Z",
+  "raw_input": "RAW-20260712-010",
+  "route": "/one-time/signup",
+  "checks": [
+    "empty submit shows signup_as validation first",
+    "custom in-page selector sets hidden signup_as",
+    "selected label remains visible",
+    "signup_as validation clears after selection",
+    "native mobile select is absent",
+    "no horizontal overflow at proof widths"
+  ],
+  "results": [
+    {
+      "width": 1440,
+      "choice": "Family",
+      "nativeSelect": false,
+      "hiddenValue": "Family",
+      "visibleLabel": "Family",
+      "selectedState": "true",
+      "signupErrorVisible": false,
+      "horizontalOverflow": false,
+      "screenshot": "ops/ui-audits/2026-07-12-onetime-signup-custom-family-school-picker/signup-type-family-1440.png"
+    },
+    {
+      "width": 768,
+      "choice": "School",
+      "nativeSelect": false,
+      "hiddenValue": "School",
+      "visibleLabel": "School",
+      "selectedState": "true",
+      "signupErrorVisible": false,
+      "horizontalOverflow": false,
+      "screenshot": "ops/ui-audits/2026-07-12-onetime-signup-custom-family-school-picker/signup-type-school-768.png"
+    },
+    {
+      "width": 430,
+      "choice": "Family",
+      "nativeSelect": false,
+      "hiddenValue": "Family",
+      "visibleLabel": "Family",
+      "selectedState": "true",
+      "signupErrorVisible": false,
+      "horizontalOverflow": false,
+      "screenshot": "ops/ui-audits/2026-07-12-onetime-signup-custom-family-school-picker/signup-type-family-430.png"
+    },
+    {
+      "width": 390,
+      "choice": "School",
+      "nativeSelect": false,
+      "hiddenValue": "School",
+      "visibleLabel": "School",
+      "selectedState": "true",
+      "signupErrorVisible": false,
+      "horizontalOverflow": false,
+      "screenshot": "ops/ui-audits/2026-07-12-onetime-signup-custom-family-school-picker/signup-type-school-390.png"
+    }
+  ]
+}

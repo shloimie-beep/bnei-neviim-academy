@@ -38744,3 +38744,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No raw contact values or raw Zoom password URL were committed. No Telegram,
   campaign, payment/access, DNS/account, credential, historical import, or
   legacy CRM write was performed.
+
+## 2026-07-12 - One Time signup Family/School picker hotfix locally verified
+
+- Captured the operator-reported signup bug and UI preference as
+  `RAW-20260712-010`.
+- Replaced the native mobile Family/School `<select>` on `/one-time/signup`
+  with a first-party in-page selector that writes the hidden `signup_as` form
+  value and clears the Family/School validation error after selection.
+- Stored the durable preference that One Time customer-facing mobile forms
+  should not use Samsung/Android-style native picker popups for primary choices.
+- Added action registry rows for the Family and School selector choices and
+  updated local/live smoke checks to reject the old native picker.
+- Local proof lives under
+  `ops/ui-audits/2026-07-12-onetime-signup-custom-family-school-picker/`
+  with screenshots at 1440, 768, 430, and 390.
+- Local gates passed: `node --test tests/one-time-direct-signup-page.test.js
+  tests/one-time-signup-reminder-workflow.test.js` 13/13,
+  `npm run test:onetime:focused` 73/73, `npm run secrets:audit`,
+  `npm run watchdog:actions`, and `git diff --check`.

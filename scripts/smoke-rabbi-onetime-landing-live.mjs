@@ -131,12 +131,16 @@ async function main() {
     expectIncludes(signup.text, [
       'name="contact_name"',
       'name="signup_as"',
-      '<option value="Family">Family</option>',
-      '<option value="School">School</option>',
+      'data-signup-type-trigger',
+      'data-value="Family"',
+      'data-value="School"',
+      'ACTION-ONETIME-SIGNUP-AS-FAMILY',
+      'ACTION-ONETIME-SIGNUP-AS-SCHOOL',
       'name="email"',
       'name="phone"',
       '/api/one-time/interest',
     ], '/one-time/signup');
+    expectNotMatches(signup.text, /<select\b[^>]*name="signup_as"/i, '/one-time/signup');
     expectNotMatches(signup.text, /name="student|student_name|signupStudentName/i, '/one-time/signup');
     pass('/one-time/signup has lightweight Family/School signup fields');
 

@@ -4,6 +4,10 @@
 - Project key: `one_time_mishnah_class`.
 - View class for Rabbi admin work: `RABBI_PROVIDER_ADMIN`.
 - Brand: black + yellow.
+- One Time public/customer forms must not use the native Samsung/Android-style
+  mobile select popup for primary choices such as Family versus School. Use a
+  clean BNA-owned in-page picker/control so the chosen value is visible,
+  accessible, and reliably submitted.
 - GHL-like means first-party BNA CRM/product patterns only. Do not add GHL,
   LeadConnector, GHL env vars, GHL APIs, or external CRM writes.
 - Classroom/content/community pipeline is provider-specific and separate from

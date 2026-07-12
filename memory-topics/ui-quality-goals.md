@@ -4,6 +4,9 @@
 - Visible controls must work, be registered, or be disabled/coming soon with a
   reason.
 - Mobile pages must avoid horizontal overflow.
+- Customer-facing mobile forms should avoid native Samsung/Android-style
+  select popups for important choices. Prefer clean in-page controls owned by
+  the app so selection state remains visible, accessible, and submit-safe.
 - Operations pages should favor compact, scannable work surfaces over giant
   unexplained cards.
 - Top toolbars/top sections should not waste first-viewport space. Filters,

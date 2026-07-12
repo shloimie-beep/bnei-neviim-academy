@@ -51,8 +51,7 @@
 
     body,
     button,
-    input,
-    select {
+    input {
       font: inherit;
     }
 
@@ -338,8 +337,7 @@
       line-height: 1.24;
     }
 
-    input,
-    select {
+    input {
       width: 100%;
       min-height: 52px;
       padding: 0 14px;
@@ -350,11 +348,110 @@
     }
 
     input:focus,
-    select:focus,
+    .signup-type-trigger:focus-visible,
+    .signup-type-option:focus-visible,
     .radio-card:focus-within {
       outline: 3px solid rgba(142, 229, 255, 0.9);
       outline-offset: 2px;
       border-color: rgba(5, 5, 5, 0.48);
+    }
+
+    .signup-type-picker {
+      position: relative;
+    }
+
+    .signup-type-trigger {
+      width: 100%;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 14px;
+      border: 1px solid rgba(5, 5, 5, 0.2);
+      border-radius: 6px;
+      color: var(--black);
+      background: var(--white);
+      cursor: pointer;
+      text-align: left;
+      font-weight: 840;
+    }
+
+    .signup-type-trigger[aria-invalid="true"] {
+      border-color: rgba(143, 33, 21, 0.82);
+      box-shadow: 0 0 0 3px rgba(143, 33, 21, 0.12);
+    }
+
+    .signup-type-current {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .signup-type-caret {
+      width: 10px;
+      height: 10px;
+      flex: 0 0 auto;
+      border-right: 2px solid rgba(5, 5, 5, 0.72);
+      border-bottom: 2px solid rgba(5, 5, 5, 0.72);
+      transform: rotate(45deg) translateY(-2px);
+      transition: transform 160ms ease;
+    }
+
+    .signup-type-trigger[aria-expanded="true"] .signup-type-caret {
+      transform: rotate(225deg) translateY(-1px);
+    }
+
+    .signup-type-menu {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 8px);
+      z-index: 4;
+      display: grid;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid rgba(5, 5, 5, 0.16);
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    .signup-type-menu[hidden] {
+      display: none;
+    }
+
+    .signup-type-option {
+      display: grid;
+      gap: 2px;
+      width: 100%;
+      min-height: 58px;
+      padding: 11px 12px;
+      border: 1px solid rgba(5, 5, 5, 0.1);
+      border-radius: 6px;
+      color: var(--black);
+      background: rgba(223, 248, 255, 0.26);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .signup-type-option span {
+      font-weight: 940;
+      line-height: 1.16;
+    }
+
+    .signup-type-option small {
+      color: var(--muted-dark);
+      font-size: 0.82rem;
+      font-weight: 670;
+      line-height: 1.22;
+    }
+
+    .signup-type-option:hover,
+    .signup-type-option[aria-selected="true"] {
+      border-color: rgba(5, 5, 5, 0.48);
+      background: var(--ice);
     }
 
     .radio-grid {
@@ -790,14 +887,26 @@
             <span class="field-error" data-error-for="contact_name">Enter the contact name.</span>
           </div>
 
-          <div class="field">
-            <label for="signupAs">Signing up as <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
-            <select id="signupAs" name="signup_as" required>
-              <option value="">Choose one</option>
-              <option value="Family">Family</option>
-              <option value="School">School</option>
-            </select>
-            <span class="field-error" data-error-for="signup_as">Choose Family or School.</span>
+          <div class="field" data-signup-type-field>
+            <label id="signupAsLabel">Signing up as <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
+            <input id="signupAs" name="signup_as" type="hidden" data-signup-type-value required>
+            <div class="signup-type-picker">
+              <button class="signup-type-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="signupAsLabel signupAsSelected" aria-describedby="signupAsError" data-signup-type-trigger>
+                <span class="signup-type-current" id="signupAsSelected" data-signup-type-label>Choose Family or School</span>
+                <span class="signup-type-caret" aria-hidden="true"></span>
+              </button>
+              <div class="signup-type-menu" id="signupAsOptions" role="listbox" aria-labelledby="signupAsLabel" data-signup-type-menu hidden>
+                <button type="button" class="signup-type-option" role="option" data-signup-type-option data-value="Family" data-action-id="ACTION-ONETIME-SIGNUP-AS-FAMILY" aria-selected="false">
+                  <span>Family</span>
+                  <small>For a parent or family signup.</small>
+                </button>
+                <button type="button" class="signup-type-option" role="option" data-signup-type-option data-value="School" data-action-id="ACTION-ONETIME-SIGNUP-AS-SCHOOL" aria-selected="false">
+                  <span>School</span>
+                  <small>For a school or class group.</small>
+                </button>
+              </div>
+            </div>
+            <span class="field-error" id="signupAsError" data-error-for="signup_as">Choose Family or School.</span>
           </div>
 
           <div class="field">
@@ -926,6 +1035,12 @@
       const timezoneFallbackField = document.querySelector('[data-timezone-fallback]');
       const timezoneFallbackInput = form?.elements.timezone_fallback;
       const localClassTime = document.querySelector('[data-local-class-time]');
+      const signupTypeInput = form?.elements.signup_as;
+      const signupTypeTrigger = document.querySelector('[data-signup-type-trigger]');
+      const signupTypeLabel = document.querySelector('[data-signup-type-label]');
+      const signupTypeMenu = document.querySelector('[data-signup-type-menu]');
+      const signupTypeOptions = Array.from(document.querySelectorAll('[data-signup-type-option]'));
+      const signupTypeValues = new Set(['Family', 'School']);
 
       function selectedReminder() {
         return reminderInputs.find((input) => input.checked)?.value || '';
@@ -933,6 +1048,34 @@
 
       function needsWhatsAppPhone(value = selectedReminder()) {
         return value === 'whatsapp' || value === 'both';
+      }
+
+      function selectedSignupType() {
+        const value = String(signupTypeInput?.value || '').trim();
+        return signupTypeValues.has(value) ? value : '';
+      }
+
+      function setSignupTypeMenuOpen(open, options = {}) {
+        if (!signupTypeMenu || !signupTypeTrigger) return;
+        signupTypeMenu.hidden = !open;
+        signupTypeTrigger.setAttribute('aria-expanded', String(open));
+        if (open && options.focusOption) {
+          const selected = signupTypeOptions.find((option) => option.getAttribute('aria-selected') === 'true');
+          (selected || signupTypeOptions[0])?.focus({ preventScroll: true });
+        }
+      }
+
+      function setSignupType(value) {
+        const normalized = signupTypeValues.has(value) ? value : '';
+        if (signupTypeInput) signupTypeInput.value = normalized;
+        if (signupTypeLabel) signupTypeLabel.textContent = normalized || 'Choose Family or School';
+        signupTypeOptions.forEach((option) => {
+          option.setAttribute('aria-selected', String(option.dataset.value === normalized));
+        });
+        if (normalized) {
+          signupTypeTrigger?.removeAttribute('aria-invalid');
+          form?.querySelector('[data-error-for="signup_as"]')?.classList.remove('visible');
+        }
       }
 
       function updatePhoneRequirement() {
@@ -1102,6 +1245,8 @@
         const error = form?.querySelector(`[data-error-for="${name}"]`);
         if (name === 'reminder_preference') {
           form?.querySelector('[data-reminder-fieldset]')?.setAttribute('aria-invalid', 'true');
+        } else if (name === 'signup_as') {
+          signupTypeTrigger?.setAttribute('aria-invalid', 'true');
         } else {
           input?.setAttribute('aria-invalid', 'true');
         }
@@ -1192,6 +1337,46 @@
         updateLocalClassTime();
       }
 
+      signupTypeTrigger?.addEventListener('click', () => {
+        setSignupTypeMenuOpen(signupTypeTrigger.getAttribute('aria-expanded') !== 'true');
+      });
+
+      signupTypeTrigger?.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          setSignupTypeMenuOpen(true, { focusOption: true });
+        }
+        if (event.key === 'Escape') {
+          setSignupTypeMenuOpen(false);
+        }
+      });
+
+      signupTypeOptions.forEach((option) => {
+        option.addEventListener('click', () => {
+          setSignupType(option.dataset.value || '');
+          setSignupTypeMenuOpen(false);
+          signupTypeTrigger?.focus({ preventScroll: true });
+        });
+        option.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            setSignupType(option.dataset.value || '');
+            setSignupTypeMenuOpen(false);
+            signupTypeTrigger?.focus({ preventScroll: true });
+          }
+          if (event.key === 'Escape') {
+            setSignupTypeMenuOpen(false);
+            signupTypeTrigger?.focus({ preventScroll: true });
+          }
+        });
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!signupTypeMenu || signupTypeMenu.hidden) return;
+        if (event.target instanceof Node && document.querySelector('[data-signup-type-field]')?.contains(event.target)) return;
+        setSignupTypeMenuOpen(false);
+      });
+
       form?.elements.city_label?.addEventListener('input', () => {
         setCityFields(form.elements.city_label.value);
       });
@@ -1211,7 +1396,7 @@
         clearStatus();
 
         const contactName = String(form.elements.contact_name.value || '').trim();
-        const signupAs = String(form.elements.signup_as.value || '').trim();
+        const signupAs = selectedSignupType();
         const cityLabel = String(form.elements.city_label.value || '').trim();
         const timezone = currentTimezone();
         const email = String(form.elements.email.value || '').trim().toLowerCase();

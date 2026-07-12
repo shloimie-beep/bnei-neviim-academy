@@ -113,9 +113,13 @@ async function main() {
     assert(/data-one-time-direct-signup-form/.test(text), 'direct signup form missing');
     assert(/href="\/one-time"[^>]*>Back to Home<\/a>/.test(text), 'Back to Home link missing');
     assert(/name="contact_name"/.test(text), 'contact name input missing');
-    assert(/name="signup_as"/.test(text), 'Family/School dropdown missing');
-    assert(/<option value="Family">Family<\/option>/.test(text), 'Family choice missing');
-    assert(/<option value="School">School<\/option>/.test(text), 'School choice missing');
+    assert(/name="signup_as"/.test(text), 'Family/School hidden field missing');
+    assert(/data-signup-type-trigger/.test(text), 'Family/School in-page selector missing');
+    assert(/data-value="Family"/.test(text), 'Family choice missing');
+    assert(/data-value="School"/.test(text), 'School choice missing');
+    assert(/ACTION-ONETIME-SIGNUP-AS-FAMILY/.test(text), 'Family selector action missing');
+    assert(/ACTION-ONETIME-SIGNUP-AS-SCHOOL/.test(text), 'School selector action missing');
+    assert(!/<select\b[^>]*name="signup_as"/i.test(text), 'native Family/School select should not render');
     assert(/name="city_label"/.test(text), 'city free-text input missing');
     assert(/name="city_id"/.test(text), 'city id field missing');
     assert(/name="city_region"/.test(text), 'city region field missing');
