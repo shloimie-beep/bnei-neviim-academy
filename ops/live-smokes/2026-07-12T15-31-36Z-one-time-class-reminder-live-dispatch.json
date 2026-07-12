@@ -1,0 +1,172 @@
+{
+  "success": true,
+  "raw_sources": [
+    "RAW-20260712-005",
+    "RAW-20260712-006"
+  ],
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "base_url": "https://join.onetimeonetime.com",
+  "runtime": {
+    "commit_sha": "e4b57d0b63497f005098e48ce35951e9da58a798",
+    "source_branch": "codex/onetime-signup-location-hotfix-20260712",
+    "deployment_id": "94ee2e4b-f01a-4c62-8d65-5731851345de",
+    "deployment_source": "railway:redeploy",
+    "target_app": "one-time",
+    "target_project": "one-time-production",
+    "target_service": "one-time-web"
+  },
+  "readiness": {
+    "class_reminders_enabled": true,
+    "class_reminders_confirm_ok": true,
+    "whatsapp_reminders_enabled": true,
+    "whatsapp_reminders_confirm_ok": true,
+    "cron_secret_present": true,
+    "resend_present": true,
+    "wapi_present": true,
+    "link_source": "ONE_TIME_WHATSAPP_CLASS_LINK",
+    "link_redacted": "https://us06web.zoom.us/j/83339110316?pwd=[redacted]"
+  },
+  "class_reminder_enqueue_dry_run": {
+    "checked_at": "2026-07-12T15:15:48.395Z",
+    "success": true,
+    "dry_run": true,
+    "candidate_count": 5,
+    "would_queue_count": 5,
+    "skipped_count": 0,
+    "channel_counts": {
+      "email": 3,
+      "whatsapp": 2
+    },
+    "schedule": {
+      "class_date": "2026-07-12",
+      "class_instant_iso": "2026-07-12T16:00:00.000Z",
+      "reminder_instant_iso": "2026-07-12T15:30:00.000Z",
+      "class_timezone": "Asia/Jerusalem",
+      "schedule_version": "daily-1900-asia-jerusalem-v1"
+    }
+  },
+  "class_reminder_enqueue": {
+    "success": true,
+    "dry_run": false,
+    "candidate_count": 5,
+    "queued_count": 0,
+    "already_queued_count": 5,
+    "skipped_count": 0,
+    "channel_counts": {
+      "email": 3,
+      "whatsapp": 2
+    }
+  },
+  "dispatcher_due_dry_run": {
+    "checked_at": "2026-07-12T15:30:42.239Z",
+    "success": true,
+    "dry_run": true,
+    "due_count": 5,
+    "would_send_count": 5,
+    "would_fail_count": 0,
+    "channel_counts": {
+      "email:one_time_class_reminder": 3,
+      "whatsapp:one_time_class_reminder": 2
+    }
+  },
+  "dispatcher_live": {
+    "checked_at": "2026-07-12T15:31:03.076Z",
+    "success": true,
+    "dry_run": false,
+    "due_count": 5,
+    "processed_count": 5,
+    "sent_count": 5,
+    "failed_count": 0,
+    "dead_lettered_count": 0,
+    "external_send_performed": true,
+    "channel_counts": {
+      "email:one_time_class_reminder": 3,
+      "whatsapp:one_time_class_reminder": 2
+    },
+    "results": [
+      {
+        "outbox_id": 16,
+        "channel_key": "email:one_time_class_reminder",
+        "transport": "email",
+        "status": "sent",
+        "provider": "resend",
+        "provider_message_id_hash": "a978c91ca0ed8cac",
+        "message_body_returned": false,
+        "raw_join_url_returned": false,
+        "error": null
+      },
+      {
+        "outbox_id": 17,
+        "channel_key": "email:one_time_class_reminder",
+        "transport": "email",
+        "status": "sent",
+        "provider": "resend",
+        "provider_message_id_hash": "8ef690d895cff930",
+        "message_body_returned": false,
+        "raw_join_url_returned": false,
+        "error": null
+      },
+      {
+        "outbox_id": 18,
+        "channel_key": "email:one_time_class_reminder",
+        "transport": "email",
+        "status": "sent",
+        "provider": "resend",
+        "provider_message_id_hash": "374c4fcd48275e24",
+        "message_body_returned": false,
+        "raw_join_url_returned": false,
+        "error": null
+      },
+      {
+        "outbox_id": 19,
+        "channel_key": "whatsapp:one_time_class_reminder",
+        "transport": "whatsapp",
+        "status": "sent",
+        "provider": "one_time_wapi",
+        "provider_message_id_hash": "3c1c8b78639e3d63",
+        "message_body_returned": false,
+        "raw_join_url_returned": false,
+        "error": null
+      },
+      {
+        "outbox_id": 20,
+        "channel_key": "whatsapp:one_time_class_reminder",
+        "transport": "whatsapp",
+        "status": "sent",
+        "provider": "one_time_wapi",
+        "provider_message_id_hash": "90dad375ea1221d2",
+        "message_body_returned": false,
+        "raw_join_url_returned": false,
+        "error": null
+      }
+    ]
+  },
+  "post_send_dry_run": {
+    "checked_at": "2026-07-12T15:31:22.611Z",
+    "success": true,
+    "dry_run": true,
+    "due_count": 0,
+    "would_send_count": 0,
+    "would_fail_count": 0
+  },
+  "idempotency_live_replay": {
+    "checked_at": "2026-07-12T15:31:36.357Z",
+    "success": true,
+    "dry_run": false,
+    "due_count": 0,
+    "processed_count": 0,
+    "sent_count": 0,
+    "failed_count": 0,
+    "external_send_performed": false
+  },
+  "guardrails": {
+    "raw_contact_values_in_evidence": false,
+    "raw_zoom_password_url_in_evidence": false,
+    "message_body_returned_by_dispatcher": false,
+    "legacy_crm_write_performed": false,
+    "payment_or_access_mutation_performed": false,
+    "telegram_send_performed": false,
+    "dns_or_credential_mutation_performed": false
+  }
+}

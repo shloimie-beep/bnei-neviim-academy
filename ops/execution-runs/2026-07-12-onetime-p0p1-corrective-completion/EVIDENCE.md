@@ -418,9 +418,16 @@ Release / live proof update:
   `secret_values_printed=false`, and no WhatsApp/Telegram/CRM mutation; it
   exits non-zero only because live auto-reply and Telegram send approvals
   remain off.
-- No production email/WhatsApp/Telegram/campaign send, charge/refund, access
-  grant, historical import, DNS/account mutation, credential mutation, or
-  external-provider write was performed.
+- July 12 scoped reminder dispatch proof passed on current production runtime
+  `e4b57d0b63497f005098e48ce35951e9da58a798`, Railway deployment
+  `94ee2e4b-f01a-4c62-8d65-5731851345de`: enqueue dry-run resolved 5 jobs
+  (3 email, 2 WhatsApp), live dispatch processed 5, sent 5, failed 0, and
+  immediate live replay sent 0 duplicates. Evidence:
+  `ops/live-smokes/2026-07-12T15-31-36Z-one-time-class-reminder-live-dispatch.md`.
+- Production external sends performed in the July 12 scoped dispatch: 3 Resend
+  class-reminder emails and 2 One Time WAPI class-reminder WhatsApps. No
+  Telegram/campaign send, charge/refund, access grant, historical import,
+  DNS/account mutation, credential mutation, or legacy CRM write was performed.
 
 Remaining evidence blockers:
 
@@ -431,5 +438,7 @@ Remaining evidence blockers:
   without a separately scoped production test packet.
 - `REQ-20260712-010`: the complete requested screenshot/matrix set remains
   open beyond the landing/signup local proof.
-- `REQ-20260712-022`: exact live-send behavior/copy and hosted reminder
-  provider readiness remain open.
+- `REQ-20260712-022`: scoped live email/WAPI reminder dispatch is complete.
+  Remaining separate gates are Telegram auto-reply/Telegram sends, unattended
+  recurring scheduler observation, and `OPS_PASSWORD` rotation after local
+  tool-output exposure.

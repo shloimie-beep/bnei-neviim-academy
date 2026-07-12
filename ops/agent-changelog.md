@@ -38722,3 +38722,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   2/2, `node --test tests/one-time-focused-landing.test.js` 2/2,
   `npm run test:onetime:focused` 73/73, `npm run watchdog:actions`, and
   `node --test tests/watchdog-action-registry.test.js` 5/5.
+
+## 2026-07-12 - One Time scoped class-reminder live dispatch completed
+
+- Captured the expanded live reminder approval as redacted raw input
+  `RAW-20260712-006`; earlier one-recipient copy approval remains captured as
+  `RAW-20260712-005`.
+- Verified current production runtime before dispatch:
+  `e4b57d0b63497f005098e48ce35951e9da58a798`,
+  Railway deployment `94ee2e4b-f01a-4c62-8d65-5731851345de`.
+- Redacted production readiness showed class reminders, WhatsApp reminders,
+  CRON, Resend, WAPI, and the class link configured.
+- Dry-run enqueue resolved exactly 5 jobs for the July 12 19:00 Israel class:
+  3 email and 2 WhatsApp, 0 skipped.
+- Live dispatch at `2026-07-12T15:31:03Z` processed 5, sent 5, failed 0:
+  3 Resend class-reminder emails and 2 One Time WAPI class-reminder WhatsApps.
+- Immediate live replay processed 0 and sent 0, proving no duplicate send on
+  retry.
+- Evidence:
+  `ops/live-smokes/2026-07-12T15-31-36Z-one-time-class-reminder-live-dispatch.md`.
+- No raw contact values or raw Zoom password URL were committed. No Telegram,
+  campaign, payment/access, DNS/account, credential, historical import, or
+  legacy CRM write was performed.

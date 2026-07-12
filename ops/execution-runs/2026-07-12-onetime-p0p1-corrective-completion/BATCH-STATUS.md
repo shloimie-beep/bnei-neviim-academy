@@ -17,11 +17,11 @@
 | direct-signup-page | REQ-20260712-013 | Verified | None. |
 | city-timezone-consent | REQ-20260712-014 | Verified | None. |
 | crm-confirmation-outbox | REQ-20260712-015 | In progress | Complete real DB/provider readback where safe and authorized. |
-| confirmation-email | REQ-20260712-016 | In progress | Hosted Resend delivery/retry proof remains; do not send without exact approval. |
-| reminder-dispatcher | REQ-20260712-017 | In progress | Hosted cron/delivery proof remains; do not send without exact approval. |
-| whatsapp-gates | REQ-20260712-018 | In progress | Live WAPI readiness and STOP/wrong-number proof remain. |
+| confirmation-email | REQ-20260712-016 | Verified scoped live send | July 12 proof sent 3 scoped Resend class-reminder emails; broader retry/bounce proof remains separate. |
+| reminder-dispatcher | REQ-20260712-017 | Verified scoped live dispatch | July 12 proof dispatched 5 due jobs and replay sent 0 duplicates; unattended recurring scheduler observation remains separate. |
+| whatsapp-gates | REQ-20260712-018 | Verified scoped live send | July 12 proof sent 2 scoped One Time WAPI class-reminder WhatsApps; STOP/wrong-number proof remains separate. |
 | rabbi-telegram-alert | REQ-20260712-019 | In progress | Hosted worker/live single-alert smoke remains; do not send without exact approval. |
 | no-portal-negative-tests | REQ-20260712-020 | Needs operator decision | Terminal proof depends on real persistence/operator-test evidence. |
 | local-class-preview-gate | REQ-20260712-021 | Needs operator decision | Terminal proof depends on real persistence/operator-test evidence. |
-| readiness-deploy-operator-test | REQ-20260712-022 | Needs operator decision | Exact live-send behavior/copy and hosted scheduler/CRON readiness remain open. |
+| readiness-deploy-operator-test | REQ-20260712-022 | Verified scoped live email/WAPI | Scoped 3-email/2-WhatsApp dispatch is complete; Telegram, unattended recurring scheduler observation, GitHub workflow scope, and OPS password rotation remain. |
 | signup-test-matrix | REQ-20260712-023 | In progress | Extend the matrix beyond the signup/reminder slice. |

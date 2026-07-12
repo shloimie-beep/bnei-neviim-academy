@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-onetime-p0p1-corrective-completion",
   "title": "One Time P0/P1 Corrective Completion",
-  "updated_at": "2026-07-12T15:36:00+03:00",
+  "updated_at": "2026-07-12T18:36:00+03:00",
   "git_refs": {
     "delivery_branch": "codex/onetime-p0p1-corrective-20260711",
     "release_worktree": "detached HEAD from origin/master at deployed commit",
@@ -33,12 +33,14 @@
     "pr_head_at_merge": "598f66238f68293575d5f9e6195bb6b032ebb156",
     "merge_commit": "8e22e5d79844e994e94c4f3ed92ac51422649b8c",
     "master_release_commit": "5bf521c539e608543c6a54028cccdc8903667081",
-    "deployed_commit": "5bf521c539e608543c6a54028cccdc8903667081",
-    "deployment_id": "bc45a0fa-76b1-4170-80d2-cf18dbca70c9",
+    "deployed_commit": "e4b57d0b63497f005098e48ce35951e9da58a798",
+    "deployment_id": "94ee2e4b-f01a-4c62-8d65-5731851345de",
     "deployment_target": "one-time-production / production / one-time-web",
     "deployment_url": "https://join.onetimeonetime.com",
-    "live_smoke_at": "2026-07-12T12:35:05Z",
-    "final_evidence_commit": "5bf521c539e608543c6a54028cccdc8903667081"
+    "live_smoke_at": "2026-07-12T15:31:36Z",
+    "final_evidence_commit": "5bf521c539e608543c6a54028cccdc8903667081",
+    "current_runtime_branch": "codex/onetime-signup-location-hotfix-20260712",
+    "current_runtime_note": "Production drifted after PR #129 release; scoped reminder dispatch proof ran against this current Railway runtime without redeploying."
   },
   "sources": [
     {
@@ -80,6 +82,26 @@
       "workspace": "rabbi_sheller_provider",
       "project": "one_time_mishnah_class",
       "source_type": "codex_chat_personal_test_approval_redacted"
+    },
+    {
+      "source_id": "RAW-20260712-005",
+      "source_path": "raw-input/RAW-20260712-005-onetime-approved-whatsapp-reminder-send.md",
+      "captured_at": "2026-07-12T18:07:00+03:00",
+      "content_fingerprint": "sha256:c1080eb3c79dd00eeacf0dbbeceaf4d421e2f95eea536b8666846e8a4b748ef3",
+      "privacy_classification": "operator_personal_contact_redacted",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_external_send_approval"
+    },
+    {
+      "source_id": "RAW-20260712-006",
+      "source_path": "raw-input/RAW-20260712-006-onetime-live-class-reminder-automation-activation.md",
+      "captured_at": "2026-07-12T18:14:00+03:00",
+      "content_fingerprint": "sha256:5c5a80c647b278c6329c170674113a84e07bd78544d5ee54a75ea3cb703c62ba",
+      "privacy_classification": "operator_send_scope_redacted",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_live_reminder_activation"
     }
   ],
   "source_statements": [
@@ -375,6 +397,20 @@
       "source_id": "RAW-20260712-004",
       "source_statement": "Exact external email, WhatsApp/WAPI, Telegram, scheduler, payment, access, DNS, import, or other provider-send actions still require their own scoped send behavior and copy approval.",
       "classification": "guardrail",
+      "requirement_id": "REQ-20260712-022"
+    },
+    {
+      "statement_id": "RAW-20260712-005:S43",
+      "source_id": "RAW-20260712-005",
+      "source_statement": "Operator approved a brief One Time WhatsApp reminder test copy for the operator-approved personal contact; raw contact values remain redacted.",
+      "classification": "decision",
+      "requirement_id": "REQ-20260712-022"
+    },
+    {
+      "statement_id": "RAW-20260712-006:S44",
+      "source_id": "RAW-20260712-006",
+      "source_statement": "Operator requested the live One Time reminder automation for local-class email contacts plus the operator and Rabbi WhatsApp contacts, with the current Zoom link included.",
+      "classification": "requirement",
       "requirement_id": "REQ-20260712-022"
     }
   ],
@@ -1330,9 +1366,9 @@
       "owner": "Codex",
       "priority": "P0",
       "can_continue_without_operator": false,
-      "blocker": "GitHub workflow scope, scheduler/CRON readiness, Telegram live approval, and explicit WAPI/email live-send approval remain open. Operator personal deployed signup/continuation proof is complete. WAPI token/instance/phone/webhook setup is no longer the blocker.",
-      "blocker_owner": "Operator / provider setup owner",
-      "blocker_next_action": "Approve exact live WAPI/email/Telegram send behavior and message copy, configure scheduler/CRON readiness, and provide workflow-scope GitHub credential if CI workflow push is still desired. Do not send broadly.",
+      "blocker": "No blocker remains for the scoped 3-email/2-WhatsApp live class-reminder dispatch. Separate blockers remain for Telegram auto-reply/Telegram sends, GitHub workflow-scope credential, and unattended recurring scheduler observation beyond this manual production trigger.",
+      "blocker_owner": "Operator / GitHub credential owner / Codex for monitoring",
+      "blocker_next_action": "Scoped email/WAPI reminder dispatch is complete. Remaining separate work: rotate the exposed Operations password, provide workflow-scope GitHub credential if CI workflow push is still desired, and approve/verify Telegram auto-reply or unattended recurring scheduler proof separately if wanted.",
       "evidence": [
         "scripts/simulate-one-time-class-reminder.mjs requires --confirm APPROVE_ONE_TIME_SINGLE_RECIPIENT_REMINDER_TEST, one positive numeric --contact-id, and CRON_SECRET before calling the protected reminder endpoint.",
         "scripts/simulate-one-time-class-reminder.mjs rejects broad audience flags including --all, --audience, --segment, --workspace, and --project.",
@@ -1357,25 +1393,35 @@
         "npm run one-time:wapi:readiness report: provider_setup.ready=true, outbound configured=true, credential_scope=one_time_scoped, auto_reply.ready=false pending explicit live-send flags.",
         "npm run secrets:audit PASS after readiness report update.",
         "RAW-20260712-004 records the operator personal test approval with raw contact details redacted from tracked files.",
-        "npm run app:smoke:one-time-personal-continuation PASS: operator personal deployed Family/School signup/continuation proof completed and cleaned up without sends."
+        "npm run app:smoke:one-time-personal-continuation PASS: operator personal deployed Family/School signup/continuation proof completed and cleaned up without sends.",
+        "RAW-20260712-005 and RAW-20260712-006 capture the operator live-send approval/scope with raw contact values redacted.",
+        "Production /api/deploy-info for the live reminder proof returned commit_sha e4b57d0b63497f005098e48ce35951e9da58a798 on branch codex/onetime-signup-location-hotfix-20260712; Railway deployment 94ee2e4b-f01a-4c62-8d65-5731851345de was SUCCESS.",
+        "Redacted Railway readiness readback confirmed class reminders enabled/approved, WhatsApp reminders enabled/approved, CRON secret present, Resend present, WAPI present, and the class link configured; no secret values were printed.",
+        "Production class-reminder enqueue dry-run resolved 5 would-queue jobs: 3 email and 2 WhatsApp, 0 skipped, for the 2026-07-12 19:00 Israel class / 18:30 reminder.",
+        "Production delivery-outbox due dry-run at 2026-07-12T15:30:42.239Z resolved 5 would-send jobs and 0 would-fail jobs.",
+        "Production delivery-outbox live dispatch at 2026-07-12T15:31:03.076Z processed 5, sent 5, failed 0: 3 Resend email reminders and 2 One Time WAPI WhatsApp reminders.",
+        "Post-send dry-run found 0 due jobs; immediate live replay processed 0 and sent 0, proving no duplicate send on retry.",
+        "ops/live-smokes/2026-07-12T15-31-36Z-one-time-class-reminder-live-dispatch.md records the redacted proof with provider message ID hashes only; message_body_returned=false and raw_join_url_returned=false for every result."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T15:24:00+03:00",
+      "updated_at": "2026-07-12T18:36:00+03:00",
       "id": "REQ-20260712-022",
       "title": "Gate deployed personal end-to-end operator test",
       "source_statement_ids": [
         "RAW-20260712-002:S38",
         "RAW-20260712-004:S41",
-        "RAW-20260712-004:S42"
+        "RAW-20260712-004:S42",
+        "RAW-20260712-005:S43",
+        "RAW-20260712-006:S44"
       ],
       "category": "operator_test",
       "batch_id": "readiness-deploy-operator-test",
       "depends_on": [
         "REQ-20260712-023"
       ],
-      "status": "needs_operator_decision",
-      "implementation_status": "Guarded reminder simulation and readiness checks are implemented locally; One Time WAPI provider setup is configured and deployed; the operator personal deployed signup/continuation proof is complete with redacted runtime-only contact input and cleanup. Exact external live-send behavior, Telegram approval, scheduler/CRON readiness, and GitHub workflow scope remain gated.",
-      "next_action": "Approve exact live WAPI/email/Telegram send behavior and message copy, configure scheduler/CRON readiness, and provide workflow-scope GitHub credential if CI workflow push is still desired. Do not send broadly.",
+      "status": "needs_verification",
+      "implementation_status": "Production One Time reminder readiness is configured for the scoped class-reminder path. Redacted production dry-run resolved exactly 5 due jobs for the 2026-07-12 19:00 Israel class: 3 email reminders and 2 WhatsApp reminders. Live dispatcher sent all 5 through first-party outbox providers at 2026-07-12T15:31:03Z with 0 failures, then immediate replay processed 0 and sent 0.",
+      "next_action": "Scoped email/WAPI reminder dispatch is complete. Remaining separate work: rotate the exposed Operations password, provide workflow-scope GitHub credential if CI workflow push is still desired, and approve/verify Telegram auto-reply or unattended recurring scheduler proof separately if wanted.",
       "acceptance_criteria": [
         "Automation deployed and ready message is given only after implementation/tests/readiness/deploy/visual proof.",
         "Only operator-submitted recipient is used.",
@@ -1403,7 +1449,15 @@
         "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment.",
         "npm run one-time:railway-target:guard PASS after WAPI env update",
         "npm run one-time:wapi:readiness provider_setup.ready=true with auto-reply still gated",
-        "npm run app:smoke:one-time-personal-continuation PASS with no email/WhatsApp/WAPI/Telegram send and no dispatchable queued rows left after cleanup"
+        "npm run app:smoke:one-time-personal-continuation PASS with no email/WhatsApp/WAPI/Telegram send and no dispatchable queued rows left after cleanup",
+        "RAW-20260712-005 and RAW-20260712-006 capture the operator live-send approval/scope with raw contact values redacted.",
+        "Production /api/deploy-info for the live reminder proof returned commit_sha e4b57d0b63497f005098e48ce35951e9da58a798 on branch codex/onetime-signup-location-hotfix-20260712; Railway deployment 94ee2e4b-f01a-4c62-8d65-5731851345de was SUCCESS.",
+        "Redacted Railway readiness readback confirmed class reminders enabled/approved, WhatsApp reminders enabled/approved, CRON secret present, Resend present, WAPI present, and the class link configured; no secret values were printed.",
+        "Production class-reminder enqueue dry-run resolved 5 would-queue jobs: 3 email and 2 WhatsApp, 0 skipped, for the 2026-07-12 19:00 Israel class / 18:30 reminder.",
+        "Production delivery-outbox due dry-run at 2026-07-12T15:30:42.239Z resolved 5 would-send jobs and 0 would-fail jobs.",
+        "Production delivery-outbox live dispatch at 2026-07-12T15:31:03.076Z processed 5, sent 5, failed 0: 3 Resend email reminders and 2 One Time WAPI WhatsApp reminders.",
+        "Post-send dry-run found 0 due jobs; immediate live replay processed 0 and sent 0, proving no duplicate send on retry.",
+        "ops/live-smokes/2026-07-12T15-31-36Z-one-time-class-reminder-live-dispatch.md records the redacted proof with provider message ID hashes only; message_body_returned=false and raw_join_url_returned=false for every result."
       ],
       "implementation_files": [
         "scripts/simulate-one-time-class-reminder.mjs",
@@ -1416,8 +1470,8 @@
       ],
       "expected_result": "Real-send workflow remains gated until the operator personally performs and confirms the deployed test.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
-      "deployment_id": "64ab8814-c984-4618-b808-5e762914f3eb",
-      "deployed_commit": "fc147ded1ee0e12325111382fa8e460134a8ce3d",
+      "deployment_id": "94ee2e4b-f01a-4c62-8d65-5731851345de",
+      "deployed_commit": "e4b57d0b63497f005098e48ce35951e9da58a798",
       "live_smoke": "PASS https://join.onetimeonetime.com at fc147ded1ee0e12325111382fa8e460134a8ce3d",
       "deployment_evidence": [
         "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
@@ -1430,7 +1484,19 @@
         "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha fc147ded1ee0e12325111382fa8e460134a8ce3d.",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d PASS.",
         "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
-      ]
+      ],
+      "live_proof": {
+        "evidence_path": "ops/live-smokes/2026-07-12T15-31-36Z-one-time-class-reminder-live-dispatch.md",
+        "runtime_commit": "e4b57d0b63497f005098e48ce35951e9da58a798",
+        "deployment_id": "94ee2e4b-f01a-4c62-8d65-5731851345de",
+        "sent_count": 5,
+        "email_count": 3,
+        "whatsapp_count": 2,
+        "failed_count": 0,
+        "idempotent_replay_sent_count": 0,
+        "raw_contact_values_in_evidence": false,
+        "raw_zoom_url_in_evidence": false
+      }
     },
     {
       "source_id": "RAW-20260712-002",

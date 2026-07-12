@@ -26,10 +26,14 @@ live-smoked.
 
 - Target: `one-time-production / production / one-time-web`
 - Public URL: https://join.onetimeonetime.com
-- Final deployment id: `bc45a0fa-76b1-4170-80d2-cf18dbca70c9`
-- Deployment status: `SUCCESS`
-- Live deployed runtime source SHA from `/api/deploy-info`:
-  `5bf521c539e608543c6a54028cccdc8903667081`
+- PR #129 final proof deployment id: `bc45a0fa-76b1-4170-80d2-cf18dbca70c9`
+- Current production deployment id used for the July 12 reminder dispatch:
+  `94ee2e4b-f01a-4c62-8d65-5731851345de`
+- Current deployment status: `SUCCESS`
+- Current live runtime source SHA from `/api/deploy-info`:
+  `e4b57d0b63497f005098e48ce35951e9da58a798`
+- Current runtime branch:
+  `codex/onetime-signup-location-hotfix-20260712`
 
 ## Live Smoke
 
@@ -68,22 +72,39 @@ and School direct signup to continuation linkage, then cancelled queued
 test outbox rows, archived product/CRM leads, deleted generated onboarding
 tasks, and closed support tickets.
 
+## July 12 Reminder Dispatch
+
+The operator approved a scoped live class-reminder trigger for the local-class
+emails plus the operator/Rabbi WhatsApp contacts. Production readiness was
+redacted and confirmed before send: class reminders enabled/approved, WhatsApp
+reminders enabled/approved, `CRON_SECRET` present, Resend present, One Time WAPI
+present, and the class link configured.
+
+Live proof:
+
+- Enqueue dry-run: 5 would queue, 0 skipped, split as 3 email and 2 WhatsApp.
+- Existing queue: 5 already queued for the 2026-07-12 19:00 Israel class.
+- Due dry-run at `2026-07-12T15:30:42.239Z`: 5 would send, 0 would fail.
+- Live dispatch at `2026-07-12T15:31:03.076Z`: 5 processed, 5 sent, 0 failed.
+- Immediate live replay at `2026-07-12T15:31:36.357Z`: 0 processed, 0 sent.
+- Evidence:
+  `ops/live-smokes/2026-07-12T15-31-36Z-one-time-class-reminder-live-dispatch.md`.
+
 ## Not Performed
 
-No email, WhatsApp, Telegram, campaign send, payment/charge/refund, access
-grant, historical import, DNS/account mutation, credential mutation, or
-external-provider write was performed.
+No Telegram/campaign send, payment/charge/refund, access grant, historical
+import, DNS/account mutation, credential mutation, or legacy CRM write was
+performed. The only production external sends in the July 12 update were the
+verified 3 Resend emails and 2 One Time WAPI WhatsApps above.
 
 ## Remaining Release Blockers
 
 - `REQ-20260712-002`: `.github/workflows/onetime-corrective.yml` still needs a
   GitHub credential or maintainer action with `workflow` scope.
-- `REQ-20260712-022`: exact live-send behavior/copy and hosted reminder
-  provider readiness remain open; no external sends were performed. The
-  handoff guard now marks deployment complete from live smoke but still
-  suppresses the ready message because CI, live-send approval, Telegram, and
-  scheduler/`CRON_SECRET` readiness are not green. One Time WAPI provider
-  setup itself is configured and deployed.
+- `REQ-20260712-022`: scoped live email/WAPI reminder dispatch is complete.
+  Remaining separate blockers are Telegram auto-reply/Telegram sends,
+  unattended recurring scheduler observation, and credential hygiene after the
+  local tool-output `OPS_PASSWORD` exposure.
 - `REQ-20260712-008` / `REQ-20260712-009`: production intake/dropoff
   write-smoke was not performed because it would create live raw/parse records
   without a separately scoped production test packet.

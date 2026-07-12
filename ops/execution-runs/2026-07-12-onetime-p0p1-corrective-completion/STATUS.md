@@ -1,6 +1,8 @@
 # Status
 
 Run remains active with release/live proof recorded and a short blocker list.
+The scoped One Time class-reminder live dispatch requested on July 12 is now
+verified.
 
 ## Current Truth
 
@@ -10,10 +12,12 @@ Run remains active with release/live proof recorded and a short blocker list.
   `598f66238f68293575d5f9e6195bb6b032ebb156`
 - Merge commit:
   `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
-- Deployed/live-smoked runtime source SHA:
-  `5bf521c539e608543c6a54028cccdc8903667081`
-- Railway deployment id:
-  `bc45a0fa-76b1-4170-80d2-cf18dbca70c9`
+- Current production runtime source SHA for the reminder dispatch proof:
+  `e4b57d0b63497f005098e48ce35951e9da58a798`
+- Current Railway deployment id:
+  `94ee2e4b-f01a-4c62-8d65-5731851345de`
+- Runtime branch:
+  `codex/onetime-signup-location-hotfix-20260712`
 - Production URL:
   https://join.onetimeonetime.com
 
@@ -39,6 +43,11 @@ Run remains active with release/live proof recorded and a short blocker list.
 - `REQ-20260712-011`: release authorization, merge, deployment, and exact-SHA
   live smoke are complete; the machine status remains `needs_verification`
   until its final-matrix dependency is closed.
+- `REQ-20260712-022`: production class-reminder dispatch proof is complete for
+  the scoped July 12 send: 3 email reminders and 2 One Time WAPI WhatsApp
+  reminders were sent at `2026-07-12T15:31:03Z` with 0 failures, and immediate
+  replay sent 0 duplicates. Evidence:
+  `ops/live-smokes/2026-07-12T15-31-36Z-one-time-class-reminder-live-dispatch.md`.
 
 ## Implemented But Still Open
 
@@ -60,19 +69,17 @@ Run remains active with release/live proof recorded and a short blocker list.
 - `REQ-20260712-020` / `REQ-20260712-021`: release proof is complete, but
   terminal closeout depends on the blocked persistence/operator-test evidence.
 - `REQ-20260712-022`: guarded reminder simulation and readiness checks pass
-  locally, One Time WAPI provider setup is configured, and the operator
-  personal deployed signup/continuation proof is complete. Live auto-reply,
-  Telegram approval, and scheduler/CRON readiness remain gated. The handoff
-  guard keeps the ready message suppressed for CI, live-send approvals,
-  Telegram, and scheduler/`CRON_SECRET` readiness.
+  locally, One Time WAPI provider setup is configured, the operator personal
+  deployed signup/continuation proof is complete, and the scoped live
+  email/WAPI reminder dispatch is verified. Telegram auto-reply/Telegram sends
+  and unattended recurring scheduler observation remain separate gates.
 - `REQ-20260712-017`: the protected One Time delivery outbox dispatcher is
-  implemented and deployed. A live no-secret request returns HTTP 503 instead
-  of sending, so terminal proof still needs hosted cron/provider readiness and
-  the operator personal test.
+  implemented and deployed. The July 12 live dispatcher proof processed the
+  exact due queue and sent 5/5 scoped class reminders with 0 failures.
 - `REQ-20260712-018`: One Time WAPI credentials and provider binding are
   configured in Railway and live on deployment
-  `079c53ca-cb65-4cf9-af06-286a7705e7a1`; readiness confirms
-  `provider_setup.ready=true` with no sends.
+  `94ee2e4b-f01a-4c62-8d65-5731851345de`; readiness confirms
+  `provider_setup.ready=true`, and the scoped WAPI reminder send proof passed.
 
 ## Blockers
 
@@ -81,13 +88,15 @@ Run remains active with release/live proof recorded and a short blocker list.
 - `REQ-20260712-008` / `REQ-20260712-009`: production intake/dropoff
   write-smoke requires a separately scoped production test packet because it
   creates live raw/parse records.
-- `REQ-20260712-022`: exact live WAPI/email/Telegram send behavior, message
-  copy, and scheduler/CRON readiness are still open. One Time WAPI provider
-  setup is configured. No external sends were performed.
-- `REQ-20260712-017`: hosted class reminder settings are not enabled/approved
-  and `CRON_SECRET` is missing by redacted Railway readiness readback, so the
-  delivery/reminder workers must not be activated yet.
+- `REQ-20260712-022`: Telegram auto-reply/Telegram sends and unattended
+  recurring scheduler observation remain separate gates. The scoped 3-email /
+  2-WhatsApp class-reminder dispatch is complete.
+- Credential hygiene: rotate the One Time `OPS_PASSWORD` because it appeared in
+  local tool output during the Railway variable inspection. Do not write the
+  old value to repo records.
 
-No production email/WhatsApp/Telegram/campaign send, charge/refund, access
-grant, historical import, DNS/account mutation, credential mutation, or
-external-provider write was performed.
+Production external writes performed in this update: 3 Resend class-reminder
+emails and 2 One Time WAPI class-reminder WhatsApps, scoped to the verified
+class-reminder queue. No Telegram/campaign send, charge/refund, access grant,
+historical import, DNS/account mutation, credential mutation, or legacy CRM
+write was performed.

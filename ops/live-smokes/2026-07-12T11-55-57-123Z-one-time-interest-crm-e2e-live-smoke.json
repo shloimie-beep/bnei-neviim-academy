@@ -1,0 +1,152 @@
+{
+  "started_at": "2026-07-12T11:55:57.123Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "status": "passed",
+  "test_email": "test-onetime-crm-e2e-2026-07-12t11-55-57-123z@example.invalid",
+  "steps": [
+    {
+      "name": "operations login uses One Time Railway auth fallback",
+      "ok": true,
+      "duration_ms": 1897,
+      "details": {
+        "source": "railway",
+        "role": "super_admin"
+      }
+    },
+    {
+      "name": "public interest submit writes scoped TEST CRM lead without Telegram reminder",
+      "ok": true,
+      "duration_ms": 481,
+      "details": {
+        "product_lead_id": 10,
+        "crm_lead_id": 16,
+        "telegram_reminder_skip_reason": "public_landing_no_external_send_guardrail",
+        "transactional_follow_up": {
+          "logged": true,
+          "send_blocked": true,
+          "attempts": [
+            {
+              "channel": "email",
+              "created": true,
+              "skipped": false,
+              "delivery_status": "not_sent"
+            },
+            {
+              "channel": "whatsapp",
+              "created": true,
+              "skipped": false,
+              "delivery_status": "not_sent"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "admin parent-lead search finds the TEST CRM lead",
+      "ok": true,
+      "duration_ms": 242,
+      "details": {
+        "id": 16,
+        "project_key": "one_time_mishnah_class",
+        "status": "follow_up",
+        "tags": [
+          "one-time",
+          "one-time-public-signup",
+          "free-class-interest",
+          "free-zoom-follow-up"
+        ]
+      }
+    },
+    {
+      "name": "CRM contact search finds the TEST lead card",
+      "ok": true,
+      "duration_ms": 256,
+      "details": {
+        "id": "bna_parent_leads:16",
+        "display_name": "TEST One Time CRM E2E 2026-07-12T11-55-57-123Z",
+        "status": "follow_up",
+        "project_key": "one_time_mishnah_class"
+      }
+    },
+    {
+      "name": "CRM timeline shows the captured signup and blocked follow-up attempts",
+      "ok": true,
+      "duration_ms": 248,
+      "details": {
+        "timeline_items": 3,
+        "matched_type": "internal_note",
+        "blocked_follow_up_channels": [
+          "email",
+          "whatsapp"
+        ]
+      }
+    },
+    {
+      "name": "edit TEST CRM contact and create fake follow-up task through API",
+      "ok": true,
+      "duration_ms": 281,
+      "details": {
+        "contact_id": "bna_parent_leads:16",
+        "follow_up_task_id": 97,
+        "timeline_items": 5
+      }
+    },
+    {
+      "name": "reload confirms persisted fake CRM edit and follow-up task",
+      "ok": true,
+      "duration_ms": 260,
+      "details": {
+        "contact_id": "bna_parent_leads:16",
+        "status": "follow_up",
+        "follow_up_task_id": 97
+      }
+    },
+    {
+      "name": "cross-workspace CRM isolation hides fake One Time contact",
+      "ok": true,
+      "duration_ms": 250,
+      "details": {
+        "status": 200,
+        "denied": false,
+        "fake_contact_visible": false,
+        "cards_count": 0
+      }
+    },
+    {
+      "name": "timeline shows fake note and follow-up task before cleanup",
+      "ok": true,
+      "duration_ms": 240,
+      "details": {
+        "timeline_items": 5
+      }
+    },
+    {
+      "name": "browser opens targeted mailbox and returns to same fake contact",
+      "ok": true,
+      "duration_ms": 5030,
+      "details": {
+        "mailbox_url_contains_targeted_inbox": true,
+        "mailbox_text_mentions_rabbi_inbox": false,
+        "selected_contact_restored": true,
+        "screenshot": "ops/live-smokes/2026-07-12T11-55-57-123Z-one-time-crm-live-mailbox-roundtrip.png"
+      }
+    },
+    {
+      "name": "delete fake follow-up task after readback",
+      "ok": true,
+      "duration_ms": 869
+    },
+    {
+      "name": "archive TEST CRM lead after readback",
+      "ok": true,
+      "duration_ms": 1121
+    }
+  ],
+  "guardrails": [
+    "Synthetic TEST/example.invalid lead only.",
+    "Telegram reminder must be skipped by the public interest route.",
+    "No email, WhatsApp/WAPI, checkout, access grant, Zoom, Vimeo, Drive, DNS, or external CRM write is performed.",
+    "CRM lead is archived after visible CRM/timeline readback.",
+    "Append-only product lead row may remain as TEST proof; no raw private data is submitted."
+  ]
+}

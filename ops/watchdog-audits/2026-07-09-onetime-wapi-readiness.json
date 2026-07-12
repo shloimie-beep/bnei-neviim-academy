@@ -1,6 +1,6 @@
 {
   "success": true,
-  "checked_at": "2026-07-12T11:21:56.219Z",
+  "checked_at": "2026-07-12T15:07:18.111Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "external_write_performed": false,
@@ -21,7 +21,7 @@
       "attempted": true,
       "ok": true,
       "source": "railway_token_or_env",
-      "key_count": 60,
+      "key_count": 70,
       "class_link_present": true,
       "instance_id_present": true,
       "phone_metadata_present": true

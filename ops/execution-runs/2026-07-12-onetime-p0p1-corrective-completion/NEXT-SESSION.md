@@ -52,3 +52,24 @@ uncommitted change that breaks `node --check server.js`.
 Do not send messages, charge/refund, import historical data, grant access,
 mutate DNS/accounts/credentials, or write to external providers unless a
 separately scoped approval covers the exact action.
+# July 12 Reminder Dispatch Update
+
+Scoped live class-reminder dispatch is complete. Do not reopen it as a missing
+approval.
+
+- Production runtime used:
+  `e4b57d0b63497f005098e48ce35951e9da58a798`
+  (`codex/onetime-signup-location-hotfix-20260712`),
+  Railway deployment `94ee2e4b-f01a-4c62-8d65-5731851345de`.
+- Redacted readiness was green for class reminders, WhatsApp reminders, CRON,
+  Resend, WAPI, and class link.
+- Live dispatch sent exactly 5 reminders: 3 email and 2 WhatsApp.
+- Immediate replay sent 0 duplicates.
+- Evidence:
+  `ops/live-smokes/2026-07-12T15-31-36Z-one-time-class-reminder-live-dispatch.md`.
+
+Remaining separate items: rotate the One Time `OPS_PASSWORD` because it appeared
+in local tool output, decide/approve Telegram auto-reply or Telegram sends if
+wanted, observe/verify an unattended recurring scheduler run if daily automation
+needs terminal Done, and resolve GitHub workflow-scope credential if the CI
+workflow file still needs pushing.

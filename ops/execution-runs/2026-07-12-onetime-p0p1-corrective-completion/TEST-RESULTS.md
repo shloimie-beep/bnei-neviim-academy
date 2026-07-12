@@ -321,3 +321,22 @@ REQ-20260712-007 local landing / Robot gate:
 No email, WhatsApp/WAPI, Telegram, campaign send, payment/charge/refund, CRM
 production mutation, access grant, local-class activation, DNS/account
 mutation, credential mutation, or external-provider write was performed.
+## 2026-07-12 Scoped Reminder Dispatch Live Proof
+
+- PASS redacted Railway readiness readback: class reminders enabled/approved,
+  WhatsApp reminders enabled/approved, `CRON_SECRET` present, Resend present,
+  One Time WAPI present, and class link configured.
+- PASS `POST /api/cron/one-time/class-reminders` dry-run: 5 would queue,
+  0 skipped, split as 3 email and 2 WhatsApp for the 2026-07-12 19:00 Israel
+  class.
+- PASS `POST /api/cron/one-time/class-reminders` live trigger: 5 already
+  queued, 0 skipped.
+- PASS `POST /api/cron/one-time/delivery-outbox` due dry-run at
+  `2026-07-12T15:30:42.239Z`: 5 due, 5 would send, 0 would fail.
+- PASS `POST /api/cron/one-time/delivery-outbox` live dispatch at
+  `2026-07-12T15:31:03.076Z`: 5 processed, 5 sent, 0 failed: 3 Resend email
+  reminders and 2 One Time WAPI WhatsApp reminders.
+- PASS immediate live replay at `2026-07-12T15:31:36.357Z`: 0 processed,
+  0 sent, 0 failed.
+- Evidence:
+  `ops/live-smokes/2026-07-12T15-31-36Z-one-time-class-reminder-live-dispatch.md`.

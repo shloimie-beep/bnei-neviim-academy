@@ -4,6 +4,14 @@ Completed older entries that mention former GHL/legacy-CRM work are historical
 changelog context only. They are superseded by the current no-GHL policy and do
 not authorize active GHL runtime paths.
 
+## Current Security Follow-up
+
+- [ ] Rotate the One Time production `OPS_PASSWORD` and update the matching
+  secure local/Railway secret stores. Reason: the value appeared in local tool
+  output during July 12 Railway variable inspection. Do not write the old or
+  new value to tracked files. Related proof:
+  `ops/live-smokes/2026-07-12T15-31-36Z-one-time-class-reminder-live-dispatch.md`.
+
 ## Current Goal-Mode Cleanup
 
 - [x] `RAW-20260706-001` / `REQ-20260706-001` through
