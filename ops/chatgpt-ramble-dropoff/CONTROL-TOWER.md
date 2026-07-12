@@ -1,10 +1,10 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-12T11:44:42.613Z
+Generated: 2026-07-12T19:06:04.536Z
 
 ## Lane Safety
 
-- Branch: `codex/onetime-landing-visual-20260712`
+- Branch: `master`
 - Dirty worktree: no
 
 
@@ -26,11 +26,29 @@ _None._
 
 ## Agent Fleet
 
-_None._
+| Status Line |
+| --- |
+| - Supervisor: running PID 36560 |
+| - Observable Codex jobs: 30 |
+| - Claimable observable jobs: 0 |
+| - Active Codex task fallback: 30 |
+| - Ready to claim: observable jobs 0, fallback task candidates 0 |
+| - Queue health: fresh 0, stale 545, blocked 136, unknown 192, do-not-redo 899 |
+| - ChatGPT dropoff ingest: enabled |
+| - ChatGPT comment collect: enabled |
 
 ### Not Claimable / Needs Cleanup
 
-_None._
+| Job |
+| --- |
+| - job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=246.45 path=.runtime/agent-fleet/task-1736.lock.json) |
+| - job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json) |
+| - job #443 / task #2258 [failed] Turn Rabbi meeting drop into One Time build brief (local_lock=missing path=.runtime/agent-fleet/task-2258.lock.json) |
+| - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json) |
+| - job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json) |
+| - job #238 / task #1141 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1141.lock.json) |
+| - job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json) |
+| - job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json) |
 
 ### Fallback Task Candidates
 
@@ -40,11 +58,17 @@ _None._
 
 | Report | Updated |
 | --- | --- |
-| ops/chatgpt-ramble-dropoff/pickups/2026-07-06T14-25-46-791Z-onetime-agent-prompt-series-20260706-911.md | 2026-07-12T11:43:59.752Z |
-| ops/chatgpt-ramble-dropoff/pickups/2026-07-07T09-15-13-onetime-agent-prompt-series-audit.md | 2026-07-12T11:43:59.752Z |
-| ops/chatgpt-ramble-dropoff/pickups/2026-07-05-fleet-claim-completion-fix.md | 2026-07-12T11:43:59.751Z |
+| ops/chatgpt-ramble-dropoff/pickups/2026-07-12T17-45-09-449Z-telegram-sidekick-super-package-20260712.md | 2026-07-12T17:45:09.450Z |
+| ops/chatgpt-ramble-dropoff/pickups/2026-07-12T14-19-17-258Z-telegram-sidekick-super-package-20260712.md | 2026-07-12T14:19:17.259Z |
+| ops/chatgpt-ramble-dropoff/pickups/2026-07-12T14-18-56-534Z-telegram-sidekick-super-package-20260712.md | 2026-07-12T14:18:56.535Z |
+| ops/chatgpt-ramble-dropoff/pickups/2026-07-10T07-27-19-148Z-onetime-launch-priority-ui-crm-automation-20260710-001.md | 2026-07-10T07:27:19.149Z |
+| ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-49-06-941Z-onetime-agent-prompt-series-20260706-911.md | 2026-07-09T05:49:06.942Z |
+| ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-49-06-937Z-chatgpt-dropoff-smoke-test-20260705-001.md | 2026-07-09T05:49:06.939Z |
+| ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-47-45-674Z-onetime-agent-prompt-series-20260706-911.md | 2026-07-09T05:47:45.676Z |
+| ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-47-45-670Z-chatgpt-dropoff-smoke-test-20260705-001.md | 2026-07-09T05:47:45.671Z |
 
 ## Recommendations
 
 - No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.
+- Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.
 - GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it.
