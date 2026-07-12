@@ -50,21 +50,22 @@ personal test completion.
 | Scoped Rabbi Telegram delivery | Locally proven at payload level, readiness blocked | `buildRabbiSignupTelegramAlert()` excludes Zoom URL; outbox channel is `telegram:one_time_rabbi_operator`; readiness report is redacted | Rabbi token/chat/worker readiness and one live scoped smoke remain blocked. |
 | WAPI provider failures | Locally proven/readiness blocked | `oneTimeWapiReminderEnvReadiness()` and `npm run one-time:wapi:readiness` report missing scoped Whapi settings without sending | Whapi auth/instance/phone/webhook/live-mode setup required; if auth expired, Rabbi must scan Whapi QR. |
 | Exact three-contact local-tag preview | Locally proven at pure-function level | `buildLocalClassSegmentPreview()` expected count 3 and masked references; test now blocks activation for count mismatch, duplicate contacts, invalid/missing email, and suppressed/archived rows | Real scoped DB preview for exactly three eligible contacts still requires approved CRM/test DB readback and must stop on mismatch. |
-| Count mismatch blocks activation | Locally proven | Local-class preview test returns `blocked_count_mismatch` for two rows | Real scoped DB preview still required before activation. |
-| Local contacts receive email only | Partially implemented | Enrollment helper maps `operator_approved_local_class_tag` to email channel only | Activation is intentionally blocked until operator personal test passes and exact segment is verified. |
-| No portal, login, password, payment, or access records | Locally proven for direct signup payload/outbox path | Form tests reject portal copy/actions; workflow metadata sets `no_portal_onboarding`, `no_member_login_created`, `no_password_setup`, `no_checkout`, `no_payment`, `no_access_granted`; server timeline copy records same guardrail | Real DB negative readback requires operator test/test DB. |
+| Count mismatch blocks activation | Locally proven | Local-class preview test returns `blocked_count_mismatch` for two rows; activation-plan helper produces no updates when the preview is blocked | Real scoped DB preview still required before activation. |
+| Local contacts receive email only | Locally proven as guarded activation plan | `buildLocalClassReminderActivationPlan()` refuses updates until operator personal test plus `APPROVE_ONE_TIME_LOCAL_CLASS_EMAIL_REMINDERS`, then returns exactly three email-only metadata patches with zero WhatsApp channels | Actual activation is intentionally blocked until operator personal test passes and exact segment is verified. |
+| No portal, login, password, payment, or access records | Locally proven for direct signup payload/outbox path and local-class activation plan | Form tests reject portal copy/actions; workflow metadata sets `no_portal_onboarding`, `no_member_login_created`, `no_password_setup`, `no_checkout`, `no_payment`, `no_access_granted`; activation plan repeats those no-portal/no-payment/no-access flags | Real DB negative readback requires operator test/test DB. |
 | Cross-workspace isolation | Partially covered by broader focused suite | Existing scope route tests and One Time focused suite cover workspace isolation; direct signup path uses `getRabbiProject()` / One Time workspace/project | Direct signup live CRM readback still required. |
 | Synthetic `.invalid` tests perform no external send | Locally proven | Browser/API tests submit `.invalid` only to local test server; no-send readiness reports show no email/WhatsApp/Telegram sends | Real provider smoke must use only operator-submitted recipient after authorization. |
 | Operator personal end-to-end test | Not run | Requirements and deployment gate document exact sequence | Requires deploy, provider readiness, and operator submitting exactly one test signup. |
-| Local-class activation after personal test | Not run | Activation gate is documented and preview helper blocks mismatches | Must remain inactive until operator personal test passes. |
+| Local-class activation after personal test | Locally planned, not run | Activation-plan helper is email-only and requires both operator personal test proof and `APPROVE_ONE_TIME_LOCAL_CLASS_EMAIL_REMINDERS`; it performs no mutation itself | Must remain inactive until operator personal test passes and real scoped DB preview proves exactly three eligible contacts. |
 
 ## Current No-Send Gate Results
 
-- `node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js` PASS: 12/12.
+- `node --test tests/one-time-signup-reminder-workflow.test.js` PASS: 11/11.
 - `node --test tests/one-time-reminder-simulation-command.test.js` PASS: 4/4.
 - `node --test tests/one-time-direct-signup-page.test.js tests/one-time-onboarding-intake.test.js` PASS: 6/6.
-- `npm run test:onetime:focused` PASS: 62/62, including the guarded
-  reminder simulation command and required checkbox/marker assertions.
+- `npm run test:onetime:focused` PASS: 63/63, including the guarded
+  reminder simulation command, required checkbox/marker assertions, and the
+  local-class activation-plan blocker assertions.
 - `node --test tests/one-time-external-setup-readiness.test.js` PASS: 8/8.
 - `npm run one-time:railway-target:guard` PASS with no external write, no send, no secret print.
 - `npm run one-time:setup:check` BLOCKED as expected: ready 5/8; missing Rabbi Stripe sandbox, Whapi/WAPI provider details, campaign seed/real campaign details; hosted scheduler settings are not enabled/approved and `CRON_SECRET` is missing.

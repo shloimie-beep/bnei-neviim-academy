@@ -7,6 +7,8 @@ const ONE_TIME_REMINDER_MINUTES_BEFORE = 30;
 const ONE_TIME_REMINDER_WINDOW = '30m';
 const ONE_TIME_SCHEDULE_VERSION = 'daily-1900-asia-jerusalem-v1';
 const ONE_TIME_REMINDER_CONSENT_POLICY_VERSION = 'one-time-class-reminders-v1-2026-07-12';
+const ONE_TIME_LOCAL_CLASS_ACTIVATION_APPROVAL = 'APPROVE_ONE_TIME_LOCAL_CLASS_EMAIL_REMINDERS';
+const ONE_TIME_LOCAL_CLASS_OPERATOR_POLICY_VERSION = 'one-time-local-class-email-reminders-v1-2026-07-12';
 
 const ONE_TIME_CITY_OPTIONS = Object.freeze([
   {
@@ -747,6 +749,74 @@ function buildLocalClassSegmentPreview(rows = []) {
   };
 }
 
+function buildLocalClassReminderActivationPlan(rows = [], {
+  operatorPersonalTestPassed = false,
+  approvalPhrase = '',
+  approvedAt = new Date(),
+  approvedBy = 'operator',
+} = {}) {
+  const preview = buildLocalClassSegmentPreview(rows);
+  const blockers = [...(preview.activation_blockers || [])];
+  if (operatorPersonalTestPassed !== true) blockers.push('operator_personal_test_required');
+  if (compact(approvalPhrase) !== ONE_TIME_LOCAL_CLASS_ACTIVATION_APPROVAL) {
+    blockers.push('activation_approval_phrase_required');
+  }
+  const approvedAtIso = (approvedAt instanceof Date ? approvedAt : new Date(approvedAt)).toISOString();
+  const activationBlocked = blockers.length > 0;
+  const updates = activationBlocked
+    ? []
+    : rows.map((row) => {
+        const email = normalizeEmail(row.parent_email || row.email || row.email_address || '');
+        const phone = normalizePhoneDigits(row.parent_phone || row.phone || row.whatsapp || '');
+        const contactId = row.id || row.contact_id || '';
+        return {
+          contact_id: contactId || null,
+          masked_reference: `contact:${String(contactId || 'unknown').replace(/\d(?=\d{2})/g, '*')}`,
+          canonical_contact_hash: safeRecipientHash(email || phone || contactId),
+          reminder_channels: ['email'],
+          whatsapp_reminders_active: false,
+          metadata_patch: {
+            reminder_source: 'operator_approved_local_class_tag',
+            reminder_preference: 'email',
+            reminder_channels: ['email'],
+            local_class_reminders_active: true,
+            operator_approved_at: approvedAtIso,
+            operator_approved_by: compact(approvedBy) || 'operator',
+            operator_approval_policy_version: ONE_TIME_LOCAL_CLASS_OPERATOR_POLICY_VERSION,
+            operator_personal_test_passed: true,
+            whatsapp_reminders_active: false,
+            no_portal_onboarding: true,
+            no_member_login_created: true,
+            no_student_portal_created: true,
+            no_password_setup: true,
+            no_checkout: true,
+            no_payment: true,
+            no_access_granted: true,
+          },
+        };
+      });
+  return {
+    approval_required: ONE_TIME_LOCAL_CLASS_ACTIVATION_APPROVAL,
+    activation_blocked: activationBlocked,
+    activation_blockers: blockers,
+    status: activationBlocked ? `blocked_${blockers[0] || 'activation'}` : 'ready_to_activate_email_only_after_operator_test',
+    preview,
+    update_count: updates.length,
+    email_reminder_contact_count: updates.length,
+    whatsapp_reminder_contact_count: 0,
+    updates,
+    no_mutation_performed: true,
+    external_send_performed: false,
+    no_portal_onboarding: true,
+    no_member_login_created: true,
+    no_student_portal_created: true,
+    no_password_setup: true,
+    no_checkout: true,
+    no_payment: true,
+    no_access_granted: true,
+  };
+}
+
 function oneTimeClassReminderEnvReadiness(env = process.env) {
   const enabled = /^(?:1|true|yes)$/i.test(String(env.ONE_TIME_CLASS_REMINDERS_ENABLED || '').trim());
   const confirmOk = String(env.ONE_TIME_CLASS_REMINDERS_CONFIRM || '').trim() === 'APPROVE_ONE_TIME_CLASS_REMINDERS';
@@ -793,11 +863,14 @@ module.exports = {
   ONE_TIME_CLASS_HOUR,
   ONE_TIME_CLASS_MINUTE,
   ONE_TIME_CLASS_TIME_ZONE,
+  ONE_TIME_LOCAL_CLASS_ACTIVATION_APPROVAL,
+  ONE_TIME_LOCAL_CLASS_OPERATOR_POLICY_VERSION,
   ONE_TIME_REMINDER_CONSENT_POLICY_VERSION,
   ONE_TIME_REMINDER_MINUTES_BEFORE,
   ONE_TIME_SCHEDULE_VERSION,
   REMINDER_PREFERENCES,
   buildClassTimeDisplay,
+  buildLocalClassReminderActivationPlan,
   buildLocalClassSegmentPreview,
   buildOneTimeClassReminderMessage,
   buildOneTimeSignupConfirmationEmail,

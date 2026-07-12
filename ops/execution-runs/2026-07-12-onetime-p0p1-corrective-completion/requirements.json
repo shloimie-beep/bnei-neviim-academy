@@ -657,7 +657,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T11:45:00+03:00",
+      "updated_at": "2026-07-12T11:49:00+03:00",
       "id": "REQ-20260712-014",
       "title": "Implement city autocomplete and DST-safe class time conversion",
       "source_statement_ids": [
@@ -1064,7 +1064,7 @@
         "REQ-20260712-020"
       ],
       "status": "needs_operator_decision",
-      "implementation_status": "Admin-only local-class preview route is implemented for the scoped One Time project and expected tag set, returning a redacted preview and blocking activation unless the segment has exactly three unique, unsuppressed, non-archived contacts with valid email addresses. Live readback of the real three-contact segment remains required before activation.",
+      "implementation_status": "Admin-only local-class preview route is implemented for the scoped One Time project and expected tag set, returning a redacted preview and blocking activation unless the segment has exactly three unique, unsuppressed, non-archived contacts with valid email addresses. A pure local activation-plan helper now refuses to produce updates until the operator personal test is marked passed and APPROVE_ONE_TIME_LOCAL_CLASS_EMAIL_REMINDERS is supplied, then produces email-only, no-portal/no-payment metadata patches for the exact three contacts. Live readback of the real three-contact segment remains required before activation.",
       "next_action": "After release authorization, deploy the exact approved SHA, run live smoke/readback for this requirement, and record the deployed SHA evidence.",
       "acceptance_criteria": [
         "Only rabbi_sheller_provider / one_time_mishnah_class contacts are inspected.",
@@ -1072,6 +1072,7 @@
         "Preview shows expected/actual count, masked references, valid-email count, duplicate count, suppression/unsubscribe status.",
         "Count mismatch, duplicate contacts, invalid/missing email, suppression, and archived rows block activation.",
         "Verified contacts are email-only unless separately opted into WhatsApp.",
+        "Activation plan requires operator personal test proof and APPROVE_ONE_TIME_LOCAL_CLASS_EMAIL_REMINDERS before producing metadata updates.",
         "No city is invented."
       ],
       "verification": [
@@ -1079,13 +1080,13 @@
         "count-mismatch block tests",
         "activation-gate tests",
         "node --check server.js PASS",
-        "npm run test:onetime:focused PASS 62/62",
+        "npm run test:onetime:focused PASS 63/63",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
         "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
-        "node --test tests/one-time-signup-reminder-workflow.test.js PASS 10/10 with duplicate, suppression, archived, invalid-email, and count-mismatch local-class activation blockers"
+        "node --test tests/one-time-signup-reminder-workflow.test.js PASS 11/11 with duplicate, suppression, archived, invalid-email, count-mismatch, operator-personal-test, approval-phrase, email-only, and no-portal activation-plan blockers"
       ],
       "implementation_files": [
         "server.js",

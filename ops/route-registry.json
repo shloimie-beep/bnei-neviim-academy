@@ -590,8 +590,8 @@
       "expected_logged_out_behavior": "reject_admin_required",
       "expected_logged_in_behavior": "return_redacted_exact_three_local_class_preview_without_mutation",
       "privacy_risk": "high",
-      "security_expectation": "Admin-only preview for scoped rabbi_sheller_provider / one_time_mishnah_class contacts tagged local_class_attendee, zoom_mishnayos_class, or local_student. It must block activation unless exactly three contacts are found and must not send reminders or create portal/access records.",
-      "smoke_expectation": "tests/one-time-signup-reminder-workflow.test.js verifies exact-three and mismatch blocker behavior.",
+      "security_expectation": "Admin-only preview for scoped rabbi_sheller_provider / one_time_mishnah_class contacts tagged local_class_attendee, zoom_mishnayos_class, or local_student. It must block activation unless exactly three unique, unsuppressed, non-archived contacts with valid emails are found and must not send reminders or create portal/access records.",
+      "smoke_expectation": "tests/one-time-signup-reminder-workflow.test.js verifies exact-three, duplicate, invalid-email, suppression/archive, and mismatch blocker behavior plus the no-send email-only activation plan.",
       "related_goal_ids": [
         "GOAL-CORE-003",
         "GOAL-CORE-010",

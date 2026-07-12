@@ -4,6 +4,8 @@ const test = require('node:test');
 
 const {
   ONE_TIME_SCHEDULE_VERSION,
+  ONE_TIME_LOCAL_CLASS_ACTIVATION_APPROVAL,
+  buildLocalClassReminderActivationPlan,
   buildClassTimeDisplay,
   buildLocalClassSegmentPreview,
   buildOneTimeClassReminderMessage,
@@ -379,4 +381,55 @@ test('local-class preview blocks activation unless the scoped tag set resolves t
   assert.equal(suppressed.activation_blocked, true);
   assert.equal(suppressed.status, 'blocked_suppressed_or_archived_contact');
   assert.equal(suppressed.contacts.filter((contact) => contact.suppressed).length, 2);
+});
+
+test('local-class activation plan is email-only and blocked until operator personal test approval', () => {
+  const rows = [
+    { id: 101, parent_email: 'one@example.com', parent_phone: '+1 732 555 0101', status: 'follow_up' },
+    { id: 102, parent_email: 'two@example.com', parent_phone: '+1 732 555 0102', status: 'follow_up' },
+    { id: 103, parent_email: 'three@example.com', parent_phone: '+1 732 555 0103', status: 'follow_up' },
+  ];
+
+  const blocked = buildLocalClassReminderActivationPlan(rows, {
+    operatorPersonalTestPassed: false,
+    approvalPhrase: ONE_TIME_LOCAL_CLASS_ACTIVATION_APPROVAL,
+    approvedAt: new Date('2026-07-12T08:00:00Z'),
+  });
+  assert.equal(blocked.activation_blocked, true);
+  assert.deepEqual(blocked.updates, []);
+  assert.match(blocked.activation_blockers.join('\n'), /operator_personal_test_required/);
+
+  const missingPhrase = buildLocalClassReminderActivationPlan(rows, {
+    operatorPersonalTestPassed: true,
+    approvalPhrase: 'APPROVE_SOMETHING_ELSE',
+    approvedAt: new Date('2026-07-12T08:00:00Z'),
+  });
+  assert.equal(missingPhrase.activation_blocked, true);
+  assert.match(missingPhrase.activation_blockers.join('\n'), /activation_approval_phrase_required/);
+
+  const ready = buildLocalClassReminderActivationPlan(rows, {
+    operatorPersonalTestPassed: true,
+    approvalPhrase: ONE_TIME_LOCAL_CLASS_ACTIVATION_APPROVAL,
+    approvedAt: new Date('2026-07-12T08:00:00Z'),
+    approvedBy: 'codex_operator_test',
+  });
+  assert.equal(ready.activation_blocked, false);
+  assert.equal(ready.status, 'ready_to_activate_email_only_after_operator_test');
+  assert.equal(ready.update_count, 3);
+  assert.equal(ready.email_reminder_contact_count, 3);
+  assert.equal(ready.whatsapp_reminder_contact_count, 0);
+  assert.equal(ready.no_mutation_performed, true);
+  assert.equal(ready.external_send_performed, false);
+  assert.ok(ready.updates.every((update) => update.reminder_channels.join(',') === 'email'));
+  assert.ok(ready.updates.every((update) => update.whatsapp_reminders_active === false));
+  assert.ok(ready.updates.every((update) => update.metadata_patch.reminder_source === 'operator_approved_local_class_tag'));
+  assert.ok(ready.updates.every((update) => update.metadata_patch.local_class_reminders_active === true));
+  assert.ok(ready.updates.every((update) => update.metadata_patch.operator_approved_at === '2026-07-12T08:00:00.000Z'));
+  assert.ok(ready.updates.every((update) => update.metadata_patch.no_portal_onboarding === true));
+  assert.ok(ready.updates.every((update) => update.metadata_patch.no_member_login_created === true));
+  assert.ok(ready.updates.every((update) => update.metadata_patch.no_student_portal_created === true));
+  assert.ok(ready.updates.every((update) => update.metadata_patch.no_password_setup === true));
+  assert.ok(ready.updates.every((update) => update.metadata_patch.no_checkout === true));
+  assert.ok(ready.updates.every((update) => update.metadata_patch.no_payment === true));
+  assert.ok(ready.updates.every((update) => update.metadata_patch.no_access_granted === true));
 });

@@ -38473,3 +38473,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
   mutation, payment/access mutation, local-class activation, or parallel PR was
   performed.
+
+## 2026-07-12 - One Time local-class activation plan guarded
+
+- Added `buildLocalClassReminderActivationPlan()` as a pure no-send helper for
+  the eventual three-contact local-class activation step.
+- The helper refuses to produce metadata updates unless the operator personal
+  test is marked passed and `APPROVE_ONE_TIME_LOCAL_CLASS_EMAIL_REMINDERS` is
+  supplied.
+- When ready, it returns exactly three email-only metadata patches and repeats
+  the no-portal, no-password, no-checkout, no-payment, and no-access flags.
+- Verification passed: workflow suite 11/11 and focused One Time suite 63/63.
+- No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
+  mutation, payment/access mutation, local-class activation, or parallel PR was
+  performed.
