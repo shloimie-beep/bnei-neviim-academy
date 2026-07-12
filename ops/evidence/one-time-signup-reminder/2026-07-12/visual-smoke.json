@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-07-12T08:17:11.938Z",
+  "generated_at": "2026-07-12T08:20:31.231Z",
   "route": "/one-time/signup",
   "local_only": true,
   "screenshot_state": "initial form state before reminder selection",
   "checks": [
     "form visible",
     "Back to Home visible",
-    "One Time logo loaded",
+    "One Time logo image loaded",
     "no preselected reminder",
     "red required dots visible including acknowledgement",
     "phone required dot hidden until WhatsApp selected",
