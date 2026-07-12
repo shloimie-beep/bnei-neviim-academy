@@ -49818,7 +49818,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
              follow_up_required, occurred_at, created_by, source, source_context, metadata
            )
            SELECT
-             l.project_id, COALESCE(l.lead_type, 'lead'), l.id, 'internal_note', 'internal',
+             l.project_id, 'lead', l.id, 'internal_note', 'internal',
              $2, $3, $4, NOW(), $5, 'dashboard',
              $6::jsonb, $7::jsonb
            FROM bna_parent_leads l

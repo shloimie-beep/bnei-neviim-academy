@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { chromium } from 'playwright';
 import { loadSmokeEnv, loginOperations } from './lib/live-smoke-auth.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -27,11 +28,15 @@ const baseUrl = String(
 const startedAt = new Date().toISOString();
 const stamp = startedAt.replace(/[:.]/g, '-');
 const testEmail = `test-onetime-crm-e2e-${stamp}@example.invalid`.toLowerCase();
+const editedEmail = `test-onetime-crm-e2e-edited-${stamp}@example.invalid`.toLowerCase();
 const testParentName = `TEST One Time CRM E2E ${stamp}`;
+const editedParentName = `TEST One Time CRM E2E Updated ${stamp}`;
 const testStudentName = `TEST Student ${stamp}`;
 let authCookie = '';
 let createdLeadId = null;
+let followUpTaskId = null;
 let archivedLead = false;
+let deletedFollowUpTask = false;
 
 const report = {
   started_at: startedAt,
@@ -108,6 +113,8 @@ function writeReports() {
     `Result: ${report.status}`,
     `Test email: ${report.test_email}`,
     `CRM lead id: ${createdLeadId || '(not created)'}`,
+    `Follow-up task id: ${followUpTaskId || '(not created)'}`,
+    `Deleted follow-up task: ${deletedFollowUpTask ? 'yes' : 'no'}`,
     `Archived lead: ${archivedLead ? 'yes' : 'no'}`,
     '',
     '## Checks',
@@ -117,6 +124,16 @@ function writeReports() {
     ...report.guardrails.map((item) => `- ${item}`),
   ].join('\n')}\n`);
   return { jsonPath, mdPath };
+}
+
+async function deleteFollowUpTaskIfNeeded() {
+  if (!followUpTaskId || deletedFollowUpTask || !authCookie) return;
+  const { response, data, text } = await fetchJson(`/api/bna/tasks/${encodeURIComponent(followUpTaskId)}`, {
+    method: 'DELETE',
+    headers: cookieHeader(),
+  });
+  assert(response.status === 200 && data.success === true, `cleanup task delete returned ${response.status}: ${text.slice(0, 500)}`);
+  deletedFollowUpTask = true;
 }
 
 async function archiveLeadIfNeeded() {
@@ -140,6 +157,59 @@ async function archiveLeadIfNeeded() {
   });
   assert(response.status === 200 && data.success === true, `cleanup archive returned ${response.status}: ${text.slice(0, 500)}`);
   archivedLead = true;
+}
+
+async function runBrowserMailboxRoundTrip(crmCardId) {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage({
+    viewport: { width: 1280, height: 900 },
+    extraHTTPHeaders: cookieHeader(),
+  });
+  try {
+    const route = '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts';
+    await page.goto(`${baseUrl}${route}`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('[data-one-time-crm-workbench]', { timeout: 20000 });
+    await page.waitForFunction((name) => document.body.innerText.includes(name), editedParentName, { timeout: 20000 });
+    await page.locator('.crm-filter-search input').fill(editedParentName);
+    await page.evaluate((name) => {
+      if (typeof window.setFirstPartyCrmFilter === 'function') {
+        window.setFirstPartyCrmFilter('search', name);
+        return;
+      }
+      const input = document.querySelector('.crm-filter-search input');
+      input?.dispatchEvent(new Event('change', { bubbles: true }));
+    }, editedParentName);
+    await page.waitForFunction((name) => {
+      const input = document.querySelector('.crm-filter-search input');
+      return input && input.value === name && document.body.innerText.includes(name);
+    }, editedParentName, { timeout: 15000 });
+    await page.locator('article.contact-card [data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND"]').first().click();
+    await page.waitForFunction((name) => {
+      const text = document.body.innerText || '';
+      return text.includes(name) && /Contact Timeline/.test(text);
+    }, editedParentName, { timeout: 15000 });
+    await page.locator('[data-action-id="ACTION-CRM-CONTACT-MAILBOX-OPEN"]').first().click();
+    await page.waitForFunction(() => {
+      return window.location.search.includes('view=communications')
+        && window.location.search.includes('section=email')
+        && window.location.search.includes('inbox=rabbi');
+    }, null, { timeout: 15000 });
+    const mailboxUrl = page.url();
+    const mailboxText = await page.evaluate(() => (document.body.innerText || '').replace(/\s+/g, ' ').slice(0, 1200));
+    await page.goto(`${baseUrl}${route}`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('[data-one-time-crm-workbench]', { timeout: 15000 });
+    await page.waitForFunction((id) => window.sessionStorage.getItem('oneTimeSelectedCrmContactId') === id, crmCardId, { timeout: 10000 });
+    const screenshot = path.join(reportDir, `${stamp}-one-time-crm-live-mailbox-roundtrip.png`);
+    await page.screenshot({ path: screenshot, fullPage: true, animations: 'disabled' });
+    return {
+      mailbox_url_contains_targeted_inbox: /view=communications/.test(mailboxUrl) && /section=email/.test(mailboxUrl) && /inbox=rabbi/.test(mailboxUrl),
+      mailbox_text_mentions_rabbi_inbox: /Rabbi \/ One Time Inbox|One Time Inbox/i.test(mailboxText),
+      selected_contact_restored: true,
+      screenshot: relative(screenshot),
+    };
+  } finally {
+    await browser.close();
+  }
 }
 
 async function main() {
@@ -247,6 +317,90 @@ async function main() {
     };
   });
 
+  const edited = await step('edit TEST CRM contact and create fake follow-up task through API', async () => {
+    const { response, data, text } = await fetchJson(`/api/bna/crm/contacts/${encodeURIComponent(crmCard.id)}`, {
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/json',
+        ...cookieHeader(),
+      },
+      body: JSON.stringify({
+        workspace_key: 'rabbi_sheller_provider',
+        project_key: 'one_time_mishnah_class',
+        display_name: editedParentName,
+        email: editedEmail,
+        phone: '+1 555 010 2200',
+        lifecycle_stage: 'follow_up',
+        next_follow_up_at: '2026-07-20',
+        assigned_owner: 'Rabbi Scheller team',
+        tags: ['free-class-interest', 'operator-test', 'live-crm-smoke'],
+        note_body: `Live fake CRM persistence note ${stamp}. No send.`,
+        create_follow_up_task: true,
+        no_send: true,
+      }),
+    });
+    assert(response.status === 200, `CRM PATCH returned ${response.status}: ${text.slice(0, 500)}`);
+    assert(data.success === true, 'CRM PATCH did not return success');
+    assert(data.external_write_performed === false, 'CRM PATCH external_write_performed was not false');
+    assert(data.no_send === true, 'CRM PATCH no_send flag missing');
+    assert(data.no_checkout === true, 'CRM PATCH no_checkout guard missing');
+    assert(data.no_access_granted === true, 'CRM PATCH no_access_granted guard missing');
+    assert(data.follow_up_task?.id || data.follow_up_task?.task_id, 'CRM PATCH did not create a follow-up task');
+    followUpTaskId = Number(data.follow_up_task.id || data.follow_up_task.task_id);
+    return {
+      contact_id: crmCard.id,
+      follow_up_task_id: followUpTaskId,
+      timeline_items: data.timeline?.length || 0,
+    };
+  });
+
+  await step('reload confirms persisted fake CRM edit and follow-up task', async () => {
+    const route = `/api/bna/crm/contacts?workspace=rabbi_sheller_provider&project_key=one_time_mishnah_class&search=${encodeURIComponent(editedEmail)}`;
+    const { response, data, text } = await fetchJson(route, { headers: cookieHeader() });
+    assert(response.status === 200, `CRM reload returned ${response.status}: ${text.slice(0, 500)}`);
+    const card = (data.cards || []).find((row) => String(row.id || '') === crmCard.id);
+    assert(card, 'edited CRM contact was not visible after reload');
+    assert(card.display_name === editedParentName, `display_name did not persist: ${card.display_name}`);
+    assert(String(card.email || '').toLowerCase() === editedEmail, `email did not persist: ${card.email}`);
+    assert(card.follow_up_task?.task_id || card.follow_up_task?.id, 'follow-up task not visible after reload');
+    assert(Number(card.follow_up_task.task_id || card.follow_up_task.id) === Number(edited.follow_up_task_id), 'follow-up task id mismatch after reload');
+    return {
+      contact_id: card.id,
+      status: card.status,
+      follow_up_task_id: Number(card.follow_up_task.task_id || card.follow_up_task.id),
+    };
+  });
+
+  await step('cross-workspace CRM denial stays enforced for fake contact', async () => {
+    const { response, data } = await fetchJson(`/api/bna/crm/contacts?workspace=bna&project=bna&search=${encodeURIComponent(editedEmail)}`, {
+      headers: cookieHeader(),
+    });
+    assert(response.status === 403, `Expected cross-workspace denial 403, got ${response.status}`);
+    assert(data.external_write_performed === false, 'cross-workspace denial external_write_performed was not false');
+    assert(/cannot access BNA CRM/i.test(data.error || ''), `unexpected denial error: ${data.error || ''}`);
+    return { status: response.status, external_write_performed: data.external_write_performed };
+  });
+
+  await step('timeline shows fake note and follow-up task before cleanup', async () => {
+    const route = `/api/bna/crm/contacts/${encodeURIComponent(crmCard.id)}/timeline?workspace=rabbi_sheller_provider&project_key=one_time_mishnah_class`;
+    const { response, data, text } = await fetchJson(route, { headers: cookieHeader() });
+    assert(response.status === 200, `CRM timeline after edit returned ${response.status}: ${text.slice(0, 500)}`);
+    const timelineText = JSON.stringify(data.timeline || []);
+    assert(timelineText.includes(`Live fake CRM persistence note ${stamp}`), 'fake persistence note missing from timeline');
+    assert(/follow_up_task/.test(timelineText), 'follow-up task missing from timeline');
+    assert(data.no_send === true, 'timeline after edit no_send flag missing');
+    assert(data.external_write_performed === false, 'timeline after edit external_write_performed was not false');
+    return { timeline_items: data.timeline?.length || 0 };
+  });
+
+  await step('browser opens targeted mailbox and returns to same fake contact', async () => {
+    const result = await runBrowserMailboxRoundTrip(crmCard.id);
+    assert(result.mailbox_url_contains_targeted_inbox, 'targeted mailbox URL was not reached');
+    assert(result.selected_contact_restored === true, 'selected contact was not restored after mailbox return');
+    return result;
+  });
+
+  await step('delete fake follow-up task after readback', deleteFollowUpTaskIfNeeded);
   await step('archive TEST CRM lead after readback', archiveLeadIfNeeded);
 
   report.status = 'passed';
@@ -256,6 +410,11 @@ async function main() {
 
 main().catch(async (error) => {
   report.status = 'failed';
+  try {
+    await deleteFollowUpTaskIfNeeded();
+  } catch (cleanupError) {
+    report.cleanup_task_error = cleanupError instanceof Error ? cleanupError.message : String(cleanupError);
+  }
   try {
     await archiveLeadIfNeeded();
   } catch (cleanupError) {
