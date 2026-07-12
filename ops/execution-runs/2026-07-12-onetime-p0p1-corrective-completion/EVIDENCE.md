@@ -147,7 +147,8 @@ REQ-20260712-013 evidence:
   `npm run bna:run:validate` after statuses were corrected to open
   non-terminal deployment-required work.
 - Production deploy/live proof is recorded below. Operator personal signup and
-  hosted reminder-provider readiness remain open under `REQ-20260712-022`.
+  Family/School continuation proof are complete; hosted reminder-provider
+  readiness remains open under `REQ-20260712-022`.
 
 REQ-20260712-006 local onboarding-linkage evidence:
 
@@ -168,10 +169,25 @@ REQ-20260712-006 local onboarding-linkage evidence:
 - Verification passed:
   `node --test tests/one-time-direct-signup-page.test.js tests/one-time-onboarding-intake.test.js`
   (6/6), `node --check server.js`, and `npm run test:onetime:focused` (62/62).
-- Remaining blocker: real local/test DB persistence proof still needs
-  `BNA_ONETIME_CRM_TEST_DATABASE_URL`. Deployment/live proof is recorded below.
-  No external send, payment, access grant, historical import, DNS/account
-  mutation, credential mutation, or production-data import was performed.
+- Operator then approved using the operator personal contact for production
+  tests. The tracked approval record is redacted:
+  `raw-input/RAW-20260712-004-onetime-personal-test-approval-redacted.md`.
+- Production personal-contact proof passed:
+  `npm run app:smoke:one-time-personal-continuation`.
+- Live proof report:
+  `ops/live-smokes/2026-07-12T12-20-37-269Z-one-time-personal-continuation-live-smoke.md`.
+- The proof covered Family and School direct signup to continuation, exact
+  `product_lead_id` / `crm_lead_id` linkage, UTM/referrer/source preservation,
+  required Family student fields, required School name/contact-role fields,
+  branch classification, Operations CRM readback, and queued outbox rows.
+- Cleanup proof passed: queued email/WhatsApp/Telegram outbox rows were
+  cancelled, product and CRM leads were archived, generated onboarding tasks
+  were deleted, support tickets were closed, and no dispatchable queued rows
+  remained.
+- The smoke report redacts the operator contact. Runtime contact values were
+  not committed. No external email, WhatsApp/WAPI, Telegram, payment, access
+  grant, historical import, DNS/account mutation, credential mutation, or
+  production-data import was performed.
 
 REQ-20260712-010 / REQ-20260712-023 matrix evidence:
 
@@ -198,8 +214,7 @@ REQ-20260712-010 / REQ-20260712-023 matrix evidence:
 - The broader older REQ-20260712-010 screenshot/matrix requirement remains
   in progress, because provider login, Operations, CRM, mailbox, and Robot
   live/deployed screenshots are not all complete in this urgent signup/reminder
-  slice. Local Family/School continuation browser payload proof is present, but
-  real DB/live proof is still blocked.
+  slice. Family/School continuation live database proof is now complete.
 
 REQ-20260712-005 evidence:
 
@@ -224,10 +239,25 @@ REQ-20260712-005 evidence:
   `npm run one-time:smoke:operations-crm-workbench-local` PASS with report
   `ops/evidence/one-time-crm-journey/2026-07-12/report.md` and screenshots at
   1440, 1024, 768, 430, and 390.
-- Required real local/test DB proof is blocked, not claimed:
+- Earlier required local/test DB proof was blocked before operator approval for
+  a production fake-contact proof:
   `scripts/smoke-onetime-crm-journey-local-db.mjs` was added and run; it wrote
   `ops/evidence/one-time-crm-journey-local-db/2026-07-12T06-54-16-286Z-report.md`
   with blocker `BNA_ONETIME_CRM_TEST_DATABASE_URL` missing.
+- Operator then approved a scoped production fake-contact write-smoke. Live
+  proof passed through the actual One Time production database and APIs:
+  `npm run app:smoke:one-time-interest-crm-e2e`.
+- The live proof created one synthetic `TEST` / `example.invalid` contact,
+  searched and selected it in CRM, edited the contact, added an internal note,
+  created a fake follow-up task, reloaded and confirmed persistence, proved the
+  fake One Time contact did not appear in BNA workspace CRM, opened the targeted
+  Rabbi / One Time mailbox, returned to the same selected contact, deleted the
+  fake follow-up task, and archived the fake lead.
+- Live proof report:
+  `ops/live-smokes/2026-07-12T11-55-57-123Z-one-time-interest-crm-e2e-live-smoke.md`.
+- During this live proof, two real CRM edit defects were found and fixed:
+  parent-lead CRM notes now use valid `bna_contact_communications`
+  `contact_type = 'lead'` and `direction = 'internal_note'`.
 
 REQ-20260712-008 evidence:
 
@@ -361,22 +391,28 @@ Release / live proof update:
   `fc147ded1ee0e12325111382fa8e460134a8ce3d`.
 - WAPI readiness setup commit deployed:
   `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`.
+- CRM live-edit fix commit deployed:
+  `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`.
+- Personal-continuation proof/evidence closeout commit deployed:
+  `5bf521c539e608543c6a54028cccdc8903667081`.
 - Railway target:
   `one-time-production / production / one-time-web`.
 - Final Railway deployment:
-  `079c53ca-cb65-4cf9-af06-286a7705e7a1`, status `SUCCESS`.
+  `bc45a0fa-76b1-4170-80d2-cf18dbca70c9`, status `SUCCESS`.
 - Live URL:
   https://join.onetimeonetime.com
 - Live `/api/deploy-info` readback:
-  `commit_sha` = `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`,
-  `deployment_source` = `railway:redeploy`,
-  `target_app` = `one-time`,
-  `target_project` = `one-time-production`,
-  `target_service` = `one-time-web`.
+  `commit_sha` = `5bf521c539e608543c6a54028cccdc8903667081`,
+  `source_branch` = `master`,
+  `deployment_source` = `runtime`,
+  `target_app` = `one-time`; `target_project` and `target_service` were
+  blank in runtime metadata after the manual Railway upload.
 - Exact-SHA live smoke passed:
-  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`.
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 5bf521c539e608543c6a54028cccdc8903667081`.
 - Focused Rabbi/One Time landing live smoke passed:
   `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.
+- Production personal continuation proof passed:
+  `npm run app:smoke:one-time-personal-continuation`.
 - WAPI no-send readiness passed for provider setup:
   `npm run one-time:wapi:readiness` reported `provider_setup.ready=true`,
   `secret_values_printed=false`, and no WhatsApp/Telegram/CRM mutation; it
@@ -390,12 +426,10 @@ Remaining evidence blockers:
 
 - `REQ-20260712-002`: workflow CI file still needs a GitHub credential with
   `workflow` scope.
-- `REQ-20260712-005` / `REQ-20260712-006`: real local/test Postgres journey
-  still needs `BNA_ONETIME_CRM_TEST_DATABASE_URL`.
 - `REQ-20260712-008` / `REQ-20260712-009`: production intake/dropoff
   write-smoke was not run because it would create live raw/parse records
   without a separately scoped production test packet.
 - `REQ-20260712-010`: the complete requested screenshot/matrix set remains
   open beyond the landing/signup local proof.
-- `REQ-20260712-022`: operator personal deployed signup and hosted reminder
+- `REQ-20260712-022`: exact live-send behavior/copy and hosted reminder
   provider readiness remain open.

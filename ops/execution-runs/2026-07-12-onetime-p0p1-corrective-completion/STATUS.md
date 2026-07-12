@@ -10,10 +10,10 @@ Run remains active with release/live proof recorded and a short blocker list.
   `598f66238f68293575d5f9e6195bb6b032ebb156`
 - Merge commit:
   `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
-- Deployed/live-smoked master SHA:
-  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
+- Deployed/live-smoked runtime source SHA:
+  `5bf521c539e608543c6a54028cccdc8903667081`
 - Railway deployment id:
-  `079c53ca-cb65-4cf9-af06-286a7705e7a1`
+  `bc45a0fa-76b1-4170-80d2-cf18dbca70c9`
 - Production URL:
   https://join.onetimeonetime.com
 
@@ -33,19 +33,19 @@ Run remains active with release/live proof recorded and a short blocker list.
   deployed/live-smoked; public Sign Up Now actions use the direct route.
 - `REQ-20260712-014`: city/timezone signup schedule behavior is implemented,
   deployed, and covered by the focused One Time proof.
+- `REQ-20260712-006`: direct signup to Family/School continuation exact
+  linkage is verified with operator-approved production personal-contact
+  proof and cleanup; no external sends were performed.
 - `REQ-20260712-011`: release authorization, merge, deployment, and exact-SHA
   live smoke are complete; the machine status remains `needs_verification`
   until its final-matrix dependency is closed.
 
 ## Implemented But Still Open
 
-- `REQ-20260712-005`: first-party One Time CRM DTO/API/UI, responsive local
-  browser/API smoke, cross-workspace denial, and targeted mailbox flow are
-  implemented locally. Terminal proof is blocked by the missing real local/test
-  Postgres URL.
-- `REQ-20260712-006`: direct signup and Family/School continuation linkage are
-  implemented locally and deployed, but terminal persistence proof still needs
-  the real local/test database journey.
+- `REQ-20260712-005`: first-party One Time CRM DTO/API/UI is verified with the
+  approved production fake-contact journey: signup capture, search/select,
+  edit, note, follow-up task, reload persistence, cross-workspace isolation,
+  targeted mailbox, return-to-contact state, task cleanup, and lead archive.
 - `REQ-20260712-007`: landing hierarchy, Robot asset optimization/launcher,
   config sync, and live smoke are complete. The broader requested screenshot
   matrix still has open non-landing surfaces.
@@ -60,12 +60,11 @@ Run remains active with release/live proof recorded and a short blocker list.
 - `REQ-20260712-020` / `REQ-20260712-021`: release proof is complete, but
   terminal closeout depends on the blocked persistence/operator-test evidence.
 - `REQ-20260712-022`: guarded reminder simulation and readiness checks pass
-  locally, and One Time WAPI provider setup is now configured. The operator has
-  not personally submitted the deployed test signup, and live auto-reply,
+  locally, One Time WAPI provider setup is configured, and the operator
+  personal deployed signup/continuation proof is complete. Live auto-reply,
   Telegram approval, and scheduler/CRON readiness remain gated. The handoff
-  guard now correctly marks deployment complete from live smoke while keeping
-  the ready message suppressed for CI, live-send approvals, Telegram, and
-  scheduler/`CRON_SECRET` readiness.
+  guard keeps the ready message suppressed for CI, live-send approvals,
+  Telegram, and scheduler/`CRON_SECRET` readiness.
 - `REQ-20260712-017`: the protected One Time delivery outbox dispatcher is
   implemented and deployed. A live no-secret request returns HTTP 503 instead
   of sending, so terminal proof still needs hosted cron/provider readiness and
@@ -79,15 +78,12 @@ Run remains active with release/live proof recorded and a short blocker list.
 
 - `REQ-20260712-002`: GitHub token lacks `workflow` scope, so
   `.github/workflows/onetime-corrective.yml` still cannot be pushed.
-- `REQ-20260712-005` / `REQ-20260712-006`: missing
-  `BNA_ONETIME_CRM_TEST_DATABASE_URL` for the required real local/test
-  Postgres persistence journey.
 - `REQ-20260712-008` / `REQ-20260712-009`: production intake/dropoff
   write-smoke requires a separately scoped production test packet because it
   creates live raw/parse records.
-- `REQ-20260712-022`: operator personal deployed signup, live auto-reply/
-  Telegram approval, and scheduler/CRON readiness are still open. One Time WAPI
-  provider setup is configured. No external sends were performed.
+- `REQ-20260712-022`: exact live WAPI/email/Telegram send behavior, message
+  copy, and scheduler/CRON readiness are still open. One Time WAPI provider
+  setup is configured. No external sends were performed.
 - `REQ-20260712-017`: hosted class reminder settings are not enabled/approved
   and `CRON_SECRET` is missing by redacted Railway readiness readback, so the
   delivery/reminder workers must not be activated yet.

@@ -145,9 +145,11 @@ REQ-20260712-006 local gate:
   `original_capture`.
 - `server.js` verifies `bna_product_leads` and `bna_parent_leads` are linked by
   CRM metadata `product_lead_id` before local no-send onboarding writes.
-- `npm run one-time:smoke:crm-journey-local-db` remains BLOCKED by missing
-  `BNA_ONETIME_CRM_TEST_DATABASE_URL`; deployed live proof is recorded in the
-  release section below.
+- `node --check scripts/smoke-one-time-personal-continuation-live.mjs` PASS.
+- `npm run app:smoke:one-time-personal-continuation` PASS using runtime-only
+  operator personal contact input and redacted evidence. Family and School
+  direct signup/continuation linkage, DB readback, Operations CRM readback, and
+  cleanup readback all passed.
 
 Execution-run validator repair:
 
@@ -179,13 +181,13 @@ Post-merge smoke-harness fix gate:
 
 Live production smoke:
 
-- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d`
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 5bf521c539e608543c6a54028cccdc8903667081`
   PASS.
 - `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
   PASS.
+- `npm run app:smoke:one-time-personal-continuation` PASS.
 - Direct `/api/deploy-info` readback returned HTTP 200 with
-  `commit_sha` = `fc147ded1ee0e12325111382fa8e460134a8ce3d` and
-  deployment target `one-time-production / one-time-web`.
+  `commit_sha` = `5bf521c539e608543c6a54028cccdc8903667081`.
 
 No external send, payment/charge/refund, access grant, historical import,
 DNS/account mutation, credential mutation, or external-provider write was
@@ -210,13 +212,15 @@ REQ-20260712-005 local gate:
   layout/API journey and responsive screenshots written under
   `ops/evidence/one-time-crm-journey/2026-07-12/`.
 - `npm run one-time:smoke:crm-journey-local-db` BLOCKED:
-  `BNA_ONETIME_CRM_TEST_DATABASE_URL` is missing, so the required real
-  local/test Postgres persistence journey was not run.
+  `BNA_ONETIME_CRM_TEST_DATABASE_URL` is missing, so the local/test Postgres
+  persistence journey was not run. This was later superseded for terminal
+  CRM proof by the approved production fake-contact smoke with cleanup.
 - `npm run watchdog:actions` PASS: finding_count 0.
 - `npm run watchdog:protocol-drift` PASS.
 - `npm run secrets:audit` PASS.
-- `npm run bna:run:validate` PASS after REQ-005 was marked blocked with the
-  exact local/test DB credential blocker.
+- `npm run app:smoke:one-time-interest-crm-e2e` later PASS after operator
+  approval for production fake-contact proof, with synthetic lead archive and
+  fake task deletion.
 
 REQ-20260712-008 local gate:
 
@@ -287,8 +291,7 @@ REQ-20260712-007 local landing / Robot gate:
 2026-07-12 post-dispatcher deploy and direct-signup smoke refresh:
 
 - `GET https://join.onetimeonetime.com/api/deploy-info` PASS:
-  `commit_sha` = `fc147ded1ee0e12325111382fa8e460134a8ce3d`, target
-  `one-time-production / one-time-web`.
+  `commit_sha` = `5bf521c539e608543c6a54028cccdc8903667081`.
 - `POST https://join.onetimeonetime.com/api/cron/one-time/delivery-outbox`
   without `CRON_SECRET` returned HTTP 503; no delivery was attempted.
 - `npm run app:smoke:one-time-interest-dry-run` PASS after updating the smoke
