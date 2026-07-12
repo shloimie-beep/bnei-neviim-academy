@@ -21,3 +21,4 @@
 - `ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped CRM cards, external-write flags false, and selected timeline read-only.
 - `public/operations.html` / `public/js/operations-shell.js` - CRM contact selection and filters now write URL state with `crm_contact`, `crm_search`, `crm_type`, `crm_status`, `crm_source`, `crm_tag`, `crm_sort`, and `crm_scroll`.
 - `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local Playwright CRM workbench proof after URL-state wiring.
+- `ops/live-smokes/2026-07-12T21-39-03-428Z-one-time-operations-crm-workbench-live-smoke.md` - deployed URL-state slice live smoke at `f818822bb3969dca5d27f7c5a70d4dbf0baa8744`, with 12 scoped cards and read-only selected timeline.

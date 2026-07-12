@@ -45,6 +45,7 @@ Current status: `active`
 - One Time Operations CRM workbench live smoke passed with 12 scoped cards and selected timeline read-only. The full `REQ-20260712-302` remains in progress because dedicated workspace/actions and deeper parity are still open.
 - Follow-up URL-state slice is locally verified and pending deploy: selected CRM contact and CRM filters/search/sort/list-scroll now sync into `crm_contact`, `crm_search`, `crm_type`, `crm_status`, `crm_source`, `crm_tag`, `crm_sort`, and `crm_scroll` URL params.
 - Verification for URL-state slice passed: generated-shell check, focused CRM/isolation tests `32/32`, local Playwright CRM workbench smoke across split shell and monolith, action watchdog, protocol drift watchdog, secret audit, execution-run validation, and whitespace diff check.
+- URL-state slice is deployed at `f818822bb3969dca5d27f7c5a70d4dbf0baa8744`; BNA and One Time deploy-info match, post-deploy Railway doctors passed, One Time separate-instance smoke passed, and One Time Operations CRM workbench live smoke passed with 12 scoped cards and selected timeline read-only.
 
 ## Identity Isolation Batch
 

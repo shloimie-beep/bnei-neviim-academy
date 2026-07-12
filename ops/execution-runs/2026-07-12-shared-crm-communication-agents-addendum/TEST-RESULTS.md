@@ -54,4 +54,12 @@
 - PASS `npm run secrets:audit` after CRM URL-state slice.
 - PASS `npm run bna:run:validate` after CRM URL-state slice.
 - PASS `git diff --check` with line-ending warnings only after CRM URL-state slice.
+- PASS `git push origin master` for CRM URL-state commit `f818822bb3969dca5d27f7c5a70d4dbf0baa8744`
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `c4ff8057-66be-497d-ac52-c8865e64769f`
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `ff0a3380-f42f-4481-a028-9f33d33e8184`
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `f818822bb3969dca5d27f7c5a70d4dbf0baa8744`
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f818822bb3969dca5d27f7c5a70d4dbf0baa8744`
+- PASS `npm run app:smoke:onetime-operations-crm-workbench` after CRM URL-state deploy
+  - Scoped CRM contacts API returned 12 cards with no external-write flags.
+  - Selected CRM timeline API was read-only.
 - BLOCKED `npm run production:readiness:gate -- --json` only on full-launch external Stripe/campaign setup fields.
