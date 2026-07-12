@@ -173,11 +173,11 @@ async function upsertSenderContact(db, {
   const existing = (await db.query(
     `SELECT c.*
      FROM bna_contacts c
-     LEFT JOIN bna_contact_identities i ON i.contact_id = c.id
+     LEFT JOIN bna_contact_identities i ON i.contact_id = c.id AND i.workspace_id = c.workspace_id
      WHERE c.workspace_id = $1
        AND (
          lower(COALESCE(c.primary_email, '')) = $2
-         OR (i.identity_type = 'email' AND i.normalized_value = $2)
+         OR (i.workspace_id = $1 AND i.identity_type = 'email' AND i.normalized_value = $2)
        )
      ORDER BY c.updated_at DESC NULLS LAST, c.created_at ASC
      LIMIT 1`,
@@ -219,13 +219,13 @@ async function upsertSenderContact(db, {
   if (contact) {
     await db.query(
       `INSERT INTO bna_contact_identities (
-         contact_id, identity_type, identity_value, normalized_value, verified, metadata
-       ) VALUES ($1, 'email', $2, $3, false, $4::jsonb)
-       ON CONFLICT (identity_type, normalized_value) DO UPDATE SET
+         workspace_id, contact_id, identity_type, identity_value, normalized_value, verified, metadata
+       ) VALUES ($1, $2, 'email', $3, $4, false, $5::jsonb)
+       ON CONFLICT (workspace_id, identity_type, normalized_value) WHERE workspace_id IS NOT NULL DO UPDATE SET
          identity_value = EXCLUDED.identity_value,
          verified = bna_contact_identities.verified OR EXCLUDED.verified,
          metadata = COALESCE(bna_contact_identities.metadata, '{}'::jsonb) || EXCLUDED.metadata`,
-      [contact.id, email, email, JSON.stringify(metadata)]
+      [workspaceId, contact.id, email, email, JSON.stringify(metadata)]
     ).catch(() => null);
   }
   return contact;

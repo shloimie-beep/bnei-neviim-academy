@@ -76,6 +76,13 @@ test('credit signups create checkout attempts and abandoned checkout sweep is ap
 test('signup flow dedupes into first-party contacts, user accounts, and login tokens', () => {
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_contacts/);
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_contact_identities/);
+  assert.match(server, /ALTER TABLE bna_contact_identities\s+ADD COLUMN IF NOT EXISTS workspace_id/);
+  assert.match(server, /DROP CONSTRAINT IF EXISTS bna_contact_identities_identity_type_normalized_value_key/);
+  assert.match(server, /idx_bna_contact_identities_workspace_unique/);
+  assert.match(server, /ON bna_contact_identities\(workspace_id, identity_type, normalized_value\)/);
+  assert.match(server, /ON CONFLICT \(workspace_id, identity_type, normalized_value\)/);
+  assert.doesNotMatch(server, /UNIQUE \(identity_type, normalized_value\)/);
+  assert.doesNotMatch(server, /ON CONFLICT \(identity_type, normalized_value\)/);
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_user_accounts/);
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_login_tokens/);
   assert.match(server, /async function upsertContactFromSignup/);

@@ -1,6 +1,6 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-12T19:06:04.536Z
+Generated: 2026-07-12T19:59:27.703Z
 
 ## Lane Safety
 
@@ -33,7 +33,7 @@ _None._
 | - Claimable observable jobs: 0 |
 | - Active Codex task fallback: 30 |
 | - Ready to claim: observable jobs 0, fallback task candidates 0 |
-| - Queue health: fresh 0, stale 545, blocked 136, unknown 192, do-not-redo 899 |
+| - Queue health: fresh 1, stale 545, blocked 136, unknown 192, do-not-redo 901 |
 | - ChatGPT dropoff ingest: enabled |
 | - ChatGPT comment collect: enabled |
 
@@ -41,7 +41,7 @@ _None._
 
 | Job |
 | --- |
-| - job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=246.45 path=.runtime/agent-fleet/task-1736.lock.json) |
+| - job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=247.34 path=.runtime/agent-fleet/task-1736.lock.json) |
 | - job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json) |
 | - job #443 / task #2258 [failed] Turn Rabbi meeting drop into One Time build brief (local_lock=missing path=.runtime/agent-fleet/task-2258.lock.json) |
 | - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json) |

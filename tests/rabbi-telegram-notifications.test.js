@@ -244,6 +244,40 @@ test('server wires Rabbi communication alerts separately from super-admin ticket
   assert.match(server, /reviewPath: '\/operations\?view=communications&workspace=rabbi_sheller_provider&project=one_time_mishnah_class'/);
 });
 
+test('Rabbi Telegram live smoke is approval-gated and redacted', () => {
+  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  const smoke = fs.readFileSync('scripts/smoke-rabbi-telegram-live.mjs', 'utf8');
+  const snapshot = fs.readFileSync('scripts/production-readiness-snapshot.mjs', 'utf8');
+
+  assert.match(pkg.scripts['telegram:rabbi:live-smoke'], /smoke-rabbi-telegram-live\.mjs/);
+  assert.match(smoke, /--approved-live-send/);
+  assert.match(smoke, /APPROVE_RABBI_TELEGRAM_LIVE_SMOKE/);
+  assert.match(smoke, /notifyRabbiCommunication/);
+  assert.match(smoke, /role_alias: 'one_time_rabbi_operator'/);
+  assert.match(smoke, /secret_values_printed: false/);
+  assert.match(smoke, /No token, chat ID, phone, email, class link, or private message body is printed/);
+  assert.match(snapshot, /rabbi-telegram-live-smoke\\.json/);
+  assert.match(snapshot, /status = 'live_smoke_verified'/);
+  assert.match(snapshot, /liveSmoke\?\.secret_values_printed === false/);
+});
+
+test('Rabbi Agent Review direct proof is explicit, terminal, and redacted', () => {
+  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  const smoke = fs.readFileSync('scripts/smoke-rabbi-agent-review-direct-proof.mjs', 'utf8');
+
+  assert.match(pkg.scripts['app:smoke:rabbi-agent-review-direct-proof'], /smoke-rabbi-agent-review-direct-proof\.mjs/);
+  assert.match(smoke, /codex_direct_verification_substituting_for_operator_agent_mode/);
+  assert.match(smoke, /No Agent Review database result row is fabricated/);
+  assert.match(smoke, /direct_codex_verification: true/);
+  assert.match(smoke, /terminal_saved_proof: true/);
+  assert.match(smoke, /agent_mode_saved_result: false/);
+  assert.match(smoke, /secret_values_printed: false/);
+  assert.match(smoke, /rabbi-telegram-live-smoke/);
+  assert.match(smoke, /rabbi-one-time-tool-scope-map\.json/);
+  assert.match(smoke, /tests\/bna-helper-tools\.test\.js/);
+  assert.match(smoke, /tests\/agent-review-hub\.test\.js/);
+});
+
 test('Rabbi readiness stays blocked when chat id and ops credentials are missing', () => {
   const readiness = buildRabbiTelegramReadiness({
     secretsDir: null,

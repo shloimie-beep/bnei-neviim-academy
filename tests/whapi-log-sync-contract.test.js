@@ -21,6 +21,18 @@ test('Whapi log sync persists runs and imports history into communications', () 
   assert.match(server, /occurredAt/);
 });
 
+test('Whapi history contact identity matching is workspace scoped', () => {
+  const block = server.slice(
+    server.indexOf('async function findOrCreateWhatsappContact'),
+    server.indexOf('async function importWhatsappMessages')
+  );
+  assert.match(block, /i\.workspace_id = \$2/);
+  assert.match(block, /c\.workspace_id = \$2/);
+  assert.match(block, /upsertContactIdentity\(\{ workspaceId, contactId: contact\.id, identityType: 'phone'/);
+  assert.match(block, /upsertContactIdentity\(\{ workspaceId, contactId: contact\.id, identityType: 'whatsapp'/);
+}
+);
+
 test('Whapi log sync is exposed in Operations and Telegram without sending messages', () => {
   assert.match(operations, /Whapi Log Sync/);
   assert.match(operations, /syncWapiLog/);

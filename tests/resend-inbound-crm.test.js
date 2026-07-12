@@ -19,6 +19,7 @@ class FakeDb {
     this.queries = [];
     this.contactInsertParams = null;
     this.contactUpdateParams = null;
+    this.identityInsertParams = null;
     this.communicationInsertParams = null;
   }
 
@@ -62,6 +63,7 @@ class FakeDb {
     }
 
     if (compactSql.startsWith('INSERT INTO bna_contact_identities')) {
+      this.identityInsertParams = params;
       return { rows: [] };
     }
 
@@ -199,6 +201,19 @@ test('Resend inbound event fetches full email and stores scoped CRM communicatio
   assert.equal(db.contactInsertParams[0], 77);
   assert.equal(db.contactInsertParams[1], 'Parent Person');
   assert.equal(db.contactInsertParams[2], 'parent@example.com');
+  assert.equal(db.identityInsertParams[0], 77);
+  assert.equal(db.identityInsertParams[1], 101);
+  assert.equal(db.identityInsertParams[2], 'parent@example.com');
+  assert.equal(db.identityInsertParams[3], 'parent@example.com');
+
+  const contactLookup = db.queries.find((query) => query.sql.startsWith('SELECT c.* FROM bna_contacts'));
+  assert.match(contactLookup.sql, /i\.workspace_id = c\.workspace_id/);
+  assert.match(contactLookup.sql, /i\.workspace_id = \$1/);
+
+  const identityInsert = db.queries.find((query) => query.sql.startsWith('INSERT INTO bna_contact_identities'));
+  assert.match(identityInsert.sql, /workspace_id, contact_id, identity_type/);
+  assert.match(identityInsert.sql, /ON CONFLICT \(workspace_id, identity_type, normalized_value\)/);
+  assert.doesNotMatch(identityInsert.sql, /ON CONFLICT \(identity_type, normalized_value\)/);
 
   const params = db.communicationInsertParams;
   assert.equal(params[0], 77);

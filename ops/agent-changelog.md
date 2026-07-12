@@ -38863,3 +38863,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   read-only readiness checks. Production readiness remains blocked by Stripe
   sandbox fields, campaign proof/approval, Rabbi Telegram live-smoke proof,
   Agent Mode terminal proof, and clean-tree release gate.
+
+## 2026-07-12 - Shared CRM addendum direct proof and identity isolation batch
+
+- Captured `RAW-20260712-014` and opened execution run
+  `2026-07-12-shared-crm-communication-agents-addendum` for the shared
+  CRM/inbound/communication-agents addendum.
+- Added `npm run app:smoke:rabbi-agent-review-direct-proof`, which records
+  explicit Codex direct verification in place of the two operator Agent Mode
+  prompt runs per Shloimie's instruction. It does not fabricate Agent Review DB
+  rows or print Telegram/chat/API secrets.
+- Verified Rabbi Telegram with the existing readiness report plus the approved
+  live smoke; production readiness no longer has the Rabbi Telegram or Agent
+  Mode proof blocker.
+- Patched `bna_contact_identities` to be workspace-scoped: added/backfilled
+  `workspace_id`, dropped the legacy global uniqueness constraint, and added a
+  workspace-scoped unique lookup.
+- Scoped contact identity upserts and matching in signup contact creation,
+  Resend inbound contact capture, WAPI correction matching, and Whapi history
+  contact import.
+- Verification passed: direct proof smoke, syntax checks, and focused
+  identity/Resend/Whapi tests. Full production readiness remains blocked by
+  external Stripe/campaign setup fields and final deploy/live readback.

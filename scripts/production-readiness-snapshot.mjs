@@ -336,6 +336,8 @@ function summarizeProofState() {
           workflow_state: item.workflow_state || item.status || '',
           latest_result_status: item.latest_result_status || null,
           terminal_saved_proof: Boolean(item.terminal_saved_proof),
+          direct_codex_verification: Boolean(item.direct_codex_verification),
+          agent_mode_saved_result: item.agent_mode_saved_result === false ? false : Boolean(item.agent_mode_saved_result),
           public_url: item.public_url || '',
           dropoff_url: item.dropoff_url || '',
         }))
@@ -466,6 +468,18 @@ function maskSensitiveId(value = '') {
 function summarizeRabbiTelegramRuntime() {
   const readiness = readJsonIfExists(rabbiTelegramReadinessPath);
   const runtimeReport = readJsonIfExists(rabbiChatIdRuntimeReportPath);
+  const liveSmokePath = latestMatchingFile('ops/live-smokes', /rabbi-telegram-live-smoke\.json$/);
+  const liveSmokeRelativePath = liveSmokePath ? `ops/live-smokes/${liveSmokePath}` : '';
+  const liveSmoke = liveSmokeRelativePath ? readJsonIfExists(liveSmokeRelativePath) : null;
+  const liveSmokeVerified = Boolean(
+    liveSmoke?.approved_by_operator === true &&
+    liveSmoke?.workspace_key === 'rabbi_sheller_provider' &&
+    liveSmoke?.project_key === 'one_time_mishnah_class' &&
+    liveSmoke?.role_alias === 'one_time_rabbi_operator' &&
+    liveSmoke?.sent === true &&
+    liveSmoke?.telegram_send_performed === true &&
+    liveSmoke?.secret_values_printed === false
+  );
   const config = readiness?.rabbi_telegram?.config || readiness?.notification_config?.rabbi_elie_scheller || {};
   const tokenConfigured = config.token_configured === true;
   const chatIdConfigured = config.chat_id_configured === true;
@@ -506,6 +520,10 @@ function summarizeRabbiTelegramRuntime() {
     status = 'blocked_missing_chat_id';
     nextAction = 'Ask the intended Rabbi account/group to message `t.me/onetimeaios_bot`, rerun `npm run telegram:rabbi:chat-id`, then configure the verified chat ID through secret-safe runtime config.';
   }
+  if (liveSmokeVerified) {
+    status = 'live_smoke_verified';
+    nextAction = 'Rabbi Telegram live smoke is verified. Continue the remaining release gates.';
+  }
 
   return {
     readiness_path: rabbiTelegramReadinessPath,
@@ -517,7 +535,7 @@ function summarizeRabbiTelegramRuntime() {
     status,
     local_ready: localReady,
     configuration_ready: localReady,
-    production_verified: status === 'live_smoke_verified',
+    production_verified: liveSmokeVerified,
     readiness_status: readiness?.rabbi_telegram?.status || 'unknown',
     readiness_blockers: Array.isArray(readiness?.rabbi_telegram?.blockers) ? readiness.rabbi_telegram.blockers : [],
     token_configured: tokenConfigured,
@@ -529,7 +547,9 @@ function summarizeRabbiTelegramRuntime() {
     unique_chat_count: uniqueChatCount,
     start_command_count: startCommandCount,
     masked_candidates: candidates,
-    live_delivery_smoke: 'not_exercised_by_readiness_report',
+    live_delivery_smoke: liveSmokeVerified ? liveSmokeRelativePath : 'not_exercised_by_readiness_report',
+    live_delivery_smoke_checked_at: liveSmoke?.checked_at || '',
+    live_delivery_smoke_status: liveSmoke?.sent === true ? 'sent' : (liveSmoke ? 'not_sent' : 'missing'),
     next_action: nextAction,
   };
 }
@@ -866,9 +886,12 @@ function renderMarkdown(report) {
     `- Latest proof file: ${report.rabbi_agent_review.path}`,
     `- Status: ${report.rabbi_agent_review.status}`,
     `- Remaining blocker count: ${report.rabbi_agent_review.remaining_blocker_count ?? 'unknown'}`,
-    ...(report.rabbi_agent_review.prompt_states || []).map((item) =>
-      `- ${item.prompt_key}: ${item.terminal_saved_proof ? 'terminal proof saved' : 'terminal proof missing'} (${item.public_url || 'no public URL'}${item.dropoff_url ? `; dropoff ${item.dropoff_url}` : ''})`
-    ),
+    ...(report.rabbi_agent_review.prompt_states || []).map((item) => {
+      const source = item.direct_codex_verification
+        ? 'via Codex direct verification'
+        : (item.agent_mode_saved_result ? 'via Agent Mode saved result' : 'via stored proof artifact');
+      return `- ${item.prompt_key}: ${item.terminal_saved_proof ? `terminal proof saved ${source}` : 'terminal proof missing'} (${item.public_url || 'no public URL'}${item.dropoff_url ? `; dropoff ${item.dropoff_url}` : ''})`;
+    }),
     '',
     '## Next Actions',
     ...report.next_actions.map((item, index) => `${index + 1}. ${item.owner}: ${item.action}`),

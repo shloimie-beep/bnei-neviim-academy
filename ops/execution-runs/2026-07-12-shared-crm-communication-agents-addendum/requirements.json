@@ -1,0 +1,542 @@
+{
+  "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
+  "title": "Shared CRM and communication agents addendum",
+  "updated_at": "2026-07-12T23:31:00+03:00",
+  "requirements": [
+    {
+      "id": "REQ-20260712-301",
+      "title": "Collision check, intake, Rabbi Telegram proof, and direct Agent Mode substitution",
+      "expected_result": "Fetch origin/master, record HEAD/deploy state/dirty files, preserve current work, register run, prove Rabbi Telegram, and replace runnable Agent Mode prompts with Codex-run verification when safe.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-001"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "0-collision-proof",
+      "depends_on": [],
+      "status": "in_progress",
+      "implementation_status": "partial",
+      "can_continue_without_operator": true,
+      "next_action": "Commit/push proof batch after validation, then continue REQ-20260712-305.",
+      "acceptance_criteria": [
+        "Fetch origin/master, record HEAD/deploy state/dirty files, preserve current work, register run, prove Rabbi Telegram, and replace runnable Agent Mode prompts with Codex-run verification when safe."
+      ],
+      "evidence": [
+        "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md",
+        "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md",
+        "tasks-pending/2026-07-12-shared-crm-communication-agents-addendum.md"
+      ],
+      "verification": [
+        "npm run app:smoke:rabbi-agent-review-direct-proof",
+        "npm run production:readiness:gate -- --json --allow-dirty"
+      ],
+      "implementation_files": [
+        "scripts/smoke-rabbi-agent-review-direct-proof.mjs",
+        "scripts/smoke-rabbi-telegram-live.mjs",
+        "scripts/production-readiness-snapshot.mjs",
+        "tests/rabbi-telegram-notifications.test.js",
+        "package.json"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:18:00+03:00",
+      "blocker": "Commit/push/deploy/readback for this batch still pending."
+    },
+    {
+      "id": "REQ-20260712-302",
+      "title": "One shared CRM product for BNA, One Time, and future providers",
+      "expected_result": "BNA and One Time use shared CRM shell/index/workspace/inbox/actions/components with only theme, logo, title, allowed fields/actions, channels, agents, and records varying by workspace.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-002"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "multi_workspace",
+      "project_key": "shared_crm",
+      "owner": "Codex",
+      "category": "crm",
+      "priority": "P0",
+      "batch_id": "2-shared-crm",
+      "depends_on": [
+        "REQ-20260712-305"
+      ],
+      "status": "not_started",
+      "implementation_status": "partial",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-302 after dependent earlier batches are validated.",
+      "acceptance_criteria": [
+        "BNA and One Time use shared CRM shell/index/workspace/inbox/actions/components with only theme, logo, title, allowed fields/actions, channels, agents, and records varying by workspace."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "public/js/operations-shell.js",
+        "public/js/operations-deferred-renderers.js",
+        "src/lib/bna/crm-contact-model.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:18:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260712-303",
+      "title": "Dedicated contact workspace and persisted CRM actions",
+      "expected_result": "Contact index opens a full workspace with URL/back-state persistence, mobile one-pane behavior, and persisted add/edit/tag/owner/lifecycle/follow-up/task/thread/family/archive actions.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-003"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "multi_workspace",
+      "project_key": "shared_crm",
+      "owner": "Codex",
+      "category": "crm",
+      "priority": "P0",
+      "batch_id": "2-shared-crm",
+      "depends_on": [
+        "REQ-20260712-305"
+      ],
+      "status": "not_started",
+      "implementation_status": "partial",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-303 after dependent earlier batches are validated.",
+      "acceptance_criteria": [
+        "Contact index opens a full workspace with URL/back-state persistence, mobile one-pane behavior, and persisted add/edit/tag/owner/lifecycle/follow-up/task/thread/family/archive actions."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "public/js/operations-shell.js",
+        "public/js/operations-deferred-renderers.js",
+        "server.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:18:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260712-304",
+      "title": "Remove dead-end/internal CRM and agent UI copy",
+      "expected_result": "Normal BNA/Rabbi CRM users do not see internal diagnostics or dead-end controls; empty states use the exact customer-facing copy and relevant actions from the addendum.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-004"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "multi_workspace",
+      "project_key": "shared_crm",
+      "owner": "Codex",
+      "category": "crm",
+      "priority": "P1",
+      "batch_id": "2-shared-crm",
+      "depends_on": [
+        "REQ-20260712-305"
+      ],
+      "status": "not_started",
+      "implementation_status": "partial",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-304 after dependent earlier batches are validated.",
+      "acceptance_criteria": [
+        "Normal BNA/Rabbi CRM users do not see internal diagnostics or dead-end controls; empty states use the exact customer-facing copy and relevant actions from the addendum."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "public/js/operations-shell.js",
+        "public/js/operations-deferred-renderers.js",
+        "public/css/operations-shell.css"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:18:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260712-305",
+      "title": "Workspace-scoped contact identities and isolation proof",
+      "expected_result": "Contact identity lookup/upsert is scoped by workspace_id, global identity uniqueness is removed, same email/phone can exist in BNA and One Time, and unauthorized contact/thread URLs cannot reveal other-workspace records.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-005"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "multi_workspace",
+      "project_key": "shared_crm",
+      "owner": "Codex",
+      "category": "identity",
+      "priority": "P0",
+      "batch_id": "1-identity-isolation",
+      "depends_on": [],
+      "status": "needs_verification",
+      "implementation_status": "Local schema and lookup patches applied for workspace-scoped contact identities; focused tests pass.",
+      "can_continue_without_operator": true,
+      "next_action": "Run broader focused suites, secrets audit, commit/push, deploy exact tested SHA, then live-readback schema/contact isolation before marking done.",
+      "acceptance_criteria": [
+        "Contact identity lookup/upsert is scoped by workspace_id, global identity uniqueness is removed, same email/phone can exist in BNA and One Time, and unauthorized contact/thread URLs cannot reveal other-workspace records."
+      ],
+      "evidence": [
+        "server.js",
+        "src/lib/integrations/resend-inbound-crm.js",
+        "tests/resend-inbound-crm.test.js",
+        "tests/assistant-portal-communications-contract.test.js",
+        "tests/whapi-log-sync-contract.test.js"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check src/lib/integrations/resend-inbound-crm.js",
+        "PASS node --test tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/integrations/resend-inbound-crm.js",
+        "tests/resend-inbound-crm.test.js",
+        "tests/assistant-portal-communications-contract.test.js",
+        "tests/whapi-log-sync-contract.test.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:31:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260712-306",
+      "title": "Canonical CRM contact aggregate service",
+      "expected_result": "One server contact service returns list, aggregate, timeline, conversations, and tasks DTOs by stable contact_key without browser-side union of independent datasets.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-006"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "multi_workspace",
+      "project_key": "shared_crm",
+      "owner": "Codex",
+      "category": "crm",
+      "priority": "P0",
+      "batch_id": "1-identity-isolation",
+      "depends_on": [
+        "REQ-20260712-305"
+      ],
+      "status": "not_started",
+      "implementation_status": "partial",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-306 after dependent earlier batches are validated.",
+      "acceptance_criteria": [
+        "One server contact service returns list, aggregate, timeline, conversations, and tasks DTOs by stable contact_key without browser-side union of independent datasets."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "src/lib/bna/crm-contact-model.js",
+        "server.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:18:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260712-307",
+      "title": "One inbound communication pipeline for email, WAPI, history import, website, and Telegram",
+      "expected_result": "Every adapter authenticates/normalizes only, then calls one service that resolves binding/workspace/contact/conversation/message/timeline/unread/agent/outbox with redacted receipts.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-007"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "multi_workspace",
+      "project_key": "communication_agents",
+      "owner": "Codex",
+      "category": "inbound_pipeline",
+      "priority": "P0",
+      "batch_id": "3-inbound-pipeline",
+      "depends_on": [
+        "REQ-20260712-305"
+      ],
+      "status": "not_started",
+      "implementation_status": "partial",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-307 after dependent earlier batches are validated.",
+      "acceptance_criteria": [
+        "Every adapter authenticates/normalizes only, then calls one service that resolves binding/workspace/contact/conversation/message/timeline/unread/agent/outbox with redacted receipts."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "src/lib/integrations/resend-inbound-crm.js",
+        "src/lib/bna/provider-lead-bot.js",
+        "server.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:18:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260712-308",
+      "title": "One Time WhatsApp contact creation without ordinary automatic tasks",
+      "expected_result": "Valid inbound WhatsApp creates/reuses contact, identities, conversation, message, timeline, unread state, and zero ordinary tasks; support/opt-out/explicit-task rules are deduped and separate.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-008"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "inbound_pipeline",
+      "priority": "P0",
+      "batch_id": "3-inbound-pipeline",
+      "depends_on": [
+        "REQ-20260712-305"
+      ],
+      "status": "not_started",
+      "implementation_status": "partial",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-308 after dependent earlier batches are validated.",
+      "acceptance_criteria": [
+        "Valid inbound WhatsApp creates/reuses contact, identities, conversation, message, timeline, unread state, and zero ordinary tasks; support/opt-out/explicit-task rules are deduped and separate."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "src/lib/bna/provider-lead-bot.js",
+        "config/service-provider-bots/one-time.json",
+        "server.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:18:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260712-309",
+      "title": "Communication-agent model separate from build and QA agents",
+      "expected_result": "Communication agents, versions, knowledge sources, channel bindings, and events are modeled separately from Codex/build/QA agents and never store provider/API secrets.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-009"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "multi_workspace",
+      "project_key": "communication_agents",
+      "owner": "Codex",
+      "category": "communication_agents",
+      "priority": "P0",
+      "batch_id": "4-agent-model-runtime",
+      "depends_on": [
+        "REQ-20260712-305"
+      ],
+      "status": "not_started",
+      "implementation_status": "missing",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-309 after dependent earlier batches are validated.",
+      "acceptance_criteria": [
+        "Communication agents, versions, knowledge sources, channel bindings, and events are modeled separately from Codex/build/QA agents and never store provider/API secrets."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/provider-lead-bot.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:18:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260712-310",
+      "title": "One Time parent information agent with shared WhatsApp/email knowledge",
+      "expected_result": "One published agent version and knowledge snapshot power One Time WhatsApp and inbound email with channel-specific formatting and no stale claims.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-010"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "communication_agents",
+      "priority": "P0",
+      "batch_id": "4-agent-model-runtime",
+      "depends_on": [
+        "REQ-20260712-305"
+      ],
+      "status": "not_started",
+      "implementation_status": "missing",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-310 after dependent earlier batches are validated.",
+      "acceptance_criteria": [
+        "One published agent version and knowledge snapshot power One Time WhatsApp and inbound email with channel-specific formatting and no stale claims."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "config/service-provider-bots/one-time.json",
+        "src/lib/bna/provider-lead-bot.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:18:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260712-311",
+      "title": "OpenAI communication-agent response runtime with deterministic policy gates",
+      "expected_result": "Runtime loads published version/knowledge/history, generates a natural reply/proposed actions, enforces deterministic policy, logs versions, and handles model failure without losing inbound data.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-011"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "multi_workspace",
+      "project_key": "communication_agents",
+      "owner": "Codex",
+      "category": "communication_agents",
+      "priority": "P0",
+      "batch_id": "4-agent-model-runtime",
+      "depends_on": [
+        "REQ-20260712-305"
+      ],
+      "status": "not_started",
+      "implementation_status": "missing",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-311 after dependent earlier batches are validated.",
+      "acceptance_criteria": [
+        "Runtime loads published version/knowledge/history, generates a natural reply/proposed actions, enforces deterministic policy, logs versions, and handles model failure without losing inbound data."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "src/lib/bna/provider-lead-bot.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:18:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260712-312",
+      "title": "Communication Agents UI",
+      "expected_result": "Normal workspace users see Communication Agents with Knowledge, Channels, Test, and Activity; Super Admin sees Build & QA agents separately.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-012"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "multi_workspace",
+      "project_key": "shared_crm",
+      "owner": "Codex",
+      "category": "agents_ui",
+      "priority": "P1",
+      "batch_id": "5-agents-ui",
+      "depends_on": [
+        "REQ-20260712-305"
+      ],
+      "status": "not_started",
+      "implementation_status": "missing",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-312 after dependent earlier batches are validated.",
+      "acceptance_criteria": [
+        "Normal workspace users see Communication Agents with Knowledge, Channels, Test, and Activity; Super Admin sees Build & QA agents separately."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "public/js/operations-shell.js",
+        "public/js/operations-deferred-renderers.js",
+        "public/css/operations-shell.css"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:18:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260712-313",
+      "title": "Safe One Time WhatsApp, Resend, WAPI, Telegram activation proof",
+      "expected_result": "Contact capture works independently of AI reply readiness; WAPI auth/binding/contact/conversation/zero-task/idempotency/opt-out/OpenAI/outbox checks pass; WhatsApp live only after readiness; email remains draft.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-013"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "activation",
+      "priority": "P0",
+      "batch_id": "6-activation",
+      "depends_on": [
+        "REQ-20260712-305"
+      ],
+      "status": "not_started",
+      "implementation_status": "partial",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-313 after dependent earlier batches are validated.",
+      "acceptance_criteria": [
+        "Contact capture works independently of AI reply readiness; WAPI auth/binding/contact/conversation/zero-task/idempotency/opt-out/OpenAI/outbox checks pass; WhatsApp live only after readiness; email remains draft."
+      ],
+      "evidence": [
+        "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md"
+      ],
+      "verification": [
+        "npm run app:smoke:rabbi-agent-review-direct-proof"
+      ],
+      "implementation_files": [
+        "src/lib/bna/telegram-notifications.js",
+        "scripts/smoke-rabbi-agent-review-direct-proof.mjs",
+        "src/lib/bna/provider-lead-bot.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:18:00+03:00",
+      "blocker": "WAPI/Resend convergence and zero-task live proof still pending."
+    },
+    {
+      "id": "REQ-20260712-314",
+      "title": "Required test matrix, deploy, screenshots, Railway doctor, and final report",
+      "expected_result": "Run the full required matrix, push bounded commits, deploy exact tested SHA, run Railway doctor, capture responsive screenshots and redacted receipts, update ledgers/changelog, and report exact blockers.",
+      "source_id": "RAW-20260712-014",
+      "source_statement_ids": [
+        "SRC-20260712-014-014"
+      ],
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "workspace_key": "multi_workspace",
+      "project_key": "release",
+      "owner": "Codex",
+      "category": "release",
+      "priority": "P0",
+      "batch_id": "7-release-proof",
+      "depends_on": [
+        "REQ-20260712-305"
+      ],
+      "status": "not_started",
+      "implementation_status": "partial",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-314 after dependent earlier batches are validated.",
+      "acceptance_criteria": [
+        "Run the full required matrix, push bounded commits, deploy exact tested SHA, run Railway doctor, capture responsive screenshots and redacted receipts, update ledgers/changelog, and report exact blockers."
+      ],
+      "evidence": [
+        "ops/production-readiness/latest-production-readiness-snapshot.md"
+      ],
+      "verification": [
+        "npm run production:readiness:gate -- --json --allow-dirty"
+      ],
+      "implementation_files": [
+        "ops/production-readiness/latest-production-readiness-snapshot.md",
+        "ops/production-readiness/latest-production-unblocker.md"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T23:18:00+03:00",
+      "blocker": "External Stripe/campaign setup fields currently block full production readiness."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "RAW-20260712-014",
+      "source_path": "raw-input/RAW-20260712-014-shared-crm-communication-agents-addendum.md",
+      "captured_at": "2026-07-12T23:12:00+03:00",
+      "content_fingerprint": "sha256:7BF60C9E2223CF64736140927218F60DC48B3F6E494CC8536F40EDCB1DDA0DA2",
+      "privacy_classification": "internal_sensitive_redacted_required",
+      "workspace": "bna_platform",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_goal_mode_packet"
+    }
+  ]
+}

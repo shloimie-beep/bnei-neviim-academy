@@ -15907,15 +15907,32 @@ CREATE TABLE IF NOT EXISTS bna_contacts (
 
 CREATE TABLE IF NOT EXISTS bna_contact_identities (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
   contact_id INTEGER REFERENCES bna_contacts(id) ON DELETE CASCADE,
   identity_type TEXT NOT NULL CHECK (identity_type IN ('email', 'phone', 'whatsapp', 'telegram', 'google', 'manual')),
   identity_value TEXT NOT NULL,
   normalized_value TEXT NOT NULL,
   verified BOOLEAN DEFAULT FALSE,
   metadata JSONB DEFAULT '{}',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE (identity_type, normalized_value)
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE bna_contact_identities
+  ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL;
+
+UPDATE bna_contact_identities identities
+SET workspace_id = contacts.workspace_id
+FROM bna_contacts contacts
+WHERE identities.contact_id = contacts.id
+  AND identities.workspace_id IS NULL
+  AND contacts.workspace_id IS NOT NULL;
+
+ALTER TABLE bna_contact_identities
+  DROP CONSTRAINT IF EXISTS bna_contact_identities_identity_type_normalized_value_key;
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_contact_identities_workspace_unique
+ON bna_contact_identities(workspace_id, identity_type, normalized_value)
+WHERE workspace_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS bna_communications (
   id SERIAL PRIMARY KEY,
@@ -16166,6 +16183,7 @@ CREATE INDEX IF NOT EXISTS idx_bna_contacts_workspace ON bna_contacts(workspace_
 CREATE INDEX IF NOT EXISTS idx_bna_contacts_email ON bna_contacts(lower(primary_email));
 CREATE INDEX IF NOT EXISTS idx_bna_contacts_phone ON bna_contacts(lower(primary_phone));
 CREATE INDEX IF NOT EXISTS idx_bna_contact_identities_contact ON bna_contact_identities(contact_id);
+CREATE INDEX IF NOT EXISTS idx_bna_contact_identities_workspace_lookup ON bna_contact_identities(workspace_id, identity_type, normalized_value);
 CREATE INDEX IF NOT EXISTS idx_bna_communications_workspace ON bna_communications(workspace_id, occurred_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_communications_project ON bna_communications(project_id, occurred_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_communications_contact ON bna_communications(contact_id, occurred_at DESC);
@@ -25875,7 +25893,7 @@ async function getWorkspaceIdForProjectKey(projectKey = DEFAULT_PROJECT_KEY, db 
   return result.rows[0]?.id || null;
 }
 
-async function upsertContactIdentity({ contactId, identityType, identityValue, verified = false, metadata = {} } = {}, db = pool) {
+async function upsertContactIdentity({ contactId, workspaceId = null, identityType, identityValue, verified = false, metadata = {} } = {}, db = pool) {
   if (!contactId || !identityType || !identityValue) return null;
   const normalizedValue = identityType === 'email'
     ? normalizeEmail(identityValue)
@@ -25883,17 +25901,22 @@ async function upsertContactIdentity({ contactId, identityType, identityValue, v
       ? normalizePhoneDigits(identityValue)
       : String(identityValue || '').trim().toLowerCase();
   if (!normalizedValue) return null;
+  const resolvedWorkspaceId = workspaceId || (await db.query(
+    'SELECT workspace_id FROM bna_contacts WHERE id = $1 LIMIT 1',
+    [contactId]
+  ).then((result) => result.rows[0]?.workspace_id || null).catch(() => null));
+  if (!resolvedWorkspaceId) return null;
   const result = await db.query(
     `INSERT INTO bna_contact_identities (
-       contact_id, identity_type, identity_value, normalized_value, verified, metadata
-     ) VALUES ($1, $2, $3, $4, $5, $6::jsonb)
-     ON CONFLICT (identity_type, normalized_value) DO UPDATE SET
+       workspace_id, contact_id, identity_type, identity_value, normalized_value, verified, metadata
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb)
+     ON CONFLICT (workspace_id, identity_type, normalized_value) WHERE workspace_id IS NOT NULL DO UPDATE SET
        contact_id = COALESCE(bna_contact_identities.contact_id, EXCLUDED.contact_id),
        identity_value = EXCLUDED.identity_value,
        verified = bna_contact_identities.verified OR EXCLUDED.verified,
        metadata = bna_contact_identities.metadata || EXCLUDED.metadata
      RETURNING *`,
-    [contactId, identityType, identityValue, normalizedValue, Boolean(verified), JSON.stringify(metadata || {})]
+    [resolvedWorkspaceId, contactId, identityType, identityValue, normalizedValue, Boolean(verified), JSON.stringify(metadata || {})]
   );
   return result.rows[0] || null;
 }
@@ -25907,12 +25930,15 @@ async function upsertContactFromSignup(signup = {}, db = pool) {
     existing = (await db.query(
       `SELECT c.*
        FROM bna_contacts c
-       LEFT JOIN bna_contact_identities i ON i.contact_id = c.id
-       WHERE ($1 <> '' AND (lower(COALESCE(c.primary_email, '')) = $1 OR (i.identity_type = 'email' AND i.normalized_value = $1)))
-          OR ($2 <> '' AND (regexp_replace(COALESCE(c.primary_phone, ''), '\\D', '', 'g') = $2 OR (i.identity_type IN ('phone', 'whatsapp') AND i.normalized_value = $2)))
+       LEFT JOIN bna_contact_identities i ON i.contact_id = c.id AND i.workspace_id = c.workspace_id
+       WHERE c.workspace_id = $3
+         AND (
+           ($1 <> '' AND (lower(COALESCE(c.primary_email, '')) = $1 OR (i.identity_type = 'email' AND i.normalized_value = $1)))
+           OR ($2 <> '' AND (regexp_replace(COALESCE(c.primary_phone, ''), '\\D', '', 'g') = $2 OR (i.identity_type IN ('phone', 'whatsapp') AND i.normalized_value = $2)))
+         )
        ORDER BY c.updated_at DESC NULLS LAST, c.created_at ASC
        LIMIT 1`,
-      [email || '', phone || '']
+      [email || '', phone || '', workspaceId]
     )).rows[0] || null;
   }
 
@@ -25953,9 +25979,9 @@ async function upsertContactFromSignup(signup = {}, db = pool) {
       );
   const contact = result.rows[0] || null;
   if (contact) {
-    await upsertContactIdentity({ contactId: contact.id, identityType: 'email', identityValue: email, verified: true, metadata }, db);
-    await upsertContactIdentity({ contactId: contact.id, identityType: 'phone', identityValue: signup.parent_phone, verified: false, metadata }, db);
-    await upsertContactIdentity({ contactId: contact.id, identityType: 'whatsapp', identityValue: signup.parent_phone, verified: false, metadata }, db);
+    await upsertContactIdentity({ workspaceId, contactId: contact.id, identityType: 'email', identityValue: email, verified: true, metadata }, db);
+    await upsertContactIdentity({ workspaceId, contactId: contact.id, identityType: 'phone', identityValue: signup.parent_phone, verified: false, metadata }, db);
+    await upsertContactIdentity({ workspaceId, contactId: contact.id, identityType: 'whatsapp', identityValue: signup.parent_phone, verified: false, metadata }, db);
   }
   return contact;
 }
@@ -65926,8 +65952,10 @@ async function findOrCreateWhatsappContact(normalized = {}, { workspaceId = null
      JOIN bna_contact_identities i ON i.contact_id = c.id
      WHERE i.identity_type IN ('phone', 'whatsapp')
        AND i.normalized_value = $1
+       AND i.workspace_id = $2
+       AND c.workspace_id = $2
      LIMIT 1`,
-    [phone]
+    [phone, workspaceId]
   )).rows[0] || null;
   if (!contact) {
     contact = (await db.query(
@@ -65955,8 +65983,8 @@ async function findOrCreateWhatsappContact(normalized = {}, { workspaceId = null
       ]
     );
   }
-  await upsertContactIdentity({ contactId: contact.id, identityType: 'phone', identityValue: normalized.fromPhone || normalized.toPhone || phone, metadata: { source: 'whatsapp_import' } }, db);
-  await upsertContactIdentity({ contactId: contact.id, identityType: 'whatsapp', identityValue: normalized.fromPhone || normalized.toPhone || phone, metadata: { source: 'whatsapp_import' } }, db);
+  await upsertContactIdentity({ workspaceId, contactId: contact.id, identityType: 'phone', identityValue: normalized.fromPhone || normalized.toPhone || phone, metadata: { source: 'whatsapp_import' } }, db);
+  await upsertContactIdentity({ workspaceId, contactId: contact.id, identityType: 'whatsapp', identityValue: normalized.fromPhone || normalized.toPhone || phone, metadata: { source: 'whatsapp_import' } }, db);
   return contact;
 }
 
@@ -66445,12 +66473,15 @@ async function updateWapiCorrectionContactRecord(write = {}, correctionPreview =
     const existing = (await db.query(
       `SELECT c.*
        FROM bna_contacts c
-       LEFT JOIN bna_contact_identities i ON i.contact_id = c.id
-       WHERE regexp_replace(COALESCE(c.primary_phone, ''), '\\D', '', 'g') = $1
-          OR (i.identity_type IN ('phone', 'whatsapp') AND i.normalized_value = $1)
+       LEFT JOIN bna_contact_identities i ON i.contact_id = c.id AND i.workspace_id = c.workspace_id
+       WHERE c.workspace_id = $2
+         AND (
+           regexp_replace(COALESCE(c.primary_phone, ''), '\\D', '', 'g') = $1
+           OR (i.identity_type IN ('phone', 'whatsapp') AND i.normalized_value = $1)
+         )
        ORDER BY c.updated_at DESC NULLS LAST, c.created_at ASC
        LIMIT 1`,
-      [phoneDigits]
+      [phoneDigits, workspaceId]
     )).rows[0] || null;
     if (existing) {
       targets = [existing.id];
@@ -66494,8 +66525,8 @@ async function updateWapiCorrectionContactRecord(write = {}, correctionPreview =
       const contact = result.rows[0] || null;
       if (contact) {
         if (phoneDigits) {
-          await upsertContactIdentity({ contactId: contact.id, identityType: 'phone', identityValue: `+${phoneDigits}`, metadata }, db);
-          await upsertContactIdentity({ contactId: contact.id, identityType: 'whatsapp', identityValue: `+${phoneDigits}`, metadata }, db);
+          await upsertContactIdentity({ workspaceId, contactId: contact.id, identityType: 'phone', identityValue: `+${phoneDigits}`, metadata }, db);
+          await upsertContactIdentity({ workspaceId, contactId: contact.id, identityType: 'whatsapp', identityValue: `+${phoneDigits}`, metadata }, db);
         }
         applied.push({ target: 'bna_contacts', action: 'update', id: contact.id, status: contact.status, tags_added: tags });
       }
@@ -66517,8 +66548,8 @@ async function updateWapiCorrectionContactRecord(write = {}, correctionPreview =
     );
     const contact = result.rows[0] || null;
     if (contact) {
-      await upsertContactIdentity({ contactId: contact.id, identityType: 'phone', identityValue: `+${phoneDigits}`, metadata }, db);
-      await upsertContactIdentity({ contactId: contact.id, identityType: 'whatsapp', identityValue: `+${phoneDigits}`, metadata }, db);
+      await upsertContactIdentity({ workspaceId, contactId: contact.id, identityType: 'phone', identityValue: `+${phoneDigits}`, metadata }, db);
+      await upsertContactIdentity({ workspaceId, contactId: contact.id, identityType: 'whatsapp', identityValue: `+${phoneDigits}`, metadata }, db);
       applied.push({ target: 'bna_contacts', action: 'create', id: contact.id, status: contact.status, tags_added: tags });
     }
   }
