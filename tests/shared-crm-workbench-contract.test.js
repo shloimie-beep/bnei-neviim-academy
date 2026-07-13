@@ -197,7 +197,11 @@ test('Operations CRM selected contact conversations include scoped email threads
   assert.match(server, /FROM bna_communications cm\s+JOIN bna_contacts bc ON bc\.id = \$1/);
   assert.match(server, /cm\.metadata->>'workspace_key' = \$\$\{params\.length\}/);
   assert.match(server, /cm\.metadata->>'project_key' = \$\$\{params\.length\}/);
-  assert.match(server, /'canonical_email_match', \(cm\.contact_id IS DISTINCT FROM bc\.id\)/);
+  assert.match(server, /regexp_replace\(COALESCE\(bc\.primary_phone, ''\), '\[\^0-9\]\+', '', 'g'\)[\s\S]*regexp_replace\(COALESCE\(cm\.from_address, cm\.to_address, ''\), '\[\^0-9\]\+', '', 'g'\)/);
+  assert.match(server, /SELECT jsonb_build_object\(\s*'message_count', COUNT\(\*\),[\s\S]*regexp_replace\(COALESCE\(c\.primary_phone, ''\), '\[\^0-9\]\+', '', 'g'\)[\s\S]*regexp_replace\(COALESCE\(cm\.from_address, cm\.to_address, ''\), '\[\^0-9\]\+', '', 'g'\)/);
+  assert.match(server, /'canonical_contact_id_match', \(cm\.contact_id = bc\.id\)/);
+  assert.match(server, /'canonical_email_match', \$\{contactCommunicationEmailMatchSql\}/);
+  assert.match(server, /'canonical_phone_match', \$\{contactCommunicationPhoneMatchSql\}/);
   assert.match(server, /FROM bna_contact_communications cc\s+JOIN bna_contacts bc ON bc\.id = \$1\s+LEFT JOIN bna_parent_leads l ON l\.id = cc\.lead_id/);
   assert.match(server, /NULLIF\(cc\.source_context->>'crm_contact_id', ''\) = \('bna_contacts:' \|\| bc\.id::text\)/);
   assert.match(server, /NULLIF\(cc\.source_context->>'canonical_contact_key', ''\) = \('bna_contacts:' \|\| bc\.id::text\)/);
@@ -226,7 +230,9 @@ test('Operations CRM selected contact conversations include scoped email threads
   assert.match(server, /cm\.project_id = l\.project_id/);
   assert.match(server, /lower\(COALESCE\(cm\.from_address, cm\.to_address, ''\)\) = lower\(l\.parent_email\)/);
   assert.match(server, /FROM bna_communications cm\s+JOIN bna_parent_leads l ON TRUE/);
-  assert.match(server, /'crm_contact_id', \('bna_parent_leads:' \|\| l\.id::text\)[\s\S]*'canonical_email_match', true/);
+  assert.match(server, /regexp_replace\(COALESCE\(l\.parent_phone, ''\), '\[\^0-9\]\+', '', 'g'\)[\s\S]*regexp_replace\(COALESCE\(cm\.from_address, cm\.to_address, ''\), '\[\^0-9\]\+', '', 'g'\)/);
+  assert.match(server, /FROM bna_communications cm\s+WHERE cm\.project_id = l\.project_id[\s\S]*regexp_replace\(COALESCE\(l\.parent_phone, ''\), '\[\^0-9\]\+', '', 'g'\)[\s\S]*regexp_replace\(COALESCE\(cm\.from_address, cm\.to_address, ''\), '\[\^0-9\]\+', '', 'g'\)/);
+  assert.match(server, /'crm_contact_id', \('bna_parent_leads:' \|\| l\.id::text\)[\s\S]*'canonical_email_match', \$\{leadCommunicationEmailMatchSql\}[\s\S]*'canonical_phone_match', \$\{leadCommunicationPhoneMatchSql\}/);
   assert.match(server, /FROM assistant_delivery_outbox o\s+JOIN bna_parent_leads l ON l\.id = \$\{oneTimeDeliveryOutboxLeadJoinExpression\('o'\)\}\s+LEFT JOIN bna_projects p ON p\.id = l\.project_id/);
   assert.match(server, /FROM assistant_dead_letters d[\s\S]*JOIN bna_parent_leads l ON l\.id = \$\{oneTimeDeliveryOutboxLeadJoinExpression\('o'\)\}[\s\S]*LEFT JOIN bna_projects p ON p\.id = l\.project_id/);
   assert.match(server, /FROM bna_product_leads prod\s+JOIN bna_parent_leads l ON TRUE\s+LEFT JOIN bna_projects p ON p\.id = l\.project_id/);

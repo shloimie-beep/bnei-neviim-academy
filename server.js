@@ -29736,9 +29736,14 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
             OR (
               cp.id IS NOT NULL
               AND cm.project_id = cp.id
-              AND
-              COALESCE(c.primary_email, '') <> ''
+              AND COALESCE(c.primary_email, '') <> ''
               AND lower(COALESCE(cm.from_address, cm.to_address, '')) = lower(c.primary_email)
+            )
+            OR (
+              cp.id IS NOT NULL
+              AND cm.project_id = cp.id
+              AND regexp_replace(COALESCE(c.primary_phone, ''), '[^0-9]+', '', 'g') <> ''
+              AND regexp_replace(COALESCE(cm.from_address, cm.to_address, ''), '[^0-9]+', '', 'g') = regexp_replace(c.primary_phone, '[^0-9]+', '', 'g')
             )
        ) AS mailbox,
        (
@@ -29982,8 +29987,16 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
          )
          FROM bna_communications cm
          WHERE cm.project_id = l.project_id
-           AND COALESCE(l.parent_email, '') <> ''
-           AND lower(COALESCE(cm.from_address, cm.to_address, '')) = lower(l.parent_email)
+           AND (
+             (
+               COALESCE(l.parent_email, '') <> ''
+               AND lower(COALESCE(cm.from_address, cm.to_address, '')) = lower(l.parent_email)
+             )
+             OR (
+               regexp_replace(COALESCE(l.parent_phone, ''), '[^0-9]+', '', 'g') <> ''
+               AND regexp_replace(COALESCE(cm.from_address, cm.to_address, ''), '[^0-9]+', '', 'g') = regexp_replace(l.parent_phone, '[^0-9]+', '', 'g')
+             )
+           )
        ) AS mailbox,
        (
          SELECT jsonb_build_object(
@@ -30138,12 +30151,16 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
   if (contactRef.source === 'bna_parent_leads') {
     const params = [contactRef.id];
     const leadSuppression = crmTimelineSuppressionParts('l');
+    const leadCommunicationEmailMatchSql = `(COALESCE(l.parent_email, '') <> '' AND lower(COALESCE(cm.from_address, cm.to_address, '')) = lower(l.parent_email))`;
+    const leadCommunicationPhoneMatchSql = `(
+      regexp_replace(COALESCE(l.parent_phone, ''), '[^0-9]+', '', 'g') <> ''
+      AND regexp_replace(COALESCE(cm.from_address, cm.to_address, ''), '[^0-9]+', '', 'g') = regexp_replace(l.parent_phone, '[^0-9]+', '', 'g')
+    )`;
     const conditions = [`c.lead_id = $1`];
     const emailConditions = [
       `l.id = $1`,
       `cm.project_id = l.project_id`,
-      `COALESCE(l.parent_email, '') <> ''`,
-      `lower(COALESCE(cm.from_address, cm.to_address, '')) = lower(l.parent_email)`,
+      `(${leadCommunicationEmailMatchSql} OR ${leadCommunicationPhoneMatchSql})`,
       `COALESCE(cm.status, '') <> 'archived'`,
     ];
     const taskConditions = [`l.id = $1`, `t.stage <> 'archive'`];
@@ -30243,7 +30260,8 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
             COALESCE(cm.metadata, '{}'::jsonb) || jsonb_build_object(
               'crm_contact_id', ('bna_parent_leads:' || l.id::text),
               'source_table', 'bna_communications',
-              'canonical_email_match', true,
+              'canonical_email_match', ${leadCommunicationEmailMatchSql},
+              'canonical_phone_match', ${leadCommunicationPhoneMatchSql},
               'no_send', true,
               'external_write_performed', false
             ) AS source_context,
@@ -30621,15 +30639,18 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
 
   const params = [contactRef.id];
   const contactSuppression = crmTimelineSuppressionParts('bc');
+  const contactCommunicationEmailMatchSql = `(COALESCE(bc.primary_email, '') <> '' AND lower(COALESCE(cm.from_address, cm.to_address, '')) = lower(bc.primary_email))`;
+  const contactCommunicationPhoneMatchSql = `(
+    regexp_replace(COALESCE(bc.primary_phone, ''), '[^0-9]+', '', 'g') <> ''
+    AND regexp_replace(COALESCE(cm.from_address, cm.to_address, ''), '[^0-9]+', '', 'g') = regexp_replace(bc.primary_phone, '[^0-9]+', '', 'g')
+  )`;
   const communicationConditions = [
     `bc.id = $1`,
     `COALESCE(cm.status, '') <> 'archived'`,
     `(
       cm.contact_id = bc.id
-      OR (
-        COALESCE(bc.primary_email, '') <> ''
-        AND lower(COALESCE(cm.from_address, cm.to_address, '')) = lower(bc.primary_email)
-      )
+      OR ${contactCommunicationEmailMatchSql}
+      OR ${contactCommunicationPhoneMatchSql}
     )`,
   ];
   const contactNoteConditions = [
@@ -30752,7 +30773,9 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
           COALESCE(cm.metadata, '{}'::jsonb) || jsonb_build_object(
             'crm_contact_id', ('bna_contacts:' || bc.id::text),
             'source_table', 'bna_communications',
-            'canonical_email_match', (cm.contact_id IS DISTINCT FROM bc.id),
+            'canonical_contact_id_match', (cm.contact_id = bc.id),
+            'canonical_email_match', ${contactCommunicationEmailMatchSql},
+            'canonical_phone_match', ${contactCommunicationPhoneMatchSql},
             'no_send', true,
             'external_write_performed', false
           ) AS source_context,
