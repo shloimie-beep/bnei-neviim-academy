@@ -372,3 +372,22 @@
 - BNA exact-SHA deploy-info readback passed with `target_app=bna`.
 - Operations workspace taxonomy live smoke passed: `ops/live-smokes/2026-07-13T07-48-07-488Z-operations-workspace-taxonomy-live-smoke.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, or production data mutation was performed by this mobile CRM IA closeout.
+
+## CRM Legacy Contact-Note DTO Fallback - 2026-07-13
+
+- `server.js` - selected canonical `bna_contacts` timelines/conversations now include same-project `bna_contact_communications` rows matched by explicit canonical contact metadata, legacy lead canonical keys, `parent_lead_id`, or same-project lead email.
+- `server.js` - legacy contact-note DTO source context is redacted to provenance/guardrail fields and does not merge arbitrary `cc.metadata` into the browser payload.
+- `tests/shared-crm-workbench-contract.test.js` - pins the server-side legacy contact-note DTO path and keeps browser-side independent dataset unions out of the selected-contact workspace loader.
+- `tests/crm-contact-service.test.js` - pins that contact-note DTO rows can appear in selected-contact conversations while preserving `no_send=true` and `external_write_performed=false`.
+- `scripts/smoke-onetime-crm-contact-notes-dto-live.mjs` / `package.json` - adds a registered, redacted, read-only production smoke for canonical selected-contact contact-note DTO behavior.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=e0dd3d48543740efb32b35f64ad27cf0cc6e676b` and `target_app=bna`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=e0dd3d48543740efb32b35f64ad27cf0cc6e676b` and `target_app=one-time`.
+- BNA Railway deployment `b35f96f7-f610-410a-b206-86b6900c07f0` reached `SUCCESS`.
+- One Time Railway deployment `99ea47d8-a5a1-4403-b435-a732b7df21d1` reached `SUCCESS`.
+- One Time separate-instance exact-SHA smoke and One Time provider route-module smoke passed; route-module report: `ops/live-smokes/2026-07-13T08-59-55-777Z-onetime-provider-route-module-live-smoke.md`.
+- One Time CRM workbench live smoke passed: `ops/live-smokes/2026-07-13T09-00-20-966Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Email-thread DTO live smoke passed: `ops/live-smokes/2026-07-13T09-00-20-963Z-one-time-crm-email-thread-dto-live-smoke.md`.
+- Operations workspace taxonomy live smoke passed: `ops/live-smokes/2026-07-13T09-00-42-212Z-operations-workspace-taxonomy-live-smoke.md`.
+- Targeted legacy contact-note DTO live probe: `ops/live-smokes/2026-07-13T09-00-20-964Z-one-time-crm-contact-notes-dto-live-smoke.md`; production returned 7 canonical contacts but no positive canonical contact-note sample, so it recorded `skipped_no_live_contact_notes` and created no synthetic data.
+- One Time exact-SHA performance gate passed: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw note/message logging, or production data mutation.

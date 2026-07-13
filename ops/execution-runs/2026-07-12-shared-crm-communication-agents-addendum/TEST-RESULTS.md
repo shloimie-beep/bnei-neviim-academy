@@ -747,3 +747,27 @@
 - PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T08-37-02-076Z-operations-workspace-taxonomy-live-smoke.md`.
 - PASS `npm run app:smoke:onetime-crm-email-thread-dto`; report `ops/live-smokes/2026-07-13T08-38-11-769Z-one-time-crm-email-thread-dto-live-smoke.md` with 12 scoped cards, 8 mailbox candidates, 1 inspected candidate, 21 selected-contact conversations, 1 email conversation, `no_send=true`, and no external writes.
 - PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 298751d8d940c02ce4c8a9c70c5b36862ea67766`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+
+## CRM Legacy Contact-Note DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js`; 31/31 tests passed.
+- PASS `node --check scripts/smoke-onetime-crm-contact-notes-dto-live.mjs`.
+- PASS `package.json` parse check after adding `app:smoke:onetime-crm-contact-notes-dto`.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; finding_count 0.
+- PASS `npm run secrets:audit`; 9325 tracked paths checked.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check`.
+- PASS `git push origin master` for final deployed commit `e0dd3d48543740efb32b35f64ad27cf0cc6e676b`.
+- PASS One Time Railway redeploy and doctor; deployment `99ea47d8-a5a1-4403-b435-a732b7df21d1` reached `SUCCESS`.
+- PASS BNA Railway redeploy and doctor; deployment `b35f96f7-f610-410a-b206-86b6900c07f0` reached `SUCCESS`.
+- PASS One Time and BNA live `/api/deploy-info`; both returned `e0dd3d48543740efb32b35f64ad27cf0cc6e676b`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e0dd3d48543740efb32b35f64ad27cf0cc6e676b`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha e0dd3d48543740efb32b35f64ad27cf0cc6e676b`; report `ops/live-smokes/2026-07-13T08-59-55-777Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T09-00-20-966Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-email-thread-dto`; report `ops/live-smokes/2026-07-13T09-00-20-963Z-one-time-crm-email-thread-dto-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T09-00-42-212Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-contact-notes-dto`; report `ops/live-smokes/2026-07-13T09-00-20-964Z-one-time-crm-contact-notes-dto-live-smoke.md` recorded `skipped_no_live_contact_notes` and created no synthetic data.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha e0dd3d48543740efb32b35f64ad27cf0cc6e676b`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
