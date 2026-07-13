@@ -301,6 +301,44 @@ test('One Time railway readback can use an isolated temp link when the local Rai
   assert.doesNotMatch(JSON.stringify(result), /secret-value|postgres:\/\/|example\.test|scoped-wapi-token|cron-secret-value|wapi-webhook-secret|\+972500000000/);
 });
 
+test('One Time railway readback treats redacted secret keys as present without values', async () => {
+  const { runRailwayVariablesReadback } = await import(setupUrl);
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'onetime-redacted-secret-readback-'));
+
+  const result = runRailwayVariablesReadback({
+    repoRoot,
+    env: { BNA_RAILWAY_USE_ACCOUNT_AUTH: '1' },
+    runner: (_command, args) => {
+      if (args.join(' ').includes('variable list')) {
+        return {
+          status: 0,
+          stdout: JSON.stringify({
+            DATABASE_URL: '',
+            ONE_TIME_PUBLIC_DOMAIN: 'join.onetimeonetime.com',
+            DEFAULT_WORKSPACE_KEY: 'rabbi_sheller_provider',
+            DEFAULT_PROJECT_KEY: 'one_time_mishnah_class',
+            ONE_TIME_WAPI_API_TOKEN: '',
+            ONE_TIME_WAPI_WEBHOOK_SECRET: '',
+            ONE_TIME_OWNER_TEST_EMAIL: '',
+            ONE_TIME_OWNER_TEST_WHATSAPP: '',
+            VIMEO_ACCESS_TOKEN: '',
+          }),
+        };
+      }
+      return { status: 1, stderr: 'unexpected fake railway command' };
+    },
+  });
+
+  fs.rmSync(repoRoot, { recursive: true, force: true });
+  assert.equal(result.ok, true);
+  assert.equal(result.one_time_wapi_token_present, true);
+  assert.equal(result.one_time_wapi_webhook_secret_present, true);
+  assert.equal(result.one_time_owner_test_email_present, true);
+  assert.equal(result.one_time_owner_test_whatsapp_present, true);
+  assert.equal(result.vimeo_access_token_present, true);
+  assert.doesNotMatch(JSON.stringify(result), /owner@example|scoped-wapi-token|wapi-webhook-secret|vimeo-token/);
+});
+
 test('One Time setup readiness can satisfy Zoom session from redacted Railway class-link readback', async () => {
   const { buildOneTimeExternalSetupReadiness } = await import(setupUrl);
   const report = buildOneTimeExternalSetupReadiness({

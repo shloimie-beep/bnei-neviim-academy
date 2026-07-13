@@ -1,4 +1,4 @@
-# Rabbi Agent Review Direct Proof - 2026-07-12T20:11:10.592Z
+# Rabbi Agent Review Direct Proof - 2026-07-13T16:08:00.665Z
 
 Status: direct_codex_verified
 Mode: codex_direct_verification_substituting_for_operator_agent_mode
@@ -12,9 +12,9 @@ Mode: codex_direct_verification_substituting_for_operator_agent_mode
 - PASS rabbi-helper-tool-scope-map: direct Codex verification (https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md)
 
 ## Commands
-- PASS refresh Rabbi Agent Review read-only proof readiness (2806ms)
-- PASS refresh Rabbi Telegram no-send readiness (43ms)
-- PASS focused direct proof tests (315ms)
+- PASS refresh Rabbi Agent Review read-only proof readiness (9326ms)
+- PASS refresh Rabbi Telegram no-send readiness (53ms)
+- PASS focused direct proof tests (371ms)
 
 ## Checks
 - PASS latest approved Rabbi Telegram live smoke sent to Rabbi role alias

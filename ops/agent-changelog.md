@@ -40356,3 +40356,9 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   public auto-reply activation, credential mutation, CRM production write,
   provider mutation, payment/access mutation, raw private payload logging, or
   destructive production mutation was performed.
+## 2026-07-13 - One Time WAPI safe activation gate prepared
+
+- Advanced `REQ-20260712-313` without enabling public auto-reply: WAPI readiness now recognizes the One Time scoped Railway token through redacted key presence, and `server.js` requires `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM` before auto-reply readiness can become true.
+- Verified current state: WAPI provider setup ready, Resend preflight ready, Rabbi Telegram scoped profile ready via ignored runtime config, owner-test email/WhatsApp aliases missing, and no external send or CRM production write performed.
+- Evidence: `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`, `ops/watchdog-audits/2026-07-13T16-06-26-630Z-onetime-owner-test-readiness.md`, `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md`, and `ops/live-smokes/2026-07-13T16-08-00-665Z-rabbi-agent-review-direct-proof.md`.
+- Guardrails: no owner email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply activation, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed.

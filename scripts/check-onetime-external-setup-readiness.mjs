@@ -93,6 +93,14 @@ function normalizeValue(value) {
   return String(value || '').replace(/^\uFEFF/, '').trim();
 }
 
+function hasVariableKey(variables = {}, name = '') {
+  return Object.prototype.hasOwnProperty.call(variables, name);
+}
+
+function sensitiveValuePresent(variables = {}, names = []) {
+  return names.some((name) => hasVariableKey(variables, name) || Boolean(normalizeValue(variables[name])));
+}
+
 function loadSecretCandidate({ envName, names = [], fileNames = [], repoRoot, inspectKeyholder = true }) {
   if (!inspectKeyholder) return { configured: false, value: '', source: 'not configured' };
   const loaded = loadSecret({ envName, names, fileNames, repoRoot });
@@ -209,61 +217,61 @@ function redactedVariableSummary(variables = {}, { source, service, environment,
     one_time_public_domain_matches: variables.ONE_TIME_PUBLIC_DOMAIN === 'join.onetimeonetime.com',
     default_workspace_matches: variables.DEFAULT_WORKSPACE_KEY === 'rabbi_sheller_provider',
     default_project_matches: variables.DEFAULT_PROJECT_KEY === 'one_time_mishnah_class',
-    one_time_drive_drop_folder_present: Boolean(normalizeValue(
-      variables.ONE_TIME_DRIVE_DROP_FOLDER_ALIAS ||
-      variables.ONE_TIME_DRIVE_DROP_FOLDER_ID ||
-      variables.DRIVE_DROP_FOLDER_ID,
-    )),
-    one_time_zoom_session_present: Boolean(normalizeValue(
-      variables.ONE_TIME_ZOOM_SESSION_ALIAS ||
-      variables.ONE_TIME_ZOOM_DETAILS_ALIAS ||
-      variables.ONE_TIME_ZOOM_JOIN_URL ||
-      variables.ZOOM_MEETING_ID,
-    )),
-    one_time_class_link_present: Boolean(normalizeValue(
-      variables.ONE_TIME_WHATSAPP_CLASS_LINK ||
-      variables.ONE_TIME_LIVE_CLASS_URL ||
-      variables.ONE_TIME_ZOOM_JOIN_URL ||
-      variables.ONE_TIME_TONIGHT_CLASS_LINK ||
-      variables.ONE_TIME_CURRENT_CLASS_LINK ||
-      variables.ONETIME_CLASS_LINK,
-    )),
+    one_time_drive_drop_folder_present: sensitiveValuePresent(variables, [
+      'ONE_TIME_DRIVE_DROP_FOLDER_ALIAS',
+      'ONE_TIME_DRIVE_DROP_FOLDER_ID',
+      'DRIVE_DROP_FOLDER_ID',
+    ]),
+    one_time_zoom_session_present: sensitiveValuePresent(variables, [
+      'ONE_TIME_ZOOM_SESSION_ALIAS',
+      'ONE_TIME_ZOOM_DETAILS_ALIAS',
+      'ONE_TIME_ZOOM_JOIN_URL',
+      'ZOOM_MEETING_ID',
+    ]),
+    one_time_class_link_present: sensitiveValuePresent(variables, [
+      'ONE_TIME_WHATSAPP_CLASS_LINK',
+      'ONE_TIME_LIVE_CLASS_URL',
+      'ONE_TIME_ZOOM_JOIN_URL',
+      'ONE_TIME_TONIGHT_CLASS_LINK',
+      'ONE_TIME_CURRENT_CLASS_LINK',
+      'ONETIME_CLASS_LINK',
+    ]),
     one_time_class_reminders_enabled_true: /^(?:1|true|yes)$/i.test(normalizeValue(
       variables.ONE_TIME_CLASS_REMINDERS_ENABLED,
     )),
     one_time_class_reminders_confirm_approved:
       normalizeValue(variables.ONE_TIME_CLASS_REMINDERS_CONFIRM) === 'APPROVE_ONE_TIME_CLASS_REMINDERS',
-    cron_secret_present: Boolean(normalizeValue(variables.CRON_SECRET)),
+    cron_secret_present: sensitiveValuePresent(variables, ['CRON_SECRET']),
     one_time_class_reminder_scheduler_ready:
       /^(?:1|true|yes)$/i.test(normalizeValue(variables.ONE_TIME_CLASS_REMINDERS_ENABLED)) &&
       normalizeValue(variables.ONE_TIME_CLASS_REMINDERS_CONFIRM) === 'APPROVE_ONE_TIME_CLASS_REMINDERS' &&
       Boolean(normalizeValue(variables.CRON_SECRET)),
-    one_time_wapi_token_present: Boolean(normalizeValue(
-      variables.ONE_TIME_WAPI_API_TOKEN ||
-      variables.ONETIME_WAPI_API_TOKEN ||
-      variables.RABBI_SHELLER_WAPI_API_TOKEN ||
-      variables.RABBI_SCHELLER_WAPI_API_TOKEN,
-    )),
-    one_time_whapi_instance_present: Boolean(normalizeValue(
-      variables.ONE_TIME_WHAPI_INSTANCE_ID ||
-      variables.ONE_TIME_WAPI_INSTANCE_ID ||
-      variables.WHAPI_INSTANCE_ID ||
-      variables.WAPI_INSTANCE_ID,
-    )),
-    one_time_whapi_phone_present: Boolean(normalizeValue(
-      variables.ONE_TIME_WHAPI_PHONE ||
-      variables.ONE_TIME_WAPI_PHONE ||
-      variables.WHAPI_PHONE ||
-      variables.WAPI_PHONE ||
-      variables.BNA_WHATSAPP_NUMBER,
-    )),
-    one_time_wapi_webhook_secret_present: Boolean(normalizeValue(
-      variables.ONE_TIME_WAPI_WEBHOOK_SECRET ||
-      variables.ONETIME_WAPI_WEBHOOK_SECRET ||
-      variables.RABBI_SHELLER_WAPI_WEBHOOK_SECRET ||
-      variables.RABBI_SCHELLER_WAPI_WEBHOOK_SECRET ||
-      variables.WAPI_WEBHOOK_SECRET,
-    )),
+    one_time_wapi_token_present: sensitiveValuePresent(variables, [
+      'ONE_TIME_WAPI_API_TOKEN',
+      'ONETIME_WAPI_API_TOKEN',
+      'RABBI_SHELLER_WAPI_API_TOKEN',
+      'RABBI_SCHELLER_WAPI_API_TOKEN',
+    ]),
+    one_time_whapi_instance_present: sensitiveValuePresent(variables, [
+      'ONE_TIME_WHAPI_INSTANCE_ID',
+      'ONE_TIME_WAPI_INSTANCE_ID',
+      'WHAPI_INSTANCE_ID',
+      'WAPI_INSTANCE_ID',
+    ]),
+    one_time_whapi_phone_present: sensitiveValuePresent(variables, [
+      'ONE_TIME_WHAPI_PHONE',
+      'ONE_TIME_WAPI_PHONE',
+      'WHAPI_PHONE',
+      'WAPI_PHONE',
+      'BNA_WHATSAPP_NUMBER',
+    ]),
+    one_time_wapi_webhook_secret_present: sensitiveValuePresent(variables, [
+      'ONE_TIME_WAPI_WEBHOOK_SECRET',
+      'ONETIME_WAPI_WEBHOOK_SECRET',
+      'RABBI_SHELLER_WAPI_WEBHOOK_SECRET',
+      'RABBI_SCHELLER_WAPI_WEBHOOK_SECRET',
+      'WAPI_WEBHOOK_SECRET',
+    ]),
     one_time_wapi_auto_reply_enabled_true: /^(?:1|true|yes|live)$/i.test(normalizeValue(
       variables.ONE_TIME_WAPI_AUTO_REPLY_ENABLED,
     )),
@@ -273,38 +281,38 @@ function redactedVariableSummary(variables = {}, { source, service, environment,
       normalizeValue(variables.ONE_TIME_PROVIDER_LEAD_BOT_MODE).toLowerCase() === 'live',
     one_time_provider_lead_bot_telegram_confirm_approved:
       normalizeValue(variables.ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM) === 'APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM',
-    one_time_owner_test_email_present: Boolean(normalizeValue(
-      variables.ONE_TIME_OWNER_TEST_EMAIL ||
-      variables.ONETIME_OWNER_TEST_EMAIL ||
-      variables.ONE_TIME_SHLOIMIE_TEST_EMAIL ||
-      variables.SHLOIMIE_OWNER_TEST_EMAIL ||
-      variables.OWNER_TEST_EMAIL ||
-      variables.BNA_OWNER_TEST_EMAIL,
-    )),
-    one_time_owner_test_whatsapp_present: Boolean(normalizeValue(
-      variables.ONE_TIME_OWNER_TEST_WHATSAPP ||
-      variables.ONE_TIME_OWNER_TEST_PHONE ||
-      variables.ONETIME_OWNER_TEST_WHATSAPP ||
-      variables.ONETIME_OWNER_TEST_PHONE ||
-      variables.ONE_TIME_SHLOIMIE_TEST_WHATSAPP ||
-      variables.ONE_TIME_SHLOIMIE_TEST_PHONE ||
-      variables.SHLOIMIE_OWNER_TEST_WHATSAPP ||
-      variables.SHLOIMIE_OWNER_TEST_PHONE ||
-      variables.OWNER_TEST_WHATSAPP ||
-      variables.OWNER_TEST_PHONE ||
-      variables.BNA_OWNER_TEST_WHATSAPP ||
-      variables.BNA_OWNER_TEST_PHONE,
-    )),
-    vimeo_access_token_present: Boolean(normalizeValue(
-      variables.VIMEO_ACCESS_TOKEN ||
-      variables.ONE_TIME_VIMEO_ACCESS_TOKEN_ALIAS,
-    )),
-    vimeo_private_smoke_target_present: Boolean(normalizeValue(
-      variables.VIMEO_TEST_PROJECT_URI ||
-      variables.BNA_VIMEO_TEST_PROJECT_URI ||
-      variables.VIMEO_TEST_PROJECT_NAME ||
-      variables.BNA_VIMEO_TEST_PROJECT_NAME,
-    )),
+    one_time_owner_test_email_present: sensitiveValuePresent(variables, [
+      'ONE_TIME_OWNER_TEST_EMAIL',
+      'ONETIME_OWNER_TEST_EMAIL',
+      'ONE_TIME_SHLOIMIE_TEST_EMAIL',
+      'SHLOIMIE_OWNER_TEST_EMAIL',
+      'OWNER_TEST_EMAIL',
+      'BNA_OWNER_TEST_EMAIL',
+    ]),
+    one_time_owner_test_whatsapp_present: sensitiveValuePresent(variables, [
+      'ONE_TIME_OWNER_TEST_WHATSAPP',
+      'ONE_TIME_OWNER_TEST_PHONE',
+      'ONETIME_OWNER_TEST_WHATSAPP',
+      'ONETIME_OWNER_TEST_PHONE',
+      'ONE_TIME_SHLOIMIE_TEST_WHATSAPP',
+      'ONE_TIME_SHLOIMIE_TEST_PHONE',
+      'SHLOIMIE_OWNER_TEST_WHATSAPP',
+      'SHLOIMIE_OWNER_TEST_PHONE',
+      'OWNER_TEST_WHATSAPP',
+      'OWNER_TEST_PHONE',
+      'BNA_OWNER_TEST_WHATSAPP',
+      'BNA_OWNER_TEST_PHONE',
+    ]),
+    vimeo_access_token_present: sensitiveValuePresent(variables, [
+      'VIMEO_ACCESS_TOKEN',
+      'ONE_TIME_VIMEO_ACCESS_TOKEN_ALIAS',
+    ]),
+    vimeo_private_smoke_target_present: sensitiveValuePresent(variables, [
+      'VIMEO_TEST_PROJECT_URI',
+      'BNA_VIMEO_TEST_PROJECT_URI',
+      'VIMEO_TEST_PROJECT_NAME',
+      'BNA_VIMEO_TEST_PROJECT_NAME',
+    ]),
   };
 }
 

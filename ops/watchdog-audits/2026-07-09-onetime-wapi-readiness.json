@@ -1,6 +1,6 @@
 {
   "success": true,
-  "checked_at": "2026-07-13T05:10:06.079Z",
+  "checked_at": "2026-07-13T16:06:20.162Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "external_write_performed": false,
@@ -12,16 +12,16 @@
     "configured": true,
     "credential_scope": "one_time_scoped",
     "one_time_token_present": true,
-    "default_token_present": true,
-    "one_time_token_source": ".secrets",
-    "default_token_source": ".secrets",
+    "default_token_present": false,
+    "one_time_token_source": "railway_token_or_env:one_time_wapi_token_present",
+    "default_token_source": "not configured",
     "base_url_configured": true,
     "base_url_source": "default",
     "railway_readback": {
       "attempted": true,
       "ok": true,
-      "source": "railway_cli_session_fallback",
-      "key_count": 73,
+      "source": "railway_token_or_env",
+      "key_count": 79,
       "class_link_present": true,
       "instance_id_present": true,
       "phone_metadata_present": true,
@@ -35,17 +35,17 @@
   "provider_setup": {
     "ready": true,
     "instance_id_present": true,
-    "instance_id_source": "railway_cli_session_fallback:one_time_whapi_instance_present",
+    "instance_id_source": "railway_token_or_env:one_time_whapi_instance_present",
     "phone_metadata_present": true,
-    "phone_metadata_source": "railway_cli_session_fallback:one_time_whapi_phone_present",
+    "phone_metadata_source": "railway_token_or_env:one_time_whapi_phone_present",
     "blockers": []
   },
   "auto_reply": {
-    "ready": true,
+    "ready": false,
     "enabled": true,
     "approved": true,
     "class_link_configured": true,
-    "class_link_source": "railway_cli_session_fallback:one_time_class_link_present",
+    "class_link_source": "railway_token_or_env:one_time_class_link_present",
     "credential_scope": "one_time_scoped",
     "provider_bot_profile": "one_time_parent_information_agent",
     "provider_bot_profile_version": "2026-07-13-v3",
@@ -56,7 +56,9 @@
     "instance_binding_required": true,
     "destination_number_binding_required": true,
     "telegram_notifications_approved": false,
-    "blockers": [],
+    "blockers": [
+      "ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM"
+    ],
     "copy_version": "2026-07-13-v3"
   },
   "telegram_notifications": {

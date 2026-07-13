@@ -67703,7 +67703,8 @@ function oneTimeWapiAutoReplyReadiness(scope = {}) {
     oneTimeScopedSender &&
     webhookSecretConfigured &&
     instanceBindingConfigured &&
-    senderBindingConfigured
+    senderBindingConfigured &&
+    oneTimeProviderLeadBotTelegramApproved()
   );
   const blockers = [];
   if (!isOneTimeWapiScope(scope)) blockers.push('not_one_time_scope');
@@ -67716,6 +67717,9 @@ function oneTimeWapiAutoReplyReadiness(scope = {}) {
   if (!webhookSecretConfigured) blockers.push('One Time WAPI webhook secret missing');
   if (!instanceBindingConfigured) blockers.push('One Time WAPI instance binding missing');
   if (!senderBindingConfigured) blockers.push('One Time WAPI destination-number binding missing');
+  if (!oneTimeProviderLeadBotTelegramApproved()) {
+    blockers.push('ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM');
+  }
   return {
     ready,
     blockers,

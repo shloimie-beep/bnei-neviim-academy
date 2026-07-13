@@ -18,6 +18,8 @@ const reportDir = path.join(repoRoot, 'ops', 'watchdog-audits');
 const reportPath = path.join(reportDir, '2026-07-08-rabbi-telegram-ticket-readiness.md');
 const jsonPath = path.join(reportDir, '2026-07-08-rabbi-telegram-ticket-readiness.json');
 const envLocalPath = path.join(repoRoot, '.env.local');
+const runtimeEnvPath = process.env.BNA_RUNTIME_ENV_FILE || envLocalPath;
+const runtimeSecretsDir = process.env.BNA_RUNTIME_SECRETS_DIR || path.join(repoRoot, '.secrets');
 
 function parseEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return {};
@@ -83,11 +85,12 @@ function renderMarkdown(payload) {
 }
 
 async function main() {
-  const env = { ...parseEnvFile(envLocalPath), ...process.env };
-  const config = loadTelegramNotificationConfig({ env });
-  const rabbiReadiness = buildRabbiTelegramReadiness({ env });
+  const env = { ...parseEnvFile(runtimeEnvPath), ...process.env };
+  const config = loadTelegramNotificationConfig({ env, secretsDir: runtimeSecretsDir });
+  const rabbiReadiness = buildRabbiTelegramReadiness({ env, secretsDir: runtimeSecretsDir });
   const dryRun = await notifySuperAdminSupportTicket({
     env,
+    secretsDir: runtimeSecretsDir,
     dryRun: true,
     ticket: {
       id: 0,
@@ -107,6 +110,7 @@ async function main() {
   });
   const communicationDryRun = await notifyRabbiCommunication({
     env,
+    secretsDir: runtimeSecretsDir,
     dryRun: true,
     communication: {
       id: 0,

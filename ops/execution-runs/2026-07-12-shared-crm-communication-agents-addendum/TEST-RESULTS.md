@@ -1135,3 +1135,14 @@
 - PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha dab8c6d8ce23e0a2cda4d619d302ed32c6bac415`; report `ops/live-smokes/2026-07-13T16-05-26-231Z-onetime-provider-route-module-live-smoke.md`.
 - PASS authenticated Communication Agents API live smoke; report `ops/live-smokes/2026-07-13T16-06-41-853Z-one-time-communication-agents-live-smoke.md`.
 - Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, CRM production write, provider mutation, credential mutation, payment/access mutation, raw private payload logging, or destructive production mutation was performed.
+## One Time WAPI / Rabbi Telegram Safe Activation Gate - 2026-07-13
+
+- PASS `node --check server.js scripts/check-onetime-external-setup-readiness.mjs scripts/check-onetime-wapi-readiness.mjs`.
+- PASS `node --check scripts/check-rabbi-telegram-ticket-readiness.mjs`.
+- PASS `node --test tests/one-time-wapi-scope-contract.test.js tests/one-time-external-setup-readiness.test.js tests/one-time-owner-test-readiness.test.js tests/service-provider-lead-bot.test.js`; 29/29 tests passed.
+- PASS `node --test tests/rabbi-telegram-notifications.test.js`; 15/15 tests passed.
+- PASS-with-blocker `npm run one-time:wapi:readiness`: WAPI provider setup ready with one-time scoped Railway token, class link, instance, sender metadata, and webhook secret; `auto_reply.ready=false` only because `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` is not approved; no send or CRM mutation.
+- PASS-with-blocker `npm run one-time:owner-test:readiness`: Resend send-ready and WAPI provider setup-ready; secure owner-test email and WhatsApp aliases missing; no owner email/WhatsApp send.
+- PASS dry-run `BNA_RUNTIME_ENV_FILE=... BNA_RUNTIME_SECRETS_DIR=... npm run telegram:rabbi:readiness`: Rabbi Telegram profile ready, Super Admin target ready, dry-run only, no token/chat ID printed, no Telegram send.
+- PASS `BNA_RUNTIME_ENV_FILE=... BNA_RUNTIME_SECRETS_DIR=... npm run app:smoke:rabbi-agent-review-direct-proof`; report `ops/live-smokes/2026-07-13T16-08-00-665Z-rabbi-agent-review-direct-proof.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, CRM production write, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed by this local proof.

@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-07-12T20:11:10.592Z",
+  "checked_at": "2026-07-13T16:08:00.665Z",
   "status": "direct_codex_verified",
   "verification_mode": "codex_direct_verification_substituting_for_operator_agent_mode",
   "operator_instruction": "On 2026-07-12 the operator instructed Codex to run whatever verifications can be run directly instead of requiring the operator to run the Agent Mode prompts.",
@@ -10,9 +10,9 @@
       "name": "refresh Rabbi Agent Review read-only proof readiness",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/smoke-rabbi-agent-review-proof-readiness-live.mjs",
       "ok": true,
-      "duration_ms": 2806,
+      "duration_ms": 9326,
       "output_tail": [
-        "  \"report\": \"ops/live-smokes/2026-07-12T20-11-10-627Z-rabbi-agent-review-proof-readiness-live.md\",",
+        "  \"report\": \"ops/live-smokes/2026-07-13T16-08-00-703Z-rabbi-agent-review-proof-readiness-live.md\",",
         "  \"latest_report\": \"ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md\",",
         "  \"missing_terminal_prompt_count\": 2,",
         "  \"next_agent_mode_prompts\": [",
@@ -26,7 +26,7 @@
       "name": "refresh Rabbi Telegram no-send readiness",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-rabbi-telegram-ticket-readiness.mjs",
       "ok": true,
-      "duration_ms": 43,
+      "duration_ms": 53,
       "output_tail": [
         "        \"chat_id_configured\": true,",
         "        \"ops_username_configured\": true,",
@@ -42,16 +42,16 @@
       "name": "focused direct proof tests",
       "command": "C:\\Program Files\\nodejs\\node.exe --test tests/agent-review-hub.test.js tests/bna-helper-tools.test.js tests/rabbi-telegram-notifications.test.js tests/production-readiness-gate.test.js tests/production-unblocker.test.js",
       "ok": true,
-      "duration_ms": 315,
+      "duration_ms": 371,
       "output_tail": [
-        "ℹ tests 54",
+        "ℹ tests 57",
         "ℹ suites 0",
-        "ℹ pass 54",
+        "ℹ pass 57",
         "ℹ fail 0",
         "ℹ cancelled 0",
         "ℹ skipped 0",
         "ℹ todo 0",
-        "ℹ duration_ms 278.565"
+        "ℹ duration_ms 330.45"
       ]
     }
   ],
@@ -142,7 +142,7 @@
       "status": "direct_codex_verified",
       "workflow_state": "direct_codex_verification",
       "latest_result_status": "pass",
-      "last_result_ref": "CODIRECT-2026-07-12T20-11-10-591Z-rabbi-telegram-helper-ticket-smoke",
+      "last_result_ref": "CODIRECT-2026-07-13T16-08-00-665Z-rabbi-telegram-helper-ticket-smoke",
       "last_result_url": "",
       "public_url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md",
       "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-telegram-helper-ticket-smoke&requirement_id=REQ-20260708-084&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-telegram-helper-ticket-smoke&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-telegram-helper-ticket-smoke%3Aall-contexts&autosave=1",
@@ -163,7 +163,7 @@
       "status": "direct_codex_verified",
       "workflow_state": "direct_codex_verification",
       "latest_result_status": "pass",
-      "last_result_ref": "CODIRECT-2026-07-12T20-11-10-591Z-rabbi-helper-tool-scope-map",
+      "last_result_ref": "CODIRECT-2026-07-13T16-08-00-665Z-rabbi-helper-tool-scope-map",
       "last_result_url": "",
       "public_url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md",
       "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-helper-tool-scope-map&requirement_id=REQ-20260708-093&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-helper-tool-scope-map&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-helper-tool-scope-map%3Aall-contexts&autosave=1",

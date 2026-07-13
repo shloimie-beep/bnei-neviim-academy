@@ -751,3 +751,35 @@
   public auto-reply enablement, CRM production write, provider mutation,
   credential mutation, payment/access mutation, raw private payload logging, or
   destructive production mutation was performed.
+## One Time WAPI / Rabbi Telegram Safe Activation Gate
+
+- Requirement: `REQ-20260712-313`; owner-send dependency:
+  `REQ-20260713-906`.
+- Runtime safety evidence: `server.js` now makes
+  `oneTimeWapiAutoReplyReadiness(...).ready` depend on
+  `oneTimeProviderLeadBotTelegramApproved()`, and includes the explicit blocker
+  `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
+- Readiness redaction evidence:
+  `scripts/check-onetime-external-setup-readiness.mjs` and
+  `scripts/check-onetime-wapi-readiness.mjs` treat Railway-redacted secret keys
+  as present without returning raw secret values.
+- WAPI report: `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md` /
+  `.json` reports `provider_setup.ready=true`,
+  `credential_scope=one_time_scoped`, `auto_reply.ready=false`, and
+  `whatsapp_send_performed=false`.
+- Owner-test report:
+  `ops/watchdog-audits/2026-07-13T16-06-26-630Z-onetime-owner-test-readiness.md`
+  / `.json` reports Resend and WAPI preflight ready but secure owner-test
+  email/WhatsApp aliases missing; `external_send_performed=false`.
+- Rabbi Telegram report:
+  `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md` /
+  `.json` reports the scoped Rabbi profile ready via ignored runtime config,
+  with no token/chat ID printed and no Telegram send.
+- Direct proof report:
+  `ops/live-smokes/2026-07-13T16-08-00-665Z-rabbi-agent-review-direct-proof.md`.
+- Test evidence: focused WAPI/external setup/owner-readiness/provider-bot suite
+  passed 29/29; Rabbi Telegram notification suite passed 15/15.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram
+  send, public auto-reply enablement, CRM production write, payment/access
+  mutation, raw destination/chat/token logging, or destructive production
+  mutation was performed by this proof.

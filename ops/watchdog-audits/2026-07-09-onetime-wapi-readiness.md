@@ -1,6 +1,6 @@
 # One Time WAPI / WhatsApp Readiness
 
-Checked at: 2026-07-13T05:10:06.079Z
+Checked at: 2026-07-13T16:06:20.162Z
 
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Mode: readiness_no_send
@@ -14,7 +14,7 @@ Secret values printed: false
 - Outbound configured: true
 - Credential scope: one_time_scoped
 - Provider setup ready: true
-- Auto-reply ready: true
+- Auto-reply ready: false
 - Auto-reply enabled: true
 - Auto-reply approved: true
 - Telegram notifications approved: false

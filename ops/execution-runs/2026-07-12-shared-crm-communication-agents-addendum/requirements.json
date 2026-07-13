@@ -120,9 +120,9 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T18:05:00+03:00",
+      "updated_at": "2026-07-13T19:08:00+03:00",
       "can_continue_without_operator": false,
-      "blocker": "Missing secure owner-test destinations: ONE_TIME_OWNER_TEST_EMAIL (or approved alias) and ONE_TIME_OWNER_TEST_WHATSAPP/PHONE (or approved alias) are absent from local/keyholder/Railway readback. Resend is send-ready and One Time WAPI provider setup is ready with one-time scoped credentials; no send was attempted.",
+      "blocker": "Missing secure owner-test destinations: ONE_TIME_OWNER_TEST_EMAIL (or approved alias) and ONE_TIME_OWNER_TEST_WHATSAPP/PHONE (or approved alias) are absent from Railway/readiness readback. Resend is send-ready and One Time WAPI provider setup is ready with one-time scoped credentials; public auto-reply remains blocked by ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM; no owner send was attempted.",
       "status": "blocked",
       "depends_on": [
         "REQ-20260713-905"
@@ -136,7 +136,9 @@
         "ops/watchdog-audits/2026-07-13T10-06-52-478Z-onetime-owner-test-readiness.md",
         "ops/watchdog-audits/2026-07-13T10-06-52-478Z-onetime-owner-test-readiness.json",
         "ops/watchdog-audits/2026-07-13T14-51-56-101Z-onetime-owner-test-readiness.md",
-        "ops/watchdog-audits/2026-07-13T14-51-56-101Z-onetime-owner-test-readiness.json"
+        "ops/watchdog-audits/2026-07-13T14-51-56-101Z-onetime-owner-test-readiness.json",
+        "ops/watchdog-audits/2026-07-13T16-06-26-630Z-onetime-owner-test-readiness.md",
+        "ops/watchdog-audits/2026-07-13T16-06-26-630Z-onetime-owner-test-readiness.json"
       ],
       "verification": [
         "node --check src/lib/bna/one-time-owner-test-readiness.js PASS",
@@ -147,7 +149,9 @@
         "npm run one-time:wapi:readiness produced redacted no-send report; WAPI provider setup and auto-reply ready; Telegram notification approval false; whatsapp_send_performed=false",
         "scripts/smoke-email.mjs one_time resend-client no-send readiness PASS with external_send_performed=false",
         "npm run one-time:owner-test:readiness refreshed redacted no-send blocker report at 2026-07-13T10:06:52.478Z; Resend send_allowed=true, WAPI provider_setup_ready=true, owner_test_email_present=false, owner_test_whatsapp_present=false, external_send_performed=false",
-        "npm run one-time:owner-test:readiness on 2026-07-13T14:51:56Z: Resend send_allowed=true, WAPI provider_setup_ready=true, credential_scope=one_time_scoped, owner_test_email_present=false, owner_test_whatsapp_present=false, external_send_performed=false"
+        "npm run one-time:owner-test:readiness on 2026-07-13T14:51:56Z: Resend send_allowed=true, WAPI provider_setup_ready=true, credential_scope=one_time_scoped, owner_test_email_present=false, owner_test_whatsapp_present=false, external_send_performed=false",
+        "npm run one-time:wapi:readiness on 2026-07-13T16:06:20Z: WAPI provider_setup.ready=true, credential_scope=one_time_scoped, telegram_confirm_approved=false, auto_reply.ready=false, whatsapp_send_performed=false",
+        "npm run one-time:owner-test:readiness on 2026-07-13T16:06:26Z: Resend send_allowed=true, WAPI provider_setup_ready=true, owner_test_email_present=false, owner_test_whatsapp_present=false, external_send_performed=false"
       ],
       "implementation_files": [
         "src/lib/bna/one-time-owner-test-readiness.js",
@@ -170,8 +174,8 @@
       ],
       "category": "provider_owner_tests",
       "batch_id": "1-owner-only-live-integration-tests",
-      "implementation_status": "No-send owner-test readiness was rerun after the operator noted WAPI was configured. Current proof confirms WAPI provider setup is ready, credential_scope=one_time_scoped, Resend send_allowed=true, and both secure owner-test aliases are still missing. Zero email sends, WhatsApp sends, CRM mutations, public auto-reply activation, Railway mutations, or external writes were performed.",
-      "next_action": "Configure secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP or approved equivalent aliases through the approved secret path; rerun npm run one-time:owner-test:readiness, then perform bounded owner-only send/readback. Continue non-send REQ-20260712-312/313 prerequisites meanwhile.",
+      "implementation_status": "No-send owner-test readiness was rerun after securely setting the One Time scoped WAPI token in Railway. Current proof confirms WAPI provider setup is ready, credential_scope=one_time_scoped, Resend send_allowed=true, and both secure owner-test aliases are still missing. Zero email sends, WhatsApp sends, CRM mutations, public auto-reply activation, Telegram sends, or destructive production writes were performed.",
+      "next_action": "Configure secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP or approved equivalent aliases through the approved secret path; rerun npm run one-time:owner-test:readiness, then perform bounded owner-only send/readback. Public WhatsApp auto-reply remains separately blocked until ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM is explicitly approved.",
       "acceptance_criteria": [
         "Secure owner-test email and WhatsApp aliases are resolved from approved config/Railway/keyholder paths or a precise blocker is recorded.",
         "No raw destination value is hardcoded, pasted, committed, logged, screenshot, or reported.",
@@ -2288,27 +2292,48 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "not_started",
-      "implementation_status": "partial",
+      "status": "in_progress",
+      "implementation_status": "Partial safe-activation proof advanced: WAPI readiness now recognizes the One Time scoped Railway token without exposing its value; provider setup is ready with instance, sender metadata, webhook secret, and class link; public auto-reply is fail-closed behind ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM; Rabbi Telegram readiness is green via ignored runtime env/secrets dry-run; owner-only email/WhatsApp sends remain blocked by missing secure owner-test aliases. No external email, WhatsApp, Telegram, CRM, payment/access, or public auto-reply send was performed.",
       "can_continue_without_operator": true,
-      "next_action": "Continue REQ-20260712-313 after dependent earlier batches are validated.",
+      "next_action": "Deploy the auto-reply safety gate and redacted readiness updates to the One Time service, run Railway doctor and exact-SHA live smokes, then continue only non-send activation checks until secure owner-test aliases and explicit public auto-reply confirmation exist.",
       "acceptance_criteria": [
         "Contact capture works independently of AI reply readiness; WAPI auth/binding/contact/conversation/zero-task/idempotency/opt-out/OpenAI/outbox checks pass; WhatsApp live only after readiness; email remains draft."
       ],
       "evidence": [
-        "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md"
+        "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md",
+        "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md",
+        "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.json",
+        "ops/watchdog-audits/2026-07-13T16-06-26-630Z-onetime-owner-test-readiness.md",
+        "ops/watchdog-audits/2026-07-13T16-06-26-630Z-onetime-owner-test-readiness.json",
+        "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md",
+        "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json",
+        "ops/live-smokes/2026-07-13T16-08-00-665Z-rabbi-agent-review-direct-proof.md"
       ],
       "verification": [
-        "npm run app:smoke:rabbi-agent-review-direct-proof"
+        "npm run app:smoke:rabbi-agent-review-direct-proof",
+        "node --check server.js scripts/check-onetime-external-setup-readiness.mjs scripts/check-onetime-wapi-readiness.mjs PASS",
+        "node --check scripts/check-rabbi-telegram-ticket-readiness.mjs PASS",
+        "node --test tests/one-time-wapi-scope-contract.test.js tests/one-time-external-setup-readiness.test.js tests/one-time-owner-test-readiness.test.js tests/service-provider-lead-bot.test.js PASS 29/29",
+        "node --test tests/rabbi-telegram-notifications.test.js PASS 15/15",
+        "npm run one-time:wapi:readiness PASS-with-blocker: provider_setup.ready=true, auto_reply.ready=false only on Telegram confirmation, whatsapp_send_performed=false",
+        "npm run one-time:owner-test:readiness PASS-with-blocker: Resend and WAPI preflight ready, owner aliases missing, no send",
+        "BNA_RUNTIME_ENV_FILE + BNA_RUNTIME_SECRETS_DIR npm run telegram:rabbi:readiness PASS: Rabbi profile ready, dry-run only, external_write_performed=false",
+        "BNA_RUNTIME_ENV_FILE + BNA_RUNTIME_SECRETS_DIR npm run app:smoke:rabbi-agent-review-direct-proof PASS"
       ],
       "implementation_files": [
         "src/lib/bna/telegram-notifications.js",
         "scripts/smoke-rabbi-agent-review-direct-proof.mjs",
-        "src/lib/bna/provider-lead-bot.js"
+        "src/lib/bna/provider-lead-bot.js",
+        "server.js",
+        "scripts/check-onetime-wapi-readiness.mjs",
+        "scripts/check-onetime-external-setup-readiness.mjs",
+        "scripts/check-rabbi-telegram-ticket-readiness.mjs",
+        "tests/one-time-wapi-scope-contract.test.js",
+        "tests/one-time-external-setup-readiness.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:18:00+03:00",
-      "blocker": "WAPI/Resend convergence and zero-task live proof still pending."
+      "updated_at": "2026-07-13T19:08:00+03:00",
+      "blocker": "Live owner email/WhatsApp sends are blocked by REQ-20260713-906 missing secure owner-test aliases; unrestricted public WhatsApp auto-reply is blocked by missing ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM approval."
     },
     {
       "id": "REQ-20260712-314",

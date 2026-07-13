@@ -583,3 +583,35 @@ Current status: `active`
 - Guardrails: no owner-test email, WhatsApp/WAPI provider send, Telegram send,
   public auto-reply enablement, credential mutation, payment/access mutation,
   raw private payload logging, or destructive production mutation was performed.
+
+## 2026-07-13 - One Time WAPI And Rabbi Telegram Safe Activation Gate
+
+- `REQ-20260712-313` is In progress; this slice prepares a safer deployable
+  activation gate without enabling public auto-reply.
+- The One Time scoped WAPI token was set in Railway through stdin with
+  `--skip-deploys` and no value printed or committed. Current readiness
+  readback reports `credential_scope=one_time_scoped` and
+  `provider_setup.ready=true`.
+- `server.js` now requires
+  `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`
+  before `oneTimeWapiAutoReplyReadiness(...).ready` can become true, so a
+  token-enabled runtime cannot accidentally open unrestricted public WhatsApp
+  auto-replies.
+- WAPI readiness report:
+  `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`; auto-reply is
+  blocked only by the missing Telegram confirmation flag, and
+  `whatsapp_send_performed=false`.
+- Owner-test readiness report:
+  `ops/watchdog-audits/2026-07-13T16-06-26-630Z-onetime-owner-test-readiness.md`;
+  Resend and WAPI preflight are ready, but secure owner-test email and WhatsApp
+  aliases are missing, so no owner send was attempted.
+- Rabbi Telegram readiness now supports explicit ignored runtime env/secret
+  paths. With the main local runtime files, the Rabbi profile, token binding,
+  chat binding, and One Time ops credentials all report ready in
+  `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md`.
+- Direct Rabbi Agent Review proof passed:
+  `ops/live-smokes/2026-07-13T16-08-00-665Z-rabbi-agent-review-direct-proof.md`.
+- Guardrails: no owner email send, WhatsApp/WAPI provider send, Telegram send,
+  public auto-reply enablement, CRM production write, payment/access mutation,
+  raw destination/chat/token logging, or destructive production mutation was
+  performed.

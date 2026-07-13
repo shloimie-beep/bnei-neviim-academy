@@ -110,6 +110,18 @@ function summarizeCredential(token, fallbackToken) {
   return 'missing';
 }
 
+function scopedTokenConfigured(token, railwayVariables = null) {
+  return token.configured || railwayVariables?.one_time_wapi_token_present === true;
+}
+
+function scopedTokenSource(token, railwayVariables = null) {
+  if (token.configured) return token.source;
+  if (railwayVariables?.one_time_wapi_token_present === true) {
+    return `${railwayVariables.source}:one_time_wapi_token_present`;
+  }
+  return token.source;
+}
+
 export function buildOneTimeWapiReadiness(options = {}) {
   const root = options.repoRoot || repoRoot;
   const env = options.env || {
@@ -203,7 +215,8 @@ export function buildOneTimeWapiReadiness(options = {}) {
       ? `${railwayVariables.source}:one_time_whapi_phone_present`
       : phone.source;
 
-  const credentialScope = summarizeCredential(oneTimeToken, defaultToken);
+  const oneTimeTokenConfigured = scopedTokenConfigured(oneTimeToken, railwayVariables);
+  const credentialScope = oneTimeTokenConfigured ? 'one_time_scoped' : summarizeCredential(oneTimeToken, defaultToken);
   const providerBotProfileKey = String(env.ONE_TIME_PROVIDER_LEAD_BOT_PROFILE || 'one-time').trim() || 'one-time';
   let providerBotProfile = null;
   let providerBotProfileError = '';
@@ -237,20 +250,23 @@ export function buildOneTimeWapiReadiness(options = {}) {
   const telegramApproved =
     String(env.ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM || '').trim() === 'APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM' ||
     railwayVariables?.one_time_provider_lead_bot_telegram_confirm_approved === true;
-  const outboundConfigured = oneTimeToken.configured || defaultToken.configured;
+  const outboundConfigured = oneTimeTokenConfigured || defaultToken.configured;
   const autoReplyBlockers = [];
-  if (!oneTimeToken.configured) autoReplyBlockers.push('ONE_TIME_WAPI_API_TOKEN or RABBI_SHELLER_WAPI_API_TOKEN missing');
-  if (defaultToken.configured && !oneTimeToken.configured) autoReplyBlockers.push('One Time auto-reply cannot use default/global WAPI credentials');
+  if (!oneTimeTokenConfigured) autoReplyBlockers.push('ONE_TIME_WAPI_API_TOKEN or RABBI_SHELLER_WAPI_API_TOKEN missing');
+  if (defaultToken.configured && !oneTimeTokenConfigured) autoReplyBlockers.push('One Time auto-reply cannot use default/global WAPI credentials');
   if (!autoReplyEnabled) autoReplyBlockers.push('ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled');
   if (!autoReplyApproved) autoReplyBlockers.push('ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY');
   if (providerBotMode !== 'live') autoReplyBlockers.push('ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live');
   if (!providerBotProfile || providerBotProfileError) autoReplyBlockers.push('One Time provider lead-bot profile is missing or invalid');
   if (!webhookSecretConfigured) autoReplyBlockers.push('One Time WAPI webhook secret missing');
   if (!classLinkConfigured) autoReplyBlockers.push('ONE_TIME_WHATSAPP_CLASS_LINK or current class link alias missing');
+  if (!telegramApproved) {
+    autoReplyBlockers.push('ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM');
+  }
 
   const setupBlockers = [];
   if (!outboundConfigured) setupBlockers.push('WAPI/Whapi token missing');
-  if (!oneTimeToken.configured) setupBlockers.push('One Time scoped WAPI token missing');
+  if (!oneTimeTokenConfigured) setupBlockers.push('One Time scoped WAPI token missing');
   if (!instanceConfigured) setupBlockers.push('Whapi/WAPI instance id missing');
   if (!phoneConfigured) setupBlockers.push('WhatsApp sender phone metadata missing');
   if (!webhookSecretConfigured) setupBlockers.push('WAPI webhook secret missing');
@@ -276,9 +292,9 @@ export function buildOneTimeWapiReadiness(options = {}) {
     outbound: {
       configured: outboundConfigured,
       credential_scope: credentialScope,
-      one_time_token_present: oneTimeToken.configured,
+      one_time_token_present: oneTimeTokenConfigured,
       default_token_present: defaultToken.configured,
-      one_time_token_source: oneTimeToken.source,
+      one_time_token_source: scopedTokenSource(oneTimeToken, railwayVariables),
       default_token_source: defaultToken.source,
       base_url_configured: Boolean(baseUrl.configured || DEFAULT_WAPI_BASE_URL),
       base_url_source: baseUrl.configured ? baseUrl.source : 'default',

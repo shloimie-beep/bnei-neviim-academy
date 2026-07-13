@@ -40,6 +40,8 @@ test('One Time WAPI provider lead-bot reply is approval-gated and does not commi
   assert.match(server, /function oneTimeWapiAutoReplyReadiness/);
   assert.match(server, /ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'live'/);
   assert.match(server, /ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_APPROVED/);
+  assert.match(server, /oneTimeProviderLeadBotTelegramApproved\(\)/);
+  assert.match(server, /ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM/);
   assert.match(server, /WAPI_WEBHOOK_ALLOW_INSECURE_LOCAL_TEST/);
   assert.doesNotMatch(webhookAuth, /req\.query\.secret/);
   assert.match(server, /credential_scope === 'one_time_scoped'/);
@@ -160,7 +162,10 @@ test('One Time WAPI readiness script reports blockers without sends or secrets',
     },
   });
   assert.equal(railwayProviderSetup.provider_setup.ready, true);
-  assert.equal(railwayProviderSetup.auto_reply.ready, true);
+  assert.equal(railwayProviderSetup.auto_reply.ready, false);
+  assert.ok(
+    railwayProviderSetup.auto_reply.blockers.some((blocker) => /ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM/.test(blocker))
+  );
   assert.equal(railwayProviderSetup.auto_reply.webhook_secret_present, true);
   assert.equal(railwayProviderSetup.outbound.railway_readback.webhook_secret_present, true);
   assert.equal(railwayProviderSetup.outbound.railway_readback.auto_reply_enabled, true);
@@ -169,6 +174,39 @@ test('One Time WAPI readiness script reports blockers without sends or secrets',
   assert.equal(railwayProviderSetup.whatsapp_send_performed, false);
   assert.equal(railwayProviderSetup.crm_mutation_performed, false);
   assert.doesNotMatch(JSON.stringify(railwayProviderSetup), /scoped-token|webhook-secret|\+972/);
+
+  const railwayRedactedToken = buildOneTimeWapiReadiness({
+    inspectKeyholder: false,
+    env: {},
+    railwayVariables: {
+      attempted: true,
+      ok: true,
+      source: 'railway_token_or_env',
+      key_count: 54,
+      one_time_wapi_token_present: true,
+      one_time_class_link_present: true,
+      one_time_whapi_instance_present: true,
+      one_time_whapi_phone_present: true,
+      one_time_wapi_webhook_secret_present: true,
+      one_time_wapi_auto_reply_enabled_true: true,
+      one_time_wapi_auto_reply_confirm_approved: true,
+      one_time_provider_lead_bot_mode_live: true,
+    },
+  });
+  assert.equal(railwayRedactedToken.outbound.configured, true);
+  assert.equal(railwayRedactedToken.outbound.one_time_token_present, true);
+  assert.equal(railwayRedactedToken.outbound.credential_scope, 'one_time_scoped');
+  assert.equal(
+    railwayRedactedToken.outbound.one_time_token_source,
+    'railway_token_or_env:one_time_wapi_token_present'
+  );
+  assert.equal(railwayRedactedToken.provider_setup.ready, true);
+  assert.equal(railwayRedactedToken.auto_reply.ready, false);
+  assert.ok(
+    railwayRedactedToken.auto_reply.blockers.some((blocker) => /ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM/.test(blocker))
+  );
+  assert.equal(railwayRedactedToken.telegram_notifications.ready, false);
+  assert.doesNotMatch(JSON.stringify(railwayRedactedToken), /scoped-token|api-token|secret-value|\+972/);
 });
 
 test('One Time WAPI attention artifacts badge/notify but suppress generic tasks', () => {
