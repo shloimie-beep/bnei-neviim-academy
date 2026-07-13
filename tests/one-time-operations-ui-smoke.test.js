@@ -444,6 +444,7 @@ test('One Time Operations UI exposes scoped owner modules, integrations, and no-
   fs.mkdirSync(outDir, { recursive: true });
   const previewRequests = [];
   const servedPaths = [];
+  const missingPaths = [];
   let activePort = 0;
   const server = http.createServer(async (req, res) => {
     const url = new URL(req.url || '/', `http://127.0.0.1:${activePort || 0}`);
@@ -458,10 +459,20 @@ test('One Time Operations UI exposes scoped owner modules, integrations, and no-
       previewRequests.push({ method: req.method, body });
       return json(res, previewPayload(body));
     }
+    if (url.pathname === '/api/performance/rum') {
+      await readBody(req);
+      return json(res, { success: true, external_write_performed: false });
+    }
     if (url.pathname.startsWith('/api/bna/')) {
       return json(res, defaultApiPayload(url.pathname));
     }
+    if (url.pathname === '/favicon.ico') {
+      res.writeHead(204);
+      res.end();
+      return;
+    }
     if (serveStatic(res, url.pathname, servedPaths)) return;
+    missingPaths.push(url.pathname);
     res.writeHead(404);
     res.end('not found');
   });
@@ -700,7 +711,7 @@ test('One Time Operations UI exposes scoped owner modules, integrations, and no-
     assert.equal(mobileContentRail.hasMeta, false);
     assert.ok(mobileContentRail.pageScrollWidth <= mobileContentRail.pageWidth + 1, `mobile content overflow ${mobileContentRail.pageScrollWidth} > ${mobileContentRail.pageWidth}`);
 
-    assert.deepEqual(consoleErrors, []);
+    assert.deepEqual({ consoleErrors, missingPaths }, { consoleErrors: [], missingPaths: [] });
 
     const redactedPreviewRequests = previewRequests.map((request) => ({
       method: request.method,

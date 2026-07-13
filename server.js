@@ -30095,6 +30095,10 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
 const CRM_TIMELINE_SUPPRESSION_STATES = "'unsubscribed', 'suppressed', 'invalid', 'bounced', 'stopped', 'stop', 'wrong_number', 'do_not_contact'";
 const CRM_TIMELINE_TRUTHY_STATES = "'1', 'true', 'yes', 'on'";
 
+function oneTimeOutboxChannelSqlList() {
+  return ONE_TIME_OUTBOX_CHANNEL_KEYS.map((key) => `'${String(key).replace(/'/g, "''")}'`).join(', ');
+}
+
 function crmTimelineSuppressionParts(alias) {
   const metadata = `${alias}.metadata`;
   const emailState = `lower(COALESCE(${metadata}->>'email_suppression_state', ${metadata}->>'email_unsubscribed', ${metadata}->>'unsubscribed', ''))`;
@@ -30144,6 +30148,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     ];
     const taskConditions = [`l.id = $1`, `t.stage <> 'archive'`];
     const suppressionConditions = [`l.id = $1`];
+    const outboxConditions = [`l.id = $1`, `o.channel_key IN (${oneTimeOutboxChannelSqlList()})`];
     const ticketConditions = [
       `l.id = $1`,
       `st.project_id = l.project_id`,
@@ -30176,6 +30181,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
       emailConditions.push(`p.project_key = $${params.length}`);
       taskConditions.push(`p.project_key = $${params.length}`);
       suppressionConditions.push(`p.project_key = $${params.length}`);
+      outboxConditions.push(`p.project_key = $${params.length}`);
       ticketConditions.push(`p.project_key = $${params.length}`);
       studentConditions.push(`p.project_key = $${params.length}`);
       memberConditions.push(`p.project_key = $${params.length}`);
@@ -30235,6 +30241,60 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
           JOIN bna_parent_leads l ON TRUE
           LEFT JOIN bna_projects p ON p.id = l.project_id
           WHERE ${emailConditions.join(' AND ')}
+         UNION ALL
+         SELECT
+           o.id,
+           CASE
+             WHEN o.channel_key LIKE 'email:%' THEN 'email'
+             WHEN o.channel_key LIKE 'whatsapp:%' THEN 'whatsapp'
+             WHEN o.channel_key LIKE 'telegram:%' THEN 'telegram'
+             ELSE 'delivery_outbox'
+           END AS channel,
+           'outbound' AS direction,
+           ('Delivery ' || COALESCE(NULLIF(o.status, ''), 'queued') || ': ' ||
+             CASE
+               WHEN o.channel_key LIKE 'email:%' THEN 'Email'
+               WHEN o.channel_key LIKE 'whatsapp:%' THEN 'WhatsApp'
+               WHEN o.channel_key LIKE 'telegram:%' THEN 'Rabbi Telegram'
+               ELSE 'Message'
+             END ||
+             CASE WHEN COALESCE(o.payload->>'workflow', '') <> '' THEN (' / ' || replace(o.payload->>'workflow', '_', ' ')) ELSE '' END
+           ) AS body,
+           NULL::text AS notes,
+           'assistant_delivery_outbox' AS source,
+           jsonb_build_object(
+             'crm_contact_id', ('bna_parent_leads:' || l.id::text),
+             'source_table', 'assistant_delivery_outbox',
+             'outbox_id', o.id,
+             'delivery_key', o.delivery_key,
+             'channel_key', o.channel_key,
+             'status', o.status,
+             'attempts', o.attempts,
+             'idempotency_key', o.idempotency_key,
+             'message_body_returned', false,
+             'recipient_returned', false,
+             'no_send', true,
+             'external_write_performed', false
+           ) AS source_context,
+           COALESCE(o.sent_at, o.updated_at, o.created_at) AS occurred_at,
+           o.created_at,
+           'delivery_outbox' AS communication_type,
+           NULL::text AS subject,
+           o.delivery_key AS thread_key,
+           NULL::text AS external_message_id,
+           NULL::text AS from_address,
+           NULL::text AS to_address,
+           CASE
+             WHEN o.channel_key LIKE 'email:%' THEN 'resend'
+             WHEN o.channel_key LIKE 'whatsapp:%' THEN 'one_time_wapi'
+             WHEN o.channel_key LIKE 'telegram:%' THEN 'one_time_rabbi_telegram'
+             ELSE 'assistant_delivery_outbox'
+           END AS provider,
+           o.status
+         FROM assistant_delivery_outbox o
+         JOIN bna_parent_leads l ON l.id = ${oneTimeDeliveryOutboxLeadJoinExpression('o')}
+         LEFT JOIN bna_projects p ON p.id = l.project_id
+         WHERE ${outboxConditions.join(' AND ')}
          UNION ALL
          SELECT
            t.id,
@@ -30473,6 +30533,22 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
   const pipelineConditions = [`contact_id = $1`];
   const taskConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(t.related_contact_email) = lower(bc.primary_email)`, `t.stage <> 'archive'`];
   const suppressionConditions = [`bc.id = $1`];
+  const outboxConditions = [
+    `bc.id = $1`,
+    `o.channel_key IN (${oneTimeOutboxChannelSqlList()})`,
+    `(
+      (
+        NULLIF(bc.metadata->>'parent_lead_id', '') IS NOT NULL
+        AND l.id::text = NULLIF(bc.metadata->>'parent_lead_id', '')
+      )
+      OR NULLIF(l.metadata->>'canonical_contact_key', '') = ('bna_contacts:' || bc.id::text)
+      OR NULLIF(l.metadata->>'canonical_contact_id', '') = bc.id::text
+      OR (
+        COALESCE(bc.primary_email, '') <> ''
+        AND lower(COALESCE(l.parent_email, '')) = lower(bc.primary_email)
+      )
+    )`,
+  ];
   const ticketConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(st.requester_email) = lower(bc.primary_email)`];
   const studentConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(COALESCE(s.parent_email, '')) = lower(bc.primary_email)`, `COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')`];
   const memberConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(COALESCE(m.email, '')) = lower(bc.primary_email)`];
@@ -30485,6 +30561,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     pipelineConditions.push(`workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     taskConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     suppressionConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
+    outboxConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     ticketConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     studentConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     memberConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
@@ -30495,6 +30572,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     communicationConditions.push(`(cm.contact_id = bc.id OR cm.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length}) OR cm.metadata->>'project_key' = $${params.length})`);
     contactNoteConditions.push(`COALESCE(l.project_id, cc.project_id) IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     taskConditions.push(`t.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
+    outboxConditions.push(`l.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     ticketConditions.push(`st.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     studentConditions.push(`s.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     memberConditions.push(`m.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
@@ -30571,6 +30649,59 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
         JOIN bna_contacts bc ON bc.id = $1
         LEFT JOIN bna_parent_leads l ON l.id = cc.lead_id
         WHERE ${contactNoteConditions.join(' AND ')}
+        UNION ALL
+       SELECT
+         o.id,
+         CASE
+           WHEN o.channel_key LIKE 'email:%' THEN 'email'
+           WHEN o.channel_key LIKE 'whatsapp:%' THEN 'whatsapp'
+           WHEN o.channel_key LIKE 'telegram:%' THEN 'telegram'
+           ELSE 'delivery_outbox'
+         END AS channel,
+         'outbound' AS direction,
+         ('Delivery ' || COALESCE(NULLIF(o.status, ''), 'queued') || ': ' ||
+           CASE
+             WHEN o.channel_key LIKE 'email:%' THEN 'Email'
+             WHEN o.channel_key LIKE 'whatsapp:%' THEN 'WhatsApp'
+             WHEN o.channel_key LIKE 'telegram:%' THEN 'Rabbi Telegram'
+             ELSE 'Message'
+           END ||
+           CASE WHEN COALESCE(o.payload->>'workflow', '') <> '' THEN (' / ' || replace(o.payload->>'workflow', '_', ' ')) ELSE '' END
+         ) AS body,
+         'assistant_delivery_outbox' AS source,
+         jsonb_build_object(
+           'crm_contact_id', ('bna_contacts:' || bc.id::text),
+           'source_table', 'assistant_delivery_outbox',
+           'outbox_id', o.id,
+           'delivery_key', o.delivery_key,
+           'channel_key', o.channel_key,
+           'status', o.status,
+           'attempts', o.attempts,
+           'idempotency_key', o.idempotency_key,
+           'message_body_returned', false,
+           'recipient_returned', false,
+           'no_send', true,
+           'external_write_performed', false
+         ) AS source_context,
+          COALESCE(o.sent_at, o.updated_at, o.created_at) AS occurred_at,
+          o.created_at,
+          'delivery_outbox' AS communication_type,
+          NULL::text AS subject,
+          o.delivery_key AS thread_key,
+          NULL::text AS external_message_id,
+          NULL::text AS from_address,
+          NULL::text AS to_address,
+          CASE
+            WHEN o.channel_key LIKE 'email:%' THEN 'resend'
+            WHEN o.channel_key LIKE 'whatsapp:%' THEN 'one_time_wapi'
+            WHEN o.channel_key LIKE 'telegram:%' THEN 'one_time_rabbi_telegram'
+            ELSE 'assistant_delivery_outbox'
+          END AS provider,
+          o.status
+        FROM assistant_delivery_outbox o
+        JOIN bna_parent_leads l ON l.id = ${oneTimeDeliveryOutboxLeadJoinExpression('o')}
+        JOIN bna_contacts bc ON bc.id = $1
+        WHERE ${outboxConditions.join(' AND ')}
         UNION ALL
        SELECT
          id,

@@ -90,12 +90,14 @@ function isAggregateContextTimelineRow(row = {}) {
     'signup_context',
     'class_attendance',
     'communication_suppression',
+    'delivery_outbox',
   ].includes(row.communication_type) || [
     'student',
     'membership',
     'signup',
     'attendance',
     'suppression',
+    'delivery_outbox',
   ].includes(row.channel);
 }
 

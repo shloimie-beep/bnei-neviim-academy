@@ -64,7 +64,7 @@ test('Super Admin can launch a scoped Rabbi provider session without passwords',
   assert.match(routeBlock, /findOneTimeProviderForAdminSession\(\)/);
   assert.match(routeBlock, /issueProviderSession\(provider\.id\)/);
   assert.match(routeBlock, /setProviderSessionCookie\(res, sessionId\)/);
-  assert.match(routeBlock, /view_url: '\/operations\?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi'/);
+  assert.match(routeBlock, /view_url: '\/provider\.html\?admin_provider=one-time&section=mailbox'/);
   assert.match(routeBlock, /password_returned: false/);
   assert.match(routeBlock, /secrets_included: false/);
   assert.match(routeBlock, /external_write_performed: false/);
