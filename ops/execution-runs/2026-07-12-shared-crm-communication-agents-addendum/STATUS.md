@@ -265,3 +265,16 @@ Current status: `active`
 - Live proof passed: One Time exact-SHA separate-instance smoke, One Time CRM workbench smoke, One Time provider route-module smoke, delivery-outbox DTO regression smoke, Operations workspace taxonomy smoke, and One Time performance regression gate.
 - Targeted delivery dead-letter DTO live probe wrote `ops/live-smokes/2026-07-13T09-51-50-226Z-one-time-crm-dead-letter-dto-live-smoke.md`; production returned 7 canonical contacts but no live dead-letter rows, so it recorded `skipped_no_live_dead_letters` without creating synthetic data.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw recipient/body/reason/payload logging, or production data mutation was performed.
+
+## CRM Signup Context And Lifecycle Activity DTO - 2026-07-13
+
+- `REQ-20260712-302` remains in progress, with the signup-context/lifecycle Activity DTO slice implemented, pushed, deployed, and live-smoked at `c2b0878b66a50679589ee240ebdbd194622008fa`.
+- `server.js` now includes scoped `bna_product_leads` rows as selected-contact `signup_context` Activity rows for canonical `bna_contacts` and legacy `bna_parent_leads`; payment links, checkout sessions, access grants, sends, and external-write flags remain redacted/false.
+- `server.js` also emits redacted `bna_contact_pipeline_events` as `lifecycle_event` Activity rows for canonical contacts; raw pipeline metadata is not returned.
+- `src/lib/bna/crm/contact-service.js` and `server.js` keep `signup_context` and `lifecycle_event` aggregate rows out of Conversations and Tasks.
+- BNA Railway deployment `2efc3746-dbf0-4531-b4c2-d82ab1a61898` reached `SUCCESS`; One Time Railway deployment `36d753a9-b0f0-4dd6-a757-c7eb8b2f0bcb` reached `SUCCESS`.
+- Both live deploy-info endpoints returned `commit_sha=c2b0878b66a50679589ee240ebdbd194622008fa` with target apps `bna` and `one-time`.
+- Live proof passed: One Time exact-SHA separate-instance smoke, One Time CRM workbench smoke, One Time provider route-module smoke, BNA Operations workspace taxonomy smoke, and One Time performance regression gate.
+- Targeted signup-context DTO live probe wrote `ops/live-smokes/2026-07-13T10-17-24-142Z-one-time-crm-signup-context-dto-live-smoke.md`; production had `signup_context_candidate_count=1` and `signup_context_match=true` without creating synthetic data.
+- Owner-only live integration testing remains blocked only by missing secure owner aliases; refreshed readiness report `ops/watchdog-audits/2026-07-13T10-06-52-478Z-onetime-owner-test-readiness.md` shows Resend and WAPI ready, owner aliases missing, and no send performed.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw contact/message/destination logging, or production data mutation was performed by this DTO smoke.

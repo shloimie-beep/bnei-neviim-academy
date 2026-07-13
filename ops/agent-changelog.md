@@ -39864,3 +39864,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation,
   provider mutation, payment/access mutation, credential mutation, raw
   recipient/body/reason/payload logging, or production data mutation.
+
+## 2026-07-13 - Shared CRM signup context and lifecycle Activity DTO deployed
+
+- Added scoped `bna_product_leads` rows to selected-contact Activity as
+  `signup_context` for canonical contacts and legacy parent leads.
+- Added redacted `bna_contact_pipeline_events` rows to selected-contact
+  Activity as `lifecycle_event` for canonical contacts.
+- Kept `signup_context` and `lifecycle_event` out of selected-contact
+  Conversations and Tasks DTOs; Tasks remain explicit follow-up-task rows only.
+- Added `app:smoke:onetime-crm-signup-context-dto` for redacted read-only
+  production proof.
+- Commit `c2b0878b66a50679589ee240ebdbd194622008fa` is pushed and deployed to
+  BNA deployment `2efc3746-dbf0-4531-b4c2-d82ab1a61898` and One Time
+  deployment `36d753a9-b0f0-4dd6-a757-c7eb8b2f0bcb`; both deploy-info
+  endpoints returned the exact SHA.
+- Verification passed: focused CRM/provider tests `31/31`, generated shell,
+  action/protocol watchdogs, secrets audit, run validation, exact-SHA One Time
+  route/CRM/provider smokes, BNA taxonomy smoke, targeted signup-context DTO
+  smoke with `signup_context_match=true`, and One Time performance gate.
+- Refreshed owner-test readiness remains blocked only by missing secure
+  owner-test email/WhatsApp aliases; Resend and WAPI are ready and no send was
+  attempted.

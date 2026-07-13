@@ -120,7 +120,7 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T08:08:00+03:00",
+      "updated_at": "2026-07-13T13:06:00+03:00",
       "can_continue_without_operator": false,
       "blocker": "Missing secure owner-test destinations: ONE_TIME_OWNER_TEST_EMAIL (or approved alias) and ONE_TIME_OWNER_TEST_WHATSAPP/PHONE (or approved alias) are absent from local/keyholder/Railway readback. Resend and One Time WAPI provider setup are ready; no send was attempted.",
       "status": "blocked",
@@ -132,7 +132,9 @@
         "ops/watchdog-audits/2026-07-13T05-10-06-583Z-onetime-owner-test-readiness.json",
         "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md",
         "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.json",
-        "scripts/smoke-email.mjs no-send one_time Resend readiness proof"
+        "scripts/smoke-email.mjs no-send one_time Resend readiness proof",
+        "ops/watchdog-audits/2026-07-13T10-06-52-478Z-onetime-owner-test-readiness.md",
+        "ops/watchdog-audits/2026-07-13T10-06-52-478Z-onetime-owner-test-readiness.json"
       ],
       "verification": [
         "node --check src/lib/bna/one-time-owner-test-readiness.js PASS",
@@ -141,7 +143,8 @@
         "node --test tests/one-time-owner-test-readiness.test.js tests/one-time-delivery-outbox.test.js tests/one-time-signup-reminder-workflow.test.js PASS 19/19",
         "npm run one-time:owner-test:readiness produced redacted no-send blocker report; Resend send_allowed=true; WAPI provider_setup_ready=true; owner aliases missing; external_send_performed=false; whatsapp_send_performed=false; email_send_performed=false",
         "npm run one-time:wapi:readiness produced redacted no-send report; WAPI provider setup and auto-reply ready; Telegram notification approval false; whatsapp_send_performed=false",
-        "scripts/smoke-email.mjs one_time resend-client no-send readiness PASS with external_send_performed=false"
+        "scripts/smoke-email.mjs one_time resend-client no-send readiness PASS with external_send_performed=false",
+        "npm run one-time:owner-test:readiness refreshed redacted no-send blocker report at 2026-07-13T10:06:52.478Z; Resend send_allowed=true, WAPI provider_setup_ready=true, owner_test_email_present=false, owner_test_whatsapp_present=false, external_send_performed=false"
       ],
       "implementation_files": [
         "src/lib/bna/one-time-owner-test-readiness.js",
@@ -693,7 +696,7 @@
         "REQ-20260712-305"
       ],
       "status": "in_progress",
-      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked through the selected-contact delivery-dead-letter DTO slice. Selected-contact Activity timelines now include redacted assistant_dead_letters rows for One Time delivery failures when live dead-letter rows exist, joined through the existing assistant_delivery_outbox lead mapping; Conversations and Tasks explicitly exclude delivery_outbox and delivery_dead_letter operational rows. DTO source_context remains redacted with reason_returned=false, payload_returned=false, message_body_returned=false, recipient_returned=false, no_send=true, and external_write_performed=false. Deployed SHA for this latest slice is 01d5a054ad99ba0a41196b18fc5b8098972e1d5a. Production had no live dead-letter rows in the inspected sample, so the live smoke recorded skipped_no_live_dead_letters without synthetic data or writes. The broader REQ-20260712-302 remains in progress for additional canonical aggregate breadth and later BNA frontend adoption after the One Time-first phase.",
+      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked through the selected-contact signup-context/lifecycle Activity DTO slice. Selected-contact Activity timelines now include scoped bna_product_leads signup_context rows for canonical contacts and legacy parent leads plus redacted bna_contact_pipeline_events lifecycle_event rows for canonical contacts; Conversations and Tasks explicitly exclude signup_context and lifecycle_event aggregate rows. Product signup context redacts payment/checkout/access/send side effects, and lifecycle context redacts raw pipeline metadata with metadata_returned=false, no_send=true, and external_write_performed=false. Deployed SHA for this latest slice is c2b0878b66a50679589ee240ebdbd194622008fa. Live proof found 1 scoped signup_context candidate and a positive selected-contact Activity timeline match without creating synthetic data or external writes. The broader REQ-20260712-302 remains in progress for additional canonical aggregate breadth and later BNA frontend adoption after the One Time-first phase.",
       "can_continue_without_operator": true,
       "next_action": "Continue canonical aggregate breadth only where it directly supports One Time-first packets or required BNA regression safety; live owner-send verifier work remains blocked until secure owner aliases exist.",
       "acceptance_criteria": [
@@ -802,7 +805,14 @@
         "ops/live-smokes/2026-07-13T09-51-50-534Z-onetime-provider-route-module-live-smoke.md records One Time provider route-module smoke at SHA 01d5a054ad99ba0a41196b18fc5b8098972e1d5a.",
         "ops/live-smokes/2026-07-13T09-52-15-192Z-operations-workspace-taxonomy-live-smoke.md records BNA workspace taxonomy regression smoke after the shared-server deploy.",
         "ops/live-smokes/2026-07-13T09-52-15-195Z-one-time-crm-delivery-outbox-dto-live-smoke.md records delivery-outbox DTO regression proof after the dead-letter slice; production again had no live delivery_outbox rows and no synthetic data was created.",
-        "ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md passed against deployed SHA 01d5a054ad99ba0a41196b18fc5b8098972e1d5a."
+        "ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md passed against deployed SHA 01d5a054ad99ba0a41196b18fc5b8098972e1d5a.",
+        "Commit c2b0878b66a50679589ee240ebdbd194622008fa adds selected-contact bna_product_leads signup_context Activity timeline rows and redacted bna_contact_pipeline_events lifecycle_event rows.",
+        "server.js selected-contact timelines include scoped signup_context rows for bna_contacts and bna_parent_leads while preserving no_send=true, no_checkout=true, no_access_granted=true, payment_link_returned=false, checkout_session_returned=false, and external_write_performed=false.",
+        "src/lib/bna/crm/contact-service.js and server.js exclude signup_context and lifecycle_event aggregate rows from selected-contact Conversations; Tasks remain explicit follow-up-task rows only.",
+        "public/operations.html labels lifecycle_event as Lifecycle update in Activity.",
+        "scripts/smoke-onetime-crm-signup-context-dto-live.mjs and package script app:smoke:onetime-crm-signup-context-dto provide a redacted read-only live probe for canonical selected-contact signup-context DTO behavior.",
+        "ops/live-smokes/2026-07-13T10-17-24-142Z-one-time-crm-signup-context-dto-live-smoke.md records a positive live proof with signup_context_candidate_count=1, signup_context_match=true, no sends, no payments, no access grants, and no external writes.",
+        "ops/watchdog-audits/2026-07-13T10-06-52-478Z-onetime-owner-test-readiness.md refreshes REQ-20260713-906 blocker evidence: Resend and WAPI are configured/ready, but owner_test_email and owner_test_whatsapp aliases remain missing and no send was attempted."
       ],
       "verification": [
         "node --check server.js PASS",
@@ -1002,7 +1012,26 @@
         "npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a PASS.",
         "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a PASS.",
         "npm run app:smoke:onetime-crm-dead-letter-dto PASS with skipped_no_live_dead_letters and no synthetic data created.",
-        "npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a PASS."
+        "npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a PASS.",
+        "node --check server.js PASS after signup-context/lifecycle Activity DTO slice.",
+        "node --check src/lib/bna/crm/contact-service.js PASS after excluding lifecycle_event aggregate rows.",
+        "node --check scripts/smoke-onetime-crm-signup-context-dto-live.mjs PASS.",
+        "node -e JSON.parse package.json PASS after adding app:smoke:onetime-crm-signup-context-dto.",
+        "node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js PASS 31/31.",
+        "npm run operations:check-generated PASS.",
+        "npm run watchdog:actions PASS finding_count=0.",
+        "npm run watchdog:protocol-drift PASS finding_count=0.",
+        "npm run secrets:audit PASS; 9364 tracked paths checked.",
+        "npm run bna:run:validate PASS; broader addendum work remains open.",
+        "One Time Railway deployment 36d753a9-b0f0-4dd6-a757-c7eb8b2f0bcb SUCCESS at commit c2b0878b66a50679589ee240ebdbd194622008fa.",
+        "BNA Railway deployment 2efc3746-dbf0-4531-b4c2-d82ab1a61898 SUCCESS at commit c2b0878b66a50679589ee240ebdbd194622008fa.",
+        "BNA and One Time /api/deploy-info exact SHA readbacks PASS for c2b0878b66a50679589ee240ebdbd194622008fa.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha c2b0878b66a50679589ee240ebdbd194622008fa PASS.",
+        "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha c2b0878b66a50679589ee240ebdbd194622008fa PASS.",
+        "npm run app:smoke:onetime-crm-signup-context-dto PASS with signup_context_match=true and no synthetic data created.",
+        "npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha c2b0878b66a50679589ee240ebdbd194622008fa PASS.",
+        "npm run app:smoke:operations-workspace-taxonomy PASS after BNA shared-runtime deploy.",
+        "npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha c2b0878b66a50679589ee240ebdbd194622008fa PASS."
       ],
       "implementation_files": [
         "src/lib/bna/crm/contact-service.js",
@@ -1035,7 +1064,8 @@
         "scripts/smoke-onetime-crm-delivery-outbox-dto-live.mjs",
         "tests/one-time-admin-mailbox-access.test.js",
         "tests/one-time-operations-ui-smoke.test.js",
-        "scripts/smoke-onetime-crm-dead-letter-dto-live.mjs"
+        "scripts/smoke-onetime-crm-dead-letter-dto-live.mjs",
+        "scripts/smoke-onetime-crm-signup-context-dto-live.mjs"
       ],
       "deployment_required": true,
       "deployment_evidence": [
@@ -1078,9 +1108,14 @@
         "One Time Railway deployment 7c81033a-ffc4-46e2-b2f5-f8ff0da1cf91 SUCCESS at commit 01d5a054ad99ba0a41196b18fc5b8098972e1d5a.",
         "BNA production verified at https://bneineviimacademy.org/api/deploy-info with commit_sha=01d5a054ad99ba0a41196b18fc5b8098972e1d5a and target_app=bna.",
         "One Time production verified at https://join.onetimeonetime.com/api/deploy-info with commit_sha=01d5a054ad99ba0a41196b18fc5b8098972e1d5a and target_app=one-time.",
-        "Final live smoke reports for latest dead-letter DTO slice: ops/live-smokes/2026-07-13T09-51-50-226Z-one-time-crm-dead-letter-dto-live-smoke.md, ops/live-smokes/2026-07-13T09-51-50-245Z-one-time-operations-crm-workbench-live-smoke.md, ops/live-smokes/2026-07-13T09-51-50-534Z-onetime-provider-route-module-live-smoke.md, ops/live-smokes/2026-07-13T09-52-15-192Z-operations-workspace-taxonomy-live-smoke.md, ops/live-smokes/2026-07-13T09-52-15-195Z-one-time-crm-delivery-outbox-dto-live-smoke.md, and ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md."
+        "Final live smoke reports for latest dead-letter DTO slice: ops/live-smokes/2026-07-13T09-51-50-226Z-one-time-crm-dead-letter-dto-live-smoke.md, ops/live-smokes/2026-07-13T09-51-50-245Z-one-time-operations-crm-workbench-live-smoke.md, ops/live-smokes/2026-07-13T09-51-50-534Z-onetime-provider-route-module-live-smoke.md, ops/live-smokes/2026-07-13T09-52-15-192Z-operations-workspace-taxonomy-live-smoke.md, ops/live-smokes/2026-07-13T09-52-15-195Z-one-time-crm-delivery-outbox-dto-live-smoke.md, and ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md.",
+        "BNA Railway deployment 2efc3746-dbf0-4531-b4c2-d82ab1a61898 SUCCESS at commit c2b0878b66a50679589ee240ebdbd194622008fa.",
+        "One Time Railway deployment 36d753a9-b0f0-4dd6-a757-c7eb8b2f0bcb SUCCESS at commit c2b0878b66a50679589ee240ebdbd194622008fa.",
+        "BNA production verified at https://bneineviimacademy.org/api/deploy-info with commit_sha=c2b0878b66a50679589ee240ebdbd194622008fa and target_app=bna.",
+        "One Time production verified at https://join.onetimeonetime.com/api/deploy-info with commit_sha=c2b0878b66a50679589ee240ebdbd194622008fa and target_app=one-time.",
+        "Final live smoke reports for latest signup-context/lifecycle DTO slice: ops/live-smokes/2026-07-13T10-17-24-142Z-one-time-crm-signup-context-dto-live-smoke.md, ops/live-smokes/2026-07-13T10-17-24-169Z-one-time-operations-crm-workbench-live-smoke.md, ops/live-smokes/2026-07-13T10-17-38-051Z-onetime-provider-route-module-live-smoke.md, ops/live-smokes/2026-07-13T10-17-37-675Z-operations-workspace-taxonomy-live-smoke.md, and ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md."
       ],
-      "updated_at": "2026-07-13T12:52:00+03:00",
+      "updated_at": "2026-07-13T13:18:00+03:00",
       "blocker": "",
       "correction_status": "superseded_in_part_by_RAW-20260713-003",
       "current_acceptance_scope": "One Time is the current canonical frontend/application acceptance target. Shared domain/API/security contracts remain active. Simultaneous BNA frontend parity is deferred to a later BNA adoption packet after One Time is stable, measured, deployed, and accepted.",
@@ -1090,10 +1125,10 @@
       "acceptance_corrections": [
         "RAW-20260713-003 supersedes simultaneous BNA/One Time frontend parity for this phase. Preserve shared backend/API/domain-contract evidence; finish One Time canonical CRM and performance first; defer BNA CRM frontend adoption to a later packet."
       ],
-      "implementation_commit": "01d5a054ad99ba0a41196b18fc5b8098972e1d5a",
-      "pushed_commit": "01d5a054ad99ba0a41196b18fc5b8098972e1d5a",
-      "deployed_commit": "01d5a054ad99ba0a41196b18fc5b8098972e1d5a",
-      "proof_commit": "01d5a054ad99ba0a41196b18fc5b8098972e1d5a"
+      "implementation_commit": "c2b0878b66a50679589ee240ebdbd194622008fa",
+      "pushed_commit": "c2b0878b66a50679589ee240ebdbd194622008fa",
+      "deployed_commit": "c2b0878b66a50679589ee240ebdbd194622008fa",
+      "proof_commit": "c2b0878b66a50679589ee240ebdbd194622008fa"
     },
     {
       "id": "REQ-20260712-303",

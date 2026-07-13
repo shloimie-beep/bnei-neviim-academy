@@ -1,14 +1,21 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-13T00:32:59.537Z
+Generated: 2026-07-13T10:15:39.988Z
 
 ## Lane Safety
 
 - Branch: `master`
-- Dirty worktree: no
+- Dirty worktree: yes
+- Collision warning: Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files.
 
-
-_None._
+| Status | Path |
+| --- | --- |
+| M | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json |
+| M | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md |
+| M | ops/watchdog-audits/2026-07-13-product-quality-drift.json |
+| M | ops/watchdog-audits/2026-07-13-product-quality-drift.md |
+| ?? | ops/watchdog-audits/2026-07-13T10-06-52-478Z-onetime-owner-test-readiness.json |
+| ?? | ops/watchdog-audits/2026-07-13T10-06-52-478Z-onetime-owner-test-readiness.md |
 
 ## Packet Status
 
@@ -33,7 +40,7 @@ _None._
 | - Claimable observable jobs: 0 |
 | - Active Codex task fallback: 30 |
 | - Ready to claim: observable jobs 0, fallback task candidates 0 |
-| - Queue health: fresh 4, stale 556, blocked 136, unknown 192, do-not-redo 915 |
+| - Queue health: fresh 3, stale 583, blocked 138, unknown 192, do-not-redo 928 |
 | - ChatGPT dropoff ingest: enabled |
 | - ChatGPT comment collect: enabled |
 
@@ -41,14 +48,14 @@ _None._
 
 | Job |
 | --- |
-| - job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=251.9 path=.runtime/agent-fleet/task-1736.lock.json) |
+| - job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=261.61 path=.runtime/agent-fleet/task-1736.lock.json) |
 | - job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json) |
 | - job #443 / task #2258 [failed] Turn Rabbi meeting drop into One Time build brief (local_lock=missing path=.runtime/agent-fleet/task-2258.lock.json) |
 | - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json) |
 | - job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json) |
 | - job #238 / task #1141 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1141.lock.json) |
-| - job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json) |
 | - job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json) |
+| - job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json) |
 
 ### Fallback Task Candidates
 
@@ -69,6 +76,7 @@ _None._
 
 ## Recommendations
 
+- Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.
 - No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.
 - Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.
 - GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it.

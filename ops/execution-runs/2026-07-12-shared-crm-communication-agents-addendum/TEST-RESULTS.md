@@ -833,3 +833,26 @@
 - PASS `npm run app:smoke:onetime-crm-delivery-outbox-dto`; report `ops/live-smokes/2026-07-13T09-52-15-195Z-one-time-crm-delivery-outbox-dto-live-smoke.md` recorded `skipped_no_live_delivery_outbox` and created no synthetic data.
 - PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T09-52-15-192Z-operations-workspace-taxonomy-live-smoke.md`.
 - PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+
+## CRM Signup Context And Lifecycle Activity DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/crm/contact-service.js`.
+- PASS `node --check scripts/smoke-onetime-crm-signup-context-dto-live.mjs`.
+- PASS package JSON parse after adding `app:smoke:onetime-crm-signup-context-dto`.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js`; 31/31 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; finding_count 0.
+- PASS `npm run secrets:audit`; 9364 tracked paths checked.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS One Time Railway deploy/doctor; deployment `36d753a9-b0f0-4dd6-a757-c7eb8b2f0bcb` reached `SUCCESS`.
+- PASS BNA Railway deploy/doctor; deployment `2efc3746-dbf0-4531-b4c2-d82ab1a61898` reached `SUCCESS`.
+- PASS One Time and BNA live `/api/deploy-info`; both returned `c2b0878b66a50679589ee240ebdbd194622008fa`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha c2b0878b66a50679589ee240ebdbd194622008fa`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha c2b0878b66a50679589ee240ebdbd194622008fa`; report `ops/live-smokes/2026-07-13T10-17-24-169Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-signup-context-dto`; report `ops/live-smokes/2026-07-13T10-17-24-142Z-one-time-crm-signup-context-dto-live-smoke.md` with `signup_context_candidate_count=1` and `signup_context_match=true`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha c2b0878b66a50679589ee240ebdbd194622008fa`; report `ops/live-smokes/2026-07-13T10-17-38-051Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T10-17-37-675Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha c2b0878b66a50679589ee240ebdbd194622008fa`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- BLOCKED owner-only email/WhatsApp sends: `npm run one-time:owner-test:readiness` wrote `ops/watchdog-audits/2026-07-13T10-06-52-478Z-onetime-owner-test-readiness.md`; Resend/WAPI are ready but secure owner-test email and WhatsApp aliases are missing, so no send was attempted.
