@@ -133,7 +133,7 @@ findings, deploy/live-smoke URLs where applicable, blockers, and next packet.
 | PKT-20260713-004-01 | 01-current-state-visual-audit | VISUAL_AUDITOR | PKT-20260713-004-00 | captured_with_blockers | Captured current public/provider/parent/student/classroom screenshots and recorded Operations/member blockers. |
 | PKT-20260713-004-02 | 02-drive-intake-orchestrator | IMPLEMENTATION_PACKET | PKT-20260713-004-00, REQ-20260713-913 | done | Drive discovery, stable-file admission, idempotent content jobs, leases, retries. |
 | PKT-20260713-004-03 | 03-media-edit-and-long-transcription | IMPLEMENTATION_PACKET | PKT-20260713-004-02 | partial - media edit Done; transcription provider/private fixture pending | Edge edit verification and chunked private transcription. |
-| PKT-20260713-004-04 | 04-transcript-metadata-and-knowledge-handoff | IMPLEMENTATION_PACKET | PKT-20260713-004-03 | local DB/review integration implemented; deploy/readback pending | Metadata schema/generator, bot-knowledge handoff contract, class-session review fields, and folder-workflow review-package bridge. |
+| PKT-20260713-004-04 | 04-transcript-metadata-and-knowledge-handoff | IMPLEMENTATION_PACKET | PKT-20260713-004-03 | deployed DB/review bridge; admin readback pending | Metadata schema/generator, bot-knowledge handoff contract, class-session review fields, and folder-workflow review-package bridge. |
 | PKT-20260713-004-05 | 05-vimeo-owner-readiness-and-private-upload | PROVIDER_SETUP_PACKET | PKT-20260713-004-00 | needs_operator_decision | Credential readback, owner account/project checks, synthetic private upload gate. Existing access token reads the owner account; newly supplied values validate as app credentials but fail direct bearer readback; no private test project/folder or upload approval is configured. |
 | PKT-20260713-004-06 | 06-class-package-classroom-and-latest-video | IMPLEMENTATION_PACKET | PKT-20260713-004-04, PKT-20260713-004-05 | not_started | Class review package, member library, latest video, older-class library, entitlements. |
 | PKT-20260713-004-07 | 07-rabbi-content-processing-ui | IMPLEMENTATION_PACKET | PKT-20260713-004-01, PQC Definition of Ready | blocked - PQC spec validates; auth/member/Vimeo gates open | Queue/details/review UI after visual audit and PQC validation. |
@@ -159,8 +159,8 @@ Media-edit deployed/live-smoked evidence and long-transcription open-provider
 gate are recorded at
 `ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/03-media-edit-and-long-transcription.md`.
 
-Transcript metadata and knowledge-handoff local contract, studio-sidecar
-integration, and class-session DB/review bridge evidence are recorded at
+Transcript metadata and knowledge-handoff contract, studio-sidecar integration,
+class-session DB/review bridge evidence, and One Time deploy-info proof are recorded at
 `ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/04-transcript-metadata-and-knowledge-handoff.md`.
 
 Vimeo owner-readiness and private-upload decision evidence is recorded at
@@ -168,7 +168,7 @@ Vimeo owner-readiness and private-upload decision evidence is recorded at
 
 Next non-UI implementation packet is `PKT-20260713-004-06` for class package,
 classroom/latest video, and member-library readback once Vimeo/provider and
-deploy/readback gates are resolved. Current Vimeo gate has valid owner app
+authenticated admin/readback gates are resolved. Current Vimeo gate has valid owner app
 credentials but still needs operator decision for private test folder/project,
 upload-capable user token/scope/plan confirmation, and synthetic upload
 approval.

@@ -9,8 +9,8 @@ Requirement: `REQ-20260713-917`
 Workspace/project:
 `rabbi_sheller_provider` / `one_time_mishnah_class`
 
-Status: local DB/review integration implemented; deploy/live readback pending;
-bot-knowledge promotion remains approval-gated
+Status: DB/review integration deployed; authenticated admin/database readback
+and bot-knowledge promotion remain approval-gated
 
 ## Product Quality Compiler Expansion
 
@@ -133,7 +133,7 @@ commands, evidence paths, deploy/readback proof, blockers, and next packet.
 | `node --check src/lib/bna/one-time-vimeo-folder-library.js` | Passed after DB/review integration. |
 | `node --test tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-member-library.test.js` | Passed 15/15 after class-session review-package bridge. |
 | `node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js tests/one-time-transcript-metadata.test.js tests/one-time-member-library.test.js` | Passed 62/62 after DB/review integration. |
-| One Time deploy-info | `https://join.onetimeonetime.com/api/deploy-info` returned `a8df4c9b9cc091028105a16430aae6927cd0b429` with `target_app=one-time`; metadata contract commit `2bf0c0d0e31c969f67556e1ee163ff0b9aa56ce6` is an ancestor. |
+| One Time deploy-info | `https://join.onetimeonetime.com/api/deploy-info` returned exact commit `87ff259ba2b4d4b27730a6ffb32a7693593b1749` with `target_app=one-time` at `2026-07-13T16:17:27+03:00`. |
 | One Time live smokes | `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha a8df4c9b9cc091028105a16430aae6927cd0b429` passed; `npm run app:smoke:onetime-provider-route-module -- --base-url https://join.onetimeonetime.com --expected-sha a8df4c9b9cc091028105a16430aae6927cd0b429` passed. |
 
 ## Not Done In This Packet
@@ -143,8 +143,9 @@ commands, evidence paths, deploy/readback proof, blockers, and next packet.
 - The helper-knowledge promotion remains an explicit later approval path: this
   packet persists the scoped handoff status but does not write
   `bna_helper_knowledge_items`.
-- Server-visible deploy/live readback for the new class-session fields remains
-  pending.
+- Authenticated admin/database readback for the new class-session fields remains
+  pending; the live deploy marker is proven at commit
+  `87ff259ba2b4d4b27730a6ffb32a7693593b1749`.
 - Review UI remains part of `PKT-20260713-004-07`, which is still blocked by
   authenticated Operations/member latest-video evidence and Vimeo/publication
   gates.
