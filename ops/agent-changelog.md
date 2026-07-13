@@ -40438,3 +40438,13 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Deployed `PKT-20260713-934A` to One Time production: Railway deployment `c00813df-2dc8-47e3-97b2-c5152c20402d` reached `SUCCESS`, and live deploy-info returned exact SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb` with `target_app=one-time`.
 - Exact-SHA separate-instance smoke passed, focused `/rabbi-member` live performance smoke passed at `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md`, and the broader One Time performance regression gate passed at `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - Status remains in progress: parent `REQ-20260713-934` still needs `PKT-20260713-934B` and `PKT-20260713-934C`. No external send, provider mutation, payment/access change, credential mutation, DNS change, public auto-reply activation, or destructive production mutation was performed.
+
+## 2026-07-13 - One Time auth/admin and student-login closeout
+
+- Completed `REQ-20260713-934` by finishing `PKT-20260713-934B` auth/admin context proof and `PKT-20260713-934C` provider/student request-console cleanup after the earlier `934A` member-performance deployment.
+- Fixed `/student/login` so One Time login mode no longer fires the unauthenticated `/api/student-portal/session` restore probe on first paint.
+- Fixed the shared One Time portal shell so the real `/student/login` page no longer renders the review/test-preview banner while preserving explicit `review=one-time` preview behavior.
+- Deployed One Time SHA `e973ce50b86e7566034faf8a604133a4870e4d7b`; Railway deployment `86bbbea8-246e-4c03-8bdd-83d677406f31` reached `SUCCESS`.
+- Verified with `node --test tests/one-time-route-role-mapping.test.js`, `npm run test:onetime:focused`, `node --check scripts/smoke-onetime-auth-session-context-live.mjs`, exact-SHA separate-instance smoke, and exact-SHA auth/session-context live smoke.
+- Evidence: `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.md`, `report.json`, `provider-admin-crm-redacted.png`, and `student-login.png`.
+- Guardrails: no external send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS change, public auto-reply activation, or destructive production mutation occurred.

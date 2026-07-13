@@ -8,14 +8,14 @@ SHA256: `sha256:BEC7D0B514919621FF8AFD25E9D95D29287F46A18B397EDB9361508BBFCDF13F
 
 Gate 1 audit: `ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md`
 
-Next unblocked requirement: `REQ-20260713-934`
+Next unblocked requirement: `REQ-20260713-935`
 
 ## Requirements
 
 - `REQ-20260713-931` done - Register RAW-20260713-010 as the active One Time launch correction source
 - `REQ-20260713-932` done - Complete Gate 1 freeze and current-truth audit
 - `REQ-20260713-933` done - Reproduce current P0 One Time role, performance, CRM, content, and mobile defects
-- `REQ-20260713-934` in_progress - Fix One Time identity, navigation, CRM/content, mobile, and performance issues; `PKT-20260713-934A` member portal performance is locally repaired, verified, committed, pushed, deployed, and live-smoked at deployed SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`; `PKT-20260713-934B`/`934C` remain open
+- `REQ-20260713-934` done - Fix One Time identity, navigation, CRM/content, mobile, and performance issues; `PKT-20260713-934A` member portal performance is deployed/live-smoked at deployed SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`; `PKT-20260713-934B`/`934C` auth/admin context and provider/student request-console cleanup are deployed/live-smoked at deployed SHA `e973ce50b86e7566034faf8a604133a4870e4d7b`
 - `REQ-20260713-935` not_started - Verify and repair One Time landing/signup/assets/responsive launch path
 - `REQ-20260713-936` blocked - Activate One Time WhatsApp canaries and public reactive auto-replies after gates
 - `REQ-20260713-937` not_started - Reconcile Stripe Billing V2 and PR #132 into current master safely
@@ -34,9 +34,9 @@ Next unblocked requirement: `REQ-20260713-934`
 
 - Done: current-state audit captured 55 screenshots and 24 findings at `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md`.
 - Product Quality splitter validated at `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`.
-- `PKT-20260713-934A` member portal performance under `REQ-20260713-934` is locally implemented and verified at `ops/performance-audits/2026-07-13-onetime-member-performance-local/report.md`.
-- Next implementation slices under `REQ-20260713-934`: continue `PKT-20260713-934B` auth/admin context and `PKT-20260713-934C` provider/student console failures without reopening the whole parent ramble.
-- Authenticated CRM/admin-provider proof remains blocked by invalid read-only Operations audit credentials.
+- `PKT-20260713-934A` member portal performance under `REQ-20260713-934` is implemented, deployed, and live-smoked at `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md`.
+- `PKT-20260713-934B` auth/admin context and `PKT-20260713-934C` provider/student console failures are implemented, deployed, and live-smoked at `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.md`.
+- Authenticated CRM/admin-provider proof is no longer blocked: live proof used Railway Operations auth, provider-session start/readback, and scoped CRM readback with no send/write.
 
 ## REQ-20260713-934A Local Evidence Update
 
@@ -51,7 +51,16 @@ Next unblocked requirement: `REQ-20260713-934`
 - Live smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb` passed.
 - Focused member live proof: `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md` passed with exact SHA headers, first useful member portal content, deferred Helper click proof, no unexpected bad responses, no failed requests, no private leaks, and no horizontal overflow. Warm exact-SHA DCL values were 998ms, 756ms, 712ms, 827ms, and 719ms across 1440/1024/768/430/390. The report preserves one immediately post-deploy cold 3604ms desktop sample as transport/cold-start context.
 - Broad gate: `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb` passed at `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
-- App-visible Done is still not claimed for parent `REQ-20260713-934`: `PKT-20260713-934B` and `PKT-20260713-934C` remain open.
+- Parent `REQ-20260713-934` stayed open after this point until `PKT-20260713-934B` and `PKT-20260713-934C` were completed in the follow-up update below.
+
+## REQ-20260713-934B / 934C Live Evidence Update
+
+- Deploy proof: One Time Railway deployment `86bbbea8-246e-4c03-8bdd-83d677406f31` reached `SUCCESS`; `https://join.onetimeonetime.com/api/deploy-info` returned exact SHA `e973ce50b86e7566034faf8a604133a4870e4d7b`, source branch `codex/onetime-final-integration-launch`, and `target_app=one-time`.
+- Code fixes: `/student/login` no longer performs the unauthenticated `/api/student-portal/session` restore probe on first paint, and the shared One Time portal shell no longer treats the real student-login shell as a preview banner surface.
+- Live proof: `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.md` passed with Operations login via Railway auth, provider-session start/readback scoped to `rabbi_sheller_provider` / `one_time_mishnah_class`, read-only CRM contacts, expected direct student-session 401 classification, provider-admin CRM route `0/0/0` failed/bad/console, student login route `0/0/0` failed/bad/console, `preview_banner_visible=false`, and no horizontal overflow.
+- Screenshots: `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/provider-admin-crm-redacted.png` and `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/student-login.png`.
+- Verification: `node --test tests/one-time-route-role-mapping.test.js`, `npm run test:onetime:focused`, exact-SHA One Time separate-instance smoke, and exact-SHA auth/session-context live smoke passed.
+- `REQ-20260713-934` is Done. Continue `REQ-20260713-935` next.
 
 ## Product Quality Operating Contract
 

@@ -1248,3 +1248,16 @@
 - PASS focused `/rabbi-member` live performance smoke: `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md`.
 - PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - NOTE first focused live smoke attempt found one immediately post-deploy cold desktop sample at 3604ms wall DCL; the passing exact-SHA retry and curl follow-up are preserved in the live report.
+
+## REQ-20260713-934B / 934C Auth/Admin Context Test Results
+
+- PASS `node --test tests/one-time-route-role-mapping.test.js`; 7/7 tests passed after the session-probe and preview-banner fixes.
+- PASS `npm run test:onetime:focused`; 81/81 tests passed after the auth/admin and student-login fixes.
+- PASS `node --check scripts/smoke-onetime-auth-session-context-live.mjs`.
+- PASS `npm run railway:redeploy` with One Time target; Railway deployment `86bbbea8-246e-4c03-8bdd-83d677406f31`.
+- PASS `npm run railway:doctor`; deployment `86bbbea8-246e-4c03-8bdd-83d677406f31` status `SUCCESS`.
+- PASS live `/api/deploy-info`: exact SHA `e973ce50b86e7566034faf8a604133a4870e4d7b`, source branch `codex/onetime-final-integration-launch`, `target_app=one-time`, `target_project=one-time-production`, and `target_service=one-time-web`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e973ce50b86e7566034faf8a604133a4870e4d7b`.
+- PASS `npm run app:smoke:onetime-auth-session-context -- --base-url https://join.onetimeonetime.com --expected-sha e973ce50b86e7566034faf8a604133a4870e4d7b`; report `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.md`.
+- PASS visual readback of `provider-admin-crm-redacted.png` and `student-login.png`: provider CRM is scoped/redacted, student login is branded and has no preview/sample-data/no-writes banner.
+- Guardrails: no external send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS change, public auto-reply activation, or destructive production mutation occurred.

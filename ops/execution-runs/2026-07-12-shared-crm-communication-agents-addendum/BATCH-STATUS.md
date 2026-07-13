@@ -46,8 +46,8 @@ Record each batch, requirement ID, status, and next action.
 | `REQ-20260713-931` | Done |
 | `REQ-20260713-932` | Done |
 | `REQ-20260713-933` | Done |
-| `REQ-20260713-934` | In progress |
+| `REQ-20260713-934` | Done |
 | `REQ-20260713-936` | Blocked |
 
-| 1-current-state-reproduce-p0-defects | REQ-20260713-933 | Done | `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md`; `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`; PQC validation passed; 55 screenshots; 24 findings; member portal 22s deadline reproduced in all five viewports; auth/admin CRM blocker recorded. | Continue `REQ-20260713-934`; `PKT-20260713-934A` is deployed/live-smoked, and 934B/934C remain open. |
-| 2-identity-ui-performance-fixes | REQ-20260713-934 | In progress | `PKT-20260713-934A` local smoke passed; One Time deployment `c00813df-2dc8-47e3-97b2-c5152c20402d` reached `SUCCESS`; live deploy-info exact SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`; separate-instance smoke, focused `/rabbi-member` live performance smoke, and broad performance regression gate passed. | Continue `PKT-20260713-934B` and `PKT-20260713-934C`; parent `REQ-20260713-934` is not Done until those are terminal. |
+| 1-current-state-reproduce-p0-defects | REQ-20260713-933 | Done | `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md`; `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`; PQC validation passed; 55 screenshots; 24 findings; member portal 22s deadline reproduced in all five viewports; auth/admin CRM blocker recorded and later superseded by 934B evidence. | Continue `REQ-20260713-935`; `REQ-20260713-934` is now Done. |
+| 2-identity-ui-performance-fixes | REQ-20260713-934 | Done | `PKT-20260713-934A` deployed/live-smoked at SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`; `PKT-20260713-934B`/`934C` deployed/live-smoked at SHA `e973ce50b86e7566034faf8a604133a4870e4d7b`; evidence `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md` and `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.md`. | Continue `REQ-20260713-935` landing/signup/assets/responsive launch path; keep `REQ-20260713-936` blocked until canary/owner gates pass. |

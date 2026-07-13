@@ -2612,10 +2612,10 @@
       "depends_on": [
         "REQ-20260713-933"
       ],
-      "status": "in_progress",
-      "implementation_status": "PKT-20260713-934A local repair implemented, verified, committed, pushed, deployed, and live-smoked at One Time deployed SHA 20307e2638988b6fe5d10b8a649d87ed8a8522cb: /rabbi-member now renders useful static member portal content before external JS, loads member/app-select/portal-shell scripts after first render or immediate form interaction, defers the heavier assistant bundle until idle or Helper click, and still opens the One Time member assistant on demand. Parent REQ remains open because child packets 934B/934C are not complete; auth/admin CRM proof remains blocked by invalid read-only Operations credentials.",
+      "status": "done",
+      "implementation_status": "Done: PKT-20260713-934A member portal first-render performance repair is deployed/live-smoked; PKT-20260713-934B auth/admin context is proven with live Operations Railway auth, Super Admin provider-session start, provider-session readback, and scoped read-only CRM contacts; PKT-20260713-934C provider/student request-console failures are fixed/classified with the student login startup session probe removed and the real login preview banner leak repaired. One Time production serves exact SHA e973ce50b86e7566034faf8a604133a4870e4d7b; live proof reports 0 failed requests, 0 bad responses, 0 console errors, no horizontal overflow, no preview banner on /student/login, no secrets/passwords returned, no sends, no CRM writes, no provider mutation, no payment/access change, and no external write.",
       "can_continue_without_operator": true,
-      "next_action": "Continue REQ-20260713-934 through PKT-20260713-934B auth/admin context and PKT-20260713-934C provider/student console failures; keep the parent requirement open until both child packets have evidence.",
+      "next_action": "Continue the next unblocked launch requirement REQ-20260713-935 landing/signup/assets/responsive launch path; keep REQ-20260713-936 blocked until secure canary/owner destinations and public WhatsApp gates pass.",
       "acceptance_criteria": [
         "Workspace context, not View as Rabbi.",
         "CRM/content/mobile match state matrix.",
@@ -2630,7 +2630,11 @@
         "ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md",
         "ops/performance-audits/2026-07-13-onetime-member-performance-live/report.json",
         "ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md",
-        "ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.json"
+        "ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.json",
+        "ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.md",
+        "ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.json",
+        "ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/provider-admin-crm-redacted.png",
+        "ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/student-login.png"
       ],
       "verification": [
         "PQC validated: npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json",
@@ -2643,18 +2647,45 @@
         "PASS live /api/deploy-info exact SHA 20307e2638988b6fe5d10b8a649d87ed8a8522cb target_app=one-time",
         "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb",
         "PASS focused /rabbi-member live performance smoke: ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md",
-        "PASS npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb"
+        "PASS npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb",
+        "PASS node --check scripts/smoke-onetime-auth-session-context-live.mjs",
+        "PASS node --test tests/one-time-route-role-mapping.test.js",
+        "PASS npm run test:onetime:focused (81/81)",
+        "PASS Railway deploy one-time-web deployment 53a37c80-7d45-4971-8d59-9a19b368b1a4 for intermediate auth/session SHA 45f93a8dba9d64222fbe4f4657e6a477ff4ae72e",
+        "PASS Railway deploy one-time-web deployment 86bbbea8-246e-4c03-8bdd-83d677406f31 for final SHA e973ce50b86e7566034faf8a604133a4870e4d7b",
+        "PASS Railway doctor one-time-web deployment 86bbbea8-246e-4c03-8bdd-83d677406f31 SUCCESS",
+        "PASS live /api/deploy-info exact SHA e973ce50b86e7566034faf8a604133a4870e4d7b target_app=one-time",
+        "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e973ce50b86e7566034faf8a604133a4870e4d7b",
+        "PASS npm run app:smoke:onetime-auth-session-context -- --base-url https://join.onetimeonetime.com --expected-sha e973ce50b86e7566034faf8a604133a4870e4d7b"
       ],
       "implementation_files": [
         "public/rabbi-member.html",
         "public/js/rabbi-member.js",
         "scripts/smoke-onetime-member-performance-local.mjs",
         "tests/app-select-dropdown.test.js",
-        "package.json"
+        "package.json",
+        "public/student.html",
+        "public/js/one-time-portal-shell.js",
+        "scripts/smoke-onetime-auth-session-context-live.mjs",
+        "tests/one-time-route-role-mapping.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T22:42:19+03:00",
-      "blocker": ""
+      "updated_at": "2026-07-13T23:12:00+03:00",
+      "blocker": "",
+      "completion": {
+        "completed_at": "2026-07-13T23:12:00+03:00",
+        "completed_sha": "e973ce50b86e7566034faf8a604133a4870e4d7b",
+        "deployed_sha": "e973ce50b86e7566034faf8a604133a4870e4d7b",
+        "one_time_deployment_id": "86bbbea8-246e-4c03-8bdd-83d677406f31",
+        "live_smoke": "ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.md"
+      },
+      "deployment_evidence": [
+        "Commit e973ce50b86e7566034faf8a604133a4870e4d7b pushed to origin/codex/onetime-final-integration-launch.",
+        "One Time Railway deployment 86bbbea8-246e-4c03-8bdd-83d677406f31 reached SUCCESS for one-time-production / one-time-web / join.onetimeonetime.com.",
+        "One Time live /api/deploy-info returned commit_sha=e973ce50b86e7566034faf8a604133a4870e4d7b, source_branch=codex/onetime-final-integration-launch, target_app=one-time.",
+        "Exact-SHA One Time separate-instance smoke passed.",
+        "Auth/admin context live smoke passed with scoped Operations login, provider-session start/readback, read-only CRM, provider route 0/0/0 failures, and student-login route 0/0/0 failures with preview_banner_visible=false."
+      ]
     },
     {
       "id": "REQ-20260713-935",

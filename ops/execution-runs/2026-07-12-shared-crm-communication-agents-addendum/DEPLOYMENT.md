@@ -586,3 +586,12 @@ No deployment occurred for Gate 1. One Time is currently serving `49f3edda2da37e
 - Focused live member portal performance smoke passed; report `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md`.
 - One Time performance regression gates passed; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - Parent app-visible Done remains pending the remaining `REQ-20260713-934` child packets, `PKT-20260713-934B` and `PKT-20260713-934C`.
+
+## REQ-20260713-934B / 934C Deployment Status
+
+- One Time deploy: `npm run railway:redeploy` with the scoped One Time target for branch `codex/onetime-final-integration-launch`.
+- Railway deployment: `86bbbea8-246e-4c03-8bdd-83d677406f31` reached `SUCCESS`; guard target was `one-time-production / one-time-web / join.onetimeonetime.com`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=e973ce50b86e7566034faf8a604133a4870e4d7b`, `source_branch=codex/onetime-final-integration-launch`, `target_app=one-time`, `target_project=one-time-production`, and `target_service=one-time-web`.
+- One Time exact-SHA separate-instance smoke passed.
+- One Time exact-SHA auth/session-context smoke passed; report `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.md`.
+- Parent `REQ-20260713-934` is now Done. This closeout evidence update is documentation-only and should not redeploy over the already live-smoked app SHA.

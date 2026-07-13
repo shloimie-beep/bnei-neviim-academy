@@ -747,3 +747,13 @@ Current status: `active`
 - Focused live member performance evidence: `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md`; warm exact-SHA `/rabbi-member` DCL was 998ms, 756ms, 712ms, 827ms, and 719ms at 1440/1024/768/430/390, with deferred Helper click proof and no unexpected failed/bad responses. The report preserves one immediately post-deploy cold 3604ms desktop sample as context.
 - Broad performance regression gate passed at `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - Guardrails: no external send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS change, public auto-reply activation, or destructive production mutation occurred.
+
+## 2026-07-13 - REQ-20260713-934 Auth/Admin And Student Login Closeout
+
+- `REQ-20260713-934` is Done after completing all child packets: `PKT-20260713-934A` member portal performance plus `PKT-20260713-934B` auth/admin context and `PKT-20260713-934C` provider/student request-console cleanup.
+- 934A member proof remains deployed/live-smoked at One Time SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`.
+- 934B/934C are deployed/live-smoked at One Time SHA `e973ce50b86e7566034faf8a604133a4870e4d7b`; Railway deployment `86bbbea8-246e-4c03-8bdd-83d677406f31` reached `SUCCESS`.
+- Live proof: `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.md` and `report.json`, with screenshots `provider-admin-crm-redacted.png` and `student-login.png`.
+- The live proof used scoped Operations auth through Railway, started/read back the provider session for `rabbi_sheller_provider` / `one_time_mishnah_class`, read CRM contacts read-only, classified direct unauthenticated student-session 401 as expected, and verified the real `/student/login` shell does not show the preview/sample-data/no-writes banner.
+- Next current requirement is `REQ-20260713-935`; `REQ-20260713-936` remains blocked until its canary/owner gates pass.
+- Guardrails: no external send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS change, public auto-reply activation, or destructive production mutation occurred.

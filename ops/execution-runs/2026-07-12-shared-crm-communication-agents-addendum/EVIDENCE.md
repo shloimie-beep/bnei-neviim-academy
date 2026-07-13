@@ -917,3 +917,15 @@
 - Broad performance regression gate: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md` and `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.json`.
 - Result: `/rabbi-member` live exact-SHA warm DCL values were 998ms, 756ms, 712ms, 827ms, and 719ms across 1440/1024/768/430/390; the deferred Helper click opened `one_time_member`; no unexpected failed/bad responses, private leaks, external writes, production mutations, or horizontal overflow were observed.
 - Context: one immediately post-deploy cold Playwright sample measured 3604ms wall DCL at 1440 before the warm exact-SHA retry; repeated curl checks showed mostly 0.45-0.50s TTFB and 0.54-0.60s total with two slower connect/TLS samples.
+
+## REQ-20260713-934B / 934C Auth/Admin Context Live Evidence - 2026-07-13
+
+- Requirement: `REQ-20260713-934`; child packets `PKT-20260713-934B` and `PKT-20260713-934C`.
+- Deployment: One Time Railway deployment `86bbbea8-246e-4c03-8bdd-83d677406f31` reached `SUCCESS`.
+- Live deploy-info: `https://join.onetimeonetime.com/api/deploy-info` returned exact SHA `e973ce50b86e7566034faf8a604133a4870e4d7b`, source branch `codex/onetime-final-integration-launch`, `target_app=one-time`, `target_project=one-time-production`, and `target_service=one-time-web`.
+- Live report: `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.md`.
+- Live JSON: `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.json`.
+- Screenshot evidence: `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/provider-admin-crm-redacted.png` and `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/student-login.png`.
+- Auth/admin proof: Operations login succeeded through Railway auth with `role=super_admin`; provider-session start/readback succeeded in `admin_on_provider_account` mode scoped to `rabbi_sheller_provider` / `one_time_mishnah_class`; read-only CRM contacts returned status 200 with cards and filtered results.
+- Student/login proof: direct unauthenticated student-session read returned expected 401; `/student/login` rendered cleanly with no startup session-probe console noise, no failed/bad requests, no horizontal overflow, and `preview_banner_visible=false`.
+- Guardrails: `password_returned=false`, `secrets_included=false`, `external_write_performed=false`, `no_send=true`, and no payment/access mutation, provider mutation, credential mutation, DNS change, public auto-reply activation, or destructive production mutation occurred.

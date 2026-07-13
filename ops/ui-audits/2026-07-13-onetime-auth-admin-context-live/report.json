@@ -1,0 +1,237 @@
+{
+  "status": "PASS",
+  "generated_at": "2026-07-13T20:07:08.882Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "expected_sha": "e973ce50b86e7566034faf8a604133a4870e4d7b",
+  "deployed_sha": "e973ce50b86e7566034faf8a604133a4870e4d7b",
+  "target_app": "one-time",
+  "raw_id": "RAW-20260713-010",
+  "requirement_ids": [
+    "REQ-20260713-934B",
+    "REQ-20260713-934C"
+  ],
+  "scope": "Read-only live proof for One Time Operations auth, admin-on-provider session context, scoped CRM readback, and provider/student console/request cleanliness.",
+  "guardrails": [
+    "No email, WhatsApp, payment, access grant, provider mutation, DNS change, or production data write was attempted.",
+    "Private provider screenshot is DOM-redacted and includes a redaction overlay.",
+    "Direct unauthenticated student session 401 is recorded only as expected API policy; /student/login must not emit it during first paint."
+  ],
+  "checks": [
+    {
+      "id": "deploy_info_ok",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "target_app": "one-time",
+        "commit_sha": "e973ce50b86e7566034faf8a604133a4870e4d7b"
+      }
+    },
+    {
+      "id": "deploy_info_exact_sha",
+      "passed": true,
+      "detail": {
+        "expected_sha": "e973ce50b86e7566034faf8a604133a4870e4d7b",
+        "actual_sha": "e973ce50b86e7566034faf8a604133a4870e4d7b"
+      }
+    },
+    {
+      "id": "deploy_info_one_time_target",
+      "passed": true,
+      "detail": {
+        "target_app": "one-time"
+      }
+    },
+    {
+      "id": "operations_login_railway_auth",
+      "passed": true,
+      "detail": {
+        "source": "railway",
+        "role": "super_admin",
+        "cookie_name": "bna_ops_session"
+      }
+    },
+    {
+      "id": "provider_session_start_scoped",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "mode": "admin_on_provider_account",
+        "view_url": "/provider.html?admin_provider=one-time&section=mailbox",
+        "provider": {
+          "provider_name": "Rabbi Elie Scheller",
+          "login_username": "one_time_admin",
+          "workspace_key": "rabbi_sheller_provider",
+          "project_key": "one_time_mishnah_class",
+          "status": "approved"
+        },
+        "provider_cookie_name": "bna_provider_session",
+        "password_returned": false,
+        "secrets_included": false,
+        "external_write_performed": false
+      }
+    },
+    {
+      "id": "provider_session_readback_scoped",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "provider": {
+          "provider_name": "Rabbi Elie Scheller",
+          "login_username": "one_time_admin",
+          "workspace_key": "rabbi_sheller_provider",
+          "project_key": "one_time_mishnah_class",
+          "status": "approved"
+        },
+        "external_write_performed": false
+      }
+    },
+    {
+      "id": "operations_crm_contacts_readonly_scoped",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "cards_count": 3,
+        "filtered_total": 6,
+        "external_write_performed": false,
+        "no_send": true
+      }
+    },
+    {
+      "id": "student_session_denial_classified_expected",
+      "passed": true,
+      "detail": {
+        "status": 401,
+        "body_preview": "{\"error\":\"Student session is required\"}"
+      }
+    },
+    {
+      "id": "provider_admin_crm_route_clean",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "failed": 0,
+        "bad": 0,
+        "console": 0,
+        "screenshot": "ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/provider-admin-crm-redacted.png"
+      }
+    },
+    {
+      "id": "student_login_route_clean_without_session_probe",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "failed": 0,
+        "bad": 0,
+        "console": 0,
+        "preview_banner_visible": false,
+        "screenshot": "ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/student-login.png"
+      }
+    }
+  ],
+  "api": {
+    "operations_login": {
+      "source": "railway",
+      "role": "super_admin",
+      "cookie_name": "bna_ops_session"
+    },
+    "provider_start": {
+      "status": 200,
+      "mode": "admin_on_provider_account",
+      "view_url": "/provider.html?admin_provider=one-time&section=mailbox",
+      "provider": {
+        "provider_name": "Rabbi Elie Scheller",
+        "login_username": "one_time_admin",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "status": "approved"
+      },
+      "provider_cookie_name": "bna_provider_session",
+      "password_returned": false,
+      "secrets_included": false,
+      "external_write_performed": false
+    },
+    "provider_session": {
+      "status": 200,
+      "provider": {
+        "provider_name": "Rabbi Elie Scheller",
+        "login_username": "one_time_admin",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "status": "approved"
+      },
+      "external_write_performed": false
+    },
+    "crm_contacts": {
+      "status": 200,
+      "cards_count": 3,
+      "filtered_total": 6,
+      "external_write_performed": false,
+      "no_send": true
+    },
+    "student_session_without_cookie": {
+      "status": 401,
+      "error": "Student session is required",
+      "classified_expected_auth_denial": true
+    }
+  },
+  "captures": [
+    {
+      "id": "provider-admin-crm-redacted",
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": 200,
+      "navigation_error": "",
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/provider-admin-crm-redacted.png",
+      "private_redaction_overlay": true,
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "state": {
+        "url": "/provider.html?admin_provider=one-time&section=crm",
+        "title": "One Time Rabbi Workspace",
+        "h1": "One Time provider session required",
+        "login_panel_visible": false,
+        "portal_panel_visible": true,
+        "crm_shell_visible": true,
+        "student_login_form_visible": false,
+        "preview_banner_visible": false,
+        "horizontal_overflow": false,
+        "body_class": "bna-shell bna-portal-page bna-provider-page one-time-review-active one-time-admin-provider-active bna-universal-assistant-active bna-assistant-surface-one-time-provider one-time-provider-review-active",
+        "text_preview": "One Time Rabbi Eli Scheller workspace Provider Operations fallback One Time Parent Student Member Classroom RABBI ACCOUNT Scoped Rabbi workspace Provider tools here stay inside the Rabbi / One Time workspace. Platform setup cards stay in Operations. Back to Op"
+      }
+    },
+    {
+      "id": "student-login",
+      "route": "/student/login",
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "status": 200,
+      "navigation_error": "",
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/student-login.png",
+      "private_redaction_overlay": false,
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "state": {
+        "url": "/student.html?one_time_login=1",
+        "title": "One Time Student Login",
+        "h1": "Student Login",
+        "login_panel_visible": true,
+        "portal_panel_visible": false,
+        "crm_shell_visible": false,
+        "student_login_form_visible": true,
+        "preview_banner_visible": false,
+        "horizontal_overflow": false,
+        "body_class": "bna-shell bna-portal-page bna-student-page one-time-student-login-active lang-en one-time-review-active bna-universal-assistant-active bna-assistant-surface-one-time-student one-time-portal-shell-ready one-time-single-tenant",
+        "text_preview": "Menu One Time ONE TIME MISHNAYOS Student Login Sign in with the username and password your parent set for the One Time Mishnayos class. ONE TIME STUDENT ACCESS Student login Use the student username and password managed by your parent. USERNAME PASSWORD Sign i"
+      }
+    }
+  ],
+  "external_write_performed": false,
+  "production_data_mutation_performed": false
+}
