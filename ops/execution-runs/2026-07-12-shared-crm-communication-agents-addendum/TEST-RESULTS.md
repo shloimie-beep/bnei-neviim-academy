@@ -264,3 +264,10 @@
 - PASS `npm run secrets:audit` after the One Time signup P0 repair.
 - PASS `npm run bna:run:validate` after the One Time signup P0 repair; broader addendum work remains open.
 - PASS `git diff --check` with line-ending warnings only after the One Time signup P0 repair.
+- PASS `git push origin master` for One Time signup form repair commit `881f892523eb9a20137377882e2452e45cd581ca`.
+- PASS One Time Railway redeploy and doctor; deployment `35633776-51a0-4185-9bd0-61d73c187d45` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; deployed SHA `881f892523eb9a20137377882e2452e45cd581ca`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 881f892523eb9a20137377882e2452e45cd581ca`.
+- PASS `node scripts/diagnose-onetime-signup-production.mjs https://join.onetimeonetime.com`; no-write/intercept browser proof generated `ops/live-smokes/2026-07-13T00-56-04-223Z-one-time-signup-production-diagnostic.md`.
+- PASS production direct-signup API dry-run with canonical payload; response validated the direct workflow, scoped workspace/project, outbox previews, and no-write/no-send guardrails.
+- PARTIAL/BLOCKED synthetic DB readback: actual synthetic direct-signup write created `bna_contacts:37` and `bna_parent_leads:22`, and both were archived through the production CRM API. Local DB-level readback/outbox cancellation is blocked because the current One Time Railway `DATABASE_URL` uses an internal Railway host unavailable from this machine, while the older local Supabase URL also fails DNS resolution.

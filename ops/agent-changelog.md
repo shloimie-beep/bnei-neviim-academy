@@ -39255,4 +39255,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verification passed: syntax checks, signup matrix tests `17/17`, focused One
   Time suite `76/76`, action watchdog 0 findings, secret audit, execution-run
   validation, and diff check with line-ending warnings only.
-- Deployment is pending for this local-verified slice.
+- Deployed commit `881f892523eb9a20137377882e2452e45cd581ca` to One Time
+  production.
+- One Time Railway deployment `35633776-51a0-4185-9bd0-61d73c187d45` reached
+  `SUCCESS`, and live `/api/deploy-info` returned the deployed SHA.
+- Live proof passed: exact-SHA One Time separate-instance smoke, production
+  browser no-write/intercept submit proof, and production direct-signup API
+  dry-run with scoped workspace/project, outbox previews, no-write/no-send,
+  no-checkout, and no-access guardrails.
+- Cleanup note: a synthetic DB-readback attempt created `bna_contacts:37` and
+  `bna_parent_leads:22`; both were archived through the production CRM API with
+  `no_send=true` and `external_write_performed=false`. Local DB-level outbox
+  cancellation/readback is blocked by Railway-internal database access from
+  this machine.

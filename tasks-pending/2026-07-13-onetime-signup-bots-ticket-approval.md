@@ -9,7 +9,7 @@
 
 | ID | Wave | Title | Status | Evidence |
 | --- | --- | --- | --- | --- |
-| REQ-20260713-901 | 1 | Reproduce, repair, deploy, and live-verify the One Time production signup form | Local verified; deploy pending | Production diagnosis reproduced on deployed SHA `3712308731910a6e77fb9a18ce18b57ae35f22dd`; local matrix and focused One Time tests passed |
+| REQ-20260713-901 | 1 | Reproduce, repair, deploy, and live-verify the One Time production signup form | Deployed; live-smoked | Deployed SHA `881f892523eb9a20137377882e2452e45cd581ca`; production browser no-write submit, direct API dry-run, and route smoke passed |
 | REQ-20260713-902 | 2 | Public One Time WhatsApp lead agent and approved public knowledge/class-link runtime | Pending | Blocked behind Wave 1 launch blocker |
 | REQ-20260713-903 | 3 | Private Rabbi Telegram workspace agent separated from public WhatsApp | Pending | Blocked behind Wave 1 launch blocker |
 | REQ-20260713-904 | 4 | Rabbi ticket to Super Admin approval to Codex job flow | Pending | Blocked behind Wave 1 launch blocker |
@@ -50,4 +50,9 @@
 - PASS `npm run secrets:audit`.
 - PASS `npm run bna:run:validate`; broader addendum work remains open.
 - PASS `node --check server.js`, `node --check src/lib/bna/one-time-signup-workflow.js`, and `node --check scripts/diagnose-onetime-signup-production.mjs`.
-- Pending: commit, push, deploy the exact tested SHA, then live-smoke the canonical production form.
+- Deployed One Time Railway deployment `35633776-51a0-4185-9bd0-61d73c187d45`; `npm run railway:doctor` returned `SUCCESS`.
+- Live `/api/deploy-info` returned `commit_sha=881f892523eb9a20137377882e2452e45cd581ca`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 881f892523eb9a20137377882e2452e45cd581ca`.
+- PASS production browser no-write/intercept diagnostic: `ops/live-smokes/2026-07-13T00-56-04-223Z-one-time-signup-production-diagnostic.md`; Family + No reminders + no phone + no consent produced one form POST attempt, no visible errors, and the approved success panel.
+- PASS production direct-signup API dry-run with canonical payload: `direct_signup_workflow=true`, workspace `rabbi_sheller_provider`, project `one_time_mishnah_class`, confirmation email and Rabbi Telegram outbox preview present, no database write, no send, no checkout, and no access grant.
+- Synthetic live-write cleanup note: one attempted DB-readback smoke created `bna_contacts:37` and `bna_parent_leads:22` for a `test-onetime-direct-signup-...@example.invalid` address before the local DB readback failed on Railway-internal database access. Both records were found and archived through the production CRM API with `no_send=true` and `external_write_performed=false`; no delivery cron was run. DB-level queued-outbox cancellation remains blocked from this machine by the Railway-internal database URL.
