@@ -40367,6 +40367,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   promotion approval, Vimeo private upload/folder approval, member publication,
   and blocked UI evidence remain separate requirements.
 
+## 2026-07-13 - Canonical inbound communication pipeline closed
+
+- Closed `REQ-20260712-307` for the canonical inbound pipeline scope after
+  deploying integrated SHA `43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- Runtime commit `40ffdc1aca34a02774275ba7b2902e46c709e9ce` added the
+  One Time communication-agent metadata/knowledge loader and delivery-outbox
+  reply handoff; it is included in the deployed head.
+- One Time deployment `9cc413fb-da9b-42f4-a2b1-ce5b6744d2cb` and BNA
+  deployment `c4f33394-0881-425b-a2de-c862e44dd09e` reached `SUCCESS`.
+- Exact-SHA live smokes passed: One Time separate-instance, One Time CRM
+  workbench, One Time provider route-module, and BNA workspace taxonomy.
+- Owner-only real email/WhatsApp sends remain blocked by `REQ-20260713-906`
+  until secure aliases are configured; no external send or public auto-reply
+  enablement was performed.
+
 ## 2026-07-13 - One Time metadata admin readback verified
 
 - Added `scripts/smoke-one-time-metadata-review-live.mjs` and
@@ -40409,3 +40424,35 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no live charge, refund, notice send, invoice/receipt send,
   access mutation, provider mutation, deploy, credential mutation, production
   data mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time classroom/latest-video read-only gates verified
+
+- Added `scripts/smoke-one-time-classroom-library-readonly-live.mjs` and
+  `app:smoke:one-time-classroom-library-readonly` for repeatable read-only live
+  proof of the classroom/member-library gates.
+- Live smoke passed against One Time SHA
+  `43f7c33733880745d8f1191c86fe8e196ef68baa`: admin readback returned two
+  published One Time packages with library items, review classroom exposed a
+  safe `today_video`, anonymous member-library/classroom routes returned 401,
+  and `external_write_performed=false`.
+- `REQ-20260713-919` remains in progress because real member/access-code
+  entitlement, member publication, parent/student latest-video proof, and
+  Vimeo-origin package integration remain gated.
+## 2026-07-13 - One Time WAPI zero-task contact capture deployed
+
+- Closed `REQ-20260712-308` after deploying exact runtime SHA
+  `7ec31290c08ede0957dbd60b2c3253979253feba` to One Time and BNA.
+- Ordinary One Time WAPI attention artifacts now suppress generic CRM tasks
+  while preserving Needs Human badge/notification metadata.
+- One Time provider support tickets now dedupe by workspace, project, contact,
+  thread, and action class instead of by individual message ID alone.
+- Verification passed: focused One Time WAPI/service-provider/inbound/outbox
+  suites (`29/29`), communications screening import UI suite (`5/5`),
+  One Time separate-instance live smoke, One Time CRM workbench live smoke,
+  One Time provider route-module live smoke, and BNA workspace taxonomy smoke.
+- Evidence: `ops/live-smokes/2026-07-13T13-45-08-361Z-one-time-operations-crm-workbench-live-smoke.md`,
+  `ops/live-smokes/2026-07-13T13-44-50-006Z-onetime-provider-route-module-live-smoke.md`,
+  and `ops/live-smokes/2026-07-13T13-44-53-216Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner email send, WhatsApp provider send, public auto-reply
+  enablement, Telegram send, destructive CRM write, provider mutation,
+  credential mutation, payment mutation, or access mutation was performed.

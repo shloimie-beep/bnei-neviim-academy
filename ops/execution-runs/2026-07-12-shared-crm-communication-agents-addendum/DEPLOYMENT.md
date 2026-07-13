@@ -396,3 +396,58 @@ Global production readiness remains blocked only by known external full-launch f
 - One Time provider route-module smoke passed; report `ops/live-smokes/2026-07-13T12-46-12-200Z-onetime-provider-route-module-live-smoke.md`.
 - BNA workspace taxonomy smoke passed; report `ops/live-smokes/2026-07-13T12-46-11-923Z-operations-workspace-taxonomy-live-smoke.md`.
 - Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send, public auto-reply enablement, CRM destructive write, provider mutation, payment/access mutation, credential mutation, raw Telegram chat/message value logging, or raw private payload logging was performed by this proof.
+
+## 2026-07-13 Communication-Agent Metadata And Outbox Convergence Deploy
+
+- Runtime app-code commit: `40ffdc1aca34a02774275ba7b2902e46c709e9ce`.
+- Integrated deployed head: `43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- Branch: `master`.
+- Push: `git push origin master` succeeded for the runtime commit; the runtime
+  commit is an ancestor of deployed head `43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- One Time Railway deployment `9cc413fb-da9b-42f4-a2b1-ce5b6744d2cb` reached
+  `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info`
+  returned `commit_sha=43f7c33733880745d8f1191c86fe8e196ef68baa`,
+  `target_app=one-time`.
+- BNA Railway doctor passed for deployment
+  `c4f33394-0881-425b-a2de-c862e44dd09e`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned
+  `commit_sha=43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- One Time separate-instance smoke passed at the exact SHA.
+- One Time CRM workbench smoke passed; report
+  `ops/live-smokes/2026-07-13T13-24-30-029Z-one-time-operations-crm-workbench-live-smoke.md`.
+- One Time provider route-module smoke passed; report
+  `ops/live-smokes/2026-07-13T13-24-38-990Z-onetime-provider-route-module-live-smoke.md`.
+- BNA workspace taxonomy smoke passed; report
+  `ops/live-smokes/2026-07-13T13-24-53-876Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send,
+  public auto-reply enablement, CRM destructive write, provider mutation,
+  payment/access mutation, credential mutation, raw private payload logging, or
+  destructive production mutation was performed by this proof.
+
+## 2026-07-13 One Time WAPI Zero-Task Contact Capture Deploy
+
+- Runtime commit: `7ec31290c08ede0957dbd60b2c3253979253feba`.
+- Branch: `master`.
+- Push: `git push origin master` succeeded for the runtime commit.
+- One Time Railway deployment `75d521fa-6826-49f5-875a-5f6f03f3dc44`
+  reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info`
+  returned `commit_sha=7ec31290c08ede0957dbd60b2c3253979253feba`,
+  `target_app=one-time`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned
+  `commit_sha=7ec31290c08ede0957dbd60b2c3253979253feba`, `target_app=bna`.
+- BNA Railway doctor access passed for `skillful-motivation / production`, but
+  the current deployment status still reported `BUILDING` during closeout;
+  exact-SHA live metadata and BNA taxonomy smoke passed.
+- One Time separate-instance smoke passed at the exact SHA.
+- One Time CRM workbench smoke passed; report
+  `ops/live-smokes/2026-07-13T13-45-08-361Z-one-time-operations-crm-workbench-live-smoke.md`.
+- One Time provider route-module smoke passed; report
+  `ops/live-smokes/2026-07-13T13-44-50-006Z-onetime-provider-route-module-live-smoke.md`.
+- BNA workspace taxonomy smoke passed; report
+  `ops/live-smokes/2026-07-13T13-44-53-216Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send,
+  public auto-reply enablement, CRM destructive write, provider mutation,
+  payment/access mutation, credential mutation, raw private payload logging, or
+  destructive production mutation was performed by this proof.
