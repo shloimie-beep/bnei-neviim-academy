@@ -40006,3 +40006,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No external send, WhatsApp/WAPI send, Telegram send, CRM write, provider
   mutation, payment/access mutation, import, credential mutation, or production
   data mutation was performed during closeout.
+
+## 2026-07-13 - One Time Drive intake orchestrator deployed
+
+- Marked `REQ-20260713-914` Done for the no-write Drive-intake orchestrator
+  runtime slice. The slice resolves the canonical One Time Drive video lane,
+  admits only stable media files, creates idempotent content-job drafts, and
+  plans lease/retry/dead-letter states without Drive/database/Vimeo writes.
+- Runtime commit `c9706382c8b8e5544797a94467e7ea54367850f0` is pushed to
+  `origin/master`.
+- One Time Railway deployment `b8ce75fb-8b08-44bb-a95f-c3e472fb0665` reached
+  SUCCESS and `https://join.onetimeonetime.com/api/deploy-info` returned the
+  exact SHA with `target_app=one-time`.
+- BNA Railway deployment `e0f3ec48-4d60-467a-bb09-d3518a0e47ba` reached
+  SUCCESS at current SHA `be58601d50ce467193f02bc1b16566b23ba173a7`, which
+  contains `c9706382c8b8e5544797a94467e7ea54367850f0` as an ancestor.
+- Verification passed: focused orchestrator/Drive-map tests `18/18`, no-write
+  orchestrator CLI dry run, protocol-drift watchdog, secrets audit,
+  `bna:run:validate`, One Time separate-instance/provider/CRM live smokes, and
+  BNA operations workspace taxonomy smoke.
+- No real Drive API read, Drive mutation, database mutation, Vimeo upload,
+  member publication, public publish, provider mutation, credential mutation,
+  payment/access mutation, or external send was performed.
