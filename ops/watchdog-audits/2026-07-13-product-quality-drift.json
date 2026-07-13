@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T12:32:37.610Z",
+  "generated_at": "2026-07-13T12:52:27.876Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -399,6 +399,7 @@
     "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/03-media-edit-and-long-transcription.md",
     "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/04-transcript-metadata-and-knowledge-handoff.md",
     "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/05-vimeo-owner-readiness-and-private-upload.md",
+    "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.product-quality.json",
     "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/MANIFEST.md",
     "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/current-state-capability-audit.md",
     "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/manifest.json",

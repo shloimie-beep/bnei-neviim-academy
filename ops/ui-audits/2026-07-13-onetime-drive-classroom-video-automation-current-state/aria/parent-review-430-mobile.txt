@@ -1,0 +1,96 @@
+- status:
+  - strong: TEST PREVIEW
+  - text: SAMPLE DATA NO WRITES
+  - link "Exit Preview":
+    - /url: /one-time-parent
+- banner:
+  - link "One Time home":
+    - /url: /one-time
+    - strong: One Time
+    - text: Parent review portal
+  - button "Open One Time portal menu": Menu
+- main:
+  - paragraph: One Time parent review
+  - heading "Parent Review Portal" [level=1]
+  - paragraph: Parent One Time sees only Student One Time, class progress, library access, payment/trial state, and support context for Rabbi Scheller's One Time Mishnayos program.
+  - link "Open classroom/library":
+    - /url: /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+  - link "Student view":
+    - /url: /student.html?review=one-time
+  - complementary:
+    - paragraph: Preview only
+    - heading "Linked family scope" [level=2]
+    - article:
+      - text: Linked student
+      - strong: Student One Time
+    - article:
+      - text: Next class
+      - strong: Weekly Mishnah Live Class
+    - article:
+      - text: Attendance
+      - strong: 39/45 minutes (87%)
+    - article:
+      - text: Access
+      - strong: active for review
+    - text: No database write, external send, charge, access grant, Zoom meeting, or provider mutation can be triggered from this review page.
+  - region "One Time parent review details":
+    - article:
+      - paragraph: Class
+      - heading "Class and Zoom" [level=2]
+      - paragraph:
+        - strong: Pesachim Perek 10
+      - paragraph: Mishnah 1-2 / Asia/Jerusalem
+      - text: The portal shows readiness and access rules. No real Zoom meeting was created for this preview.
+    - article:
+      - paragraph: Progress
+      - heading "Course progress" [level=2]
+      - paragraph:
+        - strong: One Time Mishnayos Course
+      - paragraph: Pesachim Foundations / Pesachim Perek 10 - Seder Night Review
+    - article:
+      - paragraph: Library
+      - heading "Library and worksheet" [level=2]
+      - paragraph:
+        - strong: Pesachim Perek 10 Review Class
+      - paragraph: Vimeo manual/sample reference
+      - link "Open library":
+        - /url: /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+      - link "Open worksheet":
+        - /url: /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS#worksheets
+    - article:
+      - paragraph: Billing
+      - heading "Payment / trial" [level=2]
+      - paragraph:
+        - strong: $67 USD/month after trial
+      - paragraph: 30 days free / trial active
+      - text: Preview mode only. No real charge or payment link is created from this review.
+    - article:
+      - paragraph: Rewards
+      - heading "Milestones and rewards" [level=2]
+      - paragraph:
+        - strong: First Mishnah Review Completed
+      - paragraph: "First Class: Attended the first One Time class review session."
+      - text: ready for rabbi review
+    - article:
+      - paragraph: Helper
+      - heading "One Time Parent Helper" [level=2]
+      - paragraph: The helper stays scoped to class schedule, child access, attendance questions, billing-support next steps, and Rabbi Scheller class questions.
+      - text: It does not show private billing records, other families, student transcripts, access codes, or admin data.
+    - article:
+      - paragraph: Question
+      - heading "Private question" [level=2]
+      - paragraph:
+        - strong: Private question about the Mishnah
+      - paragraph: Can Rabbi explain why this time is used for Shema?
+      - text: submitted for rabbi review
+    - article:
+      - paragraph: Support
+      - heading "Support ticket" [level=2]
+      - paragraph:
+        - strong: Worksheet link question
+      - paragraph: parent asked where the worksheet is located.
+      - text: Ask support / Rabbi
+      - textbox "Ask support / Rabbi":
+        - /placeholder: Type a review-only parent question
+      - button "Submit preview"
+- button "Robot Scheller"

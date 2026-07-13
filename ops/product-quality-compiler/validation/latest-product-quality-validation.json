@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-13T11:21:13.347Z",
+  "generated_at": "2026-07-13T12:52:27.310Z",
   "mode": "default",
   "files_scanned": [
-    "tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json"
+    "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.product-quality.json"
   ],
   "total": 1,
   "passed": 1,
   "failed": 0,
   "results": [
     {
-      "file": "tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json",
+      "file": "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.product-quality.json",
       "passed": true,
       "error_codes": [],
       "errors": []

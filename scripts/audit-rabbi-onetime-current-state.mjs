@@ -109,6 +109,14 @@ function argValue(name, fallback = '') {
   return fallback;
 }
 
+function argValues(name) {
+  const raw = argValue(name, '');
+  return String(raw || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
@@ -552,7 +560,7 @@ async function captureRoute(browser, baseUrl, routeMeta, viewport, cookieHeader,
   };
 }
 
-function buildStateMatrix(captures) {
+function buildStateMatrix(captures, requirementId = REQUIREMENT_ID) {
   const byRoute = new Map();
   for (const capture of captures) {
     if (!byRoute.has(capture.route_id)) byRoute.set(capture.route_id, []);
@@ -583,7 +591,7 @@ function buildStateMatrix(captures) {
         aria_semantic_expectation: 'Clear page heading, labeled controls, and role-appropriate structure.',
         accessibility_expectation: 'No P0/P1 accessibility defect; no mobile overflow; controls labeled.',
         test_smoke_assertion: 'Follow-up packet must convert this audit row into deterministic smoke assertions where feasible.',
-        requirement_id: REQUIREMENT_ID,
+        requirement_id: requirementId,
       });
     }
   }
@@ -597,8 +605,8 @@ function markdownTable(rows, columns) {
   return [header, sep, ...body].join('\n');
 }
 
-function writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix }) {
-  const routeRows = ROUTES.map((route) => ({
+function writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix, routes = ROUTES, runMeta = {} }) {
+  const routeRows = routes.map((route) => ({
     id: route.id,
     route: route.route,
     surface: route.surface,
@@ -607,11 +615,11 @@ function writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix }
   }));
 
   const report = {
-    audit_id: '2026-07-01-rabbi-onetime-current-state',
-    raw_id: 'RAW-20260701-004',
-    parent_packet_raw_id: 'RAW-20260701-003',
-    packet_id: 'PKT-20260701-112',
-    requirement_id: REQUIREMENT_ID,
+    audit_id: runMeta.auditId || '2026-07-01-rabbi-onetime-current-state',
+    raw_id: runMeta.rawId || 'RAW-20260701-004',
+    parent_packet_raw_id: runMeta.parentRawId || 'RAW-20260701-003',
+    packet_id: runMeta.packetId || 'PKT-20260701-112',
+    requirement_id: runMeta.requirementId || REQUIREMENT_ID,
     generated_at: new Date().toISOString(),
     base_url: baseUrl,
     workspace_key: WORKSPACE_KEY,
@@ -623,7 +631,7 @@ function writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix }
     },
     screenshot_count: captures.length,
     required_viewports: VIEWPORTS.map((viewport) => viewport.label),
-    route_count: ROUTES.length,
+    route_count: routes.length,
     findings_count: findings.length,
     browser_content_untrusted: true,
     ui_implementation_performed: false,
@@ -632,7 +640,7 @@ function writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix }
     captures,
     findings,
     state_matrix: stateMatrix,
-    next_recommended_packet: 'Manual screenshot review is required. Split any newly found defect into a focused Product Quality Compiler packet. Deploy/live-smoke remains blocked until DEC-20260702-801 is resolved.',
+    next_recommended_packet: 'Manual screenshot review is required. Split any newly found defect into a focused Product Quality Compiler packet. UI implementation remains blocked until Product Quality Definition of Ready passes and any audit blockers are resolved or explicitly accepted.',
   };
   writeJson(path.join(outDir, 'report.json'), report);
 
@@ -663,7 +671,7 @@ function writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix }
     '## Evidence',
     '',
     `- Screenshots captured: ${captures.length}`,
-    `- Routes audited: ${ROUTES.length}`,
+    `- Routes audited: ${routes.length}`,
     `- Viewports: ${VIEWPORTS.map((viewport) => viewport.label).join(', ')}`,
     `- Operations auth: ${auth.ok ? 'available' : `blocked - ${auth.blocker}`}`,
     '',
@@ -673,7 +681,7 @@ function writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix }
     '',
     '## Next Recommended Packet',
     '',
-    'Manual screenshot review is required. Split any newly found defect into a focused Product Quality Compiler packet. Deploy/live-smoke remains blocked by `DEC-20260702-801`.',
+    'Manual screenshot review is required. Split any newly found defect into a focused Product Quality Compiler packet. UI implementation remains blocked until Product Quality Definition of Ready passes and any audit blockers are resolved or explicitly accepted.',
   ].join('\n'));
 
   writeText(path.join(outDir, 'route-inventory.md'), [
@@ -724,7 +732,7 @@ function writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix }
     '',
     '1. Review the latest redacted screenshots manually for any remaining route-specific defects that automation cannot classify.',
     '2. Split any new defect into a focused Product Quality Compiler packet before implementation.',
-    '3. When `DEC-20260702-801` is resolved, run deploy/live-smoke for app-visible One Time Operations, review, and portal changes.',
+    '3. Run deploy/live-smoke for app-visible One Time Operations, review, and portal changes only after a focused Product Quality packet passes Definition of Ready and the implementation is complete.',
     '4. Keep CRM/community/classroom follow-ups first-party only; do not add GHL, LeadConnector, external CRM writes, sends, payments, access grants, DNS, uploads, or publishes without an explicit Decision.',
     '',
     'Do not implement all of these in one Codex session. Each implementation packet must pass Product Quality Compiler Definition of Ready first.',
@@ -740,8 +748,15 @@ async function main() {
     loadEnvFile(envFile);
   }
 
-  const baseUrl = argValue('base', process.env.BNA_AUDIT_BASE_URL || DEFAULT_BASE_URL).replace(/\/+$/, '');
+  const baseUrl = (argValue('base', '') || argValue('base-url', process.env.BNA_AUDIT_BASE_URL || DEFAULT_BASE_URL)).replace(/\/+$/, '');
   const outDir = argValue('out', DEFAULT_OUT);
+  const routeIds = new Set(argValues('route-ids'));
+  const routes = routeIds.size ? ROUTES.filter((route) => routeIds.has(route.id)) : ROUTES;
+  if (routeIds.size && routes.length !== routeIds.size) {
+    const known = new Set(ROUTES.map((route) => route.id));
+    const unknown = [...routeIds].filter((id) => !known.has(id));
+    throw new Error(`Unknown route id(s): ${unknown.join(', ')}`);
+  }
   ensureDir(outDir);
   for (const child of ['screenshots', 'aria', 'accessibility', 'state-matrix']) ensureDir(path.join(outDir, child));
 
@@ -750,7 +765,7 @@ async function main() {
   const captures = [];
   const findings = [];
   try {
-    for (const routeMeta of ROUTES) {
+    for (const routeMeta of routes) {
       for (const viewport of VIEWPORTS) {
         const capture = await captureRoute(browser, baseUrl, routeMeta, viewport, auth.cookieHeader, outDir);
         captures.push(capture);
@@ -767,7 +782,14 @@ async function main() {
     await browser.close();
   }
 
-  const stateMatrix = buildStateMatrix(captures);
+  const runMeta = {
+    auditId: argValue('audit-id', '2026-07-01-rabbi-onetime-current-state'),
+    rawId: argValue('raw-id', 'RAW-20260701-004'),
+    parentRawId: argValue('parent-raw-id', 'RAW-20260701-003'),
+    packetId: argValue('packet-id', 'PKT-20260701-112'),
+    requirementId: argValue('requirement-id', REQUIREMENT_ID),
+  };
+  const stateMatrix = buildStateMatrix(captures, runMeta.requirementId);
   writeJson(path.join(outDir, 'state-matrix', 'observed-state-matrix.json'), stateMatrix);
   writeJson(path.join(outDir, 'console-errors.json'), captures.flatMap((capture) => capture.console_errors.map((error) => ({
     route: capture.route,
@@ -779,7 +801,7 @@ async function main() {
     viewport: capture.viewport,
     ...error,
   }))));
-  writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix });
+  writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix, routes, runMeta });
   console.log(`Report: ${path.relative(ROOT, path.join(outDir, 'report.md')).replace(/\\/g, '/')}`);
 }
 

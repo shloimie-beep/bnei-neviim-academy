@@ -11,7 +11,7 @@ Requirement register:
 Workspace/project:
 `rabbi_sheller_provider` / `one_time_mishnah_class`
 
-Status: vimeo-owner-readiness-needs-operator-decision
+Status: vimeo-owner-readiness-and-ui-readiness-blockers-open
 
 ## Router Result
 
@@ -130,13 +130,13 @@ findings, deploy/live-smoke URLs where applicable, blockers, and next packet.
 | Packet ID | Stage | Role | Depends on | Status | Scope |
 |---|---|---|---|---|---|
 | PKT-20260713-004-00 | 00-control-tower | CONTROL_TOWER | RAW-20260713-004 | done | Register source, classify, define DAG, collisions, requirements, provider gates. |
-| PKT-20260713-004-01 | 01-current-state-visual-audit | VISUAL_AUDITOR | PKT-20260713-004-00 | ready_for_generation | Capture current Rabbi content command center, parent/student portals, classroom/library, mobile states. |
+| PKT-20260713-004-01 | 01-current-state-visual-audit | VISUAL_AUDITOR | PKT-20260713-004-00 | captured_with_blockers | Captured current public/provider/parent/student/classroom screenshots and recorded Operations/member blockers. |
 | PKT-20260713-004-02 | 02-drive-intake-orchestrator | IMPLEMENTATION_PACKET | PKT-20260713-004-00, REQ-20260713-913 | done | Drive discovery, stable-file admission, idempotent content jobs, leases, retries. |
 | PKT-20260713-004-03 | 03-media-edit-and-long-transcription | IMPLEMENTATION_PACKET | PKT-20260713-004-02 | partial - media edit Done; transcription provider/private fixture pending | Edge edit verification and chunked private transcription. |
 | PKT-20260713-004-04 | 04-transcript-metadata-and-knowledge-handoff | IMPLEMENTATION_PACKET | PKT-20260713-004-03 | in_progress - local contract deployed and studio sidecar verified; DB/review integration pending | Metadata schema/generator and bot-knowledge handoff contract. |
 | PKT-20260713-004-05 | 05-vimeo-owner-readiness-and-private-upload | PROVIDER_SETUP_PACKET | PKT-20260713-004-00 | needs_operator_decision | Credential readback, owner account/project checks, synthetic private upload gate. Existing access token reads the owner account; newly supplied values validate as app credentials but fail direct bearer readback; no private test project/folder or upload approval is configured. |
 | PKT-20260713-004-06 | 06-class-package-classroom-and-latest-video | IMPLEMENTATION_PACKET | PKT-20260713-004-04, PKT-20260713-004-05 | not_started | Class review package, member library, latest video, older-class library, entitlements. |
-| PKT-20260713-004-07 | 07-rabbi-content-processing-ui | IMPLEMENTATION_PACKET | PKT-20260713-004-01, PQC Definition of Ready | blocked | Queue/details/review UI after visual audit and PQC validation. |
+| PKT-20260713-004-07 | 07-rabbi-content-processing-ui | IMPLEMENTATION_PACKET | PKT-20260713-004-01, PQC Definition of Ready | blocked - PQC spec validates; auth/member/Vimeo gates open | Queue/details/review UI after visual audit and PQC validation. |
 | PKT-20260713-004-08 | 08-end-to-end-pilot-and-release | VERIFIER_PACKET / DEPLOY_PACKET | PKT-20260713-004-02..07 | not_started | Synthetic E2E, one real pilot when gates pass, deploy/live smoke, rollback/handoff. |
 
 ## Current Collision Constraints
@@ -172,7 +172,16 @@ metadata integration gates are resolved. Current Vimeo gate has valid owner app
 credentials but still needs operator decision for private test folder/project,
 upload-capable user token/scope/plan confirmation, and synthetic upload
 approval.
-Generate/run `PKT-20260713-004-01` before any broad UI implementation.
+Current-state visual audit evidence is recorded at
+`ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.md`.
+The focused Product Quality Compiler spec for `PKT-20260713-004-07` is
+`ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.product-quality.json`
+and validated with `npm run pqc:validate`.
+
+UI implementation remains blocked: authenticated Operations command-center
+screenshots returned `401 Invalid credentials`, the `one-time-member-login`
+route repeatedly hung the screenshot harness, and Vimeo/member publication
+gates remain unresolved.
 
 Do not solve the whole parent ramble in any child packet. Complete only that
 packet's scope and record the next packet or blocker.
