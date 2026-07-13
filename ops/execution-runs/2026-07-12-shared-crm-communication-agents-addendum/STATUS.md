@@ -237,3 +237,15 @@ Current status: `active`
 - Live proof passed: One Time separate-instance exact-SHA smoke, One Time provider route-module smoke `ops/live-smokes/2026-07-13T08-59-55-777Z-onetime-provider-route-module-live-smoke.md`, One Time CRM workbench smoke `ops/live-smokes/2026-07-13T09-00-20-966Z-one-time-operations-crm-workbench-live-smoke.md`, email-thread DTO smoke `ops/live-smokes/2026-07-13T09-00-20-963Z-one-time-crm-email-thread-dto-live-smoke.md`, Operations taxonomy smoke `ops/live-smokes/2026-07-13T09-00-42-212Z-operations-workspace-taxonomy-live-smoke.md`, and exact-SHA One Time performance gate.
 - Targeted legacy contact-note live probe wrote `ops/live-smokes/2026-07-13T09-00-20-964Z-one-time-crm-contact-notes-dto-live-smoke.md`; production returned 7 canonical contacts but no positive canonical contact-note sample, so it recorded `skipped_no_live_contact_notes` without creating synthetic data.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw note/message logging, or production data mutation was performed.
+
+## CRM Delivery Outbox Activity DTO - 2026-07-13
+
+- `REQ-20260712-302` remains in progress, with the delivery-outbox Activity DTO slice implemented at `fc36995bf85e31b988e1d7e1d756bf4e51e00ca4` and deployed at `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
+- `server.js` now includes scoped `assistant_delivery_outbox` rows in selected-contact Activity timelines for canonical `bna_contacts` and legacy `bna_parent_leads` when One Time outbox rows exist.
+- `src/lib/bna/crm/contact-service.js` keeps `delivery_outbox` rows out of Conversations and Tasks so queued/sent/failed/dead-letter delivery state is not presented as a sent message or task.
+- DTO source context is redacted: `message_body_returned=false`, `recipient_returned=false`, `no_send=true`, and `external_write_performed=false`.
+- BNA Railway deployment `b49f07c2-86e5-44d3-8092-e4ed1bdaed2e` reached `SUCCESS`; One Time Railway deployment `c7de0743-3989-43a4-8cba-0f012b96364a` reached `SUCCESS`.
+- Both live deploy-info endpoints returned `commit_sha=ee9391d2bd4a1ff3ef41fc99296089254373a4d6`; One Time returned `target_app=one-time`.
+- Live proof passed: One Time exact-SHA separate-instance smoke, One Time CRM workbench smoke, One Time provider route-module smoke, Operations workspace taxonomy smoke, and One Time performance regression gate.
+- Targeted delivery-outbox DTO live probe wrote `ops/live-smokes/2026-07-13T09-28-14-537Z-one-time-crm-delivery-outbox-dto-live-smoke.md`; production returned 7 canonical contacts but no live delivery_outbox rows, so it recorded `skipped_no_live_delivery_outbox` without creating synthetic data.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw recipient/body logging, or production data mutation was performed.

@@ -39795,3 +39795,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   production currently has no matching canonical legacy-note data; it created
   no synthetic data and performed no external writes. Report:
   `ops/live-smokes/2026-07-13T09-00-20-964Z-one-time-crm-contact-notes-dto-live-smoke.md`.
+
+## 2026-07-13 - Shared CRM delivery-outbox Activity DTO deployed
+
+- Extended `REQ-20260712-302` selected-contact Activity timeline loading so
+  scoped `assistant_delivery_outbox` rows appear for One Time delivery status
+  when live outbox rows exist.
+- Kept delivery outbox rows out of Conversations and Tasks so queued/sent/failed
+  delivery state is not represented as a sent conversation or task.
+- Added `app:smoke:onetime-crm-delivery-outbox-dto` for redacted read-only
+  production proof.
+- App-code commit `fc36995bf85e31b988e1d7e1d756bf4e51e00ca4` is included in
+  deployed head `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`; BNA deployment
+  `b49f07c2-86e5-44d3-8092-e4ed1bdaed2e` and One Time deployment
+  `c7de0743-3989-43a4-8cba-0f012b96364a` reached `SUCCESS`.
+- Verification passed: focused CRM/signup tests `42/42`, full One Time focused
+  suite `78/78`, generated-shell check, action/protocol/secrets watchdogs, run
+  validation, exact-SHA One Time route/CRM/provider smokes, BNA taxonomy smoke,
+  and One Time performance gate.
+- Targeted delivery-outbox live probe recorded no positive sample because
+  production currently has no live delivery-outbox rows in the inspected
+  canonical contact set; it created no synthetic data and performed no external
+  writes. Report:
+  `ops/live-smokes/2026-07-13T09-28-14-537Z-one-time-crm-delivery-outbox-dto-live-smoke.md`.
