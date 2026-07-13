@@ -46,15 +46,30 @@ function normalizePageOptions(options = {}) {
 }
 
 function mapConversationDto(row = {}) {
+  const context = normalizeSourceContext(row.source_context);
+  const channel = row.channel || context.channel || 'internal_note';
+  const source = row.source || row.provider || context.source || context.provider || null;
+  const haystack = `${channel} ${source} ${row.communication_type || ''}`.toLowerCase();
+  const openAction = /whatsapp|wapi|whapi/.test(haystack)
+    ? 'whatsapp'
+    : (/email|resend|mail/.test(haystack) ? 'email' : null);
   return {
     id: row.id,
-    channel: row.channel || 'internal_note',
-    direction: row.direction || 'internal',
+    channel,
+    direction: row.direction || context.direction || 'internal',
     summary: row.body || row.summary || 'Conversation',
     body: row.notes || row.body || '',
-    source: row.source || null,
+    subject: row.subject || context.subject || null,
+    source,
+    provider: row.provider || context.provider || source,
     occurred_at: row.occurred_at || row.created_at || null,
     communication_type: row.communication_type || 'communication',
+    thread_key: row.thread_key || context.thread_key || context.conversation_id || context.chat_id || context.wapi_chat_id || null,
+    external_message_id: row.external_message_id || context.external_message_id || context.message_id || context.email_message_id || context.wapi_message_id || null,
+    from_address: row.from_address || context.from_address || context.from_number || null,
+    to_address: row.to_address || context.to_address || context.to_number || null,
+    status: row.status || context.status || null,
+    open_action: openAction,
     no_send: true,
     external_write_performed: false,
   };

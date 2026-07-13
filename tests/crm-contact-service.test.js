@@ -96,6 +96,8 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
         direction: 'inbound',
         body: 'Can my school join?',
         source: 'wapi',
+        thread_key: 'phone:972501112222',
+        from_address: '+972 50 111 2222',
         occurred_at: '2026-07-12T13:00:00Z',
         communication_type: 'communication',
       },
@@ -122,6 +124,9 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.equal(conversations.contact_key, 'bna_contacts:7');
   assert.equal(conversations.conversations.length, 1);
   assert.equal(conversations.conversations[0].channel, 'whatsapp');
+  assert.equal(conversations.conversations[0].open_action, 'whatsapp');
+  assert.equal(conversations.conversations[0].thread_key, 'phone:972501112222');
+  assert.equal(conversations.conversations[0].from_address, '+972 50 111 2222');
   assert.equal(conversations.conversations[0].no_send, true);
   assert.equal(conversations.page.limit, 1);
 

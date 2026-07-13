@@ -7419,9 +7419,8 @@ function renderFirstPartyCrmSafeActions(card = null) {
     const inboxAction = card?.id
         ? `<button class="task-action" type="button" onclick="openFirstPartyCrmInboxContext(${attrJson(card.id)})" data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX">Open email thread</button>`
         : `<button class="task-action" type="button" disabled aria-disabled="true" title="${escapeHtml(window.BnaCrmContactWorkspace?.emptyState?.('email_unavailable') || 'Email is not available for this contact.')}">Start email</button>`;
-    const whatsappHref = window.BnaCrmActions?.whatsappHref?.(card?.phone || '') || '';
-    const whatsappAction = whatsappHref
-        ? `<a class="task-action" href="${escapeHtml(whatsappHref)}" target="_blank" rel="noopener" data-action-id="ACTION-CRM-OPEN-WHATSAPP-THREAD">Start WhatsApp conversation</a>`
+    const whatsappAction = card?.phone
+        ? `<button class="task-action" type="button" onclick="openFirstPartyCrmConversationThread(event, ${attrJson(card?.id || '')}, '', 'whatsapp')" data-action-id="ACTION-CRM-OPEN-WHATSAPP-THREAD">Open WhatsApp thread</button>`
         : `<button class="task-action" type="button" disabled aria-disabled="true" title="${escapeHtml(window.BnaCrmActions?.unavailableTooltip?.('whatsapp') || 'WhatsApp is not available for this contact.')}">Start WhatsApp conversation</button>`;
     const taskAction = readOnlyPreview
         ? `<button class="task-action" type="button" data-action-id="ACTION-CRM-CREATE-TASK" disabled aria-disabled="true" title="Create task is unavailable in read-only preview.">Create task</button>`
@@ -7777,6 +7776,25 @@ function renderFirstPartyCrmTimeline(card = {}) {
     `;
 }
 
+function firstPartyCrmConversationActionChannel(item = {}) {
+    const declared = String(item.open_action || '').toLowerCase();
+    if (['email', 'whatsapp'].includes(declared)) return declared;
+    const haystack = `${item.channel || ''} ${item.source || ''} ${item.provider || ''} ${item.communication_type || ''}`.toLowerCase();
+    if (/whatsapp|wapi|whapi/.test(haystack)) return 'whatsapp';
+    if (/email|resend|mail/.test(haystack)) return 'email';
+    return '';
+}
+
+function firstPartyCrmConversationOpenButton(item = {}, card = {}) {
+    const actionChannel = firstPartyCrmConversationActionChannel(item);
+    if (!actionChannel) return '';
+    const args = `${attrJson(card.id || selectedFirstPartyCrmContactId || '')}, ${attrJson(item.id || '')}`;
+    if (actionChannel === 'whatsapp') {
+        return `<button class="task-action" type="button" onclick="openFirstPartyCrmConversationThread(event, ${args})" data-action-id="ACTION-CRM-OPEN-WHATSAPP-THREAD" data-crm-conversation-action="whatsapp">Open WhatsApp thread</button>`;
+    }
+    return `<button class="task-action" type="button" onclick="openFirstPartyCrmConversationThread(event, ${args})" data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX" data-crm-conversation-action="email">Open email thread</button>`;
+}
+
 function renderFirstPartyCrmConversationDtoPanel(card = {}) {
     const items = Array.isArray(firstPartyCrmConversationsPayload?.conversations)
         ? firstPartyCrmConversationsPayload.conversations
@@ -7799,6 +7817,7 @@ function renderFirstPartyCrmConversationDtoPanel(card = {}) {
                     <div class="content-card-title">${escapeHtml([item.channel, item.communication_type].filter(Boolean).join(' / ') || 'Conversation')}</div>
                     <div class="content-card-meta">${escapeHtml([item.direction, item.occurred_at ? formatDateTime(item.occurred_at) : ''].filter(Boolean).join(' - '))}</div>
                     <p class="event-meta">${escapeHtml(item.body || item.summary || '')}</p>
+                    ${firstPartyCrmConversationOpenButton(item, card) ? `<div class="task-actions">${firstPartyCrmConversationOpenButton(item, card)}</div>` : ''}
                 </article>
             `).join('')}
         </div>
@@ -8058,6 +8077,57 @@ async function openFirstPartyCrmInboxContext(contactId = '') {
     taskProjectFilter = 'one_time_mishnah_class';
     currentView = 'communications';
     communicationsSection = 'email';
+    syncOperationsUrl();
+    rerenderOperationsApp();
+    await loadData({ background: true });
+}
+
+function firstPartyCrmWapiPhonebookKey(card = {}, item = {}) {
+    const candidates = [
+        item.thread_key,
+        item.from_address,
+        item.to_address,
+        card.phone,
+        card.whatsapp,
+    ];
+    for (const value of candidates) {
+        const raw = String(value || '').trim();
+        if (!raw) continue;
+        if (/^phone:\d+$/i.test(raw)) return raw.toLowerCase();
+        if (/^chat:[^\s]+$/i.test(raw)) return raw.toLowerCase();
+        const tokens = phoneTokenVariantsClient(raw);
+        if (tokens.length) return `phone:${tokens[0]}`;
+    }
+    return '';
+}
+
+async function openFirstPartyCrmConversationThread(event, contactId = '', conversationId = '', preferredChannel = '') {
+    event?.preventDefault?.();
+    const card = selectedFirstPartyCrmCard() || {};
+    const item = (firstPartyCrmConversationsPayload?.conversations || [])
+        .find(entry => String(entry.id || '') === String(conversationId || '')) || {};
+    const actionChannel = firstPartyCrmConversationActionChannel(item) || String(preferredChannel || '').toLowerCase();
+    if (!actionChannel) return;
+    const workspaceKey = card.workspace_key || currentWorkspaceKey() || 'rabbi_sheller_provider';
+    const projectKey = card.project_key || projectKeyForWorkspaceKey(workspaceKey) || taskProjectFilter || 'one_time_mishnah_class';
+    if (contactId) {
+        selectedFirstPartyCrmContactId = contactId;
+        window.sessionStorage?.setItem?.('oneTimeSelectedCrmContactId', String(contactId || ''));
+    }
+    if (card.email) window.sessionStorage?.setItem?.('oneTimeSelectedCrmContactEmail', String(card.email || ''));
+    currentWorkspaceId = workspaceKey;
+    taskProjectFilter = projectKey;
+    currentView = 'communications';
+    if (actionChannel === 'email') {
+        communicationsSection = 'email';
+        emailInboxScope = window.BnaCrmInbox?.scopeForWorkspace?.(workspaceKey) || emailInboxScopeRecord().id;
+        firstPartyCrmNotice = 'Email thread opened in the scoped Inbox. No email was sent.';
+    } else {
+        communicationsSection = 'whatsapp';
+        selectedWapiPhonebookKey = firstPartyCrmWapiPhonebookKey(card, item) || selectedWapiPhonebookKey;
+        wapiMobilePane = 'conversation';
+        firstPartyCrmNotice = 'WhatsApp thread opened in the scoped Inbox. No WhatsApp message was sent.';
+    }
     syncOperationsUrl();
     rerenderOperationsApp();
     await loadData({ background: true });

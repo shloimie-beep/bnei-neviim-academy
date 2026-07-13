@@ -29580,21 +29580,28 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     const result = await db.query(
       `SELECT *
        FROM (
-         SELECT
-           c.id,
-           c.channel,
-           c.direction,
-           c.summary AS body,
-           c.body AS notes,
-           c.source,
-           c.source_context,
-           c.occurred_at,
-           c.created_at,
-           'contact_note' AS communication_type
-         FROM bna_contact_communications c
-         LEFT JOIN bna_parent_leads l ON l.id = c.lead_id
-         LEFT JOIN bna_projects p ON p.id = l.project_id
-         WHERE ${conditions.join(' AND ')}
+          SELECT
+            c.id,
+            c.channel,
+            c.direction,
+            c.summary AS body,
+            c.body AS notes,
+            c.source,
+            c.source_context,
+            c.occurred_at,
+            c.created_at,
+            'contact_note' AS communication_type,
+            NULL::text AS subject,
+            NULL::text AS thread_key,
+            NULL::text AS external_message_id,
+            NULL::text AS from_address,
+            NULL::text AS to_address,
+            NULL::text AS provider,
+            NULL::text AS status
+          FROM bna_contact_communications c
+          LEFT JOIN bna_parent_leads l ON l.id = c.lead_id
+          LEFT JOIN bna_projects p ON p.id = l.project_id
+          WHERE ${conditions.join(' AND ')}
          UNION ALL
          SELECT
            t.id,
@@ -29612,12 +29619,19 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
              'no_send', true,
              'external_write_performed', false
            ) AS source_context,
-           COALESCE(t.due_date::timestamp, t.updated_at, t.created_at) AS occurred_at,
-           t.created_at,
-           'follow_up_task' AS communication_type
-         FROM bna_tasks t
-         JOIN bna_parent_leads l ON lower(t.related_contact_email) = lower(l.parent_email)
-         LEFT JOIN bna_projects p ON p.id = l.project_id
+            COALESCE(t.due_date::timestamp, t.updated_at, t.created_at) AS occurred_at,
+            t.created_at,
+            'follow_up_task' AS communication_type,
+            NULL::text AS subject,
+            NULL::text AS thread_key,
+            NULL::text AS external_message_id,
+            NULL::text AS from_address,
+            NULL::text AS to_address,
+            NULL::text AS provider,
+            NULL::text AS status
+          FROM bna_tasks t
+          JOIN bna_parent_leads l ON lower(t.related_contact_email) = lower(l.parent_email)
+          LEFT JOIN bna_projects p ON p.id = l.project_id
          WHERE ${taskConditions.join(' AND ')}
        ) timeline
        ORDER BY occurred_at DESC NULLS LAST, created_at DESC
@@ -29650,27 +29664,41 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
          channel,
          direction,
          COALESCE(NULLIF(body_text, ''), subject, communication_type, 'Communication') AS body,
-         provider AS source,
-         metadata AS source_context,
-         occurred_at,
-         created_at,
-         COALESCE(communication_type, 'communication') AS communication_type
-       FROM bna_communications
-       WHERE ${communicationConditions.join(' AND ')}
-       UNION ALL
+          provider AS source,
+          metadata AS source_context,
+          occurred_at,
+          created_at,
+          COALESCE(communication_type, 'communication') AS communication_type,
+          subject,
+          thread_key,
+          external_message_id,
+          from_address,
+          to_address,
+          provider,
+          status
+        FROM bna_communications
+        WHERE ${communicationConditions.join(' AND ')}
+        UNION ALL
        SELECT
          id,
          'internal_note' AS channel,
          'internal' AS direction,
          summary AS body,
          source,
-         metadata AS source_context,
-         created_at AS occurred_at,
-         created_at,
-         event_type AS communication_type
-       FROM bna_contact_pipeline_events
-       WHERE ${pipelineConditions.join(' AND ')}
-       UNION ALL
+          metadata AS source_context,
+          created_at AS occurred_at,
+          created_at,
+          event_type AS communication_type,
+          NULL::text AS subject,
+          NULL::text AS thread_key,
+          NULL::text AS external_message_id,
+          NULL::text AS from_address,
+          NULL::text AS to_address,
+          NULL::text AS provider,
+          NULL::text AS status
+        FROM bna_contact_pipeline_events
+        WHERE ${pipelineConditions.join(' AND ')}
+        UNION ALL
        SELECT
          t.id,
          'task' AS channel,
@@ -29686,11 +29714,18 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
            'no_send', true,
            'external_write_performed', false
          ) AS source_context,
-         COALESCE(t.due_date::timestamp, t.updated_at, t.created_at) AS occurred_at,
-         t.created_at,
-         'follow_up_task' AS communication_type
-       FROM bna_tasks t
-       JOIN bna_contacts bc ON ${taskConditions.join(' AND ')}
+          COALESCE(t.due_date::timestamp, t.updated_at, t.created_at) AS occurred_at,
+          t.created_at,
+          'follow_up_task' AS communication_type,
+          NULL::text AS subject,
+          NULL::text AS thread_key,
+          NULL::text AS external_message_id,
+          NULL::text AS from_address,
+          NULL::text AS to_address,
+          NULL::text AS provider,
+          NULL::text AS status
+        FROM bna_tasks t
+        JOIN bna_contacts bc ON ${taskConditions.join(' AND ')}
      ) timeline
      ORDER BY occurred_at DESC NULLS LAST, created_at DESC
      LIMIT 200`,

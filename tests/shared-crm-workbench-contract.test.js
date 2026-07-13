@@ -229,12 +229,18 @@ test('Operations CRM workspace tabs are enabled surfaces, not disabled placehold
   assert.match(operations, /function setFirstPartyCrmWorkspaceTab\(tabId\)/);
   assert.match(operations, /function renderFirstPartyCrmTabContent\(card = \{\}, readOnly = false\)/);
   assert.match(operations, /function renderFirstPartyCrmConversationDtoPanel\(card = \{\}\)/);
+  assert.match(operations, /function firstPartyCrmConversationOpenButton\(item = \{\}, card = \{\}\)/);
+  assert.match(operations, /function openFirstPartyCrmConversationThread\(event, contactId = '', conversationId = '', preferredChannel = ''\)/);
   assert.match(operations, /function renderFirstPartyCrmTaskDtoPanel\(card = \{\}\)/);
   assert.match(operations, /onclick="setFirstPartyCrmWorkspaceTab\(\$\{attrJson\(tab\.id\)\}\)"/);
   assert.match(operations, /data-crm-tab-panel="conversations"/);
   assert.match(operations, /data-crm-tab-panel="tasks"/);
   assert.match(operations, /data-crm-dto-source="contact-conversations"/);
   assert.match(operations, /data-crm-dto-source="contact-tasks"/);
+  assert.match(operations, /data-crm-conversation-action="whatsapp"/);
+  assert.match(operations, /data-crm-conversation-action="email"/);
+  assert.match(operations, /Open WhatsApp thread/);
+  assert.match(operations, /No WhatsApp message was sent\./);
   assert.match(operations, /Promise\.allSettled\(\[/);
   assert.match(operations, /api\.getCrmContactConversations\(contactId, \{ \.\.\.filters, limit: 25 \}/);
   assert.match(operations, /api\.getCrmContactTasks\(contactId, \{ \.\.\.filters, limit: 25 \}/);
@@ -298,4 +304,6 @@ test('CRM routes delegate DTOs through the canonical contact service', () => {
   assert.match(server, /app\.get\('\/api\/bna\/crm\/contacts\/:id\/tasks', requireAdmin/);
   assert.match(server, /const payload = await operationsCrmContactService\.getContactTasks\(req\.params\.id, scope, \{/);
   assert.match(contactService, /aggregate_service: 'bna_crm_contact_service_v1'/);
+  assert.match(contactService, /open_action: openAction/);
+  assert.match(server, /thread_key,\s*external_message_id,\s*from_address,\s*to_address,\s*provider,\s*status/);
 });

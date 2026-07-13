@@ -2805,16 +2805,16 @@
     },
     {
       "action_id": "ACTION-CRM-OPEN-WHATSAPP-THREAD",
-      "label": "Start WhatsApp conversation",
+      "label": "Open WhatsApp thread",
       "surface": "operations_contacts",
-      "route": "/operations?view=contacts&section=crm_contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=whatsapp",
       "selector_hint": "[data-action-id=\"ACTION-CRM-OPEN-WHATSAPP-THREAD\"]",
-      "expected_behavior": "Opens a wa.me link for the selected contact only when a phone identity exists; it does not prefill or send a WhatsApp message.",
+      "expected_behavior": "Moves from a selected local CRM contact or conversation DTO to the scoped WhatsApp conversation workspace; it does not prefill or send a WhatsApp message.",
       "permission": "super_admin or scoped provider workspace role with CRM entitlement",
       "status": "active_navigation_no_send",
       "test": {
         "type": "node_test",
-        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the shared CRM action helper builds a wa.me link and unavailable tooltip."
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the shared CRM conversation DTO exposes a no-send WhatsApp thread-open action."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
