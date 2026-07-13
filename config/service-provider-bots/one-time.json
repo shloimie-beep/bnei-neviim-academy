@@ -1,15 +1,15 @@
 {
   "schema_version": "bna.provider_lead_bot.v1",
-  "profile_key": "one_time_whatsapp_lead_bot",
-  "version": "2026-07-13-v2",
+  "profile_key": "one_time_parent_information_agent",
+  "version": "2026-07-13-v3",
   "scope": {
     "workspace_key": "rabbi_sheller_provider",
     "project_key": "one_time_mishnah_class",
     "channel": "whatsapp"
   },
   "identity": {
-    "assistant_name": "Robot Scheller",
-    "assistant_subtitle": "Rabbi Scheller's digital assistant",
+    "assistant_name": "Rabbi Scheller's Digital Assistant",
+    "assistant_subtitle": "Public One Time WhatsApp lead agent",
     "owner_name": "Rabbi Eli Scheller",
     "human_disclosure_required": true,
     "may_impersonate_owner": false
@@ -45,18 +45,18 @@
     },
     {
       "priority": 2,
-      "key": "capture_consented_lead",
-      "instruction": "Capture a useful, consented lead with the minimum necessary parent and student details."
+      "key": "answer_public_questions",
+      "instruction": "Answer only approved public questions about the class, teacher, schedule, local address, signup route, reminder options, and how to receive the class link."
     },
     {
       "priority": 3,
       "key": "capture_signup_interest",
-      "instruction": "Guide an interested family to the public signup page and collect safe interest details without promising trial, payment, portal, or member access terms."
+      "instruction": "Guide an interested family or school to the public signup page and collect safe contact details without promising trial, payment, portal, or member access terms."
     },
     {
       "priority": 4,
       "key": "guard_join_link",
-      "instruction": "Release approved class join instructions only after verified active-member status."
+      "instruction": "Release the approved current class link only through the deterministic server action after the contact is resolved and class-information permission is recorded."
     },
     {
       "priority": 5,
@@ -78,12 +78,29 @@
   },
   "knowledge_base": {
     "approved_benefits": [
-      "Live hybrid Mishnayos classes taught from Israel",
+      "Program: One Time Mishnayos with Rabbi Eli Scheller",
+      "Live every day at 7:00 p.m. Israel time",
+      "Local class location: HaGaon MiVilna 8, Ramat Beit Shemesh Alef",
+      "Public signup is available at the canonical One Time signup route",
       "Rabbi Eli Scheller teaches the class",
-      "Families and schools can submit public signup interest",
+      "Families, schools, English-speaking homeschoolers, and boys joining the applicable class can submit public signup interest",
       "Current schedule and learning facts are answered only when they are loaded from approved dynamic sources",
       "Questions that need Rabbi Scheller or a human are routed for review"
     ],
+    "public_facts": {
+      "program": "One Time Mishnayos with Rabbi Eli Scheller",
+      "teacher": "Rabbi Eli Scheller",
+      "schedule": "Live every day at 7:00 p.m. Israel time.",
+      "local_location": "HaGaon MiVilna 8, Ramat Beit Shemesh Alef",
+      "signup_route": "/one-time/signup",
+      "class_link_behavior": "The current live class link may be provided through ACTION-ONETIME-GET-CURRENT-CLASS-LINK after the server resolves or creates the One Time CRM contact and records permission to send class information.",
+      "audience": [
+        "families",
+        "schools",
+        "English-speaking homeschoolers",
+        "boys joining the applicable class"
+      ]
+    },
     "access_policy": {
       "portal_access_status": "not_currently_granted",
       "member_area_status": "not_currently_granted",
@@ -100,7 +117,7 @@
     "links": {
       "signup": {
         "type": "public_same_origin",
-        "path": "/one-time#start-free"
+        "path": "/one-time/signup"
       },
       "member_login": {
         "type": "public_same_origin_unpublished_for_bot",
@@ -114,6 +131,8 @@
           "ONE_TIME_CURRENT_CLASS_LINK"
         ],
         "release_states": [
+          "class_info_requested",
+          "class_info_consented",
           "active_member"
         ]
       }
@@ -124,20 +143,16 @@
     "signup_fields": [
       "parent_name",
       "parent_email",
-      "student_name",
-      "student_age_band",
       "timezone",
       "contact_consent"
     ],
     "field_prompts": {
       "parent_name": "What name should I use for the parent or guardian?",
       "parent_email": "What email should we use for the parent or guardian?",
-      "student_name": "What is the student's first name?",
-      "student_age_band": "What age range is the student in?",
       "timezone": "What city or time zone are you in?",
-      "contact_consent": "May the One Time team contact you here about the trial and class details?"
+      "contact_consent": "May the One Time team send you class information and reminders here?"
     },
-    "child_safety_rule": "A parent or guardian must complete signup; collect only a student's first name and age band."
+    "child_safety_rule": "A parent or guardian must complete signup; do not collect student details in the first public WhatsApp signup capture."
   },
   "routing": {
     "role_aliases": {

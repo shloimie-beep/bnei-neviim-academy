@@ -147,6 +147,7 @@ const {
 const {
   buildProviderLeadBotPlan,
   classifyProviderLeadBotIntent,
+  providerLeadBotClassLinkAllowed,
   loadProviderLeadBotProfile,
 } = require('./src/lib/bna/provider-lead-bot');
 const integrationSecretLoader = require('./src/lib/integrations/secret-loader');
@@ -8463,8 +8464,8 @@ function oneTimePublicWhatsAppReadiness() {
     configured,
     workspace_key: 'rabbi_sheller_provider',
     project_key: 'one_time_mishnah_class',
-    assistant_name: 'Robot Scheller',
-    assistant_subtitle: "Rabbi Scheller's digital assistant",
+    assistant_name: "Rabbi Scheller's Digital Assistant",
+    assistant_subtitle: 'Public One Time WhatsApp lead agent',
     redirect_path: configured ? '/api/one-time/public-whatsapp/redirect' : '',
     missing_runtime: configured ? [] : ['ONE_TIME_PUBLIC_WHATSAPP_NUMBER'],
     class_link_configured: Boolean(ONE_TIME_WHATSAPP_CLASS_LINK),
@@ -64292,6 +64293,8 @@ async function ensureOneTimeProviderBotLead({ normalized, communicationResult, s
             profile_version: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.version,
             whatsapp_suppressed: optOut,
             contact_consent: false,
+            class_info_requested: intent === 'class_join_link_request',
+            class_info_consent: intent === 'class_join_link_request',
             external_write_performed: false,
           }),
         ]
@@ -64326,6 +64329,8 @@ async function ensureOneTimeProviderBotLead({ normalized, communicationResult, s
             profile_key: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.profile_key,
             profile_version: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.version,
             whatsapp_suppressed: optOut || Boolean(oneTimeProductJson(lead.metadata).whatsapp_suppressed),
+            class_info_requested: intent === 'class_join_link_request' || Boolean(oneTimeProductJson(lead.metadata).class_info_requested),
+            class_info_consent: intent === 'class_join_link_request' || Boolean(oneTimeProductJson(lead.metadata).class_info_consent),
           }),
         ]
       )).rows[0];
@@ -64467,6 +64472,8 @@ function oneTimeProviderBotContact({ lead = null, communicationResult = {}, what
     student_age: lead?.student_age || '',
     timezone: metadata.timezone || '',
     contact_consent: metadata.contact_consent === true,
+    class_info_requested: metadata.class_info_requested === true,
+    class_info_consented: metadata.class_info_consent === true,
     whatsapp_suppressed: whatsappSuppressed === true || metadata.whatsapp_suppressed === true,
     bot_state: metadata.provider_lead_bot_state || {},
   };
@@ -64520,6 +64527,10 @@ async function applyOneTimeProviderBotPlan({ plan, lead = null, communication = 
           provider_lead_bot_profile_version: plan.profile_version,
           timezone: captured.timezone || oneTimeProductJson(lead.metadata).timezone || '',
           contact_consent: captured.contact_consent === true || oneTimeProductJson(lead.metadata).contact_consent === true,
+          class_info_requested: plan.class_link_requested === true || oneTimeProductJson(lead.metadata).class_info_requested === true,
+          class_info_consent: plan.class_link_requested === true || plan.class_link_released === true || oneTimeProductJson(lead.metadata).class_info_consent === true,
+          class_info_supplied: plan.class_link_released === true || oneTimeProductJson(lead.metadata).class_info_supplied === true,
+          class_link_action_id: plan.class_link_action_id || oneTimeProductJson(lead.metadata).class_link_action_id || null,
           whatsapp_suppressed: plan.suppress_outbound === true || oneTimeProductJson(lead.metadata).whatsapp_suppressed === true,
           last_bot_intent: plan.intent,
           last_bot_route_aliases: plan.route_aliases,
@@ -64549,6 +64560,8 @@ async function applyOneTimeProviderBotPlan({ plan, lead = null, communication = 
             route_aliases: plan.route_aliases,
             class_link_requested: plan.class_link_requested,
             class_link_released: plan.class_link_released,
+            class_link_action_id: plan.class_link_action_id || null,
+            class_info_state: plan.class_info_state || null,
             opt_out: plan.opt_out,
           },
         }),
@@ -64562,6 +64575,8 @@ async function applyOneTimeProviderBotPlan({ plan, lead = null, communication = 
           whatsapp_suppressed: plan.suppress_outbound === true,
           class_link_requested: plan.class_link_requested === true,
           class_link_released: plan.class_link_released === true,
+          class_link_action_id: plan.class_link_action_id || null,
+          class_info_state: plan.class_info_state || null,
           raw_class_link_in_metadata: false,
         }),
       ]
@@ -64976,7 +64991,7 @@ async function claimOneTimeWapiAutoReplyAttempt({
       summary,
       projectId: recipient.project_id,
       source: 'one_time_provider_lead_bot',
-      createdBy: 'Robot Scheller',
+      createdBy: "Rabbi Scheller's Digital Assistant",
       sourceContext,
       metadata,
     }, runner);
@@ -65010,8 +65025,10 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
     profile_key: botPlan?.profile_key || ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.profile_key,
     intent: botPlan?.intent || 'unknown',
     access_state: botPlan?.access_state || 'anonymous',
+    class_info_state: botPlan?.class_info_state || botPlan?.access_state || 'anonymous',
     class_link_requested: botPlan?.class_link_requested === true,
     class_link_released: botPlan?.class_link_released === true,
+    class_link_action_id: botPlan?.class_link_action_id || null,
     opt_out: botPlan?.opt_out === true,
     status: 'blocked',
     sent: false,
@@ -65034,8 +65051,15 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
   if (!botPlan?.reply_allowed || !String(botPlan?.reply_body || '').trim()) {
     plan.blockers.push('provider_lead_bot_reply_not_allowed');
   }
-  if (botPlan?.class_link_released && botPlan?.access_state !== 'active_member') {
-    plan.blockers.push('class_link_release_requires_active_member');
+  if (
+    botPlan?.class_link_released &&
+    !providerLeadBotClassLinkAllowed(
+      ONE_TIME_PROVIDER_LEAD_BOT_PROFILE,
+      botPlan.class_info_state || botPlan.access_state,
+      ONE_TIME_WHATSAPP_CLASS_LINK
+    )
+  ) {
+    plan.blockers.push('class_link_release_requires_server_authorized_class_info_request');
   }
 
   if (plan.blockers.length) {
@@ -65078,6 +65102,8 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
       wapi_webhook_log_id: webhookLogId || null,
       workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
       project_key: ONE_TIME_PROJECT_KEY,
+      class_link_action_id: botPlan?.class_link_action_id || null,
+      class_info_state: botPlan?.class_info_state || null,
     },
     metadata: {
       auto_reply_type: 'provider_lead_bot_reply',
@@ -65089,6 +65115,8 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
       provider_lead_bot_profile: plan.profile_key,
       provider_lead_bot_profile_version: plan.copy_version,
       provider_lead_bot_intent: plan.intent,
+      class_link_action_id: botPlan?.class_link_action_id || null,
+      class_info_state: botPlan?.class_info_state || null,
       class_link_requested: plan.class_link_requested,
       class_link_released: plan.class_link_released,
       raw_class_link_in_metadata: false,
@@ -82595,7 +82623,7 @@ app.get(['/api/one-time/public-whatsapp/redirect', '/api/bna/one-time/public-wha
     ONE_TIME_PUBLIC_WHATSAPP_NUMBER,
     oneTimePublicWhatsAppMessage(req.query?.intent || '')
   );
-  if (!composeUrl) return res.redirect(302, '/one-time#start-free');
+  if (!composeUrl) return res.redirect(302, '/one-time/signup');
   res.redirect(302, composeUrl);
 });
 

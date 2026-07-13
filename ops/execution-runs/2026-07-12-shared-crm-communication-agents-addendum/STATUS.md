@@ -86,6 +86,19 @@ Current status: `active`
 - A synthetic live-write DB-readback attempt created `bna_contacts:37` and `bna_parent_leads:22` before local DB readback failed because the usable Railway database URL is internal-only from this machine. Both records were archived through the production CRM API with `no_send=true` and `external_write_performed=false`; no delivery cron was run. DB-level outbox cancellation remains a Railway-internal cleanup blocker if dispatchable rows exist.
 - Next action: continue Wave 2 public WhatsApp lead-agent activation without delaying the already-deployed form repair.
 
+## One Time Public WhatsApp Agent Slice
+
+- `REQ-20260713-902` is implemented locally and pending commit/deploy; live activation remains blocked by the explicit Telegram notification approval env.
+- `config/service-provider-bots/one-time.json` is now public agent profile `one_time_parent_information_agent` version `2026-07-13-v3`, display name `Rabbi Scheller's Digital Assistant`, scoped to `rabbi_sheller_provider` / `one_time_mishnah_class` / WhatsApp.
+- Approved public knowledge now includes One Time Mishnayos with Rabbi Eli Scheller, daily 7:00 p.m. Israel time schedule, local address `HaGaon MiVilna 8, Ramat Beit Shemesh Alef`, canonical signup route `/one-time/signup`, and the allowed public audiences.
+- The public bot still treats price, trial, portal, library, paid membership, current-learning, and access claims as unpublished unless a verified dynamic/approved source exists.
+- Added `ACTION-ONETIME-GET-CURRENT-CLASS-LINK` to `ops/action-registry.json`.
+- The deterministic class-link action now releases only for `class_info_requested`, `class_info_consented`, or verified `active_member` policy states; raw class link remains out of persisted audit body, prompt context, metadata, diagnostics, and repo evidence.
+- Public WhatsApp readiness reports the new public assistant identity and falls back to `/one-time/signup` when runtime WhatsApp number config is missing.
+- Local verification passed: `node --check src/lib/bna/provider-lead-bot.js`, `node --check server.js`, `node --test tests/service-provider-lead-bot.test.js` (10/10), `node --test tests/one-time-brand-helper-isolation.test.js` (11/11), `npm run test:onetime:focused` (76/76), `npm run watchdog:actions`, `npm run secrets:audit`, `npm run bna:run:validate`, and `git diff --check`.
+- `node scripts/check-onetime-wapi-readiness.mjs` remained no-send/no-write and reported outbound configured, One Time scoped credentials, provider setup ready, auto-reply ready/enabled/approved, and class link configured.
+- Remaining activation blocker: `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` must equal `APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
+
 ## Identity Isolation Batch
 
 - `REQ-20260712-305` local code patch is applied and moved to `needs_verification`.

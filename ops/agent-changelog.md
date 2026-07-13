@@ -39268,3 +39268,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `no_send=true` and `external_write_performed=false`. Local DB-level outbox
   cancellation/readback is blocked by Railway-internal database access from
   this machine.
+
+## 2026-07-13 - One Time public WhatsApp agent profile and class-link policy
+
+- Updated the public One Time WhatsApp profile to
+  `one_time_parent_information_agent` version `2026-07-13-v3`, displayed as
+  `Rabbi Scheller's Digital Assistant`.
+- Added approved public facts for One Time Mishnayos with Rabbi Eli Scheller,
+  the daily 7:00 p.m. Israel schedule, local address at HaGaon MiVilna 8,
+  Ramat Beit Shemesh Alef, canonical signup route `/one-time/signup`, and
+  allowed public audiences.
+- Added `ACTION-ONETIME-GET-CURRENT-CLASS-LINK` and changed class-link release
+  policy to server-authorized `class_info_requested` / `class_info_consented`
+  / verified `active_member` states, with raw links restricted to final channel
+  delivery and redacted from prompt/audit/metadata/log paths.
+- Updated public WhatsApp readiness to report the new assistant identity and
+  fallback to `/one-time/signup`.
+- Verification passed: provider bot tests `10/10`, One Time helper isolation
+  tests `11/11`, focused One Time suite `76/76`, syntax checks, action
+  watchdog, secret audit, execution-run validation, and diff check.
+- WAPI readiness remains no-send/no-write and reports the exact live-activation
+  blocker: `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` must equal
+  `APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.

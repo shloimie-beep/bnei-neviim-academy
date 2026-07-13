@@ -58,11 +58,32 @@
       "expected_behavior": "Opens a same-origin runtime redirect for the One Time public WhatsApp business line from a standard bottom-right WhatsApp launcher. The server reads ONE_TIME_PUBLIC_WHATSAPP_NUMBER or aliases at runtime, never commits or returns the full number in repo evidence, and performs no WhatsApp send by itself. If runtime config is missing, the redirect falls back to the public form and readiness reports the exact missing env var.",
       "permission": "anonymous public visitor",
       "status": "active_runtime_redirect_with_setup_fallback",
-      "disabled_reason": "Live WhatsApp chat requires ONE_TIME_PUBLIC_WHATSAPP_NUMBER in runtime/keyholder configuration; missing config falls back to /one-time#start-free.",
+      "disabled_reason": "Live WhatsApp chat requires ONE_TIME_PUBLIC_WHATSAPP_NUMBER in runtime/keyholder configuration; missing config falls back to /one-time/signup.",
       "handler": "GET /api/one-time/public-whatsapp/redirect",
       "test": {
         "type": "api_and_static",
         "expected_result": "GET /api/one-time/public-whatsapp returns configured/readiness metadata without the full number; public page launcher links to the same-origin redirect and performs no server-side send."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-GET-CURRENT-CLASS-LINK",
+      "label": "Send current class link",
+      "surface": "one_time_public_whatsapp_agent",
+      "route": "/api/webhooks/wapi",
+      "selector_hint": "One Time WAPI inbound message classified as class_join_link_request",
+      "expected_behavior": "Resolves the current approved One Time class-link alias server-side, verifies the request is scoped to rabbi_sheller_provider / one_time_mishnah_class, resolves or creates the One Time contact, records class-information permission, sends the raw link only in the final approved channel delivery, and stores only redacted audit metadata. It must not expose the raw link in model context, logs, diagnostics, public API responses, or repo evidence.",
+      "permission": "anonymous public WhatsApp contact after scoped contact resolution and class-information request/consent",
+      "status": "active_policy_guarded_runtime_action",
+      "handler": "buildProviderLeadBotPlan + maybeSendOneTimeWapiAutoReply via POST /api/webhooks/wapi",
+      "test": {
+        "type": "unit_and_readiness",
+        "expected_result": "tests/service-provider-lead-bot.test.js verifies ACTION-ONETIME-GET-CURRENT-CLASS-LINK uses class_info_requested/class_info_consented release states, redacts persisted audit body, and keeps the raw class link out of profile/prompt/metadata."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

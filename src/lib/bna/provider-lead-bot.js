@@ -2,7 +2,9 @@ const fs = require('fs');
 const path = require('path');
 
 const CONFIG_DIR = path.resolve(__dirname, '../../../config/service-provider-bots');
-const ACCESS_STATES = new Set(['anonymous', 'lead', 'verified_signup', 'active_member']);
+const CURRENT_CLASS_LINK_ACTION_ID = 'ACTION-ONETIME-GET-CURRENT-CLASS-LINK';
+const CLASS_LINK_RELEASE_STATES = new Set(['class_info_requested', 'class_info_consented', 'active_member']);
+const ACCESS_STATES = new Set(['anonymous', 'lead', 'class_info_requested', 'class_info_consented', 'verified_signup', 'active_member']);
 
 const INTENT_MATCHERS = Object.freeze([
   ['opt_out_or_wrong_number', /\b(stop|unsubscribe|remove\s+me|wrong\s+number|do\s+not\s+(?:message|contact)|don['`]?t\s+(?:message|contact)|leave\s+me\s+alone)\b/i],
@@ -12,6 +14,7 @@ const INTENT_MATCHERS = Object.freeze([
   ['parent_or_student_question', /\b(parent\s+question|student\s+question|my\s+(?:son|daughter|child)|for\s+my\s+child|student\s+needs)\b/i],
   ['class_join_link_request', /\b(zoom\s+link|class\s+link|join\s+link|live\s+link|where\s+(?:is|can\s+i\s+find)\s+(?:the\s+)?link|send\s+(?:me\s+)?(?:the\s+)?link)\b/i],
   ['signup_or_trial_start', /\b(sign\s*up|signup|register|enroll|start\s+(?:the\s+)?trial|try\s+(?:the\s+)?class|join\s+(?:the\s+)?program|interested\s+in\s+joining|free\s+trial)\b/i],
+  ['local_class_location', /\b(address|location|in\s+person|local\s+class|where\s+(?:is|are)\s+(?:you|the\s+class)|ramat\s+beit\s+shemesh|rbs|hagaon|gaon\s+mi?v?ilna|vilna)\b/i],
   ['schedule', /\b(schedule|what\s+time|when\s+(?:is|are)|days?\s+of\s+(?:the\s+)?week|next\s+class|class\s+time)\b/i],
   ['current_learning', /\b(current\s+(?:masechta|tractate|perek|mishnah)|which\s+(?:masechta|tractate|perek)|what\s+are\s+(?:you|they|we)\s+learning|up\s+to\s+in\s+mishnayos)\b/i],
   ['price_or_trial', /\b(price|pricing|cost|how\s+much|\$\s*67|67\s+dollars?|trial|monthly|per\s+month)\b/i],
@@ -45,8 +48,8 @@ function validateProviderLeadBotProfile(profile = {}) {
     errors.push('knowledge_base.approved_benefits is required');
   }
   const releaseStates = profile.knowledge_base?.links?.class_join?.release_states;
-  if (!Array.isArray(releaseStates) || releaseStates.some((state) => state !== 'active_member')) {
-    errors.push('class_join.release_states may contain only active_member');
+  if (!Array.isArray(releaseStates) || releaseStates.some((state) => !CLASS_LINK_RELEASE_STATES.has(state))) {
+    errors.push('class_join.release_states may contain only class_info_requested, class_info_consented, or active_member');
   }
   if (profile.offer?.bot_may_charge !== false) errors.push('offer.bot_may_charge must be false');
   if (profile.offer?.bot_may_grant_access !== false) errors.push('offer.bot_may_grant_access must be false');
@@ -124,12 +127,34 @@ function extractProviderLeadBotFields(text = '', { awaitingField = '' } = {}) {
 
 function providerLeadBotAccessState(contact = {}) {
   const explicit = compactText(contact.access_state || contact.accessState, 80).toLowerCase();
-  if (explicit === 'anonymous' || explicit === 'lead') return explicit;
+  if (['anonymous', 'lead', 'class_info_requested', 'class_info_consented'].includes(explicit)) return explicit;
   if (['verified_signup', 'active_member'].includes(explicit) && contact.access_verified === true) return explicit;
   if (contact.active_member === true && contact.access_verified === true) return 'active_member';
   if (contact.verified_signup === true && contact.access_verified === true) return 'verified_signup';
+  if (contact.class_info_consented === true || contact.classInfoConsented === true || contact.contact_consent === true || contact.consent === true) {
+    return 'class_info_consented';
+  }
+  if (contact.class_info_requested === true || contact.classInfoRequested === true || contact.class_link_requested === true || contact.classLinkRequested === true) {
+    return 'class_info_requested';
+  }
   if (contact.lead_id || contact.leadId) return 'lead';
   return 'anonymous';
+}
+
+function providerLeadBotHasResolvedContact(contact = {}) {
+  const type = compactText(contact.contact_type || contact.contactType, 80).toLowerCase();
+  return Boolean(
+    contact.lead_id || contact.leadId ||
+    contact.signup_id || contact.signupId ||
+    contact.student_id || contact.studentId ||
+    ['lead', 'signup', 'student'].includes(type)
+  );
+}
+
+function providerLeadBotClassInfoState({ intent, contact, accessState }) {
+  if (intent !== 'class_join_link_request') return accessState;
+  if (accessState === 'active_member' || accessState === 'class_info_consented') return accessState;
+  return providerLeadBotHasResolvedContact(contact) ? 'class_info_requested' : accessState;
 }
 
 function providerLeadBotClassLinkAllowed(profile = {}, accessState = 'anonymous', classJoinUrl = '') {
@@ -179,6 +204,15 @@ function currentLearningText(dynamicKnowledge = {}) {
     .map((value) => compactText(value, 120))
     .filter(Boolean);
   return parts.join(', ');
+}
+
+function approvedProgramFact(profile = {}, key = '') {
+  return compactText(profile.knowledge_base?.public_facts?.[key], 500);
+}
+
+function approvedAudience(profile = {}) {
+  const audience = profile.knowledge_base?.public_facts?.audience;
+  return Array.isArray(audience) ? audience.map((item) => compactText(item, 160)).filter(Boolean) : [];
 }
 
 function providerLeadBotOfferPublished(profile = {}) {
@@ -237,12 +271,15 @@ function routeAliasesForPlan(profile, intent, { newLead = false, verifiedSignup 
 function renderProviderLeadBotReply({ profile, intent, capture, dynamicKnowledge, accessState, classJoinUrl, publicBaseUrl }) {
   const name = profile.identity.assistant_name;
   const subtitle = profile.identity.assistant_subtitle;
-  const signupUrl = sameOriginLink(publicBaseUrl, profile.knowledge_base?.links?.signup?.path || '/one-time#start-free');
+  const signupUrl = sameOriginLink(publicBaseUrl, profile.knowledge_base?.links?.signup?.path || '/one-time/signup');
   const offer = profile.offer || {};
   const offerPublished = providerLeadBotOfferPublished(profile);
   const offerText = providerLeadBotOfferText(profile);
   const accessPolicyText = providerLeadBotAccessPolicyText(profile);
   const schedule = formatDynamicSchedule(dynamicKnowledge);
+  const approvedSchedule = approvedProgramFact(profile, 'schedule');
+  const localLocation = approvedProgramFact(profile, 'local_location');
+  const programName = approvedProgramFact(profile, 'program') || 'One Time Mishnayos';
   const learning = currentLearningText(dynamicKnowledge);
   const classLinkAllowed = providerLeadBotClassLinkAllowed(profile, accessState, classJoinUrl);
 
@@ -253,17 +290,22 @@ function renderProviderLeadBotReply({ profile, intent, capture, dynamicKnowledge
     return `Got it. I'm ${name}, ${subtitle}. I saved your question for Rabbi Scheller, and I won't answer in his name.`;
   }
   if (intent === 'class_join_link_request') {
-    if (classLinkAllowed) return `Your One Time member access is verified. Here are the approved live-class join instructions: ${String(classJoinUrl).trim()}`;
-    return `I can't send the live-class link until active membership is verified. You can start here: ${signupUrl}`;
+    if (classLinkAllowed) return `Sure. I can send the current ${programName} live-class link here: ${String(classJoinUrl).trim()}`;
+    return `I can send the current class link after I save your contact request. Please sign up here: ${signupUrl}`;
   }
   if (intent === 'signup_or_trial_start') {
     if (capture.complete) return `Thanks, I saved those details for the One Time team to verify. You can also review the signup page here: ${signupUrl}`;
     const prompt = profile.lead_capture?.field_prompts?.[capture.awaiting_field] || 'What parent contact detail should we use?';
     if (offerPublished) return `Great, I can help start the ${offer.trial_days}-day trial. After that it is $${offer.renewal.amount}/${offer.renewal.cadence}. ${prompt}`;
-    return `Great, I can help pass your signup details to the One Time team. ${prompt}`;
+    return `Great, I can help with the public signup for One Time Mishnayos. ${prompt}`;
+  }
+  if (intent === 'local_class_location') {
+    return localLocation
+      ? `The local One Time class is at ${localLocation}.`
+      : `I do not have a confirmed local address in the approved public facts yet, so I asked the One Time team to confirm it.`;
   }
   if (intent === 'schedule') {
-    return schedule || `I don't have the confirmed class time in front of me, so I won't guess. I asked the One Time team to confirm the current schedule.`;
+    return schedule || approvedSchedule || `I don't have the confirmed class time in front of me, so I won't guess. I asked the One Time team to confirm the current schedule.`;
   }
   if (intent === 'current_learning') {
     return learning ? `The current approved learning is ${learning}.` : `I don't want to guess the current masechta. I asked Rabbi Scheller's team to confirm it.`;
@@ -272,10 +314,12 @@ function renderProviderLeadBotReply({ profile, intent, capture, dynamicKnowledge
   if (intent === 'program_benefits') {
     const accessNote = accessPolicyText ? ` ${accessPolicyText}` : '';
     const nextStep = offerPublished ? `Want help starting the ${offer.trial_days}-day trial?` : 'Want me to collect safe signup details for the One Time team?';
-    return `Approved facts: ${profile.knowledge_base.approved_benefits.join('; ')}.${accessNote} ${nextStep}`;
+    const audience = approvedAudience(profile);
+    const audienceNote = audience.length ? ` Audience: ${audience.join(', ')}.` : '';
+    return `Approved facts: ${profile.knowledge_base.approved_benefits.join('; ')}.${audienceNote}${accessNote} ${nextStep}`;
   }
-  if (intent === 'greeting') return `Hi, I'm ${name}, ${subtitle}. I can explain the class, help with the trial, or pass a question to Rabbi Scheller. What would you like to know?`;
-  return `Thanks, I got your message. I'm ${name}, ${subtitle}. Are you asking about joining, the schedule, the current Mishnah, or a question for Rabbi Scheller?`;
+  if (intent === 'greeting') return `Hi, I'm ${name}, ${subtitle}. I can explain the class, help with signup, send the current class link after saving your request, or pass a question to Rabbi Scheller. What would you like to know?`;
+  return `Thanks, I got your message. I'm ${name}, ${subtitle}. Are you asking about signup, the schedule, the local class, the current Mishnah, or a question for Rabbi Scheller?`;
 }
 
 function buildProviderLeadBotPlan({
@@ -299,6 +343,7 @@ function buildProviderLeadBotPlan({
     'technology_support',
     'parent_or_student_question',
     'class_join_link_request',
+    'local_class_location',
     'human_handoff',
   ]);
   const intent = previousState.state === 'signup_capture' && !signupCaptureInterrupts.has(classifiedIntent)
@@ -306,7 +351,8 @@ function buildProviderLeadBotPlan({
     : classifiedIntent;
   const capturedFields = extractProviderLeadBotFields(message, { awaitingField: previousState.awaiting_field || '' });
   const capture = mergedCaptureState(selectedProfile, contact, capturedFields);
-  const accessState = providerLeadBotAccessState(contact);
+  const baseAccessState = providerLeadBotAccessState(contact);
+  const accessState = providerLeadBotClassInfoState({ intent, contact, accessState: baseAccessState });
   const classLinkReleased = intent === 'class_join_link_request'
     && providerLeadBotClassLinkAllowed(selectedProfile, accessState, classJoinUrl);
   const optOut = intent === 'opt_out_or_wrong_number';
@@ -332,6 +378,8 @@ function buildProviderLeadBotPlan({
     project_key: selectedProfile.scope.project_key,
     intent,
     access_state: accessState,
+    base_access_state: baseAccessState,
+    class_info_state: accessState,
     capture,
     captured_fields: capturedFields,
     should_capture_lead: true,
@@ -347,9 +395,18 @@ function buildProviderLeadBotPlan({
     class_link_requested: intent === 'class_join_link_request',
     class_link_released: classLinkReleased,
     class_link_blocked: intent === 'class_join_link_request' && !classLinkReleased,
+    class_link_action_id: intent === 'class_join_link_request' ? CURRENT_CLASS_LINK_ACTION_ID : null,
+    deterministic_actions: intent === 'class_join_link_request'
+      ? [{
+          action_id: CURRENT_CLASS_LINK_ACTION_ID,
+          status: classLinkReleased ? 'executed_in_final_channel_delivery' : 'blocked_until_contact_request',
+          raw_link_in_model_context: false,
+          raw_link_in_logs: false,
+        }]
+      : [],
     reply_body: reply,
     reply_audit_body: classLinkReleased
-      ? 'Your One Time member access is verified. [Approved live-class join link sent; restricted URL omitted from logs.]'
+      ? '[Approved One Time live-class link sent through final channel delivery; restricted URL omitted from logs.]'
       : reply,
     reply_allowed: Boolean(reply && !suppressOutbound),
     bot_state: {
@@ -358,6 +415,9 @@ function buildProviderLeadBotPlan({
       captured_fields: capture.captured_fields,
       last_intent: intent,
       profile_version: selectedProfile.version,
+      class_info_state: accessState,
+      class_link_requested: intent === 'class_join_link_request',
+      class_link_action_id: intent === 'class_join_link_request' ? CURRENT_CLASS_LINK_ACTION_ID : null,
     },
     guardrails: {
       deterministic_privileged_actions: true,
@@ -367,7 +427,7 @@ function buildProviderLeadBotPlan({
       portal_access_not_granted_by_bot: true,
       no_raw_link_in_metadata: true,
       no_raw_link_in_persisted_reply_body: true,
-      class_link_requires_active_member: true,
+      class_link_requires_server_authorized_request: true,
     },
   };
 }
@@ -376,7 +436,7 @@ function buildProviderLeadBotSystemPrompt(profile, dynamicKnowledge = {}) {
   const selectedProfile = profile || loadProviderLeadBotProfile('one-time');
   const validation = validateProviderLeadBotProfile(selectedProfile);
   if (!validation.valid) throw new Error(`Invalid provider lead-bot profile: ${validation.errors.join('; ')}`);
-  const schedule = formatDynamicSchedule(dynamicKnowledge) || 'Schedule is not currently confirmed; do not guess.';
+  const schedule = formatDynamicSchedule(dynamicKnowledge) || approvedProgramFact(selectedProfile, 'schedule') || 'Schedule is not currently confirmed; do not guess.';
   const learning = currentLearningText(dynamicKnowledge) || 'Current learning is not currently confirmed; do not guess.';
   const offerPublished = providerLeadBotOfferPublished(selectedProfile);
   const offerLine = offerPublished
@@ -389,6 +449,7 @@ function buildProviderLeadBotSystemPrompt(profile, dynamicKnowledge = {}) {
     `Goals: ${[...selectedProfile.goals].sort((a, b) => a.priority - b.priority).map((goal) => goal.instruction).join(' ')}`,
     offerLine,
     `Approved benefits: ${selectedProfile.knowledge_base.approved_benefits.join('; ')}.`,
+    `Approved public facts: ${Object.entries(selectedProfile.knowledge_base.public_facts || {}).filter(([, value]) => !Array.isArray(value)).map(([key, value]) => `${key}: ${compactText(value, 300)}`).join('; ') || 'none'}.`,
     accessPolicy ? `Access policy: ${accessPolicy}` : 'Access policy: do not promise or grant portal, library, member, parent-login, or student-login access.',
     `Dynamic schedule: ${schedule}`,
     `Dynamic current learning: ${learning}`,
@@ -399,6 +460,7 @@ function buildProviderLeadBotSystemPrompt(profile, dynamicKnowledge = {}) {
 
 module.exports = {
   ACCESS_STATES,
+  CURRENT_CLASS_LINK_ACTION_ID,
   buildProviderLeadBotPlan,
   buildProviderLeadBotSystemPrompt,
   classifyProviderLeadBotIntent,

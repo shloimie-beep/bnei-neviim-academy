@@ -271,3 +271,13 @@
 - PASS `node scripts/diagnose-onetime-signup-production.mjs https://join.onetimeonetime.com`; no-write/intercept browser proof generated `ops/live-smokes/2026-07-13T00-56-04-223Z-one-time-signup-production-diagnostic.md`.
 - PASS production direct-signup API dry-run with canonical payload; response validated the direct workflow, scoped workspace/project, outbox previews, and no-write/no-send guardrails.
 - PARTIAL/BLOCKED synthetic DB readback: actual synthetic direct-signup write created `bna_contacts:37` and `bna_parent_leads:22`, and both were archived through the production CRM API. Local DB-level readback/outbox cancellation is blocked because the current One Time Railway `DATABASE_URL` uses an internal Railway host unavailable from this machine, while the older local Supabase URL also fails DNS resolution.
+- PASS `node --check src/lib/bna/provider-lead-bot.js` after the One Time public WhatsApp agent profile/class-link policy slice.
+- PASS `node --check server.js` after the One Time public WhatsApp agent profile/class-link policy slice.
+- PASS `node --test tests/service-provider-lead-bot.test.js` (10/10) after adding `one_time_parent_information_agent`, approved public facts, and `ACTION-ONETIME-GET-CURRENT-CLASS-LINK`.
+- PASS `node --test tests/one-time-brand-helper-isolation.test.js` (11/11) after updating public WhatsApp readiness identity/fallback behavior.
+- PASS `npm run test:onetime:focused` (76/76) after the public WhatsApp agent slice.
+- PASS `npm run watchdog:actions` with `finding_count=0`; report `ops/watchdog-audits/2026-07-13T01-20-watchdog-action-audit.md`.
+- PASS `npm run secrets:audit`; 9265 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` with line-ending warnings only after the public WhatsApp agent slice.
+- BLOCKED/EXPECTED `node scripts/check-onetime-wapi-readiness.mjs`: no-send/no-write readiness shows outbound configured, One Time scoped credentials, provider setup ready, auto-reply ready/enabled/approved, and class link configured, but Telegram notifications are blocked until `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.

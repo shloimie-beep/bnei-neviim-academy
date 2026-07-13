@@ -6,6 +6,7 @@ const {
   buildProviderLeadBotPlan,
   buildProviderLeadBotSystemPrompt,
   classifyProviderLeadBotIntent,
+  CURRENT_CLASS_LINK_ACTION_ID,
   loadProviderLeadBotProfile,
   providerLeadBotClassLinkAllowed,
   validateProviderLeadBotProfile,
@@ -18,21 +19,27 @@ test('One Time provider-bot profile has explicit GHL-style sections without priv
   const site = JSON.parse(fs.readFileSync('config/service-provider-sites/one-time.json', 'utf8'));
   const validation = validateProviderLeadBotProfile(profile);
   assert.deepEqual(validation, { valid: true, errors: [] });
-  assert.equal(profile.identity.assistant_name, 'Robot Scheller');
-  assert.equal(profile.identity.assistant_subtitle, "Rabbi Scheller's digital assistant");
+  assert.equal(profile.profile_key, 'one_time_parent_information_agent');
+  assert.equal(profile.identity.assistant_name, "Rabbi Scheller's Digital Assistant");
+  assert.equal(profile.identity.assistant_subtitle, 'Public One Time WhatsApp lead agent');
   assert.equal(profile.identity.may_impersonate_owner, false);
   assert.ok(profile.personality.tone.includes('warm'));
   assert.ok(profile.goals.length >= 5);
   assert.equal(profile.offer.status, 'not_published_for_bot');
   assert.equal(profile.offer.trial_days, 0);
   assert.equal(profile.offer.renewal.amount, 0);
-  assert.ok(profile.knowledge_base.approved_benefits.some((item) => /live hybrid Mishnayos/i.test(item)));
+  assert.ok(profile.knowledge_base.approved_benefits.some((item) => /One Time Mishnayos with Rabbi Eli Scheller/i.test(item)));
+  assert.equal(profile.knowledge_base.public_facts.schedule, 'Live every day at 7:00 p.m. Israel time.');
+  assert.equal(profile.knowledge_base.public_facts.local_location, 'HaGaon MiVilna 8, Ramat Beit Shemesh Alef');
+  assert.equal(profile.knowledge_base.links.signup.path, '/one-time/signup');
   assert.ok(profile.knowledge_base.approved_benefits.every((item) => !/parent portal|student portal|library|accountability/i.test(item)));
   assert.equal(profile.knowledge_base.access_policy.portal_access_status, 'not_currently_granted');
   assert.match(profile.knowledge_base.access_policy.operator_correction, /not giving portal access yet/i);
   assert.match(profile.knowledge_base.access_policy.safe_public_answer, /not giving portal access yet/i);
   assert.match(profile.knowledge_base.access_policy.safe_public_answer, /not being opened or promised yet/i);
   assert.equal(profile.policies.activation_mode, 'observe_only');
+  assert.ok(profile.knowledge_base.links.class_join.release_states.includes('class_info_requested'));
+  assert.ok(profile.knowledge_base.links.class_join.release_states.includes('class_info_consented'));
   assert.equal(schema.$id, 'bna.provider_lead_bot.v1');
   assert.equal(site.lead_bot.profile_key, profile.profile_key);
   const serialized = JSON.stringify(profile);
@@ -46,6 +53,7 @@ test('intent precedence keeps opt-out, human, tech, link, signup, and knowledge 
   assert.equal(classifyProviderLeadBotIntent('My child cannot log in to the portal'), 'technology_support');
   assert.equal(classifyProviderLeadBotIntent('Please send me the Zoom link'), 'class_join_link_request');
   assert.equal(classifyProviderLeadBotIntent('I want to sign up for the free trial'), 'signup_or_trial_start');
+  assert.equal(classifyProviderLeadBotIntent('Where is the local class in RBS?'), 'local_class_location');
   assert.equal(classifyProviderLeadBotIntent('What time is the next class?'), 'schedule');
   assert.equal(classifyProviderLeadBotIntent('Which masechta are you learning?'), 'current_learning');
   assert.equal(classifyProviderLeadBotIntent('How much is it after the trial?'), 'price_or_trial');
@@ -78,39 +86,45 @@ test('signup flow asks one missing question at a time and never claims enrollmen
     publicBaseUrl: 'https://example.invalid',
   });
   assert.equal(second.captured_fields.parent_email, 'parent@example.invalid');
-  assert.equal(second.capture.awaiting_field, 'student_name');
+  assert.equal(second.capture.awaiting_field, 'timezone');
   assert.equal(second.intent, 'signup_or_trial_start');
-  assert.match(second.reply_body, /student.s first name/i);
+  assert.match(second.reply_body, /city or time zone/i);
 });
 
-test('class link is denied to anonymous, lead, and signup states and allowed only for active member state', () => {
+test('class link action requires a resolved class-information request or consent and never persists the raw URL', () => {
   const privateJoinUrl = 'https://private.example.invalid/class';
   assert.equal(providerLeadBotClassLinkAllowed(profile, 'anonymous', privateJoinUrl), false);
   assert.equal(providerLeadBotClassLinkAllowed(profile, 'lead', privateJoinUrl), false);
+  assert.equal(providerLeadBotClassLinkAllowed(profile, 'class_info_requested', privateJoinUrl), true);
+  assert.equal(providerLeadBotClassLinkAllowed(profile, 'class_info_consented', privateJoinUrl), true);
   assert.equal(providerLeadBotClassLinkAllowed(profile, 'verified_signup', privateJoinUrl), false);
   assert.equal(providerLeadBotClassLinkAllowed(profile, 'active_member', privateJoinUrl), true);
 
   const anonymous = buildProviderLeadBotPlan({
     profile,
     message: 'Send me the class link',
-    contact: { contact_type: 'lead', lead_id: 9 },
+    contact: {},
     classJoinUrl: privateJoinUrl,
     publicBaseUrl: 'https://example.invalid',
   });
   assert.equal(anonymous.class_link_released, false);
   assert.equal(anonymous.class_link_blocked, true);
   assert.doesNotMatch(anonymous.reply_body, /private\.example\.invalid/);
-  assert.match(anonymous.reply_body, /until active membership is verified/i);
+  assert.match(anonymous.reply_body, /after I save your contact request/i);
 
-  const unverifiedSignup = buildProviderLeadBotPlan({
+  const requested = buildProviderLeadBotPlan({
     profile,
     message: 'Send me the class link',
-    contact: { contact_type: 'signup' },
+    contact: { contact_type: 'lead', lead_id: 9 },
     classJoinUrl: privateJoinUrl,
     publicBaseUrl: 'https://example.invalid',
   });
-  assert.equal(unverifiedSignup.class_link_released, false);
-  assert.doesNotMatch(unverifiedSignup.reply_body, /private\.example\.invalid/);
+  assert.equal(requested.access_state, 'class_info_requested');
+  assert.equal(requested.class_link_released, true);
+  assert.equal(requested.class_link_action_id, CURRENT_CLASS_LINK_ACTION_ID);
+  assert.equal(requested.deterministic_actions[0].action_id, CURRENT_CLASS_LINK_ACTION_ID);
+  assert.match(requested.reply_body, /private\.example\.invalid/);
+  assert.doesNotMatch(requested.reply_audit_body, /private\.example\.invalid/);
 
   const forgedMemberState = buildProviderLeadBotPlan({
     profile,
@@ -130,24 +144,29 @@ test('class link is denied to anonymous, lead, and signup states and allowed onl
   });
   assert.equal(forgedSignupState.class_link_released, false);
 
-  const verified = buildProviderLeadBotPlan({
+  const consented = buildProviderLeadBotPlan({
     profile,
     message: 'Send me the class link',
-    contact: { contact_type: 'signup', access_state: 'active_member', access_verified: true },
+    contact: { contact_type: 'signup', contact_consent: true },
     classJoinUrl: privateJoinUrl,
     publicBaseUrl: 'https://example.invalid',
   });
-  assert.equal(verified.class_link_released, true);
-  assert.match(verified.reply_body, /private\.example\.invalid/);
-  assert.doesNotMatch(verified.reply_audit_body, /private\.example\.invalid/);
-  assert.equal(verified.guardrails.no_raw_link_in_metadata, true);
-  assert.equal(verified.guardrails.no_raw_link_in_persisted_reply_body, true);
-  assert.equal(verified.guardrails.class_link_requires_active_member, true);
+  assert.equal(consented.access_state, 'class_info_consented');
+  assert.equal(consented.class_link_released, true);
+  assert.match(consented.reply_body, /private\.example\.invalid/);
+  assert.doesNotMatch(consented.reply_audit_body, /private\.example\.invalid/);
+  assert.equal(consented.guardrails.no_raw_link_in_metadata, true);
+  assert.equal(consented.guardrails.no_raw_link_in_persisted_reply_body, true);
+  assert.equal(consented.guardrails.class_link_requires_server_authorized_request, true);
 });
 
 test('dynamic schedule/current learning answer only from supplied approved facts', () => {
   const missing = buildProviderLeadBotPlan({ profile, message: 'When is class?', contact: { contact_type: 'lead' } });
-  assert.match(missing.reply_body, /so I won.t guess/i);
+  assert.match(missing.reply_body, /Live every day at 7:00 p\.m\. Israel time/i);
+
+  const location = buildProviderLeadBotPlan({ profile, message: 'Where is the local class?', contact: { contact_type: 'lead' } });
+  assert.equal(location.intent, 'local_class_location');
+  assert.match(location.reply_body, /HaGaon MiVilna 8, Ramat Beit Shemesh Alef/i);
 
   const known = buildProviderLeadBotPlan({
     profile,
@@ -167,7 +186,7 @@ test('natural WhatsApp replies stay deterministic and safety-gated', () => {
     contact: { contact_type: 'lead', lead_id: 19 },
   });
   assert.equal(greeting.intent, 'greeting');
-  assert.match(greeting.reply_body, /^Hi, I'm Robot Scheller/);
+  assert.match(greeting.reply_body, /^Hi, I'm Rabbi Scheller's Digital Assistant/);
   assert.match(greeting.reply_body, /What would you like to know\?/);
   assert.equal(greeting.guardrails.deterministic_natural_reply, true);
   assert.equal(greeting.guardrails.no_charge, true);
@@ -179,7 +198,7 @@ test('natural WhatsApp replies stay deterministic and safety-gated', () => {
     contact: { contact_type: 'lead', lead_id: 19 },
   });
   assert.match(unknown.reply_body, /Thanks, I got your message/);
-  assert.match(unknown.reply_body, /joining, the schedule, the current Mishnah, or a question for Rabbi Scheller/);
+  assert.match(unknown.reply_body, /signup, the schedule, the local class, the current Mishnah, or a question for Rabbi Scheller/);
   assert.doesNotMatch(unknown.reply_body, /as an ai|dear user|ticket has been closed/i);
 
   const tech = buildProviderLeadBotPlan({
@@ -193,16 +212,17 @@ test('natural WhatsApp replies stay deterministic and safety-gated', () => {
   assert.equal(tech.notify_platform_support, true);
   assert.equal(tech.notify_rabbi, false);
 
-  const blockedLink = buildProviderLeadBotPlan({
+  const releasedLink = buildProviderLeadBotPlan({
     profile,
     message: 'Please send the class link',
     contact: { contact_type: 'lead', lead_id: 19 },
     classJoinUrl: 'https://private.example.invalid/class',
     publicBaseUrl: 'https://example.invalid',
   });
-  assert.equal(blockedLink.class_link_released, false);
-  assert.match(blockedLink.reply_body, /I can't send the live-class link until active membership is verified/);
-  assert.doesNotMatch(blockedLink.reply_body, /private\.example\.invalid/);
+  assert.equal(releasedLink.class_link_released, true);
+  assert.equal(releasedLink.class_link_action_id, CURRENT_CLASS_LINK_ACTION_ID);
+  assert.match(releasedLink.reply_body, /private\.example\.invalid/);
+  assert.doesNotMatch(releasedLink.reply_audit_body, /private\.example\.invalid/);
 });
 
 test('program, portal, trial, and price replies use only safe unpublished bot facts', () => {
@@ -268,7 +288,9 @@ test('natural-language prompt is knowledge-scoped and never receives the raw joi
   const prompt = buildProviderLeadBotSystemPrompt(profile, {
     current_learning: { masechta: 'Example Masechta' },
   });
-  assert.match(prompt, /Robot Scheller/);
+  assert.match(prompt, /Rabbi Scheller's Digital Assistant/);
+  assert.match(prompt, /Live every day at 7:00 p\.m\. Israel time/);
+  assert.match(prompt, /HaGaon MiVilna 8, Ramat Beit Shemesh Alef/);
   assert.match(prompt, /Offer terms:/);
   assert.match(prompt, /Do not state a trial length, price, renewal term, payment flow, portal availability, library availability, or member access as an approved fact/);
   assert.match(prompt, /We are not giving portal access yet/);
@@ -309,6 +331,9 @@ test('server wires fail-closed hosted webhook auth, sanitized headers, CRM lead 
   assert.match(server, /roleAlias: 'one_time_rabbi_operator'/);
   assert.match(server, /auto_reply_type: 'provider_lead_bot_reply'/);
   assert.match(server, /claimOneTimeWapiAutoReplyAttempt/);
+  assert.match(server, /providerLeadBotClassLinkAllowed/);
+  assert.match(server, /class_link_release_requires_server_authorized_class_info_request/);
+  assert.match(server, /class_info_requested/);
   assert.match(server, /normalized\.messageId && db === pool && typeof db\.connect === 'function'/);
   assert.match(server, /db !== pool \|\| typeof db\.connect !== 'function'/);
   assert.match(server, /\$2::text <> ''/);

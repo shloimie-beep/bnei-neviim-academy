@@ -24,10 +24,10 @@
     "category": "Worldwide Live Mishnah Learning"
   },
   "lead_bot": {
-    "profile_key": "one_time_whatsapp_lead_bot",
+    "profile_key": "one_time_parent_information_agent",
     "config_path": "config/service-provider-bots/one-time.json",
-    "public_name": "Robot Scheller",
-    "public_subtitle": "Rabbi Scheller's digital assistant",
+    "public_name": "Rabbi Scheller's Digital Assistant",
+    "public_subtitle": "Public One Time WhatsApp lead agent",
     "launcher_asset": "/assets/one-time/robot/robot-scheller-whatsapp.png",
     "primary_channel": "whatsapp",
     "activation": "runtime_controlled"
