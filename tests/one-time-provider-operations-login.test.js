@@ -218,6 +218,7 @@ test('server bridges normal One Time provider sessions into canonical scoped Ope
   assert.match(providerHtml, /crm: '\/js\/one-time-provider-crm-route\.js'/);
   assert.match(providerHtml, /mailbox: '\/js\/one-time-provider-mailbox-route\.js'/);
   assert.match(providerHtml, /communications: '\/js\/one-time-provider-communications-route\.js'/);
+  assert.match(providerHtml, /billing: '\/js\/one-time-provider-billing-route\.js'/);
   assert.match(providerHtml, /ensureOneTimeProviderRouteModule\(activeProviderSection\)/);
 });
 
@@ -282,14 +283,17 @@ test('normal One Time provider login stays in dedicated shell with Operations fa
       crmLoaded: document.documentElement.dataset.oneTimeProviderCrmRouteModule === 'loaded',
       mailboxLoaded: document.documentElement.dataset.oneTimeProviderMailboxRouteModule === 'loaded',
       communicationsLoaded: document.documentElement.dataset.oneTimeProviderCommunicationsRouteModule === 'loaded',
+      billingLoaded: document.documentElement.dataset.oneTimeProviderBillingRouteModule === 'loaded',
     }));
     assert.deepEqual(routeModuleState.modules, ['crm']);
     assert.equal(routeModuleState.crmLoaded, true);
     assert.equal(routeModuleState.mailboxLoaded, false);
     assert.equal(routeModuleState.communicationsLoaded, false);
+    assert.equal(routeModuleState.billingLoaded, false);
     assert.ok(routeModuleState.scripts.includes('/js/one-time-provider-crm-route.js'));
     assert.equal(routeModuleState.scripts.includes('/js/one-time-provider-mailbox-route.js'), false);
     assert.equal(routeModuleState.scripts.includes('/js/one-time-provider-communications-route.js'), false);
+    assert.equal(routeModuleState.scripts.includes('/js/one-time-provider-billing-route.js'), false);
 
     const me = await page.evaluate(async () => fetch('/api/bna/auth/me').then((res) => res.json()));
     assert.equal(me.authenticated, true);

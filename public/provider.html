@@ -1105,6 +1105,17 @@
                 <div id="providerMessages" class="service-list" style="margin-top:12px;"></div>
             </section>
 
+            <section class="panel provider-section" data-provider-section="billing">
+                <div class="service-head">
+                    <div>
+                        <h2>Billing</h2>
+                        <p class="small">One Time Mishnayos membership billing, customer state, policy gates, and launch blockers.</p>
+                    </div>
+                    <span class="status-pill">No live charge</span>
+                </div>
+                <div id="oneTimeBilling" class="service-list"></div>
+            </section>
+
             <section class="panel provider-section" data-provider-section="activity">
                 <h2>Activity</h2>
                 <div id="providerActivity" class="service-list"></div>
@@ -1632,6 +1643,7 @@
                     { id: 'crm', label: 'CRM', group: 'Workspace' },
                     { id: 'mailbox', label: 'Mailbox', group: 'Workspace' },
                     { id: 'communications', label: 'Messages', group: 'Workspace' },
+                    { id: 'billing', label: 'Billing', group: 'Business' },
                     { id: 'content', label: 'Content', group: 'Program' },
                     { id: 'class_setup', label: 'Live Class', group: 'Program' },
                     { id: 'class_media', label: 'Library', group: 'Program' },
@@ -1725,6 +1737,7 @@
             crm: '/js/one-time-provider-crm-route.js',
             mailbox: '/js/one-time-provider-mailbox-route.js',
             communications: '/js/one-time-provider-communications-route.js',
+            billing: '/js/one-time-provider-billing-route.js',
         });
         const loadedOneTimeProviderRouteModules = new Set();
 
@@ -1760,6 +1773,7 @@
             if (activeProviderSection === 'crm') hydrateOneTimeCrmRoute(portalState);
             if (activeProviderSection === 'mailbox') hydrateOneTimeMailboxRoute(portalState);
             if (activeProviderSection === 'communications') hydrateOneTimeCommunicationsRoute(portalState);
+            if (activeProviderSection === 'billing') hydrateOneTimeBillingRoute(portalState);
             if (options.updateUrl) updateProviderSectionUrl(activeProviderSection);
             ensureOneTimeProviderRouteModule(activeProviderSection);
         }
@@ -2711,6 +2725,76 @@
             return renderOneTimeCommunicationsRouteLoading('Loading messages...', true);
         }
 
+        function oneTimeProviderBillingRouteHelpers() {
+            return {
+                escapeHtml,
+                oneTimeStatusPill,
+                reviewCard,
+                afterRender: () => {
+                    instrumentOneTimeProviderButtons();
+                    applyOneTimeReadOnlyControls();
+                },
+            };
+        }
+
+        function renderOneTimeBillingRouteLoading(message = 'Billing loads when this section opens.', busy = false) {
+            if (window.OneTimeProviderBillingRoute?.renderPlaceholder) {
+                return window.OneTimeProviderBillingRoute.renderPlaceholder(message, oneTimeProviderBillingRouteHelpers());
+            }
+            return `
+                <section class="service-card" data-one-time-provider-billing-route-placeholder data-route-module="one-time-provider-billing-route" aria-busy="${busy}">
+                    <div class="service-head">
+                        <div>
+                            <h3>Billing</h3>
+                            <p class="small">${escapeHtml(message)}</p>
+                        </div>
+                        <span class="status-pill">Route module</span>
+                    </div>
+                </section>
+            `;
+        }
+
+        function hydrateOneTimeBillingRoute(data = portalState) {
+            if (!data || !(oneTimeReviewMode || oneTimeViewAsRabbiToken || portalDataIsOneTimeProvider(data))) return;
+            const target = document.getElementById('oneTimeBilling');
+            if (!target) return;
+            const render = () => {
+                if (!window.OneTimeProviderBillingRoute?.render) return;
+                target.innerHTML = window.OneTimeProviderBillingRoute.render(data, oneTimeProviderBillingRouteHelpers());
+                instrumentOneTimeProviderButtons();
+                applyOneTimeReadOnlyControls();
+            };
+            if (window.OneTimeProviderBillingRoute?.render) {
+                render();
+                return;
+            }
+            target.innerHTML = renderOneTimeBillingRouteLoading('Loading billing workspace...', true);
+            let script = document.querySelector('script[src="/js/one-time-provider-billing-route.js"]');
+            let appendScript = false;
+            if (!script) {
+                script = document.createElement('script');
+                script.src = '/js/one-time-provider-billing-route.js';
+                script.dataset.routeModule = 'one-time-provider-billing-route';
+                script.async = true;
+                appendScript = true;
+            }
+            script.addEventListener('load', render, { once: true });
+            script.addEventListener('error', () => {
+                target.innerHTML = renderOneTimeBillingRouteLoading('Billing route module could not load.', false);
+            }, { once: true });
+            if (appendScript) document.head.appendChild(script);
+        }
+
+        function renderOneTimeBillingWorkspace(data = {}, options = {}) {
+            const active = options.active ?? activeProviderSection === 'billing';
+            if (!active) return renderOneTimeBillingRouteLoading();
+            if (window.OneTimeProviderBillingRoute?.render) {
+                return window.OneTimeProviderBillingRoute.render(data, oneTimeProviderBillingRouteHelpers());
+            }
+            queueMicrotask(() => hydrateOneTimeBillingRoute(data));
+            return renderOneTimeBillingRouteLoading('Loading billing workspace...', true);
+        }
+
         function renderOneTimeProviderReview(data, viewAsSession = null) {
             applyOneTimeReviewBrand(viewAsSession);
             ensureOneTimeProviderShell(viewAsSession);
@@ -2740,6 +2824,7 @@
             const automationPanel = document.querySelector('[data-provider-section="automations"]');
             const badgesPanel = document.querySelector('[data-provider-section="badges"]');
             const commsPanel = document.querySelector('[data-provider-section="communications"]');
+            const billingPanel = document.querySelector('[data-provider-section="billing"]');
             const classPanel = document.querySelector('[data-provider-section="class_setup"]');
             const mediaPanel = document.querySelector('[data-provider-section="class_media"]');
             const commercialPanel = document.querySelector('[data-provider-section="commercial"]');
@@ -2856,6 +2941,10 @@
             }
             if (commsPanel) {
                 document.getElementById('providerMessages').innerHTML = renderOneTimeReviewCommunications(data);
+            }
+            if (billingPanel) {
+                const billingTarget = document.getElementById('oneTimeBilling');
+                if (billingTarget) billingTarget.innerHTML = renderOneTimeBillingWorkspace(data);
             }
             if (commercialPanel) {
                 document.getElementById('commercialSummary').innerHTML = reviewCard(data.payment?.offer || 'Offer', `${data.payment?.trial || ''} / ${data.payment?.status || ''}. No real charge in review mode.`, data.payment?.access_state || 'test');

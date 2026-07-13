@@ -40029,3 +40029,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   (12/12), `node --test tests/one-time-stripe-local-beta.test.js` (5/5),
   `npm run operations:build`, `npm run operations:check-generated`, and syntax
   checks for the edited helpers.
+
+## 2026-07-13 - One Time Billing V2 provider Billing UI locally verified
+
+- Added the dedicated One Time provider Billing section as a lazy-loaded route
+  module with Overview, Catalog, Billing, Automations, and Settings categories.
+- The UI shows the current `$67/month` no-Stripe-trial policy, promotional
+  access status, tax-exclusive disclosure, manual refund review, no grace
+  period, and disabled/gated notice, live billing, refund, and access automation
+  actions.
+- Updated shared review data, provider navigation, route/action registries,
+  route-module budget checks, live-smoke harness coverage, and provider/auth
+  tests for the Billing section.
+- Verification passed: after-implementation Billing UI audit at 1440, 1024,
+  768, 430, and 390 widths; route-module budget audit; targeted
+  provider/Stripe/auth test suite 36/36; `npm run operations:check-generated`;
+  `npm run secrets:audit`; and `git diff --check`.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send, access
+  mutation, provider mutation, credential mutation, or secret exposure was
+  performed. Deploy/live smoke and final launch approval remain pending.

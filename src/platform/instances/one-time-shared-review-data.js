@@ -4,6 +4,9 @@ const PROJECT_KEY = 'one_time_mishnah_class';
 const {
   rabbiFacingDriveLinksFromMap,
 } = require('../../lib/bna/one-time-drive-intake-map');
+const {
+  buildOneTimeTrialReferralConfiguration,
+} = require('../../lib/bna/one-time-product-system');
 
 function joinUrl(baseUrl, path) {
   const normalizedBase = String(baseUrl || '').replace(/\/+$/, '');
@@ -31,6 +34,99 @@ function buildEmailTemplate({
     blocked_reason,
     no_send: true,
     status_label: 'No-send preview only',
+  };
+}
+
+function uniqueList(items = []) {
+  return [...new Set(items.filter(Boolean))];
+}
+
+function buildProviderBillingWorkspace() {
+  const billingConfig = buildOneTimeTrialReferralConfiguration();
+  const launchPolicy = billingConfig.launch_trial || {};
+  const renewal = launchPolicy.renewal || {};
+  const notice = billingConfig.billing_notice || {};
+  const refund = billingConfig.refund_review || {};
+  const gates = {
+    live_charges_enabled: Boolean(launchPolicy.gates?.live_charges_enabled),
+    checkout_creation_enabled: Boolean(launchPolicy.gates?.checkout_session_creation_enabled),
+    notice_email_send_enabled: Boolean(notice.gates?.email_send_enabled),
+    stripe_refund_create_enabled: Boolean(refund.gates?.stripe_refund_create_enabled),
+    access_grant_automation_enabled: Boolean(launchPolicy.gates?.access_grant_automation_enabled),
+  };
+  const displayPrice = notice.copy_tokens?.display_price
+    || `${renewal.display_amount || '$67.00'} / ${renewal.billing_interval || 'month'}`;
+
+  return {
+    requirement_id: 'REQ-20260713-960',
+    source_requirement_ids: [
+      'REQ-20260713-952',
+      'REQ-20260713-953',
+      'REQ-20260713-954',
+      'REQ-20260713-955',
+      'REQ-20260713-956',
+      'REQ-20260713-957',
+      'REQ-20260713-958',
+    ],
+    status: 'sandbox_ready_live_blocked',
+    workspace_key: WORKSPACE_KEY,
+    project_key: PROJECT_KEY,
+    price: {
+      product_name: notice.copy_tokens?.membership_name || 'One Time Mishnayos Membership',
+      display_price: displayPrice,
+      amount_cents: renewal.amount_cents || 6700,
+      currency: renewal.currency || 'USD',
+      interval: renewal.billing_interval || 'month',
+      tax_behavior: renewal.tax_behavior || 'exclusive',
+      stripe_trial_enabled: false,
+    },
+    campaign: {
+      name: 'Rosh Hashanah paid conversion',
+      billing_start_at: launchPolicy.billing_start_at || null,
+      timezone: launchPolicy.timezone || 'Asia/Jerusalem',
+      billing_authorization_required: true,
+    },
+    counts: {
+      customers: 0,
+      subscriptions: 0,
+      invoices: 0,
+      payments: 0,
+      refund_reviews: 0,
+    },
+    catalog: [
+      { label: 'Product', value: notice.copy_tokens?.membership_name || 'One Time Mishnayos Membership', state: 'draft ready' },
+      { label: 'Price', value: displayPrice, state: 'sandbox verified' },
+      { label: 'Tax', value: renewal.tax_behavior === 'exclusive' ? 'Exclusive' : 'Policy required', state: 'account readiness gated' },
+      { label: 'Stripe trial', value: 'Disabled', state: 'no trial' },
+    ],
+    billing: [
+      { label: 'Customers', value: 'Synthetic test identities only', state: 'no real customer' },
+      { label: 'Subscriptions', value: 'Create after final billing start approval', state: 'blocked live' },
+      { label: 'Invoices', value: 'Monthly invoice/receipt email modeled', state: 'send disabled' },
+      { label: 'Payments', value: 'Sandbox smoke passed, live charges disabled', state: 'test only' },
+      { label: 'Refunds', value: refund.default_refund_policy || 'non refundable except manual exception', state: 'execution disabled' },
+    ],
+    automations: [
+      { label: 'Pre-billing notice', value: 'Preview enabled, batch/live sends disabled', state: notice.status || 'draft send disabled' },
+      { label: 'Failed payment', value: 'Access suspends immediately, no grace period', state: 'modeled' },
+      { label: 'Cancellation', value: refund.cancellation_default || 'cancel at period end', state: 'modeled' },
+      { label: 'Referral credit', value: 'Manual review after first paid cycle', state: billingConfig.referral_credit?.status || 'manual only' },
+    ],
+    settings: [
+      { label: 'Provider account', value: 'Stripe sandbox smoke passed locally; live account readback still gated', state: 'live readback needed' },
+      { label: 'Policies', value: 'No trial, no automatic refunds, no live sends', state: 'locked local' },
+      { label: 'Permissions', value: 'Price publication is separate from campaign start and customer charging', state: 'separated' },
+      { label: 'Launch packet', value: 'Final start date, sender, cohort, hosted env readback', state: 'blocked' },
+    ],
+    blockers: uniqueList([
+      ...(billingConfig.blockers || []),
+      ...(notice.blockers || []),
+      ...(refund.blockers || []),
+      'exact_approval_required_before_live_charges_sends_refunds_or_access_changes',
+    ]),
+    gates,
+    external_write_performed: false,
+    live_payment_performed: false,
   };
 }
 
@@ -187,13 +283,14 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     visibility: 'parent_and_student',
   };
   const payment = {
-    offer: '$67 USD/month after trial',
-    trial: '30 days free',
-    status: 'test_trial_active',
-    access_state: 'active_for_review',
+    offer: '$67 USD/month',
+    trial: 'No Stripe trial',
+    status: 'promotional_access_until_approved_billing_start',
+    access_state: 'promotional_access_review',
     stripe_state: 'test/readiness only',
     no_charge: true,
   };
+  const billingWorkspace = buildProviderBillingWorkspace();
   const milestone = {
     id: 'TEST-OT-MILESTONE-001',
     title: 'First Mishnah Review Completed',
@@ -853,6 +950,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
       worksheet,
       announcement,
       payment,
+      billing_workspace: billingWorkspace,
       milestone,
       achievement,
       reward,
@@ -875,7 +973,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     mock_test_only: [
       'TEST parent and TEST student identities',
       'Attendance minutes and course progress',
-      'Payment/trial/access example',
+      'Billing/access example',
       'Milestone, achievement, and reward lifecycle',
       'Private question and support ticket examples',
       'Manual Vimeo sample reference and legacy site branding assets',
