@@ -40576,3 +40576,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no live charge, refund, notice send, invoice/receipt send,
   access mutation, provider mutation, deploy, credential mutation, production
   data mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 terminal status audit added
+
+- Added `ops/release-handoffs/2026-07-13-onetime-billing-platform-v2-terminal-status.md`
+  so every Billing V2 requirement has a terminal safe-branch status and the
+  remaining live-launch blocker is a reusable owner-action packet.
+- Tightened the Billing V2 register so requirements that were already locally
+  or sandbox verified no longer read as open-ended partial work; live charge,
+  live send, live refund, paid-access mutation, and deploy/live smoke remain
+  gated under `REQ-20260713-963` and the release gate.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.

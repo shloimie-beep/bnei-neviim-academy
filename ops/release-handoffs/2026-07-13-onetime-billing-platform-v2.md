@@ -4,8 +4,9 @@ Status: draft PR master-refreshed and clean at readback; live activation blocked
 Branch: `codex/onetime-rosh-hashanah-billing-platform-v2`
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Primary requirements: `REQ-20260713-950` through `REQ-20260713-963`
-Latest verified master-refresh PR head:
-`cc3e4f3a6b7483d692c44691e9e4cf22bb5a063c`
+PR head verification: use `gh pr view 132` for the current pushed head after
+any closeout commit. Verified snapshots are recorded in the terminal-status
+audit and agent ledger.
 Current master/base SHA: `dd018f6906b81926a215c63487ef2a230a79be49`
 Draft PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/132
 Release owner: release/integration agent after final operator launch packet
@@ -40,7 +41,7 @@ slice for One Time:
 | Billing route-module budget | `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` | Passed |
 | Sandbox E2E verifier | `ops/verifier-runs/2026-07-13-onetime-billing-sandbox-e2e/latest.md` | Passed |
 | Hosted Railway Stripe readback | `ops/deploy-readbacks/2026-07-13-onetime-billing-railway-readback.md`; `ops/deploy-readbacks/2026-07-13-onetime-billing-railway-propagation.md` | Passed for sandbox/test config; no deploy triggered |
-| Branch/PR mergeability | PR #132 head `cc3e4f3a6b7483d692c44691e9e4cf22bb5a063c`; base `dd018f6906b81926a215c63487ef2a230a79be49` | Passed: GitHub merge state `CLEAN`, draft/open, verified after master-refresh push |
+| Branch/PR mergeability | PR #132 against base `dd018f6906b81926a215c63487ef2a230a79be49`; current head verified by PR readback after each closeout push | Passed at latest readback; draft/open |
 | Secret handling | `npm run secrets:audit`; targeted changed-file secret scan | Passed |
 | Generated Operations shell | `npm run operations:check-generated` | Passed |
 | One Time external setup readiness | `npm run one-time:setup:check` | Stripe sandbox readiness passed by redacted readback; overall setup check remains blocked only by campaign send approval fields |
@@ -113,10 +114,17 @@ launch packet with:
 ## Draft PR
 
 Draft PR URL: https://github.com/shloimie-beep/bnei-neviim-academy/pull/132
-Draft PR merge state: `CLEAN`, verified after the master-refresh merge push.
+Draft PR merge state: `CLEAN`, verified after the master-refresh merge push and
+again after the PR-readback closeout push.
 Latest merged base in this branch is
-`dd018f6906b81926a215c63487ef2a230a79be49`; verified master-refresh PR head was
-`cc3e4f3a6b7483d692c44691e9e4cf22bb5a063c`.
+`dd018f6906b81926a215c63487ef2a230a79be49`. Current pushed head should be
+read from GitHub after the latest closeout commit instead of hardcoded here.
+
+## Terminal Status Audit
+
+Terminal requirement status and the reusable live-launch blocker packet are
+recorded in
+`ops/release-handoffs/2026-07-13-onetime-billing-platform-v2-terminal-status.md`.
 
 ## Final Report
 
