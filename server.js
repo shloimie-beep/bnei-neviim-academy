@@ -89291,6 +89291,155 @@ function supportTicketBlocksAutomaticTask(ticket = {}, body = {}) {
   return Boolean(body.suppress_task_creation || body.suppressTaskCreation || body.requires_super_admin_approval || body.requiresSuperAdminApproval);
 }
 
+async function mirrorRabbiTelegramSupportTicketToInboundCommunication({
+  ticket = {},
+  project = {},
+  body = {},
+  sourceContext = {},
+  db = pool,
+} = {}) {
+  if (!ticket?.id || !project?.id || !isRabbiTelegramApprovalTicketContext(sourceContext)) {
+    return { ticket, mirrored: false };
+  }
+
+  const chatHash = sourceContext.chat_id
+    ? sha256Hex(`telegram_chat:${sourceContext.chat_id}`).slice(0, 16)
+    : null;
+  const messageHash = sourceContext.message_id
+    ? sha256Hex(`telegram_message:${sourceContext.message_id}`).slice(0, 16)
+    : null;
+  const messageKey = sha256Hex([
+    'rabbi_telegram_support_ticket',
+    sourceContext.bridge_profile || 'rabbi-elie-scheller',
+    sourceContext.chat_id || '',
+    sourceContext.message_id || '',
+    ticket.id,
+  ].join(':')).slice(0, 32);
+  const workspaceKey = 'rabbi_sheller_provider';
+  const projectKey = normalizeProjectKey(project.project_key || sourceContext.project_key || ONE_TIME_PROJECT_KEY) || ONE_TIME_PROJECT_KEY;
+  const workspaceId = await workspaceSettingsIdForKey(workspaceKey, db).catch(() => null);
+
+  await db.query('SAVEPOINT rabbi_telegram_inbound_mirror');
+  try {
+    const ingest = await crmInboundIngest.ingestInboundCommunication({
+      db,
+      binding: {
+        workspaceId,
+        projectId: project.id,
+        workspaceKey,
+        projectKey,
+        replyMode: 'approval_gated',
+      },
+      channel: 'telegram',
+      provider: 'telegram',
+      communicationType: 'rabbi_telegram_support_ticket',
+      providerMessageId: `rabbi_telegram:${messageKey}`,
+      providerEventId: `rabbi_telegram_event:${messageKey}`,
+      sender: {
+        displayName: limitText(body.reporter_name || body.reporterName || 'Rabbi Elie Scheller', 180),
+      },
+      recipients: ['one_time_operations'],
+      subject: limitText(ticket.title || body.title || 'Rabbi Telegram support ticket', 240),
+      bodyText: limitText(ticket.description || body.description || body.body || '', 8000),
+      threadHints: {
+        threadKey: chatHash ? `rabbi_telegram:${chatHash}` : `rabbi_telegram:ticket:${ticket.id}`,
+      },
+      metadata: {
+        source: 'rabbi_telegram_ticket',
+        source_table: 'bna_support_tickets',
+        support_ticket_id: ticket.id,
+        ticket_number: ticket.ticket_number || null,
+        telegram_chat_hash: chatHash,
+        telegram_message_hash: messageHash,
+        bridge_profile: sourceContext.bridge_profile || 'rabbi-elie-scheller',
+        relationship_scope: sourceContext.relationship_scope || 'one_time_external_admin_project_ticket',
+        approval_gate: 'super_admin_required_before_codex',
+        codex_job_created_initially: false,
+        create_task_on_inbound: false,
+        no_send: true,
+        external_write_performed: false,
+      },
+      contact: {
+        source: 'rabbi_telegram_ticket',
+        tags: ['rabbi_telegram_ticket', projectKey, workspaceKey],
+        lifecycle: 'Support Ticket',
+        metadata: {
+          workspace_key: workspaceKey,
+          project_key: projectKey,
+          support_ticket_id: ticket.id,
+        },
+      },
+      createContactOnInbound: false,
+      createTaskOnInbound: false,
+    });
+
+    if (ingest?.communication_id) {
+      await db.query(
+        `UPDATE bna_communications
+         SET ticket_id = $2,
+             metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb
+         WHERE id = $1`,
+        [
+          ingest.communication_id,
+          ticket.id,
+          JSON.stringify({
+            support_ticket_id: ticket.id,
+            canonical_ticket_linked: true,
+            no_send: true,
+            external_write_performed: false,
+          }),
+        ]
+      );
+    }
+
+    const contextPatch = {
+      canonical_inbound_communication: {
+        status: ingest?.duplicate ? 'duplicate' : 'captured',
+        communication_id: ingest?.communication_id || null,
+        contact_id: ingest?.contact_id || null,
+        receipt: ingest?.receipt || null,
+        no_send: true,
+        external_write_performed: false,
+      },
+    };
+    const updated = (await db.query(
+      `UPDATE bna_support_tickets
+       SET source_context = COALESCE(source_context, '{}'::jsonb) || $2::jsonb
+       WHERE id = $1
+       RETURNING *`,
+      [ticket.id, JSON.stringify(contextPatch)]
+    )).rows[0];
+    await db.query('RELEASE SAVEPOINT rabbi_telegram_inbound_mirror');
+    return {
+      ticket: supportTicketView(updated || ticket),
+      mirrored: true,
+      ingest,
+    };
+  } catch (error) {
+    await db.query('ROLLBACK TO SAVEPOINT rabbi_telegram_inbound_mirror').catch(() => null);
+    const failurePatch = {
+      canonical_inbound_communication: {
+        status: 'failed',
+        error: limitText(redactValue(error?.message || String(error)), 240),
+        no_send: true,
+        external_write_performed: false,
+      },
+    };
+    const updated = (await db.query(
+      `UPDATE bna_support_tickets
+       SET source_context = COALESCE(source_context, '{}'::jsonb) || $2::jsonb
+       WHERE id = $1
+       RETURNING *`,
+      [ticket.id, JSON.stringify(failurePatch)]
+    ).catch(() => ({ rows: [] }))).rows[0];
+    return {
+      ticket: supportTicketView(updated || ticket),
+      mirrored: false,
+      error,
+    };
+  }
+}
+
 function requirePlatformSuperAdminForAction(req, res) {
   if (req?.opsIdentity?.scope?.type === 'all') return true;
   res.status(403).json({ error: 'Only platform_super_admin can perform this approval action.' });
@@ -89760,6 +89909,16 @@ app.post('/api/bna/support-tickets', requireAdmin, async (req, res) => {
       : await maybeCreateTaskForSupportTicket({ ticket, project, req, db: client });
     if (task) {
       ticket = supportTicketView((await client.query('SELECT * FROM bna_support_tickets WHERE id = $1', [ticket.id])).rows[0]);
+    }
+    if (rabbiApprovalTicket) {
+      const mirror = await mirrorRabbiTelegramSupportTicketToInboundCommunication({
+        ticket,
+        project,
+        body,
+        sourceContext: storedSourceContext,
+        db: client,
+      });
+      ticket = supportTicketView(mirror.ticket || ticket);
     }
     await createInAppNotification({
       eventType: ['student_parent_data'].includes(category) && ['high', 'blocking'].includes(severity)

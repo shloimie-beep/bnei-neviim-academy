@@ -199,6 +199,75 @@ test('inbound service accepts WhatsApp-shaped adapter input without creating an 
   assert.doesNotMatch(JSON.stringify(result.receipt), /15551234567|\+1 \(555\) 123-4567|I want to join/i);
 });
 
+test('inbound service captures Rabbi Telegram support-ticket input without contact, task, or outbox send', async () => {
+  const db = new FakeDb();
+  const result = await ingestInboundCommunication({
+    db,
+    binding: {
+      workspaceId: 77,
+      projectId: 88,
+      workspaceKey: 'rabbi_sheller_provider',
+      projectKey: 'one_time_mishnah_class',
+      replyMode: 'approval_gated',
+    },
+    channel: 'telegram',
+    provider: 'telegram',
+    communicationType: 'rabbi_telegram_support_ticket',
+    providerMessageId: 'rabbi_telegram:hashed-message-key',
+    providerEventId: 'rabbi_telegram_event:hashed-message-key',
+    sender: {
+      displayName: 'Rabbi Elie Scheller',
+    },
+    recipients: ['one_time_operations'],
+    subject: 'Bot is not responding',
+    bodyText: 'Private Telegram ticket body should stay out of receipts.',
+    threadHints: {
+      threadKey: 'rabbi_telegram:hashed-chat-key',
+    },
+    metadata: {
+      source: 'rabbi_telegram_ticket',
+      source_table: 'bna_support_tickets',
+      support_ticket_id: 404,
+      telegram_chat_hash: 'hashed-chat-key',
+      telegram_message_hash: 'hashed-message-key',
+      approval_gate: 'super_admin_required_before_codex',
+      no_send: true,
+      external_write_performed: false,
+    },
+    createContactOnInbound: false,
+    createTaskOnInbound: false,
+  });
+
+  assert.equal(result.success, true);
+  assert.equal(result.channel, 'telegram');
+  assert.equal(result.provider, 'telegram');
+  assert.equal(result.contact_id, null);
+  assert.equal(db.contactInsertParams, null);
+  assert.equal(db.identityInsertParams.length, 0);
+  assert.equal(db.communicationInsertParams[2], null);
+  assert.equal(db.communicationInsertParams[3], 'telegram');
+  assert.equal(db.communicationInsertParams[4], 'inbound');
+  assert.equal(db.communicationInsertParams[12], 'rabbi_telegram:hashed-message-key');
+
+  const metadata = JSON.parse(db.communicationInsertParams[16]);
+  assert.equal(metadata.source, 'rabbi_telegram_ticket');
+  assert.equal(metadata.source_table, 'bna_support_tickets');
+  assert.equal(metadata.contact_resolution_status, 'not_resolved');
+  assert.equal(metadata.create_contact_on_inbound, false);
+  assert.equal(metadata.create_task_on_inbound, false);
+  assert.equal(metadata.task_created, false);
+  assert.equal(metadata.agent_reply_mode, 'approval_gated');
+  assert.equal(metadata.outbox_status, 'not_created');
+  assert.equal(metadata.external_write_performed, false);
+  assert.equal(metadata.no_send, true);
+
+  assert.equal(result.receipt.sender.identity_type, 'unknown');
+  assert.equal(result.receipt.outbox_status, 'not_created');
+  assert.equal(result.receipt.task_created, false);
+  assert.equal(result.receipt.external_write_performed, false);
+  assert.doesNotMatch(JSON.stringify(result.receipt), /Private Telegram ticket body|Rabbi Elie Scheller|hashed-message-key/i);
+});
+
 test('duplicate inbound messages return a redacted no-send receipt without inserting', async () => {
   const db = new FakeDb({
     duplicate: {
