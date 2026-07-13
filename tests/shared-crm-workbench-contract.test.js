@@ -214,7 +214,14 @@ test('Operations CRM selected contact conversations include scoped email threads
   assert.match(server, /FROM assistant_dead_letters d\s+JOIN assistant_delivery_outbox o ON \(/);
   assert.match(server, /'source_table', 'assistant_dead_letters'[\s\S]*'reason_returned', false[\s\S]*'payload_returned', false[\s\S]*'message_body_returned', false[\s\S]*'recipient_returned', false[\s\S]*'external_write_performed', false/);
   assert.match(server, /'delivery_dead_letter' AS communication_type/);
+  assert.match(server, /FROM bna_product_leads prod\s+JOIN bna_contacts bc ON bc\.id = \$1/);
+  assert.match(server, /'source_table', 'bna_product_leads'[\s\S]*'payment_link_returned', false[\s\S]*'checkout_session_returned', false[\s\S]*'no_checkout', true[\s\S]*'no_access_granted', true[\s\S]*'external_write_performed', false/);
+  assert.match(server, /'signup_context' AS communication_type/);
+  assert.match(server, /'source_table', 'bna_contact_pipeline_events'[\s\S]*'metadata_returned', false[\s\S]*'no_send', true[\s\S]*'external_write_performed', false/);
+  assert.match(server, /'lifecycle_event' AS communication_type/);
+  assert.match(server, /'signup_context',\s*'lifecycle_event',[\s\S]*\.includes\(row\.communication_type\)/);
   assert.match(server, /'delivery_outbox',\s*'delivery_dead_letter',[\s\S]*\.includes\(row\.communication_type\)/);
+  assert.match(server, /'signup',\s*'lifecycle',[\s\S]*\.includes\(row\.channel\)/);
   assert.match(server, /'delivery_outbox',\s*'dead_letter',[\s\S]*\.includes\(row\.channel\)/);
   assert.match(server, /cm\.project_id = l\.project_id/);
   assert.match(server, /lower\(COALESCE\(cm\.from_address, cm\.to_address, ''\)\) = lower\(l\.parent_email\)/);
@@ -222,6 +229,7 @@ test('Operations CRM selected contact conversations include scoped email threads
   assert.match(server, /'crm_contact_id', \('bna_parent_leads:' \|\| l\.id::text\)[\s\S]*'canonical_email_match', true/);
   assert.match(server, /FROM assistant_delivery_outbox o\s+JOIN bna_parent_leads l ON l\.id = \$\{oneTimeDeliveryOutboxLeadJoinExpression\('o'\)\}\s+LEFT JOIN bna_projects p ON p\.id = l\.project_id/);
   assert.match(server, /FROM assistant_dead_letters d[\s\S]*JOIN bna_parent_leads l ON l\.id = \$\{oneTimeDeliveryOutboxLeadJoinExpression\('o'\)\}[\s\S]*LEFT JOIN bna_projects p ON p\.id = l\.project_id/);
+  assert.match(server, /FROM bna_product_leads prod\s+JOIN bna_parent_leads l ON TRUE\s+LEFT JOIN bna_projects p ON p\.id = l\.project_id/);
   assert.match(server, /operationsCrmConversationRows\(contactRef, scope = \{\}, options = \{\}, db = pool\)[\s\S]*operationsCrmTimelineRows\(contactRef, scope, db\)/);
   const contactWorkspaceLoader = operations.match(/async function loadFirstPartyCrmSubviewData[\s\S]*?function toggleFirstPartyCrmAddContact/)?.[0] || '';
   assert.match(contactWorkspaceLoader, /api\.getCrmContactConversations\(contactId, \{ \.\.\.filters, limit: 25 \}/);

@@ -134,6 +134,46 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
         communication_type: 'contact_note',
       },
       {
+        id: 456,
+        channel: 'signup',
+        direction: 'internal',
+        body: 'Public signup captured: parents - new',
+        source: 'bna_product_leads',
+        source_context: JSON.stringify({
+          crm_contact_id: 'bna_contacts:7',
+          source_table: 'bna_product_leads',
+          product_lead_id: 456,
+          status: 'new',
+          payment_link_returned: false,
+          checkout_session_returned: false,
+          no_checkout: true,
+          no_access_granted: true,
+          no_send: true,
+          external_write_performed: false,
+        }),
+        occurred_at: '2026-07-12T13:17:00Z',
+        communication_type: 'signup_context',
+      },
+      {
+        id: 457,
+        channel: 'lifecycle',
+        direction: 'internal',
+        body: 'CRM lifecycle changed',
+        source: 'bna_contact_pipeline_events',
+        source_context: JSON.stringify({
+          crm_contact_id: 'bna_contacts:7',
+          source_table: 'bna_contact_pipeline_events',
+          pipeline_event_id: 457,
+          event_type: 'crm_workbench_update',
+          pipeline_status: 'follow_up',
+          metadata_returned: false,
+          no_send: true,
+          external_write_performed: false,
+        }),
+        occurred_at: '2026-07-12T13:18:00Z',
+        communication_type: 'lifecycle_event',
+      },
+      {
         id: 12,
         channel: 'task',
         direction: 'internal',
@@ -267,6 +307,8 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'support_ticket'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'student_link'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'membership_access'), false);
+  assert.equal(conversations.conversations.some((item) => item.communication_type === 'signup_context'), false);
+  assert.equal(conversations.conversations.some((item) => item.communication_type === 'lifecycle_event'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'class_attendance'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'communication_suppression'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'delivery_outbox'), false);
@@ -289,6 +331,8 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
 
   assert.equal(timeline.timeline.some((item) => item.type === 'support_ticket'), true);
   assert.match(timeline.timeline.find((item) => item.type === 'support_ticket').body, /Support ticket OT-SUP-000013/);
+  assert.equal(timeline.timeline.some((item) => item.type === 'signup_context'), true);
+  assert.equal(timeline.timeline.some((item) => item.type === 'lifecycle_event'), true);
   assert.equal(timeline.timeline.some((item) => item.type === 'student_link'), true);
   assert.equal(timeline.timeline.some((item) => item.type === 'membership_access'), true);
   assert.equal(timeline.timeline.some((item) => item.type === 'class_attendance'), true);
@@ -296,6 +340,8 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.equal(timeline.timeline.some((item) => item.type === 'delivery_outbox'), true);
   assert.equal(timeline.timeline.some((item) => item.type === 'delivery_dead_letter'), true);
   assert.equal(timeline.timeline.find((item) => item.type === 'communication_suppression').no_send, true);
+  assert.equal(timeline.timeline.find((item) => item.type === 'signup_context').source_context.includes('payment_link_returned'), true);
+  assert.equal(timeline.timeline.find((item) => item.type === 'lifecycle_event').source_context.includes('metadata_returned'), true);
   assert.equal(timeline.timeline.find((item) => item.type === 'delivery_outbox').source_context.includes('recipient_returned'), true);
   assert.equal(timeline.timeline.find((item) => item.type === 'delivery_dead_letter').source_context.includes('reason_returned'), true);
 });

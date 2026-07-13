@@ -30154,6 +30154,19 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
       `d.source_table = 'assistant_delivery_outbox'`,
       `o.channel_key IN (${oneTimeOutboxChannelSqlList()})`,
     ];
+    const productLeadConditions = [
+      `l.id = $1`,
+      `prod.project_id = l.project_id`,
+      `COALESCE(prod.status, 'new') <> 'archived'`,
+      `(
+        (NULLIF(l.metadata->>'product_lead_id', '') IS NOT NULL AND prod.id::text = NULLIF(l.metadata->>'product_lead_id', ''))
+        OR (COALESCE(l.parent_email, '') <> '' AND lower(COALESCE(prod.parent_email, '')) = lower(l.parent_email))
+        OR (
+          regexp_replace(COALESCE(l.parent_phone, ''), '[^0-9]+', '', 'g') <> ''
+          AND regexp_replace(COALESCE(NULLIF(prod.parent_phone, ''), NULLIF(prod.parent_whatsapp, ''), ''), '[^0-9]+', '', 'g') = regexp_replace(l.parent_phone, '[^0-9]+', '', 'g')
+        )
+      )`,
+    ];
     const ticketConditions = [
       `l.id = $1`,
       `st.project_id = l.project_id`,
@@ -30188,6 +30201,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
       suppressionConditions.push(`p.project_key = $${params.length}`);
       outboxConditions.push(`p.project_key = $${params.length}`);
       deadLetterConditions.push(`p.project_key = $${params.length}`);
+      productLeadConditions.push(`p.project_key = $${params.length}`);
       ticketConditions.push(`p.project_key = $${params.length}`);
       studentConditions.push(`p.project_key = $${params.length}`);
       memberConditions.push(`p.project_key = $${params.length}`);
@@ -30367,6 +30381,47 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
          JOIN bna_parent_leads l ON l.id = ${oneTimeDeliveryOutboxLeadJoinExpression('o')}
          LEFT JOIN bna_projects p ON p.id = l.project_id
          WHERE ${deadLetterConditions.join(' AND ')}
+         UNION ALL
+         SELECT
+           prod.id,
+           'signup' AS channel,
+           'internal' AS direction,
+           ('Public signup captured: ' || COALESCE(NULLIF(prod.audience, ''), 'parents') || ' - ' || COALESCE(NULLIF(prod.status, ''), 'new')) AS body,
+           NULL::text AS notes,
+           'bna_product_leads' AS source,
+           jsonb_build_object(
+             'crm_contact_id', ('bna_parent_leads:' || l.id::text),
+             'source_table', 'bna_product_leads',
+             'product_lead_id', prod.id,
+             'program_key', prod.program_key,
+             'product_key', prod.product_key,
+             'region', prod.region,
+             'audience', prod.audience,
+             'status', prod.status,
+             'interested_tiers_count', COALESCE(array_length(prod.interested_tiers, 1), 0),
+             'consent', prod.consent,
+             'source_landing_page', prod.source_landing_page,
+             'payment_link_returned', false,
+             'checkout_session_returned', false,
+             'no_checkout', true,
+             'no_access_granted', true,
+             'no_send', true,
+             'external_write_performed', false
+           ) AS source_context,
+           COALESCE(prod.updated_at, prod.created_at) AS occurred_at,
+           prod.created_at,
+           'signup_context' AS communication_type,
+           NULL::text AS subject,
+           NULL::text AS thread_key,
+           NULL::text AS external_message_id,
+           NULL::text AS from_address,
+           NULL::text AS to_address,
+           NULL::text AS provider,
+           prod.status
+         FROM bna_product_leads prod
+         JOIN bna_parent_leads l ON TRUE
+         LEFT JOIN bna_projects p ON p.id = l.project_id
+         WHERE ${productLeadConditions.join(' AND ')}
          UNION ALL
          SELECT
            t.id,
@@ -30638,6 +30693,18 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
       )
     )`,
   ];
+  const productLeadConditions = [
+    `bc.id = $1`,
+    `COALESCE(prod.status, 'new') <> 'archived'`,
+    `(
+      (NULLIF(bc.metadata->>'product_lead_id', '') IS NOT NULL AND prod.id::text = NULLIF(bc.metadata->>'product_lead_id', ''))
+      OR (COALESCE(bc.primary_email, '') <> '' AND lower(COALESCE(prod.parent_email, '')) = lower(bc.primary_email))
+      OR (
+        regexp_replace(COALESCE(bc.primary_phone, ''), '[^0-9]+', '', 'g') <> ''
+        AND regexp_replace(COALESCE(NULLIF(prod.parent_phone, ''), NULLIF(prod.parent_whatsapp, ''), ''), '[^0-9]+', '', 'g') = regexp_replace(bc.primary_phone, '[^0-9]+', '', 'g')
+      )
+    )`,
+  ];
   const ticketConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(st.requester_email) = lower(bc.primary_email)`];
   const studentConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(COALESCE(s.parent_email, '')) = lower(bc.primary_email)`, `COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')`];
   const memberConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(COALESCE(m.email, '')) = lower(bc.primary_email)`];
@@ -30652,6 +30719,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     suppressionConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     outboxConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     deadLetterConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
+    productLeadConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     ticketConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     studentConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     memberConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
@@ -30664,6 +30732,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     taskConditions.push(`t.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     outboxConditions.push(`l.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     deadLetterConditions.push(`l.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
+    productLeadConditions.push(`prod.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     ticketConditions.push(`st.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     studentConditions.push(`s.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     memberConditions.push(`m.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
@@ -30860,15 +30929,65 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
         WHERE ${deadLetterConditions.join(' AND ')}
         UNION ALL
        SELECT
-         id,
-         'internal_note' AS channel,
+         prod.id,
+         'signup' AS channel,
          'internal' AS direction,
-         summary AS body,
-         source,
-          metadata AS source_context,
+         ('Public signup captured: ' || COALESCE(NULLIF(prod.audience, ''), 'parents') || ' - ' || COALESCE(NULLIF(prod.status, ''), 'new')) AS body,
+         'bna_product_leads' AS source,
+         jsonb_build_object(
+           'crm_contact_id', ('bna_contacts:' || bc.id::text),
+           'source_table', 'bna_product_leads',
+           'product_lead_id', prod.id,
+           'program_key', prod.program_key,
+           'product_key', prod.product_key,
+           'region', prod.region,
+           'audience', prod.audience,
+           'status', prod.status,
+           'interested_tiers_count', COALESCE(array_length(prod.interested_tiers, 1), 0),
+           'consent', prod.consent,
+           'source_landing_page', prod.source_landing_page,
+           'payment_link_returned', false,
+           'checkout_session_returned', false,
+           'no_checkout', true,
+           'no_access_granted', true,
+           'no_send', true,
+           'external_write_performed', false
+         ) AS source_context,
+          COALESCE(prod.updated_at, prod.created_at) AS occurred_at,
+          prod.created_at,
+          'signup_context' AS communication_type,
+          NULL::text AS subject,
+          NULL::text AS thread_key,
+          NULL::text AS external_message_id,
+          NULL::text AS from_address,
+          NULL::text AS to_address,
+          NULL::text AS provider,
+          prod.status
+        FROM bna_product_leads prod
+        JOIN bna_contacts bc ON bc.id = $1
+        WHERE ${productLeadConditions.join(' AND ')}
+        UNION ALL
+       SELECT
+         id,
+         'lifecycle' AS channel,
+         'internal' AS direction,
+         COALESCE(NULLIF(summary, ''), NULLIF(pipeline_status, ''), event_type, 'CRM lifecycle updated') AS body,
+         'bna_contact_pipeline_events' AS source,
+          jsonb_build_object(
+            'crm_contact_id', ('bna_contacts:' || contact_id::text),
+            'source_table', 'bna_contact_pipeline_events',
+            'pipeline_event_id', id,
+            'event_type', event_type,
+            'pipeline_status', pipeline_status,
+            'source', source,
+            'crm_action_id', NULLIF(metadata->>'crm_action_id', ''),
+            'metadata_returned', false,
+            'no_send', true,
+            'external_write_performed', false
+          ) AS source_context,
           created_at AS occurred_at,
           created_at,
-          event_type AS communication_type,
+          'lifecycle_event' AS communication_type,
           NULL::text AS subject,
           NULL::text AS thread_key,
           NULL::text AS external_message_id,
@@ -31068,6 +31187,7 @@ async function operationsCrmConversationRows(contactRef, scope = {}, options = {
       'student_link',
       'membership_access',
       'signup_context',
+      'lifecycle_event',
       'class_attendance',
       'communication_suppression',
       'delivery_outbox',
@@ -31078,6 +31198,7 @@ async function operationsCrmConversationRows(contactRef, scope = {}, options = {
       'student',
       'membership',
       'signup',
+      'lifecycle',
       'attendance',
       'suppression',
       'delivery_outbox',

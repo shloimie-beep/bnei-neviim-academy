@@ -44,6 +44,7 @@ test('server wires service-provider scope and first-party CRM routes', () => {
   assert.match(server, /whatsapp_suppression_state/);
   assert.match(server, /'student_link' AS communication_type/);
   assert.match(server, /'membership_access' AS communication_type/);
+  assert.match(server, /'signup_context' AS communication_type/);
   assert.match(server, /'class_attendance' AS communication_type/);
   assert.match(server, /'communication_suppression' AS communication_type/);
   assert.match(server, /'delivery_outbox' AS communication_type/);
@@ -52,6 +53,7 @@ test('server wires service-provider scope and first-party CRM routes', () => {
   assert.match(server, /assistant_dead_letters/);
   assert.match(server, /bna_live_class_attendance/);
   assert.match(server, /'membership_access'[\s\S]*\.includes\(row\.communication_type\)/);
+  assert.match(server, /'signup_context'[\s\S]*\.includes\(row\.communication_type\)/);
   assert.match(server, /'class_attendance'[\s\S]*\.includes\(row\.communication_type\)/);
   assert.match(server, /'communication_suppression'[\s\S]*\.includes\(row\.communication_type\)/);
   assert.match(server, /'delivery_dead_letter'[\s\S]*\.includes\(row\.communication_type\)/);
@@ -59,6 +61,7 @@ test('server wires service-provider scope and first-party CRM routes', () => {
   assert.match(contactService, /'delivery_dead_letter'[\s\S]*\.includes\(row\.communication_type\)/);
   assert.match(server, /'attendance'[\s\S]*\.includes\(row\.channel\)/);
   assert.match(server, /'suppression'[\s\S]*\.includes\(row\.channel\)/);
+  assert.match(server, /'signup'[\s\S]*\.includes\(row\.channel\)/);
   assert.match(server, /'dead_letter'[\s\S]*\.includes\(row\.channel\)/);
   assert.match(contactService, /'delivery_outbox'[\s\S]*\.includes\(row\.channel\)/);
   assert.match(contactService, /'dead_letter'[\s\S]*\.includes\(row\.channel\)/);
