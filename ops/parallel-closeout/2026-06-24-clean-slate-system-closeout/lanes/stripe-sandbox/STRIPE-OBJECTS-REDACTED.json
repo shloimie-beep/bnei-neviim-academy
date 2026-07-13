@@ -1,6 +1,29 @@
 {
-  "product": null,
-  "price": null,
-  "customer": null,
-  "checkout_session": null
+  "product": {
+    "id": "prod_UsSAgNkQqqzmNG_[redacted_779c7a7b1b32]",
+    "object": "product",
+    "livemode": false,
+    "created": 1783939149,
+    "active": true
+  },
+  "price": {
+    "id": "price_1TshGUEEOawBwiexvfEp30M4_[redacted_eecc23a86b70]",
+    "object": "price",
+    "livemode": false,
+    "created": 1783939150,
+    "active": true
+  },
+  "customer": {
+    "id": "cus_UsSAJ5S5yK7a39_[redacted_04a5c855690d]",
+    "object": "customer",
+    "livemode": false,
+    "created": 1783939150
+  },
+  "checkout_session": {
+    "id": "cs_test_[redacted_14a49edc59af]",
+    "object": "checkout.session",
+    "livemode": false,
+    "created": 1783939151,
+    "status": "open"
+  }
 }
