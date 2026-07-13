@@ -180,15 +180,19 @@ test('transcript privacy readiness covers REQ-20260619-309 sections and gates', 
   assert.doesNotMatch(JSON.stringify(readiness), /Student seven privately asked/);
 });
 
-test('server exposes protected transcript privacy readiness while member-safe classroom data blanks transcripts', () => {
+test('server exposes protected transcript privacy readiness while member-safe classroom data omits private transcript fields', () => {
   [
     "app.get('/api/bna/one-time/transcript-privacy', requireAdmin",
     'buildTranscriptPrivacyReadiness',
     'raw_transcript_text_returned: false',
     "routePath === '/api/bna/one-time/transcript-privacy' && method === 'GET'",
-    "transcript_text: memberSafe ? '' : session.transcript_text",
-    "transcript_notes: memberSafe ? '' : session.transcript_notes",
-    "transcript_segments: memberSafe ? [] : session.transcript_segments",
+    'ONE_TIME_MEMBER_PRIVATE_PAYLOAD_KEYS',
+    'oneTimeMemberSafePayload',
+    'oneTimeClassSessionMemberSafeView(session)',
+    "classroom: oneTimeMemberSafePayload(review.classroom)",
+    "'transcript_text'",
+    "'transcript_notes'",
+    "'transcript_segments'",
     "transcript_review_state TEXT DEFAULT 'needs_review'",
     "transcript_segments JSONB DEFAULT '[]'",
     "transcript_release_audit JSONB DEFAULT '{}'",

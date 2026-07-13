@@ -107,12 +107,14 @@ test('Member library API returns only published tier-visible safe items', () => 
   assert.match(helper, /publish_status = 'published'/);
   assert.match(helper, /libraryVisibilityAllowsMember\(item\.library_visibility, tier, item\.required_tier\)/);
   const publicView = sliceBetween(server, 'function oneTimeMemberLibraryPublicView', 'function normalizeOneTimeClassroomModerationStatus');
-  const memberSafeClassView = sliceBetween(server, 'function oneTimeClassSessionMemberSafeView', 'function oneTimeClassAssetView');
+  const memberSafePayload = sliceBetween(server, 'const ONE_TIME_MEMBER_PRIVATE_PAYLOAD_KEYS', 'function oneTimeClassAssetView');
   const classPackageView = sliceBetween(server, 'function buildOneTimeClassPackage', 'function isOneTimeEditableSlideAsset');
   assert.match(classPackageView, /metadata_review/);
   assert.match(classPackageView, /bot_knowledge/);
   assert.match(classPackageView, /private_admin_only:[\s\S]*metadata_draft[\s\S]*bot_knowledge_handoff/);
+  assert.match(memberSafePayload, /function oneTimeMemberSafePayload/);
   assert.match(server, /oneTimeClassSessionMemberSafeView\(session\)/);
+  assert.match(server, /classroom: oneTimeMemberSafePayload\(review\.classroom\)/);
   [
     'content_job_id',
     'newsletter_draft',
@@ -131,7 +133,8 @@ test('Member library API returns only published tier-visible safe items', () => 
     'source_sheet_draft',
     'package_status',
     'updated_by',
-  ].forEach((field) => assert.match(memberSafeClassView, new RegExp(`\\b${field}\\b`)));
+    'private_admin_only',
+  ].forEach((field) => assert.match(memberSafePayload, new RegExp(`\\b${field}\\b`)));
   assert.doesNotMatch(publicView, /approval_flag|approved_by|rollback_metadata|transcript_notes|private_admin_only|package_status/);
   assert.doesNotMatch(publicView, /metadata_draft|bot_knowledge_handoff|bot_knowledge_status|transcript_text/);
   assert.match(server, /const ONE_TIME_ASSET_TYPES = new Set\(\['worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'thumbnail', 'transcript', 'example', 'other'\]\)/);

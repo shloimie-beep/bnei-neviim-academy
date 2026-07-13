@@ -32321,29 +32321,41 @@ function oneTimeClassSessionView(row = {}) {
   };
 }
 
+const ONE_TIME_MEMBER_PRIVATE_PAYLOAD_KEYS = new Set([
+  'content_job_id',
+  'newsletter_draft',
+  'source_media_url',
+  'transcript_text',
+  'transcript_notes',
+  'transcript_review_state',
+  'transcript_privacy_class',
+  'transcript_segments',
+  'transcript_versions',
+  'transcript_glossary',
+  'transcript_release_audit',
+  'metadata_draft',
+  'metadata_review_state',
+  'bot_knowledge_handoff',
+  'bot_knowledge_status',
+  'source_sheet_draft',
+  'package_status',
+  'updated_by',
+  'private_admin_only',
+]);
+
+function oneTimeMemberSafePayload(value) {
+  if (Array.isArray(value)) return value.map((item) => oneTimeMemberSafePayload(item));
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(([key]) => !ONE_TIME_MEMBER_PRIVATE_PAYLOAD_KEYS.has(key))
+      .map(([key, item]) => [key, oneTimeMemberSafePayload(item)])
+  );
+}
+
 function oneTimeClassSessionMemberSafeView(session = {}) {
-  const {
-    content_job_id,
-    newsletter_draft,
-    source_media_url,
-    transcript_text,
-    transcript_notes,
-    transcript_review_state,
-    transcript_privacy_class,
-    transcript_segments,
-    transcript_versions,
-    transcript_glossary,
-    transcript_release_audit,
-    metadata_draft,
-    metadata_review_state,
-    bot_knowledge_handoff,
-    bot_knowledge_status,
-    source_sheet_draft,
-    package_status,
-    updated_by,
-    ...safe
-  } = session || {};
-  return safe;
+  const safe = oneTimeMemberSafePayload(session || {});
+  return safe && typeof safe === 'object' && !Array.isArray(safe) ? safe : {};
 }
 
 function oneTimeClassAssetView(row = {}) {
@@ -81845,7 +81857,7 @@ app.get('/api/one-time-classroom', async (req, res) => {
       const review = oneTimeSharedReviewDataForRequest(req);
       return res.json({
         success: true,
-        classroom: review.classroom,
+        classroom: oneTimeMemberSafePayload(review.classroom),
         internal_fields_hidden: true,
         test_only: true,
         external_write_performed: false,
