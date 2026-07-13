@@ -614,3 +614,32 @@
   send, public auto-reply enablement, provider mutation, credential mutation,
   payment/access mutation, raw private payload logging, or destructive
   production mutation was performed.
+
+## One Time WAPI Zero-Task Contact Capture Closeout
+
+- `REQ-20260712-308` is Done for code/deployment proof.
+- Runtime commit `7ec31290c08ede0957dbd60b2c3253979253feba` prevents ordinary
+  One Time WAPI inbound messages from creating generic CRM tasks while
+  preserving scoped contact creation/reuse, phone/WhatsApp identities,
+  canonical communication/thread/unread metadata, and no-send notifications.
+- Support-ticket behavior is separate from ordinary tasks: provider-bot support
+  tickets dedupe by workspace/project/contact/thread/action class and store
+  only a hashed thread key.
+- One Time deployment evidence: Railway deployment
+  `75d521fa-6826-49f5-875a-5f6f03f3dc44`, live deploy-info exact SHA
+  `7ec31290c08ede0957dbd60b2c3253979253feba`, `target_app=one-time`.
+- BNA shared-runtime regression evidence: live deploy-info exact SHA
+  `7ec31290c08ede0957dbd60b2c3253979253feba`, `target_app=bna`; BNA taxonomy
+  smoke passed. Railway doctor access passed, but the active Railway deployment
+  status still reported `BUILDING` during closeout.
+- One Time live smoke evidence: separate-instance route smoke passed; CRM
+  workbench smoke `ops/live-smokes/2026-07-13T13-45-08-361Z-one-time-operations-crm-workbench-live-smoke.md`;
+  provider route-module smoke `ops/live-smokes/2026-07-13T13-44-50-006Z-onetime-provider-route-module-live-smoke.md`.
+- BNA live smoke evidence: workspace taxonomy smoke
+  `ops/live-smokes/2026-07-13T13-44-53-216Z-operations-workspace-taxonomy-live-smoke.md`.
+- Owner-only real WAPI send/inbound proof remains blocked by
+  `REQ-20260713-906` secure aliases.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram
+  send, public auto-reply enablement, provider mutation, credential mutation,
+  payment/access mutation, raw private payload logging, or destructive
+  production mutation was performed.

@@ -1874,23 +1874,61 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "not_started",
-      "implementation_status": "partial",
+      "status": "done",
+      "implementation_status": "Done: One Time WAPI inbound messages create/reuse the workspace-scoped canonical CRM contact, phone and WhatsApp identities, canonical communication/thread/timeline/unread metadata, and zero ordinary CRM tasks. One Time WAPI attention artifacts can badge/notify but suppress generic task creation when create_task_on_inbound=false, support tickets dedupe by workspace/project/contact/thread/action class instead of individual message ID, and opt-out/support behavior remains separate from ordinary task creation. Deployed and live-smoked at SHA 7ec31290c08ede0957dbd60b2c3253979253feba. Owner-only real WAPI send/inbound proof remains separately blocked by REQ-20260713-906 secure aliases.",
       "can_continue_without_operator": true,
-      "next_action": "Continue REQ-20260712-308 after dependent earlier batches are validated.",
+      "next_action": "Continue the next unblocked communication-agent/runtime or Rabbi Telegram slice. Owner-only live WAPI send/inbound proof remains blocked by REQ-20260713-906 secure aliases.",
       "acceptance_criteria": [
         "Valid inbound WhatsApp creates/reuses contact, identities, conversation, message, timeline, unread state, and zero ordinary tasks; support/opt-out/explicit-task rules are deduped and separate."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "server.js createCommunicationAttentionArtifacts now honors create_task_on_inbound=false and ordinary_inbound_creates_task=false before inserting bna_tasks, while still creating no-send attention notifications.",
+        "server.js oneTimeProviderBotSupportTicketDedupe dedupes One Time provider-bot support tickets by workspace/project/contact/thread/action class and stores only a thread hash, not the raw thread key.",
+        "tests/one-time-wapi-scope-contract.test.js asserts One Time WAPI badge/notify behavior suppresses generic tasks and support ticket dedupe is not individual-message-only.",
+        "tests/inbound-communication-ingest.test.js asserts canonical WhatsApp inbound creates scoped contact, phone/WhatsApp identities, communication/thread/unread metadata, and no bna_tasks query.",
+        "One Time deployment 75d521fa-6826-49f5-875a-5f6f03f3dc44 reached SUCCESS and /api/deploy-info returned commit_sha=7ec31290c08ede0957dbd60b2c3253979253feba target_app=one-time.",
+        "BNA /api/deploy-info returned commit_sha=7ec31290c08ede0957dbd60b2c3253979253feba target_app=bna; Railway doctor access passed while the current deployment status still reported BUILDING.",
+        "One Time exact-SHA CRM workbench smoke passed with 12 scoped cards: ops/live-smokes/2026-07-13T13-45-08-361Z-one-time-operations-crm-workbench-live-smoke.md.",
+        "One Time exact-SHA provider route-module smoke passed: ops/live-smokes/2026-07-13T13-44-50-006Z-onetime-provider-route-module-live-smoke.md.",
+        "BNA exact-SHA workspace taxonomy smoke passed: ops/live-smokes/2026-07-13T13-44-53-216Z-operations-workspace-taxonomy-live-smoke.md."
+      ],
+      "verification": [
+        "PASS clean-worktree node --check server.js",
+        "PASS clean-worktree node --test tests/one-time-wapi-scope-contract.test.js tests/service-provider-lead-bot.test.js tests/inbound-communication-ingest.test.js tests/inbound-communication-pipeline.test.js tests/one-time-delivery-outbox.test.js (29/29)",
+        "PASS clean-worktree node --test tests/communications-screening-import-ui.test.js (5/5)",
+        "PASS main-worktree npm run bna:run:validate before runtime commit",
+        "PASS git diff --cached --check before runtime commit",
+        "PASS staged server.js syntax check before runtime commit",
+        "PASS git push origin master for 7ec31290c08ede0957dbd60b2c3253979253feba",
+        "PASS One Time Railway doctor: deployment 75d521fa-6826-49f5-875a-5f6f03f3dc44 SUCCESS",
+        "PASS One Time deploy-info exact SHA 7ec31290c08ede0957dbd60b2c3253979253feba",
+        "PASS BNA deploy-info exact SHA 7ec31290c08ede0957dbd60b2c3253979253feba",
+        "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 7ec31290c08ede0957dbd60b2c3253979253feba",
+        "PASS npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 7ec31290c08ede0957dbd60b2c3253979253feba",
+        "PASS npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 7ec31290c08ede0957dbd60b2c3253979253feba",
+        "PASS npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha 7ec31290c08ede0957dbd60b2c3253979253feba"
+      ],
       "implementation_files": [
         "src/lib/bna/provider-lead-bot.js",
         "config/service-provider-bots/one-time.json",
-        "server.js"
+        "server.js",
+        "tests/one-time-wapi-scope-contract.test.js",
+        "tests/inbound-communication-ingest.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:18:00+03:00",
-      "blocker": ""
+      "updated_at": "2026-07-13T16:48:00+03:00",
+      "blocker": "",
+      "implementation_commit": "7ec31290c08ede0957dbd60b2c3253979253feba",
+      "pushed_commit": "7ec31290c08ede0957dbd60b2c3253979253feba",
+      "deployed_commit": "7ec31290c08ede0957dbd60b2c3253979253feba",
+      "deployment_evidence": [
+        "One Time Railway deployment 75d521fa-6826-49f5-875a-5f6f03f3dc44 reached SUCCESS.",
+        "One Time production verified at https://join.onetimeonetime.com/api/deploy-info with commit_sha=7ec31290c08ede0957dbd60b2c3253979253feba and target_app=one-time.",
+        "BNA production verified at https://bneineviimacademy.org/api/deploy-info with commit_sha=7ec31290c08ede0957dbd60b2c3253979253feba and target_app=bna.",
+        "BNA Railway doctor access passed for skillful-motivation / production, but current Railway deployment status still reported BUILDING during closeout; exact-SHA live metadata and BNA taxonomy smoke passed.",
+        "One Time live smokes passed: separate-instance, Operations CRM workbench, provider route-module.",
+        "BNA live workspace taxonomy smoke passed."
+      ]
     },
     {
       "id": "REQ-20260712-309",
