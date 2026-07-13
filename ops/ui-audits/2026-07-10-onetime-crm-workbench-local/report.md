@@ -36,4 +36,3 @@ Checks:
 - Legacy CRM review/source table is absent while the details panel is closed and present after it is opened.
 - Desktop, tablet, and mobile screenshots have no horizontal overflow.
 - Synthetic local records only; no external sends, payments, access grants, or external CRM writes.
-

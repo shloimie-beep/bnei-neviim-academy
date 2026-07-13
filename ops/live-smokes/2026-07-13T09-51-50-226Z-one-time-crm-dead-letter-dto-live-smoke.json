@@ -1,0 +1,93 @@
+{
+  "started_at": "2026-07-13T09:51:50.226Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "status": "skipped_no_live_dead_letters",
+  "deployment_id": "",
+  "commit": "",
+  "steps": [
+    {
+      "name": "operations login uses One Time Railway auth fallback",
+      "ok": true,
+      "duration_ms": 1984,
+      "details": {
+        "source": "railway",
+        "role": "super_admin"
+      }
+    },
+    {
+      "name": "scoped One Time CRM list exposes canonical contacts without external writes",
+      "ok": true,
+      "duration_ms": 449,
+      "details": {
+        "cards_count": 12,
+        "canonical_contact_candidate_count": 7,
+        "no_send": true
+      }
+    },
+    {
+      "name": "selected contact Activity exposes dead-letter rows only when live dead-letter data exists",
+      "ok": true,
+      "duration_ms": 3566,
+      "details": {
+        "skipped": true,
+        "reason": "Canonical One Time contacts were present, but no assistant_dead_letters DTO was returned from the inspected production sample.",
+        "inspected_candidates": 7,
+        "inspected_counts": [
+          {
+            "timeline_count": 1,
+            "conversation_count": 1,
+            "dead_letter_timeline_count": 0,
+            "delivery_operational_conversation_count": 0
+          },
+          {
+            "timeline_count": 1,
+            "conversation_count": 1,
+            "dead_letter_timeline_count": 0,
+            "delivery_operational_conversation_count": 0
+          },
+          {
+            "timeline_count": 1,
+            "conversation_count": 1,
+            "dead_letter_timeline_count": 0,
+            "delivery_operational_conversation_count": 0
+          },
+          {
+            "timeline_count": 1,
+            "conversation_count": 1,
+            "dead_letter_timeline_count": 0,
+            "delivery_operational_conversation_count": 0
+          },
+          {
+            "timeline_count": 1,
+            "conversation_count": 1,
+            "dead_letter_timeline_count": 0,
+            "delivery_operational_conversation_count": 0
+          },
+          {
+            "timeline_count": 2,
+            "conversation_count": 2,
+            "dead_letter_timeline_count": 0,
+            "delivery_operational_conversation_count": 0
+          },
+          {
+            "timeline_count": 1,
+            "conversation_count": 1,
+            "dead_letter_timeline_count": 0,
+            "delivery_operational_conversation_count": 0
+          }
+        ]
+      }
+    }
+  ],
+  "guardrails": [
+    "Read-only live smoke; no contact IDs, names, addresses, recipients, message bodies, payload bodies, provider error text, sends, payments, access grants, or external writes are saved.",
+    "The smoke records only aggregate counts, no-send flags, and whether selected-contact Activity exposes assistant_dead_letters rows.",
+    "Dead-letter rows are expected in Activity/timeline only and must not appear in selected-contact Conversations.",
+    "If production has no scoped One Time dead-letter rows, the probe records a skip rather than creating synthetic data."
+  ],
+  "crm_cards_count": 12,
+  "canonical_contact_candidate_count": 7,
+  "inspected_candidate_count": 7
+}

@@ -253,3 +253,15 @@ Current status: `active`
 - Live proof passed: One Time exact-SHA separate-instance smoke, One Time CRM workbench smoke, One Time provider route-module smoke, Operations workspace taxonomy smoke, and One Time performance regression gate.
 - Targeted delivery-outbox DTO live probe wrote `ops/live-smokes/2026-07-13T09-32-18-053Z-one-time-crm-delivery-outbox-dto-live-smoke.md`; production returned 7 canonical contacts but no live delivery_outbox rows, so it recorded `skipped_no_live_delivery_outbox` without creating synthetic data.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw recipient/body logging, or production data mutation was performed.
+
+## CRM Delivery Dead-Letter Activity DTO - 2026-07-13
+
+- `REQ-20260712-302` remains in progress, with the delivery dead-letter Activity DTO slice implemented, pushed, deployed, and live-smoked at `01d5a054ad99ba0a41196b18fc5b8098972e1d5a`.
+- `server.js` now includes redacted `assistant_dead_letters` rows in selected-contact Activity timelines for canonical `bna_contacts` and legacy `bna_parent_leads` when One Time dead-letter rows exist through the existing delivery-outbox lead mapping.
+- Conversations and Tasks explicitly exclude `delivery_outbox` and `delivery_dead_letter` operational rows, so queued/failed/dead-letter delivery state is not presented as a message thread or task.
+- DTO source context is redacted: `reason_returned=false`, `payload_returned=false`, `message_body_returned=false`, `recipient_returned=false`, `no_send=true`, and `external_write_performed=false`.
+- BNA Railway deployment `86b1d98c-d4d3-4c52-8f0f-784ebee3deef` reached `SUCCESS`; One Time Railway deployment `7c81033a-ffc4-46e2-b2f5-f8ff0da1cf91` reached `SUCCESS`.
+- Both live deploy-info endpoints returned `commit_sha=01d5a054ad99ba0a41196b18fc5b8098972e1d5a` with target apps `bna` and `one-time`.
+- Live proof passed: One Time exact-SHA separate-instance smoke, One Time CRM workbench smoke, One Time provider route-module smoke, delivery-outbox DTO regression smoke, Operations workspace taxonomy smoke, and One Time performance regression gate.
+- Targeted delivery dead-letter DTO live probe wrote `ops/live-smokes/2026-07-13T09-51-50-226Z-one-time-crm-dead-letter-dto-live-smoke.md`; production returned 7 canonical contacts but no live dead-letter rows, so it recorded `skipped_no_live_dead_letters` without creating synthetic data.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw recipient/body/reason/payload logging, or production data mutation was performed.

@@ -414,3 +414,22 @@
 - BNA workspace taxonomy regression smoke passed: `ops/live-smokes/2026-07-13T09-28-14-579Z-operations-workspace-taxonomy-live-smoke.md`.
 - One Time performance gate passed at the deployed SHA: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw recipient/body logging, or production data mutation.
+
+## CRM Delivery Dead-Letter Activity DTO - 2026-07-13
+
+- `server.js` - selected-contact Activity timelines now include redacted `assistant_dead_letters` rows for One Time delivery failures joined through the existing `assistant_delivery_outbox` lead mapping for canonical `bna_contacts` and legacy `bna_parent_leads`.
+- `server.js` / `src/lib/bna/crm/contact-service.js` - selected-contact Conversations and Tasks exclude `delivery_outbox` and `delivery_dead_letter` operational rows.
+- `public/operations.html` - Activity labels now render delivery operational rows as `Delivery status` and `Delivery needs review`.
+- `scripts/smoke-onetime-crm-dead-letter-dto-live.mjs` / `package.json` - added a redacted read-only production smoke for selected-contact dead-letter DTO behavior.
+- Tests pin timeline inclusion, conversation/task exclusion, redacted source context, and workspace/project scoping in `tests/crm-contact-service.test.js`, `tests/shared-crm-workbench-contract.test.js`, and `tests/service-provider-scope-routes.test.js`.
+- Commit `01d5a054ad99ba0a41196b18fc5b8098972e1d5a` implemented and pushed the slice.
+- BNA Railway deployment `86b1d98c-d4d3-4c52-8f0f-784ebee3deef` reached `SUCCESS`; One Time Railway deployment `7c81033a-ffc4-46e2-b2f5-f8ff0da1cf91` reached `SUCCESS`.
+- BNA live `/api/deploy-info` returned `commit_sha=01d5a054ad99ba0a41196b18fc5b8098972e1d5a`, `target_app=bna`.
+- One Time live `/api/deploy-info` returned `commit_sha=01d5a054ad99ba0a41196b18fc5b8098972e1d5a`, `target_app=one-time`.
+- Live One Time CRM workbench smoke passed: `ops/live-smokes/2026-07-13T09-51-50-245Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Live One Time provider route-module smoke passed: `ops/live-smokes/2026-07-13T09-51-50-534Z-onetime-provider-route-module-live-smoke.md`.
+- Live targeted delivery dead-letter DTO smoke passed with `skipped_no_live_dead_letters`: `ops/live-smokes/2026-07-13T09-51-50-226Z-one-time-crm-dead-letter-dto-live-smoke.md`. It found 7 canonical contacts, no live dead-letter rows, and created no synthetic data.
+- Delivery-outbox DTO regression smoke passed with `skipped_no_live_delivery_outbox`: `ops/live-smokes/2026-07-13T09-52-15-195Z-one-time-crm-delivery-outbox-dto-live-smoke.md`.
+- BNA workspace taxonomy regression smoke passed: `ops/live-smokes/2026-07-13T09-52-15-192Z-operations-workspace-taxonomy-live-smoke.md`.
+- One Time performance gate passed at the deployed SHA: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw recipient/body/reason/payload logging, or production data mutation.
