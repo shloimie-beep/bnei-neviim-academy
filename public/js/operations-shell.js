@@ -286,6 +286,18 @@ const api = {
             : '/crm/contacts/' + encodeURIComponent(id) + '/timeline';
         return this.request('GET', path, null, requestOptions);
     },
+    getCrmContactConversations(id, filters = {}, requestOptions = {}) {
+        const path = window.BnaCrmApi?.contactConversationsPath
+            ? window.BnaCrmApi.contactConversationsPath(id, filters)
+            : '/crm/contacts/' + encodeURIComponent(id) + '/conversations';
+        return this.request('GET', path, null, requestOptions);
+    },
+    getCrmContactTasks(id, filters = {}, requestOptions = {}) {
+        const path = window.BnaCrmApi?.contactTasksPath
+            ? window.BnaCrmApi.contactTasksPath(id, filters)
+            : '/crm/contacts/' + encodeURIComponent(id) + '/tasks';
+        return this.request('GET', path, null, requestOptions);
+    },
     createCrmContact(payload = {}) { return this.request('POST', '/crm/contacts', payload); },
     updateCrmContact(id, payload = {}) { return this.request('PATCH', '/crm/contacts/' + encodeURIComponent(id), payload); },
     createContactCommunication(note) { return this.request('POST', '/contact-communications', note); },
@@ -1172,6 +1184,8 @@ let selectedLeadId = null;
 let selectedPersonKey = null;
 let firstPartyCrmContactsPayload = null;
 let firstPartyCrmTimelinePayload = null;
+let firstPartyCrmConversationsPayload = null;
+let firstPartyCrmTasksPayload = null;
 let selectedFirstPartyCrmContactId = currentView === 'contacts' && contactSection === 'crm_contacts'
     ? String(initialParams.get('crm_contact') || '').trim() || null
     : null;
@@ -7763,6 +7777,73 @@ function renderFirstPartyCrmTimeline(card = {}) {
     `;
 }
 
+function renderFirstPartyCrmConversationDtoPanel(card = {}) {
+    const items = Array.isArray(firstPartyCrmConversationsPayload?.conversations)
+        ? firstPartyCrmConversationsPayload.conversations
+        : [];
+    const isLoading = selectedFirstPartyCrmContactId && firstPartyCrmTimelineAbortController && !firstPartyCrmConversationsPayload;
+    const error = firstPartyCrmConversationsPayload?.error || '';
+    if (error) {
+        return `<div class="contact-empty-card" data-crm-tab-panel="conversations">${escapeHtml(error)}</div>`;
+    }
+    if (isLoading) {
+        return `<div class="contact-empty-card" data-crm-tab-panel="conversations">Loading conversations...</div>`;
+    }
+    if (!items.length) {
+        return `<div class="contact-empty-card" data-crm-tab-panel="conversations">${window.BnaCrmContactWorkspace?.emptyState?.('conversations') || 'No conversations yet.'}</div>`;
+    }
+    return `
+        <div class="crm-timeline-list" data-crm-tab-panel="conversations" data-crm-dto-source="contact-conversations">
+            ${items.map(item => `
+                <article class="content-card">
+                    <div class="content-card-title">${escapeHtml([item.channel, item.communication_type].filter(Boolean).join(' / ') || 'Conversation')}</div>
+                    <div class="content-card-meta">${escapeHtml([item.direction, item.occurred_at ? formatDateTime(item.occurred_at) : ''].filter(Boolean).join(' - '))}</div>
+                    <p class="event-meta">${escapeHtml(item.body || item.summary || '')}</p>
+                </article>
+            `).join('')}
+        </div>
+    `;
+}
+
+function renderFirstPartyCrmTaskDtoPanel(card = {}) {
+    const linkedTaskId = String(firstPartyCrmFollowUpTaskId(card.follow_up_task || {}) || '');
+    const items = (Array.isArray(firstPartyCrmTasksPayload?.tasks)
+        ? firstPartyCrmTasksPayload.tasks
+        : [])
+        .filter(item => !linkedTaskId || String(item.id || '') !== linkedTaskId);
+    const isLoading = selectedFirstPartyCrmContactId && firstPartyCrmTimelineAbortController && !firstPartyCrmTasksPayload;
+    const error = firstPartyCrmTasksPayload?.error || '';
+    if (error) {
+        return `<div class="contact-empty-card" data-crm-tab-panel="tasks">${escapeHtml(error)}</div>`;
+    }
+    if (isLoading) {
+        return `<div class="contact-empty-card" data-crm-tab-panel="tasks">Loading tasks...</div>`;
+    }
+    if (!items.length) {
+        return '';
+    }
+    return `
+        <div class="crm-timeline-list" data-crm-tab-panel="tasks" data-crm-dto-source="contact-tasks">
+            ${items.map(item => `
+                <article class="contact-empty-card crm-linked-task-card">
+                    <div class="task-section-header compact">
+                        <div>
+                            <h3>${escapeHtml(item.title || 'CRM task')}</h3>
+                            <p class="notification-lock-note">${escapeHtml(item.notes || 'First-party CRM task readback. No message, payment, access grant, import, or external CRM write runs from this view.')}</p>
+                        </div>
+                        <span class="status-chip">${escapeHtml(contactStatusLabel(item.stage || 'assigned'))}</span>
+                    </div>
+                    <div class="crm-linked-task-meta">
+                        <span>Task #${escapeHtml(item.id || '')}</span>
+                        <span>Owner: ${escapeHtml(item.assigned_to || card.assigned_owner || 'Unassigned')}</span>
+                        <span>Due: ${item.due_date ? escapeHtml(formatDate(item.due_date)) : 'No follow-up scheduled.'}</span>
+                    </div>
+                </article>
+            `).join('')}
+        </div>
+    `;
+}
+
 function firstPartyCrmWorkspaceTabs() {
     return window.BnaCrmContactWorkspace?.workspaceTabs?.() || [
         { id: 'overview', label: 'Overview', enabled: true },
@@ -7806,20 +7887,16 @@ function renderFirstPartyCrmTabContent(card = {}, readOnly = false) {
         `;
     }
     if (activeTab === 'conversations') {
-        const hasEmail = Boolean(card.mailbox?.message_count);
         return `
             ${renderFirstPartyCrmSafeActions(card)}
-            <div class="contact-empty-card" data-crm-tab-panel="conversations">
-                ${hasEmail
-                    ? `${Number(card.mailbox.message_count)} email messages${card.mailbox.latest_subject ? ` / ${escapeHtml(card.mailbox.latest_subject)}` : ''}`
-                    : (window.BnaCrmContactWorkspace?.emptyState?.('conversations') || 'No conversations yet.')}
-            </div>
+            ${renderFirstPartyCrmConversationDtoPanel(card)}
         `;
     }
     if (activeTab === 'tasks') {
         return `
             ${renderFirstPartyCrmSafeActions(card)}
             ${renderFirstPartyCrmLinkedTaskPanel(card, readOnly)}
+            ${renderFirstPartyCrmTaskDtoPanel(card)}
         `;
     }
     if (activeTab === 'access') {
@@ -7897,8 +7974,10 @@ async function loadFirstPartyCrmContacts(event, options = {}) {
         if (selectedFirstPartyCrmContactId && !cards.some(card => String(card.id) === String(selectedFirstPartyCrmContactId))) {
             selectedFirstPartyCrmContactId = null;
             firstPartyCrmTimelinePayload = null;
+            firstPartyCrmConversationsPayload = null;
+            firstPartyCrmTasksPayload = null;
             syncOperationsUrl();
-        } else if (selectedFirstPartyCrmContactId && !firstPartyCrmTimelinePayload && !firstPartyCrmTimelineAbortController) {
+        } else if (selectedFirstPartyCrmContactId && (!firstPartyCrmTimelinePayload || !firstPartyCrmConversationsPayload || !firstPartyCrmTasksPayload) && !firstPartyCrmTimelineAbortController) {
             await openFirstPartyCrmContact(selectedFirstPartyCrmContactId, { captureScroll: false, syncUrl: false });
         }
     } catch (error) {
@@ -7918,6 +7997,8 @@ async function openFirstPartyCrmContact(contactId, options = {}) {
     if (options.captureScroll !== false) captureFirstPartyCrmListScroll();
     selectedFirstPartyCrmContactId = contactId;
     firstPartyCrmTimelinePayload = null;
+    firstPartyCrmConversationsPayload = null;
+    firstPartyCrmTasksPayload = null;
     if (firstPartyCrmTimelineAbortController) firstPartyCrmTimelineAbortController.abort();
     const requestSeq = firstPartyCrmTimelineRequestSeq + 1;
     firstPartyCrmTimelineRequestSeq = requestSeq;
@@ -7927,12 +8008,27 @@ async function openFirstPartyCrmContact(contactId, options = {}) {
     updateFirstPartyCrmPanel();
 
     try {
-        const timelinePayload = await api.getCrmContactTimeline(contactId, firstPartyCrmQueryFilters(), { signal: controller.signal });
+        const filters = firstPartyCrmQueryFilters();
+        const detailResults = await Promise.allSettled([
+            api.getCrmContactTimeline(contactId, filters, { signal: controller.signal }),
+            api.getCrmContactConversations(contactId, { ...filters, limit: 25 }, { signal: controller.signal }),
+            api.getCrmContactTasks(contactId, { ...filters, limit: 25 }, { signal: controller.signal })
+        ]);
         if (controller.signal.aborted || requestSeq !== firstPartyCrmTimelineRequestSeq) return;
-        firstPartyCrmTimelinePayload = timelinePayload;
+        firstPartyCrmTimelinePayload = detailResults[0].status === 'fulfilled'
+            ? detailResults[0].value
+            : { timeline: [{ channel: 'error', type: 'readback_error', body: detailResults[0].reason?.message || 'Could not load timeline.' }] };
+        firstPartyCrmConversationsPayload = detailResults[1].status === 'fulfilled'
+            ? detailResults[1].value
+            : { conversations: [], error: detailResults[1].reason?.message || 'Could not load conversations.' };
+        firstPartyCrmTasksPayload = detailResults[2].status === 'fulfilled'
+            ? detailResults[2].value
+            : { tasks: [], error: detailResults[2].reason?.message || 'Could not load tasks.' };
     } catch (error) {
         if (isAbortError(error)) return;
         firstPartyCrmTimelinePayload = { timeline: [{ channel: 'error', type: 'readback_error', body: error.message || 'Could not load timeline.' }] };
+        firstPartyCrmConversationsPayload = { conversations: [], error: error.message || 'Could not load conversations.' };
+        firstPartyCrmTasksPayload = { tasks: [], error: error.message || 'Could not load tasks.' };
     }
     if (requestSeq === firstPartyCrmTimelineRequestSeq) {
         firstPartyCrmTimelineAbortController = null;
@@ -7944,6 +8040,8 @@ function clearFirstPartyCrmSelection(event) {
     event?.preventDefault?.();
     selectedFirstPartyCrmContactId = null;
     firstPartyCrmTimelinePayload = null;
+    firstPartyCrmConversationsPayload = null;
+    firstPartyCrmTasksPayload = null;
     firstPartyCrmActiveTab = 'activity';
     if (firstPartyCrmTimelineAbortController) {
         firstPartyCrmTimelineAbortController.abort();
@@ -8055,8 +8153,10 @@ async function saveFirstPartyCrmAction(event, contactId) {
             : 'CRM update saved.';
         await loadFirstPartyCrmContacts();
         selectedFirstPartyCrmContactId = contactId;
-        firstPartyCrmTimelinePayload = result?.timeline ? { timeline: result.timeline } : null;
-        if (!firstPartyCrmTimelinePayload) await openFirstPartyCrmContact(contactId);
+        firstPartyCrmTimelinePayload = null;
+        firstPartyCrmConversationsPayload = null;
+        firstPartyCrmTasksPayload = null;
+        await openFirstPartyCrmContact(contactId, { captureScroll: false, syncUrl: false });
     } catch (error) {
         firstPartyCrmError = error.message || 'Could not save CRM update.';
     } finally {
@@ -8157,8 +8257,10 @@ async function createFirstPartyCrmTask(event, contactId) {
         firstPartyCrmContactsCache.clear();
         await loadFirstPartyCrmContacts(null, { force: true });
         selectedFirstPartyCrmContactId = contactId;
-        firstPartyCrmTimelinePayload = result?.timeline ? { timeline: result.timeline } : null;
-        if (!firstPartyCrmTimelinePayload) await openFirstPartyCrmContact(contactId);
+        firstPartyCrmTimelinePayload = null;
+        firstPartyCrmConversationsPayload = null;
+        firstPartyCrmTasksPayload = null;
+        await openFirstPartyCrmContact(contactId, { captureScroll: false, syncUrl: false });
     } catch (error) {
         firstPartyCrmError = error.message || 'Could not create CRM task.';
     } finally {
@@ -8210,6 +8312,8 @@ async function updateFirstPartyCrmLinkedTask(event, contactId, mode = 'complete'
         selectedFirstPartyCrmContactId = contactId;
         firstPartyCrmActiveTab = 'tasks';
         firstPartyCrmTimelinePayload = null;
+        firstPartyCrmConversationsPayload = null;
+        firstPartyCrmTasksPayload = null;
         await loadFirstPartyCrmContacts(null, { force: true });
         await openFirstPartyCrmContact(contactId, { captureScroll: false, syncUrl: false });
     } catch (error) {

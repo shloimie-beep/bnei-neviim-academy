@@ -51,6 +51,8 @@ test('provider and operations UIs expose scoped package surfaces', () => {
   [
     'getCrmContacts',
     'getCrmContactTimeline',
+    'getCrmContactConversations',
+    'getCrmContactTasks',
     'renderFirstPartyCrmContactsPanel',
     'membership_access',
     'follow_up_task',

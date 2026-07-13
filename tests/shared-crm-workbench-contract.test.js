@@ -224,11 +224,20 @@ test('Operations CRM Archive Contact action is explicit and first-party only', (
 
 test('Operations CRM workspace tabs are enabled surfaces, not disabled placeholders', () => {
   assert.match(operations, /let firstPartyCrmActiveTab = 'activity';/);
+  assert.match(operations, /let firstPartyCrmConversationsPayload = null;/);
+  assert.match(operations, /let firstPartyCrmTasksPayload = null;/);
   assert.match(operations, /function setFirstPartyCrmWorkspaceTab\(tabId\)/);
   assert.match(operations, /function renderFirstPartyCrmTabContent\(card = \{\}, readOnly = false\)/);
+  assert.match(operations, /function renderFirstPartyCrmConversationDtoPanel\(card = \{\}\)/);
+  assert.match(operations, /function renderFirstPartyCrmTaskDtoPanel\(card = \{\}\)/);
   assert.match(operations, /onclick="setFirstPartyCrmWorkspaceTab\(\$\{attrJson\(tab\.id\)\}\)"/);
   assert.match(operations, /data-crm-tab-panel="conversations"/);
   assert.match(operations, /data-crm-tab-panel="tasks"/);
+  assert.match(operations, /data-crm-dto-source="contact-conversations"/);
+  assert.match(operations, /data-crm-dto-source="contact-tasks"/);
+  assert.match(operations, /Promise\.allSettled\(\[/);
+  assert.match(operations, /api\.getCrmContactConversations\(contactId, \{ \.\.\.filters, limit: 25 \}/);
+  assert.match(operations, /api\.getCrmContactTasks\(contactId, \{ \.\.\.filters, limit: 25 \}/);
   assert.match(operations, /data-crm-tab-panel="access"/);
   assert.match(operations, /data-crm-tab-panel="identity"/);
   assert.match(operations, /data-crm-tab-panel="family"/);
