@@ -91,6 +91,7 @@ const openArtMcpAdapter = require('./src/lib/bna/studio-openart-mcp-adapter');
 const accountScope = require('./src/lib/bna/account-scope-entitlements');
 const crmContactModel = require('./src/lib/bna/crm-contact-model');
 const { createContactService } = require('./src/lib/bna/crm/contact-service');
+const crmInboundIngest = require('./src/lib/bna/crm/ingest-inbound-communication');
 const assistantScopePolicy = require('./src/lib/bna/assistant-scope-policy');
 const {
   LATEST_ONE_TIME_DRIVE_BRIEF_SOURCE,
@@ -16361,6 +16362,12 @@ ON bna_communications ((metadata->>'email_message_id'))
 WHERE provider = 'resend'
   AND direction = 'inbound'
   AND COALESCE(metadata->>'email_message_id', '') <> '';
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_communications_wapi_message_id
+ON bna_communications ((metadata->>'wapi_message_id'))
+WHERE provider IN ('wapi', 'whapi')
+  AND direction = 'inbound'
+  AND COALESCE(metadata->>'wapi_message_id', '') <> '';
 
 CREATE TABLE IF NOT EXISTS bna_message_connectors (
   id SERIAL PRIMARY KEY,
@@ -46816,6 +46823,8 @@ function resendInboundResponse(result = {}) {
     workspace_key: result.workspace_key || null,
     project_key: result.project_key || null,
     attachment_count: Number(result.attachment_count || 0),
+    receipt: result.receipt && result.receipt.redacted_receipt === true ? result.receipt : null,
+    redacted_receipt: result.redacted_receipt === true,
   };
 }
 
@@ -65919,6 +65928,8 @@ async function createCommunicationFromWapiWebhook({
   payload,
   syncRunId = null,
   projectId = null,
+  workspaceKey = null,
+  projectKey = null,
   suppressAttentionArtifacts = false,
 }, db = pool) {
   if (normalized.messageId && db === pool && typeof db.connect === 'function') {
@@ -65932,6 +65943,8 @@ async function createCommunicationFromWapiWebhook({
         payload,
         syncRunId,
         projectId,
+        workspaceKey,
+        projectKey,
         suppressAttentionArtifacts,
       }, client);
       await client.query('COMMIT');
@@ -66057,7 +66070,7 @@ async function createCommunicationFromWapiWebhook({
     },
   };
 
-  const communication = (await db.query(
+  let communication = (await db.query(
     `INSERT INTO bna_contact_communications (
       project_id, contact_type, lead_id, signup_id, student_id, channel, direction,
       summary, body, follow_up_required, occurred_at, created_by, source,
@@ -66083,6 +66096,105 @@ async function createCommunicationFromWapiWebhook({
       JSON.stringify(enrichedMetadata),
     ]
   )).rows[0];
+  let canonicalCommunication = null;
+  if (!outboundMessage && !statusOnlyEvent) {
+    const canonicalProjectKey = normalizeProjectKey(projectKey || '');
+    const canonicalWorkspaceKey = normalizeWorkspaceKey(workspaceKey || workspaceKeyForProject(canonicalProjectKey) || '');
+    try {
+      canonicalCommunication = await crmInboundIngest.ingestInboundCommunication({
+        db,
+        binding: {
+          workspaceKey: canonicalWorkspaceKey,
+          projectKey: canonicalProjectKey,
+          projectId: communicationProjectId,
+          channelId: 'wapi:one_time_whatsapp',
+          replyMode: ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'live' ? 'live' : 'capture_only',
+        },
+        channel: 'whatsapp',
+        provider: 'wapi',
+        communicationType: 'wapi_inbound_whatsapp',
+        providerMessageId: normalized.messageId || '',
+        providerEventId: normalized.eventId || '',
+        sender: {
+          displayName: normalized.pushName || match.matched_name || '',
+          phone: normalized.fromNumber || normalized.chatId || '',
+          whatsapp: normalized.fromNumber || normalized.chatId || '',
+          address: normalized.fromNumber || normalized.chatId || '',
+        },
+        recipients: [normalized.toNumber || ''],
+        subject: copy.summary,
+        bodyText: copy.body || normalized.messageText || null,
+        occurredAt: normalized.occurredAt || null,
+        threadHints: {
+          chatId: normalized.chatId || normalized.fromNumber || '',
+          wapiMessageId: normalized.messageId || '',
+        },
+        metadata: {
+          ...enrichedMetadata,
+          ...enrichedSourceContext,
+          source: 'wapi',
+          wapi_message_id: normalized.messageId || null,
+          wapi_chat_id: normalized.chatId || null,
+          legacy_contact_communication_id: communication.id,
+          import_source: syncRunId ? 'whapi_sync' : 'webhook',
+          create_task_on_inbound: false,
+          ordinary_inbound_creates_task: false,
+        },
+        contact: {
+          source: 'whatsapp',
+          lifecycle: 'New Inquiry',
+          tags: ['one-time', 'whatsapp', 'wapi_inbound'],
+          metadata: {
+            source: 'wapi',
+            workspace_key: canonicalWorkspaceKey,
+            project_key: canonicalProjectKey,
+            legacy_contact_communication_id: communication.id,
+          },
+        },
+        createContactOnInbound: true,
+        createConversationOnInbound: true,
+        createTaskOnInbound: false,
+      });
+      if (canonicalCommunication?.communication_id) {
+        communication = (await db.query(
+          `UPDATE bna_contact_communications
+           SET source_context = COALESCE(source_context, '{}'::jsonb) || $2::jsonb,
+               metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb,
+               updated_at = NOW()
+           WHERE id = $1
+           RETURNING *`,
+          [
+            communication.id,
+            JSON.stringify({
+              canonical_communication_id: canonicalCommunication.communication_id,
+              canonical_contact_id: canonicalCommunication.contact_id || null,
+              canonical_ingest_pipeline: '2026-07-13-v1',
+            }),
+            JSON.stringify({
+              canonical_communication_id: canonicalCommunication.communication_id,
+              canonical_contact_id: canonicalCommunication.contact_id || null,
+              canonical_ingest_pipeline: '2026-07-13-v1',
+            }),
+          ]
+        )).rows[0] || communication;
+      }
+    } catch (error) {
+      communication = (await db.query(
+        `UPDATE bna_contact_communications
+         SET metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [
+          communication.id,
+          JSON.stringify({
+            canonical_ingest_failed: true,
+            canonical_ingest_error: limitText(error.message || 'canonical ingest failed', 240),
+          }),
+        ]
+      ).catch(() => ({ rows: [communication] }))).rows[0] || communication;
+    }
+  }
 
   if (match.lead_id) {
     await db.query(
@@ -66099,7 +66211,7 @@ async function createCommunicationFromWapiWebhook({
     await createCommunicationAttentionArtifacts(communication, screening, { db }).catch(() => {});
   }
 
-  return { communication, duplicate: false, match };
+  return { communication, duplicate: false, match, canonicalCommunication };
 }
 
 async function ensureOneTimeProviderBotLead({ normalized, communicationResult, scope, intent }, db = pool) {
@@ -67638,6 +67750,8 @@ async function runWapiMessageSync({ req, body = {} } = {}) {
           webhookLogId: null,
           syncRunId: run.id,
           projectId: project?.id || null,
+          workspaceKey: workspaceKeyForProject(project?.project_key || '') || null,
+          projectKey: project?.project_key || null,
           payload,
         });
         if (result.duplicate) duplicates += 1;
@@ -68201,6 +68315,8 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       webhookLogId: webhookLog.id,
       payload,
       projectId: webhookProject?.id || null,
+      workspaceKey: webhookScope.workspace_key || null,
+      projectKey: webhookScope.project_key || null,
       suppressAttentionArtifacts: isOneTimeWapiScope(webhookScope) && ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'observe_only',
     });
     let providerBotPlan = null;
@@ -68341,6 +68457,7 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       receivedAt,
       webhookLogId: webhookLog.id || null,
       communicationId: communicationResult.communication?.id || null,
+      canonicalCommunicationId: communicationResult.canonicalCommunication?.communication_id || null,
       duplicateCommunication: communicationResult.duplicate,
       eventType: normalized.eventType,
       messageId: normalized.messageId,
@@ -68358,6 +68475,7 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       received: true,
       webhookLogId: webhookLog.id || null,
       communicationId: communicationResult.communication?.id || null,
+      canonicalCommunicationId: communicationResult.canonicalCommunication?.communication_id || null,
       duplicateCommunication: communicationResult.duplicate,
       crmLeadId: providerBotLead?.id || communicationResult.communication?.lead_id || null,
       crmLeadCreated: providerBotLeadCreated,
