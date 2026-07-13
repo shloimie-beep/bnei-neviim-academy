@@ -402,6 +402,16 @@
 - PASS `node scripts/diagnose-onetime-signup-production.mjs https://join.onetimeonetime.com`; no-write/intercept browser proof generated `ops/live-smokes/2026-07-13T00-56-04-223Z-one-time-signup-production-diagnostic.md`.
 - PASS production direct-signup API dry-run with canonical payload; response validated the direct workflow, scoped workspace/project, outbox previews, and no-write/no-send guardrails.
 - PARTIAL/BLOCKED synthetic DB readback: actual synthetic direct-signup write created `bna_contacts:37` and `bna_parent_leads:22`, and both were archived through the production CRM API. Local DB-level readback/outbox cancellation is blocked because the current One Time Railway `DATABASE_URL` uses an internal Railway host unavailable from this machine, while the older local Supabase URL also fails DNS resolution.
+- FAIL reproduced before keyboard-card patch: `ops/live-smokes/2026-07-13T09-15-12-884Z-one-time-signup-form-matrix-live.md` showed the production keyboard-only path attempted zero POSTs because Enter on the Family/School and reminder cards left the underlying radios unchecked.
+- PASS keyboard-card patch syntax and generated checks: `node --check server.js`, `node --check scripts/smoke-onetime-signup-form-matrix-live.mjs`, `node --check scripts/smoke-onetime-crm-delivery-outbox-dto-live.mjs`, and `npm run operations:check-generated`.
+- PASS keyboard-card patch local tests: signup matrix/reminder/direct-signup tests `17/17`; CRM/service-provider/Operations contract tests `34/34`.
+- PASS keyboard-card patch watchdogs: `npm run watchdog:actions`, `npm run secrets:audit`, `npm run bna:run:validate`, `npm run watchdog:protocol-drift`, and `git diff --check` with line-ending warnings only.
+- PASS One Time Railway redeploy and doctor for keyboard-card patch; deployment `2645a6c7-3b51-4ae6-915f-5a267dacde22` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; deployed SHA `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
+- PASS `npm run app:smoke:onetime-signup-form-matrix -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T09-32-18-347Z-one-time-signup-form-matrix-live.md` recorded all success/error/switch/double-click/mobile/keyboard cases with `failed=[]`.
+- PASS `npm run app:smoke:one-time-interest-dry-run`; report `ops/live-smokes/2026-07-13T09-32-18-048Z-one-time-interest-dry-run-live-smoke.md`.
+- PASS post-deploy One Time CRM/provider regression smokes at the same deployed SHA: CRM workbench `ops/live-smokes/2026-07-13T09-33-33-379Z-one-time-operations-crm-workbench-live-smoke.md`, provider route-module `ops/live-smokes/2026-07-13T09-33-33-717Z-onetime-provider-route-module-live-smoke.md`, and delivery-outbox DTO `ops/live-smokes/2026-07-13T09-32-18-053Z-one-time-crm-delivery-outbox-dto-live-smoke.md`.
 - PASS `node --check src/lib/bna/provider-lead-bot.js` after the One Time public WhatsApp agent profile/class-link policy slice.
 - PASS `node --check server.js` after the One Time public WhatsApp agent profile/class-link policy slice.
 - PASS `node --test tests/service-provider-lead-bot.test.js` (10/10) after adding `one_time_parent_information_agent`, approved public facts, and `ACTION-ONETIME-GET-CURRENT-CLASS-LINK`.
@@ -789,11 +799,11 @@
 - PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
 - PASS `git push origin master` for app-code commit `fc36995bf85e31b988e1d7e1d756bf4e51e00ca4`; deployed head is `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
 - PASS BNA Railway deploy/doctor; deployment `b49f07c2-86e5-44d3-8092-e4ed1bdaed2e` reached `SUCCESS`.
-- PASS One Time Railway deploy/doctor; deployment `c7de0743-3989-43a4-8cba-0f012b96364a` reached `SUCCESS`.
+- PASS One Time Railway deploy/doctor; deployment `2645a6c7-3b51-4ae6-915f-5a267dacde22` reached `SUCCESS`.
 - PASS BNA and One Time live `/api/deploy-info`; both returned `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
-- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha ee9391d2bd4a1ff3ef41fc99296089254373a4d6`; report `ops/live-smokes/2026-07-13T09-27-55-073Z-onetime-provider-route-module-live-smoke.md`.
-- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha ee9391d2bd4a1ff3ef41fc99296089254373a4d6`; report `ops/live-smokes/2026-07-13T09-27-54-801Z-one-time-operations-crm-workbench-live-smoke.md`.
-- PASS `npm run app:smoke:onetime-crm-delivery-outbox-dto`; report `ops/live-smokes/2026-07-13T09-28-14-537Z-one-time-crm-delivery-outbox-dto-live-smoke.md` recorded `skipped_no_live_delivery_outbox` and created no synthetic data.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha ee9391d2bd4a1ff3ef41fc99296089254373a4d6`; report `ops/live-smokes/2026-07-13T09-33-33-717Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha ee9391d2bd4a1ff3ef41fc99296089254373a4d6`; report `ops/live-smokes/2026-07-13T09-33-33-379Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-delivery-outbox-dto`; report `ops/live-smokes/2026-07-13T09-32-18-053Z-one-time-crm-delivery-outbox-dto-live-smoke.md` recorded `skipped_no_live_delivery_outbox` and created no synthetic data.
 - PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T09-28-14-579Z-operations-workspace-taxonomy-live-smoke.md`.
 - PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha ee9391d2bd4a1ff3ef41fc99296089254373a4d6`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.

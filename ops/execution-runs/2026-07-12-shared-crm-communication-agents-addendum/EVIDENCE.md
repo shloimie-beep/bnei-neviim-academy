@@ -173,6 +173,12 @@
 - `ops/live-smokes/2026-07-13T00-56-04-223Z-one-time-signup-production-diagnostic.md` - ignored local no-write/intercept production browser proof after deployment; Family + No reminders + no phone + no consent reached the approved success panel with one intercepted POST attempt and no visible field errors.
 - Production direct-signup API dry-run proof - `POST https://join.onetimeonetime.com/api/one-time/interest?dry_run=1` with canonical direct-signup keys returned `direct_signup_workflow=true`, workspace `rabbi_sheller_provider`, project `one_time_mishnah_class`, confirmation email and Rabbi Telegram outbox previews, and no database write/send/checkout/access grant.
 - Production CRM API cleanup proof - synthetic attempted live-write records `bna_contacts:37` and `bna_parent_leads:22` were found in project `one_time_mishnah_class` and archived through `PATCH /api/bna/crm/contacts/:id` with `no_send=true` and `external_write_performed=false`.
+- `ops/live-smokes/2026-07-13T09-15-12-884Z-one-time-signup-form-matrix-live.md` - production regression proof before the keyboard-card patch; Enter on the Family/School and reminder cards left radios unchecked, produced audience/reminder errors, and attempted zero POSTs.
+- `public/one-time/signup.html` - Family/School and reminder cards are now focusable and route Enter/Space through `activateRadioCard`, checking the underlying radio input and dispatching the same `change` path used by pointer/touch selection.
+- One Time latest deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
+- One Time latest Railway doctor - deployment `2645a6c7-3b51-4ae6-915f-5a267dacde22` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-13T09-32-18-347Z-one-time-signup-form-matrix-live.md` - latest production form matrix passed every required success, field-error, switch, double-click, mobile-width, and keyboard-only case with `failed=[]`.
+- `ops/live-smokes/2026-07-13T09-32-18-048Z-one-time-interest-dry-run-live-smoke.md` - latest direct signup dry-run passed without production writes or sends.
 - `config/service-provider-bots/one-time.json` - One Time public WhatsApp profile is now `one_time_parent_information_agent` version `2026-07-13-v3`, display name `Rabbi Scheller's Digital Assistant`, with approved public facts for program, Rabbi, daily 7:00 p.m. Israel time schedule, local RBS Alef address, canonical `/one-time/signup`, audience, and deterministic class-link behavior.
 - `src/lib/bna/provider-lead-bot.js` - public bot intent/reply runtime now answers the approved schedule/address facts, avoids stale trial/member language, supports `class_info_requested` and `class_info_consented` release states, emits `ACTION-ONETIME-GET-CURRENT-CLASS-LINK`, and keeps restricted class-link URLs out of prompt/audit metadata.
 - `server.js` - One Time WAPI auto-reply guard now validates released class links through `providerLeadBotClassLinkAllowed`, records class-info request/consent metadata, redacts persisted audit body, updates public WhatsApp readiness identity, and falls back to `/one-time/signup`.
@@ -401,10 +407,10 @@
 - App-code commit: `fc36995bf85e31b988e1d7e1d756bf4e51e00ca4`.
 - Deployed head: `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
 - BNA Railway deployment `b49f07c2-86e5-44d3-8092-e4ed1bdaed2e` reached `SUCCESS`; BNA deploy-info returned `commit_sha=ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
-- One Time Railway deployment `c7de0743-3989-43a4-8cba-0f012b96364a` reached `SUCCESS`; One Time deploy-info returned `commit_sha=ee9391d2bd4a1ff3ef41fc99296089254373a4d6` and `target_app=one-time`.
-- Live One Time CRM workbench smoke passed: `ops/live-smokes/2026-07-13T09-27-54-801Z-one-time-operations-crm-workbench-live-smoke.md`.
+- One Time Railway deployment `2645a6c7-3b51-4ae6-915f-5a267dacde22` reached `SUCCESS`; One Time deploy-info returned `commit_sha=ee9391d2bd4a1ff3ef41fc99296089254373a4d6` and `target_app=one-time`.
+- Live One Time CRM workbench smoke passed: `ops/live-smokes/2026-07-13T09-33-33-379Z-one-time-operations-crm-workbench-live-smoke.md`.
 - Live One Time provider route-module smoke passed: `ops/live-smokes/2026-07-13T09-27-55-073Z-onetime-provider-route-module-live-smoke.md`.
-- Live targeted delivery-outbox DTO smoke passed with `skipped_no_live_delivery_outbox`: `ops/live-smokes/2026-07-13T09-28-14-537Z-one-time-crm-delivery-outbox-dto-live-smoke.md`. It found 7 canonical contacts, no live outbox rows, and created no synthetic data.
+- Live targeted delivery-outbox DTO smoke passed with `skipped_no_live_delivery_outbox`: `ops/live-smokes/2026-07-13T09-32-18-053Z-one-time-crm-delivery-outbox-dto-live-smoke.md`. It found 7 canonical contacts, no live outbox rows, and created no synthetic data.
 - BNA workspace taxonomy regression smoke passed: `ops/live-smokes/2026-07-13T09-28-14-579Z-operations-workspace-taxonomy-live-smoke.md`.
 - One Time performance gate passed at the deployed SHA: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw recipient/body logging, or production data mutation.

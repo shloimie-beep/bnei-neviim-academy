@@ -9,7 +9,7 @@
 
 | ID | Wave | Title | Status | Evidence |
 | --- | --- | --- | --- | --- |
-| REQ-20260713-901 | 1 | Reproduce, repair, deploy, and live-verify the One Time production signup form | Deployed; live-smoked | Deployed SHA `881f892523eb9a20137377882e2452e45cd581ca`; production browser no-write submit, direct API dry-run, and route smoke passed |
+| REQ-20260713-901 | 1 | Reproduce, repair, deploy, and live-verify the One Time production signup form | Deployed; live-smoked | Form repair deployed at `881f892523eb9a20137377882e2452e45cd581ca`; keyboard-card regression patch deployed at `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`; production form matrix, direct API dry-run, and exact-SHA route smoke passed |
 | REQ-20260713-902 | 2 | Public One Time WhatsApp lead agent and approved public knowledge/class-link runtime | Deployed; live activation blocked by approval flag | `config/service-provider-bots/one-time.json` v3, `ACTION-ONETIME-GET-CURRENT-CLASS-LINK`, focused bot tests, One Time focused suite, action watchdog, secrets audit, WAPI readiness check, One Time deploy-info, route smoke, and public WhatsApp readiness readback |
 | REQ-20260713-903 | 3 | Private Rabbi Telegram workspace agent separated from public WhatsApp | In progress; deployed readiness/ticket slice | Private Rabbi target readiness, scoped status notifications, and public/private bot separation tests passed; full CRM/content action surface remains open |
 | REQ-20260713-904 | 4 | Rabbi ticket to Super Admin approval to Codex job flow | In progress; deployed approval-gate slice | Support-ticket approval lifecycle, Super Admin inline callbacks, no-initial-Codex-job guard, registry rows, deployment, live route guard, and tests passed; live synthetic send/approval remains send/cleanup gated |
@@ -56,6 +56,13 @@
 - PASS production browser no-write/intercept diagnostic: `ops/live-smokes/2026-07-13T00-56-04-223Z-one-time-signup-production-diagnostic.md`; Family + No reminders + no phone + no consent produced one form POST attempt, no visible errors, and the approved success panel.
 - PASS production direct-signup API dry-run with canonical payload: `direct_signup_workflow=true`, workspace `rabbi_sheller_provider`, project `one_time_mishnah_class`, confirmation email and Rabbi Telegram outbox preview present, no database write, no send, no checkout, and no access grant.
 - Synthetic live-write cleanup note: one attempted DB-readback smoke created `bna_contacts:37` and `bna_parent_leads:22` for a `test-onetime-direct-signup-...@example.invalid` address before the local DB readback failed on Railway-internal database access. Both records were found and archived through the production CRM API with `no_send=true` and `external_write_performed=false`; no delivery cron was run. DB-level queued-outbox cancellation remains blocked from this machine by the Railway-internal database URL.
+- Regression patch: production matrix on SHA `e0dd3d48543740efb32b35f64ad27cf0cc6e676b` reproduced a remaining keyboard-only card issue where Enter on the Family/School and reminder cards left the underlying radios unchecked, produced audience/reminder errors, and attempted zero POSTs.
+- Patch files: `public/one-time/signup.html`, `tests/one-time-signup-form-matrix.test.js`, `scripts/smoke-onetime-signup-form-matrix-live.mjs`, and `scripts/smoke-one-time-interest-dry-run-live.mjs`.
+- Fix: Family/School and reminder cards are focusable and Enter/Space now activate the underlying radio input through the same change path as pointer/touch selection.
+- PASS local regression verification: syntax checks, signup matrix tests `17/17`, CRM DTO contract tests `34/34`, `npm run operations:check-generated`, `npm run watchdog:actions`, `npm run secrets:audit`, `npm run watchdog:protocol-drift`, and `npm run bna:run:validate`.
+- Latest One Time deployment `2645a6c7-3b51-4ae6-915f-5a267dacde22` reached `SUCCESS`; live `/api/deploy-info` returned `commit_sha=ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
+- PASS latest production form matrix: `ops/live-smokes/2026-07-13T09-32-18-347Z-one-time-signup-form-matrix-live.md`; all required success/error/switch/double-click/mobile/keyboard cases passed with no failed rows.
+- PASS latest direct signup dry-run: `ops/live-smokes/2026-07-13T09-32-18-048Z-one-time-interest-dry-run-live-smoke.md`; no production writes or sends.
 
 ## Wave 2 Public WhatsApp Bot Local Proof
 
