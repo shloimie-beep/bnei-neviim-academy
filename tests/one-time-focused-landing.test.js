@@ -40,13 +40,16 @@ test('One Time focused landing copy uses launch funnel offer and safe CTAs', () 
   assert.match(html, /<h3>Accomplishment<\/h3>/);
   assert.match(html, /<h3>Excitement for learning Torah<\/h3>/);
   assert.match(html, /<h3>Live daily Mishnayos class<\/h3>/);
-  assert.match(html, /<h3>Online class library<\/h3>/);
-  assert.match(html, /<h3>Parent portal<\/h3>/);
-  assert.match(html, /<h3>Student portal<\/h3>/);
+  assert.match(html, /Everything a family or school needs to join the live class/);
+  assert.match(html, /<h3>Class link for each session<\/h3>/);
+  assert.match(html, /<h3>Review support<\/h3>/);
+  assert.match(html, /<h3>Family and school signup<\/h3>/);
   assert.match(html, /<h3>Review sheets<\/h3>/);
   assert.match(html, /<h3>Daily reminders<\/h3>/);
-  assert.match(html, /<h3>Monitored online platform<\/h3>/);
+  assert.match(html, /<h3>Safe class communication<\/h3>/);
   assert.match(html, /<h3>Questions with Rabbi Scheller<\/h3>/);
+  assert.match(html, /a real sense of finishing each day&rsquo;s learning/);
+  assert.match(html, /Sign up, get the class information, and join the daily 7:00 p\.m\. live Mishnayos class\./);
   assert.match(html, /<h3>Sign up<\/h3>/);
   assert.match(html, /<h3>Receive the class link<\/h3>/);
   assert.match(html, /<h3>Enjoy the live class<\/h3>/);
@@ -78,6 +81,7 @@ test('One Time focused landing copy uses launch funnel offer and safe CTAs', () 
   assert.doesNotMatch(html, />Notes</);
   assert.doesNotMatch(html, /parent access next steps/i);
   assert.doesNotMatch(html, /Parent portal setup instructions/i);
+  assert.doesNotMatch(html, /A complete online dashboard|Online class library|Student portal|Parent portal|Monitored online platform|progress badges|student portal|refining the technology/i);
   assert.doesNotMatch(html, /private asset library/i);
   assert.doesNotMatch(html, /server-backed/i);
   assert.doesNotMatch(html, /video ID/i);
