@@ -1284,3 +1284,17 @@
 - PASS `npm run app:smoke:one-time-interest-dry-run -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md`.
 - PASS visual readback of live `landing-1440.png`, `landing-390.png`, and `signup-390.png`.
 - Guardrails: live smokes performed no checkout POST, payment link, live charge/refund/subscription, member creation, access grant, email, WhatsApp/WAPI, Telegram, Zoom, upload, DNS/account mutation, provider mutation, CRM production write, or public auto-reply activation.
+
+## REQ-20260713-937 Billing V2 / PR #132 Local Test Results
+
+- PASS PR #132 audit: open draft DIRTY; no wholesale merge.
+- PASS `node --check server.js`.
+- PASS `node --check scripts/smoke-one-time-trial-referral-live.mjs`.
+- PASS `node --check scripts/smoke-owner-review-external-readiness.mjs`.
+- PASS `node --check scripts/watchdog-workspace-scope-guardrails.mjs`.
+- PASS `node --check src/lib/bna/agent-review-hub.js src/platform/agent-control/one-time-acceptance.js src/platform/instances/one-time-shared-review-data.js`.
+- PASS `node --test tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js tests/one-time-parent-trial-invite.test.js tests/one-time-billing-sandbox-e2e-verifier.test.js tests/owner-review-role-flow-contract.test.js`; 25/25 tests passed.
+- PASS `npm run stripe:sandbox-e2e`; report `ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.md`, with external/write/live/access mutations false.
+- PASS `npm run watchdog:workspace-scope`.
+- PASS `git diff --check` with line-ending warnings only.
+- BLOCKED for Done: no deploy/live exact-SHA proof yet.

@@ -20370,34 +20370,38 @@ function closeAgentRunPortal() {
             const referral = config.referral_credit || {};
             const referralReward = referral.reward || {};
             const referralRules = referral.rules || {};
+            const promotional = config.promotional_access || trial.promotional_access || {};
+            const billingNotice = config.billing_notice || {};
+            const billingDelivery = billingNotice.delivery || {};
+            const refundReview = config.refund_review || {};
             const acceptance = config.acceptance_storage || {};
             const decision = config.legal_wording_decision || {};
             const guardrails = config.guardrails || {};
             const blockers = Array.isArray(config.blockers) ? config.blockers : [];
             return `
-                <section class="focus-panel" data-one-time-trial-referral-config data-requirement-id="${escapeHtml(config.requirement_id || 'REQ-20260621-906')}" aria-label="One Time trial and referral configuration">
+                <section class="focus-panel" data-one-time-trial-referral-config data-requirement-id="${escapeHtml(config.requirement_id || 'REQ-20260713-954')}" aria-label="One Time promotional billing and referral configuration">
                     <div class="task-section-header">
                         <div>
-                            <h3>Trial / Referral Configuration</h3>
-                            <p class="notification-lock-note">Warm-lead trial, referral credit, policy-version acceptance, and legal wording are modeled for test/local readiness only. No live charge, payment link, or real invoice credit is enabled.</p>
+                            <h3>Promotional Billing / Referral Configuration</h3>
+                            <p class="notification-lock-note">Rosh Hashanah promotional access, referral credit, policy-version acceptance, billing notice, and manual refund review are modeled for test/local readiness only. No live charge, payment link, Stripe trial, access grant, refund, notice send, or real invoice credit is enabled.</p>
                         </div>
                         <span>${escapeHtml(config.status || 'local_contract_present')}</span>
                     </div>
                     <div class="task-overview-grid">
-                        ${renderMetricButton('Intro Trial', `${trial.trial_days || 30} days`, '30-day warm-lead intro trial.', '')}
+                        ${renderMetricButton('Stripe Trial', trial.stripe_trial_enabled ? 'Enabled' : 'Disabled', 'Stripe trial days remain disabled.', '')}
                         ${renderMetricButton('Renewal', moneyFromCents(renewal.amount_cents ?? 6700, renewal.currency || 'USD'), '$67 renewal default.', '')}
-                        ${renderMetricButton('Card', trialRules.card_required ? 'Required' : 'Pending', 'Card-required rule is modeled but checkout creation remains disabled.', '')}
+                        ${renderMetricButton('Card', trialRules.card_required ? 'Required' : 'Pending', 'Billing authorization is modeled but checkout creation remains disabled.', '')}
                         ${renderMetricButton('Referral Trigger', referral.activation_trigger === 'first_successful_paid_cycle' ? 'Paid cycle' : 'Manual', 'Referral credit activates only after the first successful paid cycle.', '')}
                     </div>
                     <div class="content-section-grid" style="margin-top:14px;">
                         <article class="content-card">
-                            <div class="content-card-title">Warm-lead intro trial</div>
-                            <div class="content-card-meta">${escapeHtml(trial.policy_key || 'one_time_warm_lead_intro_trial')} &middot; ${escapeHtml(trial.policy_version || 'one-time-warm-lead-intro-trial-v1')}</div>
+                            <div class="content-card-title">Rosh Hashanah promotional access</div>
+                            <div class="content-card-meta">${escapeHtml(trial.policy_key || promotional.policy_key || 'one_time_rosh_hashanah_promotional_access')} &middot; ${escapeHtml(trial.policy_version || 'one-time-rosh-hashanah-promotional-access-v1')}</div>
                             <ul class="content-card-summary">
-                                <li><strong>30-day trial</strong><span>${escapeHtml(String(trial.trial_days || 30))} days before renewal</span></li>
+                                <li><strong>Stripe trial</strong><span>${trial.stripe_trial_enabled ? 'Enabled' : 'Disabled'}</span></li>
+                                <li><strong>Promotional access</strong><span>${promotional.access_until_billing_start !== false ? 'Until approved billing start' : 'Needs billing start approval'}</span></li>
                                 <li><strong>$67 renewal</strong><span>${escapeHtml(moneyFromCents(renewal.amount_cents ?? 6700, renewal.currency || 'USD'))} / ${escapeHtml(renewal.billing_interval || 'month')}</span></li>
-                                <li><strong>Card required</strong><span>${trialRules.card_required ? 'Modeled as required' : 'Needs decision'}</span></li>
-                                <li><strong>One intro trial per household</strong><span>${trialRules.one_intro_trial_per_household ? 'Required' : 'Needs decision'}</span></li>
+                                <li><strong>Billing authorization</strong><span>${trialRules.billing_authorization_required ? 'Required before paid conversion' : 'Needs decision'}</span></li>
                             </ul>
                         </article>
                         <article class="content-card">
@@ -20411,18 +20415,36 @@ function closeAgentRunPortal() {
                             </ul>
                         </article>
                         <article class="content-card">
+                            <div class="content-card-title">Billing notice</div>
+                            <div class="content-card-meta">${escapeHtml(billingNotice.policy_key || 'one_time_rosh_hashanah_pre_billing_notice')} &middot; ${escapeHtml(billingNotice.policy_version || 'one-time-rosh-hashanah-pre-billing-notice-v1')}</div>
+                            <ul class="content-card-summary">
+                                <li><strong>Template</strong><span>${escapeHtml(billingNotice.template_key || 'one_time_pre_billing_notice_v1')}</span></li>
+                                <li><strong>Preview</strong><span>${billingDelivery.preview_enabled === false ? 'Disabled' : 'Enabled'}</span></li>
+                                <li><strong>Batch send</strong><span>${billingDelivery.batch_send_enabled ? 'Enabled' : 'Disabled'}</span></li>
+                            </ul>
+                        </article>
+                        <article class="content-card">
+                            <div class="content-card-title">Manual refund review</div>
+                            <div class="content-card-meta">${escapeHtml(refundReview.policy_key || 'one_time_manual_exception_refund_review')} &middot; ${escapeHtml(refundReview.policy_version || 'one-time-manual-exception-refund-review-v1')}</div>
+                            <ul class="content-card-summary">
+                                <li><strong>Automatic refunds</strong><span>${refundReview.automatic_refunds_enabled ? 'Enabled' : 'Disabled'}</span></li>
+                                <li><strong>Prorated refunds</strong><span>${refundReview.prorated_refunds_enabled ? 'Enabled' : 'Disabled'}</span></li>
+                                <li><strong>Execution</strong><span>${refundReview.refund_execution_enabled ? 'Enabled' : 'Disabled'}</span></li>
+                            </ul>
+                        </article>
+                        <article class="content-card">
                             <div class="content-card-title">Policy acceptance storage</div>
                             <div class="content-card-meta">${escapeHtml(acceptance.table || 'bna_one_time_policy_acceptances')} &middot; ${escapeHtml(String(acceptance.record_count || 0))} records</div>
                             <ul class="content-card-summary">
-                                ${(acceptance.policy_versions || ['one-time-warm-lead-intro-trial-v1', 'one-time-referral-credit-v1']).map(version => `<li><strong>Version</strong><span>${escapeHtml(version)}</span></li>`).join('')}
+                                ${(acceptance.policy_versions || ['one-time-rosh-hashanah-promotional-access-v1', 'one-time-referral-credit-v1']).map(version => `<li><strong>Version</strong><span>${escapeHtml(version)}</span></li>`).join('')}
                                 <li><strong>Mode</strong><span>${acceptance.test_local_mode_supported ? 'Test/local supported only' : 'Test/local only'}</span></li>
                                 <li><strong>Required fields</strong><span>${escapeHtml((acceptance.required_fields || []).slice(0, 4).join(', ') || 'policy_key, policy_version, acceptance_key, accepted_at')}</span></li>
                             </ul>
                         </article>
                         <article class="content-card">
                             <div class="content-card-title">Legal wording decision</div>
-                            <div class="content-card-meta">${escapeHtml(decision.decision_key || 'trial_referral_legal_wording')} &middot; ${escapeHtml(decision.status || 'decision_pending')}</div>
-                            <p class="event-meta">${escapeHtml(decision.question || 'Approve public trial/referral wording before publication.')}</p>
+                            <div class="content-card-meta">${escapeHtml(decision.decision_key || 'rosh_hashanah_billing_policy_copy')} &middot; ${escapeHtml(decision.status || 'decision_pending')}</div>
+                            <p class="event-meta">${escapeHtml(decision.question || 'Approve public billing/referral wording before publication.')}</p>
                             <div class="tag-list">
                                 <span class="tag">public copy blocked</span>
                                 <span class="tag">local config allowed</span>
@@ -20435,6 +20457,7 @@ function closeAgentRunPortal() {
                         <span class="tag">invoice credits ${guardrails.real_invoice_credits_enabled ? 'enabled' : 'disabled'}</span>
                         <span class="tag">checkout ${guardrails.checkout_creation_enabled ? 'enabled' : 'disabled'}</span>
                         <span class="tag">payment links ${guardrails.payment_link_creation_enabled ? 'enabled' : 'disabled'}</span>
+                        <span class="tag">refunds ${guardrails.refund_execution_enabled ? 'enabled' : 'disabled'}</span>
                         <span class="tag">external writes ${guardrails.external_write_performed ? 'performed' : 'none'}</span>
                     </div>
                     ${blockers.length ? `<p class="settings-disabled-note" style="margin-top:12px;">Blockers: ${escapeHtml(blockers.join(' / '))}</p>` : ''}

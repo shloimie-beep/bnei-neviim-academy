@@ -14,55 +14,75 @@ const DEFAULT_TENANT_ID = 'one_time_mishnah_class';
 const DEFAULT_PROVIDER_ID = 'rabbi_scheller';
 
 const PROVISIONAL_TEST_POLICY = Object.freeze({
-  policy_key: 'one_time_provisional_stripe_sandbox_policy',
-  policy_version: 'stripe-sandbox-provisional-2026-06-24',
+  policy_key: 'one_time_rosh_hashanah_promotional_access',
+  conversion_policy_key: 'one_time_rosh_hashanah_paid_conversion',
+  offer_key: 'membership_67_monthly',
+  policy_version: 'one-time-rosh-hashanah-promotional-access-v1',
   policy_status: 'provisional_test_only',
+  billing_start_at: null,
+  timezone: 'Asia/Jerusalem',
   price: {
     offer_key: 'membership_67_monthly',
-    product_key: 'one_time_membership',
-    display_name: 'One Time membership sandbox test',
+    product_key: 'one_time_mishnayos_membership',
+    display_name: 'One Time Mishnayos Membership',
     amount_cents: 6700,
     currency: 'USD',
     interval: 'month',
+    tax_behavior: 'exclusive',
   },
   trial: {
-    days: 30,
+    days: 0,
+    stripe_trial_enabled: false,
     card_required: true,
-    one_intro_trial_per_household: true,
+  },
+  promotional_access: {
+    policy_key: 'one_time_rosh_hashanah_promotional_access',
+    conversion_policy_key: 'one_time_rosh_hashanah_paid_conversion',
+    offer_key: 'membership_67_monthly',
+    timezone: 'Asia/Jerusalem',
+    billing_start_at: null,
+    stripe_trial_enabled: false,
+    access_until_billing_start: true,
   },
   renewal: {
     interval: 'month',
     retry_collection: 'stripe_smart_retries',
+    starts_at: null,
   },
   cancellation: {
     behavior: 'period_end',
+    default_cancel_at_period_end: true,
   },
   refund: {
-    status: 'decision_required',
+    status: 'manual_exception_only',
     default_action: 'manual_review_only',
+    automatic_refunds_enabled: false,
+    prorated_refunds_enabled: false,
   },
   tax: {
     status: 'not_configured',
     automatic_tax_enabled: false,
   },
   grace_period: {
-    days: 7,
-    access_during_grace: true,
+    days: 0,
+    access_during_grace: false,
   },
   receipt_invoice_language: {
     status: 'draft',
     customer_facing_copy_approved: false,
   },
-  provider_revenue_split: {
-    status: 'decision_required',
-    provider_share_basis_points: null,
+  provider_payouts: {
+    status: 'out_of_scope',
+    stripe_connect_enabled: false,
+    transfers_enabled: false,
+    payout_reports_enabled: false,
   },
 });
 
 const POLICY_GAPS = Object.freeze([
-  'Canonical live price is not approved; $67/month and 30-day trial are provisional sandbox defaults.',
-  'Currency, tax handling, refund policy, grace period, cancellation effective date, receipt/invoice language, and provider revenue split need approved Decisions before live mode.',
-  'Provider payout/Stripe Connect ownership is unresolved and must not be inferred from sandbox readiness.',
+  'Exact live billing_start_at must be approved before live conversion.',
+  'Provider account tax configuration, receipt/invoice language, and final customer notice copy need approved Decisions before live mode.',
+  'Live charging remains blocked until final cohort, consent, payment-method coverage, price, deployed SHA, and launch approval are recorded.',
 ]);
 
 function nowIso(now = new Date()) {
@@ -366,6 +386,23 @@ function buildCheckoutSessionPayload({
   }
   const customerEmail = String(request.customer_email || request.email || request.member_email || '').trim();
   const memberId = String(request.member_id || request.memberId || '').trim();
+  const subscriptionMetadata = {
+    tenant_id: tenantId,
+    provider_id: providerId,
+    offer_key: offerKey,
+    member_id: memberId,
+    policy_key: policy.policy_key,
+    policy_version: policy.policy_version,
+    conversion_policy_key: policy.conversion_policy_key || '',
+    billing_start_at: policy.billing_start_at || '',
+    stripe_trial_enabled: String(Boolean(policy.trial?.stripe_trial_enabled)),
+    provisional_test_policy: String(Boolean(policy.provisional_test_policy)),
+  };
+  const trialDays = cents(policy.trial?.days, 0) || 0;
+  const subscriptionData = { metadata: subscriptionMetadata };
+  if (policy.trial?.stripe_trial_enabled === true && trialDays > 0) {
+    subscriptionData.trial_period_days = trialDays;
+  }
   const payload = {
     mode: 'subscription',
     line_items: [{ price: price.stripe_price_id, quantity: 1 }],
@@ -376,18 +413,7 @@ function buildCheckoutSessionPayload({
     allow_promotion_codes: true,
     automatic_tax: { enabled: Boolean(policy.tax?.automatic_tax_enabled) },
     client_reference_id: memberId || undefined,
-    subscription_data: {
-      trial_period_days: cents(policy.trial?.days, 0) || undefined,
-      metadata: {
-        tenant_id: tenantId,
-        provider_id: providerId,
-        offer_key: offerKey,
-        member_id: memberId,
-        policy_key: policy.policy_key,
-        policy_version: policy.policy_version,
-        provisional_test_policy: String(Boolean(policy.provisional_test_policy)),
-      },
-    },
+    subscription_data: subscriptionData,
     metadata: {
       tenant_id: tenantId,
       provider_id: providerId,
@@ -395,6 +421,9 @@ function buildCheckoutSessionPayload({
       member_id: memberId,
       policy_key: policy.policy_key,
       policy_version: policy.policy_version,
+      conversion_policy_key: policy.conversion_policy_key || '',
+      billing_start_at: policy.billing_start_at || '',
+      stripe_trial_enabled: String(Boolean(policy.trial?.stripe_trial_enabled)),
       provisional_test_policy: String(Boolean(policy.provisional_test_policy)),
     },
   };
@@ -639,10 +668,10 @@ function subscriptionEntitlementPatch(status, object = {}, policy = PROVISIONAL_
   const trialEnd = toUnixIso(object.trial_end);
   if (status === 'trialing') {
     return {
-      entitlement_state: 'trial',
-      access_enabled: true,
-      reason: 'trial_active',
-      trial_ends_at: trialEnd,
+      entitlement_state: 'manual_review',
+      access_enabled: false,
+      reason: 'unexpected_stripe_trial_status_superseded',
+      superseded_trial_end_at: trialEnd,
       current_period_end: currentPeriodEnd,
     };
   }
@@ -657,10 +686,10 @@ function subscriptionEntitlementPatch(status, object = {}, policy = PROVISIONAL_
   }
   if (['past_due', 'unpaid', 'incomplete', 'incomplete_expired'].includes(status)) {
     return {
-      entitlement_state: policy.grace_period?.access_during_grace ? 'grace_period' : 'payment_failed',
-      access_enabled: Boolean(policy.grace_period?.access_during_grace),
-      reason: 'payment_failed_retry_required',
-      grace_until: graceUntil(policy, now),
+      entitlement_state: 'payment_failed',
+      access_enabled: false,
+      reason: 'payment_failed_no_grace',
+      grace_until: null,
       current_period_end: currentPeriodEnd,
     };
   }
@@ -792,16 +821,14 @@ function applyStripeBillingEvent(state, event, options = {}) {
     };
     updateEntitlement(next, memberId, subscriptionEntitlementPatch(status, object, next.policy, now));
     next.members[memberId].billing_state = status;
-    audit.lifecycle_state = status === 'trialing' ? 'trial' : status === 'active' ? 'subscription_active' : `subscription_${status}`;
+    audit.lifecycle_state = status === 'trialing' ? 'trial_status_ignored' : status === 'active' ? 'subscription_active' : `subscription_${status}`;
   } else if (type === 'customer.subscription.trial_will_end') {
-    updateEntitlement(next, memberId, {
-      entitlement_state: 'trial_ending',
-      access_enabled: true,
-      reason: 'trial_will_end',
-      trial_ends_at: toUnixIso(object.trial_end),
-    });
-    next.members[memberId].billing_state = 'trial_ending';
-    audit.lifecycle_state = 'trial_ending';
+    audit = {
+      ...audit,
+      status: 'ignored',
+      reason: 'trial_will_end_superseded_by_rosh_hashanah_policy',
+      lifecycle_state: 'trial_event_ignored',
+    };
   } else if (type === 'invoice.upcoming') {
     next.invoices[object.id || key] = {
       invoice_id: object.id || null,
@@ -853,10 +880,10 @@ function applyStripeBillingEvent(state, event, options = {}) {
     };
     next.provider_revenue.failed_cents += amountDue;
     updateEntitlement(next, memberId, {
-      entitlement_state: next.policy.grace_period?.access_during_grace ? 'grace_period' : 'payment_failed',
-      access_enabled: Boolean(next.policy.grace_period?.access_during_grace),
-      reason: 'payment_failed_retry_required',
-      grace_until: graceUntil(next.policy, now),
+      entitlement_state: 'payment_failed',
+      access_enabled: false,
+      reason: 'payment_failed_no_grace',
+      grace_until: null,
       retry_state: object.next_payment_attempt ? 'scheduled' : 'needs_recovery',
     });
     next.members[memberId].billing_state = 'payment_failed';
@@ -1016,7 +1043,8 @@ function buildLifecycleFinalAudit(state = {}) {
     mode_state: state.mode_state || 'not_configured',
     states: {
       pricing: Boolean(state.policy?.price),
-      trial: entitlements.some((entry) => entry.entitlement_state === 'trial' || entry.trial_ends_at),
+      trial: entitlements.some((entry) => entry.entitlement_state === 'trial'),
+      promotional_access: Boolean(state.policy?.promotional_access || state.policy?.billing_start_at),
       checkout: Object.keys(state.checkout_sessions || {}).length > 0,
       payment_method: Object.keys(state.payment_methods || {}).length > 0,
       successful_payment: Object.values(state.invoices || {}).some((invoice) => invoice.state === 'paid')

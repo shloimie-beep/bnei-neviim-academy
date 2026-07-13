@@ -65,15 +65,20 @@ const ONE_TIME_APPOINTMENT_STATUSES = Object.freeze([
 ]);
 
 const ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS = Object.freeze({
-  policy_key: 'one_time_warm_lead_intro_trial',
-  policy_version: 'one-time-warm-lead-intro-trial-v1',
+  policy_key: 'one_time_rosh_hashanah_promotional_access',
+  conversion_policy_key: 'one_time_rosh_hashanah_paid_conversion',
+  policy_version: 'one-time-rosh-hashanah-promotional-access-v1',
   offer_key: 'membership_67_monthly',
-  trial_days: 30,
+  billing_start_at: null,
+  timezone: 'Asia/Jerusalem',
+  trial_days: 0,
+  stripe_trial_enabled: false,
   renewal_amount_cents: 6700,
   currency: 'USD',
   billing_interval: 'month',
+  tax_behavior: 'exclusive',
   card_required: true,
-  one_intro_trial_per_household: true,
+  billing_authorization_required: true,
 });
 
 const ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS = Object.freeze({
@@ -83,6 +88,19 @@ const ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS = Object.freeze({
   reward_amount_cents: 6700,
   currency: 'USD',
   activation_trigger: 'first_successful_paid_cycle',
+});
+
+const ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS = Object.freeze({
+  policy_key: 'one_time_rosh_hashanah_pre_billing_notice',
+  policy_version: 'one-time-rosh-hashanah-pre-billing-notice-v1',
+  template_key: 'one_time_pre_billing_notice_v1',
+  requirement_id: 'REQ-20260713-957',
+});
+
+const ONE_TIME_REFUND_REVIEW_POLICY_DEFAULTS = Object.freeze({
+  policy_key: 'one_time_manual_exception_refund_review',
+  policy_version: 'one-time-manual-exception-refund-review-v1',
+  requirement_id: 'REQ-20260713-958',
 });
 
 const ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS = Object.freeze({
@@ -407,16 +425,16 @@ const ONE_TIME_PRODUCT_READINESS_SECTIONS = Object.freeze([
     title: 'Trial And Referral Launch',
     items: [
       {
-        key: 'warm_lead_30_day_trial',
-        label: '30-day warm-lead intro trial',
+        key: 'rosh_hashanah_promotional_access',
+        label: 'Rosh Hashanah promotional access',
         status: 'local_contract_present',
-        note: 'Default trial policy is modeled locally for the $67 monthly membership without creating a checkout session.',
+        note: 'Promotional access is modeled locally for the $67 monthly membership without creating a Stripe trial or checkout session.',
       },
       {
-        key: 'card_required_one_intro_trial',
-        label: 'Card-required and one intro trial per household',
+        key: 'card_required_no_stripe_trial',
+        label: 'Card-required, no Stripe trial',
         status: 'local_contract_present',
-        note: 'Policy rules require card collection and one intro trial per household when a live checkout path is approved.',
+        note: 'Policy rules require billing authorization when a live checkout path is approved, without enabling Stripe trial days.',
       },
       {
         key: 'policy_version_acceptance_storage',
@@ -614,15 +632,20 @@ function safePositiveInteger(value, fallback) {
   return Number.isFinite(number) && number > 0 ? Math.round(number) : fallback;
 }
 
-function oneTimePolicyDecisionView(decisions = [], decisionKey = 'trial_referral_legal_wording') {
+function safeNonNegativeInteger(value, fallback) {
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? Math.round(number) : fallback;
+}
+
+function oneTimePolicyDecisionView(decisions = [], decisionKey = 'rosh_hashanah_billing_policy_copy') {
   const rows = Array.isArray(decisions) ? decisions : [];
   const match = rows.find((decision) => String(decision?.decision_key || decision?.decisionKey || '') === decisionKey) || {};
   return {
     decision_key: decisionKey,
     status: match.status || 'decision_pending',
-    title: match.title || 'Approve trial and referral legal wording',
-    question: match.question || 'What exact public trial, card-required, renewal, referral, and credit wording may One Time use?',
-    context: match.context || 'Local implementation can store policy versions and acceptance records, but public/legal wording needs approval before publication.',
+    title: match.title || 'Approve Rosh Hashanah billing notice and policy wording',
+    question: match.question || 'What exact public billing-start, no-trial, tax, cancellation, refund, and notice wording may One Time use?',
+    context: match.context || 'Local implementation can store policy versions and acceptance records, but live billing notice and customer-facing legal copy need approval before publication.',
     needed_from: match.needed_from || 'Shloimie + legal/accounting owner',
     public_output_allowed: match.public_output_allowed === true,
     blocks_public_copy: match.status !== 'approved',
@@ -659,6 +682,8 @@ function buildOneTimePolicyAcceptanceStorageContract(rows = []) {
     policy_versions: [
       ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_version,
       ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS.policy_version,
+      ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS.policy_version,
+      ONE_TIME_REFUND_REVIEW_POLICY_DEFAULTS.policy_version,
     ],
     required_fields: [
       'project_id',
@@ -679,33 +704,54 @@ function buildOneTimePolicyAcceptanceStorageContract(rows = []) {
 
 function buildOneTimeLaunchTrialPolicy(input = {}) {
   const offer = input.offer && typeof input.offer === 'object' ? input.offer : {};
-  const trialDays = safePositiveInteger(input.trial_days ?? input.trialDays, ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.trial_days);
+  const trialDays = safeNonNegativeInteger(input.trial_days ?? input.trialDays, ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.trial_days);
   const renewalAmountCents = safePositiveInteger(
     input.renewal_amount_cents ?? input.renewalAmountCents ?? offer.price_amount_cents,
     ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.renewal_amount_cents,
   );
   const currency = String(input.currency || offer.currency || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.currency).toUpperCase();
+  const billingStartAt = input.billing_start_at || input.billingStartAt || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.billing_start_at;
+  const timezone = input.timezone || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.timezone;
   return {
-    requirement_id: 'REQ-20260621-906',
+    requirement_id: 'REQ-20260713-954',
     policy_key: input.policy_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_key,
+    conversion_policy_key: input.conversion_policy_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.conversion_policy_key,
     policy_version: input.policy_version || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_version,
     offer_key: input.offer_key || offer.offer_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.offer_key,
     status: 'local_contract_present',
     mode: 'test_local_only',
+    model: 'application_promotional_access_then_paid_conversion',
+    billing_start_at: billingStartAt,
+    timezone,
     trial_days: trialDays,
+    stripe_trial_enabled: false,
+    promotional_access: {
+      policy_key: input.policy_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_key,
+      conversion_policy_key: input.conversion_policy_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.conversion_policy_key,
+      offer_key: input.offer_key || offer.offer_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.offer_key,
+      access_until_billing_start: true,
+      billing_start_at: billingStartAt,
+      timezone,
+      stripe_trial_enabled: false,
+    },
     renewal: {
       amount_cents: renewalAmountCents,
       display_amount: `${currency === 'USD' ? '$' : `${currency} `}${(renewalAmountCents / 100).toFixed(2)}`,
       currency,
       billing_interval: input.billing_interval || offer.billing_interval || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.billing_interval,
-      starts_after_trial: true,
+      starts_after_trial: false,
+      starts_at: billingStartAt,
+      tax_behavior: input.tax_behavior || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.tax_behavior,
     },
     rules: {
       card_required: input.card_required !== undefined ? input.card_required === true : ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.card_required,
-      one_intro_trial_per_household: input.one_intro_trial_per_household !== undefined
-        ? input.one_intro_trial_per_household === true
-        : ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.one_intro_trial_per_household,
+      billing_authorization_required: input.billing_authorization_required !== undefined
+        ? input.billing_authorization_required === true
+        : ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.billing_authorization_required,
+      one_intro_trial_per_household: false,
       acceptance_required: true,
+      no_stripe_trial: true,
+      no_failed_payment_grace_period: true,
       household_match_keys: ['normalized_parent_email', 'normalized_parent_phone', 'normalized_student_name'],
     },
     acceptance: {
@@ -721,6 +767,7 @@ function buildOneTimeLaunchTrialPolicy(input = {}) {
       invoice_credit_enabled: false,
       payment_link_creation_enabled: false,
       access_grant_automation_enabled: false,
+      stripe_trial_enabled: false,
       external_write_performed: false,
     },
   };
@@ -773,6 +820,116 @@ function buildOneTimeReferralCreditPolicy(input = {}) {
   };
 }
 
+function buildOneTimeBillingNoticePolicy(input = {}) {
+  const launchPolicy = input.launchPolicy && typeof input.launchPolicy === 'object' ? input.launchPolicy : {};
+  const renewal = launchPolicy.renewal || {};
+  const amountCents = safePositiveInteger(
+    input.amount_cents ?? input.amountCents ?? renewal.amount_cents,
+    ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.renewal_amount_cents,
+  );
+  const currency = String(input.currency || renewal.currency || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.currency).toUpperCase();
+  return {
+    requirement_id: ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS.requirement_id,
+    policy_key: input.policy_key || ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS.policy_key,
+    policy_version: input.policy_version || ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS.policy_version,
+    template_key: input.template_key || ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS.template_key,
+    status: 'draft_send_disabled',
+    mode: 'test_local_only',
+    billing_start_at: input.billing_start_at || launchPolicy.billing_start_at || null,
+    timezone: input.timezone || launchPolicy.timezone || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.timezone,
+    notice_types: [
+      'pre_billing_notice',
+      'monthly_invoice_receipt',
+      'payment_failed_notice',
+      'cancellation_confirmation',
+    ],
+    required_disclosures: [
+      'price_67_usd_monthly',
+      'plus_applicable_taxes',
+      'no_stripe_trial',
+      'billing_start_date',
+      'cancel_at_period_end',
+      'manual_exception_refund_review_only',
+      'failed_payment_suspends_access_immediately',
+    ],
+    copy_tokens: {
+      membership_name: 'One Time Mishnayos Membership',
+      display_price: `${currency === 'USD' ? '$' : `${currency} `}${(amountCents / 100).toFixed(2)} / month`,
+      tax_phrase: 'plus applicable taxes where required',
+      billing_start_at: input.billing_start_at || launchPolicy.billing_start_at || null,
+      timezone: input.timezone || launchPolicy.timezone || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.timezone,
+    },
+    delivery: {
+      channel: 'email',
+      sender_identity_required: true,
+      preview_enabled: true,
+      batch_send_enabled: false,
+      live_send_enabled: false,
+      send_requires_exact_approval: true,
+      no_marketing_newsletter: true,
+    },
+    gates: {
+      email_send_enabled: false,
+      invoice_receipt_email_enabled: false,
+      whatsapp_send_enabled: false,
+      telegram_send_enabled: false,
+      external_write_performed: false,
+    },
+    blockers: [
+      'billing_start_at_decision_required_before_live_notice',
+      'sender_identity_required_before_live_notice',
+      'customer_notice_copy_required_before_live_notice',
+      'recipient_cohort_review_required_before_batch_send',
+    ],
+  };
+}
+
+function buildOneTimeRefundReviewPolicy(input = {}) {
+  return {
+    requirement_id: ONE_TIME_REFUND_REVIEW_POLICY_DEFAULTS.requirement_id,
+    policy_key: input.policy_key || ONE_TIME_REFUND_REVIEW_POLICY_DEFAULTS.policy_key,
+    policy_version: input.policy_version || ONE_TIME_REFUND_REVIEW_POLICY_DEFAULTS.policy_version,
+    status: 'manual_review_required',
+    mode: 'test_local_only',
+    default_refund_policy: 'non_refundable_except_manual_exception',
+    cancellation_default: 'cancel_at_period_end',
+    automatic_refunds_enabled: false,
+    prorated_refunds_enabled: false,
+    refund_execution_enabled: false,
+    allowed_exception_reasons: [
+      'duplicate_charge',
+      'incorrect_charge',
+      'provider_cancelled_without_makeup_or_credit',
+      'legally_required',
+      'operator_approved_exception',
+    ],
+    required_review_fields: [
+      'member_id',
+      'stripe_customer_id',
+      'stripe_invoice_id',
+      'stripe_payment_intent_or_charge_id',
+      'refund_reason',
+      'requested_by',
+      'reviewed_by',
+      'approval_recorded_at',
+      'access_decision',
+      'test_or_live_mode',
+    ],
+    gates: {
+      refund_request_storage_enabled: true,
+      refund_preview_enabled: true,
+      stripe_refund_create_enabled: false,
+      automatic_access_revoke_enabled: false,
+      external_write_performed: false,
+    },
+    blockers: [
+      'final_refund_policy_copy_required_before_live_checkout',
+      'authorized_admin_approval_required_before_refund_execution',
+      'linked_invoice_payment_customer_required_before_refund_review',
+    ],
+  };
+}
+
 function oneTimeReferralRecordView(row = {}) {
   const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata) ? row.metadata : {};
   return {
@@ -797,14 +954,20 @@ function buildOneTimeTrialReferralConfiguration({
   const offerRows = Array.isArray(offers) ? offers : [];
   const monthlyOffer = offerRows.find((offer) => offer?.offer_key === ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.offer_key) || {};
   const referralRows = (Array.isArray(referrals) ? referrals : []).map(oneTimeReferralRecordView);
+  const launchPolicy = buildOneTimeLaunchTrialPolicy({ offer: monthlyOffer });
+  const billingNotice = buildOneTimeBillingNoticePolicy({ launchPolicy });
+  const refundReview = buildOneTimeRefundReviewPolicy();
   return {
-    requirement_id: 'REQ-20260621-906',
+    requirement_id: 'REQ-20260713-954',
     workspace_key: 'rabbi_sheller_provider',
     project_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
     status: 'local_contract_present',
     mode: 'test_local_only',
-    launch_trial: buildOneTimeLaunchTrialPolicy({ offer: monthlyOffer }),
+    launch_trial: launchPolicy,
+    promotional_access: launchPolicy.promotional_access,
     referral_credit: buildOneTimeReferralCreditPolicy(),
+    billing_notice: billingNotice,
+    refund_review: refundReview,
     acceptance_storage: buildOneTimePolicyAcceptanceStorageContract(acceptances),
     referral_records: referralRows,
     legal_wording_decision: oneTimePolicyDecisionView(decisions),
@@ -815,13 +978,16 @@ function buildOneTimeTrialReferralConfiguration({
       payment_link_creation_enabled: false,
       email_send_enabled: false,
       whatsapp_send_enabled: false,
+      refund_execution_enabled: false,
       external_crm_write_enabled: false,
       external_write_performed: false,
     },
     blockers: [
-      'legal_wording_decision_required_before_public_copy',
+      'billing_start_at_decision_required_before_live_conversion',
+      'billing_notice_and_policy_copy_required_before_public_copy',
       'billing_provider_and_test_checkout_required_before_live_card_collection',
       'accounting_owner_approval_required_before_real_invoice_credit_or_reward',
+      'authorized_admin_approval_required_before_refund_execution',
     ],
   };
 }
@@ -1426,6 +1592,8 @@ module.exports = {
   ONE_TIME_APPOINTMENT_STATUSES,
   ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS,
   ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS,
+  ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS,
+  ONE_TIME_REFUND_REVIEW_POLICY_DEFAULTS,
   ONE_TIME_DEFAULT_REGION_NOTES,
   ONE_TIME_READINESS_STATUSES,
   ONE_TIME_PRODUCT_READINESS_SECTIONS,
@@ -1460,6 +1628,8 @@ module.exports = {
   buildOneTimePolicyAcceptanceStorageContract,
   buildOneTimeLaunchTrialPolicy,
   buildOneTimeReferralCreditPolicy,
+  buildOneTimeBillingNoticePolicy,
+  buildOneTimeRefundReviewPolicy,
   oneTimeReferralRecordView,
   buildOneTimeTrialReferralConfiguration,
   oneTimeCheckoutRecordView,

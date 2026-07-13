@@ -283,7 +283,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
   const crmWorkspace = {
     pipelines: [
       { title: 'New lead / homepage signup', body: 'Capture name, email, region, source, tier interest, and notes from the landing funnel.', status: 'mapped' },
-      { title: 'Trial member onboarding', body: 'Track 30-day trial start, parent/student setup, first class, and payment readiness.', status: 'mapped' },
+      { title: 'Promotional access onboarding', body: 'Track Rosh Hashanah promotional access, parent/student setup, first class, and billing-readiness review.', status: 'mapped' },
       { title: 'Parent/student accounts', body: 'Keep parents, students, access state, attendance, support, and member-library visibility together.', status: 'mapped' },
       { title: 'Support and private questions', body: 'Route worksheet issues, private Mishnah questions, and Rabbi replies without public chat.', status: 'mapped' },
     ],
@@ -298,7 +298,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
 
   const contentWorkspace = {
     sections: [
-      { title: 'Public landing page', body: 'Mission funnel, Vimeo hero, proof strip, FAQ, and 30-day-free signup CTA.', status: 'implemented review' },
+      { title: 'Public landing page', body: 'Mission funnel, Vimeo hero, proof strip, FAQ, and Rosh Hashanah promotional signup CTA.', status: 'implemented review' },
       { title: 'Live class setup', body: `${classSession.title}: ${classSession.masechta} ${classSession.perek} ${classSession.mishnah_range}.`, status: classSession.status },
       { title: 'Video library', body: `${video.title} is embedded in the member classroom from the manual Vimeo reference.`, status: video.package_status },
       { title: 'Worksheets/source sheets', body: worksheet.title, status: worksheet.status },
@@ -311,7 +311,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     groups: [
       {
         title: 'Enrollment funnel',
-        items: ['Signup intake', 'region/tier tagging', 'trial confirmation preview', 'parent/student account setup'],
+        items: ['Signup intake', 'region/tier tagging', 'promotional access confirmation preview', 'parent/student account setup'],
         status: 'mapped / no external writes',
       },
       {
@@ -326,7 +326,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
       },
       {
         title: 'Payments and access',
-        items: ['30-day trial', 'pre-renewal reminder', 'receipt preview', 'payment issue preview', 'access state'],
+        items: ['promotional access', 'pre-billing notice preview', 'receipt preview', 'payment issue preview', 'access state'],
         status: 'mapped / no charge',
       },
       {

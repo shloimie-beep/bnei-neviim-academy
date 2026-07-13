@@ -49,7 +49,7 @@ check(
   parentInviteRoute,
   'WSG-ONETIME-PARENT-ROUTE-MISSING',
   'high',
-  'One Time parent trial invite route could not be found for scope inspection.'
+  'One Time parent promotional access invite route could not be found for scope inspection.'
 );
 
 check(
@@ -123,7 +123,7 @@ check(
 check(
   /function oneTimeParentTrialInvitePreflight/.test(server)
     && /missing_student_name/.test(server)
-    && /One Time parent trial invite is not launch-ready/.test(parentInviteRoute)
+    && /One Time parent promotional access invite is not launch-ready/.test(parentInviteRoute)
     && !/TEST One Time Student/.test(parentInviteRoute)
     && /inviteMode = smokeMode \? 'smoke_test' : 'production'/.test(parentInviteRoute),
   'WSG-ONETIME-NO-TEST-INVITE-DEFAULT',
@@ -163,7 +163,7 @@ check(
 );
 
 check(
-  /One Time Parent Setup/.test(oneTimeParentSetupPage)
+  /One Time Parent(?: Account)? Setup/.test(oneTimeParentSetupPage)
     && /\/api\/parent-portal\/password\/reset/.test(oneTimeParentSetupPage)
     && /\/api\/one-time\/parent-password\/request/.test(oneTimeParentSetupPage)
     && !/\bBNA\b|Bnei Neviim|Academy|bneineviimacademy/i.test(oneTimeParentSetupPage),

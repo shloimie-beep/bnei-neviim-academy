@@ -27,7 +27,15 @@ Current requirement: `REQ-20260713-937` - Reconcile Stripe Billing V2 and PR #13
 - The real `/student/login` screen no longer sends the startup session probe and no longer shows the `TEST PREVIEW / SAMPLE DATA / NO WRITES` banner.
 - `REQ-20260713-934` is Done. Do not reopen 934A/934B/934C unless verification regresses.
 
-Continue with `REQ-20260713-935`. Keep the scope narrow; do not broaden into the whole parent ramble.
+Continue with `REQ-20260713-937` deploy/live verification. The safe PR #132 Billing V2 slice is locally reconciled and sandbox-verified, but it is not Done until the scoped commit is pushed, One Time is deployed at the intended SHA, and exact-SHA live smokes/readbacks pass.
+
+REQ-937 local evidence:
+
+- PR #132 audit: `ops/audits/2026-07-14-onetime-billing-pr132-reconciliation-audit.md`.
+- Sandbox E2E verifier: `ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.md`.
+- Focused tests: `node --test tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js tests/one-time-parent-trial-invite.test.js tests/one-time-billing-sandbox-e2e-verifier.test.js tests/owner-review-role-flow-contract.test.js` passed `25/25`.
+- Guardrail: `npm run watchdog:workspace-scope` passed.
+- No live charge, refund, subscription, checkout, billing notice send, email/WhatsApp send, provider mutation, access mutation, or external write was performed.
 
 Validated PQC splitter: `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`.
 

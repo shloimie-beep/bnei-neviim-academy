@@ -202,7 +202,13 @@ function runStripeReadiness() {
     check('readiness_reports_not_configured', readiness.status === 'not_configured', readiness.status),
     check('checkout_preview_is_no_write', checkoutPreview.preview_only === true && checkoutPreview.external_write_performed === false, 'preview_only'),
     check('local_beta_disables_live_billing', localBeta.actions.live_charge_enabled === false && localBeta.actions.checkout_session_creation_enabled === false, 'live_charge=false; checkout_session=false'),
-    check('local_beta_has_test_policy_shape', localBeta.launch_trial.trial_days === 30 && localBeta.launch_trial.renewal_amount_cents === 6700, '30 days; 6700 cents'),
+    check(
+      'local_beta_has_test_policy_shape',
+      localBeta.launch_trial.trial_days === 0
+        && localBeta.launch_trial.stripe_trial_enabled === false
+        && localBeta.launch_trial.renewal_amount_cents === 6700,
+      '0 trial days; Stripe trial disabled; 6700 cents',
+    ),
   ];
   return {
     requirement_id: 'REQ-20260624-022',

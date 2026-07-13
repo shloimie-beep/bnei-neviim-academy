@@ -21,11 +21,11 @@ const DEFAULT_STAGES = Object.freeze([
   },
   {
     key: 'trial_referral',
-    title: 'Trial / Referral',
-    requirement_id: 'REQ-20260621-906',
+    title: 'Promotional Access / Referral',
+    requirement_id: 'REQ-20260713-954',
     status: 'verified_live',
     evidence: 'ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md',
-    acceptance: ['30-day trial model', '$67 renewal model', 'referral after first paid cycle', 'legal wording Decision remains scoped'],
+    acceptance: ['Rosh Hashanah promotional access model', '$67 monthly conversion model', 'no Stripe trial object', 'referral after first paid cycle', 'legal wording Decision remains scoped'],
   },
   {
     key: 'payment_access_class_links',

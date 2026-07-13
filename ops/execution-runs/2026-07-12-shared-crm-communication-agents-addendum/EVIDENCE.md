@@ -942,3 +942,13 @@
 - Signup matrix smoke: `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-form-matrix-live.md` and `.json`; mobile screenshot evidence `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-430.png` and `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-390.png`.
 - Interest dry-run smoke: `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md` and `.json`.
 - Guardrails: no signup POST outside dry-run/intercepted smoke, checkout, payment link, live charge, refund, subscription, access grant, email, WhatsApp/WAPI, Telegram, Zoom, upload, DNS/account mutation, CRM production write, provider mutation, credential mutation, or public auto-reply activation.
+
+## REQ-20260713-937 Billing V2 / PR #132 Local Evidence - 2026-07-14
+
+- Requirement: `REQ-20260713-937`.
+- PR audit: `ops/audits/2026-07-14-onetime-billing-pr132-reconciliation-audit.md`.
+- Sandbox E2E report: `ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.md` and `.json`.
+- Implementation: no-trial Stripe billing lifecycle, Rosh Hashanah promotional access policy defaults, local Stripe beta preview, parent promotional-access invite compatibility, Operations promotional billing/referral panel, SQL policy seeds, live smoke assertion updates, and current guidance copy cleanup.
+- Verification evidence: focused tests `25/25`, `npm run stripe:sandbox-e2e`, `npm run watchdog:workspace-scope`, and `git diff --check`.
+- Guardrails: `external_write_performed=false`, `live_charge_performed=false`, `access_mutation_performed=false`; no Stripe object creation, refund, invoice credit, billing notice send, email/WhatsApp send, provider mutation, credential mutation, or production data mutation.
+- Remaining evidence required before Done: pushed commit, One Time deploy-info exact SHA, and live smokes/readbacks for billing/Operations/parent promotional access surfaces.

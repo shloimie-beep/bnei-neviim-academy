@@ -769,3 +769,14 @@ Current status: `active`
 - Visual readback passed for `landing-1440.png`, `landing-390.png`, and `signup-390.png`: the landing hero has a next-section cue on desktop/mobile and the narrow signup form remains readable.
 - Next current unblocked requirement is `REQ-20260713-937`; `REQ-20260713-936` remains blocked until canary/owner gates pass.
 - Guardrails: no checkout POST, payment link creation, member creation, access grant, email send, WhatsApp/WAPI send, Telegram send, social post, upload, charge, DNS/account write, CRM production write, provider mutation, credential mutation, public auto-reply activation, or destructive production mutation occurred.
+
+## 2026-07-14 - REQ-20260713-937 Billing V2 / PR #132 Local Reconciliation
+
+- `REQ-20260713-937` is `needs_verification`, not Done.
+- PR #132 was audited as open, draft, dirty, and divergent; no wholesale merge was performed.
+- Safe local slice reconciles no-trial Stripe billing lifecycle, Rosh Hashanah promotional access defaults, Stripe local beta preview, parent promotional-access invite semantics, Operations panel copy, SQL policy seeds, the live smoke contract, and sandbox verifier/test coverage.
+- Audit: `ops/audits/2026-07-14-onetime-billing-pr132-reconciliation-audit.md`.
+- Sandbox report: `ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.md`.
+- Local verification passed: syntax checks, focused billing/review tests `25/25`, `npm run stripe:sandbox-e2e`, `npm run watchdog:workspace-scope`, and `git diff --check`.
+- Remaining gate: commit/push, One Time deploy, exact-SHA live readback/smokes for billing/Operations/parent promotional access surfaces before marking Done.
+- Guardrails: no live checkout/session/subscription/charge/refund/invoice-credit/access mutation, billing notice send, email send, WhatsApp/WAPI send, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.

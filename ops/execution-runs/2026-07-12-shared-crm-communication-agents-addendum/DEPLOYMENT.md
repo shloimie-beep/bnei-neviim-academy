@@ -607,3 +607,10 @@ No deployment occurred for Gate 1. One Time is currently serving `49f3edda2da37e
 - One Time exact-SHA signup form matrix smoke passed; report `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-form-matrix-live.md`.
 - One Time interest dry-run live smoke passed; report `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md`.
 - This follow-up closeout/evidence update is documentation-only and should not redeploy over the already live-smoked product SHA.
+
+## REQ-20260713-937 Deployment Status
+
+- Status: pending.
+- The Billing V2 / PR #132 reconciliation slice is locally implemented and sandbox-verified, but no deploy/live proof has been run for this slice yet.
+- Do not mark `REQ-20260713-937` Done until the scoped commit is pushed, One Time deploy-info returns the intended SHA, and exact-SHA live billing/Operations/parent promotional access smokes/readbacks pass.
+- Guardrails so far: no live Stripe checkout/session/subscription/charge/refund/invoice-credit mutation, billing notice send, email/WhatsApp send, access mutation, provider mutation, credential mutation, or production data mutation.

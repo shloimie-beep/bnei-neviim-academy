@@ -128,6 +128,7 @@
     "one-time:provider-route-module-budget": "node scripts/audit-onetime-provider-route-module-budget.mjs",
     "one-time:performance-regression-gates": "node scripts/audit-onetime-performance-regression-gates.mjs",
     "stripe:sandbox-smoke": "node scripts/smoke-stripe-sandbox-billing.mjs",
+    "stripe:sandbox-e2e": "node scripts/verify-onetime-billing-sandbox-e2e.mjs",
     "one-time:separate-instance-package": "node scripts/generate-onetime-separate-instance-package.mjs",
     "one-time:railway-target:guard": "node scripts/check-onetime-external-setup-readiness.mjs --json --railway-only",
     "one-time:railway-provision:check": "node scripts/provision-onetime-railway-instance.mjs --json --write-report",

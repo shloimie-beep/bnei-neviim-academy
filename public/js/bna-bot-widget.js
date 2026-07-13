@@ -184,14 +184,14 @@
         ...base,
         helperTitle: 'Robot Scheller',
         surfaceLabel: 'One Time member help',
-        intro: "Hi, I'm Robot Scheller, Rabbi Scheller's digital assistant. I can help with the trial, class schedule, child access, attendance questions, and how to ask Rabbi Scheller a class question. I do not show private billing records, other families, student transcripts, access codes, or admin data.",
+        intro: "Hi, I'm Robot Scheller, Rabbi Scheller's digital assistant. I can help with promotional access, the class schedule, child access, attendance questions, and how to ask Rabbi Scheller a class question. I do not show private billing records, other families, student transcripts, access codes, or admin data.",
         cards: [
-          ['Trial and schedule', 'Review how the 30-day trial works, where class links appear, and what a parent should expect.'],
+          ['Access and schedule', 'Review how promotional access works, where class links appear, and what a parent should expect.'],
           ['Child access', 'Understand how parent and student login fit together without resetting a password or exposing private codes here.'],
           ['Billing and attendance help', 'Prepare a support question about billing or attendance without changing payment or access status.'],
         ],
         prompts: [
-          'What should I do during the 30-day trial?',
+          'What should I do during promotional access?',
           'How does my child get into class?',
           'Help me ask about billing or attendance.',
         ],

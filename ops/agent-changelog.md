@@ -40457,3 +40457,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verified with focused One Time tests `82/82`, action watchdog, exact-SHA separate-instance smoke, landing smoke, responsive landing/signup smoke, signup form matrix smoke, and interest dry-run smoke.
 - Evidence: `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/REPORT.md`, screenshots under `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/screenshots/`, `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-form-matrix-live.md`, and `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md`.
 - Guardrails: no checkout, payment link, live charge/refund/subscription, member creation, access grant, email, WhatsApp/WAPI, Telegram, Zoom, upload, DNS/account mutation, CRM production write, provider mutation, credential mutation, public auto-reply activation, or destructive production mutation occurred.
+
+## 2026-07-14 - One Time Billing V2 / PR #132 local reconciliation
+
+- Advanced `REQ-20260713-937` to `needs_verification`: PR #132 was audited as open, draft, dirty, and divergent; no wholesale merge was performed.
+- Reconciled the safe local Billing V2 slice: no-trial Stripe lifecycle, Rosh Hashanah promotional-access policy defaults, local Stripe beta preview, parent promotional-access invite semantics, Operations billing/referral copy, SQL policy seeds, live smoke assertions, and sandbox E2E verifier.
+- Evidence: `ops/audits/2026-07-14-onetime-billing-pr132-reconciliation-audit.md` and `ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.md`.
+- Verification passed: syntax checks, focused billing/review tests `25/25`, `npm run stripe:sandbox-e2e`, `npm run watchdog:workspace-scope`, and `git diff --check`.
+- Remaining gate: commit/push, One Time deploy, exact-SHA live billing/Operations/parent promotional access smokes/readbacks before marking Done.
+- Guardrails: no live checkout/session/subscription/charge/refund/invoice-credit/access mutation, billing notice send, email send, WhatsApp/WAPI send, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.

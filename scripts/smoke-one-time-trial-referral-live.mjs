@@ -98,7 +98,7 @@ function writeReports(report) {
   fs.writeFileSync(jsonPath, `${JSON.stringify(report, null, 2)}\n`);
   const failed = report.steps.filter((step) => !step.ok);
   const lines = [
-    `# One Time Trial Referral Live Smoke - ${report.started_at}`,
+    `# One Time Promotional Billing / Referral Live Smoke - ${report.started_at}`,
     '',
     `App: ${report.app_url}`,
     `Result: ${failed.length ? 'failed' : 'passed'}`,
@@ -108,14 +108,18 @@ function writeReports(report) {
     '',
     '## Policy Snapshot',
     `- Trial days: ${report.trial_days ?? 'n/a'}`,
+    `- Stripe trial enabled: ${report.stripe_trial_enabled ?? 'n/a'}`,
     `- Renewal cents: ${report.renewal_amount_cents ?? 'n/a'}`,
     `- Card required: ${report.card_required ?? 'n/a'}`,
+    `- Billing authorization required: ${report.billing_authorization_required ?? 'n/a'}`,
+    `- Billing notice policy: ${report.billing_notice_policy || 'n/a'}`,
+    `- Refund review policy: ${report.refund_review_policy || 'n/a'}`,
     `- Referral trigger: ${report.referral_trigger || 'n/a'}`,
     `- Acceptance table: ${report.acceptance_table || 'n/a'}`,
     `- Promotion policy count: ${report.promotion_policy_count ?? 'n/a'}`,
     '',
     '## Guardrails',
-    '- Smoke is read-only: it does not create checkout sessions, payment links, charges, invoices, invoice credits, access grants, email sends, WhatsApp sends, or external CRM writes.',
+    '- Smoke is read-only: it does not create checkout sessions, payment links, charges, invoices, invoice credits, access grants, refunds, billing notices, email sends, WhatsApp sends, or external CRM writes.',
     '- The report records policy metadata only and does not include raw private contact bodies or payment credentials.',
   ];
   fs.writeFileSync(mdPath, `${lines.join('\n')}\n`);
@@ -160,7 +164,7 @@ async function main() {
     cookie: `${cookie.name}=${cookie.value}`,
   };
 
-  await step('Trial/referral config API responds with no-write policy', async () => {
+  await step('Promotional billing/referral config API responds with no-write policy', async () => {
     const { data } = await requestJson(`${appUrl}/api/bna/one-time/trial-referral-config`, {
       headers: authHeaders,
     });
@@ -168,46 +172,71 @@ async function main() {
     const config = data.trial_referral_config || {};
     const trial = config.launch_trial || {};
     const referral = config.referral_credit || {};
+    const billingNotice = config.billing_notice || {};
+    const refundReview = config.refund_review || {};
     const acceptance = config.acceptance_storage || {};
     const guardrails = config.guardrails || {};
     const policies = Array.isArray(config.promotion_policies) ? config.promotion_policies : [];
-    assert(config.requirement_id === 'REQ-20260621-906', 'requirement id mismatch');
-    assert(trial.trial_days === 30, 'trial days are not 30');
+    assert(config.requirement_id === 'REQ-20260713-954', 'requirement id mismatch');
+    assert(trial.policy_key === 'one_time_rosh_hashanah_promotional_access', 'promotional access policy missing');
+    assert(trial.conversion_policy_key === 'one_time_rosh_hashanah_paid_conversion', 'conversion policy missing');
+    assert(trial.trial_days === 0, 'trial days are not 0');
+    assert(trial.stripe_trial_enabled === false, 'Stripe trial is enabled');
     assert(trial.renewal?.amount_cents === 6700, 'renewal amount is not 6700 cents');
+    assert(trial.renewal?.tax_behavior === 'exclusive', 'exclusive tax behavior missing');
     assert(trial.rules?.card_required === true, 'card-required rule missing');
-    assert(trial.rules?.one_intro_trial_per_household === true, 'one-intro-trial rule missing');
+    assert(trial.rules?.billing_authorization_required === true, 'billing authorization rule missing');
+    assert(trial.rules?.no_stripe_trial === true, 'no-Stripe-trial rule missing');
+    assert(trial.rules?.no_failed_payment_grace_period === true, 'no failed-payment grace rule missing');
     assert(referral.activation_trigger === 'first_successful_paid_cycle', 'referral trigger missing');
     assert(referral.gates?.invoice_credit_enabled === false, 'referral invoice credits are enabled');
+    assert(billingNotice.policy_key === 'one_time_rosh_hashanah_pre_billing_notice', 'billing notice policy missing');
+    assert(billingNotice.delivery?.live_send_enabled === false, 'billing notice live send is enabled');
+    assert(billingNotice.gates?.email_send_enabled === false, 'billing notice email send is enabled');
+    assert(refundReview.policy_key === 'one_time_manual_exception_refund_review', 'manual refund review policy missing');
+    assert(refundReview.automatic_refunds_enabled === false, 'automatic refunds are enabled');
+    assert(refundReview.gates?.stripe_refund_create_enabled === false, 'Stripe refund creation is enabled');
     assert(acceptance.table === 'bna_one_time_policy_acceptances', 'acceptance table missing');
     assert(guardrails.live_charges_enabled === false, 'live charges are enabled');
     assert(guardrails.real_invoice_credits_enabled === false, 'real invoice credits are enabled');
+    assert(guardrails.checkout_creation_enabled === false, 'checkout creation is enabled');
+    assert(guardrails.email_send_enabled === false, 'email sends are enabled');
+    assert(guardrails.refund_execution_enabled === false, 'refund execution is enabled');
     assert(guardrails.external_write_performed === false, 'external write was reported');
-    assert(config.promotion_policy_count >= 2, 'promotion policy rows are missing');
-    assert(policies.some((policy) => policy.policy_key === 'one_time_warm_lead_intro_trial'), 'trial policy row missing');
+    assert(config.promotion_policy_count >= 4, 'promotion policy rows are missing');
+    assert(policies.some((policy) => policy.policy_key === 'one_time_rosh_hashanah_promotional_access'), 'promotional access policy row missing');
     assert(policies.some((policy) => policy.policy_key === 'one_time_referral_credit_after_first_paid_cycle'), 'referral policy row missing');
+    assert(policies.some((policy) => policy.policy_key === 'one_time_rosh_hashanah_pre_billing_notice'), 'billing notice policy row missing');
+    assert(policies.some((policy) => policy.policy_key === 'one_time_manual_exception_refund_review'), 'refund review policy row missing');
     assert(policies.every((policy) => policy.live_billing_enabled === false), 'a promotion policy enabled live billing');
     assert(policies.every((policy) => policy.invoice_credit_enabled === false), 'a promotion policy enabled invoice credits');
     report.trial_days = trial.trial_days;
+    report.stripe_trial_enabled = trial.stripe_trial_enabled;
     report.renewal_amount_cents = trial.renewal?.amount_cents;
     report.card_required = trial.rules?.card_required;
+    report.billing_authorization_required = trial.rules?.billing_authorization_required;
+    report.billing_notice_policy = billingNotice.policy_key;
+    report.refund_review_policy = refundReview.policy_key;
     report.referral_trigger = referral.activation_trigger;
     report.acceptance_table = acceptance.table;
     report.promotion_policy_count = config.promotion_policy_count;
-    return '30-day trial, $67 renewal, card rule, first-paid-cycle referral, and no-write gates returned';
+    return 'Rosh Hashanah promotional access, no Stripe trial, $67 monthly conversion, billing notice/refund gates, first-paid-cycle referral, and no-write gates returned';
   });
 
-  await step('Operations ships trial/referral UX markers', async () => {
+  await step('Operations ships promotional billing/referral UX markers', async () => {
     const { text } = await requestText(`${appUrl}/operations`, {
       headers: authHeaders,
     });
     assert(text.includes('data-one-time-trial-referral-config'), 'Operations HTML missing trial/referral marker');
-    assert(text.includes('REQ-20260621-906'), 'Operations HTML missing Batch 9F requirement id');
-    assert(text.includes('30-day warm-lead intro trial'), 'Operations HTML missing trial copy');
-    assert(text.includes('One intro trial per household'), 'Operations HTML missing one-intro-trial copy');
+    assert(text.includes('REQ-20260713-954'), 'Operations HTML missing promotional billing requirement id');
+    assert(text.includes('Rosh Hashanah promotional access'), 'Operations HTML missing promotional access copy');
+    assert(text.includes('Stripe Trial'), 'Operations HTML missing Stripe trial state');
     assert(text.includes('Referral credit activates only after the first successful paid cycle'), 'Operations HTML missing referral trigger copy');
+    assert(text.includes('Billing notice'), 'Operations HTML missing billing notice copy');
+    assert(text.includes('Manual refund review'), 'Operations HTML missing refund review copy');
     assert(text.includes('bna_one_time_policy_acceptances'), 'Operations HTML missing acceptance storage table');
-    assert(text.includes('No live charge, payment link, or real invoice credit is enabled'), 'Operations HTML missing no-charge/no-credit guardrail');
-    return 'Trial/referral panel markers shipped';
+    assert(text.includes('No live charge, payment link, Stripe trial, access grant, refund, notice send, or real invoice credit is enabled'), 'Operations HTML missing no-charge/no-trial/no-refund/no-send guardrail');
+    return 'Promotional billing/referral panel markers shipped';
   });
 
   const paths = writeReports(report);
@@ -215,6 +244,7 @@ async function main() {
     ok: true,
     report: path.relative(root, paths.mdPath).replace(/\\/g, '/'),
     trial_days: report.trial_days,
+    stripe_trial_enabled: report.stripe_trial_enabled,
     renewal_amount_cents: report.renewal_amount_cents,
     referral_trigger: report.referral_trigger,
   }, null, 2));

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-13T21:55:00Z",
+  "updated_at": "2026-07-14T00:32:32+03:00",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -2877,10 +2877,10 @@
       "depends_on": [
         "REQ-20260713-932"
       ],
-      "status": "not_started",
-      "implementation_status": "Not started.",
+      "status": "needs_verification",
+      "implementation_status": "Safe PR #132 Billing V2 slice reconciled locally against the current launch branch: no-trial Stripe billing lifecycle, One Time Rosh Hashanah promotional-access defaults, Stripe local beta preview, parent promotional-access invite semantics, Operations panel copy, SQL policy seeds, local sandbox E2E verifier, and focused tests. Full Done still waits on commit/push plus approved One Time deploy/live readback because deployment_required=true.",
       "can_continue_without_operator": true,
-      "next_action": "Audit PR #132 diff and rebuild/cherry-pick only safe scoped pieces with sandbox livemode=false proof.",
+      "next_action": "Commit/push the scoped slice, deploy the approved One Time target, run exact-SHA live readback/smoke for billing/Operations/parent promotional access no-trial surfaces, then mark Done only if the live proof passes.",
       "acceptance_criteria": [
         "No wholesale dirty merge.",
         "No trial object/hidden trial.",
@@ -2888,21 +2888,57 @@
         "No live charge/refund/access mutation."
       ],
       "evidence": [
-        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md"
+        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md",
+        "ops/audits/2026-07-14-onetime-billing-pr132-reconciliation-audit.md",
+        "ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.md",
+        "ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.json"
       ],
       "verification": [
-        "gh pr view 132 open draft DIRTY"
+        "gh pr view 132 open draft DIRTY",
+        "gh pr view 132 => open draft DIRTY; no wholesale merge performed.",
+        "PASS node --check server.js",
+        "PASS node --check scripts/smoke-one-time-trial-referral-live.mjs",
+        "PASS node --check scripts/smoke-owner-review-external-readiness.mjs",
+        "PASS node --check scripts/watchdog-workspace-scope-guardrails.mjs",
+        "PASS node --test tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js tests/one-time-parent-trial-invite.test.js tests/one-time-billing-sandbox-e2e-verifier.test.js tests/owner-review-role-flow-contract.test.js (25/25)",
+        "PASS npm run stripe:sandbox-e2e; external_write_performed=false, live_charge_performed=false, access_mutation_performed=false",
+        "PASS npm run watchdog:workspace-scope",
+        "PASS git diff --check (line-ending warnings only)"
       ],
       "implementation_files": [
+        "package.json",
         "server.js",
-        "src/",
-        "public/",
-        "tests/",
-        "scripts/"
+        "public/js/bna-bot-widget.js",
+        "public/js/operations-shell.js",
+        "public/agent-review-prompts/index.json",
+        "public/agent-review-prompts/one-time-brand-helper-toolbar-audit.md",
+        "public/agent-review-prompts/one-time-parent-trial-journey.md",
+        "public/one-time-parent-review.html",
+        "public/one-time-parent.html",
+        "public/operations.html",
+        "public/parent.html",
+        "railway-migration-2026-06-21-one-time-trial-referral-config.sql",
+        "scripts/smoke-one-time-trial-referral-live.mjs",
+        "scripts/smoke-owner-review-external-readiness.mjs",
+        "scripts/verify-onetime-billing-sandbox-e2e.mjs",
+        "scripts/watchdog-workspace-scope-guardrails.mjs",
+        "src/lib/billing/stripe-billing-lifecycle.js",
+        "src/lib/bna/agent-review-hub.js",
+        "src/lib/bna/one-time-product-system.js",
+        "src/lib/bna/rabbi-emails.js",
+        "src/lib/integrations/stripe.js",
+        "src/platform/agent-control/one-time-acceptance.js",
+        "src/platform/instances/one-time-shared-review-data.js",
+        "tests/one-time-billing-sandbox-e2e-verifier.test.js",
+        "tests/one-time-parent-trial-invite.test.js",
+        "tests/one-time-stripe-local-beta.test.js",
+        "tests/stripe-billing-lifecycle.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T22:42:00+03:00",
-      "blocker": ""
+      "updated_at": "2026-07-14T00:32:32+03:00",
+      "blocker": "Deployment/live smoke still required before Done because server/UI-visible billing semantics changed.",
+      "blocker_owner": "Codex / release lane",
+      "blocker_next_action": "Commit/push scoped slice, deploy the One Time target, run exact-SHA live readback/smokes for the billing/Operations parent promotional-access no-trial surfaces, then update REQ-20260713-937 to Done if all pass."
     },
     {
       "id": "REQ-20260713-938",
