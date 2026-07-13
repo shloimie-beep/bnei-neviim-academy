@@ -4,8 +4,8 @@ Status: draft PR mergeable; live activation blocked
 Branch: `codex/onetime-rosh-hashanah-billing-platform-v2`
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Primary requirements: `REQ-20260713-950` through `REQ-20260713-963`
-Branch head at latest merge verification: `1f52c17b0b23e7bdf5a65857b7a5b8d3fd95871a`
-Current master/base SHA: `dc540e121a9bce02a8d0e738ec4e99a9c8edc831`
+Branch head at latest merge verification: `ea909d4d47b421f71976897f86fdd79b330fced1`
+Current master/base SHA: `10960a86bba30aede6c72075ef1b5eb1a529f54d`
 Draft PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/132
 Release owner: release/integration agent after final operator launch packet
 
@@ -39,7 +39,7 @@ slice for One Time:
 | Billing route-module budget | `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` | Passed |
 | Sandbox E2E verifier | `ops/verifier-runs/2026-07-13-onetime-billing-sandbox-e2e/latest.md` | Passed |
 | Hosted Railway Stripe readback | `ops/deploy-readbacks/2026-07-13-onetime-billing-railway-readback.md`; `ops/deploy-readbacks/2026-07-13-onetime-billing-railway-propagation.md` | Passed for sandbox/test config; no deploy triggered |
-| Branch/PR mergeability | PR #132 at latest verified merge `1f52c17b0b23e7bdf5a65857b7a5b8d3fd95871a`; base `dc540e121a9bce02a8d0e738ec4e99a9c8edc831` | GitHub merge state must be rechecked after final handoff-refresh push |
+| Branch/PR mergeability | PR #132 at latest verified merge `ea909d4d47b421f71976897f86fdd79b330fced1`; base `10960a86bba30aede6c72075ef1b5eb1a529f54d` | Passed: GitHub merge state `CLEAN`, draft/open |
 | Secret handling | `npm run secrets:audit`; targeted changed-file secret scan | Passed |
 | Generated Operations shell | `npm run operations:check-generated` | Passed |
 
@@ -103,11 +103,10 @@ launch packet with:
 ## Draft PR
 
 Draft PR URL: https://github.com/shloimie-beep/bnei-neviim-academy/pull/132
-Draft PR merge state: `CLEAN` was verified before this handoff-refresh slice and
-must be rechecked after the final handoff-refresh push. Latest merged base in
-this branch is `dc540e121a9bce02a8d0e738ec4e99a9c8edc831`; latest verified
-merge commit before this doc refresh is
-`1f52c17b0b23e7bdf5a65857b7a5b8d3fd95871a`.
+Draft PR merge state: `CLEAN`, verified after the latest handoff refresh.
+Latest merged base in this branch is
+`10960a86bba30aede6c72075ef1b5eb1a529f54d`; latest verified merge commit is
+`ea909d4d47b421f71976897f86fdd79b330fced1`.
 
 ## Final Report
 

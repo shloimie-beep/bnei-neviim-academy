@@ -40425,6 +40425,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   access mutation, provider mutation, deploy, credential mutation, production
   data mutation, or secret exposure was performed.
 
+## 2026-07-13 - One Time Billing V2 PR merge state refreshed
+
+- Merged current `master` into the Billing V2 branch after GitHub reported PR
+  #132 as dirty, preserving both append-only ledger/changelog sides from the
+  concurrent One Time work.
+- Current PR head is `ea909d4d47b421f71976897f86fdd79b330fced1` against base
+  `10960a86bba30aede6c72075ef1b5eb1a529f54d`; GitHub reports draft PR #132
+  merge state `CLEAN`.
+- Verification passed: focused Billing parent/review/Stripe tests,
+  merge-adjacent One Time member/WAPI tests, workspace-scope watchdog,
+  protocol-drift watchdog, ledger JSONL parse, `npm run secrets:audit`, and
+  `git diff --check`.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.
+
 ## 2026-07-13 - One Time classroom/latest-video read-only gates verified
 
 - Added `scripts/smoke-one-time-classroom-library-readonly-live.mjs` and
