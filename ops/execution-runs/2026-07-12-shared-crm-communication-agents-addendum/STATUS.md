@@ -735,5 +735,6 @@ Current status: `active`
 - Root cause addressed locally: nonessential member/helper scripts were part of the first-render critical path and vulnerable to slow static-asset TTFB. The member portal now renders useful static fallback content before external JS, loads app-select/member/portal-shell enhancements after first render, and defers the heavier assistant bundle until idle or Helper click.
 - Local smoke evidence: `ops/performance-audits/2026-07-13-onetime-member-performance-local/report.md`; screenshot-ready DCL was 22ms, 15ms, 46ms, 54ms, and 15ms at 1440/1024/768/430/390.
 - Focused contracts passed for app-select loading, member preview, assistant scope, support/question routes, checkout/access, and canonical member journey.
-- App-visible Done is not claimed: commit/push, One Time deploy/live exact-SHA smoke, and child packets `PKT-20260713-934B` and `PKT-20260713-934C` remain open.
+- Commit/push proof: `4200582d6` is pushed to `codex/onetime-final-integration-launch`.
+- App-visible Done is not claimed: One Time deploy/live exact-SHA smoke and child packets `PKT-20260713-934B` and `PKT-20260713-934C` remain open.
 - Guardrails: no external send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS change, deploy, or public auto-reply activation occurred.

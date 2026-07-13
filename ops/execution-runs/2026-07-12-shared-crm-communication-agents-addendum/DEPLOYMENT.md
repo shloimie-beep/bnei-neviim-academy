@@ -580,5 +580,5 @@ No deployment occurred for Gate 1. One Time is currently serving `49f3edda2da37e
 ## REQ-20260713-934A Deployment Status
 
 - No deployment has been performed yet for the member portal performance repair.
-- Local implementation and local smoke are complete for `PKT-20260713-934A`, but app-visible Done remains pending commit/push, One Time deployment, exact-SHA live smoke/readback, and the remaining `REQ-20260713-934` child packets.
-- One Time live deploy-info still serves `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`; this local repair is not visible on `https://join.onetimeonetime.com` yet.
+- Local implementation and local smoke are complete for `PKT-20260713-934A`, and commit `4200582d6` is pushed to `codex/onetime-final-integration-launch`, but app-visible Done remains pending One Time deployment, exact-SHA live smoke/readback, and the remaining `REQ-20260713-934` child packets.
+- One Time live deploy-info still serves `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`; pushed commit `4200582d6` is not visible on `https://join.onetimeonetime.com` yet.

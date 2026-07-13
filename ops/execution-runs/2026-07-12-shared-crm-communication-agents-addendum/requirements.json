@@ -2613,9 +2613,9 @@
         "REQ-20260713-933"
       ],
       "status": "in_progress",
-      "implementation_status": "PKT-20260713-934A local repair implemented and verified: /rabbi-member now renders useful static member portal content before external JS, loads member/app-select/portal-shell scripts after first render or immediate form interaction, defers the heavier assistant bundle until idle or Helper click, and still opens the One Time member assistant on demand. Parent REQ remains open because app-visible deployment/live smoke and child packets 934B/934C are not complete; auth/admin CRM proof remains blocked by invalid read-only Operations credentials.",
+      "implementation_status": "PKT-20260713-934A local repair implemented, verified, committed, and pushed at 4200582d6: /rabbi-member now renders useful static member portal content before external JS, loads member/app-select/portal-shell scripts after first render or immediate form interaction, defers the heavier assistant bundle until idle or Helper click, and still opens the One Time member assistant on demand. Parent REQ remains open because app-visible deployment/live smoke and child packets 934B/934C are not complete; auth/admin CRM proof remains blocked by invalid read-only Operations credentials.",
       "can_continue_without_operator": true,
-      "next_action": "Commit/push PKT-20260713-934A, then continue REQ-20260713-934 through PKT-20260713-934B/934C and exact-SHA deploy/live smoke before marking this app-visible requirement Done.",
+      "next_action": "Deploy/live-smoke the current pushed branch head containing PKT-20260713-934A implementation commit 4200582d6, then continue REQ-20260713-934 through PKT-20260713-934B/934C before marking this app-visible requirement Done.",
       "acceptance_criteria": [
         "Workspace context, not View as Rabbi.",
         "CRM/content/mobile match state matrix.",
@@ -2643,7 +2643,7 @@
         "package.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T22:28:00+03:00",
+      "updated_at": "2026-07-13T22:33:00+03:00",
       "blocker": ""
     },
     {

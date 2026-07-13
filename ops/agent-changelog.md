@@ -40430,4 +40430,5 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Advanced `REQ-20260713-934` through `PKT-20260713-934A`: `/rabbi-member` now ships static fallback member/library/session/question/support content before deferred scripts load, and the member portal initializer supports deferred loading.
 - Added `npm run one-time:smoke:member-performance-local` and evidence at `ops/performance-audits/2026-07-13-onetime-member-performance-local/report.md`.
 - Verification passed: local smoke across 1440/1024/768/430/390 viewports, deferred assistant click smoke, syntax checks for the changed member script and smoke harness, and focused One Time contract tests 35/35.
+- Commit/push proof: `4200582d6` is pushed to `codex/onetime-final-integration-launch`.
 - Status remains in progress: app-visible Done requires exact-SHA deploy/live smoke, and `REQ-20260713-934B`/`934C` still need completion. No send, provider mutation, payment/access change, credential mutation, deploy, or external write was performed in this local batch.
