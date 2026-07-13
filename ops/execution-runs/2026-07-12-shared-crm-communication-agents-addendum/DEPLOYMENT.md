@@ -425,6 +425,35 @@ Global production readiness remains blocked only by known external full-launch f
   payment/access mutation, credential mutation, raw private payload logging, or
   destructive production mutation was performed by this proof.
 
+## 2026-07-13 Communication-Agent Model Deploy
+
+- Runtime app-code commit: `98e449a5777158a1125ddfbcbd7925dd489d8f18`.
+- Deployed head: `1e6a977818f1393fd3721d796d9c025e0ac95eb9`.
+- Branch: `master`.
+- Push: `git push origin master` succeeded for both the runtime commit and the
+  final test-stability commit.
+- One Time Railway deployment `7a02b4b9-c2cc-48ef-8376-e7755266836d` reached
+  `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info`
+  returned `commit_sha=1e6a977818f1393fd3721d796d9c025e0ac95eb9`,
+  `target_app=one-time`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned
+  `commit_sha=1e6a977818f1393fd3721d796d9c025e0ac95eb9`, `target_app=bna`.
+- BNA Railway doctor access passed for `skillful-motivation / production`, but
+  the current deployment status still reported `BUILDING` during closeout;
+  exact-SHA live metadata and BNA taxonomy smoke passed.
+- One Time separate-instance smoke passed at the exact SHA.
+- One Time CRM workbench smoke passed; report
+  `ops/live-smokes/2026-07-13T14-04-45-139Z-one-time-operations-crm-workbench-live-smoke.md`.
+- One Time provider route-module smoke passed; report
+  `ops/live-smokes/2026-07-13T14-04-45-800Z-onetime-provider-route-module-live-smoke.md`.
+- BNA workspace taxonomy smoke passed; report
+  `ops/live-smokes/2026-07-13T14-04-45-310Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send,
+  public auto-reply enablement, CRM destructive write, provider mutation,
+  payment/access mutation, credential mutation, raw private payload logging, or
+  destructive production mutation was performed by this proof.
+
 ## 2026-07-13 One Time WAPI Zero-Task Contact Capture Deploy
 
 - Runtime commit: `7ec31290c08ede0957dbd60b2c3253979253feba`.

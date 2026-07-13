@@ -35,6 +35,42 @@ function normalizeReplyMode(value = '', fallback = 'capture_only') {
     : fallback;
 }
 
+function channelFormattingPolicy(channel = '') {
+  const normalizedChannel = normalizeChannel(channel);
+  if (normalizedChannel === 'email') {
+    return {
+      format: 'email',
+      subject_required: true,
+      greeting: 'parent_or_school_safe',
+      paragraphs: 'short_email',
+      signature: 'concise',
+      one_question_at_a_time: false,
+      include_public_signup_route: true,
+      raw_class_link_delivery: 'server_action_only',
+      raw_class_link_in_model_context: false,
+      raw_class_link_in_logs: false,
+    };
+  }
+  if (normalizedChannel === 'whatsapp') {
+    return {
+      format: 'whatsapp',
+      short_paragraphs: true,
+      one_question_at_a_time: true,
+      max_reply_chars: 900,
+      include_public_signup_route: true,
+      raw_class_link_delivery: 'server_action_only',
+      raw_class_link_in_model_context: false,
+      raw_class_link_in_logs: false,
+    };
+  }
+  return {
+    format: normalizedChannel || 'unknown',
+    raw_class_link_delivery: 'server_action_only',
+    raw_class_link_in_model_context: false,
+    raw_class_link_in_logs: false,
+  };
+}
+
 function knowledgeSnapshotHash(profile = {}) {
   return sha256(JSON.stringify({
     schema_version: profile.schema_version || '',
@@ -48,6 +84,52 @@ function knowledgeSnapshotHash(profile = {}) {
     offer: profile.offer || {},
     policies: profile.policies || {},
   }));
+}
+
+function publishedKnowledgeSnapshot(profile = {}) {
+  const publicFacts = profile.knowledge_base?.public_facts || {};
+  const accessPolicy = profile.knowledge_base?.access_policy || {};
+  return {
+    publication_status: 'published',
+    source_type: 'service_provider_bot_profile',
+    source_ref: 'config/service-provider-bots/one-time.json',
+    profile_key: profile.profile_key || '',
+    profile_version: profile.version || '',
+    approved_public_facts: {
+      program: publicFacts.program || '',
+      teacher: publicFacts.teacher || '',
+      schedule: publicFacts.schedule || '',
+      local_location: publicFacts.local_location || '',
+      signup_route: publicFacts.signup_route || '/one-time/signup',
+      audience: Array.isArray(publicFacts.audience) ? publicFacts.audience : [],
+      class_link_behavior: publicFacts.class_link_behavior || '',
+    },
+    access_policy: {
+      portal_access_status: accessPolicy.portal_access_status || 'not_currently_granted',
+      member_area_status: accessPolicy.member_area_status || 'not_currently_granted',
+      library_access_status: accessPolicy.library_access_status || 'not_currently_granted',
+      student_login_status: accessPolicy.student_login_status || 'not_currently_granted',
+      parent_login_status: accessPolicy.parent_login_status || 'not_currently_granted',
+      safe_public_answer: accessPolicy.safe_public_answer || '',
+    },
+    offer_status: profile.offer?.status || 'not_published_for_bot',
+    safe_offer_summary: profile.offer?.safe_summary || '',
+    unpublished_claim_categories_blocked: [
+      'trial_terms',
+      'renewal_pricing',
+      'payment_flow',
+      'portal_access',
+      'library_access',
+      'member_access',
+    ],
+    class_link_policy: {
+      deterministic_server_action_required: true,
+      raw_class_link_in_model_context: false,
+      raw_class_link_in_logs: false,
+      raw_class_link_returned_in_metadata: false,
+    },
+    no_stale_claims: true,
+  };
 }
 
 function resolveAssignedCommunicationAgent({
@@ -73,6 +155,8 @@ function resolveAssignedCommunicationAgent({
   try {
     const profile = loadProviderLeadBotProfile(ONE_TIME_PROFILE_KEY);
     const snapshotHash = knowledgeSnapshotHash(profile);
+    const publishedKnowledge = publishedKnowledgeSnapshot(profile);
+    const formattingPolicy = channelFormattingPolicy(normalizedChannel);
     const effectiveReplyMode = normalizeReplyMode(
       binding.replyMode || binding.reply_mode || (normalizedChannel === 'email' ? 'draft' : profile.policies?.activation_mode || 'capture_only'),
       normalizedChannel === 'email' ? 'draft' : 'capture_only'
@@ -89,10 +173,20 @@ function resolveAssignedCommunicationAgent({
       agent_version_status: 'published_config',
       knowledge_snapshot_version: `${profile.profile_key}:${profile.version}:${snapshotHash.slice(0, 12)}`,
       knowledge_snapshot_hash: snapshotHash,
+      published_knowledge_snapshot: {
+        ...publishedKnowledge,
+        knowledge_snapshot_version: `${profile.profile_key}:${profile.version}:${snapshotHash.slice(0, 12)}`,
+        knowledge_snapshot_hash: snapshotHash,
+      },
       knowledge_source_type: 'service_provider_bot_profile',
       knowledge_source_ref: 'config/service-provider-bots/one-time.json',
       channel: normalizedChannel,
       channel_binding_key: `${ONE_TIME_WORKSPACE_KEY}:${ONE_TIME_PROJECT_KEY}:${normalizedChannel}:${profile.profile_key}`,
+      channel_formatting_policy: formattingPolicy,
+      model_family: 'communication_agent',
+      control_plane_table: 'bna_communication_agents',
+      build_qa_agent_profile_table: null,
+      provider_secret_storage: 'external_provider_connectors_only',
       reply_mode: effectiveReplyMode,
       outbox_channel_key: normalizedChannel === 'whatsapp' ? ONE_TIME_AGENT_OUTBOX_CHANNEL_KEY : null,
       create_contact_on_inbound: true,
@@ -136,6 +230,12 @@ function communicationAgentMetadata(agent = {}) {
     knowledge_source_type: agent.knowledge_source_type,
     knowledge_source_ref: agent.knowledge_source_ref,
     channel_binding_key: agent.channel_binding_key,
+    channel_formatting_policy: agent.channel_formatting_policy || channelFormattingPolicy(agent.channel),
+    published_knowledge_snapshot: agent.published_knowledge_snapshot || null,
+    agent_model_family: agent.model_family || 'communication_agent',
+    agent_control_plane_table: agent.control_plane_table || 'bna_communication_agents',
+    build_qa_agent_profile_table: null,
+    provider_secret_storage: 'external_provider_connectors_only',
     agent_outbox_channel_key: agent.outbox_channel_key || null,
     outbox_status: 'not_created',
     communication_agent: {
@@ -145,6 +245,10 @@ function communicationAgentMetadata(agent = {}) {
       reply_mode: agent.reply_mode,
       channel: agent.channel,
       channel_binding_key: agent.channel_binding_key,
+      channel_formatting_policy: agent.channel_formatting_policy || channelFormattingPolicy(agent.channel),
+      published_knowledge_snapshot: agent.published_knowledge_snapshot || null,
+      model_family: agent.model_family || 'communication_agent',
+      control_plane_table: agent.control_plane_table || 'bna_communication_agents',
       knowledge_snapshot_version: agent.knowledge_snapshot_version,
       raw_api_key_stored: false,
       raw_secret_returned: false,
@@ -158,7 +262,9 @@ module.exports = {
   ONE_TIME_AGENT_OUTBOX_CHANNEL_KEY,
   ONE_TIME_PROJECT_KEY,
   ONE_TIME_WORKSPACE_KEY,
+  channelFormattingPolicy,
   communicationAgentMetadata,
   knowledgeSnapshotHash,
+  publishedKnowledgeSnapshot,
   resolveAssignedCommunicationAgent,
 };

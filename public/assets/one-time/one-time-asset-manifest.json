@@ -436,7 +436,7 @@
       "verified_location": null,
       "identity_verification": "visually inspected from operator-supplied Downloads image; no child identity inferred",
       "rights_provenance": "operator-selected One Time public landing image addendum on 2026-07-13; broader licensing facts not independently asserted",
-      "crop_focal_guidance": "Use object-fit cover in the 16:10 Clarity card image area, object-position 50% 29%, no extra zoom so Rabbi's full head/face, text display, and classroom context remain visible.",
+      "crop_focal_guidance": "Use object-fit cover in the 16:10 Clarity card image area, object-position 50% 25%, no extra zoom so Rabbi's full head/face, text display, and classroom context remain visible.",
       "optimization_status": "converted with ffmpeg libwebp quality 84, metadata stripped with -map_metadata -1; production file 96992 bytes",
       "public_use_status": "operator explicitly assigned to One Time public landing Clarity card",
       "status": "used"
@@ -456,7 +456,7 @@
       "verified_location": null,
       "identity_verification": "visually inspected from operator-supplied Downloads image; no child identity inferred",
       "rights_provenance": "operator-selected One Time public landing image addendum on 2026-07-13; broader licensing facts not independently asserted",
-      "crop_focal_guidance": "Use object-fit cover in the 16:10 Excitement card image area, object-position 50% 54%, and CSS scale(1.1) for a moderate crop that emphasizes the larger group of students while avoiding the bottom-right chair gap.",
+      "crop_focal_guidance": "Use object-fit cover in the 16:10 Excitement card image area, object-position 50% 50%, and CSS scale(1.1) for a moderate crop that emphasizes the larger group of students while avoiding the bottom-right chair gap.",
       "optimization_status": "converted with ffmpeg libwebp quality 84, metadata stripped with -map_metadata -1; production file 101038 bytes",
       "public_use_status": "operator explicitly assigned to One Time public landing Excitement card",
       "status": "used"

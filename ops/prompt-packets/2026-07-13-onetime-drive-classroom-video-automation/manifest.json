@@ -316,7 +316,7 @@
       ],
       "stage": "06-class-package-classroom-and-latest-video",
       "packet_role": "IMPLEMENTATION_PACKET",
-      "status": "partial_readonly_live_smoke_verified_member_publication_gated",
+      "status": "partial_readonly_synthetic_member_live_smoke_verified_publication_vimeo_gated",
       "owner": "Codex",
       "scope": "Class review package, member library, latest-video query shape, older-class library, parent/student entitlements, and workspace isolation.",
       "out_of_scope": [
@@ -342,18 +342,21 @@
       "required_evidence": [
         "admin class-package list readback with published library items",
         "review classroom safe latest-video shape",
+        "synthetic review member access-code entitlement proof",
+        "member-safe private transcript/admin key omission",
         "anonymous member-library and classroom 401 gates",
-        "real member access-code entitlement proof",
+        "approved publication gate proof",
+        "Vimeo-origin package integration proof",
         "workspace isolation proof",
         "no production mutation"
       ],
       "validation_command": "node --test tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-member-library.test.js",
-      "terminal_condition": "Read-only live smoke is verified at One Time deploy SHA 43f7c33733880745d8f1191c86fe8e196ef68baa, but terminal Done still requires approved member/access-code entitlement proof, publication gate proof, and eventual Vimeo-origin package integration after provider upload readiness resolves.",
+      "terminal_condition": "Read-only admin/review/synthetic-member/anonymous live smoke is verified at One Time deploy SHA 22e50b2ee10fd0f78d17d5eb896d31a8a73402cd, but terminal Done still requires approved publication gate proof and eventual Vimeo-origin package integration after provider upload readiness resolves.",
       "handoff_target": "PKT-20260713-004-08",
       "next_requirement": "REQ-20260713-919",
       "next_packet": "PKT-20260713-004-08"
     }
   ],
   "created_at": "2026-07-13T14:17:00+03:00",
-  "updated_at": "2026-07-13T16:37:10+03:00"
+  "updated_at": "2026-07-13T17:06:30+03:00"
 }

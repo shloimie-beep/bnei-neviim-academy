@@ -40507,3 +40507,56 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no live charge, refund, notice send, invoice/receipt send,
   access mutation, provider mutation, deploy, credential mutation, production
   data mutation, or secret exposure was performed.
+## 2026-07-13 - One Time classroom member-safe live proof strengthened
+
+- Hardened One Time member-safe classroom payloads so review and member
+  embedded classroom readback omit private transcript/admin keys instead of
+  returning blank private fields.
+- Deployed exact One Time SHA `22e50b2ee10fd0f78d17d5eb896d31a8a73402cd`.
+- Live smoke passed: admin packages with library items, review `today_video`,
+  synthetic member access-code entitlement with two visible items at
+  `live_class`, anonymous member/classroom 401 gates, and
+  `external_write_performed=false`.
+- Evidence: `ops/live-smokes/2026-07-13T14-06-30-661Z-one-time-classroom-library-readonly-live-smoke.md`.
+- Remaining gates: approved member publication, parent/student latest-video
+  proof, Vimeo-origin package integration, and Vimeo private upload approval.
+## 2026-07-13 - Communication-agent control model deployed
+
+- Closed `REQ-20260712-309` after deploying exact runtime SHA
+  `1e6a977818f1393fd3721d796d9c025e0ac95eb9` to One Time and BNA.
+- Added a dedicated first-party communication-agent model separate from
+  `bna_agent_profiles` / Codex build and QA agents: agents, versions,
+  knowledge sources, channel bindings, and events.
+- Seeded the One Time public agent `one_time_parent_information_agent` with the
+  same published version for email and WhatsApp, approved public knowledge,
+  email `draft` mode, WhatsApp `capture_only` mode, and
+  `create_task_on_inbound=false`.
+- Added strict no-secret JSON checks so provider/API keys remain in Railway or
+  connector configuration, not in communication-agent tables.
+- Verification passed: clean-worktree syntax checks, focused communication
+  agent/inbound/outbox/WAPI suite `37/37`, secrets audit over 9522 tracked
+  paths, One Time separate-instance live smoke, One Time CRM workbench live
+  smoke, One Time provider route-module live smoke, and BNA workspace taxonomy
+  smoke.
+- Evidence: `ops/live-smokes/2026-07-13T14-04-45-139Z-one-time-operations-crm-workbench-live-smoke.md`,
+  `ops/live-smokes/2026-07-13T14-04-45-800Z-onetime-provider-route-module-live-smoke.md`,
+  and `ops/live-smokes/2026-07-13T14-04-45-310Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner email send, WhatsApp provider send, public auto-reply
+  enablement, Telegram send, destructive CRM write, provider mutation,
+  credential mutation, payment mutation, or access mutation was performed.
+
+## 2026-07-13 - One Time Billing V2 branch refreshed against current master
+
+- Merged current `origin/master`
+  `dd018f6906b81926a215c63487ef2a230a79be49` into the One Time Billing V2
+  draft PR branch after preserving the concurrent Vimeo/classroom,
+  communication-agent, and landing-image work.
+- Resolved overlapping memory/changelog/ledger conflict sections by preserving
+  both the Billing V2 Stripe proof records and the incoming One Time
+  classroom/communication-agent proof records.
+- Re-ran focused Billing, communication-agent, One Time member/library, generated
+  Operations, workspace-scope, protocol-drift, secret-audit, ledger JSONL, and
+  diff checks before the merge push.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.

@@ -84,3 +84,11 @@
   where required`, USD, monthly recurring, tax-exclusive, no free trial, no
   failed-payment grace period, no automatic refunds/prorations, cancellation at
   period end by default, and manual exceptional refund review only.
+- As of 2026-07-13, the newly supplied Vimeo owner values are confirmed as
+  app credential material: the first value is the owner app `client_id` and the
+  second value is the owner app `client_secret` for client-credentials auth.
+  Do not treat either value as `VIMEO_ACCESS_TOKEN`; both failed direct `/me`
+  bearer readback. The existing local user access token remains the confirmed
+  Shloimie Dratler `/me` bearer for read-only account checks, while upload
+  smoke still requires a private test project/folder, upload-capable user
+  token/scope/plan confirmation, and explicit synthetic upload approval.
