@@ -10,6 +10,7 @@ const ONE_TIME_OUTBOX_CHANNEL_KEYS = Object.freeze([
   'telegram:one_time_rabbi_operator',
   'email:one_time_class_reminder',
   'whatsapp:one_time_class_reminder',
+  'whatsapp:one_time_agent_reply',
 ]);
 
 const ONE_TIME_OUTBOX_MAX_ATTEMPTS = 5;
@@ -53,6 +54,7 @@ function outboxMessageKind(channelKey = '') {
   const key = String(channelKey || '').trim();
   if (key.endsWith('one_time_signup_confirmation')) return 'signup_confirmation';
   if (key.endsWith('one_time_class_reminder')) return 'class_reminder';
+  if (key.endsWith('one_time_agent_reply')) return 'agent_reply';
   if (key === 'telegram:one_time_rabbi_operator') return 'rabbi_signup_alert';
   return '';
 }
@@ -98,6 +100,15 @@ function phoneRecipientForOutbox(contact = {}) {
   return normalizePhoneDigits(contact.parent_whatsapp || contact.parent_phone || contact.phone || contact.whatsapp || '');
 }
 
+function messageText(value = '', maxLength = 4000) {
+  return String(value || '')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+    .slice(0, maxLength);
+}
+
 function assertSafeClassJoinUrl(classJoinUrl = '') {
   const link = compact(classJoinUrl);
   if (!/^https:\/\//i.test(link)) {
@@ -118,6 +129,48 @@ function assertTelegramTextDoesNotExposeClassLink(text = '', classJoinUrl = '') 
     error.retryable = false;
     throw error;
   }
+}
+
+function assertAgentReplyDoesNotExposeRawClassLink(text = '', classJoinUrl = '') {
+  const body = String(text || '');
+  const link = compact(classJoinUrl);
+  if ((link && body.includes(link)) || /https?:\/\/[^\s]*zoom\.us/i.test(body)) {
+    const error = new Error('One Time agent reply payload must not store the raw class join link.');
+    error.code = 'agent_reply_raw_class_link_blocked';
+    error.retryable = false;
+    throw error;
+  }
+}
+
+function buildOneTimeAgentReplyText(payload = {}, classJoinUrl = '') {
+  if (payload.raw_class_link_in_payload === true) {
+    const error = new Error('One Time agent reply payload flagged a raw class join link.');
+    error.code = 'agent_reply_raw_class_link_blocked';
+    error.retryable = false;
+    throw error;
+  }
+  const template = messageText(payload.reply_text_template || payload.text_template || '');
+  const token = '{{CURRENT_CLASS_LINK}}';
+  if (template.includes(token)) {
+    if (payload.class_link_delivery_alias !== 'current_one_time_class_link') {
+      const error = new Error('One Time agent reply class-link template is missing the approved alias.');
+      error.code = 'agent_reply_class_link_alias_missing';
+      error.retryable = false;
+      throw error;
+    }
+    const classLink = assertSafeClassJoinUrl(classJoinUrl);
+    assertAgentReplyDoesNotExposeRawClassLink(template, classLink);
+    return template.split(token).join(classLink);
+  }
+  const text = messageText(payload.reply_text || payload.text || payload.body || '');
+  assertAgentReplyDoesNotExposeRawClassLink(text, classJoinUrl);
+  if (!text) {
+    const error = new Error('One Time agent reply text is missing.');
+    error.code = 'missing_agent_reply_text';
+    error.retryable = false;
+    throw error;
+  }
+  return text;
 }
 
 function htmlFromText(text = '') {
@@ -158,7 +211,10 @@ function buildOneTimeOutboxDeliveryRequest({
   }
   const transport = outboxChannelTransport(channelKey);
   const kind = outboxMessageKind(channelKey);
-  const classLink = transport === 'telegram' ? compact(classJoinUrl) : assertSafeClassJoinUrl(classJoinUrl);
+  const classLinkRequired = transport !== 'telegram' && kind !== 'agent_reply';
+  const classLink = transport === 'telegram'
+    ? compact(classJoinUrl)
+    : classLinkRequired ? assertSafeClassJoinUrl(classJoinUrl) : compact(classJoinUrl);
   const city = cityFromPayload(payload, contact);
   const classInstant = classInstantFromPayload(payload, now);
   const contactName = compact(contact.parent_name || contact.contact_name || payload.contact_name || '');
@@ -208,12 +264,24 @@ function buildOneTimeOutboxDeliveryRequest({
   }
 
   if (transport === 'whatsapp') {
-    const to = phoneRecipientForOutbox(contact);
+    const to = kind === 'agent_reply'
+      ? normalizePhoneDigits(payload.recipient_phone || payload.to_phone || payload.to || payload.phone || '') || phoneRecipientForOutbox(contact)
+      : phoneRecipientForOutbox(contact);
     if (!to) {
       const error = new Error('WhatsApp recipient is missing for One Time outbox delivery.');
       error.code = 'missing_whatsapp_recipient';
       error.retryable = false;
       throw error;
+    }
+    if (kind === 'agent_reply') {
+      return {
+        transport,
+        kind,
+        provider: 'one_time_wapi',
+        to,
+        text: buildOneTimeAgentReplyText(payload, classLink),
+        noLinkPreview: payload.no_link_preview === true,
+      };
     }
     const text = kind === 'signup_confirmation'
       ? buildOneTimeSignupConfirmationEmail({

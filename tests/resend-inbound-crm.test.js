@@ -239,6 +239,12 @@ test('Resend inbound event fetches full email and stores scoped CRM communicatio
   assert.equal(metadata.inbound_pipeline_version, '2026-07-13-v1');
   assert.equal(metadata.timeline_projection, 'operations_communications_unified_timeline');
   assert.equal(metadata.unread, true);
+  assert.equal(metadata.agent_loaded, true);
+  assert.equal(metadata.agent_key, 'one_time_parent_information_agent');
+  assert.equal(metadata.agent_version, '2026-07-13-v3');
+  assert.match(metadata.knowledge_snapshot_version, /^one_time_parent_information_agent:2026-07-13-v3:/);
+  assert.equal(metadata.communication_agent.reply_mode, 'draft');
+  assert.equal(metadata.communication_agent.raw_class_link_in_model_context, false);
   assert.equal(metadata.agent_reply_mode, 'draft');
   assert.equal(metadata.outbox_status, 'not_created');
   assert.equal(metadata.external_write_performed, false);
@@ -252,6 +258,8 @@ test('Resend inbound event fetches full email and stores scoped CRM communicatio
   assert.equal(result.receipt.redacted_receipt, true);
   assert.equal(result.receipt.body_returned, false);
   assert.equal(result.receipt.html_returned, false);
+  assert.equal(result.receipt.agent_loaded, true);
+  assert.equal(result.receipt.agent_key, 'one_time_parent_information_agent');
   assert.equal(result.receipt.external_write_performed, false);
   assert.equal(result.receipt.sender.email_masked, 'p***t@example.com');
   assert.doesNotMatch(JSON.stringify(result.receipt), /Please call me back|Parent Person <Parent@Example\.COM>|parent@example\.com/i);

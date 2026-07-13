@@ -1,6 +1,6 @@
 # Next Session
 
-Next unblocked batch: continue `REQ-20260712-307` inbound communication pipeline after the deployed canonical website assistant/Rabbi Telegram adapter mirror slice; owner-test sends remain blocked until secure owner aliases are configured.
+Next unblocked batch: commit, push, deploy, and live-smoke the `REQ-20260712-307` communication-agent metadata and delivery-outbox convergence slice; owner-test sends remain blocked until secure owner aliases are configured.
 Open blocked requirement: `REQ-20260713-910`, blocked by `REQ-20260713-906`
 
 Current closeout:
@@ -8,7 +8,7 @@ Current closeout:
 - `REQ-20260712-302` is Done for the One Time-first shared CRM current phase.
 - `REQ-20260712-303` is Done for the dedicated CRM contact workspace/action matrix.
 - `REQ-20260712-304` is Done for customer-facing CRM/contact-review copy cleanup.
-- `REQ-20260712-307` is In progress: canonical inbound ingest now covers Resend, One Time WAPI mirroring/history shape, website assistant user messages, and private Rabbi Telegram support tickets at deployed SHA `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`; continue communication-agent loading and delivery-outbox convergence next.
+- `REQ-20260712-307` is In progress: canonical inbound ingest now covers Resend, One Time WAPI mirroring/history shape, website assistant user messages, and private Rabbi Telegram support tickets at deployed SHA `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`. The next local slice loads the published One Time communication-agent profile/version/knowledge metadata for email/WhatsApp and queues public WhatsApp lead-agent replies through `assistant_delivery_outbox` channel `whatsapp:one_time_agent_reply`; commit, push, deploy, and live-smoke that slice next.
 - Latest current app runtime proof is deployed on BNA and One Time at `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`; the prior CRM copy cleanup runtime proof remains `a8df4c9b9cc091028105a16430aae6927cd0b429`.
 - Do not reopen `REQ-20260712-302` for deferred BNA frontend parity; create/use a later BNA adoption packet if that becomes active.
 - `RAW-20260713-004` One Time Drive/Classroom automation is registered separately. `REQ-20260713-912` and `REQ-20260713-913` are Done; continue `REQ-20260713-914` Drive intake orchestrator or the visual audit packet only after its stated gates.

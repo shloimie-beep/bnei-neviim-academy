@@ -135,7 +135,12 @@ test('inbound service resolves binding, contact, conversation, message, unread, 
   assert.equal(metadata.message_persisted, true);
   assert.equal(metadata.timeline_projection, 'operations_communications_unified_timeline');
   assert.equal(metadata.unread, true);
-  assert.equal(metadata.agent_loaded, false);
+  assert.equal(metadata.agent_loaded, true);
+  assert.equal(metadata.agent_key, 'one_time_parent_information_agent');
+  assert.equal(metadata.agent_version, '2026-07-13-v3');
+  assert.match(metadata.knowledge_snapshot_version, /^one_time_parent_information_agent:2026-07-13-v3:/);
+  assert.equal(metadata.communication_agent.raw_api_key_stored, false);
+  assert.equal(metadata.communication_agent.raw_class_link_in_model_context, false);
   assert.equal(metadata.agent_reply_mode, 'draft');
   assert.equal(metadata.outbox_status, 'not_created');
   assert.equal(metadata.external_write_performed, false);
@@ -145,6 +150,8 @@ test('inbound service resolves binding, contact, conversation, message, unread, 
   assert.equal(result.receipt.body_returned, false);
   assert.equal(result.receipt.html_returned, false);
   assert.equal(result.receipt.raw_headers_returned, false);
+  assert.equal(result.receipt.agent_loaded, true);
+  assert.equal(result.receipt.agent_key, 'one_time_parent_information_agent');
   assert.equal(result.receipt.external_write_performed, false);
   assert.doesNotMatch(JSON.stringify(result.receipt), /Private message body|sender@example\.com|email_received_secret_123|evt_secret_123/i);
 });
@@ -190,10 +197,14 @@ test('inbound service accepts WhatsApp-shaped adapter input without creating an 
   const metadata = JSON.parse(db.communicationInsertParams[16]);
   assert.equal(metadata.sender_identity_type, 'whatsapp');
   assert.equal(metadata.unread, true);
+  assert.equal(metadata.agent_loaded, true);
+  assert.equal(metadata.agent_key, 'one_time_parent_information_agent');
+  assert.equal(metadata.agent_outbox_channel_key, 'whatsapp:one_time_agent_reply');
   assert.equal(metadata.outbox_status, 'not_created');
   assert.equal(metadata.external_write_performed, false);
 
   assert.equal(result.receipt.sender.phone_masked.endsWith('4567'), true);
+  assert.equal(result.receipt.agent_loaded, true);
   assert.equal(result.receipt.outbox_status, 'not_created');
   assert.equal(result.receipt.external_write_performed, false);
   assert.doesNotMatch(JSON.stringify(result.receipt), /15551234567|\+1 \(555\) 123-4567|I want to join/i);
@@ -256,6 +267,8 @@ test('inbound service captures Rabbi Telegram support-ticket input without conta
   assert.equal(metadata.create_contact_on_inbound, false);
   assert.equal(metadata.create_task_on_inbound, false);
   assert.equal(metadata.task_created, false);
+  assert.equal(metadata.agent_loaded, false);
+  assert.equal(metadata.agent_load_status, 'no_channel_agent_binding');
   assert.equal(metadata.agent_reply_mode, 'approval_gated');
   assert.equal(metadata.outbox_status, 'not_created');
   assert.equal(metadata.external_write_performed, false);

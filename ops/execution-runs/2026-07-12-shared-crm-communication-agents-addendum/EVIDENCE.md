@@ -565,3 +565,23 @@
   public auto-reply enablement, payment/access mutation, provider credential
   mutation, raw Telegram chat/message value logging, raw contact/message
   logging, or destructive production mutation was performed by this slice proof.
+
+## Communication-Agent Metadata And Delivery-Outbox Convergence - Local Proof
+
+- `src/lib/bna/crm/communication-agent-runtime.js` loads the existing published
+  One Time provider lead-bot profile as the assigned communication agent for
+  One Time email and WhatsApp channels.
+- `src/lib/bna/crm/ingest-inbound-communication.js` now stamps redacted agent
+  key, version, knowledge snapshot, binding key, reply mode, and no-secret /
+  no-raw-class-link flags on canonical inbound rows and receipts.
+- `src/lib/bna/one-time-delivery-outbox.js` adds
+  `whatsapp:one_time_agent_reply`; class-link replies store
+  `{{CURRENT_CLASS_LINK}}` and substitute the approved link only during final
+  provider delivery.
+- `server.js` queues live-ready public WhatsApp lead-agent replies into
+  `assistant_delivery_outbox` after the existing claim/dedupe step instead of
+  invoking WAPI directly from `maybeSendOneTimeWapiAutoReply`.
+- Local tests passed: focused agent/inbound/outbox suite `30/30`, adjacent
+  inbound/outbox suite `16/16`, runtime syntax checks, and run validation.
+- Deployment/live smoke pending for this slice. Owner-only live sends remain
+  blocked by `REQ-20260713-906` secure owner-test aliases.

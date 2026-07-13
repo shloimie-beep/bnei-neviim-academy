@@ -306,6 +306,10 @@ test('server wires fail-closed hosted webhook auth, sanitized headers, CRM lead 
     server.indexOf('function authorizeWapiWebhookRequest'),
     server.indexOf('function oneTimeWapiAutoReplyReadiness')
   );
+  const autoReplySender = server.slice(
+    server.indexOf('async function maybeSendOneTimeWapiAutoReply'),
+    server.indexOf('async function resolveWapiOutboundRecipient')
+  );
   assert.match(server, /function authorizeWapiWebhookRequest/);
   assert.match(server, /WAPI webhook is disabled until a server-side webhook secret is configured/);
   assert.match(server, /function sanitizedWapiWebhookHeaders/);
@@ -338,6 +342,11 @@ test('server wires fail-closed hosted webhook auth, sanitized headers, CRM lead 
   assert.match(server, /db !== pool \|\| typeof db\.connect !== 'function'/);
   assert.match(server, /\$2::text <> ''/);
   assert.match(server, /reply_audit_body/);
+  assert.match(server, /function oneTimeWapiAgentReplyPayload/);
+  assert.match(autoReplySender, /upsertAssistantDeliveryOutboxEvent/);
+  assert.match(autoReplySender, /whatsapp:one_time_agent_reply/);
+  assert.match(autoReplySender, /queued_for_delivery_outbox/);
+  assert.doesNotMatch(autoReplySender, /sendWapiTextMessage\(/);
   assert.match(server, /skipped_observe_only/);
   assert.match(server, /ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'live'/);
   assert.doesNotMatch(server, /Here is the link for today.s shiur/);
