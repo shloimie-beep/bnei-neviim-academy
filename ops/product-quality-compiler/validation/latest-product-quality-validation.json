@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-13T07:38:08.107Z",
+  "generated_at": "2026-07-13T11:21:13.347Z",
   "mode": "default",
   "files_scanned": [
-    "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json"
+    "tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json"
   ],
   "total": 1,
   "passed": 1,
   "failed": 0,
   "results": [
     {
-      "file": "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json",
+      "file": "tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json",
       "passed": true,
       "error_codes": [],
       "errors": []

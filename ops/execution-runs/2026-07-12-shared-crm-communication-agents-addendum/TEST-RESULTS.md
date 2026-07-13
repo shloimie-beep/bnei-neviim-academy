@@ -940,3 +940,28 @@
 - PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T11-12-08-098Z-operations-workspace-taxonomy-live-smoke.md`.
 - PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 8ea2cd06e1920eecfd1ae97b937c22d701c00099`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw assistant body/contact logging, or production data mutation was performed by this DTO smoke.
+
+## Shared CRM Current-Phase Closeout - 2026-07-13
+
+- PASS `npm run pqc:validate -- tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json`.
+- PASS `npm run operations:build`.
+- PASS `npm run operations:check-generated`.
+- PASS `node --check server.js`.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js`; 46/46 tests passed.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run secrets:audit`; 9372 tracked paths checked.
+- PASS `npm run watchdog:protocol-drift`; finding_count 0 after hardening the new One Time Drive/Classroom packet guardrails.
+- PASS `npm run bna:run:validate`; counts after closeout were 7 not_started, 3 in_progress, 2 blocked, 9 done.
+- PASS `npm run bna:run:next`; selector advanced to `REQ-20260712-303`.
+
+## Canonical CRM Contact Aggregate Service Closeout - 2026-07-13
+
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/service-provider-scope-routes.test.js`; 22/22 tests passed during the `8ea2cd06` assistant-thread slice.
+- PASS `node --test tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js`; 9/9 tests passed during the same closeout.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; finding_count 0.
+- PASS `npm run secrets:audit`; 9370 tracked paths checked before the app-code deploy.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS live One Time CRM workbench, assistant-thread DTO, WhatsApp DTO, signup-context DTO, signup-record DTO, BNA taxonomy, and One Time performance regression smokes at deployed SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- `REQ-20260712-306` marked Done because its exact DTO/service acceptance contract is now implemented, deployed, and proved; no new deploy was required for this status-only closeout.

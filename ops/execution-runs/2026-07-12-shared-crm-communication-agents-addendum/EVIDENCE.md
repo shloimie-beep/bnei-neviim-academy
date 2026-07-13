@@ -474,3 +474,21 @@
 - Operations workspace taxonomy smoke passed: `ops/live-smokes/2026-07-13T11-12-08-098Z-operations-workspace-taxonomy-live-smoke.md`.
 - One Time performance gate passed at the deployed SHA: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw assistant body/contact logging, or production data mutation.
+
+## Shared CRM Current-Phase Closeout - 2026-07-13
+
+- `requirements.json` marks `REQ-20260712-302` Done for the current One Time-first acceptance scope.
+- `tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json` validates the bounded shared CRM slice.
+- `ops/product-quality-compiler/validation/latest-product-quality-validation.md` records the latest PQC validation readback.
+- `ops/watchdog-audits/2026-07-13-product-quality-drift.md` records protocol drift finding_count 0 after hardening `RAW-20260713-004` packet guardrails.
+- `raw-input/RAW-20260713-004-onetime-drive-classroom-video-automation.md`, `tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md`, and `ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/` register the next One Time Drive/Classroom automation lane separately from `REQ-20260712-302`.
+- Current shared CRM runtime proof remains deployed at `8ea2cd06e1920eecfd1ae97b937c22d701c00099` with BNA and One Time Railway deployments successful and live smokes recorded in the assistant-thread DTO section above.
+
+## Canonical CRM Contact Aggregate Service - 2026-07-13
+
+- `REQ-20260712-306` acceptance criterion is satisfied: one server contact service returns list, selected aggregate/timeline, conversations, and tasks DTOs by stable `contact_key` without browser-side union of independent datasets.
+- `src/lib/bna/crm/contact-service.js` owns the DTO envelopes and selected-contact row normalization.
+- `server.js` wires `operationsCrmContactService = createContactService(...)` with `listContactRows`, `timelineRows`, `conversationRows`, `taskRows`, and `parseContactRef`; protected routes derive workspace/project scope server-side before querying.
+- `tests/shared-crm-workbench-contract.test.js` pins the server-owned selected-contact routes and asserts `loadFirstPartyCrmSubviewData` does not use browser union helpers or raw `bna_communications`/`bna_contact_communications` merging.
+- `tests/crm-contact-service.test.js` covers the canonical list DTO, timeline DTO, separate conversations and tasks DTO envelopes, support-ticket/task classification, and Activity-only exclusions for signup, assistant, lifecycle, class attendance, suppression, delivery, and membership rows.
+- Deployed proof at `8ea2cd06e1920eecfd1ae97b937c22d701c00099` includes One Time CRM workbench readback, targeted assistant-thread, WhatsApp, signup-context, and signup-record DTO smokes, BNA taxonomy smoke, and One Time performance regression gate.

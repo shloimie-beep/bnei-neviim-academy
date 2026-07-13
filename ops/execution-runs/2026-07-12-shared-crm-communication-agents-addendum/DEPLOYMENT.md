@@ -336,3 +336,12 @@ Global production readiness remains blocked only by known external full-launch f
 - Operations workspace taxonomy smoke passed; report `ops/live-smokes/2026-07-13T11-12-08-098Z-operations-workspace-taxonomy-live-smoke.md`.
 - One Time performance regression gate passed against the deployed SHA; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw assistant body/contact logging, or production data mutation.
+
+## 2026-07-13 Shared CRM Current-Phase Closeout
+
+- No new runtime deploy was required for this status/evidence closeout.
+- Current deployed/proved runtime SHA: `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- BNA Railway deployment `55f38854-f00a-4432-bfdf-0dfcf6c400fc` reached `SUCCESS`; BNA `/api/deploy-info` returned exact SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099` and `target_app=bna`.
+- One Time Railway deployment `c2b6b88a-036a-4a33-93d9-3bd2f9de7719` reached `SUCCESS`; One Time `/api/deploy-info` returned exact SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099` and `target_app=one-time`.
+- Live proof remains: One Time exact-SHA separate-instance smoke, One Time provider route-module smoke, One Time Operations CRM workbench smoke, targeted assistant-thread DTO smoke, WhatsApp/signup-context/signup-record DTO regressions, BNA taxonomy smoke, and One Time performance gate.
+- `REQ-20260712-302` is closed only for the current One Time-first shared CRM phase; dedicated CRM actions, owner-test sends, and future BNA frontend adoption remain separate lanes.

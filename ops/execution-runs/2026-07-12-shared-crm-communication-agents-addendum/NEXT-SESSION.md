@@ -1,7 +1,14 @@
 # Next Session
 
-Next unblocked batch: continue only non-send, non-credential work outside the owner-only verifier lane until owner aliases are configured.
+Next unblocked batch: `REQ-20260712-303` dedicated contact workspace/actions, while owner-test sends remain blocked until secure owner aliases are configured.
 Open blocked requirement: `REQ-20260713-910`, blocked by `REQ-20260713-906`
+
+Current closeout:
+
+- `REQ-20260712-302` is Done for the One Time-first shared CRM current phase.
+- Latest shared CRM runtime proof remains deployed on BNA and One Time at `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- Do not reopen `REQ-20260712-302` for deferred BNA frontend parity; create/use a later BNA adoption packet if that becomes active.
+- `RAW-20260713-004` One Time Drive/Classroom automation is registered separately. `REQ-20260713-912` and `REQ-20260713-913` are Done; continue `REQ-20260713-914` Drive intake orchestrator or the visual audit packet only after its stated gates.
 
 Current control correction:
 

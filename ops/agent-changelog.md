@@ -39958,3 +39958,36 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   after inspecting 1 scoped card and returned zero assistant-thread rows in
   selected-contact Conversations; no synthetic data, sends, CRM mutations,
   assistant message bodies, or external writes were performed.
+
+## 2026-07-13 - Shared CRM current phase closed and Drive/Classroom packet hardened
+
+- Marked `REQ-20260712-302` Done for the current One Time-first shared CRM
+  acceptance scope. BNA CRM frontend adoption remains deferred by
+  `RAW-20260713-003`; dedicated CRM actions remain `REQ-20260712-303`.
+- Registered and hardened `RAW-20260713-004` One Time Drive/Classroom automation
+  packet guardrails without storing literal Vimeo credentials or performing any
+  upload, Drive write, send, payment/access mutation, provider mutation, or
+  production data mutation.
+- Preserved the current-state capability audit for the Drive/Classroom packet;
+  `REQ-20260713-912` and `REQ-20260713-913` are Done, while Drive intake,
+  transcription, metadata, upload, classroom publication, UI, and release
+  packets remain open.
+- Verification passed: PQC validation for the shared CRM workbench packet,
+  focused CRM/model/isolation tests `46/46`, action watchdog, protocol-drift
+  watchdog finding_count 0, secrets audit, `bna:run:validate`, and
+  `bna:run:next` advancing to `REQ-20260712-303`.
+
+## 2026-07-13 - Canonical CRM contact aggregate service closed
+
+- Marked `REQ-20260712-306` Done because the deployed canonical contact service
+  now satisfies the exact list/aggregate/timeline/conversations/tasks DTO
+  contract by stable `contact_key`.
+- Evidence is carried by deployed SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`
+  and proof commit `a523ef08d17d35425a6c96ac6148adc9a6aed778`.
+- The aggregate is server-owned through `src/lib/bna/crm/contact-service.js`
+  and `operationsCrmContactService`; contract tests reject browser-side selected
+  contact union helpers.
+- Live One Time CRM workbench, assistant-thread, WhatsApp, signup-context,
+  signup-record, BNA taxonomy, and performance smokes passed at the deployed
+  SHA. Remaining CRM work stays under `REQ-20260712-302` / `REQ-20260712-303`
+  for One Time-first UI/action breadth, not the canonical aggregate service.

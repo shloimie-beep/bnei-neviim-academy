@@ -315,3 +315,22 @@ Current status: `active`
 - Live proof passed: exact-SHA One Time separate-instance smoke, One Time CRM workbench smoke, One Time provider route-module smoke, BNA workspace taxonomy smoke, assistant-thread DTO smoke, WhatsApp DTO regression smoke, signup-context DTO regression smoke, signup-record DTO regression smoke, and One Time performance gate.
 - Targeted assistant-thread DTO live probe wrote `ops/live-smokes/2026-07-13T11-11-46-025Z-one-time-crm-assistant-thread-dto-live-smoke.md`; production returned `inspected_candidate_count=1` and `assistant_thread_match=true` with zero assistant-thread rows in selected-contact Conversations.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw assistant body/contact logging, or production data mutation was performed by this DTO smoke.
+
+## Shared CRM Current-Phase Closeout - 2026-07-13
+
+- `REQ-20260712-302` is Done for the current One Time-first acceptance scope.
+- Latest deployed/proved runtime SHA remains `8ea2cd06e1920eecfd1ae97b937c22d701c00099`; no new runtime deploy was required for this documentation/status closeout.
+- Closeout proof passed: `npm run pqc:validate -- tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json`, `npm run operations:build`, `npm run operations:check-generated`, `node --check server.js`, focused CRM/model/isolation tests `46/46`, action watchdog, secrets audit, and protocol-drift watchdog with zero findings.
+- `RAW-20260713-003` still defers simultaneous BNA CRM frontend parity; BNA remains protected by shared runtime, API/security/privacy/database, taxonomy, and workspace-isolation regression proof.
+- Dedicated CRM actions remain open under `REQ-20260712-303`; owner-only send verification remains blocked by `REQ-20260713-906` until secure owner email/WhatsApp aliases exist.
+- The new One Time Drive/Classroom automation raw packet `RAW-20260713-004` is registered separately; its control packet and code/current-state capability audit are done, but Drive intake, transcription, metadata, upload, classroom publication, UI, and release packets remain open.
+
+## Canonical CRM Contact Aggregate Service - 2026-07-13
+
+- `REQ-20260712-306` is Done at deployed runtime SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- The server-owned canonical contact service in `src/lib/bna/crm/contact-service.js` returns the required list, selected aggregate/timeline, conversations, and tasks DTO envelopes by stable `contact_key`; the browser no longer owns a union of independent CRM/communication datasets for selected-contact detail.
+- Operations routes delegate selected-contact DTO loading through `operationsCrmContactService`, with server-side workspace/project scope derivation before row loading.
+- The deployed aggregate covers the scoped One Time contact record, communications, legacy contact communications, support tickets, product/signup context, direct signups, assistant threads, lifecycle events, follow-up tasks, student/member/access context, live class attendance, suppression, delivery outbox, and delivery dead-letter rows.
+- Contract tests explicitly reject browser-side contact/conversation union helpers and pin the dedicated server DTO routes.
+- Live proof at SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`: One Time CRM workbench smoke passed with 12 scoped cards, assistant-thread DTO proof found a positive Activity match, WhatsApp and signup-context DTO regressions found positive matches, signup-record DTO safely skipped only because sampled production had no direct signup rows, and BNA taxonomy regression passed.
+- Remaining `REQ-20260712-302` work is shared CRM product/UI breadth and One Time-first action polish, not the canonical aggregate service contract itself.

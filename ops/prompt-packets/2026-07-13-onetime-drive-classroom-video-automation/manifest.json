@@ -1,0 +1,119 @@
+{
+  "schema_version": "packet-dag.v1",
+  "parent_raw_id": "RAW-20260713-004",
+  "parent_raw_source_path": "raw-input/RAW-20260713-004-onetime-drive-classroom-video-automation.md",
+  "requirement_register_path": "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "classification": [
+    "SUPER_RAMBLE",
+    "PRODUCT_QUALITY",
+    "UI_VISUAL_AUDIT",
+    "DRIVE_CONTENT_INTAKE",
+    "MEDIA_PROCESSING",
+    "TRANSCRIPTION",
+    "COMMUNITY_CLASSROOM",
+    "BOT_KNOWLEDGE_HANDOFF",
+    "PROVIDER_SETUP",
+    "EXTERNAL_WRITE_REQUEST",
+    "SECURITY_PRIVACY",
+    "DEPLOY_RELEASE"
+  ],
+  "product_quality_compiler_required": true,
+  "visual_audit_before_ui_implementation": true,
+  "external_writes_authorized": false,
+  "secret_values_printed": false,
+  "packet_dag_status": "current-state-code-audit-produced",
+  "packets": [
+    {
+      "packet_id": "PKT-20260713-004-00",
+      "parent_raw_id": "RAW-20260713-004",
+      "parent_packet_id": null,
+      "child_packet_ids": [
+        "PKT-20260713-004-01",
+        "PKT-20260713-004-02",
+        "PKT-20260713-004-03",
+        "PKT-20260713-004-04",
+        "PKT-20260713-004-05",
+        "PKT-20260713-004-06",
+        "PKT-20260713-004-07",
+        "PKT-20260713-004-08"
+      ],
+      "depends_on_packet_ids": [],
+      "stage": "00-control-tower",
+      "packet_role": "CONTROL_TOWER",
+      "status": "done",
+      "owner": "Codex",
+      "scope": "Raw capture, router output, source coverage, Packet DAG, collision constraints, and next packet.",
+      "out_of_scope": [
+        "Product UI implementation",
+        "Vimeo upload",
+        "Drive file mutation",
+        "External sends",
+        "Payment/access/DNS/GHL runtime"
+      ],
+      "affected_routes": [],
+      "affected_files": [
+        "raw-input/RAW-20260713-004-onetime-drive-classroom-video-automation.md",
+        "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md",
+        "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/MANIFEST.md",
+        "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/current-state-capability-audit.md"
+      ],
+      "view_classes": [
+        "RABBI_PROVIDER_ADMIN",
+        "MEMBER_PARENT_PORTAL",
+        "STUDENT_PORTAL",
+        "INTERNAL_AGENT_SUPPORT"
+      ],
+      "required_evidence": [
+        "raw capture",
+        "source statement map",
+        "packet DAG",
+        "secret-redacted credential handling evidence"
+      ],
+      "validation_command": "npm run watchdog:protocol-drift",
+      "terminal_condition": "Parent control artifacts exist, guardrails validate with protocol drift watchdog, and next child packet is named.",
+      "handoff_target": "PKT-20260713-004-01",
+      "next_packet": "PKT-20260713-004-01"
+    },
+    {
+      "packet_id": "PKT-20260713-004-01",
+      "parent_raw_id": "RAW-20260713-004",
+      "parent_packet_id": "PKT-20260713-004-00",
+      "child_packet_ids": [
+        "PKT-20260713-004-07"
+      ],
+      "depends_on_packet_ids": [
+        "PKT-20260713-004-00"
+      ],
+      "stage": "01-current-state-visual-audit",
+      "packet_role": "VISUAL_AUDITOR",
+      "status": "ready_for_generation",
+      "owner": "Codex",
+      "scope": "Audit current Rabbi content command center, parent/student portals, classroom/library, and mobile states before UI code.",
+      "out_of_scope": [
+        "UI implementation",
+        "External writes"
+      ],
+      "affected_routes": [
+        "Rabbi content command center",
+        "parent portal",
+        "student portal",
+        "classroom/library"
+      ],
+      "required_evidence": [
+        "1440/1024/768/430/390 screenshots or exact blocker",
+        "state matrix",
+        "action-state matrix",
+        "scope-leak scan",
+        "forbidden-content scan"
+      ],
+      "validation_command": "npm run pqc:validate",
+      "terminal_condition": "Visual audit report exists and UI packet Definition of Ready can be validated or is blocked with exact reason.",
+      "handoff_target": "PKT-20260713-004-07",
+      "next_packet": "PKT-20260713-004-02"
+    }
+  ],
+  "created_at": "2026-07-13T14:17:00+03:00",
+  "updated_at": "2026-07-13T14:32:00+03:00"
+}
