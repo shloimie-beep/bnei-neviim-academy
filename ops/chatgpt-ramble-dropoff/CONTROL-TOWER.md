@@ -1,6 +1,6 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-13T10:15:39.988Z
+Generated: 2026-07-13T11:14:21.225Z
 
 ## Lane Safety
 
@@ -10,12 +10,21 @@ Generated: 2026-07-13T10:15:39.988Z
 
 | Status | Path |
 | --- | --- |
-| M | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json |
-| M | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md |
+| M | ops/agent-changelog.md |
+| M | ops/agent-task-ledger.jsonl |
+| M | ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/BATCH-STATUS.md |
+| M | ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/DEPLOYMENT.md |
+| M | ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/EVIDENCE.md |
+| M | ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/NEXT-SESSION.md |
+| M | ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/STATUS.md |
+| M | ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/TEST-RESULTS.md |
+| M | ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json |
+| M | ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/run.json |
+| M | ops/execution-runs/latest.json |
+| M | ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.json |
+| M | ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md |
 | M | ops/watchdog-audits/2026-07-13-product-quality-drift.json |
 | M | ops/watchdog-audits/2026-07-13-product-quality-drift.md |
-| ?? | ops/watchdog-audits/2026-07-13T10-06-52-478Z-onetime-owner-test-readiness.json |
-| ?? | ops/watchdog-audits/2026-07-13T10-06-52-478Z-onetime-owner-test-readiness.md |
 
 ## Packet Status
 
@@ -40,7 +49,7 @@ Generated: 2026-07-13T10:15:39.988Z
 | - Claimable observable jobs: 0 |
 | - Active Codex task fallback: 30 |
 | - Ready to claim: observable jobs 0, fallback task candidates 0 |
-| - Queue health: fresh 3, stale 583, blocked 138, unknown 192, do-not-redo 928 |
+| - Queue health: fresh 4, stale 586, blocked 138, unknown 192, do-not-redo 928 |
 | - ChatGPT dropoff ingest: enabled |
 | - ChatGPT comment collect: enabled |
 
@@ -48,7 +57,7 @@ Generated: 2026-07-13T10:15:39.988Z
 
 | Job |
 | --- |
-| - job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=261.61 path=.runtime/agent-fleet/task-1736.lock.json) |
+| - job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=262.59 path=.runtime/agent-fleet/task-1736.lock.json) |
 | - job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json) |
 | - job #443 / task #2258 [failed] Turn Rabbi meeting drop into One Time build brief (local_lock=missing path=.runtime/agent-fleet/task-2258.lock.json) |
 | - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json) |
