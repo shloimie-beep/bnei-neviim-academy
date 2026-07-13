@@ -40493,3 +40493,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   meeting/registrant/webhook write, member publication, access mutation, send,
   payment, DNS/account mutation, provider mutation, credential mutation, CRM
   production write, or destructive production mutation occurred.
+
+## 2026-07-14 - One Time release tail blocked after read-only preflight
+
+- Recorded `REQ-20260713-939`, `REQ-20260713-940`, and `REQ-20260713-941`
+  as blocked rather than unstarted.
+- Read-only release target guard passed for `join.onetimeonetime.com` and
+  the One Time Railway target.
+- Refreshed no-write public launch smoke evidence at
+  `ops/production-readiness/2026-07-12-no-write-live-smoke-readback.md`.
+- Owner-test readiness is blocked on missing secure owner email/WhatsApp
+  aliases; setup readiness is blocked on campaign seed approvals.
+- Guardrails: no deploy, merge, DNS/account mutation, provider write, email or
+  WhatsApp/WAPI send, Telegram send, payment/access mutation, credential
+  mutation, CRM production write, public auto-reply activation, or destructive
+  production mutation occurred.

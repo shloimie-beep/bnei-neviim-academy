@@ -626,3 +626,14 @@ No deployment occurred for Gate 1. One Time is currently serving `49f3edda2da37e
 - Exact deployed SHA was rechecked by the four read-only live smokes for transcript privacy, Zoom attendance/readiness, metadata/admin package readback, and classroom/member-library entitlement gates.
 - Smoke tooling/docs/test changes are local source closeout only and do not change the deployed runtime until a later release gate deploys them.
 - Guardrails: no Vimeo upload, Drive write/move, Google Classroom write, Zoom meeting/registrant/webhook attendance write, member publication, access mutation, email/WhatsApp send, payment action, DNS/account mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.
+
+## REQ-20260713-939 / 940 / 941 Release Tail Status
+
+- Status: blocked; no deploy, merge, DNS/account mutation, provider write, send, payment, access mutation, credential mutation, or production-data mutation was performed.
+- `REQ-20260713-939` read-only release preflight ran. `npm run one-time:target:guard` passed for `https://join.onetimeonetime.com`, Railway target `one-time-production / one-time-web`, and canonical One Time public funnel checks.
+- `npm run one-time:setup:check` remains blocked only on `SETUP-ONETIME-CAMPAIGN-001`: `final_campaign_copy`, `exact_recipient_segment_or_list`, `suppression_unsubscribe_proof`, and `explicit_seed_packet_approval`.
+- `npm run one-time:owner-test:readiness` wrote `ops/watchdog-audits/2026-07-13T22-13-41-897Z-onetime-owner-test-readiness.md` and remains blocked on missing secure owner-test email and WhatsApp aliases.
+- The no-write public launch smoke sweep passed and refreshed `ops/production-readiness/2026-07-12-no-write-live-smoke-readback.md`.
+- `npm run production:readiness:gate -- --json` still blocks production readiness because the evidence tree is dirty before this commit and because the owner/canary and campaign gates remain unresolved.
+- `REQ-20260713-940` exact live launch proof is blocked until `REQ-20260713-939` clears and an approved deploy candidate exists.
+- `REQ-20260713-941` final closeout is blocked until `REQ-20260713-936`, `REQ-20260713-939`, and `REQ-20260713-940` are cleared or remain explicitly blocked with current evidence.

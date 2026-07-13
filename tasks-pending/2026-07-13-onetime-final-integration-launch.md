@@ -8,7 +8,7 @@ SHA256: `sha256:BEC7D0B514919621FF8AFD25E9D95D29287F46A18B397EDB9361508BBFCDF13F
 
 Gate 1 audit: `ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md`
 
-Next requirement: `REQ-20260713-939` (dependency-aware; `REQ-20260713-936` remains blocked)
+Next requirement: none unblocked (`REQ-20260713-936`, `REQ-20260713-939`, `REQ-20260713-940`, and `REQ-20260713-941` are blocked)
 
 ## Requirements
 
@@ -20,15 +20,16 @@ Next requirement: `REQ-20260713-939` (dependency-aware; `REQ-20260713-936` remai
 - `REQ-20260713-936` blocked - Activate One Time WhatsApp canaries and public reactive auto-replies after gates
 - `REQ-20260713-937` done - Reconcile Stripe Billing V2 and PR #132 into current master safely; deployed/live-smoked at One Time SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5` with no-trial promotional billing proof
 - `REQ-20260713-938` done - Finish Vimeo, Drive, Classroom, and Zoom integration truth for One Time; no-write live proof passed at One Time SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`
-- `REQ-20260713-939` not_started - Run PR/CI/DNS/deploy/rollback gate for final launch candidate
-- `REQ-20260713-940` not_started - Prove exact live One Time deployment and launch smoke at current SHA
-- `REQ-20260713-941` not_started - Finalize source-of-truth reconciliation and goal closeout
+- `REQ-20260713-939` blocked - Run PR/CI/DNS/deploy/rollback gate for final launch candidate
+- `REQ-20260713-940` blocked - Prove exact live One Time deployment and launch smoke at current SHA
+- `REQ-20260713-941` blocked - Finalize source-of-truth reconciliation and goal closeout
 
 ## Blockers
 
 - `REQ-20260713-936`: public WhatsApp approval is granted, but secure canary aliases and technical gates are still missing.
-- `REQ-20260713-939`: release/PR/CI/DNS/deploy/rollback gate is dependency-aware and cannot fully close while `REQ-20260713-936` remains blocked on canary/owner gates.
-- `REQ-20260713-940`: final exact-SHA launch deployment proof remains pending after remaining implementation requirements are terminal.
+- `REQ-20260713-939`: release/PR/CI/DNS/deploy/rollback gate is blocked while `REQ-20260713-936` remains blocked on canary/owner gates and `SETUP-ONETIME-CAMPAIGN-001` campaign seed fields are missing.
+- `REQ-20260713-940`: final exact-SHA launch deployment proof is blocked until `REQ-20260713-939` clears and an approved deploy candidate exists.
+- `REQ-20260713-941`: final source-of-truth/goal closeout is blocked until the owner/canary, release, and exact-live-proof gates clear.
 
 ## REQ-20260713-933 Evidence Update
 
@@ -93,7 +94,17 @@ Next requirement: `REQ-20260713-939` (dependency-aware; `REQ-20260713-936` remai
   `ops/live-smokes/2026-07-13T21-58-34-168Z-one-time-classroom-library-readonly-live-smoke.md`.
 - Smoke tooling was updated so transcript privacy and Zoom use the One Time Railway auth fallback and deployed-SHA checks.
 - `REQ-20260713-938` is Done as a truth/readiness closeout. It is not an approval for Vimeo upload, Drive write/move, Google Classroom write, Zoom meeting/registrant/webhook write, member publication, access mutation, send, payment, DNS, credential, provider, or production-data mutation.
-- Continue dependency-aware `REQ-20260713-939`; `REQ-20260713-936` remains blocked until canary/owner gates pass.
+- Continue only after blocked owner/canary and campaign seed gates clear. `REQ-20260713-939`, `REQ-20260713-940`, and `REQ-20260713-941` are recorded as blocked below.
+
+## REQ-20260713-939 / 940 / 941 Release Tail Blocked
+
+- `npm run one-time:target:guard` passed as read-only release target proof for `https://join.onetimeonetime.com` and Railway target `one-time-production / one-time-web`.
+- `npm run one-time:setup:check` is blocked only on `SETUP-ONETIME-CAMPAIGN-001`: `final_campaign_copy`, `exact_recipient_segment_or_list`, `suppression_unsubscribe_proof`, and `explicit_seed_packet_approval`.
+- `npm run one-time:owner-test:readiness` is blocked by missing secure owner-test email and WhatsApp aliases; evidence `ops/watchdog-audits/2026-07-13T22-13-41-897Z-onetime-owner-test-readiness.md`.
+- No-write public launch smoke evidence is refreshed at `ops/production-readiness/2026-07-12-no-write-live-smoke-readback.md`.
+- `REQ-20260713-940` is blocked until `REQ-20260713-939` clears and an approved exact-SHA deploy candidate exists.
+- `REQ-20260713-941` is blocked until `REQ-20260713-936`, `REQ-20260713-939`, and `REQ-20260713-940` clear or remain explicitly blocked with current evidence.
+- Guardrails: no deploy, merge, DNS/account mutation, provider write, email send, WhatsApp/WAPI send, Telegram send, payment/access mutation, credential mutation, CRM production write, public auto-reply activation, or destructive production mutation occurred.
 
 ## Product Quality Operating Contract
 

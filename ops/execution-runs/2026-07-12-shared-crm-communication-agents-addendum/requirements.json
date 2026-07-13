@@ -3062,10 +3062,10 @@
         "REQ-20260713-937",
         "REQ-20260713-938"
       ],
-      "status": "not_started",
-      "implementation_status": "Not started.",
-      "can_continue_without_operator": true,
-      "next_action": "Run dependency-aware release/PR/CI/DNS/deploy/rollback gate only after dependent requirements are terminal; REQ-20260713-936 is still blocked on canary/owner gates, so final release actions remain gated until that blocker clears.",
+      "status": "blocked",
+      "implementation_status": "Read-only release preflight ran; final release/deploy/rollback remains blocked by external owner/canary and campaign gates.",
+      "can_continue_without_operator": false,
+      "next_action": "Configure secure owner/canary aliases and campaign seed approvals through approved paths; rerun owner-test readiness, one-time setup check, production readiness gate from a clean tree, release captain, CI/PR gate, deploy/rollback planning, and exact-SHA live smokes.",
       "acceptance_criteria": [
         "CI/tests pass.",
         "Secrets audit passes.",
@@ -3073,10 +3073,16 @@
         "Exact SHA deployed with rollback plan."
       ],
       "evidence": [
-        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md"
+        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md",
+        "ops/production-readiness/2026-07-12-no-write-live-smoke-readback.md",
+        "ops/watchdog-audits/2026-07-13T22-13-41-897Z-onetime-owner-test-readiness.md"
       ],
       "verification": [
-        "production readiness currently blocked"
+        "npm run one-time:target:guard PASS",
+        "npm run one-time:setup:check blocked only on SETUP-ONETIME-CAMPAIGN-001",
+        "npm run one-time:owner-test:readiness blocked on owner_test_email_alias_missing and owner_test_whatsapp_alias_missing",
+        "no-write public launch smoke sweep PASS and production-readiness evidence refreshed",
+        "npm run production:readiness:gate -- --json blocked by owner/canary aliases, campaign seed approvals, and dirty evidence tree before commit"
       ],
       "implementation_files": [
         "server.js",
@@ -3088,8 +3094,10 @@
         "package.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-14T01:05:00+03:00",
-      "blocker": ""
+      "updated_at": "2026-07-14T01:18:00+03:00",
+      "blocker": "Final release/deploy/rollback gate is blocked because REQ-20260713-936 remains blocked on secure owner/canary aliases and canary/readback/idempotency/opt-out gates; production readiness also requires SETUP-ONETIME-CAMPAIGN-001 final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, and explicit_seed_packet_approval.",
+      "blocker_owner": "Shloimie / secure runtime configuration owner / campaign owner",
+      "blocker_next_action": "Configure secure owner/canary aliases and campaign seed approvals without exposing raw secrets or raw recipient exports, then rerun readiness gates and release proof."
     },
     {
       "id": "REQ-20260713-940",
@@ -3109,20 +3117,21 @@
       "depends_on": [
         "REQ-20260713-939"
       ],
-      "status": "not_started",
-      "implementation_status": "Not started.",
-      "can_continue_without_operator": true,
-      "next_action": "After deployment, rerun exact-SHA live smokes; resolve Gate 1 mismatch before Done.",
+      "status": "blocked",
+      "implementation_status": "Blocked by REQ-20260713-939 final release/deploy gate.",
+      "can_continue_without_operator": false,
+      "next_action": "After REQ-20260713-939 clears and an approved deploy occurs, rerun exact-SHA launch smokes, screenshots/accessibility/action/route/privacy proof, and deploy-info readback before Done.",
       "acceptance_criteria": [
         "Deploy-info matches intended commit.",
         "Exact-SHA smokes pass.",
         "Screenshots/accessibility/action/route/privacy proof current."
       ],
       "evidence": [
-        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md"
+        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md",
+        "ops/production-readiness/2026-07-12-no-write-live-smoke-readback.md"
       ],
       "verification": [
-        "Gate 1 live mismatch One Time=49f3edda, origin/master=cebbfc57"
+        "Blocked until approved release/deploy candidate exists after REQ-20260713-939"
       ],
       "implementation_files": [
         "scripts/",
@@ -3130,8 +3139,10 @@
         "ops/live-smokes/"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T22:42:00+03:00",
-      "blocker": ""
+      "updated_at": "2026-07-14T01:18:00+03:00",
+      "blocker": "Exact live deployment proof cannot run until REQ-20260713-939 release/deploy gate clears.",
+      "blocker_owner": "Shloimie / secure runtime configuration owner / Codex after unblock",
+      "blocker_next_action": "Clear owner/canary and campaign gates, complete REQ-20260713-939, deploy approved candidate, then run exact-SHA live smoke matrix."
     },
     {
       "id": "REQ-20260713-941",
@@ -3151,17 +3162,22 @@
       "depends_on": [
         "REQ-20260713-940"
       ],
-      "status": "not_started",
-      "implementation_status": "Not started.",
-      "can_continue_without_operator": true,
-      "next_action": "Close only after all launch requirements are terminal with evidence/blockers.",
+      "status": "blocked",
+      "implementation_status": "Blocked by downstream exact live deployment proof.",
+      "can_continue_without_operator": false,
+      "next_action": "Close only after blocked release/live-proof requirements are either cleared and verified or remain explicitly blocked with current evidence.",
       "acceptance_criteria": [
         "All source statements terminal.",
         "Ledger/changelog/final report updated.",
         "Audit outputs governed or mapped."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/production-readiness/2026-07-12-no-write-live-smoke-readback.md",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/NEXT-SESSION.md"
+      ],
+      "verification": [
+        "Blocked until REQ-20260713-940 exact live proof can run after release/deploy gate clears"
+      ],
       "implementation_files": [
         "TASKS.md",
         "MEMORY.md",
@@ -3171,8 +3187,10 @@
         "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-13T22:42:00+03:00",
-      "blocker": ""
+      "updated_at": "2026-07-14T01:18:00+03:00",
+      "blocker": "Final source-of-truth/goal closeout cannot be claimed while REQ-20260713-936, REQ-20260713-939, and REQ-20260713-940 remain blocked.",
+      "blocker_owner": "Shloimie / secure runtime configuration owner / campaign owner / Codex after unblock",
+      "blocker_next_action": "Clear owner/canary and campaign gates, complete release and exact live proof, then rerun validation/audit governance and close the goal."
     }
   ],
   "sources": [

@@ -1321,3 +1321,15 @@
 - PASS `npm run app:smoke:one-time-metadata-review -- --base-url https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`; report `ops/live-smokes/2026-07-13T21-58-34-161Z-one-time-metadata-review-live-smoke.md`.
 - PASS `npm run app:smoke:one-time-classroom-library-readonly -- --base-url https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`; report `ops/live-smokes/2026-07-13T21-58-34-168Z-one-time-classroom-library-readonly-live-smoke.md`.
 - Guardrails: no external upload, Drive/Classroom/Zoom provider write, member publication, send, payment/access mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.
+
+## REQ-20260713-939 / 940 / 941 Release Tail Test Results
+
+- PASS `npm run one-time:target:guard`; read-only One Time public target guard passed with no release blockers.
+- BLOCKED `npm run one-time:setup:check`; no writes performed, ready `7/8`, blocked only by `SETUP-ONETIME-CAMPAIGN-001` campaign seed fields.
+- BLOCKED `npm run one-time:owner-test:readiness`; no sends performed, blocked by missing owner-test email and WhatsApp aliases; report `ops/watchdog-audits/2026-07-13T22-13-41-897Z-onetime-owner-test-readiness.md`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`.
+- PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T22-14-30-736Z-rabbi-onetime-landing-smoke.md`.
+- PASS `npm run app:smoke:one-time-interest-dry-run`; report `ops/live-smokes/2026-07-13T22-14-30-719Z-one-time-interest-dry-run-live-smoke.md`.
+- PASS `npm run app:smoke:public-privacy`; report `ops/live-smokes/2026-07-13T22-14-39-121Z-public-route-privacy-smoke.md`.
+- BLOCKED `npm run production:readiness:gate -- --json`; public launch no-write proof is fresh and ready, but owner/canary aliases, campaign seed approvals, and dirty-tree-before-commit still block production readiness.
+- Guardrails: no deploy, merge, DNS/account mutation, provider write, email send, WhatsApp/WAPI send, Telegram send, payment/access mutation, credential mutation, CRM production write, public auto-reply activation, or destructive production mutation occurred.

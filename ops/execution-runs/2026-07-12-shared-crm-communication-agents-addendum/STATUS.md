@@ -128,12 +128,9 @@ Current status: `active`
 
 ## Current Blockers
 
-- Full production readiness still blocks on external One Time setup fields:
-  `rabbi_stripe_test_secret_key_alias_or_test_key_status`,
-  `67_month_product_price_id_or_alias`,
-  `final_campaign_copy`,
-  `exact_recipient_segment_or_list`,
-  `suppression_unsubscribe_proof`,
+- Full production readiness still blocks on external One Time setup fields for
+  `SETUP-ONETIME-CAMPAIGN-001`: `final_campaign_copy`,
+  `exact_recipient_segment_or_list`, `suppression_unsubscribe_proof`, and
   `explicit_seed_packet_approval`.
 - Owner-only live integration tests block on missing secure owner-test aliases:
   `ONE_TIME_OWNER_TEST_EMAIL` and `ONE_TIME_OWNER_TEST_WHATSAPP` or approved
@@ -141,8 +138,9 @@ Current status: `active`
 - `REQ-20260713-906` owner-only live integration tests are blocked only on
   missing secure owner-test aliases; `REQ-20260713-910` final verifier remains
   blocked by that owner-alias requirement.
-- Main addendum implementation remains open across the verifier and remaining
-  Rabbi Telegram/ticket-approval proof.
+- Release/live-proof closeout remains blocked by `REQ-20260713-936`
+  owner/canary gates, `REQ-20260713-939` release/deploy gate, and downstream
+  `REQ-20260713-940` exact live proof.
 
 ## Shared CRM Product Slice
 
@@ -791,3 +789,13 @@ Current status: `active`
 - Smoke tooling was updated for transcript privacy and Zoom so both use the One Time Railway auth fallback and exact deployed-SHA checks.
 - Next current requirement is dependency-aware `REQ-20260713-939`; `REQ-20260713-936` remains blocked until canary/owner gates pass.
 - Guardrails: no Vimeo upload, Drive write/move, Google Classroom write, Zoom meeting/registrant/webhook attendance write, member publication, access mutation, email/WhatsApp send, payment action, DNS/account mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.
+
+## 2026-07-14 - REQ-20260713-939 / 940 / 941 Release Tail Blocked
+
+- `REQ-20260713-939` is Blocked after read-only release preflight. The One Time public target guard passed for `https://join.onetimeonetime.com`, and the no-write public launch smoke sweep was refreshed at `ops/production-readiness/2026-07-12-no-write-live-smoke-readback.md`.
+- `npm run one-time:setup:check` now blocks only on campaign seed fields: `final_campaign_copy`, `exact_recipient_segment_or_list`, `suppression_unsubscribe_proof`, and `explicit_seed_packet_approval`.
+- `npm run one-time:owner-test:readiness` wrote `ops/watchdog-audits/2026-07-13T22-13-41-897Z-onetime-owner-test-readiness.md` and still blocks on missing secure owner-test email and WhatsApp aliases.
+- `npm run production:readiness:gate -- --json` remains blocked as expected: owner/canary aliases and campaign seed approvals are missing, and the evidence tree is dirty until this closeout commit is published.
+- `REQ-20260713-940` is Blocked until the release/deploy gate clears and an approved exact-SHA deployment candidate exists.
+- `REQ-20260713-941` is Blocked until `REQ-20260713-936`, `REQ-20260713-939`, and `REQ-20260713-940` are cleared or remain explicitly blocked with current evidence.
+- Guardrails: no deploy, merge, DNS/account mutation, provider write, email send, WhatsApp/WAPI send, Telegram send, payment/access mutation, credential mutation, CRM production write, public auto-reply activation, or destructive production mutation occurred.

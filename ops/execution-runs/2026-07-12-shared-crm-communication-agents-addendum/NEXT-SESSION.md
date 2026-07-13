@@ -2,7 +2,7 @@
 
 Active source: `RAW-20260713-010`
 
-Current requirement: `REQ-20260713-939` - Run PR/CI/DNS/deploy/rollback gate for final launch candidate.
+Current requirement: none unblocked. `REQ-20260713-939`, `REQ-20260713-940`, and `REQ-20260713-941` are blocked by the `REQ-20260713-936` owner/canary gate plus campaign seed approvals.
 
 `REQ-20260713-935` landing/signup/assets/responsive is Done. One Time deployment `39b4820d-fe5a-456c-bdc1-ccc30befa1d5` serves exact SHA `11e5ba0d4da6ae8897294be81a567bb519943ab2`; responsive report `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/REPORT.md`, signup matrix `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-form-matrix-live.md`, and interest dry-run `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md` passed. Do not redo the landing/signup campaign-policy repair unless verification regresses.
 
@@ -55,7 +55,15 @@ REQ-938 evidence:
   `ops/live-smokes/2026-07-13T21-58-34-168Z-one-time-classroom-library-readonly-live-smoke.md`.
 - Guardrail: no Vimeo upload, Drive write/move, Google Classroom write, Zoom meeting/registrant/webhook write, member publication, access mutation, send, payment, DNS, credential, provider, or production-data mutation occurred.
 
-Continue with dependency-aware `REQ-20260713-939`. It cannot fully close while `REQ-20260713-936` remains blocked on canary/owner gates, but preflight/read-only release checks may continue where safe.
+Dependency-aware release preflight for `REQ-20260713-939` has run. Do not redo it unless a blocker changes.
+
+REQ-939 / 940 / 941 release-tail blocker evidence:
+
+- `npm run one-time:target:guard` passed for the canonical One Time public target and Railway target.
+- `npm run one-time:setup:check` is blocked only on `SETUP-ONETIME-CAMPAIGN-001`: `final_campaign_copy`, `exact_recipient_segment_or_list`, `suppression_unsubscribe_proof`, and `explicit_seed_packet_approval`.
+- `npm run one-time:owner-test:readiness` wrote `ops/watchdog-audits/2026-07-13T22-13-41-897Z-onetime-owner-test-readiness.md` and is blocked on missing secure owner-test email and WhatsApp aliases.
+- No-write public launch smoke evidence is refreshed at `ops/production-readiness/2026-07-12-no-write-live-smoke-readback.md`.
+- `npm run production:readiness:gate -- --json` is blocked as expected until owner/canary aliases and campaign seed approvals are configured; the dirty-tree blocker should clear after this closeout commit is pushed.
 
 Validated PQC splitter: `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`.
 
@@ -65,3 +73,4 @@ Blocked/gated items remain:
 - Stripe sandbox/test work is authorized by `DEC-20260713-009`; no live charge/refund/subscription/access mutation is authorized.
 - PR #132 must not be merged wholesale.
 - No deploy/live Done until One Time live SHA matches the intended current source and live smokes pass.
+- Next safe action after operator/secret update: rerun `npm run one-time:owner-test:readiness`, `npm run one-time:setup:check`, `npm run production:readiness:gate -- --json`, and `npm run bna:run:next`.

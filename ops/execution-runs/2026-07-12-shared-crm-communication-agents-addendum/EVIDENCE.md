@@ -968,3 +968,14 @@
 - Prior capability/register evidence: `tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md` and `docs/integrations/onetime-vimeo-zoom-resend-readiness.md`.
 - Tooling evidence: `scripts/smoke-one-time-transcript-privacy-live.mjs`, `scripts/smoke-one-time-zoom-attendance-live.mjs`, `tests/one-time-transcript-privacy.test.js`, `tests/one-time-zoom-attendance-automation.test.js`, and `package.json`.
 - Guardrails: no Vimeo upload, Drive write/move, Google Classroom write, Zoom meeting/registrant/webhook attendance write, member publication, access mutation, email/WhatsApp send, payment action, DNS/account mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.
+
+## REQ-20260713-939 / 940 / 941 Release Tail Blocker Evidence - 2026-07-14
+
+- Requirement: `REQ-20260713-939`, `REQ-20260713-940`, and `REQ-20260713-941`.
+- One Time public target guard: `npm run one-time:target:guard` passed with `production_mutation_performed=false`, `external_write_performed=false`, canonical routes `/` and `/one-time/` OK, instance-config scoped to `rabbi_sheller_provider / one_time_mishnah_class`, and Railway status matching `one-time-production / one-time-web`.
+- Setup readiness: `npm run one-time:setup:check` reported `ready_count=7`, `total_count=8`, no external/provider/DNS/email/WhatsApp writes, and a single remaining setup blocker `SETUP-ONETIME-CAMPAIGN-001`.
+- Owner-test readiness: `ops/watchdog-audits/2026-07-13T22-13-41-897Z-onetime-owner-test-readiness.md` and `.json`; Resend connected/domain verified, WAPI provider setup-ready, owner-test aliases missing, and `external_send_performed=false`.
+- No-write public launch smoke: `ops/production-readiness/2026-07-12-no-write-live-smoke-readback.md` and `.json` refreshed with four passing commands: One Time separate-instance, Rabbi/One Time landing, One Time interest dry-run, and public privacy.
+- Local ignored smoke reports referenced by the tracked readback: `ops/live-smokes/2026-07-13T22-14-30-736Z-rabbi-onetime-landing-smoke.md`, `ops/live-smokes/2026-07-13T22-14-30-719Z-one-time-interest-dry-run-live-smoke.md`, and `ops/live-smokes/2026-07-13T22-14-39-121Z-public-route-privacy-smoke.md`.
+- Production readiness gate: `npm run production:readiness:gate -- --json` remains blocked because owner/canary aliases and campaign seed approvals are missing; it also reports dirty-tree status until this evidence commit is published.
+- Guardrails: no deploy, merge, DNS/account mutation, provider write, email send, WhatsApp/WAPI send, Telegram send, payment/access mutation, credential mutation, CRM production write, public auto-reply activation, or destructive production mutation occurred.
