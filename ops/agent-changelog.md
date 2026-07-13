@@ -40432,3 +40432,9 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verification passed: local smoke across 1440/1024/768/430/390 viewports, deferred assistant click smoke, syntax checks for the changed member script and smoke harness, and focused One Time contract tests 35/35.
 - Commit/push proof: `4200582d6` is pushed to `codex/onetime-final-integration-launch`.
 - Status remains in progress: app-visible Done requires exact-SHA deploy/live smoke, and `REQ-20260713-934B`/`934C` still need completion. No send, provider mutation, payment/access change, credential mutation, deploy, or external write was performed in this local batch.
+
+## 2026-07-13 - One Time member portal first-render repair deployed
+
+- Deployed `PKT-20260713-934A` to One Time production: Railway deployment `c00813df-2dc8-47e3-97b2-c5152c20402d` reached `SUCCESS`, and live deploy-info returned exact SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb` with `target_app=one-time`.
+- Exact-SHA separate-instance smoke passed, focused `/rabbi-member` live performance smoke passed at `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md`, and the broader One Time performance regression gate passed at `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Status remains in progress: parent `REQ-20260713-934` still needs `PKT-20260713-934B` and `PKT-20260713-934C`. No external send, provider mutation, payment/access change, credential mutation, DNS change, public auto-reply activation, or destructive production mutation was performed.

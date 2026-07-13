@@ -1,0 +1,210 @@
+{
+  "generated_at": "2026-07-13T19:41:43.271Z",
+  "requirement_id": "REQ-20260713-934",
+  "packet_id": "PKT-20260713-934A",
+  "base_url": "https://join.onetimeonetime.com",
+  "expected_sha": "20307e2638988b6fe5d10b8a649d87ed8a8522cb",
+  "deployed_sha": "20307e2638988b6fe5d10b8a649d87ed8a8522cb",
+  "route": "/rabbi-member",
+  "external_write_performed": false,
+  "production_data_mutation_performed": false,
+  "first_attempt_note": "An immediately post-deploy cold Playwright sample measured 3604ms wall DCL at 1440 before this warm exact-SHA retry; curl follow-up showed mostly 0.45-0.50s TTFB and 0.54-0.60s total with two slower connect/TLS samples.",
+  "results": [
+    {
+      "viewport": "1440-desktop",
+      "width": 1440,
+      "height": 1000,
+      "status": 200,
+      "dom_content_loaded_ms": 998,
+      "nav_dom_content_loaded_ms": 994,
+      "screenshot": "ops/performance-audits/2026-07-13-onetime-member-performance-live/screenshots/member-portal-live-1440-desktop.png",
+      "request_paths": [
+        "/rabbi-member",
+        "/css/one-time-portal-shell.css",
+        "/images/one-time/brand/onetimelogo.webp"
+      ],
+      "bad_responses": [],
+      "failed_requests": [],
+      "console_errors": [],
+      "header_proof": {
+        "deploy_sha": "20307e2638988b6fe5d10b8a649d87ed8a8522cb",
+        "target_app": "one-time",
+        "trace_id": "trace-mrjmor2d-85ff2610888d",
+        "server_timing": "app;dur=1.8, handler;dur=1.8, db;dur=0;desc=\"queries:0\", pool;dur=0;desc=\"waits:0\""
+      },
+      "metrics": {
+        "title": "One Time Family Portal",
+        "h1": "One Time Family Portal",
+        "ready_state": "complete",
+        "nav_dom_content_loaded_ms": 994,
+        "nav_response_start_ms": 634,
+        "nav_response_end_ms": 644,
+        "nav_load_event_ms": 995,
+        "helper_ready_initially": false,
+        "page_scripts_state": "",
+        "helper_state": "",
+        "horizontal_overflow": false,
+        "has_private_leak": false
+      }
+    },
+    {
+      "viewport": "1024-desktop-tablet",
+      "width": 1024,
+      "height": 900,
+      "status": 200,
+      "dom_content_loaded_ms": 756,
+      "nav_dom_content_loaded_ms": 754,
+      "screenshot": "ops/performance-audits/2026-07-13-onetime-member-performance-live/screenshots/member-portal-live-1024-desktop-tablet.png",
+      "request_paths": [
+        "/rabbi-member",
+        "/css/one-time-portal-shell.css",
+        "/images/one-time/brand/onetimelogo.webp"
+      ],
+      "bad_responses": [],
+      "failed_requests": [],
+      "console_errors": [],
+      "header_proof": {
+        "deploy_sha": "20307e2638988b6fe5d10b8a649d87ed8a8522cb",
+        "target_app": "one-time",
+        "trace_id": "trace-mrjmorwh-b5f3c66146b6",
+        "server_timing": "app;dur=1.6, handler;dur=1.6, db;dur=0;desc=\"queries:0\", pool;dur=0;desc=\"waits:0\""
+      },
+      "metrics": {
+        "title": "One Time Family Portal",
+        "h1": "One Time Family Portal",
+        "ready_state": "complete",
+        "nav_dom_content_loaded_ms": 754,
+        "nav_response_start_ms": 468,
+        "nav_response_end_ms": 472,
+        "nav_load_event_ms": 776,
+        "helper_ready_initially": false,
+        "page_scripts_state": "",
+        "helper_state": "",
+        "horizontal_overflow": false,
+        "has_private_leak": false
+      }
+    },
+    {
+      "viewport": "768-tablet",
+      "width": 768,
+      "height": 900,
+      "status": 200,
+      "dom_content_loaded_ms": 712,
+      "nav_dom_content_loaded_ms": 710,
+      "screenshot": "ops/performance-audits/2026-07-13-onetime-member-performance-live/screenshots/member-portal-live-768-tablet.png",
+      "request_paths": [
+        "/rabbi-member",
+        "/css/one-time-portal-shell.css",
+        "/images/one-time/brand/onetimelogo.webp"
+      ],
+      "bad_responses": [],
+      "failed_requests": [],
+      "console_errors": [],
+      "header_proof": {
+        "deploy_sha": "20307e2638988b6fe5d10b8a649d87ed8a8522cb",
+        "target_app": "one-time",
+        "trace_id": "trace-mrjmosm5-fad9497ad9c5",
+        "server_timing": "app;dur=2.2, handler;dur=2.2, db;dur=0;desc=\"queries:0\", pool;dur=0;desc=\"waits:0\""
+      },
+      "metrics": {
+        "title": "One Time Family Portal",
+        "h1": "One Time Family Portal",
+        "ready_state": "complete",
+        "nav_dom_content_loaded_ms": 710,
+        "nav_response_start_ms": 435,
+        "nav_response_end_ms": 436,
+        "nav_load_event_ms": 767,
+        "helper_ready_initially": false,
+        "page_scripts_state": "",
+        "helper_state": "",
+        "horizontal_overflow": false,
+        "has_private_leak": false
+      }
+    },
+    {
+      "viewport": "430-mobile",
+      "width": 430,
+      "height": 932,
+      "status": 200,
+      "dom_content_loaded_ms": 827,
+      "nav_dom_content_loaded_ms": 825,
+      "screenshot": "ops/performance-audits/2026-07-13-onetime-member-performance-live/screenshots/member-portal-live-430-mobile.png",
+      "request_paths": [
+        "/rabbi-member",
+        "/css/one-time-portal-shell.css",
+        "/images/one-time/brand/onetimelogo.webp"
+      ],
+      "bad_responses": [],
+      "failed_requests": [],
+      "console_errors": [],
+      "header_proof": {
+        "deploy_sha": "20307e2638988b6fe5d10b8a649d87ed8a8522cb",
+        "target_app": "one-time",
+        "trace_id": "trace-mrjmotc2-a68020007ca1",
+        "server_timing": "app;dur=3.1, handler;dur=3.1, db;dur=0;desc=\"queries:0\", pool;dur=0;desc=\"waits:0\""
+      },
+      "metrics": {
+        "title": "One Time Family Portal",
+        "h1": "One Time Family Portal",
+        "ready_state": "complete",
+        "nav_dom_content_loaded_ms": 825,
+        "nav_response_start_ms": 452,
+        "nav_response_end_ms": 463,
+        "nav_load_event_ms": 825,
+        "helper_ready_initially": false,
+        "page_scripts_state": "",
+        "helper_state": "",
+        "horizontal_overflow": false,
+        "has_private_leak": false
+      }
+    },
+    {
+      "viewport": "390-mobile",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "dom_content_loaded_ms": 719,
+      "nav_dom_content_loaded_ms": 717,
+      "screenshot": "ops/performance-audits/2026-07-13-onetime-member-performance-live/screenshots/member-portal-live-390-mobile.png",
+      "request_paths": [
+        "/rabbi-member",
+        "/css/one-time-portal-shell.css",
+        "/images/one-time/brand/onetimelogo.webp"
+      ],
+      "bad_responses": [],
+      "failed_requests": [],
+      "console_errors": [],
+      "header_proof": {
+        "deploy_sha": "20307e2638988b6fe5d10b8a649d87ed8a8522cb",
+        "target_app": "one-time",
+        "trace_id": "trace-mrjmou2z-f5f144d35a99",
+        "server_timing": "app;dur=2.1, handler;dur=2.1, db;dur=0;desc=\"queries:0\", pool;dur=0;desc=\"waits:0\""
+      },
+      "metrics": {
+        "title": "One Time Family Portal",
+        "h1": "One Time Family Portal",
+        "ready_state": "complete",
+        "nav_dom_content_loaded_ms": 717,
+        "nav_response_start_ms": 439,
+        "nav_response_end_ms": 441,
+        "nav_load_event_ms": 771,
+        "helper_ready_initially": false,
+        "page_scripts_state": "",
+        "helper_state": "",
+        "horizontal_overflow": false,
+        "has_private_leak": false
+      }
+    }
+  ],
+  "deferred_helper": {
+    "surface": "one_time_member",
+    "panelCount": 1,
+    "bodyState": "ready",
+    "header_proof": {
+      "deploy_sha": "20307e2638988b6fe5d10b8a649d87ed8a8522cb",
+      "target_app": "one-time",
+      "trace_id": "trace-mrjmourt-5c32e2a54452",
+      "server_timing": "app;dur=2.5, handler;dur=2.5, db;dur=0;desc=\"queries:0\", pool;dur=0;desc=\"waits:0\""
+    }
+  }
+}

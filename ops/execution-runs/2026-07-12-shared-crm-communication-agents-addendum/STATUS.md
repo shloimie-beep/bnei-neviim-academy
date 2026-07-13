@@ -738,3 +738,12 @@ Current status: `active`
 - Commit/push proof: `4200582d6` is pushed to `codex/onetime-final-integration-launch`.
 - App-visible Done is not claimed: One Time deploy/live exact-SHA smoke and child packets `PKT-20260713-934B` and `PKT-20260713-934C` remain open.
 - Guardrails: no external send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS change, deploy, or public auto-reply activation occurred.
+
+## 2026-07-13 - REQ-20260713-934A Member Portal Performance Deployed
+
+- Child packet `PKT-20260713-934A` is now deployed/live-smoked, but parent `REQ-20260713-934` remains `in_progress` because `PKT-20260713-934B` and `PKT-20260713-934C` are still open.
+- One Time Railway deployment `c00813df-2dc8-47e3-97b2-c5152c20402d` reached `SUCCESS`; live `/api/deploy-info` returned exact SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`, source branch `codex/onetime-final-integration-launch`, and `target_app=one-time`.
+- Exact-SHA separate-instance smoke passed for `https://join.onetimeonetime.com`.
+- Focused live member performance evidence: `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md`; warm exact-SHA `/rabbi-member` DCL was 998ms, 756ms, 712ms, 827ms, and 719ms at 1440/1024/768/430/390, with deferred Helper click proof and no unexpected failed/bad responses. The report preserves one immediately post-deploy cold 3604ms desktop sample as context.
+- Broad performance regression gate passed at `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS change, public auto-reply activation, or destructive production mutation occurred.

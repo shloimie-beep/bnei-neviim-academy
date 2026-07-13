@@ -15,7 +15,7 @@ Next unblocked requirement: `REQ-20260713-934`
 - `REQ-20260713-931` done - Register RAW-20260713-010 as the active One Time launch correction source
 - `REQ-20260713-932` done - Complete Gate 1 freeze and current-truth audit
 - `REQ-20260713-933` done - Reproduce current P0 One Time role, performance, CRM, content, and mobile defects
-- `REQ-20260713-934` in_progress - Fix One Time identity, navigation, CRM/content, mobile, and performance issues; `PKT-20260713-934A` member portal performance is locally repaired, verified, committed, and pushed at `4200582d6`, pending deploy/live proof
+- `REQ-20260713-934` in_progress - Fix One Time identity, navigation, CRM/content, mobile, and performance issues; `PKT-20260713-934A` member portal performance is locally repaired, verified, committed, pushed, deployed, and live-smoked at deployed SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`; `PKT-20260713-934B`/`934C` remain open
 - `REQ-20260713-935` not_started - Verify and repair One Time landing/signup/assets/responsive launch path
 - `REQ-20260713-936` blocked - Activate One Time WhatsApp canaries and public reactive auto-replies after gates
 - `REQ-20260713-937` not_started - Reconcile Stripe Billing V2 and PR #132 into current master safely
@@ -28,14 +28,14 @@ Next unblocked requirement: `REQ-20260713-934`
 
 - `REQ-20260713-936`: public WhatsApp approval is granted, but secure canary aliases and technical gates are still missing.
 - `REQ-20260713-937`: PR #132 is dirty/draft and must not merge wholesale.
-- `REQ-20260713-940`: One Time live SHA mismatch must be resolved before launch Done.
+- `REQ-20260713-940`: final exact-SHA launch deployment proof remains pending after remaining implementation requirements are terminal.
 
 ## REQ-20260713-933 Evidence Update
 
 - Done: current-state audit captured 55 screenshots and 24 findings at `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md`.
 - Product Quality splitter validated at `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`.
 - `PKT-20260713-934A` member portal performance under `REQ-20260713-934` is locally implemented and verified at `ops/performance-audits/2026-07-13-onetime-member-performance-local/report.md`.
-- Next implementation slices under `REQ-20260713-934`: deploy/live-smoke `PKT-20260713-934A` from pushed commit `4200582d6`, then continue `PKT-20260713-934B` auth/admin context and `PKT-20260713-934C` provider/student console failures without reopening the whole parent ramble.
+- Next implementation slices under `REQ-20260713-934`: continue `PKT-20260713-934B` auth/admin context and `PKT-20260713-934C` provider/student console failures without reopening the whole parent ramble.
 - Authenticated CRM/admin-provider proof remains blocked by invalid read-only Operations audit credentials.
 
 ## REQ-20260713-934A Local Evidence Update
@@ -44,6 +44,14 @@ Next unblocked requirement: `REQ-20260713-934`
 - Verification: `npm run one-time:smoke:member-performance-local` passed with screenshot-ready DCL at 22ms, 15ms, 46ms, 54ms, and 15ms across 1440/1024/768/430/390, plus deferred Helper click proof.
 - Focused contracts passed: `tests/app-select-dropdown.test.js`, `tests/one-time-safe-view-as-navigation.test.js`, `tests/universal-assistant-contract.test.js`, `tests/one-time-member-support-questions.test.js`, `tests/rabbi-checkout-access.test.js`, and `tests/one-time-canonical-journey.test.js`.
 - App-visible Done is not yet claimed: deploy to the One Time runtime, exact-SHA live smoke, and broader child packet closeout remain required.
+
+## REQ-20260713-934A Live Evidence Update
+
+- Deploy proof: One Time Railway deployment `c00813df-2dc8-47e3-97b2-c5152c20402d` reached `SUCCESS`; `https://join.onetimeonetime.com/api/deploy-info` returned exact SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`, source branch `codex/onetime-final-integration-launch`, and `target_app=one-time`.
+- Live smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb` passed.
+- Focused member live proof: `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md` passed with exact SHA headers, first useful member portal content, deferred Helper click proof, no unexpected bad responses, no failed requests, no private leaks, and no horizontal overflow. Warm exact-SHA DCL values were 998ms, 756ms, 712ms, 827ms, and 719ms across 1440/1024/768/430/390. The report preserves one immediately post-deploy cold 3604ms desktop sample as transport/cold-start context.
+- Broad gate: `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb` passed at `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- App-visible Done is still not claimed for parent `REQ-20260713-934`: `PKT-20260713-934B` and `PKT-20260713-934C` remain open.
 
 ## Product Quality Operating Contract
 

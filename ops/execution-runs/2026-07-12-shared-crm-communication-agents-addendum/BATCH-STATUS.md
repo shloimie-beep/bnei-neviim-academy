@@ -45,8 +45,9 @@ Record each batch, requirement ID, status, and next action.
 |---|---|
 | `REQ-20260713-931` | Done |
 | `REQ-20260713-932` | Done |
-| `REQ-20260713-933` | Next / not started |
+| `REQ-20260713-933` | Done |
+| `REQ-20260713-934` | In progress |
 | `REQ-20260713-936` | Blocked |
 
-| 1-current-state-reproduce-p0-defects | REQ-20260713-933 | Done | `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md`; `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`; PQC validation passed; 55 screenshots; 24 findings; member portal 22s deadline reproduced in all five viewports; auth/admin CRM blocker recorded. | Continue `REQ-20260713-934`; `PKT-20260713-934A` is locally repaired, verified, committed, and pushed at `4200582d6`, pending deploy/live proof and 934B/934C. |
-| 2-identity-ui-performance-fixes | REQ-20260713-934 | In progress | `PKT-20260713-934A` local smoke `ops/performance-audits/2026-07-13-onetime-member-performance-local/report.md` passed with screenshot-ready `/rabbi-member` DCL of 22ms/15ms/46ms/54ms/15ms across 1440/1024/768/430/390 and deferred Helper click proof; commit `4200582d6` is pushed to `codex/onetime-final-integration-launch`. | Deploy/live-smoke 934A before app-visible Done, then continue `PKT-20260713-934B` and `PKT-20260713-934C`. |
+| 1-current-state-reproduce-p0-defects | REQ-20260713-933 | Done | `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md`; `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`; PQC validation passed; 55 screenshots; 24 findings; member portal 22s deadline reproduced in all five viewports; auth/admin CRM blocker recorded. | Continue `REQ-20260713-934`; `PKT-20260713-934A` is deployed/live-smoked, and 934B/934C remain open. |
+| 2-identity-ui-performance-fixes | REQ-20260713-934 | In progress | `PKT-20260713-934A` local smoke passed; One Time deployment `c00813df-2dc8-47e3-97b2-c5152c20402d` reached `SUCCESS`; live deploy-info exact SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`; separate-instance smoke, focused `/rabbi-member` live performance smoke, and broad performance regression gate passed. | Continue `PKT-20260713-934B` and `PKT-20260713-934C`; parent `REQ-20260713-934` is not Done until those are terminal. |

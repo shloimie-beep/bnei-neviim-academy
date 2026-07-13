@@ -2613,9 +2613,9 @@
         "REQ-20260713-933"
       ],
       "status": "in_progress",
-      "implementation_status": "PKT-20260713-934A local repair implemented, verified, committed, and pushed at 4200582d6: /rabbi-member now renders useful static member portal content before external JS, loads member/app-select/portal-shell scripts after first render or immediate form interaction, defers the heavier assistant bundle until idle or Helper click, and still opens the One Time member assistant on demand. Parent REQ remains open because app-visible deployment/live smoke and child packets 934B/934C are not complete; auth/admin CRM proof remains blocked by invalid read-only Operations credentials.",
+      "implementation_status": "PKT-20260713-934A local repair implemented, verified, committed, pushed, deployed, and live-smoked at One Time deployed SHA 20307e2638988b6fe5d10b8a649d87ed8a8522cb: /rabbi-member now renders useful static member portal content before external JS, loads member/app-select/portal-shell scripts after first render or immediate form interaction, defers the heavier assistant bundle until idle or Helper click, and still opens the One Time member assistant on demand. Parent REQ remains open because child packets 934B/934C are not complete; auth/admin CRM proof remains blocked by invalid read-only Operations credentials.",
       "can_continue_without_operator": true,
-      "next_action": "Deploy/live-smoke the current pushed branch head containing PKT-20260713-934A implementation commit 4200582d6, then continue REQ-20260713-934 through PKT-20260713-934B/934C before marking this app-visible requirement Done.",
+      "next_action": "Continue REQ-20260713-934 through PKT-20260713-934B auth/admin context and PKT-20260713-934C provider/student console failures; keep the parent requirement open until both child packets have evidence.",
       "acceptance_criteria": [
         "Workspace context, not View as Rabbi.",
         "CRM/content/mobile match state matrix.",
@@ -2626,14 +2626,24 @@
         "ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json",
         "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md",
         "ops/performance-audits/2026-07-13-onetime-member-performance-local/report.md",
-        "ops/performance-audits/2026-07-13-onetime-member-performance-local/report.json"
+        "ops/performance-audits/2026-07-13-onetime-member-performance-local/report.json",
+        "ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md",
+        "ops/performance-audits/2026-07-13-onetime-member-performance-live/report.json",
+        "ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md",
+        "ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.json"
       ],
       "verification": [
         "PQC validated: npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json",
         "PASS node --check public/js/rabbi-member.js",
         "PASS node --check scripts/smoke-onetime-member-performance-local.mjs",
         "PASS npm run one-time:smoke:member-performance-local",
-        "PASS node --test tests/app-select-dropdown.test.js tests/one-time-safe-view-as-navigation.test.js tests/universal-assistant-contract.test.js tests/one-time-member-support-questions.test.js tests/rabbi-checkout-access.test.js tests/one-time-canonical-journey.test.js"
+        "PASS node --test tests/app-select-dropdown.test.js tests/one-time-safe-view-as-navigation.test.js tests/universal-assistant-contract.test.js tests/one-time-member-support-questions.test.js tests/rabbi-checkout-access.test.js tests/one-time-canonical-journey.test.js",
+        "PASS Railway deploy one-time-web deployment c00813df-2dc8-47e3-97b2-c5152c20402d",
+        "PASS Railway doctor one-time-web deployment c00813df-2dc8-47e3-97b2-c5152c20402d SUCCESS",
+        "PASS live /api/deploy-info exact SHA 20307e2638988b6fe5d10b8a649d87ed8a8522cb target_app=one-time",
+        "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb",
+        "PASS focused /rabbi-member live performance smoke: ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md",
+        "PASS npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb"
       ],
       "implementation_files": [
         "public/rabbi-member.html",
@@ -2643,7 +2653,7 @@
         "package.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T22:33:00+03:00",
+      "updated_at": "2026-07-13T22:42:19+03:00",
       "blocker": ""
     },
     {

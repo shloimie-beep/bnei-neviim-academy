@@ -1237,4 +1237,14 @@
 - PASS `npm run one-time:smoke:member-performance-local`: report `ops/performance-audits/2026-07-13-onetime-member-performance-local/report.md`.
 - PASS focused contracts:
   `node --test tests/app-select-dropdown.test.js tests/one-time-safe-view-as-navigation.test.js tests/universal-assistant-contract.test.js tests/one-time-member-support-questions.test.js tests/rabbi-checkout-access.test.js tests/one-time-canonical-journey.test.js`; 35/35 tests passed.
-- Pending for app-visible Done: commit/push, One Time deployment, exact-SHA live smoke/readback, and remaining child packets under `REQ-20260713-934`.
+- Follow-up live proof is recorded below; parent `REQ-20260713-934` remains open because child packets `PKT-20260713-934B` and `PKT-20260713-934C` remain incomplete.
+
+## REQ-20260713-934A Member Portal Performance Live Test Results
+
+- PASS `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true`, `BNA_DEPLOY_APP=one-time`, and `BNA_RAILWAY_TARGET_PROFILE=one-time`; Railway deployment `c00813df-2dc8-47e3-97b2-c5152c20402d`.
+- PASS `npm run railway:doctor` with the same One Time target; deployment `c00813df-2dc8-47e3-97b2-c5152c20402d` status `SUCCESS`.
+- PASS live `/api/deploy-info`: exact SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`, source branch `codex/onetime-final-integration-launch`, `target_app=one-time`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb`.
+- PASS focused `/rabbi-member` live performance smoke: `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md`.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- NOTE first focused live smoke attempt found one immediately post-deploy cold desktop sample at 3604ms wall DCL; the passing exact-SHA retry and curl follow-up are preserved in the live report.

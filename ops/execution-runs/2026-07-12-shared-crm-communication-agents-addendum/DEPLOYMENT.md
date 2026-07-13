@@ -579,6 +579,10 @@ No deployment occurred for Gate 1. One Time is currently serving `49f3edda2da37e
 
 ## REQ-20260713-934A Deployment Status
 
-- No deployment has been performed yet for the member portal performance repair.
-- Local implementation and local smoke are complete for `PKT-20260713-934A`, and commit `4200582d6` is pushed to `codex/onetime-final-integration-launch`, but app-visible Done remains pending One Time deployment, exact-SHA live smoke/readback, and the remaining `REQ-20260713-934` child packets.
-- One Time live deploy-info still serves `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`; pushed commit `4200582d6` is not visible on `https://join.onetimeonetime.com` yet.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true`, `BNA_DEPLOY_APP=one-time`, and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- Railway deployment: `c00813df-2dc8-47e3-97b2-c5152c20402d` reached `SUCCESS`; guard target was `one-time-production / one-time-web / join.onetimeonetime.com`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=20307e2638988b6fe5d10b8a649d87ed8a8522cb`, `source_branch=codex/onetime-final-integration-launch`, and `target_app=one-time`.
+- One Time exact-SHA separate-instance smoke passed.
+- Focused live member portal performance smoke passed; report `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md`.
+- One Time performance regression gates passed; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Parent app-visible Done remains pending the remaining `REQ-20260713-934` child packets, `PKT-20260713-934B` and `PKT-20260713-934C`.

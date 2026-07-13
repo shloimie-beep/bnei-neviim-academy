@@ -4,7 +4,7 @@ Active source: `RAW-20260713-010`
 
 Current requirement: `REQ-20260713-934` - Fix One Time identity, navigation, CRM/content, mobile, and performance issues.
 
-`PKT-20260713-934A` member portal performance is locally implemented, verified, committed, and pushed at implementation commit `4200582d6`. Deploy/live-smoke the current pushed branch head containing that implementation before claiming app-visible Done. Do not redo the 934A root-cause repair unless verification regresses.
+`PKT-20260713-934A` member portal performance is locally implemented, verified, committed, pushed, deployed, and live-smoked. One Time deployment `c00813df-2dc8-47e3-97b2-c5152c20402d` serves exact SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`; do not redo the 934A root-cause repair unless verification regresses.
 
 934A local evidence:
 
@@ -12,7 +12,13 @@ Current requirement: `REQ-20260713-934` - Fix One Time identity, navigation, CRM
 - Report: `ops/performance-audits/2026-07-13-onetime-member-performance-local/report.md`.
 - Result: screenshot-ready DCL at 22ms, 15ms, 46ms, 54ms, and 15ms across 1440/1024/768/430/390; deferred Helper click still opens the `one_time_member` assistant.
 
-Continue with child packets `PKT-20260713-934B` and `PKT-20260713-934C` after the 934A deploy/live proof gate. Keep the scope narrow; do not broaden into the whole parent ramble.
+934A live evidence:
+
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb` passed.
+- `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md` passed with exact SHA headers and warm DCL values of 998ms, 756ms, 712ms, 827ms, and 719ms across 1440/1024/768/430/390. It preserves one immediately post-deploy cold 3604ms desktop sample as context.
+- `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md` passed at exact SHA.
+
+Continue with child packets `PKT-20260713-934B` and `PKT-20260713-934C`. Keep the scope narrow; do not broaden into the whole parent ramble.
 
 Validated PQC splitter: `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`.
 

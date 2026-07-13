@@ -905,3 +905,15 @@
 - Result: `/rabbi-member` reached screenshot-ready first useful content at 1440, 1024, 768, 430, and 390 widths with DCL values of 22ms, 15ms, 46ms, 54ms, and 15ms in the local no-write smoke.
 - Helper proof: the assistant is absent from first render and still opens on Helper click as `one_time_member`.
 - Guardrails: local static server only; no external write, production data mutation, send, payment/access mutation, provider mutation, credential mutation, DNS change, deploy, or public auto-reply activation.
+
+## REQ-20260713-934A Member Portal Performance Live Evidence - 2026-07-13
+
+- Deployment: One Time Railway deployment `c00813df-2dc8-47e3-97b2-c5152c20402d` reached `SUCCESS`.
+- Live deploy-info: `https://join.onetimeonetime.com/api/deploy-info` returned exact SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`, source branch `codex/onetime-final-integration-launch`, and `target_app=one-time`.
+- Exact-SHA route smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 20307e2638988b6fe5d10b8a649d87ed8a8522cb` passed.
+- Focused live member performance report: `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.md`.
+- Focused live member performance JSON: `ops/performance-audits/2026-07-13-onetime-member-performance-live/report.json`.
+- Focused live screenshot directory: `ops/performance-audits/2026-07-13-onetime-member-performance-live/screenshots/`.
+- Broad performance regression gate: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md` and `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.json`.
+- Result: `/rabbi-member` live exact-SHA warm DCL values were 998ms, 756ms, 712ms, 827ms, and 719ms across 1440/1024/768/430/390; the deferred Helper click opened `one_time_member`; no unexpected failed/bad responses, private leaks, external writes, production mutations, or horizontal overflow were observed.
+- Context: one immediately post-deploy cold Playwright sample measured 3604ms wall DCL at 1440 before the warm exact-SHA retry; repeated curl checks showed mostly 0.45-0.50s TTFB and 0.54-0.60s total with two slower connect/TLS samples.
