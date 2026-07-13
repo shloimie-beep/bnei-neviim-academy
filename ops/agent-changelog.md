@@ -40493,3 +40493,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no live charge, refund, notice send, invoice/receipt send,
   access mutation, provider mutation, deploy, credential mutation, production
   data mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 current PR head recorded
+
+- Refreshed the Billing V2 register and release handoff after the Stripe
+  sandbox evidence push so they now name current PR head
+  `062e9b4e53cebdb665e1d834cc5245bc0f98bf0b`.
+- GitHub reports draft PR #132 open with merge state `CLEAN` against master
+  base `10960a86bba30aede6c72075ef1b5eb1a529f54d`.
+- Remaining gates are unchanged: deploy/live smoke, exact `billing_start_at`,
+  final notice sender/copy/cohort approval, final live Stripe approval,
+  campaign send approval, and explicit final launch authorization.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.
