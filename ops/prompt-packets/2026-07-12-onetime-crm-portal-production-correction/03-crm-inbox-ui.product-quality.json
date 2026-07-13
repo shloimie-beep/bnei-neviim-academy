@@ -635,11 +635,11 @@
     },
     {
       "label": "Open scoped One Time inbox",
-      "selector_or_action_key": "ACTION-CRM-OPEN-SCOPED-INBOX",
+      "selector_or_action_key": "ACTION-CRM-CONTACT-MAILBOX-OPEN",
       "action_state": "WORKS_NOW",
       "owner": "Codex",
       "external_write": false,
-      "handler_or_blocker": "openFirstPartyCrmInboxContext navigates to Communications > Email with inbox=rabbi while retaining selected CRM context.",
+      "handler_or_blocker": "openFirstPartyCrmMailbox navigates to Communications > Email with inbox=rabbi while retaining selected CRM context.",
       "registry_required": true
     },
     {

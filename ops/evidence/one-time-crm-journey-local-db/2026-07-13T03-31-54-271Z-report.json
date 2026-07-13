@@ -1,0 +1,82 @@
+{
+  "started_at": "2026-07-13T03:31:54.271Z",
+  "status": "passed",
+  "marker": "one_time_crm_local_db_2026-07-13T03-31-54-271Z",
+  "guardrails": [
+    "Requires BNA_ONETIME_CRM_TEST_DATABASE_URL; production DATABASE_URL is intentionally ignored.",
+    "Refuses remote-looking database URLs unless BNA_ALLOW_REMOTE_ONETIME_CRM_TEST_DB=1 is set for an approved test database.",
+    "Allows Railway-hosted test databases only when BNA_ALLOW_RAILWAY_ONETIME_CRM_TEST_DB=1 and BNA_ONETIME_CRM_TEST_RAILWAY_ENVIRONMENT names a test-like environment.",
+    "Uses only TEST/example.invalid data and deletes seeded local/test rows in cleanup.",
+    "No email, WhatsApp, payment, access grant, import, or external CRM write is performed."
+  ],
+  "steps": [
+    {
+      "name": "wait for required CRM schema bootstrap",
+      "ok": true,
+      "details": {
+        "required_tables": 5
+      }
+    },
+    {
+      "name": "seed local/test One Time CRM records",
+      "ok": true,
+      "details": {
+        "project_id": 2,
+        "lead_id": 5
+      }
+    },
+    {
+      "name": "search scoped CRM contacts API",
+      "ok": true,
+      "details": {
+        "card_id": "bna_parent_leads:5",
+        "project_key": "one_time_mishnah_class",
+        "mailbox_count": 1
+      }
+    },
+    {
+      "name": "edit contact and assign follow-up through CRM API",
+      "ok": true,
+      "details": {
+        "follow_up_task_id": 41,
+        "timeline_items": 3
+      }
+    },
+    {
+      "name": "reload confirms persisted edit and follow-up task",
+      "ok": true,
+      "details": {
+        "status": "follow_up",
+        "task_id": 41,
+        "email": "test-onetime-crm-edited-2026-07-13t03-31-54-271z@example.invalid"
+      }
+    },
+    {
+      "name": "targeted timeline contains note and follow-up task",
+      "ok": true,
+      "details": {
+        "timeline_items": 3,
+        "no_send": true
+      }
+    },
+    {
+      "name": "cross-workspace CRM list does not leak seeded contact",
+      "ok": true,
+      "details": {
+        "status": 200,
+        "leaked": false,
+        "cards": 0
+      }
+    },
+    {
+      "name": "open targeted mailbox and return with selected contact restored",
+      "ok": true,
+      "details": {
+        "mailbox_url_contains_targeted_inbox": true,
+        "mailbox_text_mentions_rabbi_inbox": true,
+        "selected_contact_restored": true,
+        "screenshot": "ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-crm-mailbox-roundtrip.png"
+      }
+    }
+  ]
+}

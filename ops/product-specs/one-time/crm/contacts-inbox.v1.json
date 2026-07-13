@@ -555,7 +555,7 @@
       "required_evidence": ["timeline no_send and external_write_performed false", "desktop and mobile selected-contact screenshots"]
     },
     {
-      "action_id": "ACTION-CRM-OPEN-SCOPED-INBOX",
+      "action_id": "ACTION-CRM-CONTACT-MAILBOX-OPEN",
       "surface": "contacts_to_inbox",
       "current_state": "partial",
       "handler": "client route to /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",

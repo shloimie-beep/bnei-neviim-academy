@@ -12747,7 +12747,6 @@ CREATE TABLE IF NOT EXISTS signups (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
 `;
 
 const createSignupAgreementSignaturesSQL = `

@@ -4378,7 +4378,7 @@
       "Open scoped inbox"
     ],
     "telegram_intent_examples": [],
-    "action_id": "ACTION-CRM-OPEN-SCOPED-INBOX",
+    "action_id": "ACTION-CRM-CONTACT-MAILBOX-OPEN",
     "label": "Open scoped One Time inbox",
     "description": "Navigate from a selected One Time CRM contact to the Rabbi/One Time email inbox while retaining selected contact context; no message is sent.",
     "category": "crm",
@@ -4397,7 +4397,7 @@
     "allowed_workspaces": [
       "rabbi_sheller_provider"
     ],
-    "execution_handler": "ui.openFirstPartyCrmInboxContext",
+    "execution_handler": "ui.openFirstPartyCrmMailbox",
     "audit_log_event": "ui_navigation_no_write",
     "success_message": "Scoped inbox opened.",
     "failure_message": "Could not open the scoped inbox."

@@ -498,7 +498,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       hasNoSendLock: /No-send locked|Scoped no-send|Read-only preview|Read-only \/ no-send|No email, WhatsApp, payment, access, or external CRM write/.test(text),
       hasSafeActionPanel: Boolean(document.querySelector('[data-crm-safe-actions]')),
       disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
-      hasOpenScopedInboxAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]')),
+      hasOpenScopedInboxAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-CONTACT-MAILBOX-OPEN"]')),
     };
   });
   let mobileBackMetrics = { checked: viewport.width <= 700, restoredList: true, clearedSelectedState: true };
@@ -689,7 +689,7 @@ async function captureInboxContext(browser, baseUrl) {
   await page.waitForFunction(() => /Sample One Time Parent/.test(document.body.textContent || ''), null, { timeout: 15000 });
   await page.locator('[data-first-party-crm-card] [data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND"]').first().click();
   await page.waitForFunction(() => /Contact Timeline/.test(document.body.textContent || ''), null, { timeout: 15000 });
-  await page.locator('[data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]').click();
+  await page.locator('[data-action-id="ACTION-CRM-CONTACT-MAILBOX-OPEN"]').click();
   await page.waitForSelector('[data-email-operator-workspace][data-one-time-inbox-workspace="true"]', { timeout: 20000 });
   await page.waitForFunction(() => /One Time Inbox/.test(document.body.textContent || '') && /One Time Inbox context/.test(document.body.textContent || ''), null, { timeout: 20000 });
   const screenshot = path.join(outDir, 'split-shell-desktop-1024-one-time-inbox.png');

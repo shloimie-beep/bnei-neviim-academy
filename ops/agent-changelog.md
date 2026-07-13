@@ -38942,3 +38942,28 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   in-process DB adapter, and no usable local env/secret file in this worktree.
   Evidence:
   `ops/evidence/one-time-crm-journey-local-db/2026-07-12T23-54-03-blocker-audit.md`.
+
+## 2026-07-13 - One Time CRM Contacts/Inbox Railway test DB proof
+
+- Created an isolated Railway `crm-test` environment
+  (`2a9b61fa-6d88-4405-b6d6-0120ff7f461f`) and Postgres test service
+  `Postgres-ib9s` (`ebbb512e-3d27-44e1-a85b-4be3871a6b2f`) after operator
+  approval to make the test database in Railway.
+- Hardened `scripts/smoke-onetime-crm-journey-local-db.mjs` so Railway remote
+  DBs require explicit test guards, readiness probes fail fast, fresh schema
+  bootstrap is awaited before seeding, and wrong-workspace list reads prove
+  no seeded contact leak.
+- Fixed fresh DB bootstrap by removing the early `bna_content_jobs` alter from
+  `createSignupsTableSQL`; the content-job project column remains in the
+  proper content schema path.
+- Aligned CRM mailbox navigation to the registered
+  `ACTION-CRM-CONTACT-MAILBOX-OPEN` action and `openFirstPartyCrmMailbox`, so
+  the selected contact restores after returning from the One Time inbox.
+- Verification passed: focused CRM/unit tests 27/27, registry/spec JSON parse,
+  and `node scripts/smoke-onetime-crm-journey-local-db.mjs` against the Railway
+  test DB. Evidence:
+  `ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-report.md`
+  and
+  `ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-crm-mailbox-roundtrip.png`.
+  No production DB, send, import, payment, access, DNS, account, credential, or
+  secret mutation was performed.

@@ -7285,7 +7285,7 @@ function firstPartyCrmPreviewLabel() {
 function renderFirstPartyCrmSafeActions(card = null) {
     const lockLabel = firstPartyCrmPreviewLabel();
     const inboxAction = card?.id
-        ? `<button class="task-action" type="button" onclick="openFirstPartyCrmInboxContext(${attrJson(card.id)})" data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX">Open scoped inbox</button>`
+        ? `<button class="task-action" type="button" onclick="openFirstPartyCrmMailbox(${attrJson(card.id)}, ${attrJson(card.email || '')})" data-action-id="ACTION-CRM-CONTACT-MAILBOX-OPEN">Open scoped inbox</button>`
         : '<button class="task-action" type="button" disabled aria-disabled="true">Select contact first</button>';
     return `
         <div class="crm-safe-action-panel" data-crm-safe-actions>

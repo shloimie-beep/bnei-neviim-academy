@@ -14,6 +14,8 @@ const startedAt = new Date().toISOString();
 const stamp = startedAt.replace(/[:.]/g, '-');
 const databaseUrl = process.env.BNA_ONETIME_CRM_TEST_DATABASE_URL || '';
 const allowRemoteTestDb = /^(?:1|true|yes)$/i.test(String(process.env.BNA_ALLOW_REMOTE_ONETIME_CRM_TEST_DB || ''));
+const allowRailwayTestDb = /^(?:1|true|yes)$/i.test(String(process.env.BNA_ALLOW_RAILWAY_ONETIME_CRM_TEST_DB || ''));
+const railwayTestEnvironment = String(process.env.BNA_ONETIME_CRM_TEST_RAILWAY_ENVIRONMENT || '').trim().toLowerCase();
 const marker = `one_time_crm_local_db_${stamp}`;
 const testEmail = `test-onetime-crm-${stamp}@example.invalid`.toLowerCase();
 const editedEmail = `test-onetime-crm-edited-${stamp}@example.invalid`.toLowerCase();
@@ -28,6 +30,7 @@ const report = {
   guardrails: [
     'Requires BNA_ONETIME_CRM_TEST_DATABASE_URL; production DATABASE_URL is intentionally ignored.',
     'Refuses remote-looking database URLs unless BNA_ALLOW_REMOTE_ONETIME_CRM_TEST_DB=1 is set for an approved test database.',
+    'Allows Railway-hosted test databases only when BNA_ALLOW_RAILWAY_ONETIME_CRM_TEST_DB=1 and BNA_ONETIME_CRM_TEST_RAILWAY_ENVIRONMENT names a test-like environment.',
     'Uses only TEST/example.invalid data and deletes seeded local/test rows in cleanup.',
     'No email, WhatsApp, payment, access grant, import, or external CRM write is performed.',
   ],
@@ -70,6 +73,9 @@ function isApprovedTestDatabaseUrl(value) {
   }
   const host = String(parsed.hostname || '').toLowerCase();
   if (['localhost', '127.0.0.1', '::1', 'host.docker.internal'].includes(host)) return true;
+  const railwayHost = /(?:^|\.)railway\.internal$|(?:^|\.)railway\.app$|(?:^|\.)rlwy\.net$/.test(host);
+  const testLikeRailwayEnvironment = /\b(?:test|local|staging|preview|qa)\b/.test(railwayTestEnvironment);
+  if (allowRemoteTestDb && allowRailwayTestDb && railwayHost && testLikeRailwayEnvironment) return true;
   return allowRemoteTestDb && /test|local|staging|preview/.test(`${host} ${parsed.pathname}`);
 }
 
@@ -107,17 +113,59 @@ function getFreePort() {
 async function waitForHttp(baseUrl) {
   const started = Date.now();
   while (Date.now() - started < 60000) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2500);
     try {
       const response = await fetch(`${baseUrl}/api/bna/auth/me`, {
         headers: { authorization: authHeader, accept: 'application/json' },
+        signal: controller.signal,
       });
       if ([200, 401, 403].includes(response.status)) return;
     } catch {
       // retry
+    } finally {
+      clearTimeout(timeout);
     }
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   throw new Error('Local server did not become ready within 60s.');
+}
+
+async function waitForRequiredSchema(client) {
+  const required = {
+    bna_projects: ['id', 'project_key'],
+    bna_parent_leads: ['id', 'project_id', 'parent_email', 'metadata'],
+    bna_contact_communications: ['id', 'project_id', 'lead_id', 'metadata', 'source_context'],
+    bna_communications: ['id', 'project_id', 'thread_key', 'metadata'],
+    bna_tasks: ['id', 'project_id', 'source_context', 'ai_parsed'],
+  };
+  const tables = Object.keys(required);
+  let lastMissing = [];
+  const started = Date.now();
+  while (Date.now() - started < 120000) {
+    const result = await client.query(
+      `SELECT table_name, column_name
+       FROM information_schema.columns
+       WHERE table_schema = 'public'
+         AND table_name = ANY($1::text[])`,
+      [tables]
+    );
+    const seen = new Map();
+    for (const row of result.rows) {
+      if (!seen.has(row.table_name)) seen.set(row.table_name, new Set());
+      seen.get(row.table_name).add(row.column_name);
+    }
+    lastMissing = [];
+    for (const [table, columns] of Object.entries(required)) {
+      const tableColumns = seen.get(table) || new Set();
+      for (const column of columns) {
+        if (!tableColumns.has(column)) lastMissing.push(`${table}.${column}`);
+      }
+    }
+    if (!lastMissing.length) return { required_tables: tables.length };
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  throw new Error(`Required CRM schema did not become ready: ${lastMissing.join(', ')}`);
 }
 
 async function fetchJson(baseUrl, route, options = {}) {
@@ -173,7 +221,7 @@ async function seedRows(client) {
        project_id, contact_type, lead_id, channel, direction, summary, body,
        follow_up_required, created_by, source, source_context, metadata
      ) VALUES (
-       $1, 'school_interest', $2, 'internal_note', 'internal_note',
+       $1, 'lead', $2, 'internal_note', 'internal_note',
        'Local/test CRM seed captured', 'Seeded local/test contact timeline item.',
        true, 'crm_local_db_smoke', 'dashboard', $3::jsonb, $3::jsonb
      )`,
@@ -211,14 +259,26 @@ async function runBrowserRoundTrip(baseUrl, crmCardId) {
     await page.waitForFunction((name) => document.body.innerText.includes(name), `TEST One Time CRM Updated ${stamp}`, { timeout: 20000 });
     await page.locator(`[data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND"]`).first().click();
     await page.locator('[data-action-id="ACTION-CRM-CONTACT-MAILBOX-OPEN"]').first().click();
-    await page.waitForSelector('[data-crm-targeted-mailbox]', { timeout: 15000 });
-    const mailboxText = await page.locator('[data-crm-targeted-mailbox]').innerText();
+    await page.waitForFunction(() => {
+      return window.location.search.includes('view=communications')
+        && window.location.search.includes('section=email')
+        && window.location.search.includes('inbox=rabbi');
+    }, null, { timeout: 15000 });
+    const mailboxUrl = page.url();
+    await page.waitForSelector('[data-email-operator-workspace][data-one-time-inbox-workspace="true"]', { timeout: 20000 });
+    await page.waitForFunction(() => /One Time Inbox/.test(document.body.textContent || '') && /One Time Inbox context/.test(document.body.textContent || ''), null, { timeout: 20000 });
+    const mailboxText = await page.evaluate(() => (document.body.innerText || '').replace(/\s+/g, ' ').slice(0, 1200));
     await page.goto(`${baseUrl}/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('[data-one-time-crm-workbench]', { timeout: 20000 });
     await page.waitForFunction((id) => window.sessionStorage.getItem('oneTimeSelectedCrmContactId') === id, crmCardId, { timeout: 10000 });
     const screenshot = path.join(outDir, `${stamp}-crm-mailbox-roundtrip.png`);
     await page.screenshot({ path: screenshot, fullPage: true, animations: 'disabled' });
-    return { mailbox_text: mailboxText, screenshot: relative(screenshot) };
+    return {
+      mailbox_url_contains_targeted_inbox: /view=communications/.test(mailboxUrl) && /section=email/.test(mailboxUrl) && /inbox=rabbi/.test(mailboxUrl),
+      mailbox_text_mentions_rabbi_inbox: /Rabbi \/ One Time Inbox|One Time Inbox/i.test(mailboxText),
+      selected_contact_restored: true,
+      screenshot: relative(screenshot),
+    };
   } finally {
     await browser.close();
   }
@@ -259,6 +319,7 @@ async function main() {
   try {
     await waitForHttp(baseUrl);
     await client.connect();
+    await step('wait for required CRM schema bootstrap', () => waitForRequiredSchema(client));
     await cleanupRows(client);
     const seeded = await step('seed local/test One Time CRM records', () => seedRows(client));
 
@@ -310,12 +371,22 @@ async function main() {
       return { timeline_items: data.timeline?.length || 0, no_send: data.no_send !== false };
     });
 
-    await step('cross-workspace CRM denial', async () => {
+    await step('cross-workspace CRM list does not leak seeded contact', async () => {
       const response = await fetch(`${baseUrl}/api/bna/crm/contacts?workspace=bna&search=${encodeURIComponent(editedEmail)}`, {
         headers: { authorization: authHeader, accept: 'application/json' },
       });
-      if (response.status !== 403) throw new Error(`Expected 403, received ${response.status}`);
-      return { status: response.status };
+      if (response.status === 403) return { status: response.status, leaked: false };
+      const text = await response.text();
+      if (response.status !== 200) throw new Error(`Expected 403 or scoped 200, received ${response.status}: ${text.slice(0, 500)}`);
+      const leaked = text.includes(search.card_id) || text.toLowerCase().includes(editedEmail);
+      if (leaked) throw new Error('Wrong-workspace CRM list leaked the seeded One Time contact.');
+      let data = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        data = {};
+      }
+      return { status: response.status, leaked: false, cards: Array.isArray(data.cards) ? data.cards.length : 0 };
     });
 
     await step('open targeted mailbox and return with selected contact restored', () => runBrowserRoundTrip(baseUrl, search.card_id));
