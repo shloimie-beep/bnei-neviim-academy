@@ -146,6 +146,7 @@ test('student login is a real student login and student preview is clearly TEST-
   assert.match(studentHtml, /const ONE_TIME_LOGIN_MODE =/);
   assert.match(studentHtml, /const ONE_TIME_HOST_MODE =/);
   assert.match(studentHtml, /onetimeonetime\\\.com\$\/i\.test\(window\.location\.hostname/);
+  assert.match(fs.readFileSync(path.join(root, 'public', 'js', 'one-time-portal-shell.js'), 'utf8'), /function isStudentPath\(\)[\s\S]*if \(isStudentPath\(\)\) return false;/);
   assert.match(studentHtml, /One Time Student Login/);
   assert.match(studentHtml, /one-time-student-login-active/);
   assert.match(studentHtml, /Use the student username and password managed by your parent/);
@@ -184,6 +185,8 @@ test('One Time student login first paint does not create expected-auth console n
     assert.match(page.url(), /\/student\.html\?one_time_login=1$/);
     assert.equal(await page.locator('#loginPanel').isVisible(), true);
     assert.equal(await page.locator('#portalLayout').isVisible(), false);
+    assert.equal(await page.locator('[data-one-time-preview-banner]').count(), 0);
+    assert.equal(await page.locator('text=TEST PREVIEW').count(), 0);
     assert.equal(local.studentSessionRequests(), 0);
     assert.deepEqual(badResponses, []);
     assert.deepEqual(consoleErrors, []);

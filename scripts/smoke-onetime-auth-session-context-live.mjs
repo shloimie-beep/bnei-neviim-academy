@@ -165,6 +165,7 @@ async function captureRoute({
       portal_panel_visible: Boolean(document.querySelector('#portalPanel:not(.hidden), #portalLayout:not(.hidden)')),
       crm_shell_visible: Boolean(document.querySelector('[data-one-time-provider-crm-shell]')),
       student_login_form_visible: Boolean(document.querySelector('#studentLoginForm')),
+      preview_banner_visible: Boolean(document.querySelector('[data-one-time-preview-banner]')),
       horizontal_overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
       body_class: document.body?.className || '',
       text_preview: (document.body?.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 260),
@@ -348,6 +349,8 @@ async function main() {
   check(checks, 'student_login_route_clean_without_session_probe', studentCapture.status === 200
     && !studentCapture.navigation_error
     && studentCapture.state?.student_login_form_visible === true
+    && studentCapture.state?.preview_banner_visible === false
+    && !/TEST PREVIEW|SAMPLE DATA|NO WRITES/i.test(studentCapture.state?.text_preview || '')
     && studentCapture.state?.horizontal_overflow === false
     && !studentCapture.failed_requests?.length
     && !studentCapture.bad_responses?.length
@@ -356,6 +359,7 @@ async function main() {
     failed: studentCapture.failed_requests?.length || 0,
     bad: studentCapture.bad_responses?.length || 0,
     console: studentCapture.console_errors?.length || 0,
+    preview_banner_visible: Boolean(studentCapture.state?.preview_banner_visible),
     screenshot: studentCapture.screenshot_path,
   });
 

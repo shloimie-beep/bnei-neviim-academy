@@ -13,10 +13,16 @@
       || /^(\/rabbi-member|\/member-library|\/one-time-classroom|\/one-time-parent|\/parent\.html|\/student(?:\.html)?)/.test(path);
   }
 
+  function isStudentPath() {
+    return /^\/student(?:\.html)?/.test(path);
+  }
+
   function isReviewMode() {
-    return REVIEW_VALUES.has(String(params.get('review') || '').toLowerCase())
-      || body.classList.contains('one-time-review-active')
-      || /review/.test(String(body.dataset.oneTimeRabbiDashboard || ''));
+    if (REVIEW_VALUES.has(String(params.get('review') || '').toLowerCase())) return true;
+    if (isStudentPath() && body.classList.contains('one-time-student-login-active')) return false;
+    if (body.classList.contains('one-time-review-active')) return true;
+    if (isStudentPath()) return false;
+    return /review/.test(String(body.dataset.oneTimeRabbiDashboard || ''));
   }
 
   function normalizeText(node, nextText) {
