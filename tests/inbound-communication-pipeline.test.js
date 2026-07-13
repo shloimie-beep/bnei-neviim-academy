@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const test = require('node:test');
 
 const {
@@ -245,4 +246,19 @@ test('standalone receipts redact provider identifiers and raw identities', () =>
   assert.equal(receipt.redacted_receipt, true);
   assert.equal(receipt.sender.phone_masked.endsWith('2222'), true);
   assert.doesNotMatch(JSON.stringify(receipt), /telegram-message-secret|telegram-event-secret|\+972 50 111 2222|972501112222/i);
+});
+
+test('website assistant user messages are mirrored through the canonical inbound service', () => {
+  const server = fs.readFileSync('server.js', 'utf8');
+  assert.match(server, /async function mirrorAssistantUserMessageToInboundCommunication/);
+  assert.match(server, /crmInboundIngest\.ingestInboundCommunication\(\{/);
+  assert.match(server, /provider:\s*'website_assistant'/);
+  assert.match(server, /communicationType:\s*'website_assistant_inbound'/);
+  assert.match(server, /const workspaceKey = normalizeWorkspaceKey\(workspaceKeyForProject\(projectKey\)\)/);
+  assert.match(server, /createTaskOnInbound:\s*false/);
+  assert.match(server, /toolName:\s*'canonical_inbound_communication'/);
+  assert.match(server, /routeAlias:\s*req\.path/);
+  assert.match(server, /routeAlias:\s*'\/api\/bna\/assistant\/chat'/);
+  assert.match(server, /routeAlias:\s*'\/api\/bna\/assistant\/threads\/:id\/messages'/);
+  assert.match(server, /routeAlias:\s*'\/api\/assistant\/threads\/:id\/messages'/);
 });

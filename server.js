@@ -74708,6 +74708,166 @@ async function insertAssistantMessage({ threadId, authorType, authorRole, body, 
   return message;
 }
 
+async function resolveAssistantThreadProject({ thread = {}, body = {}, project = null, db = pool } = {}) {
+  if (project?.id) return project;
+  const projectKey = normalizeProjectKey(
+    thread.project_key ||
+    body.project_key ||
+    body.projectKey ||
+    body.context?.project_key ||
+    body.context?.projectKey ||
+    ''
+  );
+  if (projectKey) return getProjectByKey(projectKey, db).catch(() => null);
+  const projectId = Number(thread.project_id || thread.workspace_id || 0);
+  if (projectId) {
+    const row = (await db.query('SELECT * FROM bna_projects WHERE id = $1 LIMIT 1', [projectId])).rows[0] || null;
+    if (row) return row;
+  }
+  const surfaceSpec = assistantProjectForSurface(body.surface || body.page || body.context?.surface || thread.surface);
+  return getProjectByKey(surfaceSpec.projectKey, db).catch(() => null);
+}
+
+function assistantInboundSenderFromActor(actor = {}, body = {}) {
+  const context = body.context || {};
+  const email = normalizeEmail(
+    actor.email ||
+    body.email ||
+    body.contact_email ||
+    body.contactEmail ||
+    context.email ||
+    context.contact_email ||
+    ''
+  );
+  const phone = body.phone || body.contact_phone || body.contactPhone || context.phone || context.contact_phone || '';
+  const whatsapp = body.whatsapp || body.whatsapp_number || body.whatsappNumber || context.whatsapp || context.whatsapp_number || '';
+  return {
+    displayName: limitText(
+      actor.name ||
+      body.name ||
+      body.contact_name ||
+      body.contactName ||
+      context.name ||
+      context.contact_name ||
+      actor.email ||
+      'Website visitor',
+      180
+    ),
+    email,
+    phone,
+    whatsapp,
+    address: email || whatsapp || phone || '',
+  };
+}
+
+async function mirrorAssistantUserMessageToInboundCommunication({
+  actor = {},
+  thread = {},
+  project = null,
+  userMessage = {},
+  messageText = '',
+  body = {},
+  routeAlias = '',
+  db = pool,
+} = {}) {
+  if (!thread?.id || !userMessage?.id || !messageText || actor.canUseCodex) return null;
+  const resolvedProject = await resolveAssistantThreadProject({ thread, body, project, db });
+  const projectKey = normalizeProjectKey(resolvedProject?.project_key || body.project_key || body.projectKey || DEFAULT_PROJECT_KEY) || DEFAULT_PROJECT_KEY;
+  const workspaceKey = normalizeWorkspaceKey(workspaceKeyForProject(projectKey));
+  const workspaceId = await workspaceSettingsIdForKey(workspaceKey, db).catch(() => null);
+  const providerMessageId = limitText(
+    body.idempotency_key ||
+    body.idempotencyKey ||
+    body.request_id ||
+    body.requestId ||
+    `assistant_message:${userMessage.id}`,
+    180
+  );
+  try {
+    const result = await crmInboundIngest.ingestInboundCommunication({
+      db,
+      binding: {
+        workspaceId,
+        projectId: resolvedProject?.id || thread.project_id || null,
+        workspaceKey,
+        projectKey,
+        replyMode: 'capture_only',
+      },
+      channel: 'web',
+      provider: 'website_assistant',
+      communicationType: 'website_assistant_inbound',
+      providerMessageId: `website_assistant:${providerMessageId}`,
+      sender: assistantInboundSenderFromActor(actor, body),
+      recipients: ['website_assistant'],
+      subject: limitText(body.subject || body.title || 'Website assistant message', 240),
+      bodyText: messageText,
+      threadHints: {
+        chatId: `assistant_thread:${thread.id}`,
+        threadKey: `assistant_thread:${thread.id}`,
+      },
+      metadata: {
+        source: 'website_assistant',
+        source_table: 'bna_assistant_messages',
+        assistant_thread_id: thread.id,
+        assistant_message_id: userMessage.id,
+        actor_type: actor.type || null,
+        actor_role: actor.role || actor.type || null,
+        surface: normalizeAssistantSurface(body.surface || body.page || body.context?.surface || thread.surface),
+        page_path: limitText(body.page_path || body.path || body.context?.page_path || body.context?.path || '', 500) || null,
+        route_alias: routeAlias || null,
+        create_task_on_inbound: false,
+        external_write_performed: false,
+      },
+      contact: {
+        source: 'website_assistant',
+        tags: ['website_assistant', projectKey, workspaceKey].filter(Boolean),
+        lifecycle: 'New Inquiry',
+        metadata: {
+          workspace_key: workspaceKey,
+          project_key: projectKey,
+          assistant_thread_id: thread.id,
+          assistant_actor_type: actor.type || null,
+        },
+      },
+      createTaskOnInbound: false,
+    });
+    await recordAssistantToolCall({
+      thread,
+      toolName: 'canonical_inbound_communication',
+      actor,
+      allowed: true,
+      status: 'completed',
+      resultSummary: result.duplicate
+        ? 'Canonical inbound communication already existed for this assistant message'
+        : 'Canonical inbound communication captured for this assistant message',
+      metadata: {
+        communication_id: result.communication_id || null,
+        contact_id: result.contact_id || null,
+        duplicate: Boolean(result.duplicate),
+        receipt: result.receipt || null,
+      },
+      db,
+    });
+    return result;
+  } catch (error) {
+    await recordAssistantToolCall({
+      thread,
+      toolName: 'canonical_inbound_communication',
+      actor,
+      allowed: true,
+      status: 'failed',
+      resultSummary: 'Assistant message saved, but canonical inbound communication capture failed',
+      metadata: {
+        error: hostedAssistantErrorForLog(error),
+        assistant_message_id: userMessage.id,
+        source_table: 'bna_assistant_messages',
+      },
+      db,
+    }).catch(() => null);
+    return null;
+  }
+}
+
 function assistantIntroForRole(actor = {}) {
   if (actor.type === 'super_admin') {
     return 'Hi Shloimie. I can help with BNA state, contacts, students, tasks, content, settings, tickets, hosted AI replies, and tracked Codex/system work.';
@@ -78159,6 +78319,16 @@ async function handleUniversalAssistantMessage(req, res, options = {}) {
       },
       db: client,
     });
+    await mirrorAssistantUserMessageToInboundCommunication({
+      actor,
+      thread,
+      project,
+      userMessage,
+      messageText,
+      body,
+      routeAlias: req.path,
+      db: client,
+    });
     const plannedActions = planUniversalAssistantActions(messageText, actor, body, context);
     const results = [];
     if (!plannedActions.length) {
@@ -78407,6 +78577,16 @@ app.post('/api/bna/assistant/chat', async (req, res) => {
       },
       db: client,
     });
+    await mirrorAssistantUserMessageToInboundCommunication({
+      actor,
+      thread,
+      project,
+      userMessage,
+      messageText,
+      body,
+      routeAlias: '/api/bna/assistant/chat',
+      db: client,
+    });
     const reply = await buildAssistantReply({ actor, message: messageText, thread, project, body, db: client });
     let usageRecord = { recorded: false, reason: 'assistant_reply_not_hosted_ai' };
     const replyProvider = reply.provider || reply.metadata?.provider || reply.metadata?.ai_provider || null;
@@ -78606,7 +78786,17 @@ app.post('/api/bna/assistant/threads/:id/messages', async (req, res) => {
       metadata: { page_path: body.page_path || body.path || null },
       db: client,
     });
-    const project = await getProjectByKey(thread.project_key || DEFAULT_PROJECT_KEY, client).catch(() => null);
+    const project = await resolveAssistantThreadProject({ thread, body, db: client });
+    await mirrorAssistantUserMessageToInboundCommunication({
+      actor,
+      thread,
+      project,
+      userMessage,
+      messageText,
+      body,
+      routeAlias: '/api/bna/assistant/threads/:id/messages',
+      db: client,
+    });
     const reply = await buildAssistantReply({ actor, message: messageText, thread, project, body, db: client });
     const assistantMessage = await insertAssistantMessage({
       threadId: thread.id,
@@ -79550,7 +79740,17 @@ app.post('/api/assistant/threads/:id/messages', async (req, res) => {
       metadata: { page_path: body.page_path || body.path || null, route_alias: '/api/assistant' },
       db: client,
     });
-    const project = await getProjectByKey(DEFAULT_PROJECT_KEY, client).catch(() => null);
+    const project = await resolveAssistantThreadProject({ thread, body, db: client });
+    await mirrorAssistantUserMessageToInboundCommunication({
+      actor,
+      thread,
+      project,
+      userMessage,
+      messageText,
+      body,
+      routeAlias: '/api/assistant/threads/:id/messages',
+      db: client,
+    });
     const reply = await buildAssistantReply({ actor, message: messageText, thread, project, body, db: client });
     const assistantMessage = await insertAssistantMessage({
       threadId: thread.id,
