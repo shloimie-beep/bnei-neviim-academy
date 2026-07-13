@@ -1,7 +1,7 @@
 # One Time Provider CRM Layout Local Smoke
 
 Status: PASS
-Generated: 2026-07-13T06:01:59.214Z
+Generated: 2026-07-13T06:28:11.713Z
 
 Local signed One Time provider CRM layout smoke; no database, sends, payments, external accounts, or production writes.
 
@@ -14,6 +14,7 @@ Local signed One Time provider CRM layout smoke; no database, sends, payments, e
 Checks:
 
 - CRM renders as one workbench shell with list and detail regions.
+- CRM route module loads for the active CRM route without eagerly loading Mailbox or Communications modules.
 - CRM is the active visible provider section from the direct URL.
 - No horizontal overflow on desktop, tablet, or 390px mobile.
 - Rabbi-facing CRM text does not expose TEST Parent/Student names, `.example.test` emails, Message Actions duplicates, BNA Academy, or platform setup diagnostics.

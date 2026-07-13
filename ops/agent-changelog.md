@@ -39571,3 +39571,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   it to One Time Railway deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754`,
   and live-smoked exact SHA, no Operations CSS/JS on the default provider
   route, and the explicit scoped Operations fallback.
+
+## 2026-07-13 - One Time CRM route module locally verified
+
+- Moved the One Time provider CRM renderer behind
+  `public/js/one-time-provider-crm-route.js`, with mailbox and communications
+  route-module stubs available for the next extraction slices.
+- The default provider overview now renders a route placeholder instead of
+  eagerly building the CRM workbench; the direct CRM route loads only the CRM
+  module, and mailbox loads after explicit navigation.
+- Local proof passed: focused provider shell tests `11/11`, route/action tests
+  `11/11`, local CRM layout smoke with route-module assertions, action
+  watchdog, secrets audit, execution-run validation, and provider route-module
+  budget audit.

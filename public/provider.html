@@ -1165,6 +1165,7 @@
             search: '',
             loaded: false,
         };
+        let oneTimeProviderCrmLastData = null;
 
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, (char) => ({
@@ -1720,6 +1721,34 @@
             }
         }
 
+        const oneTimeProviderRouteModuleManifest = Object.freeze({
+            crm: '/js/one-time-provider-crm-route.js',
+            mailbox: '/js/one-time-provider-mailbox-route.js',
+            communications: '/js/one-time-provider-communications-route.js',
+        });
+        const loadedOneTimeProviderRouteModules = new Set();
+
+        function oneTimeProviderRouteModulesEnabled() {
+            return Boolean(oneTimeReviewMode || oneTimeAdminProviderMode || oneTimeViewAsRabbiToken || isSignedOneTimeProviderSession());
+        }
+
+        function ensureOneTimeProviderRouteModule(section) {
+            if (!oneTimeProviderRouteModulesEnabled()) return;
+            const moduleSrc = oneTimeProviderRouteModuleManifest[section];
+            if (!moduleSrc || loadedOneTimeProviderRouteModules.has(moduleSrc)) return;
+            if (document.querySelector(`script[src="${moduleSrc}"]`)) {
+                loadedOneTimeProviderRouteModules.add(moduleSrc);
+                return;
+            }
+            loadedOneTimeProviderRouteModules.add(moduleSrc);
+            const script = document.createElement('script');
+            script.src = moduleSrc;
+            script.async = false;
+            script.dataset.oneTimeProviderRouteModule = section;
+            script.dataset.oneTimeProviderRouteModuleSrc = moduleSrc;
+            document.head.appendChild(script);
+        }
+
         function setProviderSection(section, options = {}) {
             activeProviderSection = providerSections().some(item => item.id === section) ? section : 'overview';
             document.querySelectorAll('[data-provider-section]').forEach(panel => {
@@ -1728,7 +1757,11 @@
             document.querySelectorAll('[data-provider-nav]').forEach(button => {
                 button.classList.toggle('active', button.dataset.providerNav === activeProviderSection);
             });
+            if (activeProviderSection === 'crm') {
+                hydrateOneTimeCrmRoute(portalState);
+            }
             if (options.updateUrl) updateProviderSectionUrl(activeProviderSection);
+            ensureOneTimeProviderRouteModule(activeProviderSection);
         }
 
         function renderProviderNav() {
@@ -2608,127 +2641,66 @@
             `;
         }
 
-        function renderOneTimeCrmWorkspace(data = {}) {
-            const parent = data.parent || {};
-            const student = data.student || {};
-            const supportTicket = data.support_ticket || {};
-            const privateQuestion = data.private_question || {};
-            const records = data.crm_workspace?.current_records || {};
-            const parentCount = Number(records.parents || 0);
-            const studentCount = Number(records.students || 0);
-            const supportCount = Number(records.support_items || (supportTicket.title ? 1 : 0));
-            const parentName = oneTimeLaunchDisplay(parent.name || parent.display_name, 'Parent records');
-            const studentName = oneTimeLaunchDisplay(student.display_name || student.name, 'Student records');
-            const parentEmail = oneTimeLaunchDisplay(parent.email || parent.contact_email, '');
-            const studentLabel = oneTimeLaunchDisplay(student.display_name || student.name, 'linked student records');
-            const supportTitle = oneTimeLaunchDisplay(supportTicket.title, 'Support tickets');
-            const supportBody = oneTimeLaunchDisplay(supportTicket.latest_activity, 'Parent support requests, worksheet questions, login issues, and billing questions are tracked from the same contact record.');
-            const privateQuestionTitle = oneTimeLaunchDisplay(privateQuestion.title, 'Private Rabbi questions');
-            const privateQuestionBody = oneTimeLaunchDisplay(privateQuestion.body, 'Student questions can stay private for Rabbi review or be approved for the public classroom feed when appropriate.');
-            const crmRecords = [
-                {
-                    type: 'Parent',
-                    title: parentName,
-                    body: oneTimeLaunchDisplay(parent.name || parent.display_name, '') || parentEmail
-                        ? `Linked to ${studentLabel}. ${parentEmail ? `Email: ${parentEmail}.` : 'Email thread captured in the One Time inbox.'}`
-                        : `${parentCount} parent record${parentCount === 1 ? '' : 's'} in this workspace. Open the inbox to review captured email threads and follow-up notes.`,
-                    meta: [parentEmail || ONE_TIME_INBOX_ADDRESS, `${parentCount || 0} parent record${parentCount === 1 ? '' : 's'}`],
-                    action: 'Open Inbox',
-                    target: 'mailbox',
-                },
-                {
-                    type: 'Student',
-                    title: studentName,
-                    body: oneTimeLaunchDisplay(student.display_name || student.name, '')
-                        ? 'Class access, attendance, library progress, private questions, badges, and reward history stay connected here.'
-                        : `${studentCount} student record${studentCount === 1 ? '' : 's'} connected to parent accounts, attendance, library progress, questions, and rewards.`,
-                    meta: ['Attendance', 'Library', 'Questions'],
-                    action: 'Student View',
-                    target: 'student',
-                    href: oneTimeRoleLink(data.links || {}, 'student', '/student/login', '/student.html?review=one-time'),
-                },
-                {
-                    type: 'Support',
-                    title: supportTitle,
-                    body: supportBody,
-                    meta: [`${supportCount || 0} support item${supportCount === 1 ? '' : 's'}`, supportTicket.status || 'Needs follow-up'],
-                    action: 'Open Messages',
-                    target: 'communications',
-                },
-                {
-                    type: 'Private question',
-                    title: privateQuestionTitle,
-                    body: privateQuestionBody,
-                    meta: [privateQuestion.status || 'Rabbi review', 'Publish only after approval'],
-                    action: 'Classroom',
-                    href: oneTimeRoleLink(data.links || {}, 'classroom', '/one-time-classroom.html', '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS'),
-                },
-            ];
-            const recordHtml = crmRecords.map(record => `
-                <article class="one-time-crm-record" data-one-time-crm-record="${escapeHtml(record.type.toLowerCase().replace(/\s+/g, '-'))}">
-                    <div class="one-time-crm-record-top">
-                        <strong>${escapeHtml(record.title)}</strong>
-                        <span class="status-pill">${escapeHtml(record.type)}</span>
-                    </div>
-                    <p class="small">${escapeHtml(record.body)}</p>
-                    <div class="one-time-crm-record-meta">
-                        ${(record.meta || []).filter(Boolean).map(item => oneTimeMaybeFitStatusPill(item)).join('')}
-                    </div>
-                    ${record.href
-                        ? `<a class="btn" href="${escapeHtml(record.href)}" data-one-time-action-state="navigate">${escapeHtml(record.action)}</a>`
-                        : `<button class="btn" type="button" data-action-id="ACTION-PROVIDER-SECTION-NAVIGATION" data-provider-nav="${escapeHtml(record.target || 'crm')}" data-one-time-action-state="navigate">${escapeHtml(record.action)}</button>`}
-                </article>
-            `).join('');
+        function oneTimeProviderCrmRouteHelpers() {
+            return { escapeHtml, oneTimeLaunchDisplay, oneTimeRoleLink, oneTimeReviewHref, oneTimeMaybeFitStatusPill, ONE_TIME_INBOX_ADDRESS };
+        }
+
+        function renderOneTimeCrmRouteLoading(message = 'CRM workspace loads when this section opens.', busy = false) {
             return `
-                <section class="one-time-crm-shell" data-one-time-provider-crm-shell aria-label="One Time CRM workbench">
-                    <div class="one-time-crm-header">
+                <section class="service-card" data-one-time-provider-crm-route-placeholder data-route-module="one-time-provider-crm-route" aria-busy="${busy}">
+                    <div class="service-head">
                         <div>
                             <h3>One Time CRM Inbox</h3>
-                            <p class="small one-time-fit-copy">Emails to ${escapeHtml(ONE_TIME_INBOX_ADDRESS)}, parent/student records, notes, support tickets, and private Rabbi questions are connected here inside the Rabbi Sheller workspace.</p>
-                            <div class="one-time-crm-summary-grid">
-                                <span class="status-pill">${escapeHtml(String(parentCount || 0))} parent${parentCount === 1 ? '' : 's'}</span>
-                                <span class="status-pill">${escapeHtml(String(studentCount || 0))} student${studentCount === 1 ? '' : 's'}</span>
-                                <span class="status-pill">${escapeHtml(String(supportCount || 0))} support item${supportCount === 1 ? '' : 's'}</span>
-                            </div>
+                            <p class="small">${escapeHtml(message)}</p>
                         </div>
-                        ${renderOneTimeProviderActionBar(data)}
-                    </div>
-                    <div class="one-time-crm-workbench">
-                        <div class="one-time-crm-list" aria-label="CRM records">
-                            <div class="one-time-crm-list-head">
-                                <span>Records</span>
-                                <span>Rabbi workspace</span>
-                            </div>
-                            ${recordHtml}
-                        </div>
-                        <aside class="one-time-crm-detail" aria-label="Selected CRM record">
-                            <div>
-                                <h3>Selected CRM view</h3>
-                                <p class="small">Open a record from the list to work from the person, not from a loose card. The Rabbi sees contact context, conversation history, notes, class access, and pending actions in one place.</p>
-                            </div>
-                            <div class="one-time-crm-detail-grid">
-                                <div class="one-time-crm-summary">
-                                    <strong>Conversation</strong>
-                                    <p class="small">Inbox and WhatsApp context stay tied to the parent/student contact.</p>
-                                </div>
-                                <div class="one-time-crm-summary">
-                                    <strong>Notes</strong>
-                                    <p class="small">Rabbi notes stay inside this One Time workspace and do not expose platform setup cards.</p>
-                                </div>
-                                <div class="one-time-crm-summary">
-                                    <strong>Class access</strong>
-                                    <p class="small">Parent and student portal links, schedule, library progress, and attendance are visible when attached.</p>
-                                </div>
-                                <div class="one-time-crm-summary">
-                                    <strong>Next action</strong>
-                                    <p class="small">Draft reply, open the mailbox, preview templates, or review the student/parent view from the same workspace.</p>
-                                </div>
-                            </div>
-                            ${renderOneTimeProviderActionBar(data)}
-                        </aside>
+                        <span class="status-pill">Route module</span>
                     </div>
                 </section>
             `;
+        }
+
+        function hydrateOneTimeCrmRoute(data = portalState) {
+            if (!data || !(oneTimeReviewMode || oneTimeViewAsRabbiToken || portalDataIsOneTimeProvider(data))) return;
+            const target = document.getElementById('oneTimeCrm');
+            if (!target) return;
+            oneTimeProviderCrmLastData = data;
+            target.dataset.routeModule = 'one-time-provider-crm-route';
+            const render = () => {
+                if (!window.OneTimeProviderCrmRoute?.render) return;
+                target.innerHTML = window.OneTimeProviderCrmRoute.render(oneTimeProviderCrmLastData, oneTimeProviderCrmRouteHelpers());
+                instrumentOneTimeProviderButtons();
+                applyOneTimeReadOnlyControls();
+            };
+            if (window.OneTimeProviderCrmRoute?.render) {
+                render();
+                return;
+            }
+            target.innerHTML = renderOneTimeCrmRouteLoading('Loading CRM workspace...', true);
+            let script = document.querySelector('script[src="/js/one-time-provider-crm-route.js"]');
+            let appendScript = false;
+            if (!script) {
+                script = document.createElement('script');
+                script.src = '/js/one-time-provider-crm-route.js';
+                script.dataset.routeModule = 'one-time-provider-crm-route';
+                script.async = true;
+                appendScript = true;
+            }
+            script.addEventListener('load', render, { once: true });
+            script.addEventListener('error', () => {
+                target.innerHTML = renderOneTimeCrmRouteLoading('CRM route module could not load.', false);
+            }, { once: true });
+            if (appendScript) document.head.appendChild(script);
+        }
+
+        function renderOneTimeCrmWorkspace(data = {}, options = {}) {
+            oneTimeProviderCrmLastData = data;
+            const active = options.active ?? activeProviderSection === 'crm';
+            if (!active) return renderOneTimeCrmRouteLoading();
+            if (window.OneTimeProviderCrmRoute?.render) {
+                return window.OneTimeProviderCrmRoute.render(data, oneTimeProviderCrmRouteHelpers());
+            }
+            queueMicrotask(() => hydrateOneTimeCrmRoute(data));
+            return renderOneTimeCrmRouteLoading('Loading CRM workspace...', true);
         }
 
         function renderOneTimeReviewMailbox(data = {}) {

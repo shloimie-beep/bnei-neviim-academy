@@ -213,6 +213,12 @@ test('server bridges normal One Time provider sessions into canonical scoped Ope
   assert.match(server, /operations_fallback_url: oneTimeProviderCanonicalOperationsUrl/);
   assert.match(server, /legacy_provider_dashboard_replaced: true/);
   assert.match(server, /query\.ops_fallback \|\| query\.operations_fallback \|\| query\.operationsFallback/);
+  const providerHtml = fs.readFileSync(providerHtmlPath, 'utf8');
+  assert.match(providerHtml, /oneTimeProviderRouteModuleManifest/);
+  assert.match(providerHtml, /crm: '\/js\/one-time-provider-crm-route\.js'/);
+  assert.match(providerHtml, /mailbox: '\/js\/one-time-provider-mailbox-route\.js'/);
+  assert.match(providerHtml, /communications: '\/js\/one-time-provider-communications-route\.js'/);
+  assert.match(providerHtml, /ensureOneTimeProviderRouteModule\(activeProviderSection\)/);
 });
 
 test('normal One Time provider login stays in dedicated shell with Operations fallback', async () => {
@@ -242,12 +248,14 @@ test('normal One Time provider login stays in dedicated shell with Operations fa
       loginHidden: document.getElementById('loginPanel')?.classList.contains('hidden'),
       loginError: document.getElementById('loginError')?.textContent || '',
       hasCrmShell: Boolean(document.querySelector('[data-one-time-provider-crm-shell]')),
+      hasCrmPlaceholder: Boolean(document.querySelector('[data-one-time-provider-crm-route-placeholder]')),
     }));
     assert.equal(renderedState.loginError, '', JSON.stringify(renderedState));
     assert.equal(renderedState.portalHidden, false, JSON.stringify(renderedState));
     assert.equal(renderedState.loginHidden, true, JSON.stringify(renderedState));
     assert.match(renderedState.bodyClass, /one-time-provider-review-active/, JSON.stringify(renderedState));
-    assert.equal(renderedState.hasCrmShell, true, JSON.stringify(renderedState));
+    assert.equal(renderedState.hasCrmShell, false, JSON.stringify(renderedState));
+    assert.equal(renderedState.hasCrmPlaceholder, true, JSON.stringify(renderedState));
 
     assert.equal(local.loginRequests(), 1);
     assert.equal(new URL(page.url()).pathname, '/provider');
@@ -258,9 +266,30 @@ test('normal One Time provider login stays in dedicated shell with Operations fa
     assert.ok(loadedAssets.css.includes('/css/one-time-shared-review.css'));
     assert.equal(loadedAssets.css.includes('/css/operations-shell.css'), false);
     assert.equal(loadedAssets.scripts.includes('/js/operations-shell.js'), false);
+    assert.equal(loadedAssets.scripts.includes('/js/one-time-provider-crm-route.js'), false);
     assert.equal(local.servedPaths.includes('/operations.html'), false);
     assert.equal(local.servedPaths.includes('/operations'), false);
     assert.equal(await page.locator('[data-action-id="ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK"]').count() > 0, true);
+
+    await page.goto(`${baseUrl}/provider.html?admin_provider=one-time&section=crm`, { waitUntil: 'networkidle' });
+    await page.waitForFunction(() => Boolean(window.OneTimeProviderRouteModules?.crm), null, {
+      timeout: 10000,
+    });
+    await page.waitForSelector('[data-one-time-provider-crm-shell]');
+    const routeModuleState = await page.evaluate(() => ({
+      modules: Object.keys(window.OneTimeProviderRouteModules || {}).sort(),
+      scripts: [...document.querySelectorAll('script[src]')].map((node) => node.getAttribute('src')),
+      crmLoaded: document.documentElement.dataset.oneTimeProviderCrmRouteModule === 'loaded',
+      mailboxLoaded: document.documentElement.dataset.oneTimeProviderMailboxRouteModule === 'loaded',
+      communicationsLoaded: document.documentElement.dataset.oneTimeProviderCommunicationsRouteModule === 'loaded',
+    }));
+    assert.deepEqual(routeModuleState.modules, ['crm']);
+    assert.equal(routeModuleState.crmLoaded, true);
+    assert.equal(routeModuleState.mailboxLoaded, false);
+    assert.equal(routeModuleState.communicationsLoaded, false);
+    assert.ok(routeModuleState.scripts.includes('/js/one-time-provider-crm-route.js'));
+    assert.equal(routeModuleState.scripts.includes('/js/one-time-provider-mailbox-route.js'), false);
+    assert.equal(routeModuleState.scripts.includes('/js/one-time-provider-communications-route.js'), false);
 
     const me = await page.evaluate(async () => fetch('/api/bna/auth/me').then((res) => res.json()));
     assert.equal(me.authenticated, true);
@@ -279,11 +308,12 @@ test('normal One Time provider login stays in dedicated shell with Operations fa
       await page.goto(`${baseUrl}${alias}`, { waitUntil: 'commit' });
       await page.waitForFunction(() => (
         document.body.classList.contains('one-time-provider-review-active')
-        && Boolean(document.querySelector('[data-one-time-provider-crm-shell]'))
+        && Boolean(document.querySelector('[data-one-time-provider-crm-route-placeholder]'))
       ), null, {
         timeout: 10000,
       });
       assert.equal(new URL(page.url()).pathname, alias === '/provider-dashboard' ? '/provider-dashboard' : alias);
+      assert.equal(await page.locator('[data-one-time-provider-crm-shell]').count(), 0);
     }
 
     await page.goto(`${baseUrl}/provider.html?admin_provider=one-time&section=crm&ops_fallback=1`, { waitUntil: 'commit' });

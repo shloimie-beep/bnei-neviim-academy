@@ -48,6 +48,17 @@
 - PASS live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`: exact deploy-info SHA matched, default provider route loaded One Time shell without Operations CSS/JS, and explicit `ops_fallback=1` redirected to scoped Operations CRM.
 - Remaining: continue route-module extraction and performance budget comparison before marking all of `REQ-20260713-908` Done.
 
+## 2026-07-13 CRM Route Module Extraction Slice
+
+- PASS `node --check public/js/one-time-provider-crm-route.js public/js/one-time-provider-mailbox-route.js public/js/one-time-provider-communications-route.js`.
+- PASS `node --check scripts/smoke-onetime-provider-crm-layout-local.mjs`.
+- PASS `node --test tests/one-time-provider-operations-login.test.js tests/one-time-provider-review-navigation.test.js` (11/11).
+- PASS `node --test tests/one-time-route-role-mapping.test.js tests/one-time-action-coverage.test.js` (11/11).
+- PASS `node scripts/smoke-onetime-provider-crm-layout-local.mjs`; report records `routeModules=["crm"]` and no eager mailbox/communications module load.
+- PASS `npm run one-time:provider-route-module-budget -- --base-ref HEAD`; report `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` shows `provider.html` shrank by 805 bytes, default overview loaded no route modules, CRM loaded only `/js/one-time-provider-crm-route.js`, mailbox loaded only its stub, Operations assets stayed absent, and failed/bad/console counts were `0/0/0`.
+- PASS `npm run watchdog:actions`, `npm run secrets:audit`, and `npm run bna:run:validate`.
+- Pending: commit, push, deploy exact SHA, and live-smoke the CRM route-module slice.
+
 - PASS `node --check server.js`
 - PASS `node --check src/lib/integrations/resend-inbound-crm.js`
 - PASS `node --test tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js` (19/19)

@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "generated_at": "2026-07-13T06:01:59.214Z",
+  "generated_at": "2026-07-13T06:28:11.713Z",
   "target": "/provider.html?admin_provider=one-time&section=crm",
   "scope": "Local signed One Time provider CRM layout smoke; no database, sends, payments, external accounts, or production writes.",
   "results": [
@@ -22,6 +22,12 @@
       "crmShellCount": 1,
       "crmWorkbenchCount": 1,
       "crmDetailCount": 1,
+      "routeModules": [
+        "crm"
+      ],
+      "crmRouteModuleLoaded": true,
+      "mailboxRouteModuleLoaded": false,
+      "communicationsRouteModuleLoaded": false,
       "activeCrmNav": true,
       "visibleCrmSection": true,
       "horizontalOverflow": false,
@@ -124,6 +130,12 @@
       "crmShellCount": 1,
       "crmWorkbenchCount": 1,
       "crmDetailCount": 1,
+      "routeModules": [
+        "crm"
+      ],
+      "crmRouteModuleLoaded": true,
+      "mailboxRouteModuleLoaded": false,
+      "communicationsRouteModuleLoaded": false,
       "activeCrmNav": true,
       "visibleCrmSection": true,
       "horizontalOverflow": false,
@@ -226,6 +238,12 @@
       "crmShellCount": 1,
       "crmWorkbenchCount": 1,
       "crmDetailCount": 1,
+      "routeModules": [
+        "crm"
+      ],
+      "crmRouteModuleLoaded": true,
+      "mailboxRouteModuleLoaded": false,
+      "communicationsRouteModuleLoaded": false,
       "activeCrmNav": true,
       "visibleCrmSection": true,
       "horizontalOverflow": false,

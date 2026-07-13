@@ -41,6 +41,7 @@ Current status: `active`
 - Scoped Operations remains available as an explicit fallback only when `ops_fallback=1` is present.
 - Registered `ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK` and added visible fallback links in the provider shell.
 - Verification passed: `node --check server.js`, provider login/review navigation browser tests, route-role/action-coverage tests, action watchdog, execution-run validation, signed local provider CRM layout smoke, BNA Railway deployment `33571043-54ce-4631-99c1-b54209edebc7`, One Time Railway deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754`, and live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`.
+- CRM route-module slice is locally verified: the CRM renderer now lives in `public/js/one-time-provider-crm-route.js`, default provider overview shows a route placeholder without loading CRM, active CRM loads only the CRM module, mailbox loads only after navigation, and `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` passed.
 
 ## Completed In This Batch
 

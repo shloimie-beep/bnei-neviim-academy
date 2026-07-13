@@ -191,6 +191,7 @@ async function captureViewport(browser, baseUrl, viewport) {
   const route = '/provider.html?admin_provider=one-time&section=crm';
   await page.goto(`${baseUrl}${route}`, { waitUntil: 'networkidle' });
   await page.waitForSelector('[data-one-time-provider-crm-shell]');
+  await page.waitForFunction(() => Boolean(window.OneTimeProviderRouteModules?.crm), null, { timeout: 5000 });
   await page.waitForSelector('.bna-bot-launcher', { timeout: 5000 }).catch(() => {});
 
   const helperBeforeOpen = await page.evaluate(() => ({
@@ -223,6 +224,10 @@ async function captureViewport(browser, baseUrl, viewport) {
       crmShellCount: document.querySelectorAll('[data-one-time-provider-crm-shell]').length,
       crmWorkbenchCount: document.querySelectorAll('.one-time-crm-workbench').length,
       crmDetailCount: document.querySelectorAll('.one-time-crm-detail').length,
+      routeModules: Object.keys(window.OneTimeProviderRouteModules || {}).sort(),
+      crmRouteModuleLoaded: document.documentElement.dataset.oneTimeProviderCrmRouteModule === 'loaded',
+      mailboxRouteModuleLoaded: document.documentElement.dataset.oneTimeProviderMailboxRouteModule === 'loaded',
+      communicationsRouteModuleLoaded: document.documentElement.dataset.oneTimeProviderCommunicationsRouteModule === 'loaded',
       activeCrmNav: Boolean(document.querySelector('[data-provider-nav="crm"].active')),
       visibleCrmSection: Boolean(document.querySelector('[data-provider-section="crm"]:not(.provider-section-hidden)')),
       horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
@@ -244,6 +249,9 @@ async function captureViewport(browser, baseUrl, viewport) {
       metrics.crmShellCount === 1 &&
       metrics.crmWorkbenchCount === 1 &&
       metrics.crmDetailCount === 1 &&
+      metrics.crmRouteModuleLoaded &&
+      !metrics.mailboxRouteModuleLoaded &&
+      !metrics.communicationsRouteModuleLoaded &&
       metrics.activeCrmNav &&
       metrics.visibleCrmSection &&
       !metrics.horizontalOverflow &&
@@ -324,6 +332,7 @@ async function main() {
     'Checks:',
     '',
     '- CRM renders as one workbench shell with list and detail regions.',
+    '- CRM route module loads for the active CRM route without eagerly loading Mailbox or Communications modules.',
     '- CRM is the active visible provider section from the direct URL.',
     '- No horizontal overflow on desktop, tablet, or 390px mobile.',
     '- Rabbi-facing CRM text does not expose TEST Parent/Student names, `.example.test` emails, Message Actions duplicates, BNA Academy, or platform setup diagnostics.',

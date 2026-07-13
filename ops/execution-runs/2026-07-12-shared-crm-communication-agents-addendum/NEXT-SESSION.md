@@ -31,7 +31,7 @@ Architecture/performance result:
 
 Immediate next action:
 
-1. Continue `REQ-20260713-908` after the first deployed routing slice: route-module extraction and performance budget comparison, preserving shared backend contracts while removing unrelated Operations route weight from the One Time critical path.
+1. Finish the `REQ-20260713-908` CRM route-module slice: commit, push, deploy exact SHA, and live-smoke the direct CRM route loads `public/js/one-time-provider-crm-route.js` without eager mailbox/communications modules or Operations assets.
 2. Keep the deployed first-slice proof visible: commit `c0b8ab8139c6166d89527a949ce4dd70bf67df3a`, BNA Railway deployment `33571043-54ce-4631-99c1-b54209edebc7`, One Time Railway deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754`, and live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`.
 3. Start or queue `REQ-20260713-911`: Server-Timing/trace IDs, API handler/database/pool timings, route-transition/RUM metrics, bundle/route budgets, and regression gates.
 4. Keep `REQ-20260713-906` blocked until the owner aliases are configured through the approved secret path.
