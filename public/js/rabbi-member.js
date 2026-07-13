@@ -348,7 +348,11 @@
     renderAll();
   }
 
-  document.addEventListener('DOMContentLoaded', async () => {
+  let memberPortalInitialized = false;
+
+  async function initMemberPortal() {
+    if (memberPortalInitialized) return;
+    memberPortalInitialized = true;
     document.body.dataset.memberReviewMode = ONE_TIME_MEMBER_REVIEW_MODE ? 'true' : 'false';
     document.querySelectorAll('[data-review-only]').forEach((node) => {
       node.hidden = !ONE_TIME_MEMBER_REVIEW_MODE;
@@ -378,5 +382,11 @@
       }
     }
     await loadMemberData();
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMemberPortal, { once: true });
+  } else {
+    initMemberPortal();
+  }
 })();

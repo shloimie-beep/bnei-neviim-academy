@@ -727,3 +727,13 @@ Current status: `active`
 - Validated PQC splitter packet: `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`.
 - Next current requirement is `REQ-20260713-934`, starting only with child packet `PKT-20260713-934A` for member portal performance. Auth/admin CRM proof stays blocked until valid read-only audit credentials/session proof exists.
 - Guardrails: no UI implementation, external send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS change, deploy, or public auto-reply activation occurred.
+
+## 2026-07-13 - REQ-20260713-934A Member Portal Performance Local Repair
+
+- `REQ-20260713-934` is now `in_progress`, not Done.
+- Child packet `PKT-20260713-934A` is locally implemented and verified for the `/rabbi-member` performance path reproduced by the current-state audit.
+- Root cause addressed locally: nonessential member/helper scripts were part of the first-render critical path and vulnerable to slow static-asset TTFB. The member portal now renders useful static fallback content before external JS, loads app-select/member/portal-shell enhancements after first render, and defers the heavier assistant bundle until idle or Helper click.
+- Local smoke evidence: `ops/performance-audits/2026-07-13-onetime-member-performance-local/report.md`; screenshot-ready DCL was 22ms, 15ms, 46ms, 54ms, and 15ms at 1440/1024/768/430/390.
+- Focused contracts passed for app-select loading, member preview, assistant scope, support/question routes, checkout/access, and canonical member journey.
+- App-visible Done is not claimed: commit/push, One Time deploy/live exact-SHA smoke, and child packets `PKT-20260713-934B` and `PKT-20260713-934C` remain open.
+- Guardrails: no external send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS change, deploy, or public auto-reply activation occurred.

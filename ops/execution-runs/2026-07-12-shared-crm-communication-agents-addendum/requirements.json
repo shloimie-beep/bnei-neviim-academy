@@ -2612,10 +2612,10 @@
       "depends_on": [
         "REQ-20260713-933"
       ],
-      "status": "not_started",
-      "implementation_status": "Ready for scoped implementation only after REQ-20260713-933 current-state evidence. First child packet is PKT-20260713-934A member portal performance; auth/admin CRM proof remains blocked by invalid read-only Operations credentials.",
+      "status": "in_progress",
+      "implementation_status": "PKT-20260713-934A local repair implemented and verified: /rabbi-member now renders useful static member portal content before external JS, loads member/app-select/portal-shell scripts after first render or immediate form interaction, defers the heavier assistant bundle until idle or Helper click, and still opens the One Time member assistant on demand. Parent REQ remains open because app-visible deployment/live smoke and child packets 934B/934C are not complete; auth/admin CRM proof remains blocked by invalid read-only Operations credentials.",
       "can_continue_without_operator": true,
-      "next_action": "Start PKT-20260713-934A: profile and repair /rabbi-member performance without touching sends, payments, DNS, deploy, provider mutations, or the whole parent ramble.",
+      "next_action": "Commit/push PKT-20260713-934A, then continue REQ-20260713-934 through PKT-20260713-934B/934C and exact-SHA deploy/live smoke before marking this app-visible requirement Done.",
       "acceptance_criteria": [
         "Workspace context, not View as Rabbi.",
         "CRM/content/mobile match state matrix.",
@@ -2624,20 +2624,26 @@
       ],
       "evidence": [
         "ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json",
-        "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md"
+        "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md",
+        "ops/performance-audits/2026-07-13-onetime-member-performance-local/report.md",
+        "ops/performance-audits/2026-07-13-onetime-member-performance-local/report.json"
       ],
       "verification": [
-        "PQC validated: npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json"
+        "PQC validated: npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json",
+        "PASS node --check public/js/rabbi-member.js",
+        "PASS node --check scripts/smoke-onetime-member-performance-local.mjs",
+        "PASS npm run one-time:smoke:member-performance-local",
+        "PASS node --test tests/app-select-dropdown.test.js tests/one-time-safe-view-as-navigation.test.js tests/universal-assistant-contract.test.js tests/one-time-member-support-questions.test.js tests/rabbi-checkout-access.test.js tests/one-time-canonical-journey.test.js"
       ],
       "implementation_files": [
-        "server.js",
-        "public/",
-        "src/",
-        "tests/",
-        "scripts/"
+        "public/rabbi-member.html",
+        "public/js/rabbi-member.js",
+        "scripts/smoke-onetime-member-performance-local.mjs",
+        "tests/app-select-dropdown.test.js",
+        "package.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T21:55:00Z",
+      "updated_at": "2026-07-13T22:28:00+03:00",
       "blocker": ""
     },
     {

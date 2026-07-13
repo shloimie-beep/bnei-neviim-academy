@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T18:56:53.634Z",
+  "generated_at": "2026-07-13T19:29:12.045Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -671,11 +671,5 @@
     "tasks-pending/_template-ramble-intake.md"
   ],
   "finding_count": 0,
-  "findings": [],
-  "requirement_ids": [
-    "REQ-20260713-933",
-    "REQ-20260713-934"
-  ],
-  "status": "passed_mapped",
-  "mapping_note": "Protocol-drift closeout for RAW-20260713-010 current-state audit/PQC splitter; no findings after register repair."
+  "findings": []
 }

@@ -576,3 +576,9 @@ No deployment occurred for Gate 1. One Time is currently serving `49f3edda2da37e
 - No deployment was performed for the current-state audit/PQC handoff.
 - One Time live deploy-info remains `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`, which does not match current source `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`.
 - Exact-SHA deploy/live smoke remains required before launch Done under `REQ-20260713-940`.
+
+## REQ-20260713-934A Deployment Status
+
+- No deployment has been performed yet for the member portal performance repair.
+- Local implementation and local smoke are complete for `PKT-20260713-934A`, but app-visible Done remains pending commit/push, One Time deployment, exact-SHA live smoke/readback, and the remaining `REQ-20260713-934` child packets.
+- One Time live deploy-info still serves `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`; this local repair is not visible on `https://join.onetimeonetime.com` yet.

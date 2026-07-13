@@ -40424,3 +40424,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Added `scripts/audit-onetime-final-launch-current-state.mjs` and npm script `audit:onetime-final-launch-current-state` for repeatable read-only/redacted current-state capture.
 - Created and validated Product Quality splitter `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`; next scoped implementation is `PKT-20260713-934A` member portal performance.
 - Guardrails held: no UI implementation, send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS, deploy, or public auto-reply activation.
+
+## 2026-07-13 - One Time member portal first-render repair verified locally
+
+- Advanced `REQ-20260713-934` through `PKT-20260713-934A`: `/rabbi-member` now ships static fallback member/library/session/question/support content before deferred scripts load, and the member portal initializer supports deferred loading.
+- Added `npm run one-time:smoke:member-performance-local` and evidence at `ops/performance-audits/2026-07-13-onetime-member-performance-local/report.md`.
+- Verification passed: local smoke across 1440/1024/768/430/390 viewports, deferred assistant click smoke, syntax checks for the changed member script and smoke harness, and focused One Time contract tests 35/35.
+- Status remains in progress: app-visible Done requires exact-SHA deploy/live smoke, and `REQ-20260713-934B`/`934C` still need completion. No send, provider mutation, payment/access change, credential mutation, deploy, or external write was performed in this local batch.

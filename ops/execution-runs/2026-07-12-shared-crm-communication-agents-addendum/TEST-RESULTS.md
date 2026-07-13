@@ -1229,3 +1229,12 @@
 - PASS `npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`: validation report `ops/product-quality-compiler/validation/latest-product-quality-validation.md`.
 - BLOCKED within audit: Operations read-only credentials returned 401, so authenticated CRM readback and admin-provider session proof remain setup/auth blockers.
 - Guardrails: no send, payment, provider mutation, credential mutation, DNS, deploy, CRM write, or public auto-reply activation.
+
+## REQ-20260713-934A Member Portal Performance Local Test Results
+
+- PASS `node --check public/js/rabbi-member.js`.
+- PASS `node --check scripts/smoke-onetime-member-performance-local.mjs`.
+- PASS `npm run one-time:smoke:member-performance-local`: report `ops/performance-audits/2026-07-13-onetime-member-performance-local/report.md`.
+- PASS focused contracts:
+  `node --test tests/app-select-dropdown.test.js tests/one-time-safe-view-as-navigation.test.js tests/universal-assistant-contract.test.js tests/one-time-member-support-questions.test.js tests/rabbi-checkout-access.test.js tests/one-time-canonical-journey.test.js`; 35/35 tests passed.
+- Pending for app-visible Done: commit/push, One Time deployment, exact-SHA live smoke/readback, and remaining child packets under `REQ-20260713-934`.

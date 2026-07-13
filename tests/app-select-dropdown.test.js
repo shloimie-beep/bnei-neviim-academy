@@ -39,7 +39,7 @@ test('every public page with native select controls loads the in-app select enha
   );
 
   for (const { file, html } of pagesWithSelects) {
-    assert.match(html, /<script src="\/js\/app-select\.js"><\/script>/, `${file} should load app-select.js`);
+    assert.match(html, /<script src="\/js\/app-select\.js"><\/script>|\/js\/app-select\.js/, `${file} should load app-select.js`);
   }
 });
 

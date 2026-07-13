@@ -469,19 +469,25 @@
         <button type="submit">Request family portal link</button>
       </form>
       <div id="memberNotice" class="notice" hidden></div>
-      <div id="memberState" style="margin-top:14px;"></div>
+      <div id="memberState" style="margin-top:14px;">
+        <div class="soft-panel">Request a member login link to view access.</div>
+      </div>
     </aside>
 
     <section class="content-stack">
       <div class="panel">
         <span class="eyebrow">Library</span>
         <h2>Recorded Classes</h2>
-        <div id="libraryList" class="member-list"></div>
+        <div id="libraryList" class="member-list">
+          <div class="soft-panel">Library access is pending.</div>
+        </div>
       </div>
       <div class="panel">
         <span class="eyebrow">Live</span>
         <h2>Live Sessions</h2>
-        <div id="sessionList" class="member-list"></div>
+        <div id="sessionList" class="member-list">
+          <div class="soft-panel">No live sessions are scheduled yet.</div>
+        </div>
       </div>
       <div class="panel" id="questions">
         <span class="eyebrow">Private Questions</span>
@@ -491,7 +497,9 @@
           <label>Question <textarea id="questionBody" maxlength="2500" required></textarea></label>
           <button type="submit" data-action-id="ACTION-ONETIME-MEMBER-PRIVATE-QUESTION">Submit Question</button>
         </form>
-        <div id="questionList" class="member-list"></div>
+        <div id="questionList" class="member-list">
+          <div class="soft-panel">Open a member session to submit private questions.</div>
+        </div>
       </div>
       <div class="panel" id="support">
         <span class="eyebrow">Support</span>
@@ -522,7 +530,9 @@
           </div>
           <button type="submit" data-action-id="ACTION-ONETIME-MEMBER-SUPPORT-TICKET">Open Ticket</button>
         </form>
-        <div id="supportList" class="member-list"></div>
+        <div id="supportList" class="member-list">
+          <div class="soft-panel">Open a member session to create support tickets.</div>
+        </div>
       </div>
     </section>
   </main>
@@ -542,10 +552,103 @@
     </div>
   </footer>
 
-  <script src="/js/app-select.js"></script>
-  <script src="/js/rabbi-member.js"></script>
-  <script src="/js/one-time-portal-shell.js"></script>
-  <script src="/js/bna-helper-knowledge.js"></script>
-  <script src="/js/bna-bot-widget.js"></script>
+  <script>
+    (function deferMemberScripts() {
+      var pageStarted = false;
+      var assistantStarted = false;
+      var pagePromise = null;
+      var assistantPromise = null;
+      var pageSources = ['/js/app-select.js', '/js/rabbi-member.js', '/js/one-time-portal-shell.js'];
+      var assistantSources = ['/js/bna-helper-knowledge.js', '/js/bna-bot-widget.js'];
+
+      function loadScript(src) {
+        return new Promise(function (resolve, reject) {
+          var script = document.createElement('script');
+          script.src = src;
+          script.async = false;
+          script.onload = resolve;
+          script.onerror = function () { reject(new Error('Could not load ' + src)); };
+          document.body.appendChild(script);
+        });
+      }
+
+      function loadSequence(sources) {
+        return sources.reduce(function (promise, src) {
+          return promise.then(function () { return loadScript(src); });
+        }, Promise.resolve());
+      }
+
+      function loadPageScripts() {
+        if (pagePromise) return pagePromise;
+        pageStarted = true;
+        document.body.dataset.memberPageScripts = 'loading';
+        pagePromise = loadSequence(pageSources).then(function () {
+          document.body.dataset.memberPageScripts = 'ready';
+          document.dispatchEvent(new CustomEvent('bna-member-page-scripts-ready'));
+        }).catch(function () {
+          document.body.dataset.memberPageScripts = 'unavailable';
+        });
+        return pagePromise;
+      }
+
+      function loadAssistant() {
+        if (assistantPromise) return assistantPromise;
+        assistantStarted = true;
+        document.body.dataset.memberAssistantState = 'loading';
+        assistantPromise = loadSequence(assistantSources).then(function () {
+          document.body.dataset.memberAssistantState = 'ready';
+          document.dispatchEvent(new CustomEvent('bna-member-assistant-ready'));
+        }).catch(function () {
+          document.body.dataset.memberAssistantState = 'unavailable';
+        });
+        return assistantPromise;
+      }
+
+      document.addEventListener('click', function (event) {
+        var opener = event.target.closest && event.target.closest('[data-helper-open], [data-bna-assistant-open]');
+        if (!opener || window.BNAAssistant) return;
+        event.preventDefault();
+        loadAssistant().then(function () {
+          if (window.BNAAssistant && typeof window.BNAAssistant.open === 'function') {
+            window.BNAAssistant.open(opener.getAttribute('data-assistant-prompt') || '');
+          }
+        });
+      }, true);
+
+      document.addEventListener('submit', function (event) {
+        var form = event.target;
+        if (!form || !form.matches || !form.matches('#linkForm, #questionForm, #supportForm')) return;
+        if (document.body.dataset.memberPageScripts === 'ready') return;
+        event.preventDefault();
+        loadPageScripts().then(function () {
+          if (!form.isConnected) return;
+          if (typeof form.requestSubmit === 'function') form.requestSubmit();
+          else form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+        });
+      }, true);
+
+      function schedulePageScripts() {
+        if (pageStarted) return;
+        window.setTimeout(loadPageScripts, 1600);
+      }
+
+      function scheduleLoad() {
+        if (assistantStarted) return;
+        var run = function () { window.setTimeout(loadAssistant, 1200); };
+        if ('requestIdleCallback' in window) window.requestIdleCallback(run, { timeout: 2400 });
+        else run();
+      }
+
+      window.BNADeferredMemberScripts = { load: loadPageScripts };
+      window.BNADeferredMemberAssistant = { load: loadAssistant };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', schedulePageScripts, { once: true });
+      } else {
+        schedulePageScripts();
+      }
+      if (document.readyState === 'complete') scheduleLoad();
+      else window.addEventListener('load', scheduleLoad, { once: true });
+    })();
+  </script>
 </body>
 </html>

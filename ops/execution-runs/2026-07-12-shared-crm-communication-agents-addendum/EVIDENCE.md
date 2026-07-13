@@ -895,3 +895,13 @@
 - Product Quality splitter packet: `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`.
 - PQC validation report: `ops/product-quality-compiler/validation/latest-product-quality-validation.md`.
 - P0 evidence: exact live SHA mismatch, Operations read-only auth 401, admin-provider session blocker, member portal 22s deadline failures across 1440/1024/768/430/390, and CRM readback skipped because auth was unavailable.
+
+## REQ-20260713-934A Member Portal Performance Local Evidence - 2026-07-13
+
+- Local performance smoke report: `ops/performance-audits/2026-07-13-onetime-member-performance-local/report.md`.
+- Local performance smoke JSON: `ops/performance-audits/2026-07-13-onetime-member-performance-local/report.json`.
+- Screenshot directory: `ops/performance-audits/2026-07-13-onetime-member-performance-local/screenshots/`.
+- Implementation files: `public/rabbi-member.html`, `public/js/rabbi-member.js`, `scripts/smoke-onetime-member-performance-local.mjs`, `tests/app-select-dropdown.test.js`, and `package.json`.
+- Result: `/rabbi-member` reached screenshot-ready first useful content at 1440, 1024, 768, 430, and 390 widths with DCL values of 22ms, 15ms, 46ms, 54ms, and 15ms in the local no-write smoke.
+- Helper proof: the assistant is absent from first render and still opens on Helper click as `one_time_member`.
+- Guardrails: local static server only; no external write, production data mutation, send, payment/access mutation, provider mutation, credential mutation, DNS change, deploy, or public auto-reply activation.
