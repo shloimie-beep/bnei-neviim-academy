@@ -10,6 +10,17 @@ test('One Time focused landing copy uses launch funnel offer and safe CTAs', () 
   assert.match(html, /Give your son a love for learning Torah\./);
   assert.match(html, /Sign Up Now/);
   assert.match(html, /href="\/one-time\/signup"/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/join\.onetimeonetime\.com\/one-time">/);
+  assert.match(html, /<link rel="icon" href="\/images\/one-time\/social\/one-time-icon-32\.png" sizes="32x32" type="image\/png">/);
+  assert.match(html, /<link rel="apple-touch-icon" href="\/images\/one-time\/social\/one-time-apple-touch-icon\.png">/);
+  assert.match(html, /<meta property="og:image" content="https:\/\/join\.onetimeonetime\.com\/images\/one-time\/social\/one-time-link-preview-icon\.png">/);
+  assert.match(html, /<meta name="twitter:image" content="https:\/\/join\.onetimeonetime\.com\/images\/one-time\/social\/one-time-link-preview-icon\.png">/);
+  assert.match(html, /<meta property="og:image:alt" content="One Time black and white logo">/);
+  assert.ok(fs.statSync('public/images/one-time/social/one-time-icon-32.png').size > 0);
+  assert.ok(fs.statSync('public/images/one-time/social/one-time-apple-touch-icon.png').size > 0);
+  assert.ok(fs.statSync('public/images/one-time/social/one-time-link-preview-icon.png').size > 0);
+  assert.doesNotMatch(html, /<link rel="icon" href="\/favicon\.ico"/);
+  assert.doesNotMatch(html, /bna-social-preview|Bnei Neviim Academy logo|\/icons\/favicon|\/icons\/apple-touch-icon/);
   assert.match(html, /--yellow: #ede518;/);
   assert.match(html, /\.site-header \{[\s\S]*background: rgba\(8, 9, 16, 0\.96\);[\s\S]*box-shadow: none;/);
   assert.match(html, /\.section \{ position: relative; overflow: hidden; padding: clamp\(52px, 6vw, 82px\) 0; \}/);
