@@ -1,22 +1,22 @@
 # One Time Operations CRM Workbench Local Smoke
 
 Status: PASS
-Generated: 2026-07-13T04:36:47.796Z
+Generated: 2026-07-13T07:37:24.799Z
 
 Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.
 
-| Target | Viewport | Passed | CRM calls | Initial cards | Task action | Root rerenders | Search requests | Legacy table closed/open | Screenshot |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| split-shell | 1440x960 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1440-crm-workbench.png |
-| monolith | 1440x960 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1440-crm-workbench.png |
-| split-shell | 1024x900 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1024-crm-workbench.png |
-| monolith | 1024x900 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1024-crm-workbench.png |
-| split-shell | 768x1024 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-tablet-768-crm-workbench.png |
-| monolith | 768x1024 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-tablet-768-crm-workbench.png |
-| split-shell | 430x932 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-430-crm-workbench.png |
-| monolith | 430x932 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-430-crm-workbench.png |
-| split-shell | 390x844 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-390-crm-workbench.png |
-| monolith | 390x844 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-390-crm-workbench.png |
+| Target | Viewport | Passed | CRM calls | Initial cards | Task action | Root rerenders | Search requests | Legacy table closed/open | Selected detail | Final screenshot |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| split-shell | 1440x960 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1440-crm-selected-detail.png | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1440-crm-workbench.png |
+| monolith | 1440x960 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1440-crm-selected-detail.png | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1440-crm-workbench.png |
+| split-shell | 1024x900 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1024-crm-selected-detail.png | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1024-crm-workbench.png |
+| monolith | 1024x900 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1024-crm-selected-detail.png | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1024-crm-workbench.png |
+| split-shell | 768x1024 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-tablet-768-crm-selected-detail.png | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-tablet-768-crm-workbench.png |
+| monolith | 768x1024 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-tablet-768-crm-selected-detail.png | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-tablet-768-crm-workbench.png |
+| split-shell | 430x932 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-430-crm-selected-detail.png | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-430-crm-workbench.png |
+| monolith | 430x932 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-430-crm-selected-detail.png | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-430-crm-workbench.png |
+| split-shell | 390x844 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-390-crm-selected-detail.png | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-390-crm-workbench.png |
+| monolith | 390x844 | true | 1 | 50 | true | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-390-crm-selected-detail.png | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-390-crm-workbench.png |
 
 Inbox context:
 

@@ -98,6 +98,17 @@
 - PASS `npm run watchdog:protocol-drift` after adding required packet markdown protocol markers for `REQ-20260713-909`.
 - Remaining: implement the scoped mobile CRM IA and run local/deployed/live proof before marking `REQ-20260713-909` Done.
 
+## 2026-07-13 Mobile CRM IA Local Implementation
+
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/watchdog-action-registry.test.js` (19/19).
+- PASS `node scripts/generate-one-time-action-coverage.mjs`; report refreshed in `ops/action-registry/one-time-action-coverage.md`.
+- PASS `node scripts/generate-universal-action-parity.mjs`; report refreshed in `ops/action-registry/universal-action-parity.md`.
+- PASS `npm run watchdog:actions`; finding count 0.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- Browser smoke proof covers split shell and monolith at 1440, 1024, 768, 430, and 390; verifies focused contact header, section rail, contextual action overflow, lazy section data, mobile Back restoration, scoped inbox context, no horizontal overflow, no console/page/request failures, and no writes.
+- Remaining: deploy exact implementation SHA and run live route/CRM smokes before marking `REQ-20260713-909` Done.
+
 - PASS `node --check server.js`
 - PASS `node --check src/lib/integrations/resend-inbound-crm.js`
 - PASS `node --test tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js` (19/19)

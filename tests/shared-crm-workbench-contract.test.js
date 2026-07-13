@@ -45,7 +45,14 @@ test('Operations loads the shared CRM browser modules before the shell', () => {
   assert.match(operations, /data-crm-component-order/);
   assert.match(operations, /data-crm-mobile-breakpoint/);
   assert.match(operations, /data-crm-back-control-height/);
+  assert.match(operations, /data-crm-mobile-ia="list-detail-subview-action"/);
+  assert.match(operations, /data-crm-ia-state/);
+  assert.match(operations, /data-crm-active-subview/);
+  assert.match(operations, /data-crm-lazy-section-data="true"/);
+  assert.match(operations, /data-crm-subview-rail/);
+  assert.match(operations, /data-crm-action-overflow/);
   assert.match(operations, /\.crm-mobile-selected-actions \.task-action[\s\S]*min-height: 40px;/);
+  assert.match(operations, /\.crm-workbench-shell\[data-selected-contact="true"\] \.crm-workbench-profile[\s\S]*display: none;/);
 });
 
 test('Operations CRM contact workspace keeps URL state for reload and browser Back', () => {
@@ -227,7 +234,11 @@ test('Operations CRM workspace tabs are enabled surfaces, not disabled placehold
   assert.match(operations, /let firstPartyCrmConversationsPayload = null;/);
   assert.match(operations, /let firstPartyCrmTasksPayload = null;/);
   assert.match(operations, /function setFirstPartyCrmWorkspaceTab\(tabId\)/);
+  assert.match(operations, /function loadFirstPartyCrmSubviewData\(contactId = selectedFirstPartyCrmContactId, tabId = firstPartyCrmActiveTab, options = \{\}\)/);
+  assert.match(operations, /function firstPartyCrmDetailPayloadLoaded\(tabId = firstPartyCrmActiveTab\)/);
   assert.match(operations, /function renderFirstPartyCrmTabContent\(card = \{\}, readOnly = false\)/);
+  assert.match(operations, /function wrapFirstPartyCrmTabPanel\(tabId, html\)/);
+  assert.match(operations, /function renderFirstPartyCrmActionOverflow\(card = null\)/);
   assert.match(operations, /function renderFirstPartyCrmConversationDtoPanel\(card = \{\}\)/);
   assert.match(operations, /function firstPartyCrmConversationOpenButton\(item = \{\}, card = \{\}\)/);
   assert.match(operations, /function openFirstPartyCrmConversationThread\(event, contactId = '', conversationId = '', preferredChannel = ''\)/);
@@ -246,7 +257,9 @@ test('Operations CRM workspace tabs are enabled surfaces, not disabled placehold
   assert.match(operations, /data-crm-conversation-action="email"/);
   assert.match(operations, /Open WhatsApp thread/);
   assert.match(operations, /No WhatsApp message was sent\./);
-  assert.match(operations, /Promise\.allSettled\(\[/);
+  const openContactFn = operations.match(/async function openFirstPartyCrmContact[\s\S]*?function clearFirstPartyCrmSelection/)?.[0] || '';
+  assert.doesNotMatch(openContactFn, /Promise\.allSettled\(\[/);
+  assert.match(operations, /loadFirstPartyCrmSubviewData\(selectedFirstPartyCrmContactId, firstPartyCrmActiveTab\)/);
   assert.match(operations, /api\.getCrmContactConversations\(contactId, \{ \.\.\.filters, limit: 25 \}/);
   assert.match(operations, /api\.getCrmContactTasks\(contactId, \{ \.\.\.filters, limit: 25 \}/);
   assert.match(operations, /data-crm-tab-panel="access"/);

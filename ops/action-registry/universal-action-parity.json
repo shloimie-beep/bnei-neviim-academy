@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T17:01:38.085Z",
+  "generated_at": "2026-07-13T07:30:26.009Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,63 +16,63 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "7b20f3bfd4719ec25896477ebc732cdbf4f50b0c64f6713c935fc14cabbdc3e5",
+  "content_hash": "36149deffd4701c4e22e1fb8ba5b52c46c0a3e5d4569527bd7836e3f40d6fba8",
   "source_hashes": {
-    "ops/action-registry.json": "0a21d51053dc3de1f6bf25d41ca4e084f38511cf3272c94b3d241f84a7b33c4c",
-    "ops/action-registry/actions.json": "71eb9f135d8e056d37fb5d52d0f8a3fe0751ab1579dee845fdb7df6d097ea8d5",
-    "public/operations.html": "625762356ef6c288b20c11329eb0785a161f83eddb22cedaed9a292d703adc42",
+    "ops/action-registry.json": "c1a0b39b14f3740d6a8091b0ef8b4c7889179d8812426dd9ecdf53c615ecc1e5",
+    "ops/action-registry/actions.json": "b8caaeae4c15f804b68ba758b8bcb4b801192f6a757415f24c7872c3e1b01c6f",
+    "public/operations.html": "9f501030e484543fefa0ee540ac362d34efbbfd7904620727c74c96e41a01091",
     "public/parent.html": "c9928f157d29d6f5da7e6710805315c8403d782f318d63dbd425f157de9f4549",
-    "public/student.html": "e6ce29152bfba7160f09cc962ad87625ec559cb90a26e8b84c97456887c60beb",
-    "public/provider.html": "c9baecdd7e6e0a0c132e2ad0786ac97e55e5b93bfcab9afc10c0093ffef94412",
+    "public/student.html": "563a659575d98cac50750e1a73fe8cffa8c45f4efc6fbf63b19d6fd6d5c60dfc",
+    "public/provider.html": "c433affc8e597c0cd455714edfa31e5b463489a13e697ffe5858460fb2a8262e",
     "src/platform/assistant/control-plane.js": "7eaf0dff452382e9694aa9dae32df76c29f1e0b912cfa69d59dc88eee9721592"
   },
   "summary": {
-    "root_actions": 134,
-    "detailed_actions": 80,
-    "total_registry_rows": 214,
-    "visible_controls": 53,
-    "visible_controls_classified": 53,
+    "root_actions": 161,
+    "detailed_actions": 87,
+    "total_registry_rows": 248,
+    "visible_controls": 71,
+    "visible_controls_classified": 71,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
-    "blocked_connector": 11,
-    "risky_actions": 106,
+    "blocked_connector": 14,
+    "risky_actions": 135,
     "risky_without_approval": 0,
     "visible_by_classification": {
-      "read_only": 8,
-      "secure_deep_link_only": 5,
-      "preview_then_approve": 30,
+      "read_only": 9,
+      "secure_deep_link_only": 6,
+      "preview_then_approve": 46,
       "blocked_connector": 4,
       "not_applicable": 2,
       "executable": 4
     },
     "registry_by_classification": {
-      "secure_deep_link_only": 23,
-      "preview_then_approve": 98,
-      "executable": 24,
-      "read_only": 56,
-      "blocked_connector": 11,
+      "secure_deep_link_only": 26,
+      "preview_then_approve": 124,
+      "executable": 25,
+      "read_only": 57,
+      "blocked_connector": 14,
       "not_applicable": 2
     }
   },
   "parity_sources": {
     "ui_button": {
-      "count": 53
+      "count": 71
     },
     "telegram_request": {
       "count": 80
     },
     "website_assistant_request": {
-      "count": 214
+      "count": 248
     },
     "operations_helper_request": {
-      "count": 182
+      "count": 216
     },
     "automation_action": {
-      "count": 88
+      "count": 114
     },
     "agent_work_handoff": {
-      "count": 100
+      "count": 106
     }
   },
   "release_gate": {
@@ -80,7 +80,7 @@
       {
         "name": "all_visible_controls_classified",
         "passed": true,
-        "value": "53/53"
+        "value": "71/71"
       },
       {
         "name": "zero_visible_missing_contracts",
@@ -110,12 +110,12 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 214
+        "value": 248
       },
       {
         "name": "agent_work_handoff_parity_present",
         "passed": true,
-        "value": 100
+        "value": 106
       }
     ]
   },
@@ -275,6 +275,34 @@
       "result_renderer": "Filters first-party BNA CRM contacts inside the selected workspace/project; performs no email, WhatsApp, social, payment, access, or external CRM writes."
     },
     {
+      "action_id": "ACTION-CRM-ADD-CONTACT",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Creates or updates one workspace-scoped first-party CRM contact, writes workspace-scoped email/phone/WhatsApp identities when provided, records a local pipeline event, opens the contact workspace, and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write. The action is disabled in read-only preview."
+    },
+    {
+      "action_id": "ACTION-CRM-ACTION-OVERFLOW",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Expands or collapses the selected contact contextual action menu in the first-party CRM workspace. It only reveals already registered no-send/no-access CRM actions and performs no email, WhatsApp, Telegram, payment, access grant, import, provider mutation, or external CRM write."
+    },
+    {
       "action_id": "ACTION-CRM-CONTACT-CARD-EXPAND",
       "file": "public/operations.html",
       "surface": "operations",
@@ -289,7 +317,7 @@
       "result_renderer": "Expands a local first-party CRM contact and timeline readback only; no message is sent."
     },
     {
-      "action_id": "ACTION-CRM-CONTACT-MAILBOX-OPEN",
+      "action_id": "ACTION-CRM-OPEN-SCOPED-INBOX",
       "file": "public/operations.html",
       "surface": "operations",
       "classification": "preview_then_approve",
@@ -300,7 +328,49 @@
       "approval_required": true,
       "risk": "high",
       "registry_layer": "root",
-      "result_renderer": "Moves from the selected local CRM contact to the scoped Rabbi / One Time email inbox while preserving selected contact context; does not send, draft-send, charge, grant access, import, or write to an external CRM."
+      "result_renderer": "Moves from a selected local CRM contact to the scoped email inbox context while preserving selected contact state; no email is sent."
+    },
+    {
+      "action_id": "ACTION-CRM-OPEN-WHATSAPP-THREAD",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Moves from a selected local CRM contact or conversation DTO to the scoped WhatsApp conversation workspace; it does not prefill or send a WhatsApp message."
+    },
+    {
+      "action_id": "ACTION-CRM-CREATE-TASK",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Creates exactly one first-party local CRM follow-up task for the selected contact only after an explicit click; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs. The action is disabled only in read-only preview."
+    },
+    {
+      "action_id": "ACTION-CRM-ARCHIVE-CONTACT",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Archives the selected workspace-scoped first-party CRM contact only after an explicit click and confirmation, hides it from active CRM lists, records a local pipeline event through the CRM PATCH route, and performs no email, WhatsApp, Telegram, payment, access grant, import, automatic task creation, historical sync, or external CRM write. The action is disabled in read-only preview."
     },
     {
       "action_id": "ACTION-CRM-CONTACT-SAFE-UPDATE",
@@ -315,6 +385,202 @@
       "risk": "high",
       "registry_layer": "root",
       "result_renderer": "Saves status, tags, owner, follow-up date, and internal note to first-party local CRM tables only; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs."
+    },
+    {
+      "action_id": "ACTION-CRM-ADD-NOTE",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Adds a first-party internal CRM note to the selected workspace contact only after an explicit click; it writes a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write."
+    },
+    {
+      "action_id": "ACTION-CRM-ADD-TAG",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Adds one first-party CRM tag to the selected workspace contact only after an explicit click; it writes the workspace-scoped local tag list and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write."
+    },
+    {
+      "action_id": "ACTION-CRM-REMOVE-TAG",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Removes a selected first-party CRM tag from the selected workspace contact only after an explicit click; it can persist an empty tag list and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write."
+    },
+    {
+      "action_id": "ACTION-CRM-ASSIGN-OWNER",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Assigns the selected workspace contact's first-party CRM owner only after an explicit click; it records local CRM metadata and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write."
+    },
+    {
+      "action_id": "ACTION-CRM-CHANGE-LIFECYCLE",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Changes the selected workspace contact's first-party CRM lifecycle stage only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write."
+    },
+    {
+      "action_id": "ACTION-CRM-CHANGE-FOLLOW-UP",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Changes the existing first-party CRM follow-up date for the selected workspace contact only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write."
+    },
+    {
+      "action_id": "ACTION-CRM-SET-FOLLOW-UP",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Schedules a first-party CRM follow-up date for the selected workspace contact only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write."
+    },
+    {
+      "action_id": "ACTION-CRM-CLEAR-FOLLOW-UP",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Clears the selected workspace contact's first-party CRM follow-up date only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write."
+    },
+    {
+      "action_id": "ACTION-CRM-COMPLETE-TASK",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Marks the selected contact's linked first-party CRM follow-up task complete only after an explicit click; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs. The action is disabled in read-only preview or when the linked task is already complete."
+    },
+    {
+      "action_id": "ACTION-CRM-REOPEN-TASK",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Reopens the selected contact's completed linked first-party CRM follow-up task only after an explicit click; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs. The action is disabled in read-only preview or when the linked task is not complete."
+    },
+    {
+      "action_id": "ACTION-CRM-LINK-MEMBER",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Creates or reuses a first-party disabled member shell for the selected workspace CRM contact only after an explicit click; the payload uses access_status=paused and access_enabled=false, creates no portal link or access code, grants no library/class access, sends no message, charges no payment, performs no import, and writes no external CRM record. The action is disabled in read-only preview and when the contact has no email."
+    },
+    {
+      "action_id": "ACTION-CRM-LINK-FAMILY",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Links the selected workspace CRM contact as a first-party family relationship only after an explicit click; the payload updates local CRM contact metadata/tags and writes a local CRM note, creates no portal login, grants no access, sends no message, charges no payment, performs no import, and writes no external CRM record. The action is disabled in read-only preview."
+    },
+    {
+      "action_id": "ACTION-CRM-LINK-STUDENT",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Creates or reuses a first-party paused student shell for the selected workspace CRM contact only after an explicit click and entered student name; the payload uses status=paused, creates no student login or access code, grants no class access, sends no message, charges no payment, performs no import, and writes no external CRM record. The action is disabled in read-only preview and when the contact has no parent email."
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-BACK",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "read_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "detailed",
+      "result_renderer": "Contact list restored."
     },
     {
       "action_id": "ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS",
@@ -695,6 +961,20 @@
       "result_renderer": "After server-backed password authentication returns chooser_required, each visible destination link opens only the server-provided same-origin redirect_to for an authenticated membership; it must not route by client-trusted workspace keys, grant extra permissions, accept unsafe external returnTo values, or expose credentials, prompts, secrets, or private account data."
     },
     {
+      "action_id": "ACTION-ONETIME-PORTAL-MENU-TOGGLE",
+      "file": "public/student.html",
+      "surface": "student_portal",
+      "classification": "secure_deep_link_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "detailed",
+      "result_renderer": "One Time portal menu toggled."
+    },
+    {
       "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
       "file": "public/student.html",
       "surface": "student_portal",
@@ -765,6 +1045,20 @@
       "result_renderer": "Returns the operator to Operations with the Rabbi / One Time inbox filter visible; provider logout remains available through the provider Sign Out control."
     },
     {
+      "action_id": "ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK",
+      "file": "public/provider.html",
+      "surface": "provider_portal",
+      "classification": "executable",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "medium",
+      "registry_layer": "root",
+      "result_renderer": "Opens the legacy scoped Operations route only when the user explicitly chooses the fallback, preserving the dedicated One Time provider shell as the default critical path."
+    },
+    {
       "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
       "file": "public/provider.html",
       "surface": "provider_portal",
@@ -819,48 +1113,6 @@
       "risk": "medium",
       "registry_layer": "root",
       "result_renderer": "Saves a provider inquiry response draft only and returns explicit no_send/external_write_performed=false metadata."
-    },
-    {
-      "action_id": "ACTION-PROVIDER-MAILBOX-THREAD-OPEN",
-      "file": "public/provider.html",
-      "surface": "provider_portal",
-      "classification": "preview_then_approve",
-      "registered": true,
-      "handler_present": true,
-      "permission_present": true,
-      "test_present": true,
-      "approval_required": true,
-      "risk": "high",
-      "registry_layer": "root",
-      "result_renderer": "Loads a scoped One Time email thread timeline from bna_communications using the private provider mailbox thread API."
-    },
-    {
-      "action_id": "ACTION-PROVIDER-MAILBOX-DRAFT",
-      "file": "public/provider.html",
-      "surface": "provider_portal",
-      "classification": "executable",
-      "registered": true,
-      "handler_present": true,
-      "permission_present": true,
-      "test_present": true,
-      "approval_required": false,
-      "risk": "medium",
-      "registry_layer": "root",
-      "result_renderer": "Saves a local One Time mailbox reply draft in bna_communications with no_send/external_write_performed=false metadata."
-    },
-    {
-      "action_id": "ACTION-PROVIDER-MAILBOX-SEND",
-      "file": "public/provider.html",
-      "surface": "provider_portal",
-      "classification": "preview_then_approve",
-      "registered": true,
-      "handler_present": true,
-      "permission_present": true,
-      "test_present": true,
-      "approval_required": true,
-      "risk": "high",
-      "registry_layer": "root",
-      "result_renderer": "Sends a one-to-one One Time mailbox reply through Resend only after provider session, workspace scope, Resend readiness, and exact SEND_RESEND_EMAIL confirmation; bulk email remains unavailable."
     }
   ],
   "action_rows": [
@@ -897,7 +1149,7 @@
     },
     {
       "action_id": "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
-      "label": "Robot Scheller WhatsApp Assistant",
+      "label": "Robot Scheller public helper",
       "registry_layer": "root",
       "category": "",
       "surface": "one_time_public_landing",
@@ -907,8 +1159,8 @@
         "anonymous public visitor"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Opens the bottom-corner Robot Scheller public assistant for Rabbi Scheller's One Time public page, with tooltip/ARIA text that identifies it as the WhatsApp assistant entry. Internal scope guardrails remain One Time only and do not expose BNA Academy or private portal data.",
-      "status": "active",
+      "execution_handler": "Archived public landing helper action. The served /one-time route now uses ACTION-ONETIME-PUBLIC-WHATSAPP as the visible bottom-corner contact launcher and does not load the public helper widget scripts.",
+      "status": "removed_from_public_landing",
       "classification": "preview_then_approve",
       "risk": "high",
       "preview_required": true,
@@ -920,15 +1172,15 @@
       "test_present": true,
       "telegram_examples": [],
       "website_examples": [
-        "Robot Scheller WhatsApp Assistant"
+        "Robot Scheller public helper"
       ],
-      "result_renderer": "Opens the bottom-corner Robot Scheller public assistant for Rabbi Scheller's One Time public page, with tooltip/ARIA text that identifies it as the WhatsApp assistant entry. Internal scope guardrails remain One Time only and do not expose BNA Academy or private portal data.",
-      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "result_renderer": "Archived public landing helper action. The served /one-time route now uses ACTION-ONETIME-PUBLIC-WHATSAPP as the visible bottom-corner contact launcher and does not load the public helper widget scripts.",
+      "rollback_or_correction_path": "REQ-20260712-109 replaces the public helper widget with a standard WhatsApp launcher.",
       "audit_event": ""
     },
     {
       "action_id": "ACTION-ONETIME-PUBLIC-WHATSAPP",
-      "label": "Open WhatsApp Assistant",
+      "label": "Open WhatsApp",
       "registry_layer": "root",
       "category": "",
       "surface": "one_time_public_landing",
@@ -939,7 +1191,7 @@
       ],
       "allowed_workspaces": [],
       "execution_handler": "GET /api/one-time/public-whatsapp/redirect",
-      "status": "blocked_external_setup_until_runtime_number_configured",
+      "status": "active_runtime_redirect_with_setup_fallback",
       "classification": "preview_then_approve",
       "risk": "high",
       "preview_required": true,
@@ -951,10 +1203,41 @@
       "test_present": true,
       "telegram_examples": [],
       "website_examples": [
-        "Open WhatsApp Assistant"
+        "Open WhatsApp"
       ],
-      "result_renderer": "Opens a same-origin runtime redirect for the One Time public WhatsApp business line. The server reads ONE_TIME_PUBLIC_WHATSAPP_NUMBER or aliases at runtime, never commits or returns the full number in repo evidence, and performs no WhatsApp send by itself. If runtime config is missing, the redirect falls back to the public form and readiness reports the exact missing env var.",
-      "rollback_or_correction_path": "Direct WhatsApp chat requires ONE_TIME_PUBLIC_WHATSAPP_NUMBER in runtime/keyholder configuration.",
+      "result_renderer": "Opens a same-origin runtime redirect for the One Time public WhatsApp business line from a standard bottom-right WhatsApp launcher. The server reads ONE_TIME_PUBLIC_WHATSAPP_NUMBER or aliases at runtime, never commits or returns the full number in repo evidence, and performs no WhatsApp send by itself. If runtime config is missing, the redirect falls back to the public form and readiness reports the exact missing env var.",
+      "rollback_or_correction_path": "Live WhatsApp chat requires ONE_TIME_PUBLIC_WHATSAPP_NUMBER in runtime/keyholder configuration; missing config falls back to /one-time/signup.",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-GET-CURRENT-CLASS-LINK",
+      "label": "Send current class link",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_public_whatsapp_agent",
+      "route": "/api/webhooks/wapi",
+      "permission": "anonymous public WhatsApp contact after scoped contact resolution and class-information request/consent",
+      "allowed_roles": [
+        "anonymous public WhatsApp contact after scoped contact resolution and class-information request/consent"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "buildProviderLeadBotPlan + maybeSendOneTimeWapiAutoReply via POST /api/webhooks/wapi",
+      "status": "active_policy_guarded_runtime_action",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Send current class link"
+      ],
+      "result_renderer": "Resolves the current approved One Time class-link alias server-side, verifies the request is scoped to rabbi_sheller_provider / one_time_mishnah_class, resolves or creates the One Time contact, records class-information permission, sends the raw link only in the final approved channel delivery, and stores only redacted audit metadata. It must not expose the raw link in model context, logs, diagnostics, public API responses, or repo evidence.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
     {
@@ -1527,7 +1810,7 @@
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required free-text location entry accepting city, ZIP/postal code, area code, or neighborhood, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
+      "execution_handler": "Creates or links a first-party One Time product lead, legacy CRM lead source, and canonical workspace CRM contact from the direct public signup form with required parent/contact name, required Family or School audience_type radio choice, required free-text location accepting city, country, ZIP/postal code, area code, or neighborhood, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, required reminder preference, conditional reminder consent, route/referrer/UTM metadata, and no student name. It enqueues the approved immediate confirmation and Rabbi Telegram signup alert through scoped outbox records when configured, creates zero automatic CRM tasks, and does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
       "status": "active",
       "classification": "preview_then_approve",
       "risk": "high",
@@ -1542,7 +1825,7 @@
       "website_examples": [
         "Sign Up Now"
       ],
-      "result_renderer": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required free-text location entry accepting city, ZIP/postal code, area code, or neighborhood, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
+      "result_renderer": "Creates or links a first-party One Time product lead, legacy CRM lead source, and canonical workspace CRM contact from the direct public signup form with required parent/contact name, required Family or School audience_type radio choice, required free-text location accepting city, country, ZIP/postal code, area code, or neighborhood, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, required reminder preference, conditional reminder consent, route/referrer/UTM metadata, and no student name. It enqueues the approved immediate confirmation and Rabbi Telegram signup alert through scoped outbox records when configured, creates zero automatic CRM tasks, and does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
@@ -1558,7 +1841,7 @@
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Sets the direct signup form's required signup_as value to Family through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "execution_handler": "Checks the direct signup form's required Family radio option, updates the compatibility signup_as value to Family, clears the audience validation error, and does not submit, send, charge, create access, or navigate.",
       "status": "active",
       "classification": "preview_then_approve",
       "risk": "high",
@@ -1573,7 +1856,7 @@
       "website_examples": [
         "Family"
       ],
-      "result_renderer": "Sets the direct signup form's required signup_as value to Family through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "result_renderer": "Checks the direct signup form's required Family radio option, updates the compatibility signup_as value to Family, clears the audience validation error, and does not submit, send, charge, create access, or navigate.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
@@ -1589,7 +1872,7 @@
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Sets the direct signup form's required signup_as value to School through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "execution_handler": "Checks the direct signup form's required School radio option, updates the compatibility signup_as value to School, clears the audience validation error, and does not submit, send, charge, create access, or navigate.",
       "status": "active",
       "classification": "preview_then_approve",
       "risk": "high",
@@ -1604,7 +1887,7 @@
       "website_examples": [
         "School"
       ],
-      "result_renderer": "Sets the direct signup form's required signup_as value to School through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "result_renderer": "Checks the direct signup form's required School radio option, updates the compatibility signup_as value to School, clears the audience validation error, and does not submit, send, charge, create access, or navigate.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
@@ -1668,6 +1951,37 @@
       ],
       "result_renderer": "Toggles the public One Time right-side navigation drawer at every viewport, updates aria-expanded, traps focus while open, restores focus on close, and closes on section-link click, overlay click, or Escape without navigating to private data.",
       "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-PUBLIC-SECTION-NAV",
+      "label": "Public section navigation",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "permission": "public",
+      "allowed_roles": [
+        "public"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Navigates only among public One Time landing sections or the public landing home state; it must not expose private member-library data, portal accounts, class links, checkout, or Operations data.",
+      "status": "active_navigation",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Public section navigation"
+      ],
+      "result_renderer": "Navigates only among public One Time landing sections or the public landing home state; it must not expose private member-library data, portal accounts, class links, checkout, or Operations data.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
     {
@@ -2167,6 +2481,37 @@
       "audit_event": ""
     },
     {
+      "action_id": "ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK",
+      "label": "Operations fallback",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_dedicated_shell",
+      "route": "/provider.html?admin_provider=one-time&ops_fallback=1",
+      "permission": "platform_super_admin_or_provider_owner",
+      "allowed_roles": [
+        "platform_super_admin_or_provider_owner"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the legacy scoped Operations route only when the user explicitly chooses the fallback, preserving the dedicated One Time provider shell as the default critical path.",
+      "status": "active_navigation_fallback",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Operations fallback"
+      ],
+      "result_renderer": "Opens the legacy scoped Operations route only when the user explicitly chooses the fallback, preserving the dedicated One Time provider shell as the default critical path.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
       "action_id": "ACTION-ONETIME-MEMBER-PRIVATE-QUESTION",
       "label": "Submit Question",
       "registry_layer": "root",
@@ -2194,6 +2539,161 @@
         "Submit Question"
       ],
       "result_renderer": "Creates an authenticated member-scoped private question review record only; no forum post, member feed, external send, or unrestricted study bot answer.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-RABBI-TELEGRAM-TICKET-CREATE",
+      "label": "Create Rabbi Ticket",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "rabbi_private_telegram_workspace_agent",
+      "route": "telegram:rabbi-elie-scheller",
+      "permission": "authenticated_rabbi_provider_owner",
+      "allowed_roles": [
+        "authenticated_rabbi_provider_owner"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Creates one rabbi_sheller_provider / one_time_mishnah_class support ticket in awaiting_super_admin_approval status, sends one Super Admin alert, and creates no Codex task or agent job.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Create Rabbi Ticket"
+      ],
+      "result_renderer": "Creates one rabbi_sheller_provider / one_time_mishnah_class support ticket in awaiting_super_admin_approval status, sends one Super Admin alert, and creates no Codex task or agent job.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-RABBI-TICKET-APPROVE-CODEX",
+      "label": "Approve for Codex",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "super_admin_telegram_ticket_alert",
+      "route": "/api/bna/support-tickets/:id/approval-action",
+      "permission": "platform_super_admin",
+      "allowed_roles": [
+        "platform_super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Requires platform Super Admin, moves the Rabbi ticket to approved_for_codex, creates exactly one linked Codex task and agent job, and notifies Rabbi Telegram without exposing internal logs.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Approve for Codex"
+      ],
+      "result_renderer": "Requires platform Super Admin, moves the Rabbi ticket to approved_for_codex, creates exactly one linked Codex task and agent job, and notifies Rabbi Telegram without exposing internal logs.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-RABBI-TICKET-ASK-RABBI",
+      "label": "Ask Rabbi",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "super_admin_telegram_ticket_alert",
+      "route": "/api/bna/support-tickets/:id/approval-action",
+      "permission": "platform_super_admin",
+      "allowed_roles": [
+        "platform_super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Requires platform Super Admin, moves the ticket to needs_requester_information, sends the exact question to Rabbi Telegram, and creates no Codex job.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Ask Rabbi"
+      ],
+      "result_renderer": "Requires platform Super Admin, moves the ticket to needs_requester_information, sends the exact question to Rabbi Telegram, and creates no Codex job.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-RABBI-TICKET-KEEP",
+      "label": "Keep as Ticket",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "super_admin_telegram_ticket_alert",
+      "route": "/api/bna/support-tickets/:id/approval-action",
+      "permission": "platform_super_admin",
+      "allowed_roles": [
+        "platform_super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Requires platform Super Admin, keeps the support ticket for manual follow-up, and creates no Codex task or job.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Keep as Ticket"
+      ],
+      "result_renderer": "Requires platform Super Admin, keeps the support ticket for manual follow-up, and creates no Codex task or job.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-RABBI-TICKET-REJECT",
+      "label": "Reject Ticket",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "super_admin_telegram_ticket_alert",
+      "route": "/api/bna/support-tickets/:id/approval-action",
+      "permission": "platform_super_admin",
+      "allowed_roles": [
+        "platform_super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Requires platform Super Admin, records a short rejection reason, notifies Rabbi Telegram, and creates no Codex task or job.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Reject Ticket"
+      ],
+      "result_renderer": "Requires platform Super Admin, records a short rejection reason, notifies Rabbi Telegram, and creates no Codex task or job.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
@@ -4864,6 +5364,37 @@
       "audit_event": ""
     },
     {
+      "action_id": "ACTION-CRM-ADD-CONTACT",
+      "label": "Add contact",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Creates or updates one workspace-scoped first-party CRM contact, writes workspace-scoped email/phone/WhatsApp identities when provided, records a local pipeline event, opens the contact workspace, and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write. The action is disabled in read-only preview.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Add contact"
+      ],
+      "result_renderer": "Creates or updates one workspace-scoped first-party CRM contact, writes workspace-scoped email/phone/WhatsApp identities when provided, records a local pipeline event, opens the contact workspace, and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write. The action is disabled in read-only preview.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
       "action_id": "ACTION-CRM-CONTACTS-FILTER",
       "label": "Filter CRM contacts",
       "registry_layer": "root",
@@ -4953,6 +5484,564 @@
         "Open contact mailbox"
       ],
       "result_renderer": "Moves from the selected local CRM contact to the scoped Rabbi / One Time email inbox while preserving selected contact context; does not send, draft-send, charge, grant access, import, or write to an external CRM.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-ACTION-OVERFLOW",
+      "label": "More actions",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Expands or collapses the selected contact contextual action menu in the first-party CRM workspace. It only reveals already registered no-send/no-access CRM actions and performs no email, WhatsApp, Telegram, payment, access grant, import, provider mutation, or external CRM write.",
+      "status": "active_navigation_only",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "More actions"
+      ],
+      "result_renderer": "Expands or collapses the selected contact contextual action menu in the first-party CRM workspace. It only reveals already registered no-send/no-access CRM actions and performs no email, WhatsApp, Telegram, payment, access grant, import, provider mutation, or external CRM write.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-OPEN-SCOPED-INBOX",
+      "label": "Open email thread",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "permission": "super_admin or scoped provider workspace role with CRM and communications entitlements",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM and communications entitlements"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Moves from a selected local CRM contact to the scoped email inbox context while preserving selected contact state; no email is sent.",
+      "status": "active_navigation_only",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open email thread"
+      ],
+      "result_renderer": "Moves from a selected local CRM contact to the scoped email inbox context while preserving selected contact state; no email is sent.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-OPEN-WHATSAPP-THREAD",
+      "label": "Open WhatsApp thread",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=whatsapp",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlement",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlement"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Moves from a selected local CRM contact or conversation DTO to the scoped WhatsApp conversation workspace; it does not prefill or send a WhatsApp message.",
+      "status": "active_navigation_no_send",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open WhatsApp thread"
+      ],
+      "result_renderer": "Moves from a selected local CRM contact or conversation DTO to the scoped WhatsApp conversation workspace; it does not prefill or send a WhatsApp message.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-CREATE-TASK",
+      "label": "Create task",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlement",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlement"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Creates exactly one first-party local CRM follow-up task for the selected contact only after an explicit click; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs. The action is disabled only in read-only preview.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Create task"
+      ],
+      "result_renderer": "Creates exactly one first-party local CRM follow-up task for the selected contact only after an explicit click; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs. The action is disabled only in read-only preview.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-COMPLETE-TASK",
+      "label": "Complete task",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "permission": "super_admin or scoped provider workspace role with CRM/task entitlement",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM/task entitlement"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Marks the selected contact's linked first-party CRM follow-up task complete only after an explicit click; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs. The action is disabled in read-only preview or when the linked task is already complete.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Complete task"
+      ],
+      "result_renderer": "Marks the selected contact's linked first-party CRM follow-up task complete only after an explicit click; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs. The action is disabled in read-only preview or when the linked task is already complete.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-REOPEN-TASK",
+      "label": "Reopen task",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "permission": "super_admin or scoped provider workspace role with CRM/task entitlement",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM/task entitlement"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Reopens the selected contact's completed linked first-party CRM follow-up task only after an explicit click; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs. The action is disabled in read-only preview or when the linked task is not complete.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Reopen task"
+      ],
+      "result_renderer": "Reopens the selected contact's completed linked first-party CRM follow-up task only after an explicit click; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs. The action is disabled in read-only preview or when the linked task is not complete.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-LINK-FAMILY",
+      "label": "Link family",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlement",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlement"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Links the selected workspace CRM contact as a first-party family relationship only after an explicit click; the payload updates local CRM contact metadata/tags and writes a local CRM note, creates no portal login, grants no access, sends no message, charges no payment, performs no import, and writes no external CRM record. The action is disabled in read-only preview.",
+      "status": "active_first_party_local_write_no_access_grant",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Link family"
+      ],
+      "result_renderer": "Links the selected workspace CRM contact as a first-party family relationship only after an explicit click; the payload updates local CRM contact metadata/tags and writes a local CRM note, creates no portal login, grants no access, sends no message, charges no payment, performs no import, and writes no external CRM record. The action is disabled in read-only preview.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-LINK-STUDENT",
+      "label": "Link student",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "permission": "super_admin or scoped provider workspace role with CRM/student entitlement",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM/student entitlement"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Creates or reuses a first-party paused student shell for the selected workspace CRM contact only after an explicit click and entered student name; the payload uses status=paused, creates no student login or access code, grants no class access, sends no message, charges no payment, performs no import, and writes no external CRM record. The action is disabled in read-only preview and when the contact has no parent email.",
+      "status": "active_first_party_local_write_no_access_grant",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Link student"
+      ],
+      "result_renderer": "Creates or reuses a first-party paused student shell for the selected workspace CRM contact only after an explicit click and entered student name; the payload uses status=paused, creates no student login or access code, grants no class access, sends no message, charges no payment, performs no import, and writes no external CRM record. The action is disabled in read-only preview and when the contact has no parent email.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-LINK-MEMBER",
+      "label": "Link member",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "permission": "super_admin or scoped provider workspace role with CRM/member entitlement",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM/member entitlement"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Creates or reuses a first-party disabled member shell for the selected workspace CRM contact only after an explicit click; the payload uses access_status=paused and access_enabled=false, creates no portal link or access code, grants no library/class access, sends no message, charges no payment, performs no import, and writes no external CRM record. The action is disabled in read-only preview and when the contact has no email.",
+      "status": "active_first_party_local_write_no_access_grant",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Link member"
+      ],
+      "result_renderer": "Creates or reuses a first-party disabled member shell for the selected workspace CRM contact only after an explicit click; the payload uses access_status=paused and access_enabled=false, creates no portal link or access code, grants no library/class access, sends no message, charges no payment, performs no import, and writes no external CRM record. The action is disabled in read-only preview and when the contact has no email.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-ARCHIVE-CONTACT",
+      "label": "Archive contact",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Archives the selected workspace-scoped first-party CRM contact only after an explicit click and confirmation, hides it from active CRM lists, records a local pipeline event through the CRM PATCH route, and performs no email, WhatsApp, Telegram, payment, access grant, import, automatic task creation, historical sync, or external CRM write. The action is disabled in read-only preview.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Archive contact"
+      ],
+      "result_renderer": "Archives the selected workspace-scoped first-party CRM contact only after an explicit click and confirmation, hides it from active CRM lists, records a local pipeline event through the CRM PATCH route, and performs no email, WhatsApp, Telegram, payment, access grant, import, automatic task creation, historical sync, or external CRM write. The action is disabled in read-only preview.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-ADD-NOTE",
+      "label": "Add note",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Adds a first-party internal CRM note to the selected workspace contact only after an explicit click; it writes a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Add note"
+      ],
+      "result_renderer": "Adds a first-party internal CRM note to the selected workspace contact only after an explicit click; it writes a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-ADD-TAG",
+      "label": "Add tag",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Adds one first-party CRM tag to the selected workspace contact only after an explicit click; it writes the workspace-scoped local tag list and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Add tag"
+      ],
+      "result_renderer": "Adds one first-party CRM tag to the selected workspace contact only after an explicit click; it writes the workspace-scoped local tag list and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-REMOVE-TAG",
+      "label": "Remove tag",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Removes a selected first-party CRM tag from the selected workspace contact only after an explicit click; it can persist an empty tag list and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Remove tag"
+      ],
+      "result_renderer": "Removes a selected first-party CRM tag from the selected workspace contact only after an explicit click; it can persist an empty tag list and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-ASSIGN-OWNER",
+      "label": "Assign owner",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Assigns the selected workspace contact's first-party CRM owner only after an explicit click; it records local CRM metadata and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Assign owner"
+      ],
+      "result_renderer": "Assigns the selected workspace contact's first-party CRM owner only after an explicit click; it records local CRM metadata and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-CHANGE-LIFECYCLE",
+      "label": "Change lifecycle",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Changes the selected workspace contact's first-party CRM lifecycle stage only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Change lifecycle"
+      ],
+      "result_renderer": "Changes the selected workspace contact's first-party CRM lifecycle stage only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-SET-FOLLOW-UP",
+      "label": "Schedule follow-up",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Schedules a first-party CRM follow-up date for the selected workspace contact only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Schedule follow-up"
+      ],
+      "result_renderer": "Schedules a first-party CRM follow-up date for the selected workspace contact only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-CHANGE-FOLLOW-UP",
+      "label": "Change follow-up",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Changes the existing first-party CRM follow-up date for the selected workspace contact only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Change follow-up"
+      ],
+      "result_renderer": "Changes the existing first-party CRM follow-up date for the selected workspace contact only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-CLEAR-FOLLOW-UP",
+      "label": "Clear follow-up",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Clears the selected workspace contact's first-party CRM follow-up date only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "status": "active_first_party_local_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Clear follow-up"
+      ],
+      "result_renderer": "Clears the selected workspace contact's first-party CRM follow-up date only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
@@ -9370,6 +10459,331 @@
         "/parent",
         "/provider"
       ]
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-BACK",
+      "label": "Back to CRM contact list",
+      "registry_layer": "detailed",
+      "category": "crm",
+      "surface": "contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "permission": "super_admin/project_owner/one_time_admin/operator/system",
+      "allowed_roles": [
+        "super_admin",
+        "project_owner",
+        "one_time_admin",
+        "operator",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "ui.clearFirstPartyCrmSelection",
+      "status": "active",
+      "classification": "read_only",
+      "risk": "low",
+      "preview_required": true,
+      "approval_required": false,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Back to contacts"
+      ],
+      "result_renderer": "Contact list restored.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": "ui_only_no_write",
+      "page_contexts": [
+        "contacts",
+        "one_time_crm"
+      ],
+      "related_routes": [
+        "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-OPEN-SCOPED-INBOX",
+      "label": "Open scoped One Time inbox",
+      "registry_layer": "detailed",
+      "category": "crm",
+      "surface": "contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "permission": "super_admin/project_owner/one_time_admin/operator/system",
+      "allowed_roles": [
+        "super_admin",
+        "project_owner",
+        "one_time_admin",
+        "operator",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "ui.openFirstPartyCrmInboxContext",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": true,
+      "approval_required": false,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open scoped inbox"
+      ],
+      "result_renderer": "Scoped inbox opened.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": "ui_navigation_no_write",
+      "page_contexts": [
+        "contacts",
+        "communications",
+        "one_time_crm"
+      ],
+      "related_routes": [
+        "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-REPLY-DRAFT-BLOCKED",
+      "label": "CRM reply draft locked",
+      "registry_layer": "detailed",
+      "category": "crm",
+      "surface": "contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "permission": "super_admin/project_owner/one_time_admin/operator/system",
+      "allowed_roles": [
+        "super_admin",
+        "project_owner",
+        "one_time_admin",
+        "operator",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "blocked.externalSendApprovalRequired",
+      "status": "approval_required",
+      "classification": "blocked_connector",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Reply draft locked"
+      ],
+      "result_renderer": "Reply remains locked.",
+      "rollback_or_correction_path": "preview_edit_cancel_or_operator_review",
+      "audit_event": "crm_reply_draft_blocked",
+      "page_contexts": [
+        "contacts",
+        "one_time_crm"
+      ],
+      "related_routes": [
+        "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-INTERNAL-NOTE-BLOCKED",
+      "label": "CRM internal note preview",
+      "registry_layer": "detailed",
+      "category": "crm",
+      "surface": "contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "permission": "super_admin/project_owner/one_time_admin/operator/system",
+      "allowed_roles": [
+        "super_admin",
+        "project_owner",
+        "one_time_admin",
+        "operator",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "blocked.localCrmNoteWriteNotInPacket",
+      "status": "approval_required",
+      "classification": "blocked_connector",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Internal note preview"
+      ],
+      "result_renderer": "Note remains preview-only.",
+      "rollback_or_correction_path": "preview_edit_cancel_or_operator_review",
+      "audit_event": "crm_note_write_blocked",
+      "page_contexts": [
+        "contacts",
+        "one_time_crm"
+      ],
+      "related_routes": [
+        "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-TASK-BLOCKED",
+      "label": "CRM task preview",
+      "registry_layer": "detailed",
+      "category": "crm",
+      "surface": "contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "permission": "super_admin/project_owner/one_time_admin/operator/system",
+      "allowed_roles": [
+        "super_admin",
+        "project_owner",
+        "one_time_admin",
+        "operator",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "blocked.localCrmTaskWriteNotInPacket",
+      "status": "approval_required",
+      "classification": "blocked_connector",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Task preview"
+      ],
+      "result_renderer": "Task remains preview-only.",
+      "rollback_or_correction_path": "preview_edit_cancel_or_operator_review",
+      "audit_event": "crm_task_write_blocked",
+      "page_contexts": [
+        "contacts",
+        "one_time_crm"
+      ],
+      "related_routes": [
+        "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PORTAL-MENU-TOGGLE",
+      "label": "Toggle One Time portal menu",
+      "registry_layer": "detailed",
+      "category": "navigation",
+      "surface": "one_time_family_portal",
+      "route": "/rabbi-member",
+      "permission": "member/parent/student/provider_admin/super_admin/system",
+      "allowed_roles": [
+        "member",
+        "parent",
+        "student",
+        "provider_admin",
+        "super_admin",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "ui.toggleOneTimePortalMenu",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": true,
+      "approval_required": false,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Menu",
+        "Close One Time portal menu"
+      ],
+      "result_renderer": "One Time portal menu toggled.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": "ui_navigation_no_write",
+      "page_contexts": [
+        "one_time_family_portal",
+        "one_time_student_portal",
+        "one_time_classroom",
+        "one_time_member_library",
+        "one_time_parent_setup",
+        "one_time_preview"
+      ],
+      "related_routes": [
+        "/rabbi-member",
+        "/member-library",
+        "/one-time-classroom",
+        "/one-time-parent",
+        "/parent.html?review=one-time",
+        "/student.html?review=one-time"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PORTAL-EXIT-PREVIEW",
+      "label": "Exit One Time preview",
+      "registry_layer": "detailed",
+      "category": "navigation",
+      "surface": "one_time_preview",
+      "route": "/rabbi-member?review=one-time",
+      "permission": "member/parent/student/provider_admin/super_admin/system",
+      "allowed_roles": [
+        "member",
+        "parent",
+        "student",
+        "provider_admin",
+        "super_admin",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "ui.exitOneTimePreview",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": true,
+      "approval_required": false,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Exit Preview"
+      ],
+      "result_renderer": "Exited One Time preview.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": "ui_navigation_no_write",
+      "page_contexts": [
+        "one_time_preview"
+      ],
+      "related_routes": [
+        "/rabbi-member?review=one-time",
+        "/member-library?review=one-time",
+        "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+        "/parent.html?review=one-time",
+        "/student.html?review=one-time"
+      ]
     }
   ],
   "category_coverage": [
@@ -9475,6 +10889,7 @@
         "ACTION-AGENT-REVIEW-RETURN-HUB",
         "ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED",
         "ACTION-ONETIME-CLASS-PACKAGE-PREVIEW",
+        "ACTION-ONETIME-GET-CURRENT-CLASS-LINK",
         "ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN",
         "ACTION-ONETIME-LIVE-ZOOM-LINK-SEND",
         "ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS",
@@ -9524,6 +10939,8 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": true,
       "action_ids": [
+        "ACTION-CRM-OPEN-SCOPED-INBOX",
+        "ACTION-CRM-OPEN-WHATSAPP-THREAD",
         "ACTION-PROVIDER-CLASSROOM-DRAFT",
         "ACTION-PROVIDER-MAILBOX-THREAD-OPEN",
         "create_provider_classroom_draft",
@@ -9561,6 +10978,7 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": false,
       "action_ids": [
+        "ACTION-ONETIME-PUBLIC-SECTION-NAV",
         "open_internal_calendar",
         "show_child_calendar"
       ],
@@ -9571,6 +10989,7 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": true,
       "action_ids": [
+        "ACTION-CRM-OPEN-SCOPED-INBOX",
         "ACTION-ONETIME-PARENT-PASSWORD-REQUEST",
         "ACTION-ONETIME-PROVIDER-SESSION-START",
         "ACTION-OPERATIONS-EMAIL-INBOX-BNA",
@@ -9603,7 +11022,9 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": true,
       "action_ids": [
+        "ACTION-CRM-REPLY-DRAFT-BLOCKED",
         "ACTION-ONETIME-MEMBER-LIBRARY-APPROVE",
+        "ACTION-ONETIME-RABBI-TICKET-APPROVE-CODEX",
         "ACTION-PROVIDER-CLASSROOM-DRAFT",
         "ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT",
         "ACTION-PROVIDER-MAILBOX-DRAFT",
@@ -9644,10 +11065,33 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": true,
       "action_ids": [
+        "ACTION-CRM-ACTION-OVERFLOW",
+        "ACTION-CRM-ADD-CONTACT",
+        "ACTION-CRM-ADD-NOTE",
+        "ACTION-CRM-ADD-TAG",
+        "ACTION-CRM-ARCHIVE-CONTACT",
+        "ACTION-CRM-ASSIGN-OWNER",
+        "ACTION-CRM-CHANGE-FOLLOW-UP",
+        "ACTION-CRM-CHANGE-LIFECYCLE",
+        "ACTION-CRM-CLEAR-FOLLOW-UP",
+        "ACTION-CRM-COMPLETE-TASK",
+        "ACTION-CRM-CONTACT-BACK",
         "ACTION-CRM-CONTACT-CARD-EXPAND",
         "ACTION-CRM-CONTACT-MAILBOX-OPEN",
         "ACTION-CRM-CONTACT-SAFE-UPDATE",
         "ACTION-CRM-CONTACTS-FILTER",
+        "ACTION-CRM-CREATE-TASK",
+        "ACTION-CRM-INTERNAL-NOTE-BLOCKED",
+        "ACTION-CRM-LINK-FAMILY",
+        "ACTION-CRM-LINK-MEMBER",
+        "ACTION-CRM-LINK-STUDENT",
+        "ACTION-CRM-OPEN-SCOPED-INBOX",
+        "ACTION-CRM-OPEN-WHATSAPP-THREAD",
+        "ACTION-CRM-REMOVE-TAG",
+        "ACTION-CRM-REOPEN-TASK",
+        "ACTION-CRM-REPLY-DRAFT-BLOCKED",
+        "ACTION-CRM-SET-FOLLOW-UP",
+        "ACTION-CRM-TASK-BLOCKED",
         "create_referral_ledger_entry",
         "move_lead_stage",
         "preview_campaign_segment",
@@ -9659,8 +11103,9 @@
     {
       "category": "reminder",
       "state": "covered_by_canonical_registry",
-      "visible_currently": false,
+      "visible_currently": true,
       "action_ids": [
+        "ACTION-CRM-SET-FOLLOW-UP",
         "create_calendar_event",
         "create_student_schedule_item",
         "delete_calendar_event",
@@ -9680,6 +11125,11 @@
       "visible_currently": false,
       "action_ids": [
         "ACTION-ONETIME-MEMBER-SUPPORT-TICKET",
+        "ACTION-ONETIME-RABBI-TELEGRAM-TICKET-CREATE",
+        "ACTION-ONETIME-RABBI-TICKET-APPROVE-CODEX",
+        "ACTION-ONETIME-RABBI-TICKET-ASK-RABBI",
+        "ACTION-ONETIME-RABBI-TICKET-KEEP",
+        "ACTION-ONETIME-RABBI-TICKET-REJECT",
         "create_report_problem_ticket",
         "create_ticket",
         "route_bug_to_codex"
@@ -9720,11 +11170,12 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": true,
       "action_ids": [
+        "ACTION-CRM-OPEN-WHATSAPP-THREAD",
         "ACTION-INTEGRATION-SETUP-OPEN",
         "ACTION-INTEGRATION-SETUP-VALIDATE",
+        "ACTION-ONETIME-GET-CURRENT-CLASS-LINK",
         "ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN",
         "ACTION-ONETIME-LIVE-ZOOM-LINK-SEND",
-        "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
         "ACTION-ONETIME-PUBLIC-WHATSAPP",
         "ACTION-PARENT-ACCESS-LINK-WHATSAPP",
         "ACTION-PROVIDER-API-USAGE-PREVIEW-NAV",
@@ -9782,6 +11233,9 @@
         "ACTION-ONETIME-AGENT-ACCEPTANCE-RUN-LIVE",
         "ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-EVIDENCE",
         "ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS",
+        "ACTION-ONETIME-GET-CURRENT-CLASS-LINK",
+        "ACTION-ONETIME-RABBI-TELEGRAM-TICKET-CREATE",
+        "ACTION-ONETIME-RABBI-TICKET-APPROVE-CODEX",
         "ACTION-ONETIME-SCOPED-AGENT-STATUS",
         "ACTION-STUDIO-AI-VIDEO-WORKER-HANDOFF",
         "ACTION-STUDIO-HANDOFF-CONTENT",

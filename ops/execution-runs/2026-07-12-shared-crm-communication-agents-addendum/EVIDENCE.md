@@ -30,6 +30,8 @@
 - `ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md` / `.json` - current-state visual audit for `REQ-20260713-909`; covers split shell and monolith CRM routes at 1440/1024/768/430/390, reports no horizontal overflow, no wrong-workspace leak, no failed requests, no console errors, and confirms the shared CRM/back-control baseline before implementation.
 - `ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json` and `.md` - validated Product Quality packet for the mobile CRM list/detail/subview/action-state IA implementation.
 - `ops/product-quality-compiler/validation/latest-product-quality-validation.md` / `.json` - PQC validation passed for the `REQ-20260713-909` packet.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` / `.json` - local implementation proof for `REQ-20260713-909`; split shell and monolith pass at 1440/1024/768/430/390 with focused contact header, section rail, contextual action overflow, lazy section data, mobile Back restoration, scoped inbox context, no horizontal overflow, no console/page/request failures, and no writes.
+- `ops/action-registry/one-time-action-coverage.md` / `.json` and `ops/action-registry/universal-action-parity.md` / `.json` - regenerated after registering `ACTION-CRM-ACTION-OVERFLOW`; both reports are ok.
 - `ops/audit-governance/latest.md` / `.json` - audit governance rerun mapped the current addendum artifacts; the remaining `NEEDS TASK MAPPING` result is older repo-wide audit backlog outside this scoped packet.
 
 - `ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md` - direct Codex proof replacing two operator Agent Mode prompt runs.

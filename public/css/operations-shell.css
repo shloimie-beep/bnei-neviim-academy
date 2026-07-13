@@ -1690,6 +1690,41 @@
             margin-top: 12px;
         }
 
+        .crm-section-rail {
+            align-items: center;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .crm-section-rail .ops-filter-tab {
+            min-height: 40px;
+            white-space: nowrap;
+        }
+
+        .crm-subview-panel {
+            display: grid;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .crm-action-overflow {
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+            display: grid;
+            gap: 10px;
+            margin-top: 14px;
+            padding-top: 12px;
+        }
+
+        .crm-action-overflow summary {
+            cursor: pointer;
+            list-style: none;
+            width: fit-content;
+        }
+
+        .crm-action-overflow summary::-webkit-details-marker {
+            display: none;
+        }
+
         .crm-safe-action-panel {
             border-top: 1px solid rgba(148, 163, 184, 0.2);
             display: grid;
@@ -1773,6 +1808,11 @@
                 display: none;
             }
 
+            [data-first-party-crm-panel][data-crm-selected-contact="true"] > [data-action-id="ACTION-CRM-CONTACTS-FILTER"],
+            [data-first-party-crm-panel][data-crm-selected-contact="true"] > [data-first-party-crm-status] {
+                display: none;
+            }
+
             .crm-workbench-shell[data-selected-contact="true"] .crm-mobile-selected-actions {
                 display: flex;
             }
@@ -1780,6 +1820,22 @@
             .crm-workbench-shell[data-selected-contact="true"] .crm-workbench-activity,
             .crm-workbench-shell[data-selected-contact="true"] .crm-workbench-profile {
                 min-height: 70vh;
+            }
+
+            .crm-workbench-shell[data-selected-contact="true"] .crm-workbench-profile {
+                display: none;
+            }
+
+            .crm-section-rail {
+                flex-wrap: nowrap;
+            }
+
+            .crm-workbench-shell[data-selected-contact="true"] .crm-subview-panel > .crm-safe-action-panel {
+                display: none;
+            }
+
+            .crm-action-overflow:not([open]) {
+                min-height: 40px;
             }
         }
 

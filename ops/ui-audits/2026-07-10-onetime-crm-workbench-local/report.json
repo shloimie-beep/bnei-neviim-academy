@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "generated_at": "2026-07-13T04:36:47.796Z",
+  "generated_at": "2026-07-13T07:37:24.799Z",
   "target": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts + /operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
   "scope": "Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.",
   "guardrails": {
@@ -18,6 +18,7 @@
       "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
       "target": "split-shell",
       "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1440-crm-workbench.png",
+      "selectedDetailScreenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1440-crm-selected-detail.png",
       "initialCrmRequestCount": 1,
       "initialListRequestCount": 1,
       "initialRenderedCardCount": 50,
@@ -111,6 +112,7 @@
       "route": "/operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
       "target": "monolith",
       "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1440-crm-workbench.png",
+      "selectedDetailScreenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1440-crm-selected-detail.png",
       "initialCrmRequestCount": 1,
       "initialListRequestCount": 1,
       "initialRenderedCardCount": 50,
@@ -204,6 +206,7 @@
       "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
       "target": "split-shell",
       "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1024-crm-workbench.png",
+      "selectedDetailScreenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1024-crm-selected-detail.png",
       "initialCrmRequestCount": 1,
       "initialListRequestCount": 1,
       "initialRenderedCardCount": 50,
@@ -297,6 +300,7 @@
       "route": "/operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
       "target": "monolith",
       "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1024-crm-workbench.png",
+      "selectedDetailScreenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1024-crm-selected-detail.png",
       "initialCrmRequestCount": 1,
       "initialListRequestCount": 1,
       "initialRenderedCardCount": 50,
@@ -390,6 +394,7 @@
       "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
       "target": "split-shell",
       "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-tablet-768-crm-workbench.png",
+      "selectedDetailScreenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-tablet-768-crm-selected-detail.png",
       "initialCrmRequestCount": 1,
       "initialListRequestCount": 1,
       "initialRenderedCardCount": 50,
@@ -483,6 +488,7 @@
       "route": "/operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
       "target": "monolith",
       "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-tablet-768-crm-workbench.png",
+      "selectedDetailScreenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-tablet-768-crm-selected-detail.png",
       "initialCrmRequestCount": 1,
       "initialListRequestCount": 1,
       "initialRenderedCardCount": 50,
@@ -576,6 +582,7 @@
       "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
       "target": "split-shell",
       "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-430-crm-workbench.png",
+      "selectedDetailScreenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-430-crm-selected-detail.png",
       "initialCrmRequestCount": 1,
       "initialListRequestCount": 1,
       "initialRenderedCardCount": 50,
@@ -591,7 +598,7 @@
         "50"
       ],
       "selectedDetailVisibleAfterSelect": true,
-      "selectedProfileVisibleAfterSelect": true,
+      "selectedProfileVisibleAfterSelect": false,
       "selectedListHiddenOnMobile": true,
       "hasContactTimelineAfterSelect": true,
       "hasClassTrialAccessAfterSelect": true,
@@ -632,7 +639,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 6,
+      "timelineRequestsAfterSelect": 4,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -669,6 +676,7 @@
       "route": "/operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
       "target": "monolith",
       "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-430-crm-workbench.png",
+      "selectedDetailScreenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-430-crm-selected-detail.png",
       "initialCrmRequestCount": 1,
       "initialListRequestCount": 1,
       "initialRenderedCardCount": 50,
@@ -684,7 +692,7 @@
         "50"
       ],
       "selectedDetailVisibleAfterSelect": true,
-      "selectedProfileVisibleAfterSelect": true,
+      "selectedProfileVisibleAfterSelect": false,
       "selectedListHiddenOnMobile": true,
       "hasContactTimelineAfterSelect": true,
       "hasClassTrialAccessAfterSelect": true,
@@ -725,7 +733,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 6,
+      "timelineRequestsAfterSelect": 4,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -762,6 +770,7 @@
       "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
       "target": "split-shell",
       "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-390-crm-workbench.png",
+      "selectedDetailScreenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-390-crm-selected-detail.png",
       "initialCrmRequestCount": 1,
       "initialListRequestCount": 1,
       "initialRenderedCardCount": 50,
@@ -777,7 +786,7 @@
         "50"
       ],
       "selectedDetailVisibleAfterSelect": true,
-      "selectedProfileVisibleAfterSelect": true,
+      "selectedProfileVisibleAfterSelect": false,
       "selectedListHiddenOnMobile": true,
       "hasContactTimelineAfterSelect": true,
       "hasClassTrialAccessAfterSelect": true,
@@ -818,7 +827,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 6,
+      "timelineRequestsAfterSelect": 4,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -855,6 +864,7 @@
       "route": "/operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
       "target": "monolith",
       "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-390-crm-workbench.png",
+      "selectedDetailScreenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-390-crm-selected-detail.png",
       "initialCrmRequestCount": 1,
       "initialListRequestCount": 1,
       "initialRenderedCardCount": 50,
@@ -870,7 +880,7 @@
         "50"
       ],
       "selectedDetailVisibleAfterSelect": true,
-      "selectedProfileVisibleAfterSelect": true,
+      "selectedProfileVisibleAfterSelect": false,
       "selectedListHiddenOnMobile": true,
       "hasContactTimelineAfterSelect": true,
       "hasClassTrialAccessAfterSelect": true,
@@ -911,7 +921,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 6,
+      "timelineRequestsAfterSelect": 4,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -960,7 +970,7 @@
       "pageErrors": [],
       "failedRequests": [],
       "badResponses": [],
-      "mailboxUrl": "http://127.0.0.1:63425/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
+      "mailboxUrl": "http://127.0.0.1:62116/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
       "passed": true
     }
   ]

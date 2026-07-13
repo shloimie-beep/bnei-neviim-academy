@@ -56,6 +56,14 @@ Current status: `active`
 - No UI implementation, deployment, external send, CRM mutation, provider mutation, payment/access change, or production data mutation occurred in this prerequisite step.
 - Next: implement the scoped mobile CRM list/detail/subview/action-state IA from the validated packet, then run local screenshots/accessibility/action proof, deploy One Time, and live-smoke before marking `REQ-20260713-909` Done.
 
+## 2026-07-13 Mobile CRM IA Local Implementation
+
+- `REQ-20260713-909` now has a local implementation and proof; deploy/live proof is still required before Done.
+- Operations CRM selected-contact workspace now exposes `data-crm-mobile-ia="list-detail-subview-action"`, focused contact header, class/access context in the header, horizontal section rail, tab panels, contextual More actions overflow, lazy Activity/Conversations/Tasks loading, and mobile one-pane profile hiding.
+- Local proof passed: generated-shell consistency, shared CRM/action-registry tests, action watchdog, refreshed action parity reports, and `npm run one-time:smoke:operations-crm-workbench-local`.
+- The local CRM smoke report is `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`; it passes split shell and monolith at 1440, 1024, 768, 430, and 390 with no horizontal overflow, no console/page/request failures, no writes, mobile Back restoration, and lazy conversations/tasks requests.
+- Next: commit/push, deploy exact SHA to BNA and One Time, run Railway doctors and live One Time route/CRM smokes, then mark `REQ-20260713-909` Done only after deployed SHA proof.
+
 ## Completed In This Batch
 
 - Created run and register for the addendum.

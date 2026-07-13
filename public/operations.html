@@ -1714,6 +1714,41 @@
             margin-top: 12px;
         }
 
+        .crm-section-rail {
+            align-items: center;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .crm-section-rail .ops-filter-tab {
+            min-height: 40px;
+            white-space: nowrap;
+        }
+
+        .crm-subview-panel {
+            display: grid;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .crm-action-overflow {
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+            display: grid;
+            gap: 10px;
+            margin-top: 14px;
+            padding-top: 12px;
+        }
+
+        .crm-action-overflow summary {
+            cursor: pointer;
+            list-style: none;
+            width: fit-content;
+        }
+
+        .crm-action-overflow summary::-webkit-details-marker {
+            display: none;
+        }
+
         .crm-safe-action-panel {
             border-top: 1px solid rgba(148, 163, 184, 0.2);
             display: grid;
@@ -1797,6 +1832,11 @@
                 display: none;
             }
 
+            [data-first-party-crm-panel][data-crm-selected-contact="true"] > [data-action-id="ACTION-CRM-CONTACTS-FILTER"],
+            [data-first-party-crm-panel][data-crm-selected-contact="true"] > [data-first-party-crm-status] {
+                display: none;
+            }
+
             .crm-workbench-shell[data-selected-contact="true"] .crm-mobile-selected-actions {
                 display: flex;
             }
@@ -1804,6 +1844,22 @@
             .crm-workbench-shell[data-selected-contact="true"] .crm-workbench-activity,
             .crm-workbench-shell[data-selected-contact="true"] .crm-workbench-profile {
                 min-height: 70vh;
+            }
+
+            .crm-workbench-shell[data-selected-contact="true"] .crm-workbench-profile {
+                display: none;
+            }
+
+            .crm-section-rail {
+                flex-wrap: nowrap;
+            }
+
+            .crm-workbench-shell[data-selected-contact="true"] .crm-subview-panel > .crm-safe-action-panel {
+                display: none;
+            }
+
+            .crm-action-overflow:not([open]) {
+                min-height: 40px;
             }
         }
 
@@ -15782,6 +15838,56 @@
             ].join(' ');
         }
 
+        function firstPartyCrmDetailPayloadLoaded(tabId = firstPartyCrmActiveTab) {
+            if (tabId === 'activity') return Boolean(firstPartyCrmTimelinePayload);
+            if (tabId === 'conversations') return Boolean(firstPartyCrmConversationsPayload);
+            if (tabId === 'tasks') return Boolean(firstPartyCrmTasksPayload);
+            return true;
+        }
+
+        function firstPartyCrmDetailLoading(tabId = firstPartyCrmActiveTab) {
+            return Boolean(selectedFirstPartyCrmContactId && firstPartyCrmTimelineAbortController && !firstPartyCrmDetailPayloadLoaded(tabId));
+        }
+
+        function firstPartyCrmMobileIaState(cards = [], selectedCard = null) {
+            if (firstPartyCrmLoading) return 'loading';
+            if (firstPartyCrmError) return 'error';
+            if (!cards.length && (firstPartyCrmFilters.search || firstPartyCrmFilters.contact_type !== 'all' || firstPartyCrmFilters.status !== 'all' || firstPartyCrmFilters.source !== 'all' || firstPartyCrmFilters.tag !== 'all')) return 'filtered_empty';
+            if (!cards.length) return 'empty';
+            return selectedCard ? 'selected_detail' : 'contact_list';
+        }
+
+        function firstPartyCrmWorkbenchStateAttrs(cards = [], selectedCard = null) {
+            const state = firstPartyCrmMobileIaState(cards, selectedCard);
+            const activeSubview = firstPartyCrmWorkspaceTabs().some(tab => tab.id === firstPartyCrmActiveTab) ? firstPartyCrmActiveTab : 'activity';
+            return [
+                'data-crm-mobile-ia="list-detail-subview-action"',
+                `data-crm-ia-state="${escapeHtml(state)}"`,
+                `data-crm-active-subview="${escapeHtml(activeSubview)}"`,
+                `data-crm-subview-loaded="${firstPartyCrmDetailPayloadLoaded(activeSubview) ? 'true' : 'false'}"`,
+                `data-crm-subview-loading="${firstPartyCrmDetailLoading(activeSubview) ? 'true' : 'false'}"`,
+                'data-crm-lazy-section-data="true"'
+            ].join(' ');
+        }
+
+        function wrapFirstPartyCrmTabPanel(tabId, html) {
+            const safeTabId = firstPartyCrmWorkspaceTabs().some(tab => tab.id === tabId) ? tabId : 'activity';
+            return `
+                <div class="crm-subview-panel" id="crm-panel-${escapeHtml(safeTabId)}" role="tabpanel" aria-labelledby="crm-tab-${escapeHtml(safeTabId)}" data-crm-tab-panel="${escapeHtml(safeTabId)}" data-crm-active-subview-panel="${escapeHtml(safeTabId)}">
+                    ${html}
+                </div>
+            `;
+        }
+
+        function renderFirstPartyCrmActionOverflow(card = null) {
+            return `
+                <details class="crm-action-overflow" data-crm-action-overflow data-action-id="ACTION-CRM-ACTION-OVERFLOW" open>
+                    <summary class="task-action crm-action-overflow-summary">More actions</summary>
+                    ${renderFirstPartyCrmSafeActions(card)}
+                </details>
+            `;
+        }
+
         function renderFirstPartyCrmContactsPanel(options = {}) {
             firstPartyCrmRenderOptions = { ...options };
             if (!firstPartyCrmContactsPayload && !firstPartyCrmLoading && !firstPartyCrmError) {
@@ -15792,20 +15898,21 @@
             const selectedCard = selectedFirstPartyCrmCard(cards);
             const workbenchAttrs = options.oneTime ? ' data-one-time-crm-workbench data-requirement-id="REQ-20260710-020"' : '';
             const sharedWorkbenchAttrs = firstPartyCrmWorkbenchContractAttrs();
+            const stateAttrs = firstPartyCrmWorkbenchStateAttrs(cards, selectedCard);
             const statusText = window.BnaCrmContactsIndex?.statusText
                 ? window.BnaCrmContactsIndex.statusText({ loading: firstPartyCrmLoading, cards, payload })
                 : (firstPartyCrmLoading ? 'Loading CRM contacts...' : `${cards.length.toLocaleString()} visible / ${Number(payload.filtered_total || cards.length).toLocaleString()} matching / ${Number(payload.total || cards.length).toLocaleString()} total.`);
             const filteredEmptyText = window.BnaCrmContactsIndex?.filteredEmptyText?.() || 'No conversations yet.';
             return `
-                <div data-first-party-crm-panel data-one-time-crm-mode="${options.oneTime ? 'one_time' : 'workspace'}">
+        <div data-first-party-crm-panel data-one-time-crm-mode="${options.oneTime ? 'one_time' : 'workspace'}" data-crm-selected-contact="${selectedCard ? 'true' : 'false'}">
                     ${renderFirstPartyCrmFilterControls(payload, options)}
                     ${renderFirstPartyCrmAddContactForm(oneTimeViewAsRabbiActive())}
                     ${firstPartyCrmError ? `<div class="error-banner">${escapeHtml(firstPartyCrmError)}</div>` : ''}
-                    <div class="contact-empty-card" data-first-party-crm-status>
-                        ${escapeHtml(statusText)}
-                    </div>
-                    ${cards.length ? `
-                        <section class="crm-workbench-shell"${workbenchAttrs} data-shared-crm-workbench="true" ${sharedWorkbenchAttrs} data-selected-contact="${selectedCard ? 'true' : 'false'}" aria-label="${escapeHtml(options.title || 'CRM contact workbench')}">
+            <div class="contact-empty-card" data-first-party-crm-status>
+                ${escapeHtml(statusText)}
+            </div>
+            ${cards.length ? `
+                <section class="crm-workbench-shell"${workbenchAttrs} data-shared-crm-workbench="true" ${sharedWorkbenchAttrs} ${stateAttrs} data-selected-contact="${selectedCard ? 'true' : 'false'}" aria-label="${escapeHtml(options.title || 'CRM contact workbench')}">
                             <div class="contact-list crm-workbench-list" data-shared-crm-component="contacts-index" aria-label="CRM contact list">
                                 ${cards.map(renderFirstPartyCrmCard).join('')}
                             </div>
@@ -16243,38 +16350,41 @@
         function renderFirstPartyCrmDetail(card = null) {
             if (!card) {
                 return `
-                    <section class="crm-selected-card" aria-label="CRM contact activity">
-                        <div class="crm-selected-title">Select a CRM contact</div>
-                        <div class="crm-selected-subtitle">Open a row to review activity, conversation history, notes/tasks affordances, and safe next action. No email, WhatsApp, payment, access, or external CRM write runs from this panel.</div>
-                    </section>
-                `;
+            <section class="crm-selected-card" aria-label="CRM contact activity" data-crm-ia-state="empty">
+                <div class="crm-selected-title">Select a CRM contact</div>
+                <div class="crm-selected-subtitle">Open a row to review activity, conversation history, notes/tasks affordances, and safe next action. No email, WhatsApp, payment, access, or external CRM write runs from this panel.</div>
+            </section>
+        `;
             }
             const timeline = firstPartyCrmActiveTab === 'activity' && selectedFirstPartyCrmContactId && firstPartyCrmTimelinePayload
                 ? renderFirstPartyCrmTimeline(card)
                 : firstPartyCrmActiveTab === 'activity'
-                    ? '<div class="contact-empty-card">Loading selected contact timeline...</div>'
-                    : '';
+                ? '<div class="contact-empty-card">Loading selected contact timeline...</div>'
+                : '';
             const viewAsReadOnly = oneTimeViewAsRabbiActive();
+            const activeSubview = firstPartyCrmWorkspaceTabs().some(tab => tab.id === firstPartyCrmActiveTab) ? firstPartyCrmActiveTab : 'activity';
             return `
-                <section class="crm-selected-card" aria-label="CRM contact activity">
-                    <div class="crm-mobile-selected-actions">
-                        <button class="task-action" type="button" onclick="clearFirstPartyCrmSelection(event)" data-action-id="ACTION-CRM-CONTACT-BACK">Back to contacts</button>
-                        <span class="status-chip blocked">${escapeHtml(firstPartyCrmPreviewLabel())}</span>
-                    </div>
-                    <div class="contact-detail-header">
-                        <div>
-                            <div class="crm-selected-title">Contact activity</div>
-                            <div class="crm-selected-subtitle">${escapeHtml(card.display_name || 'CRM contact')} - ${escapeHtml([contactStatusLabel(card.contact_type), contactStatusLabel(card.source_label || card.source), contactStatusLabel(card.status || 'new')].filter(Boolean).join(' - '))}</div>
-                        </div>
-                        <span class="page-status-pill">${escapeHtml(contactStatusLabel(card.status || 'new'))}</span>
-                    </div>
-                    <div class="crm-workbench-tabs" role="tablist" aria-label="CRM contact sections">
-                        ${firstPartyCrmWorkspaceTabs().map(tab => `<button class="ops-filter-tab ${tab.id === firstPartyCrmActiveTab ? 'active' : ''}" type="button" role="tab" aria-selected="${tab.id === firstPartyCrmActiveTab ? 'true' : 'false'}" onclick="setFirstPartyCrmWorkspaceTab(${attrJson(tab.id)})">${escapeHtml(tab.label)}</button>`).join('')}
-                    </div>
-                    ${renderFirstPartyCrmTabContent(card, viewAsReadOnly)}
-                </section>
-                ${timeline}
-            `;
+        <section class="crm-selected-card" aria-label="CRM contact activity" data-crm-selected-detail data-crm-active-subview="${escapeHtml(activeSubview)}" data-crm-subview-loaded="${firstPartyCrmDetailPayloadLoaded(activeSubview) ? 'true' : 'false'}" data-crm-subview-loading="${firstPartyCrmDetailLoading(activeSubview) ? 'true' : 'false'}">
+            <div class="crm-mobile-selected-actions">
+                <button class="task-action" type="button" onclick="clearFirstPartyCrmSelection(event)" data-action-id="ACTION-CRM-CONTACT-BACK">Back to contacts</button>
+                <span class="status-chip blocked">${escapeHtml(firstPartyCrmPreviewLabel())}</span>
+            </div>
+            <div class="contact-detail-header" data-crm-focused-contact-header>
+                <div>
+                    <div class="crm-selected-title">${escapeHtml(card.display_name || 'CRM contact')}</div>
+                    <div class="crm-selected-subtitle">${escapeHtml([contactStatusLabel(activeSubview), contactStatusLabel(card.contact_type), contactStatusLabel(card.source_label || card.source), contactStatusLabel(card.status || 'new')].filter(Boolean).join(' - '))}</div>
+                    <div class="crm-selected-subtitle">Class / Trial / Access: ${escapeHtml(firstPartyCrmClassAccessSummary(card))}</div>
+                    <div class="crm-selected-subtitle" data-crm-focused-class-context>Class / Trial / Access: ${escapeHtml(firstPartyCrmClassAccessSummary(card))}</div>
+                </div>
+                <span class="page-status-pill">${escapeHtml(contactStatusLabel(card.status || 'new'))}</span>
+            </div>
+            <div class="crm-workbench-tabs crm-section-rail" role="tablist" aria-label="CRM contact sections" aria-orientation="horizontal" data-crm-subview-rail>
+                ${firstPartyCrmWorkspaceTabs().map(tab => `<button class="ops-filter-tab ${tab.id === firstPartyCrmActiveTab ? 'active' : ''}" id="crm-tab-${escapeHtml(tab.id)}" type="button" role="tab" aria-selected="${tab.id === firstPartyCrmActiveTab ? 'true' : 'false'}" aria-controls="crm-panel-${escapeHtml(tab.id)}" data-crm-subview-tab="${escapeHtml(tab.id)}" onclick="setFirstPartyCrmWorkspaceTab(${attrJson(tab.id)})">${escapeHtml(tab.label)}</button>`).join('')}
+            </div>
+            ${renderFirstPartyCrmTabContent(card, viewAsReadOnly)}
+        </section>
+        ${timeline}
+    `;
         }
 
         function renderFirstPartyCrmProfile(card = null) {
@@ -16474,6 +16584,48 @@
             const allowed = firstPartyCrmWorkspaceTabs().map(tab => tab.id);
             firstPartyCrmActiveTab = allowed.includes(tabId) ? tabId : 'activity';
             updateFirstPartyCrmPanel();
+            if (selectedFirstPartyCrmContactId) {
+                loadFirstPartyCrmSubviewData(selectedFirstPartyCrmContactId, firstPartyCrmActiveTab);
+            }
+        }
+
+        async function loadFirstPartyCrmSubviewData(contactId = selectedFirstPartyCrmContactId, tabId = firstPartyCrmActiveTab, options = {}) {
+            const allowed = firstPartyCrmWorkspaceTabs().map(tab => tab.id);
+            const activeTab = allowed.includes(tabId) ? tabId : 'activity';
+            if (!contactId) return;
+            if (!options.force && firstPartyCrmDetailPayloadLoaded(activeTab)) return;
+            if (!['activity', 'conversations', 'tasks'].includes(activeTab)) return;
+            if (firstPartyCrmTimelineAbortController) firstPartyCrmTimelineAbortController.abort();
+            const requestSeq = firstPartyCrmTimelineRequestSeq + 1;
+            firstPartyCrmTimelineRequestSeq = requestSeq;
+            const controller = new AbortController();
+            firstPartyCrmTimelineAbortController = controller;
+            if (options.renderLoading !== false) updateFirstPartyCrmPanel();
+
+            try {
+                const filters = firstPartyCrmQueryFilters();
+                if (activeTab === 'activity') {
+                    firstPartyCrmTimelinePayload = await api.getCrmContactTimeline(contactId, filters, { signal: controller.signal });
+                } else if (activeTab === 'conversations') {
+                    firstPartyCrmConversationsPayload = await api.getCrmContactConversations(contactId, { ...filters, limit: 25 }, { signal: controller.signal });
+                } else if (activeTab === 'tasks') {
+                    firstPartyCrmTasksPayload = await api.getCrmContactTasks(contactId, { ...filters, limit: 25 }, { signal: controller.signal });
+                }
+            } catch (error) {
+                if (isAbortError(error)) return;
+                if (activeTab === 'activity') {
+                    firstPartyCrmTimelinePayload = { timeline: [{ channel: 'error', type: 'readback_error', body: error.message || 'Could not load timeline.' }] };
+                } else if (activeTab === 'conversations') {
+                    firstPartyCrmConversationsPayload = { conversations: [], error: error.message || 'Could not load conversations.' };
+                } else if (activeTab === 'tasks') {
+                    firstPartyCrmTasksPayload = { tasks: [], error: error.message || 'Could not load tasks.' };
+                }
+            } finally {
+                if (requestSeq === firstPartyCrmTimelineRequestSeq) {
+                    firstPartyCrmTimelineAbortController = null;
+                    updateFirstPartyCrmPanel();
+                }
+            }
         }
 
         function toggleFirstPartyCrmAddContact(event, force = null) {
@@ -16487,77 +16639,79 @@
         function renderFirstPartyCrmTabContent(card = {}, readOnly = false) {
             const activeTab = firstPartyCrmWorkspaceTabs().some(tab => tab.id === firstPartyCrmActiveTab) ? firstPartyCrmActiveTab : 'activity';
             if (activeTab === 'overview') {
-                return `
-                    <div class="contact-detail-grid">
-                        ${renderContactDetailItem('Lifecycle', contactStatusLabel(card.status || 'new'))}
-                        ${renderContactDetailItem('Source', contactStatusLabel(card.source_label || card.source || 'first party'))}
-                        ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : (window.BnaCrmContactWorkspace?.emptyState?.('follow_up') || 'No follow-up scheduled.'))}
-                        ${renderContactDetailItem('Owner', card.assigned_owner || 'Unassigned')}
-                        ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
-                        ${renderContactDetailItem('Notes', card.summary || (window.BnaCrmContactWorkspace?.emptyState?.('notes') || 'No notes yet.'))}
-                    </div>
-                    ${renderFirstPartyCrmSafeActions(card)}
-                    ${renderFirstPartyCrmLocalUpdateForm(card, readOnly)}
-                `;
+                return wrapFirstPartyCrmTabPanel(activeTab, `
+            <div class="contact-detail-grid">
+                ${renderContactDetailItem('Lifecycle', contactStatusLabel(card.status || 'new'))}
+                ${renderContactDetailItem('Source', contactStatusLabel(card.source_label || card.source || 'first party'))}
+                ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : (window.BnaCrmContactWorkspace?.emptyState?.('follow_up') || 'No follow-up scheduled.'))}
+                ${renderContactDetailItem('Owner', card.assigned_owner || 'Unassigned')}
+                ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
+                ${renderContactDetailItem('Notes', card.summary || (window.BnaCrmContactWorkspace?.emptyState?.('notes') || 'No notes yet.'))}
+            </div>
+            ${renderFirstPartyCrmActionOverflow(card)}
+            ${renderFirstPartyCrmLocalUpdateForm(card, readOnly)}
+        `);
             }
             if (activeTab === 'conversations') {
-                return `
-                    ${renderFirstPartyCrmSafeActions(card)}
-                    ${renderFirstPartyCrmConversationDtoPanel(card)}
-                `;
+                return wrapFirstPartyCrmTabPanel(activeTab, `
+            ${renderFirstPartyCrmActionOverflow(card)}
+            ${renderFirstPartyCrmConversationDtoPanel(card)}
+        `);
             }
             if (activeTab === 'tasks') {
-                return `
-                    ${renderFirstPartyCrmSafeActions(card)}
-                    ${renderFirstPartyCrmLinkedTaskPanel(card, readOnly)}
-                    ${renderFirstPartyCrmTaskDtoPanel(card, readOnly)}
-                `;
+                return wrapFirstPartyCrmTabPanel(activeTab, `
+            ${renderFirstPartyCrmActionOverflow(card)}
+            ${renderFirstPartyCrmLinkedTaskPanel(card, readOnly)}
+            ${renderFirstPartyCrmTaskDtoPanel(card, readOnly)}
+        `);
             }
             if (activeTab === 'access') {
-                return `
-                    <div class="contact-detail-grid" data-crm-tab-panel="access">
-                        ${renderContactDetailItem('Membership', [card.membership_access?.access_tier, card.membership_access?.access_status].filter(Boolean).join(' / ') || (window.BnaCrmContactWorkspace?.emptyState?.('membership') || 'No membership linked.'))}
-                        ${renderContactDetailItem('Class Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : (window.BnaCrmContactWorkspace?.emptyState?.('class_activity') || 'No class activity recorded.'))}
-                        ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
-                        ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
-                    </div>
-                    ${renderFirstPartyCrmMemberLinkPanel(card, readOnly)}
-                `;
+                return wrapFirstPartyCrmTabPanel(activeTab, `
+            <div class="contact-detail-grid" data-crm-tab-panel="access">
+                ${renderContactDetailItem('Membership', [card.membership_access?.access_tier, card.membership_access?.access_status].filter(Boolean).join(' / ') || (window.BnaCrmContactWorkspace?.emptyState?.('membership') || 'No membership linked.'))}
+                ${renderContactDetailItem('Class Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : (window.BnaCrmContactWorkspace?.emptyState?.('class_activity') || 'No class activity recorded.'))}
+                ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
+                ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
+            </div>
+            ${renderFirstPartyCrmActionOverflow(card)}
+            ${renderFirstPartyCrmMemberLinkPanel(card, readOnly)}
+        `);
             }
             if (activeTab === 'identity') {
-                return `
-                    <div class="contact-detail-grid" data-crm-tab-panel="identity">
-                        ${renderContactDetailItem('Display Name', card.display_name || 'CRM contact')}
-                        ${renderContactDetailItem('Email', window.BnaCrmContactWorkspace?.profileValue?.('email', card.email) || (card.email || 'Email is not available for this contact.'))}
-                        ${renderContactDetailItem('WhatsApp', window.BnaCrmContactWorkspace?.profileValue?.('whatsapp', card.phone) || (card.phone || 'WhatsApp is not available for this contact.'))}
-                        ${renderContactDetailItem('Contact Type', contactStatusLabel(card.contact_type || 'general_contact'))}
+                return wrapFirstPartyCrmTabPanel(activeTab, `
+            <div class="contact-detail-grid" data-crm-tab-panel="identity">
+                ${renderContactDetailItem('Display Name', card.display_name || 'CRM contact')}
+                ${renderContactDetailItem('Email', window.BnaCrmContactWorkspace?.profileValue?.('email', card.email) || (card.email || 'Email is not available for this contact.'))}
+                ${renderContactDetailItem('WhatsApp', window.BnaCrmContactWorkspace?.profileValue?.('whatsapp', card.phone) || (card.phone || 'WhatsApp is not available for this contact.'))}
+                ${renderContactDetailItem('Contact Type', contactStatusLabel(card.contact_type || 'general_contact'))}
                         ${renderContactDetailItem('Lifecycle', contactStatusLabel(card.status || 'new'))}
                         ${renderContactDetailItem('Source', contactStatusLabel(card.source_label || card.source || 'first party'))}
-                        ${renderContactDetailItem('Communication Preference', contactStatusLabel(card.communication_preference || 'Not set'))}
-                        ${renderContactDetailItem('Consent / Suppression', [card.consent_status, card.suppression_status].filter(Boolean).map(contactStatusLabel).join(' / ') || 'No suppression recorded')}
-                    </div>
-                    ${renderFirstPartyCrmSafeActions(card)}
-                `;
+                ${renderContactDetailItem('Communication Preference', contactStatusLabel(card.communication_preference || 'Not set'))}
+                ${renderContactDetailItem('Consent / Suppression', [card.consent_status, card.suppression_status].filter(Boolean).map(contactStatusLabel).join(' / ') || 'No suppression recorded')}
+            </div>
+            ${renderFirstPartyCrmActionOverflow(card)}
+        `);
             }
             if (activeTab === 'family') {
-                return `
-                    <div class="contact-detail-grid" data-crm-tab-panel="family">
-                        ${renderContactDetailItem('Family / School', contactStatusLabel(card.family_school_classification || 'family'))}
-                        ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
-                        ${renderContactDetailItem('Membership', [card.membership_access?.access_tier, card.membership_access?.access_status].filter(Boolean).join(' / ') || (window.BnaCrmContactWorkspace?.emptyState?.('membership') || 'No membership linked.'))}
-                        ${renderContactDetailItem('Class Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : (window.BnaCrmContactWorkspace?.emptyState?.('class_activity') || 'No class activity recorded.'))}
+                return wrapFirstPartyCrmTabPanel(activeTab, `
+            <div class="contact-detail-grid" data-crm-tab-panel="family">
+                ${renderContactDetailItem('Family / School', contactStatusLabel(card.family_school_classification || 'family'))}
+                ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
+                ${renderContactDetailItem('Membership', [card.membership_access?.access_tier, card.membership_access?.access_status].filter(Boolean).join(' / ') || (window.BnaCrmContactWorkspace?.emptyState?.('membership') || 'No membership linked.'))}
+                ${renderContactDetailItem('Class Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : (window.BnaCrmContactWorkspace?.emptyState?.('class_activity') || 'No class activity recorded.'))}
                         ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : (window.BnaCrmContactWorkspace?.emptyState?.('follow_up') || 'No follow-up scheduled.'))}
                         ${renderContactDetailItem('Notes', card.summary || (window.BnaCrmContactWorkspace?.emptyState?.('notes') || 'No notes yet.'))}
                     </div>
-                    ${renderFirstPartyCrmFamilyLinkPanel(card, readOnly)}
-                    ${renderFirstPartyCrmStudentLinkPanel(card, readOnly)}
-                    ${renderFirstPartyCrmMemberLinkPanel(card, readOnly)}
-                `;
+            ${renderFirstPartyCrmActionOverflow(card)}
+            ${renderFirstPartyCrmFamilyLinkPanel(card, readOnly)}
+            ${renderFirstPartyCrmStudentLinkPanel(card, readOnly)}
+            ${renderFirstPartyCrmMemberLinkPanel(card, readOnly)}
+        `);
             }
-            return `
-                ${renderFirstPartyCrmSafeActions(card)}
-                ${renderFirstPartyCrmLocalUpdateForm(card, readOnly)}
-            `;
+            return wrapFirstPartyCrmTabPanel(activeTab, `
+        ${renderFirstPartyCrmActionOverflow(card)}
+        ${renderFirstPartyCrmLocalUpdateForm(card, readOnly)}
+    `);
         }
 
         async function loadFirstPartyCrmContacts(event, options = {}) {
@@ -16591,7 +16745,7 @@
                     firstPartyCrmConversationsPayload = null;
                     firstPartyCrmTasksPayload = null;
                     syncOperationsUrl();
-                } else if (selectedFirstPartyCrmContactId && (!firstPartyCrmTimelinePayload || !firstPartyCrmConversationsPayload || !firstPartyCrmTasksPayload) && !firstPartyCrmTimelineAbortController) {
+                } else if (selectedFirstPartyCrmContactId && !firstPartyCrmDetailPayloadLoaded(firstPartyCrmActiveTab) && !firstPartyCrmTimelineAbortController) {
                     await openFirstPartyCrmContact(selectedFirstPartyCrmContactId, { captureScroll: false, syncUrl: false });
                 }
             } catch (error) {
@@ -16621,33 +16775,10 @@
             if (options.syncUrl !== false) syncOperationsUrl();
             updateFirstPartyCrmPanel();
 
-            try {
-                const filters = firstPartyCrmQueryFilters();
-                const detailResults = await Promise.allSettled([
-                    api.getCrmContactTimeline(contactId, filters, { signal: controller.signal }),
-                    api.getCrmContactConversations(contactId, { ...filters, limit: 25 }, { signal: controller.signal }),
-                    api.getCrmContactTasks(contactId, { ...filters, limit: 25 }, { signal: controller.signal })
-                ]);
-                if (controller.signal.aborted || requestSeq !== firstPartyCrmTimelineRequestSeq) return;
-                firstPartyCrmTimelinePayload = detailResults[0].status === 'fulfilled'
-                    ? detailResults[0].value
-                    : { timeline: [{ channel: 'error', type: 'readback_error', body: detailResults[0].reason?.message || 'Could not load timeline.' }] };
-                firstPartyCrmConversationsPayload = detailResults[1].status === 'fulfilled'
-                    ? detailResults[1].value
-                    : { conversations: [], error: detailResults[1].reason?.message || 'Could not load conversations.' };
-                firstPartyCrmTasksPayload = detailResults[2].status === 'fulfilled'
-                    ? detailResults[2].value
-                    : { tasks: [], error: detailResults[2].reason?.message || 'Could not load tasks.' };
-            } catch (error) {
-                if (isAbortError(error)) return;
-                firstPartyCrmTimelinePayload = { timeline: [{ channel: 'error', type: 'readback_error', body: error.message || 'Could not load timeline.' }] };
-                firstPartyCrmConversationsPayload = { conversations: [], error: error.message || 'Could not load conversations.' };
-                firstPartyCrmTasksPayload = { tasks: [], error: error.message || 'Could not load tasks.' };
-            }
             if (requestSeq === firstPartyCrmTimelineRequestSeq) {
                 firstPartyCrmTimelineAbortController = null;
-                updateFirstPartyCrmPanel();
             }
+            await loadFirstPartyCrmSubviewData(contactId, firstPartyCrmActiveTab, { renderLoading: false });
         }
 
         function clearFirstPartyCrmSelection(event) {

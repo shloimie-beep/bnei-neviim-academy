@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-07-12T23:59:00+03:00",
+  "updated_at": "2026-07-13T10:35:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -2797,6 +2797,25 @@
       "test": {
         "type": "browser_static_and_local_smoke",
         "expected_result": "One Time CRM workbench exposes a mailbox shortcut that routes to the Rabbi inbox with workspace=rabbi_sheller_provider and project_key=one_time_mishnah_class."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-ACTION-OVERFLOW",
+      "label": "More actions",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-ACTION-OVERFLOW\"]",
+      "expected_behavior": "Expands or collapses the selected contact contextual action menu in the first-party CRM workspace. It only reveals already registered no-send/no-access CRM actions and performs no email, WhatsApp, Telegram, payment, access grant, import, provider mutation, or external CRM write.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "active_navigation_only",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the overflow marker and the One Time CRM workbench local smoke verifies action-overflow state without performing a write."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

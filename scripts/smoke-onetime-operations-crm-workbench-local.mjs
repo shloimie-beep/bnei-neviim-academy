@@ -506,7 +506,17 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     return {
       selectedDetailVisible: Boolean(detail && detailRect && detailRect.width > 0 && detailRect.height > 0),
       selectedProfileVisible: Boolean(profile && profileRect && profileRect.width > 0 && profileRect.height > 0),
+      selectedProfileResponsiveState: window.innerWidth <= 700
+        ? Boolean(!profile || profileRect.width === 0 || window.getComputedStyle(profile).display === 'none')
+        : Boolean(profile && profileRect && profileRect.width > 0 && profileRect.height > 0),
       selectedListHiddenOnMobile: window.innerWidth <= 700 ? Boolean(!list || listRect.width === 0 || window.getComputedStyle(list).display === 'none') : true,
+      hasFocusedContactHeader: Boolean(document.querySelector('[data-crm-focused-contact-header]')),
+      hasSubviewRail: Boolean(document.querySelector('[data-crm-subview-rail]')),
+      activeSubview: document.querySelector('[data-crm-selected-detail]')?.getAttribute('data-crm-active-subview') || '',
+      hasActionOverflow: Boolean(document.querySelector('[data-crm-action-overflow]')),
+      actionOverflowOpen: Boolean(document.querySelector('[data-crm-action-overflow][open]')),
+      activeSubviewPanel: Boolean(document.querySelector('[data-crm-active-subview-panel="activity"]')),
+      lazySectionData: document.querySelector('[data-one-time-crm-workbench]')?.getAttribute('data-crm-lazy-section-data') === 'true',
       hasContactTimeline: /Contact Timeline/.test(text),
       hasClassTrialAccess: /Class \/ Trial \/ Access/i.test(text),
       hasNoSendLock: /Review mode|Scoped review|Read-only preview|No email, WhatsApp, payment, access, or external CRM write/.test(text),
@@ -519,6 +529,11 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       hasOpenScopedInboxAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]')),
     };
   });
+  const selectedDetailScreenshot = path.join(outDir, `${target.id}-${viewport.id}-crm-selected-detail.png`);
+  await page.screenshot({ path: selectedDetailScreenshot, fullPage: true, type: 'png', animations: 'disabled' });
+  const detailRequestsBeforeSubviewClicks = crmRequests.filter((item) => item.pathname.startsWith('/api/bna/crm/contacts/')).length;
+  const conversationRequestsBeforeSubviewClicks = crmRequests.filter((item) => item.pathname.endsWith('/conversations')).length;
+  const taskRequestsBeforeSubviewClicks = crmRequests.filter((item) => item.pathname.endsWith('/tasks')).length;
   const workspaceTabs = [
     { id: 'overview', label: 'Overview', pattern: /Lifecycle|Owner|Class \/ Trial \/ Access/i },
     { id: 'conversations', label: 'Conversations', pattern: /No conversations yet|email messages|Open email thread/i },
@@ -533,10 +548,14 @@ async function captureViewport(browser, baseUrl, viewport, target) {
   let memberLinkMetrics = { hasMemberLinkPanel: false, hasLinkMemberAction: false };
   for (const tab of workspaceTabs) {
     await page.locator('.crm-workbench-tabs [role="tab"]', { hasText: tab.label }).click();
-    await page.waitForFunction((label) => {
+    await page.waitForFunction(({ label, id, patternSource }) => {
       const active = document.querySelector('.crm-workbench-tabs [role="tab"][aria-selected="true"]');
-      return active && active.textContent.includes(label);
-    }, tab.label, { timeout: 5000 });
+      const text = document.body.innerText.replace(/\s+/g, ' ').trim();
+      if (!active || !active.textContent.includes(label)) return false;
+      if (id === 'conversations' && /Loading conversations/i.test(text)) return false;
+      if (id === 'tasks' && /Loading tasks/i.test(text)) return false;
+      return new RegExp(patternSource, 'i').test(text);
+    }, { label: tab.label, id: tab.id, patternSource: tab.pattern.source }, { timeout: 10000 });
     workspaceTabMetrics[tab.id] = await page.evaluate((label) => {
       const active = document.querySelector('.crm-workbench-tabs [role="tab"][aria-selected="true"]');
       const text = document.body.innerText.replace(/\s+/g, ' ').trim();
@@ -577,6 +596,8 @@ async function captureViewport(browser, baseUrl, viewport, target) {
   }
   const listRequestsAfterSelect = crmRequests.filter((item) => item.pathname === '/api/bna/crm/contacts').length;
   const timelineRequestsAfterSelect = crmRequests.filter((item) => item.pathname.startsWith('/api/bna/crm/contacts/')).length;
+  const conversationRequestsAfterSubviewClicks = crmRequests.filter((item) => item.pathname.endsWith('/conversations')).length;
+  const taskRequestsAfterSubviewClicks = crmRequests.filter((item) => item.pathname.endsWith('/tasks')).length;
   const appRootMutationsAfterSelect = await page.evaluate(() => window.__crmSmokeAppRootMutations || 0);
 
   const listRequestsBeforeSearch = crmRequests.filter((item) => item.pathname === '/api/bna/crm/contacts').length;
@@ -654,8 +675,15 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       initialListRequestCount <= 1 &&
       initialLimitRequests.every((value) => value === '50') &&
       selectedMetrics.selectedDetailVisible &&
-      selectedMetrics.selectedProfileVisible &&
+      selectedMetrics.selectedProfileResponsiveState &&
       selectedMetrics.selectedListHiddenOnMobile &&
+      selectedMetrics.hasFocusedContactHeader &&
+      selectedMetrics.hasSubviewRail &&
+      selectedMetrics.activeSubview === 'activity' &&
+      selectedMetrics.hasActionOverflow &&
+      selectedMetrics.actionOverflowOpen &&
+      selectedMetrics.activeSubviewPanel &&
+      selectedMetrics.lazySectionData &&
       selectedMetrics.hasContactTimeline &&
       selectedMetrics.hasClassTrialAccess &&
       selectedMetrics.hasNoSendLock &&
@@ -677,7 +705,12 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       mobileBackMetrics.restoredList &&
       mobileBackMetrics.clearedSelectedState &&
       listRequestsAfterSelect === initialListRequestCount &&
+      detailRequestsBeforeSubviewClicks === 1 &&
+      conversationRequestsBeforeSubviewClicks === 0 &&
+      taskRequestsBeforeSubviewClicks === 0 &&
       timelineRequestsAfterSelect >= 1 &&
+      conversationRequestsAfterSubviewClicks >= 1 &&
+      taskRequestsAfterSubviewClicks >= 1 &&
       appRootMutationsAfterSelect === 0 &&
       searchListRequestDelta === 1 &&
       initialMetrics.legacyTableClosedCount === 0 &&
@@ -700,6 +733,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     route: target.route,
     target: target.id,
     screenshot: rel(screenshot),
+    selectedDetailScreenshot: rel(selectedDetailScreenshot),
     initialCrmRequestCount,
     initialListRequestCount,
     initialRenderedCardCount: initialMetrics.cardCount,
@@ -768,7 +802,14 @@ async function captureInboxContext(browser, baseUrl) {
   await page.waitForFunction(() => /Sample One Time Parent/.test(document.body.textContent || ''), null, { timeout: 15000 });
   await page.locator('[data-first-party-crm-card] [data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND"]').first().click();
   await page.waitForFunction(() => /Contact Timeline/.test(document.body.textContent || ''), null, { timeout: 15000 });
-  await page.locator('[data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]').click();
+  await page.waitForSelector('[data-crm-selected-detail] [data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]', { timeout: 15000 });
+  await page.evaluate(() => {
+    const overflow = document.querySelector('[data-crm-action-overflow]');
+    if (overflow) overflow.open = true;
+    const button = document.querySelector('[data-crm-selected-detail] [data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]');
+    if (!button) throw new Error('Scoped inbox CRM action not found.');
+    button.click();
+  });
   await page.waitForSelector('[data-email-operator-workspace][data-one-time-inbox-workspace="true"]', { timeout: 20000 });
   await page.waitForFunction(() => /One Time Inbox/.test(document.body.textContent || '') && /One Time Inbox context/.test(document.body.textContent || ''), null, { timeout: 20000 });
   const screenshot = path.join(outDir, 'split-shell-desktop-1024-one-time-inbox.png');
@@ -865,8 +906,8 @@ async function main() {
     '',
     report.scope,
     '',
-    '| Target | Viewport | Passed | CRM calls | Initial cards | Task action | Root rerenders | Search requests | Legacy table closed/open | Screenshot |',
-    '|---|---|---:|---:|---:|---:|---:|---:|---:|---|',
+    '| Target | Viewport | Passed | CRM calls | Initial cards | Task action | Root rerenders | Search requests | Legacy table closed/open | Selected detail | Final screenshot |',
+    '|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|',
     ...results.map((result) => [
       `| ${result.target}`,
       `${result.viewport.width}x${result.viewport.height}`,
@@ -877,6 +918,7 @@ async function main() {
       String(result.appRootMutationsAfterSelect),
       String(result.searchListRequestDelta),
       `${result.legacyTableClosedCount}/${result.legacyTableOpenCount}`,
+      result.selectedDetailScreenshot,
       result.screenshot,
     ].join(' | ') + ' |'),
     '',

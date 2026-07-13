@@ -31,7 +31,7 @@ Architecture/performance result:
 
 Immediate next action:
 
-1. Continue `REQ-20260713-909`: implement the scoped mobile CRM IA from `ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json`.
+1. Continue `REQ-20260713-909`: local implementation and local proof are complete; commit/push, deploy exact SHA to BNA and One Time, run Railway doctors and live route/CRM smokes, then mark Done only after live SHA proof.
 2. Keep the deployed first-slice proof visible: commit `c0b8ab8139c6166d89527a949ce4dd70bf67df3a`, BNA Railway deployment `33571043-54ce-4631-99c1-b54209edebc7`, One Time Railway deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754`, and live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`.
 3. Keep the deployed CRM route-module proof visible: One Time Railway deployment `fac38cc0-23c4-4158-8556-4c11e6c95215`, exact-SHA smoke, and live route-module smoke `ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md`.
 4. Keep the deployed mailbox/messages route-module proof visible: One Time Railway deployment `df3a27b2-a930-430d-b29d-0d8390b62a17`, exact-SHA smoke, and live route-module smoke `ops/live-smokes/2026-07-13T06-59-53-991Z-onetime-provider-route-module-live-smoke.md`.
@@ -89,7 +89,7 @@ Continue by inspecting and repairing:
 - `REQ-20260713-906` owner-only live integration tests are blocked on missing secure owner-test aliases, while Resend and One Time WAPI are ready;
 - keep `REQ-20260713-908` proof visible as Done after the deployed CRM/mailbox/communications route-module slices;
 - start or queue `REQ-20260713-911` performance instrumentation/regression gates before calling lag fixed;
-- continue `REQ-20260713-909` mobile CRM IA implementation from validated packet `ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json`; current-state audit/PQC gate is complete, but app-visible UI changes still need local smoke, accessibility/action watchdogs, deploy, and live smoke before Done;
+- continue `REQ-20260713-909` mobile CRM IA deployment from the locally verified implementation; local smoke/action proof passed, but deployed SHA/live route/CRM smoke proof is still required before Done;
 - keep `REQ-20260713-910` verifier/final report and `REQ-20260713-911` performance gates tied to owner-test, architecture, dedicated shell, and mobile CRM proof before calling lag fixed;
 - Wave 3 private Rabbi Telegram workspace agent (`REQ-20260713-903`), especially full CRM/content/read/write action surface, content-parsing knowledge binding, and live receiver ownership/409 proof;
 - Wave 4 Rabbi ticket to Super Admin approval flow (`REQ-20260713-904`), especially cleanup-safe live synthetic ticket alert/approval, Ask Rabbi round trip, Reject proof, and completion evidence notifications;
@@ -100,6 +100,6 @@ Continue by inspecting and repairing:
 - stable `contact_key` API/URL identity;
 - tests proving browser code is not unioning independent datasets.
 
-Do not mark broad CRM UI edits Done until the validated mobile CRM packet is implemented, screenshot/accessibility/action proof is recorded, One Time is deployed, and live smoke passes.
+Do not mark broad CRM UI edits Done until the validated mobile CRM packet is deployed, deployed SHA proof is recorded, One Time live smoke passes, and any required BNA shared-runtime smoke remains clean.
 
 Full production readiness remains blocked only by external Stripe/campaign setup fields listed in `ops/production-readiness/latest-production-unblocker.md`.
