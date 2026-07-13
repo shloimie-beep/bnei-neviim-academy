@@ -39646,3 +39646,28 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - `REQ-20260713-908` is done; next is `REQ-20260713-911`
   instrumentation/regression gates. `REQ-20260713-906` remains blocked until
   secure owner aliases are configured.
+
+## 2026-07-13 - One Time mobile CRM IA audit and PQC ready
+
+- Created current-state audit
+  `ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md`
+  for `REQ-20260713-909`, covering split shell and monolith CRM views at
+  1440/1024/768/430/390.
+- Created validated Product Quality packet
+  `ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json`
+  for the scoped mobile CRM list/detail/subview/action-state implementation.
+- Verification passed: local CRM workbench smoke and
+  `npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json`.
+- `REQ-20260713-909` is now in progress, not Done; UI implementation, deploy,
+  and live mobile/accessibility proof remain.
+
+## 2026-07-13 - One Time mobile CRM IA packet validated
+
+- Created the `REQ-20260713-909` current-state audit and Product Quality packet:
+  `ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md` and
+  `ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json`.
+- Validation passed:
+  `npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json`.
+- `REQ-20260713-909` is now ready for scoped mobile CRM UI implementation;
+  no sends, provider mutations, external CRM writes, or production data writes
+  were attempted.

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T06:28:24.171Z",
+  "generated_at": "2026-07-13T07:22:21.215Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -394,6 +394,10 @@
     "ops/prompt-packets/2026-07-12-onetime-landing-visual-revision/00-control-tower.md",
     "ops/prompt-packets/2026-07-12-onetime-landing-visual-revision/01-current-state-visual-audit.md",
     "ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json",
+    "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.md",
+    "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json",
+    "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/MANIFEST.md",
+    "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/manifest.json",
     "ops/prompt-packets/README.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/00-control-tower.sample.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/01-current-state-visual-audit.sample.md",
@@ -652,12 +656,5 @@
     "tasks-pending/_template-ramble-intake.md"
   ],
   "finding_count": 0,
-  "findings": [],
-  "mapped_requirement_ids": [
-    "REQ-20260713-907",
-    "REQ-20260713-908",
-    "REQ-20260713-909"
-  ],
-  "status": "PASS",
-  "closeout_summary": "0 findings after adding Product Quality gate markers to the active One Time task packets."
+  "findings": []
 }

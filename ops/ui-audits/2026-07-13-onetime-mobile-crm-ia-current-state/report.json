@@ -1,0 +1,109 @@
+{
+  "audit_id": "AUDIT-20260713-909",
+  "requirement_id": "REQ-20260713-909",
+  "packet_id": "PKT-20260713-909",
+  "generated_at": "2026-07-13T10:07:00+03:00",
+  "status": "current_state_captured",
+  "scope": "Current-state visual and behavior audit for One Time Operations CRM mobile information architecture. Local synthetic data only; no database, sends, payments, access grants, provider-account changes, or production writes.",
+  "source_statement_ids": [
+    "SRC-20260713-003-013"
+  ],
+  "source_smoke": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json",
+  "source_smoke_generated_at": "2026-07-13T04:36:47.796Z",
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+    "/operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+  ],
+  "viewports": [
+    "1440x960",
+    "1024x900",
+    "768x1024",
+    "430x932",
+    "390x844"
+  ],
+  "current_state_summary": {
+    "smoke_status": "PASS",
+    "result_count": 10,
+    "split_shell_and_monolith": [
+      "split-shell",
+      "monolith"
+    ],
+    "initial_crm_list_requests_max": 1,
+    "initial_rendered_card_count_max": 50,
+    "crm_contract_version": [
+      "shared-crm-v1"
+    ],
+    "crm_component_order": [
+      "contacts-index>contact-workspace>contact-inspector"
+    ],
+    "crm_mobile_breakpoint": [
+      "700"
+    ],
+    "crm_back_control_height": [
+      "40"
+    ],
+    "no_horizontal_overflow": true,
+    "mobile_back_flow_ok": true,
+    "workspace_tabs_ok": true,
+    "no_wrong_workspace_leak": true,
+    "no_forbidden_external_terms": true,
+    "no_failed_requests_or_console_errors": true
+  },
+  "screenshots": [
+    "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1440-crm-workbench.png",
+    "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1440-crm-workbench.png",
+    "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1024-crm-workbench.png",
+    "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1024-crm-workbench.png",
+    "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-tablet-768-crm-workbench.png",
+    "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-tablet-768-crm-workbench.png",
+    "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-430-crm-workbench.png",
+    "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-430-crm-workbench.png",
+    "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-390-crm-workbench.png",
+    "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-390-crm-workbench.png"
+  ],
+  "findings": [
+    {
+      "id": "VQF-20260713-909-001",
+      "severity": "P0",
+      "surface": "Operations One Time CRM mobile contact workspace",
+      "status": "requirement_before_implementation",
+      "summary": "Current mobile smoke proves list-to-detail/back works, but the next UI implementation must keep list, detail, subview, action-overflow, filtered-empty, error, and permission states as explicit states rather than an always-open wall of sections.",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md"
+      ],
+      "next_action": "Implement only from a validated PQC packet with a state matrix and before/after 390 and 430 screenshots."
+    },
+    {
+      "id": "VQF-20260713-909-002",
+      "severity": "P1",
+      "surface": "Mobile contact detail IA",
+      "status": "design_requirement",
+      "summary": "The selected contact state exists, but the implementation packet must formalize a focused contact header, section rail, contextual overflow menu, sticky back behavior, and lazy section data budgets.",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-430-crm-workbench.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-430-crm-workbench.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-390-crm-workbench.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-390-crm-workbench.png"
+      ],
+      "next_action": "Preserve current no-overflow/back behavior while reducing simultaneous detail-section exposure on mobile."
+    },
+    {
+      "id": "VQF-20260713-909-003",
+      "severity": "P1",
+      "surface": "Accessibility and action states",
+      "status": "proof_gap",
+      "summary": "Current smoke checks visual behavior and registered actions, but the implementation packet still needs semantic tab names, focus order, keyboard/back behavior, tap target proof, and disabled/no-send action states in the final proof matrix.",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md"
+      ],
+      "next_action": "Add accessibility and action-state checks to the implementation verification before Done."
+    }
+  ],
+  "guardrails": {
+    "external_write_performed": false,
+    "production_data_mutation_performed": false,
+    "raw_private_data_committed": false,
+    "test_data_only": true,
+    "browser_content_untrusted": true
+  }
+}

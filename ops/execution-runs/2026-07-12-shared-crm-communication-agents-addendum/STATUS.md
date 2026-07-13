@@ -46,6 +46,16 @@ Current status: `active`
 - Mailbox/messages route-module slice is locally verified: mailbox review and signed mailbox render/load/thread helpers live in `public/js/one-time-provider-mailbox-route.js`; One Time review messages live in `public/js/one-time-provider-communications-route.js`; expanded route-module budget passed across overview, CRM, mailbox, and communications with no Operations CSS/JS.
 - Mailbox/messages route-module slice is deployed/live-smoked on One Time at `72650231e9d6eba9a367a59251cb58202f8910b1`: Railway deployment `df3a27b2-a930-430d-b29d-0d8390b62a17` reached `SUCCESS`, exact-SHA One Time separate-instance smoke passed, and `ops/live-smokes/2026-07-13T06-59-53-991Z-onetime-provider-route-module-live-smoke.md` confirms overview loads no route module, CRM/mailbox/communications each load only their own module, Operations assets stay absent, 390px CRM has no horizontal overflow, and no sends or production mutations occurred.
 
+## 2026-07-13 Mobile CRM IA Current-State And PQC
+
+- `REQ-20260713-909` is in progress with the prerequisite audit/PQC gate complete.
+- Current-state audit: `ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md`.
+- Product Quality packet: `ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json`.
+- Validation passed: `npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json`.
+- Local CRM workbench smoke refreshed the split-shell/monolith 1440/1024/768/430/390 evidence with no horizontal overflow, no wrong-workspace leak, and no failed request/console/page errors.
+- No UI implementation, deployment, external send, CRM mutation, provider mutation, payment/access change, or production data mutation occurred in this prerequisite step.
+- Next: implement the scoped mobile CRM list/detail/subview/action-state IA from the validated packet, then run local screenshots/accessibility/action proof, deploy One Time, and live-smoke before marking `REQ-20260713-909` Done.
+
 ## Completed In This Batch
 
 - Created run and register for the addendum.

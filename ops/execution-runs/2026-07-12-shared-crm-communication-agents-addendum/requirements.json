@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-13T08:45:00+03:00",
+  "updated_at": "2026-07-13T10:23:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -393,22 +393,50 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T07:58:00+03:00",
+      "updated_at": "2026-07-13T10:23:00+03:00",
       "can_continue_without_operator": true,
       "blocker": "",
-      "status": "not_started",
+      "status": "in_progress",
       "depends_on": [
         "REQ-20260713-905"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md",
+        "ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.json",
+        "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/manifest.json",
+        "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/MANIFEST.md",
+        "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.md",
+        "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/watchdog-audits/2026-07-13-product-quality-drift.md",
+        "ops/watchdog-audits/2026-07-13-product-quality-drift.json"
+      ],
+      "verification": [
+        "npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json PASS",
+        "Current-state audit readback confirms split shell and monolith 1440/1024/768/430/390 evidence, shared-crm-v1 contract, 40px mobile back control, no horizontal overflow, no wrong-workspace leak, and no failed requests/console/page errors.",
+        "node scripts/smoke-onetime-operations-crm-workbench-local.mjs PASS for current-state local CRM workbench audit; refreshed ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "npm run watchdog:protocol-drift PASS after packet markdown protocol markers for REQ-20260713-909",
+        "npm run watchdog:protocol-drift PASS after adding protocol markers to the mobile CRM IA markdown packet and manifest."
+      ],
       "implementation_files": [
         "tasks-pending/",
         "public/",
         "src/",
         "scripts/",
         "tests/",
-        "ops/action-registry.json"
+        "ops/action-registry.json",
+        "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/manifest.json",
+        "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/MANIFEST.md",
+        "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.md",
+        "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json",
+        "ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md",
+        "ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.json",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+        "ops/watchdog-audits/2026-07-13-product-quality-drift.md",
+        "ops/watchdog-audits/2026-07-13-product-quality-drift.json"
       ],
       "deployment_required": true,
       "id": "REQ-20260713-909",
@@ -419,8 +447,8 @@
       ],
       "category": "crm_mobile_ia",
       "batch_id": "4-mobile-crm-information-architecture",
-      "implementation_status": "not_started",
-      "next_action": "Create current-state visual audit and validated Product Quality packet before editing CRM UI code.",
+      "implementation_status": "In progress: current-state mobile CRM visual audit and validated Product Quality packet are complete; UI implementation, deployed One Time proof, and live mobile/accessibility verification are still open.",
+      "next_action": "Implement the mobile CRM IA from ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json: list/detail/subview/action states, focused mobile header/rail/overflow, lazy section data, URL/back-state restoration, accessibility/action-registry coverage, local screenshots, One Time deploy, and live smoke proof before Done.",
       "acceptance_criteria": [
         "Current-state visual audit exists before implementation.",
         "Product Quality packet validates before UI code changes.",

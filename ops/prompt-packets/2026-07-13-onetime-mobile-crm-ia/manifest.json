@@ -1,0 +1,18 @@
+{
+  "packet_group": "2026-07-13-onetime-mobile-crm-ia",
+  "parent_raw_id": "RAW-20260713-003",
+  "requirement_ids": [
+    "REQ-20260713-909"
+  ],
+  "created_at": "2026-07-13T10:07:00+03:00",
+  "packets": [
+    {
+      "packet_id": "PKT-20260713-909",
+      "role": "IMPLEMENTATION_PACKET",
+      "path": "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json",
+      "status": "ready_for_codex"
+    }
+  ],
+  "audit": "ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md",
+  "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json"
+}

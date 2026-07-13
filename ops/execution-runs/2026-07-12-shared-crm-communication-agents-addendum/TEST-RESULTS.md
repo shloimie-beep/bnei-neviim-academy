@@ -83,6 +83,21 @@
 - PASS live route-module proof: overview loads no route modules; CRM, mailbox, and communications each load only their own module; Operations CSS/JS are absent; 390px CRM has no horizontal overflow; failed/bad/console counts are 0/0/0; no external send or production mutation was attempted.
 - Remaining: start `REQ-20260713-911` instrumentation/regression gates.
 
+## 2026-07-13 Mobile CRM IA Definition of Ready
+
+- PASS current-state audit packet: `ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md`.
+- PASS `npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json`.
+- PASS `npm run watchdog:protocol-drift` after adding protocol markers to the mobile CRM IA markdown packet and manifest.
+- Ready for scoped `REQ-20260713-909` UI implementation; no email, WhatsApp, Telegram, payment, access, provider-account, external CRM, or production-data write was attempted.
+
+## 2026-07-13 Mobile CRM IA Current-State And PQC
+
+- PASS `node scripts/smoke-onetime-operations-crm-workbench-local.mjs`; refreshed `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS current-state audit readback for `REQ-20260713-909`: split shell and monolith 1440/1024/768/430/390 evidence, shared CRM contract, 40px mobile back control, no horizontal overflow, no wrong-workspace leak, no failed requests, no console errors, and no page errors.
+- PASS `npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json`.
+- PASS `npm run watchdog:protocol-drift` after adding required packet markdown protocol markers for `REQ-20260713-909`.
+- Remaining: implement the scoped mobile CRM IA and run local/deployed/live proof before marking `REQ-20260713-909` Done.
+
 - PASS `node --check server.js`
 - PASS `node --check src/lib/integrations/resend-inbound-crm.js`
 - PASS `node --test tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js` (19/19)
