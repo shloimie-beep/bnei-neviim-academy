@@ -214,7 +214,7 @@ test('One Time provider review, view-as, and signed sessions use the same Rabbi-
 
   assert.match(sectionsBlock, /oneTimeReviewMode \|\| oneTimeViewAsRabbiToken \|\| signedOneTimeSession/);
   assert.match(sectionsBlock, /providerWapiSetupEnabled\(\)/);
-  for (const section of ['overview', 'crm', 'mailbox', 'communications', 'content', 'class_setup', 'class_media', 'users', 'badges', 'activity']) {
+  for (const section of ['overview', 'crm', 'mailbox', 'communications', 'agents', 'content', 'class_setup', 'class_media', 'users', 'badges', 'activity']) {
     assert.match(sectionsBlock, new RegExp(`id: '${section}'`), `missing ${section} review section`);
   }
   for (const hiddenSection of ['commercial', 'integrations', 'access']) {
@@ -314,6 +314,67 @@ test('actual signed Rabbi provider login does not show Super Admin bridge chrome
     assert.equal(await page.locator('#oneTimeAdminProviderBanner').count(), 0);
     assert.equal(await page.locator('[data-one-time-provider-crm-shell]').count(), 1);
     assert.equal(await page.locator('.one-time-crm-workbench').count(), 1);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const mobileOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
+    assert.equal(mobileOverflow, false);
+  } finally {
+    await browser.close();
+    await local.close();
+  }
+});
+
+test('One Time provider Agents route exposes communication-agent workspace without Build and QA chrome', async () => {
+  const local = createProviderReviewServer();
+  const baseUrl = await local.listen();
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1180, height: 840 } });
+    await page.goto(`${baseUrl}/provider.html?review=one-time&section=agents`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('[data-provider-nav="agents"].active');
+    await page.waitForSelector('[data-one-time-provider-agents-route]');
+    await page.waitForFunction(() => Boolean(window.OneTimeProviderRouteModules?.agents), null, {
+      timeout: 10000,
+    });
+
+    const modules = await page.evaluate(() => Object.keys(window.OneTimeProviderRouteModules || {}).sort());
+    assert.deepEqual(modules, ['agents']);
+
+    const agentsSection = page.locator('[data-provider-section="agents"]');
+    const text = await agentsSection.innerText();
+    assert.match(text, /Communication Agents/);
+    assert.match(text, /Rabbi Scheller's Digital Assistant/);
+    assert.match(text, /Active version 2026-07-13-v3/);
+    assert.match(text, /Channels: WhatsApp, Email/);
+    assert.doesNotMatch(text, /Agent Runs|Codex Queue|Build & QA|Copy Agent Prompt/i);
+
+    const indexTabs = await agentsSection.locator('[data-agents-index-tab]').evaluateAll((nodes) => nodes.map((node) => node.textContent.trim()));
+    assert.deepEqual(indexTabs, ['Communication Agents', 'Knowledge', 'Channels', 'Test', 'Activity']);
+
+    await agentsSection.locator('[data-agent-open]').click();
+    const workspaceTabs = await agentsSection.locator('[data-agent-tab]').evaluateAll((nodes) => nodes.map((node) => node.textContent.trim()));
+    assert.deepEqual(workspaceTabs, ['Overview', 'Instructions', 'Knowledge', 'Channels', 'Permissions', 'Test', 'Activity']);
+    const workspaceText = await agentsSection.innerText();
+    assert.match(workspaceText, /Contact capture: On/);
+    assert.match(workspaceText, /Automatic tasks: Off/);
+    assert.match(workspaceText, /Shared knowledge snapshot/);
+
+    await agentsSection.locator('[data-agent-tab="Channels"]').click();
+    const channelsText = await agentsSection.innerText();
+    assert.match(channelsText, /WhatsApp/);
+    assert.match(channelsText, /Agent reply: Live only after readiness passes/);
+    assert.match(channelsText, /Email/);
+    assert.match(channelsText, /Agent reply: Draft/);
+    assert.match(channelsText, /Automatic tasks: Off/);
+
+    await agentsSection.locator('[data-agent-tab="Test"]').click();
+    await agentsSection.locator('textarea[name="message"]').fill('Do families get portal access?');
+    await agentsSection.locator('[data-action-id="ACTION-ONETIME-COMMUNICATION-AGENT-RUN-TEST"]').click();
+    const testText = await agentsSection.innerText();
+    assert.match(testText, /Generated response/);
+    assert.match(testText, /We are not giving portal access yet/);
+    assert.match(testText, /No raw class link in model context/);
+    assert.match(testText, /no automatic task/i);
 
     await page.setViewportSize({ width: 390, height: 844 });
     const mobileOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);

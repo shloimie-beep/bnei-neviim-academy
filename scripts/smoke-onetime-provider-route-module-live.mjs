@@ -115,7 +115,9 @@ async function captureRoute(browser, route) {
       crmLoaded: document.documentElement.dataset.oneTimeProviderCrmRouteModule === 'loaded',
       mailboxLoaded: document.documentElement.dataset.oneTimeProviderMailboxRouteModule === 'loaded',
       communicationsLoaded: document.documentElement.dataset.oneTimeProviderCommunicationsRouteModule === 'loaded',
+      agentsLoaded: document.documentElement.dataset.oneTimeProviderAgentsRouteModule === 'loaded',
       hasCrmShell: Boolean(document.querySelector('[data-one-time-provider-crm-shell]')),
+      hasAgentsShell: Boolean(document.querySelector('[data-one-time-provider-agents-route]')),
       hasCrmPlaceholder: Boolean(document.querySelector('[data-one-time-provider-crm-route-placeholder]')),
       activeCrmNav: Boolean(document.querySelector('[data-provider-nav="crm"].active')),
       visibleCrmSection: Boolean(document.querySelector('[data-provider-section="crm"]:not(.provider-section-hidden)')),
@@ -175,6 +177,12 @@ async function main() {
         expectModuleKey: 'communications',
       }),
       await captureRoute(browser, {
+        id: 'agents',
+        path: '/provider.html?review=one-time&section=agents',
+        expectSelector: '[data-one-time-provider-agents-route]',
+        expectModuleKey: 'agents',
+      }),
+      await captureRoute(browser, {
         id: 'crm-mobile-390',
         path: '/provider.html?review=one-time&section=crm',
         viewport: { width: 390, height: 844 },
@@ -190,6 +198,7 @@ async function main() {
   const crm = routeById(routes, 'crm');
   const mailbox = routeById(routes, 'mailbox');
   const communications = routeById(routes, 'communications');
+  const agents = routeById(routes, 'agents');
   const crmMobile = routeById(routes, 'crm-mobile-390');
 
   checks.push(
@@ -250,6 +259,27 @@ async function main() {
         crmLoaded: communications.crmLoaded,
         mailboxLoaded: communications.mailboxLoaded,
         communicationsLoaded: communications.communicationsLoaded,
+      }),
+    },
+    {
+      id: 'agents_loads_only_agents_route_module',
+      passed: JSON.stringify(agents.modules || []) === JSON.stringify(['agents']) &&
+        agents.routeModuleScripts?.includes('/js/one-time-provider-agents-route.js') &&
+        agents.hasCrmShell === false &&
+        agents.hasAgentsShell === true &&
+        agents.agentsLoaded === true &&
+        agents.crmLoaded === false &&
+        agents.mailboxLoaded === false &&
+        agents.communicationsLoaded === false,
+      detail: JSON.stringify({
+        modules: agents.modules || [],
+        routeModuleScripts: agents.routeModuleScripts || [],
+        hasCrmShell: agents.hasCrmShell,
+        hasAgentsShell: agents.hasAgentsShell,
+        crmLoaded: agents.crmLoaded,
+        mailboxLoaded: agents.mailboxLoaded,
+        communicationsLoaded: agents.communicationsLoaded,
+        agentsLoaded: agents.agentsLoaded,
       }),
     },
     {

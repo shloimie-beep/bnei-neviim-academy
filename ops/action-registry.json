@@ -93,6 +93,250 @@
       ]
     },
     {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-OPEN",
+      "label": "Open communication agent",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "selector_hint": "[data-one-time-provider-agents-route] [data-agent-open]",
+      "expected_behavior": "Opens the selected One Time communication-agent workspace with Overview, Instructions, Knowledge, Channels, Permissions, Test, and Activity tabs. This is separate from Super Admin Build and QA agent runs.",
+      "permission": "rabbi_sheller_provider workspace user",
+      "status": "active_client_route",
+      "handler": "OneTimeProviderAgentsRoute.hydrate client state",
+      "test": {
+        "type": "browser",
+        "expected_result": "tests/one-time-provider-review-navigation.test.js opens /provider.html?review=one-time&section=agents, loads only the Agents route module, opens the workspace, and confirms the Communication Agents tabs."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-RUN-TEST",
+      "label": "Run No-Send Test",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "selector_hint": "[data-agent-test-form] button[type=\"submit\"]",
+      "expected_behavior": "Runs a local no-send communication-agent simulation showing generated response, retrieved knowledge, proposed actions, and blocked actions without email, WhatsApp, Telegram, CRM mutation, payment, access grant, or credential side effects.",
+      "permission": "rabbi_sheller_provider workspace user",
+      "status": "active_no_send_client_test",
+      "handler": "OneTimeProviderAgentsRoute.hydrate submit handler",
+      "test": {
+        "type": "browser",
+        "expected_result": "tests/one-time-provider-review-navigation.test.js submits the no-send test and verifies portal-access claims are blocked."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-ADD",
+      "label": "Add Agent",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-COMMUNICATION-AGENT-ADD\"]",
+      "expected_behavior": "Visible but disabled in the Rabbi provider workspace with an exact reason because new-agent creation requires the Super Admin publication workflow.",
+      "permission": "super_admin_release_workflow",
+      "status": "disabled_blocker",
+      "disabled_reason": "New agent creation requires the Super Admin publication workflow.",
+      "handler": "disabled client control",
+      "test": {
+        "type": "browser",
+        "expected_result": "Agents route shows Add Agent disabled with the publication-workflow reason."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-SAVE-DRAFT",
+      "label": "Save Draft",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-COMMUNICATION-AGENT-SAVE-DRAFT\"]",
+      "expected_behavior": "Visible but disabled until editable communication-agent drafts are enabled for the Rabbi provider workspace.",
+      "permission": "super_admin_release_workflow",
+      "status": "disabled_blocker",
+      "disabled_reason": "Draft editing is not enabled in the Rabbi provider workspace yet.",
+      "handler": "disabled client control",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Agents workspace renders Save Draft disabled with a specific reason."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-PUBLISH",
+      "label": "Publish Version",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-COMMUNICATION-AGENT-PUBLISH\"]",
+      "expected_behavior": "Visible but disabled because publishing communication-agent versions requires Super Admin release approval.",
+      "permission": "super_admin_release_workflow",
+      "status": "disabled_blocker",
+      "disabled_reason": "Publishing requires Super Admin release approval.",
+      "handler": "disabled client control",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Agents workspace renders Publish Version disabled with a specific release-approval reason."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-PAUSE",
+      "label": "Pause Agent",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-COMMUNICATION-AGENT-PAUSE\"]",
+      "expected_behavior": "Visible but disabled because pausing live channel bindings requires Super Admin release approval.",
+      "permission": "super_admin_release_workflow",
+      "status": "disabled_blocker",
+      "disabled_reason": "Pausing live bindings requires Super Admin release approval.",
+      "handler": "disabled client control",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Agents workspace renders Pause Agent disabled with a specific release-approval reason."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-BACK",
+      "label": "Back to Agents",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-COMMUNICATION-AGENT-BACK\"]",
+      "expected_behavior": "Returns from a selected communication-agent workspace to the Communication Agents index without external side effects.",
+      "permission": "rabbi_sheller_provider workspace user",
+      "status": "active_client_route",
+      "handler": "OneTimeProviderAgentsRoute.hydrate client state",
+      "test": {
+        "type": "browser",
+        "expected_result": "Agents route workspace back control returns to the local index state."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-COMPARE",
+      "label": "Compare Version",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-COMMUNICATION-AGENT-COMPARE\"]",
+      "expected_behavior": "Visible but disabled until version comparison is backed by editable communication-agent drafts.",
+      "permission": "super_admin_release_workflow",
+      "status": "disabled_blocker",
+      "disabled_reason": "Version comparison opens after editable drafts are enabled.",
+      "handler": "disabled client control",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Instructions tab renders Compare Version disabled with a specific reason."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-RESTORE",
+      "label": "Restore Prior Version",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-COMMUNICATION-AGENT-RESTORE\"]",
+      "expected_behavior": "Visible but disabled because restoring a prior communication-agent version requires Super Admin publication approval.",
+      "permission": "super_admin_release_workflow",
+      "status": "disabled_blocker",
+      "disabled_reason": "Restore requires Super Admin publication approval.",
+      "handler": "disabled client control",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Instructions tab renders Restore Prior Version disabled with a specific reason."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-BINDING-TEST",
+      "label": "Test Binding",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-COMMUNICATION-BINDING-TEST\"]",
+      "expected_behavior": "Switches to the no-send test state for the selected Email or WhatsApp binding and confirms contact capture on, automatic tasks off, and no external send.",
+      "permission": "rabbi_sheller_provider workspace user",
+      "status": "active_no_send_client_test",
+      "handler": "OneTimeProviderAgentsRoute.hydrate click handler",
+      "test": {
+        "type": "browser",
+        "expected_result": "Agents route channel cards expose Test Binding without external sends."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-BINDING-EDIT",
+      "label": "Edit Binding",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-COMMUNICATION-BINDING-EDIT\"]",
+      "expected_behavior": "Visible but disabled because channel-binding edits require Super Admin release approval.",
+      "permission": "super_admin_release_workflow",
+      "status": "disabled_blocker",
+      "disabled_reason": "Binding edits require Super Admin release approval.",
+      "handler": "disabled client control",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Agents channel cards render Edit Binding disabled with a specific release-approval reason."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-KNOWLEDGE-ADD",
+      "label": "Add Knowledge Source",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-COMMUNICATION-KNOWLEDGE-ADD\"]",
+      "expected_behavior": "Visible but disabled until knowledge additions can enter the approved review and publication workflow.",
+      "permission": "super_admin_release_workflow",
+      "status": "disabled_blocker",
+      "disabled_reason": "Knowledge additions require review before publication.",
+      "handler": "disabled client control",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Agents Knowledge view renders Add Knowledge Source disabled with a review-required reason."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-ONETIME-PARENT-HELPER-OPEN",
       "label": "Robot Scheller",
       "surface": "one_time_parent_review",

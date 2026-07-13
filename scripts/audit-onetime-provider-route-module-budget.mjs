@@ -256,6 +256,7 @@ async function main() {
     crm_route_module: await fileBytes('public/js/one-time-provider-crm-route.js'),
     mailbox_route_module: await fileBytes('public/js/one-time-provider-mailbox-route.js'),
     communications_route_module: await fileBytes('public/js/one-time-provider-communications-route.js'),
+    agents_route_module: await fileBytes('public/js/one-time-provider-agents-route.js'),
     rum_collector: await fileBytes('public/js/one-time-performance-rum.js'),
   };
   const sizeComparison = {
@@ -303,6 +304,11 @@ async function main() {
         path: '/provider.html?admin_provider=one-time&section=communications',
         expectModuleKey: 'communications',
       }),
+      await captureRoute(browser, baseUrl, {
+        id: 'agents',
+        path: '/provider.html?admin_provider=one-time&section=agents',
+        expectModuleKey: 'agents',
+      }),
     ];
   } finally {
     await browser.close();
@@ -313,11 +319,12 @@ async function main() {
   const crm = routes.find((route) => route.id === 'crm');
   const mailbox = routes.find((route) => route.id === 'mailbox');
   const communications = routes.find((route) => route.id === 'communications');
+  const agents = routes.find((route) => route.id === 'agents');
   const checks = [
     {
-      id: 'provider_html_delta_within_instrumentation_budget',
-      passed: sizeComparison.provider_html_delta_bytes <= 4096,
-      detail: `${sizeComparison.provider_html_delta_bytes} bytes <= 4096 bytes`,
+      id: 'provider_html_delta_within_agents_route_budget',
+      passed: sizeComparison.provider_html_delta_bytes <= 8192,
+      detail: `${sizeComparison.provider_html_delta_bytes} bytes <= 8192 bytes for the new lazy Agents route wiring`,
     },
     {
       id: 'overview_no_crm_module',
@@ -344,6 +351,13 @@ async function main() {
       detail: JSON.stringify({ modules: communications?.modules || [], routeModuleScripts: communications?.routeModuleScripts || [], hasCrmShell: communications?.hasCrmShell }),
     },
     {
+      id: 'agents_loads_only_agents_route_module',
+      passed: JSON.stringify(agents?.modules || []) === JSON.stringify(['agents']) &&
+        agents?.routeModuleScripts?.includes('/js/one-time-provider-agents-route.js') &&
+        agents?.hasCrmShell === false,
+      detail: JSON.stringify({ modules: agents?.modules || [], routeModuleScripts: agents?.routeModuleScripts || [], hasCrmShell: agents?.hasCrmShell }),
+    },
+    {
       id: 'operations_assets_absent',
       passed: routes.every((route) => !route.hasOperationsCss && !route.hasOperationsJs),
       detail: JSON.stringify(routes.map((route) => ({ id: route.id, hasOperationsCss: route.hasOperationsCss, hasOperationsJs: route.hasOperationsJs }))),
@@ -363,11 +377,13 @@ async function main() {
       passed: currentBytes.crm_route_module <= 16384 &&
         currentBytes.mailbox_route_module <= 18432 &&
         currentBytes.communications_route_module <= 8192 &&
+        currentBytes.agents_route_module <= 24576 &&
         currentBytes.rum_collector <= 8192,
       detail: JSON.stringify({
         crm_route_module_bytes: currentBytes.crm_route_module,
         mailbox_route_module_bytes: currentBytes.mailbox_route_module,
         communications_route_module_bytes: currentBytes.communications_route_module,
+        agents_route_module_bytes: currentBytes.agents_route_module,
         rum_collector_bytes: currentBytes.rum_collector,
         crm_route_total_delta_bytes: sizeComparison.crm_route_total_delta_bytes,
       }),
@@ -406,6 +422,7 @@ async function main() {
     `- CRM route module: ${sizeComparison.crm_route_module_bytes} bytes`,
     `- Mailbox route module: ${currentBytes.mailbox_route_module} bytes`,
     `- Communications route module: ${currentBytes.communications_route_module} bytes`,
+    `- Agents route module: ${currentBytes.agents_route_module} bytes`,
     `- One Time RUM collector: ${currentBytes.rum_collector} bytes`,
     `- Current provider.html + CRM module delta: ${sizeComparison.crm_route_total_delta_bytes} bytes`,
     '',

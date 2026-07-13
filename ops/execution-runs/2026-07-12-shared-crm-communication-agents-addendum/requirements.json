@@ -2202,22 +2202,40 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "not_started",
-      "implementation_status": "missing",
+      "status": "in_progress",
+      "implementation_status": "Local verified, deploy pending: added a dedicated One Time provider Communication Agents route module instead of reusing the Super Admin Build/QA agent-run surface. The provider app now exposes an Agents workspace with Communication Agents, Knowledge, Channels, Test, and Activity index tabs; opening Rabbi Scheller's Digital Assistant shows Overview, Instructions, Knowledge, Channels, Permissions, Test, and Activity tabs; channel cards show WhatsApp and Email bindings with contact capture on and automatic tasks off; the Test panel runs a no-send local policy preview and blocks portal-access/raw-link/task/payment/access actions.",
       "can_continue_without_operator": true,
-      "next_action": "Continue REQ-20260712-312 after dependent earlier batches are validated.",
+      "next_action": "Commit, push, deploy the exact tested SHA, then run the One Time provider route-module live smoke with the new Agents route and BNA shared-runtime regression smoke.",
       "acceptance_criteria": [
         "Normal workspace users see Communication Agents with Knowledge, Channels, Test, and Activity; Super Admin sees Build & QA agents separately."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "public/provider.html adds the One Time provider Agents section and lazy route-module wiring.",
+        "public/js/one-time-provider-agents-route.js owns the Communication Agents index, agent workspace, channels, knowledge, activity, and no-send test panel.",
+        "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md confirms overview loads no route modules, Agents loads only /js/one-time-provider-agents-route.js, Operations assets are absent, and the Agents module is 23784 bytes under the 24576-byte route budget."
+      ],
+      "verification": [
+        "node --check public/js/one-time-provider-agents-route.js scripts/audit-onetime-provider-route-module-budget.mjs scripts/smoke-onetime-provider-route-module-live.mjs PASS",
+        "node --test tests/one-time-provider-review-navigation.test.js PASS 10/10",
+        "node --test tests/communication-agent-model.test.js tests/communication-agent-response-runtime.test.js tests/one-time-focused-landing.test.js PASS 14/14",
+        "npm run one-time:provider-route-module-budget -- --base-ref HEAD PASS",
+        "npm run watchdog:actions PASS finding_count=0",
+        "npm run secrets:audit PASS over 9594 tracked paths",
+        "git diff --check PASS",
+        "npm run bna:run:validate PASS"
+      ],
       "implementation_files": [
-        "public/js/operations-shell.js",
-        "public/js/operations-deferred-renderers.js",
-        "public/css/operations-shell.css"
+        "public/provider.html",
+        "public/js/one-time-provider-agents-route.js",
+        "tests/one-time-provider-review-navigation.test.js",
+        "scripts/audit-onetime-provider-route-module-budget.mjs",
+        "scripts/smoke-onetime-provider-route-module-live.mjs",
+        "ops/action-registry.json",
+        "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md",
+        "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:18:00+03:00",
+      "updated_at": "2026-07-13T18:46:00+03:00",
       "blocker": ""
     },
     {

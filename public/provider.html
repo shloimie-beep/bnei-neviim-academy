@@ -1105,6 +1105,11 @@
                 <div id="providerMessages" class="service-list" style="margin-top:12px;"></div>
             </section>
 
+            <section class="panel provider-section" data-provider-section="agents">
+                <h2>Agents</h2>
+                <div id="providerAgents" class="service-list"></div>
+            </section>
+
             <section class="panel provider-section" data-provider-section="activity">
                 <h2>Activity</h2>
                 <div id="providerActivity" class="service-list"></div>
@@ -1632,6 +1637,7 @@
                     { id: 'crm', label: 'CRM', group: 'Workspace' },
                     { id: 'mailbox', label: 'Mailbox', group: 'Workspace' },
                     { id: 'communications', label: 'Messages', group: 'Workspace' },
+                    { id: 'agents', label: 'Agents', group: 'Workspace' },
                     { id: 'content', label: 'Content', group: 'Program' },
                     { id: 'class_setup', label: 'Live Class', group: 'Program' },
                     { id: 'class_media', label: 'Library', group: 'Program' },
@@ -1725,6 +1731,7 @@
             crm: '/js/one-time-provider-crm-route.js',
             mailbox: '/js/one-time-provider-mailbox-route.js',
             communications: '/js/one-time-provider-communications-route.js',
+            agents: '/js/one-time-provider-agents-route.js',
         });
         const loadedOneTimeProviderRouteModules = new Set();
 
@@ -1760,6 +1767,7 @@
             if (activeProviderSection === 'crm') hydrateOneTimeCrmRoute(portalState);
             if (activeProviderSection === 'mailbox') hydrateOneTimeMailboxRoute(portalState);
             if (activeProviderSection === 'communications') hydrateOneTimeCommunicationsRoute(portalState);
+            if (activeProviderSection === 'agents') hydrateOneTimeAgentsRoute(portalState);
             if (options.updateUrl) updateProviderSectionUrl(activeProviderSection);
             ensureOneTimeProviderRouteModule(activeProviderSection);
         }
@@ -2711,6 +2719,74 @@
             return renderOneTimeCommunicationsRouteLoading('Loading messages...', true);
         }
 
+        function oneTimeProviderAgentsRouteHelpers() {
+            return { escapeHtml, reviewCard };
+        }
+
+        function renderOneTimeAgentsRouteLoading(message = 'Communication Agents load when this section opens.', busy = false) {
+            if (window.OneTimeProviderAgentsRoute?.renderPlaceholder) {
+                return window.OneTimeProviderAgentsRoute.renderPlaceholder(message, oneTimeProviderAgentsRouteHelpers());
+            }
+            return `
+                <section class="service-card" data-one-time-provider-agents-route-placeholder data-route-module="one-time-provider-agents-route" aria-busy="${busy}">
+                    <div class="service-head">
+                        <div>
+                            <h3>Communication Agents</h3>
+                            <p class="small">${escapeHtml(message)}</p>
+                        </div>
+                        <span class="status-pill">Route module</span>
+                    </div>
+                </section>
+            `;
+        }
+
+        function hydrateOneTimeAgentsRoute(data = portalState) {
+            if (!data || !(oneTimeReviewMode || oneTimeViewAsRabbiToken || portalDataIsOneTimeProvider(data))) return;
+            const target = document.getElementById('providerAgents');
+            if (!target) return;
+            const render = () => {
+                const route = window.OneTimeProviderAgentsRoute;
+                if (route?.hydrate) {
+                    route.hydrate(data, oneTimeProviderAgentsRouteHelpers());
+                } else if (route?.render) {
+                    target.innerHTML = route.render(data, oneTimeProviderAgentsRouteHelpers());
+                } else {
+                    return;
+                }
+                instrumentOneTimeProviderButtons();
+                applyOneTimeReadOnlyControls();
+            };
+            if (window.OneTimeProviderAgentsRoute?.hydrate || window.OneTimeProviderAgentsRoute?.render) {
+                render();
+                return;
+            }
+            target.innerHTML = renderOneTimeAgentsRouteLoading('Loading Communication Agents...', true);
+            let script = document.querySelector('script[src="/js/one-time-provider-agents-route.js"]');
+            let appendScript = false;
+            if (!script) {
+                script = document.createElement('script');
+                script.src = '/js/one-time-provider-agents-route.js';
+                script.dataset.routeModule = 'one-time-provider-agents-route';
+                script.async = true;
+                appendScript = true;
+            }
+            script.addEventListener('load', render, { once: true });
+            script.addEventListener('error', () => {
+                target.innerHTML = renderOneTimeAgentsRouteLoading('Communication Agents route module could not load.', false);
+            }, { once: true });
+            if (appendScript) document.head.appendChild(script);
+        }
+
+        function renderOneTimeReviewAgents(data = {}, options = {}) {
+            const active = options.active ?? activeProviderSection === 'agents';
+            if (!active) return renderOneTimeAgentsRouteLoading();
+            if (window.OneTimeProviderAgentsRoute?.render) {
+                return window.OneTimeProviderAgentsRoute.render(data, oneTimeProviderAgentsRouteHelpers());
+            }
+            queueMicrotask(() => hydrateOneTimeAgentsRoute(data));
+            return renderOneTimeAgentsRouteLoading('Loading Communication Agents...', true);
+        }
+
         function renderOneTimeProviderReview(data, viewAsSession = null) {
             applyOneTimeReviewBrand(viewAsSession);
             ensureOneTimeProviderShell(viewAsSession);
@@ -2740,6 +2816,7 @@
             const automationPanel = document.querySelector('[data-provider-section="automations"]');
             const badgesPanel = document.querySelector('[data-provider-section="badges"]');
             const commsPanel = document.querySelector('[data-provider-section="communications"]');
+            const agentsPanel = document.querySelector('[data-provider-section="agents"]');
             const classPanel = document.querySelector('[data-provider-section="class_setup"]');
             const mediaPanel = document.querySelector('[data-provider-section="class_media"]');
             const commercialPanel = document.querySelector('[data-provider-section="commercial"]');
@@ -2856,6 +2933,9 @@
             }
             if (commsPanel) {
                 document.getElementById('providerMessages').innerHTML = renderOneTimeReviewCommunications(data);
+            }
+            if (agentsPanel) {
+                document.getElementById('providerAgents').innerHTML = renderOneTimeReviewAgents(data);
             }
             if (commercialPanel) {
                 document.getElementById('commercialSummary').innerHTML = reviewCard(data.payment?.offer || 'Offer', `${data.payment?.trial || ''} / ${data.payment?.status || ''}. No real charge in review mode.`, data.payment?.access_state || 'test');
