@@ -1490,23 +1490,65 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "not_started",
-      "implementation_status": "partial",
+      "status": "done",
+      "implementation_status": "Done: normal One Time/Rabbi CRM contact workspace and contact-review surfaces now use customer-facing copy instead of internal no-send/external-write explanations. Add Contact, CRM update, task, member, family, student, archive, timeline, conversation-open, legacy source-review, and email-contact staging labels were cleaned while API/source-context safety metadata remains intact.",
       "can_continue_without_operator": true,
-      "next_action": "Continue REQ-20260712-304 after dependent earlier batches are validated.",
+      "next_action": "Done. Continue REQ-20260712-307 inbound communication pipeline; owner-only live integration tests remain blocked by REQ-20260713-906 secure owner aliases.",
       "acceptance_criteria": [
         "Normal BNA/Rabbi CRM users do not see internal diagnostics or dead-end controls; empty states use the exact customer-facing copy and relevant actions from the addendum."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "Commit a8df4c9b9cc091028105a16430aae6927cd0b429 cleaned CRM/contact-review copy and refreshed generated Operations shell.",
+        "One Time deploy-info PASS at https://join.onetimeonetime.com/api/deploy-info: commit_sha=a8df4c9b9cc091028105a16430aae6927cd0b429, target_app=one-time.",
+        "BNA deploy-info PASS at https://bneineviimacademy.org/api/deploy-info: commit_sha=a8df4c9b9cc091028105a16430aae6927cd0b429, target_app=bna.",
+        "One Time Railway deployment 6059d148-7708-43ae-9665-abdaa544a5d6 reached SUCCESS.",
+        "BNA Railway deployment 298894e0-1890-4c39-98e7-aa9461883660 reached SUCCESS.",
+        "Local CRM smoke PASS report refreshed at ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md.",
+        "One Time live CRM workbench smoke PASS: ops/live-smokes/2026-07-13T12-00-42-976Z-one-time-operations-crm-workbench-live-smoke.md.",
+        "BNA workspace taxonomy smoke PASS: ops/live-smokes/2026-07-13T12-04-05-833Z-operations-workspace-taxonomy-live-smoke.md."
+      ],
+      "verification": [
+        "node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js PASS 47/47.",
+        "npm run operations:check-generated PASS.",
+        "node --check public/js/operations-shell.js public/js/operations-deferred-renderers.js server.js scripts/smoke-onetime-operations-crm-workbench-local.mjs scripts/smoke-onetime-operations-crm-workbench-live.mjs PASS.",
+        "npm run one-time:smoke:operations-crm-workbench-local PASS.",
+        "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com PASS.",
+        "npm run app:smoke:operations-workspace-taxonomy PASS.",
+        "npm run watchdog:actions PASS finding_count 0.",
+        "npm run bna:run:validate PASS.",
+        "git diff --check PASS.",
+        "npm run secrets:audit PASS."
+      ],
       "implementation_files": [
+        "public/operations.html",
         "public/js/operations-shell.js",
-        "public/js/operations-deferred-renderers.js",
-        "public/css/operations-shell.css"
+        "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "scripts/smoke-onetime-operations-crm-workbench-live.mjs",
+        "tests/shared-crm-workbench-contract.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/operations-contacts-intake-cleanup.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:18:00+03:00",
-      "blocker": ""
+      "updated_at": "2026-07-13T15:03:00+03:00",
+      "blocker": "",
+      "completed_at": "2026-07-13T15:03:00+03:00",
+      "deployment_evidence": [
+        "One Time Railway deployment 6059d148-7708-43ae-9665-abdaa544a5d6 reached SUCCESS.",
+        "BNA Railway deployment 298894e0-1890-4c39-98e7-aa9461883660 reached SUCCESS.",
+        "One Time deploy-info https://join.onetimeonetime.com/api/deploy-info returned commit_sha=a8df4c9b9cc091028105a16430aae6927cd0b429 target_app=one-time.",
+        "BNA deploy-info https://bneineviimacademy.org/api/deploy-info returned commit_sha=a8df4c9b9cc091028105a16430aae6927cd0b429 target_app=bna.",
+        "One Time live smoke PASS: ops/live-smokes/2026-07-13T12-00-42-976Z-one-time-operations-crm-workbench-live-smoke.md.",
+        "BNA live smoke PASS: ops/live-smokes/2026-07-13T12-04-05-833Z-operations-workspace-taxonomy-live-smoke.md."
+      ],
+      "live_smoke": [
+        "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha a8df4c9b9cc091028105a16430aae6927cd0b429 PASS.",
+        "npm run app:smoke:operations-workspace-taxonomy PASS."
+      ],
+      "deployment_id": [
+        "one_time:6059d148-7708-43ae-9665-abdaa544a5d6",
+        "bna:298894e0-1890-4c39-98e7-aa9461883660"
+      ],
+      "deployed_commit": "a8df4c9b9cc091028105a16430aae6927cd0b429"
     },
     {
       "id": "REQ-20260712-305",

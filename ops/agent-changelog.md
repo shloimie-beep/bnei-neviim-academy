@@ -40054,3 +40054,20 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No Drive write, database mutation, Vimeo upload, bot-knowledge promotion,
   member publication, provider mutation, credential mutation, payment/access
   mutation, or external send was performed.
+
+## 2026-07-13 - One Time/BNA Railway a8df deployment reconciled
+
+- Reconciled the current production deploy after the CRM copy cleanup head
+  advanced to `a8df4c9b9cc091028105a16430aae6927cd0b429`, which contains the
+  Drive intake proof commit and the media/transcription metadata harness.
+- One Time Railway deployment `6059d148-7708-43ae-9665-abdaa544a5d6` reached
+  SUCCESS and `https://join.onetimeonetime.com/api/deploy-info` returned exact
+  SHA `a8df4c9b9cc091028105a16430aae6927cd0b429` with `target_app=one-time`.
+- BNA Railway deployment `298894e0-1890-4c39-98e7-aa9461883660` reached SUCCESS
+  and `https://bneineviimacademy.org/api/deploy-info` returned exact SHA
+  `a8df4c9b9cc091028105a16430aae6927cd0b429` with `target_app=bna`.
+- Verification passed: One Time separate-instance live smoke, One Time provider
+  route live smoke, One Time Operations CRM workbench live smoke, and BNA
+  Operations workspace taxonomy live smoke.
+- Updated the One Time Operations CRM live-smoke marker expectations to match
+  the committed CRM contact workspace copy from `a8df4c9b`.

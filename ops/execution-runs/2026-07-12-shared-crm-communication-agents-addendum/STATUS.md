@@ -343,3 +343,12 @@ Current status: `active`
 - Final closeout proof used the already-deployed One Time runtime SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`; no new runtime deploy was required.
 - Verification passed: focused CRM tests `46/46`, local One Time CRM workbench smoke, action watchdog finding_count `0`, and production read-only marker proof for 18 CRM action IDs on `https://join.onetimeonetime.com/operations.html`.
 - Guardrails: closeout performed no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, import, credential mutation, or production data mutation.
+
+## CRM Internal-Copy Cleanup - 2026-07-13
+
+- `REQ-20260712-304` is Done. Normal One Time/Rabbi CRM contact workspace, source-review, and email-contact staging surfaces now use customer-facing copy instead of internal no-send/external-write explanations.
+- Cleaned visible copy for Add Contact, CRM update, selected-contact empty state, timeline, task state changes, create/complete/reopen task notices, scoped email/WhatsApp thread-open notices, member/family/student link panels, archive confirmation, legacy source-review labels, and email-contact tags.
+- Safety metadata remains intact in API/source-context payloads and tests: `no_send=true`, `external_write_performed=false`, paused/member/student access states, and registered action IDs are still asserted.
+- Runtime commit `a8df4c9b9cc091028105a16430aae6927cd0b429` was pushed to `origin/master`, deployed to One Time deployment `6059d148-7708-43ae-9665-abdaa544a5d6` and BNA deployment `298894e0-1890-4c39-98e7-aa9461883660`, and both `/api/deploy-info` endpoints returned the exact SHA.
+- Verification passed: 47/47 focused CRM/contact tests, generated Operations shell check, local One Time CRM workbench smoke, One Time live CRM workbench smoke, BNA workspace taxonomy smoke, action watchdog finding_count `0`, run validator, diff check, and secrets audit.
+- Next unblocked shared-CRM lane is `REQ-20260712-307` inbound communication pipeline. Owner-only live email/WhatsApp sends remain blocked by `REQ-20260713-906` until secure owner-test aliases are configured.
