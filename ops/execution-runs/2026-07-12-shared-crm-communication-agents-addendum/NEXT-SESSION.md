@@ -1,7 +1,7 @@
 # Next Session
 
-Next unblocked batch: `6-performance-regression-gates`
-Open requirement: `REQ-20260713-911`
+Next unblocked batch: none inside the One Time-first verifier lane until owner aliases are configured.
+Open blocked requirement: `REQ-20260713-910`, blocked by `REQ-20260713-906`
 
 Current control correction:
 
@@ -31,17 +31,16 @@ Architecture/performance result:
 
 Immediate next action:
 
-1. Start `REQ-20260713-911`: add instrumentation/regression gates for the One Time shell and CRM route-module path, then prove they do not regress BNA or One Time.
-2. Keep the deployed first-slice proof visible: commit `c0b8ab8139c6166d89527a949ce4dd70bf67df3a`, BNA Railway deployment `33571043-54ce-4631-99c1-b54209edebc7`, One Time Railway deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754`, and live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`.
-3. Keep the deployed CRM route-module proof visible: One Time Railway deployment `fac38cc0-23c4-4158-8556-4c11e6c95215`, exact-SHA smoke, and live route-module smoke `ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md`.
-4. Keep the deployed mailbox/messages route-module proof visible: One Time Railway deployment `df3a27b2-a930-430d-b29d-0d8390b62a17`, exact-SHA smoke, and live route-module smoke `ops/live-smokes/2026-07-13T06-59-53-991Z-onetime-provider-route-module-live-smoke.md`.
-5. Keep the completed mobile CRM IA proof visible: commit `e971aa1e69eae63be8682b699b78d4b7733fefb8`, BNA Railway deployment `1e95c912-8985-42a2-b4d7-294f26dd0939`, One Time Railway deployment `9baac6d8-a249-49f7-a228-a77efcf87d5f`, exact-SHA One Time smoke, One Time live CRM smoke `ops/live-smokes/2026-07-13T07-45-19-025Z-one-time-operations-crm-workbench-live-smoke.md`, One Time route-module smoke `ops/live-smokes/2026-07-13T07-45-30-679Z-onetime-provider-route-module-live-smoke.md`, BNA exact-SHA deploy-info readback, and Operations taxonomy smoke `ops/live-smokes/2026-07-13T07-48-07-488Z-operations-workspace-taxonomy-live-smoke.md`.
-6. Keep `REQ-20260713-906` blocked until the owner aliases are configured through the approved secret path.
-7. Do not enable public WhatsApp auto-reply, send to non-owner contacts, or expose raw destination values.
+1. Do not reopen `REQ-20260713-911`; it is Done at deployed SHA `2c72bc0bf060d33567544e97d07c77317e54e971`.
+2. Keep the performance-gate proof visible: One Time deployment `a5c64bbc-c82f-4130-8a54-dbf217a02985`, BNA deployment `28f84dbc-3629-436d-9811-36318d0a3aad`, gate report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`, BNA smoke `ops/live-smokes/2026-07-13T08-14-25-029Z-live-app-smoke.md`, Operations taxonomy smoke `ops/live-smokes/2026-07-13T08-14-24-391Z-operations-workspace-taxonomy-live-smoke.md`, and One Time CRM workbench smoke `ops/live-smokes/2026-07-13T08-14-46-620Z-one-time-operations-crm-workbench-live-smoke.md`.
+3. Keep `REQ-20260713-906` blocked until `ONE_TIME_OWNER_TEST_EMAIL` and `ONE_TIME_OWNER_TEST_WHATSAPP`/phone aliases are configured through the approved secret path.
+4. After aliases exist, rerun owner-test readiness and continue `REQ-20260713-910` verifier without duplicate sends.
+5. If aliases are still unavailable, run `npm run bna:run:next` and choose only a non-send, non-credential, non-production-mutation slice outside the blocked verifier lane.
+6. Do not enable public WhatsApp auto-reply, send to non-owner contacts, or expose raw destination values.
 
 Previous shared-CRM lane is no longer the first lane. Continue `REQ-20260712-302` / `REQ-20260712-303` only where they directly support the One Time-first packets or required BNA regression safety.
 
-Latest One Time app runtime SHA: `e971aa1e69eae63be8682b699b78d4b7733fefb8`
+Latest One Time app runtime SHA: `2c72bc0bf060d33567544e97d07c77317e54e971`
 
 Current proof:
 
@@ -88,9 +87,9 @@ Continue by inspecting and repairing:
 - continue remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`, especially email-thread DTO proof where live data exists and canonical aggregate breadth beyond signup/product leads;
 - `REQ-20260713-906` owner-only live integration tests are blocked on missing secure owner-test aliases, while Resend and One Time WAPI are ready;
 - keep `REQ-20260713-908` proof visible as Done after the deployed CRM/mailbox/communications route-module slices;
-- start or queue `REQ-20260713-911` performance instrumentation/regression gates before calling lag fixed;
-- continue `REQ-20260713-909` mobile CRM IA deployment from the locally verified implementation; local smoke/action proof passed, but deployed SHA/live route/CRM smoke proof is still required before Done;
-- keep `REQ-20260713-910` verifier/final report and `REQ-20260713-911` performance gates tied to owner-test, architecture, dedicated shell, and mobile CRM proof before calling lag fixed;
+- keep `REQ-20260713-911` closed unless a new regression appears; performance instrumentation/regression gates are deployed and live-verified;
+- keep `REQ-20260713-909` closed; mobile CRM IA is deployed and live-verified;
+- keep `REQ-20260713-910` verifier/final report blocked by `REQ-20260713-906` until owner-test aliases exist;
 - Wave 3 private Rabbi Telegram workspace agent (`REQ-20260713-903`), especially full CRM/content/read/write action surface, content-parsing knowledge binding, and live receiver ownership/409 proof;
 - Wave 4 Rabbi ticket to Super Admin approval flow (`REQ-20260713-904`), especially cleanup-safe live synthetic ticket alert/approval, Ask Rabbi round trip, Reject proof, and completion evidence notifications;
 - continue remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`, especially email-thread DTO rows where live data is present and canonical aggregate breadth beyond signup/product leads;

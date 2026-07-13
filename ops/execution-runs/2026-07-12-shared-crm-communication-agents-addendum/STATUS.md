@@ -68,6 +68,19 @@ Current status: `active`
 - Live proof passed: One Time exact-SHA separate-instance smoke, One Time CRM workbench live smoke `ops/live-smokes/2026-07-13T07-45-19-025Z-one-time-operations-crm-workbench-live-smoke.md`, One Time route-module smoke `ops/live-smokes/2026-07-13T07-45-30-679Z-onetime-provider-route-module-live-smoke.md`, BNA exact-SHA deploy-info readback, and Operations workspace taxonomy smoke `ops/live-smokes/2026-07-13T07-48-07-488Z-operations-workspace-taxonomy-live-smoke.md`.
 - `REQ-20260713-909` is Done. Next: start `REQ-20260713-911` instrumentation/regression gates; keep `REQ-20260713-906` blocked until secure owner aliases exist.
 
+## 2026-07-13 Performance Instrumentation And Regression Gates
+
+- `REQ-20260713-911` is Done.
+- Added shared request instrumentation in `server.js`: `X-Request-Id`, `X-BNA-Trace-Id`, `X-BNA-Deploy-SHA`, `X-BNA-Target-App`, `X-BNA-Response-Bytes`, and `Server-Timing` with `app`, `handler`, `db`, and `pool` spans.
+- Wrapped pool/client query paths for database and pool-wait timing, added privacy-safe browser RUM collection under `/api/performance/rum`, and created the `bna_performance_events` table contract.
+- Added `public/js/one-time-performance-rum.js` and loaded it from One Time public/provider/Operations entrypoints with route redaction and no cookie/localStorage/DOM-text capture.
+- Added the performance regression gate `scripts/audit-onetime-performance-regression-gates.mjs`, expanded route-module budgets, and recorded `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Commit `2c72bc0bf060d33567544e97d07c77317e54e971` is pushed to `origin/master`.
+- One Time Railway deployment `e0674590-9e8c-4f01-aaf1-00c1cf27ef41` reached `SUCCESS`; `https://join.onetimeonetime.com/api/deploy-info` returned the exact commit and `target_app=one-time`.
+- BNA Railway deployment `9b3c68bc-fbce-48d2-8636-c2583e25aa57` reached `SUCCESS`; `https://bneineviimacademy.org/api/deploy-info` returned the exact commit and `target_app=bna`.
+- Live proof passed: production performance gate against `https://join.onetimeonetime.com`, Operations taxonomy smoke `ops/live-smokes/2026-07-13T08-16-56-138Z-operations-workspace-taxonomy-live-smoke.md`, One Time CRM workbench smoke `ops/live-smokes/2026-07-13T08-19-54-835Z-one-time-operations-crm-workbench-live-smoke.md`, One Time provider route-module smoke `ops/live-smokes/2026-07-13T08-19-55-092Z-onetime-provider-route-module-live-smoke.md`, and exact-SHA One Time separate-instance smoke.
+- `REQ-20260713-910` verifier is now blocked only by `REQ-20260713-906` missing secure owner-test aliases.
+
 ## Completed In This Batch
 
 - Created run and register for the addendum.
@@ -97,12 +110,10 @@ Current status: `active`
   `ONE_TIME_OWNER_TEST_EMAIL` and `ONE_TIME_OWNER_TEST_WHATSAPP` or approved
   equivalent aliases must be configured through the approved secret path.
 - `REQ-20260713-906` owner-only live integration tests are blocked only on
-  missing secure owner-test aliases; continue `REQ-20260713-911` performance
-  gates and only return to `REQ-20260713-908` for broader critical-path proof
-  while those aliases are configured.
-- Main addendum implementation remains open across the One Time app shell,
-  mobile CRM IA, performance gates, verifier, and remaining Rabbi
-  Telegram/ticket-approval proof.
+  missing secure owner-test aliases; `REQ-20260713-910` final verifier remains
+  blocked by that owner-alias requirement.
+- Main addendum implementation remains open across the verifier and remaining
+  Rabbi Telegram/ticket-approval proof.
 
 ## Shared CRM Product Slice
 

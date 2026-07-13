@@ -39708,3 +39708,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   split shell and monolith at 1440, 1024, 768, 430, and 390 with no writes.
 - Deployment/live proof is still pending before `REQ-20260713-909` can be
   marked Done.
+
+## 2026-07-13 - One Time performance gates deployed and live-verified
+
+- Completed `REQ-20260713-911` with shared server performance instrumentation:
+  trace/request/deploy/target/response-byte headers, `Server-Timing` app,
+  handler, database, and pool spans, privacy-safe One Time RUM, and local/live
+  regression gates.
+- Pushed `2c72bc0bf060d33567544e97d07c77317e54e971` to `origin/master`.
+- Deployed One Time Railway deployment
+  `a5c64bbc-c82f-4130-8a54-dbf217a02985` and BNA Railway deployment
+  `28f84dbc-3629-436d-9811-36318d0a3aad`; both production deploy-info routes
+  returned the exact SHA.
+- Verification passed: local performance gate, route-module budget gate,
+  focused tests, production performance gate
+  `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`,
+  BNA live smoke, Operations workspace taxonomy smoke, and One Time CRM
+  workbench smoke.
+- `REQ-20260713-910` remains blocked only by `REQ-20260713-906` missing secure
+  owner-test aliases.

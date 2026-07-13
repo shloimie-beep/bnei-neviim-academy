@@ -107,7 +107,29 @@
 - PASS `npm run watchdog:actions`; finding count 0.
 - PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
 - Browser smoke proof covers split shell and monolith at 1440, 1024, 768, 430, and 390; verifies focused contact header, section rail, contextual action overflow, lazy section data, mobile Back restoration, scoped inbox context, no horizontal overflow, no console/page/request failures, and no writes.
-- Remaining: deploy exact implementation SHA and run live route/CRM smokes before marking `REQ-20260713-909` Done.
+- Completed in the deployed mobile CRM closeout: exact implementation SHA, BNA/One Time deployments, and live route/CRM smokes passed before `REQ-20260713-909` was marked Done.
+
+## 2026-07-13 Performance Instrumentation And Regression Gates
+
+- PASS `node --check server.js`.
+- PASS `node --check scripts/audit-onetime-performance-regression-gates.mjs`.
+- PASS `node --check scripts/audit-onetime-provider-route-module-budget.mjs`.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/one-time-performance-instrumentation.test.js` (3/3).
+- PASS `npm run one-time:performance-regression-gates` local marker/budget gate.
+- PASS `npm run one-time:provider-route-module-budget`; report `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md`.
+- PASS `node --test tests/one-time-performance-instrumentation.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js` (33/33).
+- PASS `npm run secrets:audit`.
+- PASS `git diff --check`.
+- PASS commit/push at `2c72bc0bf060d33567544e97d07c77317e54e971` on `master`.
+- PASS One Time Railway deploy/doctor: deployment `a5c64bbc-c82f-4130-8a54-dbf217a02985` reached `SUCCESS`.
+- PASS BNA Railway deploy/doctor: deployment `28f84dbc-3629-436d-9811-36318d0a3aad` reached `SUCCESS`.
+- PASS live deploy-info readback: `https://join.onetimeonetime.com/api/deploy-info` and `https://bneineviimacademy.org/api/deploy-info` both returned `commit_sha=2c72bc0bf060d33567544e97d07c77317e54e971`.
+- PASS production performance gate: `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 2c72bc0bf060d33567544e97d07c77317e54e971`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- PASS `npm run app:smoke`; report `ops/live-smokes/2026-07-13T08-14-25-029Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T08-14-24-391Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T08-14-46-620Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Done: `REQ-20260713-911` performance instrumentation/regression gates are deployed and live-verified; `REQ-20260713-910` remains blocked by missing owner-test aliases in `REQ-20260713-906`.
 
 - PASS `node --check server.js`
 - PASS `node --check src/lib/integrations/resend-inbound-crm.js`

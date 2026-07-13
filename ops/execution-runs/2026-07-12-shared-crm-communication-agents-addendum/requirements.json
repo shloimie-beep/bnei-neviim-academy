@@ -578,10 +578,10 @@
       "depends_on": [
         "REQ-20260713-907"
       ],
-      "status": "not_started",
-      "implementation_status": "not_started",
+      "status": "done",
+      "implementation_status": "deployed_and_verified",
       "can_continue_without_operator": true,
-      "next_action": "Ready to start after or alongside the shell work: add Server-Timing/trace IDs, API handler/database/pool timings, route-transition/RUM metrics, bundle/route budgets, and regression gates based on the 2026-07-13 baseline.",
+      "next_action": "Done. Performance instrumentation and release gates are live on One Time and BNA at runtime SHA 2c72bc0bf060d33567544e97d07c77317e54e971; REQ-20260713-910 remains blocked by REQ-20260713-906 until secure owner-test aliases are configured.",
       "acceptance_criteria": [
         "Instrumentation includes request ID, trace ID, Server-Timing, route duration, API handler duration, database duration, pool wait, response bytes, error status, frontend route transition duration, Web Vitals/RUM without personal data, deploy SHA, target app, and cold/warm classification where detectable.",
         "Repeated cold/warm measurements and budgets are recorded for public One Time and authenticated One Time routes.",
@@ -589,19 +589,85 @@
         "Release gates cover bundle-size budgets, route chunk budgets, repeated Playwright performance smoke, CRM request/render limits, response-size limits, Web Vitals thresholds, eager Vimeo/player checks, compression/cache headers, and p95 live readback after deploy.",
         "The lag requirement is not Done until root cause, ADR, smaller critical path, repeated tests, API/database budgets, mobile responsiveness, instrumentation, regression gates, exact deployed SHA, and linked evidence all exist."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "server.js",
+        "public/js/one-time-performance-rum.js",
+        "public/one-time/index.html",
+        "public/provider.html",
+        "public/operations.html",
+        "public/operations-bootstrap.html",
+        "scripts/audit-onetime-performance-regression-gates.mjs",
+        "scripts/audit-onetime-provider-route-module-budget.mjs",
+        "tests/one-time-performance-instrumentation.test.js",
+        "ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md",
+        "ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.json",
+        "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md",
+        "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.json",
+        "ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md",
+        "ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.json",
+        "ops/live-smokes/2026-07-13T08-19-54-835Z-one-time-operations-crm-workbench-live-smoke.md",
+        "ops/live-smokes/2026-07-13T08-19-55-092Z-onetime-provider-route-module-live-smoke.md",
+        "ops/live-smokes/2026-07-13T08-16-56-138Z-operations-workspace-taxonomy-live-smoke.md"
+      ],
+      "verification": [
+        "node --check server.js PASS",
+        "node --check public/js/one-time-performance-rum.js PASS",
+        "node --check scripts/audit-onetime-performance-regression-gates.mjs PASS",
+        "node --check scripts/audit-onetime-provider-route-module-budget.mjs PASS",
+        "npm run operations:check-generated PASS",
+        "node --test tests/one-time-performance-instrumentation.test.js tests/one-time-provider-review-navigation.test.js tests/one-time-provider-operations-login.test.js PASS (14/14)",
+        "npm run one-time:performance-regression-gates PASS locally",
+        "npm run one-time:provider-route-module-budget -- --base-ref HEAD PASS",
+        "git diff --check PASS",
+        "Commit 2c72bc0bf060d33567544e97d07c77317e54e971 is present on origin/master and contains the live One Time performance gate proof; runtime code was introduced by 367084f6c and hardened by 943bc7fbe.",
+        "One Time Railway deployment e0674590-9e8c-4f01-aaf1-00c1cf27ef41 reached SUCCESS; live /api/deploy-info returned commit_sha=2c72bc0bf060d33567544e97d07c77317e54e971 and target_app=one-time.",
+        "BNA Railway deployment 9b3c68bc-fbce-48d2-8636-c2583e25aa57 reached SUCCESS; live /api/deploy-info returned commit_sha=2c72bc0bf060d33567544e97d07c77317e54e971 and target_app=bna.",
+        "npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 2c72bc0bf060d33567544e97d07c77317e54e971 PASS; production Server-Timing, trace/deploy/response-size headers, RUM dry-run, and scoped CRM readback passed.",
+        "npm run one-time:architecture-performance-baseline -- --base-url https://join.onetimeonetime.com --repeats=2 --expected-sha 943bc7fbec483ad9fc24919d971d13672e61b669 PASS; 160 measured samples; 0 skipped; runtime-equivalent to 2c72bc0bf because later commit changed only gate/report artifacts.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 2c72bc0bf060d33567544e97d07c77317e54e971 PASS",
+        "npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 2c72bc0bf060d33567544e97d07c77317e54e971 PASS; report ops/live-smokes/2026-07-13T08-19-55-092Z-onetime-provider-route-module-live-smoke.md",
+        "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 2c72bc0bf060d33567544e97d07c77317e54e971 PASS; report ops/live-smokes/2026-07-13T08-19-54-835Z-one-time-operations-crm-workbench-live-smoke.md",
+        "npm run app:smoke:operations-workspace-taxonomy PASS against https://bneineviimacademy.org; report ops/live-smokes/2026-07-13T08-16-56-138Z-operations-workspace-taxonomy-live-smoke.md",
+        "Direct live /api/health readbacks on One Time and BNA returned database=connected plus Server-Timing app/handler/db/pool spans, trace headers, deploy SHA headers, target-app headers, and response-byte headers."
+      ],
       "implementation_files": [
         "server.js",
-        "src/",
-        "public/",
-        "scripts/",
-        "tests/",
-        "ops/"
+        "public/js/one-time-performance-rum.js",
+        "public/one-time/index.html",
+        "public/provider.html",
+        "public/operations.html",
+        "public/operations-bootstrap.html",
+        "scripts/audit-onetime-performance-regression-gates.mjs",
+        "scripts/audit-onetime-provider-route-module-budget.mjs",
+        "tests/one-time-performance-instrumentation.test.js",
+        "ops/performance-audits/2026-07-13-onetime-performance-regression-gates/",
+        "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/",
+        "ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T08:45:00+03:00",
-      "blocker": ""
+      "updated_at": "2026-07-13T11:25:00+03:00",
+      "blocker": "",
+      "implementation_commit": "2c72bc0bf060d33567544e97d07c77317e54e971",
+      "deployed_commit": "2c72bc0bf060d33567544e97d07c77317e54e971",
+      "deployment_id": {
+        "one_time": "a5c64bbc-c82f-4130-8a54-dbf217a02985",
+        "bna": "28f84dbc-3629-436d-9811-36318d0a3aad"
+      },
+      "deployment_evidence": [
+        "One Time Railway deployment a5c64bbc-c82f-4130-8a54-dbf217a02985 reached SUCCESS and live deploy-info returned commit_sha=2c72bc0bf060d33567544e97d07c77317e54e971 target_app=one-time.",
+        "BNA Railway deployment 28f84dbc-3629-436d-9811-36318d0a3aad reached SUCCESS and live deploy-info returned commit_sha=2c72bc0bf060d33567544e97d07c77317e54e971 target_app=bna.",
+        "Live performance gate passed: ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md",
+        "Live BNA smoke passed: ops/live-smokes/2026-07-13T08-14-25-029Z-live-app-smoke.md",
+        "Live Operations taxonomy smoke passed: ops/live-smokes/2026-07-13T08-14-24-391Z-operations-workspace-taxonomy-live-smoke.md",
+        "Live One Time CRM workbench smoke passed: ops/live-smokes/2026-07-13T08-14-46-620Z-one-time-operations-crm-workbench-live-smoke.md"
+      ],
+      "live_smoke": {
+        "one_time_performance_gate": "ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md",
+        "bna_app": "ops/live-smokes/2026-07-13T08-14-25-029Z-live-app-smoke.md",
+        "operations_taxonomy": "ops/live-smokes/2026-07-13T08-14-24-391Z-operations-workspace-taxonomy-live-smoke.md",
+        "one_time_crm": "ops/live-smokes/2026-07-13T08-14-46-620Z-one-time-operations-crm-workbench-live-smoke.md"
+      },
+      "pushed_commit": "2c72bc0bf060d33567544e97d07c77317e54e971"
     },
     {
       "id": "REQ-20260712-302",

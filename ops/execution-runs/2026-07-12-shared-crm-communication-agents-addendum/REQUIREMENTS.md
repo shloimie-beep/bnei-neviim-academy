@@ -18,7 +18,7 @@ New addendum requirements:
 | REQ-20260713-905 | One Time-first control correction and BNA parity supersession | Done |
 | REQ-20260713-906 | Owner-only live integration tests for One Time email and WhatsApp | Blocked on owner aliases |
 | REQ-20260713-907 | One Time architecture and performance baseline | Done |
-| REQ-20260713-908 | Dedicated One Time application shell and route-level modules | Ready |
-| REQ-20260713-909 | Mobile CRM information architecture | Not started |
-| REQ-20260713-910 | Performance and integration verifier/final report | Not started |
-| REQ-20260713-911 | Performance instrumentation, regression gates, and final proof sections | Ready |
+| REQ-20260713-908 | Dedicated One Time application shell and route-level modules | Done |
+| REQ-20260713-909 | Mobile CRM information architecture | Done |
+| REQ-20260713-910 | Performance and integration verifier/final report | Blocked on owner aliases |
+| REQ-20260713-911 | Performance instrumentation, regression gates, and final proof sections | Done |
