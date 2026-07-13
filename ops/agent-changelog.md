@@ -40077,3 +40077,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   production write, provider mutation, payment/access mutation, import,
   credential mutation, or production data mutation was performed by this
   closeout proof.
+
+## 2026-07-13 - One Time Vimeo credential status clarified
+
+- Updated `REQ-20260713-918` with the Vimeo owner credential readback result:
+  the newly supplied owner values validate as `client_id` plus
+  `client_secret` for Vimeo client-credentials public auth, but neither value
+  works as a direct `/me` bearer token.
+- Kept the working keyholder `VIMEO_ACCESS_TOKEN` as the user readback token;
+  it still reads the `Shloimie Dratler` account, but private upload remains
+  blocked on test folder/project, upload-capable token/scope/plan confirmation,
+  and explicit synthetic-smoke approval.
+- Wired `REQ-20260713-917` metadata drafts and blocked bot-knowledge handoffs
+  into the One Time studio sidecar and safe report path, without committing raw
+  transcript body text.
+- Verification passed: focused One Time studio/metadata/transcription/folder
+  suite `36/36`.
+- No Vimeo upload, Vimeo folder attach, privacy change, metadata edit, delete,
+  public publish, token storage, Drive write, database mutation, bot-knowledge
+  promotion, member publication, provider mutation, credential mutation,
+  payment/access mutation, or external send was performed.

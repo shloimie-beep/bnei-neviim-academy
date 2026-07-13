@@ -27,6 +27,7 @@ credential mutation, and raw token printing.
 | Check | Result |
 |---|---|
 | Supplied owner values as direct Bearer token candidates | Both newly supplied values returned 401 on direct `/me` bearer readback, so they are not installed as `VIMEO_ACCESS_TOKEN`. |
+| Supplied owner values as app credentials | First supplied value as `client_id` plus second supplied value as `client_secret` returned 200 for Vimeo client-credentials public auth; reverse ordering failed; returned token was not stored. |
 | Existing local `VIMEO_ACCESS_TOKEN` readback | Read-only `/me` works from keyholder and reads account name `Shloimie Dratler`; account URI is redacted in evidence and the account field read back as `free`. |
 | `node scripts/vimeo-private-smoke.mjs --json` | Returned `preview_only`; `BNA_VIMEO_PRIVATE_SMOKE` was not enabled; token source was keyholder; `external_write_performed=false`; no upload ran. |
 | Read-only owner-confirmed capability check | Returned `test_target_missing`: owner account read works, but no Vimeo private test project/folder is configured. |
@@ -34,8 +35,9 @@ credential mutation, and raw token printing.
 ## Decision Needed
 
 `REQ-20260713-918` cannot be marked Done until the operator chooses or creates a
-private Vimeo test project/folder and explicitly approves a synthetic private
-upload smoke.
+private Vimeo test project/folder, confirms the owner user access token has the
+needed upload/private/edit/video_files capability, and explicitly approves a
+synthetic private upload smoke.
 
 Recommended next action:
 
@@ -43,9 +45,11 @@ Recommended next action:
    One Time synthetic upload proof.
 2. Provide its project/folder name or URI through the approved secret/runtime
    config path as `VIMEO_TEST_PROJECT_URI` or `VIMEO_TEST_PROJECT_NAME`.
-3. Confirm the account plan/token scopes support API upload plus private,
-   edit, and video_files behavior.
-4. Explicitly approve the non-sensitive synthetic upload smoke before setting
+3. Keep the supplied owner values stored/used as `VIMEO_CLIENT_ID` and
+   `VIMEO_CLIENT_SECRET`, not as `VIMEO_ACCESS_TOKEN`.
+4. Confirm or generate the owner user access token for `VIMEO_ACCESS_TOKEN`
+   with API upload plus private, edit, and video_files behavior.
+5. Explicitly approve the non-sensitive synthetic upload smoke before setting
    `BNA_VIMEO_PRIVATE_SMOKE=1`.
 
 ## Guardrails

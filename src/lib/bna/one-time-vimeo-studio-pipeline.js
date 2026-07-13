@@ -5,6 +5,7 @@ const { spawnSync } = require('node:child_process');
 const ffmpegPath = require('ffmpeg-static');
 
 const folderWorkflow = require('./one-time-vimeo-folder-library');
+const transcriptMetadata = require('./one-time-transcript-metadata');
 const {
   classifyProviderHttpError,
   loadOpenAiCredentialCandidates,
@@ -445,6 +446,63 @@ function parseScopeBlockers(metadata = {}) {
   return blockers;
 }
 
+function buildTranscriptReviewVersion(candidate = {}) {
+  const transcript = candidate.transcript || {};
+  return {
+    version: 'studio-sidecar-draft',
+    status: transcript.status || 'draft',
+    transcript_sha256: transcript.text ? sha256(transcript.text) : '',
+    transcript_body_included: false,
+  };
+}
+
+function buildMetadataArtifacts(candidate = {}) {
+  const transcriptVersion = buildTranscriptReviewVersion(candidate);
+  const metadataDraft = transcriptMetadata.buildOneTimeMetadataDraft({
+    transcriptVersion,
+    transcriptText: candidate.transcript?.text || '',
+    sidecar: candidate.metadata || {},
+  });
+  const botKnowledgeHandoff = transcriptMetadata.buildBotKnowledgeHandoff({
+    metadataDraft,
+    transcriptVersion,
+    approved: false,
+  });
+  return {
+    transcript_version: transcriptVersion,
+    metadata_draft: metadataDraft,
+    bot_knowledge_handoff: botKnowledgeHandoff,
+  };
+}
+
+function safeMetadataDraftReport(metadataDraft = {}) {
+  return {
+    schema_version: metadataDraft.schema_version || '',
+    title: metadataDraft.title || '',
+    torah_metadata: metadataDraft.torah_metadata || {},
+    confidence: metadataDraft.confidence || 0,
+    review_state: metadataDraft.review_state || '',
+    transcript_sha256: metadataDraft.transcript_sha256 || '',
+    approved_for_member_publish: metadataDraft.approved_for_member_publish === true,
+    approved_for_bot_knowledge: metadataDraft.approved_for_bot_knowledge === true,
+    raw_transcript_included: metadataDraft.raw_transcript_included === true,
+    description_bullets_count: Array.isArray(metadataDraft.description_bullets)
+      ? metadataDraft.description_bullets.length
+      : 0,
+  };
+}
+
+function safeBotKnowledgeHandoffReport(handoff = {}) {
+  return {
+    schema_version: handoff.schema_version || '',
+    status: handoff.status || '',
+    blockers: handoff.blockers || [],
+    no_raw_transcript_body: handoff.no_raw_transcript_body === true,
+    transcript_sha256: handoff.transcript_sha256 || '',
+    knowledge_item_ready: Boolean(handoff.knowledge_item),
+  };
+}
+
 function buildStudioCandidate(drop, folderRoot, processedRoot, options = {}) {
   const dropRoot = path.resolve(drop.drop_root);
   const videoPath = path.resolve(drop.video_path);
@@ -473,7 +531,7 @@ function buildStudioCandidate(drop, folderRoot, processedRoot, options = {}) {
   };
   const blockers = [...metadataRead.errors, ...scopeBlockers];
   if (safety.contains_sensitive_data) blockers.push('Sidecar marks this file as containing sensitive data; Vimeo upload remains blocked.');
-  return {
+  const candidate = {
     id: candidateId,
     workspace_key: ONE_TIME_WORKSPACE_KEY,
     project_key: ONE_TIME_PROJECT_KEY,
@@ -510,10 +568,13 @@ function buildStudioCandidate(drop, folderRoot, processedRoot, options = {}) {
     },
     blockers,
   };
+  candidate.metadata_artifacts = buildMetadataArtifacts(candidate);
+  return candidate;
 }
 
 function buildVimeoSidecar(candidate, rendered = {}) {
   const metadata = candidate.metadata || {};
+  const artifacts = candidate.metadata_artifacts || buildMetadataArtifacts(candidate);
   return {
     workspace_key: ONE_TIME_WORKSPACE_KEY,
     project_key: ONE_TIME_PROJECT_KEY,
@@ -527,6 +588,8 @@ function buildVimeoSidecar(candidate, rendered = {}) {
     duration_seconds: Math.max(0, Math.round((candidate.trim_plan?.output_content_seconds || 0) + (candidate.opener?.seconds || 0))),
     transcript_text: candidate.transcript.text || '',
     transcript_status: candidate.transcript.status || 'draft',
+    metadata_draft: artifacts.metadata_draft,
+    bot_knowledge_handoff: artifacts.bot_knowledge_handoff,
     package_status: compactText(metadataValue(metadata, 'package_status', 'packageStatus') || 'review', 40),
     synthetic_test: candidate.safety.synthetic_test,
     contains_sensitive_data: candidate.safety.contains_sensitive_data,
@@ -815,6 +878,7 @@ function writeCandidateSidecar(candidate, rendered = {}) {
 }
 
 function safeCandidateReport(candidate, rendered = {}, repoRoot = process.cwd()) {
+  const artifacts = candidate.metadata_artifacts || buildMetadataArtifacts(candidate);
   return {
     id: candidate.id,
     workspace_key: candidate.workspace_key,
@@ -836,6 +900,8 @@ function safeCandidateReport(candidate, rendered = {}, repoRoot = process.cwd())
       length: candidate.transcript.length,
       sha256: candidate.transcript.sha256,
     },
+    metadata_draft: safeMetadataDraftReport(artifacts.metadata_draft),
+    bot_knowledge_handoff: safeBotKnowledgeHandoffReport(artifacts.bot_knowledge_handoff),
     output: {
       rendered: rendered.render_performed === true,
       video_path: reportPath(repoRoot, rendered.video_path || candidate.output.video_path),

@@ -217,9 +217,9 @@
       ],
       "stage": "04-transcript-metadata-and-knowledge-handoff",
       "packet_role": "IMPLEMENTATION_PACKET",
-      "status": "in_progress_local_contract_deployed_db_review_integration_pending",
+      "status": "in_progress_local_contract_deployed_studio_sidecar_verified_db_review_integration_pending",
       "owner": "Codex",
-      "scope": "Versioned transcript metadata draft and provider-scoped bot knowledge handoff contracts with review gates and no raw transcript leakage.",
+      "scope": "Versioned transcript metadata draft, studio sidecar artifacts, and provider-scoped bot knowledge handoff contracts with review gates and no raw transcript leakage.",
       "out_of_scope": [
         "Database promotion worker",
         "Review UI integration",
@@ -232,7 +232,9 @@
       "affected_routes": [],
       "affected_files": [
         "src/lib/bna/one-time-transcript-metadata.js",
+        "src/lib/bna/one-time-vimeo-studio-pipeline.js",
         "tests/one-time-transcript-metadata.test.js",
+        "tests/one-time-vimeo-studio-pipeline.test.js",
         "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/04-transcript-metadata-and-knowledge-handoff.md"
       ],
       "required_evidence": [
@@ -240,10 +242,11 @@
         "sidecar priority tests",
         "confidence and review gate tests",
         "bot knowledge approval blocker tests",
-        "raw transcript omission tests"
+        "raw transcript omission tests",
+        "studio sidecar and safe report redaction tests"
       ],
-      "validation_command": "node --test tests/one-time-transcript-metadata.test.js",
-      "terminal_condition": "Local contract is validated; DB promotion worker/review UI integration remains pending.",
+      "validation_command": "node --test tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-transcript-metadata.test.js tests/one-time-long-transcription.test.js tests/one-time-vimeo-folder-library-workflow.test.js",
+      "terminal_condition": "Local contract and studio sidecar integration are validated; DB promotion worker/review UI integration remains pending.",
       "handoff_target": "PKT-20260713-004-06",
       "next_requirement": "REQ-20260713-919",
       "next_packet": "PKT-20260713-004-06"
@@ -262,7 +265,7 @@
       "packet_role": "PROVIDER_SETUP_PACKET",
       "status": "needs_operator_decision",
       "owner": "Codex + operator",
-      "scope": "Vimeo owner account readback, private test project/folder decision, upload scope/plan confirmation, and explicit synthetic private upload approval gate.",
+      "scope": "Vimeo owner app credential readback, user-token/account readback, private test project/folder decision, upload scope/plan confirmation, and explicit synthetic private upload approval gate.",
       "out_of_scope": [
         "Real class upload",
         "Synthetic upload without explicit approval",
@@ -279,18 +282,19 @@
       ],
       "required_evidence": [
         "secret-redacted credential readback",
+        "client credentials auth proof without token storage",
         "owner account confirmation",
         "private test project or folder config",
         "explicit approval for synthetic private upload",
         "no public publish or token print"
       ],
       "validation_command": "node scripts/vimeo-private-smoke.mjs --json",
-      "terminal_condition": "Current state is Needs operator decision: keyholder token reads the owner account, but no private Vimeo test project/folder or synthetic upload approval is configured.",
+      "terminal_condition": "Current state is Needs operator decision: supplied owner app credentials validate as client_id/client_secret, keyholder token reads the owner account, but no private Vimeo test project/folder, upload-capable user-token/scope confirmation, or synthetic upload approval is configured.",
       "handoff_target": "PKT-20260713-004-06",
       "next_requirement": "REQ-20260713-919",
       "next_packet": "PKT-20260713-004-06"
     }
   ],
   "created_at": "2026-07-13T14:17:00+03:00",
-  "updated_at": "2026-07-13T14:48:37+03:00"
+  "updated_at": "2026-07-13T15:17:02+03:00"
 }

@@ -306,6 +306,13 @@ test('studio sidecar is compatible with the existing Vimeo folder workflow shape
   assert.equal(sidecar.mishnah_range, '1');
   assert.equal(sidecar.transcript_status, 'review');
   assert.match(sidecar.transcript_text, /synthetic transcript/);
+  assert.equal(sidecar.metadata_draft.schema_version, 'one_time_transcript_metadata.v1');
+  assert.equal(sidecar.metadata_draft.torah_metadata.masechta, 'Berachos');
+  assert.equal(sidecar.metadata_draft.raw_transcript_included, false);
+  assert.equal(sidecar.bot_knowledge_handoff.schema_version, 'one_time_bot_knowledge_handoff.v1');
+  assert.equal(sidecar.bot_knowledge_handoff.status, 'blocked');
+  assert.equal(sidecar.bot_knowledge_handoff.no_raw_transcript_body, true);
+  assert.equal(sidecar.bot_knowledge_handoff.knowledge_item, null);
   assert.equal(sidecar.metadata.intake_source, 'one_time_vimeo_studio_pipeline');
 });
 
@@ -323,8 +330,12 @@ test('studio reports redact transcript body from committed evidence', async () =
     runVimeoDryRun: false,
   });
   const markdown = pipeline.formatMarkdownReport(report);
+  const candidate = report.candidates[0];
 
   assert.match(markdown, /Transcript: `present`/);
+  assert.equal(candidate.metadata_draft.raw_transcript_included, false);
+  assert.equal(candidate.bot_knowledge_handoff.no_raw_transcript_body, true);
+  assert.equal(candidate.bot_knowledge_handoff.status, 'blocked');
   assert.doesNotMatch(markdown, /This transcript body should not appear/);
   assert.doesNotMatch(JSON.stringify(report), /This transcript body should not appear/);
 });
