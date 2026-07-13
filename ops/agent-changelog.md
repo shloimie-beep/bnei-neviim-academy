@@ -39384,3 +39384,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   action watchdog, protocol drift, secret audit, execution-run validation,
   BNA/One Time Railway doctors, exact-SHA One Time route smoke, live CRM
   workbench smoke, deployed JS marker checks, and read-only live endpoint smoke.
+
+## 2026-07-13 - CRM conversation thread opening deployed
+
+- Added safe thread-open metadata to selected-contact conversation DTOs and
+  carried bna_communications thread/message fields through the canonical
+  server-owned CRM conversation path.
+- Added literal registered Open email thread / Open WhatsApp thread controls to
+  conversation cards; the WhatsApp shortcut now opens the scoped Operations
+  WhatsApp pane instead of an external `wa.me` link.
+- Verification passed: syntax checks, generated-shell check, shared CRM
+  contract/service-provider tests `21/21`, local and live One Time CRM workbench
+  smokes, focused One Time suite `76/76`, action/link/security/protocol
+  watchdogs, secret audit, execution-run validation, BNA/One Time Railway
+  doctors, exact-SHA One Time route smoke, deployed marker checks on both
+  domains, and read-only live `/conversations` DTO proof.

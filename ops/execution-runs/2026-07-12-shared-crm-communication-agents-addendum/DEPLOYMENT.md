@@ -121,3 +121,19 @@ Global production readiness remains blocked only by known external full-launch f
 - One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 15796035598280b3ae14d748e3673d6a186af5cd` passed.
 - One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com` passed; report `ops/live-smokes/2026-07-13T02-32-29-354Z-one-time-operations-crm-workbench-live-smoke.md`.
 - Deployed JS marker checks passed for `ACTION-CRM-ADD-NOTE`, `ACTION-CRM-ADD-TAG`, `ACTION-CRM-REMOVE-TAG`, `ACTION-CRM-ASSIGN-OWNER`, `ACTION-CRM-CHANGE-LIFECYCLE`, tag remove validation copy, and `create_follow_up_task: false`.
+
+## 2026-07-13 CRM Conversation Thread Open Slice Deploy
+
+- Commit: `83427a7a7d7d1c255d83f1e13da24b18265e55fd`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_RAILWAY_TARGET_PROFILE=bna`.
+- BNA Railway doctor: deployment `8744a95d-c510-412a-9f57-f72f69f72ce2` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=83427a7a7d7d1c255d83f1e13da24b18265e55fd`, `target_app=bna`.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- One Time Railway doctor: deployment `16db8dd7-50d7-4ec1-ad79-e951956c07c3` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=83427a7a7d7d1c255d83f1e13da24b18265e55fd`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 83427a7a7d7d1c255d83f1e13da24b18265e55fd` passed.
+- One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench` passed; report `ops/live-smokes/2026-07-13T03-12-16-557Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Deployed JS marker checks passed on BNA and One Time for `openFirstPartyCrmConversationThread`, literal email/WhatsApp conversation action markers, `No WhatsApp message was sent.`, and `Open WhatsApp thread`.
+- Live selected-contact `/conversations` DTO readback through Operations auth returned 12 scoped cards, 6 selected conversations, `open_actions=["whatsapp"]`, `no_send=true`, and `external_write_performed=false`.

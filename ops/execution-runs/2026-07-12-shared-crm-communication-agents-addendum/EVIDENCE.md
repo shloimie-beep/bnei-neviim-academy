@@ -195,6 +195,18 @@
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1a8bca34048a8b0213b0a608cae5320727f6747b` passed.
 - `ops/live-smokes/2026-07-13T02-43-26-025Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards and selected timeline read-only.
 - Read-only live endpoint smoke through Operations auth returned scoped One Time CRM cards plus `/conversations` and `/tasks` DTOs with `aggregate_service=bna_crm_contact_service_v1`, page limits `[5,5]`, `no_send=true`, and `external_write_performed=false`.
+- `src/lib/bna/crm/contact-service.js` - selected-contact conversation DTOs now include safe channel/thread navigation metadata (`open_action`, `thread_key`, external message id, from/to address, provider/status) while retaining `no_send=true` and `external_write_performed=false`.
+- `server.js` - canonical CRM timeline loaders now include bna_communications thread/message metadata in the server-owned conversation DTO path, with workspace/project filtering still applied before DTO mapping.
+- `public/operations.html` / `public/js/operations-shell.js` - contact conversation cards expose literal registered `ACTION-CRM-OPEN-SCOPED-INBOX` and `ACTION-CRM-OPEN-WHATSAPP-THREAD` buttons; the WhatsApp shortcut now opens the scoped Operations WhatsApp pane instead of a `wa.me` external chat link.
+- `ops/action-registry.json` - `ACTION-CRM-OPEN-WHATSAPP-THREAD` now describes scoped internal WhatsApp conversation navigation with no prefill/send.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=83427a7a7d7d1c255d83f1e13da24b18265e55fd`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=83427a7a7d7d1c255d83f1e13da24b18265e55fd`.
+- BNA post-deploy doctor - Railway deployment `8744a95d-c510-412a-9f57-f72f69f72ce2` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `16db8dd7-50d7-4ec1-ad79-e951956c07c3` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 83427a7a7d7d1c255d83f1e13da24b18265e55fd` passed.
+- `ops/live-smokes/2026-07-13T03-12-16-557Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards.
+- Deployed JS marker checks on both BNA and One Time confirmed `openFirstPartyCrmConversationThread`, `data-crm-conversation-action="whatsapp"`, `data-crm-conversation-action="email"`, `No WhatsApp message was sent.`, and `Open WhatsApp thread`.
+- Read-only live endpoint smoke through Operations auth returned 12 scoped One Time CRM cards and 6 selected-contact conversations with `open_actions=["whatsapp"]`, `no_send=true`, and `external_write_performed=false`.
 - `public/operations.html` / `public/js/operations-shell.js` - selected CRM contact workspace now fetches timeline, conversations, and tasks through the canonical contact DTO endpoints in parallel, stores separate detail payloads, and renders the Conversations and Tasks tabs from server-owned DTOs instead of mailbox/card fallbacks.
 - `tests/shared-crm-workbench-contract.test.js` / `tests/service-provider-scope-routes.test.js` - contract tests now pin `getCrmContactConversations`, `getCrmContactTasks`, DTO payload state, `Promise.allSettled` readback, and `data-crm-dto-source` tab markers.
 - BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=132fdbdb454f51f7c9d073237e8c21b1e5fba070`.
