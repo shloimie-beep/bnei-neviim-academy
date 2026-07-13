@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const test = require('node:test');
 
 const {
@@ -175,4 +176,25 @@ test('policy blocks arbitrary access, payment, and task actions even with a safe
   assert.deepEqual(policy.blocked_actions.map((action) => action.action_id), ['ACTION-GRANT-ACCESS', 'ACTION-CHARGE-PAYMENT']);
   assert.equal(policy.create_task, false);
   assert.equal(policy.external_send_performed, false);
+});
+
+test('WAPI webhook wires response runtime after inbound persistence and before auto-reply decisions', () => {
+  const server = fs.readFileSync('server.js', 'utf8');
+  assert.match(server, /generateCommunicationAgentResponse/);
+  assert.match(server, /stampOneTimeCommunicationAgentResponse/);
+  assert.match(server, /loadOneTimeCommunicationAgentConversationHistory/);
+  assert.match(server, /communication_agent_runtime_version/);
+  assert.match(server, /communication_agent_external_send_performed:\s*false/);
+  assert.match(server, /OPENAI_API_KEY/);
+
+  const inboundIndex = server.indexOf('let communicationResult = await createCommunicationFromWapiWebhook');
+  const runtimeIndex = server.indexOf('communicationAgentResponse = await generateCommunicationAgentResponse', inboundIndex);
+  const stampIndex = server.indexOf('stampOneTimeCommunicationAgentResponse', runtimeIndex);
+  const applyIndex = server.indexOf('const applied = await applyOneTimeProviderBotPlan', stampIndex);
+  const autoReplyIndex = server.indexOf('maybeSendOneTimeWapiAutoReply', applyIndex);
+  assert.ok(inboundIndex > 0, 'inbound communication must be persisted first');
+  assert.ok(runtimeIndex > inboundIndex, 'response runtime must run after inbound persistence');
+  assert.ok(stampIndex > runtimeIndex, 'runtime metadata must be stamped before plan persistence');
+  assert.ok(applyIndex > stampIndex, 'provider plan persistence should include runtime metadata');
+  assert.ok(autoReplyIndex > applyIndex, 'auto-reply/outbox decision remains after runtime policy gates');
 });

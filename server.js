@@ -153,6 +153,9 @@ const {
   providerLeadBotClassLinkAllowed,
   loadProviderLeadBotProfile,
 } = require('./src/lib/bna/provider-lead-bot');
+const {
+  generateCommunicationAgentResponse,
+} = require('./src/lib/bna/crm/communication-agent-response-runtime');
 const integrationSecretLoader = require('./src/lib/integrations/secret-loader');
 const bufferIntegration = require('./src/lib/integrations/buffer-client');
 const resendIntegration = require('./src/lib/integrations/resend-client');
@@ -67005,6 +67008,174 @@ function oneTimeProviderBotContact({ lead = null, communicationResult = {}, what
   };
 }
 
+function oneTimeCommunicationAgentRuntimeSummary(response = {}) {
+  if (!response || typeof response !== 'object') return null;
+  return {
+    runtime_version: response.runtime_version || null,
+    prompt_version: response.prompt_version || null,
+    agent_loaded: response.agent_loaded === true,
+    agent_key: response.agent_key || null,
+    agent_version: response.agent_version || null,
+    knowledge_snapshot_version: response.knowledge_snapshot_version || null,
+    knowledge_snapshot_hash: response.knowledge_snapshot_hash || null,
+    channel_binding_key: response.channel_binding_key || null,
+    channel_id: response.channel_id || null,
+    channel: response.channel || null,
+    model: response.model || null,
+    model_status: response.model_status || null,
+    model_response_id: response.model_response_id || null,
+    model_error_redacted: response.model_error_redacted || null,
+    response_status: response.response_status || null,
+    fallback_used: response.fallback_used === true,
+    model_reply_blocked: response.model_reply_blocked === true,
+    deterministic_reply_blocked: response.deterministic_reply_blocked === true,
+    reply_mode: response.reply_mode || null,
+    delivery: response.delivery ? {
+      enqueue: response.delivery.enqueue === true,
+      mode: response.delivery.mode || null,
+      channel_key: response.delivery.channel_key || null,
+      body_returned: false,
+      raw_class_link_in_model_context: false,
+      raw_class_link_in_logs: false,
+    } : null,
+    allowed_actions: (Array.isArray(response.allowed_actions) ? response.allowed_actions : []).map((action = {}) => ({
+      action_id: limitText(action.action_id || '', 120),
+      status: limitText(action.status || '', 160) || null,
+      create_generic_task: action.create_generic_task === true,
+      create_follow_up_task: action.create_follow_up_task === true,
+    })),
+    blocked_actions: (Array.isArray(response.blocked_actions) ? response.blocked_actions : []).map((action = {}) => ({
+      action_id: limitText(action.action_id || '', 120),
+      reason: limitText(action.reason || '', 160) || 'blocked_by_policy',
+    })),
+    deterministic_plan: response.deterministic_plan ? {
+      intent: response.deterministic_plan.intent || null,
+      route_aliases: Array.isArray(response.deterministic_plan.route_aliases) ? response.deterministic_plan.route_aliases : [],
+      create_support_ticket: response.deterministic_plan.create_support_ticket === true,
+      opt_out: response.deterministic_plan.opt_out === true,
+      suppress_outbound: response.deterministic_plan.suppress_outbound === true,
+      class_link_requested: response.deterministic_plan.class_link_requested === true,
+      class_link_released: false,
+      raw_class_link_returned: false,
+    } : null,
+    prompt_input_returned: false,
+    reply_body_returned: false,
+    raw_api_key_stored: false,
+    raw_secret_returned: false,
+    raw_class_link_in_model_context: false,
+    raw_class_link_in_logs: false,
+    create_task: false,
+    external_send_performed: false,
+  };
+}
+
+async function loadOneTimeCommunicationAgentConversationHistory({ communication = {}, normalized = {} } = {}, db = pool) {
+  if (!communication?.project_id) return [];
+  const phoneDigits = normalizePhoneDigits(normalized.fromNumber || normalized.chatId || '');
+  const result = await db.query(
+    `SELECT id, channel, direction, body, summary, occurred_at, created_at
+     FROM bna_contact_communications
+     WHERE project_id = $1
+       AND id <> $2
+       AND channel IN ('whatsapp', 'email')
+       AND (
+         ($3::int IS NOT NULL AND lead_id = $3::int)
+         OR ($4::int IS NOT NULL AND signup_id = $4::int)
+         OR ($5::int IS NOT NULL AND student_id = $5::int)
+         OR (
+           $6 <> ''
+           AND regexp_replace(
+             COALESCE(
+               source_context->>'from_number',
+               source_context->>'chat_id',
+               metadata->>'wapi_chat_id',
+               metadata->>'from_number',
+               ''
+             ),
+             '\\D',
+             '',
+             'g'
+           ) = $6
+         )
+       )
+     ORDER BY occurred_at DESC NULLS LAST, created_at DESC NULLS LAST, id DESC
+     LIMIT 6`,
+    [
+      communication.project_id,
+      communication.id || 0,
+      communication.lead_id || null,
+      communication.signup_id || null,
+      communication.student_id || null,
+      phoneDigits,
+    ]
+  ).catch(() => ({ rows: [] }));
+  return [...(result.rows || [])].reverse().map((row = {}) => ({
+    direction: row.direction || '',
+    channel: row.channel || '',
+    body: row.body || row.summary || '',
+    occurred_at: row.occurred_at || row.created_at || null,
+  }));
+}
+
+async function stampOneTimeCommunicationAgentResponse({ communication = {}, response = {}, conversationHistory = [] } = {}, db = pool) {
+  if (!communication?.id) return communication;
+  const summary = oneTimeCommunicationAgentRuntimeSummary(response);
+  if (!summary) return communication;
+  const result = await db.query(
+    `UPDATE bna_contact_communications
+     SET source_context = COALESCE(source_context, '{}'::jsonb) || $2::jsonb,
+         metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb,
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      communication.id,
+      JSON.stringify({
+        communication_agent_response_runtime: {
+          ...summary,
+          conversation_history_loaded: Array.isArray(conversationHistory),
+          conversation_history_count: Array.isArray(conversationHistory) ? conversationHistory.length : 0,
+        },
+      }),
+      JSON.stringify({
+        communication_agent_response_runtime: {
+          ...summary,
+          conversation_history_loaded: Array.isArray(conversationHistory),
+          conversation_history_count: Array.isArray(conversationHistory) ? conversationHistory.length : 0,
+        },
+        communication_agent_runtime_version: summary.runtime_version,
+        communication_agent_response_status: summary.response_status,
+        communication_agent_model_status: summary.model_status,
+        communication_agent_reply_mode: summary.reply_mode,
+        communication_agent_external_send_performed: false,
+      }),
+    ]
+  ).catch(() => ({ rows: [communication] }));
+  return result.rows[0] || communication;
+}
+
+function applyCommunicationAgentResponseToProviderPlan(plan = {}, response = {}) {
+  const summary = oneTimeCommunicationAgentRuntimeSummary(response);
+  const nextPlan = {
+    ...plan,
+    communication_agent_response_runtime: summary,
+  };
+  const reply = String(response?.reply || '').trim();
+  if (
+    reply
+    && response?.success === true
+    && response?.response_status !== 'suppressed'
+    && plan.class_link_released !== true
+    && plan.suppress_outbound !== true
+  ) {
+    nextPlan.reply_body = reply;
+    nextPlan.reply_audit_body = reply;
+    nextPlan.reply_allowed = true;
+    nextPlan.reply_source = 'communication_agent_response_runtime';
+  }
+  return nextPlan;
+}
+
 async function applyOneTimeProviderBotPlan({ plan, lead = null, communication = null }, db = pool) {
   let updatedLead = lead;
   if (lead?.id) {
@@ -68968,6 +69139,7 @@ app.post('/api/webhooks/wapi', async (req, res) => {
     let providerBotLead = null;
     let providerBotLeadCreated = false;
     let providerBotSupportTicket = null;
+    let communicationAgentResponse = null;
     if (isOneTimeWapiScope(webhookScope) && !communicationResult.duplicate && oneTimeProviderLeadBotCaptureEnabled()) {
       const intent = classifyProviderLeadBotIntent(normalized.messageText || '');
       const leadResult = await ensureOneTimeProviderBotLead({
@@ -69000,6 +69172,50 @@ app.post('/api/webhooks/wapi', async (req, res) => {
         classJoinUrl: ONE_TIME_WHATSAPP_CLASS_LINK,
         publicBaseUrl: configuredOneTimePublicBaseUrl(),
         newLead: providerBotLeadCreated,
+      });
+      const conversationHistory = await loadOneTimeCommunicationAgentConversationHistory({
+        communication: communicationResult.communication,
+        normalized,
+      });
+      communicationAgentResponse = await generateCommunicationAgentResponse({
+        binding: {
+          workspace_key: webhookScope.workspace_key || ONE_TIME_PROVIDER_WORKSPACE_KEY,
+          project_key: webhookScope.project_key || ONE_TIME_PROJECT_KEY,
+          reply_mode: ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'live' ? 'live' : 'capture_only',
+        },
+        channel: 'whatsapp',
+        provider: 'wapi',
+        message: normalized.messageText || '',
+        contact: oneTimeProviderBotContact({
+          lead: providerBotLead,
+          communicationResult,
+          whatsappSuppressed,
+        }),
+        conversationHistory,
+        dynamicKnowledge,
+        publicBaseUrl: configuredOneTimePublicBaseUrl(),
+        openai: {
+          apiKey: OPENAI_API_KEY,
+          baseUrl: OPENAI_BASE_URL,
+          model: process.env.ONE_TIME_COMMUNICATION_AGENT_MODEL || OPENAI_MODEL,
+          timeoutMs: Number(process.env.ONE_TIME_COMMUNICATION_AGENT_TIMEOUT_MS || 12000),
+        },
+      }).catch((error) => ({
+        success: false,
+        agent_loaded: false,
+        response_status: 'runtime_exception',
+        model_status: 'not_called',
+        model_error_redacted: limitText(error.message || 'communication-agent runtime failed', 240),
+        create_task: false,
+        external_send_performed: false,
+        raw_class_link_in_model_context: false,
+        raw_class_link_in_logs: false,
+      }));
+      providerBotPlan = applyCommunicationAgentResponseToProviderPlan(providerBotPlan, communicationAgentResponse);
+      communicationResult.communication = await stampOneTimeCommunicationAgentResponse({
+        communication: communicationResult.communication,
+        response: communicationAgentResponse,
+        conversationHistory,
       });
       const applied = await applyOneTimeProviderBotPlan({
         plan: providerBotPlan,
@@ -69111,6 +69327,8 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       autoReplyStatus: autoReplyResult?.status || null,
       providerBotProfile: providerBotPlan?.profile_key || null,
       providerBotIntent: providerBotPlan?.intent || null,
+      communicationAgentResponseStatus: communicationAgentResponse?.response_status || null,
+      communicationAgentModelStatus: communicationAgentResponse?.model_status || null,
       providerBotLeadCreated,
       providerBotSupportTicketId: providerBotSupportTicket?.id || null,
     });
@@ -69133,6 +69351,22 @@ app.post('/api/webhooks/wapi', async (req, res) => {
             optOut: providerBotPlan.opt_out,
             classLinkRequested: providerBotPlan.class_link_requested,
             classLinkReleased: providerBotPlan.class_link_released,
+            rawClassLinkReturned: false,
+          }
+        : null,
+      communicationAgentResponse: communicationAgentResponse
+        ? {
+            runtimeVersion: communicationAgentResponse.runtime_version || null,
+            agentKey: communicationAgentResponse.agent_key || null,
+            agentVersion: communicationAgentResponse.agent_version || null,
+            knowledgeSnapshotVersion: communicationAgentResponse.knowledge_snapshot_version || null,
+            channelBindingKey: communicationAgentResponse.channel_binding_key || null,
+            modelStatus: communicationAgentResponse.model_status || null,
+            responseStatus: communicationAgentResponse.response_status || null,
+            fallbackUsed: communicationAgentResponse.fallback_used === true,
+            modelReplyBlocked: communicationAgentResponse.model_reply_blocked === true,
+            replyMode: communicationAgentResponse.reply_mode || null,
+            externalSendPerformed: false,
             rawClassLinkReturned: false,
           }
         : null,
