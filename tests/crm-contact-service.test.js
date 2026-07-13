@@ -118,6 +118,22 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
         communication_type: 'support_ticket',
       },
       {
+        id: 17,
+        channel: 'internal_note',
+        direction: 'internal_note',
+        body: 'Manual note from the first-party contact timeline.',
+        source: 'manual',
+        source_context: JSON.stringify({
+          crm_contact_id: 'bna_contacts:7',
+          source_table: 'bna_contact_communications',
+          canonical_note_match: true,
+          no_send: true,
+          external_write_performed: false,
+        }),
+        occurred_at: '2026-07-12T13:16:00Z',
+        communication_type: 'contact_note',
+      },
+      {
         id: 12,
         channel: 'task',
         direction: 'internal',
@@ -198,6 +214,7 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   });
 
   const conversations = await service.getContactConversations('bna_contacts:7', { workspace_key: 'rabbi_sheller_provider' }, { limit: 1 });
+  const expandedConversations = await service.getContactConversations('bna_contacts:7', { workspace_key: 'rabbi_sheller_provider' }, { limit: 5 });
   const tasks = await service.getContactTasks('bna_contacts:7', { workspace_key: 'rabbi_sheller_provider' }, { limit: 5 });
   const timeline = await service.getContactTimeline('bna_contacts:7', { workspace_key: 'rabbi_sheller_provider' });
 
@@ -215,6 +232,8 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.equal(conversations.conversations[0].from_address, '+972 50 111 2222');
   assert.equal(conversations.conversations[0].no_send, true);
   assert.equal(conversations.page.limit, 1);
+  assert.equal(expandedConversations.conversations.some((item) => item.communication_type === 'contact_note'), true);
+  assert.equal(expandedConversations.conversations.find((item) => item.communication_type === 'contact_note').source, 'manual');
 
   assert.equal(tasks.success, true);
   assert.equal(tasks.contact_key, 'bna_contacts:7');

@@ -29794,6 +29794,30 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
        jsonb_build_object(
          'activity_count',
            COALESCE((SELECT COUNT(*) FROM bna_communications cm WHERE cm.contact_id = c.id), 0)
+           + COALESCE((
+             SELECT COUNT(*)
+             FROM bna_contact_communications cc
+             LEFT JOIN bna_parent_leads l2 ON l2.id = cc.lead_id
+             WHERE cp.id IS NOT NULL
+               AND COALESCE(l2.project_id, cc.project_id) = cp.id
+               AND (
+                 (NULLIF(c.metadata->>'parent_lead_id', '') IS NOT NULL AND cc.lead_id::text = NULLIF(c.metadata->>'parent_lead_id', ''))
+                 OR NULLIF(cc.source_context->>'crm_contact_id', '') = ('bna_contacts:' || c.id::text)
+                 OR NULLIF(cc.source_context->>'canonical_contact_key', '') = ('bna_contacts:' || c.id::text)
+                 OR NULLIF(cc.metadata->>'canonical_contact_key', '') = ('bna_contacts:' || c.id::text)
+                 OR NULLIF(cc.source_context->>'contact_id', '') = c.id::text
+                 OR NULLIF(cc.metadata->>'contact_id', '') = c.id::text
+                 OR NULLIF(cc.source_context->>'canonical_contact_id', '') = c.id::text
+                 OR NULLIF(cc.metadata->>'canonical_contact_id', '') = c.id::text
+                 OR NULLIF(l2.metadata->>'canonical_contact_key', '') = ('bna_contacts:' || c.id::text)
+                 OR NULLIF(l2.metadata->>'canonical_contact_id', '') = c.id::text
+                 OR (
+                   COALESCE(c.primary_email, '') <> ''
+                   AND l2.id IS NOT NULL
+                   AND lower(COALESCE(l2.parent_email, '')) = lower(c.primary_email)
+                 )
+               )
+           ), 0)
            + COALESCE((SELECT COUNT(*) FROM bna_contact_pipeline_events pe WHERE pe.contact_id = c.id), 0)
            + CASE WHEN pl.id IS NOT NULL THEN 1 ELSE 0 END
            + COALESCE((
@@ -29807,6 +29831,30 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
          'latest_activity_at',
            GREATEST(
              COALESCE((SELECT MAX(cm.occurred_at) FROM bna_communications cm WHERE cm.contact_id = c.id), '1970-01-01'::timestamp),
+             COALESCE((
+               SELECT MAX(COALESCE(cc.occurred_at, cc.created_at))
+               FROM bna_contact_communications cc
+               LEFT JOIN bna_parent_leads l2 ON l2.id = cc.lead_id
+               WHERE cp.id IS NOT NULL
+                 AND COALESCE(l2.project_id, cc.project_id) = cp.id
+                 AND (
+                   (NULLIF(c.metadata->>'parent_lead_id', '') IS NOT NULL AND cc.lead_id::text = NULLIF(c.metadata->>'parent_lead_id', ''))
+                   OR NULLIF(cc.source_context->>'crm_contact_id', '') = ('bna_contacts:' || c.id::text)
+                   OR NULLIF(cc.source_context->>'canonical_contact_key', '') = ('bna_contacts:' || c.id::text)
+                   OR NULLIF(cc.metadata->>'canonical_contact_key', '') = ('bna_contacts:' || c.id::text)
+                   OR NULLIF(cc.source_context->>'contact_id', '') = c.id::text
+                   OR NULLIF(cc.metadata->>'contact_id', '') = c.id::text
+                   OR NULLIF(cc.source_context->>'canonical_contact_id', '') = c.id::text
+                   OR NULLIF(cc.metadata->>'canonical_contact_id', '') = c.id::text
+                   OR NULLIF(l2.metadata->>'canonical_contact_key', '') = ('bna_contacts:' || c.id::text)
+                   OR NULLIF(l2.metadata->>'canonical_contact_id', '') = c.id::text
+                   OR (
+                     COALESCE(c.primary_email, '') <> ''
+                     AND l2.id IS NOT NULL
+                     AND lower(COALESCE(l2.parent_email, '')) = lower(c.primary_email)
+                   )
+                 )
+             ), '1970-01-01'::timestamp),
              COALESCE((SELECT MAX(pe.created_at) FROM bna_contact_pipeline_events pe WHERE pe.contact_id = c.id), '1970-01-01'::timestamp),
              COALESCE(COALESCE(pl.updated_at, pl.created_at), '1970-01-01'::timestamp),
              COALESCE((
@@ -30397,6 +30445,31 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
       )
     )`,
   ];
+  const contactNoteConditions = [
+    `bc.id = $1`,
+    `(
+      (
+        NULLIF(cc.source_context->>'crm_contact_id', '') = ('bna_contacts:' || bc.id::text)
+        OR NULLIF(cc.source_context->>'canonical_contact_key', '') = ('bna_contacts:' || bc.id::text)
+        OR NULLIF(cc.metadata->>'canonical_contact_key', '') = ('bna_contacts:' || bc.id::text)
+        OR NULLIF(cc.source_context->>'contact_id', '') = bc.id::text
+        OR NULLIF(cc.metadata->>'contact_id', '') = bc.id::text
+        OR NULLIF(cc.source_context->>'canonical_contact_id', '') = bc.id::text
+        OR NULLIF(cc.metadata->>'canonical_contact_id', '') = bc.id::text
+        OR NULLIF(l.metadata->>'canonical_contact_key', '') = ('bna_contacts:' || bc.id::text)
+        OR NULLIF(l.metadata->>'canonical_contact_id', '') = bc.id::text
+      )
+      OR (
+        NULLIF(bc.metadata->>'parent_lead_id', '') IS NOT NULL
+        AND cc.lead_id::text = NULLIF(bc.metadata->>'parent_lead_id', '')
+      )
+      OR (
+        COALESCE(bc.primary_email, '') <> ''
+        AND l.id IS NOT NULL
+        AND lower(COALESCE(l.parent_email, '')) = lower(bc.primary_email)
+      )
+    )`,
+  ];
   const pipelineConditions = [`contact_id = $1`];
   const taskConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(t.related_contact_email) = lower(bc.primary_email)`, `t.stage <> 'archive'`];
   const suppressionConditions = [`bc.id = $1`];
@@ -30408,6 +30481,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     params.push(workspaceKey);
     communicationConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     communicationConditions.push(`(cm.contact_id = bc.id OR cm.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length}) OR cm.metadata->>'workspace_key' = $${params.length})`);
+    contactNoteConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     pipelineConditions.push(`workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     taskConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     suppressionConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
@@ -30419,6 +30493,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
   if (projectKey && !['platform', 'super_admin'].includes(projectKey)) {
     params.push(projectKey);
     communicationConditions.push(`(cm.contact_id = bc.id OR cm.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length}) OR cm.metadata->>'project_key' = $${params.length})`);
+    contactNoteConditions.push(`COALESCE(l.project_id, cc.project_id) IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     taskConditions.push(`t.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     ticketConditions.push(`st.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     studentConditions.push(`s.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
@@ -30456,6 +30531,46 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
         FROM bna_communications cm
         JOIN bna_contacts bc ON bc.id = $1
         WHERE ${communicationConditions.join(' AND ')}
+        UNION ALL
+       SELECT
+         cc.id,
+         cc.channel,
+         cc.direction,
+         COALESCE(NULLIF(cc.body, ''), cc.summary, 'Contact note') AS body,
+         COALESCE(cc.source, 'manual') AS source,
+         COALESCE(cc.source_context, '{}'::jsonb) || jsonb_build_object(
+           'crm_contact_id', ('bna_contacts:' || bc.id::text),
+           'source_table', 'bna_contact_communications',
+           'legacy_parent_lead_id', cc.lead_id,
+           'canonical_note_match',
+             (
+               NULLIF(cc.source_context->>'crm_contact_id', '') = ('bna_contacts:' || bc.id::text)
+               OR NULLIF(cc.source_context->>'canonical_contact_key', '') = ('bna_contacts:' || bc.id::text)
+               OR NULLIF(cc.metadata->>'canonical_contact_key', '') = ('bna_contacts:' || bc.id::text)
+               OR NULLIF(l.metadata->>'canonical_contact_key', '') = ('bna_contacts:' || bc.id::text)
+               OR NULLIF(l.metadata->>'canonical_contact_id', '') = bc.id::text
+               OR (
+                 NULLIF(bc.metadata->>'parent_lead_id', '') IS NOT NULL
+                 AND cc.lead_id::text = NULLIF(bc.metadata->>'parent_lead_id', '')
+               )
+             ),
+           'no_send', true,
+           'external_write_performed', false
+         ) AS source_context,
+          COALESCE(cc.occurred_at, cc.created_at) AS occurred_at,
+          cc.created_at,
+          'contact_note' AS communication_type,
+          NULL::text AS subject,
+          COALESCE(NULLIF(cc.source_context->>'thread_key', ''), NULLIF(cc.source_context->>'conversation_id', ''), NULLIF(cc.source_context->>'chat_id', '')) AS thread_key,
+          COALESCE(NULLIF(cc.source_context->>'external_message_id', ''), NULLIF(cc.source_context->>'message_id', ''), NULLIF(cc.source_context->>'email_message_id', ''), NULLIF(cc.source_context->>'wapi_message_id', '')) AS external_message_id,
+          COALESCE(NULLIF(cc.source_context->>'from_address', ''), NULLIF(cc.source_context->>'from_number', '')) AS from_address,
+          COALESCE(NULLIF(cc.source_context->>'to_address', ''), NULLIF(cc.source_context->>'to_number', '')) AS to_address,
+          COALESCE(NULLIF(cc.source_context->>'provider', ''), cc.source) AS provider,
+          NULL::text AS status
+        FROM bna_contact_communications cc
+        JOIN bna_contacts bc ON bc.id = $1
+        LEFT JOIN bna_parent_leads l ON l.id = cc.lead_id
+        WHERE ${contactNoteConditions.join(' AND ')}
         UNION ALL
        SELECT
          id,

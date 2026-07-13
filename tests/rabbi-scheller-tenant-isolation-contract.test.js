@@ -70,7 +70,9 @@ test('One Time CRM contacts and timelines require explicit workspace or project 
   );
 
   assert.match(timelineRows, /conditions\.push\(`p\.project_key = \$\$\{params\.length\}`\);/);
-  assert.match(timelineRows, /communicationConditions\.push\(`workspace_id IN \(SELECT id FROM bna_workspace_settings WHERE workspace_key = \$\$\{params\.length\}\)`\);/);
+  assert.match(timelineRows, /communicationConditions\.push\(`bc\.workspace_id IN \(SELECT id FROM bna_workspace_settings WHERE workspace_key = \$\$\{params\.length\}\)`\);/);
+  assert.match(timelineRows, /contactNoteConditions\.push\(`bc\.workspace_id IN \(SELECT id FROM bna_workspace_settings WHERE workspace_key = \$\$\{params\.length\}\)`\);/);
+  assert.match(timelineRows, /contactNoteConditions\.push\(`COALESCE\(l\.project_id, cc\.project_id\) IN \(SELECT id FROM bna_projects WHERE project_key = \$\$\{params\.length\}\)`\);/);
   assert.match(timelineRows, /pipelineConditions\.push\(`workspace_id IN \(SELECT id FROM bna_workspace_settings WHERE workspace_key = \$\$\{params\.length\}\)`\);/);
   assert.doesNotMatch(timelineRows, /primary_email\s*=\s*|parent_email\s*=\s*|from_address\s*=\s*/i);
 });

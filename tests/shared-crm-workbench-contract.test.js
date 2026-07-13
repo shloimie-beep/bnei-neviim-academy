@@ -198,6 +198,16 @@ test('Operations CRM selected contact conversations include scoped email threads
   assert.match(server, /cm\.metadata->>'workspace_key' = \$\$\{params\.length\}/);
   assert.match(server, /cm\.metadata->>'project_key' = \$\$\{params\.length\}/);
   assert.match(server, /'canonical_email_match', \(cm\.contact_id IS DISTINCT FROM bc\.id\)/);
+  assert.match(server, /FROM bna_contact_communications cc\s+JOIN bna_contacts bc ON bc\.id = \$1\s+LEFT JOIN bna_parent_leads l ON l\.id = cc\.lead_id/);
+  assert.match(server, /NULLIF\(cc\.source_context->>'crm_contact_id', ''\) = \('bna_contacts:' \|\| bc\.id::text\)/);
+  assert.match(server, /NULLIF\(cc\.source_context->>'canonical_contact_key', ''\) = \('bna_contacts:' \|\| bc\.id::text\)/);
+  assert.match(server, /NULLIF\(l\.metadata->>'canonical_contact_key', ''\) = \('bna_contacts:' \|\| bc\.id::text\)/);
+  assert.match(server, /NULLIF\(bc\.metadata->>'parent_lead_id', ''\) IS NOT NULL[\s\S]*cc\.lead_id::text = NULLIF\(bc\.metadata->>'parent_lead_id', ''\)/);
+  assert.match(server, /lower\(COALESCE\(l\.parent_email, ''\)\) = lower\(bc\.primary_email\)/);
+  assert.match(server, /COALESCE\(l\.project_id, cc\.project_id\) IN \(SELECT id FROM bna_projects WHERE project_key = \$\$\{params\.length\}\)/);
+  assert.match(server, /COALESCE\(cc\.source_context, '\{\}'::jsonb\) \|\| jsonb_build_object\(/);
+  assert.doesNotMatch(server, /COALESCE\(cc\.source_context, '\{\}'::jsonb\) \|\| COALESCE\(cc\.metadata, '\{\}'::jsonb\)/);
+  assert.match(server, /'source_table', 'bna_contact_communications'[\s\S]*'canonical_note_match'[\s\S]*'external_write_performed', false/);
   assert.match(server, /cm\.project_id = l\.project_id/);
   assert.match(server, /lower\(COALESCE\(cm\.from_address, cm\.to_address, ''\)\) = lower\(l\.parent_email\)/);
   assert.match(server, /FROM bna_communications cm\s+JOIN bna_parent_leads l ON TRUE/);
