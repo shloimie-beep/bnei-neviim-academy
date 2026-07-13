@@ -40299,3 +40299,20 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails remained intact: no live charge, refund, notice send,
   invoice/receipt send, access mutation, provider mutation, credential
   mutation, production data mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 hosted Stripe sandbox readback ready
+
+- Added a Billing-only Railway readback and guarded Stripe variable propagation
+  path for `one-time-web / production`.
+- Propagated only test-mode Rabbi Stripe config, webhook secret, price
+  reference, and live-billing disabled flags with `--skip-deploys`; no deploy
+  was triggered and no secret values were printed.
+- Final redacted readback reports ready `2/2`: One Time Railway target ready,
+  Stripe test key present, webhook secret present, price reference present,
+  live key absent, and mode live not requested.
+- Verification passed: `npm run stripe:railway-readback`,
+  `node --test tests/one-time-billing-railway-readback.test.js tests/one-time-billing-sandbox-e2e-verifier.test.js tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js`
+  (14/14).
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, production data mutation, or
+  secret exposure was performed.

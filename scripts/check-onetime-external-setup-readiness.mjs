@@ -48,6 +48,7 @@ function parseArgs(argv = []) {
     json: false,
     writeReport: false,
     railwayOnly: false,
+    billingOnly: false,
     checklist: DEFAULT_CHECKLIST_PATH,
     railwayProvisioningReport: DEFAULT_RAILWAY_PROVISIONING_REPORT,
     joinDomainReport: DEFAULT_JOIN_DOMAIN_REPORT,
@@ -57,6 +58,7 @@ function parseArgs(argv = []) {
     if (arg === '--json') args.json = true;
     else if (arg === '--write-report') args.writeReport = true;
     else if (arg === '--railway-only') args.railwayOnly = true;
+    else if (arg === '--billing-only') args.billingOnly = true;
     else if (arg === '--checklist') {
       args.checklist = argv[index + 1] || args.checklist;
       index += 1;
@@ -87,6 +89,12 @@ function isStripeSandboxKey(value) {
 
 function isStripeLiveKey(value) {
   return /^(?:sk|rk)_live_/i.test(String(value || '').trim());
+}
+
+function stripeKeyMode(value) {
+  if (isStripeSandboxKey(value)) return 'test';
+  if (isStripeLiveKey(value)) return 'live';
+  return value ? 'unknown' : 'missing';
 }
 
 function normalizeValue(value) {
@@ -195,6 +203,34 @@ function readProvisioningTarget(repoRoot, provisioningReportPath = DEFAULT_RAILW
 
 function redactedVariableSummary(variables = {}, { source, service, environment, linkTarget = null } = {}) {
   const databaseUrl = normalizeValue(variables.DATABASE_URL);
+  const rabbiStripeSecret = normalizeValue(
+    variables.RABBI_STRIPE_SECRET_KEY ||
+    variables.RABBI_STRIPE_TEST_SECRET_KEY ||
+    variables.ONE_TIME_STRIPE_TEST_SECRET_KEY,
+  );
+  const genericStripeSecret = normalizeValue(
+    variables.STRIPE_SECRET_KEY ||
+    variables.ONE_TIME_STRIPE_SECRET_KEY ||
+    variables.STRIPE_TEST_SECRET_KEY,
+  );
+  const stripeSecret = rabbiStripeSecret || genericStripeSecret;
+  const stripeWebhookSecret = normalizeValue(
+    variables.RABBI_STRIPE_WEBHOOK_SECRET ||
+    variables.ONE_TIME_STRIPE_WEBHOOK_SECRET ||
+    variables.STRIPE_WEBHOOK_SECRET,
+  );
+  const stripePrice = normalizeValue(
+    variables.ONE_TIME_STRIPE_PRICE_ID ||
+    variables.ONE_TIME_STRIPE_PRICE_ALIAS ||
+    variables.RABBI_STRIPE_PRICE_ID ||
+    variables.STRIPE_PRICE_ID,
+  );
+  const stripePublishable = normalizeValue(
+    variables.RABBI_STRIPE_PUBLISHABLE_KEY ||
+    variables.ONE_TIME_STRIPE_PUBLISHABLE_KEY ||
+    variables.STRIPE_PUBLISHABLE_KEY,
+  );
+  const stripeMode = normalizeValue(variables.RABBI_STRIPE_MODE || variables.STRIPE_MODE);
   return {
     ok: true,
     attempted: true,
@@ -273,6 +309,16 @@ function redactedVariableSummary(variables = {}, { source, service, environment,
       normalizeValue(variables.ONE_TIME_PROVIDER_LEAD_BOT_MODE).toLowerCase() === 'live',
     one_time_provider_lead_bot_telegram_confirm_approved:
       normalizeValue(variables.ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM) === 'APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM',
+    stripe_secret_key_present: Boolean(stripeSecret),
+    stripe_secret_key_mode: stripeKeyMode(stripeSecret),
+    stripe_test_secret_key_present: isStripeSandboxKey(stripeSecret),
+    stripe_live_key_present: isStripeLiveKey(stripeSecret),
+    stripe_webhook_secret_present: Boolean(stripeWebhookSecret),
+    stripe_price_present: Boolean(stripePrice),
+    stripe_publishable_key_present: Boolean(stripePublishable),
+    stripe_mode_present: Boolean(stripeMode),
+    stripe_mode_live_requested: /^live$/i.test(stripeMode),
+    stripe_sandbox_config_ready: isStripeSandboxKey(stripeSecret) && Boolean(stripeWebhookSecret),
     one_time_owner_test_email_present: Boolean(normalizeValue(
       variables.ONE_TIME_OWNER_TEST_EMAIL ||
       variables.ONETIME_OWNER_TEST_EMAIL ||
@@ -715,10 +761,14 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
     inspectKeyholder,
   );
   const stripeLiveKeyPresent = isStripeLiveKey(genericStripeSecret.value);
+  const railwayStripe = railway.current_variables || {};
   const stripeTestKeyReady =
     isStripeSandboxKey(stripeTestSecret.value) ||
     (!stripeLiveKeyPresent && isStripeSandboxKey(genericStripeSecret.value)) ||
-    status(env.ONE_TIME_STRIPE_TEST_SECRET_KEY_ALIAS) === 'configured';
+    status(env.ONE_TIME_STRIPE_TEST_SECRET_KEY_ALIAS) === 'configured' ||
+    railwayStripe.stripe_test_secret_key_present === true;
+  const stripeWebhookReady = railwayStripe.stripe_webhook_secret_present === true;
+  const stripePriceReady = stripePrice.configured || railwayStripe.stripe_price_present === true;
 
   const whapiToken = configuredFromEnvOrSecret(
     env,
@@ -881,12 +931,23 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
       id: 'SETUP-ONETIME-STRIPE-001',
       title: 'Rabbi Stripe sandbox',
       clears: ['REQ-20260701-714'],
-      ready: stripeTestKeyReady && stripePrice.configured,
+      ready: stripeTestKeyReady && stripeWebhookReady && stripePriceReady,
       missing: [
         stripeTestKeyReady ? '' : 'rabbi_stripe_test_secret_key_alias_or_test_key_status',
-        stripePrice.configured ? '' : '67_month_product_price_id_or_alias',
+        stripeWebhookReady ? '' : 'stripe_webhook_secret_alias_or_Railway_variable',
+        stripePriceReady ? '' : '67_month_product_price_id_or_alias',
       ],
-      warnings: [stripeLiveKeyPresent ? 'Live Stripe key appears configured; sandbox-only smoke must not use it.' : ''],
+      warnings: [
+        stripeLiveKeyPresent || railwayStripe.stripe_live_key_present
+          ? 'Live Stripe key appears configured; sandbox-only smoke must not use it.'
+          : '',
+        railwayStripe.stripe_sandbox_config_ready
+          ? 'Stripe test key and webhook secret are present by redacted One Time Railway readback; values are not written to evidence.'
+          : '',
+        stripePriceReady && !stripePrice.configured
+          ? 'Stripe price reference is present by redacted One Time Railway readback.'
+          : '',
+      ],
       verification: ['sandbox Stripe smoke only; no live payment'],
     }),
     makeItem({
@@ -932,7 +993,9 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
     }),
   ];
 
-  const scopedItems = options.railwayOnly ? items.slice(0, 1) : items;
+  const scopedItems = options.billingOnly
+    ? items.filter((item) => ['SETUP-ONETIME-RAILWAY-001', 'SETUP-ONETIME-STRIPE-001'].includes(item.id))
+    : options.railwayOnly ? items.slice(0, 1) : items;
   const readyCount = scopedItems.filter((item) => item.ready).length;
   const blockers = scopedItems.filter((item) => !item.ready);
   return {
@@ -946,7 +1009,7 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
     whatsapp_send_performed: false,
     live_payment_performed: false,
     secret_values_printed: false,
-    mode: options.railwayOnly ? 'railway_only' : 'full_setup',
+    mode: options.billingOnly ? 'billing_only' : options.railwayOnly ? 'railway_only' : 'full_setup',
     checklist,
     railway_variable_readback: railway.current_variables || null,
     ready_count: readyCount,
@@ -1015,6 +1078,7 @@ export async function main(argv = process.argv.slice(2), options = {}) {
     railwayProvisioningReport: args.railwayProvisioningReport || options.railwayProvisioningReport,
     joinDomainReport: args.joinDomainReport || options.joinDomainReport,
     railwayOnly: args.railwayOnly || options.railwayOnly,
+    billingOnly: args.billingOnly || options.billingOnly,
   });
   const paths = args.writeReport ? writeReport(report, options.repoRoot || process.cwd()) : null;
   if (args.json) console.log(JSON.stringify({ ...report, report_paths: paths }, null, 2));

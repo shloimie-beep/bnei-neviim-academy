@@ -33,6 +33,7 @@ slice for One Time:
 | Billing UI before/after | `ops/ui-audits/2026-07-13-onetime-billing-ui-current-state/report.md`; `ops/ui-audits/2026-07-13-onetime-billing-ui-after/report.md` | Passed |
 | Billing route-module budget | `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` | Passed |
 | Sandbox E2E verifier | `ops/verifier-runs/2026-07-13-onetime-billing-sandbox-e2e/latest.md` | Passed |
+| Hosted Railway Stripe readback | `ops/deploy-readbacks/2026-07-13-onetime-billing-railway-readback.md`; `ops/deploy-readbacks/2026-07-13-onetime-billing-railway-propagation.md` | Passed for sandbox/test config; no deploy triggered |
 | Secret handling | `npm run secrets:audit`; targeted changed-file secret scan | Passed |
 | Generated Operations shell | `npm run operations:check-generated` | Passed |
 
@@ -40,6 +41,8 @@ slice for One Time:
 
 - `npm run stripe:sandbox-smoke`
 - `npm run stripe:sandbox-e2e`
+- `npm run stripe:railway-propagate`
+- `npm run stripe:railway-readback`
 - `node --test tests/one-time-billing-sandbox-e2e-verifier.test.js tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js`
 - `node --test tests/one-time-provider-review-navigation.test.js tests/one-time-provider-operations-login.test.js tests/one-time-stripe-local-beta.test.js tests/stripe-billing-lifecycle.test.js tests/one-time-shared-review-branding.test.js tests/rabbi-scheller-auth-navigation-contract.test.js`
 - `node scripts/audit-onetime-billing-ui-current-state.mjs --expect after --out-dir ops/ui-audits/2026-07-13-onetime-billing-ui-after`
@@ -65,8 +68,10 @@ needed and are never written into tracked files.
   `railway-migration-2026-06-21-one-time-trial-referral-config.sql`.
 - Deploying app-visible Billing UI still requires the normal One Time deploy
   path and live smoke against the deployed SHA.
-- Hosted Stripe webhook readback still needs target guard confirmation before
-  any hosted webhook smoke is called complete.
+- Hosted Stripe/Railway readback now confirms the One Time target has test-mode
+  Rabbi Stripe config, webhook secret, and price reference without triggering a
+  deploy. Hosted webhook delivery still needs deployed-SHA live smoke before it
+  can be called complete.
 - If deployment is rolled back, no live payment state should need rollback
   because this branch does not authorize live billing writes.
 
@@ -76,7 +81,7 @@ Live activation remains blocked until Shloimie/Rabbi approve an exact final
 launch packet with:
 
 - canonical `billing_start_at` in Asia/Jerusalem;
-- final live Stripe account/key/webhook readback for the One Time target;
+- final live Stripe account/key/webhook approval for the One Time target;
 - final live price/account/campaign/cohort confirmation;
 - consent/payment-method coverage readback;
 - final pre-billing notice sender, copy, recipient cohort, and send approval;
