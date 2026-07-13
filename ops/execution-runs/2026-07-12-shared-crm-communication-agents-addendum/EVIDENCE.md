@@ -111,3 +111,11 @@
 - BNA post-deploy doctor - Railway deployment `640fc22a-5172-4729-ab92-7882426a13e0` reached `SUCCESS`.
 - One Time post-deploy doctor - Railway deployment `2c2c7631-a004-4019-bf3f-328cd61cd905` reached `SUCCESS`.
 - `ops/live-smokes/2026-07-12T22-17-11-356Z-rabbi-onetime-landing-smoke.md` - live One Time public landing/signup/WhatsApp readiness smoke passed on `https://join.onetimeonetime.com` with no external send, payment, access grant, DNS write, or connector write.
+- `config/service-provider-bots/one-time.json` version `2026-07-13-v2` - explicit operator correction says "We are not giving portal access yet"; bot knowledge continues to keep portal/member/library/parent-login/student-login access unpublished.
+- `public/one-time/signup.html` - signup header now uses the member-style One Time Mishnayos lockup and softened yellow submit-button shadow while preserving Family/School signup selection.
+- BNA live deploy-info readback v2 - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=3712308731910a6e77fb9a18ce18b57ae35f22dd`.
+- One Time live deploy-info readback v2 - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=3712308731910a6e77fb9a18ce18b57ae35f22dd`.
+- BNA post-deploy doctor v2 - Railway deployment `77191e2f-0aaf-4fde-ae2c-cf69ce299af8` reached `SUCCESS`.
+- One Time post-deploy doctor v2 - Railway deployment `38d75556-5a94-42d3-b8b3-65a5a3290fe7` reached `SUCCESS`.
+- Live marker checks v2 - deployed One Time pages include `--yellow: #ede518`, `box-shadow: none`, `margin-top: -10px`, no old black CTA inset shadow, `/images/one-time/brand/onetimelogo.webp`, and `One Time Mishnayos<small>Sign up</small>`.
+- `ops/live-smokes/2026-07-13T00-26-05-640Z-rabbi-onetime-landing-smoke.md` - live One Time public landing/signup/WhatsApp readiness smoke passed on `https://join.onetimeonetime.com` after the v2 deployment.

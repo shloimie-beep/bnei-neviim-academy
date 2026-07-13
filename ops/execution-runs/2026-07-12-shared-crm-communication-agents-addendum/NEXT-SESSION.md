@@ -3,11 +3,11 @@
 Next unblocked batch: `2-shared-crm`
 Open requirement: `REQ-20260712-302`
 
-Latest deployed SHA: `ec1e893848f12242a30fd1fc59c236442997f30e`
+Latest deployed SHA: `3712308731910a6e77fb9a18ce18b57ae35f22dd`
 
 Current proof:
 
-- `ec1e893848f12242a30fd1fc59c236442997f30e` is pushed to `origin/master`.
+- `3712308731910a6e77fb9a18ce18b57ae35f22dd` is pushed to `origin/master`.
 - BNA production `https://bneineviimacademy.org/api/deploy-info` returns that SHA.
 - One Time production `https://join.onetimeonetime.com/api/deploy-info` returns that SHA.
 - One Time signup Family/School behavior has live no-write browser proof and API dry-run proof.
@@ -24,6 +24,7 @@ Current proof:
 - Archive Contact is deployed under `REQ-20260712-303` through `3293d3528ace28938d5f13d8b65b485448c9ebc9`: the action is registered as `ACTION-CRM-ARCHIVE-CONTACT`, uses the scoped CRM PATCH path with `status=archived`, `create_follow_up_task=false`, and no external-write flags, BNA deployment `d454d665-4e81-43d7-868e-8c02888c0080` and One Time deployment `e4883410-13ce-4ad8-8d59-db5fc50effd4` reached `SUCCESS`, and the One Time live CRM workbench smoke passed.
 - Complete/Reopen task is deployed under `REQ-20260712-303` through `ec1e893848f12242a30fd1fc59c236442997f30e`: the Tasks tab exposes `ACTION-CRM-COMPLETE-TASK` and `ACTION-CRM-REOPEN-TASK` for linked follow-up tasks, uses scoped `PATCH /api/bna/tasks/:id`, BNA deployment `3b43615c-3fde-4fad-bb1c-326baed500aa` and One Time deployment `8f022587-8b8e-474e-8c59-886b68e18faa` reached `SUCCESS`, the One Time live CRM workbench smoke passed, and deployed JS/CSS marker checks confirmed the controls.
 - Link member is deployed under `REQ-20260712-303` through `8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`: Access/Family tabs expose `ACTION-CRM-LINK-MEMBER`, the explicit click creates only a disabled first-party member shell (`access_status=paused`, `access_enabled=false`) with no portal link, class link, library access, send, payment, import, or external CRM write, direct contact aggregate email fallback rollups are now project-scoped by workspace before showing communications, support, tasks, or membership, BNA deployment `91234f89-084d-4dc0-bc8b-4de7fbd33325` and One Time deployment `dc45500e-960c-4adf-8e78-dcb92a2a725c` reached `SUCCESS`, and the One Time live CRM workbench smoke passed.
+- One Time bot/landing polish v2 is deployed under `REQ-20260712-310` through `3712308731910a6e77fb9a18ce18b57ae35f22dd`: the WhatsApp bot profile version `2026-07-13-v2` explicitly says "We are not giving portal access yet," the public landing/signup header and yellow CTA polish is live, BNA deployment `77191e2f-0aaf-4fde-ae2c-cf69ce299af8` and One Time deployment `38d75556-5a94-42d3-b8b3-65a5a3290fe7` reached `SUCCESS`, both deploy-info endpoints returned the SHA, and One Time route/landing smokes plus deployed marker checks passed.
 
 Continue by inspecting and repairing:
 

@@ -247,16 +247,16 @@
         "public/operations-bootstrap.html",
         "src/lib/bna/crm-contact-model.js",
         "server.js",
-    "ops/action-registry.json",
+        "ops/action-registry.json",
         "public/css/crm-core.css",
         "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
         "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json",
         "tests/crm-contact-service.test.js",
         "tests/shared-crm-workbench-contract.test.js",
-    "tests/rabbi-scheller-tenant-isolation-contract.test.js",
-    "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
-    "ops/watchdog-audits/2026-07-12T23-18-watchdog-action-audit.md",
-    "ops/watchdog-audits/2026-07-12T23-29-watchdog-action-audit.md"
+        "tests/rabbi-scheller-tenant-isolation-contract.test.js",
+        "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "ops/watchdog-audits/2026-07-12T23-18-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-07-12T23-29-watchdog-action-audit.md"
       ],
       "deployment_required": true,
       "deployment_evidence": [
@@ -267,17 +267,17 @@
         "URL-state slice deployed at f818822bb3969dca5d27f7c5a70d4dbf0baa8744 with live smoke report ops/live-smokes/2026-07-12T21-39-03-428Z-one-time-operations-crm-workbench-live-smoke.md.",
         "Local update/no-auto-task slice deployed at 224bc077919c624f115c264d35e35092ed4144da with live smoke report ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md.",
         "Explicit Create task action slice deployed at ded53274e31f91abff7944c094bdcdfaa9c55c5e with live smoke report ops/live-smokes/2026-07-12T22-30-27-405Z-one-time-operations-crm-workbench-live-smoke.md.",
-    "Enabled workspace tabs slice deployed at 1c4880418954d984c08683ba0955a32549eb33aa with live smoke report ops/live-smokes/2026-07-12T22-41-20-271Z-one-time-operations-crm-workbench-live-smoke.md.",
-    "Shared CRM contract/geometry slice deployed at 909cb26d9a21a1e505ee30835ff31646b7c1c9cd.",
-    "BNA production deploy-info readback commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd.",
-    "One Time production deploy-info readback commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd.",
-    "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T23-25-19-779Z-one-time-operations-crm-workbench-live-smoke.md.",
-    "Identity/Family workspace slice deployed at d1c0d3a596ad420876941445faad9f1e60c7ce48.",
-    "BNA production deploy-info readback commit_sha=d1c0d3a596ad420876941445faad9f1e60c7ce48.",
-    "One Time production deploy-info readback commit_sha=d1c0d3a596ad420876941445faad9f1e60c7ce48.",
-    "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T23-34-34-660Z-one-time-operations-crm-workbench-live-smoke.md."
+        "Enabled workspace tabs slice deployed at 1c4880418954d984c08683ba0955a32549eb33aa with live smoke report ops/live-smokes/2026-07-12T22-41-20-271Z-one-time-operations-crm-workbench-live-smoke.md.",
+        "Shared CRM contract/geometry slice deployed at 909cb26d9a21a1e505ee30835ff31646b7c1c9cd.",
+        "BNA production deploy-info readback commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd.",
+        "One Time production deploy-info readback commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd.",
+        "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T23-25-19-779Z-one-time-operations-crm-workbench-live-smoke.md.",
+        "Identity/Family workspace slice deployed at d1c0d3a596ad420876941445faad9f1e60c7ce48.",
+        "BNA production deploy-info readback commit_sha=d1c0d3a596ad420876941445faad9f1e60c7ce48.",
+        "One Time production deploy-info readback commit_sha=d1c0d3a596ad420876941445faad9f1e60c7ce48.",
+        "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T23-34-34-660Z-one-time-operations-crm-workbench-live-smoke.md."
       ],
-  "updated_at": "2026-07-13T02:35:00+03:00",
+      "updated_at": "2026-07-13T02:35:00+03:00",
       "blocker": ""
     },
     {
@@ -721,43 +721,63 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-    "status": "in_progress",
-      "implementation_status": "Partial deployed verification completed for the existing WhatsApp provider-bot profile/runtime and One Time public landing: stale portal/member/library/trial/pricing claims are no longer bot-published, access facts are marked not currently granted, deterministic replies/system prompt avoid the old 30-day/$67 bot claims unless a future profile explicitly publishes them, and the public landing header/button/mobile CTA polish is live at commit 301b408b36fa982d4562d06f30de56758cd0e168. Full channel-independent WhatsApp/email agent versioning remains open.",
-    "can_continue_without_operator": true,
+      "status": "in_progress",
+      "implementation_status": "Partial deployed verification completed for the existing WhatsApp provider-bot profile/runtime and One Time public landing: stale portal/member/library/trial/pricing claims are no longer bot-published, access facts are marked not currently granted, deterministic replies/system prompt avoid the old 30-day/$67 bot claims unless a future profile explicitly publishes them, and the v2 operator correction explicitly says We are not giving portal access yet. Public landing/header/button/mobile CTA/signup-header polish is live at commit 3712308731910a6e77fb9a18ce18b57ae35f22dd. Full channel-independent WhatsApp/email agent versioning remains open.",
+      "can_continue_without_operator": true,
       "next_action": "Continue the full shared WhatsApp/email communication-agent knowledge bundle, channel-independent agent model, and channel bindings.",
       "acceptance_criteria": [
         "One published agent version and knowledge snapshot power One Time WhatsApp and inbound email with channel-specific formatting and no stale claims."
       ],
-    "evidence": [
-      "raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md",
-      "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md",
-      "config/service-provider-bots/one-time.json version 2026-07-13-v1",
-      "src/lib/bna/provider-lead-bot.js unpublished-offer/access-policy runtime gates",
+      "evidence": [
+        "raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md",
+        "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md",
+        "config/service-provider-bots/one-time.json version 2026-07-13-v1",
+        "src/lib/bna/provider-lead-bot.js unpublished-offer/access-policy runtime gates",
         "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md",
         "commit 301b408b36fa982d4562d06f30de56758cd0e168 pushed to origin/master",
         "BNA deployment 640fc22a-5172-4729-ab92-7882426a13e0 SUCCESS",
         "One Time deployment 2c2c7631-a004-4019-bf3f-328cd61cd905 SUCCESS",
         "BNA and One Time live deploy-info commit_sha=301b408b36fa982d4562d06f30de56758cd0e168",
-        "ops/live-smokes/2026-07-12T22-17-11-356Z-rabbi-onetime-landing-smoke.md"
-    ],
-    "verification": [
-      "node --test tests\\service-provider-lead-bot.test.js tests\\one-time-focused-landing.test.js tests\\one-time-canonical-journey.test.js tests\\one-time-brand-helper-isolation.test.js tests\\one-time-shared-review-branding.test.js PASS 33/33",
-      "node scripts\\smoke-onetime-landing-whatsapp-local.mjs PASS",
+        "ops/live-smokes/2026-07-12T22-17-11-356Z-rabbi-onetime-landing-smoke.md",
+        "config/service-provider-bots/one-time.json version 2026-07-13-v2 says We are not giving portal access yet",
+        "public/one-time/signup.html member-style signup header and softened yellow submit shadow",
+        "commit 3712308731910a6e77fb9a18ce18b57ae35f22dd pushed to origin/master",
+        "BNA deployment 77191e2f-0aaf-4fde-ae2c-cf69ce299af8 SUCCESS",
+        "One Time deployment 38d75556-5a94-42d3-b8b3-65a5a3290fe7 SUCCESS",
+        "BNA and One Time live deploy-info commit_sha=3712308731910a6e77fb9a18ce18b57ae35f22dd",
+        "Live deployed marker checks passed for yellow/header/shadow/CTA/signup-header changes",
+        "ops/live-smokes/2026-07-13T00-26-05-640Z-rabbi-onetime-landing-smoke.md"
+      ],
+      "verification": [
+        "node --test tests\\service-provider-lead-bot.test.js tests\\one-time-focused-landing.test.js tests\\one-time-canonical-journey.test.js tests\\one-time-brand-helper-isolation.test.js tests\\one-time-shared-review-branding.test.js PASS 33/33",
+        "node scripts\\smoke-onetime-landing-whatsapp-local.mjs PASS",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS findings 0",
         "npm run secrets:audit PASS",
         "git diff --check PASS with line-ending warnings only",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 301b408b36fa982d4562d06f30de56758cd0e168 PASS",
-        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS"
-    ],
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS",
+        "node --test tests/service-provider-lead-bot.test.js tests/one-time-focused-landing.test.js tests/one-time-direct-signup-page.test.js PASS 14/14",
+        "npm run test:onetime:focused PASS 76/76",
+        "node scripts/smoke-onetime-landing-whatsapp-local.mjs PASS after v2 polish",
+        "npm run pqc:validate PASS after v2 polish",
+        "npm run watchdog:protocol-drift PASS findings 0 after v2 polish",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 3712308731910a6e77fb9a18ce18b57ae35f22dd PASS",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after v2 polish",
+        "live marker checks for deployed yellow/header/shadow/CTA/signup-header changes PASS"
+      ],
       "implementation_files": [
         "config/service-provider-bots/one-time.json",
         "src/lib/bna/provider-lead-bot.js",
         "public/one-time/index.html",
-        "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json"
+        "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json",
+        "public/one-time/signup.html",
+        "tests/service-provider-lead-bot.test.js",
+        "tests/one-time-focused-landing.test.js",
+        "tests/one-time-direct-signup-page.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T01:22:00+03:00",
+      "updated_at": "2026-07-13T03:27:00+03:00",
       "blocker": ""
     },
     {

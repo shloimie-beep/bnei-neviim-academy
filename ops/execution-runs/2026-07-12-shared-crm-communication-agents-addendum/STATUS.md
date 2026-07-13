@@ -68,6 +68,9 @@ Current status: `active`
 - Local verification passed: focused One Time/bot tests `33/33`, local responsive landing smoke with 1440/1024/768/430/390 screenshots, action watchdog, protocol drift watchdog, secret audit, execution-run validation, provider-lead-bot syntax check, and whitespace diff check with line-ending warnings only.
 - The focused slice is deployed at `301b408b36fa982d4562d06f30de56758cd0e168`; BNA deployment `640fc22a-5172-4729-ab92-7882426a13e0` and One Time deployment `2c2c7631-a004-4019-bf3f-328cd61cd905` reached `SUCCESS`.
 - BNA and One Time deploy-info both returned `301b408b36fa982d4562d06f30de56758cd0e168`; One Time separate-instance smoke and live Rabbi/One Time landing smoke passed.
+- V2 operator correction is deployed at `3712308731910a6e77fb9a18ce18b57ae35f22dd`: `config/service-provider-bots/one-time.json` version `2026-07-13-v2` now says "We are not giving portal access yet," and the focused tests assert deterministic replies plus generated system prompt keep portal/member/library/parent-login/student-login access unpublished.
+- V2 public polish is live: BNA deployment `77191e2f-0aaf-4fde-ae2c-cf69ce299af8` and One Time deployment `38d75556-5a94-42d3-b8b3-65a5a3290fe7` reached `SUCCESS`, both deploy-info endpoints returned `3712308731910a6e77fb9a18ce18b57ae35f22dd`, and live marker checks confirmed the yellow token/header shadow/mobile CTA/signup-header changes.
+- V2 live smokes passed: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 3712308731910a6e77fb9a18ce18b57ae35f22dd` and `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com` with report `ops/live-smokes/2026-07-13T00-26-05-640Z-rabbi-onetime-landing-smoke.md`.
 - The full channel-independent WhatsApp/email communication-agent model remains open.
 
 ## Identity Isolation Batch

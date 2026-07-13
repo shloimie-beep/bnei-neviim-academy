@@ -46,3 +46,18 @@ Global production readiness remains blocked only by known external full-launch f
 - One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8ea9b798fe9187fbb5f311fbd6073b49f1befcf3` passed.
 - One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com` passed; report `ops/live-smokes/2026-07-13T00-11-08-626Z-one-time-operations-crm-workbench-live-smoke.md`.
 - Deployed JS/HTML marker checks passed for `ACTION-CRM-LINK-MEMBER`, `linkFirstPartyCrmMember`, `data-crm-member-link-state`, `access_status: 'paused'`, and `access_enabled: false`.
+
+## 2026-07-13 One Time Bot/Landing Polish V2 Deploy
+
+- Commit: `3712308731910a6e77fb9a18ce18b57ae35f22dd`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=1` and `BNA_RAILWAY_TARGET_PROFILE=bna`.
+- BNA Railway doctor: deployment `77191e2f-0aaf-4fde-ae2c-cf69ce299af8` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=3712308731910a6e77fb9a18ce18b57ae35f22dd`, `target_app=bna`.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=1` and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- One Time Railway doctor: deployment `38d75556-5a94-42d3-b8b3-65a5a3290fe7` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=3712308731910a6e77fb9a18ce18b57ae35f22dd`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 3712308731910a6e77fb9a18ce18b57ae35f22dd` passed.
+- One Time public landing smoke: `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com` passed; report `ops/live-smokes/2026-07-13T00-26-05-640Z-rabbi-onetime-landing-smoke.md`.
+- Deployed marker checks passed for `--yellow: #ede518`, `box-shadow: none`, `margin-top: -10px`, removed old black CTA inset shadow, `/images/one-time/brand/onetimelogo.webp`, and `One Time Mishnayos<small>Sign up</small>`.

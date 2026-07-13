@@ -135,6 +135,24 @@
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 301b408b36fa982d4562d06f30de56758cd0e168`.
 - PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
   - Verified `/rabbi` One Time branding, direct signup CTA, WhatsApp launcher, no Academy chrome, public WhatsApp readiness configured/scoped/no-send, lightweight Family/School signup fields, and scoped One Time instance config.
+- PASS `node --test tests/service-provider-lead-bot.test.js tests/one-time-focused-landing.test.js tests/one-time-direct-signup-page.test.js` (14/14) after v2 no-portal wording, public header/button/CTA polish, signup header polish, and Family/School classification coverage.
+- PASS `node scripts/smoke-onetime-landing-whatsapp-local.mjs` after v2 polish.
+  - Captured/refreshed local screenshots at 1440, 1024, 768, 430, and 390.
+  - Confirmed the mobile hero CTA clears the bottom browser/launcher zone.
+- PASS `npm run test:onetime:focused` (76/76) after v2 polish.
+- PASS `npm run watchdog:actions` finding_count `0` after v2 polish.
+- PASS `npm run secrets:audit` after v2 polish.
+- PASS `npm run bna:run:validate` after v2 polish; work remains on the broader addendum.
+- PASS `npm run pqc:validate` after v2 polish.
+- PASS `npm run watchdog:protocol-drift` findings `0` after v2 polish.
+- PASS `git diff --check` with line-ending warnings only after v2 polish.
+- PASS `git push origin master` for v2 One Time bot/landing polish commit `3712308731910a6e77fb9a18ce18b57ae35f22dd`.
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `77191e2f-0aaf-4fde-ae2c-cf69ce299af8`.
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `38d75556-5a94-42d3-b8b3-65a5a3290fe7`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `3712308731910a6e77fb9a18ce18b57ae35f22dd`.
+- PASS live marker checks for deployed yellow token, no header shadow, lifted mobile CTA, removed old black CTA inset shadow, and signup member-style header.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 3712308731910a6e77fb9a18ce18b57ae35f22dd`.
+- PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T00-26-05-640Z-rabbi-onetime-landing-smoke.md`.
 - PASS `node --check server.js public/js/operations-shell.js scripts/smoke-onetime-operations-crm-workbench-local.mjs` after Add Contact slice.
 - PASS `npm run operations:check-generated` after Add Contact slice.
 - PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js` (11/11) after Add Contact slice.

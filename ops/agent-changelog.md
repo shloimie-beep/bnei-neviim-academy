@@ -39213,3 +39213,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Live proof passed: One Time separate-instance SHA smoke, One Time Operations
   CRM workbench smoke with 12 scoped cards and read-only selected timeline, and
   deployed JS/HTML marker checks for Link member controls.
+
+## 2026-07-13 - One Time bot portal knowledge and landing polish v2
+
+- Updated the One Time WhatsApp bot profile to version `2026-07-13-v2` with
+  the explicit operator correction: "We are not giving portal access yet."
+- Tightened tests so the deterministic replies and generated system prompt must
+  keep portal/member/library/parent-login/student-login access unpublished.
+- Polished the public One Time landing and signup surfaces: shared black/yellow
+  header treatment, member-style signup lockup, softened yellow button shadows,
+  tighter section spacing, and a lifted mobile hero CTA.
+- Verification passed: focused bot/landing/signup tests `14/14`, full focused
+  One Time suite `76/76`, local responsive landing smoke at 1440/1024/768/430/390,
+  action watchdog, PQC validator, protocol drift watchdog, secret audit,
+  execution-run validation, and JSON/config checks.
+- Deployed commit `3712308731910a6e77fb9a18ce18b57ae35f22dd` to BNA and One
+  Time production.
+- BNA Railway deployment `77191e2f-0aaf-4fde-ae2c-cf69ce299af8` and One Time
+  deployment `38d75556-5a94-42d3-b8b3-65a5a3290fe7` reached `SUCCESS`.
+- BNA and One Time live `/api/deploy-info` both returned
+  `3712308731910a6e77fb9a18ce18b57ae35f22dd`.
+- Live proof passed: One Time separate-instance SHA smoke, public Rabbi/One
+  Time landing smoke, and deployed marker checks for yellow/header/shadow/CTA
+  and signup-header changes.
