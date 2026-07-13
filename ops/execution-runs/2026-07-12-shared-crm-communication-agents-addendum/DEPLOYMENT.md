@@ -212,3 +212,18 @@ Global production readiness remains blocked only by known external full-launch f
 - One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 593398dd6f3f927e321c24fad4bd2d01e13dcd51` passed.
 - One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench` passed; report `ops/live-smokes/2026-07-13T04-13-58-713Z-one-time-operations-crm-workbench-live-smoke.md`.
 - Read-only live DTO readback confirmed the deployed One Time CRM list returned 12 scoped cards with `no_send=true` and `external_write_performed=false`. The sampled timelines had 20 rows, `class_attendance_timeline_rows=0`, and `class_attendance_conversation_rows=0`; current live data had no class-attendance rows, so local smoke and DTO tests cover row behavior when records exist.
+
+## 2026-07-13 CRM Communication Consent/Suppression DTO Context Slice Deploy
+
+- Commit: `0e33764d66519d8f45d86e57b320a1988a604058`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_RAILWAY_TARGET_PROFILE=bna`.
+- BNA Railway doctor: deployment `1cf2ff91-2ead-4124-851d-a71b17742b56` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=0e33764d66519d8f45d86e57b320a1988a604058`, `target_app=bna`.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- One Time Railway doctor: deployment `57c2454e-60e2-40e9-9214-b7f5572df6c6` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=0e33764d66519d8f45d86e57b320a1988a604058`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 0e33764d66519d8f45d86e57b320a1988a604058` passed.
+- One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench` passed; report `ops/live-smokes/2026-07-13T04-26-18-047Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Read-only live DTO readback confirmed the deployed One Time CRM list returned 12 scoped cards, `communication_preferences_cards=12`, preference counts `{whatsapp:2,email:3,not_set:7}`, consent counts `{not_recorded:12}`, suppression counts `{none_recorded:12}`, `no_send=true`, and `external_write_performed=false`.

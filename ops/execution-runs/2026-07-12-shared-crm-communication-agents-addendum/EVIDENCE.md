@@ -269,3 +269,13 @@
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 593398dd6f3f927e321c24fad4bd2d01e13dcd51` passed.
 - `ops/live-smokes/2026-07-13T04-13-58-713Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the class-attendance aggregate slice.
 - Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, 20 sampled timeline rows, `class_attendance_timeline_rows=0`, `class_attendance_conversation_rows=0`, `no_send=true`, and `external_write_performed=false`; current live sample had no class-attendance rows.
+- `src/lib/bna/crm-contact-model.js` - canonical contact DTOs now expose `communication_preference`, `consent_status`, `suppression_status`, and structured `communication_preferences` derived from row metadata and matched signup context.
+- `server.js` - signup/product lead context now carries consent timestamp, consent policy version, email suppression state, WhatsApp suppression state, and suppression flags into canonical CRM contact rows for both `bna_contacts` and `bna_parent_leads`.
+- `tests/crm-contact-model.test.js` / `tests/service-provider-scope-routes.test.js` - tests pin consent/suppression mapping and server aggregate wiring without exposing raw internals.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=0e33764d66519d8f45d86e57b320a1988a604058`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=0e33764d66519d8f45d86e57b320a1988a604058`.
+- BNA post-deploy doctor - Railway deployment `1cf2ff91-2ead-4124-851d-a71b17742b56` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `57c2454e-60e2-40e9-9214-b7f5572df6c6` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 0e33764d66519d8f45d86e57b320a1988a604058` passed.
+- `ops/live-smokes/2026-07-13T04-26-18-047Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the communication consent/suppression DTO slice.
+- Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `communication_preferences_cards=12`, preference counts `{whatsapp:2,email:3,not_set:7}`, consent counts `{not_recorded:12}`, suppression counts `{none_recorded:12}`, `no_send=true`, and `external_write_performed=false`.

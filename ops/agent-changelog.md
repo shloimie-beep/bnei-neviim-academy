@@ -39477,3 +39477,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   read-only live DTO readback with no sends or external writes. Current live
   One Time sample had no class-attendance rows, so live proof is route/exclusion
   health plus local/test row coverage.
+
+## 2026-07-13 - CRM communication consent context deployed
+
+- Added communication preference, consent status, suppression status, and
+  structured communication preference context to canonical CRM contact cards,
+  derived from workspace-scoped contact, lead, and signup metadata.
+- Extended One Time signup persistence so reminder consent and suppression state
+  are preserved in signup context for later CRM aggregate reads without exposing
+  raw provider internals in the UI.
+- Verification passed: syntax checks, shared CRM/service-provider tests
+  `29/29`, local One Time CRM workbench smoke, focused One Time suite `78/78`,
+  action/link/security/protocol watchdogs, secret audit, execution-run
+  validation, BNA/One Time Railway doctors, exact-SHA One Time route smoke,
+  live One Time CRM workbench smoke, and read-only live DTO readback showing
+  12 scoped cards with communication preference context, no sends, and no
+  external writes.
