@@ -75,3 +75,10 @@
   through secure aliases only. Do not expose full destinations in logs or proof,
   do not send to Rabbi/parents/students/leads without separate approval, and do
   not enable unrestricted public auto-reply for owner tests.
+
+## 2026-07-13 - RAW-20260713-010 One Time final launch corrections
+
+- Use spelling `Shloimie`.
+- Shloimie is Super Admin and the real One Time workspace admin; One Time entry should be workspace/admin context, not View as Rabbi impersonation.
+- Public One Time WhatsApp reactive auto-replies are approved after Shloimie canary and technical safety gates. Do not ask again for that same approval.
+- Current slow-app report supersedes older performance-pass confidence until fresh proof says otherwise.

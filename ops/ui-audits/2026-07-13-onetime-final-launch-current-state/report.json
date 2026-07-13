@@ -1,0 +1,2159 @@
+{
+  "audit_id": "2026-07-13-onetime-final-launch-current-state",
+  "raw_id": "RAW-20260713-010",
+  "requirement_id": "REQ-20260713-933",
+  "generated_at": "2026-07-13T18:48:37.156Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "expected_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "observed_sha": "49f3edda2da37e3afd9bdf3056ab5f6fc91e981c",
+  "target_app": "one-time",
+  "ui_implementation_performed": false,
+  "external_write_performed": false,
+  "production_data_mutation_performed": false,
+  "private_screenshots_redacted_with_overlay": true,
+  "browser_content_untrusted": true,
+  "auth": {
+    "operations_login_available": false,
+    "operations_blocker": "Operations login returned 401: {\"success\":false,\"error\":\"Invalid credentials\"}",
+    "admin_provider_session_available": false,
+    "admin_provider_blocker": "No Operations cookie available for provider-session start.",
+    "provider_session_response_redacted": null
+  },
+  "api_checks": [
+    {
+      "id": "deploy_info",
+      "ok": true,
+      "status": 200,
+      "duration_ms": 624,
+      "target_app": "one-time",
+      "commit_sha": "49f3edda2da37e3afd9bdf3056ab5f6fc91e981c"
+    },
+    {
+      "id": "health",
+      "ok": true,
+      "status": 200,
+      "duration_ms": 497,
+      "target_app": "one-time"
+    },
+    {
+      "id": "crm_contacts_readonly",
+      "ok": false,
+      "status": 0,
+      "duration_ms": 0,
+      "text_preview": "Skipped because Operations login was unavailable."
+    }
+  ],
+  "routes": [
+    {
+      "id": "public-root",
+      "path": "/",
+      "surface": "public landing root",
+      "auth": "none",
+      "private": false
+    },
+    {
+      "id": "public-one-time",
+      "path": "/one-time",
+      "surface": "public One Time landing",
+      "auth": "none",
+      "private": false
+    },
+    {
+      "id": "public-signup",
+      "path": "/one-time/signup",
+      "surface": "public One Time signup",
+      "auth": "none",
+      "private": false
+    },
+    {
+      "id": "provider-review-overview",
+      "path": "/provider.html?review=one-time",
+      "surface": "provider review overview",
+      "auth": "none",
+      "private": false
+    },
+    {
+      "id": "provider-review-crm",
+      "path": "/provider.html?review=one-time&section=crm",
+      "surface": "provider review CRM",
+      "auth": "none",
+      "private": false
+    },
+    {
+      "id": "provider-review-agents",
+      "path": "/provider.html?review=one-time&section=agents",
+      "surface": "provider review agents",
+      "auth": "none",
+      "private": false
+    },
+    {
+      "id": "provider-admin-crm",
+      "path": "/provider.html?admin_provider=one-time&section=crm",
+      "surface": "admin-on-provider CRM",
+      "auth": "provider",
+      "private": true
+    },
+    {
+      "id": "operations-one-time-crm",
+      "path": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "surface": "Super Admin Operations One Time CRM",
+      "auth": "operations",
+      "private": true
+    },
+    {
+      "id": "operations-rabbi-inbox",
+      "path": "/operations?workspace=platform&view=communications&section=email&inbox=rabbi",
+      "surface": "Operations Rabbi / One Time inbox",
+      "auth": "operations",
+      "private": true
+    },
+    {
+      "id": "member-portal",
+      "path": "/rabbi-member",
+      "surface": "member portal route",
+      "auth": "none",
+      "private": false
+    },
+    {
+      "id": "student-login",
+      "path": "/student/login",
+      "surface": "student login route",
+      "auth": "none",
+      "private": false
+    },
+    {
+      "id": "classroom",
+      "path": "/one-time-classroom.html",
+      "surface": "classroom route",
+      "auth": "none",
+      "private": false
+    }
+  ],
+  "viewports": [
+    {
+      "id": "1440-desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "id": "1024-desktop-tablet",
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "id": "768-tablet",
+      "width": 768,
+      "height": 900
+    },
+    {
+      "id": "430-mobile",
+      "width": 430,
+      "height": 932
+    },
+    {
+      "id": "390-mobile",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "captures": [
+    {
+      "route_id": "public-root",
+      "route": "/",
+      "surface": "public landing root",
+      "auth": "none",
+      "viewport": "1440-desktop",
+      "status": 200,
+      "duration_ms": 2473,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-root-1440-desktop.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1181,
+        "load_event_ms": 2060,
+        "resource_count": 23,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 37
+      }
+    },
+    {
+      "route_id": "public-root",
+      "route": "/",
+      "surface": "public landing root",
+      "auth": "none",
+      "viewport": "1024-desktop-tablet",
+      "status": 200,
+      "duration_ms": 2999,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-root-1024-desktop-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1836,
+        "load_event_ms": 2022,
+        "resource_count": 23,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 37
+      }
+    },
+    {
+      "route_id": "public-root",
+      "route": "/",
+      "surface": "public landing root",
+      "auth": "none",
+      "viewport": "768-tablet",
+      "status": 200,
+      "duration_ms": 2960,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-root-768-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1848,
+        "load_event_ms": 2042,
+        "resource_count": 23,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 37
+      }
+    },
+    {
+      "route_id": "public-root",
+      "route": "/",
+      "surface": "public landing root",
+      "auth": "none",
+      "viewport": "430-mobile",
+      "status": 200,
+      "duration_ms": 2953,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-root-430-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1913,
+        "load_event_ms": 2125,
+        "resource_count": 23,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 37
+      }
+    },
+    {
+      "route_id": "public-root",
+      "route": "/",
+      "surface": "public landing root",
+      "auth": "none",
+      "viewport": "390-mobile",
+      "status": 200,
+      "duration_ms": 3062,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-root-390-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 2049,
+        "load_event_ms": 2327,
+        "resource_count": 23,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 37
+      }
+    },
+    {
+      "route_id": "public-one-time",
+      "route": "/one-time",
+      "surface": "public One Time landing",
+      "auth": "none",
+      "viewport": "1440-desktop",
+      "status": 200,
+      "duration_ms": 3434,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-one-time-1440-desktop.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 2148,
+        "load_event_ms": 2796,
+        "resource_count": 23,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 37
+      }
+    },
+    {
+      "route_id": "public-one-time",
+      "route": "/one-time",
+      "surface": "public One Time landing",
+      "auth": "none",
+      "viewport": "1024-desktop-tablet",
+      "status": 200,
+      "duration_ms": 3448,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-one-time-1024-desktop-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 2284,
+        "load_event_ms": 2444,
+        "resource_count": 23,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 37
+      }
+    },
+    {
+      "route_id": "public-one-time",
+      "route": "/one-time",
+      "surface": "public One Time landing",
+      "auth": "none",
+      "viewport": "768-tablet",
+      "status": 200,
+      "duration_ms": 3438,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-one-time-768-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 2317,
+        "load_event_ms": 2688,
+        "resource_count": 23,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 37
+      }
+    },
+    {
+      "route_id": "public-one-time",
+      "route": "/one-time",
+      "surface": "public One Time landing",
+      "auth": "none",
+      "viewport": "430-mobile",
+      "status": 200,
+      "duration_ms": 3260,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-one-time-430-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 2229,
+        "load_event_ms": 2530,
+        "resource_count": 23,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 37
+      }
+    },
+    {
+      "route_id": "public-one-time",
+      "route": "/one-time",
+      "surface": "public One Time landing",
+      "auth": "none",
+      "viewport": "390-mobile",
+      "status": 200,
+      "duration_ms": 3267,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-one-time-390-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 2239,
+        "load_event_ms": 2481,
+        "resource_count": 23,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 37
+      }
+    },
+    {
+      "route_id": "public-signup",
+      "route": "/one-time/signup",
+      "surface": "public One Time signup",
+      "auth": "none",
+      "viewport": "1440-desktop",
+      "status": 200,
+      "duration_ms": 1541,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-signup-1440-desktop.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign Up Now | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 508,
+        "load_event_ms": 808,
+        "resource_count": 2,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": false,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 31
+      }
+    },
+    {
+      "route_id": "public-signup",
+      "route": "/one-time/signup",
+      "surface": "public One Time signup",
+      "auth": "none",
+      "viewport": "1024-desktop-tablet",
+      "status": 200,
+      "duration_ms": 1536,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-signup-1024-desktop-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign Up Now | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 510,
+        "load_event_ms": 819,
+        "resource_count": 2,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": false,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 31
+      }
+    },
+    {
+      "route_id": "public-signup",
+      "route": "/one-time/signup",
+      "surface": "public One Time signup",
+      "auth": "none",
+      "viewport": "768-tablet",
+      "status": 200,
+      "duration_ms": 1595,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-signup-768-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign Up Now | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 597,
+        "load_event_ms": 901,
+        "resource_count": 2,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 31
+      }
+    },
+    {
+      "route_id": "public-signup",
+      "route": "/one-time/signup",
+      "surface": "public One Time signup",
+      "auth": "none",
+      "viewport": "430-mobile",
+      "status": 200,
+      "duration_ms": 1495,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-signup-430-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign Up Now | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 520,
+        "load_event_ms": 810,
+        "resource_count": 2,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 31
+      }
+    },
+    {
+      "route_id": "public-signup",
+      "route": "/one-time/signup",
+      "surface": "public One Time signup",
+      "auth": "none",
+      "viewport": "390-mobile",
+      "status": 200,
+      "duration_ms": 1511,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-signup-390-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign Up Now | One Time Mishnayos",
+        "h1": "Give your son a love for learning Torah.",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 531,
+        "load_event_ms": 831,
+        "resource_count": 2,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 31
+      }
+    },
+    {
+      "route_id": "provider-review-overview",
+      "route": "/provider.html?review=one-time",
+      "surface": "provider review overview",
+      "auth": "none",
+      "viewport": "1440-desktop",
+      "status": 200,
+      "duration_ms": 2057,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-overview-1440-desktop.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1040,
+        "load_event_ms": 1041,
+        "resource_count": 8,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 88
+      }
+    },
+    {
+      "route_id": "provider-review-overview",
+      "route": "/provider.html?review=one-time",
+      "surface": "provider review overview",
+      "auth": "none",
+      "viewport": "1024-desktop-tablet",
+      "status": 200,
+      "duration_ms": 2025,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-overview-1024-desktop-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1030,
+        "load_event_ms": 1030,
+        "resource_count": 8,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 88
+      }
+    },
+    {
+      "route_id": "provider-review-overview",
+      "route": "/provider.html?review=one-time",
+      "surface": "provider review overview",
+      "auth": "none",
+      "viewport": "768-tablet",
+      "status": 200,
+      "duration_ms": 2036,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-overview-768-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1050,
+        "load_event_ms": 1051,
+        "resource_count": 8,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 88
+      }
+    },
+    {
+      "route_id": "provider-review-overview",
+      "route": "/provider.html?review=one-time",
+      "surface": "provider review overview",
+      "auth": "none",
+      "viewport": "430-mobile",
+      "status": 200,
+      "duration_ms": 2010,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-overview-430-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1029,
+        "load_event_ms": 1030,
+        "resource_count": 8,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 88
+      }
+    },
+    {
+      "route_id": "provider-review-overview",
+      "route": "/provider.html?review=one-time",
+      "surface": "provider review overview",
+      "auth": "none",
+      "viewport": "390-mobile",
+      "status": 200,
+      "duration_ms": 2050,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-overview-390-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1075,
+        "load_event_ms": 1075,
+        "resource_count": 8,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 88
+      }
+    },
+    {
+      "route_id": "provider-review-crm",
+      "route": "/provider.html?review=one-time&section=crm",
+      "surface": "provider review CRM",
+      "auth": "none",
+      "viewport": "1440-desktop",
+      "status": 200,
+      "duration_ms": 1901,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-crm-1440-desktop.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 889,
+        "load_event_ms": 890,
+        "resource_count": 9,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 102
+      }
+    },
+    {
+      "route_id": "provider-review-crm",
+      "route": "/provider.html?review=one-time&section=crm",
+      "surface": "provider review CRM",
+      "auth": "none",
+      "viewport": "1024-desktop-tablet",
+      "status": 200,
+      "duration_ms": 1851,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-crm-1024-desktop-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 845,
+        "load_event_ms": 846,
+        "resource_count": 9,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 102
+      }
+    },
+    {
+      "route_id": "provider-review-crm",
+      "route": "/provider.html?review=one-time&section=crm",
+      "surface": "provider review CRM",
+      "auth": "none",
+      "viewport": "768-tablet",
+      "status": 200,
+      "duration_ms": 1912,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-crm-768-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 933,
+        "load_event_ms": 934,
+        "resource_count": 9,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 102
+      }
+    },
+    {
+      "route_id": "provider-review-crm",
+      "route": "/provider.html?review=one-time&section=crm",
+      "surface": "provider review CRM",
+      "auth": "none",
+      "viewport": "430-mobile",
+      "status": 200,
+      "duration_ms": 1947,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-crm-430-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 981,
+        "load_event_ms": 982,
+        "resource_count": 9,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 102
+      }
+    },
+    {
+      "route_id": "provider-review-crm",
+      "route": "/provider.html?review=one-time&section=crm",
+      "surface": "provider review CRM",
+      "auth": "none",
+      "viewport": "390-mobile",
+      "status": 200,
+      "duration_ms": 1842,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-crm-390-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 875,
+        "load_event_ms": 875,
+        "resource_count": 9,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 102
+      }
+    },
+    {
+      "route_id": "provider-review-agents",
+      "route": "/provider.html?review=one-time&section=agents",
+      "surface": "provider review agents",
+      "auth": "none",
+      "viewport": "1440-desktop",
+      "status": 200,
+      "duration_ms": 2024,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-agents-1440-desktop.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1013,
+        "load_event_ms": 1014,
+        "resource_count": 9,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 95
+      }
+    },
+    {
+      "route_id": "provider-review-agents",
+      "route": "/provider.html?review=one-time&section=agents",
+      "surface": "provider review agents",
+      "auth": "none",
+      "viewport": "1024-desktop-tablet",
+      "status": 200,
+      "duration_ms": 1831,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-agents-1024-desktop-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 835,
+        "load_event_ms": 835,
+        "resource_count": 9,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 95
+      }
+    },
+    {
+      "route_id": "provider-review-agents",
+      "route": "/provider.html?review=one-time&section=agents",
+      "surface": "provider review agents",
+      "auth": "none",
+      "viewport": "768-tablet",
+      "status": 200,
+      "duration_ms": 1880,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-agents-768-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 881,
+        "load_event_ms": 881,
+        "resource_count": 9,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 95
+      }
+    },
+    {
+      "route_id": "provider-review-agents",
+      "route": "/provider.html?review=one-time&section=agents",
+      "surface": "provider review agents",
+      "auth": "none",
+      "viewport": "430-mobile",
+      "status": 200,
+      "duration_ms": 1870,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-agents-430-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 881,
+        "load_event_ms": 882,
+        "resource_count": 9,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 95
+      }
+    },
+    {
+      "route_id": "provider-review-agents",
+      "route": "/provider.html?review=one-time&section=agents",
+      "surface": "provider review agents",
+      "auth": "none",
+      "viewport": "390-mobile",
+      "status": 200,
+      "duration_ms": 1848,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-review-agents-390-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Rabbi Workspace Review",
+        "h1": "Provider portal",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 870,
+        "load_event_ms": 870,
+        "resource_count": 9,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 95
+      }
+    },
+    {
+      "route_id": "provider-admin-crm",
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "surface": "admin-on-provider CRM",
+      "auth": "provider",
+      "viewport": "1440-desktop",
+      "status": 200,
+      "duration_ms": 1855,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-admin-crm-1440-desktop.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [
+        "401 https://join.onetimeonetime.com/api/provider-portal/session"
+      ],
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ],
+      "metrics": {
+        "title": "Admin on Rabbi One Time Provider Account",
+        "h1": "One Time provider session required",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 843,
+        "load_event_ms": 843,
+        "resource_count": 8,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 101
+      }
+    },
+    {
+      "route_id": "provider-admin-crm",
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "surface": "admin-on-provider CRM",
+      "auth": "provider",
+      "viewport": "1024-desktop-tablet",
+      "status": 200,
+      "duration_ms": 1901,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-admin-crm-1024-desktop-tablet.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [
+        "401 https://join.onetimeonetime.com/api/provider-portal/session"
+      ],
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ],
+      "metrics": {
+        "title": "Admin on Rabbi One Time Provider Account",
+        "h1": "One Time provider session required",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 920,
+        "load_event_ms": 921,
+        "resource_count": 8,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 101
+      }
+    },
+    {
+      "route_id": "provider-admin-crm",
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "surface": "admin-on-provider CRM",
+      "auth": "provider",
+      "viewport": "768-tablet",
+      "status": 200,
+      "duration_ms": 1863,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-admin-crm-768-tablet.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [
+        "401 https://join.onetimeonetime.com/api/provider-portal/session"
+      ],
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ],
+      "metrics": {
+        "title": "Admin on Rabbi One Time Provider Account",
+        "h1": "One Time provider session required",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 902,
+        "load_event_ms": 903,
+        "resource_count": 8,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 101
+      }
+    },
+    {
+      "route_id": "provider-admin-crm",
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "surface": "admin-on-provider CRM",
+      "auth": "provider",
+      "viewport": "430-mobile",
+      "status": 200,
+      "duration_ms": 1874,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-admin-crm-430-mobile.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [
+        "401 https://join.onetimeonetime.com/api/provider-portal/session"
+      ],
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ],
+      "metrics": {
+        "title": "Admin on Rabbi One Time Provider Account",
+        "h1": "One Time provider session required",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 910,
+        "load_event_ms": 910,
+        "resource_count": 8,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 101
+      }
+    },
+    {
+      "route_id": "provider-admin-crm",
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "surface": "admin-on-provider CRM",
+      "auth": "provider",
+      "viewport": "390-mobile",
+      "status": 200,
+      "duration_ms": 1970,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-admin-crm-390-mobile.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [
+        "401 https://join.onetimeonetime.com/api/provider-portal/session"
+      ],
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ],
+      "metrics": {
+        "title": "Admin on Rabbi One Time Provider Account",
+        "h1": "One Time provider session required",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1012,
+        "load_event_ms": 1013,
+        "resource_count": 8,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 101
+      }
+    },
+    {
+      "route_id": "operations-one-time-crm",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "surface": "Super Admin Operations One Time CRM",
+      "auth": "operations",
+      "viewport": "1440-desktop",
+      "status": 200,
+      "duration_ms": 1981,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/operations-one-time-crm-1440-desktop.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign In - BNA Operations",
+        "h1": "Welcome back",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1019,
+        "load_event_ms": 1177,
+        "resource_count": 3,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": false,
+          "signup_marker": false
+        },
+        "interactive_count": 3
+      }
+    },
+    {
+      "route_id": "operations-one-time-crm",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "surface": "Super Admin Operations One Time CRM",
+      "auth": "operations",
+      "viewport": "1024-desktop-tablet",
+      "status": 200,
+      "duration_ms": 1877,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/operations-one-time-crm-1024-desktop-tablet.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign In - BNA Operations",
+        "h1": "Welcome back",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 924,
+        "load_event_ms": 1081,
+        "resource_count": 3,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": false,
+          "signup_marker": false
+        },
+        "interactive_count": 3
+      }
+    },
+    {
+      "route_id": "operations-one-time-crm",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "surface": "Super Admin Operations One Time CRM",
+      "auth": "operations",
+      "viewport": "768-tablet",
+      "status": 200,
+      "duration_ms": 1997,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/operations-one-time-crm-768-tablet.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign In - BNA Operations",
+        "h1": "Welcome back",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1052,
+        "load_event_ms": 1200,
+        "resource_count": 3,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": false,
+          "signup_marker": false
+        },
+        "interactive_count": 3
+      }
+    },
+    {
+      "route_id": "operations-one-time-crm",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "surface": "Super Admin Operations One Time CRM",
+      "auth": "operations",
+      "viewport": "430-mobile",
+      "status": 200,
+      "duration_ms": 1899,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/operations-one-time-crm-430-mobile.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign In - BNA Operations",
+        "h1": "Welcome back",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 961,
+        "load_event_ms": 1152,
+        "resource_count": 3,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": false,
+          "signup_marker": false
+        },
+        "interactive_count": 3
+      }
+    },
+    {
+      "route_id": "operations-one-time-crm",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "surface": "Super Admin Operations One Time CRM",
+      "auth": "operations",
+      "viewport": "390-mobile",
+      "status": 200,
+      "duration_ms": 1897,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/operations-one-time-crm-390-mobile.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign In - BNA Operations",
+        "h1": "Welcome back",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 959,
+        "load_event_ms": 1124,
+        "resource_count": 3,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": false,
+          "signup_marker": false
+        },
+        "interactive_count": 3
+      }
+    },
+    {
+      "route_id": "operations-rabbi-inbox",
+      "route": "/operations?workspace=platform&view=communications&section=email&inbox=rabbi",
+      "surface": "Operations Rabbi / One Time inbox",
+      "auth": "operations",
+      "viewport": "1440-desktop",
+      "status": 200,
+      "duration_ms": 2024,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/operations-rabbi-inbox-1440-desktop.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign In - BNA Operations",
+        "h1": "Welcome back",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1050,
+        "load_event_ms": 1189,
+        "resource_count": 3,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": false,
+          "signup_marker": false
+        },
+        "interactive_count": 3
+      }
+    },
+    {
+      "route_id": "operations-rabbi-inbox",
+      "route": "/operations?workspace=platform&view=communications&section=email&inbox=rabbi",
+      "surface": "Operations Rabbi / One Time inbox",
+      "auth": "operations",
+      "viewport": "1024-desktop-tablet",
+      "status": 200,
+      "duration_ms": 1943,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/operations-rabbi-inbox-1024-desktop-tablet.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign In - BNA Operations",
+        "h1": "Welcome back",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 981,
+        "load_event_ms": 1156,
+        "resource_count": 3,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": false,
+          "signup_marker": false
+        },
+        "interactive_count": 3
+      }
+    },
+    {
+      "route_id": "operations-rabbi-inbox",
+      "route": "/operations?workspace=platform&view=communications&section=email&inbox=rabbi",
+      "surface": "Operations Rabbi / One Time inbox",
+      "auth": "operations",
+      "viewport": "768-tablet",
+      "status": 200,
+      "duration_ms": 1900,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/operations-rabbi-inbox-768-tablet.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign In - BNA Operations",
+        "h1": "Welcome back",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 948,
+        "load_event_ms": 1097,
+        "resource_count": 3,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": false,
+          "signup_marker": false
+        },
+        "interactive_count": 3
+      }
+    },
+    {
+      "route_id": "operations-rabbi-inbox",
+      "route": "/operations?workspace=platform&view=communications&section=email&inbox=rabbi",
+      "surface": "Operations Rabbi / One Time inbox",
+      "auth": "operations",
+      "viewport": "430-mobile",
+      "status": 200,
+      "duration_ms": 1988,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/operations-rabbi-inbox-430-mobile.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign In - BNA Operations",
+        "h1": "Welcome back",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1030,
+        "load_event_ms": 1261,
+        "resource_count": 3,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": false,
+          "signup_marker": false
+        },
+        "interactive_count": 3
+      }
+    },
+    {
+      "route_id": "operations-rabbi-inbox",
+      "route": "/operations?workspace=platform&view=communications&section=email&inbox=rabbi",
+      "surface": "Operations Rabbi / One Time inbox",
+      "auth": "operations",
+      "viewport": "390-mobile",
+      "status": 200,
+      "duration_ms": 2019,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/operations-rabbi-inbox-390-mobile.png",
+      "private_redaction_overlay": true,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "Sign In - BNA Operations",
+        "h1": "Welcome back",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1078,
+        "load_event_ms": 1224,
+        "resource_count": 3,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": false,
+          "signup_marker": false
+        },
+        "interactive_count": 3
+      }
+    },
+    {
+      "route_id": "member-portal",
+      "route": "/rabbi-member",
+      "surface": "member portal route",
+      "auth": "none",
+      "viewport": "1440-desktop",
+      "status": 200,
+      "duration_ms": 22021,
+      "screenshot_path": "",
+      "private_redaction_overlay": false,
+      "navigation_error": "member-portal 1440-desktop capture exceeded 22000ms",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {}
+    },
+    {
+      "route_id": "member-portal",
+      "route": "/rabbi-member",
+      "surface": "member portal route",
+      "auth": "none",
+      "viewport": "1024-desktop-tablet",
+      "status": 200,
+      "duration_ms": 22003,
+      "screenshot_path": "",
+      "private_redaction_overlay": false,
+      "navigation_error": "member-portal 1024-desktop-tablet capture exceeded 22000ms",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {}
+    },
+    {
+      "route_id": "member-portal",
+      "route": "/rabbi-member",
+      "surface": "member portal route",
+      "auth": "none",
+      "viewport": "768-tablet",
+      "status": 200,
+      "duration_ms": 22012,
+      "screenshot_path": "",
+      "private_redaction_overlay": false,
+      "navigation_error": "member-portal 768-tablet capture exceeded 22000ms",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {}
+    },
+    {
+      "route_id": "member-portal",
+      "route": "/rabbi-member",
+      "surface": "member portal route",
+      "auth": "none",
+      "viewport": "430-mobile",
+      "status": 200,
+      "duration_ms": 22012,
+      "screenshot_path": "",
+      "private_redaction_overlay": false,
+      "navigation_error": "member-portal 430-mobile capture exceeded 22000ms",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {}
+    },
+    {
+      "route_id": "member-portal",
+      "route": "/rabbi-member",
+      "surface": "member portal route",
+      "auth": "none",
+      "viewport": "390-mobile",
+      "status": 200,
+      "duration_ms": 22005,
+      "screenshot_path": "",
+      "private_redaction_overlay": false,
+      "navigation_error": "member-portal 390-mobile capture exceeded 22000ms",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {}
+    },
+    {
+      "route_id": "student-login",
+      "route": "/student/login",
+      "surface": "student login route",
+      "auth": "none",
+      "viewport": "1440-desktop",
+      "status": 200,
+      "duration_ms": 2186,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/student-login-1440-desktop.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [
+        "401 https://join.onetimeonetime.com/api/student-portal/session"
+      ],
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ],
+      "metrics": {
+        "title": "One Time Student Login",
+        "h1": "Student Login",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1146,
+        "load_event_ms": 1147,
+        "resource_count": 11,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 33
+      }
+    },
+    {
+      "route_id": "student-login",
+      "route": "/student/login",
+      "surface": "student login route",
+      "auth": "none",
+      "viewport": "1024-desktop-tablet",
+      "status": 200,
+      "duration_ms": 2120,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/student-login-1024-desktop-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [
+        "401 https://join.onetimeonetime.com/api/student-portal/session"
+      ],
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ],
+      "metrics": {
+        "title": "One Time Student Login",
+        "h1": "Student Login",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1106,
+        "load_event_ms": 1107,
+        "resource_count": 11,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 33
+      }
+    },
+    {
+      "route_id": "student-login",
+      "route": "/student/login",
+      "surface": "student login route",
+      "auth": "none",
+      "viewport": "768-tablet",
+      "status": 200,
+      "duration_ms": 2059,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/student-login-768-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [
+        "401 https://join.onetimeonetime.com/api/student-portal/session"
+      ],
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ],
+      "metrics": {
+        "title": "One Time Student Login",
+        "h1": "Student Login",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1072,
+        "load_event_ms": 1073,
+        "resource_count": 11,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 33
+      }
+    },
+    {
+      "route_id": "student-login",
+      "route": "/student/login",
+      "surface": "student login route",
+      "auth": "none",
+      "viewport": "430-mobile",
+      "status": 200,
+      "duration_ms": 2127,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/student-login-430-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [
+        "401 https://join.onetimeonetime.com/api/student-portal/session"
+      ],
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ],
+      "metrics": {
+        "title": "One Time Student Login",
+        "h1": "Student Login",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1128,
+        "load_event_ms": 1129,
+        "resource_count": 11,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 33
+      }
+    },
+    {
+      "route_id": "student-login",
+      "route": "/student/login",
+      "surface": "student login route",
+      "auth": "none",
+      "viewport": "390-mobile",
+      "status": 200,
+      "duration_ms": 2052,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/student-login-390-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [
+        "401 https://join.onetimeonetime.com/api/student-portal/session"
+      ],
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ],
+      "metrics": {
+        "title": "One Time Student Login",
+        "h1": "Student Login",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 1085,
+        "load_event_ms": 1086,
+        "resource_count": 11,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": false
+        },
+        "interactive_count": 33
+      }
+    },
+    {
+      "route_id": "classroom",
+      "route": "/one-time-classroom.html",
+      "surface": "classroom route",
+      "auth": "none",
+      "viewport": "1440-desktop",
+      "status": 200,
+      "duration_ms": 1862,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/classroom-1440-desktop.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Mishnah Classroom",
+        "h1": "One Time Mishnah Classroom",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 878,
+        "load_event_ms": 879,
+        "resource_count": 7,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 20
+      }
+    },
+    {
+      "route_id": "classroom",
+      "route": "/one-time-classroom.html",
+      "surface": "classroom route",
+      "auth": "none",
+      "viewport": "1024-desktop-tablet",
+      "status": 200,
+      "duration_ms": 1815,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/classroom-1024-desktop-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Mishnah Classroom",
+        "h1": "One Time Mishnah Classroom",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 861,
+        "load_event_ms": 862,
+        "resource_count": 7,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 20
+      }
+    },
+    {
+      "route_id": "classroom",
+      "route": "/one-time-classroom.html",
+      "surface": "classroom route",
+      "auth": "none",
+      "viewport": "768-tablet",
+      "status": 200,
+      "duration_ms": 1841,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/classroom-768-tablet.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Mishnah Classroom",
+        "h1": "One Time Mishnah Classroom",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 870,
+        "load_event_ms": 871,
+        "resource_count": 7,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 20
+      }
+    },
+    {
+      "route_id": "classroom",
+      "route": "/one-time-classroom.html",
+      "surface": "classroom route",
+      "auth": "none",
+      "viewport": "430-mobile",
+      "status": 200,
+      "duration_ms": 1810,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/classroom-430-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Mishnah Classroom",
+        "h1": "One Time Mishnah Classroom",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 855,
+        "load_event_ms": 856,
+        "resource_count": 7,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 20
+      }
+    },
+    {
+      "route_id": "classroom",
+      "route": "/one-time-classroom.html",
+      "surface": "classroom route",
+      "auth": "none",
+      "viewport": "390-mobile",
+      "status": 200,
+      "duration_ms": 1833,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/classroom-390-mobile.png",
+      "private_redaction_overlay": false,
+      "navigation_error": "",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "metrics": {
+        "title": "One Time Mishnah Classroom",
+        "h1": "One Time Mishnah Classroom",
+        "ready_state": "complete",
+        "dom_content_loaded_ms": 889,
+        "load_event_ms": 890,
+        "resource_count": 7,
+        "horizontal_overflow": false,
+        "body_markers": {
+          "permission_denied": true,
+          "bna_public_leak": false,
+          "one_time_marker": true,
+          "signup_marker": true
+        },
+        "interactive_count": 20
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "FIND-20260713-933-001",
+      "severity": "P0",
+      "title": "One Time live deploy SHA differs from current launch worktree",
+      "evidence": "/api/deploy-info observed 49f3edda2da37e3afd9bdf3056ab5f6fc91e981c; expected cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+      "next_action": "Deploy the exact intended SHA before launch Done and rerun live smoke."
+    },
+    {
+      "id": "FIND-20260713-933-002",
+      "severity": "P0",
+      "title": "Operations authenticated current-state audit is blocked",
+      "evidence": "Operations login returned 401: {\"success\":false,\"error\":\"Invalid credentials\"}",
+      "next_action": "Install valid read-only Operations audit credentials or fix the login/session path."
+    },
+    {
+      "id": "FIND-20260713-933-003",
+      "severity": "P0",
+      "title": "Admin-on-provider current-state audit is blocked",
+      "evidence": "No Operations cookie available for provider-session start.",
+      "next_action": "Fix provider-session start from the Super Admin One Time workspace context."
+    },
+    {
+      "id": "FIND-20260713-933-REQ-4",
+      "severity": "P1",
+      "title": "provider-admin-crm 1440-desktop has request or console failures",
+      "evidence": "failed=0, bad=1, console=1",
+      "next_action": "Classify whether failures are expected auth denials or product defects, then add regression coverage."
+    },
+    {
+      "id": "FIND-20260713-933-REQ-5",
+      "severity": "P1",
+      "title": "provider-admin-crm 1024-desktop-tablet has request or console failures",
+      "evidence": "failed=0, bad=1, console=1",
+      "next_action": "Classify whether failures are expected auth denials or product defects, then add regression coverage."
+    },
+    {
+      "id": "FIND-20260713-933-REQ-6",
+      "severity": "P1",
+      "title": "provider-admin-crm 768-tablet has request or console failures",
+      "evidence": "failed=0, bad=1, console=1",
+      "next_action": "Classify whether failures are expected auth denials or product defects, then add regression coverage."
+    },
+    {
+      "id": "FIND-20260713-933-REQ-7",
+      "severity": "P1",
+      "title": "provider-admin-crm 430-mobile has request or console failures",
+      "evidence": "failed=0, bad=1, console=1",
+      "next_action": "Classify whether failures are expected auth denials or product defects, then add regression coverage."
+    },
+    {
+      "id": "FIND-20260713-933-REQ-8",
+      "severity": "P1",
+      "title": "provider-admin-crm 390-mobile has request or console failures",
+      "evidence": "failed=0, bad=1, console=1",
+      "next_action": "Classify whether failures are expected auth denials or product defects, then add regression coverage."
+    },
+    {
+      "id": "FIND-20260713-933-NAV-9",
+      "severity": "P0",
+      "title": "member-portal 1440-desktop navigation did not complete",
+      "evidence": "member-portal 1440-desktop capture exceeded 22000ms",
+      "next_action": "Reproduce locally, classify root cause, and add deterministic smoke coverage."
+    },
+    {
+      "id": "FIND-20260713-933-SLOW-10",
+      "severity": "P0",
+      "title": "member-portal 1440-desktop exceeded current-state performance budget",
+      "evidence": "22021ms to domcontentloaded/screenshot capture",
+      "next_action": "Profile route assets/API waits and repair before launch."
+    },
+    {
+      "id": "FIND-20260713-933-NAV-11",
+      "severity": "P0",
+      "title": "member-portal 1024-desktop-tablet navigation did not complete",
+      "evidence": "member-portal 1024-desktop-tablet capture exceeded 22000ms",
+      "next_action": "Reproduce locally, classify root cause, and add deterministic smoke coverage."
+    },
+    {
+      "id": "FIND-20260713-933-SLOW-12",
+      "severity": "P0",
+      "title": "member-portal 1024-desktop-tablet exceeded current-state performance budget",
+      "evidence": "22003ms to domcontentloaded/screenshot capture",
+      "next_action": "Profile route assets/API waits and repair before launch."
+    },
+    {
+      "id": "FIND-20260713-933-NAV-13",
+      "severity": "P0",
+      "title": "member-portal 768-tablet navigation did not complete",
+      "evidence": "member-portal 768-tablet capture exceeded 22000ms",
+      "next_action": "Reproduce locally, classify root cause, and add deterministic smoke coverage."
+    },
+    {
+      "id": "FIND-20260713-933-SLOW-14",
+      "severity": "P0",
+      "title": "member-portal 768-tablet exceeded current-state performance budget",
+      "evidence": "22012ms to domcontentloaded/screenshot capture",
+      "next_action": "Profile route assets/API waits and repair before launch."
+    },
+    {
+      "id": "FIND-20260713-933-NAV-15",
+      "severity": "P0",
+      "title": "member-portal 430-mobile navigation did not complete",
+      "evidence": "member-portal 430-mobile capture exceeded 22000ms",
+      "next_action": "Reproduce locally, classify root cause, and add deterministic smoke coverage."
+    },
+    {
+      "id": "FIND-20260713-933-SLOW-16",
+      "severity": "P0",
+      "title": "member-portal 430-mobile exceeded current-state performance budget",
+      "evidence": "22012ms to domcontentloaded/screenshot capture",
+      "next_action": "Profile route assets/API waits and repair before launch."
+    },
+    {
+      "id": "FIND-20260713-933-NAV-17",
+      "severity": "P0",
+      "title": "member-portal 390-mobile navigation did not complete",
+      "evidence": "member-portal 390-mobile capture exceeded 22000ms",
+      "next_action": "Reproduce locally, classify root cause, and add deterministic smoke coverage."
+    },
+    {
+      "id": "FIND-20260713-933-SLOW-18",
+      "severity": "P0",
+      "title": "member-portal 390-mobile exceeded current-state performance budget",
+      "evidence": "22005ms to domcontentloaded/screenshot capture",
+      "next_action": "Profile route assets/API waits and repair before launch."
+    },
+    {
+      "id": "FIND-20260713-933-REQ-19",
+      "severity": "P1",
+      "title": "student-login 1440-desktop has request or console failures",
+      "evidence": "failed=0, bad=1, console=1",
+      "next_action": "Classify whether failures are expected auth denials or product defects, then add regression coverage."
+    },
+    {
+      "id": "FIND-20260713-933-REQ-20",
+      "severity": "P1",
+      "title": "student-login 1024-desktop-tablet has request or console failures",
+      "evidence": "failed=0, bad=1, console=1",
+      "next_action": "Classify whether failures are expected auth denials or product defects, then add regression coverage."
+    },
+    {
+      "id": "FIND-20260713-933-REQ-21",
+      "severity": "P1",
+      "title": "student-login 768-tablet has request or console failures",
+      "evidence": "failed=0, bad=1, console=1",
+      "next_action": "Classify whether failures are expected auth denials or product defects, then add regression coverage."
+    },
+    {
+      "id": "FIND-20260713-933-REQ-22",
+      "severity": "P1",
+      "title": "student-login 430-mobile has request or console failures",
+      "evidence": "failed=0, bad=1, console=1",
+      "next_action": "Classify whether failures are expected auth denials or product defects, then add regression coverage."
+    },
+    {
+      "id": "FIND-20260713-933-REQ-23",
+      "severity": "P1",
+      "title": "student-login 390-mobile has request or console failures",
+      "evidence": "failed=0, bad=1, console=1",
+      "next_action": "Classify whether failures are expected auth denials or product defects, then add regression coverage."
+    },
+    {
+      "id": "FIND-20260713-933-CRM",
+      "severity": "P0",
+      "title": "Scoped CRM read-only API check failed",
+      "evidence": "status=0; Skipped because Operations login was unavailable.",
+      "next_action": "Fix authenticated CRM readback for rabbi_sheller_provider / one_time_mishnah_class."
+    }
+  ],
+  "findings_count": 24,
+  "screenshot_count": 55,
+  "status": "needs_implementation"
+}

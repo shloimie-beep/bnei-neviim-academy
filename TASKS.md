@@ -2962,3 +2962,5 @@ execution continues under the active goal
 - [ ] Continue working the full `RAW-20260616-001` correction register until
   every requirement is Done, Already satisfied, Blocked, Failed, Needs operator
   decision, or Archived with proof.
+
+- [ ] `RAW-20260713-010 / REQ-20260713-931 through REQ-20260713-941`: One Time final integration launch goal-mode packet. Register: `tasks-pending/2026-07-13-onetime-final-integration-launch.md`. Gate 1 is recorded at `ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md`; `REQ-20260713-933` current-state P0 reproduction/PQC audit is done at `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md`; next unblocked work is `REQ-20260713-934` via `PKT-20260713-934A` member portal performance. Public WhatsApp approval is granted after canary/gates, Stripe sandbox work is authorized under the no-trial/no-surprise $67/month policy, and PR #132 must not merge wholesale.

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-13T18:52:44+03:00",
+  "updated_at": "2026-07-13T21:55:00Z",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -120,9 +120,9 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T19:19:00+03:00",
+      "updated_at": "2026-07-13T22:42:00+03:00",
       "can_continue_without_operator": false,
-      "blocker": "Missing secure owner-test destinations: ONE_TIME_OWNER_TEST_EMAIL (or approved alias) and ONE_TIME_OWNER_TEST_WHATSAPP/PHONE (or approved alias) are absent from Railway/readiness readback. Resend is send-ready and One Time WAPI provider setup is ready with one-time scoped credentials; public auto-reply remains blocked by ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM; no owner send was attempted.",
+      "blocker": "Missing secure owner-test destinations. RAW-20260713-010 grants public auto-reply approval after canary/gates, but does not remove secure owner/canary destination requirement.",
       "status": "blocked",
       "depends_on": [
         "REQ-20260713-905"
@@ -178,7 +178,7 @@
       "category": "provider_owner_tests",
       "batch_id": "1-owner-only-live-integration-tests",
       "implementation_status": "No-send owner-test readiness was rerun after securely setting the One Time scoped WAPI token in Railway. Current proof confirms WAPI provider setup is ready, credential_scope=one_time_scoped, Resend send_allowed=true, and both secure owner-test aliases are still missing. Zero email sends, WhatsApp sends, CRM mutations, public auto-reply activation, Telegram sends, or destructive production writes were performed.",
-      "next_action": "Configure secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP or approved equivalent aliases through the approved secret path; rerun npm run one-time:owner-test:readiness, then perform bounded owner-only send/readback. Public WhatsApp auto-reply remains separately blocked until ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM is explicitly approved.",
+      "next_action": "Configure secure owner/canary aliases through approved secret path; rerun readiness; then run bounded owner/canary send/readback.",
       "acceptance_criteria": [
         "Secure owner-test email and WhatsApp aliases are resolved from approved config/Railway/keyholder paths or a precise blocker is recorded.",
         "No raw destination value is hardcoded, pasted, committed, logged, screenshot, or reported.",
@@ -189,7 +189,7 @@
         "Public auto-reply remains separately gated and is not enabled merely for owner tests."
       ],
       "blocker_owner": "Shloimie / secure runtime configuration owner",
-      "blocker_next_action": "Configure secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP or approved equivalent aliases in Railway/keyholder without exposing raw values; then rerun npm run one-time:owner-test:readiness and bounded owner-only send/readback.",
+      "blocker_next_action": "Configure secure owner/canary aliases through approved secret path; rerun readiness; then run bounded owner/canary send/readback.",
       "blocker_recommended_option": "Set owner-test aliases as Railway variables for the One Time service and mirror only presence/fingerprint evidence in repo reports.",
       "blocker_alternatives": "Use local keyholder aliases for Codex-only preflight, but production owner-send proof still needs Railway aliases or an approved runtime path.",
       "blocker_consequence": "Owner-only live email/WhatsApp sends cannot be safely attempted without risking raw destination leakage or non-owner sends."
@@ -2298,7 +2298,7 @@
       "status": "blocked",
       "implementation_status": "Blocked after completing the deployable no-send activation proof: One Time WAPI/Rabbi Telegram safe gate is deployed, exact-SHA live readback and route smokes pass, WAPI provider setup is ready, OpenAI/agent/inbound/outbox/Resend/WAPI/Rabbi policy contracts pass, public auto-reply remains fail-closed behind the Telegram confirmation flag, and additional read-only DTO/safe-smoke evidence was captured. Owner-test email/WhatsApp sends remain blocked by missing secure owner aliases. No external email, WhatsApp, Telegram, CRM, payment/access, or public auto-reply send was performed.",
       "can_continue_without_operator": false,
-      "next_action": "Operator/secure runtime owner must configure secure owner-test aliases to continue bounded owner sends, and must explicitly approve ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM before unrestricted public WhatsApp auto-reply activation. Continue other unblocked requirements meanwhile.",
+      "next_action": "Configure secure owner/canary aliases; rerun readiness; run bounded canary/readback; activate public reply only if gates pass.",
       "acceptance_criteria": [
         "Contact capture works independently of AI reply readiness; WAPI auth/binding/contact/conversation/zero-task/idempotency/opt-out/OpenAI/outbox checks pass; WhatsApp live only after readiness; email remains draft."
       ],
@@ -2363,8 +2363,8 @@
         "tests/one-time-external-setup-readiness.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T19:27:00+03:00",
-      "blocker": "Blocked on external configuration/approval: missing secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP/PHONE aliases for owner-only sends, and missing ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM for unrestricted public WhatsApp auto-reply.",
+      "updated_at": "2026-07-13T22:42:00+03:00",
+      "blocker": "Blocked on configuration/technical gates: public WhatsApp approval is now granted by RAW-20260713-010/DEC-20260713-008 after canary/safety gates, but secure owner/canary aliases are missing and activation/readback gates have not passed.",
       "deployment_evidence": {
         "one_time_deployed_sha": "80b75432672d282855b350a2f7c5adc160e63623",
         "one_time_deployment_id": "74f45880-7a11-4b06-9632-d858843cb4fb",
@@ -2372,7 +2372,7 @@
         "railway_doctor": "npm run railway:doctor for BNA_DEPLOY_APP=one-time reached SUCCESS for deployment 74f45880-7a11-4b06-9632-d858843cb4fb"
       },
       "blocker_owner": "Shloimie / secure runtime configuration owner",
-      "blocker_next_action": "Set secure owner-test aliases in Railway/keyholder without exposing raw values; separately approve ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM only when unrestricted public WhatsApp auto-reply should go live.",
+      "blocker_next_action": "Configure secure owner/canary aliases; rerun readiness; run bounded canary/readback; activate public reply only if gates pass.",
       "blocker_recommended_option": "Keep public auto-reply disabled; configure owner aliases first, rerun owner-test readiness, perform bounded owner-only email/WhatsApp send/readback, then decide public auto-reply confirmation as a separate approval.",
       "blocker_consequence": "REQ-20260712-313 cannot be marked Done because live owner send/readback and public WhatsApp live activation are intentionally gated."
     },
@@ -2397,7 +2397,7 @@
       "status": "blocked",
       "implementation_status": "Current release-proof report is recorded with exact live SHA, deployment IDs, performance evidence, CRM/mobile screenshot evidence, WAPI/owner/Rabbi readiness evidence, and guardrails. The full final matrix cannot be marked Done until owner-test aliases and public-auto-reply confirmation unblock live send/readback and final verifier sections.",
       "can_continue_without_operator": false,
-      "next_action": "After secure owner-test aliases and any public-auto-reply approval are configured, rerun owner-only email/WhatsApp send/readback, final integration verifier, and final matrix closeout. Continue no-send or unrelated unblocked work meanwhile.",
+      "next_action": "Continue REQ-20260713-933 current-state reproduction, then implementation/activation/billing/deploy gates before final matrix.",
       "acceptance_criteria": [
         "Run the full required matrix, push bounded commits, deploy exact tested SHA, run Railway doctor, capture responsive screenshots and redacted receipts, update ledgers/changelog, and report exact blockers."
       ],
@@ -2441,10 +2441,514 @@
         "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/FINAL-REPORT.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T19:31:00+03:00",
-      "blocker": "Blocked by REQ-20260713-906 missing secure owner-test aliases, REQ-20260712-313 missing public auto-reply confirmation, and REQ-20260713-910 final verifier dependency on owner-test send/readback.",
+      "updated_at": "2026-07-13T22:42:00+03:00",
+      "blocker": "Blocked by RAW-20260713-010 launch gates: secure canary aliases/final live-send proof are missing; public approval is granted but technical gates must pass; exact-SHA live proof is blocked by One Time deploy-info mismatch.",
       "blocker_owner": "Shloimie / secure runtime configuration owner",
-      "blocker_next_action": "Configure secure owner-test aliases; separately approve ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM only when unrestricted public WhatsApp auto-reply should go live; rerun final verifier and matrix."
+      "blocker_next_action": "Continue REQ-20260713-933 current-state reproduction, then implementation/activation/billing/deploy gates before final matrix."
+    },
+    {
+      "id": "REQ-20260713-931",
+      "title": "Register RAW-20260713-010 as the active One Time launch correction source",
+      "expected_result": "Preserve prompt, map source statements, update active run/topic memory/register/ledger/changelog.",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-001"
+      ],
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "0-gate1-register-launch-prompt",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "Completed for this gate.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue Gate 1 audit and then start REQ-20260713-933.",
+      "acceptance_criteria": [
+        "Raw prompt copied and fingerprinted.",
+        "Source statements mapped.",
+        "Active run points to RAW-20260713-010."
+      ],
+      "evidence": [
+        "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-010.json",
+        "tasks-pending/2026-07-13-onetime-final-integration-launch.md",
+        "memory/2026-07-13.md",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "verification": [
+        "SHA256 BEC7D0B514919621FF8AFD25E9D95D29287F46A18B397EDB9361508BBFCDF13F"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-010.json",
+        "tasks-pending/2026-07-13-onetime-final-integration-launch.md",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/run.json",
+        "TASKS.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-13T22:42:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260713-932",
+      "title": "Complete Gate 1 freeze and current-truth audit",
+      "expected_result": "Record repo, live, PR, readiness, secrets, and immediate blockers before implementation.",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-006"
+      ],
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "audit",
+      "priority": "P0",
+      "batch_id": "0-gate1-current-truth-audit",
+      "depends_on": [
+        "REQ-20260713-931"
+      ],
+      "status": "done",
+      "implementation_status": "Completed for this gate.",
+      "can_continue_without_operator": true,
+      "next_action": "Start REQ-20260713-933 current-state reproduction/PQC audit.",
+      "acceptance_criteria": [
+        "Current branch/SHA recorded.",
+        "Live deploy-info recorded.",
+        "PR #132 status recorded.",
+        "Findings mapped."
+      ],
+      "evidence": [
+        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md",
+        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.json",
+        "ops/production-readiness/latest-production-readiness-snapshot.md",
+        "ops/production-readiness/latest-production-readiness-snapshot.json",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-010.json"
+      ],
+      "verification": [
+        "git fetch/rev-parse/live deploy-info/gh pr view/readiness/secrets commands recorded"
+      ],
+      "implementation_files": [
+        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md",
+        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.json",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-13T22:42:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260713-933",
+      "title": "Reproduce current P0 One Time role, performance, CRM, content, and mobile defects",
+      "expected_result": "Capture current-state evidence and PQC/state matrix before fixes.",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-005",
+        "SRC-20260713-010-007"
+      ],
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "audit",
+      "priority": "P0",
+      "batch_id": "1-current-state-reproduce-p0-defects",
+      "depends_on": [
+        "REQ-20260713-932"
+      ],
+      "status": "done",
+      "implementation_status": "Done: current-state visual/performance audit captured 55 screenshots across public/provider/Operations/member/student/classroom routes; 24 findings recorded including exact-SHA mismatch, blocked Operations/auth CRM readback, admin-provider session blocker, member portal 22s deadline failures across all five viewports, and provider/student request-console failures. Validated Product Quality splitter packet created for scoped implementation batches.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260713-934 via PKT-20260713-934A member portal performance repair first; keep auth/admin CRM blocker visible until valid read-only audit credentials/session proof exists.",
+      "acceptance_criteria": [
+        "Screenshots/traces captured.",
+        "Exact SHA/source recorded.",
+        "Role/context and performance causes classified.",
+        "PQC/state matrix created."
+      ],
+      "evidence": [
+        "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md",
+        "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.json",
+        "ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json"
+      ],
+      "verification": [
+        "node --check scripts/audit-onetime-final-launch-current-state.mjs",
+        "npm run audit:onetime-final-launch-current-state -- --base-url=https://join.onetimeonetime.com --expected-sha=cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+        "npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json"
+      ],
+      "implementation_files": [
+        "scripts/audit-onetime-final-launch-current-state.mjs",
+        "package.json",
+        "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md",
+        "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.json",
+        "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/",
+        "ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-13T21:55:00Z",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260713-934",
+      "title": "Fix One Time identity, navigation, CRM/content, mobile, and performance issues",
+      "expected_result": "Implement scoped fixes after current-state proof.",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-002",
+        "SRC-20260713-010-008"
+      ],
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "ui_product_implementation",
+      "priority": "P0",
+      "batch_id": "2-identity-ui-performance-fixes",
+      "depends_on": [
+        "REQ-20260713-933"
+      ],
+      "status": "not_started",
+      "implementation_status": "Ready for scoped implementation only after REQ-20260713-933 current-state evidence. First child packet is PKT-20260713-934A member portal performance; auth/admin CRM proof remains blocked by invalid read-only Operations credentials.",
+      "can_continue_without_operator": true,
+      "next_action": "Start PKT-20260713-934A: profile and repair /rabbi-member performance without touching sends, payments, DNS, deploy, provider mutations, or the whole parent ramble.",
+      "acceptance_criteria": [
+        "Workspace context, not View as Rabbi.",
+        "CRM/content/mobile match state matrix.",
+        "Performance budgets addressed.",
+        "No workspace data bleed."
+      ],
+      "evidence": [
+        "ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json",
+        "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md"
+      ],
+      "verification": [
+        "PQC validated: npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/",
+        "src/",
+        "tests/",
+        "scripts/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-13T21:55:00Z",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260713-935",
+      "title": "Verify and repair One Time landing/signup/assets/responsive launch path",
+      "expected_result": "Inspect/repair landing, signup, assets, pricing copy, responsive behavior, and dry-run proof.",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-009"
+      ],
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "public_landing_signup",
+      "priority": "P0",
+      "batch_id": "3-landing-signup-assets-responsive",
+      "depends_on": [
+        "REQ-20260713-932"
+      ],
+      "status": "not_started",
+      "implementation_status": "Not started.",
+      "can_continue_without_operator": true,
+      "next_action": "Audit/fix scoped public landing/signup issues and prove with no-write and exact-SHA smokes.",
+      "acceptance_criteria": [
+        "Landing/signup responsive.",
+        "Family/School intent preserved.",
+        "Copy matches no-trial policy.",
+        "No unapproved production lead write."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "server.js",
+        "public/",
+        "src/",
+        "tests/",
+        "scripts/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-13T22:42:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260713-936",
+      "title": "Activate One Time WhatsApp canaries and public reactive auto-replies after gates",
+      "expected_result": "Apply approval correction while blocking activation until secure canary destinations and technical gates pass.",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-003",
+        "SRC-20260713-010-010"
+      ],
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "activation",
+      "priority": "P0",
+      "batch_id": "4-whatsapp-canary-public-activation",
+      "depends_on": [
+        "REQ-20260713-932"
+      ],
+      "status": "blocked",
+      "implementation_status": "Blocked by recorded blocker.",
+      "can_continue_without_operator": false,
+      "next_action": "Configure secure aliases, rerun readiness, run bounded canary/readback, then activate public replies only if gates pass.",
+      "acceptance_criteria": [
+        "Do not ask again for same approval.",
+        "Do not activate before canary/gates.",
+        "Destination values never committed/logged.",
+        "Provider/CRM/idempotency/opt-out proof exists."
+      ],
+      "evidence": [
+        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md",
+        "ops/watchdog-audits/2026-07-13T16-18-40-701Z-onetime-owner-test-readiness.md"
+      ],
+      "verification": [
+        "Approval registered; technical gates still block."
+      ],
+      "implementation_files": [
+        "server.js",
+        "scripts/check-onetime-owner-test-readiness.mjs",
+        "scripts/check-onetime-wapi-readiness.mjs",
+        "tests/one-time-owner-test-readiness.test.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-13T22:42:00+03:00",
+      "blocker": "Public WhatsApp approval is granted by RAW-20260713-010/DEC-20260713-008, but secure Shloimie canary/owner destinations are not configured and canary/readback/idempotency/opt-out gates have not passed.",
+      "blocker_owner": "Shloimie / secure runtime configuration owner",
+      "blocker_next_action": "Configure secure owner/canary aliases through approved secret path; rerun readiness; perform bounded canary proof before public activation."
+    },
+    {
+      "id": "REQ-20260713-937",
+      "title": "Reconcile Stripe Billing V2 and PR #132 into current master safely",
+      "expected_result": "Audit PR #132 and implement/reconcile Billing V2 in safe sandbox-only slices.",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-004",
+        "SRC-20260713-010-011"
+      ],
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "billing",
+      "priority": "P0",
+      "batch_id": "5-stripe-billing-v2-reconciliation",
+      "depends_on": [
+        "REQ-20260713-932"
+      ],
+      "status": "not_started",
+      "implementation_status": "Not started.",
+      "can_continue_without_operator": true,
+      "next_action": "Audit PR #132 diff and rebuild/cherry-pick only safe scoped pieces with sandbox livemode=false proof.",
+      "acceptance_criteria": [
+        "No wholesale dirty merge.",
+        "No trial object/hidden trial.",
+        "Sandbox livemode=false proof.",
+        "No live charge/refund/access mutation."
+      ],
+      "evidence": [
+        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md"
+      ],
+      "verification": [
+        "gh pr view 132 open draft DIRTY"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/",
+        "public/",
+        "tests/",
+        "scripts/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-13T22:42:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260713-938",
+      "title": "Finish Vimeo, Drive, Classroom, and Zoom integration truth for One Time",
+      "expected_result": "Audit and finish media/classroom/Zoom integration state with workspace scope and blockers.",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-012"
+      ],
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "media_classroom_zoom",
+      "priority": "P1",
+      "batch_id": "6-vimeo-drive-classroom-zoom",
+      "depends_on": [
+        "REQ-20260713-932"
+      ],
+      "status": "not_started",
+      "implementation_status": "Not started.",
+      "can_continue_without_operator": true,
+      "next_action": "Inspect current video/classroom/Zoom docs/runtime/register and run no-upload/no-send smokes unless approved.",
+      "acceptance_criteria": [
+        "State is current and One Time scoped.",
+        "No workspace leakage.",
+        "External uploads/moves/publishes blocked without credentials/approval."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "server.js",
+        "scripts/",
+        "src/",
+        "tests/",
+        "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-13T22:42:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260713-939",
+      "title": "Run PR/CI/DNS/deploy/rollback gate for final launch candidate",
+      "expected_result": "After implementation gates, run PR/CI/readiness/secrets/DNS/deploy/rollback proof.",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-013",
+        "SRC-20260713-010-016"
+      ],
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "release",
+      "priority": "P0",
+      "batch_id": "7-pr-ci-dns-deploy-rollback",
+      "depends_on": [
+        "REQ-20260713-934",
+        "REQ-20260713-935",
+        "REQ-20260713-936",
+        "REQ-20260713-937",
+        "REQ-20260713-938"
+      ],
+      "status": "not_started",
+      "implementation_status": "Not started.",
+      "can_continue_without_operator": true,
+      "next_action": "Run only after dependent gates are terminal; commit/push/deploy exact candidate and record rollback.",
+      "acceptance_criteria": [
+        "CI/tests pass.",
+        "Secrets audit passes.",
+        "DNS/target current.",
+        "Exact SHA deployed with rollback plan."
+      ],
+      "evidence": [
+        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md"
+      ],
+      "verification": [
+        "production readiness currently blocked"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/",
+        "public/",
+        "tests/",
+        "scripts/",
+        "railway.json",
+        "package.json"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-13T22:42:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260713-940",
+      "title": "Prove exact live One Time deployment and launch smoke at current SHA",
+      "expected_result": "Verify join.onetimeonetime.com serves intended launch commit and exact-SHA smoke matrix passes.",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-014"
+      ],
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "release_verification",
+      "priority": "P0",
+      "batch_id": "8-exact-live-verification",
+      "depends_on": [
+        "REQ-20260713-939"
+      ],
+      "status": "not_started",
+      "implementation_status": "Not started.",
+      "can_continue_without_operator": true,
+      "next_action": "After deployment, rerun exact-SHA live smokes; resolve Gate 1 mismatch before Done.",
+      "acceptance_criteria": [
+        "Deploy-info matches intended commit.",
+        "Exact-SHA smokes pass.",
+        "Screenshots/accessibility/action/route/privacy proof current."
+      ],
+      "evidence": [
+        "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md"
+      ],
+      "verification": [
+        "Gate 1 live mismatch One Time=49f3edda, origin/master=cebbfc57"
+      ],
+      "implementation_files": [
+        "scripts/",
+        "tests/",
+        "ops/live-smokes/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-13T22:42:00+03:00",
+      "blocker": ""
+    },
+    {
+      "id": "REQ-20260713-941",
+      "title": "Finalize source-of-truth reconciliation and goal closeout",
+      "expected_result": "When all gates are terminal, update registers/memory/TASKS/ledger/changelog/audit governance/final report.",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-015"
+      ],
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "closeout",
+      "priority": "P0",
+      "batch_id": "9-final-closeout",
+      "depends_on": [
+        "REQ-20260713-940"
+      ],
+      "status": "not_started",
+      "implementation_status": "Not started.",
+      "can_continue_without_operator": true,
+      "next_action": "Close only after all launch requirements are terminal with evidence/blockers.",
+      "acceptance_criteria": [
+        "All source statements terminal.",
+        "Ledger/changelog/final report updated.",
+        "Audit outputs governed or mapped."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "TASKS.md",
+        "MEMORY.md",
+        "memory/",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-13T22:42:00+03:00",
+      "blocker": ""
     }
   ],
   "sources": [
@@ -2467,12 +2971,26 @@
       "workspace": "rabbi_sheller_provider",
       "project": "one_time_mishnah_class",
       "source_type": "codex_chat_goal_mode_addendum"
+    },
+    {
+      "source_id": "RAW-20260713-010",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+      "captured_at": "2026-07-13T22:42:00+03:00",
+      "content_fingerprint": "sha256:BEC7D0B514919621FF8AFD25E9D95D29287F46A18B397EDB9361508BBFCDF13F",
+      "privacy_classification": "internal_sensitive_redacted_required",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_goal_mode_launch_prompt"
     }
   ],
   "source_statement_matrices": [
     {
       "source_id": "RAW-20260713-003",
       "path": "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-003.json"
+    },
+    {
+      "source_id": "RAW-20260713-010",
+      "path": "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-010.json"
     }
   ],
   "decisions": [
@@ -2516,6 +3034,71 @@
       "owner": "Codex",
       "created_at": "2026-07-13T07:47:20+03:00",
       "next_action": "Inspect guarded scripts and secure alias readiness before any send; record blockers if aliases or gates are missing."
+    },
+    {
+      "id": "DEC-20260713-007",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-002"
+      ],
+      "title": "One Time entry is Shloimie workspace context, not Rabbi impersonation",
+      "decision": "Use Shloimie spelling. Shloimie is Super Admin and the real One Time workspace admin. One Time entry is workspace context/admin access, not View as Rabbi impersonation.",
+      "status": "active",
+      "owner": "Codex",
+      "created_at": "2026-07-13T22:42:00+03:00",
+      "next_action": "Apply in REQ-20260713-933/934."
+    },
+    {
+      "id": "DEC-20260713-008",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-003"
+      ],
+      "title": "Public One Time WhatsApp auto-reply approval is granted after canary and gates",
+      "decision": "Public One Time reactive WhatsApp auto-replies are approved for valid new public inbound senders after Shloimie canary and technical safety gates. Do not ask again for this same approval.",
+      "status": "active",
+      "owner": "Shloimie",
+      "created_at": "2026-07-13T22:42:00+03:00",
+      "next_action": "Block only on secure canary destinations and technical proof."
+    },
+    {
+      "id": "DEC-20260713-009",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-004"
+      ],
+      "title": "Stripe sandbox/test-mode billing policy for One Time launch",
+      "decision": "Stripe sandbox/test work is authorized. Policy is $67/month recurring, no trial object, no hidden trial, application-level promo until configured Rosh Hashanah deadline, no surprise subscriptions, no automatic refunds, no grace period, and strict livemode=false proof. No live charge/refund/access change authorized.",
+      "status": "active",
+      "owner": "Shloimie",
+      "created_at": "2026-07-13T22:42:00+03:00",
+      "next_action": "Use for REQ-20260713-937."
+    },
+    {
+      "id": "DEC-20260713-010",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-010"
+      ],
+      "title": "Secure canary destinations required before WhatsApp activation",
+      "decision": "Public approval does not remove secure Shloimie-controlled canary destination requirement.",
+      "status": "blocked",
+      "owner": "Shloimie / secure runtime configuration owner",
+      "created_at": "2026-07-13T22:42:00+03:00",
+      "next_action": "Configure secure canary aliases without exposing raw values."
+    },
+    {
+      "id": "DEC-20260713-011",
+      "source_id": "RAW-20260713-010",
+      "source_statement_ids": [
+        "SRC-20260713-010-011"
+      ],
+      "title": "Do not merge PR #132 wholesale",
+      "decision": "PR #132 is draft, dirty, and divergent. Billing V2 must be reconciled or replaced in scoped slices.",
+      "status": "active",
+      "owner": "Codex",
+      "created_at": "2026-07-13T22:42:00+03:00",
+      "next_action": "Audit PR #132 and cherry-pick/rebuild safe pieces only."
     }
   ]
 }

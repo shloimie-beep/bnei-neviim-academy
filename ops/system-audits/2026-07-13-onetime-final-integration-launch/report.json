@@ -1,0 +1,83 @@
+{
+  "audit_id": "AUDIT-20260713-ONETIME-FINAL-INTEGRATION-LAUNCH-GATE1",
+  "raw_id": "RAW-20260713-010",
+  "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+  "created_at": "2026-07-13T22:42:00+03:00",
+  "branch": "codex/onetime-final-integration-launch",
+  "head_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "origin_master_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "live_readback": {
+    "one_time": {
+      "commit_sha": "49f3edda2da37e3afd9bdf3056ab5f6fc91e981c",
+      "target_app": "one-time"
+    },
+    "bna": {
+      "commit_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c"
+    }
+  },
+  "pr_132": {
+    "state": "OPEN",
+    "is_draft": true,
+    "merge_state_status": "DIRTY",
+    "head_sha": "2e4cd4ad0cf44618b817f1e48940ef86a28913ea",
+    "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/132"
+  },
+  "conclusion": {
+    "gate_1_status": "done_with_blockers_recorded",
+    "next_unblocked_requirement_id": "REQ-20260713-933",
+    "definition_of_ready_for_product_implementation": false
+  },
+  "findings": [
+    {
+      "id": "FIND-20260713-010-001",
+      "severity": "P0",
+      "title": "One Time live SHA mismatch",
+      "mapped_requirement_id": "REQ-20260713-940",
+      "finding": "One Time live deploy-info returns 49f3edda2da37e3afd9bdf3056ab5f6fc91e981c while this clean worktree and origin/master are cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c. BNA live matches origin/master.",
+      "next_action": "Deploy and smoke the intended exact SHA before launch Done."
+    },
+    {
+      "id": "FIND-20260713-010-002",
+      "severity": "P0",
+      "title": "Original checkout dirty; clean lane created",
+      "mapped_requirement_id": "REQ-20260713-932",
+      "finding": "Original BNA v2.0 checkout had unrelated dirty work on codex/onetime-member-library-audit-evidence. Registration moved to clean branch codex/onetime-final-integration-launch.",
+      "next_action": "Keep launch work scoped to the clean branch/worktree."
+    },
+    {
+      "id": "FIND-20260713-010-003",
+      "severity": "P0",
+      "title": "WhatsApp public approval corrected; canary gates still block",
+      "mapped_requirement_id": "REQ-20260713-936",
+      "finding": "RAW-20260713-010 grants public One Time WhatsApp reactive auto-reply approval after Shloimie canary and technical safety gates. Secure owner/canary destinations are still missing.",
+      "next_action": "Configure secure canary aliases and pass readiness/readback before activation."
+    },
+    {
+      "id": "FIND-20260713-010-004",
+      "severity": "P0",
+      "title": "PR #132 dirty draft; no wholesale merge",
+      "mapped_requirement_id": "REQ-20260713-937",
+      "finding": "PR #132 is OPEN draft, mergeStateStatus DIRTY, head 2e4cd4ad0cf44618b817f1e48940ef86a28913ea. It must be reconciled or replaced in scoped Billing V2 slices.",
+      "next_action": "Audit PR #132 and cherry-pick/rebuild safe pieces only."
+    },
+    {
+      "id": "FIND-20260713-010-005",
+      "severity": "P1",
+      "title": "Readiness remains blocked",
+      "mapped_requirement_id": "REQ-20260713-939",
+      "finding": "production:readiness:gate is blocked; missing setup/canary proof and stale public no-write smoke prevent launch Done.",
+      "next_action": "Refresh readiness after Gate 2/current implementation batches."
+    }
+  ],
+  "guardrails": {
+    "product_code_changed": false,
+    "external_send_performed": false,
+    "public_auto_reply_enabled": false,
+    "stripe_live_charge_or_refund_performed": false,
+    "provider_mutation_performed": false,
+    "dns_mutation_performed": false,
+    "deployment_performed": false,
+    "credential_mutation_performed": false,
+    "raw_private_destination_committed": false
+  }
+}

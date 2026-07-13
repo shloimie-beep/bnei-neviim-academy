@@ -64,6 +64,7 @@
     "telegram:rabbi:chat-id": "node scripts/read-rabbi-telegram-chat-id.mjs",
     "telegram:rabbi:live-smoke": "node scripts/smoke-rabbi-telegram-live.mjs",
     "audit:onetime-role-ui": "node scripts/audit-onetime-role-ui-current-state.mjs",
+    "audit:onetime-final-launch-current-state": "node scripts/audit-onetime-final-launch-current-state.mjs",
     "audit:onetime-toolbar-density": "node scripts/audit-onetime-toolbar-filter-density.mjs",
     "audit:parent-student-login-ui": "node scripts/audit-parent-student-login-ui-polish.mjs",
     "telegram:rabbi:start": "powershell -ExecutionPolicy Bypass -File scripts/start-telegram-kimi-bridge.ps1 rabbi-elie-scheller",

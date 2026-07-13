@@ -38,3 +38,14 @@ Record each batch, requirement ID, status, and next action.
 | 6-rabbi-telegram-private-agent | REQ-20260713-903 | In progress; deployed readiness/ticket slice | Commit `8f6441523` deployed to BNA and One Time; Telegram readiness no-send audit reports Super Admin and Rabbi targets configured/ready; Rabbi ticket status notifications are scoped/redacted; private/public bot separation tests passed | Continue full private Rabbi Telegram CRM/content/read/write action surface and content-parsing knowledge binding. |
 | 6-rabbi-telegram-private-agent | REQ-20260713-904 | In progress; deployed approval-gate slice | Commit `8f6441523` deployed to BNA and One Time; approval lifecycle statuses, no-initial-Codex-job ticket capture, Super Admin inline callbacks, action registry rows, tests, exact-SHA smoke, and live unauth approval guard passed | Live synthetic ticket alert/approval remains gated by Telegram send flags and a cleanup-safe production test path. |
 | 7-release-proof | REQ-20260712-314 | Blocked on live-send/final-verifier gates | Current final report `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/FINAL-REPORT.md` records live SHA `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`, One Time Railway deployment `fe180cfc-322c-46cc-acde-4e1314e42291`, performance reports, CRM/mobile screenshot evidence, WAPI/owner/Rabbi readiness, and exact blockers. | Configure secure owner-test aliases and separately approve public WhatsApp auto-reply before rerunning owner-send/readback, final verifier, and full final matrix. |
+
+## RAW-20260713-010 Launch Batch Status
+
+| Requirement | Status |
+|---|---|
+| `REQ-20260713-931` | Done |
+| `REQ-20260713-932` | Done |
+| `REQ-20260713-933` | Next / not started |
+| `REQ-20260713-936` | Blocked |
+
+| 1-current-state-reproduce-p0-defects | REQ-20260713-933 | Done | `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md`; `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`; PQC validation passed; 55 screenshots; 24 findings; member portal 22s deadline reproduced in all five viewports; auth/admin CRM blocker recorded. | Start `REQ-20260713-934` with `PKT-20260713-934A` member portal performance only. |

@@ -18,3 +18,9 @@
 - Payment success may map to access grant only in an approved implementation or
   sandbox packet with reversible test records.
 
+
+## 2026-07-13 - RAW-20260713-010 One Time Stripe sandbox and billing policy
+
+- Stripe sandbox/test-mode work is authorized.
+- Policy: $67/month recurring, no trial object, no hidden trial, application-level promo until configured Rosh Hashanah deadline, no surprise subscriptions, no automatic refunds, no grace period, strict `livemode=false` proof.
+- No live charges, refunds, subscriptions, payment-method mutation, or access grants are authorized by this correction.

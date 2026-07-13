@@ -708,3 +708,22 @@ Current status: `active`
   auto-reply mutation, CRM production write, provider mutation, credential
   mutation, payment/access mutation, raw private payload logging, or destructive
   production mutation was performed.
+
+## 2026-07-13 One Time Final Integration Launch Gate 1
+
+- Registered `RAW-20260713-010` as newest One Time launch source.
+- Gate 1 audit: `ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md`.
+- One Time live SHA is `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`; origin/master is `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`.
+- Public WhatsApp approval is recorded; canary/technical gates still block activation.
+- PR #132 is dirty/draft and must be reconciled, not merged wholesale.
+- Next batch: `REQ-20260713-933`.
+
+## 2026-07-13 - One Time Final Launch Current-State Audit Done
+
+- `REQ-20260713-933` is Done for current-state reproduction and PQC handoff.
+- Audit report: `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md`; JSON: `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.json`.
+- Captured 55 screenshots across public landing/signup, provider review/admin, Operations CRM/inbox, member, student, and classroom routes at 1440/1024/768/430/390 where routes reached screenshot state.
+- Findings: 24 total, 14 P0. Key current truth: One Time live SHA is `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c` while expected current source is `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`; Operations read-only audit credentials return 401; admin-provider session cannot start without the Operations cookie; `/rabbi-member` exceeded the 22s capture deadline in all five viewports.
+- Validated PQC splitter packet: `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`.
+- Next current requirement is `REQ-20260713-934`, starting only with child packet `PKT-20260713-934A` for member portal performance. Auth/admin CRM proof stays blocked until valid read-only audit credentials/session proof exists.
+- Guardrails: no UI implementation, external send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS change, deploy, or public auto-reply activation occurred.

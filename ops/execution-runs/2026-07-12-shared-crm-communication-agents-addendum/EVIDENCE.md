@@ -879,3 +879,19 @@
   auto-reply mutation, CRM production write, provider mutation, credential
   mutation, payment/access mutation, raw private payload logging, or destructive
   production mutation was performed.
+
+## RAW-20260713-010 Gate 1 Evidence
+
+- Raw prompt: `raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md`.
+- Source matrix: `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-010.json`.
+- Audit: `ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md` and `ops/system-audits/2026-07-13-onetime-final-integration-launch/report.json`.
+- Readiness snapshot: `ops/production-readiness/latest-production-readiness-snapshot.md`.
+
+## REQ-20260713-933 Current-State Audit Evidence - 2026-07-13
+
+- Current-state audit report: `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md`.
+- Current-state audit JSON: `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.json`.
+- Screenshot directory: `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/` with 55 redacted/public screenshots.
+- Product Quality splitter packet: `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`.
+- PQC validation report: `ops/product-quality-compiler/validation/latest-product-quality-validation.md`.
+- P0 evidence: exact live SHA mismatch, Operations read-only auth 401, admin-provider session blocker, member portal 22s deadline failures across 1440/1024/768/430/390, and CRM readback skipped because auth was unavailable.

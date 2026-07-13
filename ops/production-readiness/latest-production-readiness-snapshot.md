@@ -1,84 +1,73 @@
-# Production Readiness Snapshot - 2026-07-12T08:39:55.921Z
+# Production Readiness Snapshot - 2026-07-13T18:03:54.882Z
 
 Result: not_production_complete
 Production ready: no
 Safe current scope: read-only production-readiness reporting, blocker reconciliation, and non-overlapping proof automation
 
 ## Why Not Done Yet
-- full One Time launch has external Stripe/WAPI/campaign blockers
-- Rabbi Telegram runtime is blocked_missing_bot_token
-- Rabbi Agent Review still needs terminal Agent Mode proof
+- full One Time launch has external setup blockers
+- public launch no-write smoke is passed
 - active execution run has no unblocked executable batch
 
 ## Git
-- Branch: codex/onetime-p0p1-corrective-20260711
-- HEAD: 2511d829
-- origin/master: d68e3f9a
+- Branch: codex/onetime-final-integration-launch
+- HEAD: cebbfc578
+- origin/master: cebbfc578
 - Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: 2511d829
-- Sampled origin/master: d68e3f9a
+- Sampled git head: cebbfc578
+- Sampled origin/master: cebbfc578
 - Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
 
 ## Active Execution Run
-- Run: ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion
-- Status counts: in_progress 7, blocked 2, needs_operator_decision 10, verified 4
+- Run: ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum
+- Status counts: blocked 4, done 17
 - Work remains: yes
 - Validation passed: yes
 - Next unblocked executable batch: none
 
 ## Remaining External Blockers
-- REQ-20260712-002: GitHub rejected push of .github/workflows/onetime-corrective.yml because the OAuth App lacks workflow scope. Owner: GitHub credential owner / operator. Next: Push the CI workflow with a GitHub token that has workflow scope, or have an authorized maintainer add .github/workflows/onetime-corrective.yml separately.
-- REQ-20260712-013: Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet. Owner: Operator / reviewer. Next: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
-- REQ-20260712-014: Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet. Owner: Operator / reviewer. Next: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
-- REQ-20260712-020: Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet. Owner: Operator / reviewer. Next: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
-- REQ-20260712-021: Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet. Owner: Operator / reviewer. Next: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
-- REQ-20260712-022: The operator must approve release/deployment and personally submit exactly one test signup before Codex can verify real external-send evidence or activate the exact three-contact local segment. Owner: Operator / reviewer. Next: After local implementation and no-send validation pass, approve deployment and submit the personal test through https://join.onetimeonetime.com/one-time/signup, then report when the page confirms signup.
-- REQ-20260712-005: Missing BNA_ONETIME_CRM_TEST_DATABASE_URL for the required real local/test Postgres CRM journey. Production DATABASE_URL is intentionally ignored by the smoke. Owner: Operator / local test environment. Next: Set BNA_ONETIME_CRM_TEST_DATABASE_URL to an approved local/test Postgres URL, then run npm run one-time:smoke:crm-journey-local-db and attach the generated report.
-- REQ-20260712-006: BNA_ONETIME_CRM_TEST_DATABASE_URL is missing for the real local/test Postgres persistence journey, and deployment/live smoke is not authorized. Owner: Operator / local test environment. Next: Provide an approved non-production BNA_ONETIME_CRM_TEST_DATABASE_URL, rerun the real persistence journey, then authorize PR #129 release/deploy/live smoke for terminal proof.
-- REQ-20260712-007: Terminal Done requires release authorization, deployment of the exact PR #129 SHA, and live-smoke proof. Local browser proof is complete, but no deploy/live external write is authorized. Owner: Operator / reviewer. Next: Authorize PR #129 release, deploy the exact approved SHA, then run live screenshots/readback against the deployed URL.
-- REQ-20260712-008: Deployment/live-smoke evidence is required before this server-visible requirement can be terminal Done. Owner: release_owner. Next: After release authorization, deploy the approved PR SHA and run live smoke/readback for the intake/dropoff path.
-- REQ-20260712-009: Deployment/live-smoke evidence is required before this server-visible regression batch can be terminal Done. Owner: release_owner. Next: After release authorization, deploy the approved PR SHA and run live smoke/readback for the intake/dropoff path.
-- REQ-20260712-011: Explicit authorization is required before merge, deployment, or production live smoke. Owner: Operator / reviewer. Next: Review PR #129 after local verification and explicitly approve or reject release through the approved pipeline.
+- REQ-20260713-906: Missing secure owner-test destinations: ONE_TIME_OWNER_TEST_EMAIL (or approved alias) and ONE_TIME_OWNER_TEST_WHATSAPP/PHONE (or approved alias) are absent from Railway/readiness readback. Resend is send-ready and One Time WAPI provider setup is ready with one-time scoped credentials; public auto-reply remains blocked by ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM; no owner send was attempted. Owner: Shloimie / secure runtime configuration owner. Next: Configure secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP or approved equivalent aliases in Railway/keyholder without exposing raw values; then rerun npm run one-time:owner-test:readiness and bounded owner-only send/readback.
+- REQ-20260713-910: REQ-20260713-910 depends on REQ-20260713-906. Secure owner-test aliases ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP/PHONE (or approved equivalents) are missing from local/keyholder/Railway readback, so independent owner-account email/WhatsApp verification and final verifier sections cannot be completed without an owner secret configuration step. Owner: Shloimie / secure runtime configuration owner. Next: Configure secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP or approved equivalent aliases in Railway/keyholder without exposing raw values; complete REQ-20260713-906 owner-only send/readback, then rerun the verifier without duplicate sends.
+- REQ-20260712-313: Blocked on external configuration/approval: missing secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP/PHONE aliases for owner-only sends, and missing ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM for unrestricted public WhatsApp auto-reply. Owner: Shloimie / secure runtime configuration owner. Next: Set secure owner-test aliases in Railway/keyholder without exposing raw values; separately approve ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM only when unrestricted public WhatsApp auto-reply should go live.
+- REQ-20260712-314: Blocked by REQ-20260713-906 missing secure owner-test aliases, REQ-20260712-313 missing public auto-reply confirmation, and REQ-20260713-910 final verifier dependency on owner-test send/readback. Owner: Shloimie / secure runtime configuration owner. Next: Configure secure owner-test aliases; separately approve ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM only when unrestricted public WhatsApp auto-reply should go live; rerun final verifier and matrix.
 
 ## One Time Setup Buckets
 - Checklist: ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
 - Available: yes
-- Current setup check: 5/8 ready (exit 1)
+- Current setup check: 7/8 ready (exit 1)
 
-- Setup ready count: 5/8
-- Operator blocker count: 3
-- SETUP-ONETIME-STRIPE-001: Rabbi Stripe sandbox (blocked_external_input). Missing now: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias. Required: rabbi_stripe_test_secret_key_alias, stripe_publishable_key_alias_if_needed, stripe_webhook_secret_alias_if_needed, 67_month_product_price_ids_or_sandbox_create_permission, confirm_sandbox_only
-- SETUP-ONETIME-WHAPI-001: Whapi/WAPI provider details (blocked_external_input). Missing now: whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number. Required: provider_account, phone_number, instance_id_or_alias, webhook_url_status, safe_test_recipient_for_later_packet, ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended, ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval
+- Setup ready count: 7/8
+- Operator blocker count: 1
 - SETUP-ONETIME-CAMPAIGN-001: Campaign seed / real campaign (blocked_external_input). Missing now: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval. Required: final_campaign_copy, exact_recipient_segment_or_list_source, suppression_unsubscribe_proof, final_join_member_links, seed_recipient_sdratler_gmail, explicit_seed_packet_approval, separate_explicit_real_send_command_if_seed_passes
 
 ## Public Launch No-Write Smoke
 - Path: ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json
 - Status: passed
-- Ready: yes
-- Fresh for launch gate: yes (0.05h old, max 24h)
+- Ready: no
+- Fresh for launch gate: no (33.45h old, max 24h)
 - Commands passed: 4/4
 - External write performed: no
 - Production data mutation performed: no
-- Blocker: none
+- Blocker: stale_or_unparseable_age_hours=33.45
 
 ## Rabbi Telegram Runtime
 - Readiness report: ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
 - Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (missing locally)
-- Status: blocked_missing_bot_token
-- Local ready: no
-- Token configured: no
-- Chat ID configured: no
-- Ops credentials configured: no
+- Status: live_smoke_verified
+- Local ready: yes
+- Token configured: yes
+- Chat ID configured: yes
+- Ops credentials configured: yes
 - Candidate count: 0
 - Unique masked chat count: 0
 - No masked chat candidates reported.
-- Live delivery smoke: not_exercised_by_readiness_report
-- Next: Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness.
+- Live delivery smoke: ops/live-smokes/2026-07-12T20-03-41-435Z-rabbi-telegram-live-smoke.json
+- Next: Rabbi Telegram live smoke is verified. Continue the remaining release gates.
 
 ## Agent Fleet
 - Supervisor: unknown
@@ -106,28 +95,18 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Rabbi Agent Review Proof
 - Latest proof file: ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json
-- Status: proof_blocked_or_pending
-- Remaining blocker count: 2
-- rabbi-telegram-helper-ticket-smoke: terminal proof missing (https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md; dropoff https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-telegram-helper-ticket-smoke&requirement_id=REQ-20260708-084&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-telegram-helper-ticket-smoke&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-telegram-helper-ticket-smoke%3Aall-contexts&autosave=1)
-- rabbi-helper-tool-scope-map: terminal proof missing (https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md; dropoff https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-helper-tool-scope-map&requirement_id=REQ-20260708-093&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-helper-tool-scope-map&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-helper-tool-scope-map%3Aall-contexts&autosave=1)
+- Status: direct_codex_verified
+- Remaining blocker count: 0
+- rabbi-telegram-helper-ticket-smoke: terminal proof saved via Codex direct verification (https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md; dropoff https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-telegram-helper-ticket-smoke&requirement_id=REQ-20260708-084&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-telegram-helper-ticket-smoke&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-telegram-helper-ticket-smoke%3Aall-contexts&autosave=1)
+- rabbi-helper-tool-scope-map: terminal proof saved via Codex direct verification (https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md; dropoff https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-helper-tool-scope-map&requirement_id=REQ-20260708-093&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-helper-tool-scope-map&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-helper-tool-scope-map%3Aall-contexts&autosave=1)
 
 ## Next Actions
-1. GitHub credential owner / operator: Push the CI workflow with a GitHub token that has workflow scope, or have an authorized maintainer add .github/workflows/onetime-corrective.yml separately.
-2. Operator / reviewer: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
-3. Operator / reviewer: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
-4. Operator / reviewer: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
-5. Operator / reviewer: Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.
-6. Operator / reviewer: After local implementation and no-send validation pass, approve deployment and submit the personal test through https://join.onetimeonetime.com/one-time/signup, then report when the page confirms signup.
-7. Operator / local test environment: Set BNA_ONETIME_CRM_TEST_DATABASE_URL to an approved local/test Postgres URL, then run npm run one-time:smoke:crm-journey-local-db and attach the generated report.
-8. Operator / local test environment: Provide an approved non-production BNA_ONETIME_CRM_TEST_DATABASE_URL, rerun the real persistence journey, then authorize PR #129 release/deploy/live smoke for terminal proof.
-9. Operator / reviewer: Authorize PR #129 release, deploy the exact approved SHA, then run live screenshots/readback against the deployed URL.
-10. release_owner: After release authorization, deploy the approved PR SHA and run live smoke/readback for the intake/dropoff path.
-11. release_owner: After release authorization, deploy the approved PR SHA and run live smoke/readback for the intake/dropoff path.
-12. Operator / reviewer: Review PR #129 after local verification and explicitly approve or reject release through the approved pipeline.
-13. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md
-14. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md
-15. Codex / operator: Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness.
-16. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
+1. Shloimie / secure runtime configuration owner: Configure secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP or approved equivalent aliases in Railway/keyholder without exposing raw values; then rerun npm run one-time:owner-test:readiness and bounded owner-only send/readback.
+2. Shloimie / secure runtime configuration owner: Configure secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP or approved equivalent aliases in Railway/keyholder without exposing raw values; complete REQ-20260713-906 owner-only send/readback, then rerun the verifier without duplicate sends.
+3. Shloimie / secure runtime configuration owner: Set secure owner-test aliases in Railway/keyholder without exposing raw values; separately approve ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM only when unrestricted public WhatsApp auto-reply should go live.
+4. Shloimie / secure runtime configuration owner: Configure secure owner-test aliases; separately approve ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM only when unrestricted public WhatsApp auto-reply should go live; rerun final verifier and matrix.
+5. Codex / operator: Rabbi Telegram runtime has hosted/live-smoke proof; keep future sends scoped and approval-gated.
+6. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
 
 ## Evidence
 - tasks-pending/2026-07-09-production-readiness-goal.md

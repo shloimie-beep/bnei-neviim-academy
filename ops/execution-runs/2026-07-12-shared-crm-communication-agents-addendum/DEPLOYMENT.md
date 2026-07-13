@@ -566,3 +566,13 @@ Global production readiness remains blocked only by known external full-launch f
   public auto-reply enablement, CRM destructive write, payment/access mutation,
   credential mutation, raw private payload logging, or destructive production
   mutation was performed by this documentation closeout.
+
+## RAW-20260713-010 Deployment Status
+
+No deployment occurred for Gate 1. One Time is currently serving `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`, not origin/master `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`.
+
+## REQ-20260713-933 Deployment Status
+
+- No deployment was performed for the current-state audit/PQC handoff.
+- One Time live deploy-info remains `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`, which does not match current source `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`.
+- Exact-SHA deploy/live smoke remains required before launch Done under `REQ-20260713-940`.

@@ -40410,3 +40410,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   auto-reply mutation, CRM production write, provider mutation, credential
   mutation, payment/access mutation, raw private payload logging, or destructive
   production mutation was performed.
+
+## 2026-07-13 - One Time final integration launch Gate 1 registered
+
+- Registered `RAW-20260713-010` from the downloaded launch prompt.
+- Created Gate 1 audit at `ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md` and `ops/system-audits/2026-07-13-onetime-final-integration-launch/report.json`.
+- Added requirements `REQ-20260713-931` through `REQ-20260713-941`; next unblocked batch is `REQ-20260713-933`.
+- No product code, external send, public auto-reply activation, Stripe live action, provider mutation, DNS change, deploy, credential mutation, CRM production write, or access mutation was performed.
+
+## 2026-07-13 - One Time final launch current-state audit and PQC splitter
+
+- Completed `REQ-20260713-933` current-state audit for `RAW-20260713-010`: 55 screenshots, 24 findings, and exact live SHA mismatch recorded in `ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.md`.
+- Added `scripts/audit-onetime-final-launch-current-state.mjs` and npm script `audit:onetime-final-launch-current-state` for repeatable read-only/redacted current-state capture.
+- Created and validated Product Quality splitter `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`; next scoped implementation is `PKT-20260713-934A` member portal performance.
+- Guardrails held: no UI implementation, send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS, deploy, or public auto-reply activation.

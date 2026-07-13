@@ -1,0 +1,923 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260713-934",
+  "parent_raw_id": "RAW-20260713-010",
+  "source_statement_ids": [
+    "SRC-20260713-010-005",
+    "SRC-20260713-010-007",
+    "SRC-20260713-010-008"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260713-931",
+    "child_packet_ids": [
+      "PKT-20260713-934A",
+      "PKT-20260713-934B",
+      "PKT-20260713-934C"
+    ],
+    "depends_on_packet_ids": [
+      "PKT-20260713-932",
+      "PKT-20260713-933"
+    ],
+    "blocks_packet_ids": [
+      "PKT-20260713-939",
+      "PKT-20260713-940",
+      "PKT-20260713-941"
+    ],
+    "consumes": [
+      "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.json",
+      "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md",
+      "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    ],
+    "produces": [
+      "scoped implementation packets for member performance, auth/admin context, and route console/request failures",
+      "after screenshots and live-smoke evidence before launch Done"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json",
+    "terminal_condition": "Current-state audit findings are converted into scoped implementation packets; no product code is implemented until a child packet is selected and verified.",
+    "handoff_target": "Start with PKT-20260713-934A / member portal performance because it is reproduced in all five viewports without requiring credentials."
+  },
+  "stage": "STAGE_1_SPEC_COMPILER",
+  "packet_role": "SPEC_COMPILER",
+  "status": "ready_for_codex",
+  "title": "One Time final launch current-state implementation splitter",
+  "created_at": "2026-07-13T21:48:37Z",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "PUBLIC_MARKETING",
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260713-010",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "SUPER_RAMBLE",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "CRM_PIPELINE",
+      "COMMUNICATIONS_EMAIL",
+      "PAYMENTS_ACCESS",
+      "PROVIDER_SETUP",
+      "SECURITY_PRIVACY",
+      "DEPLOY_RELEASE"
+    ],
+    "confidence": "high",
+    "reasons": [
+      "The launch prompt spans public, provider, Operations CRM, member, student, communications, billing, and deploy proof.",
+      "Current-state visual/performance audit is mandatory before implementation.",
+      "The audit found multiple P0 blockers that must be split into scoped implementation and setup packets."
+    ],
+    "affected_product_surfaces": [
+      "One Time public landing/signup",
+      "One Time provider/admin portal",
+      "Operations One Time CRM/inbox",
+      "Member portal",
+      "Student login/classroom",
+      "Deployment proof"
+    ],
+    "likely_external_provider_blockers": [
+      "Public WhatsApp activation still needs secure canary destinations and technical gates.",
+      "Stripe live charges/refunds/subscriptions are out of scope; sandbox only.",
+      "Exact One Time deployment SHA mismatch blocks launch Done."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "PKT-20260713-934A member portal performance",
+      "PKT-20260713-934B auth/admin context and CRM readback",
+      "PKT-20260713-934C provider/student request-console failures",
+      "REQ-20260713-935 landing/signup/assets responsive verification",
+      "REQ-20260713-937 Stripe sandbox reconciliation",
+      "REQ-20260713-939/940 deploy/live smoke"
+    ],
+    "next_exact_packet": "Implement only the member portal performance packet first; do not solve the whole parent ramble in one pass."
+  },
+  "operator_intent_summary": "Turn the final One Time launch prompt into exact, auditable product-quality implementation slices based on current live evidence, starting from the reproduced member-portal slowness and launch SHA mismatch.",
+  "raw_quotes": [
+    "App is reported unbearably slow/nearly unusable; old performance pass evidence is superseded.",
+    "Gate 2 reproduces P0 role/performance/CRM/content/mobile defects with evidence before fixes.",
+    "Shloimie is Super Admin and One Time workspace admin; this is a workspace/admin context switch, not Rabbi impersonation."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260713-007",
+      "decision": "One Time entry is Shloimie workspace context, not Rabbi impersonation.",
+      "status": "active"
+    },
+    {
+      "id": "DEC-20260713-008",
+      "decision": "Public WhatsApp auto-reply approval is granted after canary and gates; do not ask again for the same approval.",
+      "status": "active"
+    },
+    {
+      "id": "DEC-20260713-009",
+      "decision": "Stripe sandbox/test billing policy is authorized; no live charge/refund/subscription mutation.",
+      "status": "active"
+    },
+    {
+      "id": "DEC-20260713-011",
+      "decision": "Do not merge PR #132 wholesale.",
+      "status": "active"
+    }
+  ],
+  "out_of_scope": [
+    "No email/WhatsApp send activation in this product-quality split packet.",
+    "No Stripe live charge, refund, subscription, payment-method, or access mutation.",
+    "No DNS, Railway variable, provider account, Vimeo, Drive, Classroom, Zoom, GitHub merge, or deployment mutation.",
+    "No GHL/LeadConnector runtime or external CRM write.",
+    "No raw private contact data, message bodies, secrets, phone numbers, emails, class links, payment data, or minors data in screenshots/reports.",
+    "Do not solve the whole parent ramble from one child packet."
+  ],
+  "affected_surfaces": [
+    "One Time public landing/signup",
+    "One Time provider/admin portal",
+    "Operations One Time CRM/inbox",
+    "Member portal",
+    "Student login/classroom",
+    "One Time deploy proof"
+  ],
+  "affected_routes": [
+    "/",
+    "/one-time",
+    "/one-time/signup",
+    "/provider.html?review=one-time",
+    "/provider.html?review=one-time&section=crm",
+    "/provider.html?review=one-time&section=agents",
+    "/provider.html?admin_provider=one-time&section=crm",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+    "/operations?workspace=platform&view=communications&section=email&inbox=rabbi",
+    "/rabbi-member",
+    "/student/login",
+    "/one-time-classroom.html"
+  ],
+  "affected_files": [
+    "public/rabbi-member.html",
+    "public/provider.html",
+    "public/operations.html",
+    "public/student.html",
+    "public/one-time/index.html",
+    "public/one-time/signup.html",
+    "server.js",
+    "scripts/audit-onetime-final-launch-current-state.mjs",
+    "ops/action-registry.json",
+    "ops/route-registry.json"
+  ],
+  "current_state": {
+    "audit_path": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.json",
+    "status": "needs_implementation",
+    "observed_sha": "49f3edda2da37e3afd9bdf3056ab5f6fc91e981c",
+    "expected_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+    "screenshot_count": 55,
+    "findings_count": 24,
+    "p0_count": 14,
+    "auth_blockers": [
+      "Operations login returned 401: {\"success\":false,\"error\":\"Invalid credentials\"}",
+      "No Operations cookie available for provider-session start."
+    ],
+    "reproduced_defects": [
+      "One Time live SHA mismatch",
+      "Operations read-only audit credentials return 401",
+      "Admin-provider session cannot start without Operations cookie",
+      "Member portal exceeds 22 second capture deadline at all five viewports",
+      "Provider admin CRM and student login have request/console failures"
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "slow",
+      "nearly unusable",
+      "CRM",
+      "mobile",
+      "launch-ready",
+      "professional",
+      "make it work"
+    ],
+    "expanded_phrases": {
+      "slow": "Routes must reach screenshot-ready first useful content within the current-state budget and must not exceed the 22-second capture deadline in any required viewport.",
+      "nearly unusable": "Member/provider/Operations/student flows must provide stable, actionable first content and deterministic no-error smoke proof before launch Done.",
+      "CRM": "First-party One Time CRM scoped to rabbi_sheller_provider / one_time_mishnah_class with read-only proof, no external CRM runtime, and no cross-workspace data.",
+      "mobile": "390px and 430px layouts must have no horizontal overflow, visible primary state, reachable actions, and screenshots before/after implementation.",
+      "launch-ready": "Exact live SHA, current-state screenshots, scoped implementation proof, accessibility, registry checks, deploy gate, and live smoke must all pass.",
+      "professional": "No raw errors, console/request failures, misleading impersonation wording, stale BNA target leakage, or private data exposure in normal user flows.",
+      "make it work": "Implement only after current-state evidence and scoped packet DoR; verify with tests, screenshots, registry/watchdog checks, and live readback."
+    },
+    "first_party_pattern_interpretation": "CRM and communications remain first-party BNA/One Time primitives, not GHL, LeadConnector, or another external CRM runtime."
+  },
+  "design_pattern_references": [
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260713-934A",
+      "statement": "Repair the member portal performance path reproduced by the current-state audit.",
+      "expected_result": "The member portal reaches screenshot-ready first useful content in all required viewports without hitting the 22-second deadline.",
+      "acceptance_criteria": [
+        "Root cause documented.",
+        "Before/after screenshots at 1440/1024/768/430/390.",
+        "Deterministic smoke covers member route performance.",
+        "No private data or cross-workspace content exposed."
+      ]
+    },
+    {
+      "id": "REQ-20260713-934B",
+      "statement": "Repair or explicitly gate Operations read-only auth and admin-on-provider session proof.",
+      "expected_result": "Shloimie Super Admin One Time workspace context can be audited without Rabbi impersonation wording, or a precise credential/setup blocker remains visible.",
+      "acceptance_criteria": [
+        "Operations login/readback no longer returns invalid credentials in audit environment or blocker is moved to setup lane.",
+        "Provider session start has redacted proof.",
+        "CRM contacts readback is workspace/project scoped and no-send."
+      ]
+    },
+    {
+      "id": "REQ-20260713-934C",
+      "statement": "Classify and fix provider-admin/student request and console failures.",
+      "expected_result": "Provider admin CRM and student login routes have no unexpected request/console failures in the current viewport matrix.",
+      "acceptance_criteria": [
+        "Console/request failures classified.",
+        "Product-visible failures fixed.",
+        "Expected auth denials are human-readable and covered by tests."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready_for_split_implementation",
+    "criteria": [
+      "RAW-20260713-010 is registered and mapped.",
+      "Gate 1 audit exists and records SHA/PR/readiness truth.",
+      "Current-state visual/performance audit exists with 55 screenshots and 24 findings.",
+      "All five required viewport widths are represented in screenshot requirements.",
+      "Implementation is split; no single packet may solve the whole super-ramble.",
+      "External sends, payments, DNS, provider mutations, and deploys remain gated/out of scope for implementation packets."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/rabbi-member",
+      "viewport": 390,
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /rabbi-member and exercise the loading state in the One Time final launch flow.",
+      "expected_visible_title": "Member portal",
+      "expected_visible_message": "Route reaches usable first content quickly.",
+      "expected_primary_action": "Show member library shell",
+      "expected_secondary_actions": [
+        "Back/navigation remains stable",
+        "No-send/read-only proof remains visible where applicable"
+      ],
+      "forbidden_content": [
+        "raw secrets",
+        "private contact details",
+        "cross-workspace data",
+        "BNA public homepage in One Time target",
+        "Rabbi impersonation language",
+        "unapproved send/charge/access mutation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "One clear heading, named controls, stable focus order, and no raw error text in the reading order.",
+      "accessibility_expectation": "Readable at 1440, 1024, 768, 430, and 390 with no horizontal overflow and usable touch targets.",
+      "test_smoke_assertion": "Automated smoke covers /rabbi-member loading with no console/request failures except explicitly documented blockers.",
+      "requirement_id": "REQ-20260713-934"
+    },
+    "empty": {
+      "route": "/provider.html?review=one-time&section=crm",
+      "viewport": 430,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /provider.html?review=one-time&section=crm and exercise the empty state in the One Time final launch flow.",
+      "expected_visible_title": "One Time CRM",
+      "expected_visible_message": "No contacts or setup state is clear and no-send.",
+      "expected_primary_action": "Review setup state",
+      "expected_secondary_actions": [
+        "Back/navigation remains stable",
+        "No-send/read-only proof remains visible where applicable"
+      ],
+      "forbidden_content": [
+        "raw secrets",
+        "private contact details",
+        "cross-workspace data",
+        "BNA public homepage in One Time target",
+        "Rabbi impersonation language",
+        "unapproved send/charge/access mutation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "One clear heading, named controls, stable focus order, and no raw error text in the reading order.",
+      "accessibility_expectation": "Readable at 1440, 1024, 768, 430, and 390 with no horizontal overflow and usable touch targets.",
+      "test_smoke_assertion": "Automated smoke covers /provider.html?review=one-time&section=crm empty with no console/request failures except explicitly documented blockers.",
+      "requirement_id": "REQ-20260713-934"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 1440,
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts and exercise the populated state in the One Time final launch flow.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Scoped contacts load without private screenshots or cross-workspace data.",
+      "expected_primary_action": "Open selected contact",
+      "expected_secondary_actions": [
+        "Back/navigation remains stable",
+        "No-send/read-only proof remains visible where applicable"
+      ],
+      "forbidden_content": [
+        "raw secrets",
+        "private contact details",
+        "cross-workspace data",
+        "BNA public homepage in One Time target",
+        "Rabbi impersonation language",
+        "unapproved send/charge/access mutation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "One clear heading, named controls, stable focus order, and no raw error text in the reading order.",
+      "accessibility_expectation": "Readable at 1440, 1024, 768, 430, and 390 with no horizontal overflow and usable touch targets.",
+      "test_smoke_assertion": "Automated smoke covers /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts populated with no console/request failures except explicitly documented blockers.",
+      "requirement_id": "REQ-20260713-934"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 1024,
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts and exercise the filtered_empty state in the One Time final launch flow.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Filtered empty state explains no matching records.",
+      "expected_primary_action": "Clear filters",
+      "expected_secondary_actions": [
+        "Back/navigation remains stable",
+        "No-send/read-only proof remains visible where applicable"
+      ],
+      "forbidden_content": [
+        "raw secrets",
+        "private contact details",
+        "cross-workspace data",
+        "BNA public homepage in One Time target",
+        "Rabbi impersonation language",
+        "unapproved send/charge/access mutation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "One clear heading, named controls, stable focus order, and no raw error text in the reading order.",
+      "accessibility_expectation": "Readable at 1440, 1024, 768, 430, and 390 with no horizontal overflow and usable touch targets.",
+      "test_smoke_assertion": "Automated smoke covers /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts filtered_empty with no console/request failures except explicitly documented blockers.",
+      "requirement_id": "REQ-20260713-934"
+    },
+    "error": {
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "viewport": 768,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /provider.html?admin_provider=one-time&section=crm and exercise the error state in the One Time final launch flow.",
+      "expected_visible_title": "Provider CRM",
+      "expected_visible_message": "Auth/session error is human-readable and not a raw console failure.",
+      "expected_primary_action": "Return to Super Admin workspace",
+      "expected_secondary_actions": [
+        "Back/navigation remains stable",
+        "No-send/read-only proof remains visible where applicable"
+      ],
+      "forbidden_content": [
+        "raw secrets",
+        "private contact details",
+        "cross-workspace data",
+        "BNA public homepage in One Time target",
+        "Rabbi impersonation language",
+        "unapproved send/charge/access mutation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "One clear heading, named controls, stable focus order, and no raw error text in the reading order.",
+      "accessibility_expectation": "Readable at 1440, 1024, 768, 430, and 390 with no horizontal overflow and usable touch targets.",
+      "test_smoke_assertion": "Automated smoke covers /provider.html?admin_provider=one-time&section=crm error with no console/request failures except explicitly documented blockers.",
+      "requirement_id": "REQ-20260713-934"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 430,
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts and exercise the blocked_setup state in the One Time final launch flow.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Invalid audit credentials/provider-session blocker is explicit and reusable.",
+      "expected_primary_action": "Fix read-only audit credentials",
+      "expected_secondary_actions": [
+        "Back/navigation remains stable",
+        "No-send/read-only proof remains visible where applicable"
+      ],
+      "forbidden_content": [
+        "raw secrets",
+        "private contact details",
+        "cross-workspace data",
+        "BNA public homepage in One Time target",
+        "Rabbi impersonation language",
+        "unapproved send/charge/access mutation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "One clear heading, named controls, stable focus order, and no raw error text in the reading order.",
+      "accessibility_expectation": "Readable at 1440, 1024, 768, 430, and 390 with no horizontal overflow and usable touch targets.",
+      "test_smoke_assertion": "Automated smoke covers /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts blocked_setup with no console/request failures except explicitly documented blockers.",
+      "requirement_id": "REQ-20260713-934"
+    },
+    "preview_only": {
+      "route": "/provider.html?review=one-time&section=agents",
+      "viewport": 390,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /provider.html?review=one-time&section=agents and exercise the preview_only state in the One Time final launch flow.",
+      "expected_visible_title": "One Time Agents",
+      "expected_visible_message": "Review mode is visibly preview/no-write.",
+      "expected_primary_action": "Review agent status",
+      "expected_secondary_actions": [
+        "Back/navigation remains stable",
+        "No-send/read-only proof remains visible where applicable"
+      ],
+      "forbidden_content": [
+        "raw secrets",
+        "private contact details",
+        "cross-workspace data",
+        "BNA public homepage in One Time target",
+        "Rabbi impersonation language",
+        "unapproved send/charge/access mutation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "One clear heading, named controls, stable focus order, and no raw error text in the reading order.",
+      "accessibility_expectation": "Readable at 1440, 1024, 768, 430, and 390 with no horizontal overflow and usable touch targets.",
+      "test_smoke_assertion": "Automated smoke covers /provider.html?review=one-time&section=agents preview_only with no console/request failures except explicitly documented blockers.",
+      "requirement_id": "REQ-20260713-934"
+    },
+    "success_readback": {
+      "route": "/api/deploy-info",
+      "viewport": 1440,
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /api/deploy-info and exercise the success_readback state in the One Time final launch flow.",
+      "expected_visible_title": "Deploy info",
+      "expected_visible_message": "Exact SHA and target_app readback match before launch Done.",
+      "expected_primary_action": "Rerun live smoke",
+      "expected_secondary_actions": [
+        "Back/navigation remains stable",
+        "No-send/read-only proof remains visible where applicable"
+      ],
+      "forbidden_content": [
+        "raw secrets",
+        "private contact details",
+        "cross-workspace data",
+        "BNA public homepage in One Time target",
+        "Rabbi impersonation language",
+        "unapproved send/charge/access mutation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "One clear heading, named controls, stable focus order, and no raw error text in the reading order.",
+      "accessibility_expectation": "Readable at 1440, 1024, 768, 430, and 390 with no horizontal overflow and usable touch targets.",
+      "test_smoke_assertion": "Automated smoke covers /api/deploy-info success_readback with no console/request failures except explicitly documented blockers.",
+      "requirement_id": "REQ-20260713-934"
+    },
+    "permission_denied": {
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "viewport": 390,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /provider.html?admin_provider=one-time&section=crm and exercise the permission_denied state in the One Time final launch flow.",
+      "expected_visible_title": "Provider CRM",
+      "expected_visible_message": "Permission denied state names the correct owner/context and avoids Rabbi impersonation.",
+      "expected_primary_action": "Switch workspace/admin context",
+      "expected_secondary_actions": [
+        "Back/navigation remains stable",
+        "No-send/read-only proof remains visible where applicable"
+      ],
+      "forbidden_content": [
+        "raw secrets",
+        "private contact details",
+        "cross-workspace data",
+        "BNA public homepage in One Time target",
+        "Rabbi impersonation language",
+        "unapproved send/charge/access mutation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "One clear heading, named controls, stable focus order, and no raw error text in the reading order.",
+      "accessibility_expectation": "Readable at 1440, 1024, 768, 430, and 390 with no horizontal overflow and usable touch targets.",
+      "test_smoke_assertion": "Automated smoke covers /provider.html?admin_provider=one-time&section=crm permission_denied with no console/request failures except explicitly documented blockers.",
+      "requirement_id": "REQ-20260713-934"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/rabbi-member",
+      "viewport": 390,
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /rabbi-member and exercise the mobile_drawer_or_detail_state state in the One Time final launch flow.",
+      "expected_visible_title": "Member portal",
+      "expected_visible_message": "Mobile member route becomes usable without 22-second wait or hidden actions.",
+      "expected_primary_action": "Open first useful member content",
+      "expected_secondary_actions": [
+        "Back/navigation remains stable",
+        "No-send/read-only proof remains visible where applicable"
+      ],
+      "forbidden_content": [
+        "raw secrets",
+        "private contact details",
+        "cross-workspace data",
+        "BNA public homepage in One Time target",
+        "Rabbi impersonation language",
+        "unapproved send/charge/access mutation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "One clear heading, named controls, stable focus order, and no raw error text in the reading order.",
+      "accessibility_expectation": "Readable at 1440, 1024, 768, 430, and 390 with no horizontal overflow and usable touch targets.",
+      "test_smoke_assertion": "Automated smoke covers /rabbi-member mobile_drawer_or_detail_state with no console/request failures except explicitly documented blockers.",
+      "requirement_id": "REQ-20260713-934"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "viewport": 1440,
+        "routes": [
+          "/",
+          "/one-time",
+          "/one-time/signup",
+          "/provider.html?review=one-time",
+          "/provider.html?review=one-time&section=crm",
+          "/provider.html?review=one-time&section=agents",
+          "/provider.html?admin_provider=one-time&section=crm",
+          "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+          "/operations?workspace=platform&view=communications&section=email&inbox=rabbi",
+          "/rabbi-member",
+          "/student/login",
+          "/one-time-classroom.html"
+        ],
+        "required_before": true,
+        "required_after": true,
+        "before_evidence": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-root-1440-desktop.png",
+        "after_evidence": "Required after scoped implementation and deploy/live-smoke gate."
+      },
+      {
+        "viewport": 1024,
+        "routes": [
+          "/",
+          "/one-time",
+          "/one-time/signup",
+          "/provider.html?review=one-time",
+          "/provider.html?review=one-time&section=crm",
+          "/provider.html?review=one-time&section=agents",
+          "/provider.html?admin_provider=one-time&section=crm",
+          "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+          "/operations?workspace=platform&view=communications&section=email&inbox=rabbi",
+          "/rabbi-member",
+          "/student/login",
+          "/one-time-classroom.html"
+        ],
+        "required_before": true,
+        "required_after": true,
+        "before_evidence": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-root-1024-desktop-tablet.png",
+        "after_evidence": "Required after scoped implementation and deploy/live-smoke gate."
+      },
+      {
+        "viewport": 768,
+        "routes": [
+          "/",
+          "/one-time",
+          "/one-time/signup",
+          "/provider.html?review=one-time",
+          "/provider.html?review=one-time&section=crm",
+          "/provider.html?review=one-time&section=agents",
+          "/provider.html?admin_provider=one-time&section=crm",
+          "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+          "/operations?workspace=platform&view=communications&section=email&inbox=rabbi",
+          "/rabbi-member",
+          "/student/login",
+          "/one-time-classroom.html"
+        ],
+        "required_before": true,
+        "required_after": true,
+        "before_evidence": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-root-768-tablet.png",
+        "after_evidence": "Required after scoped implementation and deploy/live-smoke gate."
+      },
+      {
+        "viewport": 430,
+        "routes": [
+          "/",
+          "/one-time",
+          "/one-time/signup",
+          "/provider.html?review=one-time",
+          "/provider.html?review=one-time&section=crm",
+          "/provider.html?review=one-time&section=agents",
+          "/provider.html?admin_provider=one-time&section=crm",
+          "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+          "/operations?workspace=platform&view=communications&section=email&inbox=rabbi",
+          "/rabbi-member",
+          "/student/login",
+          "/one-time-classroom.html"
+        ],
+        "required_before": true,
+        "required_after": true,
+        "before_evidence": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-root-430-mobile.png",
+        "after_evidence": "Required after scoped implementation and deploy/live-smoke gate."
+      },
+      {
+        "viewport": 390,
+        "routes": [
+          "/",
+          "/one-time",
+          "/one-time/signup",
+          "/provider.html?review=one-time",
+          "/provider.html?review=one-time&section=crm",
+          "/provider.html?review=one-time&section=agents",
+          "/provider.html?admin_provider=one-time&section=crm",
+          "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+          "/operations?workspace=platform&view=communications&section=email&inbox=rabbi",
+          "/rabbi-member",
+          "/student/login",
+          "/one-time-classroom.html"
+        ],
+        "required_before": true,
+        "required_after": true,
+        "before_evidence": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/public-root-390-mobile.png",
+        "after_evidence": "Required after scoped implementation and deploy/live-smoke gate."
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260713-934-001",
+        "route": "/api/deploy-info",
+        "viewport": 1440,
+        "screenshot_before": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.json",
+        "screenshot_after_or_blocker": "Blocked until exact current SHA is deployed and live-smoked.",
+        "defect_codes": [
+          "VQ-CRED-006"
+        ],
+        "severity": "P0",
+        "user_impact": "Launch proof is not trustworthy while the One Time live service serves a different commit than the current source of truth.",
+        "expected_fix": "Deploy the intended launch commit to One Time and rerun exact-SHA live smokes before Done.",
+        "requirement_id": "REQ-20260713-940"
+      },
+      {
+        "finding_id": "VQF-20260713-934-002",
+        "route": "/rabbi-member",
+        "viewport": 390,
+        "screenshot_before": "No screenshot because capture exceeded 22 seconds in every viewport.",
+        "screenshot_after_or_blocker": "After screenshot required at 1440/1024/768/430/390 once performance is fixed.",
+        "defect_codes": [
+          "VQ-CRED-001",
+          "VQ-RESP-003"
+        ],
+        "severity": "P0",
+        "user_impact": "Member portal is effectively unusable when it cannot reach screenshot-ready state within the audit deadline.",
+        "expected_fix": "Profile and repair member route load path, then add deterministic smoke and visual proof.",
+        "requirement_id": "REQ-20260713-934"
+      },
+      {
+        "finding_id": "VQF-20260713-934-003",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 430,
+        "screenshot_before": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/operations-one-time-crm-430-mobile.png",
+        "screenshot_after_or_blocker": "Blocked until valid read-only Operations audit credentials/provider-session proof exist.",
+        "defect_codes": [
+          "VQ-ACTION-006",
+          "VQ-DATA-009"
+        ],
+        "severity": "P0",
+        "user_impact": "CRM/admin current truth cannot be independently verified while read-only auth returns 401.",
+        "expected_fix": "Fix audit credential/session path and rerun redacted CRM readback and screenshots.",
+        "requirement_id": "REQ-20260713-934"
+      },
+      {
+        "finding_id": "VQF-20260713-934-004",
+        "route": "/provider.html?admin_provider=one-time&section=crm",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/provider-admin-crm-390-mobile.png",
+        "screenshot_after_or_blocker": "After screenshot must show a clean context switch or explicit setup blocker.",
+        "defect_codes": [
+          "VQ-ACTION-006",
+          "VQ-CRED-001"
+        ],
+        "severity": "P1",
+        "user_impact": "Admin-on-provider path emits request/console failures under current audit conditions.",
+        "expected_fix": "Repair or clearly gate admin-provider session entry without Rabbi impersonation language.",
+        "requirement_id": "REQ-20260713-934"
+      },
+      {
+        "finding_id": "VQF-20260713-934-005",
+        "route": "/student/login",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots/student-login-390-mobile.png",
+        "screenshot_after_or_blocker": "After screenshot must show no request/console failures.",
+        "defect_codes": [
+          "VQ-CRED-001"
+        ],
+        "severity": "P1",
+        "user_impact": "Student login route has request/console failures in every viewport and needs classification before launch.",
+        "expected_fix": "Classify the failing request/console message, fix if product-visible, and add route smoke coverage.",
+        "requirement_id": "REQ-20260713-934"
+      }
+    ],
+    "rubric": "ops/visual-quality-rubric.md"
+  },
+  "accessibility": {
+    "requirements": [
+      "No horizontal overflow at required widths.",
+      "One visible heading per route state.",
+      "Named controls for login, signup, workspace switch, CRM actions, and blocked setup states.",
+      "Focus order and mobile touch targets must be validated after implementation."
+    ],
+    "tests": [
+      "Playwright viewport matrix",
+      "manual screenshot review",
+      "route-specific smoke assertions"
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Sign Up Now",
+      "selector_or_action_key": "one-time-public-signup-cta",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "/one-time/signup current-state capture passed",
+      "registry_required": true
+    },
+    {
+      "label": "Operations CRM readback",
+      "selector_or_action_key": "operations-one-time-crm-readback",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Codex/keyholder",
+      "external_write": false,
+      "handler_or_blocker": "Audit credentials returned 401; fix read-only auth path before CRM proof.",
+      "registry_required": true
+    },
+    {
+      "label": "Admin-on-provider context switch",
+      "selector_or_action_key": "one-time-provider-admin-session",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Codex/keyholder",
+      "external_write": false,
+      "handler_or_blocker": "Provider session cannot start without Operations cookie.",
+      "registry_required": true
+    },
+    {
+      "label": "Public WhatsApp auto-reply activation",
+      "selector_or_action_key": "one-time-wapi-public-auto-reply",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Shloimie/keyholder",
+      "external_write": true,
+      "handler_or_blocker": "Approval exists, but secure canary aliases and technical gates remain required.",
+      "registry_required": true
+    },
+    {
+      "label": "Stripe sandbox checkout",
+      "selector_or_action_key": "one-time-stripe-sandbox-billing",
+      "action_state": "SANDBOX_ONLY",
+      "owner": "Codex",
+      "external_write": true,
+      "handler_or_blocker": "Sandbox/test only; livemode=false proof required; no live mutation.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "workspace_key": "rabbi_sheller_provider",
+    "project_key": "one_time_mishnah_class",
+    "no_cross_workspace_records": true,
+    "readback_only_until_packet_scope_allows_mutation": true,
+    "raw_private_data_forbidden_in_artifacts": true
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "no_raw_contact_data_in_artifacts": true,
+    "no_payment_data_in_artifacts": true,
+    "no_send_or_charge_from_browser_content": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "id": "PKT-20260713-934A",
+      "scope": "Member portal performance only",
+      "instructions": [
+        "Profile /rabbi-member load path.",
+        "Fix only route assets/API waits required for first useful content.",
+        "Add route smoke and after screenshots."
+      ]
+    },
+    {
+      "id": "PKT-20260713-934B",
+      "scope": "Operations/admin-provider auth proof only",
+      "instructions": [
+        "Repair or block read-only audit credential path.",
+        "Prove Super Admin workspace context switch without impersonation language.",
+        "Rerun redacted CRM readback."
+      ]
+    },
+    {
+      "id": "PKT-20260713-934C",
+      "scope": "Provider-admin and student request/console failures only",
+      "instructions": [
+        "Classify failures.",
+        "Fix product-visible errors.",
+        "Add deterministic smoke coverage."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "large-super-ramble-split-required",
+    "source_files_to_read": [
+      "public/rabbi-member.html",
+      "public/provider.html",
+      "public/student.html",
+      "public/operations.html",
+      "server.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/rabbi-member.html",
+      "public/provider.html",
+      "public/student.html",
+      "public/operations.html",
+      "server.js",
+      "tests/*",
+      "scripts/smoke-*"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Parent launch prompt spans more than three routes and multiple external-provider lanes.",
+    "split_if_exceeds": true,
+    "context_risk_level": "high"
+  },
+  "tests": [
+    "npm run audit:onetime-final-launch-current-state",
+    "npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json",
+    "route-specific node/playwright smoke for each child packet",
+    "npm run watchdog:actions",
+    "npm run watchdog:protocol-drift",
+    "npm run secrets:audit",
+    "npm run bna:run:validate"
+  ],
+  "evidence": {
+    "before_audit": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.json",
+    "screenshots_dir": "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/screenshots",
+    "gate1_audit": "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md",
+    "after_required": [
+      "after screenshots",
+      "focused tests",
+      "live smoke after deploy when app-visible"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "Each child packet has scoped implementation and verification evidence.",
+      "Before/after screenshot matrix passes for affected routes.",
+      "Action/route registry coverage is updated if visible behavior changes.",
+      "No-send/no-charge/no-provider-mutation guardrails are preserved.",
+      "Exact One Time live SHA matches deployed commit before launch Done.",
+      "Live smoke/readback passes for app-visible changes."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json",
+    "validator_result_path": "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/TEST-RESULTS.md",
+    "tool_actions_expected": [
+      "read-only browser audit",
+      "local code edits only inside selected child packet",
+      "tests/smokes/watchdogs",
+      "commit/push after verified scope"
+    ],
+    "skipped_actions_policy": "Skip sends, charges, refunds, live Stripe, DNS, provider-account mutation, deployment, and public auto-reply activation unless a later gated packet explicitly authorizes them.",
+    "blocker_decisions": [
+      "DEC-20260713-008",
+      "DEC-20260713-009",
+      "DEC-20260713-010",
+      "DEC-20260713-011"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-13-onetime-final-launch-current-state/report.json",
+      "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md"
+    ],
+    "final_status_path": "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/STATUS.md",
+    "next_packet_path": "tasks-pending/2026-07-13-onetime-final-integration-launch.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "closeout_required": true,
+    "expected_result": "No protocol drift introduced by implementation packets; residual pre-existing governance backlog remains separately mapped or blocked."
+  },
+  "next_packet": {
+    "packet_id": "PKT-20260713-934A",
+    "title": "Member portal performance repair",
+    "requirement_id": "REQ-20260713-934",
+    "status": "not_started",
+    "handoff": "Start only member portal performance slice; do not solve the whole parent ramble."
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "raw_id": "RAW-20260713-010",
+  "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md",
+  "created_at": "2026-07-13T22:42:00+03:00",
+  "content_fingerprint": "sha256:BEC7D0B514919621FF8AFD25E9D95D29287F46A18B397EDB9361508BBFCDF13F",
+  "matrix": [
+    {
+      "statement_id": "SRC-20260713-010-001",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Register prompt as newest correction/addendum source and operate in goal mode until terminal statuses.",
+      "requirement_id": "REQ-20260713-931",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-002",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Shloimie is Super Admin and real One Time workspace admin; entering One Time must be workspace context switch, not View as Rabbi impersonation.",
+      "requirement_id": "REQ-20260713-934",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-003",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Public One Time WhatsApp reactive auto-replies are approved after Shloimie canary and technical safety gates; do not ask again.",
+      "requirement_id": "REQ-20260713-936",
+      "classification": "approval",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-004",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Stripe sandbox/test work authorized; $67/month recurring; no trial object; no hidden trial; no surprise subscriptions; no automatic refunds; no grace period; livemode=false proof.",
+      "requirement_id": "REQ-20260713-937",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-005",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "App is reported unbearably slow/nearly unusable; old performance pass evidence is superseded.",
+      "requirement_id": "REQ-20260713-933",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-006",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Gate 1 requires freeze/status/current truth audit in ops/system-audits/2026-07-13-onetime-final-integration-launch.",
+      "requirement_id": "REQ-20260713-932",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-007",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Gate 2 reproduces P0 role/performance/CRM/content/mobile defects with evidence before fixes.",
+      "requirement_id": "REQ-20260713-933",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-008",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Gate 3 fixes identity, navigation, CRM, content, mobile, and performance issues after reproduction evidence.",
+      "requirement_id": "REQ-20260713-934",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-009",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Gate 4 covers landing/signup/assets/responsive truth and no hidden wrong-trial behavior.",
+      "requirement_id": "REQ-20260713-935",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-010",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Gate 5 covers canaries/public WhatsApp activation after safety gates and canary proof.",
+      "requirement_id": "REQ-20260713-936",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-011",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Gate 6 reconciles PR #132 Billing V2 and Stripe sandbox behavior without dirty wholesale merge.",
+      "requirement_id": "REQ-20260713-937",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-012",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Gate 7 covers Vimeo, Drive, Classroom, and Zoom without workspace leakage or stale target assumptions.",
+      "requirement_id": "REQ-20260713-938",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-013",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Gate 8 requires PR/CI/DNS/deploy/rollback discipline and exact release proof.",
+      "requirement_id": "REQ-20260713-939",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-014",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Gate 9 requires exact-deployment live verification and current-SHA smokes before launch claims.",
+      "requirement_id": "REQ-20260713-940",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-015",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "Gate 10 requires final source-of-truth reconciliation, evidence, ledger/changelog, and continuation status.",
+      "requirement_id": "REQ-20260713-941",
+      "classification": "requirement",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    },
+    {
+      "statement_id": "SRC-20260713-010-016",
+      "source_id": "RAW-20260713-010",
+      "source_statement": "No surprise subscriptions, automatic refunds, live charge, external sends, DNS/deploy/access/provider mutation without specified gates.",
+      "requirement_id": "REQ-20260713-939",
+      "classification": "constraint",
+      "source_path": "raw-input/RAW-20260713-010-one-time-final-integration-launch-prompt.md"
+    }
+  ]
+}

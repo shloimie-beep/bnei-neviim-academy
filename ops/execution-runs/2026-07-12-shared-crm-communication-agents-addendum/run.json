@@ -2,13 +2,13 @@
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
   "created_at": "2026-07-12T20:11:59.374Z",
-  "updated_at": "2026-07-13T14:50:00+03:00",
+  "updated_at": "2026-07-13T21:55:00Z",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
-  "current_control_correction": "RAW-20260713-003",
-  "current_implementation_target": "one_time_first",
-  "current_batch": "2-shared-crm",
-  "current_requirement": "REQ-20260712-307",
-  "current_blocked_requirement": "REQ-20260713-906"
+  "current_control_correction": "RAW-20260713-010",
+  "current_implementation_target": "one_time_final_integration_launch",
+  "current_batch": "2-identity-ui-performance-fixes",
+  "current_requirement": "REQ-20260713-934",
+  "current_blocked_requirement": "REQ-20260713-936"
 }

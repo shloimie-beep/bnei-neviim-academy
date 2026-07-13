@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T16:01:11.016Z",
+  "generated_at": "2026-07-13T18:56:53.634Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -404,6 +404,7 @@
     "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/MANIFEST.md",
     "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/current-state-capability-audit.md",
     "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/manifest.json",
+    "ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json",
     "ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json",
     "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.md",
     "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json",
@@ -662,6 +663,7 @@
     "tasks-pending/2026-07-12-shared-crm-communication-agents-addendum.md",
     "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md",
     "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md",
+    "tasks-pending/2026-07-13-onetime-final-integration-launch.md",
     "tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
     "tasks-pending/2026-07-13-onetime-landing-image-addendum.md",
     "tasks-pending/2026-07-13-onetime-signup-bots-ticket-approval.md",
@@ -669,5 +671,11 @@
     "tasks-pending/_template-ramble-intake.md"
   ],
   "finding_count": 0,
-  "findings": []
+  "findings": [],
+  "requirement_ids": [
+    "REQ-20260713-933",
+    "REQ-20260713-934"
+  ],
+  "status": "passed_mapped",
+  "mapping_note": "Protocol-drift closeout for RAW-20260713-010 current-state audit/PQC splitter; no findings after register repair."
 }
