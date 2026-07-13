@@ -2144,10 +2144,12 @@
       "evidence": [
         "src/lib/bna/crm/communication-agent-response-runtime.js",
         "tests/communication-agent-response-runtime.test.js",
-        "One Time deploy-info commit_sha=59519bc8c902b8a29c4503cce5372dac25575c04",
-        "BNA deploy-info commit_sha=59519bc8c902b8a29c4503cce5372dac25575c04",
-        "ops/watchdog-audits/2026-07-13T14-51-56-101Z-onetime-owner-test-readiness.md",
-        "server.js"
+        "server.js",
+        "One Time deploy-info commit_sha=302567b2147c2cf0c40eb839a333c785808af1ab",
+        "BNA deploy-info commit_sha=cf487abe11d1d247700885d8cc80d7e7837c0a4f contains implementation_commit 302567b2147c2cf0c40eb839a333c785808af1ab",
+        "ops/live-smokes/2026-07-13T15-07-49-760Z-onetime-provider-route-module-live-smoke.md",
+        "ops/live-smokes/2026-07-13T15-15-36-114Z-operations-workspace-taxonomy-live-smoke.md",
+        "ops/watchdog-audits/2026-07-13T14-51-56-101Z-onetime-owner-test-readiness.md"
       ],
       "verification": [
         "node --check server.js PASS",
@@ -2155,12 +2157,11 @@
         "node --check src/lib/bna/crm/communication-agent-runtime.js PASS",
         "node --check src/lib/bna/provider-lead-bot.js PASS",
         "node --test tests/communication-agent-response-runtime.test.js tests/communication-agent-model.test.js tests/service-provider-lead-bot.test.js tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/one-time-delivery-outbox.test.js tests/one-time-wapi-scope-contract.test.js PASS 44/44",
-        "npm run secrets:audit PASS; 9537 tracked paths checked",
-        "npm run railway:doctor PASS for One Time one-time-web / production",
-        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 59519bc8c902b8a29c4503cce5372dac25575c04 PASS",
-        "npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 59519bc8c902b8a29c4503cce5372dac25575c04 PASS; report ops/live-smokes/2026-07-13T15-00-42-081Z-onetime-provider-route-module-live-smoke.md",
-        "npm run railway:doctor PASS for BNA skillful-motivation / production",
-        "npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org PASS; report ops/live-smokes/2026-07-13T15-02-25-115Z-operations-workspace-taxonomy-live-smoke.md",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com --expected-sha 302567b2147c2cf0c40eb839a333c785808af1ab PASS; report ops/live-smokes/2026-07-13T15-06-56-542Z-rabbi-onetime-landing-smoke.md",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 302567b2147c2cf0c40eb839a333c785808af1ab PASS",
+        "npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 302567b2147c2cf0c40eb839a333c785808af1ab PASS; report ops/live-smokes/2026-07-13T15-07-49-760Z-onetime-provider-route-module-live-smoke.md",
+        "npm run app:smoke:one-time-interest-dry-run -- https://join.onetimeonetime.com --expected-sha 302567b2147c2cf0c40eb839a333c785808af1ab PASS; report ops/live-smokes/2026-07-13T15-07-49-415Z-one-time-interest-dry-run-live-smoke.md",
+        "npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha cf487abe11d1d247700885d8cc80d7e7837c0a4f PASS; report ops/live-smokes/2026-07-13T15-15-36-114Z-operations-workspace-taxonomy-live-smoke.md",
         "npm run one-time:owner-test:readiness rerun: Resend send_allowed=true, WAPI provider_setup_ready=true, credential_scope=one_time_scoped, owner aliases missing, external_send_performed=false"
       ],
       "implementation_files": [
@@ -2172,14 +2173,14 @@
         "config/service-provider-bots/one-time.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T18:05:00+03:00",
+      "updated_at": "2026-07-13T18:16:00+03:00",
       "blocker": "",
       "implementation_commit": "302567b2147c2cf0c40eb839a333c785808af1ab",
       "pushed_commit": "302567b2147c2cf0c40eb839a333c785808af1ab",
-      "deployed_commit": "59519bc8c902b8a29c4503cce5372dac25575c04",
+      "deployed_commit": "302567b2147c2cf0c40eb839a333c785808af1ab",
       "deployment_evidence": [
-        "One Time Railway deployment 43824379-af89-45f5-b6f3-85077f69390a reached SUCCESS and deploy-info returned exact SHA 59519bc8c902b8a29c4503cce5372dac25575c04",
-        "BNA deploy-info returned exact SHA 59519bc8c902b8a29c4503cce5372dac25575c04 and Operations workspace taxonomy smoke passed; Railway doctor saw deployment af09e962-fadd-4e46-8148-b1b9428d1636 initializing while live readback was already on the exact SHA",
+        "One Time Railway deployment d967bd8d-fde8-46a1-b454-a45d7be8899a reached SUCCESS and deploy-info returned exact SHA 302567b2147c2cf0c40eb839a333c785808af1ab",
+        "BNA Railway deployment 45bc84e7-14e4-49c4-98dc-847c9c0c0157 reached SUCCESS and deploy-info returned SHA cf487abe11d1d247700885d8cc80d7e7837c0a4f, which contains implementation_commit 302567b2147c2cf0c40eb839a333c785808af1ab",
         "No owner email/WhatsApp send, public auto-reply activation, raw class-link exposure, CRM production mutation, payment, access grant, or credential write was performed in this runtime slice"
       ]
     },

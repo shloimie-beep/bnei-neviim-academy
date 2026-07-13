@@ -89,9 +89,9 @@ Current status: `active`
 - The WAPI webhook now calls the response runtime after canonical inbound persistence and before auto-reply decisions.
 - Verification passed: syntax checks, focused communication-agent/inbound/outbox/WAPI/Resend suite `44/44`, and `npm run secrets:audit`.
 - Runtime commit `59519bc8c902b8a29c4503cce5372dac25575c04` and wiring commit `302567b2147c2cf0c40eb839a333c785808af1ab` are pushed to `origin/master`.
-- One Time Railway deployment `43824379-af89-45f5-b6f3-85077f69390a` reached `SUCCESS`; `https://join.onetimeonetime.com/api/deploy-info` returned the exact commit.
-- BNA deploy-info returned the exact commit and Operations workspace taxonomy smoke passed. Railway doctor reported BNA deployment `af09e962-fadd-4e46-8148-b1b9428d1636` initializing while live readback was already on the exact SHA.
-- One Time exact-SHA separate-instance smoke and provider route-module smoke passed.
+- One Time Railway deployment `d967bd8d-fde8-46a1-b454-a45d7be8899a` reached `SUCCESS`; `https://join.onetimeonetime.com/api/deploy-info` returned wiring SHA `302567b2147c2cf0c40eb839a333c785808af1ab`.
+- BNA Railway deployment `45bc84e7-14e4-49c4-98dc-847c9c0c0157` reached `SUCCESS`; `https://bneineviimacademy.org/api/deploy-info` returned proof SHA `cf487abe11d1d247700885d8cc80d7e7837c0a4f`, which contains wiring SHA `302567b2147c2cf0c40eb839a333c785808af1ab`.
+- One Time exact-SHA landing, separate-instance, provider route-module, and interest dry-run smokes passed; BNA exact-SHA Operations workspace taxonomy smoke passed.
 - Owner-only send readiness was rerun after the WAPI update: Resend is send-ready and WAPI is ready with one-time scoped credentials, but secure owner-test email/WhatsApp aliases are still missing, so no owner email/WhatsApp send or public auto-reply activation occurred.
 
 ## Completed In This Batch
