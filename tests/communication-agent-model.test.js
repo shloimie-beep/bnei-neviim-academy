@@ -23,8 +23,9 @@ function communicationAgentModelSlice() {
   const start = server.indexOf('const createCommunicationAgentModelSQL = `');
   assert.notEqual(start, -1, 'communication-agent SQL model is present');
   const rest = server.slice(start);
-  const end = rest.indexOf('`;\n\nconst createContactCommunicationsSQL');
-  assert.notEqual(end, -1, 'communication-agent SQL model has an end marker');
+  const endMatch = rest.match(/`;\r?\n\r?\nconst createContactCommunicationsSQL/);
+  assert.ok(endMatch, 'communication-agent SQL model has an end marker');
+  const end = endMatch.index;
   return rest.slice(0, end);
 }
 
