@@ -40315,3 +40315,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verification passed from clean `master`: syntax checks, focused communication-agent/inbound/outbox/WAPI/Resend suite `44/44`, and tracked secret audit over 9537 paths.
 - Deployed One Time wiring SHA `302567b2147c2cf0c40eb839a333c785808af1ab`; One Time Railway deployment `d967bd8d-fde8-46a1-b454-a45d7be8899a` reached `SUCCESS`, and exact-SHA landing, separate-instance, provider route-module, and interest dry-run smokes passed. BNA Railway deployment `45bc84e7-14e4-49c4-98dc-847c9c0c0157` reached `SUCCESS` at proof SHA `cf487abe11d1d247700885d8cc80d7e7837c0a4f`, which contains the wiring SHA, and BNA taxonomy smoke passed.
 - Owner-test readiness was rerun: Resend and One Time WAPI are ready with one-time scoped credentials, but secure owner-test email/WhatsApp aliases are still missing; no owner send or public auto-reply activation occurred.
+
+## 2026-07-13 - One Time link-preview favicon fallback deployed
+
+- Closed `REQ-20260713-930` after deploying the One Time single-tenant favicon fallback override.
+- The One Time app now serves the black/white One Time icon for `/favicon.ico` and shared fallback `/icons/*` paths while leaving the BNA app's shared Academy favicon path untouched.
+- Deployed One Time SHA `c73a7ae9687f725a47881f105b1e5a4240d22615`; Railway deployment `f5cf5d9d-8023-42a2-9a1b-9117c30c1418` reached `SUCCESS`.
+- Live proof: `https://join.onetimeonetime.com/favicon.ico` byte-matches `public/images/one-time/social/one-time-icon-32.png` with SHA256 `1CF82ADD57041DB2B24DB9C368EA21D8DE3107B8520B4F2711F20DBA05DC7112`.
+- Verification passed: `node --check server.js`, `node --check scripts/smoke-rabbi-onetime-landing-live.mjs`, `node --test tests/one-time-focused-landing.test.js`, `npm run test:onetime:focused`, `npm run secrets:audit`, and live `npm run app:smoke:rabbi-onetime-landing`.
+- Guardrails: no checkout, payment, member/access grant, email send, WhatsApp/WAPI send, Telegram send, social post, upload, DNS/account mutation, credential mutation, or production data mutation was performed.
