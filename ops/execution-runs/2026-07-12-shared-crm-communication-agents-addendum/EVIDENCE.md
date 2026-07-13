@@ -258,3 +258,14 @@
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 381023aad5fdaf1b23ef4c7ab0c12327ee2d369b` passed.
 - `ops/live-smokes/2026-07-13T04-03-00-662Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the student/member aggregate slice.
 - Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `total_student_activity_rows=0`, `total_membership_activity_rows=0`, `list_no_send=true`, and `list_external_write_performed=false`; current live sample had no student/member rows, so row behavior is proven by local smoke and tests.
+- `server.js` - selected-contact timeline SQL now adds scoped `class_attendance` rows from `bna_live_class_attendance` through `bna_members` and `bna_live_class_sessions` for both canonical `bna_contacts` and legacy `bna_parent_leads` references, without exposing raw class links.
+- `src/lib/bna/crm/contact-service.js` - fallback conversation DTO filtering now excludes attendance aggregate rows in addition to student/member/signup/task/support rows.
+- `public/operations.html` / `public/js/operations-shell.js` - contact timeline rows now use customer-facing labels for aggregate timeline types, including `Class attendance`, instead of showing raw type strings.
+- `tests/crm-contact-service.test.js` / `tests/service-provider-scope-routes.test.js` - tests pin Activity inclusion and Conversations/Tasks exclusion for class-attendance aggregate rows.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=593398dd6f3f927e321c24fad4bd2d01e13dcd51`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=593398dd6f3f927e321c24fad4bd2d01e13dcd51`.
+- BNA post-deploy doctor - Railway deployment `8886d1ce-677e-406e-a34f-49313e9fde86` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `1bef031c-3522-440f-8e62-ac33972515cb` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 593398dd6f3f927e321c24fad4bd2d01e13dcd51` passed.
+- `ops/live-smokes/2026-07-13T04-13-58-713Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the class-attendance aggregate slice.
+- Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, 20 sampled timeline rows, `class_attendance_timeline_rows=0`, `class_attendance_conversation_rows=0`, `no_send=true`, and `external_write_performed=false`; current live sample had no class-attendance rows.

@@ -500,3 +500,24 @@
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 381023aad5fdaf1b23ef4c7ab0c12327ee2d369b`.
 - PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T04-03-00-662Z-one-time-operations-crm-workbench-live-smoke.md`.
 - PASS read-only live DTO readback through Operations auth: 12 scoped cards, `total_student_activity_rows=0`, `total_membership_activity_rows=0`, `list_no_send=true`, and `list_external_write_performed=false`; current live sample had no student/member rows.
+- PASS `node --check server.js` after adding scoped class-attendance Activity timeline rows.
+- PASS `node --check src/lib/bna/crm/contact-service.js`.
+- PASS `npm run operations:build`.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/crm-contact-model.test.js tests/shared-crm-workbench-contract.test.js` (32/32).
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T04-10-watchdog-action-audit.md`.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run secrets:audit`; 9272 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run test:onetime:focused` (77/77).
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run watchdog:links`; report `ops/watchdog-audits/2026-07-13T04-10-watchdog-link-audit.md`.
+- PASS `npm run watchdog:security`; report `ops/watchdog-audits/2026-07-13T04-10-watchdog-security-routes.md`.
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM class-attendance activity context commit `593398dd6f3f927e321c24fad4bd2d01e13dcd51`.
+- PASS BNA Railway redeploy and sequential doctor; deployment `8886d1ce-677e-406e-a34f-49313e9fde86` reached `SUCCESS`.
+- PASS One Time Railway redeploy and sequential doctor; deployment `1bef031c-3522-440f-8e62-ac33972515cb` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `593398dd6f3f927e321c24fad4bd2d01e13dcd51`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 593398dd6f3f927e321c24fad4bd2d01e13dcd51`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T04-13-58-713Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only live DTO readback through Operations auth: 12 scoped cards, 20 sampled timeline rows, `class_attendance_timeline_rows=0`, `class_attendance_conversation_rows=0`, `no_send=true`, and `external_write_performed=false`; current live sample had no class-attendance rows.
