@@ -39842,3 +39842,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no external email, WhatsApp/WAPI, Telegram, payment/access,
   credential, provider, or production-data mutation was performed by the
   regression matrix; the direct signup verification used dry-run/no-write proof.
+
+## 2026-07-13 - Shared CRM delivery dead-letter Activity DTO deployed
+
+- Added redacted `assistant_dead_letters` rows to selected-contact Activity for
+  One Time delivery failures, joined through the existing delivery-outbox lead
+  mapping. Conversations and Tasks now exclude both `delivery_outbox` and
+  `delivery_dead_letter` operational rows.
+- Commit `01d5a054ad99ba0a41196b18fc5b8098972e1d5a` is pushed and deployed to
+  BNA deployment `86b1d98c-d4d3-4c52-8f0f-784ebee3deef` and One Time deployment
+  `7c81033a-ffc4-46e2-b2f5-f8ff0da1cf91`; both deploy-info endpoints returned
+  the exact SHA.
+- Verification passed: focused CRM/provider tests `42/42`, generated shell,
+  action/protocol watchdogs, secrets audit, run validation, exact-SHA One Time
+  route/CRM/provider smokes, BNA taxonomy smoke, delivery-outbox regression
+  smoke, and One Time performance gate.
+- Targeted dead-letter DTO live smoke:
+  `ops/live-smokes/2026-07-13T09-51-50-226Z-one-time-crm-dead-letter-dto-live-smoke.md`.
+  Production had 7 canonical contacts and no live dead-letter rows, so it
+  recorded `skipped_no_live_dead_letters` and created no synthetic data.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation,
+  provider mutation, payment/access mutation, credential mutation, raw
+  recipient/body/reason/payload logging, or production data mutation.

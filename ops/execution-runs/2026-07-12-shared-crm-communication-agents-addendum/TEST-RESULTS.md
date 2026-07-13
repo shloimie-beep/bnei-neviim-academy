@@ -807,3 +807,29 @@
 - PASS `npm run app:smoke:onetime-crm-delivery-outbox-dto`; report `ops/live-smokes/2026-07-13T09-32-18-053Z-one-time-crm-delivery-outbox-dto-live-smoke.md` recorded `skipped_no_live_delivery_outbox` and created no synthetic data.
 - PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T09-28-14-579Z-operations-workspace-taxonomy-live-smoke.md`.
 - PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha ee9391d2bd4a1ff3ef41fc99296089254373a4d6`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+
+## CRM Delivery Dead-Letter Activity DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --check scripts/smoke-onetime-crm-dead-letter-dto-live.mjs`.
+- PASS package JSON parse after adding `app:smoke:onetime-crm-dead-letter-dto`.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/service-provider-scope-routes.test.js`; 22/22 tests passed.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/one-time-delivery-outbox.test.js tests/one-time-delivery-outbox-cron.test.js`; 42/42 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run watchdog:protocol-drift`.
+- PASS `npm run secrets:audit`; 9352 tracked paths checked.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for commit `01d5a054ad99ba0a41196b18fc5b8098972e1d5a`.
+- PASS BNA Railway deploy/doctor; deployment `86b1d98c-d4d3-4c52-8f0f-784ebee3deef` reached `SUCCESS`.
+- PASS One Time Railway deploy/doctor; deployment `7c81033a-ffc4-46e2-b2f5-f8ff0da1cf91` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `01d5a054ad99ba0a41196b18fc5b8098972e1d5a`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a`; report `ops/live-smokes/2026-07-13T09-51-50-534Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a`; report `ops/live-smokes/2026-07-13T09-51-50-245Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-dead-letter-dto`; report `ops/live-smokes/2026-07-13T09-51-50-226Z-one-time-crm-dead-letter-dto-live-smoke.md` recorded `skipped_no_live_dead_letters` and created no synthetic data.
+- PASS `npm run app:smoke:onetime-crm-delivery-outbox-dto`; report `ops/live-smokes/2026-07-13T09-52-15-195Z-one-time-crm-delivery-outbox-dto-live-smoke.md` recorded `skipped_no_live_delivery_outbox` and created no synthetic data.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T09-52-15-192Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.

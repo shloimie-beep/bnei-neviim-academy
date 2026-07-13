@@ -271,3 +271,23 @@ Global production readiness remains blocked only by known external full-launch f
 - Operations workspace taxonomy smoke passed; report `ops/live-smokes/2026-07-13T09-28-14-579Z-operations-workspace-taxonomy-live-smoke.md`.
 - One Time performance regression gate passed against the deployed SHA; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw recipient/body logging, or production data mutation.
+
+## 2026-07-13 CRM Delivery Dead-Letter Activity DTO Slice Deploy
+
+- Commit: `01d5a054ad99ba0a41196b18fc5b8098972e1d5a`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_DEPLOY_APP=bna`.
+- BNA Railway doctor: deployment `86b1d98c-d4d3-4c52-8f0f-784ebee3deef` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=01d5a054ad99ba0a41196b18fc5b8098972e1d5a`, `target_app=bna`.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_DEPLOY_APP=one-time`.
+- One Time Railway doctor: deployment `7c81033a-ffc4-46e2-b2f5-f8ff0da1cf91` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=01d5a054ad99ba0a41196b18fc5b8098972e1d5a`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a` passed.
+- One Time provider route-module smoke passed; report `ops/live-smokes/2026-07-13T09-51-50-534Z-onetime-provider-route-module-live-smoke.md`.
+- One Time Operations CRM smoke passed; report `ops/live-smokes/2026-07-13T09-51-50-245Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Delivery dead-letter DTO live smoke passed with `skipped_no_live_dead_letters`; report `ops/live-smokes/2026-07-13T09-51-50-226Z-one-time-crm-dead-letter-dto-live-smoke.md`.
+- Delivery-outbox DTO regression smoke passed with `skipped_no_live_delivery_outbox`; report `ops/live-smokes/2026-07-13T09-52-15-195Z-one-time-crm-delivery-outbox-dto-live-smoke.md`.
+- Operations workspace taxonomy smoke passed; report `ops/live-smokes/2026-07-13T09-52-15-192Z-operations-workspace-taxonomy-live-smoke.md`.
+- One Time performance regression gate passed against the deployed SHA; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw recipient/body/reason/payload logging, or production data mutation.
