@@ -39428,3 +39428,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   action/link/security/protocol watchdogs, secret audit, execution-run
   validation, BNA/One Time Railway doctors, exact-SHA One Time route smoke, and
   read-only live DTO readback with no sends or external writes.
+
+## 2026-07-13 - CRM signup context aggregate deployed
+
+- Added One Time product/signup context into canonical CRM contact aggregates so
+  signup status, audience, reminder preference, city, and timezone travel with
+  the selected contact card.
+- Canonical `bna_contacts` cards now win over duplicate legacy parent-lead rows
+  for the same workspace-scoped email/phone, while still preserving linked lead
+  and signup IDs for the contact workspace.
+- Replaced internal CRM empty copy such as “not loaded” with customer-facing
+  membership/class empty states in the Operations contact workspace.
+- Verification passed: syntax checks, Operations build/generated-shell check,
+  shared CRM/service-provider tests `32/32`, local One Time CRM workbench smoke,
+  focused One Time suite `77/77`, action/link/security/protocol watchdogs,
+  secret audit, execution-run validation, BNA/One Time Railway doctors,
+  exact-SHA One Time route smoke, live One Time CRM workbench smoke, and
+  read-only live DTO readback showing 12 scoped cards, 5 signup-context cards,
+  0 duplicate email/phone cards, no sends, and no external writes.

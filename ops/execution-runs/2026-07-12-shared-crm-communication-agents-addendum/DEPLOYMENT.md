@@ -167,3 +167,18 @@ Global production readiness remains blocked only by known external full-launch f
 - One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e830ca924a2fd4853fc523a4bad6e55c454bf420` passed.
 - One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench` passed; report `ops/live-smokes/2026-07-13T03-36-02-229Z-one-time-operations-crm-workbench-live-smoke.md`.
 - Read-only live DTO readback found no live support tickets on the sampled One Time contact set (`support_summary_cards=0`, `support_timeline_items=0`) and confirmed support tickets are not returned in Conversations (`support_conversation_items=0`), with `no_send=true` and `external_write_performed=false`.
+
+## 2026-07-13 CRM Signup-Context Aggregate Slice Deploy
+
+- Commit: `feaece026a62daaf1ff85bdb53ac25ffb246ab89`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_RAILWAY_TARGET_PROFILE=bna`.
+- BNA Railway doctor: deployment `aff0823d-e323-439a-8837-150273689bc4` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=feaece026a62daaf1ff85bdb53ac25ffb246ab89`, `target_app=bna`.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- One Time Railway doctor: deployment `b119d430-216a-43c9-b59a-37b2b8dcfdb1` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=feaece026a62daaf1ff85bdb53ac25ffb246ab89`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha feaece026a62daaf1ff85bdb53ac25ffb246ab89` passed.
+- One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench` passed; report `ops/live-smokes/2026-07-13T03-52-25-026Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Read-only live DTO readback confirmed the deployed One Time CRM list returned 12 scoped cards, 5 cards with signup context, 5 cards with linked legacy leads, 0 duplicate email/phone cards, `no_send=true`, and `external_write_performed=false`.

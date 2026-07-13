@@ -237,3 +237,14 @@
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e830ca924a2fd4853fc523a4bad6e55c454bf420` passed.
 - `ops/live-smokes/2026-07-13T03-36-02-229Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards and read-only selected timeline after the support-ticket aggregate slice.
 - Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `support_summary_cards=0`, sampled selected-contact `support_timeline_items=0`, `support_conversation_items=0`, `no_send=true`, and `external_write_performed=false`; no raw contact data or message bodies were saved.
+- `server.js` - canonical CRM list SQL now joins matching One Time `bna_product_leads` by product lead ID, workspace-scoped email, or workspace-scoped phone and returns a `signup_context` object on canonical contact/lead rows without creating tasks or performing external writes.
+- `src/lib/bna/crm-contact-model.js` - contact DTOs now expose `signup_context`, preserve linked product/legacy lead IDs, and dedupe same-human legacy lead rows under canonical `bna_contacts` cards by workspace/project email or phone.
+- `public/operations.html` / `public/js/operations-shell.js` - contact workspace class/access summary now displays signup status, audience, reminder preference, city, and timezone when present and no longer shows internal “not loaded” copy.
+- `tests/crm-contact-model.test.js` / `tests/service-provider-scope-routes.test.js` - tests pin signup context mapping, canonical duplicate collapse, server aggregate wiring, and Operations signup-context markers.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=feaece026a62daaf1ff85bdb53ac25ffb246ab89`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=feaece026a62daaf1ff85bdb53ac25ffb246ab89`.
+- BNA post-deploy doctor - Railway deployment `aff0823d-e323-439a-8837-150273689bc4` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `b119d430-216a-43c9-b59a-37b2b8dcfdb1` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha feaece026a62daaf1ff85bdb53ac25ffb246ab89` passed.
+- `ops/live-smokes/2026-07-13T03-52-25-026Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the signup-context aggregate slice.
+- Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `signup_context_cards=5`, `linked_lead_cards=5`, `duplicate_email_or_phone_count=0`, `no_send=true`, and `external_write_performed=false`; no raw contact data or message bodies were saved.
