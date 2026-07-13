@@ -170,3 +170,37 @@ test('One Time WAPI readiness script reports blockers without sends or secrets',
   assert.equal(railwayProviderSetup.crm_mutation_performed, false);
   assert.doesNotMatch(JSON.stringify(railwayProviderSetup), /scoped-token|webhook-secret|\+972/);
 });
+
+test('One Time WAPI attention artifacts badge/notify but suppress generic tasks', () => {
+  const attentionArtifacts = server.slice(
+    server.indexOf('async function createCommunicationAttentionArtifacts'),
+    server.indexOf('function mergeParentTagsSql')
+  );
+  const wapiIngest = server.slice(
+    server.indexOf('async function createCommunicationFromWapiWebhook'),
+    server.indexOf('async function ensureOneTimeProviderBotLead')
+  );
+
+  assert.match(wapiIngest, /create_task_on_inbound:\s*false/);
+  assert.match(wapiIngest, /ordinary_inbound_creates_task:\s*false/);
+  assert.match(attentionArtifacts, /taskCreationAllowed/);
+  assert.match(attentionArtifacts, /metadata\.create_task_on_inbound !== false/);
+  assert.match(attentionArtifacts, /metadata\.ordinary_inbound_creates_task !== false/);
+  assert.match(attentionArtifacts, /automatic_task_suppressed/);
+  assert.match(attentionArtifacts, /screening\.follow_up_required && taskCreationAllowed/);
+});
+
+test('One Time provider support tickets dedupe by contact thread action class, not message id alone', () => {
+  const supportTicket = server.slice(
+    server.indexOf('function oneTimeProviderBotSupportTicketDedupe'),
+    server.indexOf('function normalizeWapiRecipient')
+  );
+
+  assert.match(supportTicket, /dedupe_scope:\s*'workspace_project_contact_thread_action'/);
+  assert.match(supportTicket, /provider_bot_support_dedupe_key/);
+  assert.match(supportTicket, /provider_bot_support_thread_key_hash/);
+  assert.match(supportTicket, /provider_bot_support_raw_thread_key_stored/);
+  assert.match(supportTicket, /source_context->>'provider_bot_support_dedupe_key' = \$3/);
+  assert.match(supportTicket, /OR source_context->>'provider_bot_communication_id' = \$4/);
+  assert.match(supportTicket, /raw_message_body_in_telegram:\s*false/);
+});

@@ -1043,3 +1043,17 @@
 - PASS `npm run bna:run:validate`; work remains yes.
 - PASS `node --test tests/inbound-communication-ingest.test.js tests/resend-inbound-crm.test.js tests/one-time-wapi-scope-contract.test.js tests/one-time-delivery-outbox.test.js`; 16/16 tests passed.
 - Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw contact/message logging, or destructive production mutation was performed by this local proof.
+
+## Canonical Inbound Communication Pipeline Closeout - 2026-07-13
+
+- PASS `git push origin master` for runtime commit `40ffdc1aca34a02774275ba7b2902e46c709e9ce`; the commit is an ancestor of deployed head `43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- PASS One Time Railway doctor; deployment `9cc413fb-da9b-42f4-a2b1-ce5b6744d2cb` reached `SUCCESS`.
+- PASS BNA Railway doctor; deployment `c4f33394-0881-425b-a2de-c862e44dd09e` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned exact SHA `43f7c33733880745d8f1191c86fe8e196ef68baa`, `target_app=one-time`.
+- PASS BNA live `/api/deploy-info`; returned exact SHA `43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 43f7c33733880745d8f1191c86fe8e196ef68baa`; report `ops/live-smokes/2026-07-13T13-24-30-029Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 43f7c33733880745d8f1191c86fe8e196ef68baa`; report `ops/live-smokes/2026-07-13T13-24-38-990Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha 43f7c33733880745d8f1191c86fe8e196ef68baa`; report `ops/live-smokes/2026-07-13T13-24-53-876Z-operations-workspace-taxonomy-live-smoke.md`.
+- `REQ-20260712-307` marked Done because Resend, WAPI/history, website assistant input, private Rabbi Telegram ticket intake, channel-assigned agent metadata, knowledge snapshot metadata, and outbox handoff are implemented, pushed, deployed, and live-smoked.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw contact/message logging, or destructive production mutation was performed by this deployed closeout proof.

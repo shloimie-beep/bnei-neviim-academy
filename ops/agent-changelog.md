@@ -40201,6 +40201,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   promotion approval, Vimeo private upload/folder approval, member publication,
   and blocked UI evidence remain separate requirements.
 
+## 2026-07-13 - Canonical inbound communication pipeline closed
+
+- Closed `REQ-20260712-307` for the canonical inbound pipeline scope after
+  deploying integrated SHA `43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- Runtime commit `40ffdc1aca34a02774275ba7b2902e46c709e9ce` added the
+  One Time communication-agent metadata/knowledge loader and delivery-outbox
+  reply handoff; it is included in the deployed head.
+- One Time deployment `9cc413fb-da9b-42f4-a2b1-ce5b6744d2cb` and BNA
+  deployment `c4f33394-0881-425b-a2de-c862e44dd09e` reached `SUCCESS`.
+- Exact-SHA live smokes passed: One Time separate-instance, One Time CRM
+  workbench, One Time provider route-module, and BNA workspace taxonomy.
+- Owner-only real email/WhatsApp sends remain blocked by `REQ-20260713-906`
+  until secure aliases are configured; no external send or public auto-reply
+  enablement was performed.
+
 ## 2026-07-13 - One Time metadata admin readback verified
 
 - Added `scripts/smoke-one-time-metadata-review-live.mjs` and

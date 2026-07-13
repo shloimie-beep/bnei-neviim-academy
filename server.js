@@ -4269,10 +4269,13 @@ function communicationAlertTitle(screening = {}, communication = {}) {
   return communication.summary || 'Communication needs review';
 }
 
-async function createCommunicationAttentionArtifacts(communication = {}, screening = {}, { req = null, db = pool } = {}) {
+async function createCommunicationAttentionArtifacts(communication = {}, screening = {}, { req = null, db = pool, createTask = true } = {}) {
   if (!communication?.id || !screening?.alert_required) return { notification: null, task: null };
   const sourceContext = parseJsonMaybe(communication.source_context) || {};
   const metadata = parseJsonMaybe(communication.metadata) || {};
+  const taskCreationAllowed = createTask !== false
+    && metadata.create_task_on_inbound !== false
+    && metadata.ordinary_inbound_creates_task !== false;
   const projectId = communication.project_id || null;
   const notification = await createInAppNotification({
     eventType: 'communication_attention_required',
@@ -4296,6 +4299,7 @@ async function createCommunicationAttentionArtifacts(communication = {}, screeni
       communication_pipeline: screening.pipeline_category,
       communication_tags: screening.pipeline_tags,
       raw_intake_id: sourceContext.raw_intake_id || null,
+      automatic_task_suppressed: Boolean(screening.follow_up_required && !taskCreationAllowed),
       no_send: true,
       external_write_performed: false,
     },
@@ -4303,7 +4307,7 @@ async function createCommunicationAttentionArtifacts(communication = {}, screeni
   }, db).catch(() => null);
 
   let task = null;
-  if (screening.follow_up_required) {
+  if (screening.follow_up_required && taskCreationAllowed) {
     const dedupeKey = `communication-follow-up:${communication.id}`;
     const existing = (await db.query(
       `SELECT *
@@ -4359,7 +4363,7 @@ async function createCommunicationAttentionArtifacts(communication = {}, screeni
       ).catch(() => ({ rows: [] }))).rows[0] || null;
     }
   }
-  return { notification, task };
+  return { notification, task, task_suppressed: Boolean(screening.follow_up_required && !taskCreationAllowed) };
 }
 
 function mergeParentTagsSql(alias = 'tags') {
@@ -66612,17 +66616,66 @@ async function applyOneTimeProviderBotPlan({ plan, lead = null, communication = 
   return { lead: updatedLead, communication: updatedCommunication };
 }
 
+function oneTimeProviderBotSupportTicketDedupe({ plan = {}, communication = {}, lead = {} } = {}) {
+  const sourceContext = parseJsonMaybe(communication.source_context) || {};
+  const metadata = parseJsonMaybe(communication.metadata) || {};
+  const actionClass = plan.intent === 'urgent_or_safety_handoff'
+    ? 'urgent_or_safety_handoff'
+    : 'platform_support';
+  const contactKey = lead?.id
+    ? 'lead:' + lead.id
+    : communication.lead_id
+      ? 'lead:' + communication.lead_id
+      : communication.signup_id
+        ? 'signup:' + communication.signup_id
+        : communication.student_id
+          ? 'student:' + communication.student_id
+          : sourceContext.canonical_contact_id
+            ? 'contact:' + sourceContext.canonical_contact_id
+            : metadata.canonical_contact_id
+              ? 'contact:' + metadata.canonical_contact_id
+              : 'contact:unknown';
+  const rawThreadKey = sourceContext.chat_id
+    || metadata.wapi_chat_id
+    || metadata.thread_key
+    || sourceContext.from_number
+    || metadata.from_number
+    || '';
+  const threadKeyHash = rawThreadKey
+    ? sha256Hex(rawThreadKey).slice(0, 16)
+    : sha256Hex(String(contactKey) + ':' + String(communication.project_id || '') + ':' + String(communication.id || '')).slice(0, 16);
+  const dedupeKey = 'one-time-provider-support:' + sha256Hex([
+    ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    ONE_TIME_PROJECT_KEY,
+    contactKey,
+    'thread:' + threadKeyHash,
+    actionClass,
+  ].join('|')).slice(0, 32);
+  return {
+    dedupe_key: dedupeKey,
+    action_class: actionClass,
+    contact_key: contactKey,
+    thread_key_hash: threadKeyHash,
+    dedupe_scope: 'workspace_project_contact_thread_action',
+    raw_thread_key_stored: false,
+  };
+}
+
 async function ensureOneTimeProviderBotSupportTicket({ plan, communication, lead }, db = pool) {
   if (!plan.create_support_ticket || !communication?.id) return null;
+  const supportDedupe = oneTimeProviderBotSupportTicketDedupe({ plan, communication, lead });
   const existing = (await db.query(
     `SELECT *
      FROM bna_support_tickets
      WHERE workspace_key = $1
        AND project_key = $2
-       AND source_context->>'provider_bot_communication_id' = $3
+       AND (
+         source_context->>'provider_bot_support_dedupe_key' = $3
+         OR source_context->>'provider_bot_communication_id' = $4
+       )
      ORDER BY created_at DESC, id DESC
      LIMIT 1`,
-    [ONE_TIME_PROVIDER_WORKSPACE_KEY, ONE_TIME_PROJECT_KEY, String(communication.id)]
+    [ONE_TIME_PROVIDER_WORKSPACE_KEY, ONE_TIME_PROJECT_KEY, supportDedupe.dedupe_key, String(communication.id)]
   )).rows[0] || null;
   if (existing) return existing;
   const project = await getProjectByKey(ONE_TIME_PROJECT_KEY, db);
@@ -66653,6 +66706,12 @@ async function ensureOneTimeProviderBotSupportTicket({ plan, communication, lead
         provider_bot_profile: plan.profile_key,
         intent: plan.intent,
         route_alias: 'platform_support_shloimie',
+        provider_bot_support_dedupe_key: supportDedupe.dedupe_key,
+        provider_bot_support_action_class: supportDedupe.action_class,
+        provider_bot_support_contact_key: supportDedupe.contact_key,
+        provider_bot_support_thread_key_hash: supportDedupe.thread_key_hash,
+        provider_bot_support_dedupe_scope: supportDedupe.dedupe_scope,
+        provider_bot_support_raw_thread_key_stored: supportDedupe.raw_thread_key_stored,
         raw_message_body_in_telegram: false,
       }),
     ]

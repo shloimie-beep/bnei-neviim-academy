@@ -585,3 +585,32 @@
   inbound/outbox suite `16/16`, runtime syntax checks, and run validation.
 - Deployment/live smoke pending for this slice. Owner-only live sends remain
   blocked by `REQ-20260713-906` secure owner-test aliases.
+
+## Canonical Inbound Communication Pipeline Closeout
+
+- `REQ-20260712-307` is Done for the canonical inbound communication pipeline
+  scope.
+- Commit `40ffdc1aca34a02774275ba7b2902e46c709e9ce` pushed the
+  communication-agent metadata/outbox runtime slice. It is included in
+  deployed integrated production head
+  `43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- One Time deployment evidence: Railway deployment
+  `9cc413fb-da9b-42f4-a2b1-ce5b6744d2cb`, live deploy-info exact SHA
+  `43f7c33733880745d8f1191c86fe8e196ef68baa`, `target_app=one-time`.
+- BNA shared-runtime regression evidence: Railway deployment
+  `c4f33394-0881-425b-a2de-c862e44dd09e`, live deploy-info exact SHA
+  `43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- One Time live smoke evidence: separate-instance route smoke passed; CRM
+  workbench smoke `ops/live-smokes/2026-07-13T13-24-30-029Z-one-time-operations-crm-workbench-live-smoke.md`;
+  provider route-module smoke `ops/live-smokes/2026-07-13T13-24-38-990Z-onetime-provider-route-module-live-smoke.md`.
+- BNA live smoke evidence: workspace taxonomy smoke
+  `ops/live-smokes/2026-07-13T13-24-53-876Z-operations-workspace-taxonomy-live-smoke.md`.
+- Scope proof: Resend, WAPI/history, website assistant input, and private Rabbi
+  Telegram ticket intake call the canonical inbound path; One Time email and
+  WhatsApp stamp channel-assigned agent/version/knowledge metadata; WhatsApp
+  public lead-agent replies use the delivery outbox instead of direct webhook
+  WAPI sends.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram
+  send, public auto-reply enablement, provider mutation, credential mutation,
+  payment/access mutation, raw private payload logging, or destructive
+  production mutation was performed.
