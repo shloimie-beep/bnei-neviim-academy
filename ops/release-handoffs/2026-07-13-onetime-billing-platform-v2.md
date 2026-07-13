@@ -1,6 +1,6 @@
 # One Time Provider Billing Platform V2 Release Handoff
 
-Status: draft PR handoff pending
+Status: draft PR created; live activation blocked
 Branch: `codex/onetime-rosh-hashanah-billing-platform-v2`
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Primary requirements: `REQ-20260713-950` through `REQ-20260713-963`
@@ -87,4 +87,4 @@ launch packet with:
 
 ## Draft PR
 
-Draft PR URL: pending creation after this handoff is committed and pushed.
+Draft PR URL: https://github.com/shloimie-beep/bnei-neviim-academy/pull/132

@@ -40071,3 +40071,13 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   invoice/receipt send, access mutation, provider mutation, credential
   mutation, production data mutation, or secret exposure was performed by the
   verifier.
+
+## 2026-07-13 - One Time Billing V2 draft PR handoff created
+
+- Created draft PR https://github.com/shloimie-beep/bnei-neviim-academy/pull/132
+  for `codex/onetime-rosh-hashanah-billing-platform-v2`.
+- Updated the release handoff and requirement register with the PR URL,
+  sandbox E2E pushed status, and explicit live activation blockers.
+- Guardrails remain unchanged: no live charge, refund, notice send,
+  invoice/receipt send, access mutation, provider mutation, credential
+  mutation, production data mutation, or secret exposure was performed.
