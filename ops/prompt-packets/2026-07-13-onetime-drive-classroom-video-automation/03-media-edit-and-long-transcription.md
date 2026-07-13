@@ -9,8 +9,8 @@ Requirements: `REQ-20260713-915`, `REQ-20260713-916`
 Workspace/project:
 `rabbi_sheller_provider` / `one_time_mishnah_class`
 
-Status: media-edit and long-transcription local harness complete; provider
-integration/private fixture pending
+Status: media edit Done; long-transcription local harness committed, pushed,
+deployed, and still pending provider/private fixture integration
 
 ## Product Quality Compiler Expansion
 
@@ -119,6 +119,10 @@ commands, evidence paths, deploy/readback proof, blockers, and next packet.
 | `node --test tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js` | Passed 41/41 before adding the final real-render smoke; rerun after smoke passed 24/24 for media workflows. |
 | `node --test tests/one-time-long-transcription.test.js` | Passed 7/7. |
 | Syntax checks for studio and folder-library modules | Passed. |
+| `node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js tests/one-time-transcript-metadata.test.js` | Passed 54/54 on 2026-07-13 after commit/push/deploy. |
+| One Time deploy-info | `https://join.onetimeonetime.com/api/deploy-info` returned `a8df4c9b9cc091028105a16430aae6927cd0b429` with `target_app=one-time`; media/transcription commit `2bf0c0d0e31c969f67556e1ee163ff0b9aa56ce6` is an ancestor. |
+| One Time live smokes | `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha a8df4c9b9cc091028105a16430aae6927cd0b429` passed; `npm run app:smoke:onetime-provider-route-module -- --base-url https://join.onetimeonetime.com --expected-sha a8df4c9b9cc091028105a16430aae6927cd0b429` passed. |
+| Authenticated transcript privacy smoke | Login/API path ran, but the smoke failed on a missing Operations-page marker. No live UI marker proof is claimed for this packet. |
 
 ## Not Done In This Packet
 
@@ -127,5 +131,5 @@ commands, evidence paths, deploy/readback proof, blockers, and next packet.
   wired into the studio worker or run against a private fixture/provider call.
 - No Drive write, Vimeo upload, production DB write, member publication, or
   external send was made.
-- Commit/push and any deploy/release closeout are still pending for the broader
-  goal.
+- `REQ-20260713-915` is Done. `REQ-20260713-916` remains open until the
+  provider/private fixture integration is actually proven.

@@ -40028,3 +40028,29 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No real Drive API read, Drive mutation, database mutation, Vimeo upload,
   member publication, public publish, provider mutation, credential mutation,
   payment/access mutation, or external send was performed.
+
+## 2026-07-13 - One Time media edit slice deployed and live-smoked
+
+- Marked `REQ-20260713-915` Done for conservative media edge editing. The
+  studio/folder workflow now defaults opener duration to zero, preserves
+  explicit opener overrides, supports MKV handoff candidates, skips opener
+  render/concat when not requested, and records output hash/duration/audio
+  verification.
+- Media/transcription/metadata runtime commit
+  `2bf0c0d0e31c969f67556e1ee163ff0b9aa56ce6` is pushed and is an ancestor of
+  live One Time deployed SHA `a8df4c9b9cc091028105a16430aae6927cd0b429`
+  (`target_app=one-time`).
+- Verification passed: consolidated One Time Drive/media/transcription/metadata
+  suite `54/54`, One Time separate-instance exact-SHA smoke, and One Time
+  provider-route exact-SHA smoke.
+- `REQ-20260713-916` remains in progress: long transcription local harness and
+  redacted reports are implemented and deployed, but provider/private fixture
+  integration is not proven. Authenticated transcript-privacy smoke logged in
+  but failed on a missing Operations-page marker, so no live UI marker proof is
+  claimed.
+- `REQ-20260713-917` remains in progress: metadata/handoff contract is
+  implemented and deployed, but DB/review integration and bot-knowledge
+  promotion proof remain pending.
+- No Drive write, database mutation, Vimeo upload, bot-knowledge promotion,
+  member publication, provider mutation, credential mutation, payment/access
+  mutation, or external send was performed.

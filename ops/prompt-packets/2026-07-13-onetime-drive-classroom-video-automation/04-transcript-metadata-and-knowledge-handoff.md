@@ -9,8 +9,8 @@ Requirement: `REQ-20260713-917`
 Workspace/project:
 `rabbi_sheller_provider` / `one_time_mishnah_class`
 
-Status: local contract complete; DB promotion worker/review UI integration
-pending
+Status: local contract committed, pushed, and deployed; DB promotion
+worker/review UI integration pending
 
 ## Product Quality Compiler Expansion
 
@@ -109,6 +109,9 @@ commands, evidence paths, deploy/readback proof, blockers, and next packet.
 |---|---|
 | `node --test tests/one-time-transcript-metadata.test.js` | Passed 5/5. |
 | Syntax check for `src/lib/bna/one-time-transcript-metadata.js` | Passed. |
+| `node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js tests/one-time-transcript-metadata.test.js` | Passed 54/54 on 2026-07-13 after commit/push/deploy. |
+| One Time deploy-info | `https://join.onetimeonetime.com/api/deploy-info` returned `a8df4c9b9cc091028105a16430aae6927cd0b429` with `target_app=one-time`; metadata contract commit `2bf0c0d0e31c969f67556e1ee163ff0b9aa56ce6` is an ancestor. |
+| One Time live smokes | `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha a8df4c9b9cc091028105a16430aae6927cd0b429` passed; `npm run app:smoke:onetime-provider-route-module -- --base-url https://join.onetimeonetime.com --expected-sha a8df4c9b9cc091028105a16430aae6927cd0b429` passed. |
 
 ## Not Done In This Packet
 
@@ -116,3 +119,5 @@ commands, evidence paths, deploy/readback proof, blockers, and next packet.
   class-session persistence, helper knowledge table, or review UI.
 - No database write, bot knowledge promotion, Drive write, Vimeo upload, member
   publication, or external send was made.
+- `REQ-20260713-917` remains open until DB/review integration and any approved
+  bot-knowledge promotion path are actually proven.
