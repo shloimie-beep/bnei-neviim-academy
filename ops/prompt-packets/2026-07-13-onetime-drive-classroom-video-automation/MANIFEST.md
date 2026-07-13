@@ -135,7 +135,7 @@ findings, deploy/live-smoke URLs where applicable, blockers, and next packet.
 | PKT-20260713-004-03 | 03-media-edit-and-long-transcription | IMPLEMENTATION_PACKET | PKT-20260713-004-02 | done - media edit, long-transcription harness, and synthetic provider fixture verified | Edge edit verification and chunked private transcription. |
 | PKT-20260713-004-04 | 04-transcript-metadata-and-knowledge-handoff | IMPLEMENTATION_PACKET | PKT-20260713-004-03 | done - deployed admin readback verified | Metadata schema/generator, bot-knowledge handoff contract, class-session review fields, and folder-workflow review-package bridge. |
 | PKT-20260713-004-05 | 05-vimeo-owner-readiness-and-private-upload | PROVIDER_SETUP_PACKET | PKT-20260713-004-00 | needs_operator_decision | Credential readback, owner OAuth setup, owner account/project checks, synthetic private upload gate. Existing access token reads the owner account; owner app credentials validate from keyholder; no OAuth redirect URI, private test project/folder, upload-capable token confirmation, or upload approval is configured. |
-| PKT-20260713-004-06 | 06-class-package-classroom-and-latest-video | IMPLEMENTATION_PACKET | PKT-20260713-004-04, PKT-20260713-004-05 | partial - read-only admin/review/synthetic-member/anonymous gates verified; publication and Vimeo-origin proof gated | Class review package, member library, latest video, older-class library, entitlements. |
+| PKT-20260713-004-06 | 06-class-package-classroom-and-latest-video | IMPLEMENTATION_PACKET | PKT-20260713-004-04, PKT-20260713-004-05 | partial - read-only admin/review/synthetic-member/anonymous gates and Vimeo-backed item shape verified; same-item continuity/publication gated | Class review package, member library, latest video, older-class library, entitlements. |
 | PKT-20260713-004-07 | 07-rabbi-content-processing-ui | IMPLEMENTATION_PACKET | PKT-20260713-004-01, PQC Definition of Ready | blocked - PQC spec validates; member-library review evidence captured; auth/Vimeo/publication gates open | Queue/details/review UI after visual audit and PQC validation. |
 | PKT-20260713-004-08 | 08-end-to-end-pilot-and-release | VERIFIER_PACKET / DEPLOY_PACKET | PKT-20260713-004-02..07 | not_started | Synthetic E2E, one real pilot when gates pass, deploy/live smoke, rollback/handoff. |
 
@@ -170,12 +170,15 @@ Vimeo owner-readiness and private-upload decision evidence is recorded at
 Classroom/latest-video read-only evidence is recorded at
 `ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/06-class-package-classroom-and-latest-video.md`.
 The deployed One Time app at SHA
-`22e50b2ee10fd0f78d17d5eb896d31a8a73402cd` has admin packages with published
-library items, a safe review-classroom `today_video` shape, synthetic review
-member access-code entitlement to two library items at tier `live_class`,
-member-safe omission of private transcript/admin keys, and anonymous
-member/classroom routes still require a member session token. Member
-publication and Vimeo-origin package proof remain gated.
+`302567b2147c2cf0c40eb839a333c785808af1ab` has admin packages with published
+Vimeo-backed library items, a safe review-classroom Vimeo-backed `today_video`
+shape, synthetic review member access-code entitlement to two Vimeo-backed
+library items at tier `live_class`, member-safe omission of private
+transcript/admin keys, and anonymous member/classroom routes still require a
+member session token. Member Vimeo-backed items match admin published items,
+but review/member latest-video still does not prove the same admin-published
+item across all surfaces. Member publication and real Vimeo-origin package
+proof remain gated.
 
 Next non-UI implementation work for `PKT-20260713-004-06` is the approved
 publication/Vimeo-origin package readback. Current Vimeo gate has valid owner

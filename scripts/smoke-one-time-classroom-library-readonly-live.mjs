@@ -37,6 +37,7 @@ const baseUrl = String(
   'https://join.onetimeonetime.com'
 ).replace(/\/+$/, '');
 const expectedSha = String(argValue('--expected-sha', process.env.BNA_EXPECT_DEPLOYED_SHA || '')).trim();
+const requireVimeoContinuity = process.argv.includes('--require-vimeo-continuity');
 const startedAt = new Date().toISOString();
 const stamp = startedAt.replace(/[:.]/g, '-');
 
@@ -57,6 +58,10 @@ const report = {
 };
 
 let cookie = null;
+let adminVimeoRefs = [];
+let reviewTodayVideoRef = null;
+let memberVimeoRefs = [];
+let memberTodayVideoRef = null;
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -124,6 +129,26 @@ function assertNoPrivatePayload(value = {}, label = 'payload') {
   );
 }
 
+function parseVimeoId(value = '') {
+  return (String(value || '').match(/(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d{5,})/i) || [])[1] || '';
+}
+
+function vimeoRefFromItem(item = {}, fallback = {}) {
+  const mediaUrl = String(item.media_url || item.playback_url || item.embed_url || '');
+  const vimeoId = String(item.vimeo_id || item.vimeoId || parseVimeoId(mediaUrl) || '').trim();
+  const provider = String(item.media_provider || item.mediaProvider || '').trim().toLowerCase();
+  return {
+    has_vimeo: provider === 'vimeo' || Boolean(vimeoId),
+    item_id: item.id ? String(item.id) : '',
+    class_session_id: item.class_session_id ? String(item.class_session_id) : (fallback.class_session_id ? String(fallback.class_session_id) : ''),
+    vimeo_id: vimeoId,
+  };
+}
+
+function refsOverlap(left = {}, right = {}) {
+  return ['item_id', 'class_session_id', 'vimeo_id'].some((key) => left[key] && right[key] && left[key] === right[key]);
+}
+
 function writeReports() {
   fs.mkdirSync(reportDir, { recursive: true });
   const jsonPath = reportPath('json');
@@ -147,8 +172,16 @@ function writeReports() {
     `- admin_classes_returned: ${report.summary?.admin_classes_returned ?? 'n/a'}`,
     `- admin_published_classes: ${report.summary?.admin_published_classes ?? 'n/a'}`,
     `- admin_classes_with_library_items: ${report.summary?.admin_classes_with_library_items ?? 'n/a'}`,
+    `- admin_vimeo_library_items: ${report.summary?.admin_vimeo_library_items ?? 'n/a'}`,
     `- review_today_video_present: ${report.summary?.review_today_video_present ? 'yes' : 'no'}`,
+    `- review_today_video_vimeo_present: ${report.summary?.review_today_video_vimeo_present ? 'yes' : 'no'}`,
     `- synthetic_member_items_visible: ${report.summary?.synthetic_member_items_visible ?? 'n/a'}`,
+    `- synthetic_member_vimeo_items: ${report.summary?.synthetic_member_vimeo_items ?? 'n/a'}`,
+    `- vimeo_origin_review_matches_admin: ${report.summary?.vimeo_origin_review_matches_admin ? 'yes' : 'no'}`,
+    `- vimeo_origin_member_matches_admin: ${report.summary?.vimeo_origin_member_matches_admin ? 'yes' : 'no'}`,
+    `- vimeo_origin_member_today_matches_review: ${report.summary?.vimeo_origin_member_today_matches_review ? 'yes' : 'no'}`,
+    `- vimeo_origin_continuity_status: ${report.summary?.vimeo_origin_continuity_status ?? 'n/a'}`,
+    `- vimeo_origin_continuity_blocker: ${report.summary?.vimeo_origin_continuity_blocker ?? 'n/a'}`,
     `- synthetic_member_tier: ${report.summary?.synthetic_member_tier ?? 'n/a'}`,
     `- anonymous_member_library_status: ${report.summary?.anonymous_member_library_status ?? 'n/a'}`,
     `- anonymous_classroom_status: ${report.summary?.anonymous_classroom_status ?? 'n/a'}`,
@@ -189,20 +222,26 @@ async function main() {
     const classes = Array.isArray(data.classes) ? data.classes : [];
     const published = classes.filter((item) => item.package_status === 'published');
     const withLibraryItems = classes.filter((item) => Array.isArray(item.library_items) && item.library_items.some((libraryItem) => libraryItem.publish_status === 'published'));
+    adminVimeoRefs = classes.flatMap((classPackage) => (Array.isArray(classPackage.library_items) ? classPackage.library_items : [])
+      .map((libraryItem) => vimeoRefFromItem(libraryItem, { class_session_id: classPackage.id }))
+      .filter((ref) => ref.has_vimeo));
     assert(classes.length > 0, 'no admin class packages returned');
     assert(published.length > 0, 'no published class packages returned');
     assert(withLibraryItems.length > 0, 'no class packages with published library items returned');
+    assert(adminVimeoRefs.length > 0, 'no admin published library item exposed Vimeo media shape');
     report.summary = {
       ...(report.summary || {}),
       admin_classes_returned: classes.length,
       admin_published_classes: published.length,
       admin_classes_with_library_items: withLibraryItems.length,
+      admin_vimeo_library_items: adminVimeoRefs.length,
       admin_package_statuses: countBy(classes, 'package_status'),
     };
     return {
       classes_returned: classes.length,
       published_classes: published.length,
       classes_with_library_items: withLibraryItems.length,
+      vimeo_library_items: adminVimeoRefs.length,
     };
   });
 
@@ -214,15 +253,19 @@ async function main() {
     const classroom = data.classroom || {};
     assert(classroom.today_video, 'review classroom did not expose today_video');
     assert(classroom.today_video.member_library_item, 'today_video did not include member library item summary');
+    reviewTodayVideoRef = vimeoRefFromItem(classroom.today_video.member_library_item, { class_session_id: classroom.today_video.id });
+    assert(reviewTodayVideoRef.has_vimeo, 'review classroom today_video did not expose Vimeo media shape');
     assertNoPrivatePayload(classroom, 'review classroom');
     report.summary = {
       ...(report.summary || {}),
       review_today_video_present: true,
+      review_today_video_vimeo_present: true,
       review_class_count: Array.isArray(classroom.classes) ? classroom.classes.length : null,
       review_threads_count: Array.isArray(classroom.threads) ? classroom.threads.length : null,
     };
     return {
       today_video_present: true,
+      today_video_vimeo_present: true,
       class_count: report.summary.review_class_count,
       threads_count: report.summary.review_threads_count,
     };
@@ -238,8 +281,12 @@ async function main() {
     assert(access.status === 'active', `synthetic review access status was ${access.status || '(missing)'}`);
     assert(['live_class', 'library_only'].includes(String(access.tier || '')), `unexpected synthetic review tier ${access.tier || '(missing)'}`);
     assert(items.length > 0, 'synthetic review member access returned no library items');
-    assert(items.some((item) => item.media_provider === 'vimeo' || item.vimeo_id), 'synthetic review member item did not include Vimeo media shape');
+    memberVimeoRefs = items.map((item) => vimeoRefFromItem(item)).filter((ref) => ref.has_vimeo);
+    assert(memberVimeoRefs.length > 0, 'synthetic review member item did not include Vimeo media shape');
     assert(data.classroom?.today_video, 'member-library payload did not include classroom today_video');
+    memberTodayVideoRef = vimeoRefFromItem(data.classroom.today_video.member_library_item || data.classroom.today_video, {
+      class_session_id: data.classroom.today_video.id,
+    });
     assertNoPrivatePayload(data, 'synthetic member-library');
     const serialized = JSON.stringify(data);
     assert(!serialized.includes(REVIEW_ACCESS_CODE), 'member-library response echoed the access code');
@@ -248,7 +295,8 @@ async function main() {
       synthetic_member_items_visible: items.length,
       synthetic_member_tier: access.tier || '',
       synthetic_member_status: access.status || '',
-      synthetic_member_vimeo_items: items.filter((item) => item.media_provider === 'vimeo' || item.vimeo_id).length,
+      synthetic_member_vimeo_items: memberVimeoRefs.length,
+      synthetic_member_today_video_vimeo_present: memberTodayVideoRef.has_vimeo,
       synthetic_member_access_code_echoed: false,
     };
     return {
@@ -256,7 +304,45 @@ async function main() {
       tier: access.tier || '',
       status: access.status || '',
       vimeo_items: report.summary.synthetic_member_vimeo_items,
+      today_video_vimeo_present: memberTodayVideoRef.has_vimeo,
       access_code_echoed: false,
+    };
+  });
+
+  await step('Vimeo-backed package continuity diagnostic stays read-only', async () => {
+    assert(adminVimeoRefs.length > 0, 'admin package did not record Vimeo-backed library items');
+    assert(reviewTodayVideoRef?.has_vimeo, 'review latest-video did not record a Vimeo-backed item');
+    assert(memberVimeoRefs.length > 0, 'member library did not record Vimeo-backed library items');
+    assert(memberTodayVideoRef?.has_vimeo, 'member classroom latest-video did not record a Vimeo-backed item');
+    const reviewMatchesAdmin = adminVimeoRefs.some((ref) => refsOverlap(ref, reviewTodayVideoRef));
+    const memberMatchesAdmin = memberVimeoRefs.some((memberRef) => adminVimeoRefs.some((adminRef) => refsOverlap(adminRef, memberRef)));
+    const memberTodayMatchesReview = refsOverlap(memberTodayVideoRef, reviewTodayVideoRef)
+      || memberVimeoRefs.some((memberRef) => refsOverlap(memberRef, reviewTodayVideoRef));
+    const continuityPassed = reviewMatchesAdmin && memberMatchesAdmin && memberTodayMatchesReview;
+    const blocker = continuityPassed ? '' : 'Vimeo-backed item exists in admin/review/member readbacks, but the review/member latest-video does not yet prove the same admin-published library item across all surfaces.';
+    if (requireVimeoContinuity) {
+      assert(reviewMatchesAdmin, 'review latest-video did not match an admin published Vimeo-backed library item');
+      assert(memberMatchesAdmin, 'member library Vimeo-backed items did not match admin published library items');
+      assert(memberTodayMatchesReview, 'member latest-video did not match review latest-video');
+    }
+    report.summary = {
+      ...(report.summary || {}),
+      vimeo_origin_admin_items: adminVimeoRefs.length,
+      vimeo_origin_member_items: memberVimeoRefs.length,
+      vimeo_origin_review_matches_admin: reviewMatchesAdmin,
+      vimeo_origin_member_matches_admin: memberMatchesAdmin,
+      vimeo_origin_member_today_matches_review: memberTodayMatchesReview,
+      vimeo_origin_continuity_status: continuityPassed ? 'passed' : 'blocked',
+      vimeo_origin_continuity_blocker: blocker,
+    };
+    return {
+      admin_vimeo_items: adminVimeoRefs.length,
+      member_vimeo_items: memberVimeoRefs.length,
+      review_matches_admin: reviewMatchesAdmin,
+      member_matches_admin: memberMatchesAdmin,
+      member_today_matches_review: memberTodayMatchesReview,
+      continuity_status: report.summary.vimeo_origin_continuity_status,
+      blocker,
     };
   });
 

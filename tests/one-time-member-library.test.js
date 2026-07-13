@@ -169,8 +169,14 @@ test('classroom library live smoke is read-only and covers latest-video entitlem
   assert.match(classroomLibraryReadonlyLiveSmoke, /admin class package list has published library items/);
   assert.match(classroomLibraryReadonlyLiveSmoke, /review classroom exposes latest-video shape without private fields/);
   assert.match(classroomLibraryReadonlyLiveSmoke, /synthetic review member access reads entitled library without private fields/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /Vimeo-backed package continuity diagnostic stays read-only/);
   assert.match(classroomLibraryReadonlyLiveSmoke, /REVIEW_ACCESS_CODE/);
   assert.match(classroomLibraryReadonlyLiveSmoke, /synthetic_member_items_visible/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /vimeo_origin_review_matches_admin/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /vimeo_origin_member_matches_admin/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /vimeo_origin_member_today_matches_review/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /vimeo_origin_continuity_status/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /requireVimeoContinuity/);
   assert.match(classroomLibraryReadonlyLiveSmoke, /metadata_draft\|bot_knowledge_handoff\|bot_knowledge_status/);
   assert.match(classroomLibraryReadonlyLiveSmoke, /member-library response echoed the access code/);
   assert.match(classroomLibraryReadonlyLiveSmoke, /anonymous member-library and classroom access stay blocked/);

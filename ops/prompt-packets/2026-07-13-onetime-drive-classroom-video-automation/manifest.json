@@ -324,9 +324,9 @@
       ],
       "stage": "06-class-package-classroom-and-latest-video",
       "packet_role": "IMPLEMENTATION_PACKET",
-      "status": "partial_readonly_synthetic_member_live_smoke_verified_publication_vimeo_gated",
+      "status": "partial_readonly_synthetic_member_vimeo_shape_verified_continuity_blocked",
       "owner": "Codex",
-      "scope": "Class review package, member library, latest-video query shape, older-class library, parent/student entitlements, and workspace isolation.",
+      "scope": "Class review package, member library, latest-video query shape, older-class library, parent/student entitlements, Vimeo-backed item continuity diagnostics, and workspace isolation.",
       "out_of_scope": [
         "Vimeo upload",
         "Vimeo privacy or folder mutation",
@@ -352,6 +352,7 @@
         "review classroom safe latest-video shape",
         "synthetic review member access-code entitlement proof",
         "member-safe private transcript/admin key omission",
+        "Vimeo-backed item shape and same-item continuity diagnostic",
         "anonymous member-library and classroom 401 gates",
         "approved publication gate proof",
         "Vimeo-origin package integration proof",
@@ -359,7 +360,7 @@
         "no production mutation"
       ],
       "validation_command": "node --test tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-member-library.test.js",
-      "terminal_condition": "Read-only admin/review/synthetic-member/anonymous live smoke is verified at One Time deploy SHA 22e50b2ee10fd0f78d17d5eb896d31a8a73402cd, but terminal Done still requires approved publication gate proof and eventual Vimeo-origin package integration after provider upload readiness resolves.",
+      "terminal_condition": "Read-only admin/review/synthetic-member/anonymous live smoke is verified at One Time deploy SHA 302567b2147c2cf0c40eb839a333c785808af1ab with Vimeo-backed item shape present and member/admin item match; terminal Done still requires approved publication gate proof, parent/student latest-video proof, same-item review/member latest-video continuity, and eventual real Vimeo-origin package integration after provider upload readiness resolves.",
       "handoff_target": "PKT-20260713-004-08",
       "next_requirement": "REQ-20260713-919",
       "next_packet": "PKT-20260713-004-08"

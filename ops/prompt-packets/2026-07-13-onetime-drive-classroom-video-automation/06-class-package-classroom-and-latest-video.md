@@ -9,8 +9,9 @@ Requirement: `REQ-20260713-919`
 Workspace/project:
 `rabbi_sheller_provider` / `one_time_mishnah_class`
 
-Status: In progress - read-only live gates and synthetic member entitlement
-verified; member publication and Vimeo-origin proof remain gated
+Status: In progress - read-only live gates, synthetic member entitlement, and
+Vimeo-backed media shape verified; same-item latest-video continuity remains
+blocked
 
 ## Scope
 
@@ -90,26 +91,33 @@ Definition of Done:
 | `node --check scripts/smoke-one-time-classroom-library-readonly-live.mjs` | Passed. |
 | `node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js tests/one-time-transcript-metadata.test.js tests/one-time-member-library.test.js tests/one-time-transcript-privacy.test.js` | Passed 71/71. |
 | `npm run secrets:audit` | Passed; 9522 tracked paths checked, 0 tracked secret-risk files found. |
-| `npm run app:smoke:one-time-classroom-library-readonly -- --expected-sha 22e50b2ee10fd0f78d17d5eb896d31a8a73402cd` | Passed. Deployed One Time SHA matched `22e50b2ee10fd0f78d17d5eb896d31a8a73402cd`; admin class list returned two packages, both published with library items; review classroom exposed safe `today_video`; synthetic review member access saw two entitled items at tier `live_class`; anonymous member-library and classroom routes returned 401; `external_write_performed=false`. |
-| Live report | `ops/live-smokes/2026-07-13T14-06-30-661Z-one-time-classroom-library-readonly-live-smoke.md` (local ignored evidence; redacted counts/statuses only). |
+| `npm run app:smoke:one-time-classroom-library-readonly` | Passed against deployed One Time SHA `302567b2147c2cf0c40eb839a333c785808af1ab`. Admin class list returned two published packages with two Vimeo-backed library items; review classroom exposed a Vimeo-backed safe `today_video`; synthetic review member access saw two entitled Vimeo-backed items at tier `live_class`; member Vimeo-backed items matched admin published items; review/member latest-video did not yet prove the same admin-published item; anonymous member-library and classroom routes returned 401; `external_write_performed=false`. |
+| Live report | `ops/live-smokes/2026-07-13T15-11-16-165Z-one-time-classroom-library-readonly-live-smoke.md` (local ignored evidence; redacted counts/statuses only). |
 
 ## Current Status
 
 Read-only live proof is now present for the deployed classroom/library shape:
 
 - admin One Time class-package list has published packages with library items;
+- admin package readback includes Vimeo-backed library item shape;
 - review classroom exposes a safe latest-video/today-video shape without
   private transcript/admin fields;
+- review classroom latest-video is Vimeo-backed, but does not yet prove the
+  same admin-published library item as the admin package readback;
 - synthetic review member access reads only entitled member-library items and
   embedded classroom data without private transcript/admin fields;
+- synthetic member library has Vimeo-backed items that match admin published
+  library items, but member latest-video still does not match the review
+  latest-video across the diagnostic;
 - anonymous member-library and classroom API access remains blocked with 401;
 - no production mutation, Vimeo upload, Drive write, member publication,
   access-code write, payment/access mutation, helper-knowledge write, or send
   occurred.
 
 This does not close `REQ-20260713-919`. Remaining proof requires a valid,
-approved member publication gate and eventual Vimeo-origin package integration
-after `REQ-20260713-918` resolves.
+approved member publication gate, parent/student latest-video proof, and
+same-item Vimeo-origin continuity through admin package -> review latest-video
+-> member latest-video after `REQ-20260713-918` resolves.
 
 ## Guardrails
 
@@ -124,7 +132,9 @@ after `REQ-20260713-918` resolves.
 
 ## Handoff
 
-Next action for this packet is to prove the publication/Vimeo-origin path using
-an approved non-sensitive fixture or existing safe test session. Vimeo-origin
-class-package proof remains dependent on `PKT-20260713-004-05` owner upload
-readiness and explicit private synthetic upload approval.
+Next action for this packet is to align or prove the same admin-published
+Vimeo-backed library item through review/latest-video and member/latest-video
+readbacks using an approved non-sensitive fixture or existing safe test
+session. Real Vimeo-origin class-package proof remains dependent on
+`PKT-20260713-004-05` owner upload readiness and explicit private synthetic
+upload approval.
