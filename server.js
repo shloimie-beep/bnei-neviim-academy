@@ -30196,6 +30196,14 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
         )
       )`,
     ];
+    const assistantThreadConditions = [
+      `l.id = $1`,
+      `th.project_id = l.project_id`,
+      `COALESCE(l.parent_email, '') <> ''`,
+      `lower(COALESCE(th.actor_email, '')) = lower(l.parent_email)`,
+      `COALESCE(th.status, 'open') <> 'archived'`,
+      `COALESCE(th.actor_type, '') IN ('anonymous', 'parent', 'student')`,
+    ];
     const ticketConditions = [
       `l.id = $1`,
       `st.project_id = l.project_id`,
@@ -30232,6 +30240,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
       deadLetterConditions.push(`p.project_key = $${params.length}`);
       productLeadConditions.push(`p.project_key = $${params.length}`);
       signupRecordConditions.push(`p.project_key = $${params.length}`);
+      assistantThreadConditions.push(`p.project_key = $${params.length}`);
       ticketConditions.push(`p.project_key = $${params.length}`);
       studentConditions.push(`p.project_key = $${params.length}`);
       memberConditions.push(`p.project_key = $${params.length}`);
@@ -30495,9 +30504,45 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
           WHERE ${signupRecordConditions.join(' AND ')}
           UNION ALL
           SELECT
+            (-2000000 - th.id) AS id,
+            'assistant' AS channel,
+            'internal' AS direction,
+            ('Website assistant thread: ' || COALESCE(NULLIF(th.status, ''), 'open') ||
+              CASE WHEN COALESCE(th.surface, '') <> '' THEN (' / ' || replace(th.surface, '_', ' ')) ELSE '' END
+            ) AS body,
+            NULL::text AS notes,
+            'bna_assistant_threads' AS source,
+            jsonb_build_object(
+              'crm_contact_id', ('bna_parent_leads:' || l.id::text),
+              'source_table', 'bna_assistant_threads',
+              'assistant_thread_id', th.id,
+              'thread_status', th.status,
+              'surface', th.surface,
+              'actor_type', th.actor_type,
+              'body_returned', false,
+              'message_body_returned', false,
+              'no_send', true,
+              'external_write_performed', false
+            ) AS source_context,
+            COALESCE(th.last_message_at, th.updated_at, th.created_at) AS occurred_at,
+            th.created_at,
+            'assistant_thread' AS communication_type,
+            NULL::text AS subject,
+            NULL::text AS thread_key,
+            NULL::text AS external_message_id,
+            NULL::text AS from_address,
+            NULL::text AS to_address,
+            NULL::text AS provider,
+            th.status
+          FROM bna_assistant_threads th
+          JOIN bna_parent_leads l ON TRUE
+          LEFT JOIN bna_projects p ON p.id = l.project_id
+          WHERE ${assistantThreadConditions.join(' AND ')}
+          UNION ALL
+         SELECT
             t.id,
-           'task' AS channel,
-           'internal' AS direction,
+            'task' AS channel,
+            'internal' AS direction,
            COALESCE(t.title, 'CRM follow-up task') AS body,
            t.notes,
            'operations_crm_workbench' AS source,
@@ -30790,6 +30835,13 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
       )
     )`,
   ];
+  const assistantThreadConditions = [
+    `bc.id = $1`,
+    `COALESCE(bc.primary_email, '') <> ''`,
+    `lower(COALESCE(th.actor_email, '')) = lower(bc.primary_email)`,
+    `COALESCE(th.status, 'open') <> 'archived'`,
+    `COALESCE(th.actor_type, '') IN ('anonymous', 'parent', 'student')`,
+  ];
   const ticketConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(st.requester_email) = lower(bc.primary_email)`];
   const studentConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(COALESCE(s.parent_email, '')) = lower(bc.primary_email)`, `COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')`];
   const memberConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(COALESCE(m.email, '')) = lower(bc.primary_email)`];
@@ -30806,6 +30858,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     deadLetterConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     productLeadConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     signupRecordConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
+    assistantThreadConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     ticketConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     studentConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     memberConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
@@ -30820,6 +30873,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     deadLetterConditions.push(`l.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     productLeadConditions.push(`prod.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     signupRecordConditions.push(`su.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
+    assistantThreadConditions.push(`th.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     ticketConditions.push(`st.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     studentConditions.push(`s.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     memberConditions.push(`m.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
@@ -31095,8 +31149,42 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
         WHERE ${signupRecordConditions.join(' AND ')}
         UNION ALL
        SELECT
-         id,
-         'lifecycle' AS channel,
+          (-2000000 - th.id) AS id,
+          'assistant' AS channel,
+          'internal' AS direction,
+          ('Website assistant thread: ' || COALESCE(NULLIF(th.status, ''), 'open') ||
+            CASE WHEN COALESCE(th.surface, '') <> '' THEN (' / ' || replace(th.surface, '_', ' ')) ELSE '' END
+          ) AS body,
+          'bna_assistant_threads' AS source,
+          jsonb_build_object(
+            'crm_contact_id', ('bna_contacts:' || bc.id::text),
+            'source_table', 'bna_assistant_threads',
+            'assistant_thread_id', th.id,
+            'thread_status', th.status,
+            'surface', th.surface,
+            'actor_type', th.actor_type,
+            'body_returned', false,
+            'message_body_returned', false,
+            'no_send', true,
+            'external_write_performed', false
+          ) AS source_context,
+           COALESCE(th.last_message_at, th.updated_at, th.created_at) AS occurred_at,
+           th.created_at,
+           'assistant_thread' AS communication_type,
+           NULL::text AS subject,
+           NULL::text AS thread_key,
+           NULL::text AS external_message_id,
+           NULL::text AS from_address,
+           NULL::text AS to_address,
+           NULL::text AS provider,
+           th.status
+        FROM bna_assistant_threads th
+        JOIN bna_contacts bc ON bc.id = $1
+        WHERE ${assistantThreadConditions.join(' AND ')}
+        UNION ALL
+       SELECT
+          id,
+          'lifecycle' AS channel,
          'internal' AS direction,
          COALESCE(NULLIF(summary, ''), NULLIF(pipeline_status, ''), event_type, 'CRM lifecycle updated') AS body,
          'bna_contact_pipeline_events' AS source,
@@ -31315,6 +31403,7 @@ async function operationsCrmConversationRows(contactRef, scope = {}, options = {
       'membership_access',
       'signup_context',
       'signup_record',
+      'assistant_thread',
       'lifecycle_event',
       'class_attendance',
       'communication_suppression',
@@ -31326,6 +31415,7 @@ async function operationsCrmConversationRows(contactRef, scope = {}, options = {
       'student',
       'membership',
       'signup',
+      'assistant',
       'lifecycle',
       'attendance',
       'suppression',

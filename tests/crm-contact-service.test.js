@@ -196,6 +196,27 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
         communication_type: 'signup_record',
       },
       {
+        id: -2000044,
+        channel: 'assistant',
+        direction: 'internal',
+        body: 'Website assistant thread: open / one time public',
+        source: 'bna_assistant_threads',
+        source_context: JSON.stringify({
+          crm_contact_id: 'bna_contacts:7',
+          source_table: 'bna_assistant_threads',
+          assistant_thread_id: 44,
+          thread_status: 'open',
+          surface: 'one_time_public',
+          actor_type: 'anonymous',
+          body_returned: false,
+          message_body_returned: false,
+          no_send: true,
+          external_write_performed: false,
+        }),
+        occurred_at: '2026-07-12T13:19:30Z',
+        communication_type: 'assistant_thread',
+      },
+      {
         id: 12,
         channel: 'task',
         direction: 'internal',
@@ -331,6 +352,7 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'membership_access'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'signup_context'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'signup_record'), false);
+  assert.equal(conversations.conversations.some((item) => item.communication_type === 'assistant_thread'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'lifecycle_event'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'class_attendance'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'communication_suppression'), false);
@@ -356,6 +378,7 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.match(timeline.timeline.find((item) => item.type === 'support_ticket').body, /Support ticket OT-SUP-000013/);
   assert.equal(timeline.timeline.some((item) => item.type === 'signup_context'), true);
   assert.equal(timeline.timeline.some((item) => item.type === 'signup_record'), true);
+  assert.equal(timeline.timeline.some((item) => item.type === 'assistant_thread'), true);
   assert.equal(timeline.timeline.some((item) => item.type === 'lifecycle_event'), true);
   assert.equal(timeline.timeline.some((item) => item.type === 'student_link'), true);
   assert.equal(timeline.timeline.some((item) => item.type === 'membership_access'), true);
@@ -366,6 +389,7 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.equal(timeline.timeline.find((item) => item.type === 'communication_suppression').no_send, true);
   assert.equal(timeline.timeline.find((item) => item.type === 'signup_context').source_context.includes('payment_link_returned'), true);
   assert.equal(timeline.timeline.find((item) => item.type === 'signup_record').source_context.includes('student_name_returned'), true);
+  assert.equal(timeline.timeline.find((item) => item.type === 'assistant_thread').source_context.includes('message_body_returned'), true);
   assert.equal(timeline.timeline.find((item) => item.type === 'lifecycle_event').source_context.includes('metadata_returned'), true);
   assert.equal(timeline.timeline.find((item) => item.type === 'delivery_outbox').source_context.includes('recipient_returned'), true);
   assert.equal(timeline.timeline.find((item) => item.type === 'delivery_dead_letter').source_context.includes('reason_returned'), true);

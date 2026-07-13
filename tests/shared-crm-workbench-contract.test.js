@@ -225,11 +225,16 @@ test('Operations CRM selected contact conversations include scoped email threads
   assert.match(server, /FROM signups su\s+JOIN bna_parent_leads l ON TRUE/);
   assert.match(server, /'source_table', 'signups'[\s\S]*'student_name_returned', false[\s\S]*'payment_link_returned', false[\s\S]*'checkout_session_returned', false[\s\S]*'no_checkout', true[\s\S]*'no_access_granted', true[\s\S]*'external_write_performed', false/);
   assert.match(server, /'signup_record' AS communication_type/);
+  assert.match(server, /FROM bna_assistant_threads th\s+JOIN bna_contacts bc ON bc\.id = \$1/);
+  assert.match(server, /FROM bna_assistant_threads th\s+JOIN bna_parent_leads l ON TRUE/);
+  assert.match(server, /'source_table', 'bna_assistant_threads'[\s\S]*'body_returned', false[\s\S]*'message_body_returned', false[\s\S]*'no_send', true[\s\S]*'external_write_performed', false/);
+  assert.match(server, /COALESCE\(th\.actor_type, ''\) IN \('anonymous', 'parent', 'student'\)/);
+  assert.match(server, /'assistant_thread' AS communication_type/);
   assert.match(server, /'source_table', 'bna_contact_pipeline_events'[\s\S]*'metadata_returned', false[\s\S]*'no_send', true[\s\S]*'external_write_performed', false/);
   assert.match(server, /'lifecycle_event' AS communication_type/);
-  assert.match(server, /'signup_context',\s*'signup_record',\s*'lifecycle_event',[\s\S]*\.includes\(row\.communication_type\)/);
+  assert.match(server, /'signup_context',\s*'signup_record',\s*'assistant_thread',[\s\S]*'lifecycle_event',[\s\S]*\.includes\(row\.communication_type\)/);
   assert.match(server, /'delivery_outbox',\s*'delivery_dead_letter',[\s\S]*\.includes\(row\.communication_type\)/);
-  assert.match(server, /'signup',\s*'lifecycle',[\s\S]*\.includes\(row\.channel\)/);
+  assert.match(server, /'signup',\s*'assistant',[\s\S]*'lifecycle',[\s\S]*\.includes\(row\.channel\)/);
   assert.match(server, /'delivery_outbox',\s*'dead_letter',[\s\S]*\.includes\(row\.channel\)/);
   assert.match(server, /cm\.project_id = l\.project_id/);
   assert.match(server, /lower\(COALESCE\(cm\.from_address, cm\.to_address, ''\)\) = lower\(l\.parent_email\)/);

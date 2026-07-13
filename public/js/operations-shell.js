@@ -7853,6 +7853,7 @@ function firstPartyCrmTimelineTitle(item = {}) {
     const channel = String(item.channel || '').toLowerCase();
     const labels = {
         class_attendance: 'Class attendance',
+        assistant_thread: 'Website assistant',
         delivery_dead_letter: 'Delivery needs review',
         delivery_outbox: 'Delivery status',
         follow_up_task: 'Follow-up task',
