@@ -39493,3 +39493,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   live One Time CRM workbench smoke, and read-only live DTO readback showing
   12 scoped cards with communication preference context, no sends, and no
   external writes.
+
+## 2026-07-13 - CRM suppression activity context deployed
+
+- Added read-only `communication_suppression` Activity timeline rows for
+  workspace-scoped contacts and parent leads with suppressed, unsubscribed,
+  invalid, bounced, stopped, wrong-number, do-not-contact, or opt-out state.
+- Kept suppression rows out of Conversations and Tasks DTOs, so no opt-out or
+  no-send state appears as a fake message thread or automatic task.
+- Verification passed: syntax checks, shared CRM/service-provider tests
+  `21/21`, local One Time CRM workbench smoke, focused One Time suite `78/78`,
+  action/link/security/protocol watchdogs, secret audit, execution-run
+  validation, BNA/One Time Railway doctors, exact-SHA One Time route smoke,
+  live One Time CRM workbench smoke, and read-only live DTO readback with
+  no sends or external writes. Current live One Time sample had no suppression
+  rows, so live proof is route/exclusion health plus local/test row coverage.

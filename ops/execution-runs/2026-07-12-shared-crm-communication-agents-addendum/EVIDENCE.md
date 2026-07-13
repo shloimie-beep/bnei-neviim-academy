@@ -279,3 +279,16 @@
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 0e33764d66519d8f45d86e57b320a1988a604058` passed.
 - `ops/live-smokes/2026-07-13T04-26-18-047Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the communication consent/suppression DTO slice.
 - Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `communication_preferences_cards=12`, preference counts `{whatsapp:2,email:3,not_set:7}`, consent counts `{not_recorded:12}`, suppression counts `{none_recorded:12}`, `no_send=true`, and `external_write_performed=false`.
+
+## CRM Suppression / Opt-Out Activity Timeline Context - 2026-07-13
+
+- `server.js` - `operationsCrmTimelineRows` now emits read-only `communication_suppression` Activity rows for workspace-scoped `bna_contacts` and `bna_parent_leads` when contact status or metadata records suppressed, unsubscribed, invalid, bounced, stopped, wrong-number, do-not-contact, or opt-out state.
+- `server.js` / `src/lib/bna/crm/contact-service.js` - Conversations and Tasks DTO filtering explicitly excludes `communication_suppression` rows and `suppression` channels so suppression history cannot appear as a fake thread or task.
+- `tests/crm-contact-service.test.js` / `tests/service-provider-scope-routes.test.js` - tests pin timeline inclusion, no-send behavior, and conversation/task exclusion for suppression rows.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
+- BNA post-deploy doctor - Railway deployment `476ad2fb-8178-44b2-af2d-20d2eb7f15cd` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `9fd12f58-f9ca-4eb3-b581-e0b9f7aca3f9` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1` passed.
+- `ops/live-smokes/2026-07-13T04-40-38-338Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the suppression/opt-out Activity timeline slice.
+- Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `suppression_timeline_rows=0`, `suppression_conversation_rows=0`, `suppression_task_rows=0`, `no_send=true`, and `external_write_performed=false`. The current live sample has no suppressed contacts; local smoke and DTO tests cover row behavior when records exist.
