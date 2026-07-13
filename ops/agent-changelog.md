@@ -40355,3 +40355,14 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no live charge, refund, notice send, invoice/receipt send,
   access mutation, provider mutation, deploy, production data mutation, or
   secret exposure was performed.
+
+## 2026-07-13 - One Time metadata DB/review bridge deployed
+
+- Pushed the server-side class-session metadata review fields in commit
+  `87ff259ba2b4d4b27730a6ffb32a7693593b1749`.
+- One Time deploy-info returned exact SHA
+  `87ff259ba2b4d4b27730a6ffb32a7693593b1749` at
+  `2026-07-13T16:17:27+03:00`.
+- Remaining gates: authenticated DB/admin readback, explicit helper-knowledge
+  promotion approval, Vimeo private upload/folder approval, member publication,
+  and blocked UI evidence remain separate requirements.
