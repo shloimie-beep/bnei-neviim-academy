@@ -973,3 +973,21 @@
 - PASS `npm run watchdog:actions`; finding_count `0`.
 - PASS production read-only marker proof for 18 CRM action IDs on One Time deployed SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
 - `REQ-20260712-303` marked Done because URL/back-state, mobile one-pane contact detail, and the persisted action matrix are implemented and already deployed; no new runtime deploy was required for this status-only closeout.
+
+## CRM Internal-Copy Cleanup Closeout - 2026-07-13
+
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js`; 47/47 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `node --check public/js/operations-shell.js`; `node --check public/js/operations-deferred-renderers.js`; `node --check server.js`; `node --check scripts/smoke-onetime-operations-crm-workbench-local.mjs`; `node --check scripts/smoke-onetime-operations-crm-workbench-live.mjs`.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; finding_count `0`.
+- PASS `npm run bna:run:validate`.
+- PASS `git diff --check`.
+- PASS `npm run secrets:audit`.
+- PASS One Time Railway deploy/doctor; deployment `6059d148-7708-43ae-9665-abdaa544a5d6` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned `a8df4c9b9cc091028105a16430aae6927cd0b429`, `target_app=one-time`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T12-00-42-976Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS BNA Railway deploy/doctor; deployment `16f00bed-0cb2-49df-b725-8ea8ee672415` reached `SUCCESS`.
+- PASS BNA live `/api/deploy-info`; returned `a8df4c9b9cc091028105a16430aae6927cd0b429`, `target_app=bna`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T12-01-50-016Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM production write, provider mutation, payment/access mutation, import, credential mutation, or production data mutation was performed by this closeout proof.

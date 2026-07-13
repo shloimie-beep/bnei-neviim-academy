@@ -352,3 +352,18 @@ Global production readiness remains blocked only by known external full-launch f
 - Production marker proof on `https://join.onetimeonetime.com/operations.html` found all 18 expected CRM action IDs with none missing.
 - Earlier bounded action slices deployed and live-smoked: Add Contact, Archive Contact, Complete/Reopen tasks, Link member, Link family/student, Set/Change/Clear follow-up, Add note/Add tag/Remove tag/Assign owner/Change lifecycle, and task DTO Complete/Reopen.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM write, provider mutation, payment/access mutation, import, credential mutation, or production data mutation was performed by the closeout proof.
+
+## 2026-07-13 CRM Internal-Copy Cleanup Deploy
+
+- Runtime commit: `a8df4c9b9cc091028105a16430aae6927cd0b429`.
+- Branch: `master`.
+- Push: `git push origin master` succeeded for the runtime commit.
+- One Time deploy: `BNA_RAILWAY_USE_ACCOUNT_AUTH=true`, `BNA_RAILWAY_TARGET_PROFILE=one-time`, `npm run railway:redeploy`.
+- One Time Railway doctor: deployment `6059d148-7708-43ae-9665-abdaa544a5d6` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=a8df4c9b9cc091028105a16430aae6927cd0b429`, `target_app=one-time`.
+- One Time CRM workbench smoke passed; report `ops/live-smokes/2026-07-13T12-00-42-976Z-one-time-operations-crm-workbench-live-smoke.md`.
+- BNA deploy: `BNA_RAILWAY_USE_ACCOUNT_AUTH=true`, `BNA_RAILWAY_TARGET_PROFILE=bna`, `npm run railway:redeploy`.
+- BNA Railway doctor: deployment `16f00bed-0cb2-49df-b725-8ea8ee672415` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=a8df4c9b9cc091028105a16430aae6927cd0b429`, `target_app=bna`.
+- BNA workspace taxonomy smoke passed; report `ops/live-smokes/2026-07-13T12-01-50-016Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM production write, provider mutation, payment/access mutation, import, credential mutation, or production data mutation was performed by this closeout proof.

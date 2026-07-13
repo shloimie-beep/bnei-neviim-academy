@@ -1,13 +1,14 @@
 # Next Session
 
-Next unblocked batch: `REQ-20260712-304` dead-end/internal CRM and agent UI copy cleanup, while owner-test sends remain blocked until secure owner aliases are configured.
+Next unblocked batch: `REQ-20260712-307` inbound communication pipeline, while owner-test sends remain blocked until secure owner aliases are configured.
 Open blocked requirement: `REQ-20260713-910`, blocked by `REQ-20260713-906`
 
 Current closeout:
 
 - `REQ-20260712-302` is Done for the One Time-first shared CRM current phase.
 - `REQ-20260712-303` is Done for the dedicated CRM contact workspace/action matrix.
-- Latest shared CRM runtime proof remains deployed on BNA and One Time at `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- `REQ-20260712-304` is Done for customer-facing CRM/contact-review copy cleanup.
+- Latest shared CRM runtime proof remains deployed on BNA and One Time at `a8df4c9b9cc091028105a16430aae6927cd0b429`.
 - Do not reopen `REQ-20260712-302` for deferred BNA frontend parity; create/use a later BNA adoption packet if that becomes active.
 - `RAW-20260713-004` One Time Drive/Classroom automation is registered separately. `REQ-20260713-912` and `REQ-20260713-913` are Done; continue `REQ-20260713-914` Drive intake orchestrator or the visual audit packet only after its stated gates.
 
@@ -43,15 +44,16 @@ Immediate next action:
 2. Keep the performance-gate proof visible: One Time deployment `a5c64bbc-c82f-4130-8a54-dbf217a02985`, BNA deployment `28f84dbc-3629-436d-9811-36318d0a3aad`, gate report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`, BNA smoke `ops/live-smokes/2026-07-13T08-14-25-029Z-live-app-smoke.md`, Operations taxonomy smoke `ops/live-smokes/2026-07-13T08-14-24-391Z-operations-workspace-taxonomy-live-smoke.md`, and One Time CRM workbench smoke `ops/live-smokes/2026-07-13T08-14-46-620Z-one-time-operations-crm-workbench-live-smoke.md`.
 3. Keep `REQ-20260713-906` blocked until `ONE_TIME_OWNER_TEST_EMAIL` and `ONE_TIME_OWNER_TEST_WHATSAPP`/phone aliases are configured through the approved secret path.
 4. After aliases exist, rerun owner-test readiness and continue `REQ-20260713-910` verifier without duplicate sends.
-5. If aliases are still unavailable, run `npm run bna:run:next` and choose only a non-send, non-credential, non-production-mutation slice outside the blocked verifier lane.
+5. If aliases are still unavailable, continue `REQ-20260712-307` or the next non-send, non-credential, non-production-mutation slice outside the blocked verifier lane.
 6. Do not enable public WhatsApp auto-reply, send to non-owner contacts, or expose raw destination values.
 
-Previous shared-CRM lane is no longer the first lane. Continue `REQ-20260712-302` / `REQ-20260712-303` only where they directly support the One Time-first packets or required BNA regression safety.
+Previous shared-CRM lanes `REQ-20260712-302`, `REQ-20260712-303`, and `REQ-20260712-304` are closed for this phase. Continue `REQ-20260712-307` next unless a higher-priority non-send One Time packet is selected.
 
-Latest One Time app runtime SHA: `8ea2cd06e1920eecfd1ae97b937c22d701c00099`
+Latest One Time app runtime SHA: `a8df4c9b9cc091028105a16430aae6927cd0b429`
 
 Current proof:
 
+- `a8df4c9b9cc091028105a16430aae6927cd0b429` is pushed to `origin/master` and deployed to One Time and BNA for `REQ-20260712-304` customer-facing CRM copy cleanup. One Time deployment `6059d148-7708-43ae-9665-abdaa544a5d6` and BNA deployment `298894e0-1890-4c39-98e7-aa9461883660` reached `SUCCESS`; both deploy-info endpoints returned the exact SHA. Focused tests passed 47/47, the local One Time CRM workbench smoke passed, the One Time live CRM workbench smoke passed at `ops/live-smokes/2026-07-13T12-00-42-976Z-one-time-operations-crm-workbench-live-smoke.md`, and the BNA taxonomy smoke passed at `ops/live-smokes/2026-07-13T12-04-05-833Z-operations-workspace-taxonomy-live-smoke.md`. No sends, CRM production writes, access grants, payments, imports, provider writes, or credential changes were performed by the closeout proof.
 - `8ea2cd06e1920eecfd1ae97b937c22d701c00099` is pushed to `origin/master` and deployed to One Time and BNA for the selected-contact website assistant-thread Activity DTO slice. Selected-contact Activity timelines include scoped public `bna_assistant_threads` rows as redacted `assistant_thread` DTOs; Conversations and Tasks exclude them. One Time deployment `c2b6b88a-036a-4a33-93d9-3bd2f9de7719` and BNA deployment `55f38854-f00a-4432-bfdf-0dfcf6c400fc` reached `SUCCESS`; both deploy-info endpoints returned the exact SHA. Live proof passed through exact-SHA One Time route/CRM/provider smokes, targeted assistant-thread DTO smoke, signup-record/WhatsApp/signup-context DTO regressions, BNA taxonomy smoke, and the One Time performance gate. The targeted assistant-thread smoke found `inspected_candidate_count=1`, `assistant_thread_match=true`, and `assistant_thread_conversation_count=0`; no synthetic data, sends, CRM mutations, or external writes were performed.
 - `1318c67da0d79e7a158aa0b13d3085906ffcdf15` is pushed to `origin/master` and deployed to One Time for the selected-contact direct signup-record Activity DTO slice. Runtime app-code commit `dab78d4e0b05b6e59affe08864e7207d2235652f` added the DTO rows; final One Time proof commit `1318c67d` adds the read-only live smoke harness. One Time deployment `af6b2ea0-721e-42de-b487-fe9ef7ea27c8` reached `SUCCESS` and deploy-info returned the exact SHA. BNA Railway doctor reports current deployment `896c0a2f-ed48-4d44-ae6d-b415c669bd8d` reached `SUCCESS`; BNA deploy-info currently returns proof-refresh head `d12e31694f2a0475936c945f1d7ec0d0c2c35664`, which contains the same runtime changes plus proof/report refreshes. Live proof passed through One Time route/CRM/provider smokes, BNA taxonomy smoke including current-head recheck `ops/live-smokes/2026-07-13T11-00-32-825Z-operations-workspace-taxonomy-live-smoke.md`, signup-record DTO smoke, WhatsApp DTO regression, signup-context regression, and the One Time performance gate. The targeted signup-record smoke inspected 12 scoped cards and recorded `skipped_no_live_signup_records` because sampled production had no direct signup rows; no synthetic data, sends, CRM mutations, or external writes were performed.
 - `35a0a5d2e0ad157e383537dfbb1518d2a8df33bd` remains the previous selected-contact phone/WhatsApp communication matching proof. It found `phone_candidate_count=2` and `selected_contact_whatsapp_thread_match=true`, and the regression was re-run successfully at SHA `1318c67da0d79e7a158aa0b13d3085906ffcdf15`.

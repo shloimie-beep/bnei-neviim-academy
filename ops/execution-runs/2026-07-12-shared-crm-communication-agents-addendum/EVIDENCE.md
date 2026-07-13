@@ -500,3 +500,14 @@
 - Production read-only marker proof on `https://join.onetimeonetime.com/operations.html` at One Time deploy-info SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099` found all 18 expected action IDs and reported `missing: []`.
 - Local workbench proof remains `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
 - Latest action watchdog proof: `npm run watchdog:actions` returned finding_count `0` during closeout.
+
+## CRM Internal-Copy Cleanup - 2026-07-13
+
+- `REQ-20260712-304` is closed by runtime commit `a8df4c9b9cc091028105a16430aae6927cd0b429`.
+- Runtime files changed: `public/operations.html`, `public/js/operations-shell.js`, `scripts/smoke-onetime-operations-crm-workbench-local.mjs`, `scripts/smoke-onetime-operations-crm-workbench-live.mjs`, `tests/shared-crm-workbench-contract.test.js`, `tests/one-time-communications-workspace.test.js`, and `tests/operations-contacts-intake-cleanup.test.js`.
+- Customer-facing copy replaced internal no-send/external-write wording for Add Contact, CRM update, selected-contact empty state, timeline, task state changes, create/complete/reopen task notices, scoped email/WhatsApp thread-open notices, member/family/student link panels, archive confirmation, legacy source-review labels, and email-contact tags.
+- Safety metadata remains asserted in source-context payloads and tests: `no_send=true`, `external_write_performed=false`, paused/member/student access states, and registered CRM action IDs.
+- Local evidence: `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- One Time deployment evidence: deployment `6059d148-7708-43ae-9665-abdaa544a5d6`, deploy-info exact SHA `a8df4c9b9cc091028105a16430aae6927cd0b429`, live CRM smoke `ops/live-smokes/2026-07-13T12-00-42-976Z-one-time-operations-crm-workbench-live-smoke.md`.
+- BNA shared-runtime safety evidence: deployment `16f00bed-0cb2-49df-b725-8ea8ee672415`, deploy-info exact SHA `a8df4c9b9cc091028105a16430aae6927cd0b429`, taxonomy smoke `ops/live-smokes/2026-07-13T12-01-50-016Z-operations-workspace-taxonomy-live-smoke.md`.
+- Validation evidence: focused CRM/contact suite `47/47`, `npm run operations:check-generated`, `npm run watchdog:actions`, `npm run bna:run:validate`, `git diff --check`, and `npm run secrets:audit` passed.
