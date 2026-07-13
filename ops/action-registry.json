@@ -892,6 +892,101 @@
       ]
     },
     {
+      "action_id": "ACTION-ONETIME-RABBI-TELEGRAM-TICKET-CREATE",
+      "label": "Create Rabbi Ticket",
+      "surface": "rabbi_private_telegram_workspace_agent",
+      "route": "telegram:rabbi-elie-scheller",
+      "selector_hint": "/ticket, /support, or plain-language broken-system report",
+      "expected_behavior": "Creates one rabbi_sheller_provider / one_time_mishnah_class support ticket in awaiting_super_admin_approval status, sends one Super Admin alert, and creates no Codex task or agent job.",
+      "permission": "authenticated_rabbi_provider_owner",
+      "status": "active",
+      "test": {
+        "type": "static_and_api_guarded",
+        "expected_result": "Rabbi Telegram bridge posts status=awaiting_super_admin_approval with suppress_task_creation=true and the API skips maybeCreateTaskForSupportTicket for approval-gated Rabbi tickets."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-RABBI-TICKET-APPROVE-CODEX",
+      "label": "Approve for Codex",
+      "surface": "super_admin_telegram_ticket_alert",
+      "route": "/api/bna/support-tickets/:id/approval-action",
+      "selector_hint": "Telegram callback ticket:approve:<id>",
+      "expected_behavior": "Requires platform Super Admin, moves the Rabbi ticket to approved_for_codex, creates exactly one linked Codex task and agent job, and notifies Rabbi Telegram without exposing internal logs.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "Repeated Approve for Codex taps reuse the same ticket/task/job idempotently and do not create duplicate Codex jobs."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-RABBI-TICKET-ASK-RABBI",
+      "label": "Ask Rabbi",
+      "surface": "super_admin_telegram_ticket_alert",
+      "route": "/api/bna/support-tickets/:id/approval-action",
+      "selector_hint": "Telegram callback ticket:ask:<id>",
+      "expected_behavior": "Requires platform Super Admin, moves the ticket to needs_requester_information, sends the exact question to Rabbi Telegram, and creates no Codex job.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "Ask Rabbi appends a project-visible comment and keeps the ticket in the same support record."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-RABBI-TICKET-KEEP",
+      "label": "Keep as Ticket",
+      "surface": "super_admin_telegram_ticket_alert",
+      "route": "/api/bna/support-tickets/:id/approval-action",
+      "selector_hint": "Telegram callback ticket:keep:<id>",
+      "expected_behavior": "Requires platform Super Admin, keeps the support ticket for manual follow-up, and creates no Codex task or job.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "Keep as Ticket records the decision in source_context and ticket comments with no agent job."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-RABBI-TICKET-REJECT",
+      "label": "Reject Ticket",
+      "surface": "super_admin_telegram_ticket_alert",
+      "route": "/api/bna/support-tickets/:id/approval-action",
+      "selector_hint": "Telegram callback ticket:reject:<id>",
+      "expected_behavior": "Requires platform Super Admin, records a short rejection reason, notifies Rabbi Telegram, and creates no Codex task or job.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "Reject fails without a reason in the API and callback-supplied reasons remain redacted and project-scoped."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
       "action_id": "ACTION-ONETIME-MEMBER-SUPPORT-TICKET",
       "label": "Open Ticket",
       "surface": "one_time_member_entry",

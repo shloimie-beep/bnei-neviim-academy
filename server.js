@@ -140,6 +140,7 @@ const {
 const {
   loadTelegramNotificationConfig,
   notifyRabbiCommunication,
+  notifyRabbiSupportTicketStatus,
   notifySuperAdminSupportTicket,
   notifyTelegramRoleAlias,
   sendTelegramMessage: sendScopedTelegramMessage,
@@ -8980,6 +8981,11 @@ function identifyOpsUser(username, password = null) {
   if (!user) return null;
   const normalizedUser = user.toLowerCase();
   const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
+  const providerAllowedViews = [
+    'tasks',
+    'content',
+    'integrations',
+  ];
   const ownerAllowedViews = oneTimeDashboardAllowedViews();
   const managerAllowedViews = oneTimeDashboardAllowedViews();
   const studioOperatorAllowedViews = oneTimeAllowedViewsForRole('one_time_ai_studio_operator');
@@ -14101,7 +14107,7 @@ CREATE TABLE IF NOT EXISTS bna_support_tickets (
   title TEXT NOT NULL,
   description TEXT,
   severity TEXT NOT NULL DEFAULT 'normal' CHECK (severity IN ('low', 'normal', 'high', 'blocking')),
-  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'triage', 'in_progress', 'resolved', 'closed')),
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'triage', 'awaiting_super_admin_approval', 'needs_requester_information', 'approved_for_codex', 'kept_as_ticket', 'rejected', 'in_progress', 'resolved', 'closed')),
   category TEXT NOT NULL DEFAULT 'other' CHECK (category IN ('login', 'payment', 'link', 'recording', 'worksheet', 'access', 'cancellation', 'bot_api', 'drive', 'automation', 'task_manager', 'student_parent_data', 'other')),
   reporter_name TEXT,
   reporter_role TEXT,
@@ -14151,6 +14157,10 @@ ALTER TABLE bna_support_tickets DROP CONSTRAINT IF EXISTS bna_support_tickets_so
 ALTER TABLE bna_support_tickets
   ADD CONSTRAINT bna_support_tickets_source_check
   CHECK (source IN ('dashboard', 'telegram', 'api', 'system', 'web_assistant'));
+ALTER TABLE bna_support_tickets DROP CONSTRAINT IF EXISTS bna_support_tickets_status_check;
+ALTER TABLE bna_support_tickets
+  ADD CONSTRAINT bna_support_tickets_status_check
+  CHECK (status IN ('open', 'triage', 'awaiting_super_admin_approval', 'needs_requester_information', 'approved_for_codex', 'kept_as_ticket', 'rejected', 'in_progress', 'resolved', 'closed'));
 ALTER TABLE bna_support_ticket_comments DROP CONSTRAINT IF EXISTS bna_support_ticket_comments_source_check;
 ALTER TABLE bna_support_ticket_comments
   ADD CONSTRAINT bna_support_ticket_comments_source_check
@@ -87026,7 +87036,18 @@ function safeSupportTicketSeverity(value) {
 
 function safeSupportTicketStatus(value) {
   const normalized = String(value || '').trim().toLowerCase();
-  return ['open', 'triage', 'in_progress', 'resolved', 'closed'].includes(normalized) ? normalized : 'open';
+  return [
+    'open',
+    'triage',
+    'awaiting_super_admin_approval',
+    'needs_requester_information',
+    'approved_for_codex',
+    'kept_as_ticket',
+    'rejected',
+    'in_progress',
+    'resolved',
+    'closed',
+  ].includes(normalized) ? normalized : 'open';
 }
 
 function safeSupportTicketCategory(value) {
@@ -87064,6 +87085,31 @@ function safeSupportTicketCategory(value) {
 function safeSupportTicketSource(value) {
   const normalized = String(value || '').trim().toLowerCase();
   return ['dashboard', 'telegram', 'api', 'system', 'web_assistant'].includes(normalized) ? normalized : 'dashboard';
+}
+
+function supportTicketContext(value = {}) {
+  return value && typeof value === 'object' ? value : parseJsonMaybe(value) || {};
+}
+
+function isRabbiTelegramApprovalTicketContext(context = {}) {
+  return String(context.workspace_key || context.workspaceKey || '').trim() === 'rabbi_sheller_provider'
+    && String(context.project_key || context.projectKey || '').trim() === 'one_time_mishnah_class'
+    && String(context.bridge_profile || context.bridgeProfile || '').trim() === 'rabbi-elie-scheller'
+    && String(context.relationship_scope || context.relationshipScope || '').trim() === 'one_time_external_admin_project_ticket';
+}
+
+function supportTicketBlocksAutomaticTask(ticket = {}, body = {}) {
+  const context = supportTicketContext(ticket.source_context || body.source_context || body.context);
+  if (isRabbiTelegramApprovalTicketContext(context)) return true;
+  const status = safeSupportTicketStatus(ticket.status || body.status);
+  if (['awaiting_super_admin_approval', 'needs_requester_information', 'kept_as_ticket', 'rejected'].includes(status)) return true;
+  return Boolean(body.suppress_task_creation || body.suppressTaskCreation || body.requires_super_admin_approval || body.requiresSuperAdminApproval);
+}
+
+function requirePlatformSuperAdminForAction(req, res) {
+  if (req?.opsIdentity?.scope?.type === 'all') return true;
+  res.status(403).json({ error: 'Only platform_super_admin can perform this approval action.' });
+  return false;
 }
 
 function supportTicketView(row = {}) {
@@ -87172,6 +87218,7 @@ async function assertSupportTicketAccess(req, ticketId, db = pool) {
 
 async function maybeCreateTaskForSupportTicket({ ticket, project, req, db = pool }) {
   if (!ticket || ticket.related_task_id) return null;
+  if (supportTicketBlocksAutomaticTask(ticket)) return null;
   const severity = safeSupportTicketSeverity(ticket.severity);
   const shouldCreateTask = ['high', 'blocking'].includes(severity)
     || ['bot_api', 'automation', 'task_manager'].includes(ticket.category);
@@ -87452,7 +87499,54 @@ app.post('/api/bna/support-tickets', requireAdmin, async (req, res) => {
     assertProjectAccess(req, project);
     const severity = safeSupportTicketSeverity(body.severity);
     const category = safeSupportTicketCategory(body.category);
-    const assignedTo = String(body.assigned_to || body.assignedTo || (['blocking', 'high'].includes(severity) ? 'Codex' : 'Shloimie')).trim();
+    const sourceContext = supportTicketContext(body.source_context || body.context);
+    const rabbiApprovalTicket = isRabbiTelegramApprovalTicketContext(sourceContext);
+    const requestedStatus = safeSupportTicketStatus(body.status || (rabbiApprovalTicket ? 'awaiting_super_admin_approval' : 'open'));
+    const assignedTo = String(
+      body.assigned_to ||
+      body.assignedTo ||
+      (rabbiApprovalTicket ? 'Shloimie' : (['blocking', 'high'].includes(severity) ? 'Codex' : 'Shloimie'))
+    ).trim();
+    const source = safeSupportTicketSource(body.source);
+    if (rabbiApprovalTicket) {
+      const existingConditions = [`project_id = $1`, `source = 'telegram'`, `status NOT IN ('resolved', 'closed', 'rejected')`];
+      const existingParams = [project.id];
+      if (sourceContext.chat_id && sourceContext.message_id) {
+        existingParams.push(String(sourceContext.chat_id), String(sourceContext.message_id));
+        existingConditions.push(`source_context->>'chat_id' = $${existingParams.length - 1}`);
+        existingConditions.push(`source_context->>'message_id' = $${existingParams.length}`);
+      } else {
+        existingParams.push(title || description.slice(0, 160), category);
+        existingConditions.push(`title = $${existingParams.length - 1}`);
+        existingConditions.push(`category = $${existingParams.length}`);
+      }
+      const existing = (await client.query(
+        `SELECT *
+         FROM bna_support_tickets
+         WHERE ${existingConditions.join(' AND ')}
+         ORDER BY created_at DESC
+         LIMIT 1`,
+        existingParams
+      )).rows[0];
+      if (existing) {
+        await client.query('COMMIT');
+        return res.json({
+          success: true,
+          duplicate_submission: true,
+          ticket: supportTicketView(existing),
+          task: null,
+          approval_required: true,
+        });
+      }
+    }
+    const storedSourceContext = {
+      ...sourceContext,
+      ...(rabbiApprovalTicket ? {
+        approval_gate: 'super_admin_required_before_codex',
+        codex_job_created_initially: false,
+        requested_status: 'awaiting_super_admin_approval',
+      } : {}),
+    };
     const result = await client.query(
       `INSERT INTO bna_support_tickets (
          project_id, title, description, severity, status, category,
@@ -87465,18 +87559,20 @@ app.post('/api/bna/support-tickets', requireAdmin, async (req, res) => {
         title || description.slice(0, 160),
         description || null,
         severity,
-        safeSupportTicketStatus(body.status || 'open'),
+        requestedStatus,
         category,
         String(body.reporter_name || body.reporterName || req.opsUser || '').trim() || null,
         String(body.reporter_role || body.reporterRole || req.opsIdentity?.role || '').trim() || null,
         assignedTo || null,
-        safeSupportTicketSource(body.source),
-        JSON.stringify(body.source_context || body.context || {}),
+        source,
+        JSON.stringify(storedSourceContext),
         req.opsUser || 'dashboard',
       ]
     );
     let ticket = supportTicketView(result.rows[0]);
-    const task = await maybeCreateTaskForSupportTicket({ ticket, project, req, db: client });
+    const task = supportTicketBlocksAutomaticTask(ticket, body)
+      ? null
+      : await maybeCreateTaskForSupportTicket({ ticket, project, req, db: client });
     if (task) {
       ticket = supportTicketView((await client.query('SELECT * FROM bna_support_tickets WHERE id = $1', [ticket.id])).rows[0]);
     }
@@ -87507,7 +87603,283 @@ app.post('/api/bna/support-tickets', requireAdmin, async (req, res) => {
       createdBy: req.opsUser || 'dashboard',
     }, client);
     await client.query('COMMIT');
-    res.json({ success: true, ticket, task });
+    if (rabbiApprovalTicket) {
+      notifySuperAdminSupportTicket({
+        ticket: {
+          ...ticket,
+          project_key: project.project_key,
+          workspace_key: 'rabbi_sheller_provider',
+        },
+        context: {
+          source: 'rabbi_telegram_ticket',
+          requested_result: storedSourceContext.requested_outcome || storedSourceContext.requested_result || title,
+          affected_section: storedSourceContext.affected_route || storedSourceContext.affected_module || category,
+          reviewPath: scopedPublicUrl(configuredPublicBaseUrl(), '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=admin&section=tickets'),
+        },
+      }).catch((error) => console.error('Super Admin ticket alert error:', error));
+    }
+    res.json({
+      success: true,
+      ticket,
+      task,
+      approval_required: rabbiApprovalTicket,
+      codex_job_created_initially: Boolean(task?.agent_job_id),
+    });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/support-tickets/:id/approval-action', requireAdmin, async (req, res) => {
+  if (!requirePlatformSuperAdminForAction(req, res)) return;
+  const action = String(req.body?.action || req.body?.decision || '').trim().toLowerCase();
+  const normalizedAction = {
+    approve: 'approve_for_codex',
+    approve_for_codex: 'approve_for_codex',
+    approved_for_codex: 'approve_for_codex',
+    ask: 'ask_rabbi',
+    ask_rabbi: 'ask_rabbi',
+    keep: 'keep_as_ticket',
+    keep_as_ticket: 'keep_as_ticket',
+    reject: 'reject',
+    rejected: 'reject',
+  }[action] || '';
+  if (!normalizedAction) {
+    return res.status(400).json({ error: 'approval action must be approve_for_codex, ask_rabbi, keep_as_ticket, or reject' });
+  }
+  const client = await pool.connect();
+  let rabbiNotification = null;
+  try {
+    await client.query('BEGIN');
+    await assertSupportTicketAccess(req, req.params.id, client);
+    const ticketRow = (await client.query(
+      `SELECT st.*, p.project_key, p.name AS project_name, p.short_name AS project_short_name
+       FROM bna_support_tickets st
+       LEFT JOIN bna_projects p ON p.id = st.project_id
+       WHERE st.id = $1
+       FOR UPDATE`,
+      [req.params.id]
+    )).rows[0];
+    if (!ticketRow) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Support ticket not found' });
+    }
+    const ticket = supportTicketView(ticketRow);
+    const context = supportTicketContext(ticket.source_context);
+    if (!isRabbiTelegramApprovalTicketContext(context)) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({ error: 'This approval action is only available for Rabbi One Time Telegram tickets.' });
+    }
+    const idempotencyKey = String(req.body?.idempotency_key || req.body?.idempotencyKey || `${normalizedAction}:${ticket.id}`).slice(0, 180);
+    const priorAction = context.super_admin_approval || {};
+    if (priorAction.idempotency_key === idempotencyKey && priorAction.action === normalizedAction) {
+      await client.query('COMMIT');
+      return res.json({
+        success: true,
+        duplicate_submission: true,
+        action: normalizedAction,
+        ticket,
+        task: null,
+        agent_job: null,
+      });
+    }
+
+    const approver = req.opsIdentity?.username || req.opsUser || 'platform_super_admin';
+    const nowIso = new Date().toISOString();
+    const actionContext = {
+      ...context,
+      super_admin_approval: {
+        action: normalizedAction,
+        approved_by: approver,
+        decided_at: nowIso,
+        idempotency_key: idempotencyKey,
+      },
+    };
+    let updatedTicket = ticket;
+    let task = null;
+    let agentJob = null;
+    let commentBody = '';
+
+    if (normalizedAction === 'approve_for_codex') {
+      if (ticket.related_task_id) {
+        task = await fetchTaskWithProject(ticket.related_task_id, client);
+        agentJob = task?.agent_job_id
+          ? (await client.query('SELECT * FROM bna_agent_jobs WHERE id = $1', [task.agent_job_id])).rows[0] || null
+          : null;
+      } else {
+        task = await createTaskFromText({
+          title: `Approved Rabbi ticket ${ticket.ticket_number || `#${ticket.id}`}: ${ticket.title}`,
+          raw_text: ticket.description || ticket.title,
+          notes: [
+            `Approved Rabbi Telegram support ticket ${ticket.ticket_number || `#${ticket.id}`}.`,
+            `Severity: ${ticket.severity}`,
+            `Category: ${ticket.category}`,
+            ticket.description || '',
+          ].filter(Boolean).join('\n'),
+          source: 'telegram',
+          source_channel: 'telegram',
+          source_chat_id: context.chat_id || null,
+          source_message_id: context.message_id || null,
+          created_by: approver,
+          author: approver,
+          assigned_to: 'Codex',
+          agent_executable: true,
+          suppress_agent_inference: false,
+          project_key: ticket.project_key || ONE_TIME_PROJECT_KEY,
+          ticket_id: ticket.id,
+          category: ticket.category === 'payment' ? 'accounting' : 'technology',
+          stage: 'assigned',
+          source_context: {
+            ...context,
+            approval_action: 'approve_for_codex',
+            support_ticket_id: ticket.id,
+            compiled_through: 'ramble_protocol_ticket_approval_v1',
+          },
+          ai_parsed: {
+            parser: 'rabbi-telegram-ticket-approval-v1',
+            kind: 'ticket_handoff',
+            support_ticket_id: ticket.id,
+            workspace_key: 'rabbi_sheller_provider',
+            project_key: ONE_TIME_PROJECT_KEY,
+            approved_for_codex: true,
+          },
+        }, { req }, client);
+        if (task?.id && !task.agent_job_id) {
+          agentJob = await ensureAgentJobForTask({ ...task, project_key: ticket.project_key || ONE_TIME_PROJECT_KEY }, {
+            agent_executable: true,
+            source: 'telegram',
+            source_channel: 'telegram',
+            source_chat_id: context.chat_id || null,
+            source_message_id: context.message_id || null,
+            ticket_id: ticket.id,
+            job_uid: `rabbi-ticket-${ticket.id}-approved-codex`,
+          }, client);
+          task = await fetchTaskWithProject(task.id, client) || task;
+        } else if (task?.agent_job_id) {
+          agentJob = (await client.query('SELECT * FROM bna_agent_jobs WHERE id = $1', [task.agent_job_id])).rows[0] || null;
+        }
+      }
+      actionContext.super_admin_approval.task_id = task?.id || null;
+      actionContext.super_admin_approval.agent_job_id = agentJob?.id || task?.agent_job_id || null;
+      const update = await client.query(
+        `UPDATE bna_support_tickets
+         SET status = 'approved_for_codex',
+             assigned_to = 'Codex',
+             related_task_id = COALESCE(related_task_id, $2),
+             source_context = $3::jsonb,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [ticket.id, task?.id || null, JSON.stringify(actionContext)]
+      );
+      updatedTicket = supportTicketView(update.rows[0]);
+      commentBody = `Approved for Codex by ${approver}. Task: ${task?.id ? `#${task.id}` : 'not created'}. Job: ${agentJob?.id || task?.agent_job_id || 'not queued'}.`;
+      rabbiNotification = {
+        status: 'approved_for_codex',
+        message: `Shloimie approved this change and queued it for Codex${task?.id ? ` as task #${task.id}` : ''}.`,
+      };
+    }
+
+    if (normalizedAction === 'ask_rabbi') {
+      const question = limitText(String(req.body?.question || req.body?.message || '').trim(), 900)
+        || 'Please send the missing details for this ticket so Shloimie can review it.';
+      actionContext.super_admin_approval.question = question;
+      const update = await client.query(
+        `UPDATE bna_support_tickets
+         SET status = 'needs_requester_information',
+             assigned_to = 'Rabbi Elie Scheller',
+             source_context = $2::jsonb,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [ticket.id, JSON.stringify(actionContext)]
+      );
+      updatedTicket = supportTicketView(update.rows[0]);
+      commentBody = `Asked Rabbi for more information: ${question}`;
+      rabbiNotification = { status: 'needs_requester_information', question };
+    }
+
+    if (normalizedAction === 'keep_as_ticket') {
+      actionContext.super_admin_approval.reason = limitText(String(req.body?.reason || req.body?.message || 'Kept for manual support without creating a Codex job.').trim(), 900);
+      const update = await client.query(
+        `UPDATE bna_support_tickets
+         SET status = 'kept_as_ticket',
+             assigned_to = 'Shloimie',
+             source_context = $2::jsonb,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [ticket.id, JSON.stringify(actionContext)]
+      );
+      updatedTicket = supportTicketView(update.rows[0]);
+      commentBody = `Kept as a manual support ticket by ${approver}.`;
+      rabbiNotification = { status: 'kept_as_ticket', message: 'Shloimie kept this as a support ticket for manual follow-up.' };
+    }
+
+    if (normalizedAction === 'reject') {
+      const reason = limitText(String(req.body?.reason || req.body?.message || '').trim(), 900);
+      if (!reason) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({ error: 'Reject requires a short reason.' });
+      }
+      actionContext.super_admin_approval.reason = reason;
+      const update = await client.query(
+        `UPDATE bna_support_tickets
+         SET status = 'rejected',
+             assigned_to = 'Shloimie',
+             source_context = $2::jsonb,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [ticket.id, JSON.stringify(actionContext)]
+      );
+      updatedTicket = supportTicketView(update.rows[0]);
+      commentBody = `Rejected by ${approver}: ${reason}`;
+      rabbiNotification = { status: 'rejected', message: reason };
+    }
+
+    if (commentBody) {
+      await client.query(
+        `INSERT INTO bna_support_ticket_comments (ticket_id, author, body, visibility, source, source_context)
+         VALUES ($1, $2, $3, 'project', 'telegram', $4::jsonb)`,
+        [
+          ticket.id,
+          approver,
+          commentBody,
+          JSON.stringify({
+            action: normalizedAction,
+            idempotency_key: idempotencyKey,
+            source: 'super_admin_ticket_approval',
+          }),
+        ]
+      );
+    }
+    await client.query('COMMIT');
+
+    let rabbi_notice = null;
+    if (rabbiNotification) {
+      rabbi_notice = await notifyRabbiSupportTicketStatus({
+        ticket: updatedTicket,
+        context: rabbiNotification,
+      }).catch((error) => ({
+        attempted: false,
+        sent: false,
+        blocker: error instanceof Error ? error.message : String(error),
+      }));
+    }
+
+    res.json({
+      success: true,
+      action: normalizedAction,
+      ticket: updatedTicket,
+      task,
+      agent_job: agentJob || (task?.agent_job_id ? { id: task.agent_job_id } : null),
+      rabbi_notice,
+      duplicate_submission: false,
+    });
   } catch (err) {
     try { await client.query('ROLLBACK'); } catch {}
     res.status(err.statusCode || 500).json({ error: err.message });

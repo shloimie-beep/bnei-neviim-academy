@@ -180,6 +180,8 @@ function formatSupportTicketTelegramAlert({ ticket = {}, context = {} } = {}) {
   const severity = compactLine(ticket.severity || context.severity, 'normal', 80);
   const category = compactLine(ticket.category || context.category, 'other', 100);
   const title = compactLine(ticket.title || context.title, 'Support ticket opened', 180);
+  const requestedResult = compactLine(context.requested_result || context.requestedResult || ticket.requested_result, 'Review requested', 180);
+  const affectedSection = compactLine(context.affected_section || context.affectedSection || ticket.affected_section, category, 120);
   const workspaceKey = workspaceKeyForTicket(ticket, context);
   const projectKey = projectKeyForTicket(ticket, context);
   const source = compactLine(context.source || ticket.source || ticket.created_by || 'support_ticket', 'support_ticket', 120);
@@ -192,8 +194,42 @@ function formatSupportTicketTelegramAlert({ ticket = {}, context = {} } = {}) {
     `- Severity: ${severity}`,
     `- Category: ${category}`,
     `- Title: ${title}`,
+    `- Affected: ${affectedSection}`,
+    `- Requested: ${requestedResult}`,
     `- Source: ${source}`,
-    `- Review: ${reviewPath}`,
+    `- Open in Operations: ${reviewPath}`,
+  ].join('\n');
+}
+
+function supportTicketApprovalKeyboard({ ticket = {}, context = {} } = {}) {
+  const ticketId = ticket.id || ticket.ticket_id || context.ticket_id || context.ticketId;
+  const reviewPath = context.review_path || context.reviewPath || '/operations?view=admin&section=tickets';
+  if (!ticketId) return null;
+  const keyboard = [
+    [
+      { text: 'Approve for Codex', callback_data: `ticket:approve:${ticketId}` },
+      { text: 'Ask Rabbi', callback_data: `ticket:ask:${ticketId}` },
+    ],
+    [
+      { text: 'Keep as Ticket', callback_data: `ticket:keep:${ticketId}` },
+      { text: 'Reject', callback_data: `ticket:reject:${ticketId}` },
+    ],
+  ];
+  if (/^https?:\/\//i.test(String(reviewPath || ''))) {
+    keyboard.push([{ text: 'Open in Operations', url: String(reviewPath) }]);
+  }
+  return { inline_keyboard: keyboard };
+}
+
+function formatRabbiSupportTicketStatusAlert({ ticket = {}, context = {} } = {}) {
+  const ticketLabel = ticket.ticket_number || ticket.ticketNumber || (ticket.id ? `#${ticket.id}` : 'your ticket');
+  const status = compactLine(context.status || ticket.status, 'updated', 100);
+  const title = compactLine(ticket.title || context.title, 'One Time support ticket', 180);
+  const message = compactLine(context.message || context.question || context.reason, 'Shloimie updated this ticket.', 500);
+  return [
+    `Ticket ${ticketLabel}: ${status}`,
+    `- Title: ${title}`,
+    `- Update: ${message}`,
   ].join('\n');
 }
 
@@ -236,7 +272,7 @@ function formatRabbiCommunicationTelegramAlert({ communication = {}, context = {
   ].join('\n');
 }
 
-async function sendTelegramMessage({ token, chatId, text, fetchImpl = global.fetch } = {}) {
+async function sendTelegramMessage({ token, chatId, text, replyMarkup = null, fetchImpl = global.fetch } = {}) {
   if (!token || !chatId || !String(text || '').trim()) {
     return { sent: false, skipped: true, reason: 'telegram_target_or_text_missing' };
   }
@@ -250,6 +286,7 @@ async function sendTelegramMessage({ token, chatId, text, fetchImpl = global.fet
       chat_id: chatId,
       text: String(text).slice(0, 3900),
       disable_web_page_preview: true,
+      ...(replyMarkup ? { reply_markup: replyMarkup } : {}),
     }),
   });
   if (!response.ok) {
@@ -338,6 +375,7 @@ async function notifySuperAdminSupportTicket({
 } = {}) {
   const config = loadTelegramNotificationConfig({ env, secretsDir });
   const text = formatSupportTicketTelegramAlert({ ticket, context });
+  const replyMarkup = supportTicketApprovalKeyboard({ ticket, context });
   const target = config.super_admin || {};
   if (!config.ticket_alerts_enabled) {
     return {
@@ -355,6 +393,52 @@ async function notifySuperAdminSupportTicket({
       sent: false,
       would_send: false,
       blocker: 'super_admin_telegram_target_not_configured',
+      text,
+      config: redactTelegramConfig(config),
+    };
+  }
+  if (dryRun) {
+    return {
+      attempted: false,
+      sent: false,
+      would_send: true,
+      text,
+      config: redactTelegramConfig(config),
+    };
+  }
+  const sendResult = await sendTelegramMessage({
+    token: target.token,
+    chatId: target.chat_id,
+    text,
+    replyMarkup,
+    fetchImpl,
+  });
+  return {
+    attempted: true,
+    text,
+    config: redactTelegramConfig(config),
+    ...sendResult,
+  };
+}
+
+async function notifyRabbiSupportTicketStatus({
+  ticket = {},
+  context = {},
+  env = process.env,
+  secretsDir = defaultSecretsDir,
+  fetchImpl = global.fetch,
+  dryRun = false,
+} = {}) {
+  const config = loadTelegramNotificationConfig({ env, secretsDir });
+  const text = formatRabbiSupportTicketStatusAlert({ ticket, context });
+  const target = config.rabbi_elie_scheller || {};
+  const telegramTargetReady = Boolean(target.token && target.chat_id);
+  if (!telegramTargetReady) {
+    return {
+      attempted: false,
+      sent: false,
+      would_send: false,
+      blocker: 'rabbi_telegram_target_not_configured',
       text,
       config: redactTelegramConfig(config),
     };
@@ -431,14 +515,17 @@ module.exports = {
   buildRabbiTelegramReadiness,
   compactLine,
   formatRabbiCommunicationTelegramAlert,
+  formatRabbiSupportTicketStatusAlert,
   formatSupportTicketTelegramAlert,
   isRabbiOneTimeCommunication,
   loadTelegramNotificationConfig,
   notifyRabbiCommunication,
+  notifyRabbiSupportTicketStatus,
   notifySuperAdminSupportTicket,
   notifyTelegramRoleAlias,
   rabbiCommunicationAlertsEnabled,
   redactTelegramConfig,
   sendTelegramMessage,
+  supportTicketApprovalKeyboard,
   supportTicketAlertsEnabled,
 };

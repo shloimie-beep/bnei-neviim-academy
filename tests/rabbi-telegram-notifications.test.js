@@ -5,12 +5,15 @@ const test = require('node:test');
 const {
   buildRabbiTelegramReadiness,
   formatRabbiCommunicationTelegramAlert,
+  formatRabbiSupportTicketStatusAlert,
   formatSupportTicketTelegramAlert,
   notifyRabbiCommunication,
+  notifyRabbiSupportTicketStatus,
   notifyTelegramRoleAlias,
   loadTelegramNotificationConfig,
   notifySuperAdminSupportTicket,
   rabbiCommunicationAlertsEnabled,
+  supportTicketApprovalKeyboard,
   supportTicketAlertsEnabled,
 } = require('../src/lib/bna/telegram-notifications');
 
@@ -40,9 +43,27 @@ test('support ticket alert text is brief and redacts secret-looking values', () 
   assert.match(text, /Support ticket opened/);
   assert.match(text, /Ticket: #42/);
   assert.match(text, /rabbi_sheller_provider \/ one_time_mishnah_class/);
+  assert.match(text, /Open in Operations/);
   assert.doesNotMatch(text, /super-secret-value/);
   assert.doesNotMatch(text, /hunter2/);
   assert.match(text, /\[redacted-secret\]/);
+});
+
+test('support ticket approval keyboard exposes Super Admin actions only as callbacks', () => {
+  const keyboard = supportTicketApprovalKeyboard({
+    ticket: { id: 42 },
+    context: { reviewPath: 'https://bneineviimacademy.org/operations?view=admin&section=tickets' },
+  });
+  assert.deepEqual(keyboard.inline_keyboard[0].map((button) => button.callback_data), [
+    'ticket:approve:42',
+    'ticket:ask:42',
+  ]);
+  assert.deepEqual(keyboard.inline_keyboard[1].map((button) => button.callback_data), [
+    'ticket:keep:42',
+    'ticket:reject:42',
+  ]);
+  assert.equal(keyboard.inline_keyboard[2][0].text, 'Open in Operations');
+  assert.match(keyboard.inline_keyboard[2][0].url, /operations/);
 });
 
 test('notification config reports ready target without exposing token or chat id', () => {
@@ -116,6 +137,8 @@ test('notifySuperAdminSupportTicket supports dry-run and mocked send', async () 
   const body = JSON.parse(calls[0].options.body);
   assert.equal(body.chat_id, '999');
   assert.match(body.text, /Support ticket opened/);
+  assert.equal(body.reply_markup.inline_keyboard[0][0].text, 'Approve for Codex');
+  assert.equal(body.reply_markup.inline_keyboard[0][0].callback_data, 'ticket:approve:8');
 });
 
 test('notifyRabbiCommunication blocks wrong scope and missing Rabbi chat id', async () => {
@@ -242,6 +265,48 @@ test('server wires Rabbi communication alerts separately from super-admin ticket
   assert.match(server, /source: 'one_time_wapi_inbound'/);
   assert.match(server, /reviewPath: '\/provider\.html\?admin_provider=one-time&section=mailbox'/);
   assert.match(server, /reviewPath: '\/operations\?view=communications&workspace=rabbi_sheller_provider&project=one_time_mishnah_class'/);
+});
+
+test('notifyRabbiSupportTicketStatus sends concise private ticket updates to Rabbi', async () => {
+  const calls = [];
+  const sent = await notifyRabbiSupportTicketStatus({
+    secretsDir: null,
+    env: {
+      TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER: '456:rabbi-token',
+      TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER: '777',
+    },
+    ticket: {
+      id: 15,
+      ticket_number: 'OT-SUP-000015',
+      title: 'Button not working',
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'one_time_mishnah_class',
+    },
+    context: {
+      status: 'needs_requester_information',
+      question: 'Which button did you press?',
+    },
+    fetchImpl: async (url, options) => {
+      calls.push({ url, options });
+      return { ok: true, status: 200, async text() { return 'ok'; } };
+    },
+  });
+  assert.equal(sent.sent, true);
+  assert.equal(calls.length, 1);
+  const body = JSON.parse(calls[0].options.body);
+  assert.equal(body.chat_id, '777');
+  assert.match(body.text, /OT-SUP-000015/);
+  assert.match(body.text, /Which button did you press/);
+});
+
+test('Rabbi ticket status formatter redacts secrets', () => {
+  const text = formatRabbiSupportTicketStatusAlert({
+    ticket: { id: 16, title: 'Access token=hidden-value broke' },
+    context: { status: 'rejected', reason: 'password=hunter2 is not a valid report' },
+  });
+  assert.match(text, /\[redacted-secret\]/);
+  assert.doesNotMatch(text, /hunter2/);
+  assert.doesNotMatch(text, /hidden-value/);
 });
 
 test('Rabbi Telegram live smoke is approval-gated and redacted', () => {

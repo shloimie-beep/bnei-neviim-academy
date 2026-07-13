@@ -4647,9 +4647,13 @@ async function captureScopedProjectToApp(config, text, chatId, messageId) {
       description: text,
       severity: inferScopedSupportTicketSeverity(text),
       category: inferScopedSupportTicketCategory(text),
+      status: 'awaiting_super_admin_approval',
+      assigned_to: 'Shloimie',
+      suppress_task_creation: true,
+      requires_super_admin_approval: true,
       source: 'telegram',
       reporter_name: config.agentDisplayName || 'Rabbi Elie Scheller',
-      reporter_role: 'external_user',
+      reporter_role: 'provider_owner',
       project_key: config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
       source_context: {
         chat_id: chatId,
@@ -4662,6 +4666,9 @@ async function captureScopedProjectToApp(config, text, chatId, messageId) {
         relationship_scope: 'one_time_external_admin_project_ticket',
         support_bot_mode: 'ticket_only',
         unrestricted_mishnah_study_bot: false,
+        approval_gate: 'super_admin_required_before_codex',
+        codex_job_created_initially: false,
+        requested_outcome: scopedSupportTicketTitleFromText(text),
         no_send: true,
         external_write_performed: false,
       },
@@ -4685,12 +4692,13 @@ async function captureScopedProjectToApp(config, text, chatId, messageId) {
     }
     return {
       enabled: true,
-      tasksCreated: result?.task?.id ? 1 : 0,
-      tasks: result?.task?.id ? [result.task] : [],
+      tasksCreated: 0,
+      tasks: [],
       eventsCreated: 0,
       commentsCreated: 0,
       supportTicketsCreated: ticket?.id ? 1 : 0,
       supportTickets: ticket?.id ? [{ ...ticket, ticket_number: ticket.ticket_number || `OT-SUP-${String(ticket.id).padStart(6, '0')}` }] : [],
+      approvalRequired: true,
     };
   }
 
@@ -11035,6 +11043,73 @@ async function handleCallbackQuery(config, query) {
       text: 'This bot is private.',
       show_alert: true,
     });
+    return;
+  }
+
+  const ticketActionMatch = data.match(/^ticket:(approve|ask|keep|reject):(\d+)$/);
+  if (ticketActionMatch) {
+    const actionKey = ticketActionMatch[1];
+    const ticketId = Number(ticketActionMatch[2]);
+    const actionPayload = {
+      approve: {
+        action: 'approve_for_codex',
+        toast: 'Approved for Codex.',
+        message: 'Approved for Codex. The ticket is queued through the tracked task/job path.',
+      },
+      ask: {
+        action: 'ask_rabbi',
+        question: 'Please send the missing details for this ticket so Shloimie can review it.',
+        toast: 'Asked Rabbi for details.',
+        message: 'Asked Rabbi for more details on this ticket.',
+      },
+      keep: {
+        action: 'keep_as_ticket',
+        reason: 'Kept for manual support from Super Admin Telegram action.',
+        toast: 'Kept as ticket.',
+        message: 'Kept as a manual support ticket. No Codex job was created.',
+      },
+      reject: {
+        action: 'reject',
+        reason: 'Rejected from Super Admin Telegram action.',
+        toast: 'Rejected.',
+        message: 'Rejected the ticket with a recorded reason. No Codex job was created.',
+      },
+    }[actionKey];
+
+    if (!ticketId || !actionPayload) {
+      await telegramRequest(config.botToken, 'answerCallbackQuery', {
+        callback_query_id: callbackId,
+        text: 'Ticket action is invalid.',
+        show_alert: true,
+      });
+      return;
+    }
+
+    try {
+      const result = await appRequest(config, 'POST', `/api/bna/support-tickets/${ticketId}/approval-action`, {
+        ...actionPayload,
+        idempotency_key: `telegram-callback-${data}`,
+      });
+      await telegramRequest(config.botToken, 'answerCallbackQuery', {
+        callback_query_id: callbackId,
+        text: result?.duplicate_submission ? 'Already handled.' : actionPayload.toast,
+      });
+      const lines = [
+        result?.duplicate_submission ? 'Ticket action was already handled.' : actionPayload.message,
+        `Ticket: ${result?.ticket?.ticket_number || `#${ticketId}`}`,
+        result?.task?.id ? `Task: #${result.task.id}` : 'Task: none',
+        result?.agent_job?.id ? `Codex job: #${result.agent_job.id}` : 'Codex job: none',
+      ];
+      await sendReply(config.botToken, chatId, lines.join('\n'), messageId);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      await telegramRequest(config.botToken, 'answerCallbackQuery', {
+        callback_query_id: callbackId,
+        text: `Ticket action failed: ${message.slice(0, 160)}`,
+        show_alert: true,
+      });
+      await sendReply(config.botToken, chatId, `Ticket action failed: ${message}`, messageId);
+    }
     return;
   }
 

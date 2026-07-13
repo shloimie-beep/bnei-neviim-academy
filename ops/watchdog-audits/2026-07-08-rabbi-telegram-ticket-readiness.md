@@ -1,6 +1,6 @@
 # Rabbi Telegram / Ticket Alert Readiness
 
-Checked at: 2026-07-12T20:11:13.432Z
+Checked at: 2026-07-13T01:42:56.925Z
 
 ## Summary
 
@@ -26,8 +26,10 @@ Support ticket opened
 - Severity: normal
 - Category: bot_api
 - Title: Readiness dry-run support ticket
+- Affected: bot_api
+- Requested: Review requested
 - Source: readiness_check
-- Review: /operations?view=admin&section=tickets
+- Open in Operations: /operations?view=admin&section=tickets
 ```
 
 ## Dry-Run Rabbi Communication Alert Preview

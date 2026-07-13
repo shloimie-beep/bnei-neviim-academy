@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-07-12T20:11:13.432Z",
+  "checked_at": "2026-07-13T01:42:56.925Z",
   "external_write_performed": false,
   "notification_config": {
     "ticket_alerts_enabled": false,
@@ -44,7 +44,7 @@
     "sent": false,
     "would_send": false,
     "blocker": "support_ticket_telegram_alerts_disabled",
-    "text": "Support ticket opened\n- Ticket: new ticket\n- Scope: rabbi_sheller_provider / one_time_mishnah_class\n- Severity: normal\n- Category: bot_api\n- Title: Readiness dry-run support ticket\n- Source: readiness_check\n- Review: /operations?view=admin&section=tickets",
+    "text": "Support ticket opened\n- Ticket: new ticket\n- Scope: rabbi_sheller_provider / one_time_mishnah_class\n- Severity: normal\n- Category: bot_api\n- Title: Readiness dry-run support ticket\n- Affected: bot_api\n- Requested: Review requested\n- Source: readiness_check\n- Open in Operations: /operations?view=admin&section=tickets",
     "config": {
       "ticket_alerts_enabled": false,
       "rabbi_communication_alerts_enabled": false,
