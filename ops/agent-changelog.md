@@ -40048,3 +40048,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no live charge, refund, notice send, invoice/receipt send, access
   mutation, provider mutation, credential mutation, or secret exposure was
   performed. Deploy/live smoke and final launch approval remain pending.
+
+## 2026-07-13 - One Time Billing V2 sandbox E2E verifier added
+
+- Added `npm run stripe:sandbox-e2e` as a repeatable local verifier for
+  `REQ-20260713-961`.
+- The verifier uses a synthetic TEST member and covers product/price,
+  policy-version consent storage, payment method readiness, no-trial
+  checkout/subscription payload, webhook signature verification, invoice
+  paid/failed/recovered/upcoming states, no-grace failed payment, duplicate
+  replay ignore, manual refund-review state, cancel-at-period-end, and
+  entitlement transitions.
+- Wrote redacted proof under
+  `ops/verifier-runs/2026-07-13-onetime-billing-sandbox-e2e/`.
+- Added a release handoff draft with verification matrix, migration/deploy
+  notes, rollback posture, guardrails, and exact remaining live activation
+  blockers.
+- Verification passed:
+  `npm run stripe:sandbox-e2e`,
+  `node --test tests/one-time-billing-sandbox-e2e-verifier.test.js tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js`.
+- Guardrails: no Stripe API call, live charge, refund, notice send,
+  invoice/receipt send, access mutation, provider mutation, credential
+  mutation, production data mutation, or secret exposure was performed by the
+  verifier.
