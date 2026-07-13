@@ -955,3 +955,16 @@
 - Parent-facing no-trial campaign smoke: `ops/live-smokes/2026-07-13T21-42-33-620Z-rabbi-onetime-landing-smoke.md`.
 - Operations billing/referral no-write smoke: `ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md` and `.json`; it recorded `trial_days=0`, `stripe_trial_enabled=false`, renewal `6700`, billing notice policy `one_time_rosh_hashanah_pre_billing_notice`, refund review policy `one_time_manual_exception_refund_review`, and referral trigger `first_successful_paid_cycle`.
 - Guardrails: `external_write_performed=false`, `live_charge_performed=false`, `access_mutation_performed=false`; no Stripe object creation, refund, invoice credit, billing notice send, email/WhatsApp send, access mutation, provider mutation, credential mutation, or production data mutation.
+
+## REQ-20260713-938 Media / Classroom / Zoom Truth Evidence - 2026-07-14
+
+- Requirement: `REQ-20260713-938`.
+- Truth audit: `ops/audits/2026-07-14-onetime-media-classroom-zoom-truth.md`.
+- Deployed app SHA under test: `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`.
+- Transcript privacy live smoke: `ops/live-smokes/2026-07-13T21-58-08-470Z-one-time-transcript-privacy-live-smoke.md`.
+- Zoom attendance/readiness live smoke: `ops/live-smokes/2026-07-13T21-58-09-287Z-one-time-zoom-attendance-live-smoke.md`.
+- Metadata/admin package live smoke: `ops/live-smokes/2026-07-13T21-58-34-161Z-one-time-metadata-review-live-smoke.md`.
+- Classroom/member-library read-only live smoke: `ops/live-smokes/2026-07-13T21-58-34-168Z-one-time-classroom-library-readonly-live-smoke.md`.
+- Prior capability/register evidence: `tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md` and `docs/integrations/onetime-vimeo-zoom-resend-readiness.md`.
+- Tooling evidence: `scripts/smoke-one-time-transcript-privacy-live.mjs`, `scripts/smoke-one-time-zoom-attendance-live.mjs`, `tests/one-time-transcript-privacy.test.js`, `tests/one-time-zoom-attendance-automation.test.js`, and `package.json`.
+- Guardrails: no Vimeo upload, Drive write/move, Google Classroom write, Zoom meeting/registrant/webhook attendance write, member publication, access mutation, email/WhatsApp send, payment action, DNS/account mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.

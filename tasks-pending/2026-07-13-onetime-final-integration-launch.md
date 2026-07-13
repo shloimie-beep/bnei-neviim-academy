@@ -8,7 +8,7 @@ SHA256: `sha256:BEC7D0B514919621FF8AFD25E9D95D29287F46A18B397EDB9361508BBFCDF13F
 
 Gate 1 audit: `ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md`
 
-Next unblocked requirement: `REQ-20260713-938`
+Next requirement: `REQ-20260713-939` (dependency-aware; `REQ-20260713-936` remains blocked)
 
 ## Requirements
 
@@ -19,7 +19,7 @@ Next unblocked requirement: `REQ-20260713-938`
 - `REQ-20260713-935` done - Verify and repair One Time landing/signup/assets/responsive launch path; deployed/live-smoked at One Time SHA `11e5ba0d4da6ae8897294be81a567bb519943ab2` with responsive, signup matrix, and dry-run proof
 - `REQ-20260713-936` blocked - Activate One Time WhatsApp canaries and public reactive auto-replies after gates
 - `REQ-20260713-937` done - Reconcile Stripe Billing V2 and PR #132 into current master safely; deployed/live-smoked at One Time SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5` with no-trial promotional billing proof
-- `REQ-20260713-938` not_started - Finish Vimeo, Drive, Classroom, and Zoom integration truth for One Time
+- `REQ-20260713-938` done - Finish Vimeo, Drive, Classroom, and Zoom integration truth for One Time; no-write live proof passed at One Time SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`
 - `REQ-20260713-939` not_started - Run PR/CI/DNS/deploy/rollback gate for final launch candidate
 - `REQ-20260713-940` not_started - Prove exact live One Time deployment and launch smoke at current SHA
 - `REQ-20260713-941` not_started - Finalize source-of-truth reconciliation and goal closeout
@@ -27,6 +27,7 @@ Next unblocked requirement: `REQ-20260713-938`
 ## Blockers
 
 - `REQ-20260713-936`: public WhatsApp approval is granted, but secure canary aliases and technical gates are still missing.
+- `REQ-20260713-939`: release/PR/CI/DNS/deploy/rollback gate is dependency-aware and cannot fully close while `REQ-20260713-936` remains blocked on canary/owner gates.
 - `REQ-20260713-940`: final exact-SHA launch deployment proof remains pending after remaining implementation requirements are terminal.
 
 ## REQ-20260713-933 Evidence Update
@@ -79,7 +80,20 @@ Next unblocked requirement: `REQ-20260713-938`
 - Verification: focused billing/review tests `25/25`, `npm run stripe:sandbox-e2e`, `npm run watchdog:workspace-scope`, and `git diff --check` passed.
 - Deploy proof: One Time Railway deployment `15280d13-3e12-4c72-8460-10e0c6e99b3e` reached `SUCCESS`; live `/api/deploy-info` returned exact SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`.
 - Live proof: exact-SHA separate-instance smoke passed, parent-facing landing/campaign no-trial smoke passed at `ops/live-smokes/2026-07-13T21-42-33-620Z-rabbi-onetime-landing-smoke.md`, and Operations promotional billing/referral smoke passed at `ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md`.
-- `REQ-20260713-937` is Done. Continue `REQ-20260713-938` next; `REQ-20260713-936` remains blocked until canary/owner gates pass.
+- `REQ-20260713-937` is Done; `REQ-20260713-938` closeout is recorded below. `REQ-20260713-936` remains blocked until canary/owner gates pass.
+
+## REQ-20260713-938 Media / Classroom / Zoom Truth Closeout
+
+- Truth audit: `ops/audits/2026-07-14-onetime-media-classroom-zoom-truth.md`.
+- Local proof: consolidated Drive/Vimeo/transcript/classroom/Zoom suite passed `83/83`.
+- Live proof at deployed One Time SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`:
+  `ops/live-smokes/2026-07-13T21-58-08-470Z-one-time-transcript-privacy-live-smoke.md`,
+  `ops/live-smokes/2026-07-13T21-58-09-287Z-one-time-zoom-attendance-live-smoke.md`,
+  `ops/live-smokes/2026-07-13T21-58-34-161Z-one-time-metadata-review-live-smoke.md`, and
+  `ops/live-smokes/2026-07-13T21-58-34-168Z-one-time-classroom-library-readonly-live-smoke.md`.
+- Smoke tooling was updated so transcript privacy and Zoom use the One Time Railway auth fallback and deployed-SHA checks.
+- `REQ-20260713-938` is Done as a truth/readiness closeout. It is not an approval for Vimeo upload, Drive write/move, Google Classroom write, Zoom meeting/registrant/webhook write, member publication, access mutation, send, payment, DNS, credential, provider, or production-data mutation.
+- Continue dependency-aware `REQ-20260713-939`; `REQ-20260713-936` remains blocked until canary/owner gates pass.
 
 ## Product Quality Operating Contract
 

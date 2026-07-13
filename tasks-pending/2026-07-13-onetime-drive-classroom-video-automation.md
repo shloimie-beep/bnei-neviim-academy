@@ -106,3 +106,26 @@ specific operator decisions such as external account approvals.
 | REQ-20260713-918 | Needs operator decision | Secret-redacted no-write Vimeo results in raw/register and `ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/05-vimeo-owner-readiness-and-private-upload.md` | Keyholder files outside repo | `node scripts/vimeo-private-smoke.mjs --json` returned `preview_only` with token source keyholder and no upload; supplied owner app credentials passed Vimeo client-credentials public auth with no token stored; direct bearer checks failed for both supplied values; read-only `checkVimeoTokenCapabilities` confirmed account read for `Shloimie Dratler` but returned `test_target_missing` because no private test project/folder is configured. | Need operator to choose/create Vimeo private test project/folder, confirm upload/private/edit/video_files scope/plan readiness, and explicitly approve a synthetic private upload smoke. |
 | REQ-20260713-919 | In progress | `ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/06-class-package-classroom-and-latest-video.md`; live report `ops/live-smokes/2026-07-13T14-06-30-661Z-one-time-classroom-library-readonly-live-smoke.md` | Member-safe classroom payload sanitizer, read-only classroom/member live-smoke script, package script, member-library/privacy test coverage, packet/register evidence | `node --check server.js`; `node --check scripts/smoke-one-time-classroom-library-readonly-live.mjs`; consolidated One Time Drive/media/transcription/metadata/member-library/privacy suite passed 71/71; `npm run secrets:audit` passed; `npm run app:smoke:one-time-classroom-library-readonly -- --expected-sha 22e50b2ee10fd0f78d17d5eb896d31a8a73402cd` passed with read-only admin/review/synthetic-member/anonymous gate proof and `external_write_performed=false`. | Publication gate, parent/student latest-video proof, and Vimeo-origin package integration remain gated. |
 | REQ-20260713-920 | Blocked | `ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.md`; `ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.product-quality.json`; PQC validation latest report | Audit script, UI audit artifacts, visual-audit packet, PQC spec | 40 screenshots captured for 8 active routes across `1440`, `1024`, `768`, `430`, and `390` viewports; PQC validation passed 1/1. | Authenticated Operations command-center screenshots are blocked by `401 Invalid credentials`; `one-time-member-login` repeatedly hung the screenshot harness; UI implementation remains blocked until those are resolved or carried as explicit blockers, and Vimeo/publication gates remain open. |
+
+## Final Launch Truth Rollup - REQ-20260713-938
+
+`REQ-20260713-938` in the One Time final integration launch register is Done as
+a truth/readiness closeout, with audit
+`ops/audits/2026-07-14-onetime-media-classroom-zoom-truth.md`.
+
+This does not close the provider-write gates in this Drive/classroom register:
+`REQ-20260713-918` still needs an operator Vimeo account/project/folder/scope
+decision before any private upload smoke, `REQ-20260713-919` still carries the
+publication/Vimeo-origin/member latest-video gate, and `REQ-20260713-920`
+remains blocked for authenticated UI screenshots and visual implementation.
+
+The rollup proof passed without external writes:
+`node --test` consolidated Drive/Vimeo/transcript/classroom/Zoom suite `83/83`,
+transcript privacy live smoke
+`ops/live-smokes/2026-07-13T21-58-08-470Z-one-time-transcript-privacy-live-smoke.md`,
+Zoom no-write live smoke
+`ops/live-smokes/2026-07-13T21-58-09-287Z-one-time-zoom-attendance-live-smoke.md`,
+metadata read-only live smoke
+`ops/live-smokes/2026-07-13T21-58-34-161Z-one-time-metadata-review-live-smoke.md`,
+and classroom/member-library read-only live smoke
+`ops/live-smokes/2026-07-13T21-58-34-168Z-one-time-classroom-library-readonly-live-smoke.md`.

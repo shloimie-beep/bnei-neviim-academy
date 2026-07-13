@@ -2979,27 +2979,65 @@
       "depends_on": [
         "REQ-20260713-932"
       ],
-      "status": "not_started",
-      "implementation_status": "Not started.",
+      "status": "done",
+      "implementation_status": "Done - current Drive/Vimeo/classroom/transcript privacy/Zoom state audited and verified with no-write local and live proof; provider writes remain gated in child registers.",
       "can_continue_without_operator": true,
-      "next_action": "Inspect current video/classroom/Zoom docs/runtime/register and run no-upload/no-send smokes unless approved.",
+      "next_action": "Continue REQ-20260713-939 release/PR/CI/DNS/deploy/rollback gate. Keep REQ-20260713-936 blocked until canary/owner gates pass; do not perform external media, Drive, Classroom, Zoom, send, payment, access, DNS, or provider writes without separate approval.",
       "acceptance_criteria": [
         "State is current and One Time scoped.",
         "No workspace leakage.",
         "External uploads/moves/publishes blocked without credentials/approval."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/audits/2026-07-14-onetime-media-classroom-zoom-truth.md",
+        "ops/live-smokes/2026-07-13T21-58-08-470Z-one-time-transcript-privacy-live-smoke.md",
+        "ops/live-smokes/2026-07-13T21-58-09-287Z-one-time-zoom-attendance-live-smoke.md",
+        "ops/live-smokes/2026-07-13T21-58-34-161Z-one-time-metadata-review-live-smoke.md",
+        "ops/live-smokes/2026-07-13T21-58-34-168Z-one-time-classroom-library-readonly-live-smoke.md",
+        "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md",
+        "docs/integrations/onetime-vimeo-zoom-resend-readiness.md"
+      ],
+      "verification": [
+        "node --check scripts/smoke-one-time-transcript-privacy-live.mjs PASS",
+        "node --check scripts/smoke-one-time-zoom-attendance-live.mjs PASS",
+        "node --test tests/one-time-transcript-privacy.test.js tests/one-time-zoom-attendance-automation.test.js PASS 19/19",
+        "npm run operations:check-generated PASS",
+        "node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js tests/one-time-transcript-metadata.test.js tests/one-time-member-library.test.js tests/one-time-transcript-privacy.test.js tests/one-time-zoom-attendance-automation.test.js PASS 83/83",
+        "npm run app:smoke:one-time-transcript-privacy -- --base-url https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5 PASS",
+        "npm run app:smoke:one-time-zoom-attendance -- --base-url https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5 PASS",
+        "npm run app:smoke:one-time-metadata-review -- --base-url https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5 PASS",
+        "npm run app:smoke:one-time-classroom-library-readonly -- --base-url https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5 PASS"
+      ],
       "implementation_files": [
         "server.js",
         "scripts/",
         "src/",
         "tests/",
-        "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md"
+        "package.json",
+        "scripts/smoke-one-time-transcript-privacy-live.mjs",
+        "scripts/smoke-one-time-zoom-attendance-live.mjs",
+        "tests/one-time-transcript-privacy.test.js",
+        "tests/one-time-zoom-attendance-automation.test.js",
+        "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md",
+        "ops/audits/2026-07-14-onetime-media-classroom-zoom-truth.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T22:42:00+03:00",
-      "blocker": ""
+      "updated_at": "2026-07-14T01:05:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "implementation_commit": "050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5",
+      "pushed_commit": "050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5",
+      "deployed_commit": "050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5",
+      "deployed_sha": "050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5",
+      "one_time_deployment_id": "15280d13-3e12-4c72-8460-10e0c6e99b3e",
+      "live_smoke_status": "passed",
+      "deployment_evidence": [
+        "ops/live-smokes/2026-07-13T21-58-08-470Z-one-time-transcript-privacy-live-smoke.md",
+        "ops/live-smokes/2026-07-13T21-58-09-287Z-one-time-zoom-attendance-live-smoke.md",
+        "ops/live-smokes/2026-07-13T21-58-34-161Z-one-time-metadata-review-live-smoke.md",
+        "ops/live-smokes/2026-07-13T21-58-34-168Z-one-time-classroom-library-readonly-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260713-939",
@@ -3027,7 +3065,7 @@
       "status": "not_started",
       "implementation_status": "Not started.",
       "can_continue_without_operator": true,
-      "next_action": "Run only after dependent gates are terminal; commit/push/deploy exact candidate and record rollback.",
+      "next_action": "Run dependency-aware release/PR/CI/DNS/deploy/rollback gate only after dependent requirements are terminal; REQ-20260713-936 is still blocked on canary/owner gates, so final release actions remain gated until that blocker clears.",
       "acceptance_criteria": [
         "CI/tests pass.",
         "Secrets audit passes.",
@@ -3050,7 +3088,7 @@
         "package.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T22:42:00+03:00",
+      "updated_at": "2026-07-14T01:05:00+03:00",
       "blocker": ""
     },
     {

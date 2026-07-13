@@ -1306,3 +1306,18 @@
 - PASS split-shell smoke correction: `node --check scripts/smoke-one-time-trial-referral-live.mjs` and `node --test tests/one-time-stripe-local-beta.test.js` `5/5`.
 - PASS `npm run app:smoke:one-time-trial-referral` against `https://join.onetimeonetime.com` with Railway Operations credentials injected in-process; report `ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md`, `trial_days=0`, `stripe_trial_enabled=false`, renewal `6700`, referral trigger `first_successful_paid_cycle`.
 - Guardrails: live smokes performed no checkout/session/subscription/charge/refund/invoice-credit mutation, billing notice send, email send, WhatsApp/WAPI send, access mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation.
+
+## REQ-20260713-938 Media / Classroom / Zoom Truth Test Results
+
+- PASS `node --check scripts/smoke-one-time-transcript-privacy-live.mjs`.
+- PASS `node --check scripts/smoke-one-time-zoom-attendance-live.mjs`.
+- PASS `node --test tests/one-time-transcript-privacy.test.js tests/one-time-zoom-attendance-automation.test.js`; `19/19` tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS consolidated Drive/Vimeo/transcript/classroom/Zoom suite:
+  `node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js tests/one-time-transcript-metadata.test.js tests/one-time-member-library.test.js tests/one-time-transcript-privacy.test.js tests/one-time-zoom-attendance-automation.test.js`;
+  `83/83` tests passed.
+- PASS `npm run app:smoke:one-time-transcript-privacy -- --base-url https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`; report `ops/live-smokes/2026-07-13T21-58-08-470Z-one-time-transcript-privacy-live-smoke.md`.
+- PASS `npm run app:smoke:one-time-zoom-attendance -- --base-url https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`; report `ops/live-smokes/2026-07-13T21-58-09-287Z-one-time-zoom-attendance-live-smoke.md`.
+- PASS `npm run app:smoke:one-time-metadata-review -- --base-url https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`; report `ops/live-smokes/2026-07-13T21-58-34-161Z-one-time-metadata-review-live-smoke.md`.
+- PASS `npm run app:smoke:one-time-classroom-library-readonly -- --base-url https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`; report `ops/live-smokes/2026-07-13T21-58-34-168Z-one-time-classroom-library-readonly-live-smoke.md`.
+- Guardrails: no external upload, Drive/Classroom/Zoom provider write, member publication, send, payment/access mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.

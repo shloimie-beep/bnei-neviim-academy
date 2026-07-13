@@ -6,9 +6,11 @@ const transcriptPrivacy = require('../src/lib/bna/transcript-privacy');
 
 const server = fs.readFileSync('server.js', 'utf8');
 const operations = fs.readFileSync('public/operations.html', 'utf8');
+const operationsDeferred = fs.readFileSync('public/js/operations-deferred-renderers.js', 'utf8');
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const routeRegistry = JSON.parse(fs.readFileSync('ops/route-registry.json', 'utf8'));
 const publicHelperRetrieval = fs.readFileSync('src/lib/bna/public-helper-retrieval.js', 'utf8');
+const transcriptPrivacySmoke = fs.readFileSync('scripts/smoke-one-time-transcript-privacy-live.mjs', 'utf8');
 
 const RAW_PRIVATE_TEXT = 'Student seven privately asked for sensitive follow-up.';
 
@@ -203,12 +205,21 @@ test('server exposes protected transcript privacy readiness while member-safe cl
 test('Operations One Time Library shows no-write transcript privacy readiness', () => {
   assert.match(operations, /renderOneTimeTranscriptPrivacyReadinessPanel/);
   assert.match(operations, /data-one-time-transcript-privacy-readiness/);
+  assert.match(operationsDeferred, /renderOneTimeTranscriptPrivacyReadinessPanel/);
+  assert.match(operationsDeferred, /data-one-time-transcript-privacy-readiness/);
   assert.match(operations, /Transcript Privacy \/ Knowledge Scope/);
   assert.match(operations, /REQ-20260619-309/);
+  assert.match(operationsDeferred, /REQ-20260619-309/);
   assert.match(operations, /guessed speaker identity/);
+  assert.match(operationsDeferred, /guessed speaker identity/);
   assert.match(operations, /Live smoke ready/);
+  assert.match(operationsDeferred, /Live smoke ready/);
   assert.match(operations, /Student and parent views can only resolve their own approved private segments/);
   assert.equal(packageJson.scripts['app:smoke:one-time-transcript-privacy'], 'node scripts/smoke-one-time-transcript-privacy-live.mjs');
+  assert.match(transcriptPrivacySmoke, /loadSmokeEnv/);
+  assert.match(transcriptPrivacySmoke, /loginOperations/);
+  assert.match(transcriptPrivacySmoke, /\/api\/deploy-info/);
+  assert.match(transcriptPrivacySmoke, /operations-deferred-renderers\.js/);
 });
 
 test('route registry and public helper retrieval keep transcript privacy scoped', () => {

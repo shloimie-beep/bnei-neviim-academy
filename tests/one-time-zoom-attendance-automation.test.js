@@ -8,6 +8,8 @@ const server = fs.readFileSync('server.js', 'utf8');
 const operations = fs.readFileSync('public/operations.html', 'utf8');
 const routeRegistry = JSON.parse(fs.readFileSync('ops/route-registry.json', 'utf8'));
 const productMigration = fs.readFileSync('railway-migration-2026-06-16-one-time-product-system.sql', 'utf8');
+const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const zoomAttendanceSmoke = fs.readFileSync('scripts/smoke-one-time-zoom-attendance-live.mjs', 'utf8');
 
 const configuredZoom = {
   accountId: 'acct',
@@ -303,6 +305,12 @@ test('Operations Live Classes shows no-write Zoom attendance automation readines
   assert.match(operations, /Dashboard clicks are not attendance/);
   assert.match(operations, /Recording\/report readers/);
   assert.match(operations, /Real Zoom writes require operator approval, DEC-20260619-304, release, and live smoke proof/);
+  assert.equal(packageJson.scripts['app:smoke:one-time-zoom-attendance'], 'node scripts/smoke-one-time-zoom-attendance-live.mjs');
+  assert.match(zoomAttendanceSmoke, /loadSmokeEnv/);
+  assert.match(zoomAttendanceSmoke, /loginOperations/);
+  assert.match(zoomAttendanceSmoke, /\/api\/deploy-info/);
+  assert.match(zoomAttendanceSmoke, /data-one-time-zoom-automation-readiness/);
+  assert.match(zoomAttendanceSmoke, /No Zoom meeting, registrant, webhook attendance write/);
 });
 
 test('route registry declares private no-write Zoom automation preview routes', () => {

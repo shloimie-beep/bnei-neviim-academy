@@ -779,5 +779,15 @@ Current status: `active`
 - Deploy proof: One Time Railway deployment `15280d13-3e12-4c72-8460-10e0c6e99b3e` reached `SUCCESS`; live `/api/deploy-info` returned exact SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`.
 - Live proof passed: exact-SHA One Time separate-instance smoke, exact-SHA parent-facing landing/campaign no-trial smoke at `ops/live-smokes/2026-07-13T21-42-33-620Z-rabbi-onetime-landing-smoke.md`, and Operations promotional billing/referral smoke at `ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md`.
 - Billing live readback showed `trial_days=0`, `stripe_trial_enabled=false`, renewal `6700`, billing notice/refund execution disabled, and referral trigger `first_successful_paid_cycle`.
-- Next current unblocked requirement is `REQ-20260713-938`; `REQ-20260713-936` remains blocked until canary/owner gates pass.
+- `REQ-20260713-938` closeout is recorded below; `REQ-20260713-936` remains blocked until canary/owner gates pass.
 - Guardrails: no live checkout/session/subscription/charge/refund/invoice-credit mutation, billing notice send, email send, WhatsApp/WAPI send, access mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.
+
+## 2026-07-14 - REQ-20260713-938 Media / Classroom / Zoom Truth Closeout
+
+- `REQ-20260713-938` is Done as a truth/readiness closeout.
+- Audit: `ops/audits/2026-07-14-onetime-media-classroom-zoom-truth.md`.
+- Local proof: consolidated Drive/Vimeo/transcript/classroom/Zoom suite passed `83/83`.
+- Live proof passed at deployed One Time SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`: transcript privacy, Zoom no-write readiness, metadata/admin package readback, and classroom/member-library read-only smokes.
+- Smoke tooling was updated for transcript privacy and Zoom so both use the One Time Railway auth fallback and exact deployed-SHA checks.
+- Next current requirement is dependency-aware `REQ-20260713-939`; `REQ-20260713-936` remains blocked until canary/owner gates pass.
+- Guardrails: no Vimeo upload, Drive write/move, Google Classroom write, Zoom meeting/registrant/webhook attendance write, member publication, access mutation, email/WhatsApp send, payment action, DNS/account mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.

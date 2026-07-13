@@ -1,39 +1,39 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { loadSmokeEnv, loginOperations } from './lib/live-smoke-auth.mjs';
 
-const root = process.cwd();
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const reportDir = path.join(root, 'ops', 'live-smokes');
+const env = loadSmokeEnv({ root });
+const oneTimeRailwayEnv = {
+  ...env,
+  OPS_USERNAME: '',
+  OPS_PASSWORD: '',
+  BNA_SMOKE_RAILWAY_PROJECT_ID: env.BNA_SMOKE_RAILWAY_PROJECT_ID || 'ce55ef20-1418-4ad3-aafa-f877fb992dc8',
+  BNA_SMOKE_RAILWAY_SERVICE: env.BNA_SMOKE_RAILWAY_SERVICE || 'one-time-web',
+  BNA_SMOKE_RAILWAY_ENVIRONMENT: env.BNA_SMOKE_RAILWAY_ENVIRONMENT || 'production',
+};
 
-function loadEnvFile(filePath) {
-  if (!fs.existsSync(filePath)) return {};
-  const env = {};
-  for (const rawLine of fs.readFileSync(filePath, 'utf8').split(/\r?\n/)) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith('#')) continue;
-    const index = line.indexOf('=');
-    if (index <= 0) continue;
-    const key = line.slice(0, index).trim();
-    let value = line.slice(index + 1).trim();
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-      value = value.slice(1, -1);
-    }
-    env[key] = value;
-  }
-  return env;
+function argValue(name, fallback = '') {
+  const index = process.argv.indexOf(name);
+  if (index >= 0 && process.argv[index + 1]) return process.argv[index + 1];
+  const inline = process.argv.find((arg) => arg.startsWith(`${name}=`));
+  return inline ? inline.slice(name.length + 1) : fallback;
 }
 
-function basicAuthHeader(username, password) {
-  return `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
-}
-
-function parseSetCookie(response) {
-  const raw = response.headers.get('set-cookie') || '';
-  const first = raw.split(';')[0] || '';
-  const index = first.indexOf('=');
-  if (index <= 0) return null;
-  return { name: first.slice(0, index), value: first.slice(index + 1) };
-}
+const appUrl = String(
+  argValue('--base-url') ||
+  process.env.ONE_TIME_PUBLIC_BASE_URL ||
+  process.env.ONE_TIME_APP_URL ||
+  process.env.ONETIME_BASE_URL ||
+  env.ONE_TIME_PUBLIC_BASE_URL ||
+  env.ONE_TIME_APP_URL ||
+  env.ONETIME_BASE_URL ||
+  'https://join.onetimeonetime.com'
+).replace(/\/+$/, '');
+const expectedSha = String(argValue('--expected-sha', process.env.BNA_EXPECT_DEPLOYED_SHA || '')).trim();
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -72,18 +72,6 @@ async function requestText(url, options = {}) {
   return { response, text };
 }
 
-async function loginOperationsSession(appUrl, username, password) {
-  const { response, data } = await requestJson(`${appUrl}/api/operations/login`, {
-    method: 'POST',
-    headers: { authorization: basicAuthHeader(username, password) },
-    body: JSON.stringify({ username, password }),
-  });
-  assert(data.success === true, 'operations login did not return success');
-  const cookie = parseSetCookie(response);
-  assert(cookie?.name && cookie?.value, 'operations login did not set a session cookie');
-  return cookie;
-}
-
 function includesSecretLikeValue(value) {
   const text = JSON.stringify(value || {});
   return /(sk_live_|sk_test_|rk_live_|xox[baprs]-|AKIA[0-9A-Z]{16}|-----BEGIN|authorization|set-cookie)/i.test(text);
@@ -101,6 +89,8 @@ function writeReports(report) {
     '',
     `App: ${report.app_url}`,
     `Result: ${failed.length ? 'failed' : 'passed'}`,
+    `Expected SHA: ${report.expected_sha || '(not provided)'}`,
+    `Deployed SHA: ${report.deployed_sha || '(not checked)'}`,
     '',
     '## Checks',
     ...report.steps.map((step) => `- ${step.ok ? 'PASS' : 'FAIL'} ${step.name}${step.detail ? `: ${step.detail}` : ''}`),
@@ -121,17 +111,12 @@ function writeReports(report) {
 }
 
 async function main() {
-  const env = {
-    ...loadEnvFile(path.join(root, '.env.local')),
-    ...loadEnvFile(path.join(root, '.env')),
-    ...process.env,
+  const report = {
+    started_at: new Date().toISOString(),
+    app_url: appUrl,
+    expected_sha: expectedSha || '',
+    steps: [],
   };
-  const appUrl = (env.BNA_APP_URL || env.NEXT_PUBLIC_APP_URL || 'https://bneineviimacademy.org').replace(/\/+$/, '');
-  const username = env.OPS_USERNAME || '';
-  const password = env.OPS_PASSWORD || '';
-  assert(username && password, 'OPS_USERNAME and OPS_PASSWORD are required for live smoke');
-
-  const report = { started_at: new Date().toISOString(), app_url: appUrl, steps: [] };
   const step = async (name, fn) => {
     try {
       const detail = await fn();
@@ -144,15 +129,26 @@ async function main() {
   };
 
   let cookie;
-  await step('Operations login', async () => {
-    cookie = await loginOperationsSession(appUrl, username, password);
-    return `cookie ${cookie.name}`;
+  await step('Operations login uses One Time Railway auth fallback', async () => {
+    const login = await loginOperations({ baseUrl: appUrl, env: oneTimeRailwayEnv, cwd: root });
+    assert(login.cookie?.name === 'bna_ops_session' && login.cookie.value, login.reason || 'Operations login cookie missing');
+    cookie = login.cookie;
+    report.auth_source = login.source;
+    return `source ${login.source}`;
   });
 
   const authHeaders = {
-    authorization: basicAuthHeader(username, password),
     cookie: `${cookie.name}=${cookie.value}`,
   };
+
+  await step('Deploy-info is One Time and matches expected SHA when supplied', async () => {
+    const { data } = await requestJson(`${appUrl}/api/deploy-info`);
+    assert(data.status === 'ok', 'deploy-info did not return ok');
+    assert(data.target_app === 'one-time', `deploy target was ${data.target_app || '(missing)'}`);
+    if (expectedSha) assert(data.commit_sha === expectedSha, `deployed SHA ${data.commit_sha || '(missing)'} did not match ${expectedSha}`);
+    report.deployed_sha = data.commit_sha || '';
+    return `target ${data.target_app}; sha ${data.commit_sha || '(missing)'}`;
+  });
 
   await step('Transcript privacy readiness API is body-free and no-write', async () => {
     const { data } = await requestJson(`${appUrl}/api/bna/one-time/transcript-privacy`, { headers: authHeaders });
@@ -182,13 +178,22 @@ async function main() {
     return `${report.classes_seen} classes, ${report.segments_seen} segments`;
   });
 
-  await step('Operations ships transcript privacy panel', async () => {
+  await step('Operations bootstrap route loads the split Operations shell', async () => {
     const { text } = await requestText(`${appUrl}/operations`, { headers: authHeaders });
-    assert(text.includes('data-one-time-transcript-privacy-readiness'), 'Operations missing transcript privacy marker');
-    assert(text.includes('REQ-20260619-309'), 'Operations missing transcript privacy requirement id');
-    assert(text.includes('guessed speaker identity'), 'Operations missing guessed-speaker guardrail');
-    assert(text.includes('Live smoke ready'), 'Operations missing live-smoke-ready state');
-    return 'Operations panel marker and guardrail text shipped';
+    assert(text.includes('/js/operations-shell.js'), 'Operations bootstrap missing operations shell runtime');
+    assert(text.includes('/css/one-time-operations.css'), 'Operations bootstrap missing One Time Operations stylesheet');
+    return 'Authenticated /operations route serves the split Operations shell';
+  });
+
+  await step('Operations deferred runtime ships transcript privacy panel', async () => {
+    const { text } = await requestText(`${appUrl}/js/operations-deferred-renderers.js`, {
+      headers: { 'cache-control': 'no-cache' },
+    });
+    assert(text.includes('data-one-time-transcript-privacy-readiness'), 'Operations deferred runtime missing transcript privacy marker');
+    assert(text.includes('REQ-20260619-309'), 'Operations deferred runtime missing transcript privacy requirement id');
+    assert(text.includes('guessed speaker identity'), 'Operations deferred runtime missing guessed-speaker guardrail');
+    assert(text.includes('Live smoke ready'), 'Operations deferred runtime missing live-smoke-ready state');
+    return 'Transcript privacy panel markers shipped in operations-deferred-renderers.js';
   });
 
   const paths = writeReports(report);

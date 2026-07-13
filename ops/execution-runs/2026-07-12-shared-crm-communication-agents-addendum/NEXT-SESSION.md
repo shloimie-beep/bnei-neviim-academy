@@ -2,7 +2,7 @@
 
 Active source: `RAW-20260713-010`
 
-Current requirement: `REQ-20260713-938` - Finish Vimeo, Drive, Classroom, and Zoom integration truth for One Time.
+Current requirement: `REQ-20260713-939` - Run PR/CI/DNS/deploy/rollback gate for final launch candidate.
 
 `REQ-20260713-935` landing/signup/assets/responsive is Done. One Time deployment `39b4820d-fe5a-456c-bdc1-ccc30befa1d5` serves exact SHA `11e5ba0d4da6ae8897294be81a567bb519943ab2`; responsive report `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/REPORT.md`, signup matrix `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-form-matrix-live.md`, and interest dry-run `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md` passed. Do not redo the landing/signup campaign-policy repair unless verification regresses.
 
@@ -42,7 +42,20 @@ REQ-937 evidence:
 - Operations promotional billing/referral no-write smoke passed: `ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md`; it recorded `trial_days=0`, `stripe_trial_enabled=false`, renewal `6700`, and referral trigger `first_successful_paid_cycle`.
 - No live charge, refund, subscription, checkout, billing notice send, email/WhatsApp send, provider mutation, access mutation, or external write was performed.
 
-Continue with `REQ-20260713-938` Vimeo, Drive, Classroom, and Zoom integration truth. Keep the work scoped to readbacks/config truth and no-write proof unless a separate owner-approved external mutation gate exists.
+`REQ-20260713-938` Media / Classroom / Zoom truth is Done. Do not redo it unless verification regresses.
+
+REQ-938 evidence:
+
+- Truth audit: `ops/audits/2026-07-14-onetime-media-classroom-zoom-truth.md`.
+- Local suite: consolidated Drive/Vimeo/transcript/classroom/Zoom tests passed `83/83`.
+- Live no-write smokes at deployed One Time SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`:
+  `ops/live-smokes/2026-07-13T21-58-08-470Z-one-time-transcript-privacy-live-smoke.md`,
+  `ops/live-smokes/2026-07-13T21-58-09-287Z-one-time-zoom-attendance-live-smoke.md`,
+  `ops/live-smokes/2026-07-13T21-58-34-161Z-one-time-metadata-review-live-smoke.md`, and
+  `ops/live-smokes/2026-07-13T21-58-34-168Z-one-time-classroom-library-readonly-live-smoke.md`.
+- Guardrail: no Vimeo upload, Drive write/move, Google Classroom write, Zoom meeting/registrant/webhook write, member publication, access mutation, send, payment, DNS, credential, provider, or production-data mutation occurred.
+
+Continue with dependency-aware `REQ-20260713-939`. It cannot fully close while `REQ-20260713-936` remains blocked on canary/owner gates, but preflight/read-only release checks may continue where safe.
 
 Validated PQC splitter: `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`.
 

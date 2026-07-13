@@ -1,38 +1,40 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
+import { loadSmokeEnv, loginOperations } from './lib/live-smoke-auth.mjs';
 
-const repoRoot = process.cwd();
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const reportDir = path.join(repoRoot, 'ops', 'live-smokes');
+const env = loadSmokeEnv({ root: repoRoot });
+const oneTimeRailwayEnv = {
+  ...env,
+  OPS_USERNAME: '',
+  OPS_PASSWORD: '',
+  BNA_SMOKE_RAILWAY_PROJECT_ID: env.BNA_SMOKE_RAILWAY_PROJECT_ID || 'ce55ef20-1418-4ad3-aafa-f877fb992dc8',
+  BNA_SMOKE_RAILWAY_SERVICE: env.BNA_SMOKE_RAILWAY_SERVICE || 'one-time-web',
+  BNA_SMOKE_RAILWAY_ENVIRONMENT: env.BNA_SMOKE_RAILWAY_ENVIRONMENT || 'production',
+};
 
-function loadEnvFile(filePath) {
-  if (!fs.existsSync(filePath)) return {};
-  const env = {};
-  for (const rawLine of fs.readFileSync(filePath, 'utf8').split(/\r?\n/)) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith('#')) continue;
-    const index = line.indexOf('=');
-    if (index <= 0) continue;
-    const key = line.slice(0, index).trim();
-    let value = line.slice(index + 1).trim();
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) value = value.slice(1, -1);
-    env[key] = value;
-  }
-  return env;
+function argValue(name, fallback = '') {
+  const index = process.argv.indexOf(name);
+  if (index >= 0 && process.argv[index + 1]) return process.argv[index + 1];
+  const inline = process.argv.find((arg) => arg.startsWith(`${name}=`));
+  return inline ? inline.slice(name.length + 1) : fallback;
 }
 
-function basicAuthHeader(username, password) {
-  return `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
-}
-
-function parseSetCookie(response) {
-  const raw = response.headers.get('set-cookie') || '';
-  const first = raw.split(';')[0] || '';
-  const index = first.indexOf('=');
-  if (index <= 0) return null;
-  return { name: first.slice(0, index), value: first.slice(index + 1) };
-}
+const baseUrl = String(
+  argValue('--base-url') ||
+  process.env.ONE_TIME_PUBLIC_BASE_URL ||
+  process.env.ONE_TIME_APP_URL ||
+  process.env.ONETIME_BASE_URL ||
+  env.ONE_TIME_PUBLIC_BASE_URL ||
+  env.ONE_TIME_APP_URL ||
+  env.ONETIME_BASE_URL ||
+  'https://join.onetimeonetime.com'
+).replace(/\/+$/, '');
+const expectedSha = String(argValue('--expected-sha', process.env.BNA_EXPECT_DEPLOYED_SHA || '')).trim();
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -66,24 +68,6 @@ async function requestJson(url, options = {}) {
     throw new Error(`${options.method || 'GET'} ${url} returned ${response.status}: ${text.slice(0, 700)}`);
   }
   return { response, data };
-}
-
-async function loginOperationsSession(appUrl, username, password) {
-  const response = await fetch(`${appUrl}/api/operations/login`, {
-    method: 'POST',
-    headers: {
-      authorization: basicAuthHeader(username, password),
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({ username, password }),
-  });
-  const text = await response.text();
-  if (!response.ok) throw new Error(`operations login returned ${response.status}: ${text.slice(0, 300)}`);
-  const data = JSON.parse(text);
-  assert(data.success === true, 'operations login did not return success');
-  const cookie = parseSetCookie(response);
-  assert(cookie?.name && cookie?.value, 'operations login did not set a session cookie');
-  return { cookie, role: data.role || null, scope: data.scope || null };
 }
 
 async function collectApiState({ appUrl, cookie }) {
@@ -217,6 +201,8 @@ function writeReports(report) {
     '',
     `App: ${report.app_url}`,
     `Result: ${failed.length ? 'failed' : 'passed'}`,
+    `Expected SHA: ${report.expected_sha || '(not provided)'}`,
+    `Deployed SHA: ${report.deployed_sha || '(not checked)'}`,
     '',
     '## Steps',
     ...report.steps.map((step) => `- ${step.ok ? 'PASS' : 'FAIL'} ${step.name} (${step.duration_ms}ms)${step.error ? ` - ${step.error}` : ''}`),
@@ -253,14 +239,11 @@ async function runStep(report, name, fn) {
 }
 
 async function main() {
-  const env = { ...loadEnvFile(path.join(repoRoot, '.env.local')), ...process.env };
-  const appUrl = String(env.OPS_BASE_URL || env.BNA_APP_URL || env.NEXT_PUBLIC_APP_URL || 'https://bneineviimacademy.org').replace(/\/+$/, '');
-  const username = env.OPS_USERNAME || '';
-  const password = env.OPS_PASSWORD || '';
-  assert(username && password, 'OPS_USERNAME and OPS_PASSWORD are required for live smoke');
+  const appUrl = baseUrl;
   const report = {
     started_at: new Date().toISOString(),
     app_url: appUrl,
+    expected_sha: expectedSha || '',
     steps: [],
     summary: {
       zoom_status_readable: false,
@@ -274,7 +257,27 @@ async function main() {
     },
   };
   try {
-    const login = await runStep(report, 'operations login', () => loginOperationsSession(appUrl, username, password));
+    const login = await runStep(report, 'operations login uses One Time Railway auth fallback', async () => {
+      const session = await loginOperations({ baseUrl: appUrl, env: oneTimeRailwayEnv, cwd: repoRoot });
+      assert(session.cookie?.name === 'bna_ops_session' && session.cookie.value, session.reason || 'Operations login cookie missing');
+      return {
+        cookie: session.cookie,
+        source: session.source,
+        role: session.role || session.user?.role || null,
+      };
+    });
+    await runStep(report, 'deploy-info is One Time and matches expected SHA when supplied', async () => {
+      const { data } = await requestJson(`${appUrl}/api/deploy-info`);
+      assert(data.status === 'ok', 'deploy-info did not return ok');
+      assert(data.target_app === 'one-time', `deploy target was ${data.target_app || '(missing)'}`);
+      if (expectedSha) assert(data.commit_sha === expectedSha, `deployed SHA ${data.commit_sha || '(missing)'} did not match ${expectedSha}`);
+      report.deployed_sha = data.commit_sha || '';
+      return {
+        target_app: data.target_app,
+        commit_sha: data.commit_sha || '',
+        deployment_source: data.deployment_source || '',
+      };
+    });
     const apiState = await runStep(report, 'zoom readiness and previews', () => collectApiState({ appUrl, cookie: login.cookie }));
     report.summary.zoom_status_readable = true;
     report.summary.token_cache_reported = apiState.status.token_cache_supported === true;

@@ -40475,3 +40475,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Evidence: `ops/live-smokes/2026-07-13T21-42-33-620Z-rabbi-onetime-landing-smoke.md`, `ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md`, and `ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.md`.
 - Live billing readback recorded `trial_days=0`, `stripe_trial_enabled=false`, renewal `6700`, billing notice/refund execution disabled, and referral trigger `first_successful_paid_cycle`.
 - Guardrails: no live checkout/session/subscription/charge/refund/invoice-credit mutation, billing notice send, email, WhatsApp/WAPI, access mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.
+
+## 2026-07-14 - One Time media/classroom/Zoom truth closeout
+
+- Completed `REQ-20260713-938` as a truth/readiness closeout for Drive, Vimeo,
+  classroom/member-library, transcript privacy, and Zoom.
+- Added audit `ops/audits/2026-07-14-onetime-media-classroom-zoom-truth.md`.
+- Updated transcript privacy and Zoom live smoke tooling to use the One Time
+  Railway auth fallback and exact deployed-SHA checks; added package script
+  `app:smoke:one-time-zoom-attendance`.
+- Verified local no-write contracts with the consolidated Drive/Vimeo/transcript/
+  classroom/Zoom suite `83/83`.
+- Verified live no-write readbacks at deployed One Time SHA
+  `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`: transcript privacy, Zoom
+  attendance/readiness, metadata/admin package, and classroom/member-library.
+- Guardrails: no Vimeo upload, Drive write/move, Google Classroom write, Zoom
+  meeting/registrant/webhook write, member publication, access mutation, send,
+  payment, DNS/account mutation, provider mutation, credential mutation, CRM
+  production write, or destructive production mutation occurred.
