@@ -31858,6 +31858,31 @@ function oneTimeClassSessionView(row = {}) {
   };
 }
 
+function oneTimeClassSessionMemberSafeView(session = {}) {
+  const {
+    content_job_id,
+    newsletter_draft,
+    source_media_url,
+    transcript_text,
+    transcript_notes,
+    transcript_review_state,
+    transcript_privacy_class,
+    transcript_segments,
+    transcript_versions,
+    transcript_glossary,
+    transcript_release_audit,
+    metadata_draft,
+    metadata_review_state,
+    bot_knowledge_handoff,
+    bot_knowledge_status,
+    source_sheet_draft,
+    package_status,
+    updated_by,
+    ...safe
+  } = session || {};
+  return safe;
+}
+
 function oneTimeClassAssetView(row = {}) {
   return {
     id: row.id ? Number(row.id) : null,
@@ -32544,13 +32569,7 @@ async function getOneTimeClassroomData({ db = pool, memberLibrary = null, member
     .map(oneTimeClassSessionView)
     .filter((session) => !memberSafe || visibleClassIds.has(Number(session.id)))
     .map((session) => ({
-      ...session,
-      transcript_text: memberSafe ? '' : session.transcript_text,
-      transcript_notes: memberSafe ? '' : session.transcript_notes,
-      transcript_segments: memberSafe ? [] : session.transcript_segments,
-      transcript_versions: memberSafe ? {} : session.transcript_versions,
-      transcript_glossary: memberSafe ? [] : session.transcript_glossary,
-      transcript_release_audit: memberSafe ? {} : session.transcript_release_audit,
+      ...(memberSafe ? oneTimeClassSessionMemberSafeView(session) : session),
       member_library_item: memberItems.find((item) => Number(item.class_session_id) === Number(session.id)) || null,
     }));
   const todayKey = getTodayDateInTimeZone();

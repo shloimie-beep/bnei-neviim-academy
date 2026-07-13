@@ -107,10 +107,31 @@ test('Member library API returns only published tier-visible safe items', () => 
   assert.match(helper, /publish_status = 'published'/);
   assert.match(helper, /libraryVisibilityAllowsMember\(item\.library_visibility, tier, item\.required_tier\)/);
   const publicView = sliceBetween(server, 'function oneTimeMemberLibraryPublicView', 'function normalizeOneTimeClassroomModerationStatus');
+  const memberSafeClassView = sliceBetween(server, 'function oneTimeClassSessionMemberSafeView', 'function oneTimeClassAssetView');
   const classPackageView = sliceBetween(server, 'function buildOneTimeClassPackage', 'function isOneTimeEditableSlideAsset');
   assert.match(classPackageView, /metadata_review/);
   assert.match(classPackageView, /bot_knowledge/);
   assert.match(classPackageView, /private_admin_only:[\s\S]*metadata_draft[\s\S]*bot_knowledge_handoff/);
+  assert.match(server, /oneTimeClassSessionMemberSafeView\(session\)/);
+  [
+    'content_job_id',
+    'newsletter_draft',
+    'source_media_url',
+    'transcript_text',
+    'transcript_notes',
+    'transcript_review_state',
+    'transcript_privacy_class',
+    'transcript_segments',
+    'transcript_versions',
+    'transcript_glossary',
+    'transcript_release_audit',
+    'metadata_draft',
+    'bot_knowledge_handoff',
+    'bot_knowledge_status',
+    'source_sheet_draft',
+    'package_status',
+    'updated_by',
+  ].forEach((field) => assert.match(memberSafeClassView, new RegExp(`\\b${field}\\b`)));
   assert.doesNotMatch(publicView, /approval_flag|approved_by|rollback_metadata|transcript_notes|private_admin_only|package_status/);
   assert.doesNotMatch(publicView, /metadata_draft|bot_knowledge_handoff|bot_knowledge_status|transcript_text/);
   assert.match(server, /const ONE_TIME_ASSET_TYPES = new Set\(\['worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'thumbnail', 'transcript', 'example', 'other'\]\)/);
@@ -144,6 +165,11 @@ test('classroom library live smoke is read-only and covers latest-video entitlem
   assert.match(classroomLibraryReadonlyLiveSmoke, /one-time\/classes\?limit=10&status=all/);
   assert.match(classroomLibraryReadonlyLiveSmoke, /admin class package list has published library items/);
   assert.match(classroomLibraryReadonlyLiveSmoke, /review classroom exposes latest-video shape without private fields/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /synthetic review member access reads entitled library without private fields/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /REVIEW_ACCESS_CODE/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /synthetic_member_items_visible/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /metadata_draft\|bot_knowledge_handoff\|bot_knowledge_status/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /member-library response echoed the access code/);
   assert.match(classroomLibraryReadonlyLiveSmoke, /anonymous member-library and classroom access stay blocked/);
   assert.match(classroomLibraryReadonlyLiveSmoke, /external_write_performed: false/);
   assert.match(classroomLibraryReadonlyLiveSmoke, /production_mutation_performed: false/);

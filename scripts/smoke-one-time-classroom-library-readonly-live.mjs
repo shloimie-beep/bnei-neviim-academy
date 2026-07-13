@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadSmokeEnv, loginOperations } from './lib/live-smoke-auth.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const require = createRequire(import.meta.url);
+const { REVIEW_ACCESS_CODE } = require('../src/platform/instances/one-time-shared-review-data.js');
 const reportDir = path.join(repoRoot, 'ops', 'live-smokes');
 const env = loadSmokeEnv({ root: repoRoot });
 const oneTimeRailwayEnv = {
@@ -115,7 +118,10 @@ function countBy(rows = [], field) {
 function assertNoPrivatePayload(value = {}, label = 'payload') {
   const serialized = JSON.stringify(value);
   assert(!/"(?:access_code|code|cookie|token|password|authorization)"\s*:/i.test(serialized), `${label} contained credential-like field`);
-  assert(!/"(?:transcript_text|transcript_notes|transcript_segments|private_admin_only)"\s*:/i.test(serialized), `${label} exposed private transcript/admin field`);
+  assert(
+    !/"(?:content_job_id|newsletter_draft|source_media_url|transcript_text|transcript_notes|transcript_review_state|transcript_privacy_class|transcript_segments|transcript_versions|transcript_glossary|transcript_release_audit|metadata_draft|bot_knowledge_handoff|bot_knowledge_status|source_sheet_draft|package_status|updated_by|private_admin_only)"\s*:/i.test(serialized),
+    `${label} exposed private transcript/admin field`
+  );
 }
 
 function writeReports() {
@@ -142,6 +148,8 @@ function writeReports() {
     `- admin_published_classes: ${report.summary?.admin_published_classes ?? 'n/a'}`,
     `- admin_classes_with_library_items: ${report.summary?.admin_classes_with_library_items ?? 'n/a'}`,
     `- review_today_video_present: ${report.summary?.review_today_video_present ? 'yes' : 'no'}`,
+    `- synthetic_member_items_visible: ${report.summary?.synthetic_member_items_visible ?? 'n/a'}`,
+    `- synthetic_member_tier: ${report.summary?.synthetic_member_tier ?? 'n/a'}`,
     `- anonymous_member_library_status: ${report.summary?.anonymous_member_library_status ?? 'n/a'}`,
     `- anonymous_classroom_status: ${report.summary?.anonymous_classroom_status ?? 'n/a'}`,
     '',
@@ -217,6 +225,38 @@ async function main() {
       today_video_present: true,
       class_count: report.summary.review_class_count,
       threads_count: report.summary.review_threads_count,
+    };
+  });
+
+  await step('synthetic review member access reads entitled library without private fields', async () => {
+    const { data } = await fetchJson(`/api/member-library?code=${encodeURIComponent(REVIEW_ACCESS_CODE)}`);
+    assert(data.success === true, 'member-library synthetic review access did not return success');
+    assert(data.internal_fields_hidden === true, 'member-library did not mark internal fields hidden');
+    const library = data.member_library || {};
+    const access = library.access || {};
+    const items = Array.isArray(library.items) ? library.items : [];
+    assert(access.status === 'active', `synthetic review access status was ${access.status || '(missing)'}`);
+    assert(['live_class', 'library_only'].includes(String(access.tier || '')), `unexpected synthetic review tier ${access.tier || '(missing)'}`);
+    assert(items.length > 0, 'synthetic review member access returned no library items');
+    assert(items.some((item) => item.media_provider === 'vimeo' || item.vimeo_id), 'synthetic review member item did not include Vimeo media shape');
+    assert(data.classroom?.today_video, 'member-library payload did not include classroom today_video');
+    assertNoPrivatePayload(data, 'synthetic member-library');
+    const serialized = JSON.stringify(data);
+    assert(!serialized.includes(REVIEW_ACCESS_CODE), 'member-library response echoed the access code');
+    report.summary = {
+      ...(report.summary || {}),
+      synthetic_member_items_visible: items.length,
+      synthetic_member_tier: access.tier || '',
+      synthetic_member_status: access.status || '',
+      synthetic_member_vimeo_items: items.filter((item) => item.media_provider === 'vimeo' || item.vimeo_id).length,
+      synthetic_member_access_code_echoed: false,
+    };
+    return {
+      items_visible: items.length,
+      tier: access.tier || '',
+      status: access.status || '',
+      vimeo_items: report.summary.synthetic_member_vimeo_items,
+      access_code_echoed: false,
     };
   });
 
