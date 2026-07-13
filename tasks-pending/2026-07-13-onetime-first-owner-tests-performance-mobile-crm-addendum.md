@@ -27,11 +27,11 @@ Source matrix: `ops/execution-runs/2026-07-12-shared-crm-communication-agents-ad
 | --- | --- | --- | --- |
 | REQ-20260713-905 | One Time-first control correction and BNA parity supersession | Done | Continue `REQ-20260713-906`. |
 | REQ-20260713-906 | Owner-only live integration tests for One Time email and WhatsApp | Blocked on owner aliases | Configure secure owner-test email and WhatsApp aliases through the approved secret path; no send occurred. |
-| REQ-20260713-907 | One Time architecture and performance baseline | Not started | Write ADR and collect repeated cold/warm performance baseline before app-shell implementation. |
-| REQ-20260713-908 | Dedicated One Time application shell and route-level modules | Not started | Wait for `REQ-20260713-907`, then implement incrementally with fallback and proof. |
+| REQ-20260713-907 | One Time architecture and performance baseline | Done | ADR and live baseline are recorded; continue `REQ-20260713-908` and `REQ-20260713-911`. |
+| REQ-20260713-908 | Dedicated One Time application shell and route-level modules | Ready | Implement incrementally with old-shell fallback, shared backend contracts, deploy/live proof, and baseline budget comparison. |
 | REQ-20260713-909 | Mobile CRM information architecture | Not started | Create current-state visual audit and validated Product Quality packet before CRM UI edits. |
 | REQ-20260713-910 | Performance and integration verifier/final report | Not started | Wait for owner-test, architecture, shell, mobile CRM, and performance-gate packets; verify without duplicate sends. |
-| REQ-20260713-911 | Performance instrumentation, regression gates, and final proof sections | Not started | Add instrumentation, repeated baseline reporting, budgets, DB/API checks, release gates, and performance proof after `REQ-20260713-907`. |
+| REQ-20260713-911 | Performance instrumentation, regression gates, and final proof sections | Ready | Add instrumentation, repeated baseline reporting, budgets, DB/API checks, release gates, and performance proof before lag is called fixed. |
 
 ## Packet DAG
 
@@ -39,11 +39,11 @@ Source matrix: `ops/execution-runs/2026-07-12-shared-crm-communication-agents-ad
 | --- | --- | --- | --- | --- |
 | PKT-20260713-905 | REQ-20260713-905 | Control correction | Done | Register raw addendum, correction decisions, source matrix, and One Time-first run order. |
 | PKT-20260713-906 | REQ-20260713-906 | Provider test packet | Blocked on owner aliases | Guarded owner-only email/WhatsApp readiness, preflight, optional send, provider readback, CRM readback, idempotency, redacted evidence. |
-| PKT-20260713-907 | REQ-20260713-907 | Architecture/performance packet | Ready | ADR, route/surface map, instrumentation, repeated baseline, budgets, root-cause classification. |
-| PKT-20260713-908 | REQ-20260713-908 | Implementation packet | Blocked by `REQ-20260713-907` | Dedicated One Time frontend shell and route modules with old-shell fallback. |
+| PKT-20260713-907 | REQ-20260713-907 | Architecture/performance packet | Done | ADR, route/surface map, instrumentation gaps, repeated baseline, budgets, root-cause classification. |
+| PKT-20260713-908 | REQ-20260713-908 | Implementation packet | Ready | Dedicated One Time frontend shell and route modules with old-shell fallback. |
 | PKT-20260713-909 | REQ-20260713-909 | Product quality packet | Ready | CRM mobile IA current-state visual audit, PQC validation, list/detail/subview model, section rail, overflow actions, lazy data, screenshots. |
 | PKT-20260713-910 | REQ-20260713-910 | Verifier packet | Blocked by dependencies | Independent final proof for owner tests, performance, mobile CRM, BNA safety, and deployed SHA. |
-| PKT-20260713-911 | REQ-20260713-911 | Performance gates packet | Blocked by `REQ-20260713-907` | Privacy-safe instrumentation, repeated baseline reporting, budgets, DB/API analysis, release gates, and production performance report. |
+| PKT-20260713-911 | REQ-20260713-911 | Performance gates packet | Ready | Privacy-safe instrumentation, repeated baseline reporting, budgets, DB/API analysis, release gates, and production performance report. |
 
 ## Guardrails
 
@@ -63,6 +63,7 @@ Source matrix: `ops/execution-runs/2026-07-12-shared-crm-communication-agents-ad
 2. Resend is configured/connected/send-ready for One Time.
 3. One Time WAPI provider setup is ready.
 4. Missing blocker: secure `ONE_TIME_OWNER_TEST_EMAIL` and `ONE_TIME_OWNER_TEST_WHATSAPP`/phone aliases were not found through local/keyholder/Railway readback.
-5. Continue `PKT-20260713-907` / `REQ-20260713-907` architecture/performance baseline while the owner aliases are configured.
+5. `PKT-20260713-907` / `REQ-20260713-907` is Done with ADR `docs/architecture/one-time-app-shell-adr-2026-07-13.md` and baseline `ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md`.
+6. Continue `PKT-20260713-908` / `REQ-20260713-908` dedicated One Time app shell while the owner aliases are configured.
 
 Do not solve the whole parent ramble. Complete only this packet's scope and record the next packet or blocker.

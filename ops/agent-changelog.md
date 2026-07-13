@@ -39535,3 +39535,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   WhatsApp aliases are configured in local/keyholder/Railway readback. No
   email, WhatsApp, Telegram, CRM mutation, public auto-reply activation,
   Railway mutation, or external write occurred.
+
+## 2026-07-13 - One Time architecture/performance baseline completed
+
+- Added the read-only One Time architecture/performance baseline runner and
+  package script `one-time:architecture-performance-baseline`.
+- Recorded ADR `docs/architecture/one-time-app-shell-adr-2026-07-13.md`,
+  choosing a dedicated same-repo One Time app shell next while preserving
+  shared backend/API/contact/outbox/agent/ticket contracts.
+- Live baseline against `https://join.onetimeonetime.com` at deploy SHA
+  `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1` measured 88 samples, 0 skipped,
+  and 21 attention samples: public landing transfer, tasks DOM weight, and one
+  throttled CRM contact-detail long-task case.
+- No sends, form submissions, button clicks, provider mutations, Railway
+  mutations, or production data mutations occurred; `REQ-20260713-908` and
+  `REQ-20260713-911` are now ready.

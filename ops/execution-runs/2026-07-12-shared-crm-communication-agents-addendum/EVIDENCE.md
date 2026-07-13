@@ -12,6 +12,9 @@
 - `ops/watchdog-audits/2026-07-13T05-10-06-583Z-onetime-owner-test-readiness.md` / `.json` - no-send owner-test readiness report: Resend send-ready, One Time WAPI provider setup-ready, owner-test email and WhatsApp aliases missing, external_send_performed=false.
 - `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md` / `.json` - no-send WAPI readiness report: One Time scoped token, instance, sender phone metadata, webhook secret, class link, live provider bot mode, auto-reply approval, and provider setup are ready; Telegram notification approval is still false.
 - `node scripts/smoke-email.mjs --adapter resend-client --identity one_time ...` - no-send Resend readiness check passed with `external_send_performed=false`.
+- `scripts/audit-onetime-architecture-performance-baseline.mjs` and package script `one-time:architecture-performance-baseline` - read-only live route/profile/cache baseline runner with redaction and no-write guardrails.
+- `docs/architecture/one-time-app-shell-adr-2026-07-13.md` - ADR choosing a dedicated same-repo One Time app shell with shared backend/API/contact/outbox/agent/ticket contracts and a deferred full app split.
+- `ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md` / `.json` - live baseline for `REQ-20260713-907`: 88 measured samples, 0 skipped, 21 attention samples (`large_transfer=10`, `heavy_dom=10`, `main_thread_long_tasks=1`), live deploy SHA `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`, no sends, no provider mutations, and no production writes.
 
 - `ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md` - direct Codex proof replacing two operator Agent Mode prompt runs.
 - `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md` - Rabbi Telegram no-send readiness.

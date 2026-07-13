@@ -121,6 +121,7 @@
     "one-time:vimeo-studio": "node scripts/one-time-vimeo-studio-pipeline.mjs --json --write-report",
     "one-time:wapi:readiness": "node scripts/check-onetime-wapi-readiness.mjs --json --write-report",
     "one-time:owner-test:readiness": "node scripts/check-onetime-owner-test-readiness.mjs --json --write-report",
+    "one-time:architecture-performance-baseline": "node scripts/audit-onetime-architecture-performance-baseline.mjs",
     "stripe:sandbox-smoke": "node scripts/smoke-stripe-sandbox-billing.mjs",
     "one-time:separate-instance-package": "node scripts/generate-onetime-separate-instance-package.mjs",
     "one-time:railway-target:guard": "node scripts/check-onetime-external-setup-readiness.mjs --json --railway-only",

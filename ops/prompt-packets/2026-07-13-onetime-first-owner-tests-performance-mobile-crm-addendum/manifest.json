@@ -8,7 +8,7 @@
   "project_key": "one_time_mishnah_class",
   "packet_dag_status": "active",
   "created_at": "2026-07-13T07:47:20+03:00",
-  "updated_at": "2026-07-13T08:08:00+03:00",
+  "updated_at": "2026-07-13T08:45:00+03:00",
   "status": "active",
   "global_rule": "Do not solve the whole parent ramble. Complete only this packet scope and record the next packet or blocker.",
   "control_decisions": [
@@ -61,7 +61,7 @@
       "role": "ARCHITECTURE_PERFORMANCE_PACKET",
       "stage": "2-architecture-performance-baseline",
       "owner": "Codex",
-      "status": "ready",
+      "status": "done",
       "requirement_id": "REQ-20260713-907",
       "depends_on": [
         "PKT-20260713-905"
@@ -70,6 +70,11 @@
       "source_statement_coverage": [
         "SRC-20260713-003-008",
         "SRC-20260713-003-010"
+      ],
+      "evidence": [
+        "docs/architecture/one-time-app-shell-adr-2026-07-13.md",
+        "ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md",
+        "ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.json"
       ]
     },
     {
@@ -77,7 +82,7 @@
       "role": "IMPLEMENTATION_PACKET",
       "stage": "3-dedicated-onetime-app-shell",
       "owner": "Codex",
-      "status": "blocked_by_dependency",
+      "status": "ready",
       "requirement_id": "REQ-20260713-908",
       "depends_on": [
         "PKT-20260713-907"
@@ -126,7 +131,7 @@
       "role": "PERFORMANCE_GATES_PACKET",
       "stage": "6-performance-regression-gates",
       "owner": "Codex",
-      "status": "blocked_by_dependency",
+      "status": "ready",
       "requirement_id": "REQ-20260713-911",
       "depends_on": [
         "PKT-20260713-907"
@@ -147,5 +152,5 @@
       "next_action": "Configure secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP/PHONE aliases through the approved secret path."
     }
   ],
-  "next_packet": "PKT-20260713-907"
+  "next_packet": "PKT-20260713-908"
 }

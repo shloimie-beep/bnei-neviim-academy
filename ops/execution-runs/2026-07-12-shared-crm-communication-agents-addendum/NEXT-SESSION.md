@@ -1,7 +1,7 @@
 # Next Session
 
-Next unblocked batch: `2-onetime-architecture-performance-baseline`
-Open requirement: `REQ-20260713-907`
+Next unblocked batch: `3-onetime-dedicated-app-shell`
+Open requirement: `REQ-20260713-908`
 
 Current control correction:
 
@@ -19,11 +19,21 @@ Owner-test result:
 - One Time WAPI provider setup is ready with one-time scoped credentials, instance metadata, sender phone metadata, class link, webhook secret, live provider-bot mode, and auto-reply approval.
 - Local/keyholder/Railway readback found no `ONE_TIME_OWNER_TEST_EMAIL` or `ONE_TIME_OWNER_TEST_WHATSAPP`/phone alias, so no owner send/readback was attempted.
 
+Architecture/performance result:
+
+- `REQ-20260713-907` is Done.
+- ADR: `docs/architecture/one-time-app-shell-adr-2026-07-13.md`.
+- Baseline: `ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md`.
+- Baseline target: `https://join.onetimeonetime.com`, live SHA `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
+- Result: 88 measured samples, 0 skipped, 21 attention samples, no production writes, no failed-request budget breaches, no console-error budget breaches, no direct slow API budget breaches.
+- Attention categories: public landing transfer, tasks DOM weight, and one throttled CRM contact-detail long-task sample.
+- Decision: implement a dedicated same-repo One Time app shell next, while keeping shared backend/API/contact/outbox/agent/ticket contracts. Full separate app is deferred until evidence proves the lighter split is insufficient.
+
 Immediate next action:
 
-1. Start `REQ-20260713-907`: One Time architecture/performance baseline.
-2. Write the ADR comparing shared monolith, same-repo dedicated One Time frontend, and fully separate app.
-3. Collect repeated cold/warm route performance measurements before implementing the dedicated shell.
+1. Start `REQ-20260713-908`: dedicated same-repo One Time app shell and route-level modules.
+2. Preserve old-shell fallback and shared backend contracts while removing unrelated Operations route weight from the One Time critical path.
+3. Start or queue `REQ-20260713-911`: Server-Timing/trace IDs, API handler/database/pool timings, route-transition/RUM metrics, bundle/route budgets, and regression gates.
 4. Keep `REQ-20260713-906` blocked until the owner aliases are configured through the approved secret path.
 5. Do not enable public WhatsApp auto-reply, send to non-owner contacts, or expose raw destination values.
 
@@ -76,7 +86,8 @@ Continue by inspecting and repairing:
 
 - continue remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`, especially email-thread DTO proof where live data exists and canonical aggregate breadth beyond signup/product leads;
 - `REQ-20260713-906` owner-only live integration tests are blocked on missing secure owner-test aliases, while Resend and One Time WAPI are ready;
-- start `REQ-20260713-907` One Time architecture/performance baseline before more broad lag fixes;
+- start `REQ-20260713-908` dedicated One Time app shell using the ADR/baseline evidence;
+- start or queue `REQ-20260713-911` performance instrumentation/regression gates before calling lag fixed;
 - start `REQ-20260713-909` mobile CRM IA with current-state audit/PQC before broad contact-workspace UI edits;
 - keep `REQ-20260713-910` verifier/final report and `REQ-20260713-911` performance gates tied to owner-test, architecture, dedicated shell, and mobile CRM proof before calling lag fixed;
 - Wave 3 private Rabbi Telegram workspace agent (`REQ-20260713-903`), especially full CRM/content/read/write action surface, content-parsing knowledge binding, and live receiver ownership/409 proof;

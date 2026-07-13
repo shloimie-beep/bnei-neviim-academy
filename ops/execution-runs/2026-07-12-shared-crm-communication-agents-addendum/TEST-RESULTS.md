@@ -17,6 +17,20 @@
 - BLOCKED `npm run one-time:wapi:readiness` only on Telegram notification approval being false; WAPI outbound/provider setup and auto-reply readiness were true, and `whatsapp_send_performed=false`.
 - PASS no-send One Time Resend readiness through `scripts/smoke-email.mjs` with `external_send_performed=false`.
 
+## 2026-07-13 Architecture/Performance Baseline
+
+- PASS `node --check scripts/audit-onetime-architecture-performance-baseline.mjs`.
+- PASS `npm run one-time:architecture-performance-baseline -- --compact --repeats=2`.
+  - Live target: `https://join.onetimeonetime.com`.
+  - Live deploy SHA: `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
+  - Samples: 88 measured, 0 skipped.
+  - Attention samples: 21 (`large_transfer=10`, `heavy_dom=10`, `main_thread_long_tasks=1`).
+  - No forms submitted, no buttons clicked, no sends, no provider mutations, no Railway mutation, no production data mutation.
+  - Report: `ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md`.
+- PASS ADR recorded at `docs/architecture/one-time-app-shell-adr-2026-07-13.md`.
+- PASS `npm run bna:run:validate` after marking `REQ-20260713-907` Done.
+- PASS `npm run bna:run:next`; selected `REQ-20260713-908` as the next unblocked executable batch.
+
 - PASS `node --check server.js`
 - PASS `node --check src/lib/integrations/resend-inbound-crm.js`
 - PASS `node --test tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js` (19/19)

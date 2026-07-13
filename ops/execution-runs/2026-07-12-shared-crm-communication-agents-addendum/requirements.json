@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-13T07:58:00+03:00",
+  "updated_at": "2026-07-13T08:45:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -188,21 +188,32 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T07:58:00+03:00",
+      "updated_at": "2026-07-13T08:45:00+03:00",
       "can_continue_without_operator": true,
       "blocker": "",
-      "status": "not_started",
+      "status": "done",
       "depends_on": [
         "REQ-20260713-905"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "docs/architecture/one-time-app-shell-adr-2026-07-13.md",
+        "ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md",
+        "ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.json"
+      ],
+      "verification": [
+        "node --check scripts/audit-onetime-architecture-performance-baseline.mjs PASS",
+        "npm run one-time:architecture-performance-baseline -- --compact --repeats=2 PASS; 88 measured samples; 0 skipped; 21 attention samples; large_transfer=10; heavy_dom=10; main_thread_long_tasks=1; external_write_performed=false; production_data_mutation_performed=false",
+        "Live deploy-info in baseline reported commit_sha=e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1",
+        "ADR recorded same-repo dedicated One Time app shell as the next implementation path and documented rejected alternatives, budgets, and instrumentation gaps",
+        "npm run bna:run:validate PASS after marking REQ-20260713-907 done",
+        "npm run bna:run:next PASS; selected REQ-20260713-908 as the next unblocked executable batch"
+      ],
       "implementation_files": [
-        "docs/",
-        "scripts/",
-        "public/",
-        "server.js",
-        "src/"
+        "package.json",
+        "scripts/audit-onetime-architecture-performance-baseline.mjs",
+        "docs/architecture/one-time-app-shell-adr-2026-07-13.md",
+        "ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md",
+        "ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.json"
       ],
       "deployment_required": false,
       "id": "REQ-20260713-907",
@@ -214,8 +225,8 @@
       ],
       "category": "architecture_performance",
       "batch_id": "2-onetime-architecture-performance-baseline",
-      "implementation_status": "not_started",
-      "next_action": "Inspect One Time route architecture and existing performance tooling, write ADR, then collect repeated cold/warm measurements before implementing the dedicated app shell.",
+      "implementation_status": "Done: ADR accepted the dedicated same-repo One Time app shell path; compact live baseline sampled 88 route/profile/cache combinations across public, provider, Operations, CRM, conversations, tasks, and owner setup surfaces with zero skipped samples, zero production writes, zero failed-request budget breaches, zero console-error budget breaches, and 21 attention samples classified as public landing transfer, tasks DOM weight, and one throttled CRM contact long-task case.",
+      "next_action": "Start REQ-20260713-908 dedicated same-repo One Time app shell and REQ-20260713-911 instrumentation/regression gates; keep REQ-20260713-906 blocked until secure owner aliases are configured.",
       "acceptance_criteria": [
         "ADR compares continuing the generated shared Operations monolith, a dedicated same-repo One Time frontend, and a fully separate app.",
         "Default choice is same-repo dedicated One Time frontend unless audit evidence contradicts it.",
@@ -232,7 +243,7 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T07:58:00+03:00",
+      "updated_at": "2026-07-13T08:45:00+03:00",
       "can_continue_without_operator": true,
       "blocker": "",
       "status": "not_started",
@@ -258,7 +269,7 @@
       "category": "frontend_architecture",
       "batch_id": "3-onetime-dedicated-app-shell",
       "implementation_status": "not_started",
-      "next_action": "Wait for ADR and baseline in REQ-20260713-907; then build the dedicated One Time shell incrementally with route/feature code splitting and fallback.",
+      "next_action": "Ready to start: implement the dedicated same-repo One Time frontend shell and route-level modules using docs/architecture/one-time-app-shell-adr-2026-07-13.md and the 2026-07-13 baseline budgets, preserving old-shell fallback and shared backend contracts.",
       "acceptance_criteria": [
         "One Time startup no longer requires the giant shared BNA Operations monolith on the critical path.",
         "The dedicated shell loads only the One Time shell, active route module, active workspace data, and genuinely needed shared primitives.",
@@ -383,7 +394,7 @@
       "status": "not_started",
       "implementation_status": "not_started",
       "can_continue_without_operator": true,
-      "next_action": "After the architecture/performance baseline, add privacy-safe instrumentation, repeated performance reporting, release-gate budget checks, and final proof fields before calling lag fixed.",
+      "next_action": "Ready to start after or alongside the shell work: add Server-Timing/trace IDs, API handler/database/pool timings, route-transition/RUM metrics, bundle/route budgets, and regression gates based on the 2026-07-13 baseline.",
       "acceptance_criteria": [
         "Instrumentation includes request ID, trace ID, Server-Timing, route duration, API handler duration, database duration, pool wait, response bytes, error status, frontend route transition duration, Web Vitals/RUM without personal data, deploy SHA, target app, and cold/warm classification where detectable.",
         "Repeated cold/warm measurements and budgets are recorded for public One Time and authenticated One Time routes.",
@@ -402,7 +413,7 @@
         "ops/"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T07:58:00+03:00",
+      "updated_at": "2026-07-13T08:45:00+03:00",
       "blocker": ""
     },
     {

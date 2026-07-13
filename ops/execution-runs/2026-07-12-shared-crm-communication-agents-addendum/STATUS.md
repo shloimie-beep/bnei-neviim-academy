@@ -22,6 +22,17 @@ Current status: `active`
 - Public auto-reply readiness is true, but Telegram notification approval remains false.
 - Local/keyholder/Railway readback found no owner-test email or WhatsApp aliases, so no email, WhatsApp, CRM mutation, public auto-reply activation, Railway mutation, or external write was performed.
 
+## 2026-07-13 Architecture/Performance Baseline
+
+- `REQ-20260713-907` is Done.
+- Added `scripts/audit-onetime-architecture-performance-baseline.mjs` and package script `one-time:architecture-performance-baseline`.
+- Added ADR `docs/architecture/one-time-app-shell-adr-2026-07-13.md`: next implementation path is a dedicated same-repo One Time app shell that keeps shared backend/API/contact/outbox/agent/ticket contracts.
+- Ran `npm run one-time:architecture-performance-baseline -- --compact --repeats=2` against `https://join.onetimeonetime.com` at live SHA `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
+- Baseline report: `ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md`.
+- Result: 88 measured samples, 0 skipped, 21 attention samples, no production writes, no failed-request budget breaches, no console-error budget breaches, and no direct slow API budget breaches.
+- Attention classification: public landing transfer (`large_transfer=10`), tasks route DOM weight (`heavy_dom=10`), and one throttled CRM contact-detail long-task sample (`main_thread_long_tasks=1`).
+- `REQ-20260713-908` and `REQ-20260713-911` are now ready; `REQ-20260713-906` remains blocked only on secure owner aliases.
+
 ## Completed In This Batch
 
 - Created run and register for the addendum.
@@ -51,8 +62,9 @@ Current status: `active`
   `ONE_TIME_OWNER_TEST_EMAIL` and `ONE_TIME_OWNER_TEST_WHATSAPP` or approved
   equivalent aliases must be configured through the approved secret path.
 - `REQ-20260713-906` owner-only live integration tests are blocked only on
-  missing secure owner-test aliases; continue `REQ-20260713-907` architecture
-  and performance baseline while those aliases are configured.
+  missing secure owner-test aliases; continue `REQ-20260713-908` dedicated
+  One Time shell and `REQ-20260713-911` performance gates while those aliases
+  are configured.
 - Main addendum implementation remains open across the One Time app shell,
   mobile CRM IA, performance gates, verifier, and remaining Rabbi
   Telegram/ticket-approval proof.
