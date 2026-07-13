@@ -440,6 +440,35 @@ Global production readiness remains blocked only by known external full-launch f
   payment/access mutation, credential mutation, raw private payload logging, or
   destructive production mutation was performed by this proof.
 
+## 2026-07-13 One Time Communication Agents Operations Console/API Deploy
+
+- Runtime commit / deployed head:
+  `dab8c6d8ce23e0a2cda4d619d302ed32c6bac415`.
+- Branch: `master` via pushed detached-head worktree.
+- Push: `git push origin HEAD:master` succeeded for runtime commit
+  `dab8c6d8ce23e0a2cda4d619d302ed32c6bac415`.
+- One Time Railway deployment `a1f5928b-7668-4e19-b337-938859ce3c71`
+  reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info`
+  returned exact SHA `dab8c6d8ce23e0a2cda4d619d302ed32c6bac415`,
+  `target_app=one-time`, `target_project=one-time-production`, and
+  `target_service=one-time-web`.
+- One Time landing smoke passed at the exact SHA and re-proved the public
+  landing page, direct signup CTA, WhatsApp lead launcher, and black/white One
+  Time favicon fallback.
+- One Time provider route-module smoke passed at the exact SHA.
+- Authenticated Communication Agents API smoke passed against
+  `/api/bna/communication-agents?project_key=one_time_mishnah_class`, proving
+  scoped read-only agent/channel/test/activity data and no-send/no-external-write
+  guardrails.
+- Evidence reports: `ops/live-smokes/2026-07-13T16-05-25-906Z-rabbi-onetime-landing-smoke.md`,
+  `ops/live-smokes/2026-07-13T16-05-26-231Z-onetime-provider-route-module-live-smoke.md`,
+  and `ops/live-smokes/2026-07-13T16-06-41-853Z-one-time-communication-agents-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram
+  send, public auto-reply enablement, CRM production write, provider mutation,
+  payment/access mutation, credential mutation, raw private payload logging, or
+  destructive production mutation was performed by this proof.
+
 ## 2026-07-13 Communication-Agent Model Deploy
 
 - Runtime app-code commit: `98e449a5777158a1125ddfbcbd7925dd489d8f18`.

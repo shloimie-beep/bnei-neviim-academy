@@ -40333,3 +40333,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Deployed exact SHA `f799b5818fe408c53f1888213bd74732883f13d0`; One Time Railway deployment `aef4fa28-75ea-4759-b45d-9d29409aec85` and BNA Railway deployment `6ce036ae-4a54-4d5b-a15d-927ddc1885e8` reached `SUCCESS`.
 - Live proof: `ops/live-smokes/2026-07-13T15-47-15-724Z-onetime-provider-route-module-live-smoke.md` passed and proved the Agents route loads only `/js/one-time-provider-agents-route.js`.
 - Guardrails: no owner email send, WhatsApp/WAPI send, Telegram send, public auto-reply activation, credential mutation, CRM production write, provider mutation, payment mutation, or access mutation was performed.
+
+## 2026-07-13 - One Time Communication Agents Operations console deployed
+
+- Extended `REQ-20260712-312` with the owner-facing Operations Communication
+  Agents console and read-only scoped API at deployed SHA
+  `dab8c6d8ce23e0a2cda4d619d302ed32c6bac415`.
+- The One Time Operations `view=agents` surface now separates Knowledge,
+  Channels, Test, and Activity, keeps Super Admin Build/QA agent runs separate,
+  and shows no-send/no-external-write test status for the One Time public
+  communication agent.
+- Deployed to `join.onetimeonetime.com`; Railway deployment
+  `a1f5928b-7668-4e19-b337-938859ce3c71` reached `SUCCESS`, and live
+  deploy-info returned the exact SHA.
+- Live proof passed for landing/favicon/signup/WhatsApp lead launcher,
+  provider route module, and authenticated
+  `/api/bna/communication-agents?project_key=one_time_mishnah_class`.
+- Evidence: `ops/live-smokes/2026-07-13T16-05-25-906Z-rabbi-onetime-landing-smoke.md`,
+  `ops/live-smokes/2026-07-13T16-05-26-231Z-onetime-provider-route-module-live-smoke.md`,
+  and `ops/live-smokes/2026-07-13T16-06-41-853Z-one-time-communication-agents-live-smoke.md`.
+- Guardrails: no owner-test email, WhatsApp/WAPI provider send, Telegram send,
+  public auto-reply activation, credential mutation, CRM production write,
+  provider mutation, payment/access mutation, raw private payload logging, or
+  destructive production mutation was performed.

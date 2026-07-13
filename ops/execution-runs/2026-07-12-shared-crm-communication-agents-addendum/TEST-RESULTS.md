@@ -1113,3 +1113,25 @@
 - PASS `npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha 1e6a977818f1393fd3721d796d9c025e0ac95eb9`; report `ops/live-smokes/2026-07-13T14-04-45-310Z-operations-workspace-taxonomy-live-smoke.md`.
 - `REQ-20260712-309` marked Done for code/deploy proof; owner-only real email/WhatsApp send proof remains blocked by `REQ-20260713-906`.
 - Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw contact/message logging, or destructive production mutation was performed by this deployed closeout proof.
+
+## One Time Communication Agents Operations Console/API Closeout - 2026-07-13
+
+- PASS `node --check public/js/operations-shell.js`.
+- PASS `node --check server.js`.
+- PASS `node --check src/platform/instances/one-time-rabbi-dashboard-ia.js`.
+- PASS `node --test tests\one-time-rabbi-dashboard-ia.test.js`; 9/9 tests passed.
+- PASS `node --test tests\communication-agent-model.test.js`; 7/7 tests passed.
+- PASS `node --test tests\agent-control-center.test.js`; 5/5 tests passed.
+- PASS `node --test tests\one-time-operations-ui-smoke.test.js`; 1/1 tests passed.
+- PASS `npm run test:onetime:focused`; 80/80 tests passed after rebase.
+- PASS `node --test tests\communication-agent-model.test.js tests\agent-control-center.test.js`; 12/12 tests passed after rebase.
+- PASS `npm run watchdog:actions`; finding_count `0`.
+- PASS `npm run watchdog:protocol-drift`; finding_count `0`.
+- PASS `npm run bna:run:validate`; work remains yes with 17 done, 2 not_started, and 2 blocked requirements.
+- PASS `npm run secrets:audit`; 9595 tracked paths checked and 0 secret-risk files found.
+- PASS One Time Railway doctor/deploy; deployment `a1f5928b-7668-4e19-b337-938859ce3c71` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned exact SHA `dab8c6d8ce23e0a2cda4d619d302ed32c6bac415`, `target_app=one-time`.
+- PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com --expected-sha dab8c6d8ce23e0a2cda4d619d302ed32c6bac415`; report `ops/live-smokes/2026-07-13T16-05-25-906Z-rabbi-onetime-landing-smoke.md`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha dab8c6d8ce23e0a2cda4d619d302ed32c6bac415`; report `ops/live-smokes/2026-07-13T16-05-26-231Z-onetime-provider-route-module-live-smoke.md`.
+- PASS authenticated Communication Agents API live smoke; report `ops/live-smokes/2026-07-13T16-06-41-853Z-one-time-communication-agents-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, CRM production write, provider mutation, credential mutation, payment/access mutation, raw private payload logging, or destructive production mutation was performed.

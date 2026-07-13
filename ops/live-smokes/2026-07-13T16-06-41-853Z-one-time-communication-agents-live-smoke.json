@@ -1,0 +1,55 @@
+{
+  "started_at": "2026-07-13T16:06:41.853Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "route": "/api/bna/communication-agents?project_key=one_time_mishnah_class",
+  "expected_sha": "dab8c6d8ce23e0a2cda4d619d302ed32c6bac415",
+  "status": "passed",
+  "steps": [
+    {
+      "name": "deploy-info reports expected One Time SHA",
+      "ok": true,
+      "duration_ms": 674,
+      "details": {
+        "commit_sha": "dab8c6d8ce23e0a2cda4d619d302ed32c6bac415",
+        "target_app": "one-time"
+      }
+    },
+    {
+      "name": "operations login uses One Time Railway auth fallback",
+      "ok": true,
+      "duration_ms": 2167,
+      "details": {
+        "source": "railway",
+        "role": "super_admin"
+      }
+    },
+    {
+      "name": "communication agents API returns scoped read-only readiness",
+      "ok": true,
+      "duration_ms": 252,
+      "details": {
+        "agent_count": 1,
+        "channel_keys": [
+          "email:resend",
+          "whatsapp:wapi"
+        ],
+        "knowledge_source_count": 1,
+        "activity_status": "loaded",
+        "no_send": true,
+        "external_write_performed": false
+      }
+    }
+  ],
+  "guardrails": [
+    "Authenticated read-only smoke; no model call, WhatsApp send, checkout, access grant, task creation, or external write is performed.",
+    "Report records counts, channel/provider names, no-send flags, deployment SHA, and redacted status only.",
+    "No cookies, credentials, provider secrets, contact bodies, class links, or private messages are written to evidence."
+  ],
+  "agent_count": 1,
+  "channel_keys": [
+    "email:resend",
+    "whatsapp:wapi"
+  ],
+  "knowledge_source_count": 1,
+  "activity_status": "loaded"
+}
