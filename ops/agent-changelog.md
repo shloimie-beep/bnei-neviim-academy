@@ -40366,3 +40366,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining gates: authenticated DB/admin readback, explicit helper-knowledge
   promotion approval, Vimeo private upload/folder approval, member publication,
   and blocked UI evidence remain separate requirements.
+
+## 2026-07-13 - One Time Billing V2 release handoff refreshed
+
+- Updated the Billing V2 release handoff with current branch head
+  `2005bd590068825521a3485835d38798758433f5`, current master/base
+  `43f7c33733880745d8f1191c86fe8e196ef68baa`, PR #132 state, and final-report
+  sections required by the goal packet.
+- Replaced the duplicated/stale final-audit table in the Billing V2 register
+  with current evidence and blockers for `REQ-20260713-950` through
+  `REQ-20260713-963`.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.
