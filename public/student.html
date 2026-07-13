@@ -3992,6 +3992,10 @@
             }
             const trimmedCode = String(code || '').trim();
             if (!trimmedCode) {
+                if (ONE_TIME_HOST_MODE && !ONE_TIME_REVIEW_MODE) {
+                    showLogin();
+                    return;
+                }
                 await loadSessionPortal({ silent: true });
                 return;
             }

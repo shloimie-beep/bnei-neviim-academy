@@ -171,6 +171,7 @@
     "app:smoke:one-time-interest-crm-e2e": "node scripts/smoke-one-time-interest-crm-e2e-live.mjs",
     "app:smoke:one-time-personal-continuation": "node scripts/smoke-one-time-personal-continuation-live.mjs",
     "app:smoke:onetime-operations-crm-workbench": "node scripts/smoke-onetime-operations-crm-workbench-live.mjs",
+    "app:smoke:onetime-auth-session-context": "node scripts/smoke-onetime-auth-session-context-live.mjs",
     "app:smoke:onetime-crm-email-thread-dto": "node scripts/smoke-onetime-crm-email-thread-dto-live.mjs",
     "app:smoke:onetime-crm-contact-notes-dto": "node scripts/smoke-onetime-crm-contact-notes-dto-live.mjs",
     "app:smoke:onetime-crm-signup-context-dto": "node scripts/smoke-onetime-crm-signup-context-dto-live.mjs",

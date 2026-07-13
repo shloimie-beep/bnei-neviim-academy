@@ -32,6 +32,7 @@ function contentType(filePath) {
 
 function createRouteRoleServer() {
   let activePort = 0;
+  let studentSessionRequests = 0;
   const server = http.createServer((req, res) => {
     const url = new URL(req.url || '/', `http://127.0.0.1:${activePort || 0}`);
     if (url.pathname === '/api/provider-portal/session') {
@@ -40,6 +41,33 @@ function createRouteRoleServer() {
         error: 'No scoped One Time provider session is active in this browser.',
         external_write_performed: false,
       }, 401);
+    }
+    if (url.pathname === '/api/student-portal/session') {
+      studentSessionRequests += 1;
+      return json(res, {
+        success: false,
+        error: 'Student session is required',
+        external_write_performed: false,
+      }, 401);
+    }
+    if (url.pathname === '/api/one-time/instance-config') {
+      return json(res, {
+        success: true,
+        target_app: 'one-time',
+        workspace_key: 'rabbi_sheller_provider',
+        project_key: 'one_time_mishnah_class',
+        external_write_performed: false,
+      });
+    }
+    if (url.pathname === '/student/login') {
+      res.writeHead(302, { Location: '/student.html?one_time_login=1' });
+      res.end();
+      return;
+    }
+    if (url.pathname === '/favicon.ico') {
+      res.writeHead(204);
+      res.end();
+      return;
     }
 
     const requested = url.pathname === '/' ? '/provider.html' : url.pathname;
@@ -61,6 +89,7 @@ function createRouteRoleServer() {
         });
       });
     },
+    studentSessionRequests: () => studentSessionRequests,
     close() {
       return new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
     },
@@ -127,9 +156,41 @@ test('student login is a real student login and student preview is clearly TEST-
   assert.match(serverJs, /<form id="codeForm" class="hidden" aria-hidden="true" style="display:none">/);
   assert.match(serverJs, /<div class="language-toggle hidden" aria-label="Language" aria-hidden="true" style="display:none">/);
   assert.match(studentHtml, /renderOneTimeStudentReview/);
+  assert.match(studentHtml, /if \(ONE_TIME_HOST_MODE && !ONE_TIME_REVIEW_MODE\) \{\s*showLogin\(\);\s*return;\s*\}/);
   assert.match(studentHtml, /Live Mishnayos, review videos, worksheets, attendance, questions, badges, and rewards in one clean One Time classroom view/);
   assert.match(studentHtml, /This view stays inside the Rabbi Scheller One Time workspace/);
   assert.doesNotMatch(studentHtml, /BNA school accountability goals, checkoffs, consequences, device controls, and other household\/student records stay out/);
+});
+
+test('One Time student login first paint does not create expected-auth console noise', async () => {
+  const local = createRouteRoleServer();
+  const baseUrl = await local.listen();
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 430, height: 932 } });
+    const badResponses = [];
+    const consoleErrors = [];
+    page.on('response', (response) => {
+      if (response.status() >= 400 && /\/api\/student-portal\/session\b/.test(response.url())) {
+        badResponses.push(`${response.status()} ${response.url()}`);
+      }
+    });
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    await page.goto(`${baseUrl}/student/login`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('text=Use the student username and password managed by your parent.');
+
+    assert.match(page.url(), /\/student\.html\?one_time_login=1$/);
+    assert.equal(await page.locator('#loginPanel').isVisible(), true);
+    assert.equal(await page.locator('#portalLayout').isVisible(), false);
+    assert.equal(local.studentSessionRequests(), 0);
+    assert.deepEqual(badResponses, []);
+    assert.deepEqual(consoleErrors, []);
+  } finally {
+    await browser.close();
+    await local.close();
+  }
 });
 
 test('One Time single-tenant parent login redirects to One Time parent setup instead of Academy login', () => {
