@@ -40275,3 +40275,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Evidence: `ops/live-smokes/2026-07-13T14-06-30-661Z-one-time-classroom-library-readonly-live-smoke.md`.
 - Remaining gates: approved member publication, parent/student latest-video
   proof, Vimeo-origin package integration, and Vimeo private upload approval.
+## 2026-07-13 - Communication-agent control model deployed
+
+- Closed `REQ-20260712-309` after deploying exact runtime SHA
+  `1e6a977818f1393fd3721d796d9c025e0ac95eb9` to One Time and BNA.
+- Added a dedicated first-party communication-agent model separate from
+  `bna_agent_profiles` / Codex build and QA agents: agents, versions,
+  knowledge sources, channel bindings, and events.
+- Seeded the One Time public agent `one_time_parent_information_agent` with the
+  same published version for email and WhatsApp, approved public knowledge,
+  email `draft` mode, WhatsApp `capture_only` mode, and
+  `create_task_on_inbound=false`.
+- Added strict no-secret JSON checks so provider/API keys remain in Railway or
+  connector configuration, not in communication-agent tables.
+- Verification passed: clean-worktree syntax checks, focused communication
+  agent/inbound/outbox/WAPI suite `37/37`, secrets audit over 9522 tracked
+  paths, One Time separate-instance live smoke, One Time CRM workbench live
+  smoke, One Time provider route-module live smoke, and BNA workspace taxonomy
+  smoke.
+- Evidence: `ops/live-smokes/2026-07-13T14-04-45-139Z-one-time-operations-crm-workbench-live-smoke.md`,
+  `ops/live-smokes/2026-07-13T14-04-45-800Z-onetime-provider-route-module-live-smoke.md`,
+  and `ops/live-smokes/2026-07-13T14-04-45-310Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner email send, WhatsApp provider send, public auto-reply
+  enablement, Telegram send, destructive CRM write, provider mutation,
+  credential mutation, payment mutation, or access mutation was performed.
