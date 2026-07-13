@@ -7794,6 +7794,22 @@ function renderFirstPartyCrmProfile(card = null) {
     `;
 }
 
+function firstPartyCrmTimelineTitle(item = {}) {
+    const type = String(item.type || item.communication_type || '').toLowerCase();
+    const channel = String(item.channel || '').toLowerCase();
+    const labels = {
+        class_attendance: 'Class attendance',
+        follow_up_task: 'Follow-up task',
+        membership_access: 'Membership / access',
+        signup_context: 'Signup context',
+        student_link: 'Student link',
+        support_ticket: 'Support ticket',
+    };
+    if (labels[type]) return labels[type];
+    if (channel === 'attendance') return 'Class attendance';
+    return [item.channel, item.type || item.communication_type].filter(Boolean).join(' / ') || 'Timeline item';
+}
+
 function renderFirstPartyCrmTimeline(card = {}) {
     const items = Array.isArray(firstPartyCrmTimelinePayload?.timeline) ? firstPartyCrmTimelinePayload.timeline : [];
     return `
@@ -7808,7 +7824,7 @@ function renderFirstPartyCrmTimeline(card = {}) {
             <div class="crm-timeline-list">
             ${items.length ? items.map(item => `
                 <article class="content-card">
-                    <div class="content-card-title">${escapeHtml([item.channel, item.type].filter(Boolean).join(' / ') || 'Timeline item')}</div>
+                    <div class="content-card-title">${escapeHtml(firstPartyCrmTimelineTitle(item))}</div>
                     <div class="content-card-meta">${escapeHtml([item.direction, item.occurred_at ? formatDateTime(item.occurred_at) : ''].filter(Boolean).join(' - '))}</div>
                     <p class="event-meta">${escapeHtml(item.body || '')}</p>
                 </article>

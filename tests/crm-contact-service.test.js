@@ -161,6 +161,23 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
         occurred_at: '2026-07-12T13:21:00Z',
         communication_type: 'membership_access',
       },
+      {
+        id: 16,
+        channel: 'attendance',
+        direction: 'internal',
+        body: 'Class attendance: One Time Mishnayos - checked in',
+        source: 'bna_live_class_attendance',
+        source_context: JSON.stringify({
+          attendance_id: 16,
+          live_session_id: 31,
+          member_id: 15,
+          attendance_status: 'checked_in',
+          no_send: true,
+          external_write_performed: false,
+        }),
+        occurred_at: '2026-07-12T13:22:00Z',
+        communication_type: 'class_attendance',
+      },
     ],
   });
 
@@ -175,6 +192,7 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'support_ticket'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'student_link'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'membership_access'), false);
+  assert.equal(conversations.conversations.some((item) => item.communication_type === 'class_attendance'), false);
   assert.equal(conversations.conversations[0].open_action, 'whatsapp');
   assert.equal(conversations.conversations[0].thread_key, 'phone:972501112222');
   assert.equal(conversations.conversations[0].from_address, '+972 50 111 2222');
@@ -193,6 +211,7 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.match(timeline.timeline.find((item) => item.type === 'support_ticket').body, /Support ticket OT-SUP-000013/);
   assert.equal(timeline.timeline.some((item) => item.type === 'student_link'), true);
   assert.equal(timeline.timeline.some((item) => item.type === 'membership_access'), true);
+  assert.equal(timeline.timeline.some((item) => item.type === 'class_attendance'), true);
 });
 
 test('CRM contact service filter and ref helpers are stable', () => {
