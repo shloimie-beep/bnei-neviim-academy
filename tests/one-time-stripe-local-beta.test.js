@@ -12,6 +12,8 @@ const {
 
 const server = fs.readFileSync('server.js', 'utf8');
 const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
+const operationsShell = fs.readFileSync('public/js/operations-shell.js', 'utf8');
+const liveSmoke = fs.readFileSync('scripts/smoke-one-time-trial-referral-live.mjs', 'utf8');
 const migration = fs.readFileSync('railway-migration-2026-06-21-one-time-trial-referral-config.sql', 'utf8');
 
 test('One Time promotional conversion and referral configuration is test-local and policy-versioned', () => {
@@ -237,6 +239,11 @@ test('server and Operations expose promotional conversion readback with disabled
   assert.match(operationsHtml, /invoice credits \${guardrails\.real_invoice_credits_enabled \? 'enabled' : 'disabled'}/);
   assert.match(operationsHtml, /refunds \${guardrails\.refund_execution_enabled \? 'enabled' : 'disabled'}/);
   assert.doesNotMatch(operationsHtml, /30-day warm-lead intro trial/);
+
+  assert.match(server, /sendFile\(path\.join\(__dirname, 'public', 'operations-bootstrap\.html'\)\)/);
+  assert.match(operationsShell, /data-one-time-trial-referral-config/);
+  assert.match(liveSmoke, /Operations bootstrap route loads the split Operations shell/);
+  assert.match(liveSmoke, /\/js\/operations-shell\.js/);
 });
 
 test('one concise no-trial billing Decision seed exists and blocks only live conversion where needed', () => {

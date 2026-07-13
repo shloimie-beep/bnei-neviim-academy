@@ -2,7 +2,7 @@
 
 Active source: `RAW-20260713-010`
 
-Current requirement: `REQ-20260713-937` - Reconcile Stripe Billing V2 and PR #132 into current master safely.
+Current requirement: `REQ-20260713-938` - Finish Vimeo, Drive, Classroom, and Zoom integration truth for One Time.
 
 `REQ-20260713-935` landing/signup/assets/responsive is Done. One Time deployment `39b4820d-fe5a-456c-bdc1-ccc30befa1d5` serves exact SHA `11e5ba0d4da6ae8897294be81a567bb519943ab2`; responsive report `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/REPORT.md`, signup matrix `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-form-matrix-live.md`, and interest dry-run `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md` passed. Do not redo the landing/signup campaign-policy repair unless verification regresses.
 
@@ -27,15 +27,22 @@ Current requirement: `REQ-20260713-937` - Reconcile Stripe Billing V2 and PR #13
 - The real `/student/login` screen no longer sends the startup session probe and no longer shows the `TEST PREVIEW / SAMPLE DATA / NO WRITES` banner.
 - `REQ-20260713-934` is Done. Do not reopen 934A/934B/934C unless verification regresses.
 
-Continue with `REQ-20260713-937` deploy/live verification. The safe PR #132 Billing V2 slice is locally reconciled and sandbox-verified, but it is not Done until the scoped commit is pushed, One Time is deployed at the intended SHA, and exact-SHA live smokes/readbacks pass.
+`REQ-20260713-937` Billing V2 / PR #132 reconciliation is Done. Do not merge PR #132 wholesale or redo the Billing V2 slice unless verification regresses.
 
-REQ-937 local evidence:
+REQ-937 evidence:
 
 - PR #132 audit: `ops/audits/2026-07-14-onetime-billing-pr132-reconciliation-audit.md`.
 - Sandbox E2E verifier: `ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.md`.
 - Focused tests: `node --test tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js tests/one-time-parent-trial-invite.test.js tests/one-time-billing-sandbox-e2e-verifier.test.js tests/owner-review-role-flow-contract.test.js` passed `25/25`.
 - Guardrail: `npm run watchdog:workspace-scope` passed.
+- Source SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5` was pushed and deployed to One Time deployment `15280d13-3e12-4c72-8460-10e0c6e99b3e`.
+- Live `/api/deploy-info` returned exact SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`.
+- Exact-SHA separate-instance smoke passed.
+- Parent-facing no-trial campaign smoke passed: `ops/live-smokes/2026-07-13T21-42-33-620Z-rabbi-onetime-landing-smoke.md`.
+- Operations promotional billing/referral no-write smoke passed: `ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md`; it recorded `trial_days=0`, `stripe_trial_enabled=false`, renewal `6700`, and referral trigger `first_successful_paid_cycle`.
 - No live charge, refund, subscription, checkout, billing notice send, email/WhatsApp send, provider mutation, access mutation, or external write was performed.
+
+Continue with `REQ-20260713-938` Vimeo, Drive, Classroom, and Zoom integration truth. Keep the work scoped to readbacks/config truth and no-write proof unless a separate owner-approved external mutation gate exists.
 
 Validated PQC splitter: `ops/prompt-packets/2026-07-13-onetime-final-integration-launch/01-current-state-to-implementation.product-quality.json`.
 

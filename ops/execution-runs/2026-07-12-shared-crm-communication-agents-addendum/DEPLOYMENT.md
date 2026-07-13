@@ -610,7 +610,11 @@ No deployment occurred for Gate 1. One Time is currently serving `49f3edda2da37e
 
 ## REQ-20260713-937 Deployment Status
 
-- Status: pending.
-- The Billing V2 / PR #132 reconciliation slice is locally implemented and sandbox-verified, but no deploy/live proof has been run for this slice yet.
-- Do not mark `REQ-20260713-937` Done until the scoped commit is pushed, One Time deploy-info returns the intended SHA, and exact-SHA live billing/Operations/parent promotional access smokes/readbacks pass.
-- Guardrails so far: no live Stripe checkout/session/subscription/charge/refund/invoice-credit mutation, billing notice send, email/WhatsApp send, access mutation, provider mutation, credential mutation, or production data mutation.
+- Status: deployed and live-smoked.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true`, `BNA_DEPLOY_APP=one-time`, and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- Railway deployment: `15280d13-3e12-4c72-8460-10e0c6e99b3e` reached `SUCCESS`; guard target was `one-time-production / one-time-web / join.onetimeonetime.com`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned exact SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`, source branch `codex/onetime-final-integration-launch`, and `target_app=one-time`.
+- One Time exact-SHA separate-instance smoke passed.
+- One Time exact-SHA parent-facing landing/campaign no-trial smoke passed; report `ops/live-smokes/2026-07-13T21-42-33-620Z-rabbi-onetime-landing-smoke.md`.
+- One Time Operations promotional billing/referral no-write smoke passed; report `ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md`.
+- Guardrails: no live Stripe checkout/session/subscription/charge/refund/invoice-credit mutation, billing notice send, email/WhatsApp send, access mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation.

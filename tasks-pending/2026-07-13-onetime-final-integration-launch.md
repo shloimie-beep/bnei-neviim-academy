@@ -8,7 +8,7 @@ SHA256: `sha256:BEC7D0B514919621FF8AFD25E9D95D29287F46A18B397EDB9361508BBFCDF13F
 
 Gate 1 audit: `ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md`
 
-Next unblocked requirement: `REQ-20260713-937`
+Next unblocked requirement: `REQ-20260713-938`
 
 ## Requirements
 
@@ -18,7 +18,7 @@ Next unblocked requirement: `REQ-20260713-937`
 - `REQ-20260713-934` done - Fix One Time identity, navigation, CRM/content, mobile, and performance issues; `PKT-20260713-934A` member portal performance is deployed/live-smoked at deployed SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`; `PKT-20260713-934B`/`934C` auth/admin context and provider/student request-console cleanup are deployed/live-smoked at deployed SHA `e973ce50b86e7566034faf8a604133a4870e4d7b`
 - `REQ-20260713-935` done - Verify and repair One Time landing/signup/assets/responsive launch path; deployed/live-smoked at One Time SHA `11e5ba0d4da6ae8897294be81a567bb519943ab2` with responsive, signup matrix, and dry-run proof
 - `REQ-20260713-936` blocked - Activate One Time WhatsApp canaries and public reactive auto-replies after gates
-- `REQ-20260713-937` needs_verification - Reconcile Stripe Billing V2 and PR #132 into current master safely; safe local no-trial billing slice is reconciled and sandbox-verified, but deploy/live exact-SHA proof is still required before Done
+- `REQ-20260713-937` done - Reconcile Stripe Billing V2 and PR #132 into current master safely; deployed/live-smoked at One Time SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5` with no-trial promotional billing proof
 - `REQ-20260713-938` not_started - Finish Vimeo, Drive, Classroom, and Zoom integration truth for One Time
 - `REQ-20260713-939` not_started - Run PR/CI/DNS/deploy/rollback gate for final launch candidate
 - `REQ-20260713-940` not_started - Prove exact live One Time deployment and launch smoke at current SHA
@@ -27,7 +27,6 @@ Next unblocked requirement: `REQ-20260713-937`
 ## Blockers
 
 - `REQ-20260713-936`: public WhatsApp approval is granted, but secure canary aliases and technical gates are still missing.
-- `REQ-20260713-937`: PR #132 is dirty/draft and was not merged wholesale; remaining blocker is deploy/live exact-SHA proof for the scoped Billing V2 reconciliation slice.
 - `REQ-20260713-940`: final exact-SHA launch deployment proof remains pending after remaining implementation requirements are terminal.
 
 ## REQ-20260713-933 Evidence Update
@@ -72,13 +71,15 @@ Next unblocked requirement: `REQ-20260713-937`
 - Screenshot evidence includes `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/screenshots/landing-1440.png`, `landing-390.png`, and `signup-390.png`; visual readback confirmed the next-section cue and readable narrow signup form.
 - `REQ-20260713-935` is Done. Continue `REQ-20260713-937` next; `REQ-20260713-936` remains blocked until canary/owner gates pass.
 
-## REQ-20260713-937 Billing V2 / PR #132 Local Evidence Update
+## REQ-20260713-937 Billing V2 / PR #132 Closeout
 
 - PR #132 was audited as open, draft, dirty, and divergent; no wholesale merge was performed.
 - Safe local reconciliation covers no-trial Stripe billing lifecycle, Rosh Hashanah promotional-access policy defaults, Stripe local beta preview, parent promotional-access invite semantics, Operations billing/referral copy, SQL policy seeds, current guidance copy, and sandbox E2E verifier.
 - Evidence: `ops/audits/2026-07-14-onetime-billing-pr132-reconciliation-audit.md` and `ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.md`.
 - Verification: focused billing/review tests `25/25`, `npm run stripe:sandbox-e2e`, `npm run watchdog:workspace-scope`, and `git diff --check` passed.
-- `REQ-20260713-937` remains `needs_verification`: commit/push, One Time deploy, and exact-SHA live smokes/readbacks are required before Done.
+- Deploy proof: One Time Railway deployment `15280d13-3e12-4c72-8460-10e0c6e99b3e` reached `SUCCESS`; live `/api/deploy-info` returned exact SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`.
+- Live proof: exact-SHA separate-instance smoke passed, parent-facing landing/campaign no-trial smoke passed at `ops/live-smokes/2026-07-13T21-42-33-620Z-rabbi-onetime-landing-smoke.md`, and Operations promotional billing/referral smoke passed at `ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md`.
+- `REQ-20260713-937` is Done. Continue `REQ-20260713-938` next; `REQ-20260713-936` remains blocked until canary/owner gates pass.
 
 ## Product Quality Operating Contract
 

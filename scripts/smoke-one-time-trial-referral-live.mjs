@@ -223,20 +223,29 @@ async function main() {
     return 'Rosh Hashanah promotional access, no Stripe trial, $67 monthly conversion, billing notice/refund gates, first-paid-cycle referral, and no-write gates returned';
   });
 
-  await step('Operations ships promotional billing/referral UX markers', async () => {
+  await step('Operations bootstrap route loads the split Operations shell', async () => {
     const { text } = await requestText(`${appUrl}/operations`, {
       headers: authHeaders,
     });
-    assert(text.includes('data-one-time-trial-referral-config'), 'Operations HTML missing trial/referral marker');
-    assert(text.includes('REQ-20260713-954'), 'Operations HTML missing promotional billing requirement id');
-    assert(text.includes('Rosh Hashanah promotional access'), 'Operations HTML missing promotional access copy');
-    assert(text.includes('Stripe Trial'), 'Operations HTML missing Stripe trial state');
-    assert(text.includes('Referral credit activates only after the first successful paid cycle'), 'Operations HTML missing referral trigger copy');
-    assert(text.includes('Billing notice'), 'Operations HTML missing billing notice copy');
-    assert(text.includes('Manual refund review'), 'Operations HTML missing refund review copy');
-    assert(text.includes('bna_one_time_policy_acceptances'), 'Operations HTML missing acceptance storage table');
-    assert(text.includes('No live charge, payment link, Stripe trial, access grant, refund, notice send, or real invoice credit is enabled'), 'Operations HTML missing no-charge/no-trial/no-refund/no-send guardrail');
-    return 'Promotional billing/referral panel markers shipped';
+    assert(text.includes('/js/operations-shell.js'), 'Operations bootstrap missing operations shell runtime');
+    assert(text.includes('/css/one-time-operations.css'), 'Operations bootstrap missing One Time Operations stylesheet');
+    return 'Authenticated /operations route serves the split Operations shell';
+  });
+
+  await step('Operations runtime ships promotional billing/referral UX markers', async () => {
+    const { text } = await requestText(`${appUrl}/js/operations-shell.js`, {
+      headers: { 'cache-control': 'no-cache' },
+    });
+    assert(text.includes('data-one-time-trial-referral-config'), 'Operations runtime missing trial/referral marker');
+    assert(text.includes('REQ-20260713-954'), 'Operations runtime missing promotional billing requirement id');
+    assert(text.includes('Rosh Hashanah promotional access'), 'Operations runtime missing promotional access copy');
+    assert(text.includes('Stripe Trial'), 'Operations runtime missing Stripe trial state');
+    assert(text.includes('Referral credit activates only after the first successful paid cycle'), 'Operations runtime missing referral trigger copy');
+    assert(text.includes('Billing notice'), 'Operations runtime missing billing notice copy');
+    assert(text.includes('Manual refund review'), 'Operations runtime missing refund review copy');
+    assert(text.includes('bna_one_time_policy_acceptances'), 'Operations runtime missing acceptance storage table');
+    assert(text.includes('No live charge, payment link, Stripe trial, access grant, refund, notice send, or real invoice credit is enabled'), 'Operations runtime missing no-charge/no-trial/no-refund/no-send guardrail');
+    return 'Promotional billing/referral panel markers shipped in operations-shell.js';
   });
 
   const paths = writeReports(report);

@@ -770,13 +770,14 @@ Current status: `active`
 - Next current unblocked requirement is `REQ-20260713-937`; `REQ-20260713-936` remains blocked until canary/owner gates pass.
 - Guardrails: no checkout POST, payment link creation, member creation, access grant, email send, WhatsApp/WAPI send, Telegram send, social post, upload, charge, DNS/account write, CRM production write, provider mutation, credential mutation, public auto-reply activation, or destructive production mutation occurred.
 
-## 2026-07-14 - REQ-20260713-937 Billing V2 / PR #132 Local Reconciliation
+## 2026-07-14 - REQ-20260713-937 Billing V2 / PR #132 Closeout
 
-- `REQ-20260713-937` is `needs_verification`, not Done.
+- `REQ-20260713-937` is Done.
 - PR #132 was audited as open, draft, dirty, and divergent; no wholesale merge was performed.
-- Safe local slice reconciles no-trial Stripe billing lifecycle, Rosh Hashanah promotional access defaults, Stripe local beta preview, parent promotional-access invite semantics, Operations panel copy, SQL policy seeds, the live smoke contract, and sandbox verifier/test coverage.
-- Audit: `ops/audits/2026-07-14-onetime-billing-pr132-reconciliation-audit.md`.
-- Sandbox report: `ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.md`.
-- Local verification passed: syntax checks, focused billing/review tests `25/25`, `npm run stripe:sandbox-e2e`, `npm run watchdog:workspace-scope`, and `git diff --check`.
-- Remaining gate: commit/push, One Time deploy, exact-SHA live readback/smokes for billing/Operations/parent promotional access surfaces before marking Done.
-- Guardrails: no live checkout/session/subscription/charge/refund/invoice-credit/access mutation, billing notice send, email send, WhatsApp/WAPI send, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.
+- Source SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5` reconciles no-trial Stripe billing lifecycle, Rosh Hashanah promotional access defaults, Stripe local beta preview, parent promotional-access invite semantics, Operations panel copy, SQL policy seeds, the live smoke contract, and sandbox verifier/test coverage.
+- Local proof passed: syntax checks, focused billing/review tests `25/25`, `npm run stripe:sandbox-e2e`, `npm run watchdog:workspace-scope`, and `git diff --check`.
+- Deploy proof: One Time Railway deployment `15280d13-3e12-4c72-8460-10e0c6e99b3e` reached `SUCCESS`; live `/api/deploy-info` returned exact SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`.
+- Live proof passed: exact-SHA One Time separate-instance smoke, exact-SHA parent-facing landing/campaign no-trial smoke at `ops/live-smokes/2026-07-13T21-42-33-620Z-rabbi-onetime-landing-smoke.md`, and Operations promotional billing/referral smoke at `ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md`.
+- Billing live readback showed `trial_days=0`, `stripe_trial_enabled=false`, renewal `6700`, billing notice/refund execution disabled, and referral trigger `first_successful_paid_cycle`.
+- Next current unblocked requirement is `REQ-20260713-938`; `REQ-20260713-936` remains blocked until canary/owner gates pass.
+- Guardrails: no live checkout/session/subscription/charge/refund/invoice-credit mutation, billing notice send, email send, WhatsApp/WAPI send, access mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.

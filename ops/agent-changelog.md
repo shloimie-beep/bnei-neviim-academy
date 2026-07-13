@@ -40466,3 +40466,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verification passed: syntax checks, focused billing/review tests `25/25`, `npm run stripe:sandbox-e2e`, `npm run watchdog:workspace-scope`, and `git diff --check`.
 - Remaining gate: commit/push, One Time deploy, exact-SHA live billing/Operations/parent promotional access smokes/readbacks before marking Done.
 - Guardrails: no live checkout/session/subscription/charge/refund/invoice-credit/access mutation, billing notice send, email send, WhatsApp/WAPI send, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.
+
+## 2026-07-14 - One Time Billing V2 / PR #132 deployed closeout
+
+- Completed `REQ-20260713-937` for the safe Billing V2 / PR #132 reconciliation. PR #132 remains unmerged wholesale; the reconciled slice is in source SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`.
+- Deployed One Time SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`; Railway deployment `15280d13-3e12-4c72-8460-10e0c6e99b3e` reached `SUCCESS`.
+- Verified live deploy-info exact SHA, exact-SHA separate-instance smoke, exact-SHA parent-facing landing/campaign no-trial smoke, and Operations promotional billing/referral smoke.
+- Evidence: `ops/live-smokes/2026-07-13T21-42-33-620Z-rabbi-onetime-landing-smoke.md`, `ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md`, and `ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.md`.
+- Live billing readback recorded `trial_days=0`, `stripe_trial_enabled=false`, renewal `6700`, billing notice/refund execution disabled, and referral trigger `first_successful_paid_cycle`.
+- Guardrails: no live checkout/session/subscription/charge/refund/invoice-credit mutation, billing notice send, email, WhatsApp/WAPI, access mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation occurred.

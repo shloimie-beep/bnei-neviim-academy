@@ -1285,7 +1285,7 @@
 - PASS visual readback of live `landing-1440.png`, `landing-390.png`, and `signup-390.png`.
 - Guardrails: live smokes performed no checkout POST, payment link, live charge/refund/subscription, member creation, access grant, email, WhatsApp/WAPI, Telegram, Zoom, upload, DNS/account mutation, provider mutation, CRM production write, or public auto-reply activation.
 
-## REQ-20260713-937 Billing V2 / PR #132 Local Test Results
+## REQ-20260713-937 Billing V2 / PR #132 Test Results
 
 - PASS PR #132 audit: open draft DIRTY; no wholesale merge.
 - PASS `node --check server.js`.
@@ -1297,4 +1297,12 @@
 - PASS `npm run stripe:sandbox-e2e`; report `ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.md`, with external/write/live/access mutations false.
 - PASS `npm run watchdog:workspace-scope`.
 - PASS `git diff --check` with line-ending warnings only.
-- BLOCKED for Done: no deploy/live exact-SHA proof yet.
+- PASS `git push origin codex/onetime-final-integration-launch` for scoped source SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`.
+- PASS `npm run railway:redeploy` with One Time target; Railway deployment `15280d13-3e12-4c72-8460-10e0c6e99b3e`.
+- PASS `npm run railway:doctor`; deployment `15280d13-3e12-4c72-8460-10e0c6e99b3e` status `SUCCESS`.
+- PASS live `/api/deploy-info`: exact SHA `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`, source branch `codex/onetime-final-integration-launch`, `target_app=one-time`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`.
+- PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`; report `ops/live-smokes/2026-07-13T21-42-33-620Z-rabbi-onetime-landing-smoke.md`.
+- PASS split-shell smoke correction: `node --check scripts/smoke-one-time-trial-referral-live.mjs` and `node --test tests/one-time-stripe-local-beta.test.js` `5/5`.
+- PASS `npm run app:smoke:one-time-trial-referral` against `https://join.onetimeonetime.com` with Railway Operations credentials injected in-process; report `ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md`, `trial_days=0`, `stripe_trial_enabled=false`, renewal `6700`, referral trigger `first_successful_paid_cycle`.
+- Guardrails: live smokes performed no checkout/session/subscription/charge/refund/invoice-credit mutation, billing notice send, email send, WhatsApp/WAPI send, access mutation, provider mutation, credential mutation, CRM production write, or destructive production mutation.

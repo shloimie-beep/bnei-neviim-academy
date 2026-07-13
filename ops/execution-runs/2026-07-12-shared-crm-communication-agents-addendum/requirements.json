@@ -2877,10 +2877,10 @@
       "depends_on": [
         "REQ-20260713-932"
       ],
-      "status": "needs_verification",
-      "implementation_status": "Safe PR #132 Billing V2 slice reconciled locally against the current launch branch: no-trial Stripe billing lifecycle, One Time Rosh Hashanah promotional-access defaults, Stripe local beta preview, parent promotional-access invite semantics, Operations panel copy, SQL policy seeds, local sandbox E2E verifier, and focused tests. Full Done still waits on commit/push plus approved One Time deploy/live readback because deployment_required=true.",
+      "status": "done",
+      "implementation_status": "Done in source SHA 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5: PR #132 was audited as open/draft/DIRTY and not merged wholesale; the scoped no-trial Billing V2 slice was rebuilt on the current launch branch, sandbox-verified with no checkout/subscription/live charge/refund/access mutation, pushed, deployed to One Time production deployment 15280d13-3e12-4c72-8460-10e0c6e99b3e, and live-smoked at the exact SHA. Live proof shows Rosh Hashanah promotional access, trial_days=0, stripe_trial_enabled=false, $67 monthly conversion, pre-billing notice/refund review gates disabled for live sends/refunds, referral credit only after the first successful paid cycle, and Operations split-shell runtime markers shipped.",
       "can_continue_without_operator": true,
-      "next_action": "Commit/push the scoped slice, deploy the approved One Time target, run exact-SHA live readback/smoke for billing/Operations/parent promotional access no-trial surfaces, then mark Done only if the live proof passes.",
+      "next_action": "Continue the next unblocked launch requirement REQ-20260713-938 Vimeo, Drive, Classroom, and Zoom integration truth; keep REQ-20260713-936 blocked until canary/owner gates pass.",
       "acceptance_criteria": [
         "No wholesale dirty merge.",
         "No trial object/hidden trial.",
@@ -2891,7 +2891,10 @@
         "ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md",
         "ops/audits/2026-07-14-onetime-billing-pr132-reconciliation-audit.md",
         "ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.md",
-        "ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.json"
+        "ops/verifier-runs/2026-07-14-onetime-billing-sandbox-e2e/latest.json",
+        "ops/live-smokes/2026-07-13T21-42-33-620Z-rabbi-onetime-landing-smoke.md",
+        "ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md",
+        "ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.json"
       ],
       "verification": [
         "gh pr view 132 open draft DIRTY",
@@ -2903,7 +2906,16 @@
         "PASS node --test tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js tests/one-time-parent-trial-invite.test.js tests/one-time-billing-sandbox-e2e-verifier.test.js tests/owner-review-role-flow-contract.test.js (25/25)",
         "PASS npm run stripe:sandbox-e2e; external_write_performed=false, live_charge_performed=false, access_mutation_performed=false",
         "PASS npm run watchdog:workspace-scope",
-        "PASS git diff --check (line-ending warnings only)"
+        "PASS git diff --check (line-ending warnings only)",
+        "PASS git push origin codex/onetime-final-integration-launch pushed scoped commit 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5",
+        "PASS npm run railway:redeploy uploaded One Time production deployment 15280d13-3e12-4c72-8460-10e0c6e99b3e",
+        "PASS npm run railway:doctor confirmed one-time-web deployment 15280d13-3e12-4c72-8460-10e0c6e99b3e SUCCESS",
+        "PASS live /api/deploy-info exact SHA 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5 target_app=one-time",
+        "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5",
+        "PASS npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com --expected-sha 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5; report ops/live-smokes/2026-07-13T21-42-33-620Z-rabbi-onetime-landing-smoke.md",
+        "PASS npm run app:smoke:one-time-trial-referral with Railway OPS credentials injected in-process; report ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md; trial_days=0 stripe_trial_enabled=false renewal_amount_cents=6700 referral_trigger=first_successful_paid_cycle",
+        "PASS node --check scripts/smoke-one-time-trial-referral-live.mjs after split-shell live smoke correction",
+        "PASS node --test tests/one-time-stripe-local-beta.test.js (5/5) after split-shell live smoke contract update"
       ],
       "implementation_files": [
         "package.json",
@@ -2935,10 +2947,19 @@
         "tests/stripe-billing-lifecycle.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-14T00:32:32+03:00",
-      "blocker": "Deployment/live smoke still required before Done because server/UI-visible billing semantics changed.",
-      "blocker_owner": "Codex / release lane",
-      "blocker_next_action": "Commit/push scoped slice, deploy the One Time target, run exact-SHA live readback/smokes for the billing/Operations parent promotional-access no-trial surfaces, then update REQ-20260713-937 to Done if all pass."
+      "updated_at": "2026-07-14T00:45:59+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "implementation_commit": "050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5",
+      "pushed_commit": "050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5",
+      "deployed_sha": "050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5",
+      "one_time_deployment_id": "15280d13-3e12-4c72-8460-10e0c6e99b3e",
+      "live_smoke_status": "passed",
+      "deployment_evidence": [
+        "ops/live-smokes/2026-07-13T21-42-33-620Z-rabbi-onetime-landing-smoke.md",
+        "ops/live-smokes/2026-07-13T21-44-55-248Z-one-time-trial-referral-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260713-938",
