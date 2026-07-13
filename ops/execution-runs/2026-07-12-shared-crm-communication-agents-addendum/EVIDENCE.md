@@ -812,3 +812,34 @@
   send, public auto-reply enablement, CRM production write, payment/access
   mutation, raw destination/chat/token logging, or destructive production
   mutation was performed by this deployed proof.
+
+## Final Release Matrix Evidence
+
+- Requirement: `REQ-20260712-314`.
+- Current final report:
+  `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/FINAL-REPORT.md`.
+- Current One Time live SHA:
+  `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`.
+- Current One Time Railway deployment:
+  `fe180cfc-322c-46cc-acde-4e1314e42291`.
+- Runtime activation-gate deployment:
+  `80b75432672d282855b350a2f7c5adc160e63623` /
+  `74f45880-7a11-4b06-9632-d858843cb4fb`.
+- Performance evidence:
+  `ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md`
+  and
+  `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- CRM/mobile evidence:
+  `ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md`
+  and `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/`.
+- Integration readiness evidence:
+  `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`,
+  `ops/watchdog-audits/2026-07-13T16-18-40-701Z-onetime-owner-test-readiness.md`,
+  and `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md`.
+- Live smoke evidence:
+  `ops/live-smokes/2026-07-13T16-18-12-320Z-onetime-provider-route-module-live-smoke.md`
+  and `ops/live-smokes/2026-07-13T16-18-59-085Z-rabbi-onetime-landing-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram
+  send, public auto-reply enablement, CRM production write, payment/access
+  mutation, raw destination/chat/token logging, or destructive production
+  mutation was performed by this final-report proof.

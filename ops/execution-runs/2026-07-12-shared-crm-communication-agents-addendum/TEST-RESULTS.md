@@ -1169,3 +1169,21 @@
 - PASS WAPI/Rabbi/bot policy suite `30/30`: One Time WAPI scoped send contract, provider lead bot, and Rabbi Telegram notifications.
 - `REQ-20260712-313` remains Blocked, not Done: owner-only live email/WhatsApp send/readback requires secure owner aliases, and unrestricted public WhatsApp auto-reply requires explicit `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` approval.
 - Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, CRM production write, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed by this proof.
+
+## Final Release Matrix Blocked Proof - 2026-07-13
+
+- PASS final report artifact recorded:
+  `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/FINAL-REPORT.md`.
+- PASS `npm run bna:run:validate` after marking `REQ-20260712-314` blocked by
+  external live-send gates.
+- PASS `npm run secrets:audit` after adding the final report artifact.
+- PASS exact-SHA One Time deploy-info readback for
+  `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`.
+- PASS exact-SHA One Time separate-instance route matrix for
+  `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`.
+- PASS no-send activation contract suite `39/39`.
+- PASS WAPI/Rabbi/provider-bot policy suite `30/30`.
+- BLOCKED owner-only email/WhatsApp live sends: secure owner-test aliases are
+  not configured, so no external owner send was attempted.
+- BLOCKED unrestricted public WhatsApp auto-reply: explicit
+  `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` approval is not configured.

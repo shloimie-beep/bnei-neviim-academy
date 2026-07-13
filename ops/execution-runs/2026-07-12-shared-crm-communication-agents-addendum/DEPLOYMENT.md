@@ -549,3 +549,20 @@ Global production readiness remains blocked only by known external full-launch f
   public auto-reply enablement, CRM destructive write, provider mutation,
   payment/access mutation, credential mutation, raw private payload logging, or
   destructive production mutation was performed by this proof.
+
+## 2026-07-13 Final Release Matrix Documentation
+
+- Current production application SHA remains
+  `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c` on One Time deployment
+  `fe180cfc-322c-46cc-acde-4e1314e42291`.
+- This closeout update records documentation and requirement status only; it is
+  intentionally not redeployed over the exact product SHA already live-smoked.
+- Final report:
+  `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/FINAL-REPORT.md`.
+- `REQ-20260712-314` remains blocked until secure owner-test aliases and any
+  public WhatsApp auto-reply approval are configured and the final live
+  send/readback verifier can run.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send,
+  public auto-reply enablement, CRM destructive write, payment/access mutation,
+  credential mutation, raw private payload logging, or destructive production
+  mutation was performed by this documentation closeout.

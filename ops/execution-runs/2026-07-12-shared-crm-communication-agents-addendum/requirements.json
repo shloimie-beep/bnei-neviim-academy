@@ -2384,10 +2384,10 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "not_started",
-      "implementation_status": "partial",
-      "can_continue_without_operator": true,
-      "next_action": "Continue REQ-20260712-314 after the remaining implementation batches are validated; full final matrix/screenshots still pending.",
+      "status": "blocked",
+      "implementation_status": "Current release-proof report is recorded with exact live SHA, deployment IDs, performance evidence, CRM/mobile screenshot evidence, WAPI/owner/Rabbi readiness evidence, and guardrails. The full final matrix cannot be marked Done until owner-test aliases and public-auto-reply confirmation unblock live send/readback and final verifier sections.",
+      "can_continue_without_operator": false,
+      "next_action": "After secure owner-test aliases and any public-auto-reply approval are configured, rerun owner-only email/WhatsApp send/readback, final integration verifier, and final matrix closeout. Continue no-send or unrelated unblocked work meanwhile.",
       "acceptance_criteria": [
         "Run the full required matrix, push bounded commits, deploy exact tested SHA, run Railway doctor, capture responsive screenshots and redacted receipts, update ledgers/changelog, and report exact blockers."
       ],
@@ -2401,7 +2401,14 @@
         "One Time live /api/deploy-info commit_sha=301b408b36fa982d4562d06f30de56758cd0e168",
         "BNA Railway deployment 640fc22a-5172-4729-ab92-7882426a13e0 SUCCESS",
         "One Time Railway deployment 2c2c7631-a004-4019-bf3f-328cd61cd905 SUCCESS",
-        "ops/live-smokes/2026-07-12T22-17-11-356Z-rabbi-onetime-landing-smoke.md"
+        "ops/live-smokes/2026-07-12T22-17-11-356Z-rabbi-onetime-landing-smoke.md",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/FINAL-REPORT.md",
+        "One Time live /api/deploy-info commit_sha=49f3edda2da37e3afd9bdf3056ab5f6fc91e981c",
+        "One Time Railway deployment fe180cfc-322c-46cc-acde-4e1314e42291 SUCCESS",
+        "ops/live-smokes/2026-07-13T16-18-12-320Z-onetime-provider-route-module-live-smoke.md",
+        "ops/live-smokes/2026-07-13T16-18-59-085Z-rabbi-onetime-landing-smoke.md",
+        "ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md",
+        "ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md"
       ],
       "verification": [
         "npm run production:readiness:gate -- --json --allow-dirty",
@@ -2410,15 +2417,24 @@
         "Playwright no-write browser intercept on https://join.onetimeonetime.com/one-time/signup for Family and School",
         "Direct live dry-run POST to /api/one-time/interest?dry_run=true for Family and School",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 301b408b36fa982d4562d06f30de56758cd0e168 PASS",
-        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS"
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS",
+        "npm run bna:run:validate PASS after marking final matrix blocked by external gates",
+        "npm run secrets:audit PASS after final report artifact",
+        "One Time exact-SHA deploy-info readback PASS for 49f3edda2da37e3afd9bdf3056ab5f6fc91e981c",
+        "One Time exact-SHA separate-instance route matrix PASS for 49f3edda2da37e3afd9bdf3056ab5f6fc91e981c",
+        "No-send activation contract suite PASS 39/39",
+        "WAPI/Rabbi/bot policy suite PASS 30/30"
       ],
       "implementation_files": [
         "ops/production-readiness/latest-production-readiness-snapshot.md",
-        "ops/production-readiness/latest-production-unblocker.md"
+        "ops/production-readiness/latest-production-unblocker.md",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/FINAL-REPORT.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T01:22:00+03:00",
-      "blocker": "External Stripe/campaign setup fields currently block full production readiness."
+      "updated_at": "2026-07-13T19:31:00+03:00",
+      "blocker": "Blocked by REQ-20260713-906 missing secure owner-test aliases, REQ-20260712-313 missing public auto-reply confirmation, and REQ-20260713-910 final verifier dependency on owner-test send/readback.",
+      "blocker_owner": "Shloimie / secure runtime configuration owner",
+      "blocker_next_action": "Configure secure owner-test aliases; separately approve ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM only when unrestricted public WhatsApp auto-reply should go live; rerun final verifier and matrix."
     }
   ],
   "sources": [

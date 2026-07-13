@@ -660,3 +660,24 @@ Current status: `active`
   public auto-reply enablement, CRM production write, payment/access mutation,
   raw destination/chat/token logging, or destructive production mutation was
   performed.
+
+## 2026-07-13 - Final Release Matrix Blocked With Current Proof
+
+- `REQ-20260712-314` is Blocked, not Done, because the final live-send/readback
+  and full integration verifier depend on external gates that are still missing.
+- Current One Time live deploy-info returns exact SHA
+  `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`; Railway deployment
+  `fe180cfc-322c-46cc-acde-4e1314e42291` reached `SUCCESS`.
+- Current final report:
+  `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/FINAL-REPORT.md`.
+- The report records signup/form deployment proof, dedicated One Time shell and
+  performance evidence, mobile CRM evidence, Communication Agents evidence,
+  WAPI/Rabbi/owner readiness, exact live SHA, guardrails, and remaining
+  blockers.
+- Remaining blockers: missing secure owner-test email/WhatsApp aliases for
+  bounded owner sends, missing explicit public WhatsApp auto-reply confirmation,
+  and the final verifier dependency on those live owner-send/readback gates.
+- Guardrails: no owner email send, WhatsApp/WAPI provider send, Telegram send,
+  public auto-reply enablement, CRM production write, payment/access mutation,
+  raw destination/chat/token logging, or destructive production mutation was
+  performed by this final-report proof.

@@ -40376,3 +40376,20 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Additional no-send contract suites passed `39/39` and `30/30`, covering communication-agent response runtime, inbound pipeline, delivery outbox, Resend inbound, WAPI provider policy, provider lead bot, and Rabbi Telegram notifications.
 - Remaining blockers: secure owner-test aliases are missing for bounded owner sends, and unrestricted public WhatsApp auto-reply still lacks explicit `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM`.
 - Guardrails: no owner email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply activation, CRM production write, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed.
+
+## 2026-07-13 - Final One Time release matrix report recorded
+
+- Marked `REQ-20260712-314` Blocked with current proof rather than calling the
+  final launch matrix Done prematurely.
+- Recorded the final report at
+  `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/FINAL-REPORT.md`,
+  including current One Time live SHA
+  `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`, deployment
+  `fe180cfc-322c-46cc-acde-4e1314e42291`, performance and CRM/mobile evidence,
+  WAPI/Rabbi/owner readiness evidence, guardrails, and exact blockers.
+- Remaining blockers: secure owner-test aliases, public WhatsApp auto-reply
+  confirmation, and the final verifier dependency on those gates.
+- Guardrails: no owner email send, WhatsApp/WAPI provider send, Telegram send,
+  public auto-reply activation, CRM production write, payment/access mutation,
+  raw destination/chat/token logging, or destructive production mutation was
+  performed.
