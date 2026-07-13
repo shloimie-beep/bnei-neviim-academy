@@ -692,11 +692,12 @@
 - PASS `npm run bna:run:validate`.
 - PASS `git diff --cached --check`.
 - PASS `git push origin master` for commit `e971aa1e69eae63be8682b699b78d4b7733fefb8`.
-- PASS One Time Railway redeploy and doctor; deployment `2e905ada-4b0d-45e0-94ef-0e3681d065d0` reached `SUCCESS`.
-- PASS BNA Railway redeploy and doctor; deployment `c5f3632a-28da-4d52-97ba-14327e8d7197` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `9baac6d8-a249-49f7-a228-a77efcf87d5f` reached `SUCCESS`.
+- PASS BNA Railway redeploy and doctor; deployment `1e95c912-8985-42a2-b4d7-294f26dd0939` reached `SUCCESS`.
 - PASS One Time live `/api/deploy-info`; returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
 - PASS BNA live `/api/deploy-info`; returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
 - PASS `node scripts/smoke-onetime-separate-instance-live.mjs https://join.onetimeonetime.com --expected-sha e971aa1e69eae63be8682b699b78d4b7733fefb8`.
-- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T07-43-18-434Z-one-time-operations-crm-workbench-live-smoke.md`.
-- PASS `npm run app:smoke`; report `ops/live-smokes/2026-07-13T07-45-08-661Z-live-app-smoke.md`.
-- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T07-45-26-489Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T07-45-19-025Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-provider-route-module`; report `ops/live-smokes/2026-07-13T07-45-30-679Z-onetime-provider-route-module-live-smoke.md`.
+- PASS BNA live `/api/deploy-info` exact-SHA readback returned `target_app=bna`; generic `npm run app:smoke` was skipped because it creates/deletes task test data.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T07-48-07-488Z-operations-workspace-taxonomy-live-smoke.md`.

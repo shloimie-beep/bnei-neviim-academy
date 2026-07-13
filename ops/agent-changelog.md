@@ -15,13 +15,12 @@ marked done, verified, deployed, or otherwise finished.
   one-pane profile hiding.
 - Pushed commit `e971aa1e69eae63be8682b699b78d4b7733fefb8` to `master`.
 - Deployed the exact SHA to One Time Railway deployment
-  `2e905ada-4b0d-45e0-94ef-0e3681d065d0` and BNA Railway deployment
-  `c5f3632a-28da-4d52-97ba-14327e8d7197`; both live deploy-info endpoints
+  `9baac6d8-a249-49f7-a228-a77efcf87d5f` and BNA Railway deployment
+  `1e95c912-8985-42a2-b4d7-294f26dd0939`; both live deploy-info endpoints
   returned the exact commit.
 - Verification passed: local CRM workbench smoke, action watchdog/parity,
   protocol drift watchdog, secrets audit, run validation, exact-SHA One Time
-  separate-instance smoke, One Time live CRM workbench smoke, BNA live app
-  smoke, and Operations workspace taxonomy smoke.
+  separate-instance smoke, One Time live CRM workbench smoke, One Time route-module smoke, BNA exact-SHA deploy-info readback, and Operations workspace taxonomy smoke.
 - Guardrail: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation,
   provider mutation, payment/access mutation, credential mutation, or production
   data mutation was performed by this mobile CRM IA closeout.

@@ -426,9 +426,9 @@
         "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-390-crm-selected-detail.png",
         "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-430-crm-selected-detail.png",
         "ops/watchdog-audits/2026-07-13T07-38-watchdog-action-audit.md",
-        "ops/live-smokes/2026-07-13T07-43-18-434Z-one-time-operations-crm-workbench-live-smoke.md",
-        "ops/live-smokes/2026-07-13T07-45-08-661Z-live-app-smoke.md",
-        "ops/live-smokes/2026-07-13T07-45-26-489Z-operations-workspace-taxonomy-live-smoke.md"
+        "ops/live-smokes/2026-07-13T07-45-19-025Z-one-time-operations-crm-workbench-live-smoke.md",
+        "ops/live-smokes/2026-07-13T07-48-07-488Z-operations-workspace-taxonomy-live-smoke.md",
+        "ops/live-smokes/2026-07-13T07-45-30-679Z-onetime-provider-route-module-live-smoke.md"
       ],
       "verification": [
         "npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json PASS",
@@ -448,14 +448,15 @@
         "npm run secrets:audit PASS after mobile CRM IA implementation",
         "npm run bna:run:validate PASS after mobile CRM IA implementation",
         "git commit -m \"Implement One Time mobile CRM IA\" created e971aa1e69eae63be8682b699b78d4b7733fefb8 and git push origin master PASS.",
-        "One Time Railway redeploy and doctor PASS; deployment 2e905ada-4b0d-45e0-94ef-0e3681d065d0 reached SUCCESS.",
-        "BNA Railway redeploy and doctor PASS; deployment c5f3632a-28da-4d52-97ba-14327e8d7197 reached SUCCESS.",
+        "One Time Railway redeploy and doctor PASS; deployment 9baac6d8-a249-49f7-a228-a77efcf87d5f reached SUCCESS.",
+        "BNA Railway redeploy and doctor PASS; deployment 1e95c912-8985-42a2-b4d7-294f26dd0939 reached SUCCESS.",
         "One Time live /api/deploy-info returned commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8 and target_app=one-time.",
         "BNA live /api/deploy-info returned commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8 and target_app=bna.",
         "node scripts/smoke-onetime-separate-instance-live.mjs https://join.onetimeonetime.com --expected-sha e971aa1e69eae63be8682b699b78d4b7733fefb8 PASS.",
-        "npm run app:smoke:onetime-operations-crm-workbench PASS; report ops/live-smokes/2026-07-13T07-43-18-434Z-one-time-operations-crm-workbench-live-smoke.md records commit/deployment and 12 scoped CRM cards with read-only selected timeline.",
-        "npm run app:smoke PASS for BNA production; report ops/live-smokes/2026-07-13T07-45-08-661Z-live-app-smoke.md.",
-        "npm run app:smoke:operations-workspace-taxonomy PASS; report ops/live-smokes/2026-07-13T07-45-26-489Z-operations-workspace-taxonomy-live-smoke.md."
+        "npm run app:smoke:onetime-operations-crm-workbench PASS; report ops/live-smokes/2026-07-13T07-45-19-025Z-one-time-operations-crm-workbench-live-smoke.md records 12 scoped CRM cards with read-only selected timeline.",
+        "npm run app:smoke:operations-workspace-taxonomy PASS; report ops/live-smokes/2026-07-13T07-48-07-488Z-operations-workspace-taxonomy-live-smoke.md.",
+        "npm run app:smoke:onetime-provider-route-module PASS; report ops/live-smokes/2026-07-13T07-45-30-679Z-onetime-provider-route-module-live-smoke.md.",
+        "BNA generic npm run app:smoke was skipped because it creates/deletes task test data; BNA proof used exact-SHA /api/deploy-info plus read-only Operations workspace taxonomy smoke."
       ],
       "implementation_files": [
         "tasks-pending/",
@@ -483,12 +484,12 @@
       "deployment_required": true,
       "deployment_evidence": [
         "Commit e971aa1e69eae63be8682b699b78d4b7733fefb8 pushed to origin/master.",
-        "One Time Railway deployment 2e905ada-4b0d-45e0-94ef-0e3681d065d0 reached SUCCESS and live /api/deploy-info returned the exact commit.",
-        "BNA Railway deployment c5f3632a-28da-4d52-97ba-14327e8d7197 reached SUCCESS and live /api/deploy-info returned the exact commit.",
+        "One Time Railway deployment 9baac6d8-a249-49f7-a228-a77efcf87d5f reached SUCCESS and live /api/deploy-info returned the exact commit with target_app=one-time.",
+        "BNA Railway deployment 1e95c912-8985-42a2-b4d7-294f26dd0939 reached SUCCESS and live /api/deploy-info returned the exact commit with target_app=bna.",
         "One Time exact-SHA separate-instance smoke passed against https://join.onetimeonetime.com.",
-        "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-13T07-43-18-434Z-one-time-operations-crm-workbench-live-smoke.md.",
-        "BNA live app smoke report: ops/live-smokes/2026-07-13T07-45-08-661Z-live-app-smoke.md.",
-        "BNA Operations workspace taxonomy live smoke report: ops/live-smokes/2026-07-13T07-45-26-489Z-operations-workspace-taxonomy-live-smoke.md."
+        "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-13T07-45-19-025Z-one-time-operations-crm-workbench-live-smoke.md.",
+        "One Time provider route-module live smoke report: ops/live-smokes/2026-07-13T07-45-30-679Z-onetime-provider-route-module-live-smoke.md.",
+        "BNA Operations workspace taxonomy live smoke report: ops/live-smokes/2026-07-13T07-48-07-488Z-operations-workspace-taxonomy-live-smoke.md."
       ],
       "id": "REQ-20260713-909",
       "title": "Mobile CRM information architecture",
@@ -498,7 +499,7 @@
       ],
       "category": "crm_mobile_ia",
       "batch_id": "4-mobile-crm-information-architecture",
-      "implementation_status": "Done: mobile selected-contact state now hides the list/filter/status on mobile, exposes a focused contact header, class/access context, subview rail, contextual More actions overflow, selected-detail state markers, and lazy active-subview data reads. Commit e971aa1e69eae63be8682b699b78d4b7733fefb8 is pushed, deployed to One Time and BNA, and live-smoked.",
+      "implementation_status": "Done: mobile selected-contact state now hides the list/filter/status on mobile, exposes a focused contact header, class/access context, subview rail, contextual More actions overflow, selected-detail state markers, and lazy active-subview data reads. Commit e971aa1e69eae63be8682b699b78d4b7733fefb8 is pushed, deployed to One Time and BNA, and live-smoked with read-only proof.",
       "next_action": "Start REQ-20260713-911 instrumentation/regression gates and keep REQ-20260713-906 blocked until secure owner-test aliases are configured through the approved secret path.",
       "acceptance_criteria": [
         "Current-state visual audit exists before implementation.",

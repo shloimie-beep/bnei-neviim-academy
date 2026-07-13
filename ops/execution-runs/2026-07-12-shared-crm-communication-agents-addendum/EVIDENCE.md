@@ -342,10 +342,11 @@
 - Local proof: `npm run operations:check-generated`, focused shared CRM/action-registry tests, `npm run watchdog:actions`, `npm run watchdog:protocol-drift`, `npm run secrets:audit`, `npm run bna:run:validate`, and `npm run one-time:smoke:operations-crm-workbench-local` passed.
 - Local visual proof: `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` covers split shell and monolith at 1440, 1024, 768, 430, and 390 with no horizontal overflow, no console/page/request failures, no writes, mobile Back restoration, and lazy conversations/tasks requests.
 - Commit `e971aa1e69eae63be8682b699b78d4b7733fefb8` pushed to `origin/master`.
-- One Time Railway deployment `2e905ada-4b0d-45e0-94ef-0e3681d065d0` reached `SUCCESS`; live deploy-info returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
-- BNA Railway deployment `c5f3632a-28da-4d52-97ba-14327e8d7197` reached `SUCCESS`; live deploy-info returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- One Time Railway deployment `9baac6d8-a249-49f7-a228-a77efcf87d5f` reached `SUCCESS`; live deploy-info returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- BNA Railway deployment `1e95c912-8985-42a2-b4d7-294f26dd0939` reached `SUCCESS`; live deploy-info returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
 - One Time exact-SHA separate-instance smoke passed against `https://join.onetimeonetime.com`.
-- One Time Operations CRM live smoke passed: `ops/live-smokes/2026-07-13T07-43-18-434Z-one-time-operations-crm-workbench-live-smoke.md`.
-- BNA live app smoke passed: `ops/live-smokes/2026-07-13T07-45-08-661Z-live-app-smoke.md`.
-- Operations workspace taxonomy live smoke passed: `ops/live-smokes/2026-07-13T07-45-26-489Z-operations-workspace-taxonomy-live-smoke.md`.
+- One Time Operations CRM live smoke passed: `ops/live-smokes/2026-07-13T07-45-19-025Z-one-time-operations-crm-workbench-live-smoke.md`.
+- One Time provider route-module live smoke passed: `ops/live-smokes/2026-07-13T07-45-30-679Z-onetime-provider-route-module-live-smoke.md`.
+- BNA exact-SHA deploy-info readback passed with `target_app=bna`.
+- Operations workspace taxonomy live smoke passed: `ops/live-smokes/2026-07-13T07-48-07-488Z-operations-workspace-taxonomy-live-smoke.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, or production data mutation was performed by this mobile CRM IA closeout.
