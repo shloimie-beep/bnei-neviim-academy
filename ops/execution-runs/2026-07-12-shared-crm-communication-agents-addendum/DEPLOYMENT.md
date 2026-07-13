@@ -152,3 +152,18 @@ Global production readiness remains blocked only by known external full-launch f
 - One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 09d239dd095e59299f06c5b3cd38893cd5696fb8` passed.
 - One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench` passed; report `ops/live-smokes/2026-07-13T03-23-44-897Z-one-time-operations-crm-workbench-live-smoke.md`.
 - Deployed JS marker checks passed on BNA and One Time for `updateFirstPartyCrmTaskDto`, `data-crm-task-dto-actions`, `Completed from CRM contact workspace Tasks tab.`, and `Reopened by an explicit Reopen task click in the CRM contact workspace Tasks tab.`.
+
+## 2026-07-13 CRM Support-Ticket Aggregate Slice Deploy
+
+- Commit: `e830ca924a2fd4853fc523a4bad6e55c454bf420`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_RAILWAY_TARGET_PROFILE=bna`.
+- BNA Railway doctor: deployment `2db01b8e-2241-413e-8df1-21a2926e892b` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=e830ca924a2fd4853fc523a4bad6e55c454bf420`, `target_app=bna`.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- One Time Railway doctor: deployment `2357d677-5991-40e4-8c05-621b201d0ad6` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=e830ca924a2fd4853fc523a4bad6e55c454bf420`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e830ca924a2fd4853fc523a4bad6e55c454bf420` passed.
+- One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench` passed; report `ops/live-smokes/2026-07-13T03-36-02-229Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Read-only live DTO readback found no live support tickets on the sampled One Time contact set (`support_summary_cards=0`, `support_timeline_items=0`) and confirmed support tickets are not returned in Conversations (`support_conversation_items=0`), with `no_send=true` and `external_write_performed=false`.

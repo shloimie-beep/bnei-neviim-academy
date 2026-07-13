@@ -226,3 +226,14 @@
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 09d239dd095e59299f06c5b3cd38893cd5696fb8` passed.
 - `ops/live-smokes/2026-07-13T03-23-44-897Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards and read-only selected timeline.
 - Deployed JS marker checks on both BNA and One Time confirmed `updateFirstPartyCrmTaskDto`, `data-crm-task-dto-actions`, `Completed from CRM contact workspace Tasks tab.`, and `Reopened by an explicit Reopen task click in the CRM contact workspace Tasks tab.`.
+- `server.js` - canonical CRM list/timeline SQL now folds matching workspace/project support tickets into contact activity counts and selected-contact Activity timeline rows by requester email, while excluding support-ticket rows from Conversations and Tasks DTOs.
+- `src/lib/bna/crm/contact-service.js` - shared fallback DTO split now keeps support-ticket timeline rows out of Conversations and Tasks.
+- `src/lib/bna/crm-contact-model.js` - support ticket source labels resolve as customer-facing `Support ticket` instead of raw table names.
+- `tests/crm-contact-service.test.js` / `tests/service-provider-scope-routes.test.js` - tests pin support-ticket timeline inclusion, Conversation/Task exclusion, scoped server wiring, and no-send/external-write metadata.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=e830ca924a2fd4853fc523a4bad6e55c454bf420`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=e830ca924a2fd4853fc523a4bad6e55c454bf420`.
+- BNA post-deploy doctor - Railway deployment `2db01b8e-2241-413e-8df1-21a2926e892b` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `2357d677-5991-40e4-8c05-621b201d0ad6` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e830ca924a2fd4853fc523a4bad6e55c454bf420` passed.
+- `ops/live-smokes/2026-07-13T03-36-02-229Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards and read-only selected timeline after the support-ticket aggregate slice.
+- Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `support_summary_cards=0`, sampled selected-contact `support_timeline_items=0`, `support_conversation_items=0`, `no_send=true`, and `external_write_performed=false`; no raw contact data or message bodies were saved.

@@ -39414,3 +39414,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   watchdogs, secret audit, execution-run validation, BNA/One Time Railway
   doctors, exact-SHA One Time route smoke, and deployed marker checks on both
   domains.
+
+## 2026-07-13 - CRM support-ticket aggregate deployed
+
+- Added scoped support-ticket activity into canonical CRM contact aggregates:
+  matching tickets now contribute to contact activity counts and selected-contact
+  Activity timeline rows.
+- Support-ticket rows are labeled as `Support ticket` and stay out of
+  Conversations and Tasks DTOs, so they do not become fake message threads or
+  automatic CRM tasks.
+- Verification passed: syntax checks, shared CRM/contact/tenant tests,
+  local and live One Time CRM workbench smokes, focused One Time suite `76/76`,
+  action/link/security/protocol watchdogs, secret audit, execution-run
+  validation, BNA/One Time Railway doctors, exact-SHA One Time route smoke, and
+  read-only live DTO readback with no sends or external writes.
