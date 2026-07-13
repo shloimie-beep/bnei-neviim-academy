@@ -1,0 +1,124 @@
+{
+  "raw_id": "RAW-20260713-003",
+  "raw_path": "raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
+  "created_at": "2026-07-13T07:47:20+03:00",
+  "matrix": [
+    {
+      "statement_id": "SRC-20260713-003-001",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "The addendum supersedes conflicting parent-prompt language about total no-real-test-send policy, simultaneous One Time and BNA implementation, cache-only performance completion, and preserving the current CRM contact-detail layout because current smokes pass.",
+      "requirement_id": "REQ-20260713-905",
+      "related_requirement_ids": [
+        "REQ-20260712-302",
+        "REQ-20260712-303"
+      ],
+      "classification": "correction"
+    },
+    {
+      "statement_id": "SRC-20260713-003-002",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "One Time is the canonical implementation and acceptance target now; BNA work in this phase is limited to privacy, security, shared API, migration, workspace-isolation, branding, and basic shared-runtime regression checks.",
+      "requirement_id": "REQ-20260713-905",
+      "classification": "decision"
+    },
+    {
+      "statement_id": "SRC-20260713-003-003",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "REQ-20260712-302 must preserve historical evidence while its simultaneous BNA and One Time CRM parity criterion is split or superseded into One Time canonical CRM, shared contracts where useful, and later BNA adoption.",
+      "requirement_id": "REQ-20260713-905",
+      "existing_requirement_id": "REQ-20260712-302",
+      "classification": "correction"
+    },
+    {
+      "statement_id": "SRC-20260713-003-004",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "Bounded, reversible real owner-only test email and WhatsApp sends are approved only for Shloimie-controlled personal test accounts resolved from secure configuration, not Rabbi, parents, students, leads, lists, public auto-replies, payments, access messages, or bulk sends.",
+      "requirement_id": "REQ-20260713-906",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260713-003-005",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "Owner test destinations must come from approved config, keyholder aliases, provider config, or Railway variables; raw addresses and phone numbers must not be hardcoded, pasted, committed, or exposed in logs or reports.",
+      "requirement_id": "REQ-20260713-906",
+      "classification": "privacy_requirement"
+    },
+    {
+      "statement_id": "SRC-20260713-003-006",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "Owner-only email testing must use the guarded email smoke or canonical equivalent for the One Time identity and scope, with preflight, one actual provider send, provider and CRM readback, idempotency, and redacted evidence.",
+      "requirement_id": "REQ-20260713-906",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260713-003-007",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "Owner-only WhatsApp testing must use the actual One Time scoped WAPI/Whapi path, enforce an owner allowlist and test-mode gate, create provider and CRM readback, prove no ordinary automatic task, and stay separate from unrestricted public auto-reply.",
+      "requirement_id": "REQ-20260713-906",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260713-003-008",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "Before more piecemeal lag patches, create a One Time architecture and performance child packet with an ADR comparing the shared Operations monolith, a dedicated One Time frontend in this repo, and a fully separate app; unless strong contrary evidence appears, choose the dedicated One Time frontend artifact in the same repo.",
+      "requirement_id": "REQ-20260713-907",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260713-003-009",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "The dedicated One Time application shell must remove the giant shared BNA Operations monolith from One Time critical startup and use real route and feature module boundaries rather than merely splitting one large bundle into another large bundle pair.",
+      "requirement_id": "REQ-20260713-908",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260713-003-010",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "Root-cause performance engineering must measure Railway cold start, warm server response, TTFB, assets, JavaScript cost, long tasks, DOM, rerenders, API/database latency, pool wait, N+1 queries, oversized responses, third-party requests, error loops, and related bottlenecks.",
+      "requirement_id": "REQ-20260713-907",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260713-003-011",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "Add privacy-safe instrumentation, repeated cold and warm route baselines, explicit performance budgets, database/API analysis, release gates, and a production performance dashboard/report.",
+      "requirement_id": "REQ-20260713-911",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260713-003-012",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "During this phase feature development and visual acceptance happen against One Time; One Time gets the dedicated frontend artifact; BNA is not required to receive simultaneous visual or feature parity and is deployed only when shared runtime changes require it.",
+      "requirement_id": "REQ-20260713-905",
+      "classification": "decision"
+    },
+    {
+      "statement_id": "SRC-20260713-003-013",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "The CRM contact workspace needs a focused Product Quality packet before broad UI edits; mobile must use list, detail, and subview/action states with a focused contact header, section rail, contextual overflow, lazy section data, URL state, accessibility, and responsive visual proof.",
+      "requirement_id": "REQ-20260713-909",
+      "classification": "product_quality_requirement"
+    },
+    {
+      "statement_id": "SRC-20260713-003-014",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "Add packet DAG children for One Time first control correction, owner-only live integration tests, architecture and performance baseline, dedicated app shell, mobile CRM information architecture, and performance/integration verifier.",
+      "requirement_id": "REQ-20260713-910",
+      "classification": "packet_dag_requirement"
+    },
+    {
+      "statement_id": "SRC-20260713-003-015",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "Do not call the lag requirement Done until root cause, ADR, smaller One Time critical path, repeated tests, API/database budgets, mobile CRM responsiveness, production instrumentation, regression gates, exact deployed SHA, and linked evidence all exist.",
+      "requirement_id": "REQ-20260713-911",
+      "classification": "done_criteria"
+    },
+    {
+      "statement_id": "SRC-20260713-003-016",
+      "source_id": "RAW-20260713-003",
+      "source_statement": "The final report must include owner-account test results, One Time architecture, performance, and CRM mobile IA sections, with provider IDs, masked destinations, p50/p75/p95 data, budget results, screenshots, and blockers where incomplete.",
+      "requirement_id": "REQ-20260713-910",
+      "classification": "reporting_requirement"
+    }
+  ]
+}

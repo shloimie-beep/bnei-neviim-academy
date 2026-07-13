@@ -2,6 +2,13 @@
 
 Record deploy/live-smoke proof or blockers.
 
+## 2026-07-13 One Time-First Addendum Deployment Policy
+
+- No deployment occurred for the control-correction step because it changed run state and planning artifacts only.
+- During this phase, feature development and visual acceptance happen against One Time first.
+- BNA deploys only when a shared runtime change actually requires BNA regression proof.
+- The final One Time closeout must prove exact tested SHA, exact One Time target, no unnecessary BNA assets on the One Time critical path, performance budgets, mobile CRM behavior, owner-only communication tests, privacy/workspace isolation, and rollback path.
+
 ## 2026-07-12 Batch 1 Deploy
 
 - Commit: `966ded41b517433533f24370949426cfd1200213`

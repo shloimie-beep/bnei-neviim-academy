@@ -2,6 +2,17 @@
 
 Current status: `active`
 
+## 2026-07-13 One Time-First Addendum
+
+- Captured `RAW-20260713-003` from the operator addendum and kept this as part of the existing active run.
+- Recorded correction decisions `DEC-20260713-003`, `DEC-20260713-004`, and `DEC-20260713-005`.
+- Added source-statement matrix `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-003.json`.
+- Added packet manifest `ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json`.
+- Added requirement register `tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md`.
+- New current order is One Time first: owner-only integration tests, architecture/performance baseline, dedicated One Time shell, mobile CRM IA, then verifier.
+- BNA frontend parity is deferred; BNA remains protected by privacy, security, shared runtime, database migration, workspace isolation, and branding regression checks.
+- No owner email/WhatsApp send, Railway mutation, app code change, or public auto-reply activation occurred during this control-correction step.
+
 ## Completed In This Batch
 
 - Created run and register for the addendum.
@@ -139,3 +150,4 @@ Current status: `active`
 - CRM class-attendance activity slice is deployed under `REQ-20260712-302` through `593398dd6f3f927e321c24fad4bd2d01e13dcd51`: selected-contact Activity timelines now include scoped `class_attendance` rows from `bna_live_class_attendance` joined through One Time members and live class sessions for canonical contacts and legacy lead references, while Conversations and Tasks continue to exclude attendance aggregate rows. BNA deployment `8886d1ce-677e-406e-a34f-49313e9fde86` and One Time deployment `1bef031c-3522-440f-8e62-ac33972515cb` reached `SUCCESS`; exact-SHA One Time route smoke, live CRM workbench smoke, focused tests `77/77`, and read-only live DTO readback passed. Current sampled One Time live data had no class-attendance rows, so row behavior is covered by tests/local smoke and live proof confirms route/exclusion health.
 - CRM communication consent/suppression DTO slice is deployed under `REQ-20260712-302` through `0e33764d66519d8f45d86e57b320a1988a604058`: canonical contact cards now expose `communication_preference`, `consent_status`, `suppression_status`, and structured `communication_preferences` derived from contact/lead/signup metadata without returning raw internals. BNA deployment `1cf2ff91-2ead-4124-851d-a71b17742b56` and One Time deployment `57c2454e-60e2-40e9-9214-b7f5572df6c6` reached `SUCCESS`; exact-SHA One Time route smoke, live CRM workbench smoke, focused tests `78/78`, and read-only live DTO readback passed with 12/12 scoped cards carrying communication preferences.
 - CRM suppression/opt-out Activity timeline slice is deployed under `REQ-20260712-302` through `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`: selected-contact timelines now emit a read-only `communication_suppression` row when a workspace-scoped contact or parent lead carries suppressed, unsubscribed, invalid, bounced, stopped, wrong-number, do-not-contact, or opt-out state; Conversations and Tasks DTOs explicitly exclude those rows. BNA deployment `476ad2fb-8178-44b2-af2d-20d2eb7f15cd` and One Time deployment `9fd12f58-f9ca-4eb3-b581-e0b9f7aca3f9` reached `SUCCESS`; exact-SHA One Time route smoke, live CRM workbench smoke, focused tests `78/78`, and read-only live DTO readback passed with 12 scoped cards and `suppression_conversation_rows=0`.
+- `RAW-20260713-003` control correction is registered as `REQ-20260713-905`: One Time is now the current canonical implementation target, simultaneous BNA frontend parity is superseded for this phase, shared API/security/privacy/database regression checks remain in scope, and replacement packets `REQ-20260713-906` through `REQ-20260713-911` cover owner-only live tests, architecture/performance baseline, dedicated One Time app shell, mobile CRM IA, independent performance/integration verification, and performance regression gates/final proof sections.

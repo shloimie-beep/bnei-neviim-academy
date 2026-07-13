@@ -1,5 +1,14 @@
 # Evidence
 
+## 2026-07-13 One Time-First Addendum Evidence
+
+- `raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md` - raw addendum captured from the attachment.
+- `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-003.json` - mapped source statements for the addendum.
+- `tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md` - dated requirement register and next packet handoff.
+- `ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json` - packet DAG manifest.
+- `requirements.json` - added `REQ-20260713-906` through `REQ-20260713-911` and decisions `DEC-20260713-003` through `DEC-20260713-005`.
+- No external send, Railway mutation, deployment, public auto-reply activation, or app code change was performed in the control-correction step.
+
 - `ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md` - direct Codex proof replacing two operator Agent Mode prompt runs.
 - `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md` - Rabbi Telegram no-send readiness.
 - `ops/live-smokes/2026-07-12T20-03-41-435Z-rabbi-telegram-live-smoke.md` - approved live Rabbi Telegram send evidence; ignored by default and must be force-added if preserved in Git.
@@ -292,3 +301,10 @@
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1` passed.
 - `ops/live-smokes/2026-07-13T04-40-38-338Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the suppression/opt-out Activity timeline slice.
 - Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `suppression_timeline_rows=0`, `suppression_conversation_rows=0`, `suppression_task_rows=0`, `no_send=true`, and `external_write_performed=false`. The current live sample has no suppressed contacts; local smoke and DTO tests cover row behavior when records exist.
+
+## One Time-First Control Correction - 2026-07-13
+
+- `raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md` - registered the One Time-first addendum with raw provenance.
+- `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json` - added source `RAW-20260713-003`, marked `REQ-20260712-302` superseded in part for simultaneous BNA/One Time frontend parity, and added `REQ-20260713-905` through `REQ-20260713-911`.
+- `memory/2026-07-13.md`, `memory-topics/rabbi-scheller-onetime.md`, and `memory-topics/one-time-rabbi-sheller.md` - recorded the durable One Time-first correction and owner-only test-send policy.
+- `npm run bna:run:validate` passed after the control correction; requirement counts are now 12 not started, 5 in progress, and 3 done.

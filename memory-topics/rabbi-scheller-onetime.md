@@ -66,3 +66,12 @@
   configuration, but the bot may not publish trial, renewal, portal, library,
   or member-access claims unless a newer explicit access/product decision
   publishes them.
+- As of RAW-20260713-003, One Time is the current canonical implementation and
+  acceptance target. Do not block One Time completion on simultaneous BNA
+  frontend parity. BNA remains in scope for shared API/security/privacy/database
+  regression safety, workspace isolation, and preventing One Time branding or
+  records from appearing in BNA. Create a later BNA adoption packet after One
+  Time is stable, measured, deployed, and accepted.
+- RAW-20260713-003 authorizes bounded owner-only One Time email/WhatsApp test
+  sends only to secure owner-test aliases, with hard allowlists, idempotency,
+  rate limits, redacted evidence, and no unrestricted public auto-reply.

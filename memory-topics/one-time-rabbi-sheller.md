@@ -61,3 +61,10 @@
 - The next UI cleanup work must start with `00-control-tower` and
   `01-current-state-visual-audit`, then split into focused implementation
   packets after audit and Definition of Ready.
+- As of RAW-20260713-003, One Time is the current implementation and acceptance
+  target. Simultaneous BNA frontend parity is deferred; shared API/security/
+  privacy/database regression safety and workspace isolation still apply.
+- RAW-20260713-003 allows bounded owner-only email/WhatsApp verification sends
+  through secure aliases only. Do not expose full destinations in logs or proof,
+  do not send to Rabbi/parents/students/leads without separate approval, and do
+  not enable unrestricted public auto-reply for owner tests.

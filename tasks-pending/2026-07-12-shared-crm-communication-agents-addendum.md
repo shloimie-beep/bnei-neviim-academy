@@ -39,6 +39,27 @@ Workspace/project scope: BNA platform plus `rabbi_sheller_provider` / `one_time_
 3. Add focused isolation tests: same email/phone in BNA and One Time must coexist and stay invisible cross-workspace.
 4. Record proof in this run, then continue to inbound pipeline convergence and zero-task policy.
 
+## 2026-07-13 Addendum - One Time First / Owner Tests / Performance / Mobile CRM
+
+Raw source: `raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md`
+
+Correction:
+
+- `REQ-20260713-905`: One Time-first control correction and BNA parity supersession. This is registered in the active run and supersedes the simultaneous BNA/One Time frontend parity acceptance criterion for the current phase.
+- `REQ-20260713-906`: Owner-only live integration tests for bounded One Time email and WhatsApp provider verification through secure aliases.
+- `REQ-20260713-907`: One Time architecture and performance baseline, including ADR, repeated cold/warm route measurements, root-cause classification, and budgets.
+- `REQ-20260713-908`: Dedicated One Time app shell with route-level modules, shared backend/domain contracts, old-shell fallback, and performance proof.
+- `REQ-20260713-909`: Mobile CRM information architecture with list/detail/subview state, section rail, overflow actions, lazy data, accessibility, and 390/430 screenshots.
+- `REQ-20260713-910`: Independent performance and integration verifier.
+- `REQ-20260713-911`: Performance instrumentation, regression gates, and final proof sections.
+
+Scope rule:
+
+- One Time is the current implementation and acceptance target.
+- BNA frontend parity is deferred to a later BNA adoption packet.
+- BNA still requires regression checks for shared APIs, security/privacy, database migrations, workspace isolation, and accidental One Time branding/records.
+- Owner-only sends are approved only through secure aliases, hard allowlists, test-run IDs, rate limits, idempotency keys, and redacted evidence.
+
 ## External / Operator Blockers
 
 - Full production readiness gate still blocks on external setup fields:
@@ -49,3 +70,18 @@ Workspace/project scope: BNA platform plus `rabbi_sheller_provider` / `one_time_
   `suppression_unsubscribe_proof`,
   `explicit_seed_packet_approval`.
 - Do not commit raw secrets or raw private message bodies.
+
+## 2026-07-13 One Time-First Addendum
+
+New raw source: `raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md`
+
+New dated register: `tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md`
+
+Control correction:
+
+- One Time is now the canonical implementation and acceptance target.
+- BNA frontend parity is deferred; BNA remains covered only for shared-runtime/security/privacy/workspace-scope regression safety during this phase.
+- `REQ-20260712-302` historical evidence remains valid, but simultaneous frontend parity is superseded for this phase by `DEC-20260713-004`.
+- Owner-only real email/WhatsApp tests are authorized only through secure aliases and redacted evidence; public auto-reply remains separately gated.
+
+Next packet: `PKT-20260713-907` / `REQ-20260713-907` owner-only live integration tests.

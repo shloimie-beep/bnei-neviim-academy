@@ -39508,3 +39508,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   live One Time CRM workbench smoke, and read-only live DTO readback with
   no sends or external writes. Current live One Time sample had no suppression
   rows, so live proof is route/exclusion health plus local/test row coverage.
+
+## 2026-07-13 - One Time-first control correction registered
+
+- Registered `RAW-20260713-003` as an addendum to the active shared CRM /
+  communication-agents run.
+- Marked simultaneous BNA/One Time frontend parity superseded for the current
+  phase: One Time is now the implementation and acceptance target, while BNA
+  remains protected by shared API, security, privacy, database, and workspace
+  isolation regression checks.
+- Added replacement packets for owner-only live integration tests, One Time
+  architecture/performance baseline, dedicated One Time app shell, mobile CRM
+  IA, independent performance/integration verification, and performance
+  instrumentation/regression gates.

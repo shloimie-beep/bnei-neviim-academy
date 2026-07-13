@@ -1,5 +1,12 @@
 # Test Results
 
+## 2026-07-13 One Time-First Addendum Control Correction
+
+- PASS JSON parse check for `requirements.json`, source-statement matrix, packet manifest, `latest.json`, and `run.json`.
+- PASS `npm run bna:run:validate` after recording `REQ-20260713-906` through `REQ-20260713-911`.
+- PASS `npm run bna:run:next`; selected `REQ-20260713-907` as the next unblocked executable batch.
+- No owner email/WhatsApp send was attempted in the control-correction step.
+
 - PASS `node --check server.js`
 - PASS `node --check src/lib/integrations/resend-inbound-crm.js`
 - PASS `node --test tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js` (19/19)
@@ -565,3 +572,9 @@
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
 - PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T04-40-38-338Z-one-time-operations-crm-workbench-live-smoke.md`.
 - PASS read-only live DTO readback through Operations auth: 12 scoped cards, `suppression_timeline_rows=0`, `suppression_conversation_rows=0`, `suppression_task_rows=0`, `no_send=true`, and `external_write_performed=false`.
+
+## One Time-First Control Correction - 2026-07-13
+
+- PASS `npm run bna:run:validate` after adding `RAW-20260713-003`, superseding the simultaneous BNA/One Time frontend parity criterion for the current phase, and registering `REQ-20260713-905` through `REQ-20260713-911`.
+- PASS JSON parse/readback of `requirements.json`; new packet IDs are `REQ-20260713-905` through `REQ-20260713-911`.
+- PASS `git diff --check` with line-ending warnings only.
