@@ -991,3 +991,24 @@
 - PASS BNA live `/api/deploy-info`; returned `a8df4c9b9cc091028105a16430aae6927cd0b429`, `target_app=bna`.
 - PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T12-01-50-016Z-operations-workspace-taxonomy-live-smoke.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM production write, provider mutation, payment/access mutation, import, credential mutation, or production data mutation was performed by this closeout proof.
+
+## Canonical Inbound Communication Pipeline Runtime Slice - 2026-07-13
+
+- PASS `node --check src/lib/bna/crm/ingest-inbound-communication.js`.
+- PASS `node --check src/lib/integrations/resend-inbound-crm.js`.
+- PASS `node --check server.js`.
+- PASS `node --test tests/inbound-communication-ingest.test.js tests/resend-inbound-crm.test.js tests/one-time-wapi-scope-contract.test.js tests/service-provider-lead-bot.test.js tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/one-time-communications-workspace.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js`; 49/49 tests passed before runtime commit `a692c6e002a09557b81c350c5c0187222d87b7de`.
+- PASS `node --test tests/inbound-communication-pipeline.test.js`; 4/4 tests passed.
+- PASS `node --test tests/inbound-communication-ingest.test.js tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js`; 11/11 tests passed.
+- PASS `node --test tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js tests/one-time-wapi-scope-contract.test.js`; 26/26 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run bna:run:validate` before runtime commit.
+- PASS `git diff --check` before runtime commit.
+- PASS `npm run secrets:audit` before runtime commit.
+- PASS One Time Railway doctor at current production head `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`; deployment `641ad29c-d8d6-4053-b4d3-c7412fa6b7d7` reached `SUCCESS`.
+- PASS BNA Railway doctor at current production head `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`; deployment `68858c05-474e-4419-91c7-d934e7796305` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`, `target_app=one-time`.
+- PASS BNA live `/api/deploy-info`; returned `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha f8df93a4ca86ecd607d5c3b63d113f77be4327c2`; report `ops/live-smokes/2026-07-13T12-25-01-672Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha f8df93a4ca86ecd607d5c3b63d113f77be4327c2`; report `ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw contact/message logging, or destructive production mutation was performed by this slice proof.

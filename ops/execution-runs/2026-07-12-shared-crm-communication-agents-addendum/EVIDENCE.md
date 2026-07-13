@@ -511,3 +511,18 @@
 - One Time deployment evidence: deployment `6059d148-7708-43ae-9665-abdaa544a5d6`, deploy-info exact SHA `a8df4c9b9cc091028105a16430aae6927cd0b429`, live CRM smoke `ops/live-smokes/2026-07-13T12-00-42-976Z-one-time-operations-crm-workbench-live-smoke.md`.
 - BNA shared-runtime safety evidence: deployment `16f00bed-0cb2-49df-b725-8ea8ee672415`, deploy-info exact SHA `a8df4c9b9cc091028105a16430aae6927cd0b429`, taxonomy smoke `ops/live-smokes/2026-07-13T12-01-50-016Z-operations-workspace-taxonomy-live-smoke.md`.
 - Validation evidence: focused CRM/contact suite `47/47`, `npm run operations:check-generated`, `npm run watchdog:actions`, `npm run bna:run:validate`, `git diff --check`, and `npm run secrets:audit` passed.
+
+## Canonical Inbound Communication Pipeline Runtime Slice - 2026-07-13
+
+- `REQ-20260712-307` is In progress, not terminal Done. The deployed slice creates the shared service and connects the currently live Resend and WAPI inbound paths; website assistant input, private Rabbi Telegram input, communication-agent loading, and delivery-outbox execution still need to use the same service.
+- Runtime app-code commit `a692c6e002a09557b81c350c5c0187222d87b7de` added `src/lib/bna/crm/ingest-inbound-communication.js`.
+- The service resolves explicit workspace/project binding, normalizes sender identity, resolves or creates a workspace-scoped `bna_contacts` row, upserts workspace-scoped contact identities, persists an inbound `bna_communications` row idempotently, marks unread/timeline metadata, returns a redacted receipt, and does not create ordinary CRM tasks.
+- `src/lib/integrations/resend-inbound-crm.js` now calls the canonical service after provider authentication/normalization instead of independently creating a sender contact and communication row.
+- `server.js` now mirrors valid One Time WAPI inbound messages and history-imported messages into the canonical service while preserving the legacy `bna_contact_communications` path needed by existing bot/ticket flows during migration.
+- Current production head `f8df93a4ca86ecd607d5c3b63d113f77be4327c2` contains commit `a692c6e0` and is deployed to both apps.
+- One Time Railway doctor passed for deployment `641ad29c-d8d6-4053-b4d3-c7412fa6b7d7`; live `/api/deploy-info` returned `commit_sha=f8df93a4ca86ecd607d5c3b63d113f77be4327c2`, `target_app=one-time`.
+- BNA Railway doctor passed for deployment `68858c05-474e-4419-91c7-d934e7796305`; live `/api/deploy-info` returned `commit_sha=f8df93a4ca86ecd607d5c3b63d113f77be4327c2`.
+- One Time current-head CRM workbench smoke passed: `ops/live-smokes/2026-07-13T12-25-01-672Z-one-time-operations-crm-workbench-live-smoke.md`.
+- BNA current-head workspace taxonomy smoke passed: `ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md`.
+- Local verification before the runtime commit passed: syntax checks for the new service, Resend adapter, and `server.js`; focused inbound/shared CRM suite `49/49`; generated Operations shell check; run validator; diff check; and secrets audit. Current focused pipeline verification also passed `tests/inbound-communication-pipeline.test.js` `4/4`, the inbound/Resend service suite `11/11`, and the broader inbound/communication contract suite `26/26`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send, public auto-reply enablement, provider credential mutation, payment/access mutation, raw contact/message logging, or destructive production mutation was performed by this slice proof.

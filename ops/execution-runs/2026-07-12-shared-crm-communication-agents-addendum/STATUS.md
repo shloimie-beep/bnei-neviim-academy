@@ -352,3 +352,24 @@ Current status: `active`
 - Runtime commit `a8df4c9b9cc091028105a16430aae6927cd0b429` was pushed to `origin/master`, deployed to One Time deployment `6059d148-7708-43ae-9665-abdaa544a5d6` and BNA deployment `298894e0-1890-4c39-98e7-aa9461883660`, and both `/api/deploy-info` endpoints returned the exact SHA.
 - Verification passed: 47/47 focused CRM/contact tests, generated Operations shell check, local One Time CRM workbench smoke, One Time live CRM workbench smoke, BNA workspace taxonomy smoke, action watchdog finding_count `0`, run validator, diff check, and secrets audit.
 - Next unblocked shared-CRM lane is `REQ-20260712-307` inbound communication pipeline. Owner-only live email/WhatsApp sends remain blocked by `REQ-20260713-906` until secure owner-test aliases are configured.
+
+## Canonical Inbound Communication Runtime Slice - 2026-07-13
+
+- `REQ-20260712-307` is In progress. The first runtime slice is pushed, deployed, and live-smoked, but the whole requirement is not terminal Done yet.
+- Runtime commit `a692c6e002a09557b81c350c5c0187222d87b7de` added `src/lib/bna/crm/ingest-inbound-communication.js`; production head `f8df93a4ca86ecd607d5c3b63d113f77be4327c2` includes it.
+- Resend inbound email now delegates canonical persistence to the shared service. The service contract also covers One Time WAPI-shaped inbound messages for workspace/project binding, contact identity resolution, canonical `bna_communications` rows, unread/timeline metadata, redacted receipts, idempotency, and zero ordinary task creation.
+- One Time Railway deployment `641ad29c-d8d6-4053-b4d3-c7412fa6b7d7` and BNA Railway deployment `68858c05-474e-4419-91c7-d934e7796305` reached `SUCCESS`; both `/api/deploy-info` endpoints returned exact SHA `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`.
+- Verification passed: inbound tests `11/11`, broader inbound/contract tests `26/26`, One Time separate-instance smoke, One Time provider-route smoke, One Time CRM workbench smoke, and BNA workspace taxonomy smoke.
+- Remaining `REQ-20260712-307` work: migrate website assistant input and private Rabbi Telegram input through the canonical service, then attach published communication-agent/version/knowledge loading and delivery-outbox execution. Owner-only sends remain blocked by `REQ-20260713-906`.
+
+## Canonical Inbound Communication Pipeline Runtime Slice - 2026-07-13
+
+- `REQ-20260712-307` is In progress with the first runtime slice deployed. It is not terminal Done yet.
+- Runtime commit `a692c6e002a09557b81c350c5c0187222d87b7de` added `src/lib/bna/crm/ingest-inbound-communication.js` and connected Resend inbound email plus One Time WAPI inbound mirroring to the canonical service.
+- The canonical service handles explicit binding/workspace/project resolution, contact creation/reuse, workspace-scoped identities, canonical `bna_communications` persistence, unread/timeline metadata, redacted receipts, idempotency, and zero ordinary task creation.
+- Current production head `f8df93a4ca86ecd607d5c3b63d113f77be4327c2` includes the inbound runtime slice and is live on both One Time and BNA.
+- One Time Railway doctor passed for deployment `641ad29c-d8d6-4053-b4d3-c7412fa6b7d7`; One Time deploy-info returned the exact current SHA and target app. Current-head One Time CRM smoke passed at `ops/live-smokes/2026-07-13T12-25-01-672Z-one-time-operations-crm-workbench-live-smoke.md`.
+- BNA Railway doctor passed for deployment `68858c05-474e-4419-91c7-d934e7796305`; BNA deploy-info returned the exact current SHA. Current-head BNA taxonomy smoke passed at `ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md`.
+- Local proof before the runtime commit passed the new inbound/service tests and shared CRM regression suite `49/49`, syntax checks, generated Operations shell check, run validator, diff check, and secrets audit. Current focused proof also passed `tests/inbound-communication-pipeline.test.js` `4/4`, inbound/Resend service suite `11/11`, and broader inbound/communication contract suite `26/26`.
+- Remaining work for `REQ-20260712-307`: route website assistant input, private Rabbi Telegram input, communication-agent version/knowledge loading, and delivery-outbox execution through the same canonical service.
+- Owner-only live email/WhatsApp sends remain blocked by `REQ-20260713-906` until secure owner-test aliases are configured through the approved secret path.

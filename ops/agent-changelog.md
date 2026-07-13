@@ -40097,3 +40097,30 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   public publish, token storage, Drive write, database mutation, bot-knowledge
   promotion, member publication, provider mutation, credential mutation,
   payment/access mutation, or external send was performed.
+
+## 2026-07-13 - Canonical inbound communication runtime slice deployed
+
+- Advanced `REQ-20260712-307` from not-started to in-progress with a deployed
+  canonical inbound ingest slice.
+- Runtime commit `a692c6e002a09557b81c350c5c0187222d87b7de` adds
+  `src/lib/bna/crm/ingest-inbound-communication.js`; current production head
+  `f8df93a4ca86ecd607d5c3b63d113f77be4327c2` includes it.
+- Resend inbound email now delegates canonical contact/message persistence to
+  the shared service, and One Time WAPI-shaped inputs are covered by the same
+  service contract for contact identities, canonical communication rows,
+  unread/timeline metadata, redacted receipts, idempotency, and no ordinary
+  task creation.
+- Deployed to One Time Railway deployment
+  `641ad29c-d8d6-4053-b4d3-c7412fa6b7d7` and BNA Railway deployment
+  `68858c05-474e-4419-91c7-d934e7796305`; both `/api/deploy-info` endpoints
+  returned exact SHA `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`.
+- Verification passed: focused inbound tests `11/11`, broader inbound/contract
+  suite `26/26`, One Time separate-instance smoke, One Time provider-route
+  smoke, One Time CRM workbench smoke, and BNA workspace taxonomy smoke.
+- Remaining `REQ-20260712-307` work: migrate website assistant input and
+  private Rabbi Telegram input through the canonical service, then attach
+  published communication-agent/version/knowledge loading and delivery-outbox
+  execution.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM
+  production mutation, provider mutation, credential mutation, payment/access
+  mutation, import, or synthetic production data creation was performed.

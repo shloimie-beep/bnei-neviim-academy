@@ -367,3 +367,17 @@ Global production readiness remains blocked only by known external full-launch f
 - BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=a8df4c9b9cc091028105a16430aae6927cd0b429`, `target_app=bna`.
 - BNA workspace taxonomy smoke passed; report `ops/live-smokes/2026-07-13T12-01-50-016Z-operations-workspace-taxonomy-live-smoke.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM production write, provider mutation, payment/access mutation, import, credential mutation, or production data mutation was performed by this closeout proof.
+
+## 2026-07-13 Canonical Inbound Communication Pipeline Runtime Slice Deploy
+
+- Runtime app-code commit: `a692c6e002a09557b81c350c5c0187222d87b7de`.
+- Current deployed head: `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`, which includes the inbound runtime slice plus later One Time Vimeo readiness work.
+- Branch: `master`.
+- Push: `git push origin master` succeeded for the runtime commit.
+- One Time Railway doctor: deployment `641ad29c-d8d6-4053-b4d3-c7412fa6b7d7` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=f8df93a4ca86ecd607d5c3b63d113f77be4327c2`, `target_app=one-time`.
+- One Time CRM workbench smoke passed at the current deployed SHA; report `ops/live-smokes/2026-07-13T12-25-01-672Z-one-time-operations-crm-workbench-live-smoke.md`.
+- BNA Railway doctor: deployment `68858c05-474e-4419-91c7-d934e7796305` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=f8df93a4ca86ecd607d5c3b63d113f77be4327c2`.
+- BNA workspace taxonomy smoke passed at the current deployed SHA; report `ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send, public auto-reply enablement, CRM destructive write, provider mutation, payment/access mutation, credential mutation, or raw private payload logging was performed by this proof.
