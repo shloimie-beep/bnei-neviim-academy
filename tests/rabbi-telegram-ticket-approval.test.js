@@ -39,6 +39,21 @@ test('Rabbi Telegram ticket creation is approval-gated and creates no initial Co
   assert.match(server, /notifySuperAdminSupportTicket\(\{/);
 });
 
+test('Rabbi Telegram ticket creation mirrors into canonical inbound communications without sends or tasks', () => {
+  assert.match(server, /async function mirrorRabbiTelegramSupportTicketToInboundCommunication/);
+  assert.match(server, /mirrorRabbiTelegramSupportTicketToInboundCommunication\(\{[\s\S]*ticket,[\s\S]*project,[\s\S]*body,[\s\S]*sourceContext:\s*storedSourceContext,[\s\S]*db:\s*client/);
+  assert.match(server, /crmInboundIngest\.ingestInboundCommunication\(\{[\s\S]*communicationType:\s*'rabbi_telegram_support_ticket'/);
+  assert.match(server, /channel:\s*'telegram'/);
+  assert.match(server, /provider:\s*'telegram'/);
+  assert.match(server, /source_table:\s*'bna_support_tickets'/);
+  assert.match(server, /approval_gate:\s*'super_admin_required_before_codex'/);
+  assert.match(server, /createContactOnInbound:\s*false/);
+  assert.match(server, /createTaskOnInbound:\s*false/);
+  assert.match(server, /ticket_id = \$2/);
+  assert.match(server, /canonical_inbound_communication/);
+  assert.match(server, /external_write_performed:\s*false/);
+});
+
 test('Super Admin ticket approval endpoint is platform-only and idempotent', () => {
   assert.match(server, /app\.post\('\/api\/bna\/support-tickets\/:id\/approval-action'/);
   assert.match(server, /requirePlatformSuperAdminForAction\(req,\s*res\)/);

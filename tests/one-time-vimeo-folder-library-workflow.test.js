@@ -13,7 +13,7 @@ function tempDrop() {
 function makeVideo(folder, name = 'berachos-synthetic-test.mp4', metadata = {}) {
   const filePath = path.join(folder, name);
   fs.writeFileSync(filePath, Buffer.from('synthetic video bytes'));
-  fs.writeFileSync(filePath.replace(/\.mp4$/i, '.json'), JSON.stringify({
+  fs.writeFileSync(filePath.replace(/\.[^.]+$/i, '.json'), JSON.stringify({
     title: 'Mishnah Berachos 1:1',
     class_date: '2026-07-06',
     masechta: 'Berachos',
@@ -106,6 +106,23 @@ test('Vimeo upload requires apply and exact upload confirmation', async () => {
 
   assert.equal(report.candidates[0].upload_result.status, 'blocked');
   assert.match(report.candidates[0].upload_result.blockers.join(' '), /UPLOAD_ONE_TIME_VIMEO_LIBRARY/);
+  assert.equal(report.external_write_performed, false);
+});
+
+test('folder workflow accepts MKV handoff candidates after Drive stability proof', async () => {
+  const folder = tempDrop();
+  makeVideo(folder, 'obs-class-recording.mkv', {
+    transcript_status: 'review',
+  });
+
+  const report = await workflow.runFolderLibraryWorkflow({
+    folder,
+    repoRoot: process.cwd(),
+    vimeoToken: 'secret-token',
+  });
+
+  assert.equal(report.candidates.length, 1);
+  assert.equal(report.candidates[0].source_file.extension, '.mkv');
   assert.equal(report.external_write_performed, false);
 });
 

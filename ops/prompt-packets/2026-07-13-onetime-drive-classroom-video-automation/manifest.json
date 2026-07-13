@@ -1,0 +1,301 @@
+{
+  "schema_version": "packet-dag.v1",
+  "parent_raw_id": "RAW-20260713-004",
+  "parent_raw_source_path": "raw-input/RAW-20260713-004-onetime-drive-classroom-video-automation.md",
+  "requirement_register_path": "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "classification": [
+    "SUPER_RAMBLE",
+    "PRODUCT_QUALITY",
+    "UI_VISUAL_AUDIT",
+    "DRIVE_CONTENT_INTAKE",
+    "MEDIA_PROCESSING",
+    "TRANSCRIPTION",
+    "COMMUNITY_CLASSROOM",
+    "BOT_KNOWLEDGE_HANDOFF",
+    "PROVIDER_SETUP",
+    "EXTERNAL_WRITE_REQUEST",
+    "SECURITY_PRIVACY",
+    "DEPLOY_RELEASE"
+  ],
+  "product_quality_compiler_required": true,
+  "visual_audit_before_ui_implementation": true,
+  "external_writes_authorized": false,
+  "secret_values_printed": false,
+  "packet_dag_status": "vimeo-owner-readiness-and-ui-readiness-blockers-open",
+  "packets": [
+    {
+      "packet_id": "PKT-20260713-004-00",
+      "parent_raw_id": "RAW-20260713-004",
+      "parent_packet_id": null,
+      "child_packet_ids": [
+        "PKT-20260713-004-01",
+        "PKT-20260713-004-02",
+        "PKT-20260713-004-03",
+        "PKT-20260713-004-04",
+        "PKT-20260713-004-05",
+        "PKT-20260713-004-06",
+        "PKT-20260713-004-07",
+        "PKT-20260713-004-08"
+      ],
+      "depends_on_packet_ids": [],
+      "stage": "00-control-tower",
+      "packet_role": "CONTROL_TOWER",
+      "status": "done",
+      "owner": "Codex",
+      "scope": "Raw capture, router output, source coverage, Packet DAG, collision constraints, and next packet.",
+      "out_of_scope": [
+        "Product UI implementation",
+        "Vimeo upload",
+        "Drive file mutation",
+        "External sends",
+        "Payment/access/DNS/GHL runtime"
+      ],
+      "affected_routes": [],
+      "affected_files": [
+        "raw-input/RAW-20260713-004-onetime-drive-classroom-video-automation.md",
+        "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md",
+        "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/MANIFEST.md",
+        "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/current-state-capability-audit.md"
+      ],
+      "view_classes": [
+        "RABBI_PROVIDER_ADMIN",
+        "MEMBER_PARENT_PORTAL",
+        "STUDENT_PORTAL",
+        "INTERNAL_AGENT_SUPPORT"
+      ],
+      "required_evidence": [
+        "raw capture",
+        "source statement map",
+        "packet DAG",
+        "secret-redacted credential handling evidence"
+      ],
+      "validation_command": "npm run watchdog:protocol-drift",
+      "terminal_condition": "Parent control artifacts exist, guardrails validate with protocol drift watchdog, and next child packet is named.",
+      "handoff_target": "PKT-20260713-004-01",
+      "next_packet": "PKT-20260713-004-01"
+    },
+    {
+      "packet_id": "PKT-20260713-004-01",
+      "parent_raw_id": "RAW-20260713-004",
+      "parent_packet_id": "PKT-20260713-004-00",
+      "child_packet_ids": [
+        "PKT-20260713-004-07"
+      ],
+      "depends_on_packet_ids": [
+        "PKT-20260713-004-00"
+      ],
+      "stage": "01-current-state-visual-audit",
+      "packet_role": "VISUAL_AUDITOR",
+      "status": "captured_with_blockers",
+      "owner": "Codex",
+      "scope": "Audit current Rabbi content command center, parent/student portals, classroom/library, and mobile states before UI code. Current pass captured public/provider/parent/student/classroom evidence and recorded Operations/member blockers.",
+      "out_of_scope": [
+        "UI implementation",
+        "External writes"
+      ],
+      "affected_routes": [
+        "Rabbi content command center",
+        "parent portal",
+        "student portal",
+        "classroom/library"
+      ],
+      "required_evidence": [
+        "1440/1024/768/430/390 screenshots or exact blocker",
+        "state matrix",
+        "action-state matrix",
+        "scope-leak scan",
+        "forbidden-content scan",
+        "PQC spec validation"
+      ],
+      "validation_command": "npm run pqc:validate",
+      "terminal_condition": "Visual audit report and PQC spec exist; UI implementation remains blocked by authenticated Operations screenshot, member/latest-video screenshot, Vimeo, and publication gates.",
+      "handoff_target": "PKT-20260713-004-07",
+      "next_packet": "PKT-20260713-004-02"
+    },
+    {
+      "packet_id": "PKT-20260713-004-02",
+      "parent_raw_id": "RAW-20260713-004",
+      "parent_packet_id": "PKT-20260713-004-00",
+      "child_packet_ids": [
+        "PKT-20260713-004-03"
+      ],
+      "depends_on_packet_ids": [
+        "PKT-20260713-004-00",
+        "REQ-20260713-913"
+      ],
+      "stage": "02-drive-intake-orchestrator",
+      "packet_role": "IMPLEMENTATION_PACKET",
+      "status": "done",
+      "owner": "Codex",
+      "scope": "Canonical One Time Drive video lane resolution, stable-file admission, idempotent content-job drafts, leases, retries, dead-letter states, and source provenance.",
+      "out_of_scope": [
+        "Drive mutation",
+        "Database mutation",
+        "Vimeo upload",
+        "Member publication",
+        "External sends"
+      ],
+      "affected_routes": [],
+      "affected_files": [
+        "src/lib/bna/one-time-drive-video-orchestrator.js",
+        "scripts/one-time-drive-video-orchestrator.mjs",
+        "tests/one-time-drive-video-orchestrator.test.js",
+        "server.js",
+        "package.json",
+        "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/02-drive-intake-orchestrator.md"
+      ],
+      "required_evidence": [
+        "stable file admission tests",
+        "duplicate suppression tests",
+        "lease retry dead-letter tests",
+        "schema coverage test",
+        "no-write CLI dry run"
+      ],
+      "validation_command": "node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js",
+      "terminal_condition": "Local implementation is validated; terminal Done still requires commit/push plus deploy or approved release/live readback for server-visible schema/runtime change.",
+      "handoff_target": "PKT-20260713-004-03",
+      "next_packet": "PKT-20260713-004-03"
+    },
+    {
+      "packet_id": "PKT-20260713-004-03",
+      "parent_raw_id": "RAW-20260713-004",
+      "parent_packet_id": "PKT-20260713-004-02",
+      "child_packet_ids": [
+        "PKT-20260713-004-04"
+      ],
+      "depends_on_packet_ids": [
+        "PKT-20260713-004-02"
+      ],
+      "stage": "03-media-edit-and-long-transcription",
+      "packet_role": "IMPLEMENTATION_PACKET",
+      "status": "partial_media_edit_done_transcription_provider_private_fixture_pending",
+      "owner": "Codex",
+      "scope": "Conservative media edit defaults, MKV handoff support, rendered-output verification, and later long-form private transcription.",
+      "out_of_scope": [
+        "OpenAI transcription provider call",
+        "Drive mutation",
+        "Vimeo upload",
+        "Database mutation",
+        "Member publication",
+        "External sends"
+      ],
+      "affected_routes": [],
+      "affected_files": [
+        "src/lib/bna/one-time-vimeo-studio-pipeline.js",
+        "src/lib/bna/one-time-vimeo-folder-library.js",
+        "src/lib/bna/one-time-long-transcription.js",
+        "tests/one-time-vimeo-studio-pipeline.test.js",
+        "tests/one-time-vimeo-folder-library-workflow.test.js",
+        "tests/one-time-long-transcription.test.js",
+        "server.js",
+        "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/03-media-edit-and-long-transcription.md"
+      ],
+      "required_evidence": [
+        "zero opener default test",
+        "explicit opener override test",
+        "MKV studio and folder-library tests",
+        "rendered output verification test",
+        "real local FFmpeg render smoke",
+        "long-form chunking and privacy-safe transcript version tests"
+      ],
+      "validation_command": "node --test tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js",
+      "terminal_condition": "Media edit and local long-transcription harness are validated; provider/private fixture integration remains pending.",
+      "handoff_target": "PKT-20260713-004-04",
+      "next_requirement": "REQ-20260713-917",
+      "next_packet": "PKT-20260713-004-04"
+    },
+    {
+      "packet_id": "PKT-20260713-004-04",
+      "parent_raw_id": "RAW-20260713-004",
+      "parent_packet_id": "PKT-20260713-004-03",
+      "child_packet_ids": [
+        "PKT-20260713-004-06"
+      ],
+      "depends_on_packet_ids": [
+        "PKT-20260713-004-03"
+      ],
+      "stage": "04-transcript-metadata-and-knowledge-handoff",
+      "packet_role": "IMPLEMENTATION_PACKET",
+      "status": "in_progress_local_contract_deployed_studio_sidecar_verified_db_review_integration_pending",
+      "owner": "Codex",
+      "scope": "Versioned transcript metadata draft, studio sidecar artifacts, and provider-scoped bot knowledge handoff contracts with review gates and no raw transcript leakage.",
+      "out_of_scope": [
+        "Database promotion worker",
+        "Review UI integration",
+        "Bot knowledge write",
+        "Drive mutation",
+        "Vimeo upload",
+        "Member publication",
+        "External sends"
+      ],
+      "affected_routes": [],
+      "affected_files": [
+        "src/lib/bna/one-time-transcript-metadata.js",
+        "src/lib/bna/one-time-vimeo-studio-pipeline.js",
+        "tests/one-time-transcript-metadata.test.js",
+        "tests/one-time-vimeo-studio-pipeline.test.js",
+        "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/04-transcript-metadata-and-knowledge-handoff.md"
+      ],
+      "required_evidence": [
+        "metadata extraction tests",
+        "sidecar priority tests",
+        "confidence and review gate tests",
+        "bot knowledge approval blocker tests",
+        "raw transcript omission tests",
+        "studio sidecar and safe report redaction tests"
+      ],
+      "validation_command": "node --test tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-transcript-metadata.test.js tests/one-time-long-transcription.test.js tests/one-time-vimeo-folder-library-workflow.test.js",
+      "terminal_condition": "Local contract and studio sidecar integration are validated; DB promotion worker/review UI integration remains pending.",
+      "handoff_target": "PKT-20260713-004-06",
+      "next_requirement": "REQ-20260713-919",
+      "next_packet": "PKT-20260713-004-06"
+    },
+    {
+      "packet_id": "PKT-20260713-004-05",
+      "parent_raw_id": "RAW-20260713-004",
+      "parent_packet_id": "PKT-20260713-004-00",
+      "child_packet_ids": [
+        "PKT-20260713-004-06"
+      ],
+      "depends_on_packet_ids": [
+        "PKT-20260713-004-00"
+      ],
+      "stage": "05-vimeo-owner-readiness-and-private-upload",
+      "packet_role": "PROVIDER_SETUP_PACKET",
+      "status": "needs_operator_decision",
+      "owner": "Codex + operator",
+      "scope": "Vimeo owner app credential readback, user-token/account readback, private test project/folder decision, upload scope/plan confirmation, and explicit synthetic private upload approval gate.",
+      "out_of_scope": [
+        "Real class upload",
+        "Synthetic upload without explicit approval",
+        "Vimeo privacy or folder mutation",
+        "Database mutation",
+        "Member publication",
+        "External sends"
+      ],
+      "affected_routes": [],
+      "affected_files": [
+        "src/lib/integrations/vimeo.js",
+        "scripts/vimeo-private-smoke.mjs",
+        "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/05-vimeo-owner-readiness-and-private-upload.md"
+      ],
+      "required_evidence": [
+        "secret-redacted credential readback",
+        "client credentials auth proof without token storage",
+        "owner account confirmation",
+        "private test project or folder config",
+        "explicit approval for synthetic private upload",
+        "no public publish or token print"
+      ],
+      "validation_command": "node scripts/vimeo-private-smoke.mjs --json",
+      "terminal_condition": "Current state is Needs operator decision: supplied owner app credentials validate as client_id/client_secret, keyholder token reads the owner account, but no private Vimeo test project/folder, upload-capable user-token/scope confirmation, or synthetic upload approval is configured.",
+      "handoff_target": "PKT-20260713-004-06",
+      "next_requirement": "REQ-20260713-919",
+      "next_packet": "PKT-20260713-004-06"
+    }
+  ],
+  "created_at": "2026-07-13T14:17:00+03:00",
+  "updated_at": "2026-07-13T15:50:00+03:00"
+}

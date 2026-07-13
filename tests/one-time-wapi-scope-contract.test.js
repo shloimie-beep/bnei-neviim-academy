@@ -52,8 +52,13 @@ test('One Time WAPI provider lead-bot reply is approval-gated and does not commi
   assert.match(server, /!isOneTimeWapiScope\(webhookScope\)/);
   assert.match(server, /function oneTimeWapiAutoReplyMessage/);
   assert.match(server, /buildProviderLeadBotPlan/);
-  assert.match(server, /class_link_release_requires_active_member/);
+  assert.match(server, /class_link_release_requires_server_authorized_class_info_request/);
   assert.match(server, /maybeSendOneTimeWapiAutoReply/);
+  assert.match(server, /crmInboundIngest\.ingestInboundCommunication/);
+  assert.match(server, /canonicalCommunicationId/);
+  assert.match(server, /idx_bna_communications_wapi_message_id/);
+  assert.match(server, /create_task_on_inbound: false/);
+  assert.match(server, /ordinary_inbound_creates_task: false/);
   assert.match(server, /auto_reply_configured/);
   assert.match(server, /auto_reply_readiness/);
   assert.match(server, /no_secret_link_in_source/);

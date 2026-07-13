@@ -71,9 +71,26 @@ test('Operations CRM local update form is first-party only and does not auto-cre
   assert.match(operations, /function renderFirstPartyCrmLocalUpdateForm\(card = \{\}, readOnly = false\)/);
   assert.match(operations, /data-crm-local-update-form/);
   assert.match(operations, /data-action-id="ACTION-CRM-CONTACT-SAFE-UPDATE"/);
-  assert.match(operations, /Saves only first-party CRM fields and notes\. External sends, access changes, imports, and task creation stay off\./);
+  assert.match(operations, /Saves contact fields, notes, tags, owner, lifecycle, and follow-up details\./);
   assert.match(operations, /create_follow_up_task: false/);
   assert.match(server, /const shouldCreateFollowUpTask = body\.create_follow_up_task === true \|\| String\(body\.create_follow_up_task \|\| ''\)\.toLowerCase\(\) === 'true';/);
+});
+
+test('Operations CRM contact workspace uses customer-facing empty and action copy', () => {
+  const start = operations.indexOf('function renderFirstPartyCrmActionOverflow');
+  const end = operations.indexOf('function renderUnifiedContactSystemPanel', start);
+  assert.ok(start > -1, 'CRM workspace block start should exist');
+  assert.ok(end > start, 'CRM workspace block end should exist');
+  const crmWorkspace = operations.slice(start, end);
+  assert.match(crmWorkspace, /Creates or updates one workspace CRM contact\./);
+  assert.match(crmWorkspace, /Saves contact fields, notes, tags, owner, lifecycle, and follow-up details\./);
+  assert.match(crmWorkspace, /Contact timeline for \$\{escapeHtml\(card\.display_name \|\| 'selected contact'\)\}\./);
+  assert.doesNotMatch(crmWorkspace, /No email, WhatsApp, Telegram|No message, payment|No external message|No portal link|No portal login|No student login|No message is sent from this view|external CRM write|External sends, access changes|Internal note:/i);
+  const followUpTaskCreator = server.match(/async function createOperationsCrmFollowUpTask[\s\S]*?const result = await db\.query/)?.[0] || '';
+  assert.match(followUpTaskCreator, /Follow-up task created from the CRM contact workspace\./);
+  assert.match(followUpTaskCreator, /no_send: true/);
+  assert.match(followUpTaskCreator, /external_write_performed: false/);
+  assert.doesNotMatch(followUpTaskCreator, /No email, WhatsApp, payment|external CRM write|Internal note:/i);
 });
 
 test('Operations CRM follow-up actions are explicit and can clear persisted dates', () => {
@@ -122,7 +139,7 @@ test('Operations CRM Add Contact action is first-party and workspace-scoped', ()
   assert.match(operations, /function saveFirstPartyCrmNewContact\(event\)/);
   assert.match(operations, /api\.createCrmContact/);
   assert.match(operations, /create_follow_up_task: false/);
-  assert.match(operations, /No email, WhatsApp, Telegram, payment, access, import, or external CRM write runs\./);
+  assert.match(operations, /Creates or updates one workspace CRM contact\./);
   assert.match(server, /app\.post\('\/api\/bna\/crm\/contacts', requireAdmin, async \(req, res\) =>/);
   assert.match(server, /assertWorkspaceAccess\(req, scope\.workspace_key \|\| defaultWorkspaceKeyForRequest\(req\), 'add CRM contact'\)/);
   assert.match(server, /accountScope\.assertEntitlement\(scope, accountScope\.ENTITLEMENTS\.CRM_CONTACTS\)/);
@@ -138,13 +155,13 @@ test('Operations CRM Create task action is explicit and first-party only', () =>
   assert.match(operations, /data-action-id="ACTION-CRM-CREATE-TASK"/);
   assert.match(operations, /function createFirstPartyCrmTask\(event, contactId\)/);
   assert.match(operations, /create_follow_up_task: true/);
-  assert.match(operations, /Created by an explicit Create task click in the CRM contact workspace/);
-  assert.match(operations, /No message, payment, access grant, import, or external CRM write was performed/);
+  assert.match(operations, /Created from the CRM contact workspace/);
   assert.match(operations, /no_send: true/);
   assert.match(operations, /external_write_performed: false/);
   assert.match(operations, /Create task is unavailable in read-only preview\./);
   assert.match(server, /if \(shouldCreateFollowUpTask\) \{[\s\S]*followUpTask = await createOperationsCrmFollowUpTask/);
-  assert.match(server, /No email, WhatsApp, payment, access, import, or external CRM write was performed by creating this task\./);
+  assert.match(server, /no_send: true/);
+  assert.match(server, /external_write_performed: false/);
 });
 
 test('Operations CRM linked task state actions are explicit first-party updates', () => {
@@ -155,13 +172,13 @@ test('Operations CRM linked task state actions are explicit first-party updates'
   assert.match(operations, /await api\.updateTask\(taskId, payload\)/);
   assert.match(operations, /stage: 'done'/);
   assert.match(operations, /completed_at: new Date\(\)\.toISOString\(\)/);
-  assert.match(operations, /Completed by an explicit Complete task click in the CRM contact workspace/);
+  assert.match(operations, /Completed from the CRM contact workspace/);
   assert.match(operations, /stage: 'assigned'/);
   assert.match(operations, /completed_at: null/);
   assert.match(operations, /verified_at: null/);
-  assert.match(operations, /Reopened by an explicit Reopen task click in the CRM contact workspace/);
+  assert.match(operations, /Reopened from the CRM contact workspace/);
   assert.match(operations, /agent_status: 'none'/);
-  assert.match(operations, /Task state changes are first-party CRM updates only\. No message, payment, access grant, import, or external CRM write runs\./);
+  assert.match(operations, /Task state changes are saved to the contact workspace\./);
   assert.match(server, /app\.patch\('\/api\/bna\/tasks\/:id', requireAdmin, async \(req, res\) =>/);
   assert.match(server, /await assertTaskAccess\(req, id\)/);
   assert.match(server, /'completed_at'/);
@@ -179,7 +196,7 @@ test('Operations CRM Link member action creates a disabled first-party member sh
   assert.match(operations, /access_enabled: false/);
   assert.match(operations, /portal_link_created: false/);
   assert.match(operations, /access_not_granted: true/);
-  assert.match(operations, /No portal link, library access, class link, payment, send, import, or external CRM write/);
+  assert.match(operations, /Create a paused member record for CRM linkage\./);
   assert.match(operations, /Add an email before linking a member shell\./);
   assert.match(server, /app\.post\('\/api\/bna\/members', requireAdmin, async \(req, res\) =>/);
   assert.match(server, /access_enabled, notes, metadata/);
@@ -264,8 +281,8 @@ test('Operations CRM Link family and Link student actions are first-party no-acc
   assert.match(operations, /await api\.createStudent\(\{/);
   assert.match(operations, /status: 'paused'/);
   assert.match(operations, /student_access_not_granted/);
-  assert.match(operations, /No student login, access code, class access, payment, send, import, or external CRM write/);
-  assert.match(operations, /No portal login, access grant, message, payment, import, or external CRM write/);
+  assert.match(operations, /Create a paused student record for CRM linkage\./);
+  assert.match(operations, /Link this contact as a family relationship\./);
   assert.match(operations, /Enter a student name before linking a student shell\./);
   assert.match(operations, /Add a parent email before linking a student shell\./);
   assert.match(operations, /createStudent\(payload = \{\}\) \{ return this\.request\('POST', '\/students', payload\); \}/);
@@ -282,7 +299,7 @@ test('Operations CRM Archive Contact action is explicit and first-party only', (
   assert.match(operations, /function archiveFirstPartyCrmContact\(event, contactId\)/);
   assert.match(operations, /status: 'archived'/);
   assert.match(operations, /lifecycle_stage: 'archived'/);
-  assert.match(operations, /Archived by an explicit Archive contact click in the CRM contact workspace/);
+  assert.match(operations, /Archived from the CRM contact workspace/);
   assert.match(operations, /create_follow_up_task: false/);
   assert.match(operations, /external_write_performed: false/);
   assert.match(operations, /Archive contact is unavailable in read-only preview\./);
@@ -311,11 +328,11 @@ test('Operations CRM workspace tabs are enabled surfaces, not disabled placehold
   assert.match(operations, /data-crm-dto-source="contact-tasks"/);
   assert.match(operations, /data-crm-task-dto-actions/);
   assert.match(operations, /Completed from CRM contact workspace Tasks tab\./);
-  assert.match(operations, /Reopened by an explicit Reopen task click in the CRM contact workspace Tasks tab/);
+  assert.match(operations, /Reopened from the CRM contact workspace Tasks tab/);
   assert.match(operations, /data-crm-conversation-action="whatsapp"/);
   assert.match(operations, /data-crm-conversation-action="email"/);
   assert.match(operations, /Open WhatsApp thread/);
-  assert.match(operations, /No WhatsApp message was sent\./);
+  assert.match(operations, /WhatsApp thread opened in the scoped Inbox\./);
   const openContactFn = operations.match(/async function openFirstPartyCrmContact[\s\S]*?function clearFirstPartyCrmSelection/)?.[0] || '';
   assert.doesNotMatch(openContactFn, /Promise\.allSettled\(\[/);
   assert.match(operations, /loadFirstPartyCrmSubviewData\(selectedFirstPartyCrmContactId, firstPartyCrmActiveTab\)/);

@@ -40081,3 +40081,210 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails remain unchanged: no live charge, refund, notice send,
   invoice/receipt send, access mutation, provider mutation, credential
   mutation, production data mutation, or secret exposure was performed.
+## 2026-07-13 - Shared CRM current phase closed and Drive/Classroom packet hardened
+
+- Marked `REQ-20260712-302` Done for the current One Time-first shared CRM
+  acceptance scope. BNA CRM frontend adoption remains deferred by
+  `RAW-20260713-003`; dedicated CRM actions remain `REQ-20260712-303`.
+- Registered and hardened `RAW-20260713-004` One Time Drive/Classroom automation
+  packet guardrails without storing literal Vimeo credentials or performing any
+  upload, Drive write, send, payment/access mutation, provider mutation, or
+  production data mutation.
+- Preserved the current-state capability audit for the Drive/Classroom packet;
+  `REQ-20260713-912` and `REQ-20260713-913` are Done, while Drive intake,
+  transcription, metadata, upload, classroom publication, UI, and release
+  packets remain open.
+- Verification passed: PQC validation for the shared CRM workbench packet,
+  focused CRM/model/isolation tests `46/46`, action watchdog, protocol-drift
+  watchdog finding_count 0, secrets audit, `bna:run:validate`, and
+  `bna:run:next` advancing to `REQ-20260712-303`.
+
+## 2026-07-13 - Canonical CRM contact aggregate service closed
+
+- Marked `REQ-20260712-306` Done because the deployed canonical contact service
+  now satisfies the exact list/aggregate/timeline/conversations/tasks DTO
+  contract by stable `contact_key`.
+- Evidence is carried by deployed SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`
+  and proof commit `a523ef08d17d35425a6c96ac6148adc9a6aed778`.
+- The aggregate is server-owned through `src/lib/bna/crm/contact-service.js`
+  and `operationsCrmContactService`; contract tests reject browser-side selected
+  contact union helpers.
+- Live One Time CRM workbench, assistant-thread, WhatsApp, signup-context,
+  signup-record, BNA taxonomy, and performance smokes passed at the deployed
+  SHA. Remaining CRM work stays under `REQ-20260712-302` / `REQ-20260712-303`
+  for One Time-first UI/action breadth, not the canonical aggregate service.
+
+## 2026-07-13 - Dedicated CRM contact workspace actions closed
+
+- Marked `REQ-20260712-303` Done. The dedicated contact workspace now has the
+  full persisted first-party action matrix on top of the deployed mobile/list
+  detail workspace: add contact, edit/update fields, notes, tags, owner,
+  lifecycle, follow-up, tasks, email/WhatsApp thread opening,
+  family/student/member linking, and archive.
+- Final closeout proof ran focused CRM tests `46/46`, local One Time CRM
+  workbench smoke, action watchdog finding_count `0`, and a read-only
+  production marker check against One Time deployed SHA
+  `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- No external send, WhatsApp/WAPI send, Telegram send, CRM write, provider
+  mutation, payment/access mutation, import, credential mutation, or production
+  data mutation was performed during closeout.
+
+## 2026-07-13 - One Time Drive intake orchestrator deployed
+
+- Marked `REQ-20260713-914` Done for the no-write Drive-intake orchestrator
+  runtime slice. The slice resolves the canonical One Time Drive video lane,
+  admits only stable media files, creates idempotent content-job drafts, and
+  plans lease/retry/dead-letter states without Drive/database/Vimeo writes.
+- Runtime commit `c9706382c8b8e5544797a94467e7ea54367850f0` is pushed to
+  `origin/master`.
+- One Time Railway deployment `b8ce75fb-8b08-44bb-a95f-c3e472fb0665` reached
+  SUCCESS and `https://join.onetimeonetime.com/api/deploy-info` returned the
+  exact SHA with `target_app=one-time`.
+- BNA Railway deployment `e0f3ec48-4d60-467a-bb09-d3518a0e47ba` reached
+  SUCCESS at current SHA `be58601d50ce467193f02bc1b16566b23ba173a7`, which
+  contains `c9706382c8b8e5544797a94467e7ea54367850f0` as an ancestor.
+- Verification passed: focused orchestrator/Drive-map tests `18/18`, no-write
+  orchestrator CLI dry run, protocol-drift watchdog, secrets audit,
+  `bna:run:validate`, One Time separate-instance/provider/CRM live smokes, and
+  BNA operations workspace taxonomy smoke.
+- No real Drive API read, Drive mutation, database mutation, Vimeo upload,
+  member publication, public publish, provider mutation, credential mutation,
+  payment/access mutation, or external send was performed.
+
+## 2026-07-13 - One Time media edit slice deployed and live-smoked
+
+- Marked `REQ-20260713-915` Done for conservative media edge editing. The
+  studio/folder workflow now defaults opener duration to zero, preserves
+  explicit opener overrides, supports MKV handoff candidates, skips opener
+  render/concat when not requested, and records output hash/duration/audio
+  verification.
+- Media/transcription/metadata runtime commit
+  `2bf0c0d0e31c969f67556e1ee163ff0b9aa56ce6` is pushed and is an ancestor of
+  live One Time deployed SHA `a8df4c9b9cc091028105a16430aae6927cd0b429`
+  (`target_app=one-time`).
+- Verification passed: consolidated One Time Drive/media/transcription/metadata
+  suite `54/54`, One Time separate-instance exact-SHA smoke, and One Time
+  provider-route exact-SHA smoke.
+- `REQ-20260713-916` remains in progress: long transcription local harness and
+  redacted reports are implemented and deployed, but provider/private fixture
+  integration is not proven. Authenticated transcript-privacy smoke logged in
+  but failed on a missing Operations-page marker, so no live UI marker proof is
+  claimed.
+- `REQ-20260713-917` remains in progress: metadata/handoff contract is
+  implemented and deployed, but DB/review integration and bot-knowledge
+  promotion proof remain pending.
+- No Drive write, database mutation, Vimeo upload, bot-knowledge promotion,
+  member publication, provider mutation, credential mutation, payment/access
+  mutation, or external send was performed.
+
+## 2026-07-13 - CRM internal-copy cleanup deployed and proved
+
+- Closed `REQ-20260712-304`: normal One Time/Rabbi CRM contact workspace,
+  source-review, and email-contact staging surfaces now use customer-facing copy
+  instead of internal no-send/external-write explanations.
+- Runtime commit `a8df4c9b9cc091028105a16430aae6927cd0b429` was pushed to
+  `origin/master`, deployed to One Time deployment
+  `6059d148-7708-43ae-9665-abdaa544a5d6`, and deployed to BNA deployment
+  `298894e0-1890-4c39-98e7-aa9461883660`.
+- Live deploy-info returned exact SHA `a8df4c9b9cc091028105a16430aae6927cd0b429`
+  for both `https://join.onetimeonetime.com/api/deploy-info` and
+  `https://bneineviimacademy.org/api/deploy-info`.
+- Verification passed: focused CRM/contact tests `47/47`, generated Operations
+  shell check, local One Time CRM workbench smoke, One Time live CRM workbench
+  smoke, BNA workspace taxonomy smoke, action watchdog finding_count `0`, run
+  validator, diff check, and secrets audit.
+- Updated the One Time Operations CRM live-smoke marker expectations to match
+  the committed CRM contact workspace copy from `a8df4c9b`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM
+  production write, provider mutation, payment/access mutation, import,
+  credential mutation, or production data mutation was performed by this
+  closeout proof.
+
+## 2026-07-13 - One Time Vimeo credential status clarified
+
+- Updated `REQ-20260713-918` with the Vimeo owner credential readback result:
+  the newly supplied owner values validate as `client_id` plus
+  `client_secret` for Vimeo client-credentials public auth, but neither value
+  works as a direct `/me` bearer token.
+- Kept the working keyholder `VIMEO_ACCESS_TOKEN` as the user readback token;
+  it still reads the `Shloimie Dratler` account, but private upload remains
+  blocked on test folder/project, upload-capable token/scope/plan confirmation,
+  and explicit synthetic-smoke approval.
+- Wired `REQ-20260713-917` metadata drafts and blocked bot-knowledge handoffs
+  into the One Time studio sidecar and safe report path, without committing raw
+  transcript body text.
+- Verification passed: focused One Time studio/metadata/transcription/folder
+  suite `36/36`.
+- No Vimeo upload, Vimeo folder attach, privacy change, metadata edit, delete,
+  public publish, token storage, Drive write, database mutation, bot-knowledge
+  promotion, member publication, provider mutation, credential mutation,
+  payment/access mutation, or external send was performed.
+
+## 2026-07-13 - Canonical inbound communication runtime slice deployed
+
+- Advanced `REQ-20260712-307` from not-started to in-progress with a deployed
+  canonical inbound ingest slice.
+- Runtime commit `a692c6e002a09557b81c350c5c0187222d87b7de` adds
+  `src/lib/bna/crm/ingest-inbound-communication.js`; current production head
+  `f8df93a4ca86ecd607d5c3b63d113f77be4327c2` includes it.
+- Resend inbound email now delegates canonical contact/message persistence to
+  the shared service, and One Time WAPI-shaped inputs are covered by the same
+  service contract for contact identities, canonical communication rows,
+  unread/timeline metadata, redacted receipts, idempotency, and no ordinary
+  task creation.
+- Deployed to One Time Railway deployment
+  `641ad29c-d8d6-4053-b4d3-c7412fa6b7d7` and BNA Railway deployment
+  `68858c05-474e-4419-91c7-d934e7796305`; both `/api/deploy-info` endpoints
+  returned exact SHA `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`.
+- Verification passed: focused inbound tests `11/11`, broader inbound/contract
+  suite `26/26`, One Time separate-instance smoke, One Time provider-route
+  smoke, One Time CRM workbench smoke, and BNA workspace taxonomy smoke.
+- Remaining `REQ-20260712-307` work: migrate website assistant input and
+  private Rabbi Telegram input through the canonical service, then attach
+  published communication-agent/version/knowledge loading and delivery-outbox
+  execution.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM
+  production mutation, provider mutation, credential mutation, payment/access
+  mutation, import, or synthetic production data creation was performed.
+
+## 2026-07-13 - Canonical inbound website assistant and Rabbi Telegram slice deployed
+
+- Advanced `REQ-20260712-307` with the next deployed adapter convergence slice:
+  website assistant user messages and private Rabbi Telegram approval-ticket
+  intake now mirror through the canonical inbound communication service.
+- Runtime head `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8` is pushed to
+  `origin/master` and deployed on both One Time and BNA.
+- Rabbi Telegram support tickets mirror into canonical `bna_communications`
+  with ticket linkage, hashed Telegram identifiers, no contact identity
+  coercion, no ordinary task creation, no outbox send, and redacted receipt or
+  failure metadata.
+- One Time deployment `ca335eed-37f9-4c47-acf3-cb310d1c80da` and BNA
+  deployment `cb2ee7e7-abee-4cbf-95ec-a12711a25442` reached `SUCCESS`; both
+  live deploy-info endpoints returned exact SHA `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`.
+- Verification passed: `node --check server.js`, focused assistant/Telegram
+  inbound tests `12/12`, inbound/Resend/WAPI regression tests `10/10`,
+  One Time separate-instance, One Time CRM workbench, One Time provider
+  route-module, BNA workspace taxonomy, run validator, scoped diff check, and
+  secrets audit.
+- Remaining `REQ-20260712-307` work: attach published
+  communication-agent/version/knowledge loading and delivery-outbox execution.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send,
+  public auto-reply enablement, provider mutation, credential mutation,
+  payment/access mutation, raw Telegram value logging, raw contact/message
+  logging, or destructive production mutation was performed.
+
+## 2026-07-13 - One Time Billing V2 PR merge conflict resolved locally
+
+- Merged current `origin/master` into
+  `codex/onetime-rosh-hashanah-billing-platform-v2` to resolve draft PR #132's
+  dirty merge state.
+- Preserved both append-only changelog/ledger histories and regenerated the
+  Product Quality validation report for both the Billing V2 UI packet and the
+  incoming Drive/Classroom UI packet.
+- Verification passed: `npm run pqc:validate -- ...` for both packets,
+  `npm run stripe:sandbox-e2e`, targeted Billing/provider/Stripe/auth tests
+  `37/37`, `npm run operations:check-generated`, `npm run secrets:audit`, and
+  `git diff --check`.
+- Guardrails remained intact: no live charge, refund, notice send,
+  invoice/receipt send, access mutation, provider mutation, credential
+  mutation, production data mutation, or secret exposure was performed.

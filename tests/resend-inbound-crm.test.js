@@ -76,8 +76,9 @@ class FakeDb {
       return {
         rows: [{
           id: 202,
-          external_message_id: params[9],
-          thread_key: params[10],
+          contact_id: params[2],
+          external_message_id: params[12],
+          thread_key: params[13],
         }],
       };
     }
@@ -203,8 +204,9 @@ test('Resend inbound event fetches full email and stores scoped CRM communicatio
   assert.equal(db.contactInsertParams[2], 'parent@example.com');
   assert.equal(db.identityInsertParams[0], 77);
   assert.equal(db.identityInsertParams[1], 101);
-  assert.equal(db.identityInsertParams[2], 'parent@example.com');
+  assert.equal(db.identityInsertParams[2], 'email');
   assert.equal(db.identityInsertParams[3], 'parent@example.com');
+  assert.equal(db.identityInsertParams[4], 'parent@example.com');
 
   const contactLookup = db.queries.find((query) => query.sql.startsWith('SELECT c.* FROM bna_contacts'));
   assert.match(contactLookup.sql, /i\.workspace_id = c\.workspace_id/);
@@ -219,21 +221,40 @@ test('Resend inbound event fetches full email and stores scoped CRM communicatio
   assert.equal(params[0], 77);
   assert.equal(params[1], 88);
   assert.equal(params[2], 101);
-  assert.equal(params[4], 'parent@example.com');
-  assert.equal(params[5], 'info@onetimeonetime.com');
-  assert.equal(params[7], 'Please call me back.');
-  assert.equal(params[8], '<p>Please call me back.</p>');
-  assert.equal(params[9], 'email_received_123');
+  assert.equal(params[3], 'email');
+  assert.equal(params[4], 'inbound');
+  assert.equal(params[5], 'resend_inbound_email');
+  assert.equal(params[7], 'parent@example.com');
+  assert.equal(params[8], 'info@onetimeonetime.com');
+  assert.equal(params[10], 'Please call me back.');
+  assert.equal(params[11], '<p>Please call me back.</p>');
+  assert.equal(params[12], 'email_received_123');
 
-  const metadata = JSON.parse(params[11]);
+  const metadata = JSON.parse(params[16]);
   assert.equal(metadata.workspace_key, ONE_TIME_WORKSPACE_KEY);
   assert.equal(metadata.project_key, ONE_TIME_PROJECT_KEY);
   assert.equal(metadata.resend_event_id, 'evt_123');
   assert.equal(metadata.resend_received_email_id, 'email_received_123');
   assert.equal(metadata.email_message_id, '<msg123@example.com>');
+  assert.equal(metadata.inbound_pipeline_version, '2026-07-13-v1');
+  assert.equal(metadata.timeline_projection, 'operations_communications_unified_timeline');
+  assert.equal(metadata.unread, true);
+  assert.equal(metadata.agent_reply_mode, 'draft');
+  assert.equal(metadata.outbox_status, 'not_created');
+  assert.equal(metadata.external_write_performed, false);
+  assert.equal(metadata.create_task_on_inbound, false);
+  assert.equal(metadata.task_created, false);
   assert.deepEqual(metadata.received_for, ['info@onetimeonetime.com']);
   assert.equal(metadata.raw_headers_json.Authorization, undefined);
   assert.equal(metadata.attachment_metadata_json[0].filename, 'question.pdf');
+
+  assert.equal(result.redacted_receipt, true);
+  assert.equal(result.receipt.redacted_receipt, true);
+  assert.equal(result.receipt.body_returned, false);
+  assert.equal(result.receipt.html_returned, false);
+  assert.equal(result.receipt.external_write_performed, false);
+  assert.equal(result.receipt.sender.email_masked, 'p***t@example.com');
+  assert.doesNotMatch(JSON.stringify(result.receipt), /Please call me back|Parent Person <Parent@Example\.COM>|parent@example\.com/i);
 });
 
 test('duplicate after received-email fetch is deduped by message id', async () => {

@@ -91,6 +91,7 @@ const openArtMcpAdapter = require('./src/lib/bna/studio-openart-mcp-adapter');
 const accountScope = require('./src/lib/bna/account-scope-entitlements');
 const crmContactModel = require('./src/lib/bna/crm-contact-model');
 const { createContactService } = require('./src/lib/bna/crm/contact-service');
+const crmInboundIngest = require('./src/lib/bna/crm/ingest-inbound-communication');
 const assistantScopePolicy = require('./src/lib/bna/assistant-scope-policy');
 const {
   LATEST_ONE_TIME_DRIVE_BRIEF_SOURCE,
@@ -626,7 +627,7 @@ const INSTANCE_RUNTIME_FLAGS = buildOneTimeRuntimeFlags(process.env);
 const ONE_TIME_DRIVE_ROOT_ID = '16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2';
 const ONE_TIME_LIBRARY_APPROVAL_FLAG = 'APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING';
 const ONE_TIME_MEDIA_PROVIDERS = new Set(['vimeo', 'manual_url', 'drive', 'placeholder']);
-const ONE_TIME_TRANSCRIPT_STATUSES = new Set(['draft', 'review', 'approved']);
+const ONE_TIME_TRANSCRIPT_STATUSES = new Set(['draft', 'machine_complete', 'needs_review', 'review', 'approved', 'superseded', 'rejected']);
 const ONE_TIME_PACKAGE_STATUSES = new Set(['draft', 'review', 'approved', 'published', 'archived']);
 const ONE_TIME_ASSET_TYPES = new Set(['worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'thumbnail', 'transcript', 'example', 'other']);
 const ONE_TIME_ASSET_SOURCE_TYPES = new Set(['manual_url', 'uploaded_placeholder', 'drive_placeholder']);
@@ -16362,6 +16363,12 @@ WHERE provider = 'resend'
   AND direction = 'inbound'
   AND COALESCE(metadata->>'email_message_id', '') <> '';
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_communications_wapi_message_id
+ON bna_communications ((metadata->>'wapi_message_id'))
+WHERE provider IN ('wapi', 'whapi')
+  AND direction = 'inbound'
+  AND COALESCE(metadata->>'wapi_message_id', '') <> '';
+
 CREATE TABLE IF NOT EXISTS bna_message_connectors (
   id SERIAL PRIMARY KEY,
   workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
@@ -17554,6 +17561,18 @@ CREATE TABLE IF NOT EXISTS bna_content_jobs (
   drive_file_id TEXT,
   drive_folder_id TEXT,
   drive_stage TEXT,
+  source_fingerprint TEXT,
+  drive_generation TEXT,
+  drive_md5_checksum TEXT,
+  drive_size_bytes BIGINT,
+  drive_file_modified_at TIMESTAMP,
+  processing_state TEXT NOT NULL DEFAULT 'queued' CHECK (processing_state IN ('queued', 'leased', 'processing', 'retry_wait', 'completed', 'blocked', 'dead_letter', 'duplicate')),
+  lease_owner TEXT,
+  lease_expires_at TIMESTAMP,
+  retry_count INTEGER NOT NULL DEFAULT 0,
+  next_retry_at TIMESTAMP,
+  last_error TEXT,
+  source_provenance JSONB DEFAULT '{}',
   mime_type TEXT,
   caption TEXT,
   status TEXT NOT NULL DEFAULT 'ingested' CHECK (status IN ('ingested', 'transcribing', 'transcribed', 'parsing', 'drafting', 'needs_approval', 'approved', 'published', 'blocked', 'archived')),
@@ -17733,7 +17752,7 @@ ALTER TABLE bna_class_sessions ADD CONSTRAINT bna_class_sessions_media_provider_
   CHECK (media_provider IN ('vimeo', 'manual_url', 'drive', 'placeholder'));
 ALTER TABLE bna_class_sessions DROP CONSTRAINT IF EXISTS bna_class_sessions_transcript_status_check;
 ALTER TABLE bna_class_sessions ADD CONSTRAINT bna_class_sessions_transcript_status_check
-  CHECK (transcript_status IN ('draft', 'review', 'approved'));
+  CHECK (transcript_status IN ('draft', 'machine_complete', 'needs_review', 'review', 'approved', 'superseded', 'rejected'));
 ALTER TABLE bna_class_sessions DROP CONSTRAINT IF EXISTS bna_class_sessions_package_status_check;
 ALTER TABLE bna_class_sessions ADD CONSTRAINT bna_class_sessions_package_status_check
   CHECK (package_status IN ('draft', 'review', 'approved', 'published', 'archived'));
@@ -19256,6 +19275,10 @@ CREATE INDEX IF NOT EXISTS idx_bna_signup_agreement_signatures_type ON bna_signu
 CREATE INDEX IF NOT EXISTS idx_bna_email_log_signup_id ON bna_email_log (signup_id);
 CREATE INDEX IF NOT EXISTS idx_bna_email_log_email_type ON bna_email_log (email_type);
 CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_status ON bna_content_jobs (status);
+CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_processing_state ON bna_content_jobs (processing_state);
+CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_source_fingerprint ON bna_content_jobs (source_fingerprint);
+CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_drive_stage_file ON bna_content_jobs (drive_stage, drive_file_id);
+CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_lease_due ON bna_content_jobs (processing_state, lease_expires_at, next_retry_at);
 CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_created_at ON bna_content_jobs (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_class_sessions_class_date ON bna_class_sessions (class_date DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_class_sessions_content_job_id ON bna_class_sessions (content_job_id);
@@ -19294,6 +19317,21 @@ CREATE INDEX IF NOT EXISTS idx_bna_agent_runtime_last_seen ON bna_agent_runtime_
 ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_file_id TEXT;
 ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_folder_id TEXT;
 ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_stage TEXT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS source_fingerprint TEXT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_generation TEXT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_md5_checksum TEXT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_size_bytes BIGINT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_file_modified_at TIMESTAMP;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS processing_state TEXT DEFAULT 'queued';
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS lease_owner TEXT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS lease_expires_at TIMESTAMP;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS retry_count INTEGER DEFAULT 0;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS next_retry_at TIMESTAMP;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS last_error TEXT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS source_provenance JSONB DEFAULT '{}';
+ALTER TABLE bna_content_jobs DROP CONSTRAINT IF EXISTS bna_content_jobs_processing_state_check;
+ALTER TABLE bna_content_jobs ADD CONSTRAINT bna_content_jobs_processing_state_check
+  CHECK (processing_state IN ('queued', 'leased', 'processing', 'retry_wait', 'completed', 'blocked', 'dead_letter', 'duplicate'));
 ALTER TABLE bna_content_outputs ADD COLUMN IF NOT EXISTS prompt_id INTEGER REFERENCES bna_content_prompts(id) ON DELETE SET NULL;
 ALTER TABLE bna_content_outputs ADD COLUMN IF NOT EXISTS prompt_version INTEGER;
 ALTER TABLE bna_content_outputs ADD COLUMN IF NOT EXISTS bundle_id INTEGER REFERENCES bna_content_bundles(id) ON DELETE SET NULL;
@@ -31459,9 +31497,8 @@ async function createOperationsCrmFollowUpTask({
   const owner = limitText(String(assignedTo || contact.owner || contact.assigned_owner || 'Rabbi Scheller team').trim(), 120);
   const taskTitle = limitText(`Follow up with ${displayName}`, 180);
   const taskNotes = limitText([
-    summary || 'First-party CRM follow-up created from the Operations CRM workbench.',
-    body ? `Internal note: ${body}` : '',
-    'No email, WhatsApp, payment, access, import, or external CRM write was performed by creating this task.',
+    summary || 'Follow-up task created from the CRM contact workspace.',
+    body || '',
   ].filter(Boolean).join('\n\n'), 4000);
   const sourceContext = JSON.stringify({
     source: 'operations_crm_workbench',
@@ -46786,6 +46823,8 @@ function resendInboundResponse(result = {}) {
     workspace_key: result.workspace_key || null,
     project_key: result.project_key || null,
     attachment_count: Number(result.attachment_count || 0),
+    receipt: result.receipt && result.receipt.redacted_receipt === true ? result.receipt : null,
+    redacted_receipt: result.redacted_receipt === true,
   };
 }
 
@@ -65889,6 +65928,8 @@ async function createCommunicationFromWapiWebhook({
   payload,
   syncRunId = null,
   projectId = null,
+  workspaceKey = null,
+  projectKey = null,
   suppressAttentionArtifacts = false,
 }, db = pool) {
   if (normalized.messageId && db === pool && typeof db.connect === 'function') {
@@ -65902,6 +65943,8 @@ async function createCommunicationFromWapiWebhook({
         payload,
         syncRunId,
         projectId,
+        workspaceKey,
+        projectKey,
         suppressAttentionArtifacts,
       }, client);
       await client.query('COMMIT');
@@ -66027,7 +66070,7 @@ async function createCommunicationFromWapiWebhook({
     },
   };
 
-  const communication = (await db.query(
+  let communication = (await db.query(
     `INSERT INTO bna_contact_communications (
       project_id, contact_type, lead_id, signup_id, student_id, channel, direction,
       summary, body, follow_up_required, occurred_at, created_by, source,
@@ -66053,6 +66096,105 @@ async function createCommunicationFromWapiWebhook({
       JSON.stringify(enrichedMetadata),
     ]
   )).rows[0];
+  let canonicalCommunication = null;
+  if (!outboundMessage && !statusOnlyEvent) {
+    const canonicalProjectKey = normalizeProjectKey(projectKey || '');
+    const canonicalWorkspaceKey = normalizeWorkspaceKey(workspaceKey || workspaceKeyForProject(canonicalProjectKey) || '');
+    try {
+      canonicalCommunication = await crmInboundIngest.ingestInboundCommunication({
+        db,
+        binding: {
+          workspaceKey: canonicalWorkspaceKey,
+          projectKey: canonicalProjectKey,
+          projectId: communicationProjectId,
+          channelId: 'wapi:one_time_whatsapp',
+          replyMode: ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'live' ? 'live' : 'capture_only',
+        },
+        channel: 'whatsapp',
+        provider: 'wapi',
+        communicationType: 'wapi_inbound_whatsapp',
+        providerMessageId: normalized.messageId || '',
+        providerEventId: normalized.eventId || '',
+        sender: {
+          displayName: normalized.pushName || match.matched_name || '',
+          phone: normalized.fromNumber || normalized.chatId || '',
+          whatsapp: normalized.fromNumber || normalized.chatId || '',
+          address: normalized.fromNumber || normalized.chatId || '',
+        },
+        recipients: [normalized.toNumber || ''],
+        subject: copy.summary,
+        bodyText: copy.body || normalized.messageText || null,
+        occurredAt: normalized.occurredAt || null,
+        threadHints: {
+          chatId: normalized.chatId || normalized.fromNumber || '',
+          wapiMessageId: normalized.messageId || '',
+        },
+        metadata: {
+          ...enrichedMetadata,
+          ...enrichedSourceContext,
+          source: 'wapi',
+          wapi_message_id: normalized.messageId || null,
+          wapi_chat_id: normalized.chatId || null,
+          legacy_contact_communication_id: communication.id,
+          import_source: syncRunId ? 'whapi_sync' : 'webhook',
+          create_task_on_inbound: false,
+          ordinary_inbound_creates_task: false,
+        },
+        contact: {
+          source: 'whatsapp',
+          lifecycle: 'New Inquiry',
+          tags: ['one-time', 'whatsapp', 'wapi_inbound'],
+          metadata: {
+            source: 'wapi',
+            workspace_key: canonicalWorkspaceKey,
+            project_key: canonicalProjectKey,
+            legacy_contact_communication_id: communication.id,
+          },
+        },
+        createContactOnInbound: true,
+        createConversationOnInbound: true,
+        createTaskOnInbound: false,
+      });
+      if (canonicalCommunication?.communication_id) {
+        communication = (await db.query(
+          `UPDATE bna_contact_communications
+           SET source_context = COALESCE(source_context, '{}'::jsonb) || $2::jsonb,
+               metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb,
+               updated_at = NOW()
+           WHERE id = $1
+           RETURNING *`,
+          [
+            communication.id,
+            JSON.stringify({
+              canonical_communication_id: canonicalCommunication.communication_id,
+              canonical_contact_id: canonicalCommunication.contact_id || null,
+              canonical_ingest_pipeline: '2026-07-13-v1',
+            }),
+            JSON.stringify({
+              canonical_communication_id: canonicalCommunication.communication_id,
+              canonical_contact_id: canonicalCommunication.contact_id || null,
+              canonical_ingest_pipeline: '2026-07-13-v1',
+            }),
+          ]
+        )).rows[0] || communication;
+      }
+    } catch (error) {
+      communication = (await db.query(
+        `UPDATE bna_contact_communications
+         SET metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [
+          communication.id,
+          JSON.stringify({
+            canonical_ingest_failed: true,
+            canonical_ingest_error: limitText(error.message || 'canonical ingest failed', 240),
+          }),
+        ]
+      ).catch(() => ({ rows: [communication] }))).rows[0] || communication;
+    }
+  }
 
   if (match.lead_id) {
     await db.query(
@@ -66069,7 +66211,7 @@ async function createCommunicationFromWapiWebhook({
     await createCommunicationAttentionArtifacts(communication, screening, { db }).catch(() => {});
   }
 
-  return { communication, duplicate: false, match };
+  return { communication, duplicate: false, match, canonicalCommunication };
 }
 
 async function ensureOneTimeProviderBotLead({ normalized, communicationResult, scope, intent }, db = pool) {
@@ -67608,6 +67750,8 @@ async function runWapiMessageSync({ req, body = {} } = {}) {
           webhookLogId: null,
           syncRunId: run.id,
           projectId: project?.id || null,
+          workspaceKey: workspaceKeyForProject(project?.project_key || '') || null,
+          projectKey: project?.project_key || null,
           payload,
         });
         if (result.duplicate) duplicates += 1;
@@ -68171,6 +68315,8 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       webhookLogId: webhookLog.id,
       payload,
       projectId: webhookProject?.id || null,
+      workspaceKey: webhookScope.workspace_key || null,
+      projectKey: webhookScope.project_key || null,
       suppressAttentionArtifacts: isOneTimeWapiScope(webhookScope) && ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'observe_only',
     });
     let providerBotPlan = null;
@@ -68311,6 +68457,7 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       receivedAt,
       webhookLogId: webhookLog.id || null,
       communicationId: communicationResult.communication?.id || null,
+      canonicalCommunicationId: communicationResult.canonicalCommunication?.communication_id || null,
       duplicateCommunication: communicationResult.duplicate,
       eventType: normalized.eventType,
       messageId: normalized.messageId,
@@ -68328,6 +68475,7 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       received: true,
       webhookLogId: webhookLog.id || null,
       communicationId: communicationResult.communication?.id || null,
+      canonicalCommunicationId: communicationResult.canonicalCommunication?.communication_id || null,
       duplicateCommunication: communicationResult.duplicate,
       crmLeadId: providerBotLead?.id || communicationResult.communication?.lead_id || null,
       crmLeadCreated: providerBotLeadCreated,
@@ -74560,6 +74708,166 @@ async function insertAssistantMessage({ threadId, authorType, authorRole, body, 
   return message;
 }
 
+async function resolveAssistantThreadProject({ thread = {}, body = {}, project = null, db = pool } = {}) {
+  if (project?.id) return project;
+  const projectKey = normalizeProjectKey(
+    thread.project_key ||
+    body.project_key ||
+    body.projectKey ||
+    body.context?.project_key ||
+    body.context?.projectKey ||
+    ''
+  );
+  if (projectKey) return getProjectByKey(projectKey, db).catch(() => null);
+  const projectId = Number(thread.project_id || thread.workspace_id || 0);
+  if (projectId) {
+    const row = (await db.query('SELECT * FROM bna_projects WHERE id = $1 LIMIT 1', [projectId])).rows[0] || null;
+    if (row) return row;
+  }
+  const surfaceSpec = assistantProjectForSurface(body.surface || body.page || body.context?.surface || thread.surface);
+  return getProjectByKey(surfaceSpec.projectKey, db).catch(() => null);
+}
+
+function assistantInboundSenderFromActor(actor = {}, body = {}) {
+  const context = body.context || {};
+  const email = normalizeEmail(
+    actor.email ||
+    body.email ||
+    body.contact_email ||
+    body.contactEmail ||
+    context.email ||
+    context.contact_email ||
+    ''
+  );
+  const phone = body.phone || body.contact_phone || body.contactPhone || context.phone || context.contact_phone || '';
+  const whatsapp = body.whatsapp || body.whatsapp_number || body.whatsappNumber || context.whatsapp || context.whatsapp_number || '';
+  return {
+    displayName: limitText(
+      actor.name ||
+      body.name ||
+      body.contact_name ||
+      body.contactName ||
+      context.name ||
+      context.contact_name ||
+      actor.email ||
+      'Website visitor',
+      180
+    ),
+    email,
+    phone,
+    whatsapp,
+    address: email || whatsapp || phone || '',
+  };
+}
+
+async function mirrorAssistantUserMessageToInboundCommunication({
+  actor = {},
+  thread = {},
+  project = null,
+  userMessage = {},
+  messageText = '',
+  body = {},
+  routeAlias = '',
+  db = pool,
+} = {}) {
+  if (!thread?.id || !userMessage?.id || !messageText || actor.canUseCodex) return null;
+  const resolvedProject = await resolveAssistantThreadProject({ thread, body, project, db });
+  const projectKey = normalizeProjectKey(resolvedProject?.project_key || body.project_key || body.projectKey || DEFAULT_PROJECT_KEY) || DEFAULT_PROJECT_KEY;
+  const workspaceKey = normalizeWorkspaceKey(workspaceKeyForProject(projectKey));
+  const workspaceId = await workspaceSettingsIdForKey(workspaceKey, db).catch(() => null);
+  const providerMessageId = limitText(
+    body.idempotency_key ||
+    body.idempotencyKey ||
+    body.request_id ||
+    body.requestId ||
+    `assistant_message:${userMessage.id}`,
+    180
+  );
+  try {
+    const result = await crmInboundIngest.ingestInboundCommunication({
+      db,
+      binding: {
+        workspaceId,
+        projectId: resolvedProject?.id || thread.project_id || null,
+        workspaceKey,
+        projectKey,
+        replyMode: 'capture_only',
+      },
+      channel: 'web',
+      provider: 'website_assistant',
+      communicationType: 'website_assistant_inbound',
+      providerMessageId: `website_assistant:${providerMessageId}`,
+      sender: assistantInboundSenderFromActor(actor, body),
+      recipients: ['website_assistant'],
+      subject: limitText(body.subject || body.title || 'Website assistant message', 240),
+      bodyText: messageText,
+      threadHints: {
+        chatId: `assistant_thread:${thread.id}`,
+        threadKey: `assistant_thread:${thread.id}`,
+      },
+      metadata: {
+        source: 'website_assistant',
+        source_table: 'bna_assistant_messages',
+        assistant_thread_id: thread.id,
+        assistant_message_id: userMessage.id,
+        actor_type: actor.type || null,
+        actor_role: actor.role || actor.type || null,
+        surface: normalizeAssistantSurface(body.surface || body.page || body.context?.surface || thread.surface),
+        page_path: limitText(body.page_path || body.path || body.context?.page_path || body.context?.path || '', 500) || null,
+        route_alias: routeAlias || null,
+        create_task_on_inbound: false,
+        external_write_performed: false,
+      },
+      contact: {
+        source: 'website_assistant',
+        tags: ['website_assistant', projectKey, workspaceKey].filter(Boolean),
+        lifecycle: 'New Inquiry',
+        metadata: {
+          workspace_key: workspaceKey,
+          project_key: projectKey,
+          assistant_thread_id: thread.id,
+          assistant_actor_type: actor.type || null,
+        },
+      },
+      createTaskOnInbound: false,
+    });
+    await recordAssistantToolCall({
+      thread,
+      toolName: 'canonical_inbound_communication',
+      actor,
+      allowed: true,
+      status: 'completed',
+      resultSummary: result.duplicate
+        ? 'Canonical inbound communication already existed for this assistant message'
+        : 'Canonical inbound communication captured for this assistant message',
+      metadata: {
+        communication_id: result.communication_id || null,
+        contact_id: result.contact_id || null,
+        duplicate: Boolean(result.duplicate),
+        receipt: result.receipt || null,
+      },
+      db,
+    });
+    return result;
+  } catch (error) {
+    await recordAssistantToolCall({
+      thread,
+      toolName: 'canonical_inbound_communication',
+      actor,
+      allowed: true,
+      status: 'failed',
+      resultSummary: 'Assistant message saved, but canonical inbound communication capture failed',
+      metadata: {
+        error: hostedAssistantErrorForLog(error),
+        assistant_message_id: userMessage.id,
+        source_table: 'bna_assistant_messages',
+      },
+      db,
+    }).catch(() => null);
+    return null;
+  }
+}
+
 function assistantIntroForRole(actor = {}) {
   if (actor.type === 'super_admin') {
     return 'Hi Shloimie. I can help with BNA state, contacts, students, tasks, content, settings, tickets, hosted AI replies, and tracked Codex/system work.';
@@ -78011,6 +78319,16 @@ async function handleUniversalAssistantMessage(req, res, options = {}) {
       },
       db: client,
     });
+    await mirrorAssistantUserMessageToInboundCommunication({
+      actor,
+      thread,
+      project,
+      userMessage,
+      messageText,
+      body,
+      routeAlias: req.path,
+      db: client,
+    });
     const plannedActions = planUniversalAssistantActions(messageText, actor, body, context);
     const results = [];
     if (!plannedActions.length) {
@@ -78259,6 +78577,16 @@ app.post('/api/bna/assistant/chat', async (req, res) => {
       },
       db: client,
     });
+    await mirrorAssistantUserMessageToInboundCommunication({
+      actor,
+      thread,
+      project,
+      userMessage,
+      messageText,
+      body,
+      routeAlias: '/api/bna/assistant/chat',
+      db: client,
+    });
     const reply = await buildAssistantReply({ actor, message: messageText, thread, project, body, db: client });
     let usageRecord = { recorded: false, reason: 'assistant_reply_not_hosted_ai' };
     const replyProvider = reply.provider || reply.metadata?.provider || reply.metadata?.ai_provider || null;
@@ -78458,7 +78786,17 @@ app.post('/api/bna/assistant/threads/:id/messages', async (req, res) => {
       metadata: { page_path: body.page_path || body.path || null },
       db: client,
     });
-    const project = await getProjectByKey(thread.project_key || DEFAULT_PROJECT_KEY, client).catch(() => null);
+    const project = await resolveAssistantThreadProject({ thread, body, db: client });
+    await mirrorAssistantUserMessageToInboundCommunication({
+      actor,
+      thread,
+      project,
+      userMessage,
+      messageText,
+      body,
+      routeAlias: '/api/bna/assistant/threads/:id/messages',
+      db: client,
+    });
     const reply = await buildAssistantReply({ actor, message: messageText, thread, project, body, db: client });
     const assistantMessage = await insertAssistantMessage({
       threadId: thread.id,
@@ -79402,7 +79740,17 @@ app.post('/api/assistant/threads/:id/messages', async (req, res) => {
       metadata: { page_path: body.page_path || body.path || null, route_alias: '/api/assistant' },
       db: client,
     });
-    const project = await getProjectByKey(DEFAULT_PROJECT_KEY, client).catch(() => null);
+    const project = await resolveAssistantThreadProject({ thread, body, db: client });
+    await mirrorAssistantUserMessageToInboundCommunication({
+      actor,
+      thread,
+      project,
+      userMessage,
+      messageText,
+      body,
+      routeAlias: '/api/assistant/threads/:id/messages',
+      db: client,
+    });
     const reply = await buildAssistantReply({ actor, message: messageText, thread, project, body, db: client });
     const assistantMessage = await insertAssistantMessage({
       threadId: thread.id,
@@ -88943,6 +89291,155 @@ function supportTicketBlocksAutomaticTask(ticket = {}, body = {}) {
   return Boolean(body.suppress_task_creation || body.suppressTaskCreation || body.requires_super_admin_approval || body.requiresSuperAdminApproval);
 }
 
+async function mirrorRabbiTelegramSupportTicketToInboundCommunication({
+  ticket = {},
+  project = {},
+  body = {},
+  sourceContext = {},
+  db = pool,
+} = {}) {
+  if (!ticket?.id || !project?.id || !isRabbiTelegramApprovalTicketContext(sourceContext)) {
+    return { ticket, mirrored: false };
+  }
+
+  const chatHash = sourceContext.chat_id
+    ? sha256Hex(`telegram_chat:${sourceContext.chat_id}`).slice(0, 16)
+    : null;
+  const messageHash = sourceContext.message_id
+    ? sha256Hex(`telegram_message:${sourceContext.message_id}`).slice(0, 16)
+    : null;
+  const messageKey = sha256Hex([
+    'rabbi_telegram_support_ticket',
+    sourceContext.bridge_profile || 'rabbi-elie-scheller',
+    sourceContext.chat_id || '',
+    sourceContext.message_id || '',
+    ticket.id,
+  ].join(':')).slice(0, 32);
+  const workspaceKey = 'rabbi_sheller_provider';
+  const projectKey = normalizeProjectKey(project.project_key || sourceContext.project_key || ONE_TIME_PROJECT_KEY) || ONE_TIME_PROJECT_KEY;
+  const workspaceId = await workspaceSettingsIdForKey(workspaceKey, db).catch(() => null);
+
+  await db.query('SAVEPOINT rabbi_telegram_inbound_mirror');
+  try {
+    const ingest = await crmInboundIngest.ingestInboundCommunication({
+      db,
+      binding: {
+        workspaceId,
+        projectId: project.id,
+        workspaceKey,
+        projectKey,
+        replyMode: 'approval_gated',
+      },
+      channel: 'telegram',
+      provider: 'telegram',
+      communicationType: 'rabbi_telegram_support_ticket',
+      providerMessageId: `rabbi_telegram:${messageKey}`,
+      providerEventId: `rabbi_telegram_event:${messageKey}`,
+      sender: {
+        displayName: limitText(body.reporter_name || body.reporterName || 'Rabbi Elie Scheller', 180),
+      },
+      recipients: ['one_time_operations'],
+      subject: limitText(ticket.title || body.title || 'Rabbi Telegram support ticket', 240),
+      bodyText: limitText(ticket.description || body.description || body.body || '', 8000),
+      threadHints: {
+        threadKey: chatHash ? `rabbi_telegram:${chatHash}` : `rabbi_telegram:ticket:${ticket.id}`,
+      },
+      metadata: {
+        source: 'rabbi_telegram_ticket',
+        source_table: 'bna_support_tickets',
+        support_ticket_id: ticket.id,
+        ticket_number: ticket.ticket_number || null,
+        telegram_chat_hash: chatHash,
+        telegram_message_hash: messageHash,
+        bridge_profile: sourceContext.bridge_profile || 'rabbi-elie-scheller',
+        relationship_scope: sourceContext.relationship_scope || 'one_time_external_admin_project_ticket',
+        approval_gate: 'super_admin_required_before_codex',
+        codex_job_created_initially: false,
+        create_task_on_inbound: false,
+        no_send: true,
+        external_write_performed: false,
+      },
+      contact: {
+        source: 'rabbi_telegram_ticket',
+        tags: ['rabbi_telegram_ticket', projectKey, workspaceKey],
+        lifecycle: 'Support Ticket',
+        metadata: {
+          workspace_key: workspaceKey,
+          project_key: projectKey,
+          support_ticket_id: ticket.id,
+        },
+      },
+      createContactOnInbound: false,
+      createTaskOnInbound: false,
+    });
+
+    if (ingest?.communication_id) {
+      await db.query(
+        `UPDATE bna_communications
+         SET ticket_id = $2,
+             metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb
+         WHERE id = $1`,
+        [
+          ingest.communication_id,
+          ticket.id,
+          JSON.stringify({
+            support_ticket_id: ticket.id,
+            canonical_ticket_linked: true,
+            no_send: true,
+            external_write_performed: false,
+          }),
+        ]
+      );
+    }
+
+    const contextPatch = {
+      canonical_inbound_communication: {
+        status: ingest?.duplicate ? 'duplicate' : 'captured',
+        communication_id: ingest?.communication_id || null,
+        contact_id: ingest?.contact_id || null,
+        receipt: ingest?.receipt || null,
+        no_send: true,
+        external_write_performed: false,
+      },
+    };
+    const updated = (await db.query(
+      `UPDATE bna_support_tickets
+       SET source_context = COALESCE(source_context, '{}'::jsonb) || $2::jsonb
+       WHERE id = $1
+       RETURNING *`,
+      [ticket.id, JSON.stringify(contextPatch)]
+    )).rows[0];
+    await db.query('RELEASE SAVEPOINT rabbi_telegram_inbound_mirror');
+    return {
+      ticket: supportTicketView(updated || ticket),
+      mirrored: true,
+      ingest,
+    };
+  } catch (error) {
+    await db.query('ROLLBACK TO SAVEPOINT rabbi_telegram_inbound_mirror').catch(() => null);
+    const failurePatch = {
+      canonical_inbound_communication: {
+        status: 'failed',
+        error: limitText(redactValue(error?.message || String(error)), 240),
+        no_send: true,
+        external_write_performed: false,
+      },
+    };
+    const updated = (await db.query(
+      `UPDATE bna_support_tickets
+       SET source_context = COALESCE(source_context, '{}'::jsonb) || $2::jsonb
+       WHERE id = $1
+       RETURNING *`,
+      [ticket.id, JSON.stringify(failurePatch)]
+    ).catch(() => ({ rows: [] }))).rows[0];
+    return {
+      ticket: supportTicketView(updated || ticket),
+      mirrored: false,
+      error,
+    };
+  }
+}
+
 function requirePlatformSuperAdminForAction(req, res) {
   if (req?.opsIdentity?.scope?.type === 'all') return true;
   res.status(403).json({ error: 'Only platform_super_admin can perform this approval action.' });
@@ -89412,6 +89909,16 @@ app.post('/api/bna/support-tickets', requireAdmin, async (req, res) => {
       : await maybeCreateTaskForSupportTicket({ ticket, project, req, db: client });
     if (task) {
       ticket = supportTicketView((await client.query('SELECT * FROM bna_support_tickets WHERE id = $1', [ticket.id])).rows[0]);
+    }
+    if (rabbiApprovalTicket) {
+      const mirror = await mirrorRabbiTelegramSupportTicketToInboundCommunication({
+        ticket,
+        project,
+        body,
+        sourceContext: storedSourceContext,
+        db: client,
+      });
+      ticket = supportTicketView(mirror.ticket || ticket);
     }
     await createInAppNotification({
       eventType: ['student_parent_data'].includes(category) && ['high', 'blocking'].includes(severity)

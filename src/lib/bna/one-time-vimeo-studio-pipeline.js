@@ -5,6 +5,7 @@ const { spawnSync } = require('node:child_process');
 const ffmpegPath = require('ffmpeg-static');
 
 const folderWorkflow = require('./one-time-vimeo-folder-library');
+const transcriptMetadata = require('./one-time-transcript-metadata');
 const {
   classifyProviderHttpError,
   loadOpenAiCredentialCandidates,
@@ -13,14 +14,14 @@ const {
 
 const ONE_TIME_WORKSPACE_KEY = folderWorkflow.ONE_TIME_WORKSPACE_KEY;
 const ONE_TIME_PROJECT_KEY = folderWorkflow.ONE_TIME_PROJECT_KEY;
-const SUPPORTED_VIDEO_EXTENSIONS = new Set(['.mp4', '.mov', '.m4v', '.webm']);
+const SUPPORTED_VIDEO_EXTENSIONS = new Set(['.mp4', '.mov', '.m4v', '.webm', '.mkv']);
 
 const DEFAULT_INBOX_FOLDER = path.join('media-inbox', 'one-time-vimeo-studio-drop');
 const DEFAULT_PROCESSED_FOLDER = path.join('media-inbox', 'one-time-vimeo-studio-processed');
 const DEFAULT_REPORT_DIR = path.join('ops', 'one-time-mishnah', 'vimeo-studio-pipeline');
 const DEFAULT_TRIM_START_SECONDS = 30;
 const DEFAULT_TRIM_END_SECONDS = 15;
-const DEFAULT_OPENER_SECONDS = 3;
+const DEFAULT_OPENER_SECONDS = 0;
 const DEFAULT_WIDTH = 1920;
 const DEFAULT_HEIGHT = 1080;
 const DEFAULT_AUTO_TRIM_MAX_EDGE_SECONDS = 180;
@@ -85,6 +86,10 @@ function ensureDir(dirPath) {
 function statHash(filePath, relativePath = filePath) {
   const stat = fs.statSync(filePath);
   return sha256(`${relativePath}:${stat.size}:${stat.mtimeMs}`).slice(0, 16);
+}
+
+function fileSha256(filePath) {
+  return crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
 }
 
 function readJsonFile(filePath) {
@@ -379,13 +384,23 @@ function buildTrimPlan(metadata = {}, probe = {}, options = {}, edgeTrim = null)
     : durationSeconds - (trimEnd !== '' ? Number(trimEnd) : hasEdgeTrim ? edgeTrim.trim_end_seconds : defaultEnd);
   const safeStart = Math.max(0, Math.min(Number.isFinite(startSeconds) ? startSeconds : 0, Math.max(0, durationSeconds - 1)));
   const safeEnd = Math.max(safeStart + 1, Math.min(Number.isFinite(endSeconds) ? endSeconds : durationSeconds, durationSeconds));
+  const openerMetadata = metadataValue(metadata, 'opener_seconds', 'openerSeconds');
+  const hasOptionOpener = Object.prototype.hasOwnProperty.call(options, 'openerSeconds')
+    && options.openerSeconds !== undefined
+    && options.openerSeconds !== null
+    && String(options.openerSeconds).trim() !== '';
+  const openerSeconds = openerMetadata !== ''
+    ? Number(openerMetadata)
+    : hasOptionOpener
+      ? Number(options.openerSeconds)
+      : DEFAULT_OPENER_SECONDS;
   return {
     source_duration_seconds: durationSeconds,
     trim_start_seconds: Number(safeStart.toFixed(3)),
     trim_end_seconds: Number(Math.max(0, durationSeconds - safeEnd).toFixed(3)),
     content_end_seconds: Number(safeEnd.toFixed(3)),
     output_content_seconds: Number((safeEnd - safeStart).toFixed(3)),
-    opener_seconds: Math.max(0, Number(metadataValue(metadata, 'opener_seconds', 'openerSeconds') || options.openerSeconds || DEFAULT_OPENER_SECONDS) || 0),
+    opener_seconds: Math.max(0, Number(openerSeconds) || 0),
     strategy: hasExplicitTrim
       ? 'sidecar_or_manifest'
       : hasEdgeTrim
@@ -431,6 +446,63 @@ function parseScopeBlockers(metadata = {}) {
   return blockers;
 }
 
+function buildTranscriptReviewVersion(candidate = {}) {
+  const transcript = candidate.transcript || {};
+  return {
+    version: 'studio-sidecar-draft',
+    status: transcript.status || 'draft',
+    transcript_sha256: transcript.text ? sha256(transcript.text) : '',
+    transcript_body_included: false,
+  };
+}
+
+function buildMetadataArtifacts(candidate = {}) {
+  const transcriptVersion = buildTranscriptReviewVersion(candidate);
+  const metadataDraft = transcriptMetadata.buildOneTimeMetadataDraft({
+    transcriptVersion,
+    transcriptText: candidate.transcript?.text || '',
+    sidecar: candidate.metadata || {},
+  });
+  const botKnowledgeHandoff = transcriptMetadata.buildBotKnowledgeHandoff({
+    metadataDraft,
+    transcriptVersion,
+    approved: false,
+  });
+  return {
+    transcript_version: transcriptVersion,
+    metadata_draft: metadataDraft,
+    bot_knowledge_handoff: botKnowledgeHandoff,
+  };
+}
+
+function safeMetadataDraftReport(metadataDraft = {}) {
+  return {
+    schema_version: metadataDraft.schema_version || '',
+    title: metadataDraft.title || '',
+    torah_metadata: metadataDraft.torah_metadata || {},
+    confidence: metadataDraft.confidence || 0,
+    review_state: metadataDraft.review_state || '',
+    transcript_sha256: metadataDraft.transcript_sha256 || '',
+    approved_for_member_publish: metadataDraft.approved_for_member_publish === true,
+    approved_for_bot_knowledge: metadataDraft.approved_for_bot_knowledge === true,
+    raw_transcript_included: metadataDraft.raw_transcript_included === true,
+    description_bullets_count: Array.isArray(metadataDraft.description_bullets)
+      ? metadataDraft.description_bullets.length
+      : 0,
+  };
+}
+
+function safeBotKnowledgeHandoffReport(handoff = {}) {
+  return {
+    schema_version: handoff.schema_version || '',
+    status: handoff.status || '',
+    blockers: handoff.blockers || [],
+    no_raw_transcript_body: handoff.no_raw_transcript_body === true,
+    transcript_sha256: handoff.transcript_sha256 || '',
+    knowledge_item_ready: Boolean(handoff.knowledge_item),
+  };
+}
+
 function buildStudioCandidate(drop, folderRoot, processedRoot, options = {}) {
   const dropRoot = path.resolve(drop.drop_root);
   const videoPath = path.resolve(drop.video_path);
@@ -459,7 +531,7 @@ function buildStudioCandidate(drop, folderRoot, processedRoot, options = {}) {
   };
   const blockers = [...metadataRead.errors, ...scopeBlockers];
   if (safety.contains_sensitive_data) blockers.push('Sidecar marks this file as containing sensitive data; Vimeo upload remains blocked.');
-  return {
+  const candidate = {
     id: candidateId,
     workspace_key: ONE_TIME_WORKSPACE_KEY,
     project_key: ONE_TIME_PROJECT_KEY,
@@ -496,10 +568,13 @@ function buildStudioCandidate(drop, folderRoot, processedRoot, options = {}) {
     },
     blockers,
   };
+  candidate.metadata_artifacts = buildMetadataArtifacts(candidate);
+  return candidate;
 }
 
 function buildVimeoSidecar(candidate, rendered = {}) {
   const metadata = candidate.metadata || {};
+  const artifacts = candidate.metadata_artifacts || buildMetadataArtifacts(candidate);
   return {
     workspace_key: ONE_TIME_WORKSPACE_KEY,
     project_key: ONE_TIME_PROJECT_KEY,
@@ -513,6 +588,8 @@ function buildVimeoSidecar(candidate, rendered = {}) {
     duration_seconds: Math.max(0, Math.round((candidate.trim_plan?.output_content_seconds || 0) + (candidate.opener?.seconds || 0))),
     transcript_text: candidate.transcript.text || '',
     transcript_status: candidate.transcript.status || 'draft',
+    metadata_draft: artifacts.metadata_draft,
+    bot_knowledge_handoff: artifacts.bot_knowledge_handoff,
     package_status: compactText(metadataValue(metadata, 'package_status', 'packageStatus') || 'review', 40),
     synthetic_test: candidate.safety.synthetic_test,
     contains_sensitive_data: candidate.safety.contains_sensitive_data,
@@ -666,7 +743,8 @@ function runFfmpeg(args, label) {
 function renderOpener(candidate, openerPath, options = {}) {
   const width = Number(options.width || DEFAULT_WIDTH);
   const height = Number(options.height || DEFAULT_HEIGHT);
-  const seconds = Math.max(0.1, Number(candidate.opener.seconds || DEFAULT_OPENER_SECONDS));
+  const requestedSeconds = Number(candidate.opener.seconds ?? DEFAULT_OPENER_SECONDS);
+  const seconds = Math.max(0.1, Number.isFinite(requestedSeconds) ? requestedSeconds : DEFAULT_OPENER_SECONDS);
   const fontPart = ffmpegFontPart(fontPathForOptions(options));
   const title = escapeDrawtext(candidate.opener.title || 'One Time Mishnah');
   const subtitle = escapeDrawtext(candidate.opener.subtitle || candidate.title);
@@ -731,20 +809,64 @@ function concatFiles(files, outputPath, workDir) {
   runFfmpeg(['-y', '-f', 'concat', '-safe', '0', '-i', concatPath, '-c', 'copy', outputPath], 'concat render');
 }
 
+function verifyRenderedOutput(candidate, videoPath = candidate?.output?.video_path, options = {}) {
+  const expectedDuration = Math.max(
+    0,
+    Number(candidate?.trim_plan?.output_content_seconds || 0) + Number(candidate?.opener?.seconds || 0),
+  );
+  if (!videoPath || !fs.existsSync(videoPath)) {
+    return {
+      status: 'missing',
+      exists: false,
+      expected_duration_seconds: Number(expectedDuration.toFixed(3)),
+      duration_seconds: 0,
+      duration_within_tolerance: false,
+      sha256: '',
+      size_bytes: 0,
+      probed: false,
+    };
+  }
+  const stat = fs.statSync(videoPath);
+  const probe = probeVideo(videoPath, { duration_seconds: expectedDuration || 1 });
+  const tolerance = Math.max(1, Number(options.durationToleranceSeconds || 2) || 2);
+  const durationDelta = Math.abs(Number(probe.duration_seconds || 0) - expectedDuration);
+  const durationOk = expectedDuration > 0 ? durationDelta <= tolerance : Number(probe.duration_seconds || 0) > 0;
+  return {
+    status: stat.size > 0 && durationOk ? 'ok' : 'needs_review',
+    exists: true,
+    expected_duration_seconds: Number(expectedDuration.toFixed(3)),
+    duration_seconds: Number(Number(probe.duration_seconds || 0).toFixed(3)),
+    duration_delta_seconds: Number(durationDelta.toFixed(3)),
+    duration_within_tolerance: durationOk,
+    sha256: fileSha256(videoPath),
+    size_bytes: stat.size,
+    width: probe.width || 0,
+    height: probe.height || 0,
+    has_audio: probe.has_audio === true,
+    probed: probe.probed === true,
+  };
+}
+
 function renderCandidate(candidate, options = {}) {
   ensureDir(candidate.output.dir);
   const workDir = path.join(candidate.output.dir, '_work');
   ensureDir(workDir);
   const openerPath = path.join(workDir, 'opener.mp4');
   const trimmedPath = path.join(workDir, 'trimmed.mp4');
-  renderOpener(candidate, openerPath, options);
-  renderTrimmed(candidate, trimmedPath, options);
-  concatFiles([openerPath, trimmedPath], candidate.output.video_path, workDir);
+  if (Number(candidate.opener?.seconds || 0) > 0) {
+    renderOpener(candidate, openerPath, options);
+    renderTrimmed(candidate, trimmedPath, options);
+    concatFiles([openerPath, trimmedPath], candidate.output.video_path, workDir);
+  } else {
+    renderTrimmed(candidate, candidate.output.video_path, options);
+  }
+  const outputVerification = verifyRenderedOutput(candidate, candidate.output.video_path, options);
   return {
     status: 'rendered',
     render_performed: true,
     video_path: candidate.output.video_path,
     sidecar_path: candidate.output.sidecar_path,
+    output_verification: outputVerification,
   };
 }
 
@@ -756,6 +878,7 @@ function writeCandidateSidecar(candidate, rendered = {}) {
 }
 
 function safeCandidateReport(candidate, rendered = {}, repoRoot = process.cwd()) {
+  const artifacts = candidate.metadata_artifacts || buildMetadataArtifacts(candidate);
   return {
     id: candidate.id,
     workspace_key: candidate.workspace_key,
@@ -777,12 +900,15 @@ function safeCandidateReport(candidate, rendered = {}, repoRoot = process.cwd())
       length: candidate.transcript.length,
       sha256: candidate.transcript.sha256,
     },
+    metadata_draft: safeMetadataDraftReport(artifacts.metadata_draft),
+    bot_knowledge_handoff: safeBotKnowledgeHandoffReport(artifacts.bot_knowledge_handoff),
     output: {
       rendered: rendered.render_performed === true,
       video_path: reportPath(repoRoot, rendered.video_path || candidate.output.video_path),
       sidecar_path: reportPath(repoRoot, rendered.sidecar_path || candidate.output.sidecar_path),
       video_exists: Boolean(rendered.video_path && fs.existsSync(rendered.video_path)),
       sidecar_exists: fs.existsSync(candidate.output.sidecar_path),
+      verification: rendered.output_verification || verifyRenderedOutput(candidate, rendered.video_path || candidate.output.video_path),
     },
     blockers: candidate.blockers,
   };
@@ -906,7 +1032,7 @@ async function runStudioPipeline(options = {}) {
   }
 
   if (!report.candidates.length) {
-    report.next_actions.push(`Drop a folder containing .mp4, .mov, .m4v, or .webm into ${report.folder_relative_to_repo}.`);
+    report.next_actions.push(`Drop a folder containing .mp4, .mov, .m4v, .webm, or .mkv into ${report.folder_relative_to_repo}.`);
   }
   if (!render) {
     report.next_actions.push('Run again with --render after reviewing the trim/opener plan.');
@@ -1021,5 +1147,6 @@ module.exports = {
   redactCredentialText,
   runStudioPipeline,
   transcriptTextFromOpenAiResponse,
+  verifyRenderedOutput,
   writeWorkflowReport,
 };

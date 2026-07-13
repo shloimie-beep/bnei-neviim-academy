@@ -17,7 +17,7 @@ const REVIEW_PACKAGE_CONFIRMATION = 'CREATE_ONE_TIME_LIBRARY_REVIEW';
 const VIMEO_UPLOAD_CONFIRMATION = 'UPLOAD_ONE_TIME_VIMEO_LIBRARY';
 const DEFAULT_DROP_FOLDER = path.join('media-inbox', 'one-time-vimeo-drop');
 const DEFAULT_REPORT_DIR = path.join('ops', 'one-time-mishnah', 'vimeo-folder-library');
-const SUPPORTED_VIDEO_EXTENSIONS = new Set(['.mp4', '.mov', '.m4v', '.webm']);
+const SUPPORTED_VIDEO_EXTENSIONS = new Set(['.mp4', '.mov', '.m4v', '.webm', '.mkv']);
 
 function compactText(value, max = 240) {
   return String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);

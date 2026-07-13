@@ -499,7 +499,8 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     const text = form?.innerText.replace(/\s+/g, ' ').trim() || '';
     return {
       formVisible: Boolean(form),
-      noExternalCopy: /No email, WhatsApp, Telegram, payment, access, import, or external CRM write runs/.test(text),
+      noExternalCopy: /Creates or updates one workspace CRM contact\./.test(text)
+        && !/No email, WhatsApp, Telegram, payment, access, import, or external CRM write runs/i.test(text),
     };
   }));
   await page.locator('[data-crm-add-contact-cancel]').click();
@@ -953,7 +954,7 @@ async function main() {
     '',
     '- One Time Operations CRM route renders the API-backed workbench.',
     '- Split shell and monolith fallback render the API-backed workbench.',
-    '- Search/filter/sort controls, Add Contact form, cards, shared CRM contract attributes, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe actions, explicit Create task/archive actions, Link member disabled-shell action, and timeline readback are visible.',
+    '- Search/filter/sort controls, Add Contact form, cards, shared CRM contract attributes, three CRM panes, selected detail, profile, class/trial/access context, review status, safe actions, explicit Create task/archive actions, Link member paused-record action, and timeline readback are visible.',
     '- Overview, Activity, Conversations, Tasks, Access, Identity, and Family tabs are clickable and render non-disabled workspace panels.',
     '- Mobile selected-contact state hides the list and Back to contacts restores it.',
     '- Scoped One Time Inbox retains selected CRM contact context and keeps send gates visible.',

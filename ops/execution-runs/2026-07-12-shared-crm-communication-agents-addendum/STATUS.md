@@ -315,3 +315,93 @@ Current status: `active`
 - Live proof passed: exact-SHA One Time separate-instance smoke, One Time CRM workbench smoke, One Time provider route-module smoke, BNA workspace taxonomy smoke, assistant-thread DTO smoke, WhatsApp DTO regression smoke, signup-context DTO regression smoke, signup-record DTO regression smoke, and One Time performance gate.
 - Targeted assistant-thread DTO live probe wrote `ops/live-smokes/2026-07-13T11-11-46-025Z-one-time-crm-assistant-thread-dto-live-smoke.md`; production returned `inspected_candidate_count=1` and `assistant_thread_match=true` with zero assistant-thread rows in selected-contact Conversations.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw assistant body/contact logging, or production data mutation was performed by this DTO smoke.
+
+## Shared CRM Current-Phase Closeout - 2026-07-13
+
+- `REQ-20260712-302` is Done for the current One Time-first acceptance scope.
+- Latest deployed/proved runtime SHA remains `8ea2cd06e1920eecfd1ae97b937c22d701c00099`; no new runtime deploy was required for this documentation/status closeout.
+- Closeout proof passed: `npm run pqc:validate -- tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json`, `npm run operations:build`, `npm run operations:check-generated`, `node --check server.js`, focused CRM/model/isolation tests `46/46`, action watchdog, secrets audit, and protocol-drift watchdog with zero findings.
+- `RAW-20260713-003` still defers simultaneous BNA CRM frontend parity; BNA remains protected by shared runtime, API/security/privacy/database, taxonomy, and workspace-isolation regression proof.
+- Dedicated CRM actions remain open under `REQ-20260712-303`; owner-only send verification remains blocked by `REQ-20260713-906` until secure owner email/WhatsApp aliases exist.
+- The new One Time Drive/Classroom automation raw packet `RAW-20260713-004` is registered separately; its control packet and code/current-state capability audit are done, but Drive intake, transcription, metadata, upload, classroom publication, UI, and release packets remain open.
+
+## Canonical CRM Contact Aggregate Service - 2026-07-13
+
+- `REQ-20260712-306` is Done at deployed runtime SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- The server-owned canonical contact service in `src/lib/bna/crm/contact-service.js` returns the required list, selected aggregate/timeline, conversations, and tasks DTO envelopes by stable `contact_key`; the browser no longer owns a union of independent CRM/communication datasets for selected-contact detail.
+- Operations routes delegate selected-contact DTO loading through `operationsCrmContactService`, with server-side workspace/project scope derivation before row loading.
+- The deployed aggregate covers the scoped One Time contact record, communications, legacy contact communications, support tickets, product/signup context, direct signups, assistant threads, lifecycle events, follow-up tasks, student/member/access context, live class attendance, suppression, delivery outbox, and delivery dead-letter rows.
+- Contract tests explicitly reject browser-side contact/conversation union helpers and pin the dedicated server DTO routes.
+- Live proof at SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`: One Time CRM workbench smoke passed with 12 scoped cards, assistant-thread DTO proof found a positive Activity match, WhatsApp and signup-context DTO regressions found positive matches, signup-record DTO safely skipped only because sampled production had no direct signup rows, and BNA taxonomy regression passed.
+- Remaining `REQ-20260712-302` work is shared CRM product/UI breadth and One Time-first action polish, not the canonical aggregate service contract itself.
+
+## Dedicated CRM Actions Closeout - 2026-07-13
+
+- `REQ-20260712-303` is Done. The dedicated contact workspace has URL/back-state and mobile one-pane behavior plus the full persisted first-party action matrix.
+- Implemented/deployed action coverage: Add Contact, field-specific Edit/Update through the CRM update form, Add Note, Add Tag, Remove Tag, Assign Owner, Change Lifecycle, Set/Change/Clear Follow-up, Create Task, Complete Task, Reopen Task, Open scoped email inbox/thread, Open WhatsApp thread, Link Family, Link Student, Link Member, and Archive Contact.
+- The email-thread action is represented by the existing registered `ACTION-CRM-OPEN-SCOPED-INBOX` control, which opens the scoped email inbox/thread context without browser-side data union.
+- Final closeout proof used the already-deployed One Time runtime SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`; no new runtime deploy was required.
+- Verification passed: focused CRM tests `46/46`, local One Time CRM workbench smoke, action watchdog finding_count `0`, and production read-only marker proof for 18 CRM action IDs on `https://join.onetimeonetime.com/operations.html`.
+- Guardrails: closeout performed no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, import, credential mutation, or production data mutation.
+
+## CRM Internal-Copy Cleanup - 2026-07-13
+
+- `REQ-20260712-304` is Done. Normal One Time/Rabbi CRM contact workspace, source-review, and email-contact staging surfaces now use customer-facing copy instead of internal no-send/external-write explanations.
+- Cleaned visible copy for Add Contact, CRM update, selected-contact empty state, timeline, task state changes, create/complete/reopen task notices, scoped email/WhatsApp thread-open notices, member/family/student link panels, archive confirmation, legacy source-review labels, and email-contact tags.
+- Safety metadata remains intact in API/source-context payloads and tests: `no_send=true`, `external_write_performed=false`, paused/member/student access states, and registered action IDs are still asserted.
+- Runtime commit `a8df4c9b9cc091028105a16430aae6927cd0b429` was pushed to `origin/master`, deployed to One Time deployment `6059d148-7708-43ae-9665-abdaa544a5d6` and BNA deployment `298894e0-1890-4c39-98e7-aa9461883660`, and both `/api/deploy-info` endpoints returned the exact SHA.
+- Verification passed: 47/47 focused CRM/contact tests, generated Operations shell check, local One Time CRM workbench smoke, One Time live CRM workbench smoke, BNA workspace taxonomy smoke, action watchdog finding_count `0`, run validator, diff check, and secrets audit.
+- Next unblocked shared-CRM lane is `REQ-20260712-307` inbound communication pipeline. Owner-only live email/WhatsApp sends remain blocked by `REQ-20260713-906` until secure owner-test aliases are configured.
+
+## Canonical Inbound Communication Runtime Slice - 2026-07-13
+
+- `REQ-20260712-307` is In progress. The first runtime slice is pushed, deployed, and live-smoked, but the whole requirement is not terminal Done yet.
+- Runtime commit `a692c6e002a09557b81c350c5c0187222d87b7de` added `src/lib/bna/crm/ingest-inbound-communication.js`; production head `f8df93a4ca86ecd607d5c3b63d113f77be4327c2` includes it.
+- Resend inbound email now delegates canonical persistence to the shared service. The service contract also covers One Time WAPI-shaped inbound messages for workspace/project binding, contact identity resolution, canonical `bna_communications` rows, unread/timeline metadata, redacted receipts, idempotency, and zero ordinary task creation.
+- One Time Railway deployment `641ad29c-d8d6-4053-b4d3-c7412fa6b7d7` and BNA Railway deployment `68858c05-474e-4419-91c7-d934e7796305` reached `SUCCESS`; both `/api/deploy-info` endpoints returned exact SHA `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`.
+- Verification passed: inbound tests `11/11`, broader inbound/contract tests `26/26`, One Time separate-instance smoke, One Time provider-route smoke, One Time CRM workbench smoke, and BNA workspace taxonomy smoke.
+- Remaining `REQ-20260712-307` work: migrate website assistant input and private Rabbi Telegram input through the canonical service, then attach published communication-agent/version/knowledge loading and delivery-outbox execution. Owner-only sends remain blocked by `REQ-20260713-906`.
+
+## Canonical Inbound Communication Pipeline Runtime Slice - 2026-07-13
+
+- `REQ-20260712-307` is In progress with the first runtime slice deployed. It is not terminal Done yet.
+- Runtime commit `a692c6e002a09557b81c350c5c0187222d87b7de` added `src/lib/bna/crm/ingest-inbound-communication.js` and connected Resend inbound email plus One Time WAPI inbound mirroring to the canonical service.
+- The canonical service handles explicit binding/workspace/project resolution, contact creation/reuse, workspace-scoped identities, canonical `bna_communications` persistence, unread/timeline metadata, redacted receipts, idempotency, and zero ordinary task creation.
+- Current production head `f8df93a4ca86ecd607d5c3b63d113f77be4327c2` includes the inbound runtime slice and is live on both One Time and BNA.
+- One Time Railway doctor passed for deployment `641ad29c-d8d6-4053-b4d3-c7412fa6b7d7`; One Time deploy-info returned the exact current SHA and target app. Current-head One Time CRM smoke passed at `ops/live-smokes/2026-07-13T12-25-01-672Z-one-time-operations-crm-workbench-live-smoke.md`.
+- BNA Railway doctor passed for deployment `68858c05-474e-4419-91c7-d934e7796305`; BNA deploy-info returned the exact current SHA. Current-head BNA taxonomy smoke passed at `ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md`.
+- Local proof before the runtime commit passed the new inbound/service tests and shared CRM regression suite `49/49`, syntax checks, generated Operations shell check, run validator, diff check, and secrets audit. Current focused proof also passed `tests/inbound-communication-pipeline.test.js` `4/4`, inbound/Resend service suite `11/11`, and broader inbound/communication contract suite `26/26`.
+- Remaining work for `REQ-20260712-307`: route website assistant input, private Rabbi Telegram input, communication-agent version/knowledge loading, and delivery-outbox execution through the same canonical service.
+- Owner-only live email/WhatsApp sends remain blocked by `REQ-20260713-906` until secure owner-test aliases are configured through the approved secret path.
+
+## Canonical Inbound Website Assistant And Rabbi Telegram Slice - 2026-07-13
+
+- `REQ-20260712-307` remains In progress, but website assistant input and
+  private Rabbi Telegram approval-ticket intake now route through the canonical
+  inbound service.
+- Existing website assistant user-message mirroring remains wired through
+  `mirrorAssistantUserMessageToInboundCommunication`, with assistant message
+  receipts recorded as redacted assistant tool-call metadata and no external
+  send.
+- Runtime commit `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8` adds
+  `mirrorRabbiTelegramSupportTicketToInboundCommunication`: Rabbi Telegram
+  support tickets are mirrored into `bna_communications` with ticket linkage,
+  hashed Telegram identifiers, no Telegram chat-id-to-phone coercion, no
+  contact identity creation, no ordinary task creation, no outbox send, and a
+  redacted canonical receipt on the support ticket source context.
+- The mirror uses a savepoint so support-ticket capture is preserved even if
+  canonical communication capture fails; failures are recorded as no-send,
+  redacted `canonical_inbound_communication.status=failed` context.
+- One Time Railway deployment `ca335eed-37f9-4c47-acf3-cb310d1c80da` and BNA
+  Railway deployment `cb2ee7e7-abee-4cbf-95ec-a12711a25442` reached `SUCCESS`.
+- One Time deploy-info returned
+  `commit_sha=c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`,
+  `target_app=one-time`; BNA deploy-info returned the same commit with
+  `target_app=bna`.
+- Live proof passed: One Time separate-instance smoke, One Time CRM workbench
+  smoke, One Time provider route-module smoke, and BNA workspace taxonomy smoke
+  at exact SHA `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`.
+- Remaining `REQ-20260712-307` work: attach published
+  communication-agent/version/knowledge loading and delivery-outbox execution
+  to the canonical inbound path. Owner-only email/WhatsApp live sends remain
+  blocked by `REQ-20260713-906`.

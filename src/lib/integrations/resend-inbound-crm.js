@@ -1,4 +1,8 @@
 const { normalizeEmail } = require('./resend-client');
+const {
+  findExistingInboundCommunication,
+  ingestInboundCommunication,
+} = require('../bna/crm/ingest-inbound-communication');
 
 const ONE_TIME_WORKSPACE_KEY = 'rabbi_sheller_provider';
 const ONE_TIME_PROJECT_KEY = 'one_time_mishnah_class';
@@ -7,15 +11,6 @@ const ONE_TIME_INBOUND_EMAIL = 'info@onetimeonetime.com';
 
 function compact(value = '', max = 2000) {
   return String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);
-}
-
-function normalizeSubject(value = '') {
-  return compact(value, 240)
-    .replace(/^(?:re|fwd?):\s*/i, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '')
-    .slice(0, 80) || 'no_subject';
 }
 
 function arrayFrom(value) {
@@ -142,126 +137,6 @@ function inboundRoutingForEmail(event = {}, receivedEmail = {}) {
   };
 }
 
-async function findExistingInboundCommunication(db, { eventId = '', emailId = '', messageId = '' } = {}) {
-  const result = await db.query(
-    `SELECT *
-     FROM bna_communications
-     WHERE provider = 'resend'
-       AND direction = 'inbound'
-       AND (
-         ($1 <> '' AND external_message_id = $1)
-         OR ($1 <> '' AND metadata->>'resend_received_email_id' = $1)
-         OR ($2 <> '' AND metadata->>'resend_event_id' = $2)
-         OR ($3 <> '' AND metadata->>'email_message_id' = $3)
-       )
-     ORDER BY occurred_at DESC, id DESC
-     LIMIT 1`,
-    [emailId || '', eventId || '', messageId || '']
-  );
-  return result.rows[0] || null;
-}
-
-async function upsertSenderContact(db, {
-  workspaceId = null,
-  fromEmail = '',
-  fromName = '',
-  projectKey = ONE_TIME_PROJECT_KEY,
-  workspaceKey = ONE_TIME_WORKSPACE_KEY,
-} = {}) {
-  const email = normalizeEmail(fromEmail);
-  if (!workspaceId || !email) return null;
-  const existing = (await db.query(
-    `SELECT c.*
-     FROM bna_contacts c
-     LEFT JOIN bna_contact_identities i ON i.contact_id = c.id AND i.workspace_id = c.workspace_id
-     WHERE c.workspace_id = $1
-       AND (
-         lower(COALESCE(c.primary_email, '')) = $2
-         OR (i.workspace_id = $1 AND i.identity_type = 'email' AND i.normalized_value = $2)
-       )
-     ORDER BY c.updated_at DESC NULLS LAST, c.created_at ASC
-     LIMIT 1`,
-    [workspaceId, email]
-  )).rows[0] || null;
-  const metadata = {
-    source: 'resend_inbound',
-    project_key: projectKey,
-    workspace_key: workspaceKey,
-  };
-  const tags = ['resend_inbound', projectKey, workspaceKey];
-  const result = existing
-    ? await db.query(
-      `UPDATE bna_contacts
-       SET full_name = COALESCE(NULLIF($2, ''), full_name),
-           primary_email = COALESCE(NULLIF($3, ''), primary_email),
-           source = COALESCE(source, 'resend_inbound'),
-           tags = (
-             SELECT ARRAY(
-               SELECT DISTINCT tag_value
-               FROM unnest(COALESCE(tags, ARRAY[]::text[]) || $4::text[]) AS tag_values(tag_value)
-               WHERE trim(tag_value) <> ''
-             )
-           ),
-           metadata = COALESCE(metadata, '{}'::jsonb) || $5::jsonb,
-           updated_at = NOW()
-       WHERE id = $1
-       RETURNING *`,
-      [existing.id, fromName || '', email, tags, JSON.stringify(metadata)]
-    )
-    : await db.query(
-      `INSERT INTO bna_contacts (
-         workspace_id, full_name, primary_email, status, source, tags, metadata
-       ) VALUES ($1, $2, $3, 'lead', 'resend_inbound', $4, $5::jsonb)
-       RETURNING *`,
-      [workspaceId, fromName || null, email, tags, JSON.stringify(metadata)]
-    );
-  const contact = result.rows[0] || null;
-  if (contact) {
-    await db.query(
-      `INSERT INTO bna_contact_identities (
-         workspace_id, contact_id, identity_type, identity_value, normalized_value, verified, metadata
-       ) VALUES ($1, $2, 'email', $3, $4, false, $5::jsonb)
-       ON CONFLICT (workspace_id, identity_type, normalized_value) WHERE workspace_id IS NOT NULL DO UPDATE SET
-         identity_value = EXCLUDED.identity_value,
-         verified = bna_contact_identities.verified OR EXCLUDED.verified,
-         metadata = COALESCE(bna_contact_identities.metadata, '{}'::jsonb) || EXCLUDED.metadata`,
-      [workspaceId, contact.id, email, email, JSON.stringify(metadata)]
-    ).catch(() => null);
-  }
-  return contact;
-}
-
-async function resolveThreadKey(db, {
-  projectId = null,
-  contactId = null,
-  fromEmail = '',
-  subject = '',
-  emailMessageId = '',
-  inReplyTo = '',
-  references = [],
-} = {}) {
-  const relatedIds = [...new Set([inReplyTo, ...references].map((item) => String(item || '').trim()).filter(Boolean))];
-  if (projectId && relatedIds.length) {
-    const result = await db.query(
-      `SELECT thread_key
-       FROM bna_communications
-       WHERE project_id = $1
-         AND provider = 'resend'
-         AND thread_key IS NOT NULL
-         AND (
-           external_message_id = ANY($2::text[])
-           OR metadata->>'email_message_id' = ANY($2::text[])
-         )
-       ORDER BY occurred_at DESC, id DESC
-       LIMIT 1`,
-      [projectId, relatedIds]
-    );
-    if (result.rows[0]?.thread_key) return result.rows[0].thread_key;
-  }
-  if (emailMessageId) return `resend:${emailMessageId.replace(/[<>]/g, '').slice(0, 180)}`;
-  return `resend:${ONE_TIME_PROJECT_KEY}:${contactId || normalizeEmail(fromEmail) || 'unknown'}:${normalizeSubject(subject)}`;
-}
-
 async function processResendInboundEvent({
   db,
   event = {},
@@ -285,9 +160,11 @@ async function processResendInboundEvent({
     throw error;
   }
   const existing = await findExistingInboundCommunication(db, {
-    eventId,
-    emailId,
-    messageId: eventMessageId,
+    provider: 'resend',
+    direction: 'inbound',
+    providerMessageId: emailId,
+    providerEventId: eventId,
+    emailMessageId: eventMessageId,
   });
   if (existing) {
     return {
@@ -319,9 +196,11 @@ async function processResendInboundEvent({
   const inReplyTo = String(headerLookup(headers, 'in-reply-to') || '').trim();
   const references = headerReferences(headerLookup(headers, 'references'));
   const existingAfterFetch = await findExistingInboundCommunication(db, {
-    eventId,
-    emailId,
-    messageId: emailMessageId || eventMessageId,
+    provider: 'resend',
+    direction: 'inbound',
+    providerMessageId: emailId,
+    providerEventId: eventId,
+    emailMessageId: emailMessageId || eventMessageId,
   });
   if (existingAfterFetch) {
     return {
@@ -332,23 +211,7 @@ async function processResendInboundEvent({
       fetched: true,
     };
   }
-  const contact = await upsertSenderContact(db, {
-    workspaceId,
-    fromEmail,
-    fromName,
-    projectKey: ONE_TIME_PROJECT_KEY,
-    workspaceKey: ONE_TIME_WORKSPACE_KEY,
-  });
   const subject = compact(receivedEmail.subject || data.subject || '', 500);
-  const threadKey = await resolveThreadKey(db, {
-    projectId,
-    contactId: contact?.id || null,
-    fromEmail,
-    subject,
-    emailMessageId,
-    inReplyTo,
-    references,
-  });
   const attachments = safeAttachments(receivedEmail.attachments || data.attachments || []);
   const metadata = {
     provider: 'resend',
@@ -371,47 +234,66 @@ async function processResendInboundEvent({
     attachment_retrieval_status: attachments.length ? 'metadata_only_follow_up' : 'none',
     raw_event_metadata: safeEventMetadata(event),
   };
-  const result = await db.query(
-    `INSERT INTO bna_communications (
-       workspace_id, project_id, contact_id, channel, direction, communication_type,
-       from_name, from_address, to_address, subject, body_text, body_html,
-       external_message_id, thread_key, provider, status, language, metadata, occurred_at
-     ) VALUES (
-       $1, $2, $3, 'email', 'inbound', 'resend_inbound_email',
-       $4, $5, $6, $7, $8, $9,
-       $10, $11, 'resend', 'received', 'en', $12::jsonb, COALESCE($13::timestamp, NOW())
-     )
-     RETURNING *`,
-    [
-      workspaceId || null,
-      projectId || null,
-      contact?.id || null,
-      fromName || null,
-      fromEmail || fromAddress || null,
-      routing.all_recipient_emails.join(', '),
-      subject || null,
-      receivedEmail.text || null,
-      receivedEmail.html || null,
-      receivedEmail.id || emailId,
-      threadKey,
-      JSON.stringify(metadata),
-      receivedEmail.created_at || data.created_at || now.toISOString(),
-    ]
-  );
-  const communication = result.rows[0] || null;
+  const ingest = await ingestInboundCommunication({
+    db,
+    binding: {
+      workspaceId,
+      projectId,
+      workspaceKey: ONE_TIME_WORKSPACE_KEY,
+      projectKey: ONE_TIME_PROJECT_KEY,
+      channelId: 'resend:one_time_inbound_email',
+      replyMode: 'draft',
+    },
+    channel: 'email',
+    provider: 'resend',
+    communicationType: 'resend_inbound_email',
+    providerMessageId: receivedEmail.id || emailId,
+    providerEventId: eventId,
+    sender: {
+      displayName: fromName,
+      email: fromEmail,
+      address: fromEmail || fromAddress,
+    },
+    recipients: routing.all_recipient_emails,
+    subject,
+    bodyText: receivedEmail.text || null,
+    bodyHtml: receivedEmail.html || null,
+    occurredAt: receivedEmail.created_at || data.created_at || now.toISOString(),
+    threadHints: {
+      emailMessageId,
+      inReplyTo,
+      references,
+    },
+    metadata,
+    contact: {
+      source: 'resend_inbound',
+      lifecycle: 'New Inquiry',
+      tags: ['resend_inbound', ONE_TIME_PROJECT_KEY, ONE_TIME_WORKSPACE_KEY],
+      metadata: {
+        source: 'resend_inbound',
+        workspace_key: ONE_TIME_WORKSPACE_KEY,
+        project_key: ONE_TIME_PROJECT_KEY,
+      },
+    },
+    createContactOnInbound: true,
+    createConversationOnInbound: true,
+    createTaskOnInbound: false,
+  });
   return {
     success: true,
     ignored: false,
-    duplicate: false,
+    duplicate: ingest.duplicate === true,
     fetched: true,
-    communication_id: communication?.id || null,
-    contact_id: contact?.id || null,
+    communication_id: ingest.communication_id || null,
+    contact_id: ingest.contact_id || null,
     provider_message_id: receivedEmail.id || emailId,
     email_message_id: emailMessageId || null,
-    thread_key: threadKey,
+    thread_key: ingest.thread_key || null,
     workspace_key: ONE_TIME_WORKSPACE_KEY,
     project_key: ONE_TIME_PROJECT_KEY,
     attachment_count: attachments.length,
+    receipt: ingest.receipt || null,
+    redacted_receipt: ingest.redacted_receipt === true,
   };
 }
 
