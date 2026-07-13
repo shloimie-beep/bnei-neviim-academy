@@ -35,12 +35,12 @@ Current status: `active`
 
 ## 2026-07-13 Dedicated One Time Provider Shell Routing
 
-- `REQ-20260713-908` first routing slice is locally verified and pending deploy/live smoke.
+- `REQ-20260713-908` first routing slice is committed, pushed, deployed, and live-smoked on One Time Railway at `c0b8ab8139c6166d89527a949ce4dd70bf67df3a`.
 - Normal One Time provider login now returns the dedicated provider-shell payload (`dedicated_provider_shell=true`, `operations_shell=false`) instead of `portal_redirect=true`.
 - `/provider.html?admin_provider=one-time` and provider aliases stay in the dedicated One Time provider shell by default and do not load `operations-shell.css` or `operations-shell.js`.
 - Scoped Operations remains available as an explicit fallback only when `ops_fallback=1` is present.
 - Registered `ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK` and added visible fallback links in the provider shell.
-- Local verification passed: `node --check server.js`, provider login/review navigation browser tests, route-role/action-coverage tests, action watchdog, execution-run validation, and signed local provider CRM layout smoke.
+- Verification passed: `node --check server.js`, provider login/review navigation browser tests, route-role/action-coverage tests, action watchdog, execution-run validation, signed local provider CRM layout smoke, Railway deployment `f99b3126-bb7f-4898-8649-089c505a7f00`, and live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`.
 
 ## Completed In This Batch
 

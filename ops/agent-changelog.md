@@ -39554,7 +39554,7 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   artifacts are mapped, while older repo-wide audit-governance backlog remains
   outside this scoped packet.
 
-## 2026-07-13 - One Time dedicated provider shell routing local proof
+## 2026-07-13 - One Time dedicated provider shell routing deployed first slice
 
 - Started `REQ-20260713-908` with a bounded routing slice: normal One Time
   provider login and `/provider.html?admin_provider=one-time` now stay in the
@@ -39566,4 +39566,8 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Local proof passed: provider login/review navigation tests `11/11`,
   route-role/action-coverage tests `11/11`, local provider CRM layout smoke,
   action watchdog, secrets audit, execution-run validation, and whitespace
-  check. Deploy/live smoke is next before calling the slice deployed.
+  check.
+- Committed and pushed `c0b8ab8139c6166d89527a949ce4dd70bf67df3a`, deployed
+  it to One Time Railway deployment `f99b3126-bb7f-4898-8649-089c505a7f00`,
+  and live-smoked exact SHA, no Operations CSS/JS on the default provider
+  route, and the explicit scoped Operations fallback.

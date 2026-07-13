@@ -243,7 +243,7 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T08:58:00+03:00",
+      "updated_at": "2026-07-13T09:07:00+03:00",
       "can_continue_without_operator": true,
       "blocker": "",
       "status": "in_progress",
@@ -253,7 +253,12 @@
       "evidence": [
         "Default One Time provider entry now stays on /provider.html dedicated shell instead of redirecting to the shared Operations shell.",
         "Explicit Operations fallback is preserved with ops_fallback=1 and registered as ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK.",
-        "Local provider CRM layout smoke refreshed at ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md with desktop/tablet/mobile screenshots."
+        "Local provider CRM layout smoke refreshed at ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md with desktop/tablet/mobile screenshots.",
+        "Commit c0b8ab8139c6166d89527a949ce4dd70bf67df3a deployed to BNA Railway deployment 33571043-54ce-4631-99c1-b54209edebc7 and One Time Railway deployment b39ce70a-89e0-44a3-80c5-77e8c2b43754.",
+        "BNA and One Time live /api/deploy-info both returned c0b8ab8139c6166d89527a949ce4dd70bf67df3a.",
+        "Live One Time provider route smoke passed: /provider.html?admin_provider=one-time&section=crm returned 200 with provider shell markers, no Operations CSS/JS assets, and ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK; ops_fallback=1 returned 302 to the scoped Operations CRM URL.",
+        "ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md",
+        "ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.json"
       ],
       "verification": [
         "node --check server.js PASS",
@@ -261,7 +266,18 @@
         "node scripts/smoke-onetime-provider-crm-layout-local.mjs PASS",
         "node --test tests/one-time-route-role-mapping.test.js tests/one-time-action-coverage.test.js PASS 11/11",
         "npm run watchdog:actions PASS",
-        "npm run bna:run:validate PASS"
+        "npm run secrets:audit PASS",
+        "npm run bna:run:validate PASS",
+        "git diff --check PASS",
+        "git diff --cached --check PASS",
+        "git push origin master PASS for c0b8ab8139c6166d89527a949ce4dd70bf67df3a",
+        "BNA railway:doctor PASS deployment 33571043-54ce-4631-99c1-b54209edebc7 SUCCESS",
+        "One Time railway:doctor PASS deployment b39ce70a-89e0-44a3-80c5-77e8c2b43754 SUCCESS",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha c0b8ab8139c6166d89527a949ce4dd70bf67df3a PASS",
+        "Live dedicated provider route/fallback smoke PASS",
+        "git commit/push c0b8ab8139c6166d89527a949ce4dd70bf67df3a PASS on master",
+        "One Time Railway deploy PASS: deployment f99b3126-bb7f-4898-8649-089c505a7f00 reached SUCCESS",
+        "Live smoke PASS: /api/deploy-info exact SHA matched c0b8ab8139c6166d89527a949ce4dd70bf67df3a; /provider.html?admin_provider=one-time&section=crm returned dedicated shell without Operations CSS/JS; ops_fallback=1 redirected to scoped Operations CRM; external_write_performed=false; production_data_mutation_performed=false"
       ],
       "implementation_files": [
         "public/provider.html",
@@ -280,8 +296,8 @@
       ],
       "category": "frontend_architecture",
       "batch_id": "3-onetime-dedicated-app-shell",
-      "implementation_status": "In progress: first dedicated-shell routing slice is locally verified. Normal One Time provider login and /provider.html?admin_provider=one-time now serve the dedicated provider shell and avoid operations-shell.css/js by default; the scoped Operations route remains available only when ops_fallback=1 is explicit. Commit, push, deploy exact SHA, and live-smoke before marking deployed.",
-      "next_action": "Commit and deploy this dedicated-shell routing slice, then live-smoke /provider.html?admin_provider=one-time&section=crm for no Operations shell assets and /provider.html?admin_provider=one-time&section=crm&ops_fallback=1 for the scoped fallback redirect. Continue route-module extraction and performance budget comparison after live proof.",
+      "implementation_status": "In progress: first dedicated-shell routing slice is committed, pushed, deployed, and live-smoked on One Time Railway at c0b8ab8139c6166d89527a949ce4dd70bf67df3a. Normal One Time provider login and /provider.html?admin_provider=one-time serve the dedicated provider shell and avoid operations-shell.css/js by default; the scoped Operations route remains available only when ops_fallback=1 is explicit. Continue route-module extraction and performance budget comparison before marking the full dedicated-shell requirement Done.",
+      "next_action": "Continue route-module extraction and performance budget comparison for the dedicated One Time shell; keep old-shell fallback until each replacement route has deploy/live proof.",
       "acceptance_criteria": [
         "One Time startup no longer requires the giant shared BNA Operations monolith on the critical path.",
         "The dedicated shell loads only the One Time shell, active route module, active workspace data, and genuinely needed shared primitives.",

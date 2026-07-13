@@ -42,7 +42,10 @@
 - PASS `node --test tests/one-time-route-role-mapping.test.js tests/one-time-action-coverage.test.js` (11/11).
 - PASS `npm run watchdog:actions`.
 - PASS `npm run bna:run:validate`.
-- Pending: commit, push, deploy exact SHA, and live-smoke `/provider.html?admin_provider=one-time&section=crm` plus the explicit `ops_fallback=1` route before marking `REQ-20260713-908` deployed.
+- PASS commit/push at `c0b8ab8139c6166d89527a949ce4dd70bf67df3a` on `master`.
+- PASS One Time Railway deploy through `railway:redeploy` with target profile `one-time`; deployment `f99b3126-bb7f-4898-8649-089c505a7f00` reached `SUCCESS`.
+- PASS live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`: exact deploy-info SHA matched, default provider route loaded One Time shell without Operations CSS/JS, and explicit `ops_fallback=1` redirected to scoped Operations CRM.
+- Remaining: continue route-module extraction and performance budget comparison before marking all of `REQ-20260713-908` Done.
 
 - PASS `node --check server.js`
 - PASS `node --check src/lib/integrations/resend-inbound-crm.js`
