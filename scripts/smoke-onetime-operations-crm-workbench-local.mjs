@@ -353,6 +353,18 @@ async function serve(req, res, baseUrl) {
     res.end();
     return;
   }
+  if (url.pathname === '/api/performance/rum') {
+    for await (const _chunk of req) {
+      // Drain sendBeacon/fetch bodies so the synthetic smoke server can close cleanly.
+    }
+    json(res, {
+      success: true,
+      accepted: true,
+      dry_run: true,
+      external_write_performed: false,
+    });
+    return;
+  }
   if (url.pathname.startsWith('/api/bna/')) {
     let rawBody = '';
     for await (const chunk of req) rawBody += chunk;
