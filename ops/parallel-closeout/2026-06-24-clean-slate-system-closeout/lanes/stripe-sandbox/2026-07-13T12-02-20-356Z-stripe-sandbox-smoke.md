@@ -44,4 +44,3 @@
 ## Notes
 
 - Created synthetic Stripe test-mode product, price, customer, and checkout session; lifecycle success/failure/cancellation were simulated locally from redacted test object IDs with no Stripe trial period.
-

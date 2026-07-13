@@ -39996,3 +39996,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no live charge, refund, notice send, access mutation, Stripe
   Connect/payout setup, credential mutation, sandbox customer mutation, or secret
   exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 Stripe sandbox smoke passed
+
+- Installed the locked npm dependencies in the dedicated worktree and ran
+  `npm run stripe:sandbox-smoke` against the stored sandbox Stripe credentials.
+- The smoke reported `sandbox_ready`, webhook secret configured, live mode
+  disabled, no real customer data, no real funds, `trial=false`, and
+  `promotional_access=true`.
+- Created only synthetic Stripe test-mode product, price, customer, and checkout
+  session objects; cleanup expired the checkout session, deleted the customer,
+  and deactivated the product.
+- Redacted proof was written under
+  `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/`.
+- Guardrails: no live charge, refund, notice send, access mutation, Stripe
+  Connect/payout setup, credential mutation, or secret exposure was performed.
