@@ -783,3 +783,32 @@
   send, public auto-reply enablement, CRM production write, payment/access
   mutation, raw destination/chat/token logging, or destructive production
   mutation was performed by this proof.
+
+## One Time WAPI Safe Activation Gate Deploy Evidence
+
+- Requirement: `REQ-20260712-313`; deployed One Time SHA:
+  `80b75432672d282855b350a2f7c5adc160e63623`.
+- Railway evidence: deployment
+  `74f45880-7a11-4b06-9632-d858843cb4fb` reached `SUCCESS` on
+  `one-time-production / production / one-time-web`.
+- Live deploy-info evidence: `https://join.onetimeonetime.com/api/deploy-info`
+  returned exact SHA `80b75432672d282855b350a2f7c5adc160e63623` and
+  `target_app=one-time`.
+- Live smoke evidence: One Time separate-instance route matrix passed; provider
+  route-module smoke
+  `ops/live-smokes/2026-07-13T16-18-12-320Z-onetime-provider-route-module-live-smoke.md`;
+  landing/signup/WhatsApp launcher smoke
+  `ops/live-smokes/2026-07-13T16-18-59-085Z-rabbi-onetime-landing-smoke.md`.
+- Post-deploy WAPI readiness evidence:
+  `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md` /
+  `.json` reports `provider_setup.ready=true`,
+  `credential_scope=one_time_scoped`, `auto_reply.ready=false`, and
+  `whatsapp_send_performed=false`.
+- Post-deploy owner-test readiness evidence:
+  `ops/watchdog-audits/2026-07-13T16-18-40-701Z-onetime-owner-test-readiness.md`
+  / `.json` reports Resend/WAPI preflight ready, missing owner aliases, and no
+  send.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram
+  send, public auto-reply enablement, CRM production write, payment/access
+  mutation, raw destination/chat/token logging, or destructive production
+  mutation was performed by this deployed proof.

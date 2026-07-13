@@ -1146,3 +1146,17 @@
 - PASS dry-run `BNA_RUNTIME_ENV_FILE=... BNA_RUNTIME_SECRETS_DIR=... npm run telegram:rabbi:readiness`: Rabbi Telegram profile ready, Super Admin target ready, dry-run only, no token/chat ID printed, no Telegram send.
 - PASS `BNA_RUNTIME_ENV_FILE=... BNA_RUNTIME_SECRETS_DIR=... npm run app:smoke:rabbi-agent-review-direct-proof`; report `ops/live-smokes/2026-07-13T16-08-00-665Z-rabbi-agent-review-direct-proof.md`.
 - Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, CRM production write, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed by this local proof.
+
+## One Time WAPI Safe Activation Gate Deploy Proof - 2026-07-13
+
+- PASS `git push origin master` for deploy candidate `80b75432672d282855b350a2f7c5adc160e63623`.
+- PASS scoped `BNA_DEPLOY_APP=one-time npm run railway:redeploy`; Railway deployment `74f45880-7a11-4b06-9632-d858843cb4fb` created.
+- PASS scoped `BNA_DEPLOY_APP=one-time npm run railway:doctor`; deployment `74f45880-7a11-4b06-9632-d858843cb4fb` reached `SUCCESS`.
+- PASS live deploy-info: `https://join.onetimeonetime.com/api/deploy-info` returned exact SHA `80b75432672d282855b350a2f7c5adc160e63623`, `target_app=one-time`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 80b75432672d282855b350a2f7c5adc160e63623`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 80b75432672d282855b350a2f7c5adc160e63623`; report `ops/live-smokes/2026-07-13T16-18-12-320Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com --expected-sha 80b75432672d282855b350a2f7c5adc160e63623`; report `ops/live-smokes/2026-07-13T16-18-59-085Z-rabbi-onetime-landing-smoke.md`.
+- PASS-with-blocker post-deploy `npm run one-time:wapi:readiness`: WAPI provider setup ready; public auto-reply remains blocked by missing `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM`; no send or CRM mutation.
+- PASS-with-blocker post-deploy `npm run one-time:owner-test:readiness`: Resend/WAPI preflight ready; secure owner aliases missing; no owner send.
+- PASS post-deploy `BNA_RUNTIME_ENV_FILE=... BNA_RUNTIME_SECRETS_DIR=... npm run telegram:rabbi:readiness`: Rabbi Telegram dry-run ready; no Telegram send.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, CRM production write, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed by this deployed proof.

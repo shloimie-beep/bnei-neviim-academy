@@ -40362,3 +40362,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verified current state: WAPI provider setup ready, Resend preflight ready, Rabbi Telegram scoped profile ready via ignored runtime config, owner-test email/WhatsApp aliases missing, and no external send or CRM production write performed.
 - Evidence: `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`, `ops/watchdog-audits/2026-07-13T16-06-26-630Z-onetime-owner-test-readiness.md`, `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md`, and `ops/live-smokes/2026-07-13T16-08-00-665Z-rabbi-agent-review-direct-proof.md`.
 - Guardrails: no owner email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply activation, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed.
+
+## 2026-07-13 - One Time WAPI safe activation gate deployed
+
+- Deployed exact SHA `80b75432672d282855b350a2f7c5adc160e63623` to One Time Railway service `one-time-web`; deployment `74f45880-7a11-4b06-9632-d858843cb4fb` reached `SUCCESS`.
+- Live deploy-info returned the exact SHA and `target_app=one-time`; One Time separate-instance, provider route-module, and Rabbi One Time landing/signup/WhatsApp launcher smokes passed.
+- Post-deploy WAPI readiness still reports provider setup ready while public auto-reply remains blocked by missing `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM`; post-deploy owner-test readiness remains blocked by missing secure owner aliases.
+- Guardrails: no owner email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply activation, CRM production write, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed.

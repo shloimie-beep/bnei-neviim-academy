@@ -440,6 +440,31 @@ Global production readiness remains blocked only by known external full-launch f
   payment/access mutation, credential mutation, raw private payload logging, or
   destructive production mutation was performed by this proof.
 
+## 2026-07-13 One Time WAPI Safe Activation Gate Deploy
+
+- Runtime commit / deployed head:
+  `80b75432672d282855b350a2f7c5adc160e63623`.
+- Branch: `master`.
+- Push: `git push origin master` succeeded for the runtime commit after
+  rebasing on `4c38c4674`.
+- One Time Railway deployment
+  `74f45880-7a11-4b06-9632-d858843cb4fb` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info`
+  returned `commit_sha=80b75432672d282855b350a2f7c5adc160e63623`,
+  `target_app=one-time`.
+- One Time separate-instance route matrix passed at the exact SHA.
+- One Time provider route-module smoke passed; report
+  `ops/live-smokes/2026-07-13T16-18-12-320Z-onetime-provider-route-module-live-smoke.md`.
+- Rabbi One Time landing/signup/WhatsApp launcher smoke passed; report
+  `ops/live-smokes/2026-07-13T16-18-59-085Z-rabbi-onetime-landing-smoke.md`.
+- WAPI readiness remains no-send/no-write and blocked only by
+  `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM`.
+- Owner-only sends remain blocked by missing secure owner aliases.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram
+  send, public auto-reply enablement, CRM destructive write, payment/access
+  mutation, raw destination/chat/token logging, or destructive production
+  mutation was performed by this deploy proof.
+
 ## 2026-07-13 One Time Communication Agents Operations Console/API Deploy
 
 - Runtime commit / deployed head:
