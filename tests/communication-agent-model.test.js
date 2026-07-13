@@ -7,6 +7,7 @@ const {
   communicationAgentMetadata,
   publishedKnowledgeSnapshot,
   resolveAssignedCommunicationAgent,
+  resolveProfileChannelBinding,
 } = require('../src/lib/bna/crm/communication-agent-runtime');
 const { loadProviderLeadBotProfile } = require('../src/lib/bna/provider-lead-bot');
 const { createAgentControlSQL } = require('../src/lib/bna/agent-control');
@@ -132,21 +133,42 @@ test('communication-agent tables reject secret-shaped JSON instead of storing pr
 });
 
 test('One Time email and WhatsApp resolve to the same communication-agent model without secrets or tasks', () => {
+  const profile = loadProviderLeadBotProfile('one-time');
   const binding = {
     workspace_key: 'rabbi_sheller_provider',
     project_key: 'one_time_mishnah_class',
   };
+  const profileEmailBinding = resolveProfileChannelBinding(profile, 'email', 'resend');
+  const profileWhatsappBinding = resolveProfileChannelBinding(profile, 'whatsapp', 'wapi');
   const email = resolveAssignedCommunicationAgent({ binding, channel: 'email', provider: 'resend' });
   const whatsapp = resolveAssignedCommunicationAgent({ binding, channel: 'whatsapp', provider: 'wapi' });
 
+  assert.equal(profile.scope.channel, undefined);
+  assert.deepEqual(profile.scope.channels, ['whatsapp', 'email']);
+  assert.equal(profile.agent_model.model_family, 'communication_agent');
+  assert.equal(profile.agent_model.shared_knowledge_snapshot, true);
+  assert.equal(profileEmailBinding.channel_id, 'one_time_inbound_email');
+  assert.equal(profileWhatsappBinding.channel_id, 'one_time_wapi');
+  assert.equal(profileEmailBinding.agent_version, profileWhatsappBinding.agent_version);
+  assert.equal(profileEmailBinding.knowledge_snapshot_ref, profileWhatsappBinding.knowledge_snapshot_ref);
+  assert.equal(profileEmailBinding.create_task_on_inbound, false);
+  assert.equal(profileWhatsappBinding.create_task_on_inbound, false);
   assert.equal(email.loaded, true);
   assert.equal(whatsapp.loaded, true);
   assert.equal(email.agent_key, 'one_time_parent_information_agent');
   assert.equal(whatsapp.agent_key, email.agent_key);
   assert.equal(email.model_family, 'communication_agent');
   assert.equal(whatsapp.control_plane_table, 'bna_communication_agents');
+  assert.equal(email.agent_scope_channel_mode, 'channel_independent');
+  assert.equal(whatsapp.agent_scope_channel_mode, 'channel_independent');
+  assert.equal(email.shared_knowledge_snapshot, true);
+  assert.equal(whatsapp.shared_knowledge_snapshot, true);
   assert.equal(email.build_qa_agent_profile_table, null);
   assert.equal(whatsapp.provider_secret_storage, 'external_provider_connectors_only');
+  assert.equal(email.channel_binding_source, 'profile_channel_bindings');
+  assert.equal(whatsapp.channel_binding_source, 'profile_channel_bindings');
+  assert.equal(email.channel_id, 'one_time_inbound_email');
+  assert.equal(whatsapp.channel_id, 'one_time_wapi');
   assert.equal(email.reply_mode, 'draft');
   assert.equal(email.outbox_channel_key, null);
   assert.equal(whatsapp.reply_mode, 'capture_only');
@@ -157,8 +179,12 @@ test('One Time email and WhatsApp resolve to the same communication-agent model 
   assert.equal(whatsapp.published_knowledge_snapshot.knowledge_snapshot_version, email.knowledge_snapshot_version);
   assert.equal(email.channel_formatting_policy.format, 'email');
   assert.equal(email.channel_formatting_policy.subject_required, true);
+  assert.equal(email.channel_formatting_policy.structured_paragraphs, true);
+  assert.equal(email.channel_formatting_policy.concise_signature, true);
   assert.equal(whatsapp.channel_formatting_policy.format, 'whatsapp');
   assert.equal(whatsapp.channel_formatting_policy.one_question_at_a_time, true);
+  assert.equal(whatsapp.channel_formatting_policy.subject_required, false);
+  assert.equal(whatsapp.channel_formatting_policy.signature, 'none');
   assert.equal(email.create_task_on_inbound, false);
   assert.equal(whatsapp.create_task_on_inbound, false);
   assert.equal(email.raw_api_key_stored, false);
@@ -168,12 +194,18 @@ test('One Time email and WhatsApp resolve to the same communication-agent model 
   assert.equal(metadata.agent_model_family, 'communication_agent');
   assert.equal(metadata.agent_control_plane_table, 'bna_communication_agents');
   assert.equal(metadata.build_qa_agent_profile_table, null);
+  assert.equal(metadata.shared_knowledge_snapshot, true);
+  assert.equal(metadata.channel_id, 'one_time_wapi');
+  assert.equal(metadata.channel_binding_source, 'profile_channel_bindings');
   assert.equal(metadata.published_knowledge_snapshot.knowledge_snapshot_version, email.knowledge_snapshot_version);
   assert.equal(metadata.published_knowledge_snapshot.approved_public_facts.signup_route, '/one-time/signup');
   assert.equal(metadata.published_knowledge_snapshot.access_policy.portal_access_status, 'not_currently_granted');
   assert.equal(metadata.published_knowledge_snapshot.no_stale_claims, true);
   assert.equal(metadata.channel_formatting_policy.format, 'whatsapp');
   assert.equal(metadata.communication_agent.model_family, 'communication_agent');
+  assert.equal(metadata.communication_agent.channel_id, 'one_time_wapi');
+  assert.equal(metadata.communication_agent.channel_binding_source, 'profile_channel_bindings');
+  assert.equal(metadata.communication_agent.shared_knowledge_snapshot, true);
   assert.equal(metadata.communication_agent.raw_api_key_stored, false);
   assert.equal(metadata.communication_agent.raw_secret_returned, false);
 });

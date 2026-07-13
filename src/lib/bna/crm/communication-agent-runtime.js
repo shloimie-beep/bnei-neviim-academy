@@ -28,6 +28,14 @@ function normalizeChannel(channel = '', provider = '') {
   return key || 'unknown';
 }
 
+function normalizeProvider(provider = '') {
+  const key = normalizeKey(provider);
+  if (key.includes('wapi') || key.includes('whapi')) return 'wapi';
+  if (key.includes('resend') || key.includes('email')) return 'resend';
+  if (key.includes('telegram')) return 'telegram';
+  return key || 'unknown';
+}
+
 function normalizeReplyMode(value = '', fallback = 'capture_only') {
   const mode = normalizeKey(value || fallback);
   return ['off', 'capture_only', 'draft', 'live', 'approval_gated'].includes(mode)
@@ -71,12 +79,39 @@ function channelFormattingPolicy(channel = '') {
   };
 }
 
+function profileChannelBindings(profile = {}) {
+  return Array.isArray(profile.channel_bindings) ? profile.channel_bindings : [];
+}
+
+function resolveProfileChannelBinding(profile = {}, channel = '', provider = '') {
+  const normalizedChannel = normalizeChannel(channel, provider);
+  const normalizedProvider = normalizeProvider(provider);
+  const candidates = profileChannelBindings(profile).filter((binding = {}) => {
+    if (binding.active === false) return false;
+    return normalizeChannel(binding.channel || binding.channel_id || '', binding.provider || '') === normalizedChannel;
+  });
+  if (!candidates.length) return null;
+  return candidates.find((binding = {}) => normalizeProvider(binding.provider || '') === normalizedProvider)
+    || candidates[0];
+}
+
+function profileChannelFormattingPolicy(profile = {}, channel = '', provider = '') {
+  const binding = resolveProfileChannelBinding(profile, channel, provider);
+  const configured = binding?.formatting_policy || binding?.channel_formatting_policy || {};
+  return {
+    ...channelFormattingPolicy(channel || binding?.channel || provider),
+    ...configured,
+  };
+}
+
 function knowledgeSnapshotHash(profile = {}) {
   return sha256(JSON.stringify({
     schema_version: profile.schema_version || '',
     profile_key: profile.profile_key || '',
     version: profile.version || '',
     scope: profile.scope || {},
+    agent_model: profile.agent_model || {},
+    channel_bindings: profile.channel_bindings || [],
     identity: profile.identity || {},
     personality: profile.personality || {},
     goals: profile.goals || [],
@@ -156,21 +191,27 @@ function resolveAssignedCommunicationAgent({
     const profile = loadProviderLeadBotProfile(ONE_TIME_PROFILE_KEY);
     const snapshotHash = knowledgeSnapshotHash(profile);
     const publishedKnowledge = publishedKnowledgeSnapshot(profile);
-    const formattingPolicy = channelFormattingPolicy(normalizedChannel);
+    const profileBinding = resolveProfileChannelBinding(profile, normalizedChannel, provider);
+    const formattingPolicy = profileChannelFormattingPolicy(profile, normalizedChannel, provider);
+    const profileBindingHasOutbox = profileBinding && Object.prototype.hasOwnProperty.call(profileBinding, 'outbox_channel_key');
+    const defaultOutboxChannelKey = normalizedChannel === 'whatsapp' ? ONE_TIME_AGENT_OUTBOX_CHANNEL_KEY : null;
     const effectiveReplyMode = normalizeReplyMode(
-      binding.replyMode || binding.reply_mode || (normalizedChannel === 'email' ? 'draft' : profile.policies?.activation_mode || 'capture_only'),
+      binding.replyMode || binding.reply_mode || profileBinding?.reply_mode || (normalizedChannel === 'email' ? 'draft' : profile.policies?.activation_mode || 'capture_only'),
       normalizedChannel === 'email' ? 'draft' : 'capture_only'
     );
     return {
       loaded: true,
       agent_key: profile.profile_key,
       display_name: profile.identity?.assistant_name || 'Rabbi Scheller Digital Assistant',
-      description: profile.identity?.assistant_subtitle || '',
+      description: profile.agent_model?.description || profile.identity?.assistant_subtitle || '',
       workspace_key: profile.scope?.workspace_key || ONE_TIME_WORKSPACE_KEY,
       project_key: profile.scope?.project_key || ONE_TIME_PROJECT_KEY,
+      scope_channels: Array.isArray(profile.scope?.channels) ? profile.scope.channels : [normalizedChannel],
+      agent_scope_channel_mode: 'channel_independent',
       active_version: profile.version,
       agent_version: profile.version,
       agent_version_status: 'published_config',
+      shared_knowledge_snapshot: true,
       knowledge_snapshot_version: `${profile.profile_key}:${profile.version}:${snapshotHash.slice(0, 12)}`,
       knowledge_snapshot_hash: snapshotHash,
       published_knowledge_snapshot: {
@@ -181,17 +222,20 @@ function resolveAssignedCommunicationAgent({
       knowledge_source_type: 'service_provider_bot_profile',
       knowledge_source_ref: 'config/service-provider-bots/one-time.json',
       channel: normalizedChannel,
+      provider: normalizeProvider(provider),
+      channel_id: profileBinding?.channel_id || `one_time_${normalizedChannel}`,
       channel_binding_key: `${ONE_TIME_WORKSPACE_KEY}:${ONE_TIME_PROJECT_KEY}:${normalizedChannel}:${profile.profile_key}`,
+      channel_binding_source: profileBinding ? 'profile_channel_bindings' : 'runtime_default',
       channel_formatting_policy: formattingPolicy,
       model_family: 'communication_agent',
       control_plane_table: 'bna_communication_agents',
       build_qa_agent_profile_table: null,
       provider_secret_storage: 'external_provider_connectors_only',
       reply_mode: effectiveReplyMode,
-      outbox_channel_key: normalizedChannel === 'whatsapp' ? ONE_TIME_AGENT_OUTBOX_CHANNEL_KEY : null,
-      create_contact_on_inbound: true,
-      create_conversation_on_inbound: true,
-      create_task_on_inbound: false,
+      outbox_channel_key: profileBindingHasOutbox ? profileBinding.outbox_channel_key : defaultOutboxChannelKey,
+      create_contact_on_inbound: profileBinding?.create_contact_on_inbound !== false,
+      create_conversation_on_inbound: profileBinding?.create_conversation_on_inbound !== false,
+      create_task_on_inbound: profileBinding?.create_task_on_inbound === true,
       raw_api_key_stored: false,
       raw_secret_returned: false,
       raw_class_link_in_model_context: false,
@@ -225,11 +269,15 @@ function communicationAgentMetadata(agent = {}) {
     agent_key: agent.agent_key,
     agent_version: agent.agent_version,
     agent_version_status: agent.agent_version_status,
+    agent_scope_channel_mode: agent.agent_scope_channel_mode || 'channel_independent',
+    shared_knowledge_snapshot: agent.shared_knowledge_snapshot === true,
     knowledge_snapshot_version: agent.knowledge_snapshot_version,
     knowledge_snapshot_hash: agent.knowledge_snapshot_hash,
     knowledge_source_type: agent.knowledge_source_type,
     knowledge_source_ref: agent.knowledge_source_ref,
+    channel_id: agent.channel_id || null,
     channel_binding_key: agent.channel_binding_key,
+    channel_binding_source: agent.channel_binding_source || 'runtime_default',
     channel_formatting_policy: agent.channel_formatting_policy || channelFormattingPolicy(agent.channel),
     published_knowledge_snapshot: agent.published_knowledge_snapshot || null,
     agent_model_family: agent.model_family || 'communication_agent',
@@ -244,12 +292,16 @@ function communicationAgentMetadata(agent = {}) {
       active_version: agent.active_version,
       reply_mode: agent.reply_mode,
       channel: agent.channel,
+      provider: agent.provider,
+      channel_id: agent.channel_id || null,
       channel_binding_key: agent.channel_binding_key,
+      channel_binding_source: agent.channel_binding_source || 'runtime_default',
       channel_formatting_policy: agent.channel_formatting_policy || channelFormattingPolicy(agent.channel),
       published_knowledge_snapshot: agent.published_knowledge_snapshot || null,
       model_family: agent.model_family || 'communication_agent',
       control_plane_table: agent.control_plane_table || 'bna_communication_agents',
       knowledge_snapshot_version: agent.knowledge_snapshot_version,
+      shared_knowledge_snapshot: agent.shared_knowledge_snapshot === true,
       raw_api_key_stored: false,
       raw_secret_returned: false,
       raw_class_link_in_model_context: false,
@@ -266,5 +318,7 @@ module.exports = {
   communicationAgentMetadata,
   knowledgeSnapshotHash,
   publishedKnowledgeSnapshot,
+  profileChannelFormattingPolicy,
+  resolveProfileChannelBinding,
   resolveAssignedCommunicationAgent,
 };

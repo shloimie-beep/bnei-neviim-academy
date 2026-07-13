@@ -9,8 +9,9 @@ Requirements: `REQ-20260713-915`, `REQ-20260713-916`
 Workspace/project:
 `rabbi_sheller_provider` / `one_time_mishnah_class`
 
-Status: media edit Done; long-transcription local harness committed, pushed,
-deployed, and still pending provider/private fixture integration
+Status: Done - media edit, long-transcription local harness, and synthetic
+OpenAI provider fixture smoke are proven; first real class/private recording
+remains operator/privacy-gated
 
 ## Product Quality Compiler Expansion
 
@@ -28,11 +29,11 @@ Role/view class boundary: this packet serves `RABBI_PROVIDER_ADMIN` and
 stay behind a support drawer/role-gate and must not appear in ordinary Rabbi,
 member, student, or parent views.
 
-Out-of-scope: broad UI implementation, visual cleanup, OpenAI transcription
-provider call, real Drive mutation, production database mutation, Vimeo upload,
-member publication, public publish, sends, payment/access grants, DNS, GHL
-runtime, raw transcript storage in Git, secret storage, and provider account
-mutation.
+Out-of-scope: broad UI implementation, visual cleanup, real/private class
+recording transcription, real Drive mutation, production database mutation,
+Vimeo upload, member publication, public publish, sends, payment/access grants,
+DNS, GHL runtime, raw transcript storage in Git, secret storage, and provider
+account mutation.
 
 Route/screen impact: no new visible route or screen is introduced by this
 packet. Later review UI must be covered by `PKT-20260713-004-07` after visual
@@ -59,11 +60,12 @@ backend scope is narrow; UI/provider writes are out of scope; private
 transcript handling is redacted; fixture tests are defined; external writes are
 not authorized.
 
-Definition of Done: local media/transcription tests pass; reports omit raw
-transcript body and private file identifiers; any server-visible runtime change
-is committed, pushed, deployed, and live-smoked or blocked with exact reason;
-ledger/changelog proof is updated; provider/private fixture integration remains
-explicitly open until it is actually run.
+Definition of Done: local media/transcription tests pass; provider fixture proof
+exists for a synthetic One Time speech file; reports omit raw transcript body
+and private file identifiers; any server-visible runtime change is committed,
+pushed, deployed, and live-smoked or blocked with exact reason; first real
+class/private recording transcription remains a separate operator/privacy
+decision.
 
 Visual defect codes: `VQ-LAYOUT`, `VQ-A11Y`, `VQ-RESPONSIVE`, `VQ-STATE`,
 `VQ-CONTENT`, `VQ-PRIVACY`, `VQ-ACTION`, and `VQ-PERFORMANCE`.
@@ -104,6 +106,7 @@ commands, evidence paths, deploy/readback proof, blockers, and next packet.
 | File | Purpose |
 |---|---|
 | `src/lib/bna/one-time-vimeo-studio-pipeline.js` | Zero default opener, explicit opener handling, `.mkv` support, no-opener render path, output verification helper/report field. |
+| `scripts/one-time-vimeo-studio-pipeline.mjs` | Adds the `--raw-id` report-provenance option used by the current provider fixture smoke. |
 | `src/lib/bna/one-time-vimeo-folder-library.js` | `.mkv` support for folder-library handoff candidates. |
 | `tests/one-time-vimeo-studio-pipeline.test.js` | Tests zero-opener default, explicit opener override, MKV discovery, output verification, and real local render smoke. |
 | `tests/one-time-vimeo-folder-library-workflow.test.js` | Tests MKV folder-library handoff remains no-write. |
@@ -122,14 +125,15 @@ commands, evidence paths, deploy/readback proof, blockers, and next packet.
 | `node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js tests/one-time-transcript-metadata.test.js` | Passed 54/54 on 2026-07-13 after commit/push/deploy. |
 | One Time deploy-info | `https://join.onetimeonetime.com/api/deploy-info` returned `a8df4c9b9cc091028105a16430aae6927cd0b429` with `target_app=one-time`; media/transcription commit `2bf0c0d0e31c969f67556e1ee163ff0b9aa56ce6` is an ancestor. |
 | One Time live smokes | `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha a8df4c9b9cc091028105a16430aae6927cd0b429` passed; `npm run app:smoke:onetime-provider-route-module -- --base-url https://join.onetimeonetime.com --expected-sha a8df4c9b9cc091028105a16430aae6927cd0b429` passed. |
+| Synthetic OpenAI provider fixture smoke | `node scripts/one-time-vimeo-studio-pipeline.mjs --folder media-inbox/onetime-vimeo-studio-speech-transcription-smoke --processed-folder media-inbox/onetime-vimeo-studio-speech-transcription-smoke-processed --render --transcribe-openai --skip-vimeo-dry-run --write-report --report-dir ops/qa-runs --limit 1 --raw-id RAW-20260713-004` passed on 2026-07-13 with one rendered candidate, OpenAI transcription performed, current raw ID `RAW-20260713-004`, blockers=0, external Vimeo write=false, production mutation=false, and member visibility=false. Evidence: `ops/qa-runs/2026-07-13T14-28-06-440Z-report.md`. Report scan found no `transcript_text`, no known synthetic transcript body, and no obvious secret pattern. |
 | Authenticated transcript privacy smoke | Login/API path ran, but the smoke failed on a missing Operations-page marker. No live UI marker proof is claimed for this packet. |
 
-## Not Done In This Packet
+## Still Gated Outside This Packet
 
-- No OpenAI transcription provider call was made.
-- The One Time long-transcription harness is local/tested, but it is not yet
-  wired into the studio worker or run against a private fixture/provider call.
+- No real class/private recording was sent to transcription in this proof; the
+  first real pilot remains an operator/privacy decision under `Q-20260713-002`.
 - No Drive write, Vimeo upload, production DB write, member publication, or
   external send was made.
-- `REQ-20260713-915` is Done. `REQ-20260713-916` remains open until the
-  provider/private fixture integration is actually proven.
+- `REQ-20260713-915` and `REQ-20260713-916` are Done for this packet. Vimeo
+  upload, publication, review UI, and end-to-end pilot work remain separate
+  gated requirements.

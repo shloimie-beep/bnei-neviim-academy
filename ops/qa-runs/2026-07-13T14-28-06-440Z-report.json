@@ -1,0 +1,139 @@
+{
+  "ok": true,
+  "generated_at": "2026-07-13T14:28:06.440Z",
+  "workflow": "one_time_vimeo_studio_pipeline",
+  "raw_id": "RAW-20260713-004",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "folder": "media-inbox/onetime-vimeo-studio-speech-transcription-smoke",
+  "folder_relative_to_repo": "media-inbox/onetime-vimeo-studio-speech-transcription-smoke",
+  "processed_folder": "media-inbox/onetime-vimeo-studio-speech-transcription-smoke-processed",
+  "processed_folder_relative_to_repo": "media-inbox/onetime-vimeo-studio-speech-transcription-smoke-processed",
+  "render_requested": true,
+  "transcription_requested": true,
+  "external_ai_transcription_performed": true,
+  "external_write_performed": false,
+  "production_mutation_performed": false,
+  "member_visibility_performed": false,
+  "candidates": [
+    {
+      "id": "7c2b5ef262a185cb",
+      "raw_id": "RAW-20260713-004",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "title": "Synthetic Speech Transcription Smoke",
+      "source_file": {
+        "relative_path": "synthetic-speech/synthetic-one-time-speech-smoke.mp4",
+        "name": "synthetic-one-time-speech-smoke.mp4",
+        "extension": ".mp4",
+        "size_bytes": 656317
+      },
+      "metadata_sources": [
+        "class.json"
+      ],
+      "safety": {
+        "synthetic_test": true,
+        "contains_sensitive_data": false,
+        "real_class_recording": false
+      },
+      "trim_plan": {
+        "source_duration_seconds": 5.98,
+        "trim_start_seconds": 0,
+        "trim_end_seconds": 0,
+        "content_end_seconds": 5.98,
+        "output_content_seconds": 5.98,
+        "opener_seconds": 0,
+        "strategy": "sidecar_or_manifest",
+        "edge_detection": {
+          "enabled": false,
+          "status": "not_used"
+        },
+        "note": "V1 records deterministic trim points; automatic semantic class-start/class-end detection is a later approval packet."
+      },
+      "opener": {
+        "title": "One Time Mishnah",
+        "subtitle": "Synthetic transcription smoke",
+        "seconds": 0
+      },
+      "transcript": {
+        "present": true,
+        "status": "review",
+        "length": 73,
+        "sha256": "32e598043f89f6f4"
+      },
+      "metadata_draft": {
+        "schema_version": "one_time_transcript_metadata.v1",
+        "title": "Synthetic Speech Transcription Smoke",
+        "torah_metadata": {
+          "masechta": "",
+          "masechta_transliterated": "",
+          "perek": "",
+          "mishnah_range": "",
+          "topics": []
+        },
+        "confidence": 0.35,
+        "review_state": "needs_review",
+        "transcript_sha256": "",
+        "approved_for_member_publish": false,
+        "approved_for_bot_knowledge": false,
+        "raw_transcript_included": false,
+        "description_bullets_count": 1
+      },
+      "bot_knowledge_handoff": {
+        "schema_version": "one_time_bot_knowledge_handoff.v1",
+        "status": "blocked",
+        "blockers": [
+          "transcript_version_not_approved",
+          "metadata_not_approved_for_bot_knowledge",
+          "handoff_approval_flag_missing"
+        ],
+        "no_raw_transcript_body": true,
+        "transcript_sha256": "",
+        "knowledge_item_ready": false
+      },
+      "output": {
+        "rendered": true,
+        "video_path": "media-inbox/onetime-vimeo-studio-speech-transcription-smoke-processed/7c2b5ef262a185cb-Synthetic-Speech-Transcription-Smoke/Synthetic-Speech-Transcription-Smoke.edited.mp4",
+        "sidecar_path": "media-inbox/onetime-vimeo-studio-speech-transcription-smoke-processed/7c2b5ef262a185cb-Synthetic-Speech-Transcription-Smoke/Synthetic-Speech-Transcription-Smoke.edited.json",
+        "video_exists": true,
+        "sidecar_exists": true,
+        "verification": {
+          "status": "ok",
+          "exists": true,
+          "expected_duration_seconds": 5.98,
+          "duration_seconds": 5.98,
+          "duration_delta_seconds": 0,
+          "duration_within_tolerance": true,
+          "sha256": "488afa5f8d5fef0b69467c2bc811454109a4038b9dd002ddeb0b12aaf166b406",
+          "size_bytes": 2214437,
+          "width": 1920,
+          "height": 1080,
+          "has_audio": true,
+          "probed": true
+        }
+      },
+      "blockers": [],
+      "transcription_result": {
+        "status": "transcribed",
+        "provider": "openai",
+        "model": "gpt-4o-mini-transcribe",
+        "credential_source": "keyholder:openaiv2.txt",
+        "credential_source_type": "keyholder",
+        "transcript_present": true,
+        "transcript_length": 73,
+        "transcript_sha256": "32e598043f89f6f4",
+        "attempted_credential_count": 1
+      }
+    }
+  ],
+  "blockers": [],
+  "next_actions": [
+    "Real Vimeo upload, production DB review-package writes, member visibility, and bot knowledge promotion remain separate approval-gated packets."
+  ],
+  "summary": {
+    "candidate_count": 1,
+    "rendered_count": 1,
+    "sidecar_count": 1,
+    "blockers_count": 0
+  }
+}

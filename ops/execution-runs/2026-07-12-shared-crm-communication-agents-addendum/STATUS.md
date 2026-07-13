@@ -517,3 +517,40 @@ Current status: `active`
   `REQ-20260713-906` secure aliases; no external send, public auto-reply
   enablement, provider mutation, credential mutation, payment/access mutation,
   raw private payload logging, or destructive production mutation was performed.
+
+## 2026-07-13 - One Time Shared WhatsApp/Email Agent Closeout
+
+- `REQ-20260712-310` is Done.
+- Commit `6d659d76570d1089c768d9f404a6be985cb57863` converts the One Time
+  parent information agent profile from a WhatsApp-only profile into one
+  channel-independent public communication agent.
+- `config/service-provider-bots/one-time.json` now publishes
+  `scope.channels=[whatsapp,email]`, one shared
+  `one_time_parent_information_agent` version `2026-07-13-v3`, and one shared
+  knowledge snapshot reference for both `one_time_wapi` and
+  `one_time_inbound_email`.
+- WhatsApp remains `capture_only`; email remains `draft`; both bindings create
+  contacts/conversations, keep automatic CRM tasks off, and keep raw class
+  links out of model context and logs.
+- `src/lib/bna/crm/communication-agent-runtime.js` resolves channel bindings
+  from the published profile and stamps `channel_binding_source`,
+  `channel_id`, channel formatting, and shared-knowledge metadata into inbound
+  communication metadata.
+- Verification passed from the clean release worktree: syntax checks, focused
+  communication-agent/inbound/outbox/WAPI/owner-readiness suite `41/41`, and
+  tracked secret audit over 9530 paths.
+- One Time Railway deployment `4d41a9d8-f34b-4238-afd5-2fd594443ac7` reached
+  `SUCCESS` after an initial Railway fallback-404 window while the deployment
+  was still activating.
+- One Time `/api/deploy-info` returned exact SHA
+  `6d659d76570d1089c768d9f404a6be985cb57863` and `target_app=one-time`.
+- BNA `/api/deploy-info` returned the same SHA and BNA workspace taxonomy smoke
+  passed as shared-runtime regression proof.
+- Live smoke evidence: One Time separate-instance route matrix passed; provider
+  route-module smoke
+  `ops/live-smokes/2026-07-13T14-31-22-196Z-onetime-provider-route-module-live-smoke.md`;
+  BNA taxonomy smoke
+  `ops/live-smokes/2026-07-13T14-31-48-215Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email, WhatsApp/WAPI provider send, Telegram send,
+  public auto-reply enablement, credential mutation, payment/access mutation,
+  raw private payload logging, or destructive production mutation was performed.

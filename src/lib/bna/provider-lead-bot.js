@@ -40,6 +40,45 @@ function validateProviderLeadBotProfile(profile = {}) {
   if (!compactText(profile.version, 120)) errors.push('version is required');
   if (!compactText(profile.scope?.workspace_key, 120)) errors.push('scope.workspace_key is required');
   if (!compactText(profile.scope?.project_key, 120)) errors.push('scope.project_key is required');
+  const scopeChannels = Array.isArray(profile.scope?.channels)
+    ? profile.scope.channels.map((channel) => compactText(channel, 80).toLowerCase()).filter(Boolean)
+    : [];
+  if (profile.scope?.channel === 'whatsapp') errors.push('scope.channel must not be WhatsApp-only; use scope.channels and channel_bindings');
+  if (!scopeChannels.includes('whatsapp') || !scopeChannels.includes('email')) {
+    errors.push('scope.channels must include whatsapp and email');
+  }
+  if (profile.agent_model?.model_family !== 'communication_agent') errors.push('agent_model.model_family must be communication_agent');
+  if (profile.agent_model?.agent_key && profile.agent_model.agent_key !== profile.profile_key) {
+    errors.push('agent_model.agent_key must match profile_key');
+  }
+  if (profile.agent_model?.shared_knowledge_snapshot !== true) errors.push('agent_model.shared_knowledge_snapshot must be true');
+  if (profile.agent_model?.build_qa_agent !== false) errors.push('agent_model.build_qa_agent must be false');
+  const channelBindings = Array.isArray(profile.channel_bindings) ? profile.channel_bindings : [];
+  const activeBindingFor = (channel) => channelBindings.find((binding = {}) => (
+    binding.active !== false
+    && compactText(binding.channel, 80).toLowerCase() === channel
+  ));
+  const whatsappBinding = activeBindingFor('whatsapp');
+  const emailBinding = activeBindingFor('email');
+  if (!whatsappBinding) errors.push('channel_bindings must include an active whatsapp binding');
+  if (!emailBinding) errors.push('channel_bindings must include an active email binding');
+  for (const binding of channelBindings) {
+    const channel = compactText(binding.channel, 80).toLowerCase();
+    if (!scopeChannels.includes(channel)) errors.push(`channel_bindings.${channel || 'unknown'} must be listed in scope.channels`);
+    if (binding.agent_version !== profile.version) errors.push(`channel_bindings.${channel || 'unknown'}.agent_version must match profile.version`);
+    if (binding.create_contact_on_inbound !== true) errors.push(`channel_bindings.${channel || 'unknown'}.create_contact_on_inbound must be true`);
+    if (binding.create_conversation_on_inbound !== true) errors.push(`channel_bindings.${channel || 'unknown'}.create_conversation_on_inbound must be true`);
+    if (binding.create_task_on_inbound !== false) errors.push(`channel_bindings.${channel || 'unknown'}.create_task_on_inbound must be false`);
+    if (binding.formatting_policy?.raw_class_link_in_model_context !== false) {
+      errors.push(`channel_bindings.${channel || 'unknown'}.formatting_policy.raw_class_link_in_model_context must be false`);
+    }
+    if (binding.formatting_policy?.raw_class_link_in_logs !== false) {
+      errors.push(`channel_bindings.${channel || 'unknown'}.formatting_policy.raw_class_link_in_logs must be false`);
+    }
+  }
+  if (whatsappBinding?.knowledge_snapshot_ref && emailBinding?.knowledge_snapshot_ref && whatsappBinding.knowledge_snapshot_ref !== emailBinding.knowledge_snapshot_ref) {
+    errors.push('email and whatsapp channel bindings must use the same knowledge_snapshot_ref');
+  }
   if (!compactText(profile.identity?.assistant_name, 120)) errors.push('identity.assistant_name is required');
   if (!compactText(profile.identity?.assistant_subtitle, 180)) errors.push('identity.assistant_subtitle is required');
   if (profile.identity?.may_impersonate_owner !== false) errors.push('identity.may_impersonate_owner must be false');
