@@ -519,10 +519,10 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T07:58:00+03:00",
+      "updated_at": "2026-07-13T11:28:00+03:00",
       "can_continue_without_operator": true,
-      "blocker": "",
-      "status": "not_started",
+      "blocker": "REQ-20260713-910 depends on REQ-20260713-906. Secure owner-test aliases ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP/PHONE (or approved equivalents) are missing from local/keyholder/Railway readback, so independent owner-account email/WhatsApp verification and final verifier sections cannot be completed without an owner secret configuration step.",
+      "status": "blocked",
       "depends_on": [
         "REQ-20260713-906",
         "REQ-20260713-907",
@@ -548,8 +548,8 @@
       ],
       "category": "verifier_closeout",
       "batch_id": "5-performance-integration-verifier",
-      "implementation_status": "not_started",
-      "next_action": "After owner-test, architecture, shell, mobile CRM, and performance-gate packets complete, verify without duplicate sends and write the final report sections required by the addendum.",
+      "implementation_status": "blocked_by_owner_test_aliases",
+      "next_action": "Blocked until REQ-20260713-906 has secure owner-test email and WhatsApp aliases configured and owner-only send/readback proof completed. After aliases exist, rerun owner-test readiness, perform bounded owner-only integration readbacks without duplicate sends, then write the final report sections.",
       "acceptance_criteria": [
         "Owner-test report includes test-run ID, channel, secure recipient label, masked destination, provider, provider message ID, send/delivery/readback status, CRM result, send count, duplicate prevention, and blocker where incomplete.",
         "Architecture report includes chosen architecture, rejected alternatives, old/new critical paths, shared contracts, One Time-specific modules, BNA adoption status, and rollback path.",
@@ -557,7 +557,12 @@
         "CRM mobile IA report includes list/detail/subview proof, sticky header, section rail, one active section, overflow actions, filter sheet, Back restoration, lazy loading, 390/430 screenshots, and accessibility proof.",
         "BNA privacy/regression safety is verified where shared runtime changed.",
         "No raw private destination or message body appears in evidence."
-      ]
+      ],
+      "blocker_owner": "Shloimie / secure runtime configuration owner",
+      "blocker_next_action": "Configure secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP or approved equivalent aliases in Railway/keyholder without exposing raw values; complete REQ-20260713-906 owner-only send/readback, then rerun the verifier without duplicate sends.",
+      "blocker_recommended_option": "Set owner-test aliases as Railway variables for the One Time service and mirror only presence/fingerprint/provider-message evidence in repo reports.",
+      "blocker_alternatives": "Use local keyholder aliases for Codex-only readiness, but final verifier cannot complete owner-account live proof until production aliases or another approved runtime path exists.",
+      "blocker_consequence": "Final owner-account test results and the independent integration-verifier section cannot be marked Done; all non-send performance, architecture, mobile CRM, deploy, and BNA regression evidence remains complete."
     },
     {
       "id": "REQ-20260713-911",

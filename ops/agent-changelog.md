@@ -39716,14 +39716,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   handler, database, and pool spans, privacy-safe One Time RUM, and local/live
   regression gates.
 - Pushed `2c72bc0bf060d33567544e97d07c77317e54e971` to `origin/master`.
-- Deployed One Time Railway deployment
-  `a5c64bbc-c82f-4130-8a54-dbf217a02985` and BNA Railway deployment
-  `28f84dbc-3629-436d-9811-36318d0a3aad`; both production deploy-info routes
+- Deployed fresh One Time Railway deployment
+  `e0674590-9e8c-4f01-aaf1-00c1cf27ef41` and BNA Railway deployment
+  `9b3c68bc-fbce-48d2-8636-c2583e25aa57`; both production deploy-info routes
   returned the exact SHA.
 - Verification passed: local performance gate, route-module budget gate,
   focused tests, production performance gate
   `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`,
-  BNA live smoke, Operations workspace taxonomy smoke, and One Time CRM
-  workbench smoke.
+  One Time exact-SHA separate-instance smoke, One Time provider route-module
+  smoke `ops/live-smokes/2026-07-13T08-19-55-092Z-onetime-provider-route-module-live-smoke.md`,
+  One Time CRM workbench smoke
+  `ops/live-smokes/2026-07-13T08-19-54-835Z-one-time-operations-crm-workbench-live-smoke.md`,
+  and BNA Operations workspace taxonomy smoke
+  `ops/live-smokes/2026-07-13T08-16-56-138Z-operations-workspace-taxonomy-live-smoke.md`.
 - `REQ-20260713-910` remains blocked only by `REQ-20260713-906` missing secure
   owner-test aliases.

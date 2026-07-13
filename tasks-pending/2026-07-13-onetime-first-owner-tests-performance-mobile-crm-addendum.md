@@ -30,7 +30,7 @@ Source matrix: `ops/execution-runs/2026-07-12-shared-crm-communication-agents-ad
 | REQ-20260713-907 | One Time architecture and performance baseline | Done | ADR and live baseline are recorded; continue `REQ-20260713-908` and `REQ-20260713-911`. |
 | REQ-20260713-908 | Dedicated One Time application shell and route-level modules | Ready | Implement incrementally with old-shell fallback, shared backend contracts, deploy/live proof, and baseline budget comparison. |
 | REQ-20260713-909 | Mobile CRM information architecture | Not started | Create current-state visual audit and validated Product Quality packet before CRM UI edits. |
-| REQ-20260713-910 | Performance and integration verifier/final report | Not started | Wait for owner-test, architecture, shell, mobile CRM, and performance-gate packets; verify without duplicate sends. |
+| REQ-20260713-910 | Performance and integration verifier/final report | Blocked on owner aliases | Architecture, shell, mobile CRM, and performance-gate packets are complete; final verifier still waits for `REQ-20260713-906` secure owner-test email/WhatsApp aliases and owner-only readback proof. |
 | REQ-20260713-911 | Performance instrumentation, regression gates, and final proof sections | Ready | Add instrumentation, repeated baseline reporting, budgets, DB/API checks, release gates, and performance proof before lag is called fixed. |
 
 ## Packet DAG
@@ -42,7 +42,7 @@ Source matrix: `ops/execution-runs/2026-07-12-shared-crm-communication-agents-ad
 | PKT-20260713-907 | REQ-20260713-907 | Architecture/performance packet | Done | ADR, route/surface map, instrumentation gaps, repeated baseline, budgets, root-cause classification. |
 | PKT-20260713-908 | REQ-20260713-908 | Implementation packet | Ready | Dedicated One Time frontend shell and route modules with old-shell fallback. |
 | PKT-20260713-909 | REQ-20260713-909 | Product quality packet | Ready | CRM mobile IA current-state visual audit, PQC validation, list/detail/subview model, section rail, overflow actions, lazy data, screenshots. |
-| PKT-20260713-910 | REQ-20260713-910 | Verifier packet | Blocked by dependencies | Independent final proof for owner tests, performance, mobile CRM, BNA safety, and deployed SHA. |
+| PKT-20260713-910 | REQ-20260713-910 | Verifier packet | Blocked by owner aliases | Independent final proof for owner tests, performance, mobile CRM, BNA safety, and deployed SHA; owner-test portions wait on secure aliases. |
 | PKT-20260713-911 | REQ-20260713-911 | Performance gates packet | Ready | Privacy-safe instrumentation, repeated baseline reporting, budgets, DB/API analysis, release gates, and production performance report. |
 
 ## Guardrails
