@@ -248,6 +248,8 @@ test('Shared CRM modules expose paths, empty states, actions, and inbox scope', 
 
   assert.equal(global.BnaCrmApi.contactListPath({ workspace: 'rabbi_sheller_provider', empty: '' }), '/crm/contacts?workspace=rabbi_sheller_provider');
   assert.equal(global.BnaCrmApi.contactTimelinePath('bna_contacts:7', { limit: 20 }), '/crm/contacts/bna_contacts%3A7/timeline?limit=20');
+  assert.equal(global.BnaCrmApi.contactConversationsPath('bna_contacts:7', { limit: 20 }), '/crm/contacts/bna_contacts%3A7/conversations?limit=20');
+  assert.equal(global.BnaCrmApi.contactTasksPath('bna_contacts:7', { limit: 20 }), '/crm/contacts/bna_contacts%3A7/tasks?limit=20');
   assert.equal(global.BnaCrmStore.stableQueryKey({ b: 2, a: 1 }), '{"a":1,"b":2}');
   assert.equal(global.BnaCrmContactsIndex.statusText({ cards: [{}, {}], payload: { filtered_total: 4, total: 9 } }), '2 visible / 4 matching / 9 total.');
   assert.equal(global.BnaCrmContactWorkspace.emptyState('conversations'), 'No conversations yet.');
@@ -277,8 +279,14 @@ test('Shared CRM modules expose paths, empty states, actions, and inbox scope', 
 
 test('CRM routes delegate DTOs through the canonical contact service', () => {
   assert.match(server, /const \{ createContactService \} = require\('\.\/src\/lib\/bna\/crm\/contact-service'\);/);
-  assert.match(server, /const operationsCrmContactService = createContactService\({[\s\S]*listContactRows: \(scope, filters\) => operationsCrmContactRows\(scope, pool, filters\),[\s\S]*timelineRows: operationsCrmTimelineRows,[\s\S]*parseContactRef: parseCrmContactRef,[\s\S]*}\);/);
+  assert.match(server, /async function operationsCrmConversationRows/);
+  assert.match(server, /async function operationsCrmTaskRows/);
+  assert.match(server, /const operationsCrmContactService = createContactService\({[\s\S]*listContactRows: \(scope, filters\) => operationsCrmContactRows\(scope, pool, filters\),[\s\S]*timelineRows: operationsCrmTimelineRows,[\s\S]*conversationRows: \(contactRef, scope, options\) => operationsCrmConversationRows\(contactRef, scope, options, pool\),[\s\S]*taskRows: \(contactRef, scope, options\) => operationsCrmTaskRows\(contactRef, scope, options, pool\),[\s\S]*parseContactRef: parseCrmContactRef,[\s\S]*}\);/);
   assert.match(server, /const payload = await operationsCrmContactService\.listContacts\(scope, filters\);/);
   assert.match(server, /const payload = await operationsCrmContactService\.getContactTimeline\(req\.params\.id, scope\);/);
+  assert.match(server, /app\.get\('\/api\/bna\/crm\/contacts\/:id\/conversations', requireAdmin/);
+  assert.match(server, /const payload = await operationsCrmContactService\.getContactConversations\(req\.params\.id, scope, \{/);
+  assert.match(server, /app\.get\('\/api\/bna\/crm\/contacts\/:id\/tasks', requireAdmin/);
+  assert.match(server, /const payload = await operationsCrmContactService\.getContactTasks\(req\.params\.id, scope, \{/);
   assert.match(contactService, /aggregate_service: 'bna_crm_contact_service_v1'/);
 });

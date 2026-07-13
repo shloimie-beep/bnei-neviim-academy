@@ -29699,10 +29699,28 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
   return result.rows;
 }
 
+async function operationsCrmConversationRows(contactRef, scope = {}, options = {}, db = pool) {
+  const limit = Math.max(1, Math.min(Number(options.limit) || 50, 100));
+  const rows = await operationsCrmTimelineRows(contactRef, scope, db);
+  return rows
+    .filter((row) => row.communication_type !== 'follow_up_task' && row.channel !== 'task')
+    .slice(0, limit);
+}
+
+async function operationsCrmTaskRows(contactRef, scope = {}, options = {}, db = pool) {
+  const limit = Math.max(1, Math.min(Number(options.limit) || 50, 100));
+  const rows = await operationsCrmTimelineRows(contactRef, scope, db);
+  return rows
+    .filter((row) => row.communication_type === 'follow_up_task' || row.channel === 'task')
+    .slice(0, limit);
+}
+
 const operationsCrmContactService = createContactService({
   model: crmContactModel,
   listContactRows: (scope, filters) => operationsCrmContactRows(scope, pool, filters),
   timelineRows: operationsCrmTimelineRows,
+  conversationRows: (contactRef, scope, options) => operationsCrmConversationRows(contactRef, scope, options, pool),
+  taskRows: (contactRef, scope, options) => operationsCrmTaskRows(contactRef, scope, options, pool),
   parseContactRef: parseCrmContactRef,
 });
 
@@ -49978,6 +49996,42 @@ app.get('/api/bna/crm/contacts/:id/timeline', requireAdmin, async (req, res) => 
     scope.feature_overrides = await featureOverridesForScope(scope);
     accountScope.assertEntitlement(scope, accountScope.ENTITLEMENTS.CONTACT_TIMELINE);
     const payload = await operationsCrmContactService.getContactTimeline(req.params.id, scope);
+    res.json(payload);
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
+  }
+});
+
+app.get('/api/bna/crm/contacts/:id/conversations', requireAdmin, async (req, res) => {
+  try {
+    const scope = scopeFromOpsRequest(req);
+    const workspaceKey = assertWorkspaceAccess(req, scope.workspace_key || defaultWorkspaceKeyForRequest(req));
+    scope.workspace_key = workspaceKey;
+    scope.project_key = scope.project_key || workspaceProjectKey(workspaceKey) || opsScopeProjectKey(req) || null;
+    scope.feature_overrides = await featureOverridesForScope(scope);
+    accountScope.assertEntitlement(scope, accountScope.ENTITLEMENTS.CONTACT_TIMELINE);
+    const payload = await operationsCrmContactService.getContactConversations(req.params.id, scope, {
+      limit: req.query.limit,
+      cursor: req.query.cursor,
+    });
+    res.json(payload);
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
+  }
+});
+
+app.get('/api/bna/crm/contacts/:id/tasks', requireAdmin, async (req, res) => {
+  try {
+    const scope = scopeFromOpsRequest(req);
+    const workspaceKey = assertWorkspaceAccess(req, scope.workspace_key || defaultWorkspaceKeyForRequest(req));
+    scope.workspace_key = workspaceKey;
+    scope.project_key = scope.project_key || workspaceProjectKey(workspaceKey) || opsScopeProjectKey(req) || null;
+    scope.feature_overrides = await featureOverridesForScope(scope);
+    accountScope.assertEntitlement(scope, accountScope.ENTITLEMENTS.CONTACT_TIMELINE);
+    const payload = await operationsCrmContactService.getContactTasks(req.params.id, scope, {
+      limit: req.query.limit,
+      cursor: req.query.cursor,
+    });
     res.json(payload);
   } catch (err) {
     res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });

@@ -29,10 +29,20 @@
         return `${CRM_API_ROOT}/contacts/${encodeURIComponent(contactKey)}/timeline${queryString(filters)}`;
     }
 
+    function contactConversationsPath(contactKey, filters = {}) {
+        return `${CRM_API_ROOT}/contacts/${encodeURIComponent(contactKey)}/conversations${queryString(filters)}`;
+    }
+
+    function contactTasksPath(contactKey, filters = {}) {
+        return `${CRM_API_ROOT}/contacts/${encodeURIComponent(contactKey)}/tasks${queryString(filters)}`;
+    }
+
     global.BnaCrmApi = Object.freeze({
         cleanFilters,
         queryString,
         contactListPath,
-        contactTimelinePath
+        contactTimelinePath,
+        contactConversationsPath,
+        contactTasksPath
     });
 })(window);

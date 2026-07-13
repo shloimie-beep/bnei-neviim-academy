@@ -6,6 +6,7 @@ const assert = require('node:assert/strict');
 const {
   createContactService,
   normalizeContactFilters,
+  normalizePageOptions,
   parseCrmContactRef,
 } = require('../src/lib/bna/crm/contact-service');
 const crmContactModel = require('../src/lib/bna/crm-contact-model');
@@ -84,9 +85,60 @@ test('CRM contact service returns canonical timeline DTO envelope', async () => 
   assert.equal(payload.external_write_performed, false);
 });
 
+test('CRM contact service returns separate conversations and tasks DTO envelopes', async () => {
+  const service = createContactService({
+    model: crmContactModel,
+    listContactRows: async () => [],
+    timelineRows: async () => [
+      {
+        id: 11,
+        channel: 'whatsapp',
+        direction: 'inbound',
+        body: 'Can my school join?',
+        source: 'wapi',
+        occurred_at: '2026-07-12T13:00:00Z',
+        communication_type: 'communication',
+      },
+      {
+        id: 12,
+        channel: 'task',
+        direction: 'internal',
+        body: 'Follow up with school',
+        source_context: JSON.stringify({
+          task_id: 99,
+          assigned_to: 'Rabbi Scheller team',
+          due_date: '2026-07-15',
+          stage: 'assigned',
+        }),
+        communication_type: 'follow_up_task',
+      },
+    ],
+  });
+
+  const conversations = await service.getContactConversations('bna_contacts:7', { workspace_key: 'rabbi_sheller_provider' }, { limit: 1 });
+  const tasks = await service.getContactTasks('bna_contacts:7', { workspace_key: 'rabbi_sheller_provider' }, { limit: 5 });
+
+  assert.equal(conversations.success, true);
+  assert.equal(conversations.contact_key, 'bna_contacts:7');
+  assert.equal(conversations.conversations.length, 1);
+  assert.equal(conversations.conversations[0].channel, 'whatsapp');
+  assert.equal(conversations.conversations[0].no_send, true);
+  assert.equal(conversations.page.limit, 1);
+
+  assert.equal(tasks.success, true);
+  assert.equal(tasks.contact_key, 'bna_contacts:7');
+  assert.equal(tasks.tasks.length, 1);
+  assert.equal(tasks.tasks[0].id, 99);
+  assert.equal(tasks.tasks[0].assigned_to, 'Rabbi Scheller team');
+  assert.equal(tasks.tasks[0].due_date, '2026-07-15');
+  assert.equal(tasks.tasks[0].external_write_performed, false);
+});
+
 test('CRM contact service filter and ref helpers are stable', () => {
   assert.deepEqual(parseCrmContactRef('bna_parent_leads:7'), { source: 'bna_parent_leads', id: 7 });
   assert.deepEqual(parseCrmContactRef('unsafe:7'), { source: 'bna_contacts', id: 7 });
+  assert.deepEqual(normalizePageOptions({ limit: 500, cursor: 'abc' }), { limit: 100, cursor: 'abc' });
+  assert.deepEqual(normalizePageOptions({ limit: 0 }), { limit: 1, cursor: null });
   assert.deepEqual(normalizeContactFilters({ search: 'abc' }), {
     contact_type: 'all',
     status: 'all',

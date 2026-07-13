@@ -2343,6 +2343,42 @@
       ]
     },
     {
+      "route": "/api/bna/crm/contacts/:id/conversations",
+      "surface": "operations_api_first_party_crm_conversations",
+      "access": "private",
+      "required_role": "super_admin_or_scoped_crm_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_workspace_scoped_contact_conversations_readonly",
+      "privacy_risk": "high_private_contacts",
+      "security_expectation": "Requires contact_timeline entitlement and workspace access; returns no_send/external_write_performed=false and does not send, draft, import, or create tasks.",
+      "smoke_expectation": "tests/crm-contact-service.test.js and tests/shared-crm-workbench-contract.test.js verify canonical conversation DTOs and route wiring.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/crm/contacts/:id/tasks",
+      "surface": "operations_api_first_party_crm_tasks",
+      "access": "private",
+      "required_role": "super_admin_or_scoped_crm_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_workspace_scoped_contact_tasks_readonly",
+      "privacy_risk": "high_private_contacts",
+      "security_expectation": "Requires contact_timeline entitlement and workspace access; returns local CRM task DTOs with no_send/external_write_performed=false and does not create or mutate tasks.",
+      "smoke_expectation": "tests/crm-contact-service.test.js and tests/shared-crm-workbench-contract.test.js verify canonical task DTOs and route wiring.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/api/bna/crm/contacts/:id",
       "surface": "operations_api_first_party_crm_contact_update",
       "access": "private",

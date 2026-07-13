@@ -34,10 +34,65 @@ function redactedSuccessEnvelope(payload = {}) {
   };
 }
 
+function normalizePageOptions(options = {}) {
+  const requestedLimit = Number(options.limit);
+  const limit = Number.isFinite(requestedLimit)
+    ? Math.max(1, Math.min(Math.floor(requestedLimit), 100))
+    : 50;
+  return {
+    limit,
+    cursor: options.cursor || null,
+  };
+}
+
+function mapConversationDto(row = {}) {
+  return {
+    id: row.id,
+    channel: row.channel || 'internal_note',
+    direction: row.direction || 'internal',
+    summary: row.body || row.summary || 'Conversation',
+    body: row.notes || row.body || '',
+    source: row.source || null,
+    occurred_at: row.occurred_at || row.created_at || null,
+    communication_type: row.communication_type || 'communication',
+    no_send: true,
+    external_write_performed: false,
+  };
+}
+
+function normalizeSourceContext(value) {
+  if (!value) return {};
+  if (typeof value === 'object') return value;
+  if (typeof value !== 'string') return {};
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch (_err) {
+    return {};
+  }
+}
+
+function mapTaskDto(row = {}) {
+  const context = normalizeSourceContext(row.source_context);
+  return {
+    id: context.task_id || row.task_id || row.id,
+    title: row.body || row.title || 'CRM follow-up task',
+    notes: row.notes || '',
+    assigned_to: context.assigned_to || row.assigned_to || null,
+    due_date: context.due_date || row.due_date || null,
+    stage: context.stage || row.stage || 'assigned',
+    occurred_at: row.occurred_at || row.created_at || null,
+    no_send: true,
+    external_write_performed: false,
+  };
+}
+
 function createContactService({
   model,
   listContactRows,
   timelineRows,
+  conversationRows,
+  taskRows,
   parseContactRef = parseCrmContactRef,
 } = {}) {
   if (!model || typeof model.filterCrmContacts !== 'function' || typeof model.buildTimeline !== 'function') {
@@ -70,12 +125,55 @@ function createContactService({
         aggregate_service: 'bna_crm_contact_service_v1',
       });
     },
+
+    async getContactConversations(contactKey = '', scope = {}, options = {}) {
+      const page = normalizePageOptions(options);
+      const contactRef = parseContactRef(contactKey);
+      const loader = typeof conversationRows === 'function'
+        ? conversationRows
+        : async (ref, scoped, pageOptions) => {
+            const rows = await timelineRows(ref, scoped);
+            return rows.filter((row) => row.communication_type !== 'follow_up_task' && row.channel !== 'task');
+          };
+      const rows = await loader(contactRef, scope, page);
+      return redactedSuccessEnvelope({
+        contact_key: `${contactRef.source}:${contactRef.id || ''}`,
+        conversations: rows.slice(0, page.limit).map(mapConversationDto),
+        page: {
+          limit: page.limit,
+          next_cursor: null,
+        },
+        aggregate_service: 'bna_crm_contact_service_v1',
+      });
+    },
+
+    async getContactTasks(contactKey = '', scope = {}, options = {}) {
+      const page = normalizePageOptions(options);
+      const contactRef = parseContactRef(contactKey);
+      const loader = typeof taskRows === 'function'
+        ? taskRows
+        : async (ref, scoped, pageOptions) => {
+            const rows = await timelineRows(ref, scoped);
+            return rows.filter((row) => row.communication_type === 'follow_up_task' || row.channel === 'task');
+          };
+      const rows = await loader(contactRef, scope, page);
+      return redactedSuccessEnvelope({
+        contact_key: `${contactRef.source}:${contactRef.id || ''}`,
+        tasks: rows.slice(0, page.limit).map(mapTaskDto),
+        page: {
+          limit: page.limit,
+          next_cursor: null,
+        },
+        aggregate_service: 'bna_crm_contact_service_v1',
+      });
+    },
   };
 }
 
 module.exports = {
   parseCrmContactRef,
   normalizeContactFilters,
+  normalizePageOptions,
   redactedSuccessEnvelope,
   createContactService,
 };
