@@ -39,7 +39,7 @@ test('Task proof links accept live smoke reports and registers', () => {
   assert.match(server, /ops\\\/live-smokes\|tasks-pending/);
 });
 
-test('One Time CRM Contacts UX shows scoped lead source, no-send, and dedupe state', () => {
+test('One Time CRM Contacts UX shows scoped lead source, communication review, and dedupe state', () => {
   assert.match(operations, /data-one-time-crm-contacts-ux/);
   assert.match(operations, /REQ-20260621-905/);
   assert.match(operations, /\{ id: 'crm_contacts', label: 'CRM Contacts' \}/);
@@ -54,8 +54,8 @@ test('One Time CRM Contacts UX shows scoped lead source, no-send, and dedupe sta
   assert.match(operations, /function oneTimeCrmProductLeadRow\(lead\)/);
   assert.match(operations, /function oneTimeCrmMemberRow\(member\)/);
   assert.match(operations, /One Time CRM Contacts/);
-  assert.match(operations, /Lead status, source, no-send, dedupe\/review state, and local communications are visible/);
-  assert.match(operations, /No email, WhatsApp, payment, or external CRM write/);
+  assert.match(operations, /Lead status, source, review state, and recent communications are visible/);
+  assert.match(operations, /Communication readiness/);
   assert.match(operations, /Private BNA goals, check-ins, admin notes, and school-only student data are not shown in One Time Contacts/);
   assert.match(operations, /one-time-no-send-until-approved/);
   assert.match(operations, /one-time-campaign-staging/);
@@ -68,7 +68,7 @@ test('One Time CRM Contacts UX shows scoped lead source, no-send, and dedupe sta
   assert.match(operations, /Product interest/);
   assert.match(operations, /Member access/);
   assert.match(operations, /addLeadCommunication\(\$\{leadId\}\)/);
-  assert.match(operations, /External sends and CRM writes require operator approval/);
+  assert.match(operations, /Outgoing communication requires operator approval/);
   assert.match(operations, /Direct Action/);
 });
 

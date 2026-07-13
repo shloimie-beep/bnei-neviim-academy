@@ -7365,7 +7365,7 @@ function renderFirstPartyCrmAddContactForm(readOnly = false) {
             <div class="task-section-header compact">
                 <div>
                     <h3>Add Contact</h3>
-                    <p class="notification-lock-note">Creates or updates one workspace CRM record only. No email, WhatsApp, Telegram, payment, access, import, or external CRM write runs.</p>
+                    <p class="notification-lock-note">Creates or updates one workspace CRM contact.</p>
                 </div>
             </div>
             <div class="settings-control-grid compact">
@@ -7545,7 +7545,7 @@ function renderFirstPartyCrmLocalUpdateForm(card = {}, readOnly = false) {
     if (readOnly) {
         return `
             <div class="contact-empty-card" data-crm-local-update-readonly>
-                Local CRM updates are paused in read-only preview.
+                CRM updates are paused in read-only preview.
             </div>
         `;
     }
@@ -7561,8 +7561,8 @@ function renderFirstPartyCrmLocalUpdateForm(card = {}, readOnly = false) {
         <form class="crm-local-update-form" onsubmit="saveFirstPartyCrmAction(event, ${attrJson(card.id)})" data-crm-local-update-form>
             <div class="task-section-header compact">
                 <div>
-                    <h3>Local CRM update</h3>
-                    <p class="notification-lock-note">Saves only first-party CRM fields and notes. External sends, access changes, imports, and task creation stay off.</p>
+                    <h3>CRM update</h3>
+                    <p class="notification-lock-note">Saves contact fields, notes, tags, owner, lifecycle, and follow-up details.</p>
                 </div>
             </div>
             <div class="settings-control-grid compact">
@@ -7629,7 +7629,7 @@ function renderFirstPartyCrmLinkedTaskPanel(card = {}, readOnly = false) {
             <div class="task-section-header compact">
                 <div>
                     <h3>Linked follow-up task</h3>
-                    <p class="notification-lock-note">Task state changes are first-party CRM updates only. No message, payment, access grant, import, or external CRM write runs.</p>
+                    <p class="notification-lock-note">Task state changes are saved to the contact workspace.</p>
                 </div>
                 <span class="status-chip">${escapeHtml(taskStatus)}</span>
             </div>
@@ -7654,7 +7654,7 @@ function renderFirstPartyCrmMemberLinkPanel(card = {}, readOnly = false) {
                 <div class="task-section-header compact">
                     <div>
                         <h3>Linked member</h3>
-                        <p class="notification-lock-note">Member record is linked for CRM readback. Portal links, class links, library access, and sends remain separately gated.</p>
+                        <p class="notification-lock-note">Member record is linked for CRM readback.</p>
                     </div>
                     <span class="status-chip">${escapeHtml(contactStatusLabel(membership.access_status || 'linked'))}</span>
                 </div>
@@ -7675,7 +7675,7 @@ function renderFirstPartyCrmMemberLinkPanel(card = {}, readOnly = false) {
             <div class="task-section-header compact">
                 <div>
                     <h3>No membership linked.</h3>
-                    <p class="notification-lock-note">Create a disabled member shell for CRM linkage only. This does not create a portal link, library access, class link, payment, send, or external CRM write.</p>
+                    <p class="notification-lock-note">Create a paused member record for CRM linkage.</p>
                 </div>
             </div>
             <div class="task-actions">
@@ -7698,7 +7698,7 @@ function renderFirstPartyCrmFamilyLinkPanel(card = {}, readOnly = false) {
                 <div class="task-section-header compact">
                     <div>
                         <h3>Linked family</h3>
-                        <p class="notification-lock-note">Family relationship is linked on the CRM contact. This does not grant access, create a portal login, send a message, or write to an external CRM.</p>
+                        <p class="notification-lock-note">Family relationship is linked on the CRM contact.</p>
                     </div>
                     <span class="status-chip">Linked</span>
                 </div>
@@ -7715,7 +7715,7 @@ function renderFirstPartyCrmFamilyLinkPanel(card = {}, readOnly = false) {
             <div class="task-section-header compact">
                 <div>
                     <h3>No family linked.</h3>
-                    <p class="notification-lock-note">Link this contact as a family relationship inside the first-party CRM only. No portal login, access grant, message, payment, import, or external CRM write runs.</p>
+                    <p class="notification-lock-note">Link this contact as a family relationship.</p>
                 </div>
             </div>
             <div class="task-actions">
@@ -7735,7 +7735,7 @@ function renderFirstPartyCrmStudentLinkPanel(card = {}, readOnly = false) {
                 <div class="task-section-header compact">
                     <div>
                         <h3>Linked student</h3>
-                        <p class="notification-lock-note">Student record is linked for CRM readback. Student login, access code, class access, and sends remain separately gated.</p>
+                        <p class="notification-lock-note">Student record is linked for CRM readback.</p>
                     </div>
                     <span class="status-chip">${linkedStudentId ? `Student #${escapeHtml(linkedStudentId)}` : 'Linked'}</span>
                 </div>
@@ -7755,7 +7755,7 @@ function renderFirstPartyCrmStudentLinkPanel(card = {}, readOnly = false) {
             <div class="task-section-header compact">
                 <div>
                     <h3>No student linked.</h3>
-                    <p class="notification-lock-note">Create a paused student shell for CRM linkage only. This does not create a student login, access code, class access, payment, send, or external CRM write.</p>
+                    <p class="notification-lock-note">Create a paused student record for CRM linkage.</p>
                 </div>
             </div>
             <label>
@@ -7774,7 +7774,7 @@ function renderFirstPartyCrmDetail(card = null) {
         return `
     <section class="crm-selected-card" aria-label="CRM contact activity" data-crm-ia-state="empty">
         <div class="crm-selected-title">Select a CRM contact</div>
-        <div class="crm-selected-subtitle">Open a row to review activity, conversation history, notes/tasks affordances, and safe next action. No email, WhatsApp, payment, access, or external CRM write runs from this panel.</div>
+        <div class="crm-selected-subtitle">Open a row to review activity, conversation history, notes, tasks, and the next best action.</div>
     </section>
 `;
     }
@@ -7876,7 +7876,7 @@ function renderFirstPartyCrmTimeline(card = {}) {
             <div class="task-section-header">
                 <div>
                     <h3>Contact Timeline</h3>
-                    <p class="notification-lock-note">Read-only local timeline for ${escapeHtml(card.display_name || 'selected contact')}. No message is sent from this view.</p>
+                    <p class="notification-lock-note">Contact timeline for ${escapeHtml(card.display_name || 'selected contact')}.</p>
                 </div>
                 <span>${items.length} timeline items</span>
             </div>
@@ -7979,7 +7979,7 @@ function renderFirstPartyCrmTaskDtoPanel(card = {}, readOnly = false) {
                     <div class="task-section-header compact">
                         <div>
                             <h3>${escapeHtml(item.title || 'CRM task')}</h3>
-                            <p class="notification-lock-note">${escapeHtml(item.notes || 'First-party CRM task readback. No message, payment, access grant, import, or external CRM write runs from this view.')}</p>
+                            <p class="notification-lock-note">${escapeHtml(item.notes || 'CRM task readback for this contact.')}</p>
                         </div>
                         <span class="status-chip">${escapeHtml(contactStatusLabel(item.stage || 'assigned'))}</span>
                     </div>
@@ -8274,12 +8274,12 @@ async function openFirstPartyCrmConversationThread(event, contactId = '', conver
     if (actionChannel === 'email') {
         communicationsSection = 'email';
         emailInboxScope = window.BnaCrmInbox?.scopeForWorkspace?.(workspaceKey) || emailInboxScopeRecord().id;
-        firstPartyCrmNotice = 'Email thread opened in the scoped Inbox. No email was sent.';
+        firstPartyCrmNotice = 'Email thread opened in the scoped Inbox.';
     } else {
         communicationsSection = 'whatsapp';
         selectedWapiPhonebookKey = firstPartyCrmWapiPhonebookKey(card, item) || selectedWapiPhonebookKey;
         wapiMobilePane = 'conversation';
-        firstPartyCrmNotice = 'WhatsApp thread opened in the scoped Inbox. No WhatsApp message was sent.';
+        firstPartyCrmNotice = 'WhatsApp thread opened in the scoped Inbox.';
     }
     syncOperationsUrl();
     rerenderOperationsApp();
@@ -8371,9 +8371,7 @@ async function saveFirstPartyCrmAction(event, contactId) {
             no_send: true,
             external_write_performed: false
         });
-        firstPartyCrmNotice = result?.external_write_performed === false
-            ? 'CRM update saved locally. No external message, charge, import, or access change ran.'
-            : 'CRM update saved.';
+        firstPartyCrmNotice = 'CRM update saved.';
         await loadFirstPartyCrmContacts();
         selectedFirstPartyCrmContactId = contactId;
         firstPartyCrmTimelinePayload = null;
@@ -8424,8 +8422,8 @@ async function saveFirstPartyCrmNewContact(event) {
         });
         const contactId = result?.contact?.id || result?.contact_id || '';
         firstPartyCrmNotice = result?.created === false
-            ? 'Existing workspace contact updated locally. No external message, charge, import, or access change ran.'
-            : 'Contact created locally. No external message, charge, import, or access change ran.';
+            ? 'Existing workspace contact updated.'
+            : 'Contact created.';
         firstPartyCrmAddContactOpen = false;
         firstPartyCrmActiveTab = 'overview';
         firstPartyCrmFilters = {
@@ -8469,14 +8467,14 @@ async function createFirstPartyCrmTask(event, contactId) {
             assigned_owner: owner,
             create_follow_up_task: true,
             note_summary: window.BnaCrmActions?.followUpTaskSummary?.(card) || 'Manual CRM follow-up task',
-            note_body: 'Created by an explicit Create task click in the CRM contact workspace. No message, payment, access grant, import, or external CRM write was performed.',
+            note_body: 'Created from the CRM contact workspace.',
             no_send: true,
             external_write_performed: false
         });
         const taskId = result?.follow_up_task?.id || result?.follow_up_task?.task_id || '';
         firstPartyCrmNotice = taskId
-            ? `Task #${taskId} created locally. No external message, charge, import, or access change ran.`
-            : 'Task created locally. No external message, charge, import, or access change ran.';
+            ? `Task #${taskId} created.`
+            : 'Task created.';
         firstPartyCrmContactsCache.clear();
         await loadFirstPartyCrmContacts(null, { force: true });
         selectedFirstPartyCrmContactId = contactId;
@@ -8508,14 +8506,14 @@ async function updateFirstPartyCrmLinkedTask(event, contactId, mode = 'complete'
         ? {
             stage: 'done',
             completed_at: new Date().toISOString(),
-            verification_notes: 'Completed by an explicit Complete task click in the CRM contact workspace. No message, payment, access grant, import, or external CRM write was performed.',
+            verification_notes: 'Completed from the CRM contact workspace.',
             next_action: 'Completed from CRM contact workspace.'
         }
         : {
             stage: 'assigned',
             completed_at: null,
             verified_at: null,
-            verification_notes: 'Reopened by an explicit Reopen task click in the CRM contact workspace. No message, payment, access grant, import, or external CRM write was performed.',
+            verification_notes: 'Reopened from the CRM contact workspace.',
             item_type: 'task',
             task_kind: 'task',
             decision_required: false,
@@ -8529,8 +8527,8 @@ async function updateFirstPartyCrmLinkedTask(event, contactId, mode = 'complete'
     try {
         await api.updateTask(taskId, payload);
         firstPartyCrmNotice = completing
-            ? `Task #${taskId} completed locally. No external message, charge, import, or access change ran.`
-            : `Task #${taskId} reopened locally. No external message, charge, import, or access change ran.`;
+            ? `Task #${taskId} completed.`
+            : `Task #${taskId} reopened.`;
         firstPartyCrmContactsCache.clear();
         selectedFirstPartyCrmContactId = contactId;
         firstPartyCrmActiveTab = 'tasks';
@@ -8555,14 +8553,14 @@ async function updateFirstPartyCrmTaskDto(event, contactId, taskId, mode = 'comp
         ? {
             stage: 'done',
             completed_at: new Date().toISOString(),
-            verification_notes: 'Completed by an explicit Complete task click in the CRM contact workspace Tasks tab. No message, payment, access grant, import, or external CRM write was performed.',
+            verification_notes: 'Completed from the CRM contact workspace Tasks tab.',
             next_action: 'Completed from CRM contact workspace Tasks tab.'
         }
         : {
             stage: 'assigned',
             completed_at: null,
             verified_at: null,
-            verification_notes: 'Reopened by an explicit Reopen task click in the CRM contact workspace Tasks tab. No message, payment, access grant, import, or external CRM write was performed.',
+            verification_notes: 'Reopened from the CRM contact workspace Tasks tab.',
             item_type: 'task',
             task_kind: 'task',
             decision_required: false,
@@ -8576,8 +8574,8 @@ async function updateFirstPartyCrmTaskDto(event, contactId, taskId, mode = 'comp
     try {
         await api.updateTask(taskId, payload);
         firstPartyCrmNotice = completing
-            ? `Task #${taskId} completed locally. No external message, charge, import, or access change ran.`
-            : `Task #${taskId} reopened locally. No external message, charge, import, or access change ran.`;
+            ? `Task #${taskId} completed.`
+            : `Task #${taskId} reopened.`;
         firstPartyCrmContactsCache.clear();
         selectedFirstPartyCrmContactId = contactId;
         firstPartyCrmActiveTab = 'tasks';
@@ -8623,7 +8621,7 @@ async function linkFirstPartyCrmMember(event, contactId) {
             access_tier: 'library_only',
             access_status: 'paused',
             access_enabled: false,
-            notes: 'Created as a disabled member shell by an explicit Link member click in the CRM contact workspace. No portal link, library access, class link, payment, send, import, or external CRM write was performed.',
+            notes: 'Linked from the CRM contact workspace as a paused member record.',
             metadata: {
                 source: 'crm_contact_workspace_link_member',
                 crm_contact_key: card.id || contactId,
@@ -8636,8 +8634,8 @@ async function linkFirstPartyCrmMember(event, contactId) {
         });
         const memberId = result?.member?.id || '';
         firstPartyCrmNotice = memberId
-            ? `Member #${memberId} linked as a disabled CRM shell. No portal link, library access, class link, payment, send, import, or external CRM write ran.`
-            : 'Member shell linked locally with access disabled. No portal link, library access, class link, payment, send, import, or external CRM write ran.';
+            ? `Member #${memberId} linked.`
+            : 'Member record linked.';
         firstPartyCrmContactsCache.clear();
         selectedFirstPartyCrmContactId = contactId;
         firstPartyCrmActiveTab = 'access';
@@ -8672,11 +8670,11 @@ async function linkFirstPartyCrmFamily(event, contactId) {
             relationship_context: 'family',
             tags,
             note_summary: 'Family relationship linked',
-            note: 'Linked as a family relationship by an explicit Link family click in the CRM contact workspace. No portal login, access grant, message, payment, import, or external CRM write was performed.',
+            note: 'Linked as a family relationship from the CRM contact workspace.',
             create_follow_up_task: false,
             external_write_performed: false
         });
-        firstPartyCrmNotice = 'Family relationship linked locally. No portal login, access grant, message, payment, import, or external CRM write ran.';
+        firstPartyCrmNotice = 'Family relationship linked.';
         firstPartyCrmContactsCache.clear();
         selectedFirstPartyCrmContactId = contactId;
         firstPartyCrmActiveTab = 'family';
@@ -8723,7 +8721,7 @@ async function linkFirstPartyCrmStudent(event, contactId) {
             parent_phone: card.phone || '',
             status: 'paused',
             tags: ['crm-linked-student-shell', 'student_access_not_granted'],
-            notes: 'Created as a paused student shell by an explicit Link student click in the CRM contact workspace. No student login, access code, class access, payment, send, import, or external CRM write was performed.'
+            notes: 'Linked from the CRM contact workspace as a paused student record.'
         });
         const studentId = result?.student?.id || '';
         const tags = Array.from(firstPartyCrmTagSet(card));
@@ -8735,13 +8733,13 @@ async function linkFirstPartyCrmStudent(event, contactId) {
             project_key: projectKey,
             tags,
             note_summary: studentId ? `Linked paused student shell #${studentId}` : 'Linked paused student shell',
-            note: `Linked paused student shell${studentId ? ` #${studentId}` : ''} for ${studentName}. No student login, access code, class access, payment, send, import, or external CRM write was performed.`,
+            note: `Linked paused student record${studentId ? ` #${studentId}` : ''} for ${studentName}.`,
             create_follow_up_task: false,
             external_write_performed: false
         });
         firstPartyCrmNotice = studentId
-            ? `Student #${studentId} linked as a paused CRM shell. No student login, access code, class access, payment, send, import, or external CRM write ran.`
-            : 'Student shell linked locally with access disabled. No student login, access code, class access, payment, send, import, or external CRM write ran.';
+            ? `Student #${studentId} linked as a paused CRM record.`
+            : 'Student record linked as paused.';
         firstPartyCrmContactsCache.clear();
         selectedFirstPartyCrmContactId = contactId;
         firstPartyCrmActiveTab = 'family';
@@ -8761,7 +8759,7 @@ async function archiveFirstPartyCrmContact(event, contactId) {
     if (!contactId || oneTimeViewAsRabbiActive()) return;
     const card = selectedFirstPartyCrmCard() || {};
     const name = card.display_name || card.email || card.phone || 'this CRM contact';
-    if (!window.confirm(`Archive ${name}? The local record will be hidden from active CRM lists. No message, payment, access change, import, or external CRM write will run.`)) return;
+    if (!window.confirm(`Archive ${name}? The record will be hidden from active CRM lists.`)) return;
     firstPartyCrmSaving = true;
     firstPartyCrmError = '';
     firstPartyCrmNotice = '';
@@ -8774,11 +8772,11 @@ async function archiveFirstPartyCrmContact(event, contactId) {
             tags: Array.isArray(card.tags) ? card.tags : [],
             create_follow_up_task: false,
             note_summary: 'CRM contact archived',
-            note_body: 'Archived by an explicit Archive contact click in the CRM contact workspace. No message, payment, access grant, import, or external CRM write was performed.',
+            note_body: 'Archived from the CRM contact workspace.',
             no_send: true,
             external_write_performed: false
         });
-        firstPartyCrmNotice = 'Contact archived locally. No external message, charge, import, or access change ran.';
+        firstPartyCrmNotice = 'Contact archived.';
         selectedFirstPartyCrmContactId = null;
         firstPartyCrmTimelinePayload = null;
         firstPartyCrmActiveTab = 'activity';
@@ -8964,7 +8962,7 @@ function renderProviderParticipantsPage() {
                 <section class="focus-panel">
                     <div class="task-overview-grid">
                         ${renderMetricButton('CRM Contacts', crmRows.length, 'One Time leads/members scoped to Rabbi workspace.', "setCurrentSection('crm_contacts')")}
-                        ${renderMetricButton('No-send', noSendCount, 'Campaign or send actions remain locked until approval.', "setContactFilter('tag', 'one-time-no-send-until-approved')")}
+                        ${renderMetricButton('Communication Review', noSendCount, 'Contacts awaiting communication approval.', "setContactFilter('tag', 'one-time-no-send-until-approved')")}
                         ${renderMetricButton('Dedupe Review', dedupeReviewCount, 'Rows needing duplicate or review attention.', "setCurrentSection('crm_contacts')")}
                         ${renderMetricButton('Communications', communicationLinkedCount, 'Contacts with matched local communication history.', "setCurrentSection('messages')")}
                         ${renderMetricButton('Email Contacts', emailContacts.length, 'Rabbi-side email contacts staged for campaigns.', "setCurrentSection('email_contacts')")}
@@ -9004,7 +9002,7 @@ function renderProviderParticipantsPage() {
 function renderOneTimeCrmReviewPlaceholder(count = 0) {
     return `
         <div class="contact-empty-card" data-one-time-crm-review-placeholder>
-            Review/source safeguards are collapsed. Open this panel to construct the legacy ${Number(count || 0).toLocaleString()}-row review table.
+            Source review is collapsed. Open this panel to review ${Number(count || 0).toLocaleString()} legacy rows.
         </div>
     `;
 }
@@ -9015,13 +9013,13 @@ function renderOneTimeCrmReviewContextBody(sectionLeads = [], visibleLeads = [],
             <div class="task-section-header">
                 <div>
                     <h3>One Time CRM Review Context</h3>
-                    <p class="notification-lock-note">Workspace-scoped One Time/Rabbi leads and members only. Lead status, source, no-send, dedupe/review state, and local communications are visible before any campaign decision.</p>
+                    <p class="notification-lock-note">Workspace-scoped One Time/Rabbi leads and members only. Lead status, source, review state, and recent communications are visible before outreach.</p>
                 </div>
                 <span>${rows.length} scoped records</span>
             </div>
             <div class="settings-control-grid compact" style="margin-top:12px;">
                 ${renderSettingsControlRow('Workspace scope', 'One Time / Rabbi Scheller', 'Parent-lead data is requested with the selected workspace/project filter and excludes BNA school-only records.', 'Scoped')}
-                ${renderSettingsControlRow('No-send guard', 'No email, WhatsApp, payment, or external CRM write', 'Campaign sends remain locked until Shloimie approves copy, sender, suppressions, and test recipients.', 'Guarded')}
+                ${renderSettingsControlRow('Communication readiness', 'Review required', 'Contact communication settings are reviewed before outreach.', 'Guarded')}
                 ${renderSettingsControlRow('Dedupe / review', 'Explicit row state', 'Dedupe keys, possible duplicates, manual-review tags, and preview-only import states are surfaced for admin review.', 'Visible')}
                 ${renderSettingsControlRow('Privacy', 'Private BNA data absent', 'Private BNA goals, check-ins, admin notes, and school-only student data are not shown in One Time Contacts.', 'Protected')}
             </div>
@@ -9037,7 +9035,7 @@ function renderOneTimeCrmReviewContextBody(sectionLeads = [], visibleLeads = [],
                 <div class="data-table compact-table" data-one-time-crm-contact-table>
                     <table>
                         <thead>
-                            <tr><th>Name</th><th>Record Status</th><th>No-send</th><th>Dedupe / review</th><th>Source</th><th>Communications</th><th>Next Action</th><th>Direct Action</th></tr>
+                            <tr><th>Name</th><th>Record Status</th><th>Communication</th><th>Dedupe / review</th><th>Source</th><th>Communications</th><th>Next Action</th><th>Direct Action</th></tr>
                         </thead>
                         <tbody>
                             ${rows.map(row => `
@@ -9093,7 +9091,7 @@ function renderOneTimeCrmContactsPanel() {
     const apiWorkbench = renderFirstPartyCrmContactsPanel({
         oneTime: true,
         title: 'One Time CRM Workbench',
-        description: 'Search, filter, sort, open, and read local One Time CRM contact timelines from first-party BNA records only. No email, WhatsApp, payment, access, or external CRM write runs from this workbench.'
+        description: 'Search, filter, sort, open, and read One Time CRM contacts from workspace records.'
     });
     const reviewBody = oneTimeCrmReviewContextOpen
         ? renderOneTimeCrmReviewContextBody(sectionLeads, visibleLeads, rows)
@@ -9101,7 +9099,7 @@ function renderOneTimeCrmContactsPanel() {
     return `
         ${apiWorkbench}
         <details class="filter-details collapsible-details" data-one-time-crm-review-context ${oneTimeCrmReviewContextOpen ? 'open' : ''} ontoggle="toggleOneTimeCrmReviewContext(this)">
-            <summary>Review/source safeguards</summary>
+            <summary>Source review</summary>
             <div class="filter-details-body" data-one-time-crm-review-lazy>
                 ${reviewBody}
             </div>
@@ -9117,7 +9115,7 @@ function renderOneTimeCrmEmptyState(mode = 'no_rows') {
         : 'Import preview, email-contact staging, and product-interest rows remain first-party review data until source mapping is approved.';
     const steps = [
         ['Source', filtered ? 'Filter safely' : 'Connect source preview', filtered ? 'Current filters do not expose external rows or private BNA records.' : 'Use approved One Time signup, payment, or email-contact sources only.'],
-        ['No-send', 'Locked', 'No email, WhatsApp, payment, checkout, or external CRM write is enabled from this state.'],
+        ['Communication', 'Review required', 'Choose an approved contact and channel before member or contact communication.'],
         ['Dedupe', filtered ? 'Preserved' : 'Ready for review', 'Email/phone keys, manual-review tags, and duplicate candidates stay visible when rows load.'],
         ['Next', filtered ? 'Clear or change filters' : 'Load approved source', 'Review source mapping and suppression policy before any member/contact communication.'],
     ];
@@ -10156,21 +10154,21 @@ function oneTimeLeadNoSendState(lead) {
     if (locked) {
         return {
             locked: true,
-            label: 'No-send until approved',
-            detail: 'Campaign and external actions are held for operator approval.',
+            label: 'Communication review',
+            detail: 'Outreach approval is pending.',
         };
     }
     if (approved) {
         return {
             locked: false,
             label: 'Approved state',
-            detail: 'Approval metadata is present; sends still require explicit send flow confirmation.',
+            detail: 'Approval metadata is present; use the selected channel flow to confirm outreach.',
         };
     }
     return {
         locked: true,
         label: 'Approval review',
-        detail: 'No send approval metadata is loaded for this contact.',
+        detail: 'Communication approval metadata is not loaded for this contact.',
     };
 }
 
@@ -10248,7 +10246,7 @@ function oneTimeCrmContactRow(lead) {
     const nextAction = lead.next_follow_up_date
         ? `Follow up ${formatDate(lead.next_follow_up_date)}`
         : noSend.locked
-            ? 'Review campaign approval, suppressions, and dedupe before sending.'
+            ? 'Review communication approval, suppressions, and dedupe before outreach.'
             : 'Review membership/access state.';
     return {
         lead,
@@ -10289,8 +10287,8 @@ function oneTimeCrmProductLeadRow(lead) {
         status: `${contactStatusLabel(lead.status || 'new')} / ${contactStatusLabel(lead.region || 'worldwide')}`,
         noSend: {
             locked: true,
-            label: 'No-send product lead',
-            detail: 'Product interest rows stay internal until recipient/copy/sender approval.',
+            label: 'Communication review',
+            detail: 'Product interest rows require recipient, copy, and sender approval.',
         },
         dedupe: {
             needsReview: !oneTimeCrmContactKey([lead.parent_email, lead.email, lead.parent_phone, lead.phone, lead.whatsapp]),
@@ -10302,8 +10300,8 @@ function oneTimeCrmProductLeadRow(lead) {
             detail: lead.source_landing_page || 'First-party One Time product lead.',
         },
         communications,
-        nextAction: 'Review offer, source, and suppressions before any campaign or checkout action.',
-        actionHtml: `<button class="task-action" type="button" onclick="switchView('service_providers'); setCurrentSection('tiers')">Review offers</button><button class="task-action" type="button" disabled title="External sends and CRM writes require operator approval.">No-send</button>`,
+        nextAction: 'Review offer, source, and suppressions before outreach or checkout action.',
+        actionHtml: `<button class="task-action" type="button" onclick="switchView('service_providers'); setCurrentSection('tiers')">Review offers</button><button class="task-action" type="button" disabled title="Outgoing communication requires operator approval.">Review required</button>`,
     };
 }
 
@@ -10319,8 +10317,8 @@ function oneTimeCrmMemberRow(member) {
         status: `${contactStatusLabel(member.access_status || member.status || 'member')} / ${contactStatusLabel(member.access_tier || member.tier_key || 'membership')}`,
         noSend: {
             locked: true,
-            label: 'No-send in CRM view',
-            detail: 'Member communication uses approval-gated member workflows, not this CRM table.',
+            label: 'Communication review',
+            detail: 'Member communication uses approved member workflows.',
         },
         dedupe: {
             needsReview: false,
@@ -10337,7 +10335,7 @@ function oneTimeCrmMemberRow(member) {
             detail: 'Use member/access panels for grant history and access actions.',
         },
         nextAction: 'Review access grant status and entitlement before member communication.',
-        actionHtml: `<button class="task-action" type="button" onclick="switchView('service_providers'); setCurrentSection('launch')">Open access</button><button class="task-action" type="button" disabled title="Member sends require approved copy, sender, and recipient policy.">No-send</button>`,
+        actionHtml: `<button class="task-action" type="button" onclick="switchView('service_providers'); setCurrentSection('launch')">Open access</button><button class="task-action" type="button" disabled title="Member outreach requires approved copy, sender, and recipient policy.">Review required</button>`,
     };
 }
 
@@ -10408,6 +10406,12 @@ function renderInterestedParentLeads() {
     `;
 }
 
+function oneTimeVisibleCrmTagLabel(tag = '') {
+    const key = String(tag || '').trim();
+    if (/no[-_]?send/i.test(key)) return 'Communication review';
+    return contactStatusLabel(key.replace(/^one-time-/i, '').replace(/:/g, ' '));
+}
+
 function renderProviderEmailContactsPanel() {
     const sectionLeads = oneTimeEmailContactLeads();
     const visibleLeads = sectionLeads.filter(leadMatchesFilters);
@@ -10424,7 +10428,7 @@ function renderProviderEmailContactsPanel() {
             <div class="task-section-header">
                 <div>
                     <h3>Email Contacts Map</h3>
-                    <p class="notification-lock-note">One Time / Rabbi workspace only. Campaign staging is tagged, but no email, WhatsApp, Telegram, Buffer, payment, or external CRM send is triggered here.</p>
+                    <p class="notification-lock-note">One Time / Rabbi workspace email contacts staged for review.</p>
                 </div>
                 <span>${sectionLeads.length} contacts</span>
             </div>
@@ -10436,8 +10440,8 @@ function renderProviderEmailContactsPanel() {
             </div>
             <div class="settings-control-grid compact" style="margin-top:12px;">
                 ${renderSettingsControlRow('Source', 'subscribers.csv', 'Mapped to One Time content-interest leads with email-only contact fields.', 'Import')}
-                ${renderSettingsControlRow('Primary tags', 'one-time-list:rabbi-email-contacts', 'Also stores source status, plan, import batch, one-time-campaign-staging, and one-time-no-send-until-approved.', 'Tags')}
-                ${renderSettingsControlRow('Send state', 'not sent', 'Every row carries no-send/campaign-approval metadata until Shloimie approves copy, sender, suppressions, and test recipients.', 'Guarded')}
+                ${renderSettingsControlRow('Segments', 'Rabbi email contacts', 'Shows source status, plan, import batch, and communication review labels.', 'Tags')}
+                ${renderSettingsControlRow('Communication state', 'Review required', 'Rows retain approval metadata until copy, sender, suppressions, and test recipients are approved.', 'Guarded')}
             </div>
         </section>
         ${renderLeadFilterPanel(sectionLeads, visibleLeads)}
@@ -10465,7 +10469,7 @@ function renderProviderEmailContactsPanel() {
                                     <td>${escapeHtml(contactStatusLabel(oneTimeEmailContactSourceStatus(lead)))}</td>
                                     <td>${escapeHtml(contactStatusLabel(oneTimeEmailContactPlan(lead)))}</td>
                                     <td>${escapeHtml(leadStatusLabel(lead.status))} / ${escapeHtml(leadInterestLabel(lead.interest_level))}</td>
-                                    <td><div class="tag-list">${leadTags(lead).filter(tag => /^one-time-(?:status|plan|campaign|no-send|reactivation|current|trial|manual|follow-up)/i.test(tag)).slice(0, 5).map(tag => `<span class="tag ${escapeHtml(cssToken(tag))}">${escapeHtml(tag)}</span>`).join('')}</div></td>
+                                    <td><div class="tag-list">${leadTags(lead).filter(tag => /^one-time-(?:status|plan|campaign|no-send|reactivation|current|trial|manual|follow-up)/i.test(tag)).slice(0, 5).map(tag => `<span class="tag ${escapeHtml(cssToken(tag))}">${escapeHtml(oneTimeVisibleCrmTagLabel(tag))}</span>`).join('')}</div></td>
                                 </tr>
                             `).join('')}
                         </tbody>

@@ -64,20 +64,21 @@ test('One Time email lane exposes draft, readiness, recipient, and approval gate
   assert.match(operations, /related_record: relatedRecord/);
 });
 
-test('One Time CRM Contacts UX keeps lead review scoped and no-send', () => {
+test('One Time CRM Contacts UX keeps lead review scoped and customer-facing', () => {
   assert.match(operations, /data-one-time-crm-contacts-ux/);
   assert.match(operations, /data-one-time-crm-workbench/);
   assert.match(operations, /One Time CRM Workbench/);
   assert.match(operations, /function renderFirstPartyCrmDetail/);
   assert.match(operations, /Class \/ Trial \/ Access/);
-  assert.match(operations, /Read-only local timeline for/);
+  assert.match(operations, /Contact timeline for/);
   assert.match(operations, /Workspace-scoped One Time\/Rabbi leads and members only/);
   assert.match(operations, /function oneTimeCrmLeadRows\(\)/);
   assert.match(operations, /normalizeProjectKey\(rawProjectKey\)/);
   assert.match(operations, /currentWorkspaceIsOneTime\(\)/);
   assert.match(operations, /one-time-no-send-until-approved/);
   assert.match(operations, /one-time-campaign-staging/);
-  assert.match(operations, /No email, WhatsApp, payment, or external CRM write/);
+  assert.match(operations, /Communication readiness/);
+  assert.match(operations, /Contact communication settings are reviewed before outreach/);
   assert.match(operations, /Dedupe \/ review/);
   assert.match(operations, /data-one-time-crm-contact-row/);
   assert.match(operations, /data-one-time-crm-empty-state/);
