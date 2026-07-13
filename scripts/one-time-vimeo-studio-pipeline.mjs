@@ -19,7 +19,7 @@ Optional edge trim:
   node scripts/one-time-vimeo-studio-pipeline.mjs --folder media-inbox/one-time-vimeo-studio-drop --render --auto-trim-edges --default-trim-start 0 --default-trim-end 0
 
 Optional local transcription smoke:
-  node scripts/one-time-vimeo-studio-pipeline.mjs --folder media-inbox/one-time-vimeo-studio-drop --render --transcribe-openai
+  node scripts/one-time-vimeo-studio-pipeline.mjs --folder media-inbox/one-time-vimeo-studio-drop --render --transcribe-openai --raw-id RAW-20260713-004
 
 The v1 processor performs no real Vimeo upload, no production DB mutation, no member publish, and no bot knowledge promotion.`);
 }
@@ -30,6 +30,7 @@ function parseArgs(argv = []) {
     folder: '',
     processedFolder: '',
     reportDir: '',
+    rawId: '',
     recursive: false,
     limit: 0,
     render: false,
@@ -67,6 +68,9 @@ function parseArgs(argv = []) {
       index += 1;
     } else if (arg === '--report-dir') {
       args.reportDir = argv[index + 1] || args.reportDir;
+      index += 1;
+    } else if (arg === '--raw-id') {
+      args.rawId = argv[index + 1] || args.rawId;
       index += 1;
     } else if (arg === '--recursive') {
       args.recursive = true;

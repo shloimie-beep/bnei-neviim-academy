@@ -27,6 +27,7 @@ const DEFAULT_HEIGHT = 1080;
 const DEFAULT_AUTO_TRIM_MAX_EDGE_SECONDS = 180;
 const DEFAULT_TRANSCRIPTION_MODEL = process.env.OPENAI_TRANSCRIPTION_MODEL || 'gpt-4o-mini-transcribe';
 const DEFAULT_OPENAI_BASE_URL = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
+const DEFAULT_RAW_ID = 'RAW-20260708-011';
 const TRANSCRIPTION_MAX_BYTES = 24 * 1024 * 1024;
 
 function compactText(value, max = 240) {
@@ -508,6 +509,10 @@ function buildStudioCandidate(drop, folderRoot, processedRoot, options = {}) {
   const videoPath = path.resolve(drop.video_path);
   const metadataRead = readDropMetadata(videoPath, dropRoot);
   const metadata = metadataRead.metadata;
+  const rawId = compactText(
+    options.rawId || metadataValue(metadata, 'parent_raw_id', 'parentRawId', 'raw_id', 'rawId') || DEFAULT_RAW_ID,
+    80,
+  );
   const probe = probeVideo(videoPath, metadata);
   const edgeTrim = detectEdgeTrim(videoPath, probe, options);
   const trimPlan = buildTrimPlan(metadata, probe, options, edgeTrim);
@@ -533,6 +538,7 @@ function buildStudioCandidate(drop, folderRoot, processedRoot, options = {}) {
   if (safety.contains_sensitive_data) blockers.push('Sidecar marks this file as containing sensitive data; Vimeo upload remains blocked.');
   const candidate = {
     id: candidateId,
+    raw_id: rawId,
     workspace_key: ONE_TIME_WORKSPACE_KEY,
     project_key: ONE_TIME_PROJECT_KEY,
     title,
@@ -603,7 +609,7 @@ function buildVimeoSidecar(candidate, rendered = {}) {
     updated_by: 'one-time-vimeo-studio-pipeline',
     metadata: {
       intake_source: 'one_time_vimeo_studio_pipeline',
-      parent_raw_id: 'RAW-20260708-011',
+      parent_raw_id: candidate.raw_id || DEFAULT_RAW_ID,
       studio_candidate_id: candidate.id,
       trim_strategy: candidate.trim_plan.strategy,
       edge_detection: candidate.trim_plan.edge_detection,
@@ -881,6 +887,7 @@ function safeCandidateReport(candidate, rendered = {}, repoRoot = process.cwd())
   const artifacts = candidate.metadata_artifacts || buildMetadataArtifacts(candidate);
   return {
     id: candidate.id,
+    raw_id: candidate.raw_id || DEFAULT_RAW_ID,
     workspace_key: candidate.workspace_key,
     project_key: candidate.project_key,
     title: candidate.title,
@@ -940,11 +947,12 @@ async function runStudioPipeline(options = {}) {
   const processedRoot = path.resolve(repoRoot, options.processedFolder || DEFAULT_PROCESSED_FOLDER);
   const render = options.render === true;
   const runVimeoDryRun = options.runVimeoDryRun !== false;
+  const rawId = compactText(options.rawId || DEFAULT_RAW_ID, 80);
   const report = {
     ok: true,
     generated_at: new Date().toISOString(),
     workflow: 'one_time_vimeo_studio_pipeline',
-    raw_id: 'RAW-20260708-011',
+    raw_id: rawId,
     workspace_key: ONE_TIME_WORKSPACE_KEY,
     project_key: ONE_TIME_PROJECT_KEY,
     folder: reportPath(repoRoot, folder),
@@ -1056,6 +1064,7 @@ function formatMarkdownReport(report = {}) {
     `# One Time Vimeo Studio Pipeline Report - ${report.generated_at || ''}`,
     '',
     `- Workflow: \`${report.workflow}\``,
+    `- Raw ID: \`${report.raw_id || ''}\``,
     `- Scope: \`${report.workspace_key}\` / \`${report.project_key}\``,
     `- Folder: \`${report.folder_relative_to_repo || report.folder || ''}\``,
     `- Processed folder: \`${report.processed_folder_relative_to_repo || report.processed_folder || ''}\``,

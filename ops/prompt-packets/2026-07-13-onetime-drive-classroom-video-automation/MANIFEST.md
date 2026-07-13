@@ -132,7 +132,7 @@ findings, deploy/live-smoke URLs where applicable, blockers, and next packet.
 | PKT-20260713-004-00 | 00-control-tower | CONTROL_TOWER | RAW-20260713-004 | done | Register source, classify, define DAG, collisions, requirements, provider gates. |
 | PKT-20260713-004-01 | 01-current-state-visual-audit | VISUAL_AUDITOR | PKT-20260713-004-00 | captured_with_blockers | Captured current public/provider/parent/student/classroom screenshots and recorded Operations/member blockers. |
 | PKT-20260713-004-02 | 02-drive-intake-orchestrator | IMPLEMENTATION_PACKET | PKT-20260713-004-00, REQ-20260713-913 | done | Drive discovery, stable-file admission, idempotent content jobs, leases, retries. |
-| PKT-20260713-004-03 | 03-media-edit-and-long-transcription | IMPLEMENTATION_PACKET | PKT-20260713-004-02 | partial - media edit Done; transcription provider/private fixture pending | Edge edit verification and chunked private transcription. |
+| PKT-20260713-004-03 | 03-media-edit-and-long-transcription | IMPLEMENTATION_PACKET | PKT-20260713-004-02 | done - media edit, long-transcription harness, and synthetic provider fixture verified | Edge edit verification and chunked private transcription. |
 | PKT-20260713-004-04 | 04-transcript-metadata-and-knowledge-handoff | IMPLEMENTATION_PACKET | PKT-20260713-004-03 | done - deployed admin readback verified | Metadata schema/generator, bot-knowledge handoff contract, class-session review fields, and folder-workflow review-package bridge. |
 | PKT-20260713-004-05 | 05-vimeo-owner-readiness-and-private-upload | PROVIDER_SETUP_PACKET | PKT-20260713-004-00 | needs_operator_decision | Credential readback, owner account/project checks, synthetic private upload gate. Existing access token reads the owner account; newly supplied values validate as app credentials but fail direct bearer readback; no private test project/folder or upload approval is configured. |
 | PKT-20260713-004-06 | 06-class-package-classroom-and-latest-video | IMPLEMENTATION_PACKET | PKT-20260713-004-04, PKT-20260713-004-05 | partial - read-only admin/review/synthetic-member/anonymous gates verified; publication and Vimeo-origin proof gated | Class review package, member library, latest video, older-class library, entitlements. |
@@ -155,8 +155,8 @@ Current-state/code audit is recorded at
 `ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/current-state-capability-audit.md`.
 Drive orchestrator local implementation evidence is recorded at
 `ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/02-drive-intake-orchestrator.md`.
-Media-edit deployed/live-smoked evidence and long-transcription open-provider
-gate are recorded at
+Media-edit deployed/live-smoked evidence, long-transcription harness proof, and
+synthetic OpenAI provider fixture proof are recorded at
 `ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/03-media-edit-and-long-transcription.md`.
 
 Transcript metadata and knowledge-handoff contract, studio-sidecar integration,

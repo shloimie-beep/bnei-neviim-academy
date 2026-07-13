@@ -71,11 +71,13 @@ test('studio pipeline discovers folder drops and builds deterministic trim plans
   const report = await pipeline.runStudioPipeline({
     folder: root,
     processedFolder: path.join(root, 'processed'),
+    rawId: 'RAW-TEST-ONETIME-001',
     render: false,
     runVimeoDryRun: false,
   });
 
   assert.equal(report.workflow, 'one_time_vimeo_studio_pipeline');
+  assert.equal(report.raw_id, 'RAW-TEST-ONETIME-001');
   assert.equal(report.workspace_key, pipeline.ONE_TIME_WORKSPACE_KEY);
   assert.equal(report.project_key, pipeline.ONE_TIME_PROJECT_KEY);
   assert.equal(report.external_write_performed, false);
@@ -84,6 +86,7 @@ test('studio pipeline discovers folder drops and builds deterministic trim plans
   assert.equal(report.candidates.length, 1);
 
   const candidate = report.candidates[0];
+  assert.equal(candidate.raw_id, 'RAW-TEST-ONETIME-001');
   assert.equal(candidate.title, 'Mishnah Berachos 1:1');
   assert.equal(candidate.trim_plan.trim_start_seconds, 18);
   assert.equal(candidate.trim_plan.trim_end_seconds, 7);
@@ -294,7 +297,7 @@ test('studio sidecar is compatible with the existing Vimeo folder workflow shape
     { drop_root: drop, video_path: videoPath },
     root,
     processed,
-    {},
+    { rawId: 'RAW-TEST-ONETIME-002' },
   );
   const sidecar = pipeline.buildVimeoSidecar(candidate, { status: 'rendered' });
 
@@ -314,6 +317,7 @@ test('studio sidecar is compatible with the existing Vimeo folder workflow shape
   assert.equal(sidecar.bot_knowledge_handoff.no_raw_transcript_body, true);
   assert.equal(sidecar.bot_knowledge_handoff.knowledge_item, null);
   assert.equal(sidecar.metadata.intake_source, 'one_time_vimeo_studio_pipeline');
+  assert.equal(sidecar.metadata.parent_raw_id, 'RAW-TEST-ONETIME-002');
 });
 
 test('studio reports redact transcript body from committed evidence', async () => {
@@ -326,6 +330,7 @@ test('studio reports redact transcript body from committed evidence', async () =
   const report = await pipeline.runStudioPipeline({
     folder: root,
     processedFolder: path.join(root, 'processed'),
+    rawId: 'RAW-TEST-ONETIME-003',
     render: false,
     runVimeoDryRun: false,
   });
@@ -333,6 +338,7 @@ test('studio reports redact transcript body from committed evidence', async () =
   const candidate = report.candidates[0];
 
   assert.match(markdown, /Transcript: `present`/);
+  assert.match(markdown, /Raw ID: `RAW-TEST-ONETIME-003`/);
   assert.equal(candidate.metadata_draft.raw_transcript_included, false);
   assert.equal(candidate.bot_knowledge_handoff.no_raw_transcript_body, true);
   assert.equal(candidate.bot_knowledge_handoff.status, 'blocked');
@@ -376,6 +382,7 @@ test('package script exposes the studio processor', () => {
 test('studio processor CLI exposes opt-in transcription flag', () => {
   const cli = fs.readFileSync('scripts/one-time-vimeo-studio-pipeline.mjs', 'utf8');
   assert.match(cli, /--transcribe-openai/);
+  assert.match(cli, /--raw-id/);
   assert.match(cli, /transcribeOpenAI = true/);
 });
 

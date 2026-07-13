@@ -170,11 +170,11 @@
       ],
       "stage": "03-media-edit-and-long-transcription",
       "packet_role": "IMPLEMENTATION_PACKET",
-      "status": "partial_media_edit_done_transcription_provider_private_fixture_pending",
+      "status": "done_media_edit_long_transcription_harness_synthetic_provider_fixture_verified",
       "owner": "Codex",
-      "scope": "Conservative media edit defaults, MKV handoff support, rendered-output verification, and later long-form private transcription.",
+      "scope": "Conservative media edit defaults, MKV handoff support, rendered-output verification, long-form private transcription harness, and synthetic provider fixture proof.",
       "out_of_scope": [
-        "OpenAI transcription provider call",
+        "Real/private class recording transcription",
         "Drive mutation",
         "Vimeo upload",
         "Database mutation",
@@ -184,6 +184,7 @@
       "affected_routes": [],
       "affected_files": [
         "src/lib/bna/one-time-vimeo-studio-pipeline.js",
+        "scripts/one-time-vimeo-studio-pipeline.mjs",
         "src/lib/bna/one-time-vimeo-folder-library.js",
         "src/lib/bna/one-time-long-transcription.js",
         "tests/one-time-vimeo-studio-pipeline.test.js",
@@ -198,10 +199,11 @@
         "MKV studio and folder-library tests",
         "rendered output verification test",
         "real local FFmpeg render smoke",
-        "long-form chunking and privacy-safe transcript version tests"
+        "long-form chunking and privacy-safe transcript version tests",
+        "synthetic OpenAI provider fixture smoke with transcript-body-redacted report"
       ],
-      "validation_command": "node --test tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js",
-      "terminal_condition": "Media edit and local long-transcription harness are validated; provider/private fixture integration remains pending.",
+      "validation_command": "node --test tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js && node scripts/one-time-vimeo-studio-pipeline.mjs --folder media-inbox/onetime-vimeo-studio-speech-transcription-smoke --processed-folder media-inbox/onetime-vimeo-studio-speech-transcription-smoke-processed --render --transcribe-openai --skip-vimeo-dry-run --write-report --report-dir ops/qa-runs --limit 1 --raw-id RAW-20260713-004",
+      "terminal_condition": "Media edit, local long-transcription harness, transcript privacy tests, and synthetic OpenAI provider fixture smoke are validated with no Vimeo upload, production DB mutation, member publication, raw transcript body in committed evidence, or secret leakage. First real class/private recording transcription remains an operator/privacy decision.",
       "handoff_target": "PKT-20260713-004-04",
       "next_requirement": "REQ-20260713-917",
       "next_packet": "PKT-20260713-004-04"
