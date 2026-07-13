@@ -39818,3 +39818,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   canonical contact set; it created no synthetic data and performed no external
   writes. Report:
   `ops/live-smokes/2026-07-13T09-28-14-537Z-one-time-crm-delivery-outbox-dto-live-smoke.md`.
+
+## 2026-07-13 - One Time signup keyboard-card regression deployed
+
+- Reproduced the remaining production form failure with
+  `ops/live-smokes/2026-07-13T09-15-12-884Z-one-time-signup-form-matrix-live.md`:
+  Enter on the Family/School and reminder cards left the underlying radio
+  controls unchecked, so keyboard-only completion attempted zero POSTs.
+- Patched `public/one-time/signup.html` so Family/School and reminder cards
+  are focusable and Enter/Space activate the underlying radio through the same
+  change path as pointer/touch selection.
+- Deployed One Time runtime SHA `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`
+  to Railway deployment `2645a6c7-3b51-4ae6-915f-5a267dacde22`; live
+  `/api/deploy-info` returned the exact SHA.
+- Verification passed: signup matrix tests `17/17`, CRM DTO contract tests
+  `34/34`, generated-shell check, action/secrets/protocol/run validators,
+  exact-SHA route smoke, full production signup matrix
+  `ops/live-smokes/2026-07-13T09-32-18-347Z-one-time-signup-form-matrix-live.md`,
+  direct signup dry-run
+  `ops/live-smokes/2026-07-13T09-32-18-048Z-one-time-interest-dry-run-live-smoke.md`,
+  One Time CRM workbench smoke, provider route-module smoke, and delivery-outbox
+  DTO smoke.
+- Guardrails: no external email, WhatsApp/WAPI, Telegram, payment/access,
+  credential, provider, or production-data mutation was performed by the
+  regression matrix; the direct signup verification used dry-run/no-write proof.
