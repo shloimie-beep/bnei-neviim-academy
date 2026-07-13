@@ -7853,6 +7853,8 @@ function firstPartyCrmTimelineTitle(item = {}) {
     const channel = String(item.channel || '').toLowerCase();
     const labels = {
         class_attendance: 'Class attendance',
+        delivery_dead_letter: 'Delivery needs review',
+        delivery_outbox: 'Delivery status',
         follow_up_task: 'Follow-up task',
         membership_access: 'Membership / access',
         signup_context: 'Signup context',
@@ -7861,6 +7863,7 @@ function firstPartyCrmTimelineTitle(item = {}) {
     };
     if (labels[type]) return labels[type];
     if (channel === 'attendance') return 'Class attendance';
+    if (channel === 'dead_letter') return 'Delivery needs review';
     return [item.channel, item.type || item.communication_type].filter(Boolean).join(' / ') || 'Timeline item';
 }
 

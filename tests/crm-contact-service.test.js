@@ -230,6 +230,28 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
         occurred_at: '2026-07-12T13:24:00Z',
         communication_type: 'delivery_outbox',
       },
+      {
+        id: -1000019,
+        channel: 'dead_letter',
+        direction: 'internal',
+        body: 'Delivery needs review: WhatsApp / one time direct signup',
+        source: 'assistant_dead_letters',
+        source_context: JSON.stringify({
+          crm_contact_id: 'bna_contacts:7',
+          source_table: 'assistant_dead_letters',
+          dead_letter_key: 'one-time-delivery-outbox:18',
+          channel_key: 'whatsapp:one_time_signup_confirmation',
+          status: 'open',
+          reason_returned: false,
+          payload_returned: false,
+          message_body_returned: false,
+          recipient_returned: false,
+          no_send: true,
+          external_write_performed: false,
+        }),
+        occurred_at: '2026-07-12T13:25:00Z',
+        communication_type: 'delivery_dead_letter',
+      },
     ],
   });
 
@@ -248,6 +270,7 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'class_attendance'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'communication_suppression'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'delivery_outbox'), false);
+  assert.equal(conversations.conversations.some((item) => item.communication_type === 'delivery_dead_letter'), false);
   assert.equal(conversations.conversations[0].open_action, 'whatsapp');
   assert.equal(conversations.conversations[0].thread_key, 'phone:972501112222');
   assert.equal(conversations.conversations[0].from_address, '+972 50 111 2222');
@@ -271,8 +294,10 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.equal(timeline.timeline.some((item) => item.type === 'class_attendance'), true);
   assert.equal(timeline.timeline.some((item) => item.type === 'communication_suppression'), true);
   assert.equal(timeline.timeline.some((item) => item.type === 'delivery_outbox'), true);
+  assert.equal(timeline.timeline.some((item) => item.type === 'delivery_dead_letter'), true);
   assert.equal(timeline.timeline.find((item) => item.type === 'communication_suppression').no_send, true);
   assert.equal(timeline.timeline.find((item) => item.type === 'delivery_outbox').source_context.includes('recipient_returned'), true);
+  assert.equal(timeline.timeline.find((item) => item.type === 'delivery_dead_letter').source_context.includes('reason_returned'), true);
 });
 
 test('CRM contact service filter and ref helpers are stable', () => {

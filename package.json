@@ -171,6 +171,7 @@
     "app:smoke:onetime-crm-email-thread-dto": "node scripts/smoke-onetime-crm-email-thread-dto-live.mjs",
     "app:smoke:onetime-crm-contact-notes-dto": "node scripts/smoke-onetime-crm-contact-notes-dto-live.mjs",
     "app:smoke:onetime-crm-delivery-outbox-dto": "node scripts/smoke-onetime-crm-delivery-outbox-dto-live.mjs",
+    "app:smoke:onetime-crm-dead-letter-dto": "node scripts/smoke-onetime-crm-dead-letter-dto-live.mjs",
     "app:smoke:onetime-signup-form-matrix": "node scripts/smoke-onetime-signup-form-matrix-live.mjs",
     "app:smoke:crm-identity-isolation": "node scripts/smoke-crm-identity-isolation-live.mjs",
     "app:smoke:rabbi-agent-review-proof-readiness": "node scripts/smoke-rabbi-agent-review-proof-readiness-live.mjs",

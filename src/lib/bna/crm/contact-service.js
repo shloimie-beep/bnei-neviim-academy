@@ -91,6 +91,7 @@ function isAggregateContextTimelineRow(row = {}) {
     'class_attendance',
     'communication_suppression',
     'delivery_outbox',
+    'delivery_dead_letter',
   ].includes(row.communication_type) || [
     'student',
     'membership',
@@ -98,6 +99,7 @@ function isAggregateContextTimelineRow(row = {}) {
     'attendance',
     'suppression',
     'delivery_outbox',
+    'dead_letter',
   ].includes(row.channel);
 }
 
