@@ -75,6 +75,7 @@ const ROUTES = [
   },
   { id: 'one-time-public', route: '/one-time', viewClass: 'PUBLIC_MARKETING', surface: 'One Time public landing' },
   { id: 'one-time-member-login', route: '/one-time/member-login', viewClass: 'MEMBER_PARENT_PORTAL', surface: 'One Time member login' },
+  { id: 'member-library-review', route: '/member-library?review=one-time', viewClass: 'MEMBER_PARENT_PORTAL', surface: 'One Time member library review' },
   { id: 'provider-review', route: '/provider.html?review=one-time', viewClass: 'RABBI_PROVIDER_ADMIN', surface: 'Provider review portal' },
   { id: 'parent-review', route: '/parent.html?review=one-time', viewClass: 'MEMBER_PARENT_PORTAL', surface: 'Parent portal review' },
   { id: 'student-review', route: '/student.html?review=one-time', viewClass: 'STUDENT_PORTAL', surface: 'Student portal review' },
@@ -138,6 +139,11 @@ function slug(value = '') {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 140) || 'route';
+}
+
+function redactEvidenceText(value = '') {
+  return String(value || '')
+    .replace(/([?&](?:code|access_code|accessCode|token|session_token|sessionToken|reset)=)[^&#\s"]*/gi, '$1[redacted]');
 }
 
 function loadEnvFile(filePath) {
@@ -262,12 +268,14 @@ async function collectPageState(page, route, responseStatus) {
     const text = document.body?.innerText || '';
     const title = document.title || '';
     const headings = Array.from(document.querySelectorAll('h1,h2,h3')).slice(0, 20).map((node) => node.textContent.trim().replace(/\s+/g, ' ')).filter(Boolean);
+    const redactUrl = (value = '') => String(value || '')
+      .replace(/([?&](?:code|access_code|accessCode|token|session_token|sessionToken|reset)=)[^&#]*/gi, '$1[redacted]');
     const buttons = Array.from(document.querySelectorAll('button,[role="button"],a[href]')).map((node) => ({
       tag: node.tagName.toLowerCase(),
       text: (node.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80),
       aria: node.getAttribute('aria-label') || node.getAttribute('title') || '',
       disabled: Boolean(node.disabled || node.getAttribute('aria-disabled') === 'true'),
-      href: node.getAttribute('href') || '',
+      href: redactUrl(node.getAttribute('href') || ''),
     })).slice(0, 160);
     const unlabeledButtons = buttons.filter((button) => !button.text && !button.aria).length;
     const isVisibleFormControl = (node) => {
@@ -306,9 +314,9 @@ async function collectPageState(page, route, responseStatus) {
     else if (/blocked|setup required|not configured|coming soon/i.test(lowerText)) observedState = 'blocked_setup';
     else if (/preview only|no .* sent|dry run|read-only/i.test(lowerText)) observedState = 'preview_only';
     return {
-      route,
+      route: redactUrl(route),
       response_status: responseStatus,
-      url: window.location.href,
+      url: redactUrl(window.location.href),
       title,
       headings,
       has_h1: Boolean(document.querySelector('h1')),
@@ -452,7 +460,7 @@ async function captureRoute(browser, baseUrl, routeMeta, viewport, cookieHeader,
   });
   page.on('pageerror', (error) => consoleErrors.push(error.message.slice(0, 500)));
   page.on('response', (response) => {
-    if (response.status() >= 400) networkErrors.push({ url: response.url(), status: response.status() });
+    if (response.status() >= 400) networkErrors.push({ url: redactEvidenceText(response.url()), status: response.status() });
   });
 
   const target = `${baseUrl}${routeMeta.route}`;
@@ -514,12 +522,15 @@ async function captureRoute(browser, baseUrl, routeMeta, viewport, cookieHeader,
   } catch (error) {
     aria = `ARIA snapshot unavailable: ${error.message}`;
   }
+  aria = redactEvidenceText(aria);
   const ariaPath = path.join(outDir, 'aria', `${routeMeta.id}-${viewport.label}.txt`);
   writeText(ariaPath, aria || 'ARIA snapshot unavailable in this Playwright runtime.');
 
   const accessibilityPath = path.join(outDir, 'accessibility', `${routeMeta.id}-${viewport.label}.json`);
+  const evidenceRoute = redactEvidenceText(routeMeta.route);
+  const evidenceTarget = redactEvidenceText(target);
   writeJson(accessibilityPath, {
-    route: routeMeta.route,
+    route: evidenceRoute,
     viewport: viewport.label,
     checks: {
       horizontal_overflow: state.horizontal_overflow,
@@ -534,16 +545,16 @@ async function captureRoute(browser, baseUrl, routeMeta, viewport, cookieHeader,
 
   await context.close();
   return {
-    route: routeMeta.route,
+    route: evidenceRoute,
     route_id: routeMeta.id,
     surface: routeMeta.surface,
     view_class: routeMeta.viewClass,
     viewport: viewport.label,
     width: viewport.width,
     height: viewport.height,
-    target_url: target,
+    target_url: evidenceTarget,
     response_status: responseStatus,
-    final_url: state.url || target,
+    final_url: redactEvidenceText(state.url || target),
     screenshot_path: path.relative(ROOT, screenshotPath).replace(/\\/g, '/'),
     aria_path: path.relative(ROOT, ariaPath).replace(/\\/g, '/'),
     accessibility_path: path.relative(ROOT, accessibilityPath).replace(/\\/g, '/'),
@@ -608,7 +619,7 @@ function markdownTable(rows, columns) {
 function writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix, routes = ROUTES, runMeta = {} }) {
   const routeRows = routes.map((route) => ({
     id: route.id,
-    route: route.route,
+    route: redactEvidenceText(route.route),
     surface: route.surface,
     view_class: route.viewClass,
     route_registry: routeRegistryCoverage(route.route).match || 'missing',

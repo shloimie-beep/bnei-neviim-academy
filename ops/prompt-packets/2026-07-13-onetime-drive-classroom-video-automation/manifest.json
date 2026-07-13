@@ -90,7 +90,7 @@
       "packet_role": "VISUAL_AUDITOR",
       "status": "captured_with_blockers",
       "owner": "Codex",
-      "scope": "Audit current Rabbi content command center, parent/student portals, classroom/library, and mobile states before UI code. Current pass captured public/provider/parent/student/classroom evidence and recorded Operations/member blockers.",
+      "scope": "Audit current Rabbi content command center, parent/student portals, classroom/library, and mobile states before UI code. Current passes captured public/provider/parent/student/classroom evidence, focused member-library review evidence, and recorded remaining Operations/publication blockers.",
       "out_of_scope": [
         "UI implementation",
         "External writes"
@@ -99,7 +99,8 @@
         "Rabbi content command center",
         "parent portal",
         "student portal",
-        "classroom/library"
+        "classroom/library",
+        "member-library review"
       ],
       "required_evidence": [
         "1440/1024/768/430/390 screenshots or exact blocker",
@@ -110,7 +111,7 @@
         "PQC spec validation"
       ],
       "validation_command": "npm run pqc:validate",
-      "terminal_condition": "Visual audit report and PQC spec exist; UI implementation remains blocked by authenticated Operations screenshot, member/latest-video screenshot, Vimeo, and publication gates.",
+      "terminal_condition": "Visual audit report and PQC spec exist; focused member-library review screenshots are captured; UI implementation remains blocked by authenticated Operations screenshot, Vimeo, publication, and true member-session/latest-video gates.",
       "handoff_target": "PKT-20260713-004-07",
       "next_packet": "PKT-20260713-004-02"
     },

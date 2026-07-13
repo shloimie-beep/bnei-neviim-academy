@@ -139,6 +139,9 @@ from this broad parent packet until Definition of Ready passes.
 Audit output:
 `ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/`
 
+Focused member-library review output:
+`ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/`
+
 | Evidence | Result |
 |---|---|
 | Base URL | `https://join.onetimeonetime.com` |
@@ -151,17 +154,30 @@ Audit output:
 | External writes | None. |
 | UI implementation | None. |
 
+Focused member-library review evidence:
+
+| Evidence | Result |
+|---|---|
+| Route captured | `/member-library?review=one-time` |
+| Audit report | `ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/report.md` and `report.json` |
+| Viewports captured | `1440-desktop`, `1024-desktop-tablet`, `768-tablet`, `430-mobile`, and `390-mobile`. |
+| Screenshots | 5 PNG screenshots plus ARIA and accessibility snapshots. |
+| Automated findings | None. |
+| Redaction/scope scan | No raw access-code/token pattern, no transcript body pattern, no network errors, and no external writes in focused evidence. |
+| Manual spot check | `390-mobile` review screenshot is readable, contained in the viewport, and shows review/sample/no-write state without obvious private credential or access-code exposure. |
+
 ## Blockers / Gaps
 
 - Authenticated Operations content-command-center evidence is incomplete:
   Operations login returned `401 Invalid credentials`, so Operations screenshots
   are permission-denied/auth-blocker evidence, not authenticated Rabbi/provider
   command-center proof.
-- `one-time-member-login` was excluded from the completed report because the
+- `one-time-member-login` was excluded from the broad report because the
   screenshot harness repeatedly hung after the One Time public route when that
-  route was included. The member/latest-video route needs either a fixed
-  screenshot harness route, a different member-library URL, or valid member
-  test session evidence before UI Done.
+  route was included. Current-state member-library review evidence is now
+  captured through `/member-library?review=one-time`; true authenticated
+  member-session/latest-video publication proof still needs either a valid
+  member test session or the approved publication path.
 - Manual screenshot review and a focused Product Quality Compiler JSON packet
   are still required before any UI implementation.
 

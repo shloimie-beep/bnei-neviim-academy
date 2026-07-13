@@ -24,6 +24,8 @@
     "consumes": [
       "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.md",
       "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.json",
+      "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/report.md",
+      "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/report.json",
       "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/01-current-state-visual-audit.md",
       "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md"
     ],
@@ -32,7 +34,7 @@
       "A later focused member/parent/student latest-video implementation packet"
     ],
     "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.product-quality.json",
-    "terminal_condition": "The UI build remains blocked until authenticated Operations evidence, member/latest-video evidence, and Vimeo/provider publication blockers are resolved or explicitly carried.",
+    "terminal_condition": "The UI build remains blocked until authenticated Operations evidence, Vimeo/provider publication blockers, and true member-session/latest-video proof are resolved or explicitly carried.",
     "handoff_target": "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.md"
   },
   "stage": "STAGE_1_SPEC_COMPILER",
@@ -66,7 +68,7 @@
     "reasons": [
       "The parent workflow asks for Drive-to-classroom visibility across provider review, classroom, parent, student, and member/latest-video surfaces.",
       "Current-state screenshots now exist for public/provider/parent/student/classroom review surfaces across the required viewports.",
-      "Authenticated Operations and member/latest-video proof is incomplete, so implementation must remain blocked or split."
+      "Authenticated Operations proof is incomplete; member-library review proof now exists, while true latest-video publication proof remains gated."
     ],
     "affected_product_surfaces": [
       "Operations One Time content library and tasks",
@@ -78,7 +80,7 @@
     ],
     "likely_external_provider_blockers": [
       "Vimeo private upload needs test folder/project, upload-capable user token/scope/plan confirmation, and explicit synthetic smoke approval.",
-      "Member/latest-video proof needs either a non-hanging member route capture or valid member test session."
+      "True member/latest-video proof still needs publication/session setup beyond the review-only member-library route."
     ],
     "product_quality_compiler_required": true,
     "super_ramble_packet_splitter_required": true,
@@ -86,7 +88,7 @@
     "implementation_forbidden_until_dor": true,
     "recommended_packet_sequence": [
       "Resolve authenticated Operations screenshot blocker or carry it as an explicit UI blocker.",
-      "Resolve member/latest-video screenshot blocker or identify the correct member-library route.",
+      "Carry the focused `/member-library?review=one-time` evidence for review-only member-library UI and keep true latest-video proof gated by publication/session setup.",
       "Split implementation into Operations review-package UI and portal/latest-video UI packets.",
       "Run focused tests, action/route watchdogs, deploy, and live smoke for any app-visible change."
     ],
@@ -132,7 +134,8 @@
     "/provider.html?review=one-time",
     "/parent.html?review=one-time",
     "/student.html?review=one-time",
-    "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+    "/one-time-classroom.html?review=one-time&code=[redacted]",
+    "/member-library?review=one-time",
     "/one-time/member-login"
   ],
   "affected_files": [
@@ -149,7 +152,9 @@
   "current_state": {
     "inspection_targets": [
       "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.json",
+      "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/report.json",
       "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/",
+      "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/screenshots/",
       "ops/action-registry.json",
       "ops/route-registry.json",
       "public/one-time-classroom.html",
@@ -159,7 +164,7 @@
     ],
     "known_current_defects": [
       "Authenticated Operations command-center screenshots were not captured because Operations login returned 401 Invalid credentials.",
-      "The member/latest-video screenshot route was excluded because one-time-member-login repeatedly hung the screenshot harness.",
+      "The original member/latest-video screenshot route was excluded because one-time-member-login repeatedly hung the screenshot harness; focused `/member-library?review=one-time` screenshots now cover the review-only member-library state, but true member-session/latest-video publication proof remains gated.",
       "Student review has unlabeled or empty action controls in all five captured viewports.",
       "Only populated, preview_only, and permission_denied states were directly observed; loading, empty, filtered_empty, error, blocked_setup, success_readback, and mobile detail states need fixtures or smoke paths."
     ],
@@ -167,9 +172,10 @@
       "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/provider-review-1440-desktop.png",
       "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/parent-review-430-mobile.png",
       "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/student-review-390-mobile.png",
-      "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/one-time-classroom-review-1440-desktop.png"
+      "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/one-time-classroom-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/screenshots/member-library-review-390-mobile.png"
     ],
-    "after_screenshot_plan": "After implementation, capture the same five viewport set for every touched route and include authenticated Operations plus member/latest-video evidence or exact blockers."
+    "after_screenshot_plan": "After implementation, capture the same five viewport set for every touched route and include authenticated Operations plus true latest-video publication evidence or exact blockers."
   },
   "product_quality_expansion": {
     "trigger_phrases": [
@@ -219,11 +225,12 @@
     }
   ],
   "definition_of_ready": {
-    "status": "blocked_pending_auth_and_member_screenshot_evidence",
+    "status": "blocked_pending_auth_vimeo_publication_and_true_member_latest_video",
     "criteria": [
       "Current-state visual audit exists with 40 screenshots across 8 active routes and five required viewports.",
+      "Focused member-library review audit exists with 5 screenshots across the required viewports.",
       "Operations command-center implementation is blocked until authenticated Operations screenshots are captured or the blocker is explicitly accepted.",
-      "Member/latest-video implementation is blocked until the hanging member-login route is replaced with a valid member/latest-video route or session.",
+      "Portal latest-video implementation remains blocked until publication/session proof exists beyond the review-only member-library route.",
       "PQC validator must pass before any UI code edit.",
       "Vimeo upload and member publication remain separate approval-gated packets."
     ]
@@ -264,7 +271,7 @@
       "requirement_id": "REQ-20260713-920"
     },
     "populated": {
-      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "route": "/one-time-classroom.html?review=one-time&code=[redacted]",
       "viewport": 1440,
       "auth_role": "STUDENT_PORTAL",
       "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
@@ -571,13 +578,17 @@
     ],
     "current_evidence": [
       "Current-state audit captured 40 screenshots and generated report.json/report.md.",
-      "Operations authenticated view and member/latest-video route remain blockers."
+      "Focused member-library review audit captured 5 screenshots and generated report.json/report.md.",
+      "Operations authenticated view and true member/latest-video publication proof remain blockers."
     ]
   },
   "evidence": {
     "current_state_report": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.md",
     "current_state_json": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.json",
     "screenshot_dir": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots",
+    "member_review_report": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/report.md",
+    "member_review_json": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/report.json",
+    "member_review_screenshot_dir": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/screenshots",
     "state_matrix": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/state-matrix/observed-state-matrix.json"
   },
   "deployment_gate": "BLOCKED_WITH_REASON",
@@ -602,10 +613,11 @@
     "blocker_decisions": [
       "DEC-20260713-006",
       "OPS_AUTH_BLOCKER",
-      "MEMBER_ROUTE_SCREENSHOT_BLOCKER"
+      "TRUE_MEMBER_LATEST_VIDEO_PUBLICATION_BLOCKER"
     ],
     "evidence_paths": [
       "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.md",
+      "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/report.md",
       "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/01-current-state-visual-audit.md"
     ],
     "final_status_path": "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md",

@@ -1,0 +1,1576 @@
+{
+  "audit_id": "2026-07-13-onetime-member-library-review-current-state",
+  "raw_id": "RAW-20260713-004",
+  "parent_packet_raw_id": "RAW-20260713-004",
+  "packet_id": "PKT-20260713-004-07B",
+  "requirement_id": "REQ-20260713-920",
+  "generated_at": "2026-07-13T14:38:59.795Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "auth": {
+    "operations_login_available": false,
+    "blocker": "Operations login returned 401: {\"success\":false,\"error\":\"Invalid credentials\"}",
+    "secrets_redacted": true
+  },
+  "screenshot_count": 5,
+  "required_viewports": [
+    "1440-desktop",
+    "1024-desktop-tablet",
+    "768-tablet",
+    "430-mobile",
+    "390-mobile"
+  ],
+  "route_count": 1,
+  "findings_count": 0,
+  "browser_content_untrusted": true,
+  "ui_implementation_performed": false,
+  "external_write_performed": false,
+  "privacy_redaction": "Operations screenshots were redacted client-side before capture; reports avoid raw private page bodies.",
+  "captures": [
+    {
+      "route": "/member-library?review=one-time",
+      "route_id": "member-library-review",
+      "surface": "One Time member library review",
+      "view_class": "MEMBER_PARENT_PORTAL",
+      "viewport": "1440-desktop",
+      "width": 1440,
+      "height": 1000,
+      "target_url": "https://join.onetimeonetime.com/member-library?review=one-time",
+      "response_status": 200,
+      "final_url": "https://join.onetimeonetime.com/member-library?review=one-time",
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/screenshots/member-library-review-1440-desktop.png",
+      "aria_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/aria/member-library-review-1440-desktop.txt",
+      "accessibility_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/accessibility/member-library-review-1440-desktop.json",
+      "navigation_error": null,
+      "screenshot_error": null,
+      "console_errors": [],
+      "network_errors": [],
+      "state": {
+        "route": "/member-library?review=one-time",
+        "response_status": 200,
+        "url": "https://join.onetimeonetime.com/member-library?review=one-time",
+        "title": "One Time Member Library",
+        "headings": [
+          "One Time Member Library",
+          "Current One Time access",
+          "Pesachim Perek 10 Review Class"
+        ],
+        "has_h1": true,
+        "button_count": 28,
+        "unlabeled_button_count": 0,
+        "visible_input_count": 1,
+        "inputs_without_labels": 0,
+        "horizontal_overflow": false,
+        "scroll_width": 1440,
+        "client_width": 1440,
+        "text_length": 1065,
+        "forbidden_matches": {
+          "raw_json": false,
+          "provider_payload": false,
+          "secret_env_name": false,
+          "ghl_runtime": false,
+          "support_noise": false,
+          "workspace_contamination_terms": false
+        },
+        "observed_state": "populated",
+        "action_samples": [
+          {
+            "tag": "a",
+            "text": "Exit Preview",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library"
+          },
+          {
+            "tag": "button",
+            "text": "Menu",
+            "aria": "Open One Time portal menu",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Family Portal",
+            "aria": "Family Portal",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Library",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Classroom",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time-classroom.html?review=one-time&code=[redacted]"
+          },
+          {
+            "tag": "a",
+            "text": "Helper",
+            "aria": "Assistant/help",
+            "disabled": false,
+            "href": "#bnaBotPanel"
+          },
+          {
+            "tag": "a",
+            "text": "Support",
+            "aria": "Questions/support",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time#support"
+          },
+          {
+            "tag": "a",
+            "text": "Logout",
+            "aria": "Account/logout",
+            "disabled": false,
+            "href": "/rabbi-member?logout=1&review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Open Family Portal",
+            "aria": "",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Parent account setup/reset",
+            "aria": "",
+            "disabled": false,
+            "href": "/parent.html?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Open Classroom",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time-classroom.html?review=one-time&code=[redacted]"
+          },
+          {
+            "tag": "button",
+            "text": "All 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Newest 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Continue Watching 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Masechta 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Perek 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Materials 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Worksheets 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Review 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Completed 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Open Media",
+            "aria": "",
+            "disabled": false,
+            "href": "https://vimeo.com/1178363755/282ea2577c"
+          },
+          {
+            "tag": "button",
+            "text": "Continue Watching",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Mark Complete",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Family Portal",
+            "aria": "",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Privacy",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time/privacy.html"
+          },
+          {
+            "tag": "a",
+            "text": "Terms",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time/terms.html"
+          },
+          {
+            "tag": "a",
+            "text": "Library",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library?review=one-time"
+          },
+          {
+            "tag": "button",
+            "text": "",
+            "aria": "Close One Time portal menu",
+            "disabled": false,
+            "href": ""
+          }
+        ],
+        "browser_content_untrusted": true
+      },
+      "route_registry": {
+        "present": true,
+        "registry_path": "ops/route-registry.json",
+        "match": "/member-library"
+      },
+      "action_registry_present": true,
+      "privacy_redaction": "Email/phone text was client-side redacted before capture."
+    },
+    {
+      "route": "/member-library?review=one-time",
+      "route_id": "member-library-review",
+      "surface": "One Time member library review",
+      "view_class": "MEMBER_PARENT_PORTAL",
+      "viewport": "1024-desktop-tablet",
+      "width": 1024,
+      "height": 900,
+      "target_url": "https://join.onetimeonetime.com/member-library?review=one-time",
+      "response_status": 200,
+      "final_url": "https://join.onetimeonetime.com/member-library?review=one-time",
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/screenshots/member-library-review-1024-desktop-tablet.png",
+      "aria_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/aria/member-library-review-1024-desktop-tablet.txt",
+      "accessibility_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/accessibility/member-library-review-1024-desktop-tablet.json",
+      "navigation_error": null,
+      "screenshot_error": null,
+      "console_errors": [],
+      "network_errors": [],
+      "state": {
+        "route": "/member-library?review=one-time",
+        "response_status": 200,
+        "url": "https://join.onetimeonetime.com/member-library?review=one-time",
+        "title": "One Time Member Library",
+        "headings": [
+          "One Time Member Library",
+          "Current One Time access",
+          "Pesachim Perek 10 Review Class"
+        ],
+        "has_h1": true,
+        "button_count": 28,
+        "unlabeled_button_count": 0,
+        "visible_input_count": 1,
+        "inputs_without_labels": 0,
+        "horizontal_overflow": false,
+        "scroll_width": 1024,
+        "client_width": 1024,
+        "text_length": 1065,
+        "forbidden_matches": {
+          "raw_json": false,
+          "provider_payload": false,
+          "secret_env_name": false,
+          "ghl_runtime": false,
+          "support_noise": false,
+          "workspace_contamination_terms": false
+        },
+        "observed_state": "populated",
+        "action_samples": [
+          {
+            "tag": "a",
+            "text": "Exit Preview",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library"
+          },
+          {
+            "tag": "button",
+            "text": "Menu",
+            "aria": "Open One Time portal menu",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Family Portal",
+            "aria": "Family Portal",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Library",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Classroom",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time-classroom.html?review=one-time&code=[redacted]"
+          },
+          {
+            "tag": "a",
+            "text": "Helper",
+            "aria": "Assistant/help",
+            "disabled": false,
+            "href": "#bnaBotPanel"
+          },
+          {
+            "tag": "a",
+            "text": "Support",
+            "aria": "Questions/support",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time#support"
+          },
+          {
+            "tag": "a",
+            "text": "Logout",
+            "aria": "Account/logout",
+            "disabled": false,
+            "href": "/rabbi-member?logout=1&review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Open Family Portal",
+            "aria": "",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Parent account setup/reset",
+            "aria": "",
+            "disabled": false,
+            "href": "/parent.html?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Open Classroom",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time-classroom.html?review=one-time&code=[redacted]"
+          },
+          {
+            "tag": "button",
+            "text": "All 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Newest 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Continue Watching 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Masechta 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Perek 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Materials 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Worksheets 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Review 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Completed 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Open Media",
+            "aria": "",
+            "disabled": false,
+            "href": "https://vimeo.com/1178363755/282ea2577c"
+          },
+          {
+            "tag": "button",
+            "text": "Continue Watching",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Mark Complete",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Family Portal",
+            "aria": "",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Privacy",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time/privacy.html"
+          },
+          {
+            "tag": "a",
+            "text": "Terms",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time/terms.html"
+          },
+          {
+            "tag": "a",
+            "text": "Library",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library?review=one-time"
+          },
+          {
+            "tag": "button",
+            "text": "",
+            "aria": "Close One Time portal menu",
+            "disabled": false,
+            "href": ""
+          }
+        ],
+        "browser_content_untrusted": true
+      },
+      "route_registry": {
+        "present": true,
+        "registry_path": "ops/route-registry.json",
+        "match": "/member-library"
+      },
+      "action_registry_present": true,
+      "privacy_redaction": "Email/phone text was client-side redacted before capture."
+    },
+    {
+      "route": "/member-library?review=one-time",
+      "route_id": "member-library-review",
+      "surface": "One Time member library review",
+      "view_class": "MEMBER_PARENT_PORTAL",
+      "viewport": "768-tablet",
+      "width": 768,
+      "height": 900,
+      "target_url": "https://join.onetimeonetime.com/member-library?review=one-time",
+      "response_status": 200,
+      "final_url": "https://join.onetimeonetime.com/member-library?review=one-time",
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/screenshots/member-library-review-768-tablet.png",
+      "aria_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/aria/member-library-review-768-tablet.txt",
+      "accessibility_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/accessibility/member-library-review-768-tablet.json",
+      "navigation_error": null,
+      "screenshot_error": null,
+      "console_errors": [],
+      "network_errors": [],
+      "state": {
+        "route": "/member-library?review=one-time",
+        "response_status": 200,
+        "url": "https://join.onetimeonetime.com/member-library?review=one-time",
+        "title": "One Time Member Library",
+        "headings": [
+          "One Time Member Library",
+          "Current One Time access",
+          "Pesachim Perek 10 Review Class"
+        ],
+        "has_h1": true,
+        "button_count": 28,
+        "unlabeled_button_count": 0,
+        "visible_input_count": 1,
+        "inputs_without_labels": 0,
+        "horizontal_overflow": false,
+        "scroll_width": 768,
+        "client_width": 768,
+        "text_length": 1016,
+        "forbidden_matches": {
+          "raw_json": false,
+          "provider_payload": false,
+          "secret_env_name": false,
+          "ghl_runtime": false,
+          "support_noise": false,
+          "workspace_contamination_terms": false
+        },
+        "observed_state": "populated",
+        "action_samples": [
+          {
+            "tag": "a",
+            "text": "Exit Preview",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library"
+          },
+          {
+            "tag": "button",
+            "text": "Menu",
+            "aria": "Open One Time portal menu",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Family Portal",
+            "aria": "Family Portal",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Library",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Classroom",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time-classroom.html?review=one-time&code=[redacted]"
+          },
+          {
+            "tag": "a",
+            "text": "Helper",
+            "aria": "Assistant/help",
+            "disabled": false,
+            "href": "#bnaBotPanel"
+          },
+          {
+            "tag": "a",
+            "text": "Support",
+            "aria": "Questions/support",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time#support"
+          },
+          {
+            "tag": "a",
+            "text": "Logout",
+            "aria": "Account/logout",
+            "disabled": false,
+            "href": "/rabbi-member?logout=1&review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Open Family Portal",
+            "aria": "",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Parent account setup/reset",
+            "aria": "",
+            "disabled": false,
+            "href": "/parent.html?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Open Classroom",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time-classroom.html?review=one-time&code=[redacted]"
+          },
+          {
+            "tag": "button",
+            "text": "All 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Newest 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Continue Watching 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Masechta 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Perek 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Materials 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Worksheets 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Review 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Completed 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Open Media",
+            "aria": "",
+            "disabled": false,
+            "href": "https://vimeo.com/1178363755/282ea2577c"
+          },
+          {
+            "tag": "button",
+            "text": "Continue Watching",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Mark Complete",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Family Portal",
+            "aria": "",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Privacy",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time/privacy.html"
+          },
+          {
+            "tag": "a",
+            "text": "Terms",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time/terms.html"
+          },
+          {
+            "tag": "a",
+            "text": "Library",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library?review=one-time"
+          },
+          {
+            "tag": "button",
+            "text": "",
+            "aria": "Close One Time portal menu",
+            "disabled": false,
+            "href": ""
+          }
+        ],
+        "browser_content_untrusted": true
+      },
+      "route_registry": {
+        "present": true,
+        "registry_path": "ops/route-registry.json",
+        "match": "/member-library"
+      },
+      "action_registry_present": true,
+      "privacy_redaction": "Email/phone text was client-side redacted before capture."
+    },
+    {
+      "route": "/member-library?review=one-time",
+      "route_id": "member-library-review",
+      "surface": "One Time member library review",
+      "view_class": "MEMBER_PARENT_PORTAL",
+      "viewport": "430-mobile",
+      "width": 430,
+      "height": 932,
+      "target_url": "https://join.onetimeonetime.com/member-library?review=one-time",
+      "response_status": 200,
+      "final_url": "https://join.onetimeonetime.com/member-library?review=one-time",
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/screenshots/member-library-review-430-mobile.png",
+      "aria_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/aria/member-library-review-430-mobile.txt",
+      "accessibility_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/accessibility/member-library-review-430-mobile.json",
+      "navigation_error": null,
+      "screenshot_error": null,
+      "console_errors": [],
+      "network_errors": [],
+      "state": {
+        "route": "/member-library?review=one-time",
+        "response_status": 200,
+        "url": "https://join.onetimeonetime.com/member-library?review=one-time",
+        "title": "One Time Member Library",
+        "headings": [
+          "One Time Member Library",
+          "Current One Time access",
+          "Pesachim Perek 10 Review Class"
+        ],
+        "has_h1": true,
+        "button_count": 28,
+        "unlabeled_button_count": 0,
+        "visible_input_count": 1,
+        "inputs_without_labels": 0,
+        "horizontal_overflow": false,
+        "scroll_width": 430,
+        "client_width": 430,
+        "text_length": 930,
+        "forbidden_matches": {
+          "raw_json": false,
+          "provider_payload": false,
+          "secret_env_name": false,
+          "ghl_runtime": false,
+          "support_noise": false,
+          "workspace_contamination_terms": false
+        },
+        "observed_state": "populated",
+        "action_samples": [
+          {
+            "tag": "a",
+            "text": "Exit Preview",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library"
+          },
+          {
+            "tag": "button",
+            "text": "Menu",
+            "aria": "Open One Time portal menu",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Family Portal",
+            "aria": "Family Portal",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Library",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Classroom",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time-classroom.html?review=one-time&code=[redacted]"
+          },
+          {
+            "tag": "a",
+            "text": "Helper",
+            "aria": "Assistant/help",
+            "disabled": false,
+            "href": "#bnaBotPanel"
+          },
+          {
+            "tag": "a",
+            "text": "Support",
+            "aria": "Questions/support",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time#support"
+          },
+          {
+            "tag": "a",
+            "text": "Logout",
+            "aria": "Account/logout",
+            "disabled": false,
+            "href": "/rabbi-member?logout=1&review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Open Family Portal",
+            "aria": "",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Parent account setup/reset",
+            "aria": "",
+            "disabled": false,
+            "href": "/parent.html?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Open Classroom",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time-classroom.html?review=one-time&code=[redacted]"
+          },
+          {
+            "tag": "button",
+            "text": "All 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Newest 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Continue Watching 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Masechta 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Perek 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Materials 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Worksheets 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Review 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Completed 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Open Media",
+            "aria": "",
+            "disabled": false,
+            "href": "https://vimeo.com/1178363755/282ea2577c"
+          },
+          {
+            "tag": "button",
+            "text": "Continue Watching",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Mark Complete",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Family Portal",
+            "aria": "",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Privacy",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time/privacy.html"
+          },
+          {
+            "tag": "a",
+            "text": "Terms",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time/terms.html"
+          },
+          {
+            "tag": "a",
+            "text": "Library",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library?review=one-time"
+          },
+          {
+            "tag": "button",
+            "text": "",
+            "aria": "Close One Time portal menu",
+            "disabled": false,
+            "href": ""
+          }
+        ],
+        "browser_content_untrusted": true
+      },
+      "route_registry": {
+        "present": true,
+        "registry_path": "ops/route-registry.json",
+        "match": "/member-library"
+      },
+      "action_registry_present": true,
+      "privacy_redaction": "Email/phone text was client-side redacted before capture."
+    },
+    {
+      "route": "/member-library?review=one-time",
+      "route_id": "member-library-review",
+      "surface": "One Time member library review",
+      "view_class": "MEMBER_PARENT_PORTAL",
+      "viewport": "390-mobile",
+      "width": 390,
+      "height": 844,
+      "target_url": "https://join.onetimeonetime.com/member-library?review=one-time",
+      "response_status": 200,
+      "final_url": "https://join.onetimeonetime.com/member-library?review=one-time",
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/screenshots/member-library-review-390-mobile.png",
+      "aria_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/aria/member-library-review-390-mobile.txt",
+      "accessibility_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/accessibility/member-library-review-390-mobile.json",
+      "navigation_error": null,
+      "screenshot_error": null,
+      "console_errors": [],
+      "network_errors": [],
+      "state": {
+        "route": "/member-library?review=one-time",
+        "response_status": 200,
+        "url": "https://join.onetimeonetime.com/member-library?review=one-time",
+        "title": "One Time Member Library",
+        "headings": [
+          "One Time Member Library",
+          "Current One Time access",
+          "Pesachim Perek 10 Review Class"
+        ],
+        "has_h1": true,
+        "button_count": 28,
+        "unlabeled_button_count": 0,
+        "visible_input_count": 1,
+        "inputs_without_labels": 0,
+        "horizontal_overflow": false,
+        "scroll_width": 390,
+        "client_width": 390,
+        "text_length": 930,
+        "forbidden_matches": {
+          "raw_json": false,
+          "provider_payload": false,
+          "secret_env_name": false,
+          "ghl_runtime": false,
+          "support_noise": false,
+          "workspace_contamination_terms": false
+        },
+        "observed_state": "populated",
+        "action_samples": [
+          {
+            "tag": "a",
+            "text": "Exit Preview",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library"
+          },
+          {
+            "tag": "button",
+            "text": "Menu",
+            "aria": "Open One Time portal menu",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Family Portal",
+            "aria": "Family Portal",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Library",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Classroom",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time-classroom.html?review=one-time&code=[redacted]"
+          },
+          {
+            "tag": "a",
+            "text": "Helper",
+            "aria": "Assistant/help",
+            "disabled": false,
+            "href": "#bnaBotPanel"
+          },
+          {
+            "tag": "a",
+            "text": "Support",
+            "aria": "Questions/support",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time#support"
+          },
+          {
+            "tag": "a",
+            "text": "Logout",
+            "aria": "Account/logout",
+            "disabled": false,
+            "href": "/rabbi-member?logout=1&review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Open Family Portal",
+            "aria": "",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Parent account setup/reset",
+            "aria": "",
+            "disabled": false,
+            "href": "/parent.html?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Open Classroom",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time-classroom.html?review=one-time&code=[redacted]"
+          },
+          {
+            "tag": "button",
+            "text": "All 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Newest 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Continue Watching 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Masechta 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Perek 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Materials 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Worksheets 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Review 1",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Completed 0",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Open Media",
+            "aria": "",
+            "disabled": false,
+            "href": "https://vimeo.com/1178363755/282ea2577c"
+          },
+          {
+            "tag": "button",
+            "text": "Continue Watching",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "button",
+            "text": "Mark Complete",
+            "aria": "",
+            "disabled": false,
+            "href": ""
+          },
+          {
+            "tag": "a",
+            "text": "Family Portal",
+            "aria": "",
+            "disabled": false,
+            "href": "/rabbi-member?review=one-time"
+          },
+          {
+            "tag": "a",
+            "text": "Privacy",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time/privacy.html"
+          },
+          {
+            "tag": "a",
+            "text": "Terms",
+            "aria": "",
+            "disabled": false,
+            "href": "/one-time/terms.html"
+          },
+          {
+            "tag": "a",
+            "text": "Library",
+            "aria": "",
+            "disabled": false,
+            "href": "/member-library?review=one-time"
+          },
+          {
+            "tag": "button",
+            "text": "",
+            "aria": "Close One Time portal menu",
+            "disabled": false,
+            "href": ""
+          }
+        ],
+        "browser_content_untrusted": true
+      },
+      "route_registry": {
+        "present": true,
+        "registry_path": "ops/route-registry.json",
+        "match": "/member-library"
+      },
+      "action_registry_present": true,
+      "privacy_redaction": "Email/phone text was client-side redacted before capture."
+    }
+  ],
+  "findings": [],
+  "state_matrix": [
+    {
+      "route_id": "member-library-review",
+      "route": "/member-library?review=one-time",
+      "state": "loading",
+      "observed": false,
+      "viewport": "not_exercised",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "how_to_enter_state": "Not exercised in screenshot-only audit; implementation packet must define fixture or interaction path.",
+      "expected_visible_title": "One Time member library review",
+      "expected_visible_message": "Must be specified in follow-up implementation packet.",
+      "expected_primary_action": "Must be classified by follow-up implementation packet.",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "secrets",
+        "raw provider payloads",
+        "raw private contact/student/parent data",
+        "GHL runtime references"
+      ],
+      "screenshot_required": true,
+      "screenshot_path": null,
+      "aria_semantic_expectation": "Clear page heading, labeled controls, and role-appropriate structure.",
+      "accessibility_expectation": "No P0/P1 accessibility defect; no mobile overflow; controls labeled.",
+      "test_smoke_assertion": "Follow-up packet must convert this audit row into deterministic smoke assertions where feasible.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    {
+      "route_id": "member-library-review",
+      "route": "/member-library?review=one-time",
+      "state": "empty",
+      "observed": false,
+      "viewport": "not_exercised",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "how_to_enter_state": "Not exercised in screenshot-only audit; implementation packet must define fixture or interaction path.",
+      "expected_visible_title": "One Time member library review",
+      "expected_visible_message": "Must be specified in follow-up implementation packet.",
+      "expected_primary_action": "Must be classified by follow-up implementation packet.",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "secrets",
+        "raw provider payloads",
+        "raw private contact/student/parent data",
+        "GHL runtime references"
+      ],
+      "screenshot_required": true,
+      "screenshot_path": null,
+      "aria_semantic_expectation": "Clear page heading, labeled controls, and role-appropriate structure.",
+      "accessibility_expectation": "No P0/P1 accessibility defect; no mobile overflow; controls labeled.",
+      "test_smoke_assertion": "Follow-up packet must convert this audit row into deterministic smoke assertions where feasible.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    {
+      "route_id": "member-library-review",
+      "route": "/member-library?review=one-time",
+      "state": "populated",
+      "observed": true,
+      "viewport": "1440-desktop",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "how_to_enter_state": "Captured directly during current-state audit.",
+      "expected_visible_title": "One Time member library review",
+      "expected_visible_message": "Observed in screenshot evidence.",
+      "expected_primary_action": "Must be classified by follow-up implementation packet.",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "secrets",
+        "raw provider payloads",
+        "raw private contact/student/parent data",
+        "GHL runtime references"
+      ],
+      "screenshot_required": true,
+      "screenshot_path": "ops/ui-audits/2026-07-13-onetime-member-library-review-current-state/screenshots/member-library-review-1440-desktop.png",
+      "aria_semantic_expectation": "Clear page heading, labeled controls, and role-appropriate structure.",
+      "accessibility_expectation": "No P0/P1 accessibility defect; no mobile overflow; controls labeled.",
+      "test_smoke_assertion": "Follow-up packet must convert this audit row into deterministic smoke assertions where feasible.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    {
+      "route_id": "member-library-review",
+      "route": "/member-library?review=one-time",
+      "state": "filtered_empty",
+      "observed": false,
+      "viewport": "not_exercised",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "how_to_enter_state": "Not exercised in screenshot-only audit; implementation packet must define fixture or interaction path.",
+      "expected_visible_title": "One Time member library review",
+      "expected_visible_message": "Must be specified in follow-up implementation packet.",
+      "expected_primary_action": "Must be classified by follow-up implementation packet.",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "secrets",
+        "raw provider payloads",
+        "raw private contact/student/parent data",
+        "GHL runtime references"
+      ],
+      "screenshot_required": true,
+      "screenshot_path": null,
+      "aria_semantic_expectation": "Clear page heading, labeled controls, and role-appropriate structure.",
+      "accessibility_expectation": "No P0/P1 accessibility defect; no mobile overflow; controls labeled.",
+      "test_smoke_assertion": "Follow-up packet must convert this audit row into deterministic smoke assertions where feasible.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    {
+      "route_id": "member-library-review",
+      "route": "/member-library?review=one-time",
+      "state": "error",
+      "observed": false,
+      "viewport": "not_exercised",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "how_to_enter_state": "Not exercised in screenshot-only audit; implementation packet must define fixture or interaction path.",
+      "expected_visible_title": "One Time member library review",
+      "expected_visible_message": "Must be specified in follow-up implementation packet.",
+      "expected_primary_action": "Must be classified by follow-up implementation packet.",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "secrets",
+        "raw provider payloads",
+        "raw private contact/student/parent data",
+        "GHL runtime references"
+      ],
+      "screenshot_required": true,
+      "screenshot_path": null,
+      "aria_semantic_expectation": "Clear page heading, labeled controls, and role-appropriate structure.",
+      "accessibility_expectation": "No P0/P1 accessibility defect; no mobile overflow; controls labeled.",
+      "test_smoke_assertion": "Follow-up packet must convert this audit row into deterministic smoke assertions where feasible.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    {
+      "route_id": "member-library-review",
+      "route": "/member-library?review=one-time",
+      "state": "blocked_setup",
+      "observed": false,
+      "viewport": "not_exercised",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "how_to_enter_state": "Not exercised in screenshot-only audit; implementation packet must define fixture or interaction path.",
+      "expected_visible_title": "One Time member library review",
+      "expected_visible_message": "Must be specified in follow-up implementation packet.",
+      "expected_primary_action": "Must be classified by follow-up implementation packet.",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "secrets",
+        "raw provider payloads",
+        "raw private contact/student/parent data",
+        "GHL runtime references"
+      ],
+      "screenshot_required": true,
+      "screenshot_path": null,
+      "aria_semantic_expectation": "Clear page heading, labeled controls, and role-appropriate structure.",
+      "accessibility_expectation": "No P0/P1 accessibility defect; no mobile overflow; controls labeled.",
+      "test_smoke_assertion": "Follow-up packet must convert this audit row into deterministic smoke assertions where feasible.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    {
+      "route_id": "member-library-review",
+      "route": "/member-library?review=one-time",
+      "state": "preview_only",
+      "observed": false,
+      "viewport": "not_exercised",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "how_to_enter_state": "Not exercised in screenshot-only audit; implementation packet must define fixture or interaction path.",
+      "expected_visible_title": "One Time member library review",
+      "expected_visible_message": "Must be specified in follow-up implementation packet.",
+      "expected_primary_action": "Must be classified by follow-up implementation packet.",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "secrets",
+        "raw provider payloads",
+        "raw private contact/student/parent data",
+        "GHL runtime references"
+      ],
+      "screenshot_required": true,
+      "screenshot_path": null,
+      "aria_semantic_expectation": "Clear page heading, labeled controls, and role-appropriate structure.",
+      "accessibility_expectation": "No P0/P1 accessibility defect; no mobile overflow; controls labeled.",
+      "test_smoke_assertion": "Follow-up packet must convert this audit row into deterministic smoke assertions where feasible.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    {
+      "route_id": "member-library-review",
+      "route": "/member-library?review=one-time",
+      "state": "success_readback",
+      "observed": false,
+      "viewport": "not_exercised",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "how_to_enter_state": "Not exercised in screenshot-only audit; implementation packet must define fixture or interaction path.",
+      "expected_visible_title": "One Time member library review",
+      "expected_visible_message": "Must be specified in follow-up implementation packet.",
+      "expected_primary_action": "Must be classified by follow-up implementation packet.",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "secrets",
+        "raw provider payloads",
+        "raw private contact/student/parent data",
+        "GHL runtime references"
+      ],
+      "screenshot_required": true,
+      "screenshot_path": null,
+      "aria_semantic_expectation": "Clear page heading, labeled controls, and role-appropriate structure.",
+      "accessibility_expectation": "No P0/P1 accessibility defect; no mobile overflow; controls labeled.",
+      "test_smoke_assertion": "Follow-up packet must convert this audit row into deterministic smoke assertions where feasible.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    {
+      "route_id": "member-library-review",
+      "route": "/member-library?review=one-time",
+      "state": "permission_denied",
+      "observed": false,
+      "viewport": "not_exercised",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "how_to_enter_state": "Not exercised in screenshot-only audit; implementation packet must define fixture or interaction path.",
+      "expected_visible_title": "One Time member library review",
+      "expected_visible_message": "Must be specified in follow-up implementation packet.",
+      "expected_primary_action": "Must be classified by follow-up implementation packet.",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "secrets",
+        "raw provider payloads",
+        "raw private contact/student/parent data",
+        "GHL runtime references"
+      ],
+      "screenshot_required": true,
+      "screenshot_path": null,
+      "aria_semantic_expectation": "Clear page heading, labeled controls, and role-appropriate structure.",
+      "accessibility_expectation": "No P0/P1 accessibility defect; no mobile overflow; controls labeled.",
+      "test_smoke_assertion": "Follow-up packet must convert this audit row into deterministic smoke assertions where feasible.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    {
+      "route_id": "member-library-review",
+      "route": "/member-library?review=one-time",
+      "state": "mobile_drawer_or_detail_state",
+      "observed": false,
+      "viewport": "not_exercised",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "how_to_enter_state": "Not exercised in screenshot-only audit; implementation packet must define fixture or interaction path.",
+      "expected_visible_title": "One Time member library review",
+      "expected_visible_message": "Must be specified in follow-up implementation packet.",
+      "expected_primary_action": "Must be classified by follow-up implementation packet.",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "secrets",
+        "raw provider payloads",
+        "raw private contact/student/parent data",
+        "GHL runtime references"
+      ],
+      "screenshot_required": true,
+      "screenshot_path": null,
+      "aria_semantic_expectation": "Clear page heading, labeled controls, and role-appropriate structure.",
+      "accessibility_expectation": "No P0/P1 accessibility defect; no mobile overflow; controls labeled.",
+      "test_smoke_assertion": "Follow-up packet must convert this audit row into deterministic smoke assertions where feasible.",
+      "requirement_id": "REQ-20260713-920"
+    }
+  ],
+  "next_recommended_packet": "Manual screenshot review is required. Split any newly found defect into a focused Product Quality Compiler packet. UI implementation remains blocked until Product Quality Definition of Ready passes and any audit blockers are resolved or explicitly accepted."
+}

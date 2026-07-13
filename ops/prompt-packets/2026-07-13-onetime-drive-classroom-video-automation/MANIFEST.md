@@ -136,7 +136,7 @@ findings, deploy/live-smoke URLs where applicable, blockers, and next packet.
 | PKT-20260713-004-04 | 04-transcript-metadata-and-knowledge-handoff | IMPLEMENTATION_PACKET | PKT-20260713-004-03 | done - deployed admin readback verified | Metadata schema/generator, bot-knowledge handoff contract, class-session review fields, and folder-workflow review-package bridge. |
 | PKT-20260713-004-05 | 05-vimeo-owner-readiness-and-private-upload | PROVIDER_SETUP_PACKET | PKT-20260713-004-00 | needs_operator_decision | Credential readback, owner account/project checks, synthetic private upload gate. Existing access token reads the owner account; newly supplied values validate as app credentials but fail direct bearer readback; no private test project/folder or upload approval is configured. |
 | PKT-20260713-004-06 | 06-class-package-classroom-and-latest-video | IMPLEMENTATION_PACKET | PKT-20260713-004-04, PKT-20260713-004-05 | partial - read-only admin/review/synthetic-member/anonymous gates verified; publication and Vimeo-origin proof gated | Class review package, member library, latest video, older-class library, entitlements. |
-| PKT-20260713-004-07 | 07-rabbi-content-processing-ui | IMPLEMENTATION_PACKET | PKT-20260713-004-01, PQC Definition of Ready | blocked - PQC spec validates; auth/member/Vimeo gates open | Queue/details/review UI after visual audit and PQC validation. |
+| PKT-20260713-004-07 | 07-rabbi-content-processing-ui | IMPLEMENTATION_PACKET | PKT-20260713-004-01, PQC Definition of Ready | blocked - PQC spec validates; member-library review evidence captured; auth/Vimeo/publication gates open | Queue/details/review UI after visual audit and PQC validation. |
 | PKT-20260713-004-08 | 08-end-to-end-pilot-and-release | VERIFIER_PACKET / DEPLOY_PACKET | PKT-20260713-004-02..07 | not_started | Synthetic E2E, one real pilot when gates pass, deploy/live smoke, rollback/handoff. |
 
 ## Current Collision Constraints
@@ -189,9 +189,11 @@ The focused Product Quality Compiler spec for `PKT-20260713-004-07` is
 and validated with `npm run pqc:validate`.
 
 UI implementation remains blocked: authenticated Operations command-center
-screenshots returned `401 Invalid credentials`, the `one-time-member-login`
-route repeatedly hung the screenshot harness, and Vimeo/member publication
-gates remain unresolved.
+screenshots returned `401 Invalid credentials`; the focused
+`/member-library?review=one-time` audit captured five review screenshots after
+`one-time-member-login` hung, but true member-session/latest-video proof still
+depends on publication/session setup; and Vimeo/member publication gates remain
+unresolved.
 
 Do not solve the whole parent ramble in any child packet. Complete only that
 packet's scope and record the next packet or blocker.

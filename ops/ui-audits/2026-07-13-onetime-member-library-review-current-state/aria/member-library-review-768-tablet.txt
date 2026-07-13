@@ -1,0 +1,58 @@
+- status:
+  - strong: TEST PREVIEW
+  - text: SAMPLE DATA NO WRITES
+  - link "Exit Preview":
+    - /url: /member-library
+- banner:
+  - heading "One Time Member Library" [level=1]
+  - text: Recorded classes, worksheets, and review progress
+  - button "Open One Time portal menu": Menu
+  - text: TEST One Time Member | TEST preview
+- main:
+  - text: Current One Time access
+  - heading "Current One Time access" [level=2]
+  - paragraph: Your secure link opened the member library.
+  - link "Open Family Portal":
+    - /url: /rabbi-member?review=one-time
+  - link "Parent account setup/reset":
+    - /url: /parent.html?review=one-time
+  - text: TEST preview library opened. No progress, reminder, support, send, or metric write was performed.
+  - paragraph: "Classroom: 1 calendar item, 0 Rabbi threads, 0 leaderboard rows."
+  - link "Open Classroom":
+    - /url: /one-time-classroom.html?review=one-time&code=[redacted]
+  - region "Library filters":
+    - text: Search
+    - textbox "Search":
+      - /placeholder: Title, Masechta, Perek
+    - tablist "Member library filters":
+      - tab "All 1"
+      - tab "Newest 1"
+      - tab "Continue Watching 0"
+      - tab "Masechta 1"
+      - tab "Perek 1"
+      - tab "Materials 0"
+      - tab "Worksheets 0"
+      - tab "Review 1"
+      - tab "Completed 0"
+  - article:
+    - text: Media link available below
+    - heading "Pesachim Perek 10 Review Class" [level=2]
+    - paragraph: Pesachim Perek 10 Mishnah 1-2 Jun 25, 2026 Review ready
+    - paragraph: Manual Vimeo sample reference traced from the legacy One Time site for UI review. This is not an automated upload.
+    - text: 0% complete
+    - link "Open Media":
+      - /url: https://vimeo.com/1178363755/282ea2577c
+    - button "Continue Watching"
+    - button "Mark Complete"
+- contentinfo:
+  - strong: One Time Mishnayos
+  - paragraph: Copyright 2026 One Time Mishnayos. Library access is private and workspace-scoped.
+  - navigation "One Time footer navigation":
+    - link "Family Portal":
+      - /url: /rabbi-member?review=one-time
+    - link "Privacy":
+      - /url: /one-time/privacy.html
+    - link "Terms":
+      - /url: /one-time/terms.html
+    - link "Library":
+      - /url: /member-library?review=one-time
