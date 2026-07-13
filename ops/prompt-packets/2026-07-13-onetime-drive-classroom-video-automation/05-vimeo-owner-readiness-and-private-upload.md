@@ -94,28 +94,33 @@ Definition of Done:
 |---|---|
 | Supplied owner values as direct Bearer token candidates | Both newly supplied values returned 401 on direct `/me` bearer readback, so they are not installed as `VIMEO_ACCESS_TOKEN`. |
 | Supplied owner values as app credentials | First supplied value as `client_id` plus second supplied value as `client_secret` returned 200 for Vimeo client-credentials public auth; reverse ordering failed; returned token was not stored. |
+| Keyholder app credentials readback | `node scripts/vimeo-owner-oauth-readiness.mjs --json --check-client-credentials --write-evidence` found `VIMEO_CLIENT_ID` and `VIMEO_CLIENT_SECRET` in keyholder, Vimeo accepted the app credential pair for client-credentials auth, the returned token was not printed or stored, and no external write ran. Evidence: `ops/qa-runs/2026-07-13T14-59-08-396Z-vimeo-owner-oauth-readiness.md`. |
+| Owner OAuth authorization readiness | The no-write owner OAuth helper is implemented and tested, but it returned `oauth_setup_missing` because `VIMEO_OAUTH_REDIRECT_URI` is not configured. Requested owner scopes are `public`, `private`, `upload`, `edit`, and `video_files`; no OAuth code exchange was performed. |
 | Existing local `VIMEO_ACCESS_TOKEN` readback | Read-only `/me` works from keyholder and reads account name `Shloimie Dratler`; account URI is redacted in evidence and the account field read back as `free`. |
 | `node scripts/vimeo-private-smoke.mjs --json` | Returned `preview_only`; `BNA_VIMEO_PRIVATE_SMOKE` was not enabled; token source was keyholder; `external_write_performed=false`; no upload ran. |
 | Read-only owner-confirmed capability check | Returned `test_target_missing`: owner account read works, but no Vimeo private test project/folder is configured. |
 
 ## Decision Needed
 
-`REQ-20260713-918` cannot be marked Done until the operator chooses or creates a
-private Vimeo test project/folder, confirms the owner user access token has the
-needed upload/private/edit/video_files capability, and explicitly approves a
-synthetic private upload smoke.
+`REQ-20260713-918` cannot be marked Done until the operator configures the Vimeo
+OAuth redirect URI, chooses or creates a private Vimeo test project/folder,
+confirms or generates the owner user access token with the needed
+upload/private/edit/video_files capability, and explicitly approves a synthetic
+private upload smoke.
 
 Recommended next action:
 
 1. In Vimeo owner account, choose or create a private test folder/project for
    One Time synthetic upload proof.
-2. Provide its project/folder name or URI through the approved secret/runtime
+2. Configure the Vimeo app callback/redirect URI and provide it through the
+   approved runtime config path as `VIMEO_OAUTH_REDIRECT_URI`.
+3. Provide the private test project/folder name or URI through the approved secret/runtime
    config path as `VIMEO_TEST_PROJECT_URI` or `VIMEO_TEST_PROJECT_NAME`.
-3. Keep the supplied owner values stored/used as `VIMEO_CLIENT_ID` and
+4. Keep the supplied owner values stored/used as `VIMEO_CLIENT_ID` and
    `VIMEO_CLIENT_SECRET`, not as `VIMEO_ACCESS_TOKEN`.
-4. Confirm or generate the owner user access token for `VIMEO_ACCESS_TOKEN`
+5. Confirm or generate the owner user access token for `VIMEO_ACCESS_TOKEN`
    with API upload plus private, edit, and video_files behavior.
-5. Explicitly approve the non-sensitive synthetic upload smoke before setting
+6. Explicitly approve the non-sensitive synthetic upload smoke before setting
    `BNA_VIMEO_PRIVATE_SMOKE=1`.
 
 ## Guardrails

@@ -277,7 +277,7 @@
       "packet_role": "PROVIDER_SETUP_PACKET",
       "status": "needs_operator_decision",
       "owner": "Codex + operator",
-      "scope": "Vimeo owner app credential readback, user-token/account readback, private test project/folder decision, upload scope/plan confirmation, and explicit synthetic private upload approval gate.",
+      "scope": "Vimeo owner app credential readback, owner OAuth authorization setup, user-token/account readback, private test project/folder decision, upload scope/plan confirmation, and explicit synthetic private upload approval gate.",
       "out_of_scope": [
         "Real class upload",
         "Synthetic upload without explicit approval",
@@ -289,19 +289,24 @@
       "affected_routes": [],
       "affected_files": [
         "src/lib/integrations/vimeo.js",
+        "scripts/vimeo-owner-oauth-readiness.mjs",
         "scripts/vimeo-private-smoke.mjs",
+        "tests/vimeo-media-integration-readiness.test.js",
+        "ops/qa-runs/2026-07-13T14-59-08-396Z-vimeo-owner-oauth-readiness.md",
         "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/05-vimeo-owner-readiness-and-private-upload.md"
       ],
       "required_evidence": [
         "secret-redacted credential readback",
         "client credentials auth proof without token storage",
+        "owner OAuth authorization readiness proof",
+        "OAuth redirect URI config",
         "owner account confirmation",
         "private test project or folder config",
         "explicit approval for synthetic private upload",
         "no public publish or token print"
       ],
-      "validation_command": "node scripts/vimeo-private-smoke.mjs --json",
-      "terminal_condition": "Current state is Needs operator decision: supplied owner app credentials validate as client_id/client_secret, keyholder token reads the owner account, but no private Vimeo test project/folder, upload-capable user-token/scope confirmation, or synthetic upload approval is configured.",
+      "validation_command": "node --test tests/vimeo-media-integration-readiness.test.js tests/one-time-vimeo-folder-library-workflow.test.js && node scripts/vimeo-owner-oauth-readiness.mjs --json --check-client-credentials && node scripts/vimeo-private-smoke.mjs --json",
+      "terminal_condition": "Current state is Needs operator decision: owner app credentials validate from keyholder and existing keyholder token reads the owner account, but no Vimeo OAuth redirect URI, private Vimeo test project/folder, upload-capable user-token/scope confirmation, or synthetic upload approval is configured.",
       "handoff_target": "PKT-20260713-004-06",
       "next_requirement": "REQ-20260713-919",
       "next_packet": "PKT-20260713-004-06"

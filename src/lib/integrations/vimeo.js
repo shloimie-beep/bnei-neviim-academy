@@ -2,6 +2,8 @@ const videoHosting = require('./video-hosting');
 const { redactError, redactSecretText } = require('./secret-loader');
 
 const VIMEO_API_BASE = 'https://api.vimeo.com';
+const VIMEO_OAUTH_AUTHORIZE_URL = 'https://api.vimeo.com/oauth/authorize';
+const DEFAULT_VIMEO_OWNER_UPLOAD_SCOPES = Object.freeze(['public', 'private', 'upload', 'edit', 'video_files']);
 const VIMEO_READINESS_STATES = Object.freeze([
   'not_configured',
   'preview_only',
@@ -48,6 +50,167 @@ function redactVimeoAssetId(value = '') {
   const id = (text.match(/\d{5,}/) || [text])[0] || '';
   if (!id) return '';
   return `[vimeo-id:...${id.slice(-4)}]`;
+}
+
+function normalizeVimeoScopeList(scopes = DEFAULT_VIMEO_OWNER_UPLOAD_SCOPES) {
+  const list = Array.isArray(scopes)
+    ? scopes
+    : String(scopes || '').split(/[\s,]+/);
+  return [...new Set(list.map((scope) => String(scope || '').trim()).filter(Boolean))];
+}
+
+function redactVimeoOAuthUrl(value = '') {
+  const text = String(value || '');
+  return text
+    .replace(/([?&](?:client_id|client_secret|code|state|token|access_token|refresh_token)=)[^&#]+/gi, '$1[redacted]')
+    .replace(/(scope=)[^&#]+/i, (match, prefix) => `${prefix}${encodeURIComponent(DEFAULT_VIMEO_OWNER_UPLOAD_SCOPES.join(' '))}`);
+}
+
+function buildVimeoOwnerOAuthAuthorization(input = {}, options = {}) {
+  const clientId = String(input.clientId || input.client_id || input.VIMEO_CLIENT_ID || '').trim();
+  const redirectUri = String(input.redirectUri || input.redirect_uri || input.VIMEO_OAUTH_REDIRECT_URI || '').trim();
+  const state = String(input.state || input.oauthState || 'one-time-vimeo-owner-oauth').trim();
+  const scopes = normalizeVimeoScopeList(input.scopes || input.scope || DEFAULT_VIMEO_OWNER_UPLOAD_SCOPES);
+  const missing = [];
+  if (!clientId) missing.push('VIMEO_CLIENT_ID');
+  if (!redirectUri) missing.push('VIMEO_OAUTH_REDIRECT_URI');
+
+  let authorizationUrl = '';
+  if (missing.length === 0) {
+    const url = new URL(options.authorizeUrl || VIMEO_OAUTH_AUTHORIZE_URL);
+    url.searchParams.set('response_type', 'code');
+    url.searchParams.set('client_id', clientId);
+    url.searchParams.set('redirect_uri', redirectUri);
+    url.searchParams.set('scope', scopes.join(' '));
+    if (state) url.searchParams.set('state', state);
+    authorizationUrl = url.toString();
+  }
+
+  return {
+    provider: 'vimeo',
+    credential_kind: 'owner_oauth_authorization_code',
+    ok: missing.length === 0,
+    status: missing.length ? 'oauth_setup_missing' : 'oauth_authorization_ready',
+    readiness_status: missing.length ? 'oauth_setup_missing' : 'oauth_authorization_ready',
+    external_write_performed: false,
+    upload_performed: false,
+    token_exchange_performed: false,
+    token_printed: false,
+    app_token_stored: false,
+    client_id_present: Boolean(clientId),
+    redirect_uri_present: Boolean(redirectUri),
+    scopes,
+    missing,
+    authorization_url_redacted: authorizationUrl ? redactVimeoOAuthUrl(authorizationUrl) : null,
+    authorization_url_included: options.includeAuthorizationUrl === true && Boolean(authorizationUrl),
+    ...(options.includeAuthorizationUrl === true && authorizationUrl ? { authorization_url: authorizationUrl } : {}),
+    code_exchange_plan: {
+      method: 'POST',
+      endpoint: `${VIMEO_API_BASE}/oauth/access_token`,
+      grant_type: 'authorization_code',
+      output_secret_env: 'VIMEO_ACCESS_TOKEN',
+      exchange_performed: false,
+    },
+    reason: missing.length
+      ? 'Vimeo owner OAuth authorization cannot be prepared until the app client ID and redirect URI are configured.'
+      : 'Vimeo owner OAuth authorization URL can be generated without exchanging a code or uploading media.',
+    next_action: missing.length
+      ? `Configure ${missing.join(' and ')} through the approved runtime/keyholder path, then rerun the owner OAuth readiness helper.`
+      : 'Open the authorization URL as the owner account, approve the upload/private/edit/video_files scopes, then exchange the code server-side into VIMEO_ACCESS_TOKEN without pasting tokens into chat or tracked files.',
+  };
+}
+
+async function verifyVimeoAppCredentials(options = {}) {
+  const clientId = String(options.clientId || options.client_id || options.VIMEO_CLIENT_ID || '').trim();
+  const appSecret = String(options.clientSecret || options.client_secret || options.VIMEO_CLIENT_SECRET || '').trim();
+  const scopes = normalizeVimeoScopeList(options.scopes || options.scope || ['public']);
+  const fetchImpl = options.fetchImpl || globalThis.fetch;
+  const missing = [];
+  if (!clientId) missing.push('VIMEO_CLIENT_ID');
+  if (!appSecret) missing.push('VIMEO_CLIENT_SECRET');
+  if (missing.length) {
+    return {
+      provider: 'vimeo',
+      credential_kind: 'client_credentials',
+      ok: false,
+      status: 'oauth_setup_missing',
+      readiness_status: 'oauth_setup_missing',
+      external_write_performed: false,
+      token_printed: false,
+      app_token_stored: false,
+      client_id_present: Boolean(clientId),
+      client_secret_present: Boolean(appSecret),
+      missing,
+      reason: 'Vimeo app credential check needs both app credential fields.',
+      next_action: `Configure ${missing.join(' and ')} through the approved runtime/keyholder path, then rerun the check.`,
+    };
+  }
+  if (typeof fetchImpl !== 'function') {
+    return {
+      provider: 'vimeo',
+      credential_kind: 'client_credentials',
+      ok: false,
+      status: 'not_configured',
+      readiness_status: 'not_configured',
+      external_write_performed: false,
+      token_printed: false,
+      app_token_stored: false,
+      reason: 'Fetch is not available for the Vimeo app credential check.',
+      next_action: 'Run this helper in a Node runtime with fetch support.',
+    };
+  }
+
+  const basic = Buffer.from(`${clientId}:${appSecret}`).toString('base64');
+  try {
+    const response = await fetchImpl(`${VIMEO_API_BASE}/oauth/authorize/client`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${basic}`,
+        Accept: 'application/vnd.vimeo.*+json;version=3.4',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        grant_type: 'client_credentials',
+        scope: scopes.join(' '),
+      }),
+    });
+    const data = await readVimeoResponse(response);
+    if (!response.ok) {
+      const error = new Error(data?.error || data?.message || `Vimeo app credential check failed with ${response.status}`);
+      error.status = response.status;
+      error.data = data;
+      throw error;
+    }
+    return {
+      provider: 'vimeo',
+      credential_kind: 'client_credentials',
+      ok: true,
+      status: 'app_credentials_valid',
+      readiness_status: 'app_credentials_valid',
+      external_write_performed: false,
+      token_printed: false,
+      app_token_stored: false,
+      access_token_returned: Boolean(data?.access_token),
+      token_type: data?.token_type || null,
+      scopes: normalizeVimeoScopeList(data?.scope || data?.scopes || scopes),
+      reason: 'Vimeo accepted the app credential pair for client-credentials auth.',
+      next_action: 'Use these as app credentials for owner OAuth setup; do not install a client-credentials token as VIMEO_ACCESS_TOKEN for owner uploads.',
+    };
+  } catch (error) {
+    return {
+      provider: 'vimeo',
+      credential_kind: 'client_credentials',
+      ok: false,
+      status: mapVimeoApiErrorToReadinessState(error),
+      readiness_status: mapVimeoApiErrorToReadinessState(error),
+      external_write_performed: false,
+      token_printed: false,
+      app_token_stored: false,
+      error: redactError(error, [clientId, appSecret, basic]),
+      reason: 'Vimeo did not accept the app credential pair for client-credentials auth.',
+      next_action: 'Confirm the app client ID/secret from the owner account and do not reuse these values as VIMEO_ACCESS_TOKEN.',
+    };
+  }
 }
 
 function parseVimeoUrl(value = '') {
@@ -1063,6 +1226,7 @@ module.exports = {
   buildThumbnailState,
   buildVimeoAuditEvent,
   buildVimeoDuplicateKey,
+  buildVimeoOwnerOAuthAuthorization,
   checkMemberVideoEntitlement,
   checkVimeoTokenCapabilities,
   createVimeoClient,
@@ -1078,6 +1242,7 @@ module.exports = {
   mapVimeoApiErrorToReadinessState,
   normalizeVimeoMetadata,
   normalizeVimeoPrivacy,
+  normalizeVimeoScopeList,
   normalizeVimeoVideo,
   normalizeVimeoTokenInput,
   parseVimeoUrl,
@@ -1088,6 +1253,7 @@ module.exports = {
   runVimeoPrivateSyntheticSmoke,
   testVimeoAuth,
   uploadVimeoAsset,
+  verifyVimeoAppCredentials,
   vimeoApiRequest,
   vimeoReadinessState,
 };

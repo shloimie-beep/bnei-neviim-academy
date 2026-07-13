@@ -70,6 +70,65 @@ test('Vimeo readiness exposes exact states for configuration, token, permissions
   assert.doesNotMatch(JSON.stringify(ready), /secret-token/);
 });
 
+test('Vimeo owner OAuth authorization plan redacts client details and performs no exchange', () => {
+  const plan = vimeo.buildVimeoOwnerOAuthAuthorization({
+    clientId: 'owner-client-id-secretish',
+    redirectUri: 'https://join.onetimeonetime.com/api/vimeo/oauth/callback',
+    state: 'owner-state-value',
+  });
+
+  assert.equal(plan.status, 'oauth_authorization_ready');
+  assert.equal(plan.external_write_performed, false);
+  assert.equal(plan.upload_performed, false);
+  assert.equal(plan.token_exchange_performed, false);
+  assert.equal(plan.authorization_url_included, false);
+  assert.equal(plan.client_id_present, true);
+  assert.equal(plan.redirect_uri_present, true);
+  assert.deepEqual(plan.scopes, ['public', 'private', 'upload', 'edit', 'video_files']);
+  assert.match(plan.authorization_url_redacted, /client_id=\[redacted\]/);
+  assert.match(plan.authorization_url_redacted, /state=\[redacted\]/);
+  assert.doesNotMatch(JSON.stringify(plan), /owner-client-id-secretish/);
+  assert.doesNotMatch(JSON.stringify(plan), /owner-state-value/);
+
+  const missing = vimeo.buildVimeoOwnerOAuthAuthorization({ clientId: 'owner-client-id-secretish' });
+  assert.equal(missing.status, 'oauth_setup_missing');
+  assert.deepEqual(missing.missing, ['VIMEO_OAUTH_REDIRECT_URI']);
+});
+
+test('Vimeo app credential check validates client-credentials without returning the token', async () => {
+  let request = null;
+  const result = await vimeo.verifyVimeoAppCredentials({
+    clientId: 'owner-client-id-secretish',
+    clientSecret: 'owner-client-secret-secretish',
+    fetchImpl: async (url, options) => {
+      request = { url, options };
+      return {
+        ok: true,
+        status: 200,
+        text: async () => JSON.stringify({
+          access_token: 'returned-app-token-secretish',
+          token_type: 'bearer',
+          scope: 'public',
+        }),
+      };
+    },
+  });
+
+  assert.equal(request.url, 'https://api.vimeo.com/oauth/authorize/client');
+  assert.equal(request.options.method, 'POST');
+  assert.match(request.options.headers.Authorization, /^Basic /);
+  assert.equal(JSON.parse(request.options.body).grant_type, 'client_credentials');
+  assert.equal(result.status, 'app_credentials_valid');
+  assert.equal(result.ok, true);
+  assert.equal(result.access_token_returned, true);
+  assert.equal(result.app_token_stored, false);
+  assert.equal(result.token_printed, false);
+  assert.deepEqual(result.scopes, ['public']);
+  assert.doesNotMatch(JSON.stringify(result), /returned-app-token-secretish/);
+  assert.doesNotMatch(JSON.stringify(result), /owner-client-id-secretish/);
+  assert.doesNotMatch(JSON.stringify(result), /owner-client-secret-secretish/);
+});
+
 test('Vimeo upload request uses private privacy defaults and normalized metadata', () => {
   const request = vimeo.createVimeoUploadRequest({
     title: 'Mishnah synthetic smoke',
