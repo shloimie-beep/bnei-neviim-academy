@@ -1005,6 +1005,9 @@
 - PASS `npm run bna:run:validate` before runtime commit.
 - PASS `git diff --check` before runtime commit.
 - PASS `npm run secrets:audit` before runtime commit.
+- PASS `npm run watchdog:protocol-drift`; finding_count `0` after adding the
+  Product Quality Protocol Envelope and action-state registry coverage to the
+  Vimeo owner-readiness packet.
 - PASS One Time Railway doctor at current production head `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`; deployment `641ad29c-d8d6-4053-b4d3-c7412fa6b7d7` reached `SUCCESS`.
 - PASS BNA Railway doctor at current production head `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`; deployment `68858c05-474e-4419-91c7-d934e7796305` reached `SUCCESS`.
 - PASS One Time live `/api/deploy-info`; returned `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`, `target_app=one-time`.
