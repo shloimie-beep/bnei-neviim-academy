@@ -1,0 +1,869 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260713-950",
+  "parent_raw_id": "RAW-20260713-005",
+  "source_statement_ids": [
+    "RAW-20260713-005:S20",
+    "RAW-20260713-005:S21",
+    "RAW-20260713-005:S22",
+    "RAW-20260713-005:S23"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260713-949",
+    "child_packet_ids": [
+      "PKT-20260713-951"
+    ],
+    "depends_on_packet_ids": [
+      "PKT-20260713-949"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260713-005-onetime-rosh-hashanah-billing-platform-v2.md",
+      "tasks-pending/2026-07-13-onetime-rosh-hashanah-billing-platform-v2.md",
+      "ops/prompt-packets/2026-07-13-onetime-rosh-hashanah-billing-platform-v2/00-control-tower-and-policy-correction.md"
+    ],
+    "produces": [
+      "provider Billing UI current-state visual audit",
+      "provider Billing UI implementation packet",
+      "route registry and action registry rows",
+      "responsive screenshots for 1440/1024/768/430/390"
+    ],
+    "validation_command": "npm run pqc:validate -- tasks-pending/2026-07-13-onetime-rosh-hashanah-billing-platform-v2.product-quality.json",
+    "terminal_condition": "Billing UI Definition of Ready is met before code implementation and Billing UI Definition of Done requires screenshots, registries, tests, deployment, and live smoke.",
+    "handoff_target": "Generate 01-current-state-visual-audit before implementing the Billing UI."
+  },
+  "stage": "STAGE_1_SPEC_COMPILER",
+  "packet_role": "SPEC_COMPILER",
+  "status": "generated",
+  "title": "One Time provider Billing UI compiler",
+  "created_at": "2026-07-13T14:35:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "PAYMENT_PROVIDER_SETUP"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260713-005",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "SUPER_RAMBLE",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "PAYMENTS_ACCESS",
+      "PROVIDER_SETUP",
+      "EXTERNAL_WRITE_REQUEST",
+      "SECURITY_PRIVACY",
+      "VERIFIER_CLOSEOUT",
+      "DEPLOY_RELEASE",
+      "DECISION_REQUIRED"
+    ],
+    "confidence": "high",
+    "reasons": [
+      "The packet asks for a complete provider Billing UI with overview, catalog, billing, automations, settings, and responsive proof.",
+      "The packet includes payment, Stripe, access, notice, refund, and release boundaries.",
+      "The packet explicitly requires Product Quality workflow before UI completion."
+    ],
+    "affected_product_surfaces": [
+      "One Time provider shell",
+      "Provider Billing category",
+      "Provider Catalog category",
+      "Provider Automations category",
+      "Provider Settings category"
+    ],
+    "likely_external_provider_blockers": [
+      "Live Stripe key/webhook values are not approved for tracked files.",
+      "Live customer charges are out of scope.",
+      "Live notice/customer batch sends are out of scope.",
+      "Live refunds and access mutations are out of scope.",
+      "Hosted Railway test-mode variable propagation requires target guard proof before any write."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "Preserve raw packet and register requirements.",
+      "Audit current provider shell and existing billing/payment surfaces.",
+      "Capture current-state screenshots at 1440, 1024, 768, 430, and 390.",
+      "Split Billing UI into focused implementation packets if more than three routes or four files are touched.",
+      "Implement only after Definition of Ready passes.",
+      "Run action/route registry, accessibility, focused tests, screenshots, deploy, and live smoke before Done."
+    ],
+    "next_exact_packet": "01-current-state-visual-audit for One Time provider Billing UI"
+  },
+  "operator_intent_summary": "Create a provider-scoped Billing UI for One Time that exposes billing operations clearly while keeping real charges, sends, refunds, and access changes approval-gated.",
+  "raw_quotes": [
+    "responsive provider-facing Billing UI",
+    "Billing UI - professional information architecture",
+    "Do not add another giant always-open wall to the Operations monolith.",
+    "Do not show raw IDs or debug text in the main overview.",
+    "Workspace owner/admin can manage products/prices/publish live prices within provider workspace, but publishing price must not charge/start campaign."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260713-959",
+      "decision": "Workspace owners/admins may manage products and prices, but publishing a price must not charge customers or start the campaign.",
+      "owner": "operator",
+      "source": "RAW-20260713-005:S23"
+    },
+    {
+      "id": "DEC-20260713-961",
+      "decision": "Live activation requires a separate exact launch packet before real charge, refund, send, or access mutation.",
+      "owner": "operator",
+      "source": "RAW-20260713-005:S31"
+    }
+  ],
+  "out_of_scope": [
+    "No live customer charge.",
+    "No live customer refund.",
+    "No live billing notice batch send.",
+    "No live access grant or revoke.",
+    "No Stripe Connect, transfer, payout, commission, or revenue-share execution.",
+    "No BNA Academy payment/account data in One Time views.",
+    "No raw secret, webhook secret, payment method, private invoice URL, or unredacted customer data in UI proof.",
+    "No UI implementation before current-state visual audit and Definition of Ready."
+  ],
+  "affected_surfaces": [
+    "One Time provider shell Billing IA",
+    "One Time provider shell Catalog IA",
+    "One Time provider shell Automations IA",
+    "One Time provider shell Settings IA",
+    "One Time payment/access state display"
+  ],
+  "affected_routes": [
+    "/provider.html?review=one-time&section=billing",
+    "/provider.html?review=one-time&section=catalog",
+    "/provider.html?review=one-time&section=automations"
+  ],
+  "affected_files": [
+    "public/provider.html",
+    "public/js/one-time-provider-billing-route.js",
+    "public/js/one-time-provider-catalog-route.js",
+    "public/js/one-time-provider-automations-route.js",
+    "public/js/one-time-provider-settings-route.js",
+    "ops/action-registry.json",
+    "ops/route-registry.json",
+    "tests/one-time-provider-billing-ui.test.js"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/provider.html",
+      "public/js/one-time-provider-crm-route.js",
+      "public/js/one-time-provider-mailbox-route.js",
+      "public/js/one-time-provider-communications-route.js",
+      "public/js/operations-shell.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json"
+    ],
+    "known_current_defects": [
+      "Billing category does not yet exist as a dedicated One Time provider-shell route module.",
+      "Old Operations payment/trial copy still includes active trial-language artifacts that must not be copied into the new Billing UI.",
+      "Current provider route-module proof covers CRM, mailbox, and communications but not Billing.",
+      "Billing actions need disabled/sandbox/live-gated states before any external payment operation appears."
+    ],
+    "before_screenshot_paths": [
+      "blocked_pending_current_state_visual_audit"
+    ],
+    "after_screenshot_plan": "Capture Billing, Catalog, Automations, and Settings states at 1440, 1024, 768, 430, and 390 after implementation."
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "professional",
+      "payment/access",
+      "automations",
+      "dashboard",
+      "portal",
+      "configured",
+      "working",
+      "clean"
+    ],
+    "expanded_phrases": {
+      "professional": "Use a restrained provider operations layout with clear hierarchy, compact tables, state chips, traceable actions, and no debug clutter.",
+      "payment/access": "Show payment state and access state together only through provider-scoped, server-derived records, with all live money/access mutations gated.",
+      "automations": "Reuse the existing automation/outbox patterns and display triggers, previews, and blocked/send states without creating a second automation engine.",
+      "dashboard": "Use an operational overview with metrics, readiness, exceptions, and next actions, not a decorative marketing hero.",
+      "portal": "Keep customer/parent-facing access status separate from provider admin controls and do not imply access is granted before the payment/access lifecycle authorizes it.",
+      "configured": "Replace vague configured/not-configured labels with specific readiness checks and exact next actions.",
+      "working": "Define success as route, registry, state matrix, tests, screenshot, deploy, and live-smoke evidence.",
+      "clean": "Use predictable navigation, compact controls, readable tables, and no nested card walls."
+    },
+    "user_facing_goal": "A One Time workspace owner can review the Billing system, product catalog, campaign readiness, customer/subscription/invoice/payment states, exceptions, and setup blockers without risking an accidental charge or send.",
+    "information_architecture": [
+      "Provider shell categories: Overview, Catalog, Billing, Automations, Settings.",
+      "Overview shows revenue/readiness/exceptions/next actions without raw IDs.",
+      "Catalog shows products, prices, status, publish controls, and tax/recurrence disclosures.",
+      "Billing shows conversion campaign, customers, subscriptions, invoices/payments, and refund exceptions.",
+      "Automations shows billing triggers, notice previews, failed-payment handling, cancellation handling, and send gates.",
+      "Settings shows Stripe account readiness, webhook health, policy versions, permissions, and live activation blockers."
+    ],
+    "visible_layout_rules": [
+      "Do not place cards inside cards.",
+      "Use dense but readable tables for repeated billing records.",
+      "Use chips for status and mode, menus for row actions, tabs or segmented controls for subviews, and icon buttons where commands are familiar.",
+      "Keep setup blockers visible but not as a giant always-open wall.",
+      "Reserve full-width bands/unframed layouts for page sections; use cards only for repeated records or modal/tool panels."
+    ],
+    "first_party_pattern_interpretation": "Use first-party BNA/One Time provider-shell patterns and no GHL/LeadConnector runtime."
+  },
+  "design_pattern_references": [
+    "One Time provider route-module shell",
+    "Shared CRM workbench table/detail density",
+    "Existing action registry rows for provider route modules",
+    "Black/yellow One Time brand family"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260713-959",
+      "statement": "Compile and validate the provider Billing UI Product Quality gate before UI implementation.",
+      "expected_result": "The UI packet names exact routes, states, actions, data, security, screenshot proof, deployment gate, and implementation split rules.",
+      "acceptance_criteria": [
+        "PQC validation passes for this packet.",
+        "Current-state visual audit is required before UI code.",
+        "The UI implementation is split if more than three routes, four files, or one major surface would be touched."
+      ]
+    },
+    {
+      "id": "REQ-20260713-960",
+      "statement": "Implement the responsive One Time provider Billing UI inside the dedicated provider shell.",
+      "expected_result": "Provider admins can inspect Billing overview, catalog, campaign, customers, subscriptions, invoices, payments, refund exceptions, automations, account readiness, policies, and permissions through scoped views.",
+      "acceptance_criteria": [
+        "Views are provider-scoped and server-derived.",
+        "All live charge, refund, send, and access actions are disabled or approval-gated until a final launch packet exists.",
+        "1440, 1024, 768, 430, and 390 screenshots show no overlap, clipping, or horizontal overflow.",
+        "Action and route registry entries exist for every visible action/route.",
+        "Focused UI tests and live route smoke pass after deployment."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "blocked_pending_current_state_visual_audit",
+    "criteria": [
+      "Raw intake is preserved.",
+      "Affected routes and likely files are listed.",
+      "Current-state screenshots are still required before UI implementation.",
+      "Old active trial/grace UI copy must be removed or isolated before Billing UI completion.",
+      "External Stripe/payment operations are sandbox-only or approval-gated.",
+      "Action and route registries are required.",
+      "State matrix and screenshot viewports are defined.",
+      "Implementation must split if scope exceeds packet budget."
+    ],
+    "blocker": "Run 01-current-state-visual-audit and capture provider-shell screenshots before UI code."
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/provider.html?review=one-time&section=billing",
+      "viewport": 1440,
+      "auth_role": "one_time_workspace_admin",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Navigate to Billing while route module/data are loading.",
+      "expected_visible_title": "Billing",
+      "expected_visible_message": "Provider-scoped billing shell remains readable while data loads.",
+      "expected_primary_action": "Review readiness",
+      "expected_secondary_actions": [
+        "Catalog",
+        "Automations",
+        "Settings"
+      ],
+      "forbidden_content": [
+        "raw secret",
+        "30-day trial",
+        "BNA Academy billing records"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Main Billing landmark and navigation are present.",
+      "accessibility_expectation": "Loading state is announced without trapping focus.",
+      "test_smoke_assertion": "Billing route renders loading state without console error.",
+      "requirement_id": "REQ-20260713-960"
+    },
+    "empty": {
+      "route": "/provider.html?review=one-time&section=billing",
+      "viewport": 1024,
+      "auth_role": "one_time_workspace_admin",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Load Billing before campaign/customers/subscriptions are seeded.",
+      "expected_visible_title": "Billing",
+      "expected_visible_message": "No billing records yet; setup next actions are specific and safe.",
+      "expected_primary_action": "Open setup",
+      "expected_secondary_actions": [
+        "Catalog",
+        "Policies"
+      ],
+      "forbidden_content": [
+        "fake live revenue",
+        "raw IDs in overview",
+        "trial offer"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state is plain text with reachable setup action.",
+      "accessibility_expectation": "Empty state has enough contrast and no tiny action text.",
+      "test_smoke_assertion": "Empty Billing route includes no private customer data.",
+      "requirement_id": "REQ-20260713-960"
+    },
+    "populated": {
+      "route": "/provider.html?review=one-time&section=billing",
+      "viewport": 1440,
+      "auth_role": "one_time_workspace_admin",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Load Billing with sandbox/test provider billing data.",
+      "expected_visible_title": "Billing",
+      "expected_visible_message": "Campaign, subscriptions, invoices, payments, and exceptions are summarized.",
+      "expected_primary_action": "Review campaign",
+      "expected_secondary_actions": [
+        "View customers",
+        "View invoices",
+        "Export redacted report"
+      ],
+      "forbidden_content": [
+        "full card data",
+        "raw private invoice URL",
+        "live charge button enabled"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Tables have headings, row labels, and menu labels.",
+      "accessibility_expectation": "Status chips are not color-only.",
+      "test_smoke_assertion": "Populated sandbox state shows scoped billing rows only.",
+      "requirement_id": "REQ-20260713-960"
+    },
+    "filtered_empty": {
+      "route": "/provider.html?review=one-time&section=billing",
+      "viewport": 768,
+      "auth_role": "one_time_workspace_admin",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Apply a filter with no matching invoices/payments.",
+      "expected_visible_title": "No matches",
+      "expected_visible_message": "Filtered state explains how to clear or adjust filters.",
+      "expected_primary_action": "Clear filters",
+      "expected_secondary_actions": [
+        "Change date range"
+      ],
+      "forbidden_content": [
+        "layout jump",
+        "empty table with no explanation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filter controls have labels and result counts update.",
+      "accessibility_expectation": "Clear filters is keyboard reachable.",
+      "test_smoke_assertion": "Filtered empty state keeps table/header dimensions stable.",
+      "requirement_id": "REQ-20260713-960"
+    },
+    "error": {
+      "route": "/provider.html?review=one-time&section=billing",
+      "viewport": 430,
+      "auth_role": "one_time_workspace_admin",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Simulate API failure for Billing data.",
+      "expected_visible_title": "Billing unavailable",
+      "expected_visible_message": "Error state gives a retry action and safe support next step without exposing secrets.",
+      "expected_primary_action": "Retry",
+      "expected_secondary_actions": [
+        "Copy support summary"
+      ],
+      "forbidden_content": [
+        "stack trace",
+        "secret",
+        "raw webhook payload"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error message is announced and retry is a button.",
+      "accessibility_expectation": "Error copy wraps on mobile.",
+      "test_smoke_assertion": "Error state redacts provider details and secrets.",
+      "requirement_id": "REQ-20260713-960"
+    },
+    "blocked_setup": {
+      "route": "/provider.html?review=one-time&section=settings",
+      "viewport": 390,
+      "auth_role": "one_time_workspace_admin",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Load Settings when Stripe/webhook/Railway/live activation is incomplete.",
+      "expected_visible_title": "Stripe setup",
+      "expected_visible_message": "Specific blocked setup rows explain the missing readiness item.",
+      "expected_primary_action": "Review test setup",
+      "expected_secondary_actions": [
+        "Webhook health",
+        "Policy versions"
+      ],
+      "forbidden_content": [
+        "webhook signing secret",
+        "secret key",
+        "live activation allowed"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked setup list is grouped with headings.",
+      "accessibility_expectation": "Long blocker labels wrap cleanly at 390px.",
+      "test_smoke_assertion": "Blocked setup state includes no secrets and no enabled live action.",
+      "requirement_id": "REQ-20260713-960"
+    },
+    "preview_only": {
+      "route": "/provider.html?review=one-time&section=automations",
+      "viewport": 1024,
+      "auth_role": "one_time_workspace_admin",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Open billing notice preview before live send approval.",
+      "expected_visible_title": "Billing notices",
+      "expected_visible_message": "Notice preview displays disclosures and shows send as approval-gated.",
+      "expected_primary_action": "Preview notice",
+      "expected_secondary_actions": [
+        "Copy draft",
+        "View cohort"
+      ],
+      "forbidden_content": [
+        "send batch enabled",
+        "private email body evidence",
+        "guaranteed educational outcomes"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview pane has a title and labelled controls.",
+      "accessibility_expectation": "Preview and action states are clear without color alone.",
+      "test_smoke_assertion": "Send action remains disabled without exact approval.",
+      "requirement_id": "REQ-20260713-960"
+    },
+    "success_readback": {
+      "route": "/provider.html?review=one-time&section=billing",
+      "viewport": 1440,
+      "auth_role": "one_time_workspace_admin",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Run sandbox reconciliation after test-mode Stripe lifecycle smoke.",
+      "expected_visible_title": "Sandbox readback",
+      "expected_visible_message": "Sandbox-only reconciliation shows matched product, price, subscription, invoice, payment, entitlement, and webhook rows.",
+      "expected_primary_action": "View sandbox report",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Download redacted report"
+      ],
+      "forbidden_content": [
+        "real customer",
+        "raw Stripe secret",
+        "live mode"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Readback summary is in a labelled region.",
+      "accessibility_expectation": "Success state includes text labels and timestamps.",
+      "test_smoke_assertion": "Sandbox readback never includes live mode or real customer identifiers.",
+      "requirement_id": "REQ-20260713-960"
+    },
+    "permission_denied": {
+      "route": "/provider.html?review=one-time&section=billing",
+      "viewport": 768,
+      "auth_role": "future_provider_admin_wrong_workspace",
+      "workspace_project": "other_provider/other_project",
+      "how_to_enter_state": "Attempt to load One Time Billing from a wrong provider scope.",
+      "expected_visible_title": "Not available",
+      "expected_visible_message": "The user cannot view unrelated provider billing records.",
+      "expected_primary_action": "Return to workspace",
+      "expected_secondary_actions": [
+        "Contact support"
+      ],
+      "forbidden_content": [
+        "One Time customer",
+        "One Time revenue",
+        "Stripe account status"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Permission message is clear and does not leak records.",
+      "accessibility_expectation": "Focus moves to the denial heading.",
+      "test_smoke_assertion": "Wrong-scope access is rejected server-side and UI-side.",
+      "requirement_id": "REQ-20260713-960"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/provider.html?review=one-time&section=billing",
+      "viewport": 390,
+      "auth_role": "one_time_workspace_admin",
+      "workspace_project": "rabbi_sheller_provider/one_time_mishnah_class",
+      "how_to_enter_state": "Open a subscription or invoice detail on mobile.",
+      "expected_visible_title": "Subscription detail",
+      "expected_visible_message": "Detail sheet shows key status, customer, invoice/payment, entitlement, and actions without horizontal overflow.",
+      "expected_primary_action": "Close detail",
+      "expected_secondary_actions": [
+        "View invoice",
+        "Request refund review"
+      ],
+      "forbidden_content": [
+        "button text clipping",
+        "overlapping status chips",
+        "enabled live refund"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Detail sheet/dialog has a label and close control.",
+      "accessibility_expectation": "Focusable controls stay inside the detail state.",
+      "test_smoke_assertion": "390px detail state has no horizontal overflow and all text fits.",
+      "requirement_id": "REQ-20260713-960"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/provider.html?review=one-time&section=billing",
+        "viewport": 1440
+      },
+      {
+        "route": "/provider.html?review=one-time&section=billing",
+        "viewport": 1024
+      },
+      {
+        "route": "/provider.html?review=one-time&section=billing",
+        "viewport": 768
+      },
+      {
+        "route": "/provider.html?review=one-time&section=billing",
+        "viewport": 430
+      },
+      {
+        "route": "/provider.html?review=one-time&section=billing",
+        "viewport": 390
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-BILLING-001",
+        "route": "/provider.html?review=one-time&section=billing",
+        "viewport": 1440,
+        "screenshot_before": "blocked_pending_current_state_visual_audit",
+        "screenshot_after_or_blocker": "required_after_implementation",
+        "defect_codes": [
+          "VQ-IA-001"
+        ],
+        "severity": "P1",
+        "user_impact": "Billing does not yet exist as a dedicated provider-shell module.",
+        "expected_fix": "Add Billing IA only after the current-state audit and data/API readiness.",
+        "requirement_id": "REQ-20260713-960"
+      },
+      {
+        "finding_id": "VQ-BILLING-002",
+        "route": "/provider.html?review=one-time&section=billing",
+        "viewport": 390,
+        "screenshot_before": "blocked_pending_current_state_visual_audit",
+        "screenshot_after_or_blocker": "required_after_implementation",
+        "defect_codes": [
+          "VQ-RESP-001"
+        ],
+        "severity": "P1",
+        "user_impact": "Mobile billing tables/details could clip or overflow unless designed as drawer/detail states.",
+        "expected_fix": "Use responsive table/detail patterns and verify 430px and 390px screenshots.",
+        "requirement_id": "REQ-20260713-960"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Billing, Catalog, Automations, and Settings views use landmark/heading hierarchy.",
+      "Tables have labelled columns and row actions.",
+      "Menus and dialogs have accessible labels and keyboard close behavior.",
+      "Status is text plus chip/icon, not color only.",
+      "Mobile touch targets are at least 44px where practical.",
+      "Long labels wrap without overlap at 390px."
+    ],
+    "verification": [
+      "Playwright accessibility snapshot for Billing route.",
+      "Keyboard tab-through for main controls.",
+      "Mobile screenshot review for text fit and overlap."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Publish price",
+      "selector_or_action_key": "one_time.billing.publish_price",
+      "action_state": "NEEDS_SHLOIMIE_SETUP",
+      "owner": "workspace_admin",
+      "external_write": true,
+      "handler_or_blocker": "Live price publication separated from campaign start and requires final live approval.",
+      "registry_required": true
+    },
+    {
+      "label": "Start campaign billing",
+      "selector_or_action_key": "one_time.billing.start_campaign_billing",
+      "action_state": "DISABLED_NOT_IN_SCOPE",
+      "owner": "workspace_admin",
+      "external_write": true,
+      "handler_or_blocker": "Blocked until final live activation packet approves billing_start_at, cohort, consent coverage, live price, and deployed SHA.",
+      "registry_required": true
+    },
+    {
+      "label": "Preview billing notice",
+      "selector_or_action_key": "one_time.billing.preview_notice",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "workspace_admin",
+      "external_write": false,
+      "handler_or_blocker": "Preview and copy only; live send requires exact approval.",
+      "registry_required": true
+    },
+    {
+      "label": "Send notice batch",
+      "selector_or_action_key": "one_time.billing.send_notice_batch",
+      "action_state": "DISABLED_NOT_IN_SCOPE",
+      "owner": "workspace_admin",
+      "external_write": true,
+      "handler_or_blocker": "Live customer batch send is outside this implementation branch.",
+      "registry_required": true
+    },
+    {
+      "label": "Run sandbox reconciliation",
+      "selector_or_action_key": "one_time.billing.run_sandbox_reconciliation",
+      "action_state": "SANDBOX_ONLY",
+      "owner": "codex_or_workspace_admin",
+      "external_write": true,
+      "handler_or_blocker": "Synthetic test-mode identities only; no real customer/funds/access/email.",
+      "registry_required": true
+    },
+    {
+      "label": "Request refund review",
+      "selector_or_action_key": "one_time.billing.request_refund_review",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "workspace_admin",
+      "external_write": false,
+      "handler_or_blocker": "Creates or previews an internal exception record only; Stripe refund execution remains approval-gated.",
+      "registry_required": true
+    },
+    {
+      "label": "Execute refund",
+      "selector_or_action_key": "one_time.billing.execute_refund",
+      "action_state": "DISABLED_NOT_IN_SCOPE",
+      "owner": "workspace_admin",
+      "external_write": true,
+      "handler_or_blocker": "No live refund in this branch; requires authorized admin explicit confirmation and final policy.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "server_derived_scope": true,
+    "workspace_key": "rabbi_sheller_provider",
+    "project_key": "one_time_mishnah_class",
+    "required_entities": [
+      "provider_payment_account",
+      "billing_policy_version",
+      "billing_product",
+      "billing_price",
+      "promotional_conversion_campaign",
+      "campaign_member",
+      "billing_consent",
+      "billing_notice",
+      "billing_customer",
+      "billing_subscription",
+      "billing_invoice",
+      "billing_payment",
+      "billing_refund_exception",
+      "billing_activity",
+      "stripe_webhook_event",
+      "billing_automation_run"
+    ],
+    "forbidden_data": [
+      "BNA Academy billing records",
+      "unrelated provider billing records",
+      "raw secret values",
+      "full payment method details",
+      "private invoice URLs outside authorized scope",
+      "raw webhook bodies in UI proof"
+    ],
+    "pagination": "All repeated billing tables require server pagination and bounded page sizes.",
+    "api_routes_needed": [
+      "/api/onetime/billing/overview",
+      "/api/onetime/billing/products",
+      "/api/onetime/billing/prices",
+      "/api/onetime/billing/campaign",
+      "/api/onetime/billing/customers",
+      "/api/onetime/billing/subscriptions",
+      "/api/onetime/billing/invoices",
+      "/api/onetime/billing/payments",
+      "/api/onetime/billing/refund-exceptions",
+      "/api/onetime/billing/automations",
+      "/api/onetime/billing/activity",
+      "/api/onetime/billing/stripe-readiness",
+      "/api/onetime/billing/webhook-health",
+      "/api/onetime/billing/sandbox-reconciliation"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "server_derived_scope_required": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "no_cross_workspace_data": true,
+    "no_secret_logging": true,
+    "no_real_charge_without_final_approval": true,
+    "no_real_refund_without_final_approval": true,
+    "no_real_access_mutation_without_final_approval": true,
+    "no_live_notice_batch_without_final_approval": true,
+    "webhook_signature_required": true,
+    "test_live_mode_separation_required": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "batch_id": "UI-0",
+      "scope": "Current-state Billing UI audit",
+      "requirements": [
+        "REQ-20260713-959"
+      ],
+      "instructions": [
+        "Capture before screenshots at required viewports.",
+        "Inventory provider shell route modules and existing payment/trial copy.",
+        "Record action/route registry gaps."
+      ],
+      "verification": [
+        "current-state report exists",
+        "PQC remains valid"
+      ]
+    },
+    {
+      "batch_id": "UI-1",
+      "scope": "Billing route-module shell and Overview/Catalog",
+      "requirements": [
+        "REQ-20260713-960"
+      ],
+      "instructions": [
+        "Create route module only after backend/API data states exist or are represented by safe previews.",
+        "Use server-derived provider scope.",
+        "Keep live money actions disabled."
+      ],
+      "verification": [
+        "focused UI tests",
+        "action registry",
+        "route registry"
+      ]
+    },
+    {
+      "batch_id": "UI-2",
+      "scope": "Billing records, Automations, Settings, and responsive detail states",
+      "requirements": [
+        "REQ-20260713-960"
+      ],
+      "instructions": [
+        "Implement customer/subscription/invoice/payment/refund exception views.",
+        "Implement notice preview and setup/readiness states.",
+        "Verify 1440, 1024, 768, 430, and 390 screenshots."
+      ],
+      "verification": [
+        "screenshots",
+        "a11y snapshot",
+        "live smoke after deploy"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "large",
+    "source_files_to_read": [
+      "public/provider.html",
+      "public/js/one-time-provider-crm-route.js",
+      "public/js/one-time-provider-mailbox-route.js",
+      "public/js/one-time-provider-communications-route.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json"
+    ],
+    "files_allowed_to_edit": [
+      "public/js/one-time-provider-billing-route.js",
+      "public/js/one-time-provider-catalog-route.js",
+      "public/js/one-time-provider-automations-route.js",
+      "public/js/one-time-provider-settings-route.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "tests/one-time-provider-billing-ui.test.js",
+      "scripts/smoke-onetime-provider-billing-route-live.mjs"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Billing UI spans several categories and must split if it grows beyond one provider-shell surface.",
+    "split_if_exceeds": true,
+    "context_risk_level": "high"
+  },
+  "tests": {
+    "required_before_ui_done": [
+      "npm run pqc:validate -- tasks-pending/2026-07-13-onetime-rosh-hashanah-billing-platform-v2.product-quality.json",
+      "npm run watchdog:actions",
+      "npm run watchdog:security",
+      "npm run watchdog:workspace-scope",
+      "npm run watchdog:protocol-drift",
+      "node --test tests/one-time-provider-billing-ui.test.js",
+      "npm run test:onetime:focused"
+    ],
+    "screenshot_viewports": [
+      1440,
+      1024,
+      768,
+      430,
+      390
+    ],
+    "live_smoke": "Run an exact-SHA One Time provider Billing route smoke after deploy; no external charge/send/refund/access mutation."
+  },
+  "evidence": {
+    "required_paths": [
+      "ops/ui-audits/2026-07-13-onetime-billing-current-state/report.md",
+      "ops/ui-audits/2026-07-13-onetime-billing-after/report.md",
+      "ops/action-registry/one-time-billing-action-coverage.md",
+      "ops/live-smokes/*onetime-provider-billing-route-live-smoke.md",
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
+    ],
+    "redaction_rules": [
+      "Do not store raw secrets.",
+      "Do not store full customer names/emails/phone numbers unless synthetic.",
+      "Do not store raw invoice URLs.",
+      "Do not store raw webhook payload bodies."
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "app_visible": true,
+  "definition_of_done": {
+    "criteria": [
+      "Definition of Ready is met before UI implementation.",
+      "Billing UI uses server-derived One Time provider scope.",
+      "Action registry covers every visible command.",
+      "Route registry covers every affected route.",
+      "Before and after screenshots exist or exact blockers are recorded.",
+      "All required viewports are verified without overlap, clipping, or horizontal overflow.",
+      "Accessibility/keyboard checks pass or blockers are explicit.",
+      "Focused UI tests pass.",
+      "Security/workspace-scope/action/protocol watchdogs pass.",
+      "Branch is pushed.",
+      "App-visible work is deployed.",
+      "Exact-SHA live smoke passes.",
+      "No real charge, refund, send, or access mutation occurs."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260713-005-onetime-rosh-hashanah-billing-platform-v2.md",
+    "compiled_packet_path": "tasks-pending/2026-07-13-onetime-rosh-hashanah-billing-platform-v2.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "local file edits",
+      "local tests",
+      "sandbox/test-mode Stripe smoke",
+      "Playwright screenshots",
+      "deployment/live smoke only after implementation"
+    ],
+    "skipped_actions_policy": [
+      "Skip real customer charges.",
+      "Skip live notice sends.",
+      "Skip live refunds.",
+      "Skip real access mutations.",
+      "Skip Stripe Connect/payouts."
+    ],
+    "blocker_decisions": [
+      "DEC-20260713-951",
+      "DEC-20260713-960",
+      "DEC-20260713-961"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-13-onetime-billing-current-state/report.md",
+      "ops/ui-audits/2026-07-13-onetime-billing-after/report.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-13-onetime-rosh-hashanah-billing-platform-v2.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-13-onetime-rosh-hashanah-billing-platform-v2/01-current-state-visual-audit.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No product-quality protocol drift and no active old trial/grace billing policy in completed UI work."
+  },
+  "next_packet": {
+    "packet_id": "PKT-20260713-951",
+    "title": "One Time Billing current-state visual audit",
+    "path": "ops/prompt-packets/2026-07-13-onetime-rosh-hashanah-billing-platform-v2/01-current-state-visual-audit.md",
+    "status": "not_started"
+  }
+}

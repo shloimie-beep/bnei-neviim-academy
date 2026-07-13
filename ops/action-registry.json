@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-07-13T10:35:00+03:00",
+  "updated_at": "2026-07-13T15:19:45+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -1214,6 +1214,90 @@
       "test": {
         "type": "unit_and_live_smoke",
         "expected_result": "tests/rabbi-checkout-access.test.js and app:smoke:one-time-payment-access-class-links verify automated_access_grants_enabled=false."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-BILLING-NOTICE-PREVIEW",
+      "label": "Preview notice",
+      "surface": "one_time_provider_billing_ui",
+      "route": "/provider.html?review=one-time&section=billing",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-BILLING-NOTICE-PREVIEW\"]",
+      "expected_behavior": "Shows the pre-billing notice as preview-only in the provider Billing UI. It must not send email, WhatsApp, Telegram, invoice receipts, or batch notices.",
+      "permission": "scoped_one_time_provider_session_or_review",
+      "status": "disabled_preview_route_pending",
+      "disabled_reason": "Preview-only until sender, copy, recipient cohort, and billing start are approved.",
+      "test": {
+        "type": "browser_and_static",
+        "expected_result": "Provider Billing UI renders the action disabled with no external send and no live billing side effect."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-BILLING-LIVE-CHARGE-BLOCKED",
+      "label": "Start live billing",
+      "surface": "one_time_provider_billing_ui",
+      "route": "/provider.html?review=one-time&section=billing",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-BILLING-LIVE-CHARGE-BLOCKED\"]",
+      "expected_behavior": "Remains disabled until exact approval, hosted Stripe readback, final billing start, notice copy, and launch packet are complete. It must not create checkout sessions, subscriptions, invoices, charges, or payment links.",
+      "permission": "scoped_one_time_provider_session_or_review",
+      "status": "disabled",
+      "disabled_reason": "Blocked until exact approval and hosted Stripe readback exist.",
+      "test": {
+        "type": "browser_and_static",
+        "expected_result": "Provider Billing UI renders live billing disabled and tests confirm live charge/write gates remain false."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-BILLING-REFUND-REVIEW-BLOCKED",
+      "label": "Create refund",
+      "surface": "one_time_provider_billing_ui",
+      "route": "/provider.html?review=one-time&section=billing",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-BILLING-REFUND-REVIEW-BLOCKED\"]",
+      "expected_behavior": "Remains disabled for Stripe refund creation. The UI may show manual exceptional-refund review state, but must not create a Stripe refund or automatically revoke access.",
+      "permission": "scoped_one_time_provider_session_or_review",
+      "status": "disabled",
+      "disabled_reason": "Requires authorized admin approval and linked invoice/payment/customer before refund execution.",
+      "test": {
+        "type": "browser_and_static",
+        "expected_result": "Provider Billing UI renders refund creation disabled and local tests confirm stripe_refund_create_enabled=false."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-BILLING-ACCESS-AUTOMATION-BLOCKED",
+      "label": "Run access automation",
+      "surface": "one_time_provider_billing_ui",
+      "route": "/provider.html?review=one-time&section=billing",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-BILLING-ACCESS-AUTOMATION-BLOCKED\"]",
+      "expected_behavior": "Remains disabled until an approved paid event, entitlement policy, final launch packet, and exact operator approval exist. It must not grant, suspend, or revoke access from the provider Billing UI.",
+      "permission": "scoped_one_time_provider_session_or_review",
+      "status": "disabled",
+      "disabled_reason": "Requires approved paid event, entitlement policy, and final launch packet.",
+      "test": {
+        "type": "browser_and_static",
+        "expected_result": "Provider Billing UI renders access automation disabled and tests confirm access_grant_automation_enabled=false."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

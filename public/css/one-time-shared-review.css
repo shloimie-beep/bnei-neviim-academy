@@ -706,6 +706,243 @@ body.one-time-review-active .one-time-crm-summary-grid .one-time-fit-pill {
   white-space: nowrap;
 }
 
+body.one-time-review-active .one-time-billing-shell {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+body.one-time-review-active .one-time-billing-hero,
+body.one-time-review-active .one-time-billing-metric,
+body.one-time-review-active .one-time-billing-band,
+body.one-time-review-active .one-time-billing-launch {
+  min-width: 0;
+  border: 1px solid rgba(8, 19, 35, 0.12);
+  border-radius: 8px;
+  background: var(--one-time-white);
+  box-shadow: 0 12px 28px rgba(8, 19, 35, 0.07);
+}
+
+body.one-time-review-active .one-time-billing-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(210px, 280px);
+  gap: 14px;
+  align-items: stretch;
+  padding: 16px;
+}
+
+body.one-time-review-active .one-time-billing-hero h3,
+body.one-time-review-active .one-time-billing-band h3,
+body.one-time-review-active .one-time-billing-launch h3 {
+  margin: 0;
+  color: var(--one-time-navy);
+}
+
+body.one-time-review-active .one-time-billing-hero .small,
+body.one-time-review-active .one-time-billing-launch .small {
+  max-width: 760px;
+  margin: 8px 0 0;
+  overflow-wrap: break-word;
+}
+
+body.one-time-review-active .one-time-billing-price {
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  border-radius: 8px;
+  background: #080910;
+  color: var(--one-time-white);
+  padding: 14px;
+}
+
+body.one-time-review-active .one-time-billing-price strong {
+  color: var(--one-time-yellow);
+  font-size: 28px;
+  line-height: 1.05;
+  overflow-wrap: break-word;
+}
+
+body.one-time-review-active .one-time-billing-price span,
+body.one-time-review-active .one-time-billing-price small {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+body.one-time-review-active .one-time-billing-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+body.one-time-review-active .one-time-billing-metric {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+}
+
+body.one-time-review-active .one-time-billing-metric span,
+body.one-time-review-active .one-time-billing-metric small {
+  color: #3d4a5f;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+body.one-time-review-active .one-time-billing-metric strong {
+  color: var(--one-time-black);
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+body.one-time-review-active .one-time-billing-category-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+body.one-time-review-active .one-time-billing-category-row span {
+  border: 1px solid rgba(251, 221, 0, 0.38);
+  border-radius: 999px;
+  background: rgba(251, 221, 0, 0.14);
+  color: var(--one-time-black);
+  font-size: 12px;
+  font-weight: 900;
+  padding: 7px 10px;
+}
+
+body.one-time-review-active .one-time-billing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  min-width: 0;
+}
+
+body.one-time-review-active .one-time-billing-band {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 14px;
+}
+
+body.one-time-review-active .one-time-billing-band-head,
+body.one-time-review-active .one-time-billing-row,
+body.one-time-review-active .one-time-billing-gated-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+body.one-time-review-active .one-time-billing-row {
+  border-top: 1px solid rgba(8, 19, 35, 0.1);
+  padding-top: 10px;
+}
+
+body.one-time-review-active .one-time-billing-row div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+body.one-time-review-active .one-time-billing-row strong {
+  color: var(--one-time-navy);
+  overflow-wrap: break-word;
+}
+
+body.one-time-review-active .one-time-billing-row span,
+body.one-time-review-active .one-time-billing-gated-action span {
+  color: #344057;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+body.one-time-review-active .one-time-billing-row .status-pill {
+  color: #073c4a;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+  text-align: center;
+}
+
+body.one-time-review-active .one-time-billing-launch {
+  display: grid;
+  grid-template-columns: minmax(0, 0.55fr) minmax(0, 0.45fr);
+  gap: 14px;
+  align-items: start;
+  padding: 16px;
+}
+
+body.one-time-review-active .one-time-billing-actions {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+body.one-time-review-active .one-time-billing-blocker-list {
+  display: grid;
+  gap: 7px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+body.one-time-review-active .one-time-billing-blocker-list li {
+  border-left: 3px solid var(--one-time-yellow);
+  border-radius: 6px;
+  background: rgba(8, 19, 35, 0.04);
+  color: #344057;
+  font-weight: 800;
+  line-height: 1.35;
+  padding: 8px 10px;
+  overflow-wrap: anywhere;
+}
+
+body.one-time-review-active .one-time-billing-gated-action button {
+  min-width: 132px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+body.one-time-review-active .one-time-billing-gated-action button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+@media (max-width: 900px) {
+  body.one-time-review-active .one-time-billing-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.one-time-review-active .one-time-billing-grid,
+  body.one-time-review-active .one-time-billing-launch {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  body.one-time-review-active .one-time-billing-hero,
+  body.one-time-review-active .one-time-billing-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  body.one-time-review-active .one-time-billing-price strong {
+    font-size: 24px;
+  }
+
+  body.one-time-review-active .one-time-billing-band-head,
+  body.one-time-review-active .one-time-billing-row,
+  body.one-time-review-active .one-time-billing-gated-action {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  body.one-time-review-active .one-time-billing-band-head .status-pill,
+  body.one-time-review-active .one-time-billing-row .status-pill,
+  body.one-time-review-active .one-time-billing-gated-action button {
+    width: 100%;
+  }
+}
+
 body.one-time-review-active.one-time-student-review-active .hero {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;

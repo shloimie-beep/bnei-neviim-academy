@@ -8,9 +8,10 @@ const provider = fs.readFileSync('public/provider.html', 'utf8');
 const actionRegistry = JSON.parse(fs.readFileSync('ops/action-registry.json', 'utf8'));
 
 test('provider-scoped Operations identities do not receive BNA super-admin navigation capabilities', () => {
-  assert.match(server, /const providerAllowedViews = \[[^\]]*'api_usage'[\s\S]*'settings'\]/);
-  assert.match(server, /const ownerAllowedViews = \[[^\]]*'api_usage'[\s\S]*'settings'\]/);
-  assert.match(server, /const managerAllowedViews = \[[^\]]*'api_usage'[\s\S]*'integrations'\]/);
+  assert.match(server, /const providerAllowedViews = \[[^\]]*'tasks'[\s\S]*'content'[\s\S]*'integrations'[\s\S]*\]/);
+  assert.match(server, /function oneTimeDashboardAllowedViews\(\) \{[\s\S]*ONE_TIME_RABBI_DASHBOARD_MAIN_MODULES[\s\S]*module\.operations_view[\s\S]*\}/);
+  assert.match(server, /const ownerAllowedViews = oneTimeDashboardAllowedViews\(\)/);
+  assert.match(server, /const managerAllowedViews = oneTimeDashboardAllowedViews\(\)/);
 
   for (const listName of ['providerAllowedViews', 'ownerAllowedViews', 'managerAllowedViews']) {
     assert.doesNotMatch(server, new RegExp(`${listName} = \\[[^\\]]*'platform_suite'`), `${listName} must not expose Platform Suite`);
@@ -102,7 +103,7 @@ test('Operations route changes push history after initial deep-link normalizatio
 test('Operations API Usage remains an honest empty state and does not present the future provider bot as live', () => {
   assert.match(operations, /Token\/cost values stay blank until backend tracking is added/);
   assert.match(operations, /No fake cost is shown until API metering persistence exists/);
-  assert.match(operations, /Detailed token, model, cost, budget, and export controls need backend metering before they can be enabled/);
+  assert.match(operations, /Detailed token, model, cost, budget, and export controls are not enabled for this account view yet/);
   assert.match(operations, /const API_USAGE_SUBTABS = \[/);
   assert.doesNotMatch(operations, /Provider Workspace Bot is live|Start provider bot|Ask provider bot/i);
 });

@@ -11497,67 +11497,94 @@ function moneyFromCents(amountCents, currency = 'USD') {
 function renderOneTimeTrialReferralPanel() {
     const config = oneTimeTrialReferralConfig();
     const trial = config.launch_trial || {};
+    const promotional = config.promotional_access || trial.promotional_access || {};
     const renewal = trial.renewal || {};
     const trialRules = trial.rules || {};
     const referral = config.referral_credit || {};
     const referralReward = referral.reward || {};
     const referralRules = referral.rules || {};
+    const billingNotice = config.billing_notice || {};
+    const noticeDelivery = billingNotice.delivery || {};
+    const noticeGates = billingNotice.gates || {};
+    const refundReview = config.refund_review || {};
+    const refundGates = refundReview.gates || {};
     const acceptance = config.acceptance_storage || {};
     const decision = config.legal_wording_decision || {};
     const guardrails = config.guardrails || {};
     const blockers = Array.isArray(config.blockers) ? config.blockers : [];
     return `
-        <section class="focus-panel" data-one-time-trial-referral-config data-requirement-id="${escapeHtml(config.requirement_id || 'REQ-20260621-906')}" aria-label="One Time trial and referral configuration">
-            <div class="task-section-header">
-                <div>
-                    <h3>Trial / Referral Configuration</h3>
-                    <p class="notification-lock-note">Warm-lead trial, referral credit, policy-version acceptance, and legal wording are modeled for test/local readiness only. No live charge, payment link, or real invoice credit is enabled.</p>
-                </div>
-                <span>${escapeHtml(config.status || 'local_contract_present')}</span>
-            </div>
-            <div class="task-overview-grid">
-                ${renderMetricButton('Intro Trial', `${trial.trial_days || 30} days`, '30-day warm-lead intro trial.', '')}
-                ${renderMetricButton('Renewal', moneyFromCents(renewal.amount_cents ?? 6700, renewal.currency || 'USD'), '$67 renewal default.', '')}
-                ${renderMetricButton('Card', trialRules.card_required ? 'Required' : 'Pending', 'Card-required rule is modeled but checkout creation remains disabled.', '')}
-                ${renderMetricButton('Referral Trigger', referral.activation_trigger === 'first_successful_paid_cycle' ? 'Paid cycle' : 'Manual', 'Referral credit activates only after the first successful paid cycle.', '')}
-            </div>
-            <div class="content-section-grid" style="margin-top:14px;">
-                <article class="content-card">
-                    <div class="content-card-title">Warm-lead intro trial</div>
-                    <div class="content-card-meta">${escapeHtml(trial.policy_key || 'one_time_warm_lead_intro_trial')} &middot; ${escapeHtml(trial.policy_version || 'one-time-warm-lead-intro-trial-v1')}</div>
-                    <ul class="content-card-summary">
-                        <li><strong>30-day trial</strong><span>${escapeHtml(String(trial.trial_days || 30))} days before renewal</span></li>
-                        <li><strong>$67 renewal</strong><span>${escapeHtml(moneyFromCents(renewal.amount_cents ?? 6700, renewal.currency || 'USD'))} / ${escapeHtml(renewal.billing_interval || 'month')}</span></li>
-                        <li><strong>Card required</strong><span>${trialRules.card_required ? 'Modeled as required' : 'Needs decision'}</span></li>
-                        <li><strong>One intro trial per household</strong><span>${trialRules.one_intro_trial_per_household ? 'Required' : 'Needs decision'}</span></li>
-                    </ul>
-                </article>
+<section class="focus-panel" data-one-time-trial-referral-config data-requirement-id="${escapeHtml(config.requirement_id || 'REQ-20260713-954')}" aria-label="One Time promotional billing and referral configuration">
+    <div class="task-section-header">
+        <div>
+            <h3>Promotional Billing / Referral Configuration</h3>
+            <p class="notification-lock-note">Rosh Hashanah promotional access, paid conversion, referral credit, policy-version acceptance, and legal wording are modeled for test/local readiness only. No live charge, payment link, Stripe trial, access grant, or real invoice credit is enabled.</p>
+        </div>
+        <span>${escapeHtml(config.status || 'local_contract_present')}</span>
+    </div>
+    <div class="task-overview-grid">
+        ${renderMetricButton('Stripe Trial', trial.stripe_trial_enabled ? 'Enabled' : 'Disabled', 'Stripe subscription trials are disabled for this policy.', '')}
+        ${renderMetricButton('Conversion', moneyFromCents(renewal.amount_cents ?? 6700, renewal.currency || 'USD'), '$67 monthly conversion default.', '')}
+        ${renderMetricButton('Card', trialRules.billing_authorization_required ? 'Required' : 'Pending', 'Billing authorization is modeled but checkout creation remains disabled.', '')}
+        ${renderMetricButton('Referral Trigger', referral.activation_trigger === 'first_successful_paid_cycle' ? 'Paid cycle' : 'Manual', 'Referral credit activates only after the first successful paid cycle.', '')}
+    </div>
+    <div class="content-section-grid" style="margin-top:14px;">
+        <article class="content-card">
+            <div class="content-card-title">Rosh Hashanah promotional access</div>
+            <div class="content-card-meta">${escapeHtml(trial.policy_key || 'one_time_rosh_hashanah_promotional_access')} &middot; ${escapeHtml(trial.policy_version || 'one-time-rosh-hashanah-promotional-access-v1')}</div>
+            <ul class="content-card-summary">
+                <li><strong>Promotional access</strong><span>${promotional.access_until_billing_start ? 'Until billing start' : 'Needs billing-start decision'}</span></li>
+                <li><strong>No Stripe trial</strong><span>${trial.stripe_trial_enabled ? 'Check required' : `${escapeHtml(String(trial.trial_days ?? 0))} trial days`}</span></li>
+                <li><strong>$67 monthly conversion</strong><span>${escapeHtml(moneyFromCents(renewal.amount_cents ?? 6700, renewal.currency || 'USD'))} / ${escapeHtml(renewal.billing_interval || 'month')} plus applicable taxes</span></li>
+                <li><strong>Billing start</strong><span>${escapeHtml(renewal.starts_at || promotional.billing_start_at || 'operator decision pending')}</span></li>
+                <li><strong>Failed payment grace</strong><span>${trialRules.no_failed_payment_grace_period ? 'None' : 'Check required'}</span></li>
+            </ul>
+        </article>
                 <article class="content-card">
                     <div class="content-card-title">Referral credit</div>
                     <div class="content-card-meta">${escapeHtml(referral.policy_key || 'one_time_referral_credit_after_first_paid_cycle')} &middot; ${escapeHtml(referral.policy_version || 'one-time-referral-credit-v1')}</div>
                     <ul class="content-card-summary">
                         <li><strong>Activation</strong><span>Only after first successful paid cycle</span></li>
                         <li><strong>Reward</strong><span>${escapeHtml(referralReward.type || 'manual_month_credit_candidate')} ${escapeHtml(moneyFromCents(referralReward.amount_cents ?? 6700, referralReward.currency || 'USD'))}</span></li>
-                        <li><strong>Review</strong><span>${referralReward.application_mode === 'manual_after_admin_review' ? 'Manual admin review' : 'Manual review required'}</span></li>
-                        <li><strong>Abuse guard</strong><span>${referralRules.self_referrals_allowed === false ? 'No self-referrals' : 'Needs policy'}</span></li>
-                    </ul>
-                </article>
-                <article class="content-card">
-                    <div class="content-card-title">Policy acceptance storage</div>
-                    <div class="content-card-meta">${escapeHtml(acceptance.table || 'bna_one_time_policy_acceptances')} &middot; ${escapeHtml(String(acceptance.record_count || 0))} records</div>
-                    <ul class="content-card-summary">
-                        ${(acceptance.policy_versions || ['one-time-warm-lead-intro-trial-v1', 'one-time-referral-credit-v1']).map(version => `<li><strong>Version</strong><span>${escapeHtml(version)}</span></li>`).join('')}
-                        <li><strong>Mode</strong><span>${acceptance.test_local_mode_supported ? 'Test/local supported only' : 'Test/local only'}</span></li>
-                        <li><strong>Required fields</strong><span>${escapeHtml((acceptance.required_fields || []).slice(0, 4).join(', ') || 'policy_key, policy_version, acceptance_key, accepted_at')}</span></li>
-                    </ul>
-                </article>
-                <article class="content-card">
-                    <div class="content-card-title">Legal wording decision</div>
-                    <div class="content-card-meta">${escapeHtml(decision.decision_key || 'trial_referral_legal_wording')} &middot; ${escapeHtml(decision.status || 'decision_pending')}</div>
-                    <p class="event-meta">${escapeHtml(decision.question || 'Approve public trial/referral wording before publication.')}</p>
-                    <div class="tag-list">
-                        <span class="tag">public copy blocked</span>
-                        <span class="tag">local config allowed</span>
+                <li><strong>Review</strong><span>${referralReward.application_mode === 'manual_after_admin_review' ? 'Manual admin review' : 'Manual review required'}</span></li>
+                <li><strong>Abuse guard</strong><span>${referralRules.self_referrals_allowed === false ? 'No self-referrals' : 'Needs policy'}</span></li>
+            </ul>
+        </article>
+        <article class="content-card">
+            <div class="content-card-title">Billing notice</div>
+            <div class="content-card-meta">${escapeHtml(billingNotice.policy_key || 'one_time_rosh_hashanah_pre_billing_notice')} &middot; ${escapeHtml(billingNotice.policy_version || 'one-time-rosh-hashanah-pre-billing-notice-v1')}</div>
+            <ul class="content-card-summary">
+                <li><strong>Template</strong><span>${escapeHtml(billingNotice.template_key || 'one_time_pre_billing_notice_v1')}</span></li>
+                <li><strong>Preview</strong><span>${noticeDelivery.preview_enabled === false ? 'Disabled' : 'Enabled'}</span></li>
+                <li><strong>Batch send</strong><span>${noticeDelivery.batch_send_enabled || noticeGates.email_send_enabled ? 'Check required' : 'Disabled'}</span></li>
+                <li><strong>Disclosures</strong><span>${escapeHtml((billingNotice.required_disclosures || []).slice(0, 3).join(', ') || 'price, tax, no trial')}</span></li>
+            </ul>
+        </article>
+        <article class="content-card">
+            <div class="content-card-title">Manual refund review</div>
+            <div class="content-card-meta">${escapeHtml(refundReview.policy_key || 'one_time_manual_exception_refund_review')} &middot; ${escapeHtml(refundReview.policy_version || 'one-time-manual-exception-refund-review-v1')}</div>
+            <ul class="content-card-summary">
+                <li><strong>Default</strong><span>${escapeHtml(refundReview.default_refund_policy || 'manual exception review only')}</span></li>
+                <li><strong>Automatic refunds</strong><span>${refundReview.automatic_refunds_enabled ? 'Check required' : 'Disabled'}</span></li>
+                <li><strong>Stripe refund create</strong><span>${refundGates.stripe_refund_create_enabled ? 'Enabled' : 'Disabled'}</span></li>
+                <li><strong>Required link</strong><span>${escapeHtml((refundReview.required_review_fields || []).slice(0, 3).join(', ') || 'customer, invoice, payment')}</span></li>
+            </ul>
+        </article>
+        <article class="content-card">
+            <div class="content-card-title">Policy acceptance storage</div>
+            <div class="content-card-meta">${escapeHtml(acceptance.table || 'bna_one_time_policy_acceptances')} &middot; ${escapeHtml(String(acceptance.record_count || 0))} records</div>
+            <ul class="content-card-summary">
+                ${(acceptance.policy_versions || ['one-time-rosh-hashanah-promotional-access-v1', 'one-time-referral-credit-v1']).map(version => `<li><strong>Version</strong><span>${escapeHtml(version)}</span></li>`).join('')}
+                <li><strong>Mode</strong><span>${acceptance.test_local_mode_supported ? 'Test/local supported only' : 'Test/local only'}</span></li>
+                <li><strong>Required fields</strong><span>${escapeHtml((acceptance.required_fields || []).slice(0, 4).join(', ') || 'policy_key, policy_version, acceptance_key, accepted_at')}</span></li>
+            </ul>
+        </article>
+        <article class="content-card">
+            <div class="content-card-title">Legal wording decision</div>
+            <div class="content-card-meta">${escapeHtml(decision.decision_key || 'rosh_hashanah_billing_policy_copy')} &middot; ${escapeHtml(decision.status || 'decision_pending')}</div>
+            <p class="event-meta">${escapeHtml(decision.question || 'Approve public no-trial billing and referral wording before publication.')}</p>
+            <div class="tag-list">
+                <span class="tag">public copy blocked</span>
+                <span class="tag">local config allowed</span>
                         <span class="tag">needed from ${escapeHtml(decision.needed_from || 'Shloimie')}</span>
                     </div>
                 </article>
@@ -11567,6 +11594,7 @@ function renderOneTimeTrialReferralPanel() {
                 <span class="tag">invoice credits ${guardrails.real_invoice_credits_enabled ? 'enabled' : 'disabled'}</span>
                 <span class="tag">checkout ${guardrails.checkout_creation_enabled ? 'enabled' : 'disabled'}</span>
                 <span class="tag">payment links ${guardrails.payment_link_creation_enabled ? 'enabled' : 'disabled'}</span>
+                <span class="tag">refunds ${guardrails.refund_execution_enabled ? 'enabled' : 'disabled'}</span>
                 <span class="tag">external writes ${guardrails.external_write_performed ? 'performed' : 'none'}</span>
             </div>
             ${blockers.length ? `<p class="settings-disabled-note" style="margin-top:12px;">Blockers: ${escapeHtml(blockers.join(' / '))}</p>` : ''}

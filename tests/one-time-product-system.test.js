@@ -166,7 +166,8 @@ test('One Time Batch 9/10 foundations model offers, booking, and portals without
   assert.equal(monthly.payment_links_enabled, false);
   assert.equal(monthly.access_automation_enabled, false);
   assert.equal(monthly.access_policy.failed_payment_state, 'failed_payment');
-  assert.equal(monthly.access_policy.grace_period_state, 'grace_period');
+  assert.equal(monthly.access_policy.grace_period_state, null);
+  assert.equal(monthly.access_policy.access_during_grace, false);
   assert.equal(monthly.access_policy.cancellation_state, 'cancellation_requested');
   assert.equal(monthly.access_policy.refund_state, 'refund_pending');
   assert.equal(monthly.access_policy.completion_state, 'completed');
@@ -370,7 +371,7 @@ test('server exposes scoped One Time product APIs and public draft routes', () =
   assert.match(server, /app\.get\(\['\/one-time\/member-login', '\/member', '\/member-portal'\], redirectOneTimeMemberHome\)/);
 });
 
-test('public One Time launch page is indexable, interest-only, and has no checkout call', () => {
+test('public One Time launch page is indexable, signup-first, and has no checkout call', () => {
   assert.match(oneTimeHtml, /<meta name="robots" content="index, follow">/);
   assert.match(oneTimeHtml, /One Time Mishnayos/);
   assert.match(oneTimeHtml, /Give your son a love for learning Torah\./);
@@ -389,9 +390,11 @@ test('public One Time launch page is indexable, interest-only, and has no checko
   assert.doesNotMatch(oneTimeHtml, /signup-strip/);
   assert.match(oneTimeSignupHtml, /source_landing_page/);
   assert.match(oneTimeSignupHtml, /signup_mode/);
-  assert.match(oneTimeSignupHtml, /REQ-20260712-106/);
+  assert.match(oneTimeSignupHtml, /REQ-20260713-901/);
   assert.match(oneTimeSignupHtml, /\/api\/one-time\/interest/);
-  assert.doesNotMatch(oneTimeHtml, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
+  assert.match(oneTimeHtml, /href="\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class"/);
+  assert.match(oneTimeHtml, /data-action-id="ACTION-ONETIME-PUBLIC-WHATSAPP"/);
+  assert.doesNotMatch(oneTimeHtml, /https:\/\/wa\.me\//);
   assert.doesNotMatch(oneTimeHtml, /WhatsApp Robot Scheller/);
   assert.doesNotMatch(oneTimeHtml, /Consent is required before submitting/);
   assert.doesNotMatch(oneTimeHtml, /You're on the list\. We will follow up with the current One Time class details\./);

@@ -1,0 +1,508 @@
+{
+  "generated_at": "2026-07-13T12:51:53.243Z",
+  "requirement_id": "REQ-20260713-961",
+  "scope": "one_time_billing_sandbox_e2e_local_verifier",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "status": "passed",
+  "external_write_performed": false,
+  "production_data_mutation_performed": false,
+  "live_charge_performed": false,
+  "notice_send_performed": false,
+  "refund_performed": false,
+  "access_mutation_performed": false,
+  "secrets_included": false,
+  "test_identity": {
+    "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+    "email_domain": "example.invalid",
+    "synthetic": true
+  },
+  "config": {
+    "state": "sandbox_ready",
+    "effective_mode": "sandbox",
+    "key_mode": "sandbox",
+    "account_owner": "Rabbi Eli Scheller",
+    "safe_to_create_live_charge": false,
+    "secret_configured": true,
+    "webhook_secret_configured": true,
+    "secrets_included": false
+  },
+  "product_price": {
+    "offer_key": "membership_67_monthly",
+    "product_key": "one_time_mishnayos_membership",
+    "amount_cents": 6700,
+    "currency": "USD",
+    "interval": "month",
+    "stripe_price_id": "price_test_[redacted_ddebec223d5f]",
+    "tax_behavior": "exclusive",
+    "stripe_trial_enabled": false
+  },
+  "checkout_preview": {
+    "mode": "subscription",
+    "line_item_count": 1,
+    "trial_period_days_present": false,
+    "metadata": {
+      "tenant_id": "one_time_mishnah_class",
+      "provider_id": "rabbi_scheller",
+      "offer_key": "membership_67_monthly",
+      "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+      "policy_key": "one_time_rosh_hashanah_promotional_access",
+      "policy_version": "one-time-rosh-hashanah-promotional-access-v1",
+      "conversion_policy_key": "one_time_rosh_hashanah_paid_conversion",
+      "billing_start_at": "",
+      "stripe_trial_enabled": "false",
+      "provisional_test_policy": "true"
+    },
+    "external_write_performed": false
+  },
+  "notice_preview": {
+    "policy_key": "one_time_rosh_hashanah_pre_billing_notice",
+    "policy_version": "one-time-rosh-hashanah-pre-billing-notice-v1",
+    "template_key": "one_time_pre_billing_notice_v1",
+    "preview_enabled": true,
+    "batch_send_enabled": false,
+    "live_send_enabled": false,
+    "required_disclosures": [
+      "price_67_usd_monthly",
+      "plus_applicable_taxes",
+      "no_stripe_trial",
+      "billing_start_date",
+      "cancel_at_period_end",
+      "manual_exception_refund_review_only",
+      "failed_payment_suspends_access_immediately"
+    ],
+    "copy_tokens": {
+      "membership_name": "One Time Mishnayos Membership",
+      "display_price": "$67.00 / month",
+      "tax_phrase": "plus applicable taxes where required",
+      "billing_start_at": null,
+      "timezone": "Asia/Jerusalem"
+    },
+    "no_send": true,
+    "external_write_performed": false
+  },
+  "refund_review": {
+    "policy_key": "one_time_manual_exception_refund_review",
+    "policy_version": "one-time-manual-exception-refund-review-v1",
+    "manual_review_required": true,
+    "automatic_refunds_enabled": false,
+    "prorated_refunds_enabled": false,
+    "refund_execution_enabled": false,
+    "linked_customer_id": "cus_test_onetime_billing_e2e",
+    "linked_invoice_id": "in_test_onetime_recovered",
+    "linked_payment_id": "pi_test_onetime_manual_exception",
+    "requested_reason": "operator_approved_exception",
+    "access_decision_required": true,
+    "external_write_performed": false
+  },
+  "lifecycle": {
+    "audit": {
+      "tenant_id": "one_time_mishnah_class",
+      "provider_id": "rabbi_scheller",
+      "mode_state": "sandbox_ready",
+      "states": {
+        "pricing": true,
+        "trial": false,
+        "promotional_access": true,
+        "checkout": true,
+        "payment_method": true,
+        "successful_payment": true,
+        "failed_payment": true,
+        "retry": true,
+        "renewal": true,
+        "cancellation": true,
+        "entitlement": true,
+        "invoice_receipt": true,
+        "member_billing": true,
+        "provider_revenue": true,
+        "test_live_mode": true
+      },
+      "latest_entitlement": {
+        "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+        "tenant_id": "one_time_mishnah_class",
+        "provider_id": "rabbi_scheller",
+        "entitlement_state": "scheduled_cancellation",
+        "access_enabled": true,
+        "scopes": [],
+        "reason": "cancel_at_period_end",
+        "trial_ends_at": null,
+        "current_period_end": "2027-07-28T18:40:00.000Z",
+        "grace_until": null,
+        "retry_state": "scheduled"
+      },
+      "revenue": {
+        "tenant_id": "one_time_mishnah_class",
+        "provider_id": "rabbi_scheller",
+        "currency": "USD",
+        "gross_collected_cents": 13400,
+        "failed_cents": 6700,
+        "refunded_cents": 1200,
+        "pending_cents": 6700,
+        "net_collected_cents": 12200,
+        "invoice_count": 2,
+        "successful_renewal_count": 1,
+        "scope": "tenant_provider",
+        "secrets_included": false
+      },
+      "invoice_receipts": {
+        "tenant_id": "one_time_mishnah_class",
+        "provider_id": "rabbi_scheller",
+        "invoice_count": 4,
+        "invoices": [
+          {
+            "invoice_id": "in_test_[redacted_8fc7f03ece59]",
+            "state": "paid",
+            "amount_paid_cents": 6700,
+            "amount_due_cents": 0,
+            "currency": "USD",
+            "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+            "subscription_id": "sub_test_[redacted_0a1fac96761b]",
+            "hosted_invoice_url_configured": true,
+            "invoice_pdf_configured": true,
+            "receipt_url_configured": true,
+            "paid_at": "2027-05-28T10:26:40.000Z",
+            "next_payment_attempt": null
+          },
+          {
+            "invoice_id": "in_test_[redacted_c25f88576699]",
+            "state": "payment_failed",
+            "amount_paid_cents": 0,
+            "amount_due_cents": 6700,
+            "currency": "USD",
+            "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+            "subscription_id": "sub_test_[redacted_0a1fac96761b]",
+            "hosted_invoice_url_configured": true,
+            "invoice_pdf_configured": false,
+            "receipt_url_configured": false,
+            "paid_at": null,
+            "next_payment_attempt": "2027-05-30T18:00:00.000Z"
+          },
+          {
+            "invoice_id": "in_test_[redacted_3fa23a1ec2e8]",
+            "state": "paid",
+            "amount_paid_cents": 6700,
+            "amount_due_cents": 0,
+            "currency": "USD",
+            "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+            "subscription_id": "sub_test_[redacted_0a1fac96761b]",
+            "hosted_invoice_url_configured": true,
+            "invoice_pdf_configured": true,
+            "receipt_url_configured": true,
+            "paid_at": "2027-05-31T21:46:40.000Z",
+            "next_payment_attempt": null
+          },
+          {
+            "invoice_id": "in_test_[redacted_f8d386831a4b]",
+            "state": "renewal_pending",
+            "amount_paid_cents": 0,
+            "amount_due_cents": 6700,
+            "currency": "USD",
+            "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+            "subscription_id": "sub_test_[redacted_0a1fac96761b]",
+            "hosted_invoice_url_configured": false,
+            "invoice_pdf_configured": false,
+            "receipt_url_configured": false,
+            "paid_at": null,
+            "next_payment_attempt": null
+          }
+        ],
+        "secrets_included": false
+      },
+      "audit_event_count": 11,
+      "secrets_included": false
+    },
+    "snapshots": {
+      "payment_method_ready": null,
+      "checkout_paid": {
+        "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+        "tenant_id": "one_time_mishnah_class",
+        "provider_id": "rabbi_scheller",
+        "entitlement_state": "active",
+        "access_enabled": true,
+        "scopes": [],
+        "reason": "checkout_paid"
+      },
+      "subscription_active": {
+        "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+        "tenant_id": "one_time_mishnah_class",
+        "provider_id": "rabbi_scheller",
+        "entitlement_state": "active",
+        "access_enabled": true,
+        "scopes": [],
+        "reason": "subscription_active",
+        "trial_ends_at": null,
+        "current_period_end": "2027-06-28T16:26:40.000Z"
+      },
+      "legacy_trial_ignored": {
+        "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+        "tenant_id": "one_time_mishnah_class",
+        "provider_id": "rabbi_scheller",
+        "entitlement_state": "active",
+        "access_enabled": true,
+        "scopes": [],
+        "reason": "subscription_active",
+        "trial_ends_at": null,
+        "current_period_end": "2027-06-28T16:26:40.000Z"
+      },
+      "initial_invoice_paid": {
+        "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+        "tenant_id": "one_time_mishnah_class",
+        "provider_id": "rabbi_scheller",
+        "entitlement_state": "active",
+        "access_enabled": true,
+        "scopes": [],
+        "reason": "invoice_paid",
+        "trial_ends_at": null,
+        "current_period_end": null
+      },
+      "failed_payment": {
+        "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+        "tenant_id": "one_time_mishnah_class",
+        "provider_id": "rabbi_scheller",
+        "entitlement_state": "payment_failed",
+        "access_enabled": false,
+        "scopes": [],
+        "reason": "payment_failed_no_grace",
+        "trial_ends_at": null,
+        "current_period_end": null,
+        "grace_until": null,
+        "retry_state": "scheduled"
+      },
+      "payment_recovered": {
+        "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+        "tenant_id": "one_time_mishnah_class",
+        "provider_id": "rabbi_scheller",
+        "entitlement_state": "active",
+        "access_enabled": true,
+        "scopes": [],
+        "reason": "renewal_paid",
+        "trial_ends_at": null,
+        "current_period_end": "2027-07-28T18:40:00.000Z",
+        "grace_until": null,
+        "retry_state": "scheduled"
+      },
+      "renewal_pending": {
+        "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+        "tenant_id": "one_time_mishnah_class",
+        "provider_id": "rabbi_scheller",
+        "entitlement_state": "active",
+        "access_enabled": true,
+        "scopes": [],
+        "reason": "renewal_paid",
+        "trial_ends_at": null,
+        "current_period_end": "2027-07-28T18:40:00.000Z",
+        "grace_until": null,
+        "retry_state": "scheduled"
+      },
+      "refund_manual_review": {
+        "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+        "tenant_id": "one_time_mishnah_class",
+        "provider_id": "rabbi_scheller",
+        "entitlement_state": "manual_review",
+        "access_enabled": true,
+        "scopes": [],
+        "reason": "refund_requires_manual_policy_review",
+        "trial_ends_at": null,
+        "current_period_end": "2027-07-28T18:40:00.000Z",
+        "grace_until": null,
+        "retry_state": "scheduled"
+      },
+      "cancellation": {
+        "member_id": "TEST-ONETIME-BILLING-MEMBER-001",
+        "tenant_id": "one_time_mishnah_class",
+        "provider_id": "rabbi_scheller",
+        "entitlement_state": "scheduled_cancellation",
+        "access_enabled": true,
+        "scopes": [],
+        "reason": "cancel_at_period_end",
+        "trial_ends_at": null,
+        "current_period_end": "2027-07-28T18:40:00.000Z",
+        "grace_until": null,
+        "retry_state": "scheduled"
+      }
+    },
+    "auditTrail": [
+      {
+        "id": "evt_e2e_payment_method_ready",
+        "type": "setup_intent.succeeded",
+        "ignored": false,
+        "duplicate": false,
+        "lifecycle_state": "payment_method_ready",
+        "reason": null
+      },
+      {
+        "id": "evt_e2e_checkout_completed",
+        "type": "checkout.session.completed",
+        "ignored": false,
+        "duplicate": false,
+        "lifecycle_state": "checkout_success",
+        "reason": null
+      },
+      {
+        "id": "evt_e2e_subscription_active",
+        "type": "customer.subscription.created",
+        "ignored": false,
+        "duplicate": false,
+        "lifecycle_state": "subscription_active",
+        "reason": null
+      },
+      {
+        "id": "evt_e2e_legacy_trial_will_end",
+        "type": "customer.subscription.trial_will_end",
+        "ignored": true,
+        "duplicate": false,
+        "lifecycle_state": "trial_event_ignored",
+        "reason": "trial_will_end_superseded_by_rosh_hashanah_policy"
+      },
+      {
+        "id": "evt_e2e_invoice_initial_paid",
+        "type": "invoice.payment_succeeded",
+        "ignored": false,
+        "duplicate": false,
+        "lifecycle_state": "payment_success",
+        "reason": null
+      },
+      {
+        "id": "evt_e2e_invoice_failed",
+        "type": "invoice.payment_failed",
+        "ignored": false,
+        "duplicate": false,
+        "lifecycle_state": "payment_failed_retry",
+        "reason": null
+      },
+      {
+        "id": "evt_e2e_invoice_recovered",
+        "type": "invoice.payment_succeeded",
+        "ignored": false,
+        "duplicate": false,
+        "lifecycle_state": "renewal_success",
+        "reason": null
+      },
+      {
+        "id": "evt_e2e_invoice_recovered",
+        "type": "invoice.payment_succeeded",
+        "ignored": true,
+        "duplicate": true,
+        "lifecycle_state": null,
+        "reason": "event_replay_ignored"
+      },
+      {
+        "id": "evt_e2e_invoice_upcoming",
+        "type": "invoice.upcoming",
+        "ignored": false,
+        "duplicate": false,
+        "lifecycle_state": "renewal_pending",
+        "reason": null
+      },
+      {
+        "id": "evt_e2e_refund_exception_created",
+        "type": "refund.created",
+        "ignored": false,
+        "duplicate": false,
+        "lifecycle_state": "refund_review",
+        "reason": null
+      },
+      {
+        "id": "evt_e2e_subscription_deleted",
+        "type": "customer.subscription.deleted",
+        "ignored": false,
+        "duplicate": false,
+        "lifecycle_state": "cancellation",
+        "reason": null
+      }
+    ],
+    "ignored_trial_event": true,
+    "duplicate_replay_verified": true
+  },
+  "checks": [
+    {
+      "id": "synthetic_test_identity_only",
+      "passed": true,
+      "detail": "Verifier uses only TEST identity data and example.invalid email."
+    },
+    {
+      "id": "product_price_model",
+      "passed": true,
+      "detail": "$67/month USD recurring price maps to a non-secret test price reference."
+    },
+    {
+      "id": "checkout_subscription_payload_no_trial",
+      "passed": true,
+      "detail": "Checkout payload is subscription mode and does not include Stripe trial fields."
+    },
+    {
+      "id": "consent_policy_acceptance_storage",
+      "passed": true,
+      "detail": "Policy-version acceptance storage is modeled for the TEST member without live public acceptance."
+    },
+    {
+      "id": "webhook_signature_verified",
+      "passed": true,
+      "detail": "Synthetic raw-body webhook signature path verifies without exposing webhook secrets."
+    },
+    {
+      "id": "payment_method_ready",
+      "passed": true,
+      "detail": "Payment method readiness is processed before any paid entitlement is created."
+    },
+    {
+      "id": "checkout_subscription_invoice_payment",
+      "passed": true,
+      "detail": "Checkout, subscription, initial invoice, and recovered renewal payment are reflected in member billing and revenue read models."
+    },
+    {
+      "id": "legacy_trial_event_ignored",
+      "passed": true,
+      "detail": "Legacy trial_will_end event is ignored and no trial state appears."
+    },
+    {
+      "id": "failed_payment_no_grace",
+      "passed": true,
+      "detail": "Failed payment immediately disables paid access and records no grace period."
+    },
+    {
+      "id": "payment_recovery_restores_access",
+      "passed": true,
+      "detail": "Recovered payment restores active paid entitlement."
+    },
+    {
+      "id": "duplicate_replay_ignored",
+      "passed": true,
+      "detail": "Replayed invoice event is idempotently ignored."
+    },
+    {
+      "id": "notice_preview_no_send",
+      "passed": true,
+      "detail": "Pre-billing notice preview is available, but batch/live sends remain disabled and disclose no Stripe trial."
+    },
+    {
+      "id": "refund_exception_manual_review_only",
+      "passed": true,
+      "detail": "Refund exception path creates manual-review state only; Stripe refund execution remains disabled."
+    },
+    {
+      "id": "cancellation_period_end_access",
+      "passed": true,
+      "detail": "Cancellation keeps paid access until period end instead of immediate refund/revoke."
+    },
+    {
+      "id": "no_live_or_external_mutation",
+      "passed": true,
+      "detail": "Verifier performs no Stripe API call, email send, invoice credit, refund, provider mutation, or access mutation."
+    }
+  ],
+  "evidence": [
+    "scripts/verify-onetime-billing-sandbox-e2e.mjs",
+    "src/lib/billing/stripe-billing-lifecycle.js",
+    "src/lib/bna/one-time-product-system.js",
+    "tests/stripe-billing-lifecycle.test.js",
+    "tests/one-time-stripe-local-beta.test.js"
+  ],
+  "remaining_live_blockers": [
+    "Exact billing_start_at in Asia/Jerusalem must be approved.",
+    "Hosted Stripe webhook/Railway env readback must be verified before deploy/live smoke completion.",
+    "Final pre-billing notice sender, copy, and cohort need explicit approval before any send.",
+    "Final live price/account/campaign launch packet and exact charge authorization are required before live charges.",
+    "Refund execution and access automation remain disabled until explicit authorized-admin approval."
+  ]
+}

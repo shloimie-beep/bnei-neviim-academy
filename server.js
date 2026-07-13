@@ -4528,7 +4528,8 @@ function oneTimeParentTrialInvitePreflight({
   dryRun = false,
   smokeMode = false,
   inviteMode = 'production',
-  trialDays = 30,
+  policyKey = 'one_time_rosh_hashanah_promotional_access',
+  billingStartAt = null,
   oneTimeBaseUrl = '',
 } = {}) {
   const blockers = [];
@@ -4581,7 +4582,13 @@ function oneTimeParentTrialInvitePreflight({
       live_class_url_config_source: rawLiveClassUrlPresent ? 'request' : (liveClassUrlPresent ? 'runtime_env' : 'missing'),
       one_time_public_base_url: oneTimeBaseUrl,
       parent_portal_path: '/one-time-parent',
-      trial_days: Number(trialDays || 30),
+      policy_key: policyKey,
+      conversion_policy_key: 'one_time_rosh_hashanah_paid_conversion',
+      offer_key: 'membership_67_monthly',
+      billing_start_at: billingStartAt || null,
+      promotional_access: true,
+      trial_days: 0,
+      stripe_trial_enabled: false,
       no_payment_created: true,
       no_checkout_created: true,
     },
@@ -11446,7 +11453,7 @@ function oneTimeCampaignConfig(now = new Date()) {
   const startAt = String(process.env.ONE_TIME_CAMPAIGN_START_AT || '').trim();
   const deadlineAt = String(process.env.ONE_TIME_CAMPAIGN_DEADLINE_AT || '').trim();
   const timeZone = String(process.env.ONE_TIME_CAMPAIGN_TIME_ZONE || 'Asia/Jerusalem').trim();
-  const offerKey = String(process.env.ONE_TIME_CAMPAIGN_OFFER_KEY || 'one-time-30-day-free-trial').trim();
+  const offerKey = String(process.env.ONE_TIME_CAMPAIGN_OFFER_KEY || 'membership_67_monthly').trim();
   const startMs = startAt ? Date.parse(startAt) : NaN;
   const deadlineMs = deadlineAt ? Date.parse(deadlineAt) : NaN;
   const deadlineConfigured = Number.isFinite(deadlineMs);
@@ -11457,7 +11464,7 @@ function oneTimeCampaignConfig(now = new Date()) {
   return {
     campaign_key: 'one-time-worldwide-mishnayos-launch',
     offer_key: offerKey,
-    headline: '30 DAYS TO JOIN - START WITH 30 DAYS FREE',
+    headline: 'JOIN BEFORE ROSH HASHANAH - PROMOTIONAL ACCESS IS OPEN',
     start_at: startConfigured ? new Date(startMs).toISOString() : '',
     deadline_at: deadlineConfigured ? new Date(deadlineMs).toISOString() : '',
     time_zone: timeZone,
@@ -11471,7 +11478,7 @@ function oneTimeCampaignConfig(now = new Date()) {
     status: deadlineConfigured ? (expired ? 'expired' : active ? 'active' : 'scheduled') : 'needs_operator_decision',
     decision: deadlineConfigured ? null : {
       id: 'DEC-20260622-ONE-TIME-CAMPAIGN-DEADLINE',
-      missing_information: 'Exact campaign launch timestamp and 30-day enrollment deadline.',
+      missing_information: 'Exact campaign launch timestamp and Rosh Hashanah billing-start deadline.',
       owner: 'Shloimie / One Time launch owner',
       recommended_option: 'Set ONE_TIME_CAMPAIGN_START_AT, ONE_TIME_CAMPAIGN_DEADLINE_AT, ONE_TIME_CAMPAIGN_TIME_ZONE, and ONE_TIME_CAMPAIGN_OFFER_KEY in the approved environment before public launch.',
       alternatives: ['Keep the page in deadline-pending mode until launch approval is ready.'],
@@ -75927,7 +75934,7 @@ function publicAssistantUnknownPolicyQuestion(message = '') {
 function publicAssistantPolicyBoundaryReply(body = {}, actor = {}) {
   const surface = normalizeAssistantSurface(body.surface || body.page || body.context?.surface);
   if (surface === 'one_time_public') {
-    return 'I do not have a verified One Time policy for that in the current public class context. I can capture the question for Rabbi Scheller follow-up, or I can help with the schedule, the program, the 30-day trial, or member access.';
+    return 'I do not have a verified One Time policy for that in the current public class context. I can capture the question for Rabbi Scheller follow-up, or I can help with the schedule, the program, promotional access, membership, or member access.';
   }
   return assistantResponseIsHebrew(body, actor)
     ? 'אין לי מדיניות מאומתת של BNA בנושא הזה בתוך התוכן הציבורי הנוכחי. אפשר לשלוח את השאלה לשלוימי, או שאפשר לשאול אותי על תוכנית 10-1, שלטון עצמי, התאמה לילד, או איך מתחילים שיחה.'
@@ -76100,7 +76107,7 @@ async function buildPublicAssistantKnowledgeBase({ db = pool, message = '', surf
   if (normalizeAssistantSurface(surface) === 'one_time_public') {
     return [
       'One Time public assistant scope: Rabbi Scheller digital assistant for the One Time Mishnayos class only.',
-      'Public topics allowed: class schedule, program fit, 30-day trial, public member-login path, worksheets/source sheets when publicly described, and routing public questions to Rabbi Scheller follow-up.',
+      'Public topics allowed: class schedule, program fit, promotional access, membership, public member-login path, worksheets/source sheets when publicly described, and routing public questions to Rabbi Scheller follow-up.',
       'Lead capture rule: public visitors may ask for follow-up or leave contact interest; the server may record a first-party scoped follow-up item, but the assistant must not claim WhatsApp, email, Zoom, payment, access, Vimeo, Drive, or transcript actions happened unless a current server result explicitly says so.',
       'Workspace boundary: project one_time_mishnah_class, workspace rabbi_sheller_provider. Do not use BNA Academy enrollment, BNA accountability, BNA service-provider, BNA parent/student portal, or generic BNA public helper knowledge as One Time public facts.',
       'Transcript boundary: raw class transcripts and recordings are private. Only approved One Time class summaries or transcript-derived knowledge rows may be used after the transcript pipeline promotes them through a reviewed One Time / Rabbi policy.',
@@ -76170,7 +76177,7 @@ async function buildSafeAssistantContextSummary({ actor = {}, message = '', thre
   const roleLines = [];
   let sourceBoundary = 'public BNA website/content only; no private portal, provider, student, family, or Operations records.';
   if (surface === 'one_time_public') {
-    roleLines.push("Role mode: Rabbi Scheller digital assistant for the public One Time Mishnayos class landing. Stay in English and answer only public class, schedule, program, 30-day trial, member-login, and Rabbi Scheller question-routing topics.");
+    roleLines.push("Role mode: Rabbi Scheller digital assistant for the public One Time Mishnayos class landing. Stay in English and answer only public class, schedule, program, promotional access, membership, member-login, and Rabbi Scheller question-routing topics.");
     roleLines.push('One Time scope rule: do not show or infer BNA Academy enrollment, BNA school goals, private parent billing, attendance, student transcripts, access codes, other students, admin diagnostics, generic BNA helper knowledge, or Operations records.');
     roleLines.push('WhatsApp rule: if the visitor asks for WhatsApp/class-link follow-up, capture the request only. Do not claim a WhatsApp message was sent or that WAPI/Happy is connected unless a current server result explicitly confirms it.');
     roleLines.push('Transcript rule: do not use or mention raw class transcripts as knowledge. Use only approved One Time transcript-derived summaries when supplied by the server context.');
@@ -86710,7 +86717,13 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
   const rawStudentName = String(body.student_name || body.studentName || body.child_name || body.childName || '').trim();
   const parentName = limitText(rawParentName || (dryRun ? 'One Time Parent' : ''), 160);
   const studentName = limitText(rawStudentName || (dryRun ? 'One Time student' : ''), 160);
-  const trialDays = Math.max(1, Math.min(Number(body.trial_days || body.trialDays || 30) || 30, 90));
+  const campaign = oneTimeCampaignConfig(new Date());
+  const policyKey = 'one_time_rosh_hashanah_promotional_access';
+  const conversionPolicyKey = 'one_time_rosh_hashanah_paid_conversion';
+  const offerKey = 'membership_67_monthly';
+  const promotionalAccessSource = 'one_time_parent_promotional_access_invite';
+  const legacyTrialSource = 'one_time_parent_trial_invite';
+  const billingStartAt = campaign.deadline_at || null;
   const rawLiveClassUrl = body.live_class_url || body.liveClassUrl || body.zoom_url || body.zoomUrl || '';
   const requestedLiveClassUrl = normalizeHttpsExternalUrl(rawLiveClassUrl);
   const liveClassUrl = requestedLiveClassUrl || (!String(rawLiveClassUrl || '').trim() ? configuredOneTimeLiveClassUrl() : '');
@@ -86724,7 +86737,8 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
     dryRun,
     smokeMode,
     inviteMode,
-    trialDays,
+    policyKey,
+    billingStartAt,
     oneTimeBaseUrl,
   });
   if (!parentEmail) return res.status(400).json({ error: 'parent_email is required', preflight });
@@ -86733,7 +86747,7 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
   }
   if (!dryRun && preflight.blockers.length) {
     return res.status(400).json({
-      error: 'One Time parent trial invite is not launch-ready',
+      error: 'One Time parent promotional access invite is not launch-ready',
       hint: 'Resolve the listed preflight blockers before using SEND_ONE_TIME_PARENT_TRIAL_INVITE.',
       preflight,
     });
@@ -86744,7 +86758,13 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
       parent_email: parentEmail,
       parent_name: parentName,
       student_name: studentName,
-      trial_days: trialDays,
+      policy_key: policyKey,
+      conversion_policy_key: conversionPolicyKey,
+      offer_key: offerKey,
+      billing_start_at: billingStartAt,
+      promotional_access: true,
+      trial_days: 0,
+      stripe_trial_enabled: false,
       invite_mode: inviteMode,
       test_labeled: smokeMode,
       launch_ready: !smokeMode,
@@ -86779,8 +86799,8 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
     }
     if (String(body.confirm || '').trim() !== ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM) {
       return res.status(400).json({
-        error: `One Time parent trial invite emails require confirm: ${ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM}`,
-        hint: 'Use this only for an explicit per-parent One Time invite. It creates scoped trial access but does not create a payment or checkout.',
+        error: `One Time parent promotional access invite emails require confirm: ${ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM}`,
+        hint: 'Use this only for an explicit per-parent One Time invite. It creates scoped promotional access but does not create a payment, checkout, or Stripe trial.',
         preflight,
         preview,
       });
@@ -86791,21 +86811,24 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
     try {
       await client.query('BEGIN');
       const tags = smokeMode
-        ? ['TEST', 'codex-test', 'one-time-trial', 'one-time-parent-trial']
-        : ['one-time-trial', 'one-time-parent-trial', 'one-time-live-invite'];
-      const tagsToRemove = smokeMode ? [] : ['test', 'codex-test'];
+        ? ['TEST', 'codex-test', 'one-time-promotional-access', 'one-time-parent-access']
+        : ['one-time-promotional-access', 'one-time-parent-access', 'one-time-live-invite'];
+      const tagsToRemove = smokeMode ? [] : ['test', 'codex-test', 'one-time-trial', 'one-time-parent-trial'];
       const studentNotes = smokeMode
-        ? 'TEST One Time parent trial student created from approved Codex smoke invite flow. Safe to archive after walkthrough.'
-        : 'One Time parent trial student created from approved launch-ready parent invite flow.';
+        ? 'TEST One Time parent promotional access student created from approved Codex smoke invite flow. Safe to archive after walkthrough.'
+        : 'One Time parent promotional access student created from approved launch-ready parent invite flow.';
       const memberNotes = smokeMode
-        ? 'TEST One Time parent trial member access for operator walkthrough.'
-        : 'One Time parent trial member access created from approved launch-ready parent invite flow.';
+        ? 'TEST One Time parent promotional access member record for operator walkthrough.'
+        : 'One Time parent promotional access member record created from approved launch-ready parent invite flow.';
       let student = (await client.query(
         `SELECT *
          FROM bna_students
          WHERE project_id = $1
            AND lower(COALESCE(parent_email, '')) = lower($2)
-           AND 'one-time-parent-trial' = ANY(COALESCE(tags, '{}'::text[]))
+           AND (
+             'one-time-promotional-access' = ANY(COALESCE(tags, '{}'::text[]))
+             OR 'one-time-parent-trial' = ANY(COALESCE(tags, '{}'::text[]))
+           )
          ORDER BY updated_at DESC NULLS LAST, id DESC
          LIMIT 1`,
         [project.id, parentEmail]
@@ -86847,15 +86870,25 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
          FROM bna_parent_leads
          WHERE project_id = $1
            AND lower(COALESCE(parent_email, '')) = lower($2)
-           AND 'one-time-parent-trial' = ANY(COALESCE(tags, '{}'::text[]))
+           AND (
+             'one-time-promotional-access' = ANY(COALESCE(tags, '{}'::text[]))
+             OR 'one-time-parent-trial' = ANY(COALESCE(tags, '{}'::text[]))
+             OR COALESCE(metadata->>'source', '') IN ('one_time_parent_promotional_access_invite', 'one_time_parent_trial_invite')
+           )
          ORDER BY updated_at DESC NULLS LAST, id DESC
          LIMIT 1`,
         [project.id, parentEmail]
       )).rows[0] || null;
       const leadMetadata = {
-        source: 'one_time_parent_trial_invite',
+        source: promotionalAccessSource,
         project_key: ONE_TIME_PROJECT_KEY,
-        trial_days: trialDays,
+        policy_key: policyKey,
+        conversion_policy_key: conversionPolicyKey,
+        offer_key: offerKey,
+        billing_start_at: billingStartAt,
+        promotional_access: true,
+        trial_days: 0,
+        stripe_trial_enabled: false,
         student_id: student.id,
         no_payment_created: true,
         no_checkout_created: true,
@@ -86873,7 +86906,7 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
                status = 'follow_up',
                interest_level = 'warm',
                source = 'manual',
-               source_detail = 'Approved One Time parent trial invite',
+               source_detail = 'Approved One Time parent promotional access invite',
                owner = 'Shloimie',
                tags = (
                  SELECT ARRAY(
@@ -86898,7 +86931,7 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
              owner, tags, notes, metadata
            ) VALUES (
              $1, $2, $3, $4,
-             'group_member', 'follow_up', 'warm', 'manual', 'Approved One Time parent trial invite',
+             'group_member', 'follow_up', 'warm', 'manual', 'Approved One Time parent promotional access invite',
              'Shloimie', $5::text[], $6, $7::jsonb
            )
            RETURNING *`,
@@ -86912,8 +86945,14 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
         email: parentEmail,
         notes: memberNotes,
         metadata: {
-          source: 'one_time_parent_trial_invite',
-          trial_days: trialDays,
+          source: promotionalAccessSource,
+          policy_key: policyKey,
+          conversion_policy_key: conversionPolicyKey,
+          offer_key: offerKey,
+          billing_start_at: billingStartAt,
+          promotional_access: true,
+          trial_days: 0,
+          stripe_trial_enabled: false,
           student_id: student.id,
           lead_id: lead.id,
           invite_mode: inviteMode,
@@ -86933,17 +86972,29 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
           [
             member.id,
             memberNotes,
-            JSON.stringify({ invite_mode: inviteMode, test_labeled: false, launch_ready: true }),
+            JSON.stringify({
+              source: promotionalAccessSource,
+              policy_key: policyKey,
+              conversion_policy_key: conversionPolicyKey,
+              offer_key: offerKey,
+              billing_start_at: billingStartAt,
+              promotional_access: true,
+              trial_days: 0,
+              stripe_trial_enabled: false,
+              invite_mode: inviteMode,
+              test_labeled: false,
+              launch_ready: true,
+            }),
           ]
         )).rows[0];
       }
 
-      const expiresAt = new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000);
+      const expiresAt = billingStartAt ? new Date(billingStartAt) : null;
       let memberAccess = (await client.query(
         `SELECT *
          FROM one_time_member_access
          WHERE lower(COALESCE(member_email, '')) = lower($1)
-           AND COALESCE(metadata->>'source', '') = 'one_time_parent_trial_invite'
+           AND COALESCE(metadata->>'source', '') IN ('one_time_parent_promotional_access_invite', 'one_time_parent_trial_invite')
            AND status = 'active'
          ORDER BY updated_at DESC NULLS LAST, id DESC
          LIMIT 1`,
@@ -86965,7 +87016,22 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
             `${parentName} / ${studentName}`,
             expiresAt,
             memberNotes,
-            JSON.stringify({ source: 'one_time_parent_trial_invite', student_id: student.id, member_id: member.id, trial_days: trialDays, invite_mode: inviteMode, test_labeled: smokeMode, launch_ready: !smokeMode }),
+            JSON.stringify({
+              source: promotionalAccessSource,
+              legacy_source: legacyTrialSource,
+              policy_key: policyKey,
+              conversion_policy_key: conversionPolicyKey,
+              offer_key: offerKey,
+              billing_start_at: billingStartAt,
+              promotional_access: true,
+              trial_days: 0,
+              stripe_trial_enabled: false,
+              student_id: student.id,
+              member_id: member.id,
+              invite_mode: inviteMode,
+              test_labeled: smokeMode,
+              launch_ready: !smokeMode,
+            }),
           ]
         )).rows[0];
       } else {
@@ -86981,7 +87047,23 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
             parentEmail,
             expiresAt,
             memberNotes,
-            JSON.stringify({ source: 'one_time_parent_trial_invite', student_id: student.id, member_id: member.id, lead_id: lead.id, trial_days: trialDays, invite_mode: inviteMode, test_labeled: smokeMode, launch_ready: !smokeMode }),
+            JSON.stringify({
+              source: promotionalAccessSource,
+              legacy_source: legacyTrialSource,
+              policy_key: policyKey,
+              conversion_policy_key: conversionPolicyKey,
+              offer_key: offerKey,
+              billing_start_at: billingStartAt,
+              promotional_access: true,
+              trial_days: 0,
+              stripe_trial_enabled: false,
+              student_id: student.id,
+              member_id: member.id,
+              lead_id: lead.id,
+              invite_mode: inviteMode,
+              test_labeled: smokeMode,
+              launch_ready: !smokeMode,
+            }),
           ]
         )).rows[0];
       }
@@ -86993,7 +87075,7 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
            AND member_id = $2
            AND tier_key = 'live_library'
            AND status = 'active'
-           AND COALESCE(metadata->>'source', '') = 'one_time_parent_trial_invite'
+           AND COALESCE(metadata->>'source', '') IN ('one_time_parent_promotional_access_invite', 'one_time_parent_trial_invite')
          ORDER BY updated_at DESC NULLS LAST, id DESC
          LIMIT 1`,
         [project.id, member.id]
@@ -87003,11 +87085,18 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
           projectId: project.id,
           memberId: member.id,
           tier: { tier_key: 'live_library' },
-          source: 'one_time_parent_trial_invite',
+          source: promotionalAccessSource,
           notes: memberNotes,
           metadata: {
-            source: 'one_time_parent_trial_invite',
-            trial_days: trialDays,
+            source: promotionalAccessSource,
+            legacy_source: legacyTrialSource,
+            policy_key: policyKey,
+            conversion_policy_key: conversionPolicyKey,
+            offer_key: offerKey,
+            billing_start_at: billingStartAt,
+            promotional_access: true,
+            trial_days: 0,
+            stripe_trial_enabled: false,
             student_id: student.id,
             member_access_id: memberAccess.id,
             invite_mode: inviteMode,
@@ -87022,8 +87111,16 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
         parentEmail,
         req,
         metadata: {
-          source: 'one_time_parent_trial_invite',
+          source: promotionalAccessSource,
+          legacy_source: legacyTrialSource,
           project_key: ONE_TIME_PROJECT_KEY,
+          policy_key: policyKey,
+          conversion_policy_key: conversionPolicyKey,
+          offer_key: offerKey,
+          billing_start_at: billingStartAt,
+          promotional_access: true,
+          trial_days: 0,
+          stripe_trial_enabled: false,
           student_id: student.id,
           lead_id: lead.id,
           member_id: member.id,
@@ -87076,7 +87173,7 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
       await logEmail({
         projectId: project.id,
         memberId: member.id,
-        emailType: 'one_time_parent_trial_invite',
+        emailType: 'one_time_parent_promotional_access_invite',
         templateKey: 'parent_trial_invite',
         to: parentEmail,
         recipientName: parentName,
@@ -87090,7 +87187,15 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
         metadata: {
           workspace_key: 'rabbi_sheller_provider',
           project_key: ONE_TIME_PROJECT_KEY,
-          source: 'one_time_parent_trial_invite',
+          source: promotionalAccessSource,
+          legacy_source: legacyTrialSource,
+          policy_key: policyKey,
+          conversion_policy_key: conversionPolicyKey,
+          offer_key: offerKey,
+          billing_start_at: billingStartAt,
+          promotional_access: true,
+          trial_days: 0,
+          stripe_trial_enabled: false,
           student_id: student.id,
           lead_id: lead.id,
           member_access_id: memberAccess.id,
@@ -87116,16 +87221,27 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
           project.id,
           lead.id,
           student.id,
-          emailResult.ok ? 'One Time parent trial invite sent' : 'One Time parent trial invite attempted',
+          emailResult.ok ? 'One Time parent promotional access invite sent' : 'One Time parent promotional access invite attempted',
           emailResult.ok
-            ? 'Sent One Time parent trial invite with parent password setup, classroom, and member library links.'
-            : `One Time parent trial invite send failed: ${emailResult.error || 'unknown error'}`,
+            ? 'Sent One Time parent promotional access invite with parent password setup, classroom, and member library links.'
+            : `One Time parent promotional access invite send failed: ${emailResult.error || 'unknown error'}`,
           req.opsUser || 'admin',
-          JSON.stringify({ source: 'one_time_parent_trial_invite', member_access_id: memberAccess.id, member_id: member.id }),
+          JSON.stringify({
+            source: promotionalAccessSource,
+            legacy_source: legacyTrialSource,
+            member_access_id: memberAccess.id,
+            member_id: member.id,
+          }),
           JSON.stringify({
             parent_email: parentEmail,
             student_id: student.id,
-            trial_days: trialDays,
+            policy_key: policyKey,
+            conversion_policy_key: conversionPolicyKey,
+            offer_key: offerKey,
+            billing_start_at: billingStartAt,
+            promotional_access: true,
+            trial_days: 0,
+            stripe_trial_enabled: false,
             email_sent: Boolean(emailResult.ok),
             email_error: emailResult.error || null,
             one_time_public_base_url: oneTimeBaseUrl,
@@ -87154,6 +87270,13 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
         member_id: member.id,
         member_access_id: memberAccess.id,
         member_access_expires_at: memberAccess.expires_at,
+        policy_key: policyKey,
+        conversion_policy_key: conversionPolicyKey,
+        offer_key: offerKey,
+        billing_start_at: billingStartAt,
+        promotional_access: true,
+        trial_days: 0,
+        stripe_trial_enabled: false,
         email_sent: Boolean(emailResult.ok),
         email_error: emailResult.error || null,
         one_time_public_base_url: oneTimeBaseUrl,

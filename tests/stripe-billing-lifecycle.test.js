@@ -154,7 +154,10 @@ test('checkout request builds a subscription session and uses idempotency in san
   });
 
   assert.equal(captured.payload.mode, 'subscription');
-  assert.equal(captured.payload.subscription_data.trial_period_days, 30);
+  assert.equal(captured.payload.subscription_data.trial_period_days, undefined);
+  assert.equal(captured.payload.subscription_data.metadata.stripe_trial_enabled, 'false');
+  assert.equal(captured.payload.subscription_data.metadata.policy_key, 'one_time_rosh_hashanah_promotional_access');
+  assert.equal(captured.payload.subscription_data.metadata.conversion_policy_key, 'one_time_rosh_hashanah_paid_conversion');
   assert.equal(captured.payload.metadata.provisional_test_policy, 'true');
   assert.equal(captured.options.idempotencyKey, 'checkout-member-1');
   assert.equal(result.external_write_performed, true);
@@ -196,7 +199,7 @@ test('webhook signature verification accepts valid events and redacts invalid er
   );
 });
 
-test('lifecycle maps trial, success, failure, retry, renewal, cancellation, entitlement, invoice, and revenue states', () => {
+test('lifecycle maps no-trial success, failure, retry, renewal, cancellation, entitlement, invoice, and revenue states', () => {
   const policy = resolveBillingPolicy();
   let state = createInitialBillingState({ config: sandboxReadyConfig(), policy });
 
@@ -225,18 +228,17 @@ test('lifecycle maps trial, success, failure, retry, renewal, cancellation, enti
     },
   })).state;
   state = applyStripeBillingEvent(state, buildSyntheticStripeEvent({
-    id: 'evt_trialing',
+    id: 'evt_subscription_active',
     type: 'customer.subscription.created',
     object: {
       id: 'sub_test_1',
       object: 'subscription',
-      status: 'trialing',
+      status: 'active',
       current_period_end: 1814200000,
-      trial_end: 1811608000,
       ...baseObject,
     },
   })).state;
-  state = applyStripeBillingEvent(state, buildSyntheticStripeEvent({
+  const ignoredTrialEnding = applyStripeBillingEvent(state, buildSyntheticStripeEvent({
     id: 'evt_trial_will_end',
     type: 'customer.subscription.trial_will_end',
     object: {
@@ -246,7 +248,10 @@ test('lifecycle maps trial, success, failure, retry, renewal, cancellation, enti
       trial_end: 1811608000,
       ...baseObject,
     },
-  })).state;
+  }));
+  assert.equal(ignoredTrialEnding.ignored, true);
+  assert.equal(ignoredTrialEnding.audit.reason, 'trial_will_end_superseded_by_rosh_hashanah_policy');
+  state = ignoredTrialEnding.state;
   state = applyStripeBillingEvent(state, buildSyntheticStripeEvent({
     id: 'evt_invoice_paid',
     type: 'invoice.payment_succeeded',
@@ -294,7 +299,8 @@ test('lifecycle maps trial, success, failure, retry, renewal, cancellation, enti
       ...baseObject,
     },
   })).state;
-  assert.equal(state.entitlements.member_1.entitlement_state, 'grace_period');
+  assert.equal(state.entitlements.member_1.entitlement_state, 'payment_failed');
+  assert.equal(state.entitlements.member_1.access_enabled, false);
   assert.equal(state.entitlements.member_1.retry_state, 'scheduled');
 
   state = applyStripeBillingEvent(state, buildSyntheticStripeEvent({
@@ -323,7 +329,8 @@ test('lifecycle maps trial, success, failure, retry, renewal, cancellation, enti
 
   const audit = buildLifecycleFinalAudit(state);
   assert.equal(audit.states.pricing, true);
-  assert.equal(audit.states.trial, true);
+  assert.equal(audit.states.trial, false);
+  assert.equal(audit.states.promotional_access, true);
   assert.equal(audit.states.checkout, true);
   assert.equal(audit.states.payment_method, true);
   assert.equal(audit.states.successful_payment, true);

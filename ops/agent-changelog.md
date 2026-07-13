@@ -39959,6 +39959,128 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   selected-contact Conversations; no synthetic data, sends, CRM mutations,
   assistant message bodies, or external writes were performed.
 
+## 2026-07-13 - One Time Billing V2 goal registered
+
+- Preserved `RAW-20260713-005` from the Codex attachment and created the One
+  Time Rosh Hashanah Billing Platform V2 requirement register on dedicated
+  branch `codex/onetime-rosh-hashanah-billing-platform-v2`.
+- Recorded operator decisions that supersede the older active 30-day Stripe
+  trial policy: Rosh Hashanah application-level promotional access, `$67/month`
+  tax-exclusive membership, no Stripe trial, no failed-payment grace period,
+  manual exceptional refunds only, provider-owned Stripe account binding, and
+  no Stripe Connect/payout scope.
+- Created the first control-tower packet, current-code correction map, and
+  Product Quality compiler packet for the future provider Billing UI.
+- Guardrails: no live charge, refund, notice send, access mutation, Stripe
+  Connect/payout setup, credential mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 no-trial policy slice implemented locally
+
+- Updated the One Time billing/product policy from active 30-day Stripe trial to
+  Rosh Hashanah application-level promotional access with `$67/month`,
+  tax-exclusive paid conversion, `trial_days=0`, and no failed-payment grace.
+- Updated Stripe checkout/lifecycle helpers so checkout payloads omit
+  `trial_period_days`, legacy `customer.subscription.trial_will_end` events are
+  ignored, invoice/payment failures suspend paid entitlement immediately, and
+  cancellation/renewal/revenue states stay provider-scoped and audit-safe.
+- Updated the local migration seed and Operations readback copy to preserve the
+  old warm-lead trial as archived provenance while active panels show
+  promotional access/no Stripe trial/no live write guardrails.
+- Verification passed: `npm run operations:build`,
+  `node --test tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js`
+  (12/12), and `node --test tests/one-time-stripe-local-beta.test.js` (5/5).
+  The broader `tests/one-time-product-system.test.js` remains blocked by an
+  unrelated existing public landing-page WhatsApp redirect baseline mismatch.
+- Commit `75fbc34ba Implement One Time no-trial billing policy slice` was pushed
+  to `origin/codex/onetime-rosh-hashanah-billing-platform-v2`.
+- Guardrails: no live charge, refund, notice send, access mutation, Stripe
+  Connect/payout setup, credential mutation, sandbox customer mutation, or secret
+  exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 Stripe sandbox smoke passed
+
+- Installed the locked npm dependencies in the dedicated worktree and ran
+  `npm run stripe:sandbox-smoke` against the stored sandbox Stripe credentials.
+- The smoke reported `sandbox_ready`, webhook secret configured, live mode
+  disabled, no real customer data, no real funds, `trial=false`, and
+  `promotional_access=true`.
+- Created only synthetic Stripe test-mode product, price, customer, and checkout
+  session objects; cleanup expired the checkout session, deleted the customer,
+  and deactivated the product.
+- Redacted proof was written under
+  `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/`.
+- Guardrails: no live charge, refund, notice send, access mutation, Stripe
+  Connect/payout setup, credential mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 notice and refund contracts modeled
+
+- Added no-send Rosh Hashanah pre-billing notice and monthly invoice/receipt
+  policy contracts with required disclosures for `$67/month`, taxes, no Stripe
+  trial, billing start, cancellation, manual refund review, and immediate
+  failed-payment suspension.
+- Added manual exceptional-refund review contract and SQL storage for linked
+  customer/invoice/payment/reason/reviewer/approval/access-decision fields while
+  keeping Stripe refund creation disabled.
+- Updated Operations readback and Stripe local beta preview to show notice and
+  refund guardrails without enabling email sends, refund creation, checkout,
+  live charges, or invoice credits.
+- Verification passed:
+  `node --test tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js`
+  (12/12), `node --test tests/one-time-stripe-local-beta.test.js` (5/5),
+  `npm run operations:build`, `npm run operations:check-generated`, and syntax
+  checks for the edited helpers.
+
+## 2026-07-13 - One Time Billing V2 provider Billing UI locally verified
+
+- Added the dedicated One Time provider Billing section as a lazy-loaded route
+  module with Overview, Catalog, Billing, Automations, and Settings categories.
+- The UI shows the current `$67/month` no-Stripe-trial policy, promotional
+  access status, tax-exclusive disclosure, manual refund review, no grace
+  period, and disabled/gated notice, live billing, refund, and access automation
+  actions.
+- Updated shared review data, provider navigation, route/action registries,
+  route-module budget checks, live-smoke harness coverage, and provider/auth
+  tests for the Billing section.
+- Verification passed: after-implementation Billing UI audit at 1440, 1024,
+  768, 430, and 390 widths; route-module budget audit; targeted
+  provider/Stripe/auth test suite 36/36; `npm run operations:check-generated`;
+  `npm run secrets:audit`; and `git diff --check`.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send, access
+  mutation, provider mutation, credential mutation, or secret exposure was
+  performed. Deploy/live smoke and final launch approval remain pending.
+
+## 2026-07-13 - One Time Billing V2 sandbox E2E verifier added
+
+- Added `npm run stripe:sandbox-e2e` as a repeatable local verifier for
+  `REQ-20260713-961`.
+- The verifier uses a synthetic TEST member and covers product/price,
+  policy-version consent storage, payment method readiness, no-trial
+  checkout/subscription payload, webhook signature verification, invoice
+  paid/failed/recovered/upcoming states, no-grace failed payment, duplicate
+  replay ignore, manual refund-review state, cancel-at-period-end, and
+  entitlement transitions.
+- Wrote redacted proof under
+  `ops/verifier-runs/2026-07-13-onetime-billing-sandbox-e2e/`.
+- Added a release handoff draft with verification matrix, migration/deploy
+  notes, rollback posture, guardrails, and exact remaining live activation
+  blockers.
+- Verification passed:
+  `npm run stripe:sandbox-e2e`,
+  `node --test tests/one-time-billing-sandbox-e2e-verifier.test.js tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js`.
+- Guardrails: no Stripe API call, live charge, refund, notice send,
+  invoice/receipt send, access mutation, provider mutation, credential
+  mutation, production data mutation, or secret exposure was performed by the
+  verifier.
+
+## 2026-07-13 - One Time Billing V2 draft PR handoff created
+
+- Created draft PR https://github.com/shloimie-beep/bnei-neviim-academy/pull/132
+  for `codex/onetime-rosh-hashanah-billing-platform-v2`.
+- Updated the release handoff and requirement register with the PR URL,
+  sandbox E2E pushed status, and explicit live activation blockers.
+- Guardrails remain unchanged: no live charge, refund, notice send,
+  invoice/receipt send, access mutation, provider mutation, credential
+  mutation, production data mutation, or secret exposure was performed.
 ## 2026-07-13 - Shared CRM current phase closed and Drive/Classroom packet hardened
 
 - Marked `REQ-20260712-302` Done for the current One Time-first shared CRM
@@ -40151,6 +40273,33 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   payment/access mutation, raw Telegram value logging, raw contact/message
   logging, or destructive production mutation was performed.
 
+## 2026-07-13 - One Time Billing V2 PR merge conflict resolved locally
+
+- Merged current `origin/master` into
+  `codex/onetime-rosh-hashanah-billing-platform-v2` to resolve draft PR #132's
+  dirty merge state.
+- Preserved both append-only changelog/ledger histories and regenerated the
+  Product Quality validation report for both the Billing V2 UI packet and the
+  incoming Drive/Classroom UI packet.
+- Verification passed: `npm run pqc:validate -- ...` for both packets,
+  `npm run stripe:sandbox-e2e`, targeted Billing/provider/Stripe/auth tests
+  `37/37`, `npm run operations:check-generated`, `npm run secrets:audit`, and
+  `git diff --check`.
+- Guardrails remained intact: no live charge, refund, notice send,
+  invoice/receipt send, access mutation, provider mutation, credential
+  mutation, production data mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 draft PR mergeable
+
+- Pushed merge commit `3dbf9084a` to
+  `codex/onetime-rosh-hashanah-billing-platform-v2`.
+- GitHub reported draft PR #132 merge state `CLEAN` after the push.
+- Updated the release handoff and requirement register to record the clean PR
+  state while keeping deploy/live smoke and live launch authorization blocked.
+- Guardrails remained intact: no live charge, refund, notice send,
+  invoice/receipt send, access mutation, provider mutation, credential
+  mutation, production data mutation, or secret exposure was performed.
+
 ## 2026-07-13 - Canonical inbound agent metadata and outbox convergence local proof
 
 - Advanced `REQ-20260712-307` with local published communication-agent metadata
@@ -40189,6 +40338,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   write, member publication, external send, provider mutation, credential
   mutation, payment/access mutation, raw transcript commit, or secret storage
   was performed.
+
+## 2026-07-13 - One Time Billing V2 hosted Stripe sandbox readback ready
+
+- Added a Billing-only Railway readback and guarded Stripe variable propagation
+  path for `one-time-web / production`.
+- Propagated only test-mode Rabbi Stripe config, webhook secret, price
+  reference, and live-billing disabled flags with `--skip-deploys`; no deploy
+  was triggered and no secret values were printed.
+- Final redacted readback reports ready `2/2`: One Time Railway target ready,
+  Stripe test key present, webhook secret present, price reference present,
+  live key absent, and mode live not requested.
+- Verification passed: `npm run stripe:railway-readback`,
+  `node --test tests/one-time-billing-railway-readback.test.js tests/one-time-billing-sandbox-e2e-verifier.test.js tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js`
+  (14/14).
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, production data mutation, or
+  secret exposure was performed.
 
 ## 2026-07-13 - One Time metadata DB/review bridge deployed
 
@@ -40230,6 +40396,51 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Helper-knowledge writes, Vimeo upload, member publication, and review UI
   remain separate approval/gated requirements.
 
+## 2026-07-13 - One Time Billing V2 release handoff refreshed
+
+- Updated the Billing V2 release handoff with current branch head
+  `1f52c17b0b23e7bdf5a65857b7a5b8d3fd95871a`, current master/base
+  `dc540e121a9bce02a8d0e738ec4e99a9c8edc831`, PR #132 state, and
+  final-report sections required by the goal packet.
+- Replaced the duplicated/stale final-audit table in the Billing V2 register
+  with current evidence and blockers for `REQ-20260713-950` through
+  `REQ-20260713-963`.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 old-policy cleanup refreshed
+
+- Replaced remaining active parent invite/email/review/helper references to
+  the old 30-day trial with Rosh Hashanah promotional-access language and
+  metadata.
+- Added `ops/audits/2026-07-13-onetime-billing-v2-old-policy-active-audit.md`
+  to classify remaining legacy terms as historical, compatibility-only,
+  unrelated 30-day filters/notices, or superseded smoke scripts.
+- Verification passed: parent invite tests, shared review/agent-review tests,
+  focused Stripe/local beta/sandbox tests, workspace-scope watchdog,
+  protocol-drift watchdog, `node --check server.js`, `npm run secrets:audit`,
+  and `git diff --check`.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 PR merge state refreshed
+
+- Merged current `master` into the Billing V2 branch after GitHub reported PR
+  #132 as dirty, preserving both append-only ledger/changelog sides from the
+  concurrent One Time work.
+- Current PR head is `ea909d4d47b421f71976897f86fdd79b330fced1` against base
+  `10960a86bba30aede6c72075ef1b5eb1a529f54d`; GitHub reports draft PR #132
+  merge state `CLEAN`.
+- Verification passed: focused Billing parent/review/Stripe tests,
+  merge-adjacent One Time member/WAPI tests, workspace-scope watchdog,
+  protocol-drift watchdog, ledger JSONL parse, `npm run secrets:audit`, and
+  `git diff --check`.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.
+
 ## 2026-07-13 - One Time classroom/latest-video read-only gates verified
 
 - Added `scripts/smoke-one-time-classroom-library-readonly-live.mjs` and
@@ -40262,6 +40473,40 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   enablement, Telegram send, destructive CRM write, provider mutation,
   credential mutation, payment mutation, or access mutation was performed.
 
+## 2026-07-13 - One Time Billing V2 Stripe sandbox smoke refreshed
+
+- Reran `npm run stripe:sandbox-smoke` against the stored One Time Stripe
+  test credentials. The smoke passed with `sandbox_ready`, webhook signature
+  verification, live mode disabled, no real customer data, no real funds, and
+  redacted synthetic test-mode product/price/customer/checkout evidence.
+- Cleanup completed for the synthetic Stripe objects: checkout session
+  expired, customer deleted, and product deactivated. No live Stripe key,
+  customer, payment, refund, or access mutation was used.
+- Updated the Billing V2 register and release handoff with the latest Stripe
+  evidence and with the unrelated validator blockers: repo-wide audit
+  governance debt and shared-CRM missing evidence paths.
+- Verification passed: focused Billing Stripe verifier suite `14/14`,
+  One Time product/checkout/helper isolation suite `24/24`, focused One Time
+  suite `79/79`, generated Operations check, action/link/security/workspace
+  watchdogs, protocol drift watchdog, ledger JSONL parse, tracked secrets
+  audit, targeted new Stripe evidence secret scan, and `git diff --check`.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 current PR head recorded
+
+- Refreshed the Billing V2 register and release handoff after the Stripe
+  sandbox evidence push so they now name current PR head
+  `062e9b4e53cebdb665e1d834cc5245bc0f98bf0b`.
+- GitHub reports draft PR #132 open with merge state `CLEAN` against master
+  base `10960a86bba30aede6c72075ef1b5eb1a529f54d`.
+- Remaining gates are unchanged: deploy/live smoke, exact `billing_start_at`,
+  final notice sender/copy/cohort approval, final live Stripe approval,
+  campaign send approval, and explicit final launch authorization.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.
 ## 2026-07-13 - One Time classroom member-safe live proof strengthened
 
 - Hardened One Time member-safe classroom payloads so review and member
@@ -40299,6 +40544,51 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no owner email send, WhatsApp provider send, public auto-reply
   enablement, Telegram send, destructive CRM write, provider mutation,
   credential mutation, payment mutation, or access mutation was performed.
+## 2026-07-13 - One Time Billing V2 branch refreshed against current master
+
+- Merged current `origin/master`
+  `dd018f6906b81926a215c63487ef2a230a79be49` into the One Time Billing V2
+  draft PR branch after preserving the concurrent Vimeo/classroom,
+  communication-agent, and landing-image work.
+- Resolved overlapping memory/changelog/ledger conflict sections by preserving
+  both the Billing V2 Stripe proof records and the incoming One Time
+  classroom/communication-agent proof records.
+- Re-ran focused Billing, communication-agent, One Time member/library, generated
+  Operations, workspace-scope, protocol-drift, secret-audit, ledger JSONL, and
+  diff checks before the merge push.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 master-refresh PR readback verified
+
+- Verified draft PR #132 after the current-master merge push. GitHub reported
+  head `cc3e4f3a6b7483d692c44691e9e4cf22bb5a063c`, base
+  `dd018f6906b81926a215c63487ef2a230a79be49`, state `OPEN`, draft `true`, and
+  merge state `CLEAN`.
+- Updated the Billing V2 release handoff and requirement register so
+  `REQ-20260713-962` no longer claims the master-refresh PR readback is
+  pending.
+- Remaining gates are unchanged: deploy/live smoke, exact `billing_start_at`,
+  final notice sender/copy/cohort approval, final live Stripe approval,
+  campaign send approval, and explicit final launch authorization.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 terminal status audit added
+
+- Added `ops/release-handoffs/2026-07-13-onetime-billing-platform-v2-terminal-status.md`
+  so every Billing V2 requirement has a terminal safe-branch status and the
+  remaining live-launch blocker is a reusable owner-action packet.
+- Tightened the Billing V2 register so requirements that were already locally
+  or sandbox verified no longer read as open-ended partial work; live charge,
+  live send, live refund, paid-access mutation, and deploy/live smoke remain
+  gated under `REQ-20260713-963` and the release gate.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.
+
 ## 2026-07-13 - One Time public agent shared across WhatsApp and email
 
 - Closed `REQ-20260712-310`: the One Time public parent-information agent is no longer a WhatsApp-only profile. It now declares `scope.channels=[whatsapp,email]`, one shared published agent version `2026-07-13-v3`, and one shared knowledge snapshot reference for WAPI WhatsApp and Resend inbound email.

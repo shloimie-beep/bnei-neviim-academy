@@ -1,0 +1,606 @@
+{
+  "status": "PASS",
+  "generated_at": "2026-07-13T12:41:53.255Z",
+  "requirement_id": "REQ-20260713-960",
+  "expectation": "after",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "scope": "After-implementation Billing UI visual audit for the One Time provider Billing route. Local read-only fixture only; no live account, payment, email, WhatsApp, refund, access, or provider mutation was attempted.",
+  "base_url": "http://127.0.0.1:59687",
+  "captures": [
+    {
+      "viewport": {
+        "id": "1440-desktop",
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/provider.html?review=one-time&section=billing",
+      "screenshot": "ops/ui-audits/2026-07-13-onetime-billing-ui-after/screenshots/provider-billing-after-1440-desktop.png",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "title": "One Time Rabbi Workspace Review",
+      "active_section": "billing",
+      "active_label": "Billing",
+      "visible_section": "billing",
+      "visible_heading": "Billing",
+      "section_ids": [
+        "overview",
+        "users",
+        "crm",
+        "mailbox",
+        "content",
+        "automations",
+        "badges",
+        "profile",
+        "services",
+        "inquiries",
+        "calendar",
+        "parent_portal",
+        "student_portal",
+        "class_setup",
+        "class_media",
+        "media",
+        "comments",
+        "website_import",
+        "commercial",
+        "entitlements",
+        "google_business",
+        "upgrade",
+        "integrations",
+        "whatsapp_setup",
+        "access",
+        "communications",
+        "billing",
+        "activity",
+        "reporting",
+        "api_usage",
+        "settings"
+      ],
+      "nav_labels": [
+        {
+          "id": "overview",
+          "label": "Dashboard"
+        },
+        {
+          "id": "crm",
+          "label": "CRM"
+        },
+        {
+          "id": "mailbox",
+          "label": "Mailbox"
+        },
+        {
+          "id": "communications",
+          "label": "Messages"
+        },
+        {
+          "id": "billing",
+          "label": "Billing"
+        },
+        {
+          "id": "content",
+          "label": "Content"
+        },
+        {
+          "id": "class_setup",
+          "label": "Live Class"
+        },
+        {
+          "id": "class_media",
+          "label": "Library"
+        },
+        {
+          "id": "badges",
+          "label": "Badges"
+        },
+        {
+          "id": "users",
+          "label": "Users"
+        },
+        {
+          "id": "activity",
+          "label": "Support"
+        }
+      ],
+      "billing_section_exists": true,
+      "billing_nav_exists": true,
+      "billing_shell_exists": true,
+      "billing_route_module_loaded": true,
+      "billing_actions_disabled": true,
+      "route_module_scripts": [
+        "/js/one-time-provider-billing-route.js"
+      ],
+      "operations_assets_loaded": false,
+      "old_trial_copy_visible": true,
+      "stripe_copy_visible": true,
+      "no_trial_copy_visible": true,
+      "horizontal_overflow": false,
+      "browser_viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "viewport": {
+        "id": "1024-desktop-tablet",
+        "width": 1024,
+        "height": 900
+      },
+      "route": "/provider.html?review=one-time&section=billing",
+      "screenshot": "ops/ui-audits/2026-07-13-onetime-billing-ui-after/screenshots/provider-billing-after-1024-desktop-tablet.png",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "title": "One Time Rabbi Workspace Review",
+      "active_section": "billing",
+      "active_label": "Billing",
+      "visible_section": "billing",
+      "visible_heading": "Billing",
+      "section_ids": [
+        "overview",
+        "users",
+        "crm",
+        "mailbox",
+        "content",
+        "automations",
+        "badges",
+        "profile",
+        "services",
+        "inquiries",
+        "calendar",
+        "parent_portal",
+        "student_portal",
+        "class_setup",
+        "class_media",
+        "media",
+        "comments",
+        "website_import",
+        "commercial",
+        "entitlements",
+        "google_business",
+        "upgrade",
+        "integrations",
+        "whatsapp_setup",
+        "access",
+        "communications",
+        "billing",
+        "activity",
+        "reporting",
+        "api_usage",
+        "settings"
+      ],
+      "nav_labels": [
+        {
+          "id": "overview",
+          "label": "Dashboard"
+        },
+        {
+          "id": "crm",
+          "label": "CRM"
+        },
+        {
+          "id": "mailbox",
+          "label": "Mailbox"
+        },
+        {
+          "id": "communications",
+          "label": "Messages"
+        },
+        {
+          "id": "billing",
+          "label": "Billing"
+        },
+        {
+          "id": "content",
+          "label": "Content"
+        },
+        {
+          "id": "class_setup",
+          "label": "Live Class"
+        },
+        {
+          "id": "class_media",
+          "label": "Library"
+        },
+        {
+          "id": "badges",
+          "label": "Badges"
+        },
+        {
+          "id": "users",
+          "label": "Users"
+        },
+        {
+          "id": "activity",
+          "label": "Support"
+        }
+      ],
+      "billing_section_exists": true,
+      "billing_nav_exists": true,
+      "billing_shell_exists": true,
+      "billing_route_module_loaded": true,
+      "billing_actions_disabled": true,
+      "route_module_scripts": [
+        "/js/one-time-provider-billing-route.js"
+      ],
+      "operations_assets_loaded": false,
+      "old_trial_copy_visible": true,
+      "stripe_copy_visible": true,
+      "no_trial_copy_visible": true,
+      "horizontal_overflow": false,
+      "browser_viewport": {
+        "width": 1024,
+        "height": 900
+      }
+    },
+    {
+      "viewport": {
+        "id": "768-tablet",
+        "width": 768,
+        "height": 900
+      },
+      "route": "/provider.html?review=one-time&section=billing",
+      "screenshot": "ops/ui-audits/2026-07-13-onetime-billing-ui-after/screenshots/provider-billing-after-768-tablet.png",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "title": "One Time Rabbi Workspace Review",
+      "active_section": "billing",
+      "active_label": "Billing",
+      "visible_section": "billing",
+      "visible_heading": "Billing",
+      "section_ids": [
+        "overview",
+        "users",
+        "crm",
+        "mailbox",
+        "content",
+        "automations",
+        "badges",
+        "profile",
+        "services",
+        "inquiries",
+        "calendar",
+        "parent_portal",
+        "student_portal",
+        "class_setup",
+        "class_media",
+        "media",
+        "comments",
+        "website_import",
+        "commercial",
+        "entitlements",
+        "google_business",
+        "upgrade",
+        "integrations",
+        "whatsapp_setup",
+        "access",
+        "communications",
+        "billing",
+        "activity",
+        "reporting",
+        "api_usage",
+        "settings"
+      ],
+      "nav_labels": [
+        {
+          "id": "overview",
+          "label": "Dashboard"
+        },
+        {
+          "id": "crm",
+          "label": "CRM"
+        },
+        {
+          "id": "mailbox",
+          "label": "Mailbox"
+        },
+        {
+          "id": "communications",
+          "label": "Messages"
+        },
+        {
+          "id": "billing",
+          "label": "Billing"
+        },
+        {
+          "id": "content",
+          "label": "Content"
+        },
+        {
+          "id": "class_setup",
+          "label": "Live Class"
+        },
+        {
+          "id": "class_media",
+          "label": "Library"
+        },
+        {
+          "id": "badges",
+          "label": "Badges"
+        },
+        {
+          "id": "users",
+          "label": "Users"
+        },
+        {
+          "id": "activity",
+          "label": "Support"
+        }
+      ],
+      "billing_section_exists": true,
+      "billing_nav_exists": true,
+      "billing_shell_exists": true,
+      "billing_route_module_loaded": true,
+      "billing_actions_disabled": true,
+      "route_module_scripts": [
+        "/js/one-time-provider-billing-route.js"
+      ],
+      "operations_assets_loaded": false,
+      "old_trial_copy_visible": true,
+      "stripe_copy_visible": true,
+      "no_trial_copy_visible": true,
+      "horizontal_overflow": false,
+      "browser_viewport": {
+        "width": 768,
+        "height": 900
+      }
+    },
+    {
+      "viewport": {
+        "id": "430-mobile",
+        "width": 430,
+        "height": 932
+      },
+      "route": "/provider.html?review=one-time&section=billing",
+      "screenshot": "ops/ui-audits/2026-07-13-onetime-billing-ui-after/screenshots/provider-billing-after-430-mobile.png",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "title": "One Time Rabbi Workspace Review",
+      "active_section": "billing",
+      "active_label": "Billing",
+      "visible_section": "billing",
+      "visible_heading": "Billing",
+      "section_ids": [
+        "overview",
+        "users",
+        "crm",
+        "mailbox",
+        "content",
+        "automations",
+        "badges",
+        "profile",
+        "services",
+        "inquiries",
+        "calendar",
+        "parent_portal",
+        "student_portal",
+        "class_setup",
+        "class_media",
+        "media",
+        "comments",
+        "website_import",
+        "commercial",
+        "entitlements",
+        "google_business",
+        "upgrade",
+        "integrations",
+        "whatsapp_setup",
+        "access",
+        "communications",
+        "billing",
+        "activity",
+        "reporting",
+        "api_usage",
+        "settings"
+      ],
+      "nav_labels": [
+        {
+          "id": "overview",
+          "label": "Dashboard"
+        },
+        {
+          "id": "crm",
+          "label": "CRM"
+        },
+        {
+          "id": "mailbox",
+          "label": "Mailbox"
+        },
+        {
+          "id": "communications",
+          "label": "Messages"
+        },
+        {
+          "id": "billing",
+          "label": "Billing"
+        },
+        {
+          "id": "content",
+          "label": "Content"
+        },
+        {
+          "id": "class_setup",
+          "label": "Live Class"
+        },
+        {
+          "id": "class_media",
+          "label": "Library"
+        },
+        {
+          "id": "badges",
+          "label": "Badges"
+        },
+        {
+          "id": "users",
+          "label": "Users"
+        },
+        {
+          "id": "activity",
+          "label": "Support"
+        }
+      ],
+      "billing_section_exists": true,
+      "billing_nav_exists": true,
+      "billing_shell_exists": true,
+      "billing_route_module_loaded": true,
+      "billing_actions_disabled": true,
+      "route_module_scripts": [
+        "/js/one-time-provider-billing-route.js"
+      ],
+      "operations_assets_loaded": false,
+      "old_trial_copy_visible": true,
+      "stripe_copy_visible": true,
+      "no_trial_copy_visible": true,
+      "horizontal_overflow": false,
+      "browser_viewport": {
+        "width": 430,
+        "height": 932
+      }
+    },
+    {
+      "viewport": {
+        "id": "390-mobile",
+        "width": 390,
+        "height": 844
+      },
+      "route": "/provider.html?review=one-time&section=billing",
+      "screenshot": "ops/ui-audits/2026-07-13-onetime-billing-ui-after/screenshots/provider-billing-after-390-mobile.png",
+      "failed_requests": [],
+      "bad_responses": [],
+      "console_errors": [],
+      "title": "One Time Rabbi Workspace Review",
+      "active_section": "billing",
+      "active_label": "Billing",
+      "visible_section": "billing",
+      "visible_heading": "Billing",
+      "section_ids": [
+        "overview",
+        "users",
+        "crm",
+        "mailbox",
+        "content",
+        "automations",
+        "badges",
+        "profile",
+        "services",
+        "inquiries",
+        "calendar",
+        "parent_portal",
+        "student_portal",
+        "class_setup",
+        "class_media",
+        "media",
+        "comments",
+        "website_import",
+        "commercial",
+        "entitlements",
+        "google_business",
+        "upgrade",
+        "integrations",
+        "whatsapp_setup",
+        "access",
+        "communications",
+        "billing",
+        "activity",
+        "reporting",
+        "api_usage",
+        "settings"
+      ],
+      "nav_labels": [
+        {
+          "id": "overview",
+          "label": "Dashboard"
+        },
+        {
+          "id": "crm",
+          "label": "CRM"
+        },
+        {
+          "id": "mailbox",
+          "label": "Mailbox"
+        },
+        {
+          "id": "communications",
+          "label": "Messages"
+        },
+        {
+          "id": "billing",
+          "label": "Billing"
+        },
+        {
+          "id": "content",
+          "label": "Content"
+        },
+        {
+          "id": "class_setup",
+          "label": "Live Class"
+        },
+        {
+          "id": "class_media",
+          "label": "Library"
+        },
+        {
+          "id": "badges",
+          "label": "Badges"
+        },
+        {
+          "id": "users",
+          "label": "Users"
+        },
+        {
+          "id": "activity",
+          "label": "Support"
+        }
+      ],
+      "billing_section_exists": true,
+      "billing_nav_exists": true,
+      "billing_shell_exists": true,
+      "billing_route_module_loaded": true,
+      "billing_actions_disabled": true,
+      "route_module_scripts": [
+        "/js/one-time-provider-billing-route.js"
+      ],
+      "operations_assets_loaded": false,
+      "old_trial_copy_visible": true,
+      "stripe_copy_visible": true,
+      "no_trial_copy_visible": true,
+      "horizontal_overflow": false,
+      "browser_viewport": {
+        "width": 390,
+        "height": 844
+      }
+    }
+  ],
+  "checks": [
+    {
+      "id": "after_billing_section_active",
+      "passed": true,
+      "detail": "Billing section, nav item, and active route are present after implementation."
+    },
+    {
+      "id": "after_billing_route_module_loaded",
+      "passed": true,
+      "detail": "Billing route module loads lazily on section=billing."
+    },
+    {
+      "id": "after_billing_actions_disabled",
+      "passed": true,
+      "detail": "Notice, live billing, refund, and access automation actions remain disabled."
+    },
+    {
+      "id": "no_horizontal_overflow",
+      "passed": true,
+      "detail": "No automated horizontal overflow at required viewports."
+    },
+    {
+      "id": "no_runtime_errors",
+      "passed": true,
+      "detail": "Local read-only review harness reported no failed requests, 4xx/5xx responses, or console errors."
+    }
+  ],
+  "external_write_performed": false,
+  "production_data_mutation_performed": false
+}

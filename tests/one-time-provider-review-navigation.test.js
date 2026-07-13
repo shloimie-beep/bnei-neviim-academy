@@ -214,7 +214,7 @@ test('One Time provider review, view-as, and signed sessions use the same Rabbi-
 
   assert.match(sectionsBlock, /oneTimeReviewMode \|\| oneTimeViewAsRabbiToken \|\| signedOneTimeSession/);
   assert.match(sectionsBlock, /providerWapiSetupEnabled\(\)/);
-  for (const section of ['overview', 'crm', 'mailbox', 'communications', 'content', 'class_setup', 'class_media', 'users', 'badges', 'activity']) {
+  for (const section of ['overview', 'crm', 'mailbox', 'communications', 'billing', 'content', 'class_setup', 'class_media', 'users', 'badges', 'activity']) {
     assert.match(sectionsBlock, new RegExp(`id: '${section}'`), `missing ${section} review section`);
   }
   for (const hiddenSection of ['commercial', 'integrations', 'access']) {
@@ -235,6 +235,7 @@ test('signed One Time provider session uses production Rabbi workspace navigatio
     assert.match(navText, /CRM/);
     assert.match(navText, /Mailbox/);
     assert.match(navText, /WhatsApp/);
+    assert.match(navText, /Billing/);
     for (const hidden of ['Commercial Model', 'External Apps', 'Access Checklist', 'API Usage', 'Settings']) {
       assert.doesNotMatch(navText, new RegExp(hidden, 'i'));
     }
@@ -267,6 +268,24 @@ test('signed One Time provider session uses production Rabbi workspace navigatio
     const routeModulesAfterMessages = await page.evaluate(() => Object.keys(window.OneTimeProviderRouteModules || {}).sort());
     assert.deepEqual(routeModulesAfterMessages, ['communications', 'crm', 'mailbox']);
     assert.equal(await page.locator('[data-provider-section="communications"] [data-route-module="one-time-provider-communications-route"]').count() > 0, true);
+    await page.locator('#providerNav [data-provider-nav="billing"]').click();
+    await page.waitForSelector('[data-provider-nav="billing"].active');
+    await page.waitForFunction(() => Boolean(window.OneTimeProviderRouteModules?.billing), null, {
+      timeout: 10000,
+    });
+    const routeModulesAfterBilling = await page.evaluate(() => Object.keys(window.OneTimeProviderRouteModules || {}).sort());
+    assert.deepEqual(routeModulesAfterBilling, ['billing', 'communications', 'crm', 'mailbox']);
+    const billingText = await page.locator('[data-provider-section="billing"]').innerText();
+    assert.match(billingText, /Billing V2/);
+    assert.match(billingText, /\$67\.00 \/ month/);
+    assert.match(billingText, /No Stripe trial/);
+    assert.match(billingText, /Start live billing/);
+    assert.match(billingText, /Create refund/);
+    assert.match(billingText, /Run access automation/);
+    assert.doesNotMatch(billingText, /30 days free|trial active|automatic refund enabled|automatic refunds enabled/i);
+    assert.equal(await page.locator('[data-provider-section="billing"] [data-action-id="ACTION-ONETIME-BILLING-LIVE-CHARGE-BLOCKED"]').isDisabled(), true);
+    assert.equal(await page.locator('[data-provider-section="billing"] [data-action-id="ACTION-ONETIME-BILLING-REFUND-REVIEW-BLOCKED"]').isDisabled(), true);
+    assert.equal(await page.locator('[data-provider-section="billing"] [data-action-id="ACTION-ONETIME-BILLING-ACCESS-AUTOMATION-BLOCKED"]').isDisabled(), true);
     await page.locator('#providerNav [data-provider-nav="crm"]').click();
     await page.waitForSelector('[data-provider-nav="crm"].active');
 

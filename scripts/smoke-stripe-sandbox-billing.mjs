@@ -147,13 +147,23 @@ function runSyntheticLifecycle(configState, syntheticIds = {}) {
       },
     }),
     buildSyntheticStripeEvent({
-      id: 'evt_smoke_trial',
+      id: 'evt_smoke_subscription_active',
       type: 'customer.subscription.created',
       object: {
         id: 'sub_test_synthetic',
         object: 'subscription',
-        status: 'trialing',
+        status: 'active',
         current_period_end: 1814200000,
+        ...memberBase,
+      },
+    }),
+    buildSyntheticStripeEvent({
+      id: 'evt_smoke_legacy_trial_will_end',
+      type: 'customer.subscription.trial_will_end',
+      object: {
+        id: 'sub_test_synthetic',
+        object: 'subscription',
+        status: 'trialing',
         trial_end: 1811608000,
         ...memberBase,
       },
@@ -353,7 +363,7 @@ async function runSandboxApiSmoke(config, baseConfigState, report) {
       checkoutSession: created.checkout_session_id,
     });
     report.status = report.lifecycle.duplicate_verified ? 'passed' : 'failed';
-    report.notes.push('Created synthetic Stripe test-mode product, price, customer, and checkout session; lifecycle success/failure/cancellation were simulated locally from redacted test object IDs.');
+    report.notes.push('Created synthetic Stripe test-mode product, price, customer, and checkout session; lifecycle success/failure/cancellation were simulated locally from redacted test object IDs with no Stripe trial period.');
   } finally {
     await expireCheckoutIfOpen(stripeClient, checkoutSession, cleanup);
     await deleteCustomer(stripeClient, customer, cleanup);

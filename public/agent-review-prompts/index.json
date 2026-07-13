@@ -512,13 +512,13 @@
     },
     {
       "key": "one-time-parent-trial-journey",
-      "title": "One Time Parent Trial Journey",
+      "title": "One Time Parent Promotional Access Journey",
       "context_keys": [
         "one_time_parent",
         "one_time_classroom"
       ],
       "requirement_id": "REQ-20260707-113",
-      "focus": "no-password parent review journey, 30-day trial state, schedule/class link, library/resource access, student click/attendance visibility, billing/trial boundaries, and parent-safe support actions",
+      "focus": "no-password parent review journey, promotional access state, schedule/class link, library/resource access, student click/attendance visibility, billing boundaries, and parent-safe support actions",
       "exact_navigation": [
         "Open /operations/agent-review?prompt=one-time-parent-trial-journey first. Confirm this prompt key is visible, click Start Audit / I started this agent mode, and keep the drop-off page open.",
         "Open the live One Time host https://join.onetimeonetime.com/. Confirm it is One Time / One Time Mishnah Class, black/yellow scoped, English-only, and not BNA Academy.",
@@ -528,15 +528,15 @@
         "Inspect the header/top section spacing, role label, selected category, top subcategory position, filters, buttons, and mobile overflow. Buttons should have equal heights and predictable alignment.",
         "Find the schedule or next-class area. Record whether a brand-new parent can immediately see when class happens and what link to use.",
         "Find the library/resource area. Click the classroom/library link and verify it opens /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS or an equivalent TEST One Time classroom route.",
-        "Find 30-day trial, billing, and access-state copy. Record whether it is clear without showing admin-only setup/debug information.",
+        "Find promotional access, billing, and access-state copy. Record whether it is clear without showing admin-only setup/debug information.",
         "Find student click, attendance, or activity information. Record whether the parent can tell if the child clicked or attended.",
         "Find student login management. Confirm parent can reset the child password from parent scope, while parent forgot-password sends a reset to the signup email. Flag any separate classroom/recovery code as wrong.",
         "Find support/private question UI. Record whether it is parent-safe and does not send real messages in review mode.",
-        "Open /one-time-email-review.html and inspect the parent welcome/trial email preview. Do not send email.",
+        "Open /one-time-email-review.html and inspect the parent welcome/promotional access email preview. Do not send email.",
         "If any step fails, save a BLOCKED or FAIL report in Operations drop-off. Include exact route, click path, visible text, screenshot/DOM notes, and the smallest Codex-ready repair."
       ],
       "audit_checklist": [
-        "PASS/FAIL for schedule visibility, class link visibility, library visibility, trial/billing clarity, student click/activity visibility, attendance visibility, support UI, and student-login management expectations.",
+        "PASS/FAIL for schedule visibility, class link visibility, library visibility, promotional access/billing clarity, student click/activity visibility, attendance visibility, support UI, and student-login management expectations.",
         "PASS/FAIL for One Time only branding on live parent login/reset/setup surfaces, with no BNA Academy leakage, Hebrew/English toggle, test labels, expired setup flow, fallback classroom code, or recovery-code copy.",
         "Top 5 UI/IA fixes in Codex-ready language, with severity labels P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE, P2-TYPOGRAPHY, or P3-POLISH.",
         "Explicit missing pieces before Codex can send a real parent welcome email.",
@@ -720,7 +720,7 @@
         "Open /operations/agent-review?prompt=one-time-brand-helper-toolbar-audit first. Confirm this prompt key is visible in the Agent Review Hub and keep the drop-off page available in another tab.",
         "Open /one-time. Confirm the page is One Time / One Time Mishnah Class, black/yellow scoped, English-only, and does not flash BNA cream/navy/teal, BNA Academy copy, or a Hebrew/English toggle.",
         "At /one-time, audit 1440px, 1024px, 768px, 430px, and 390px. Check first-viewport density, top section wasted space, button equal heights, text wrapping, helper launcher placement, and horizontal overflow.",
-        "Open the One Time Helper on /one-time. Ask three public-safe questions: class schedule, parent trial link, and library access. Verify answers stay in one_time_mishnah_class scope and do not mention BNA school accountability unless explicitly framed as unrelated.",
+        "Open the One Time Helper on /one-time. Ask three public-safe questions: class schedule, parent access link, and library access. Verify answers stay in one_time_mishnah_class scope and do not mention BNA school accountability unless explicitly framed as unrelated.",
         "Open /operations. If login is required, use browser takeover so the owner types credentials directly. Do not ask for, store, or repeat credentials.",
         "From Operations, use the workspace switcher to select One Time / Rabbi / One Time Mishnah Class. If the click path is not findable, record the failed click path and then open /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview.",
         "In the One Time Operations workspace, inspect the side panel, active workspace label, top subcategories, filters/search, primary action buttons, helper/drawer position, and any cards that say configured/not configured. If Rabbi cannot act on a card, mark it as role-contaminating admin noise.",
@@ -855,7 +855,7 @@
         "Open /operations/agent-review?prompt=one-time-public-landing-million-dollar-audit first when available, then open this public prompt URL and keep the drop-off page available.",
         "Open https://join.onetimeonetime.com/one-time and https://join.onetimeonetime.com/one-time/mishnayos. If the canonical host is unavailable, use the current app base URL and record the base URL.",
         "Capture full-page, first-viewport, header/topbar crop, footer crop, and any helper-over-form crop for 1440px, 1024px, 768px, 430px, and 390px.",
-        "Inspect the campaign countdown. It must use /api/one-time/campaign or explicit config, be Israel-time / Asia/Jerusalem, and point toward Rosh Hashanah / the new year rather than a generic resettable 30-day timer.",
+        "Inspect the campaign countdown. It must use /api/one-time/campaign or explicit config, be Israel-time / Asia/Jerusalem, and point toward Rosh Hashanah / the new year rather than a generic resettable timer.",
         "Inspect the hero: brand signal, logo size, headline, CTAs, image/media treatment, first useful content y-position, and whether the next section is hinted without wasting the first viewport.",
         "Inspect the proof strip. Logos should look intentional as one clean strip; do not accept plain text pretending to be a missing logo asset.",
         "Inspect the public form. It may collect parent/student contact interest and route to /api/one-time/interest only. Success copy must not promise checkout, payment, access grant, portal setup, Zoom creation, email send, or WhatsApp send.",

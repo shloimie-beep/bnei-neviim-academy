@@ -204,10 +204,13 @@ function buildOneTimeSeedManifest(options = {}) {
     reviewIdentity('TEST-ONETIME-STUDENT-REVIEW', 'TEST One Time Student Review', 'student'),
   ];
   const productWorkflow = {
-    offer_key: 'TEST-ONETIME-67-MONTHLY-TRIAL',
+    offer_key: 'membership_67_monthly',
     price_cents: 6700,
     currency: 'USD',
-    trial_days: 30,
+    trial_days: 0,
+    stripe_trial_enabled: false,
+    promotional_access: true,
+    billing_start_at: null,
     live_charge_enabled: false,
     checkout_preview_only: true,
   };

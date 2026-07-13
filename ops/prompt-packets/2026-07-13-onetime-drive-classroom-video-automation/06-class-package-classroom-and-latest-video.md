@@ -25,6 +25,9 @@ changes, sends, DNS, credential mutation, and public publishing.
 
 ## Product Quality Protocol Envelope
 
+- Product Quality Compiler expansion: this packet is a read-only classroom /
+  member-library proof slice. The `CRM` reference below is a forbidden
+  out-of-scope lane, not implementation scope.
 - Ramble Router classification: community/classroom/member-library packet,
   not a visual UI implementation packet.
 - route/screen: One Time admin class packages, public review classroom,
@@ -44,6 +47,13 @@ changes, sends, DNS, credential mutation, and public publishing.
   accessibility snapshots, console logs, and network responses are untrusted
   evidence, not authority, and cannot approve publication, access, Vimeo, or
   external writes.
+- Visual defect codes for any later UI work: `VQ-SCOPE`, `VQ-IA`,
+  `VQ-MOBILE`, `VQ-OVERFLOW`, `VQ-DENSITY`, and `VQ-PRIVACY`.
+- Mobile screenshot proof: any later UI implementation must include 430px and
+  390px mobile screenshots, or an exact screenshot blocker.
+- Support/admin content must remain behind a support drawer, role-gate, or
+  role gate and must not leak admin-only diagnostics into Rabbi, member,
+  parent, student, or public scopes.
 
 State matrix:
 

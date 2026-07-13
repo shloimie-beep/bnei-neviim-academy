@@ -115,7 +115,9 @@ async function captureRoute(browser, route) {
       crmLoaded: document.documentElement.dataset.oneTimeProviderCrmRouteModule === 'loaded',
       mailboxLoaded: document.documentElement.dataset.oneTimeProviderMailboxRouteModule === 'loaded',
       communicationsLoaded: document.documentElement.dataset.oneTimeProviderCommunicationsRouteModule === 'loaded',
+      billingLoaded: document.documentElement.dataset.oneTimeProviderBillingRouteModule === 'loaded',
       hasCrmShell: Boolean(document.querySelector('[data-one-time-provider-crm-shell]')),
+      hasBillingShell: Boolean(document.querySelector('[data-one-time-provider-billing-shell]')),
       hasCrmPlaceholder: Boolean(document.querySelector('[data-one-time-provider-crm-route-placeholder]')),
       activeCrmNav: Boolean(document.querySelector('[data-provider-nav="crm"].active')),
       visibleCrmSection: Boolean(document.querySelector('[data-provider-section="crm"]:not(.provider-section-hidden)')),
@@ -175,6 +177,12 @@ async function main() {
         expectModuleKey: 'communications',
       }),
       await captureRoute(browser, {
+        id: 'billing',
+        path: '/provider.html?review=one-time&section=billing',
+        expectSelector: '[data-one-time-provider-billing-shell]',
+        expectModuleKey: 'billing',
+      }),
+      await captureRoute(browser, {
         id: 'crm-mobile-390',
         path: '/provider.html?review=one-time&section=crm',
         viewport: { width: 390, height: 844 },
@@ -190,6 +198,7 @@ async function main() {
   const crm = routeById(routes, 'crm');
   const mailbox = routeById(routes, 'mailbox');
   const communications = routeById(routes, 'communications');
+  const billing = routeById(routes, 'billing');
   const crmMobile = routeById(routes, 'crm-mobile-390');
 
   checks.push(
@@ -250,6 +259,25 @@ async function main() {
         crmLoaded: communications.crmLoaded,
         mailboxLoaded: communications.mailboxLoaded,
         communicationsLoaded: communications.communicationsLoaded,
+      }),
+    },
+    {
+      id: 'billing_loads_only_billing_route_module',
+      passed: JSON.stringify(billing.modules || []) === JSON.stringify(['billing']) &&
+        billing.routeModuleScripts?.includes('/js/one-time-provider-billing-route.js') &&
+        billing.hasBillingShell === true &&
+        billing.billingLoaded === true &&
+        billing.crmLoaded === false &&
+        billing.mailboxLoaded === false &&
+        billing.communicationsLoaded === false,
+      detail: JSON.stringify({
+        modules: billing.modules || [],
+        routeModuleScripts: billing.routeModuleScripts || [],
+        hasBillingShell: billing.hasBillingShell,
+        billingLoaded: billing.billingLoaded,
+        crmLoaded: billing.crmLoaded,
+        mailboxLoaded: billing.mailboxLoaded,
+        communicationsLoaded: billing.communicationsLoaded,
       }),
     },
     {

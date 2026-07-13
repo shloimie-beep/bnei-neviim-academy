@@ -229,7 +229,9 @@ async function captureRoute(browser, baseUrl, route) {
       crmLoaded: document.documentElement.dataset.oneTimeProviderCrmRouteModule === 'loaded',
       mailboxLoaded: document.documentElement.dataset.oneTimeProviderMailboxRouteModule === 'loaded',
       communicationsLoaded: document.documentElement.dataset.oneTimeProviderCommunicationsRouteModule === 'loaded',
+      billingLoaded: document.documentElement.dataset.oneTimeProviderBillingRouteModule === 'loaded',
       hasCrmShell: Boolean(document.querySelector('[data-one-time-provider-crm-shell]')),
+      hasBillingShell: Boolean(document.querySelector('[data-one-time-provider-billing-shell]')),
       hasCrmPlaceholder: Boolean(document.querySelector('[data-one-time-provider-crm-route-placeholder]')),
       hasOperationsCss: styles.includes('/css/operations-shell.css'),
       hasOperationsJs: scripts.includes('/js/operations-shell.js') || scripts.includes('/js/operations-deferred-renderers.js'),
@@ -256,6 +258,7 @@ async function main() {
     crm_route_module: await fileBytes('public/js/one-time-provider-crm-route.js'),
     mailbox_route_module: await fileBytes('public/js/one-time-provider-mailbox-route.js'),
     communications_route_module: await fileBytes('public/js/one-time-provider-communications-route.js'),
+    billing_route_module: await fileBytes('public/js/one-time-provider-billing-route.js'),
     rum_collector: await fileBytes('public/js/one-time-performance-rum.js'),
   };
   const sizeComparison = {
@@ -265,6 +268,7 @@ async function main() {
     current_provider_html_bytes: currentBytes.provider_html,
     provider_html_delta_bytes: currentBytes.provider_html - byteLength(baseProviderHtml),
     crm_route_module_bytes: currentBytes.crm_route_module,
+    billing_route_module_bytes: currentBytes.billing_route_module,
     crm_route_total_delta_bytes: currentBytes.provider_html + currentBytes.crm_route_module - byteLength(baseProviderHtml),
   };
 
@@ -303,6 +307,11 @@ async function main() {
         path: '/provider.html?admin_provider=one-time&section=communications',
         expectModuleKey: 'communications',
       }),
+      await captureRoute(browser, baseUrl, {
+        id: 'billing',
+        path: '/provider.html?admin_provider=one-time&section=billing',
+        expectModuleKey: 'billing',
+      }),
     ];
   } finally {
     await browser.close();
@@ -313,11 +322,12 @@ async function main() {
   const crm = routes.find((route) => route.id === 'crm');
   const mailbox = routes.find((route) => route.id === 'mailbox');
   const communications = routes.find((route) => route.id === 'communications');
+  const billing = routes.find((route) => route.id === 'billing');
   const checks = [
     {
-      id: 'provider_html_delta_within_instrumentation_budget',
-      passed: sizeComparison.provider_html_delta_bytes <= 4096,
-      detail: `${sizeComparison.provider_html_delta_bytes} bytes <= 4096 bytes`,
+      id: 'provider_html_delta_within_route_hook_budget',
+      passed: sizeComparison.provider_html_delta_bytes <= 8192,
+      detail: `${sizeComparison.provider_html_delta_bytes} bytes <= 8192 bytes`,
     },
     {
       id: 'overview_no_crm_module',
@@ -344,6 +354,19 @@ async function main() {
       detail: JSON.stringify({ modules: communications?.modules || [], routeModuleScripts: communications?.routeModuleScripts || [], hasCrmShell: communications?.hasCrmShell }),
     },
     {
+      id: 'billing_loads_only_billing_route_module',
+      passed: JSON.stringify(billing?.modules || []) === JSON.stringify(['billing']) &&
+        billing?.routeModuleScripts?.includes('/js/one-time-provider-billing-route.js') &&
+        billing?.hasBillingShell === true &&
+        billing?.hasCrmShell === false,
+      detail: JSON.stringify({
+        modules: billing?.modules || [],
+        routeModuleScripts: billing?.routeModuleScripts || [],
+        hasBillingShell: billing?.hasBillingShell,
+        hasCrmShell: billing?.hasCrmShell,
+      }),
+    },
+    {
       id: 'operations_assets_absent',
       passed: routes.every((route) => !route.hasOperationsCss && !route.hasOperationsJs),
       detail: JSON.stringify(routes.map((route) => ({ id: route.id, hasOperationsCss: route.hasOperationsCss, hasOperationsJs: route.hasOperationsJs }))),
@@ -363,11 +386,13 @@ async function main() {
       passed: currentBytes.crm_route_module <= 16384 &&
         currentBytes.mailbox_route_module <= 18432 &&
         currentBytes.communications_route_module <= 8192 &&
+        currentBytes.billing_route_module <= 24576 &&
         currentBytes.rum_collector <= 8192,
       detail: JSON.stringify({
         crm_route_module_bytes: currentBytes.crm_route_module,
         mailbox_route_module_bytes: currentBytes.mailbox_route_module,
         communications_route_module_bytes: currentBytes.communications_route_module,
+        billing_route_module_bytes: currentBytes.billing_route_module,
         rum_collector_bytes: currentBytes.rum_collector,
         crm_route_total_delta_bytes: sizeComparison.crm_route_total_delta_bytes,
       }),
@@ -406,6 +431,7 @@ async function main() {
     `- CRM route module: ${sizeComparison.crm_route_module_bytes} bytes`,
     `- Mailbox route module: ${currentBytes.mailbox_route_module} bytes`,
     `- Communications route module: ${currentBytes.communications_route_module} bytes`,
+    `- Billing route module: ${currentBytes.billing_route_module} bytes`,
     `- One Time RUM collector: ${currentBytes.rum_collector} bytes`,
     `- Current provider.html + CRM module delta: ${sizeComparison.crm_route_total_delta_bytes} bytes`,
     '',

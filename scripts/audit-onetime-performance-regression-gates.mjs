@@ -270,6 +270,7 @@ function collectLocalAudit() {
     crm_route_module_bytes: { actual: fileBytes('public/js/one-time-provider-crm-route.js'), max: 12000 },
     mailbox_route_module_bytes: { actual: fileBytes('public/js/one-time-provider-mailbox-route.js'), max: 20000 },
     communications_route_module_bytes: { actual: fileBytes('public/js/one-time-provider-communications-route.js'), max: 5000 },
+    billing_route_module_bytes: { actual: fileBytes('public/js/one-time-provider-billing-route.js'), max: 22000 },
   };
 
   const checks = [
