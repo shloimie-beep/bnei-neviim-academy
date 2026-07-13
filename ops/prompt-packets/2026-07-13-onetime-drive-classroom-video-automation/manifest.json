@@ -23,7 +23,7 @@
   "visual_audit_before_ui_implementation": true,
   "external_writes_authorized": false,
   "secret_values_printed": false,
-  "packet_dag_status": "drive-orchestrator-local-implementation-complete",
+  "packet_dag_status": "metadata-knowledge-contract-local-complete",
   "packets": [
     {
       "packet_id": "PKT-20260713-004-00",
@@ -156,8 +156,99 @@
       "terminal_condition": "Local implementation is validated; terminal Done still requires commit/push plus deploy or approved release/live readback for server-visible schema/runtime change.",
       "handoff_target": "PKT-20260713-004-03",
       "next_packet": "PKT-20260713-004-03"
+    },
+    {
+      "packet_id": "PKT-20260713-004-03",
+      "parent_raw_id": "RAW-20260713-004",
+      "parent_packet_id": "PKT-20260713-004-02",
+      "child_packet_ids": [
+        "PKT-20260713-004-04"
+      ],
+      "depends_on_packet_ids": [
+        "PKT-20260713-004-02"
+      ],
+      "stage": "03-media-edit-and-long-transcription",
+      "packet_role": "IMPLEMENTATION_PACKET",
+      "status": "in_progress_local_harness_complete_provider_private_fixture_pending",
+      "owner": "Codex",
+      "scope": "Conservative media edit defaults, MKV handoff support, rendered-output verification, and later long-form private transcription.",
+      "out_of_scope": [
+        "OpenAI transcription provider call",
+        "Drive mutation",
+        "Vimeo upload",
+        "Database mutation",
+        "Member publication",
+        "External sends"
+      ],
+      "affected_routes": [],
+      "affected_files": [
+        "src/lib/bna/one-time-vimeo-studio-pipeline.js",
+        "src/lib/bna/one-time-vimeo-folder-library.js",
+        "src/lib/bna/one-time-long-transcription.js",
+        "tests/one-time-vimeo-studio-pipeline.test.js",
+        "tests/one-time-vimeo-folder-library-workflow.test.js",
+        "tests/one-time-long-transcription.test.js",
+        "server.js",
+        "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/03-media-edit-and-long-transcription.md"
+      ],
+      "required_evidence": [
+        "zero opener default test",
+        "explicit opener override test",
+        "MKV studio and folder-library tests",
+        "rendered output verification test",
+        "real local FFmpeg render smoke",
+        "long-form chunking and privacy-safe transcript version tests"
+      ],
+      "validation_command": "node --test tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js",
+      "terminal_condition": "Media edit and local long-transcription harness are validated; provider/private fixture integration remains pending.",
+      "handoff_target": "PKT-20260713-004-04",
+      "next_requirement": "REQ-20260713-917",
+      "next_packet": "PKT-20260713-004-04"
+    },
+    {
+      "packet_id": "PKT-20260713-004-04",
+      "parent_raw_id": "RAW-20260713-004",
+      "parent_packet_id": "PKT-20260713-004-03",
+      "child_packet_ids": [
+        "PKT-20260713-004-06"
+      ],
+      "depends_on_packet_ids": [
+        "PKT-20260713-004-03"
+      ],
+      "stage": "04-transcript-metadata-and-knowledge-handoff",
+      "packet_role": "IMPLEMENTATION_PACKET",
+      "status": "in_progress_local_contract_complete_db_review_integration_pending",
+      "owner": "Codex",
+      "scope": "Versioned transcript metadata draft and provider-scoped bot knowledge handoff contracts with review gates and no raw transcript leakage.",
+      "out_of_scope": [
+        "Database promotion worker",
+        "Review UI integration",
+        "Bot knowledge write",
+        "Drive mutation",
+        "Vimeo upload",
+        "Member publication",
+        "External sends"
+      ],
+      "affected_routes": [],
+      "affected_files": [
+        "src/lib/bna/one-time-transcript-metadata.js",
+        "tests/one-time-transcript-metadata.test.js",
+        "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/04-transcript-metadata-and-knowledge-handoff.md"
+      ],
+      "required_evidence": [
+        "metadata extraction tests",
+        "sidecar priority tests",
+        "confidence and review gate tests",
+        "bot knowledge approval blocker tests",
+        "raw transcript omission tests"
+      ],
+      "validation_command": "node --test tests/one-time-transcript-metadata.test.js",
+      "terminal_condition": "Local contract is validated; DB promotion worker/review UI integration remains pending.",
+      "handoff_target": "PKT-20260713-004-06",
+      "next_requirement": "REQ-20260713-919",
+      "next_packet": "PKT-20260713-004-06"
     }
   ],
   "created_at": "2026-07-13T14:17:00+03:00",
-  "updated_at": "2026-07-13T14:35:19+03:00"
+  "updated_at": "2026-07-13T14:48:37+03:00"
 }

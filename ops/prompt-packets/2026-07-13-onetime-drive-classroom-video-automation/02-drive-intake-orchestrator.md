@@ -9,7 +9,8 @@ Requirement: `REQ-20260713-914`
 Workspace/project:
 `rabbi_sheller_provider` / `one_time_mishnah_class`
 
-Status: local implementation complete; deploy/live readback not run
+Status: Done for the Drive-intake orchestrator runtime slice; downstream
+Drive/Classroom packets remain open
 
 ## Product Quality Compiler Expansion
 
@@ -117,12 +118,22 @@ Implement the first no-write One Time Drive video intake orchestrator slice:
 | `node -c src/lib/bna/one-time-drive-video-orchestrator.js` | Passed. |
 | `node -e "JSON.parse(require('fs').readFileSync('package.json','utf8'))"` | Passed. |
 | `npm run one-time:drive-video-orchestrator -- --json --now 2026-07-13T12:00:00.000Z` | Passed; produced no-write report, resolved folder from `drive_map:videoDrop`, zero discovered fixture files. |
+| `git push origin master` | Passed for runtime commit `c9706382c8b8e5544797a94467e7ea54367850f0`. |
+| One Time Railway deploy/readback | Passed. Deployment `b8ce75fb-8b08-44bb-a95f-c3e472fb0665` reached SUCCESS; `https://join.onetimeonetime.com/api/deploy-info` returned commit `c9706382c8b8e5544797a94467e7ea54367850f0` and `target_app=one-time`. |
+| One Time live smokes | Passed: `app:smoke:onetime-separate-instance`, `app:smoke:onetime-provider-route-module`, and `app:smoke:onetime-operations-crm-workbench` against the exact One Time SHA. Evidence: `ops/live-smokes/2026-07-13T11-41-37-317Z-onetime-provider-route-module-live-smoke.md` and `ops/live-smokes/2026-07-13T11-41-36-800Z-one-time-operations-crm-workbench-live-smoke.md`. |
+| BNA shared-runtime deploy/readback | Passed as descendant proof. BNA deployment `e0f3ec48-4d60-467a-bb09-d3518a0e47ba` reached SUCCESS; `https://bneineviimacademy.org/api/deploy-info` returned current commit `be58601d50ce467193f02bc1b16566b23ba173a7`, and `c9706382c8b8e5544797a94467e7ea54367850f0` is an ancestor of that deployed head. |
+| BNA shared-runtime smoke | Passed: `npm run app:smoke:operations-workspace-taxonomy`. Evidence: `ops/live-smokes/2026-07-13T11-46-08-876Z-operations-workspace-taxonomy-live-smoke.md`. |
 
-## Remaining Before Terminal Done
+## Terminal Closeout
 
-- Run full closeout checks after remaining implementation packets settle.
-- Commit/push the scoped changes.
-- Deploy or run the approved release path for the `server.js` schema/runtime
-  change, then run live/readback smoke before marking `REQ-20260713-914` done.
-- This packet did not perform a real Drive API read, Drive mutation, database
-  mutation, Vimeo upload, member publication, or external send.
+`REQ-20260713-914` is Done for this no-write Drive-intake orchestrator runtime
+slice. The implementation is committed, pushed, deployed, and live-smoked for
+the server-visible schema/runtime change.
+
+This packet did not perform a real Drive API read, Drive mutation, database
+mutation, Vimeo upload, member publication, public publish, provider mutation,
+credential mutation, payment/access mutation, or external send.
+
+Remaining downstream work belongs to later packets: media edit/transcription,
+metadata/knowledge handoff, Vimeo owner-private upload gate, classroom/latest
+video publication, visual UI audit/implementation, and end-to-end pilot/release.

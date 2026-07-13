@@ -626,7 +626,7 @@ const INSTANCE_RUNTIME_FLAGS = buildOneTimeRuntimeFlags(process.env);
 const ONE_TIME_DRIVE_ROOT_ID = '16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2';
 const ONE_TIME_LIBRARY_APPROVAL_FLAG = 'APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING';
 const ONE_TIME_MEDIA_PROVIDERS = new Set(['vimeo', 'manual_url', 'drive', 'placeholder']);
-const ONE_TIME_TRANSCRIPT_STATUSES = new Set(['draft', 'review', 'approved']);
+const ONE_TIME_TRANSCRIPT_STATUSES = new Set(['draft', 'machine_complete', 'needs_review', 'review', 'approved', 'superseded', 'rejected']);
 const ONE_TIME_PACKAGE_STATUSES = new Set(['draft', 'review', 'approved', 'published', 'archived']);
 const ONE_TIME_ASSET_TYPES = new Set(['worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'thumbnail', 'transcript', 'example', 'other']);
 const ONE_TIME_ASSET_SOURCE_TYPES = new Set(['manual_url', 'uploaded_placeholder', 'drive_placeholder']);
@@ -17745,7 +17745,7 @@ ALTER TABLE bna_class_sessions ADD CONSTRAINT bna_class_sessions_media_provider_
   CHECK (media_provider IN ('vimeo', 'manual_url', 'drive', 'placeholder'));
 ALTER TABLE bna_class_sessions DROP CONSTRAINT IF EXISTS bna_class_sessions_transcript_status_check;
 ALTER TABLE bna_class_sessions ADD CONSTRAINT bna_class_sessions_transcript_status_check
-  CHECK (transcript_status IN ('draft', 'review', 'approved'));
+  CHECK (transcript_status IN ('draft', 'machine_complete', 'needs_review', 'review', 'approved', 'superseded', 'rejected'));
 ALTER TABLE bna_class_sessions DROP CONSTRAINT IF EXISTS bna_class_sessions_package_status_check;
 ALTER TABLE bna_class_sessions ADD CONSTRAINT bna_class_sessions_package_status_check
   CHECK (package_status IN ('draft', 'review', 'approved', 'published', 'archived'));
@@ -31490,9 +31490,8 @@ async function createOperationsCrmFollowUpTask({
   const owner = limitText(String(assignedTo || contact.owner || contact.assigned_owner || 'Rabbi Scheller team').trim(), 120);
   const taskTitle = limitText(`Follow up with ${displayName}`, 180);
   const taskNotes = limitText([
-    summary || 'First-party CRM follow-up created from the Operations CRM workbench.',
-    body ? `Internal note: ${body}` : '',
-    'No email, WhatsApp, payment, access, import, or external CRM write was performed by creating this task.',
+    summary || 'Follow-up task created from the CRM contact workspace.',
+    body || '',
   ].filter(Boolean).join('\n\n'), 4000);
   const sourceContext = JSON.stringify({
     source: 'operations_crm_workbench',

@@ -2,7 +2,9 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { spawnSync } = require('node:child_process');
 const test = require('node:test');
+const ffmpegPath = require('ffmpeg-static');
 
 const pipeline = require('../src/lib/bna/one-time-vimeo-studio-pipeline');
 
@@ -26,6 +28,33 @@ function writeFakeVideo(folder, name = 'berachos-class.mp4', metadata = {}) {
     synthetic_test: true,
     contains_sensitive_data: false,
     ...metadata,
+  }, null, 2));
+  return videoPath;
+}
+
+function writeTinyRenderableVideo(folder, name = 'tiny-class.mp4') {
+  fs.mkdirSync(folder, { recursive: true });
+  const videoPath = path.join(folder, name);
+  const result = spawnSync(ffmpegPath, [
+    '-y',
+    '-f', 'lavfi',
+    '-i', 'testsrc2=size=320x180:rate=15:duration=2',
+    '-f', 'lavfi',
+    '-i', 'sine=frequency=440:duration=2',
+    '-t', '2',
+    '-c:v', 'libx264',
+    '-c:a', 'aac',
+    '-pix_fmt', 'yuv420p',
+    videoPath,
+  ], { encoding: 'utf8' });
+  assert.equal(result.status, 0, `${result.stdout || ''}\n${result.stderr || ''}`);
+  fs.writeFileSync(path.join(folder, 'class.json'), JSON.stringify({
+    title: 'Tiny Render Smoke',
+    duration_seconds: 2,
+    trim_start_seconds: 0,
+    trim_end_seconds: 0,
+    synthetic_test: true,
+    contains_sensitive_data: false,
   }, null, 2));
   return videoPath;
 }
@@ -60,6 +89,7 @@ test('studio pipeline discovers folder drops and builds deterministic trim plans
   assert.equal(candidate.trim_plan.trim_end_seconds, 7);
   assert.equal(candidate.trim_plan.strategy, 'sidecar_or_manifest');
   assert.equal(candidate.opener.title, 'One Time Test Opener');
+  assert.equal(candidate.opener.seconds, 0);
   assert.equal(candidate.output.rendered, false);
   assert.equal(candidate.output.sidecar_exists, false);
 });
@@ -100,6 +130,87 @@ test('studio sidecar trim points override automatic edge detection', () => {
   assert.equal(plan.strategy, 'sidecar_or_manifest');
   assert.equal(plan.trim_start_seconds, 12);
   assert.equal(plan.trim_end_seconds, 8);
+});
+
+test('studio opener defaults to zero unless sidecar or CLI options request it', () => {
+  assert.equal(pipeline.DEFAULT_OPENER_SECONDS, 0);
+  assert.equal(pipeline.buildTrimPlan({}, { duration_seconds: 100 }, {}).opener_seconds, 0);
+  assert.equal(pipeline.buildTrimPlan({}, { duration_seconds: 100 }, { openerSeconds: 0 }).opener_seconds, 0);
+  assert.equal(pipeline.buildTrimPlan({}, { duration_seconds: 100 }, { openerSeconds: 5 }).opener_seconds, 5);
+  assert.equal(pipeline.buildTrimPlan({ opener_seconds: 4 }, { duration_seconds: 100 }, { openerSeconds: 0 }).opener_seconds, 4);
+});
+
+test('studio pipeline discovers MKV class recordings for conservative processing', async () => {
+  const root = tempDir();
+  const drop = path.join(root, 'mkv-drop');
+  writeFakeVideo(drop, 'obs-class-recording.mkv', {
+    duration_seconds: 90,
+    synthetic_test: true,
+    contains_sensitive_data: false,
+  });
+
+  const report = await pipeline.runStudioPipeline({
+    folder: root,
+    processedFolder: path.join(root, 'processed'),
+    render: false,
+    runVimeoDryRun: false,
+  });
+
+  assert.equal(report.candidates.length, 1);
+  assert.equal(report.candidates[0].source_file.extension, '.mkv');
+  assert.equal(report.candidates[0].opener.seconds, 0);
+});
+
+test('studio output verification records hash and expected duration evidence', () => {
+  const root = tempDir();
+  const drop = path.join(root, 'verify-output');
+  const videoPath = writeFakeVideo(drop, 'verify.mp4', {
+    duration_seconds: 80,
+    trim_start_seconds: 5,
+    trim_end_seconds: 10,
+    opener_seconds: 0,
+  });
+  const candidate = pipeline.buildStudioCandidate(
+    { drop_root: drop, video_path: videoPath },
+    root,
+    path.join(root, 'processed'),
+    {},
+  );
+  fs.mkdirSync(candidate.output.dir, { recursive: true });
+  fs.writeFileSync(candidate.output.video_path, Buffer.from('rendered-output-placeholder'));
+
+  const verification = pipeline.verifyRenderedOutput(candidate, candidate.output.video_path);
+
+  assert.equal(verification.exists, true);
+  assert.equal(verification.size_bytes, 'rendered-output-placeholder'.length);
+  assert.equal(verification.sha256.length, 64);
+  assert.equal(verification.expected_duration_seconds, 65);
+  assert.equal(typeof verification.duration_within_tolerance, 'boolean');
+});
+
+test('studio render smoke omits opener by default and verifies rendered output', async (t) => {
+  if (!ffmpegPath) {
+    t.skip('ffmpeg-static unavailable');
+    return;
+  }
+  const root = tempDir();
+  const drop = path.join(root, 'render-smoke');
+  writeTinyRenderableVideo(drop);
+
+  const report = await pipeline.runStudioPipeline({
+    folder: root,
+    processedFolder: path.join(root, 'processed'),
+    render: true,
+    runVimeoDryRun: false,
+  });
+  const candidate = report.candidates[0];
+
+  assert.equal(candidate.opener.seconds, 0);
+  assert.equal(candidate.output.rendered, true);
+  assert.equal(candidate.output.verification.status, 'ok');
+  assert.equal(candidate.output.verification.expected_duration_seconds, 2);
+  assert.equal(candidate.output.verification.duration_within_tolerance, true);
+  assert.equal(candidate.output.verification.sha256.length, 64);
 });
 
 test('studio pipeline accepts BOM-prefixed Windows sidecar JSON', async () => {

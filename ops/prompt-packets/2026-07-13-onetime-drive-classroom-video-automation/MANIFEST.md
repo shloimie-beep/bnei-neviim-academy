@@ -11,7 +11,7 @@ Requirement register:
 Workspace/project:
 `rabbi_sheller_provider` / `one_time_mishnah_class`
 
-Status: drive-orchestrator-local-implementation-complete
+Status: metadata-knowledge-contract-local-complete
 
 ## Router Result
 
@@ -132,8 +132,8 @@ findings, deploy/live-smoke URLs where applicable, blockers, and next packet.
 | PKT-20260713-004-00 | 00-control-tower | CONTROL_TOWER | RAW-20260713-004 | done | Register source, classify, define DAG, collisions, requirements, provider gates. |
 | PKT-20260713-004-01 | 01-current-state-visual-audit | VISUAL_AUDITOR | PKT-20260713-004-00 | ready_for_generation | Capture current Rabbi content command center, parent/student portals, classroom/library, mobile states. |
 | PKT-20260713-004-02 | 02-drive-intake-orchestrator | IMPLEMENTATION_PACKET | PKT-20260713-004-00, REQ-20260713-913 | in_progress - local implementation complete; deploy/live readback pending | Drive discovery, stable-file admission, idempotent content jobs, leases, retries. |
-| PKT-20260713-004-03 | 03-media-edit-and-long-transcription | IMPLEMENTATION_PACKET | PKT-20260713-004-02 | not_started | Edge edit verification and chunked private transcription. |
-| PKT-20260713-004-04 | 04-transcript-metadata-and-knowledge-handoff | IMPLEMENTATION_PACKET | PKT-20260713-004-03 | not_started | Metadata schema/generator and bot-knowledge handoff contract. |
+| PKT-20260713-004-03 | 03-media-edit-and-long-transcription | IMPLEMENTATION_PACKET | PKT-20260713-004-02 | in_progress - local harness complete; provider/private fixture integration pending | Edge edit verification and chunked private transcription. |
+| PKT-20260713-004-04 | 04-transcript-metadata-and-knowledge-handoff | IMPLEMENTATION_PACKET | PKT-20260713-004-03 | in_progress - local contract complete; DB/review integration pending | Metadata schema/generator and bot-knowledge handoff contract. |
 | PKT-20260713-004-05 | 05-vimeo-owner-readiness-and-private-upload | PROVIDER_SETUP_PACKET | PKT-20260713-004-00 | in_progress | Credential readback, owner account/project checks, synthetic private upload gate. Existing access token passes read-only `/me`; newly supplied values fail direct bearer readback. |
 | PKT-20260713-004-06 | 06-class-package-classroom-and-latest-video | IMPLEMENTATION_PACKET | PKT-20260713-004-04, PKT-20260713-004-05 | not_started | Class review package, member library, latest video, older-class library, entitlements. |
 | PKT-20260713-004-07 | 07-rabbi-content-processing-ui | IMPLEMENTATION_PACKET | PKT-20260713-004-01, PQC Definition of Ready | blocked | Queue/details/review UI after visual audit and PQC validation. |
@@ -155,9 +155,16 @@ Current-state/code audit is recorded at
 `ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/current-state-capability-audit.md`.
 Drive orchestrator local implementation evidence is recorded at
 `ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/02-drive-intake-orchestrator.md`.
+Media-edit local implementation evidence is recorded at
+`ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/03-media-edit-and-long-transcription.md`.
 
-Next non-UI packet is `PKT-20260713-004-03` for media edit/transcription once
-the local Drive-orchestrator dependency is acceptable for continued local work.
+Transcript metadata and knowledge-handoff local contract evidence is recorded
+at
+`ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/04-transcript-metadata-and-knowledge-handoff.md`.
+
+Next non-UI implementation packet is `PKT-20260713-004-06` for class package,
+classroom/latest video, and member-library readback once Vimeo/provider and
+metadata integration gates are resolved.
 Generate/run `PKT-20260713-004-01` before any broad UI implementation.
 
 Do not solve the whole parent ramble in any child packet. Complete only that
