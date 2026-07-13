@@ -119,6 +119,7 @@
     "one-time:smoke:resend-vimeo-stripe": "node scripts/smoke-one-time-resend-vimeo-stripe-safe.mjs",
     "one-time:vimeo-library": "node scripts/one-time-vimeo-folder-library.mjs --json --write-report",
     "one-time:vimeo-studio": "node scripts/one-time-vimeo-studio-pipeline.mjs --json --write-report",
+    "one-time:drive-video-orchestrator": "node scripts/one-time-drive-video-orchestrator.mjs --json",
     "one-time:wapi:readiness": "node scripts/check-onetime-wapi-readiness.mjs --json --write-report",
     "one-time:owner-test:readiness": "node scripts/check-onetime-owner-test-readiness.mjs --json --write-report",
     "one-time:architecture-performance-baseline": "node scripts/audit-onetime-architecture-performance-baseline.mjs",

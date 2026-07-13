@@ -17554,6 +17554,18 @@ CREATE TABLE IF NOT EXISTS bna_content_jobs (
   drive_file_id TEXT,
   drive_folder_id TEXT,
   drive_stage TEXT,
+  source_fingerprint TEXT,
+  drive_generation TEXT,
+  drive_md5_checksum TEXT,
+  drive_size_bytes BIGINT,
+  drive_file_modified_at TIMESTAMP,
+  processing_state TEXT NOT NULL DEFAULT 'queued' CHECK (processing_state IN ('queued', 'leased', 'processing', 'retry_wait', 'completed', 'blocked', 'dead_letter', 'duplicate')),
+  lease_owner TEXT,
+  lease_expires_at TIMESTAMP,
+  retry_count INTEGER NOT NULL DEFAULT 0,
+  next_retry_at TIMESTAMP,
+  last_error TEXT,
+  source_provenance JSONB DEFAULT '{}',
   mime_type TEXT,
   caption TEXT,
   status TEXT NOT NULL DEFAULT 'ingested' CHECK (status IN ('ingested', 'transcribing', 'transcribed', 'parsing', 'drafting', 'needs_approval', 'approved', 'published', 'blocked', 'archived')),
@@ -19256,6 +19268,10 @@ CREATE INDEX IF NOT EXISTS idx_bna_signup_agreement_signatures_type ON bna_signu
 CREATE INDEX IF NOT EXISTS idx_bna_email_log_signup_id ON bna_email_log (signup_id);
 CREATE INDEX IF NOT EXISTS idx_bna_email_log_email_type ON bna_email_log (email_type);
 CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_status ON bna_content_jobs (status);
+CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_processing_state ON bna_content_jobs (processing_state);
+CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_source_fingerprint ON bna_content_jobs (source_fingerprint);
+CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_drive_stage_file ON bna_content_jobs (drive_stage, drive_file_id);
+CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_lease_due ON bna_content_jobs (processing_state, lease_expires_at, next_retry_at);
 CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_created_at ON bna_content_jobs (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_class_sessions_class_date ON bna_class_sessions (class_date DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_class_sessions_content_job_id ON bna_class_sessions (content_job_id);
@@ -19294,6 +19310,21 @@ CREATE INDEX IF NOT EXISTS idx_bna_agent_runtime_last_seen ON bna_agent_runtime_
 ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_file_id TEXT;
 ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_folder_id TEXT;
 ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_stage TEXT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS source_fingerprint TEXT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_generation TEXT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_md5_checksum TEXT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_size_bytes BIGINT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_file_modified_at TIMESTAMP;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS processing_state TEXT DEFAULT 'queued';
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS lease_owner TEXT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS lease_expires_at TIMESTAMP;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS retry_count INTEGER DEFAULT 0;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS next_retry_at TIMESTAMP;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS last_error TEXT;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS source_provenance JSONB DEFAULT '{}';
+ALTER TABLE bna_content_jobs DROP CONSTRAINT IF EXISTS bna_content_jobs_processing_state_check;
+ALTER TABLE bna_content_jobs ADD CONSTRAINT bna_content_jobs_processing_state_check
+  CHECK (processing_state IN ('queued', 'leased', 'processing', 'retry_wait', 'completed', 'blocked', 'dead_letter', 'duplicate'));
 ALTER TABLE bna_content_outputs ADD COLUMN IF NOT EXISTS prompt_id INTEGER REFERENCES bna_content_prompts(id) ON DELETE SET NULL;
 ALTER TABLE bna_content_outputs ADD COLUMN IF NOT EXISTS prompt_version INTEGER;
 ALTER TABLE bna_content_outputs ADD COLUMN IF NOT EXISTS bundle_id INTEGER REFERENCES bna_content_bundles(id) ON DELETE SET NULL;

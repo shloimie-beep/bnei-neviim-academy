@@ -23,7 +23,7 @@
   "visual_audit_before_ui_implementation": true,
   "external_writes_authorized": false,
   "secret_values_printed": false,
-  "packet_dag_status": "current-state-code-audit-produced",
+  "packet_dag_status": "drive-orchestrator-local-implementation-complete",
   "packets": [
     {
       "packet_id": "PKT-20260713-004-00",
@@ -112,8 +112,52 @@
       "terminal_condition": "Visual audit report exists and UI packet Definition of Ready can be validated or is blocked with exact reason.",
       "handoff_target": "PKT-20260713-004-07",
       "next_packet": "PKT-20260713-004-02"
+    },
+    {
+      "packet_id": "PKT-20260713-004-02",
+      "parent_raw_id": "RAW-20260713-004",
+      "parent_packet_id": "PKT-20260713-004-00",
+      "child_packet_ids": [
+        "PKT-20260713-004-03"
+      ],
+      "depends_on_packet_ids": [
+        "PKT-20260713-004-00",
+        "REQ-20260713-913"
+      ],
+      "stage": "02-drive-intake-orchestrator",
+      "packet_role": "IMPLEMENTATION_PACKET",
+      "status": "in_progress_local_implementation_complete_deploy_live_readback_pending",
+      "owner": "Codex",
+      "scope": "Canonical One Time Drive video lane resolution, stable-file admission, idempotent content-job drafts, leases, retries, dead-letter states, and source provenance.",
+      "out_of_scope": [
+        "Drive mutation",
+        "Database mutation",
+        "Vimeo upload",
+        "Member publication",
+        "External sends"
+      ],
+      "affected_routes": [],
+      "affected_files": [
+        "src/lib/bna/one-time-drive-video-orchestrator.js",
+        "scripts/one-time-drive-video-orchestrator.mjs",
+        "tests/one-time-drive-video-orchestrator.test.js",
+        "server.js",
+        "package.json",
+        "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/02-drive-intake-orchestrator.md"
+      ],
+      "required_evidence": [
+        "stable file admission tests",
+        "duplicate suppression tests",
+        "lease retry dead-letter tests",
+        "schema coverage test",
+        "no-write CLI dry run"
+      ],
+      "validation_command": "node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js",
+      "terminal_condition": "Local implementation is validated; terminal Done still requires commit/push plus deploy or approved release/live readback for server-visible schema/runtime change.",
+      "handoff_target": "PKT-20260713-004-03",
+      "next_packet": "PKT-20260713-004-03"
     }
   ],
   "created_at": "2026-07-13T14:17:00+03:00",
-  "updated_at": "2026-07-13T14:32:00+03:00"
+  "updated_at": "2026-07-13T14:35:19+03:00"
 }
