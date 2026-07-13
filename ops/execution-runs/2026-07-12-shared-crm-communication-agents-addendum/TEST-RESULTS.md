@@ -43,7 +43,8 @@
 - PASS `npm run watchdog:actions`.
 - PASS `npm run bna:run:validate`.
 - PASS commit/push at `c0b8ab8139c6166d89527a949ce4dd70bf67df3a` on `master`.
-- PASS One Time Railway deploy through `railway:redeploy` with target profile `one-time`; deployment `f99b3126-bb7f-4898-8649-089c505a7f00` reached `SUCCESS`.
+- PASS BNA Railway deploy through `railway:redeploy`; deployment `33571043-54ce-4631-99c1-b54209edebc7` reached `SUCCESS`.
+- PASS One Time Railway deploy through `railway:redeploy` with target profile `one-time`; deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754` reached `SUCCESS`.
 - PASS live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`: exact deploy-info SHA matched, default provider route loaded One Time shell without Operations CSS/JS, and explicit `ops_fallback=1` redirected to scoped Operations CRM.
 - Remaining: continue route-module extraction and performance budget comparison before marking all of `REQ-20260713-908` Done.
 

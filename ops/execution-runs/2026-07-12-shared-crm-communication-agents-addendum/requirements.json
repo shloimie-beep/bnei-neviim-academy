@@ -276,7 +276,7 @@
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha c0b8ab8139c6166d89527a949ce4dd70bf67df3a PASS",
         "Live dedicated provider route/fallback smoke PASS",
         "git commit/push c0b8ab8139c6166d89527a949ce4dd70bf67df3a PASS on master",
-        "One Time Railway deploy PASS: deployment f99b3126-bb7f-4898-8649-089c505a7f00 reached SUCCESS",
+        "One Time Railway deploy PASS: deployment b39ce70a-89e0-44a3-80c5-77e8c2b43754 reached SUCCESS",
         "Live smoke PASS: /api/deploy-info exact SHA matched c0b8ab8139c6166d89527a949ce4dd70bf67df3a; /provider.html?admin_provider=one-time&section=crm returned dedicated shell without Operations CSS/JS; ops_fallback=1 redirected to scoped Operations CRM; external_write_performed=false; production_data_mutation_performed=false"
       ],
       "implementation_files": [

@@ -40,7 +40,7 @@ Current status: `active`
 - `/provider.html?admin_provider=one-time` and provider aliases stay in the dedicated One Time provider shell by default and do not load `operations-shell.css` or `operations-shell.js`.
 - Scoped Operations remains available as an explicit fallback only when `ops_fallback=1` is present.
 - Registered `ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK` and added visible fallback links in the provider shell.
-- Verification passed: `node --check server.js`, provider login/review navigation browser tests, route-role/action-coverage tests, action watchdog, execution-run validation, signed local provider CRM layout smoke, Railway deployment `f99b3126-bb7f-4898-8649-089c505a7f00`, and live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`.
+- Verification passed: `node --check server.js`, provider login/review navigation browser tests, route-role/action-coverage tests, action watchdog, execution-run validation, signed local provider CRM layout smoke, BNA Railway deployment `33571043-54ce-4631-99c1-b54209edebc7`, One Time Railway deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754`, and live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`.
 
 ## Completed In This Batch
 
