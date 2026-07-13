@@ -1,0 +1,251 @@
+{
+  "status": "PASS",
+  "generated_at": "2026-07-13T08:36:47.920Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "expected_sha": "298751d8d940c02ce4c8a9c70c5b36862ea67766",
+  "deployed_sha": "298751d8d940c02ce4c8a9c70c5b36862ea67766",
+  "deployment_source": "railway:redeploy",
+  "target_app": "one-time",
+  "scope": "Live One Time provider route-module smoke. Read-only/review routes only; no form submission, email, WhatsApp, CRM write, payment, access grant, provider mutation, or production data write.",
+  "routes": [
+    {
+      "id": "overview",
+      "path": "/provider.html?review=one-time",
+      "title": "One Time Rabbi Workspace Review",
+      "scripts": [
+        "/js/one-time-performance-rum.js",
+        "/js/app-select.js",
+        "/js/bna-bot-widget.js"
+      ],
+      "styles": [
+        "/css/bna-app-shell.css",
+        "/css/one-time-shared-review.css"
+      ],
+      "routeModuleScripts": [],
+      "modules": [],
+      "crmLoaded": false,
+      "mailboxLoaded": false,
+      "communicationsLoaded": false,
+      "hasCrmShell": false,
+      "hasCrmPlaceholder": true,
+      "activeCrmNav": false,
+      "visibleCrmSection": false,
+      "hasOperationsCss": false,
+      "hasOperationsJs": false,
+      "horizontalOverflow": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "failedRequests": [],
+      "badResponses": [],
+      "consoleErrors": []
+    },
+    {
+      "id": "crm",
+      "path": "/provider.html?review=one-time&section=crm",
+      "title": "One Time Rabbi Workspace Review",
+      "scripts": [
+        "/js/one-time-provider-crm-route.js",
+        "/js/one-time-performance-rum.js",
+        "/js/app-select.js",
+        "/js/bna-bot-widget.js"
+      ],
+      "styles": [
+        "/css/bna-app-shell.css",
+        "/css/one-time-shared-review.css"
+      ],
+      "routeModuleScripts": [
+        "/js/one-time-provider-crm-route.js"
+      ],
+      "modules": [
+        "crm"
+      ],
+      "crmLoaded": true,
+      "mailboxLoaded": false,
+      "communicationsLoaded": false,
+      "hasCrmShell": true,
+      "hasCrmPlaceholder": false,
+      "activeCrmNav": true,
+      "visibleCrmSection": true,
+      "hasOperationsCss": false,
+      "hasOperationsJs": false,
+      "horizontalOverflow": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "failedRequests": [],
+      "badResponses": [],
+      "consoleErrors": []
+    },
+    {
+      "id": "mailbox",
+      "path": "/provider.html?review=one-time&section=mailbox",
+      "title": "One Time Rabbi Workspace Review",
+      "scripts": [
+        "/js/one-time-provider-mailbox-route.js",
+        "/js/one-time-performance-rum.js",
+        "/js/app-select.js",
+        "/js/bna-bot-widget.js"
+      ],
+      "styles": [
+        "/css/bna-app-shell.css",
+        "/css/one-time-shared-review.css"
+      ],
+      "routeModuleScripts": [
+        "/js/one-time-provider-mailbox-route.js"
+      ],
+      "modules": [
+        "mailbox"
+      ],
+      "crmLoaded": false,
+      "mailboxLoaded": true,
+      "communicationsLoaded": false,
+      "hasCrmShell": false,
+      "hasCrmPlaceholder": true,
+      "activeCrmNav": false,
+      "visibleCrmSection": false,
+      "hasOperationsCss": false,
+      "hasOperationsJs": false,
+      "horizontalOverflow": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "failedRequests": [],
+      "badResponses": [],
+      "consoleErrors": []
+    },
+    {
+      "id": "communications",
+      "path": "/provider.html?review=one-time&section=communications",
+      "title": "One Time Rabbi Workspace Review",
+      "scripts": [
+        "/js/one-time-provider-communications-route.js",
+        "/js/one-time-performance-rum.js",
+        "/js/app-select.js",
+        "/js/bna-bot-widget.js"
+      ],
+      "styles": [
+        "/css/bna-app-shell.css",
+        "/css/one-time-shared-review.css"
+      ],
+      "routeModuleScripts": [
+        "/js/one-time-provider-communications-route.js"
+      ],
+      "modules": [
+        "communications"
+      ],
+      "crmLoaded": false,
+      "mailboxLoaded": false,
+      "communicationsLoaded": true,
+      "hasCrmShell": false,
+      "hasCrmPlaceholder": true,
+      "activeCrmNav": false,
+      "visibleCrmSection": false,
+      "hasOperationsCss": false,
+      "hasOperationsJs": false,
+      "horizontalOverflow": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "failedRequests": [],
+      "badResponses": [],
+      "consoleErrors": []
+    },
+    {
+      "id": "crm-mobile-390",
+      "path": "/provider.html?review=one-time&section=crm",
+      "title": "One Time Rabbi Workspace Review",
+      "scripts": [
+        "/js/one-time-provider-crm-route.js",
+        "/js/one-time-performance-rum.js",
+        "/js/app-select.js",
+        "/js/bna-bot-widget.js"
+      ],
+      "styles": [
+        "/css/bna-app-shell.css",
+        "/css/one-time-shared-review.css"
+      ],
+      "routeModuleScripts": [
+        "/js/one-time-provider-crm-route.js"
+      ],
+      "modules": [
+        "crm"
+      ],
+      "crmLoaded": true,
+      "mailboxLoaded": false,
+      "communicationsLoaded": false,
+      "hasCrmShell": true,
+      "hasCrmPlaceholder": false,
+      "activeCrmNav": true,
+      "visibleCrmSection": true,
+      "hasOperationsCss": false,
+      "hasOperationsJs": false,
+      "horizontalOverflow": false,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "failedRequests": [],
+      "badResponses": [],
+      "consoleErrors": []
+    }
+  ],
+  "checks": [
+    {
+      "id": "deploy_info_ok",
+      "passed": true,
+      "detail": "{\"status\":200,\"deploy_status\":\"ok\",\"target_app\":\"one-time\",\"commit_sha\":\"298751d8d940c02ce4c8a9c70c5b36862ea67766\"}"
+    },
+    {
+      "id": "deploy_info_exact_sha",
+      "passed": true,
+      "detail": "{\"expected_sha\":\"298751d8d940c02ce4c8a9c70c5b36862ea67766\",\"actual_sha\":\"298751d8d940c02ce4c8a9c70c5b36862ea67766\"}"
+    },
+    {
+      "id": "deploy_info_one_time_target",
+      "passed": true,
+      "detail": "{\"target_app\":\"one-time\"}"
+    },
+    {
+      "id": "overview_no_route_module",
+      "passed": true,
+      "detail": "{\"modules\":[],\"routeModuleScripts\":[],\"hasCrmShell\":false,\"hasCrmPlaceholder\":true}"
+    },
+    {
+      "id": "crm_loads_only_crm_route_module",
+      "passed": true,
+      "detail": "{\"modules\":[\"crm\"],\"routeModuleScripts\":[\"/js/one-time-provider-crm-route.js\"],\"hasCrmShell\":true,\"crmLoaded\":true,\"mailboxLoaded\":false,\"communicationsLoaded\":false}"
+    },
+    {
+      "id": "mailbox_loads_only_mailbox_route_module",
+      "passed": true,
+      "detail": "{\"modules\":[\"mailbox\"],\"routeModuleScripts\":[\"/js/one-time-provider-mailbox-route.js\"],\"hasCrmShell\":false,\"crmLoaded\":false,\"mailboxLoaded\":true}"
+    },
+    {
+      "id": "communications_loads_only_communications_route_module",
+      "passed": true,
+      "detail": "{\"modules\":[\"communications\"],\"routeModuleScripts\":[\"/js/one-time-provider-communications-route.js\"],\"hasCrmShell\":false,\"crmLoaded\":false,\"mailboxLoaded\":false,\"communicationsLoaded\":true}"
+    },
+    {
+      "id": "crm_mobile_no_horizontal_overflow",
+      "passed": true,
+      "detail": "{\"hasCrmShell\":true,\"horizontalOverflow\":false,\"viewport\":{\"width\":390,\"height\":844}}"
+    },
+    {
+      "id": "operations_assets_absent",
+      "passed": true,
+      "detail": "[{\"id\":\"overview\",\"hasOperationsCss\":false,\"hasOperationsJs\":false},{\"id\":\"crm\",\"hasOperationsCss\":false,\"hasOperationsJs\":false},{\"id\":\"mailbox\",\"hasOperationsCss\":false,\"hasOperationsJs\":false},{\"id\":\"communications\",\"hasOperationsCss\":false,\"hasOperationsJs\":false},{\"id\":\"crm-mobile-390\",\"hasOperationsCss\":false,\"hasOperationsJs\":false}]"
+    },
+    {
+      "id": "no_failed_requests_or_console_errors",
+      "passed": true,
+      "detail": "[{\"id\":\"overview\",\"failed\":0,\"bad\":0,\"console\":0},{\"id\":\"crm\",\"failed\":0,\"bad\":0,\"console\":0},{\"id\":\"mailbox\",\"failed\":0,\"bad\":0,\"console\":0},{\"id\":\"communications\",\"failed\":0,\"bad\":0,\"console\":0},{\"id\":\"crm-mobile-390\",\"failed\":0,\"bad\":0,\"console\":0}]"
+    }
+  ],
+  "external_write_performed": false,
+  "production_data_mutation_performed": false
+}

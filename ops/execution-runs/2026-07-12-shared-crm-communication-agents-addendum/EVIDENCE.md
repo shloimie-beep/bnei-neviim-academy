@@ -335,6 +335,20 @@
 - `ops/live-smokes/2026-07-13T04-40-38-338Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the suppression/opt-out Activity timeline slice.
 - Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `suppression_timeline_rows=0`, `suppression_conversation_rows=0`, `suppression_task_rows=0`, `no_send=true`, and `external_write_performed=false`. The current live sample has no suppressed contacts; local smoke and DTO tests cover row behavior when records exist.
 
+## CRM Email Thread DTO Fallback - 2026-07-13
+
+- `server.js` - selected-contact timeline/conversation DTO loading now includes scoped `bna_communications` email rows for canonical `bna_contacts` records by direct `contact_id` or workspace/project-scoped primary-email match, and annotates source context with `canonical_email_match`, `no_send=true`, and `external_write_performed=false`.
+- `server.js` - legacy `bna_parent_leads` selected-contact timelines now include same-project email rows matched by `parent_email`, so a lead opened from the CRM card can show its email conversation without browser-side dataset unioning.
+- `tests/shared-crm-workbench-contract.test.js` - pins the server-side email-thread DTO path and proves the selected-contact workspace loader calls the canonical Conversations endpoint instead of merging `bna_communications` in browser code.
+- `scripts/smoke-onetime-crm-email-thread-dto-live.mjs` / `package.json` - added a redacted read-only production smoke for scoped mailbox candidates and selected-contact email conversation DTOs.
+- Commit `6a2bf93d4` introduced the DTO fallback and live smoke script; runtime SHA `298751d8d940c02ce4c8a9c70c5b36862ea67766` is deployed after the follow-up smoke/RUM proof stabilization commit.
+- One Time Railway deployment `4002d6ca-6a1c-483b-bd56-65906d60020e` reached `SUCCESS`; live deploy-info returned `commit_sha=298751d8d940c02ce4c8a9c70c5b36862ea67766` and `target_app=one-time`.
+- BNA Railway deployment `fccc5a3d-2f96-4c7f-a8ab-5fae904b1bf7` reached `SUCCESS`; live deploy-info returned `commit_sha=298751d8d940c02ce4c8a9c70c5b36862ea67766` and `target_app=bna`.
+- Verification passed: `node --check server.js`, `node --check scripts/smoke-onetime-crm-email-thread-dto-live.mjs`, focused CRM/service-provider contract tests `22/22`, `npm run operations:check-generated`, `npm run watchdog:actions`, `npm run secrets:audit`, `npm run one-time:performance-regression-gates`, and pre-commit `git diff --cached --check`.
+- Live proof passed: `ops/live-smokes/2026-07-13T08-38-11-769Z-one-time-crm-email-thread-dto-live-smoke.md` found 8 scoped mailbox candidates and `selected_contact_email_thread_match=true` with no raw IDs, names, addresses, subjects, bodies, or message IDs saved.
+- Additional live smokes passed after deploy: `ops/live-smokes/2026-07-13T08-37-27-323Z-one-time-operations-crm-workbench-live-smoke.md`, `ops/live-smokes/2026-07-13T08-37-27-486Z-operations-workspace-taxonomy-live-smoke.md`, and `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw message logging, or production data mutation was performed by this email-thread DTO closeout.
+
 ## One Time-First Control Correction - 2026-07-13
 
 - `raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md` - registered the One Time-first addendum with raw provenance.

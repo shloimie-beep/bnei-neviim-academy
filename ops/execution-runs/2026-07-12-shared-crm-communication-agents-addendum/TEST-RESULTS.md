@@ -723,3 +723,27 @@
 - PASS `npm run app:smoke:onetime-provider-route-module`; report `ops/live-smokes/2026-07-13T07-45-30-679Z-onetime-provider-route-module-live-smoke.md`.
 - PASS BNA live `/api/deploy-info` exact-SHA readback returned `target_app=bna`; generic `npm run app:smoke` was skipped because it creates/deletes task test data.
 - PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T07-48-07-488Z-operations-workspace-taxonomy-live-smoke.md`.
+
+## CRM Selected-Contact Email Thread DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --check scripts/smoke-onetime-operations-crm-workbench-local.mjs`.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js`; 22/22 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T08-32-watchdog-action-audit.md`, finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`, finding_count 0.
+- PASS `npm run watchdog:security`; report `ops/watchdog-audits/2026-07-13T08-32-watchdog-security-routes.md`, finding_count 0.
+- PASS `npm run secrets:audit`; 9317 tracked paths checked.
+- PASS `npm run bna:run:validate` before deploy.
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for runtime/proof commit `298751d8d940c02ce4c8a9c70c5b36862ea67766`.
+- PASS BNA Railway redeploy and doctor; deployment `fccc5a3d-2f96-4c7f-a8ab-5fae904b1bf7` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `4002d6ca-6a1c-483b-bd56-65906d60020e` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `298751d8d940c02ce4c8a9c70c5b36862ea67766` with target apps `bna` and `one-time`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 298751d8d940c02ce4c8a9c70c5b36862ea67766`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 298751d8d940c02ce4c8a9c70c5b36862ea67766`; report `ops/live-smokes/2026-07-13T08-36-47-586Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 298751d8d940c02ce4c8a9c70c5b36862ea67766`; report `ops/live-smokes/2026-07-13T08-36-47-920Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T08-37-02-076Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-email-thread-dto`; report `ops/live-smokes/2026-07-13T08-38-11-769Z-one-time-crm-email-thread-dto-live-smoke.md` with 12 scoped cards, 8 mailbox candidates, 1 inspected candidate, 21 selected-contact conversations, 1 email conversation, `no_send=true`, and no external writes.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 298751d8d940c02ce4c8a9c70c5b36862ea67766`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.

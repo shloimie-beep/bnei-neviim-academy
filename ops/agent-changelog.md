@@ -39731,3 +39731,44 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `ops/live-smokes/2026-07-13T08-16-56-138Z-operations-workspace-taxonomy-live-smoke.md`.
 - `REQ-20260713-910` remains blocked only by `REQ-20260713-906` missing secure
   owner-test aliases.
+
+## 2026-07-13 - CRM selected-contact email-thread DTO slice deployed
+
+- Continued `REQ-20260712-302` with a scoped shared CRM slice: selected-contact
+  timelines/conversations now include same-workspace/project email rows from
+  `bna_communications` for canonical contacts and legacy One Time parent leads,
+  without browser-side mailbox unions.
+- Stabilized the local One Time CRM workbench smoke by stubbing the privacy-safe
+  `/api/performance/rum` dry acknowledgment in the synthetic smoke server.
+- Deployed commit `298751d8d940c02ce4c8a9c70c5b36862ea67766`: BNA Railway
+  deployment `fccc5a3d-2f96-4c7f-a8ab-5fae904b1bf7` and One Time Railway
+  deployment `4002d6ca-6a1c-483b-bd56-65906d60020e` reached `SUCCESS`.
+- Verification passed: focused CRM/service-provider tests `22/22`, local One
+  Time CRM workbench smoke, action/protocol/security/secrets watchdogs, exact
+  SHA One Time route/CRM/provider smokes, BNA workspace taxonomy smoke, and
+  read-only email-thread DTO proof with 8 mailbox candidates and 1 selected
+  email conversation.
+- Guardrails: no email, WhatsApp/WAPI, Telegram, payment/access, credential,
+  provider, production-data, or external CRM mutation was performed.
+
+## 2026-07-13 - Shared CRM email-thread DTO fallback deployed
+
+- Extended `REQ-20260712-302` selected-contact CRM DTO loading so scoped
+  `bna_communications` email rows appear in contact timelines/conversations
+  when matched server-side by canonical contact email or legacy parent-lead
+  email.
+- Added `scripts/smoke-onetime-crm-email-thread-dto-live.mjs` and npm script
+  `app:smoke:onetime-crm-email-thread-dto` for redacted read-only production
+  proof.
+- Runtime SHA `298751d8d940c02ce4c8a9c70c5b36862ea67766` is deployed to One
+  Time and BNA; One Time deployment `4002d6ca-6a1c-483b-bd56-65906d60020e`
+  and BNA deployment `fccc5a3d-2f96-4c7f-a8ab-5fae904b1bf7` reached
+  `SUCCESS`.
+- Verification passed: focused CRM/performance tests `34/34`,
+  `npm run operations:check-generated`, `npm run watchdog:actions`,
+  `npm run secrets:audit`, live CRM workbench smoke, Operations taxonomy smoke,
+  exact-SHA One Time performance gate, and
+  `ops/live-smokes/2026-07-13T08-38-11-769Z-one-time-crm-email-thread-dto-live-smoke.md`
+  with 8 scoped mailbox candidates and `selected_contact_email_thread_match=true`.
+- Guardrails: no sends, CRM mutation, provider mutation, payment/access change,
+  credential mutation, raw message logging, or production data mutation.

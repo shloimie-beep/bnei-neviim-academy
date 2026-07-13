@@ -1,0 +1,50 @@
+{
+  "started_at": "2026-07-13T08:38:11.769Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "status": "passed",
+  "deployment_id": "4002d6ca-6a1c-483b-bd56-65906d60020e",
+  "commit": "298751d8d940c02ce4c8a9c70c5b36862ea67766",
+  "steps": [
+    {
+      "name": "operations login uses One Time Railway auth fallback",
+      "ok": true,
+      "duration_ms": 4297,
+      "details": {
+        "source": "railway",
+        "role": "super_admin"
+      }
+    },
+    {
+      "name": "scoped One Time CRM cards expose mailbox activity candidates",
+      "ok": true,
+      "duration_ms": 429,
+      "details": {
+        "cards_count": 12,
+        "mailbox_candidate_count": 8,
+        "no_send": true
+      }
+    },
+    {
+      "name": "selected contact conversations DTO includes scoped email thread when live mailbox data exists",
+      "ok": true,
+      "duration_ms": 243,
+      "details": {
+        "inspected_candidates": 1,
+        "matched_email_conversation": true,
+        "conversation_count": 21,
+        "email_conversation_count": 1,
+        "no_send": true
+      }
+    }
+  ],
+  "guardrails": [
+    "Read-only live smoke; no contact IDs, names, addresses, subjects, bodies, message IDs, sends, payments, access grants, or external writes are saved.",
+    "The smoke records only counts, channel/open-action flags, no-send flags, and whether a matching email DTO was found.",
+    "If production has no scoped One Time cards with mailbox activity, the probe records a skip rather than creating data."
+  ],
+  "crm_cards_count": 12,
+  "mailbox_candidate_count": 8,
+  "selected_contact_email_thread_match": true
+}
