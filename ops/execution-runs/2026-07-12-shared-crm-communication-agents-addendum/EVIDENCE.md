@@ -526,3 +526,42 @@
 - BNA current-head workspace taxonomy smoke passed: `ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md`.
 - Local verification before the runtime commit passed: syntax checks for the new service, Resend adapter, and `server.js`; focused inbound/shared CRM suite `49/49`; generated Operations shell check; run validator; diff check; and secrets audit. Current focused pipeline verification also passed `tests/inbound-communication-pipeline.test.js` `4/4`, the inbound/Resend service suite `11/11`, and the broader inbound/communication contract suite `26/26`.
 - Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send, public auto-reply enablement, provider credential mutation, payment/access mutation, raw contact/message logging, or destructive production mutation was performed by this slice proof.
+
+## Canonical Inbound Website Assistant And Rabbi Telegram Slice - 2026-07-13
+
+- `REQ-20260712-307` remains In progress, not terminal Done. Website
+  assistant input and private Rabbi Telegram support-ticket input are now
+  covered by the canonical inbound path; communication-agent
+  version/knowledge loading and delivery-outbox execution remain open.
+- Runtime commit `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8` adds
+  `mirrorRabbiTelegramSupportTicketToInboundCommunication` in `server.js`.
+- The mirror runs only for the existing Rabbi Telegram approval-ticket context:
+  `workspace_key=rabbi_sheller_provider`,
+  `project_key=one_time_mishnah_class`, `bridge_profile=rabbi-elie-scheller`,
+  and `relationship_scope=one_time_external_admin_project_ticket`.
+- Mirrored Rabbi Telegram support tickets create canonical inbound
+  `bna_communications` rows with
+  `communication_type=rabbi_telegram_support_ticket`, `channel=telegram`,
+  `provider=telegram`, `ticket_id`, hashed Telegram chat and message
+  identifiers, no contact identity creation, no task creation, no outbox send,
+  no external write, and a redacted receipt on support-ticket
+  `source_context.canonical_inbound_communication`.
+- Existing website assistant user-message mirroring through
+  `mirrorAssistantUserMessageToInboundCommunication` remains covered by
+  `tests/inbound-communication-pipeline.test.js`.
+- One Time Railway deployment `ca335eed-37f9-4c47-acf3-cb310d1c80da` reached
+  `SUCCESS`; One Time `/api/deploy-info` returned exact SHA
+  `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`, `target_app=one-time`.
+- BNA Railway deployment `cb2ee7e7-abee-4cbf-95ec-a12711a25442` reached
+  `SUCCESS`; BNA `/api/deploy-info` returned exact SHA
+  `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`, `target_app=bna`.
+- Live smoke evidence: One Time CRM workbench
+  `ops/live-smokes/2026-07-13T12-45-53-175Z-one-time-operations-crm-workbench-live-smoke.md`,
+  One Time provider route-module
+  `ops/live-smokes/2026-07-13T12-46-12-200Z-onetime-provider-route-module-live-smoke.md`,
+  and BNA workspace taxonomy
+  `ops/live-smokes/2026-07-13T12-46-11-923Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send,
+  public auto-reply enablement, payment/access mutation, provider credential
+  mutation, raw Telegram chat/message value logging, raw contact/message
+  logging, or destructive production mutation was performed by this slice proof.

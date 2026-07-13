@@ -373,3 +373,35 @@ Current status: `active`
 - Local proof before the runtime commit passed the new inbound/service tests and shared CRM regression suite `49/49`, syntax checks, generated Operations shell check, run validator, diff check, and secrets audit. Current focused proof also passed `tests/inbound-communication-pipeline.test.js` `4/4`, inbound/Resend service suite `11/11`, and broader inbound/communication contract suite `26/26`.
 - Remaining work for `REQ-20260712-307`: route website assistant input, private Rabbi Telegram input, communication-agent version/knowledge loading, and delivery-outbox execution through the same canonical service.
 - Owner-only live email/WhatsApp sends remain blocked by `REQ-20260713-906` until secure owner-test aliases are configured through the approved secret path.
+
+## Canonical Inbound Website Assistant And Rabbi Telegram Slice - 2026-07-13
+
+- `REQ-20260712-307` remains In progress, but website assistant input and
+  private Rabbi Telegram approval-ticket intake now route through the canonical
+  inbound service.
+- Existing website assistant user-message mirroring remains wired through
+  `mirrorAssistantUserMessageToInboundCommunication`, with assistant message
+  receipts recorded as redacted assistant tool-call metadata and no external
+  send.
+- Runtime commit `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8` adds
+  `mirrorRabbiTelegramSupportTicketToInboundCommunication`: Rabbi Telegram
+  support tickets are mirrored into `bna_communications` with ticket linkage,
+  hashed Telegram identifiers, no Telegram chat-id-to-phone coercion, no
+  contact identity creation, no ordinary task creation, no outbox send, and a
+  redacted canonical receipt on the support ticket source context.
+- The mirror uses a savepoint so support-ticket capture is preserved even if
+  canonical communication capture fails; failures are recorded as no-send,
+  redacted `canonical_inbound_communication.status=failed` context.
+- One Time Railway deployment `ca335eed-37f9-4c47-acf3-cb310d1c80da` and BNA
+  Railway deployment `cb2ee7e7-abee-4cbf-95ec-a12711a25442` reached `SUCCESS`.
+- One Time deploy-info returned
+  `commit_sha=c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`,
+  `target_app=one-time`; BNA deploy-info returned the same commit with
+  `target_app=bna`.
+- Live proof passed: One Time separate-instance smoke, One Time CRM workbench
+  smoke, One Time provider route-module smoke, and BNA workspace taxonomy smoke
+  at exact SHA `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`.
+- Remaining `REQ-20260712-307` work: attach published
+  communication-agent/version/knowledge loading and delivery-outbox execution
+  to the canonical inbound path. Owner-only email/WhatsApp live sends remain
+  blocked by `REQ-20260713-906`.

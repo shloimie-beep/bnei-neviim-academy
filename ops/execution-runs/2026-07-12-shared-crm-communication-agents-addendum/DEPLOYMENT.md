@@ -381,3 +381,18 @@ Global production readiness remains blocked only by known external full-launch f
 - BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=f8df93a4ca86ecd607d5c3b63d113f77be4327c2`.
 - BNA workspace taxonomy smoke passed at the current deployed SHA; report `ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md`.
 - Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send, public auto-reply enablement, CRM destructive write, provider mutation, payment/access mutation, credential mutation, or raw private payload logging was performed by this proof.
+
+## 2026-07-13 Canonical Inbound Website Assistant And Rabbi Telegram Slice Deploy
+
+- Runtime deployed head: `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`.
+- Branch: `master`.
+- Push: `git push origin master` succeeded for the runtime head.
+- One Time Railway deployment `ca335eed-37f9-4c47-acf3-cb310d1c80da` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`, `target_app=one-time`.
+- BNA Railway deployment `cb2ee7e7-abee-4cbf-95ec-a12711a25442` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`, `target_app=bna`.
+- One Time separate-instance smoke passed at the exact SHA.
+- One Time CRM workbench smoke passed; report `ops/live-smokes/2026-07-13T12-45-53-175Z-one-time-operations-crm-workbench-live-smoke.md`.
+- One Time provider route-module smoke passed; report `ops/live-smokes/2026-07-13T12-46-12-200Z-onetime-provider-route-module-live-smoke.md`.
+- BNA workspace taxonomy smoke passed; report `ops/live-smokes/2026-07-13T12-46-11-923Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send, public auto-reply enablement, CRM destructive write, provider mutation, payment/access mutation, credential mutation, raw Telegram chat/message value logging, or raw private payload logging was performed by this proof.

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-13T14:48:00+03:00",
+  "updated_at": "2026-07-13T15:55:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -1719,9 +1719,9 @@
         "REQ-20260712-305"
       ],
       "status": "in_progress",
-      "implementation_status": "partial deployed: canonical inbound service now owns the Resend inbound path and mirrors One Time WAPI inbound messages into workspace-scoped canonical contacts, identities, bna_communications rows, unread/timeline metadata, redacted receipts, idempotent provider-message handling, and zero ordinary task creation. Website assistant input, private Telegram input, published communication-agent loading, and outbox execution still need to migrate to the same service before terminal Done.",
+      "implementation_status": "In progress: canonical inbound service now covers Resend inbound email, One Time WAPI inbound mirroring/history shape, website assistant user messages, and private Rabbi Telegram approval-ticket intake. Latest runtime slice c8865b070 mirrors Rabbi Telegram support tickets into canonical bna_communications with ticket linkage, hashed Telegram identifiers, no contact identity coercion, no ordinary task creation, no outbox send, redacted receipt, and failure recording that does not lose the support ticket. Remaining work is published communication-agent/version/knowledge loading and delivery-outbox execution; owner-only live email/WhatsApp sends remain blocked by REQ-20260713-906 until secure aliases exist.",
       "can_continue_without_operator": true,
-      "next_action": "Continue REQ-20260712-307 by migrating website assistant input and private Rabbi Telegram input through src/lib/bna/crm/ingest-inbound-communication.js, then attach published communication-agent/version/knowledge loading and delivery-outbox execution. Keep owner-only email/WhatsApp live sends blocked until REQ-20260713-906 secure aliases exist.",
+      "next_action": "Continue REQ-20260712-307 by attaching published communication-agent/version/knowledge loading and delivery-outbox execution to the canonical inbound path. Keep owner-only email/WhatsApp live sends blocked until REQ-20260713-906 secure aliases exist.",
       "acceptance_criteria": [
         "Every adapter authenticates/normalizes only, then calls one service that resolves binding/workspace/contact/conversation/message/timeline/unread/agent/outbox with redacted receipts."
       ],
@@ -1731,7 +1731,24 @@
         "One Time Railway doctor passed for deployment 641ad29c-d8d6-4053-b4d3-c7412fa6b7d7; /api/deploy-info returned commit_sha=f8df93a4ca86ecd607d5c3b63d113f77be4327c2 and target_app=one-time.",
         "BNA Railway doctor passed for deployment 68858c05-474e-4419-91c7-d934e7796305; /api/deploy-info returned commit_sha=f8df93a4ca86ecd607d5c3b63d113f77be4327c2.",
         "One Time current-head CRM workbench smoke passed with 12 scoped cards and 12 filtered total: ops/live-smokes/2026-07-13T12-25-01-672Z-one-time-operations-crm-workbench-live-smoke.md.",
-        "BNA current-head workspace taxonomy smoke passed: ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md."
+        "BNA current-head workspace taxonomy smoke passed: ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md.",
+        "Runtime commit b873dde2ef68aa9028a4ade026db5806725e1d4c mirrors website assistant user messages from /api/assistant/message, /api/bna/assistant/chat, and assistant thread-message aliases through the canonical inbound service without trusting browser-supplied workspace keys.",
+        "Runtime commit c8865b070b8f2ee59615ad2a3ddf21ee171a32d8 mirrors Rabbi Telegram support-ticket inputs through the canonical inbound service without creating tasks, outbox sends, or public replies.",
+        "One Time Railway deployment b6be424e-9361-4d73-8ede-6f19fe6d4543 reached SUCCESS at c8865b070b8f2ee59615ad2a3ddf21ee171a32d8; /api/deploy-info returned target_app=one-time.",
+        "BNA Railway deployment e18a1160-f873-42a9-9208-01b18cf934ae reached SUCCESS at c8865b070b8f2ee59615ad2a3ddf21ee171a32d8; /api/deploy-info returned target_app=bna.",
+        "One Time exact-SHA CRM workbench smoke passed: ops/live-smokes/2026-07-13T12-45-49-360Z-one-time-operations-crm-workbench-live-smoke.md.",
+        "BNA exact-SHA workspace taxonomy smoke passed: ops/live-smokes/2026-07-13T12-45-49-357Z-operations-workspace-taxonomy-live-smoke.md.",
+        "server.js mirrorRabbiTelegramSupportTicketToInboundCommunication",
+        "tests/inbound-communication-pipeline.test.js Rabbi Telegram support-ticket no-contact/no-task/no-outbox contract",
+        "tests/rabbi-telegram-ticket-approval.test.js canonical mirror server wiring contract",
+        "Commit c8865b070b8f2ee59615ad2a3ddf21ee171a32d8 pushed to origin/master",
+        "One Time Railway deployment ca335eed-37f9-4c47-acf3-cb310d1c80da reached SUCCESS",
+        "BNA Railway deployment cb2ee7e7-abee-4cbf-95ec-a12711a25442 reached SUCCESS",
+        "One Time deploy-info commit_sha=c8865b070b8f2ee59615ad2a3ddf21ee171a32d8 target_app=one-time",
+        "BNA deploy-info commit_sha=c8865b070b8f2ee59615ad2a3ddf21ee171a32d8 target_app=bna",
+        "ops/live-smokes/2026-07-13T12-45-53-175Z-one-time-operations-crm-workbench-live-smoke.md",
+        "ops/live-smokes/2026-07-13T12-46-12-200Z-onetime-provider-route-module-live-smoke.md",
+        "ops/live-smokes/2026-07-13T12-46-11-923Z-operations-workspace-taxonomy-live-smoke.md"
       ],
       "verification": [
         "PASS node --check src/lib/bna/crm/ingest-inbound-communication.js",
@@ -1744,8 +1761,25 @@
         "PASS git diff --check before runtime commit",
         "PASS node --test tests/inbound-communication-ingest.test.js tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js (11/11)",
         "PASS node --test tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js tests/one-time-wapi-scope-contract.test.js (26/26)",
+        "PASS node --test tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/universal-assistant-mvp.test.js tests/shared-crm-workbench-contract.test.js (30/30)",
+        "PASS node --test tests/inbound-communication-pipeline.test.js tests/rabbi-telegram-ticket-approval.test.js tests/resend-inbound-crm.test.js tests/one-time-wapi-scope-contract.test.js tests/universal-assistant-mvp.test.js (24/24)",
         "PASS current-head One Time Railway doctor, deploy-info, and CRM workbench live smoke at f8df93a4ca86ecd607d5c3b63d113f77be4327c2",
-        "PASS current-head BNA Railway doctor, deploy-info, and workspace taxonomy live smoke at f8df93a4ca86ecd607d5c3b63d113f77be4327c2"
+        "PASS current-head BNA Railway doctor, deploy-info, and workspace taxonomy live smoke at f8df93a4ca86ecd607d5c3b63d113f77be4327c2",
+        "PASS c8865b070b8f2ee59615ad2a3ddf21ee171a32d8 One Time Railway doctor, deploy-info, and CRM workbench live smoke",
+        "PASS c8865b070b8f2ee59615ad2a3ddf21ee171a32d8 BNA Railway doctor, deploy-info, and workspace taxonomy live smoke",
+        "node --check server.js PASS",
+        "node --test tests/inbound-communication-pipeline.test.js tests/rabbi-telegram-ticket-approval.test.js PASS 12/12",
+        "node --test tests/inbound-communication-ingest.test.js tests/resend-inbound-crm.test.js tests/one-time-wapi-scope-contract.test.js PASS 10/10",
+        "node --test tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js tests/one-time-wapi-scope-contract.test.js tests/rabbi-telegram-ticket-approval.test.js tests/one-time-external-user-portal.test.js PARTIAL: 69/70 passed; unrelated pre-existing Operations copy assertion failed",
+        "npm run bna:run:validate PASS",
+        "git diff --check scoped code/test diff PASS",
+        "npm run secrets:audit PASS",
+        "One Time Railway doctor/status: deployment ca335eed-37f9-4c47-acf3-cb310d1c80da SUCCESS",
+        "BNA Railway status: deployment cb2ee7e7-abee-4cbf-95ec-a12711a25442 SUCCESS",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8 PASS",
+        "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8 PASS",
+        "npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8 PASS",
+        "npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8 PASS"
       ],
       "implementation_files": [
         "src/lib/bna/crm/ingest-inbound-communication.js",
@@ -1755,10 +1789,12 @@
         "tests/inbound-communication-ingest.test.js",
         "tests/inbound-communication-pipeline.test.js",
         "tests/resend-inbound-crm.test.js",
-        "tests/one-time-wapi-scope-contract.test.js"
+        "tests/one-time-wapi-scope-contract.test.js",
+        "tests/rabbi-telegram-ticket-approval.test.js",
+        "tests/universal-assistant-mvp.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T15:30:00+03:00",
+      "updated_at": "2026-07-13T15:55:00+03:00",
       "blocker": "",
       "deployment_evidence": [
         "Runtime app-code commit a692c6e002a09557b81c350c5c0187222d87b7de was pushed to origin/master.",
@@ -1766,11 +1802,23 @@
         "One Time Railway deployment 641ad29c-d8d6-4053-b4d3-c7412fa6b7d7 reached SUCCESS.",
         "BNA Railway deployment 68858c05-474e-4419-91c7-d934e7796305 reached SUCCESS.",
         "One Time live smoke ops/live-smokes/2026-07-13T12-25-01-672Z-one-time-operations-crm-workbench-live-smoke.md passed at f8df93a4ca86ecd607d5c3b63d113f77be4327c2.",
-        "BNA live smoke ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md passed at f8df93a4ca86ecd607d5c3b63d113f77be4327c2."
+        "BNA live smoke ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md passed at f8df93a4ca86ecd607d5c3b63d113f77be4327c2.",
+        "Website assistant runtime commit b873dde2ef68aa9028a4ade026db5806725e1d4c was pushed to origin/master.",
+        "Rabbi Telegram ticket runtime commit c8865b070b8f2ee59615ad2a3ddf21ee171a32d8 was pushed to origin/master and is current deployed production head.",
+        "One Time Railway deployment b6be424e-9361-4d73-8ede-6f19fe6d4543 reached SUCCESS at c8865b070b8f2ee59615ad2a3ddf21ee171a32d8.",
+        "BNA Railway deployment e18a1160-f873-42a9-9208-01b18cf934ae reached SUCCESS at c8865b070b8f2ee59615ad2a3ddf21ee171a32d8.",
+        "One Time live smoke ops/live-smokes/2026-07-13T12-45-49-360Z-one-time-operations-crm-workbench-live-smoke.md passed at c8865b070b8f2ee59615ad2a3ddf21ee171a32d8.",
+        "BNA live smoke ops/live-smokes/2026-07-13T12-45-49-357Z-operations-workspace-taxonomy-live-smoke.md passed at c8865b070b8f2ee59615ad2a3ddf21ee171a32d8.",
+        "One Time production verified at https://join.onetimeonetime.com/api/deploy-info with commit_sha=c8865b070b8f2ee59615ad2a3ddf21ee171a32d8 and target_app=one-time",
+        "BNA production verified at https://bneineviimacademy.org/api/deploy-info with commit_sha=c8865b070b8f2ee59615ad2a3ddf21ee171a32d8 and target_app=bna",
+        "One Time Railway deployment ca335eed-37f9-4c47-acf3-cb310d1c80da reached SUCCESS",
+        "BNA Railway deployment cb2ee7e7-abee-4cbf-95ec-a12711a25442 reached SUCCESS",
+        "One Time live smokes passed: separate-instance, Operations CRM workbench, provider route-module",
+        "BNA live workspace taxonomy smoke passed"
       ],
-      "implementation_commit": "a692c6e002a09557b81c350c5c0187222d87b7de",
-      "pushed_commit": "a692c6e002a09557b81c350c5c0187222d87b7de",
-      "deployed_commit": "f8df93a4ca86ecd607d5c3b63d113f77be4327c2"
+      "implementation_commit": "c8865b070b8f2ee59615ad2a3ddf21ee171a32d8",
+      "pushed_commit": "c8865b070b8f2ee59615ad2a3ddf21ee171a32d8",
+      "deployed_commit": "c8865b070b8f2ee59615ad2a3ddf21ee171a32d8"
     },
     {
       "id": "REQ-20260712-308",

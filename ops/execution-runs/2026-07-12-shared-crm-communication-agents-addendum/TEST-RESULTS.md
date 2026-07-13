@@ -1015,3 +1015,22 @@
 - PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha f8df93a4ca86ecd607d5c3b63d113f77be4327c2`; report `ops/live-smokes/2026-07-13T12-25-01-672Z-one-time-operations-crm-workbench-live-smoke.md`.
 - PASS `npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha f8df93a4ca86ecd607d5c3b63d113f77be4327c2`; report `ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md`.
 - Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw contact/message logging, or destructive production mutation was performed by this slice proof.
+
+## Canonical Inbound Website Assistant And Rabbi Telegram Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --test tests/inbound-communication-pipeline.test.js tests/rabbi-telegram-ticket-approval.test.js`; 12/12 tests passed.
+- PASS `node --test tests/inbound-communication-ingest.test.js tests/resend-inbound-crm.test.js tests/one-time-wapi-scope-contract.test.js`; 10/10 tests passed.
+- PARTIAL unrelated broad-suite check: `node --test tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js tests/one-time-wapi-scope-contract.test.js tests/rabbi-telegram-ticket-approval.test.js tests/one-time-external-user-portal.test.js`; 69/70 tests passed, with one pre-existing Operations copy assertion in `tests/one-time-external-user-portal.test.js` failing outside this inbound slice.
+- PASS `npm run bna:run:validate`; work remains yes.
+- PASS scoped `git diff --check` for `server.js`, `tests/inbound-communication-pipeline.test.js`, and `tests/rabbi-telegram-ticket-approval.test.js`.
+- PASS `npm run secrets:audit`; 9393 tracked paths checked and 0 tracked secret-risk files found.
+- PASS One Time Railway deployment `ca335eed-37f9-4c47-acf3-cb310d1c80da` reached `SUCCESS`.
+- PASS BNA Railway deployment `cb2ee7e7-abee-4cbf-95ec-a12711a25442` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`, `target_app=one-time`.
+- PASS BNA live `/api/deploy-info`; returned `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`, `target_app=bna`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`; report `ops/live-smokes/2026-07-13T12-45-53-175Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`; report `ops/live-smokes/2026-07-13T12-46-12-200Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`; report `ops/live-smokes/2026-07-13T12-46-11-923Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw Telegram chat/message value logging, raw contact/message logging, or destructive production mutation was performed by this slice proof.

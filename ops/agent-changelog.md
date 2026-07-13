@@ -40124,3 +40124,29 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM
   production mutation, provider mutation, credential mutation, payment/access
   mutation, import, or synthetic production data creation was performed.
+
+## 2026-07-13 - Canonical inbound website assistant and Rabbi Telegram slice deployed
+
+- Advanced `REQ-20260712-307` with the next deployed adapter convergence slice:
+  website assistant user messages and private Rabbi Telegram approval-ticket
+  intake now mirror through the canonical inbound communication service.
+- Runtime head `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8` is pushed to
+  `origin/master` and deployed on both One Time and BNA.
+- Rabbi Telegram support tickets mirror into canonical `bna_communications`
+  with ticket linkage, hashed Telegram identifiers, no contact identity
+  coercion, no ordinary task creation, no outbox send, and redacted receipt or
+  failure metadata.
+- One Time deployment `ca335eed-37f9-4c47-acf3-cb310d1c80da` and BNA
+  deployment `cb2ee7e7-abee-4cbf-95ec-a12711a25442` reached `SUCCESS`; both
+  live deploy-info endpoints returned exact SHA `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`.
+- Verification passed: `node --check server.js`, focused assistant/Telegram
+  inbound tests `12/12`, inbound/Resend/WAPI regression tests `10/10`,
+  One Time separate-instance, One Time CRM workbench, One Time provider
+  route-module, BNA workspace taxonomy, run validator, scoped diff check, and
+  secrets audit.
+- Remaining `REQ-20260712-307` work: attach published
+  communication-agent/version/knowledge loading and delivery-outbox execution.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send,
+  public auto-reply enablement, provider mutation, credential mutation,
+  payment/access mutation, raw Telegram value logging, raw contact/message
+  logging, or destructive production mutation was performed.
