@@ -29405,11 +29405,27 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
        jsonb_build_object(
          'activity_count',
            COALESCE((SELECT COUNT(*) FROM bna_communications cm WHERE cm.contact_id = c.id), 0)
-           + COALESCE((SELECT COUNT(*) FROM bna_contact_pipeline_events pe WHERE pe.contact_id = c.id), 0),
+           + COALESCE((SELECT COUNT(*) FROM bna_contact_pipeline_events pe WHERE pe.contact_id = c.id), 0)
+           + COALESCE((
+             SELECT COUNT(*)
+             FROM bna_support_tickets st
+             WHERE cp.id IS NOT NULL
+               AND st.project_id = cp.id
+               AND COALESCE(c.primary_email, '') <> ''
+               AND lower(st.requester_email) = lower(c.primary_email)
+           ), 0),
          'latest_activity_at',
            GREATEST(
              COALESCE((SELECT MAX(cm.occurred_at) FROM bna_communications cm WHERE cm.contact_id = c.id), '1970-01-01'::timestamp),
              COALESCE((SELECT MAX(pe.created_at) FROM bna_contact_pipeline_events pe WHERE pe.contact_id = c.id), '1970-01-01'::timestamp),
+             COALESCE((
+               SELECT MAX(COALESCE(st.updated_at, st.created_at))
+               FROM bna_support_tickets st
+               WHERE cp.id IS NOT NULL
+                 AND st.project_id = cp.id
+                 AND COALESCE(c.primary_email, '') <> ''
+                 AND lower(st.requester_email) = lower(c.primary_email)
+             ), '1970-01-01'::timestamp),
              COALESCE(c.updated_at, c.created_at, '1970-01-01'::timestamp)
            )
        ) AS timeline_activity,
@@ -29541,8 +29557,27 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
          'live_class_context', COALESCE(NULLIF(l.metadata->>'live_class_context', ''), NULLIF(l.source_detail, ''))
        ) AS class_context,
        jsonb_build_object(
-         'activity_count', COALESCE((SELECT COUNT(*) FROM bna_contact_communications cc WHERE cc.lead_id = l.id), 0),
-         'latest_activity_at', COALESCE((SELECT MAX(cc.occurred_at) FROM bna_contact_communications cc WHERE cc.lead_id = l.id), COALESCE(l.last_inbound_at, l.last_outbound_at, l.updated_at, l.created_at)),
+         'activity_count',
+           COALESCE((SELECT COUNT(*) FROM bna_contact_communications cc WHERE cc.lead_id = l.id), 0)
+           + COALESCE((
+             SELECT COUNT(*)
+             FROM bna_support_tickets st
+             WHERE st.project_id = l.project_id
+               AND COALESCE(l.parent_email, '') <> ''
+               AND lower(st.requester_email) = lower(l.parent_email)
+           ), 0),
+         'latest_activity_at',
+           GREATEST(
+             COALESCE((SELECT MAX(cc.occurred_at) FROM bna_contact_communications cc WHERE cc.lead_id = l.id), '1970-01-01'::timestamp),
+             COALESCE((
+               SELECT MAX(COALESCE(st.updated_at, st.created_at))
+               FROM bna_support_tickets st
+               WHERE st.project_id = l.project_id
+                 AND COALESCE(l.parent_email, '') <> ''
+                 AND lower(st.requester_email) = lower(l.parent_email)
+             ), '1970-01-01'::timestamp),
+             COALESCE(l.last_inbound_at, l.last_outbound_at, l.updated_at, l.created_at, '1970-01-01'::timestamp)
+           ),
          'latest_activity_type', COALESCE((SELECT cc.source FROM bna_contact_communications cc WHERE cc.lead_id = l.id ORDER BY cc.occurred_at DESC NULLS LAST, cc.id DESC LIMIT 1), l.source)
        ) AS timeline_activity,
        l.created_at
@@ -29572,10 +29607,17 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     const params = [contactRef.id];
     const conditions = [`c.lead_id = $1`];
     const taskConditions = [`l.id = $1`, `t.stage <> 'archive'`];
+    const ticketConditions = [
+      `l.id = $1`,
+      `st.project_id = l.project_id`,
+      `COALESCE(l.parent_email, '') <> ''`,
+      `lower(st.requester_email) = lower(l.parent_email)`,
+    ];
     if (projectKey && !['platform', 'super_admin'].includes(projectKey)) {
       params.push(projectKey);
       conditions.push(`p.project_key = $${params.length}`);
       taskConditions.push(`p.project_key = $${params.length}`);
+      ticketConditions.push(`p.project_key = $${params.length}`);
     }
     const result = await db.query(
       `SELECT *
@@ -29633,6 +29675,38 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
           JOIN bna_parent_leads l ON lower(t.related_contact_email) = lower(l.parent_email)
           LEFT JOIN bna_projects p ON p.id = l.project_id
          WHERE ${taskConditions.join(' AND ')}
+         UNION ALL
+         SELECT
+           st.id,
+           'support' AS channel,
+           'internal' AS direction,
+           ('Support ticket ' || COALESCE(st.ticket_number, ('#' || st.id::text)) || ': ' || COALESCE(NULLIF(st.title, ''), 'Support request')) AS body,
+           NULL::text AS notes,
+           'bna_support_tickets' AS source,
+           jsonb_build_object(
+             'crm_contact_id', ('bna_parent_leads:' || l.id::text),
+             'support_ticket_id', st.id,
+             'ticket_number', COALESCE(st.ticket_number, ('OT-SUP-' || LPAD(st.id::text, 6, '0'))),
+             'status', st.status,
+             'severity', st.severity,
+             'category', st.category,
+             'no_send', true,
+             'external_write_performed', false
+           ) AS source_context,
+           COALESCE(st.updated_at, st.created_at) AS occurred_at,
+           st.created_at,
+           'support_ticket' AS communication_type,
+           NULL::text AS subject,
+           NULL::text AS thread_key,
+           NULL::text AS external_message_id,
+           NULL::text AS from_address,
+           NULL::text AS to_address,
+           NULL::text AS provider,
+           st.status
+         FROM bna_support_tickets st
+         JOIN bna_parent_leads l ON TRUE
+         LEFT JOIN bna_projects p ON p.id = l.project_id
+         WHERE ${ticketConditions.join(' AND ')}
        ) timeline
        ORDER BY occurred_at DESC NULLS LAST, created_at DESC
        LIMIT 200`,
@@ -29645,15 +29719,18 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
   const communicationConditions = [`contact_id = $1`];
   const pipelineConditions = [`contact_id = $1`];
   const taskConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(t.related_contact_email) = lower(bc.primary_email)`, `t.stage <> 'archive'`];
+  const ticketConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(st.requester_email) = lower(bc.primary_email)`];
   if (workspaceKey && !['platform', 'super_admin'].includes(workspaceKey)) {
     params.push(workspaceKey);
     communicationConditions.push(`workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     pipelineConditions.push(`workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     taskConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
+    ticketConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
   }
   if (projectKey && !['platform', 'super_admin'].includes(projectKey)) {
     params.push(projectKey);
     taskConditions.push(`t.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
+    ticketConditions.push(`st.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
   }
 
   const result = await db.query(
@@ -29726,6 +29803,35 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
           NULL::text AS status
         FROM bna_tasks t
         JOIN bna_contacts bc ON ${taskConditions.join(' AND ')}
+        UNION ALL
+       SELECT
+         st.id,
+         'support' AS channel,
+         'internal' AS direction,
+         ('Support ticket ' || COALESCE(st.ticket_number, ('#' || st.id::text)) || ': ' || COALESCE(NULLIF(st.title, ''), 'Support request')) AS body,
+         'bna_support_tickets' AS source,
+         jsonb_build_object(
+           'crm_contact_id', ('bna_contacts:' || bc.id::text),
+           'support_ticket_id', st.id,
+           'ticket_number', COALESCE(st.ticket_number, ('OT-SUP-' || LPAD(st.id::text, 6, '0'))),
+           'status', st.status,
+           'severity', st.severity,
+           'category', st.category,
+           'no_send', true,
+           'external_write_performed', false
+         ) AS source_context,
+          COALESCE(st.updated_at, st.created_at) AS occurred_at,
+          st.created_at,
+          'support_ticket' AS communication_type,
+          NULL::text AS subject,
+          NULL::text AS thread_key,
+          NULL::text AS external_message_id,
+          NULL::text AS from_address,
+          NULL::text AS to_address,
+          NULL::text AS provider,
+          st.status
+        FROM bna_support_tickets st
+        JOIN bna_contacts bc ON ${ticketConditions.join(' AND ')}
      ) timeline
      ORDER BY occurred_at DESC NULLS LAST, created_at DESC
      LIMIT 200`,
@@ -29738,7 +29844,7 @@ async function operationsCrmConversationRows(contactRef, scope = {}, options = {
   const limit = Math.max(1, Math.min(Number(options.limit) || 50, 100));
   const rows = await operationsCrmTimelineRows(contactRef, scope, db);
   return rows
-    .filter((row) => row.communication_type !== 'follow_up_task' && row.channel !== 'task')
+    .filter((row) => row.communication_type !== 'follow_up_task' && row.channel !== 'task' && row.communication_type !== 'support_ticket' && row.channel !== 'support')
     .slice(0, limit);
 }
 

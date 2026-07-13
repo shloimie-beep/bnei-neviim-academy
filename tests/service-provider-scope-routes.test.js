@@ -34,6 +34,9 @@ test('server wires service-provider scope and first-party CRM routes', () => {
   assert.match(server, /INSERT INTO bna_tasks \(/);
   assert.match(server, /'dashboard',\s*\$6::jsonb,\s*\$7::jsonb/);
   assert.match(server, /'follow_up_task' AS communication_type/);
+  assert.match(server, /'support_ticket' AS communication_type/);
+  assert.match(server, /bna_support_tickets/);
+  assert.match(server, /row\.communication_type !== 'support_ticket'/);
 });
 test('provider and operations UIs expose scoped package surfaces', () => {
   const provider = read('public/provider.html');

@@ -75,6 +75,14 @@ function mapConversationDto(row = {}) {
   };
 }
 
+function isTaskTimelineRow(row = {}) {
+  return row.communication_type === 'follow_up_task' || row.channel === 'task';
+}
+
+function isSupportTicketTimelineRow(row = {}) {
+  return row.communication_type === 'support_ticket' || row.channel === 'support';
+}
+
 function normalizeSourceContext(value) {
   if (!value) return {};
   if (typeof value === 'object') return value;
@@ -148,7 +156,7 @@ function createContactService({
         ? conversationRows
         : async (ref, scoped, pageOptions) => {
             const rows = await timelineRows(ref, scoped);
-            return rows.filter((row) => row.communication_type !== 'follow_up_task' && row.channel !== 'task');
+            return rows.filter((row) => !isTaskTimelineRow(row) && !isSupportTicketTimelineRow(row));
           };
       const rows = await loader(contactRef, scope, page);
       return redactedSuccessEnvelope({
@@ -169,7 +177,7 @@ function createContactService({
         ? taskRows
         : async (ref, scoped, pageOptions) => {
             const rows = await timelineRows(ref, scoped);
-            return rows.filter((row) => row.communication_type === 'follow_up_task' || row.channel === 'task');
+            return rows.filter(isTaskTimelineRow);
           };
       const rows = await loader(contactRef, scope, page);
       return redactedSuccessEnvelope({

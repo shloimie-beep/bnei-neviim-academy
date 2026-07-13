@@ -102,6 +102,22 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
         communication_type: 'communication',
       },
       {
+        id: 13,
+        channel: 'support',
+        direction: 'internal',
+        body: 'Support ticket OT-SUP-000013: Login link trouble',
+        source: 'bna_support_tickets',
+        source_context: JSON.stringify({
+          support_ticket_id: 13,
+          ticket_number: 'OT-SUP-000013',
+          status: 'triage',
+          no_send: true,
+          external_write_performed: false,
+        }),
+        occurred_at: '2026-07-12T13:15:00Z',
+        communication_type: 'support_ticket',
+      },
+      {
         id: 12,
         channel: 'task',
         direction: 'internal',
@@ -119,11 +135,13 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
 
   const conversations = await service.getContactConversations('bna_contacts:7', { workspace_key: 'rabbi_sheller_provider' }, { limit: 1 });
   const tasks = await service.getContactTasks('bna_contacts:7', { workspace_key: 'rabbi_sheller_provider' }, { limit: 5 });
+  const timeline = await service.getContactTimeline('bna_contacts:7', { workspace_key: 'rabbi_sheller_provider' });
 
   assert.equal(conversations.success, true);
   assert.equal(conversations.contact_key, 'bna_contacts:7');
   assert.equal(conversations.conversations.length, 1);
   assert.equal(conversations.conversations[0].channel, 'whatsapp');
+  assert.equal(conversations.conversations.some((item) => item.communication_type === 'support_ticket'), false);
   assert.equal(conversations.conversations[0].open_action, 'whatsapp');
   assert.equal(conversations.conversations[0].thread_key, 'phone:972501112222');
   assert.equal(conversations.conversations[0].from_address, '+972 50 111 2222');
@@ -137,6 +155,9 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.equal(tasks.tasks[0].assigned_to, 'Rabbi Scheller team');
   assert.equal(tasks.tasks[0].due_date, '2026-07-15');
   assert.equal(tasks.tasks[0].external_write_performed, false);
+
+  assert.equal(timeline.timeline.some((item) => item.type === 'support_ticket'), true);
+  assert.match(timeline.timeline.find((item) => item.type === 'support_ticket').body, /Support ticket OT-SUP-000013/);
 });
 
 test('CRM contact service filter and ref helpers are stable', () => {
