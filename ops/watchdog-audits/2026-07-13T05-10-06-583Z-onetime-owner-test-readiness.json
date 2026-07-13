@@ -81,5 +81,10 @@
     "Owner destinations are resolved only by configured aliases and are reported only by source, validity, length, and fingerprint.",
     "Public WhatsApp auto-reply is not enabled by owner-test readiness.",
     "Live owner sends require the explicit owner-test confirmation phrase and a separate guarded send step."
-  ]
+  ],
+  "requirement_id": "REQ-20260713-906",
+  "mapped_requirement_ids": [
+    "REQ-20260713-906"
+  ],
+  "status": "blocked_missing_owner_aliases"
 }

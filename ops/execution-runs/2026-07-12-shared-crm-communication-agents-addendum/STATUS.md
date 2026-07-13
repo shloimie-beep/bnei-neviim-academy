@@ -27,11 +27,20 @@ Current status: `active`
 - `REQ-20260713-907` is Done.
 - Added `scripts/audit-onetime-architecture-performance-baseline.mjs` and package script `one-time:architecture-performance-baseline`.
 - Added ADR `docs/architecture/one-time-app-shell-adr-2026-07-13.md`: next implementation path is a dedicated same-repo One Time app shell that keeps shared backend/API/contact/outbox/agent/ticket contracts.
-- Ran `npm run one-time:architecture-performance-baseline -- --compact --repeats=2` against `https://join.onetimeonetime.com` at live SHA `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
+- Ran `npm run one-time:architecture-performance-baseline -- --repeats=2` against `https://join.onetimeonetime.com` at live SHA `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
 - Baseline report: `ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md`.
-- Result: 88 measured samples, 0 skipped, 21 attention samples, no production writes, no failed-request budget breaches, no console-error budget breaches, and no direct slow API budget breaches.
-- Attention classification: public landing transfer (`large_transfer=10`), tasks route DOM weight (`heavy_dom=10`), and one throttled CRM contact-detail long-task sample (`main_thread_long_tasks=1`).
-- `REQ-20260713-908` and `REQ-20260713-911` are now ready; `REQ-20260713-906` remains blocked only on secure owner aliases.
+- Result: 160 measured samples, 0 skipped, 32 attention samples, no production writes, no failed-request budget breaches, no console-error budget breaches, and no direct slow API budget breaches.
+- Attention classification: public landing transfer (`large_transfer=16`) and tasks route DOM weight (`heavy_dom=16`).
+- `REQ-20260713-908` is in progress, `REQ-20260713-911` is ready, and `REQ-20260713-906` remains blocked only on secure owner aliases.
+
+## 2026-07-13 Dedicated One Time Provider Shell Routing
+
+- `REQ-20260713-908` first routing slice is locally verified and pending deploy/live smoke.
+- Normal One Time provider login now returns the dedicated provider-shell payload (`dedicated_provider_shell=true`, `operations_shell=false`) instead of `portal_redirect=true`.
+- `/provider.html?admin_provider=one-time` and provider aliases stay in the dedicated One Time provider shell by default and do not load `operations-shell.css` or `operations-shell.js`.
+- Scoped Operations remains available as an explicit fallback only when `ops_fallback=1` is present.
+- Registered `ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK` and added visible fallback links in the provider shell.
+- Local verification passed: `node --check server.js`, provider login/review navigation browser tests, route-role/action-coverage tests, action watchdog, execution-run validation, and signed local provider CRM layout smoke.
 
 ## Completed In This Batch
 

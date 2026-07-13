@@ -188,7 +188,7 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T08:45:00+03:00",
+      "updated_at": "2026-07-13T08:54:00+03:00",
       "can_continue_without_operator": true,
       "blocker": "",
       "status": "done",
@@ -202,11 +202,11 @@
       ],
       "verification": [
         "node --check scripts/audit-onetime-architecture-performance-baseline.mjs PASS",
-        "npm run one-time:architecture-performance-baseline -- --compact --repeats=2 PASS; 88 measured samples; 0 skipped; 21 attention samples; large_transfer=10; heavy_dom=10; main_thread_long_tasks=1; external_write_performed=false; production_data_mutation_performed=false",
-        "Live deploy-info in baseline reported commit_sha=e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1",
-        "ADR recorded same-repo dedicated One Time app shell as the next implementation path and documented rejected alternatives, budgets, and instrumentation gaps",
+        "npm run one-time:architecture-performance-baseline -- --repeats=2 PASS; 160 measured samples; 0 skipped; 32 attention samples; large_transfer=16; heavy_dom=16; failed_request_budget_breaches=0; console_error_budget_breaches=0; direct_slow_api_budget_breaches=0; external_write_performed=false; production_data_mutation_performed=false",
+        "Live baseline deploy SHA e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1; operations_auth=available via railway; credentials/cookies not written to reports",
+        "No forms submitted, no buttons clicked, no sends, no provider mutations, no Railway mutation, no production data mutation, no raw contact/message/destination data stored",
         "npm run bna:run:validate PASS after marking REQ-20260713-907 done",
-        "npm run bna:run:next PASS; selected REQ-20260713-908 as the next unblocked executable batch"
+        "npm run bna:run:next PASS; selected REQ-20260713-908 as next unblocked batch"
       ],
       "implementation_files": [
         "package.json",
@@ -225,7 +225,7 @@
       ],
       "category": "architecture_performance",
       "batch_id": "2-onetime-architecture-performance-baseline",
-      "implementation_status": "Done: ADR accepted the dedicated same-repo One Time app shell path; compact live baseline sampled 88 route/profile/cache combinations across public, provider, Operations, CRM, conversations, tasks, and owner setup surfaces with zero skipped samples, zero production writes, zero failed-request budget breaches, zero console-error budget breaches, and 21 attention samples classified as public landing transfer, tasks DOM weight, and one throttled CRM contact long-task case.",
+      "implementation_status": "Done: ADR accepted the dedicated same-repo One Time app shell path; full live baseline sampled 160 route/profile/cache/sample combinations across public, provider, Operations, CRM, conversations, tasks, and owner communication-agent test surfaces with zero skipped samples, zero production writes, zero failed-request budget breaches, zero console-error budget breaches, zero direct slow API budget breaches, and 32 attention samples classified as public landing transfer and tasks DOM weight.",
       "next_action": "Start REQ-20260713-908 dedicated same-repo One Time app shell and REQ-20260713-911 instrumentation/regression gates; keep REQ-20260713-906 blocked until secure owner aliases are configured.",
       "acceptance_criteria": [
         "ADR compares continuing the generated shared Operations monolith, a dedicated same-repo One Time frontend, and a fully separate app.",
@@ -243,21 +243,33 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T08:45:00+03:00",
+      "updated_at": "2026-07-13T08:58:00+03:00",
       "can_continue_without_operator": true,
       "blocker": "",
-      "status": "not_started",
+      "status": "in_progress",
       "depends_on": [
         "REQ-20260713-907"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "Default One Time provider entry now stays on /provider.html dedicated shell instead of redirecting to the shared Operations shell.",
+        "Explicit Operations fallback is preserved with ops_fallback=1 and registered as ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK.",
+        "Local provider CRM layout smoke refreshed at ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md with desktop/tablet/mobile screenshots."
+      ],
+      "verification": [
+        "node --check server.js PASS",
+        "node --test tests/one-time-provider-operations-login.test.js tests/one-time-provider-review-navigation.test.js PASS 11/11",
+        "node scripts/smoke-onetime-provider-crm-layout-local.mjs PASS",
+        "node --test tests/one-time-route-role-mapping.test.js tests/one-time-action-coverage.test.js PASS 11/11",
+        "npm run watchdog:actions PASS",
+        "npm run bna:run:validate PASS"
+      ],
       "implementation_files": [
-        "public/",
-        "src/",
+        "public/provider.html",
         "server.js",
-        "scripts/",
-        "tests/"
+        "ops/action-registry.json",
+        "tests/one-time-provider-operations-login.test.js",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.json"
       ],
       "deployment_required": true,
       "id": "REQ-20260713-908",
@@ -268,8 +280,8 @@
       ],
       "category": "frontend_architecture",
       "batch_id": "3-onetime-dedicated-app-shell",
-      "implementation_status": "not_started",
-      "next_action": "Ready to start: implement the dedicated same-repo One Time frontend shell and route-level modules using docs/architecture/one-time-app-shell-adr-2026-07-13.md and the 2026-07-13 baseline budgets, preserving old-shell fallback and shared backend contracts.",
+      "implementation_status": "In progress: first dedicated-shell routing slice is locally verified. Normal One Time provider login and /provider.html?admin_provider=one-time now serve the dedicated provider shell and avoid operations-shell.css/js by default; the scoped Operations route remains available only when ops_fallback=1 is explicit. Commit, push, deploy exact SHA, and live-smoke before marking deployed.",
+      "next_action": "Commit and deploy this dedicated-shell routing slice, then live-smoke /provider.html?admin_provider=one-time&section=crm for no Operations shell assets and /provider.html?admin_provider=one-time&section=crm&ops_fallback=1 for the scoped fallback redirect. Continue route-module extraction and performance budget comparison after live proof.",
       "acceptance_criteria": [
         "One Time startup no longer requires the giant shared BNA Operations monolith on the critical path.",
         "The dedicated shell loads only the One Time shell, active route module, active workspace data, and genuinely needed shared primitives.",

@@ -10917,19 +10917,42 @@ function sendOneTimeProviderShell(req, res) {
 function oneTimeProviderCanonicalOperationsUrl(req) {
   const query = req?.query || {};
   const viewAsToken = query.view_as_rabbi || query.viewAsRabbi || '';
+  const requestedSection = String(query.section || '').toLowerCase();
   const target = new URLSearchParams({
     workspace: 'rabbi_sheller_provider',
     project: 'one_time_mishnah_class',
-    view: query.section === 'mailbox' ? 'communications' : 'service_providers',
-    section: query.section === 'mailbox' ? 'email' : 'overview',
+    view: requestedSection === 'mailbox'
+      ? 'communications'
+      : requestedSection === 'crm'
+        ? 'contacts'
+        : requestedSection === 'tasks'
+          ? 'tasks'
+          : 'service_providers',
+    section: requestedSection === 'mailbox'
+      ? 'email'
+      : requestedSection === 'crm'
+        ? 'crm_contacts'
+        : requestedSection === 'tasks'
+          ? 'one_time'
+          : requestedSection === 'agents'
+            ? 'tiers'
+            : 'overview',
   });
-  if (query.section === 'mailbox') target.set('inbox', 'rabbi');
+  if (requestedSection === 'mailbox') target.set('inbox', 'rabbi');
   if (viewAsToken) target.set('view_as_rabbi', String(viewAsToken));
   return `/operations?${target.toString()}`;
 }
 
+function oneTimeProviderWantsOperationsFallback(req) {
+  const query = req?.query || {};
+  return ['1', 'true', 'operations', 'ops'].includes(String(
+    query.ops_fallback || query.operations_fallback || query.operationsFallback || ''
+  ).toLowerCase());
+}
+
 async function shouldRedirectOneTimeProviderToOperations(req) {
   const query = req?.query || {};
+  if (!oneTimeProviderWantsOperationsFallback(req)) return false;
   if (
     ['one-time', 'onetime'].includes(String(query.admin_provider || query.adminProvider || '').toLowerCase())
     || Boolean(query.view_as_rabbi || query.viewAsRabbi)
@@ -12122,7 +12145,7 @@ app.post('/api/bna/one-time/provider-session/start', requireAdmin, async (req, r
     res.json({
       success: true,
       mode: 'admin_on_provider_account',
-      view_url: '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi',
+      view_url: '/provider.html?admin_provider=one-time&section=mailbox',
       provider: oneTimeProviderAdminSessionView(provider),
       audit_event: {
         event_type: 'one_time_provider_session_started_by_super_admin',
@@ -51074,17 +51097,19 @@ app.post('/api/provider-portal/login', async (req, res) => {
     setProviderSessionCookie(res, sessionId);
     const providerWithProject = await serviceProviderWithProject(provider.id).catch(() => provider);
     if (isOneTimeClassMediaProvider(providerWithProject || provider)) {
+      const payload = await getProviderPortalPayload(provider.id);
       return res.json({
         success: true,
         sessionId,
-        portal_redirect: true,
-        redirect_to: oneTimeProviderCanonicalOperationsUrl({ query: {} }),
+        ...payload,
+        dedicated_provider_shell: true,
+        operations_fallback_url: oneTimeProviderCanonicalOperationsUrl({ query: { ops_fallback: '1' } }),
         role: 'project_owner',
         provider_id: provider.id,
         provider_name: provider.provider_name || provider.display_name || null,
         workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
         project_key: ONE_TIME_PROJECT_KEY,
-        operations_shell: true,
+        operations_shell: false,
         legacy_provider_dashboard_replaced: true,
         external_write_performed: false,
       });

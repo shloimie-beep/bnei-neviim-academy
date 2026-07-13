@@ -20,16 +20,29 @@
 ## 2026-07-13 Architecture/Performance Baseline
 
 - PASS `node --check scripts/audit-onetime-architecture-performance-baseline.mjs`.
-- PASS `npm run one-time:architecture-performance-baseline -- --compact --repeats=2`.
+- PASS `npm run one-time:architecture-performance-baseline -- --repeats=2`.
   - Live target: `https://join.onetimeonetime.com`.
   - Live deploy SHA: `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
-  - Samples: 88 measured, 0 skipped.
-  - Attention samples: 21 (`large_transfer=10`, `heavy_dom=10`, `main_thread_long_tasks=1`).
+  - Samples: 160 measured, 0 skipped.
+  - Attention samples: 32 (`large_transfer=16`, `heavy_dom=16`).
   - No forms submitted, no buttons clicked, no sends, no provider mutations, no Railway mutation, no production data mutation.
   - Report: `ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md`.
 - PASS ADR recorded at `docs/architecture/one-time-app-shell-adr-2026-07-13.md`.
 - PASS `npm run bna:run:validate` after marking `REQ-20260713-907` Done.
 - PASS `npm run bna:run:next`; selected `REQ-20260713-908` as the next unblocked executable batch.
+- PASS `npm run watchdog:protocol-drift` after adding Product Quality gate markers to the active task packets; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md` shows 0 findings and is mapped to `REQ-20260713-907`, `REQ-20260713-908`, and `REQ-20260713-909`.
+- PASS `npm run audit:governance`; current addendum artifacts are mapped to active requirements, no untracked audit packages were reported, and the remaining `NEEDS TASK MAPPING` result is from older repo-wide audit backlog outside this scoped packet.
+- PASS final `npm run bna:run:validate`; active run remains valid and work remains.
+
+## 2026-07-13 Dedicated Provider Shell Routing Slice
+
+- PASS `node --check server.js`.
+- PASS `node --test tests/one-time-provider-operations-login.test.js tests/one-time-provider-review-navigation.test.js` (11/11).
+- PASS `node scripts/smoke-onetime-provider-crm-layout-local.mjs`; report `ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md`.
+- PASS `node --test tests/one-time-route-role-mapping.test.js tests/one-time-action-coverage.test.js` (11/11).
+- PASS `npm run watchdog:actions`.
+- PASS `npm run bna:run:validate`.
+- Pending: commit, push, deploy exact SHA, and live-smoke `/provider.html?admin_provider=one-time&section=crm` plus the explicit `ops_fallback=1` route before marking `REQ-20260713-908` deployed.
 
 - PASS `node --check server.js`
 - PASS `node --check src/lib/integrations/resend-inbound-crm.js`

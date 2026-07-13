@@ -27,7 +27,7 @@ Existing architecture notes already support a scoped One Time runtime:
 - `docs/architecture/onetime-single-tenant-split.md`
 - `docs/architecture/platform-core-backend-contracts.md`
 
-The 2026-07-13 live baseline sampled 88 route/profile/cache combinations across:
+The 2026-07-13 live baseline sampled 160 route/profile/cache/sample combinations across:
 
 - public landing;
 - provider/login entry;
@@ -44,26 +44,26 @@ The runner performed no submissions, no sends, no provider mutations, no product
 
 Summary:
 
-- Samples measured: 88
+- Samples measured: 160
 - Skipped samples: 0
-- Samples needing attention: 21
+- Samples needing attention: 32
 - Failed request budget breaches: 0
 - Console error budget breaches: 0
 - Direct slow API budget breaches: 0
 
 Attention categories:
 
-- `large_transfer`: 10 samples, concentrated on the public landing route with roughly 2151 KB transfer.
-- `heavy_dom`: 10 samples, concentrated on the tasks route with roughly 6066 DOM nodes.
-- `main_thread_long_tasks`: 1 sample, on throttled mobile CRM contact detail.
+- `large_transfer`: 16 samples, concentrated on the public landing route with roughly 2151 KB transfer on cold non-throttled profiles.
+- `heavy_dom`: 16 samples, concentrated on the tasks route with roughly 6066 DOM nodes on cold non-throttled profiles.
 
 Representative live timings from the report:
 
-- Public landing mobile-390 cold FCP p95: 972 ms.
-- Provider/login entry mobile-390-throttled cold FCP: 1592 ms.
-- CRM contact detail mobile-390-throttled cold FCP: 1424 ms, LCP: 3188 ms.
-- Conversations mobile-390-throttled cold FCP: 1240 ms, LCP: 3824 ms.
-- API p95 on sampled authenticated routes stayed below current draft budgets.
+- Public landing mobile-390 cold FCP/LCP p95: 820 ms; transfer p95: 2151 KB.
+- Provider/login entry mobile-390-throttled cold FCP p95: 1616 ms; LCP p95: 3296 ms.
+- CRM contact detail mobile-390-throttled cold FCP p95: 1336 ms; LCP p95: 3064 ms; request p95: 53.
+- Conversations mobile-390-throttled cold FCP p95: 1276 ms; LCP p95: 3828 ms; request p95: 57.
+- Tasks desktop/tablet/mobile non-throttled cold samples hit the heavy DOM budget with roughly 6066 DOM nodes; throttled mobile cold FCP/LCP p95 stayed at 1660/3416 ms.
+- API p95 on sampled authenticated routes stayed below current draft budgets; worst shown in the report is the tasks throttled API p95 at 1776 ms, below the 2200 ms throttled budget.
 
 ## Why This Path
 

@@ -39544,9 +39544,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   choosing a dedicated same-repo One Time app shell next while preserving
   shared backend/API/contact/outbox/agent/ticket contracts.
 - Live baseline against `https://join.onetimeonetime.com` at deploy SHA
-  `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1` measured 88 samples, 0 skipped,
-  and 21 attention samples: public landing transfer, tasks DOM weight, and one
-  throttled CRM contact-detail long-task case.
+  `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1` measured 160 samples, 0 skipped,
+  and 32 attention samples: public landing transfer and tasks DOM weight.
 - No sends, form submissions, button clicks, provider mutations, Railway
   mutations, or production data mutations occurred; `REQ-20260713-908` and
   `REQ-20260713-911` are now ready.
+- Added Product Quality gate markers to the active addendum task packets and
+  reran `watchdog:protocol-drift` to 0 findings; current addendum audit
+  artifacts are mapped, while older repo-wide audit-governance backlog remains
+  outside this scoped packet.
+
+## 2026-07-13 - One Time dedicated provider shell routing local proof
+
+- Started `REQ-20260713-908` with a bounded routing slice: normal One Time
+  provider login and `/provider.html?admin_provider=one-time` now stay in the
+  dedicated provider shell instead of redirecting to the shared Operations
+  shell by default.
+- Preserved the scoped Operations route as an explicit fallback through
+  `ops_fallback=1` and registered
+  `ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK`.
+- Local proof passed: provider login/review navigation tests `11/11`,
+  route-role/action-coverage tests `11/11`, local provider CRM layout smoke,
+  action watchdog, secrets audit, execution-run validation, and whitespace
+  check. Deploy/live smoke is next before calling the slice deployed.

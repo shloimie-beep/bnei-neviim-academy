@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T04:36:59.060Z",
+  "generated_at": "2026-07-13T05:56:19.273Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -39,6 +39,7 @@
     "docs/architecture/bot-context-and-ticket-routing.md",
     "docs/architecture/community-dialogue-map.md",
     "docs/architecture/no-ghl-policy.md",
+    "docs/architecture/one-time-app-shell-adr-2026-07-13.md",
     "docs/architecture/onetime-single-tenant-split.md",
     "docs/architecture/platform-core-backend-contracts.md",
     "docs/architecture/service-provider-studio-prompt-engine.md",
@@ -392,6 +393,7 @@
     "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/manifest.json",
     "ops/prompt-packets/2026-07-12-onetime-landing-visual-revision/00-control-tower.md",
     "ops/prompt-packets/2026-07-12-onetime-landing-visual-revision/01-current-state-visual-audit.md",
+    "ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json",
     "ops/prompt-packets/README.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/00-control-tower.sample.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/01-current-state-visual-audit.sample.md",
@@ -644,10 +646,18 @@
     "tasks-pending/2026-07-12-onetime-wapi-webhook-bot-not-responding.md",
     "tasks-pending/2026-07-12-shared-crm-communication-agents-addendum.md",
     "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md",
+    "tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
     "tasks-pending/2026-07-13-onetime-signup-bots-ticket-approval.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"
   ],
   "finding_count": 0,
-  "findings": []
+  "findings": [],
+  "mapped_requirement_ids": [
+    "REQ-20260713-907",
+    "REQ-20260713-908",
+    "REQ-20260713-909"
+  ],
+  "status": "PASS",
+  "closeout_summary": "0 findings after adding Product Quality gate markers to the active One Time task packets."
 }

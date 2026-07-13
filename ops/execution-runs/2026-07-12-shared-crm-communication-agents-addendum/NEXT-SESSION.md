@@ -25,14 +25,14 @@ Architecture/performance result:
 - ADR: `docs/architecture/one-time-app-shell-adr-2026-07-13.md`.
 - Baseline: `ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md`.
 - Baseline target: `https://join.onetimeonetime.com`, live SHA `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
-- Result: 88 measured samples, 0 skipped, 21 attention samples, no production writes, no failed-request budget breaches, no console-error budget breaches, no direct slow API budget breaches.
-- Attention categories: public landing transfer, tasks DOM weight, and one throttled CRM contact-detail long-task sample.
+- Result: 160 measured samples, 0 skipped, 32 attention samples, no production writes, no failed-request budget breaches, no console-error budget breaches, no direct slow API budget breaches.
+- Attention categories: public landing transfer and tasks DOM weight.
 - Decision: implement a dedicated same-repo One Time app shell next, while keeping shared backend/API/contact/outbox/agent/ticket contracts. Full separate app is deferred until evidence proves the lighter split is insufficient.
 
 Immediate next action:
 
-1. Start `REQ-20260713-908`: dedicated same-repo One Time app shell and route-level modules.
-2. Preserve old-shell fallback and shared backend contracts while removing unrelated Operations route weight from the One Time critical path.
+1. Finish the first `REQ-20260713-908` routing slice: commit, push, deploy exact SHA, and live-smoke `/provider.html?admin_provider=one-time&section=crm` for the dedicated shell plus `ops_fallback=1` for the scoped Operations fallback.
+2. Continue route-module extraction after live proof, preserving shared backend contracts while removing unrelated Operations route weight from the One Time critical path.
 3. Start or queue `REQ-20260713-911`: Server-Timing/trace IDs, API handler/database/pool timings, route-transition/RUM metrics, bundle/route budgets, and regression gates.
 4. Keep `REQ-20260713-906` blocked until the owner aliases are configured through the approved secret path.
 5. Do not enable public WhatsApp auto-reply, send to non-owner contacts, or expose raw destination values.

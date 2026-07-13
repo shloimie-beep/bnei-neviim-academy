@@ -1361,11 +1361,13 @@
                     <strong>ADMIN ON RABBI ACCOUNT</strong>
                     <span>Start from Operations to open the Rabbi / One Time workspace safely. This page never asks for Rabbi, student, or member passwords.</span>
                     <a data-action-id="ACTION-ONETIME-PROVIDER-SESSION-EXIT" href="/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi">Return to Super Admin Inbox</a>
+                    <a data-action-id="ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK" href="/provider.html?admin_provider=one-time&section=${escapeHtml(activeProviderSection || 'overview')}&ops_fallback=1">Operations fallback</a>
                 `
                 : `
                     <strong>Scoped Rabbi workspace</strong>
                     <span>Provider tools here stay inside the Rabbi / One Time workspace. Platform setup cards stay in Operations.</span>
                     <a data-action-id="ACTION-ONETIME-PROVIDER-SESSION-EXIT" href="/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi">Back to Operations</a>
+                    <a data-action-id="ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK" href="/provider.html?admin_provider=one-time&section=${escapeHtml(activeProviderSection || 'overview')}&ops_fallback=1">Operations fallback</a>
                 `;
             const providerName = provider.provider_name || provider.display_name || 'Rabbi Eli Scheller';
             const providerTitle = document.getElementById('providerTitle');
@@ -2578,6 +2580,7 @@
                 const links = data.links || {};
                 actions.innerHTML = `
                     <a class="portal-topbar-link active" aria-current="page" href="/provider.html?admin_provider=one-time">Provider</a>
+                    <a class="portal-topbar-link secondary-link" data-action-id="ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK" href="/provider.html?admin_provider=one-time&ops_fallback=1">Operations fallback</a>
                     <a class="portal-topbar-link secondary-link" href="${escapeHtml(oneTimeRoleLink(links, 'one_time_home', '/one-time', '/one-time'))}">One Time</a>
                     <a class="portal-topbar-link secondary-link" href="${escapeHtml(oneTimeRoleLink(links, 'parent', '/parent/login', '/parent.html?review=one-time'))}">Parent</a>
                     <a class="portal-topbar-link secondary-link" href="${escapeHtml(oneTimeRoleLink(links, 'student', '/student/login', '/student.html?review=one-time'))}">Student</a>

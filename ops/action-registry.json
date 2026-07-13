@@ -871,6 +871,26 @@
       ]
     },
     {
+      "action_id": "ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK",
+      "label": "Operations fallback",
+      "surface": "one_time_provider_dedicated_shell",
+      "route": "/provider.html?admin_provider=one-time&ops_fallback=1",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK\"]",
+      "expected_behavior": "Opens the legacy scoped Operations route only when the user explicitly chooses the fallback, preserving the dedicated One Time provider shell as the default critical path.",
+      "permission": "platform_super_admin_or_provider_owner",
+      "status": "active_navigation_fallback",
+      "test": {
+        "type": "static_and_browser_contract",
+        "expected_result": "Default /provider.html?admin_provider=one-time serves the dedicated provider shell without operations-shell.js; adding ops_fallback=1 redirects to the scoped Operations URL."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-ONETIME-MEMBER-PRIVATE-QUESTION",
       "label": "Submit Question",
       "surface": "one_time_member_entry",

@@ -1,6 +1,7 @@
 # One Time Owner-Test Readiness
 
 Checked at: 2026-07-13T05:10:06.583Z
+Requirement: REQ-20260713-906
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Mode: owner_test_readiness_no_send
 
