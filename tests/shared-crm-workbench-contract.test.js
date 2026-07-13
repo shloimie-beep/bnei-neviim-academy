@@ -231,12 +231,17 @@ test('Operations CRM workspace tabs are enabled surfaces, not disabled placehold
   assert.match(operations, /function renderFirstPartyCrmConversationDtoPanel\(card = \{\}\)/);
   assert.match(operations, /function firstPartyCrmConversationOpenButton\(item = \{\}, card = \{\}\)/);
   assert.match(operations, /function openFirstPartyCrmConversationThread\(event, contactId = '', conversationId = '', preferredChannel = ''\)/);
-  assert.match(operations, /function renderFirstPartyCrmTaskDtoPanel\(card = \{\}\)/);
+  assert.match(operations, /function renderFirstPartyCrmTaskDtoActions\(card = \{\}, item = \{\}, readOnly = false\)/);
+  assert.match(operations, /function renderFirstPartyCrmTaskDtoPanel\(card = \{\}, readOnly = false\)/);
+  assert.match(operations, /function updateFirstPartyCrmTaskDto\(event, contactId, taskId, mode = 'complete'\)/);
   assert.match(operations, /onclick="setFirstPartyCrmWorkspaceTab\(\$\{attrJson\(tab\.id\)\}\)"/);
   assert.match(operations, /data-crm-tab-panel="conversations"/);
   assert.match(operations, /data-crm-tab-panel="tasks"/);
   assert.match(operations, /data-crm-dto-source="contact-conversations"/);
   assert.match(operations, /data-crm-dto-source="contact-tasks"/);
+  assert.match(operations, /data-crm-task-dto-actions/);
+  assert.match(operations, /Completed from CRM contact workspace Tasks tab\./);
+  assert.match(operations, /Reopened by an explicit Reopen task click in the CRM contact workspace Tasks tab/);
   assert.match(operations, /data-crm-conversation-action="whatsapp"/);
   assert.match(operations, /data-crm-conversation-action="email"/);
   assert.match(operations, /Open WhatsApp thread/);
