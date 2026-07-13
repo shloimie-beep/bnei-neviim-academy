@@ -378,3 +378,22 @@
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1a8bca34048a8b0213b0a608cae5320727f6747b`.
 - PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T02-43-26-025Z-one-time-operations-crm-workbench-live-smoke.md`.
 - PASS read-only live endpoint smoke through Operations auth for selected-contact `/conversations` and `/tasks`; returned scoped One Time DTOs with `no_send=true`, `external_write_performed=false`, `aggregate_service=bna_crm_contact_service_v1`, and page limits `[5,5]`.
+- PASS `npm run operations:build` after wiring the CRM tabs to selected-contact conversation/task DTO payloads.
+- PASS `node --check public/js/operations-shell.js` and `node --check public/js/operations-deferred-renderers.js`.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js` (21/21).
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T02-53-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run secrets:audit`; 9267 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM DTO tab-consumption commit `132fdbdb454f51f7c9d073237e8c21b1e5fba070`.
+- PASS BNA Railway redeploy and doctor; deployment `d717976a-69b1-4e9d-9758-9c774b3d468d` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `a698d7a2-6531-40b2-a7e9-1b7868650f0a` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `132fdbdb454f51f7c9d073237e8c21b1e5fba070`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 132fdbdb454f51f7c9d073237e8c21b1e5fba070`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T02-57-50-282Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS deployed JS marker check for `getCrmContactConversations`, `getCrmContactTasks`, `data-crm-dto-source="contact-conversations"`, `data-crm-dto-source="contact-tasks"`, and `Promise.allSettled`.
+- PASS read-only live endpoint smoke through Operations auth for selected-contact `/conversations` and `/tasks`; returned scoped One Time DTOs with `no_send=true`, `external_write_performed=false`, `aggregate_service=bna_crm_contact_service_v1`, and page limits `[5,5]`.

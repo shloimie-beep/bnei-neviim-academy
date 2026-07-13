@@ -39371,3 +39371,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   protocol drift, link/security route watchdogs, secret audit, execution-run
   validation, BNA/One Time Railway doctors, exact-SHA One Time route smoke, live
   CRM workbench smoke, and read-only live endpoint smoke for the new DTO routes.
+
+## 2026-07-13 - CRM workspace consumes contact DTO routes
+
+- Updated the selected CRM contact workspace to fetch timeline, conversations,
+  and tasks through the canonical contact DTO endpoints in parallel.
+- Conversations and Tasks tabs now render from server-owned DTO payloads instead
+  of relying on mailbox/card fallbacks; the existing explicit linked-task
+  Complete/Reopen controls remain intact.
+- Verification passed: generated-shell check, shared CRM/service-provider
+  tests, local One Time CRM workbench smoke, focused One Time suite `76/76`,
+  action watchdog, protocol drift, secret audit, execution-run validation,
+  BNA/One Time Railway doctors, exact-SHA One Time route smoke, live CRM
+  workbench smoke, deployed JS marker checks, and read-only live endpoint smoke.

@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "generated_at": "2026-07-13T02:29:11.154Z",
+  "generated_at": "2026-07-13T02:54:17.968Z",
   "target": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts + /operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
   "scope": "Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.",
   "guardrails": {
@@ -74,7 +74,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 1,
+      "timelineRequestsAfterSelect": 3,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -167,7 +167,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 1,
+      "timelineRequestsAfterSelect": 3,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -260,7 +260,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 1,
+      "timelineRequestsAfterSelect": 3,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -353,7 +353,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 1,
+      "timelineRequestsAfterSelect": 3,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -446,7 +446,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 1,
+      "timelineRequestsAfterSelect": 3,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -539,7 +539,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 1,
+      "timelineRequestsAfterSelect": 3,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -632,7 +632,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 2,
+      "timelineRequestsAfterSelect": 6,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -725,7 +725,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 2,
+      "timelineRequestsAfterSelect": 6,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -818,7 +818,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 2,
+      "timelineRequestsAfterSelect": 6,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -911,7 +911,7 @@
         "clearedSelectedState": true
       },
       "listRequestsAfterSelect": 1,
-      "timelineRequestsAfterSelect": 2,
+      "timelineRequestsAfterSelect": 6,
       "appRootMutationsAfterSelect": 0,
       "searchListRequestDelta": 1,
       "legacyTableClosedCount": 0,
@@ -960,7 +960,7 @@
       "pageErrors": [],
       "failedRequests": [],
       "badResponses": [],
-      "mailboxUrl": "http://127.0.0.1:62786/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
+      "mailboxUrl": "http://127.0.0.1:59182/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
       "passed": true
     }
   ]

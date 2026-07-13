@@ -195,3 +195,13 @@
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1a8bca34048a8b0213b0a608cae5320727f6747b` passed.
 - `ops/live-smokes/2026-07-13T02-43-26-025Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards and selected timeline read-only.
 - Read-only live endpoint smoke through Operations auth returned scoped One Time CRM cards plus `/conversations` and `/tasks` DTOs with `aggregate_service=bna_crm_contact_service_v1`, page limits `[5,5]`, `no_send=true`, and `external_write_performed=false`.
+- `public/operations.html` / `public/js/operations-shell.js` - selected CRM contact workspace now fetches timeline, conversations, and tasks through the canonical contact DTO endpoints in parallel, stores separate detail payloads, and renders the Conversations and Tasks tabs from server-owned DTOs instead of mailbox/card fallbacks.
+- `tests/shared-crm-workbench-contract.test.js` / `tests/service-provider-scope-routes.test.js` - contract tests now pin `getCrmContactConversations`, `getCrmContactTasks`, DTO payload state, `Promise.allSettled` readback, and `data-crm-dto-source` tab markers.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=132fdbdb454f51f7c9d073237e8c21b1e5fba070`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=132fdbdb454f51f7c9d073237e8c21b1e5fba070`.
+- BNA post-deploy doctor - Railway deployment `d717976a-69b1-4e9d-9758-9c774b3d468d` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `a698d7a2-6531-40b2-a7e9-1b7868650f0a` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 132fdbdb454f51f7c9d073237e8c21b1e5fba070` passed.
+- `ops/live-smokes/2026-07-13T02-57-50-282Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards and selected timeline read-only after the UI DTO-consumption slice.
+- Deployed JS marker check confirmed `getCrmContactConversations`, `getCrmContactTasks`, `data-crm-dto-source="contact-conversations"`, `data-crm-dto-source="contact-tasks"`, and `Promise.allSettled`.
+- Read-only live endpoint smoke through Operations auth returned scoped One Time CRM cards plus `/conversations` and `/tasks` DTOs with `aggregate_service=bna_crm_contact_service_v1`, page limits `[5,5]`, `no_send=true`, and `external_write_performed=false`.
