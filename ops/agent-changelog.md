@@ -40393,3 +40393,20 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   public auto-reply activation, CRM production write, payment/access mutation,
   raw destination/chat/token logging, or destructive production mutation was
   performed.
+
+## 2026-07-13 - One Time safe activation read-only proof added
+
+- Fixed the WAPI readiness check so redacted production Railway token presence
+  counts as One Time-scoped production readiness without printing or using the
+  token value.
+- Proved WAPI setup, class-link/webhook/profile readiness, Resend readiness,
+  scoped email/WhatsApp thread DTOs, delivery outbox DTOs, zero-task behavior,
+  idempotency, opt-out/policy gates, OpenAI fallback, and outbox handoff.
+- Remaining blocker: owner approval/secret update for
+  `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
+  Owner-only sends remain separately blocked by missing secure owner-test email
+  and WhatsApp aliases.
+- Guardrails: no email send, WhatsApp/WAPI send, Telegram send, public
+  auto-reply mutation, CRM production write, provider mutation, credential
+  mutation, payment/access mutation, raw private payload logging, or destructive
+  production mutation was performed.

@@ -1,12 +1,12 @@
 # One Time External Setup Readiness Check
 
-Generated: 2026-07-09T15:09:19.193Z
+Generated: 2026-07-13T16:24:40.248Z
 
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Mode: full_setup
 External write performed: false
 Secret values printed: false
-Ready items: 5/8
+Ready items: 7/8
 All external setup ready: false
 
 ## Items
@@ -37,7 +37,7 @@ Warnings: Railway custom domain and GoDaddy DNS are verified from ops\domain-rea
 Ready: true
 Clears: REQ-20260701-708
 Missing: none
-Warnings: Zoom/class link is present by redacted OneTime Railway readback; raw link is not written to evidence. Zoom account/client credentials are present by safe keyholder alias.
+Warnings: Zoom/class link is present by redacted One Time Railway readback; raw link is not written to evidence. Zoom account/client credentials are present by safe keyholder alias.
 
 ### SETUP-ONETIME-VIMEO-001 - Vimeo / Drive / OBS media setup
 
@@ -48,17 +48,17 @@ Warnings: Vimeo client credentials, access token, and One Time Drive/drop folder
 
 ### SETUP-ONETIME-STRIPE-001 - Rabbi Stripe sandbox
 
-Ready: false
+Ready: true
 Clears: REQ-20260701-714
-Missing: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias
+Missing: none
 Warnings: Live Stripe key appears configured; sandbox-only smoke must not use it.
 
 ### SETUP-ONETIME-WHAPI-001 - Whapi/WAPI provider details
 
-Ready: false
+Ready: true
 Clears: not mapped
-Missing: whapi_wapi_instance_id, whapi_wapi_phone_number
-Warnings: none
+Missing: none
+Warnings: WAPI token is present by redacted One Time Railway readback; raw credential is not written to evidence. Whapi/WAPI instance id is present by redacted One Time Railway readback; raw value is not written to evidence. Whapi/WAPI phone metadata is present by redacted One Time Railway readback; raw phone is not written to evidence.
 
 ### SETUP-ONETIME-CAMPAIGN-001 - Campaign seed / real campaign
 

@@ -304,6 +304,7 @@ export function buildOneTimeWapiReadiness(options = {}) {
           ok: railwayVariables.ok,
           source: railwayVariables.source,
           key_count: railwayVariables.key_count,
+          one_time_token_present: railwayVariables.one_time_wapi_token_present === true,
           class_link_present: railwayVariables.one_time_class_link_present === true,
           instance_id_present: railwayVariables.one_time_whapi_instance_present === true,
           phone_metadata_present: railwayVariables.one_time_whapi_phone_present === true,

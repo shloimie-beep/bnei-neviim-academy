@@ -2296,7 +2296,7 @@
         "REQ-20260712-305"
       ],
       "status": "blocked",
-      "implementation_status": "Blocked after completing the deployable no-send activation proof: One Time WAPI/Rabbi Telegram safe gate is deployed, exact-SHA live readback and route smokes pass, WAPI provider setup is ready, OpenAI/agent/inbound/outbox/Resend/WAPI/Rabbi policy contracts pass, public auto-reply remains fail-closed behind the Telegram confirmation flag, and owner-test email/WhatsApp sends remain blocked by missing secure owner aliases. No external email, WhatsApp, Telegram, CRM, payment/access, or public auto-reply send was performed.",
+      "implementation_status": "Blocked after completing the deployable no-send activation proof: One Time WAPI/Rabbi Telegram safe gate is deployed, exact-SHA live readback and route smokes pass, WAPI provider setup is ready, OpenAI/agent/inbound/outbox/Resend/WAPI/Rabbi policy contracts pass, public auto-reply remains fail-closed behind the Telegram confirmation flag, and additional read-only DTO/safe-smoke evidence was captured. Owner-test email/WhatsApp sends remain blocked by missing secure owner aliases. No external email, WhatsApp, Telegram, CRM, payment/access, or public auto-reply send was performed.",
       "can_continue_without_operator": false,
       "next_action": "Operator/secure runtime owner must configure secure owner-test aliases to continue bounded owner sends, and must explicitly approve ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM before unrestricted public WhatsApp auto-reply activation. Continue other unblocked requirements meanwhile.",
       "acceptance_criteria": [
@@ -2315,7 +2315,12 @@
         "ops/live-smokes/2026-07-13T16-18-12-320Z-onetime-provider-route-module-live-smoke.json",
         "ops/live-smokes/2026-07-13T16-18-59-085Z-rabbi-onetime-landing-smoke.md",
         "ops/watchdog-audits/2026-07-13T16-18-40-701Z-onetime-owner-test-readiness.md",
-        "ops/watchdog-audits/2026-07-13T16-18-40-701Z-onetime-owner-test-readiness.json"
+        "ops/watchdog-audits/2026-07-13T16-18-40-701Z-onetime-owner-test-readiness.json",
+        "ops/one-time-mishnah/integration-smokes/2026-07-13T16-15-59-598Z-resend-vimeo-stripe-safe-smoke.md",
+        "ops/one-time-mishnah/integration-smokes/2026-07-13T16-15-59-598Z-resend-vimeo-stripe-safe-smoke.json",
+        "ops/live-smokes/2026-07-13T16-18-40-554Z-one-time-crm-whatsapp-thread-dto-live-smoke.md",
+        "ops/live-smokes/2026-07-13T16-18-40-557Z-one-time-crm-email-thread-dto-live-smoke.md",
+        "ops/live-smokes/2026-07-13T16-18-39-947Z-one-time-crm-delivery-outbox-dto-live-smoke.md"
       ],
       "verification": [
         "npm run app:smoke:rabbi-agent-review-direct-proof",
@@ -2339,7 +2344,12 @@
         "Post-deploy BNA_RUNTIME_ENV_FILE + BNA_RUNTIME_SECRETS_DIR npm run telegram:rabbi:readiness PASS: Rabbi profile ready, dry-run only, external_write_performed=false",
         "Post-deploy exact-SHA smoke rerun: npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 49f3edda2da37e3afd9bdf3056ab5f6fc91e981c PASS",
         "No-send activation contract suite PASS 39/39: communication-agent response runtime, canonical inbound pipeline/ingest, delivery outbox/cron contracts, Resend inbound webhook/CRM, communication-agent model",
-        "No-send WAPI/Rabbi/bot policy suite PASS 30/30: WAPI scoped send contract, provider lead bot, Rabbi Telegram notifications"
+        "No-send WAPI/Rabbi/bot policy suite PASS 30/30: WAPI scoped send contract, provider lead bot, Rabbi Telegram notifications",
+        "node --test tests\\communication-agent-response-runtime.test.js tests\\communication-agent-model.test.js tests\\service-provider-lead-bot.test.js tests\\inbound-communication-pipeline.test.js tests\\resend-inbound-crm.test.js tests\\one-time-delivery-outbox.test.js tests\\one-time-wapi-scope-contract.test.js PASS 45/45",
+        "npm run one-time:smoke:resend-vimeo-stripe PASS no-send/no-upload/no-charge; Resend send_allowed=true",
+        "npm run app:smoke:onetime-crm-whatsapp-thread-dto -- https://join.onetimeonetime.com --expected-sha 4c38c4674c2877a701f99de788c9e086a74d0de6 PASS",
+        "npm run app:smoke:onetime-crm-email-thread-dto -- https://join.onetimeonetime.com --expected-sha 4c38c4674c2877a701f99de788c9e086a74d0de6 PASS",
+        "npm run app:smoke:onetime-crm-delivery-outbox-dto -- https://join.onetimeonetime.com --expected-sha 4c38c4674c2877a701f99de788c9e086a74d0de6 PASS"
       ],
       "implementation_files": [
         "src/lib/bna/telegram-notifications.js",

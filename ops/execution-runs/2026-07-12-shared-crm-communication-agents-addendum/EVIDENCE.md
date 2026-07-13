@@ -190,7 +190,7 @@
 - `config/service-provider-sites/one-time.json` - site lead-bot metadata points to `one_time_parent_information_agent` and the new public assistant display name.
 - `ops/action-registry.json` - registers `ACTION-ONETIME-GET-CURRENT-CLASS-LINK` as the server-authorized WhatsApp class-link action with raw-link redaction requirements.
 - `tests/service-provider-lead-bot.test.js` - covers public facts, no stale portal/trial/pricing claims, consent/request class-link policy, redacted audit body, and server guard wiring.
-- WAPI readiness no-send proof - `node scripts/check-onetime-wapi-readiness.mjs` reports outbound configured, One Time scoped credentials, provider setup ready, auto-reply ready/enabled/approved, class link configured, and Telegram notification approval missing; no WhatsApp send, CRM mutation, external write, or secret print occurred.
+- WAPI readiness no-send proof - `node scripts/check-onetime-wapi-readiness.mjs` reports outbound configured, One Time scoped credentials, provider setup ready, class link configured, and auto-reply gated by missing Telegram notification approval; no WhatsApp send, CRM mutation, external write, or secret print occurred.
 - One Time Railway deployment `eac01ac4-5589-4c24-b21f-5aea52aeb8d6` - public WhatsApp agent profile/policy code commit `9fb436760872bab77019b3769652c8b517025c8d` deployed and reached `SUCCESS`.
 - One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=9fb436760872bab77019b3769652c8b517025c8d`.
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 9fb436760872bab77019b3769652c8b517025c8d` passed.
@@ -843,3 +843,39 @@
   send, public auto-reply enablement, CRM production write, payment/access
   mutation, raw destination/chat/token logging, or destructive production
   mutation was performed by this final-report proof.
+
+## Safe One Time Activation Proof - Partial Closeout
+
+- Requirement: `REQ-20260712-313`.
+- Runtime/deployed head used for live readbacks:
+  `4c38c4674c2877a701f99de788c9e086a74d0de6`.
+- Readiness evidence: `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`
+  now reports outbound configured, credential scope `one_time_scoped`,
+  provider setup ready, auto-reply fail-closed behind
+  `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM`, class link configured, webhook
+  secret present, and no send/write/mutation performed.
+- Owner-test readiness evidence:
+  `ops/watchdog-audits/2026-07-13T16-18-40-701Z-onetime-owner-test-readiness.md`
+  reports Resend send allowed and WAPI setup ready, while owner email/WhatsApp
+  test aliases remain missing.
+- Safe integration evidence:
+  `ops/one-time-mishnah/integration-smokes/2026-07-13T16-15-59-598Z-resend-vimeo-stripe-safe-smoke.md`
+  passed with no Resend send, Vimeo upload/write, Stripe checkout creation, or
+  charge.
+- Live read-only CRM evidence:
+  `ops/live-smokes/2026-07-13T16-18-40-554Z-one-time-crm-whatsapp-thread-dto-live-smoke.md`,
+  `ops/live-smokes/2026-07-13T16-18-40-557Z-one-time-crm-email-thread-dto-live-smoke.md`,
+  and `ops/live-smokes/2026-07-13T16-18-39-947Z-one-time-crm-delivery-outbox-dto-live-smoke.md`.
+- Code/test evidence: `scripts/check-onetime-wapi-readiness.mjs` now counts
+  redacted One Time Railway token presence as production readiness evidence
+  without printing or using the token; `tests/one-time-wapi-scope-contract.test.js`
+  covers that exact Railway-readback case.
+- Blocker owner: Shloimie / One Time owner secret approver.
+- Remaining blocker: full Telegram notification activation requires
+  `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
+  Owner-only sends remain separately blocked by `REQ-20260713-906` secure
+  owner-test aliases.
+- Guardrails: no email send, WhatsApp/WAPI send, Telegram send, public
+  auto-reply mutation, CRM production write, provider mutation, credential
+  mutation, payment/access mutation, raw private payload logging, or destructive
+  production mutation was performed.

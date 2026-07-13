@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T15:09:19.193Z",
+  "generated_at": "2026-07-13T16:24:40.248Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "external_write_performed": false,
@@ -190,9 +190,9 @@
         "id": "SETUP-ONETIME-WHAPI-001",
         "priority": 2,
         "title": "Whapi/WAPI provider details",
-        "current_status": "blocked_external_input",
+        "current_status": "provider_setup_ready_live_send_gated",
         "operator_blocker": true,
-        "current_evidence": "OneTime-scoped outbound token and hosted class link are configured; instance ID, sender phone metadata, auto-reply enable flag, and explicit approval flag are missing.",
+        "current_evidence": "One Time-scoped outbound token, Whapi instance ID, sender metadata, webhook secret, and hosted class link are configured in ignored local secret storage and Railway by redacted readiness readback. Auto-reply/live Telegram flags and one approved no-broad-send provider proof remain gated.",
         "required_fields": [
           "provider_account",
           "phone_number",
@@ -236,10 +236,10 @@
   "railway_variable_readback": {
     "ok": true,
     "attempted": true,
-    "source": "railway_cli_session_fallback",
+    "source": "railway_token_or_env",
     "service": "one-time-web",
     "environment": "production",
-    "key_count": 52,
+    "key_count": 79,
     "database_url_present": true,
     "database_url_length": 98,
     "database_url_usable": true,
@@ -249,13 +249,24 @@
     "one_time_drive_drop_folder_present": true,
     "one_time_zoom_session_present": true,
     "one_time_class_link_present": true,
-    "one_time_wapi_token_present": false,
-    "one_time_whapi_instance_present": false,
-    "one_time_whapi_phone_present": false,
+    "one_time_class_reminders_enabled_true": true,
+    "one_time_class_reminders_confirm_approved": true,
+    "cron_secret_present": true,
+    "one_time_class_reminder_scheduler_ready": true,
+    "one_time_wapi_token_present": true,
+    "one_time_whapi_instance_present": true,
+    "one_time_whapi_phone_present": true,
+    "one_time_wapi_webhook_secret_present": true,
+    "one_time_wapi_auto_reply_enabled_true": true,
+    "one_time_wapi_auto_reply_confirm_approved": true,
+    "one_time_provider_lead_bot_mode_live": true,
+    "one_time_provider_lead_bot_telegram_confirm_approved": false,
+    "one_time_owner_test_email_present": false,
+    "one_time_owner_test_whatsapp_present": false,
     "vimeo_access_token_present": false,
     "vimeo_private_smoke_target_present": false
   },
-  "ready_count": 5,
+  "ready_count": 7,
   "total_count": 8,
   "all_required_external_setup_ready": false,
   "post_setup_execution_packet": "ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/00-railway-db-join-domain-deploy-live-smoke.md",
@@ -318,7 +329,7 @@
       "ready": true,
       "missing_fields": [],
       "warnings": [
-        "Zoom/class link is present by redacted OneTime Railway readback; raw link is not written to evidence.",
+        "Zoom/class link is present by redacted One Time Railway readback; raw link is not written to evidence.",
         "Zoom account/client credentials are present by safe keyholder alias."
       ],
       "verification_after_setup": [
@@ -347,11 +358,8 @@
       "clears_requirements": [
         "REQ-20260701-714"
       ],
-      "ready": false,
-      "missing_fields": [
-        "rabbi_stripe_test_secret_key_alias_or_test_key_status",
-        "67_month_product_price_id_or_alias"
-      ],
+      "ready": true,
+      "missing_fields": [],
       "warnings": [
         "Live Stripe key appears configured; sandbox-only smoke must not use it."
       ],
@@ -363,12 +371,13 @@
       "id": "SETUP-ONETIME-WHAPI-001",
       "title": "Whapi/WAPI provider details",
       "clears_requirements": [],
-      "ready": false,
-      "missing_fields": [
-        "whapi_wapi_instance_id",
-        "whapi_wapi_phone_number"
+      "ready": true,
+      "missing_fields": [],
+      "warnings": [
+        "WAPI token is present by redacted One Time Railway readback; raw credential is not written to evidence.",
+        "Whapi/WAPI instance id is present by redacted One Time Railway readback; raw value is not written to evidence.",
+        "Whapi/WAPI phone metadata is present by redacted One Time Railway readback; raw phone is not written to evidence."
       ],
-      "warnings": [],
       "verification_after_setup": [
         "safe test send only in later exact packet"
       ]
@@ -394,26 +403,6 @@
     }
   ],
   "blockers": [
-    {
-      "id": "SETUP-ONETIME-STRIPE-001",
-      "title": "Rabbi Stripe sandbox",
-      "missing_fields": [
-        "rabbi_stripe_test_secret_key_alias_or_test_key_status",
-        "67_month_product_price_id_or_alias"
-      ],
-      "warnings": [
-        "Live Stripe key appears configured; sandbox-only smoke must not use it."
-      ]
-    },
-    {
-      "id": "SETUP-ONETIME-WHAPI-001",
-      "title": "Whapi/WAPI provider details",
-      "missing_fields": [
-        "whapi_wapi_instance_id",
-        "whapi_wapi_phone_number"
-      ],
-      "warnings": []
-    },
     {
       "id": "SETUP-ONETIME-CAMPAIGN-001",
       "title": "Campaign seed / real campaign",

@@ -221,7 +221,7 @@ Current status: `active`
 - The deterministic class-link action now releases only for `class_info_requested`, `class_info_consented`, or verified `active_member` policy states; raw class link remains out of persisted audit body, prompt context, metadata, diagnostics, and repo evidence.
 - Public WhatsApp readiness reports the new public assistant identity and falls back to `/one-time/signup` when runtime WhatsApp number config is missing.
 - Local verification passed: `node --check src/lib/bna/provider-lead-bot.js`, `node --check server.js`, `node --test tests/service-provider-lead-bot.test.js` (10/10), `node --test tests/one-time-brand-helper-isolation.test.js` (11/11), `npm run test:onetime:focused` (76/76), `npm run watchdog:actions`, `npm run secrets:audit`, `npm run bna:run:validate`, and `git diff --check`.
-- `node scripts/check-onetime-wapi-readiness.mjs` remained no-send/no-write and reported outbound configured, One Time scoped credentials, provider setup ready, auto-reply ready/enabled/approved, and class link configured.
+- `node scripts/check-onetime-wapi-readiness.mjs` remained no-send/no-write and reported outbound configured, One Time scoped credentials, provider setup ready, class link configured, and auto-reply gated by missing Telegram notification approval.
 - Remaining activation blocker: `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` must equal `APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
 - Deployed code commit `9fb436760872bab77019b3769652c8b517025c8d` to One Time Railway deployment `eac01ac4-5589-4c24-b21f-5aea52aeb8d6`; Railway doctor reached `SUCCESS`.
 - Live proof passed: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 9fb436760872bab77019b3769652c8b517025c8d`.
@@ -660,7 +660,6 @@ Current status: `active`
   public auto-reply enablement, CRM production write, payment/access mutation,
   raw destination/chat/token logging, or destructive production mutation was
   performed.
-
 ## 2026-07-13 - Final Release Matrix Blocked With Current Proof
 
 - `REQ-20260712-314` is Blocked, not Done, because the final live-send/readback
@@ -681,3 +680,31 @@ Current status: `active`
   public auto-reply enablement, CRM production write, payment/access mutation,
   raw destination/chat/token logging, or destructive production mutation was
   performed by this final-report proof.
+
+## 2026-07-13 - Safe One Time activation proof partially complete; Telegram approval blocked
+
+- `REQ-20260712-313` is now `blocked`, not `not_started`.
+- Safe proof completed for the parts Codex can verify without external sends:
+  WAPI production setup is read by redacted Railway variable readback as
+  `credential_scope=one_time_scoped`, provider setup ready, auto-reply
+  fail-closed behind `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM`, class link
+  configured, webhook secret present, and provider profile
+  `one_time_parent_information_agent` version `2026-07-13-v3` valid.
+- Focused convergence tests passed `45/45`, covering Resend inbound, WAPI
+  webhook/runtime wiring, contact/conversation capture, zero ordinary tasks,
+  duplicate/idempotency behavior, opt-out/policy gates, OpenAI response runtime
+  fallback, and delivery outbox handoff.
+- Live read-only DTO smokes passed at deployed SHA
+  `4c38c4674c2877a701f99de788c9e086a74d0de6` for scoped WhatsApp thread,
+  email thread, and delivery outbox readback.
+- Resend safe smoke passed with `send_allowed=true`; the smoke intentionally
+  did not call Resend `/emails` without an approved target recipient.
+- Blocker owner: Shloimie / One Time owner secret approver.
+- Blocker: `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` is not approved, so
+  full Telegram notification activation is blocked. Owner-only email/WhatsApp
+  send tests remain separately blocked by `REQ-20260713-906` missing secure
+  owner-test aliases.
+- Guardrails: no email send, WhatsApp/WAPI send, Telegram send, public
+  auto-reply mutation, CRM production write, provider mutation, credential
+  mutation, payment/access mutation, raw private payload logging, or destructive
+  production mutation was performed.

@@ -22,6 +22,7 @@
       "ok": true,
       "source": "railway_token_or_env",
       "key_count": 79,
+      "one_time_token_present": true,
       "class_link_present": true,
       "instance_id_present": true,
       "phone_metadata_present": true,

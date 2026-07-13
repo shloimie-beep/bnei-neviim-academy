@@ -439,7 +439,7 @@
 - PASS `npm run secrets:audit`; 9265 tracked paths checked, 0 tracked secret-risk files found.
 - PASS `npm run bna:run:validate`; broader addendum work remains open.
 - PASS `git diff --check` with line-ending warnings only after the public WhatsApp agent slice.
-- BLOCKED/EXPECTED `node scripts/check-onetime-wapi-readiness.mjs`: no-send/no-write readiness shows outbound configured, One Time scoped credentials, provider setup ready, auto-reply ready/enabled/approved, and class link configured, but Telegram notifications are blocked until `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
+- BLOCKED/EXPECTED `node scripts/check-onetime-wapi-readiness.mjs`: no-send/no-write readiness shows outbound configured, One Time scoped credentials, provider setup ready, and class link configured, but auto-reply/Telegram notifications are blocked until `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
 - PASS `git push origin master` for public WhatsApp agent commit `9fb436760872bab77019b3769652c8b517025c8d`.
 - PASS One Time Railway redeploy and doctor; deployment `eac01ac4-5589-4c24-b21f-5aea52aeb8d6` reached `SUCCESS`.
 - PASS One Time live `/api/deploy-info`; deployed SHA `9fb436760872bab77019b3769652c8b517025c8d`.
@@ -1187,3 +1187,31 @@
   not configured, so no external owner send was attempted.
 - BLOCKED unrestricted public WhatsApp auto-reply: explicit
   `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` approval is not configured.
+
+## Safe One Time Activation Read-Only DTO Proof - 2026-07-13
+
+- PASS `node --check scripts/check-onetime-wapi-readiness.mjs`.
+- PASS `node --test tests\one-time-wapi-scope-contract.test.js`; 5/5 tests passed.
+- PASS focused convergence suite:
+  `node --test tests\communication-agent-response-runtime.test.js tests\communication-agent-model.test.js tests\service-provider-lead-bot.test.js tests\inbound-communication-pipeline.test.js tests\resend-inbound-crm.test.js tests\one-time-delivery-outbox.test.js tests\one-time-wapi-scope-contract.test.js`;
+  45/45 tests passed.
+- PASS `npm run one-time:wapi:readiness` generated no-send readiness with
+  provider setup ready, credential scope `one_time_scoped`, auto-reply
+  fail-closed behind `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM`, and no send.
+- PASS `npm run one-time:owner-test:readiness` generated no-send readiness with
+  Resend send allowed and WAPI setup ready; owner-test aliases remain missing
+  under `REQ-20260713-906`.
+- PASS `npm run one-time:smoke:resend-vimeo-stripe`; no-send/no-upload/no-charge
+  safe smoke, Resend send allowed.
+- PASS `npm run app:smoke:onetime-crm-whatsapp-thread-dto -- https://join.onetimeonetime.com --expected-sha 4c38c4674c2877a701f99de788c9e086a74d0de6`;
+  report `ops/live-smokes/2026-07-13T16-18-40-554Z-one-time-crm-whatsapp-thread-dto-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-email-thread-dto -- https://join.onetimeonetime.com --expected-sha 4c38c4674c2877a701f99de788c9e086a74d0de6`;
+  report `ops/live-smokes/2026-07-13T16-18-40-557Z-one-time-crm-email-thread-dto-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-delivery-outbox-dto -- https://join.onetimeonetime.com --expected-sha 4c38c4674c2877a701f99de788c9e086a74d0de6`;
+  report `ops/live-smokes/2026-07-13T16-18-39-947Z-one-time-crm-delivery-outbox-dto-live-smoke.md`.
+- PASS `npm run bna:run:validate`; work remains yes with 17 done, 3 blocked,
+  and 1 not_started requirements.
+- Guardrails: no email send, WhatsApp/WAPI send, Telegram send, public
+  auto-reply mutation, CRM production write, provider mutation, credential
+  mutation, payment/access mutation, raw private payload logging, or destructive
+  production mutation was performed.
