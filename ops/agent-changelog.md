@@ -39316,3 +39316,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining live-send blocker: this environment reports Telegram alert send
   flags disabled, so no synthetic production Telegram ticket alert/approval
   send or Codex job was created in this slice.
+
+## 2026-07-13 - CRM family and student link actions deployed
+
+- Added explicit `ACTION-CRM-LINK-FAMILY` and `ACTION-CRM-LINK-STUDENT` actions
+  to the shared CRM Family tab.
+- Link family persists local relationship metadata/tags through the scoped CRM
+  PATCH route; Link student creates a paused student shell with no login,
+  access code, class access, send, payment, import, or external CRM write.
+- Verification passed: Operations generated-shell check, shared CRM contract
+  tests `29/29`, local One Time CRM workbench smoke, focused One Time suite
+  `76/76`, action watchdog, secret audit, execution-run validation, BNA/One
+  Time Railway doctors, exact-SHA One Time route smoke, and deployed JS marker
+  checks.

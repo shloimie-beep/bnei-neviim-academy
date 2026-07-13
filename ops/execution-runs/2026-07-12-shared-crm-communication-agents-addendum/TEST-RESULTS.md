@@ -304,3 +304,19 @@
 - PASS live approval route unauthenticated guard on BNA and One Time: `401 Unauthorized`.
 - PASS `npm run telegram:rabbi:readiness` in no-send mode; Super Admin and Rabbi targets configured/ready, external_write_performed=false.
 - EXPECTED BLOCKER `node scripts/check-onetime-wapi-readiness.mjs`: no-send/no-write readiness remains blocked until `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
+- PASS `node --check server.js` after the CRM Family/Student link slice.
+- PASS `node --check public/js/operations-shell.js` after regenerating Operations shell.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/live-class-infrastructure.test.js` (29/29).
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions` with `finding_count=0`.
+- PASS `npm run secrets:audit`; 9266 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM Family/Student link commit `003e3e7fe23684a40131e53be280787811bcc8a4`.
+- PASS BNA Railway redeploy and doctor; deployment `f8ff55d2-ebe1-4f1e-8250-7a4d34e873a6` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `7e9d6c53-e77f-493a-82ea-573e6b1fcb29` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `003e3e7fe23684a40131e53be280787811bcc8a4`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 003e3e7fe23684a40131e53be280787811bcc8a4`.
+- PASS deployed JS marker checks for Family/Student link actions.

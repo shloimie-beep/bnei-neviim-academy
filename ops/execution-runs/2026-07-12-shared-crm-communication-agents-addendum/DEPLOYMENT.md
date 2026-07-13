@@ -77,3 +77,17 @@ Global production readiness remains blocked only by known external full-launch f
 - Live approval route guard: unauthenticated `POST /api/bna/support-tickets/1/approval-action` returned `401 Unauthorized` on both BNA and One Time with no ticket/job creation.
 - Telegram readiness: `npm run telegram:rabbi:readiness` passed in no-send mode; Super Admin and Rabbi Telegram targets are configured/ready, but alert send flags are disabled in this environment.
 - WAPI readiness remains no-send/no-write and blocked only by `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM`.
+
+## 2026-07-13 CRM Family/Student Link Slice Deploy
+
+- Commit: `003e3e7fe23684a40131e53be280787811bcc8a4`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true`.
+- BNA Railway doctor: deployment `f8ff55d2-ebe1-4f1e-8250-7a4d34e873a6` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=003e3e7fe23684a40131e53be280787811bcc8a4`, `target_app=bna`.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_DEPLOY_APP=one-time`.
+- One Time Railway doctor: deployment `7e9d6c53-e77f-493a-82ea-573e6b1fcb29` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=003e3e7fe23684a40131e53be280787811bcc8a4`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 003e3e7fe23684a40131e53be280787811bcc8a4` passed.
+- Deployed JS marker checks passed for `ACTION-CRM-LINK-FAMILY`, `ACTION-CRM-LINK-STUDENT`, `linkFirstPartyCrmFamily`, `linkFirstPartyCrmStudent`, `student_access_not_granted`, and `relationship:family`.

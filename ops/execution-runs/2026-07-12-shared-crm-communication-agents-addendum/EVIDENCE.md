@@ -154,3 +154,13 @@
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8f6441523a5cd3547ecd4ba633dab90c8951ffd9` passed.
 - Live approval route guard - unauthenticated `POST /api/bna/support-tickets/1/approval-action` returned `401 Unauthorized` on both BNA and One Time with no ticket/job creation.
 - `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md` - post-deploy no-send readiness audit reports Super Admin and Rabbi Telegram targets configured/ready, with alert send flags disabled in this environment.
+- `public/operations.html` / `public/js/operations-shell.js` - CRM Family tab now exposes `ACTION-CRM-LINK-FAMILY` and `ACTION-CRM-LINK-STUDENT` alongside Link member.
+- `server.js` - CRM PATCH route persists relationship metadata for first-party contacts and parent leads, and CRM contact rows read same-project paused student shells by parent email for contact workspace readback.
+- `ops/action-registry.json` - registers `ACTION-CRM-LINK-FAMILY` and `ACTION-CRM-LINK-STUDENT` as first-party local writes with no portal login, access grant, student access code, send, payment, import, or external CRM write.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local One Time CRM workbench smoke passed after the Family/Student link slice.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=003e3e7fe23684a40131e53be280787811bcc8a4`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=003e3e7fe23684a40131e53be280787811bcc8a4`.
+- BNA post-deploy doctor - Railway deployment `f8ff55d2-ebe1-4f1e-8250-7a4d34e873a6` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `7e9d6c53-e77f-493a-82ea-573e6b1fcb29` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 003e3e7fe23684a40131e53be280787811bcc8a4` passed.
+- Deployed JS marker checks confirmed `ACTION-CRM-LINK-FAMILY`, `ACTION-CRM-LINK-STUDENT`, `linkFirstPartyCrmFamily`, `linkFirstPartyCrmStudent`, `student_access_not_granted`, and `relationship:family`.
