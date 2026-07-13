@@ -1,6 +1,6 @@
 # Next Session
 
-Next unblocked batch: `REQ-20260712-311` OpenAI communication-agent response runtime with deterministic policy gates; owner-test sends remain blocked until secure owner aliases are configured.
+Next unblocked batch: `REQ-20260712-312` Communication Agents UI; owner-test sends remain blocked until secure owner aliases are configured.
 Open blocked requirement: `REQ-20260713-910`, blocked by `REQ-20260713-906`
 
 Current closeout:
@@ -11,6 +11,7 @@ Current closeout:
 - `REQ-20260712-307` is Done for the canonical inbound pipeline scope: Resend, One Time WAPI mirroring/history shape, website assistant user messages, private Rabbi Telegram support tickets, published One Time communication-agent profile/version/knowledge metadata for email/WhatsApp, and public WhatsApp lead-agent delivery-outbox handoff are deployed and live-smoked at integrated SHA `43f7c33733880745d8f1191c86fe8e196ef68baa`.
 - `REQ-20260712-308` is Done for One Time WAPI contact capture without ordinary automatic tasks: generic task creation is suppressed for One Time WAPI attention artifacts, support tickets dedupe by workspace/project/contact/thread/action class, and exact-SHA live smokes passed at `7ec31290c08ede0957dbd60b2c3253979253feba`.
 - `REQ-20260712-310` is Done for the shared One Time WhatsApp/email public agent: `one-time.json` is channel-independent with `scope.channels=[whatsapp,email]`, one shared agent version `2026-07-13-v3`, one shared knowledge snapshot reference, WhatsApp `capture_only`, email `draft`, contact/conversation capture on, automatic tasks off, and raw class-link/model/log exposure blocked. Exact deployed SHA is `6d659d76570d1089c768d9f404a6be985cb57863`.
+- `REQ-20260712-311` is Done for the OpenAI communication-agent response runtime: `src/lib/bna/crm/communication-agent-response-runtime.js` loads the published One Time agent binding/knowledge, redacts scoped conversation history, calls OpenAI Responses through an injectable runtime, enforces deterministic no-task/no-access/no-payment/no-raw-link policy, and safely falls back when OpenAI fails. `server.js` wires the WAPI webhook to call the runtime after canonical inbound persistence and before auto-reply decisions. Runtime commit is `59519bc8c902b8a29c4503cce5372dac25575c04`; wiring commit is `302567b2147c2cf0c40eb839a333c785808af1ab`.
 - Latest current app runtime proof is deployed on BNA and One Time at `6d659d76570d1089c768d9f404a6be985cb57863`; the prior CRM copy cleanup runtime proof remains `a8df4c9b9cc091028105a16430aae6927cd0b429`.
 - Do not reopen `REQ-20260712-302` for deferred BNA frontend parity; create/use a later BNA adoption packet if that becomes active.
 - `RAW-20260713-004` One Time Drive/Classroom automation is registered separately. `REQ-20260713-912` and `REQ-20260713-913` are Done; continue `REQ-20260713-914` Drive intake orchestrator or the visual audit packet only after its stated gates.
@@ -26,10 +27,10 @@ Current control correction:
 Owner-test result:
 
 - `REQ-20260713-906` is blocked only on missing secure owner-test destinations.
-- `npm run one-time:owner-test:readiness` wrote `ops/watchdog-audits/2026-07-13T05-10-06-583Z-onetime-owner-test-readiness.md` and performed zero sends.
+- Latest `npm run one-time:owner-test:readiness` wrote `ops/watchdog-audits/2026-07-13T14-51-56-101Z-onetime-owner-test-readiness.md` and performed zero sends.
 - Resend is configured/connected/send-ready for One Time.
 - One Time WAPI provider setup is ready with one-time scoped credentials, instance metadata, sender phone metadata, class link, webhook secret, live provider-bot mode, and auto-reply approval.
-- Local/keyholder/Railway readback found no `ONE_TIME_OWNER_TEST_EMAIL` or `ONE_TIME_OWNER_TEST_WHATSAPP`/phone alias, so no owner send/readback was attempted.
+- Local/keyholder/Railway readback still found no `ONE_TIME_OWNER_TEST_EMAIL` or `ONE_TIME_OWNER_TEST_WHATSAPP`/phone alias, so no owner send/readback was attempted.
 
 Architecture/performance result:
 
@@ -50,12 +51,13 @@ Immediate next action:
 5. If aliases are still unavailable, continue the next non-send, non-credential, non-production-mutation slice outside the blocked verifier lane.
 6. Do not enable public WhatsApp auto-reply, send to non-owner contacts, or expose raw destination values.
 
-Previous shared-CRM/agent lanes `REQ-20260712-302`, `REQ-20260712-303`, `REQ-20260712-304`, `REQ-20260712-307`, `REQ-20260712-308`, `REQ-20260712-309`, and `REQ-20260712-310` are closed for this phase. Continue the next non-send One Time packet selected by the run selector.
+Previous shared-CRM/agent lanes `REQ-20260712-302`, `REQ-20260712-303`, `REQ-20260712-304`, `REQ-20260712-307`, `REQ-20260712-308`, `REQ-20260712-309`, `REQ-20260712-310`, and `REQ-20260712-311` are closed for this phase. Continue the next non-send One Time packet selected by the run selector.
 
-Latest One Time app runtime SHA: `6d659d76570d1089c768d9f404a6be985cb57863`
+Latest One Time app runtime SHA: `59519bc8c902b8a29c4503cce5372dac25575c04`
 
 Current proof:
 
+- `59519bc8c902b8a29c4503cce5372dac25575c04` was the first production runtime head for `REQ-20260712-311`; follow-up commit `302567b2147c2cf0c40eb839a333c785808af1ab` wires WAPI webhook response generation through that runtime. One Time deployment `43824379-af89-45f5-b6f3-85077f69390a` reached `SUCCESS`; exact-SHA One Time separate-instance and provider route-module smokes passed. BNA deploy-info returned the exact SHA and Operations workspace taxonomy smoke passed.
 - `6d659d76570d1089c768d9f404a6be985cb57863` is current production head on One Time and BNA and contains `REQ-20260712-310`: the public One Time parent information agent is channel-independent, WhatsApp and email use the same published agent version and knowledge snapshot, WhatsApp remains capture-only, email remains draft, automatic tasks are off, and stale trial/pricing/portal/library claims stay blocked. One Time deployment `4d41a9d8-f34b-4238-afd5-2fd594443ac7` reached `SUCCESS`; exact-SHA One Time separate-instance/provider smokes and BNA taxonomy smoke passed.
 - `1e6a977818f1393fd3721d796d9c025e0ac95eb9` is current production head on One Time and BNA and contains `REQ-20260712-309`: a dedicated communication-agent model separate from `bna_agent_profiles`, with version, instruction, policy, knowledge, channel binding, and event tables; strict no-secret JSON checks; and seeded One Time email/WhatsApp bindings for `one_time_parent_information_agent`. One Time deployment `7a02b4b9-c2cc-48ef-8376-e7755266836d` reached `SUCCESS`; BNA deploy-info returned the exact SHA and BNA taxonomy smoke passed while Railway doctor still reported an active build; One Time separate-instance, CRM workbench, and provider route-module smokes passed.
 - `7ec31290c08ede0957dbd60b2c3253979253feba` is current production head on One Time and BNA and contains `REQ-20260712-308`: One Time WAPI inbound attention artifacts can notify/badge but suppress generic task creation, and provider-bot support tickets dedupe by workspace/project/contact/thread/action class rather than individual message ID. One Time deployment `75d521fa-6826-49f5-875a-5f6f03f3dc44` reached `SUCCESS`; BNA deploy-info returned the exact SHA and BNA taxonomy smoke passed while Railway doctor still reported an active build; One Time separate-instance, CRM workbench, and provider route-module smokes passed.

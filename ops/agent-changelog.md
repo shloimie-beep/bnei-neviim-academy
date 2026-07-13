@@ -40307,3 +40307,11 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verification passed from clean release worktree: syntax checks, focused communication-agent/inbound/outbox/WAPI/owner-readiness suite `41/41`, tracked secret audit over 9530 paths, One Time separate-instance live smoke, One Time provider route-module smoke, and BNA workspace taxonomy smoke.
 - Deployed exact SHA `6d659d76570d1089c768d9f404a6be985cb57863`; One Time Railway deployment `4d41a9d8-f34b-4238-afd5-2fd594443ac7` reached `SUCCESS`, and One Time/BNA deploy-info returned the exact SHA.
 - Guardrails: no owner-test email, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, credential mutation, payment/access mutation, raw private payload logging, or destructive production mutation was performed.
+
+## 2026-07-13 - Communication-agent response runtime deployed
+
+- Closed `REQ-20260712-311`: added a first-party OpenAI response runtime for communication agents with scoped history redaction, published One Time agent/knowledge loading, JSON reply/action parsing, deterministic policy enforcement, safe fallback handling, and versioned policy/delivery metadata. The WAPI webhook now calls the runtime after canonical inbound persistence and before auto-reply decisions.
+- Policy gates block stale trial/pricing/portal/library claims, raw class-link exposure, arbitrary task creation, access grants, payment actions, and unassigned-channel sends.
+- Verification passed from clean `master`: syntax checks, focused communication-agent/inbound/outbox/WAPI/Resend suite `44/44`, and tracked secret audit over 9537 paths.
+- Deployed exact SHA `59519bc8c902b8a29c4503cce5372dac25575c04`; One Time Railway deployment `43824379-af89-45f5-b6f3-85077f69390a` reached `SUCCESS`, One Time exact-SHA separate-instance and provider route-module smokes passed, BNA deploy-info returned the exact SHA, and BNA taxonomy smoke passed.
+- Owner-test readiness was rerun: Resend and One Time WAPI are ready with one-time scoped credentials, but secure owner-test email/WhatsApp aliases are still missing; no owner send or public auto-reply activation occurred.

@@ -81,6 +81,19 @@ Current status: `active`
 - Live proof passed: production performance gate against `https://join.onetimeonetime.com`, Operations taxonomy smoke `ops/live-smokes/2026-07-13T08-16-56-138Z-operations-workspace-taxonomy-live-smoke.md`, One Time CRM workbench smoke `ops/live-smokes/2026-07-13T08-19-54-835Z-one-time-operations-crm-workbench-live-smoke.md`, One Time provider route-module smoke `ops/live-smokes/2026-07-13T08-19-55-092Z-onetime-provider-route-module-live-smoke.md`, and exact-SHA One Time separate-instance smoke.
 - `REQ-20260713-910` verifier is now blocked only by `REQ-20260713-906` missing secure owner-test aliases.
 
+## 2026-07-13 Communication-Agent Response Runtime
+
+- `REQ-20260712-311` is Done.
+- Added `src/lib/bna/crm/communication-agent-response-runtime.js` and `tests/communication-agent-response-runtime.test.js`.
+- The runtime loads the published One Time channel binding and knowledge snapshot, redacts scoped conversation history, calls OpenAI Responses through an injectable runtime, parses JSON replies/actions, blocks stale pricing/trial/portal/library claims, blocks raw class links and task/access/payment actions, and preserves inbound data with a safe fallback/no-send result when the model fails.
+- The WAPI webhook now calls the response runtime after canonical inbound persistence and before auto-reply decisions.
+- Verification passed: syntax checks, focused communication-agent/inbound/outbox/WAPI/Resend suite `44/44`, and `npm run secrets:audit`.
+- Runtime commit `59519bc8c902b8a29c4503cce5372dac25575c04` and wiring commit `302567b2147c2cf0c40eb839a333c785808af1ab` are pushed to `origin/master`.
+- One Time Railway deployment `43824379-af89-45f5-b6f3-85077f69390a` reached `SUCCESS`; `https://join.onetimeonetime.com/api/deploy-info` returned the exact commit.
+- BNA deploy-info returned the exact commit and Operations workspace taxonomy smoke passed. Railway doctor reported BNA deployment `af09e962-fadd-4e46-8148-b1b9428d1636` initializing while live readback was already on the exact SHA.
+- One Time exact-SHA separate-instance smoke and provider route-module smoke passed.
+- Owner-only send readiness was rerun after the WAPI update: Resend is send-ready and WAPI is ready with one-time scoped credentials, but secure owner-test email/WhatsApp aliases are still missing, so no owner email/WhatsApp send or public auto-reply activation occurred.
+
 ## Completed In This Batch
 
 - Created run and register for the addendum.
