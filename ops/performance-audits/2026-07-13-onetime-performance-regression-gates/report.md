@@ -1,6 +1,6 @@
 # One Time Performance Regression Gates
 
-Generated: 2026-07-13T10:35:21.820Z
+Generated: 2026-07-13T10:41:28.626Z
 Requirement: REQ-20260713-911
 Status: PASSED
 
@@ -45,11 +45,11 @@ Observed SHA: 35a0a5d2e0ad157e383537dfbb1518d2a8df33bd
 
 | Check | Status | Detail |
 | --- | --- | --- |
-| `live_deploy_info_headers` | PASS | 568ms |
-| `live_health_db_pool_timing` | PASS | 543ms |
-| `live_one_time_shell_rum_loaded` | PASS | 621ms |
-| `live_rum_dry_run_contract` | PASS | 257ms |
-| `live_scoped_operations_crm_headers` | PASS | 4001ms |
+| `live_deploy_info_headers` | PASS | 692ms |
+| `live_health_db_pool_timing` | PASS | 457ms |
+| `live_one_time_shell_rum_loaded` | PASS | 484ms |
+| `live_rum_dry_run_contract` | PASS | 226ms |
+| `live_scoped_operations_crm_headers` | PASS | 4237ms |
 
 ## Guardrails
 

@@ -88,6 +88,7 @@ function isAggregateContextTimelineRow(row = {}) {
     'student_link',
     'membership_access',
     'signup_context',
+    'signup_record',
     'lifecycle_event',
     'class_attendance',
     'communication_suppression',
