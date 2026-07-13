@@ -39597,6 +39597,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   its stub, Operations CSS/JS stay absent, 390px has no horizontal overflow,
   and no sends or production mutations occurred.
 
+## 2026-07-13 - One Time mailbox and messages route modules locally verified
+
+- Moved One Time mailbox review plus signed mailbox render/load/thread helpers
+  into `public/js/one-time-provider-mailbox-route.js`.
+- Moved One Time review message cards into
+  `public/js/one-time-provider-communications-route.js`.
+- Local proof passed: focused provider shell tests `11/11`, route/action tests
+  `11/11`, mailbox portal tests `6/6`, local CRM layout smoke, expanded
+  route-module budget audit, action watchdog, secrets audit, and execution-run
+  validation.
+
 ## 2026-07-13 - One Time CRM route module deployed
 
 - Committed and pushed `a9447271e29ed0f30401b05f760f4d314f91c9a9`, then

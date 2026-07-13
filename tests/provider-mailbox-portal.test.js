@@ -6,6 +6,7 @@ const test = require('node:test');
 const root = path.resolve(__dirname, '..');
 const server = fs.readFileSync(path.join(root, 'server.js'), 'utf8');
 const providerHtml = fs.readFileSync(path.join(root, 'public', 'provider.html'), 'utf8');
+const providerMailboxRoute = fs.readFileSync(path.join(root, 'public', 'js', 'one-time-provider-mailbox-route.js'), 'utf8');
 const routeRegistry = JSON.parse(fs.readFileSync(path.join(root, 'ops', 'route-registry.json'), 'utf8'));
 const actionRegistry = JSON.parse(fs.readFileSync(path.join(root, 'ops', 'action-registry.json'), 'utf8'));
 
@@ -22,17 +23,19 @@ test('provider portal renders One Time mailbox CRM controls', () => {
   assert.match(providerHtml, /data-provider-section="mailbox"/);
   assert.match(providerHtml, /info@onetimeonetime\.com/);
   assert.match(providerHtml, /providerMailboxEnabled\(\)/);
+  assert.match(providerHtml, /hydrateOneTimeMailboxRoute/);
+  assert.match(providerHtml, /one-time-provider-mailbox-route\.js/);
   assert.match(providerHtml, /ACTION-PROVIDER-MAILBOX-SEARCH/);
-  assert.match(providerHtml, /ACTION-PROVIDER-MAILBOX-THREAD-OPEN/);
-  assert.match(providerHtml, /ACTION-PROVIDER-MAILBOX-DRAFT/);
-  assert.match(providerHtml, /ACTION-PROVIDER-MAILBOX-SEND/);
-  assert.match(providerHtml, /\/api\/provider-portal\/mailbox/);
+  assert.match(providerMailboxRoute, /ACTION-PROVIDER-MAILBOX-THREAD-OPEN/);
+  assert.match(providerMailboxRoute, /ACTION-PROVIDER-MAILBOX-DRAFT/);
+  assert.match(providerMailboxRoute, /ACTION-PROVIDER-MAILBOX-SEND/);
+  assert.match(providerMailboxRoute, /\/api\/provider-portal\/mailbox/);
   assert.match(providerHtml, /SEND_RESEND_EMAIL/);
   assert.doesNotMatch(providerHtml, /Bulk email locked/);
 
   const readinessBlock = sourceBlock(
-    providerHtml,
-    /function mailboxReadinessPills\(readiness = \{\}\)/,
+    providerMailboxRoute,
+    /function mailboxReadinessPills\(readiness = \{\}, explicitHelpers\)/,
     /function renderProviderMailboxThreadList/
   );
   assert.match(readinessBlock, /Draft replies only/);

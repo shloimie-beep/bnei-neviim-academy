@@ -258,6 +258,15 @@ test('signed One Time provider session uses production Rabbi workspace navigatio
     const routeModules = await page.evaluate(() => Object.keys(window.OneTimeProviderRouteModules || {}).sort());
     assert.deepEqual(routeModules, ['crm', 'mailbox']);
     assert.equal(await page.locator('[data-provider-section="mailbox"]').isVisible(), true);
+    assert.equal(await page.locator('[data-provider-section="mailbox"] [data-route-module="one-time-provider-mailbox-route"]').count() > 0, true);
+    await page.locator('#providerNav [data-provider-nav="communications"]').click();
+    await page.waitForSelector('[data-provider-nav="communications"].active');
+    await page.waitForFunction(() => Boolean(window.OneTimeProviderRouteModules?.communications), null, {
+      timeout: 10000,
+    });
+    const routeModulesAfterMessages = await page.evaluate(() => Object.keys(window.OneTimeProviderRouteModules || {}).sort());
+    assert.deepEqual(routeModulesAfterMessages, ['communications', 'crm', 'mailbox']);
+    assert.equal(await page.locator('[data-provider-section="communications"] [data-route-module="one-time-provider-communications-route"]').count() > 0, true);
     await page.locator('#providerNav [data-provider-nav="crm"]').click();
     await page.waitForSelector('[data-provider-nav="crm"].active');
 

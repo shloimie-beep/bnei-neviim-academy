@@ -31,7 +31,7 @@ Architecture/performance result:
 
 Immediate next action:
 
-1. Continue `REQ-20260713-908` with mailbox/communications route-module extraction and budget comparison. The CRM route-module slice is already committed, pushed, deployed to One Time, and live-smoked at `a9447271e29ed0f30401b05f760f4d314f91c9a9`.
+1. Finish the `REQ-20260713-908` mailbox/messages route-module slice: commit, push, deploy exact SHA, and live-smoke that overview loads no route modules while CRM, mailbox, and communications each load only their own module.
 2. Keep the deployed first-slice proof visible: commit `c0b8ab8139c6166d89527a949ce4dd70bf67df3a`, BNA Railway deployment `33571043-54ce-4631-99c1-b54209edebc7`, One Time Railway deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754`, and live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`.
 3. Keep the deployed CRM route-module proof visible: One Time Railway deployment `fac38cc0-23c4-4158-8556-4c11e6c95215`, exact-SHA smoke, and live route-module smoke `ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md`.
 4. Start or queue `REQ-20260713-911`: Server-Timing/trace IDs, API handler/database/pool timings, route-transition/RUM metrics, bundle/route budgets, and regression gates.

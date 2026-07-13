@@ -297,6 +297,11 @@ async function main() {
         path: '/provider.html?admin_provider=one-time&section=mailbox',
         expectModuleKey: 'mailbox',
       }),
+      await captureRoute(browser, baseUrl, {
+        id: 'communications',
+        path: '/provider.html?admin_provider=one-time&section=communications',
+        expectModuleKey: 'communications',
+      }),
     ];
   } finally {
     await browser.close();
@@ -306,6 +311,7 @@ async function main() {
   const overview = routes.find((route) => route.id === 'overview');
   const crm = routes.find((route) => route.id === 'crm');
   const mailbox = routes.find((route) => route.id === 'mailbox');
+  const communications = routes.find((route) => route.id === 'communications');
   const checks = [
     {
       id: 'provider_html_shrunk',
@@ -323,9 +329,18 @@ async function main() {
       detail: JSON.stringify({ modules: crm?.modules || [], routeModuleScripts: crm?.routeModuleScripts || [], hasCrmShell: crm?.hasCrmShell }),
     },
     {
-      id: 'mailbox_loads_only_mailbox_stub',
-      passed: JSON.stringify(mailbox?.modules || []) === JSON.stringify(['mailbox']) && mailbox?.hasCrmShell === false,
+      id: 'mailbox_loads_only_mailbox_route_module',
+      passed: JSON.stringify(mailbox?.modules || []) === JSON.stringify(['mailbox']) &&
+        mailbox?.routeModuleScripts?.includes('/js/one-time-provider-mailbox-route.js') &&
+        mailbox?.hasCrmShell === false,
       detail: JSON.stringify({ modules: mailbox?.modules || [], routeModuleScripts: mailbox?.routeModuleScripts || [], hasCrmShell: mailbox?.hasCrmShell }),
+    },
+    {
+      id: 'communications_loads_only_communications_route_module',
+      passed: JSON.stringify(communications?.modules || []) === JSON.stringify(['communications']) &&
+        communications?.routeModuleScripts?.includes('/js/one-time-provider-communications-route.js') &&
+        communications?.hasCrmShell === false,
+      detail: JSON.stringify({ modules: communications?.modules || [], routeModuleScripts: communications?.routeModuleScripts || [], hasCrmShell: communications?.hasCrmShell }),
     },
     {
       id: 'operations_assets_absent',
@@ -343,10 +358,14 @@ async function main() {
       }))),
     },
     {
-      id: 'crm_route_module_budget',
-      passed: currentBytes.crm_route_module <= 16384,
+      id: 'route_module_budgets',
+      passed: currentBytes.crm_route_module <= 16384 &&
+        currentBytes.mailbox_route_module <= 18432 &&
+        currentBytes.communications_route_module <= 8192,
       detail: JSON.stringify({
         crm_route_module_bytes: currentBytes.crm_route_module,
+        mailbox_route_module_bytes: currentBytes.mailbox_route_module,
+        communications_route_module_bytes: currentBytes.communications_route_module,
         crm_route_total_delta_bytes: sizeComparison.crm_route_total_delta_bytes,
       }),
     },
@@ -382,6 +401,8 @@ async function main() {
     `- Current provider.html: ${sizeComparison.current_provider_html_bytes} bytes`,
     `- Provider HTML delta: ${sizeComparison.provider_html_delta_bytes} bytes`,
     `- CRM route module: ${sizeComparison.crm_route_module_bytes} bytes`,
+    `- Mailbox route module: ${currentBytes.mailbox_route_module} bytes`,
+    `- Communications route module: ${currentBytes.communications_route_module} bytes`,
     `- Current provider.html + CRM module delta: ${sizeComparison.crm_route_total_delta_bytes} bytes`,
     '',
     '## Route Checks',

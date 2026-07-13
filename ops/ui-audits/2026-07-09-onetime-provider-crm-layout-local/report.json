@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "generated_at": "2026-07-13T06:28:11.713Z",
+  "generated_at": "2026-07-13T06:55:43.640Z",
   "target": "/provider.html?admin_provider=one-time&section=crm",
   "scope": "Local signed One Time provider CRM layout smoke; no database, sends, payments, external accounts, or production writes.",
   "results": [

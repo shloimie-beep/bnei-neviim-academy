@@ -170,6 +170,11 @@ async function main() {
         expectModuleKey: 'mailbox',
       }),
       await captureRoute(browser, {
+        id: 'communications',
+        path: '/provider.html?review=one-time&section=communications',
+        expectModuleKey: 'communications',
+      }),
+      await captureRoute(browser, {
         id: 'crm-mobile-390',
         path: '/provider.html?review=one-time&section=crm',
         viewport: { width: 390, height: 844 },
@@ -184,6 +189,7 @@ async function main() {
   const overview = routeById(routes, 'overview');
   const crm = routeById(routes, 'crm');
   const mailbox = routeById(routes, 'mailbox');
+  const communications = routeById(routes, 'communications');
   const crmMobile = routeById(routes, 'crm-mobile-390');
 
   checks.push(
@@ -227,6 +233,23 @@ async function main() {
         hasCrmShell: mailbox.hasCrmShell,
         crmLoaded: mailbox.crmLoaded,
         mailboxLoaded: mailbox.mailboxLoaded,
+      }),
+    },
+    {
+      id: 'communications_loads_only_communications_route_module',
+      passed: JSON.stringify(communications.modules || []) === JSON.stringify(['communications']) &&
+        communications.routeModuleScripts?.includes('/js/one-time-provider-communications-route.js') &&
+        communications.hasCrmShell === false &&
+        communications.communicationsLoaded === true &&
+        communications.crmLoaded === false &&
+        communications.mailboxLoaded === false,
+      detail: JSON.stringify({
+        modules: communications.modules || [],
+        routeModuleScripts: communications.routeModuleScripts || [],
+        hasCrmShell: communications.hasCrmShell,
+        crmLoaded: communications.crmLoaded,
+        mailboxLoaded: communications.mailboxLoaded,
+        communicationsLoaded: communications.communicationsLoaded,
       }),
     },
     {

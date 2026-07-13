@@ -63,6 +63,17 @@
 - PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha a9447271e29ed0f30401b05f760f4d314f91c9a9`; report `ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md`.
 - Remaining: continue mailbox/communications extraction and performance/instrumentation gates before marking all of `REQ-20260713-908` Done.
 
+## 2026-07-13 Mailbox And Messages Route Module Slice
+
+- PASS `node --check public/js/one-time-provider-mailbox-route.js public/js/one-time-provider-communications-route.js scripts/audit-onetime-provider-route-module-budget.mjs scripts/smoke-onetime-provider-route-module-live.mjs`.
+- PASS `node --test tests/one-time-provider-operations-login.test.js tests/one-time-provider-review-navigation.test.js` (11/11).
+- PASS `node --test tests/one-time-route-role-mapping.test.js tests/one-time-action-coverage.test.js` (11/11).
+- PASS `node --test tests/provider-mailbox-portal.test.js` (6/6).
+- PASS `node scripts/smoke-onetime-provider-crm-layout-local.mjs`.
+- PASS `npm run one-time:provider-route-module-budget -- --base-ref HEAD`; report confirms overview no module load, CRM/mailbox/communications isolated route modules, no Operations assets, and `provider.html` -4,183 bytes.
+- PASS `npm run watchdog:actions`, `npm run secrets:audit`, and `npm run bna:run:validate`.
+- Pending: commit, push, deploy exact SHA, and live-smoke mailbox/messages module isolation.
+
 - PASS `node --check server.js`
 - PASS `node --check src/lib/integrations/resend-inbound-crm.js`
 - PASS `node --test tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js` (19/19)

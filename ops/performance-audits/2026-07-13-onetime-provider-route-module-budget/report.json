@@ -1,22 +1,22 @@
 {
   "status": "PASS",
-  "generated_at": "2026-07-13T06:28:10.846Z",
+  "generated_at": "2026-07-13T06:55:32.227Z",
   "scope": "Local One Time provider route-module budget audit. No database, sends, payments, external accounts, or production writes.",
-  "base_ref": "HEAD",
+  "base_ref": "24abcd235455ebb3a3f25a88c8dffba0a57474e6",
   "size_comparison": {
-    "base_ref": "HEAD",
+    "base_ref": "24abcd235455ebb3a3f25a88c8dffba0a57474e6",
     "base_sha": "24abcd235455ebb3a3f25a88c8dffba0a57474e6",
     "base_provider_html_bytes": 186972,
-    "current_provider_html_bytes": 186167,
-    "provider_html_delta_bytes": -805,
+    "current_provider_html_bytes": 178896,
+    "provider_html_delta_bytes": -8076,
     "crm_route_module_bytes": 10041,
-    "crm_route_total_delta_bytes": 9236
+    "crm_route_total_delta_bytes": 1965
   },
   "current_bytes": {
-    "provider_html": 186167,
+    "provider_html": 178896,
     "crm_route_module": 10041,
-    "mailbox_route_module": 321,
-    "communications_route_module": 342
+    "mailbox_route_module": 17307,
+    "communications_route_module": 2845
   },
   "routes": [
     {
@@ -41,61 +41,55 @@
       "hasOperationsJs": false,
       "resources": [
         {
-          "name": "http://127.0.0.1:64642/css/bna-app-shell.css",
+          "name": "http://127.0.0.1:57627/css/bna-app-shell.css",
           "transferSize": 35186,
           "encodedBodySize": 34886,
           "decodedBodySize": 34886
         },
         {
-          "name": "http://127.0.0.1:64642/css/one-time-shared-review.css",
+          "name": "http://127.0.0.1:57627/css/one-time-shared-review.css",
           "transferSize": 38647,
           "encodedBodySize": 38347,
           "decodedBodySize": 38347
         },
         {
-          "name": "http://127.0.0.1:64642/api/provider-portal/session",
-          "transferSize": 1562,
-          "encodedBodySize": 1262,
-          "decodedBodySize": 1262
-        },
-        {
-          "name": "http://127.0.0.1:64642/js/app-select.js",
+          "name": "http://127.0.0.1:57627/js/app-select.js",
           "transferSize": 19763,
           "encodedBodySize": 19463,
           "decodedBodySize": 19463
         },
         {
-          "name": "http://127.0.0.1:64642/js/bna-bot-widget.js",
+          "name": "http://127.0.0.1:57627/js/bna-bot-widget.js",
           "transferSize": 83592,
           "encodedBodySize": 83292,
           "decodedBodySize": 83292
         },
         {
-          "name": "http://127.0.0.1:64642/api/provider-portal/inquiries",
+          "name": "http://127.0.0.1:57627/api/provider-portal/session",
+          "transferSize": 1562,
+          "encodedBodySize": 1262,
+          "decodedBodySize": 1262
+        },
+        {
+          "name": "http://127.0.0.1:57627/api/provider-portal/inquiries",
           "transferSize": 345,
           "encodedBodySize": 45,
           "decodedBodySize": 45
         },
         {
-          "name": "http://127.0.0.1:64642/api/provider-portal/mailbox",
-          "transferSize": 450,
-          "encodedBodySize": 150,
-          "decodedBodySize": 150
-        },
-        {
-          "name": "http://127.0.0.1:64642/api/provider-portal/calendar-events",
+          "name": "http://127.0.0.1:57627/api/provider-portal/calendar-events",
           "transferSize": 346,
           "encodedBodySize": 46,
           "decodedBodySize": 46
         },
         {
-          "name": "http://127.0.0.1:64642/images/one-time/brand/onetimelogo.webp",
+          "name": "http://127.0.0.1:57627/images/one-time/brand/onetimelogo.webp",
           "transferSize": 27772,
           "encodedBodySize": 27472,
           "decodedBodySize": 27472
         },
         {
-          "name": "http://127.0.0.1:64642/assets/one-time/robot/robot-scheller-whatsapp.png",
+          "name": "http://127.0.0.1:57627/assets/one-time/robot/robot-scheller-whatsapp.png",
           "transferSize": 403534,
           "encodedBodySize": 403234,
           "decodedBodySize": 403234
@@ -132,67 +126,61 @@
       "hasOperationsJs": false,
       "resources": [
         {
-          "name": "http://127.0.0.1:64642/css/bna-app-shell.css",
+          "name": "http://127.0.0.1:57627/css/bna-app-shell.css",
           "transferSize": 35186,
           "encodedBodySize": 34886,
           "decodedBodySize": 34886
         },
         {
-          "name": "http://127.0.0.1:64642/css/one-time-shared-review.css",
+          "name": "http://127.0.0.1:57627/css/one-time-shared-review.css",
           "transferSize": 38647,
           "encodedBodySize": 38347,
           "decodedBodySize": 38347
         },
         {
-          "name": "http://127.0.0.1:64642/js/app-select.js",
+          "name": "http://127.0.0.1:57627/js/app-select.js",
           "transferSize": 19763,
           "encodedBodySize": 19463,
           "decodedBodySize": 19463
         },
         {
-          "name": "http://127.0.0.1:64642/js/bna-bot-widget.js",
+          "name": "http://127.0.0.1:57627/js/bna-bot-widget.js",
           "transferSize": 83592,
           "encodedBodySize": 83292,
           "decodedBodySize": 83292
         },
         {
-          "name": "http://127.0.0.1:64642/api/provider-portal/session",
+          "name": "http://127.0.0.1:57627/api/provider-portal/session",
           "transferSize": 1562,
           "encodedBodySize": 1262,
           "decodedBodySize": 1262
         },
         {
-          "name": "http://127.0.0.1:64642/assets/one-time/robot/robot-scheller-whatsapp.png",
+          "name": "http://127.0.0.1:57627/assets/one-time/robot/robot-scheller-whatsapp.png",
           "transferSize": 403534,
           "encodedBodySize": 403234,
           "decodedBodySize": 403234
         },
         {
-          "name": "http://127.0.0.1:64642/api/provider-portal/inquiries",
+          "name": "http://127.0.0.1:57627/api/provider-portal/inquiries",
           "transferSize": 345,
           "encodedBodySize": 45,
           "decodedBodySize": 45
         },
         {
-          "name": "http://127.0.0.1:64642/api/provider-portal/mailbox",
-          "transferSize": 450,
-          "encodedBodySize": 150,
-          "decodedBodySize": 150
-        },
-        {
-          "name": "http://127.0.0.1:64642/api/provider-portal/calendar-events",
+          "name": "http://127.0.0.1:57627/api/provider-portal/calendar-events",
           "transferSize": 346,
           "encodedBodySize": 46,
           "decodedBodySize": 46
         },
         {
-          "name": "http://127.0.0.1:64642/js/one-time-provider-crm-route.js",
+          "name": "http://127.0.0.1:57627/js/one-time-provider-crm-route.js",
           "transferSize": 10341,
           "encodedBodySize": 10041,
           "decodedBodySize": 10041
         },
         {
-          "name": "http://127.0.0.1:64642/images/one-time/brand/onetimelogo.webp",
+          "name": "http://127.0.0.1:57627/images/one-time/brand/onetimelogo.webp",
           "transferSize": 27772,
           "encodedBodySize": 27472,
           "decodedBodySize": 27472
@@ -229,67 +217,158 @@
       "hasOperationsJs": false,
       "resources": [
         {
-          "name": "http://127.0.0.1:64642/css/bna-app-shell.css",
+          "name": "http://127.0.0.1:57627/css/bna-app-shell.css",
           "transferSize": 35186,
           "encodedBodySize": 34886,
           "decodedBodySize": 34886
         },
         {
-          "name": "http://127.0.0.1:64642/css/one-time-shared-review.css",
+          "name": "http://127.0.0.1:57627/css/one-time-shared-review.css",
           "transferSize": 38647,
           "encodedBodySize": 38347,
           "decodedBodySize": 38347
         },
         {
-          "name": "http://127.0.0.1:64642/js/app-select.js",
+          "name": "http://127.0.0.1:57627/js/app-select.js",
           "transferSize": 19763,
           "encodedBodySize": 19463,
           "decodedBodySize": 19463
         },
         {
-          "name": "http://127.0.0.1:64642/js/bna-bot-widget.js",
+          "name": "http://127.0.0.1:57627/js/bna-bot-widget.js",
           "transferSize": 83592,
           "encodedBodySize": 83292,
           "decodedBodySize": 83292
         },
         {
-          "name": "http://127.0.0.1:64642/api/provider-portal/session",
+          "name": "http://127.0.0.1:57627/api/provider-portal/session",
           "transferSize": 1562,
           "encodedBodySize": 1262,
           "decodedBodySize": 1262
         },
         {
-          "name": "http://127.0.0.1:64642/assets/one-time/robot/robot-scheller-whatsapp.png",
+          "name": "http://127.0.0.1:57627/assets/one-time/robot/robot-scheller-whatsapp.png",
           "transferSize": 403534,
           "encodedBodySize": 403234,
           "decodedBodySize": 403234
         },
         {
-          "name": "http://127.0.0.1:64642/api/provider-portal/inquiries",
+          "name": "http://127.0.0.1:57627/api/provider-portal/inquiries",
           "transferSize": 345,
           "encodedBodySize": 45,
           "decodedBodySize": 45
         },
         {
-          "name": "http://127.0.0.1:64642/api/provider-portal/mailbox",
-          "transferSize": 450,
-          "encodedBodySize": 150,
-          "decodedBodySize": 150
-        },
-        {
-          "name": "http://127.0.0.1:64642/api/provider-portal/calendar-events",
+          "name": "http://127.0.0.1:57627/api/provider-portal/calendar-events",
           "transferSize": 346,
           "encodedBodySize": 46,
           "decodedBodySize": 46
         },
         {
-          "name": "http://127.0.0.1:64642/js/one-time-provider-mailbox-route.js",
-          "transferSize": 621,
-          "encodedBodySize": 321,
-          "decodedBodySize": 321
+          "name": "http://127.0.0.1:57627/js/one-time-provider-mailbox-route.js",
+          "transferSize": 17607,
+          "encodedBodySize": 17307,
+          "decodedBodySize": 17307
         },
         {
-          "name": "http://127.0.0.1:64642/images/one-time/brand/onetimelogo.webp",
+          "name": "http://127.0.0.1:57627/images/one-time/brand/onetimelogo.webp",
+          "transferSize": 27772,
+          "encodedBodySize": 27472,
+          "decodedBodySize": 27472
+        },
+        {
+          "name": "http://127.0.0.1:57627/api/provider-portal/mailbox",
+          "transferSize": 450,
+          "encodedBodySize": 150,
+          "decodedBodySize": 150
+        }
+      ],
+      "failedRequests": [],
+      "badResponses": [],
+      "consoleErrors": []
+    },
+    {
+      "id": "communications",
+      "path": "/provider.html?admin_provider=one-time&section=communications",
+      "scripts": [
+        "/js/one-time-provider-communications-route.js",
+        "/js/app-select.js",
+        "/js/bna-bot-widget.js"
+      ],
+      "styles": [
+        "/css/bna-app-shell.css",
+        "/css/one-time-shared-review.css"
+      ],
+      "routeModuleScripts": [
+        "/js/one-time-provider-communications-route.js"
+      ],
+      "modules": [
+        "communications"
+      ],
+      "crmLoaded": false,
+      "mailboxLoaded": false,
+      "communicationsLoaded": true,
+      "hasCrmShell": false,
+      "hasCrmPlaceholder": true,
+      "hasOperationsCss": false,
+      "hasOperationsJs": false,
+      "resources": [
+        {
+          "name": "http://127.0.0.1:57627/css/bna-app-shell.css",
+          "transferSize": 35186,
+          "encodedBodySize": 34886,
+          "decodedBodySize": 34886
+        },
+        {
+          "name": "http://127.0.0.1:57627/css/one-time-shared-review.css",
+          "transferSize": 38647,
+          "encodedBodySize": 38347,
+          "decodedBodySize": 38347
+        },
+        {
+          "name": "http://127.0.0.1:57627/js/app-select.js",
+          "transferSize": 19763,
+          "encodedBodySize": 19463,
+          "decodedBodySize": 19463
+        },
+        {
+          "name": "http://127.0.0.1:57627/js/bna-bot-widget.js",
+          "transferSize": 83592,
+          "encodedBodySize": 83292,
+          "decodedBodySize": 83292
+        },
+        {
+          "name": "http://127.0.0.1:57627/api/provider-portal/session",
+          "transferSize": 1562,
+          "encodedBodySize": 1262,
+          "decodedBodySize": 1262
+        },
+        {
+          "name": "http://127.0.0.1:57627/assets/one-time/robot/robot-scheller-whatsapp.png",
+          "transferSize": 403534,
+          "encodedBodySize": 403234,
+          "decodedBodySize": 403234
+        },
+        {
+          "name": "http://127.0.0.1:57627/api/provider-portal/inquiries",
+          "transferSize": 345,
+          "encodedBodySize": 45,
+          "decodedBodySize": 45
+        },
+        {
+          "name": "http://127.0.0.1:57627/api/provider-portal/calendar-events",
+          "transferSize": 346,
+          "encodedBodySize": 46,
+          "decodedBodySize": 46
+        },
+        {
+          "name": "http://127.0.0.1:57627/js/one-time-provider-communications-route.js",
+          "transferSize": 3145,
+          "encodedBodySize": 2845,
+          "decodedBodySize": 2845
+        },
+        {
+          "name": "http://127.0.0.1:57627/images/one-time/brand/onetimelogo.webp",
           "transferSize": 27772,
           "encodedBodySize": 27472,
           "decodedBodySize": 27472
@@ -303,24 +382,22 @@
   "served_paths": [
     "/provider.html",
     "/css/bna-app-shell.css",
-    "/css/one-time-shared-review.css",
-    "/api/provider-portal/session",
     "/js/app-select.js",
+    "/css/one-time-shared-review.css",
     "/js/bna-bot-widget.js",
+    "/api/provider-portal/session",
     "/api/provider-portal/inquiries",
-    "/api/provider-portal/mailbox",
     "/api/provider-portal/calendar-events",
     "/images/one-time/brand/onetimelogo.webp",
     "/assets/one-time/robot/robot-scheller-whatsapp.png",
     "/provider.html",
     "/css/bna-app-shell.css",
     "/css/one-time-shared-review.css",
-    "/js/app-select.js",
     "/js/bna-bot-widget.js",
+    "/js/app-select.js",
     "/api/provider-portal/session",
     "/assets/one-time/robot/robot-scheller-whatsapp.png",
     "/api/provider-portal/inquiries",
-    "/api/provider-portal/mailbox",
     "/api/provider-portal/calendar-events",
     "/js/one-time-provider-crm-route.js",
     "/images/one-time/brand/onetimelogo.webp",
@@ -332,16 +409,27 @@
     "/api/provider-portal/session",
     "/assets/one-time/robot/robot-scheller-whatsapp.png",
     "/api/provider-portal/inquiries",
-    "/api/provider-portal/mailbox",
     "/api/provider-portal/calendar-events",
+    "/images/one-time/brand/onetimelogo.webp",
     "/js/one-time-provider-mailbox-route.js",
-    "/images/one-time/brand/onetimelogo.webp"
+    "/api/provider-portal/mailbox",
+    "/provider.html",
+    "/css/bna-app-shell.css",
+    "/css/one-time-shared-review.css",
+    "/js/bna-bot-widget.js",
+    "/js/app-select.js",
+    "/api/provider-portal/session",
+    "/assets/one-time/robot/robot-scheller-whatsapp.png",
+    "/api/provider-portal/inquiries",
+    "/api/provider-portal/calendar-events",
+    "/images/one-time/brand/onetimelogo.webp",
+    "/js/one-time-provider-communications-route.js"
   ],
   "checks": [
     {
       "id": "provider_html_shrunk",
       "passed": true,
-      "detail": "-805 bytes"
+      "detail": "-8076 bytes"
     },
     {
       "id": "overview_no_crm_module",
@@ -354,24 +442,29 @@
       "detail": "{\"modules\":[\"crm\"],\"routeModuleScripts\":[\"/js/one-time-provider-crm-route.js\"],\"hasCrmShell\":true}"
     },
     {
-      "id": "mailbox_loads_only_mailbox_stub",
+      "id": "mailbox_loads_only_mailbox_route_module",
       "passed": true,
       "detail": "{\"modules\":[\"mailbox\"],\"routeModuleScripts\":[\"/js/one-time-provider-mailbox-route.js\"],\"hasCrmShell\":false}"
     },
     {
+      "id": "communications_loads_only_communications_route_module",
+      "passed": true,
+      "detail": "{\"modules\":[\"communications\"],\"routeModuleScripts\":[\"/js/one-time-provider-communications-route.js\"],\"hasCrmShell\":false}"
+    },
+    {
       "id": "operations_assets_absent",
       "passed": true,
-      "detail": "[{\"id\":\"overview\",\"hasOperationsCss\":false,\"hasOperationsJs\":false},{\"id\":\"crm\",\"hasOperationsCss\":false,\"hasOperationsJs\":false},{\"id\":\"mailbox\",\"hasOperationsCss\":false,\"hasOperationsJs\":false}]"
+      "detail": "[{\"id\":\"overview\",\"hasOperationsCss\":false,\"hasOperationsJs\":false},{\"id\":\"crm\",\"hasOperationsCss\":false,\"hasOperationsJs\":false},{\"id\":\"mailbox\",\"hasOperationsCss\":false,\"hasOperationsJs\":false},{\"id\":\"communications\",\"hasOperationsCss\":false,\"hasOperationsJs\":false}]"
     },
     {
       "id": "no_failed_requests_or_console_errors",
       "passed": true,
-      "detail": "[{\"id\":\"overview\",\"failed\":0,\"bad\":0,\"console\":0},{\"id\":\"crm\",\"failed\":0,\"bad\":0,\"console\":0},{\"id\":\"mailbox\",\"failed\":0,\"bad\":0,\"console\":0}]"
+      "detail": "[{\"id\":\"overview\",\"failed\":0,\"bad\":0,\"console\":0},{\"id\":\"crm\",\"failed\":0,\"bad\":0,\"console\":0},{\"id\":\"mailbox\",\"failed\":0,\"bad\":0,\"console\":0},{\"id\":\"communications\",\"failed\":0,\"bad\":0,\"console\":0}]"
     },
     {
-      "id": "crm_route_module_budget",
+      "id": "route_module_budgets",
       "passed": true,
-      "detail": "{\"crm_route_module_bytes\":10041,\"crm_route_total_delta_bytes\":9236}"
+      "detail": "{\"crm_route_module_bytes\":10041,\"mailbox_route_module_bytes\":17307,\"communications_route_module_bytes\":2845,\"crm_route_total_delta_bytes\":1965}"
     }
   ],
   "external_write_performed": false,

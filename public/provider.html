@@ -1757,9 +1757,9 @@
             document.querySelectorAll('[data-provider-nav]').forEach(button => {
                 button.classList.toggle('active', button.dataset.providerNav === activeProviderSection);
             });
-            if (activeProviderSection === 'crm') {
-                hydrateOneTimeCrmRoute(portalState);
-            }
+            if (activeProviderSection === 'crm') hydrateOneTimeCrmRoute(portalState);
+            if (activeProviderSection === 'mailbox') hydrateOneTimeMailboxRoute(portalState);
+            if (activeProviderSection === 'communications') hydrateOneTimeCommunicationsRoute(portalState);
             if (options.updateUrl) updateProviderSectionUrl(activeProviderSection);
             ensureOneTimeProviderRouteModule(activeProviderSection);
         }
@@ -1840,153 +1840,16 @@
         }
 
         function mailboxReadinessPills(readiness = {}) {
-            const provider = readiness.readiness || {};
-            return [
-                { label: `Inbox: ${readiness.inbox_address || ONE_TIME_INBOX_ADDRESS}`, fit: true },
-                { label: provider.send_allowed ? 'Email replies available' : 'Draft replies only', ok: true },
-                { label: 'Parent and student email stored in One Time CRM', fit: true },
-            ].map(item => oneTimeStatusPill(item.label, { fit: item.fit })).join('');
-        }
-
-        function renderProviderMailboxThreadList(threads = []) {
-            if (!threads.length) return `<p class="small one-time-fit-copy">No captured emails yet. New messages to ${escapeHtml(ONE_TIME_INBOX_ADDRESS)} will appear here when they arrive.</p>`;
-            return threads.map(thread => `
-                <button type="button" class="mailbox-thread-button ${thread.thread_key === providerMailboxState.selectedThreadKey ? 'active' : ''}" data-action-id="ACTION-PROVIDER-MAILBOX-THREAD-OPEN" data-provider-mailbox-thread="${escapeHtml(thread.thread_key)}">
-                    <strong>${escapeHtml(thread.contact_name || thread.contact_email || 'Email thread')}</strong>
-                    <span class="small">${escapeHtml(shortText(thread.subject || 'No subject', 72))}</span>
-                    <span class="small">${escapeHtml(shortText(thread.preview || '', 110))}</span>
-                    <div class="service-meta">
-                        <span class="status-pill">${escapeHtml(thread.needs_reply ? 'Needs reply' : 'Updated')}</span>
-                        <span class="status-pill">${escapeHtml(String(thread.message_count || 1))} message${Number(thread.message_count || 1) === 1 ? '' : 's'}</span>
-                    </div>
-                </button>
-            `).join('');
-        }
-
-        function renderMailboxMessage(message = {}) {
-            const direction = String(message.direction || '').toLowerCase();
-            const party = direction === 'outbound'
-                ? `To ${message.to_address || 'recipient'}`
-                : `From ${message.from_name || message.from_address || 'sender'}`;
-            const date = message.occurred_at ? new Date(message.occurred_at).toLocaleString('en-GB') : '';
-            return `
-                <article class="mailbox-message ${escapeHtml(direction)}">
-                    <div class="service-head">
-                        <div>
-                            <strong>${escapeHtml(party)}</strong>
-                            <span class="small">${escapeHtml(message.subject || 'No subject')}</span>
-                        </div>
-                        <span class="status-pill">${escapeHtml(message.status || direction || 'logged')}</span>
-                    </div>
-                    <div class="service-meta">
-                        ${date ? `<span class="status-pill">${escapeHtml(date)}</span>` : ''}
-                        ${message.provider ? `<span class="status-pill">${escapeHtml(message.provider)}</span>` : ''}
-                    </div>
-                    <p class="mailbox-message-body">${escapeHtml(message.body_text || message.preview || '')}</p>
-                </article>
-            `;
-        }
-
-        function renderProviderMailboxThread(thread = null) {
-            if (!thread) return '<p class="small">Select a thread to read the email timeline.</p>';
-            const messages = Array.isArray(thread.messages) ? thread.messages : [];
-            const readiness = providerMailboxState.readiness || {};
-            const providerReadiness = readiness.readiness || {};
-            const canDraft = Boolean(thread.reply_to_address);
-            const canSend = Boolean(thread.reply_to_address && providerReadiness.send_allowed);
-            const sendBlocker = !thread.reply_to_address
-                ? 'No inbound sender address is available for this thread.'
-                : 'Draft this reply here, then use the approved email sending flow when sending is available.';
-            return `
-                <section class="service-card">
-                    <div class="service-head">
-                        <div>
-                            <h3>${escapeHtml(thread.subject || 'Email thread')}</h3>
-                            <p class="small">${escapeHtml(thread.reply_to_address ? `Reply target: ${thread.reply_to_address}` : 'No reply target found')}</p>
-                        </div>
-                        <span class="status-pill">${escapeHtml(messages.length)} message${messages.length === 1 ? '' : 's'}</span>
-                    </div>
-                    <div class="service-list">
-                        ${messages.map(renderMailboxMessage).join('')}
-                    </div>
-                    <form class="mailbox-composer" data-provider-mailbox-reply="${escapeHtml(thread.thread_key)}">
-                        <label>Reply
-                            <textarea name="body_text" required maxlength="5000" placeholder="Write the reply here. Save Draft stores it in the One Time CRM; Send Reply uses the approved email flow after confirmation."></textarea>
-                        </label>
-                        <p class="small">${canSend ? 'Send Reply asks for explicit confirmation before any external email is sent.' : escapeHtml(sendBlocker)}</p>
-                        <div class="button-row">
-                            <button class="btn" type="submit" name="mailbox_action" value="draft" data-action-id="ACTION-PROVIDER-MAILBOX-DRAFT" ${canDraft ? '' : 'disabled'}>Save Draft</button>
-                            <button class="btn primary" type="submit" name="mailbox_action" value="send" data-action-id="ACTION-PROVIDER-MAILBOX-SEND" ${canSend ? '' : 'disabled'} title="${escapeHtml(canSend ? 'Send reply with explicit confirmation' : sendBlocker)}">Send Reply</button>
-                        </div>
-                    </form>
-                </section>
-            `;
-        }
-
-        function renderProviderMailbox() {
-            const target = document.getElementById('providerMailbox');
-            const readinessTarget = document.getElementById('providerMailboxReadiness');
-            const mailboxSearchForm = document.getElementById('providerMailboxSearchForm');
-            if (!target) return;
-            if (mailboxSearchForm) mailboxSearchForm.classList.remove('hidden');
-            if (readinessTarget) readinessTarget.innerHTML = mailboxReadinessPills(providerMailboxState.readiness || {});
-            target.innerHTML = `
-                <div class="mailbox-layout">
-                    <aside class="mailbox-thread-list" aria-label="Mailbox threads">
-                        ${renderProviderMailboxThreadList(providerMailboxState.threads || [])}
-                    </aside>
-                    <div id="providerMailboxThread">
-                        ${renderProviderMailboxThread(providerMailboxState.thread)}
-                    </div>
-                </div>
-            `;
+            return window.OneTimeProviderMailboxRoute?.mailboxReadinessPills?.(readiness, oneTimeProviderMailboxRouteHelpers()) || '';
         }
 
         async function loadProviderMailbox(options = {}) {
-            const target = document.getElementById('providerMailbox');
-            const searchInput = document.getElementById('providerMailboxSearch');
-            if (!target || !providerMailboxEnabled()) return;
-            const search = options.search !== undefined ? options.search : (searchInput?.value || providerMailboxState.search || '');
-            target.innerHTML = '<p class="small">Loading mailbox...</p>';
-            try {
-                const query = search ? `?q=${encodeURIComponent(search)}` : '';
-                const data = await api(`/api/provider-portal/mailbox${query}`);
-                providerMailboxState.threads = data.mailbox?.threads || [];
-                providerMailboxState.readiness = data.mailbox?.readiness || null;
-                providerMailboxState.search = search || '';
-                providerMailboxState.loaded = true;
-                if (searchInput && searchInput.value !== providerMailboxState.search) searchInput.value = providerMailboxState.search;
-                if (!providerMailboxState.threads.some(thread => thread.thread_key === providerMailboxState.selectedThreadKey)) {
-                    providerMailboxState.selectedThreadKey = providerMailboxState.threads[0]?.thread_key || '';
-                    providerMailboxState.thread = null;
-                }
-                renderProviderMailbox();
-                if (providerMailboxState.selectedThreadKey) {
-                    await loadProviderMailboxThread(providerMailboxState.selectedThreadKey);
-                }
-            } catch (error) {
-                target.innerHTML = `<p class="small">${escapeHtml(error.message || 'Could not load mailbox.')}</p>`;
-            }
+            hydrateOneTimeMailboxRoute(portalState);
+            return window.OneTimeProviderMailboxRoute?.loadMailbox?.(options, oneTimeProviderMailboxRouteHelpers());
         }
 
         async function loadProviderMailboxThread(threadKey) {
-            const target = document.getElementById('providerMailboxThread');
-            if (!threadKey || !target) return;
-            providerMailboxState.selectedThreadKey = threadKey;
-            document.querySelectorAll('[data-provider-mailbox-thread]').forEach(button => {
-                button.classList.toggle('active', button.dataset.providerMailboxThread === threadKey);
-            });
-            target.innerHTML = '<p class="small">Loading thread...</p>';
-            try {
-                const data = await api(`/api/provider-portal/mailbox/${encodeURIComponent(threadKey)}`);
-                providerMailboxState.thread = data.thread || null;
-                providerMailboxState.readiness = data.mailbox?.readiness || providerMailboxState.readiness;
-                target.innerHTML = renderProviderMailboxThread(providerMailboxState.thread);
-                const readinessTarget = document.getElementById('providerMailboxReadiness');
-                if (readinessTarget) readinessTarget.innerHTML = mailboxReadinessPills(providerMailboxState.readiness || {});
-            } catch (error) {
-                target.innerHTML = `<p class="small">${escapeHtml(error.message || 'Could not load mailbox thread.')}</p>`;
-            }
+            return window.OneTimeProviderMailboxRoute?.loadThread?.(threadKey, oneTimeProviderMailboxRouteHelpers());
         }
 
         function renderProviderCalendarEvents(items = []) {
@@ -2025,7 +1888,6 @@
                     : reviewCard('Limited analytics', 'Free provider accounts receive basic listing/support signals only. Full reporting requires Provider Plus.', 'Limited');
             }
             loadProviderInquiries();
-            loadProviderMailbox();
             loadProviderCalendarEvents();
         }
 
@@ -2703,71 +2565,150 @@
             return renderOneTimeCrmRouteLoading('Loading CRM workspace...', true);
         }
 
-        function renderOneTimeReviewMailbox(data = {}) {
-            const parent = data.parent || {};
-            const supportTicket = data.support_ticket || {};
-            const thread = {
-                contact_name: parent.name || 'TEST Parent One Time',
-                contact_email: parent.email || 'test.parent+onetime@example.test',
-                subject: supportTicket.title || 'Worksheet link question',
-                preview: supportTicket.latest_activity || 'Parent asked where the worksheet is located.',
-                message_count: 2,
-                needs_reply: true
+        function oneTimeProviderMailboxRouteHelpers() {
+            return {
+                escapeHtml,
+                oneTimeReviewHref,
+                oneTimeStatusPill,
+                shortText,
+                api,
+                providerMailboxEnabled,
+                providerMailboxState,
+                ONE_TIME_INBOX_ADDRESS,
+                oneTimeReviewMode,
+                oneTimeViewAsRabbiToken,
+                portalDataIsOneTimeProvider,
+                afterRender: () => {
+                    instrumentOneTimeProviderButtons();
+                    applyOneTimeReadOnlyControls();
+                },
             };
+        }
+
+        function renderOneTimeMailboxRouteLoading(message = 'Mailbox loads when this section opens.', busy = false) {
+            if (window.OneTimeProviderMailboxRoute?.renderPlaceholder) {
+                return window.OneTimeProviderMailboxRoute.renderPlaceholder(message, oneTimeProviderMailboxRouteHelpers());
+            }
             return `
-                <div class="mailbox-layout">
-                    <aside class="mailbox-thread-list" aria-label="Mailbox threads">
-                        <article class="mailbox-thread-button active">
-                            <strong>${escapeHtml(thread.contact_name)}</strong>
-                            <span class="small">${escapeHtml(thread.subject)}</span>
-                            <span class="small">${escapeHtml(thread.preview)}</span>
-                            <div class="service-meta">
-                                <span class="status-pill">Needs reply</span>
-                                <span class="status-pill">${escapeHtml(String(thread.message_count))} messages</span>
-                            </div>
-                        </article>
-                    </aside>
-                    <div id="providerMailboxThread">
-                        <section class="service-card">
-                            <div class="service-head">
-                                <div>
-                                    <h3>${escapeHtml(thread.subject)}</h3>
-                                    <p class="small">Thread with ${escapeHtml(thread.contact_email)} inside the One Time CRM mailbox.</p>
-                                </div>
-                                <span class="status-pill">CRM mailbox</span>
-                            </div>
-                            <div class="service-list">
-                                <article class="mailbox-message inbound">
-                                    <div class="service-head">
-                                        <div>
-                                            <strong>From ${escapeHtml(thread.contact_name)}</strong>
-                                            <span class="small">${escapeHtml(thread.subject)}</span>
-                                        </div>
-                                        <span class="status-pill">Received</span>
-                                    </div>
-                                    <p class="mailbox-message-body">${escapeHtml(thread.preview)}</p>
-                                </article>
-                                <article class="mailbox-message outbound">
-                                    <div class="service-head">
-                                        <div>
-                                            <strong>Draft reply</strong>
-                                            <span class="small">Reply can be saved from the signed provider mailbox.</span>
-                                        </div>
-                                        <span class="status-pill">Draft action</span>
-                                    </div>
-                                    <p class="mailbox-message-body">Open the signed provider mailbox to save the reply draft. Live email sending stays behind the approved confirmation flow.</p>
-                                </article>
-                            </div>
-                            <div class="button-row">
-                                <button class="btn" type="button" data-action-id="ACTION-PROVIDER-SECTION-NAVIGATION" data-provider-nav="crm" data-one-time-action-state="navigate">Open CRM</button>
-                                <a class="btn primary" href="${oneTimeReviewHref(data.links?.email_preview, '/one-time-email-review.html')}" data-one-time-action-state="navigate">Preview Email</a>
-                                <button class="btn" type="button" disabled title="Use the signed provider mailbox to save live drafts.">Save Draft</button>
-                                <button class="btn" type="button" disabled title="Live email sending requires the approved confirmation flow.">Send Reply</button>
-                            </div>
-                        </section>
+                <section class="service-card" data-one-time-provider-mailbox-route-placeholder data-route-module="one-time-provider-mailbox-route" aria-busy="${busy}">
+                    <div class="service-head">
+                        <div>
+                            <h3>Mailbox</h3>
+                            <p class="small">${escapeHtml(message)}</p>
+                        </div>
+                        <span class="status-pill">Route module</span>
                     </div>
-                </div>
+                </section>
             `;
+        }
+
+        function hydrateOneTimeMailboxRoute(data = portalState) {
+            if (!data || !(oneTimeReviewMode || oneTimeViewAsRabbiToken || portalDataIsOneTimeProvider(data))) return;
+            const target = document.getElementById('providerMailbox');
+            if (!target) return;
+            const render = () => {
+                const route = window.OneTimeProviderMailboxRoute;
+                if (route?.hydrate) {
+                    route.hydrate(data, oneTimeProviderMailboxRouteHelpers());
+                } else if (route?.renderReviewMailbox) {
+                    target.innerHTML = route.renderReviewMailbox(data, oneTimeProviderMailboxRouteHelpers());
+                } else {
+                    return;
+                }
+                instrumentOneTimeProviderButtons();
+                applyOneTimeReadOnlyControls();
+            };
+            if (window.OneTimeProviderMailboxRoute?.hydrate || window.OneTimeProviderMailboxRoute?.renderReviewMailbox) {
+                render();
+                return;
+            }
+            target.innerHTML = renderOneTimeMailboxRouteLoading('Loading mailbox...', true);
+            let script = document.querySelector('script[src="/js/one-time-provider-mailbox-route.js"]');
+            let appendScript = false;
+            if (!script) {
+                script = document.createElement('script');
+                script.src = '/js/one-time-provider-mailbox-route.js';
+                script.dataset.routeModule = 'one-time-provider-mailbox-route';
+                script.async = true;
+                appendScript = true;
+            }
+            script.addEventListener('load', render, { once: true });
+            script.addEventListener('error', () => {
+                target.innerHTML = renderOneTimeMailboxRouteLoading('Mailbox route module could not load.', false);
+            }, { once: true });
+            if (appendScript) document.head.appendChild(script);
+        }
+
+        function renderOneTimeReviewMailbox(data = {}, options = {}) {
+            const active = options.active ?? activeProviderSection === 'mailbox';
+            if (!active) return renderOneTimeMailboxRouteLoading();
+            if (window.OneTimeProviderMailboxRoute?.renderReviewMailbox) {
+                return window.OneTimeProviderMailboxRoute.renderReviewMailbox(data, oneTimeProviderMailboxRouteHelpers());
+            }
+            queueMicrotask(() => hydrateOneTimeMailboxRoute(data));
+            return renderOneTimeMailboxRouteLoading('Loading mailbox...', true);
+        }
+
+        function oneTimeProviderCommunicationsRouteHelpers() {
+            return { escapeHtml, reviewCard };
+        }
+
+        function renderOneTimeCommunicationsRouteLoading(message = 'Messages load when this section opens.', busy = false) {
+            if (window.OneTimeProviderCommunicationsRoute?.renderPlaceholder) {
+                return window.OneTimeProviderCommunicationsRoute.renderPlaceholder(message, oneTimeProviderCommunicationsRouteHelpers());
+            }
+            return `
+                <section class="service-card" data-one-time-provider-communications-route-placeholder data-route-module="one-time-provider-communications-route" aria-busy="${busy}">
+                    <div class="service-head">
+                        <div>
+                            <h3>Messages</h3>
+                            <p class="small">${escapeHtml(message)}</p>
+                        </div>
+                        <span class="status-pill">Route module</span>
+                    </div>
+                </section>
+            `;
+        }
+
+        function hydrateOneTimeCommunicationsRoute(data = portalState) {
+            if (!data || !(oneTimeReviewMode || oneTimeViewAsRabbiToken || portalDataIsOneTimeProvider(data))) return;
+            const target = document.getElementById('providerMessages');
+            if (!target) return;
+            const render = () => {
+                if (!window.OneTimeProviderCommunicationsRoute?.renderReviewCommunications) return;
+                target.innerHTML = window.OneTimeProviderCommunicationsRoute.renderReviewCommunications(data, oneTimeProviderCommunicationsRouteHelpers());
+                instrumentOneTimeProviderButtons();
+                applyOneTimeReadOnlyControls();
+            };
+            if (window.OneTimeProviderCommunicationsRoute?.renderReviewCommunications) {
+                render();
+                return;
+            }
+            target.innerHTML = renderOneTimeCommunicationsRouteLoading('Loading messages...', true);
+            let script = document.querySelector('script[src="/js/one-time-provider-communications-route.js"]');
+            let appendScript = false;
+            if (!script) {
+                script = document.createElement('script');
+                script.src = '/js/one-time-provider-communications-route.js';
+                script.dataset.routeModule = 'one-time-provider-communications-route';
+                script.async = true;
+                appendScript = true;
+            }
+            script.addEventListener('load', render, { once: true });
+            script.addEventListener('error', () => {
+                target.innerHTML = renderOneTimeCommunicationsRouteLoading('Messages route module could not load.', false);
+            }, { once: true });
+            if (appendScript) document.head.appendChild(script);
+        }
+
+        function renderOneTimeReviewCommunications(data = {}, options = {}) {
+            const active = options.active ?? activeProviderSection === 'communications';
+            if (!active) return renderOneTimeCommunicationsRouteLoading();
+            if (window.OneTimeProviderCommunicationsRoute?.renderReviewCommunications) {
+                return window.OneTimeProviderCommunicationsRoute.renderReviewCommunications(data, oneTimeProviderCommunicationsRouteHelpers());
+            }
+            queueMicrotask(() => hydrateOneTimeCommunicationsRoute(data));
+            return renderOneTimeCommunicationsRouteLoading('Loading messages...', true);
         }
 
         function renderOneTimeProviderReview(data, viewAsSession = null) {
@@ -2914,13 +2855,7 @@
                 `;
             }
             if (commsPanel) {
-                document.getElementById('providerMessages').innerHTML = [
-                    reviewCard('Announcement', data.announcement?.body || '', data.announcement?.visibility || 'review'),
-                    reviewCard('Private question', data.private_question?.body || '', data.private_question?.status || 'review'),
-                    reviewCard('Support ticket', data.support_ticket?.latest_activity || '', data.support_ticket?.status || 'open'),
-                    reviewCard('WhatsApp credential handoff', data.login_access?.handoff_note || 'Prepare approved WhatsApp credential handoff after recipient/body approval. No WhatsApp was sent from this review.', data.login_access?.whatsapp_send_state || 'not sent'),
-                    reviewCard('Email previews', `${data.email_templates?.length || 0} templates are available at ${data.links?.email_preview || '/one-time-email-review.html'}`, 'preview only'),
-                ].join('');
+                document.getElementById('providerMessages').innerHTML = renderOneTimeReviewCommunications(data);
             }
             if (commercialPanel) {
                 document.getElementById('commercialSummary').innerHTML = reviewCard(data.payment?.offer || 'Offer', `${data.payment?.trial || ''} / ${data.payment?.status || ''}. No real charge in review mode.`, data.payment?.access_state || 'test');
