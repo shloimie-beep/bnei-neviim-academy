@@ -8,7 +8,7 @@ SHA256: `sha256:BEC7D0B514919621FF8AFD25E9D95D29287F46A18B397EDB9361508BBFCDF13F
 
 Gate 1 audit: `ops/system-audits/2026-07-13-onetime-final-integration-launch/report.md`
 
-Next unblocked requirement: `REQ-20260713-935`
+Next unblocked requirement: `REQ-20260713-937`
 
 ## Requirements
 
@@ -16,7 +16,7 @@ Next unblocked requirement: `REQ-20260713-935`
 - `REQ-20260713-932` done - Complete Gate 1 freeze and current-truth audit
 - `REQ-20260713-933` done - Reproduce current P0 One Time role, performance, CRM, content, and mobile defects
 - `REQ-20260713-934` done - Fix One Time identity, navigation, CRM/content, mobile, and performance issues; `PKT-20260713-934A` member portal performance is deployed/live-smoked at deployed SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`; `PKT-20260713-934B`/`934C` auth/admin context and provider/student request-console cleanup are deployed/live-smoked at deployed SHA `e973ce50b86e7566034faf8a604133a4870e4d7b`
-- `REQ-20260713-935` not_started - Verify and repair One Time landing/signup/assets/responsive launch path
+- `REQ-20260713-935` done - Verify and repair One Time landing/signup/assets/responsive launch path; deployed/live-smoked at One Time SHA `11e5ba0d4da6ae8897294be81a567bb519943ab2` with responsive, signup matrix, and dry-run proof
 - `REQ-20260713-936` blocked - Activate One Time WhatsApp canaries and public reactive auto-replies after gates
 - `REQ-20260713-937` not_started - Reconcile Stripe Billing V2 and PR #132 into current master safely
 - `REQ-20260713-938` not_started - Finish Vimeo, Drive, Classroom, and Zoom integration truth for One Time
@@ -61,6 +61,16 @@ Next unblocked requirement: `REQ-20260713-935`
 - Screenshots: `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/provider-admin-crm-redacted.png` and `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/student-login.png`.
 - Verification: `node --test tests/one-time-route-role-mapping.test.js`, `npm run test:onetime:focused`, exact-SHA One Time separate-instance smoke, and exact-SHA auth/session-context live smoke passed.
 - `REQ-20260713-934` is Done. Continue `REQ-20260713-935` next.
+
+## REQ-20260713-935 Landing/Signup/Assets Responsive Evidence Update
+
+- Deploy proof: One Time Railway deployment `39b4820d-fe5a-456c-bdc1-ccc30befa1d5` reached `SUCCESS`; `https://join.onetimeonetime.com/api/deploy-info` returned exact SHA `11e5ba0d4da6ae8897294be81a567bb519943ab2`, source branch `codex/onetime-final-integration-launch`, and `target_app=one-time`.
+- Policy proof: the public campaign API and landing copy now use the Rosh Hashanah 5787 policy: free promotional access until Friday, September 11, 2026 (Israel time), `$67/month afterward`, no Stripe trial object, no hidden trial, no card today, and paid service only after active choice.
+- Live responsive proof: `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/REPORT.md` passed `/one-time` and `/one-time/signup` at 1440, 1024, 768, 430, and 390 widths with no horizontal overflow, no old trial copy, and zero actionless visible buttons.
+- Signup proof: `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-form-matrix-live.md` passed Family/School, reminder choices, validation, double-click, server-refresh, mobile widths, and keyboard-only scenarios.
+- No-write proof: `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md` passed without product lead insertion, CRM write, note creation, send, checkout, access grant, Zoom creation, or external write.
+- Screenshot evidence includes `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/screenshots/landing-1440.png`, `landing-390.png`, and `signup-390.png`; visual readback confirmed the next-section cue and readable narrow signup form.
+- `REQ-20260713-935` is Done. Continue `REQ-20260713-937` next; `REQ-20260713-936` remains blocked until canary/owner gates pass.
 
 ## Product Quality Operating Contract
 

@@ -1,0 +1,1684 @@
+{
+  "started_at": "2026-07-13T20:50:12.287Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "expected_sha": "11e5ba0d4da6ae8897294be81a567bb519943ab2",
+  "deploy_info": {
+    "status": 200,
+    "ok": true,
+    "json": {
+      "status": "ok",
+      "commit_sha": "11e5ba0d4da6ae8897294be81a567bb519943ab2",
+      "source_branch": "codex/onetime-final-integration-launch",
+      "generated_at": "2026-07-13T20:46:43.1802992Z",
+      "deployment_source": "railway:redeploy",
+      "target_app": "one-time",
+      "target_project": "one-time-production",
+      "target_service": "one-time-web"
+    }
+  },
+  "deployed_sha_matches_expected": true,
+  "cta_checks": [
+    {
+      "index": 0,
+      "tag": "a",
+      "text": "Sign Up Now",
+      "href": "https://join.onetimeonetime.com/one-time/signup",
+      "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
+      "type": "",
+      "hidden": false
+    },
+    {
+      "index": 1,
+      "tag": "a",
+      "text": "Sign Up Now",
+      "href": "https://join.onetimeonetime.com/one-time/signup",
+      "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
+      "type": "",
+      "hidden": false
+    },
+    {
+      "index": 2,
+      "tag": "a",
+      "text": "Sign Up Now",
+      "href": "https://join.onetimeonetime.com/one-time/signup",
+      "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
+      "type": "",
+      "hidden": false
+    },
+    {
+      "index": 3,
+      "tag": "a",
+      "text": "Sign Up Now",
+      "href": "https://join.onetimeonetime.com/one-time/signup",
+      "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
+      "type": "",
+      "hidden": false
+    }
+  ],
+  "initial_controls": [
+    {
+      "tag": "input",
+      "name": "contact_name",
+      "id": "contactName",
+      "type": "text",
+      "required": true,
+      "disabled": false,
+      "hidden": false,
+      "checked": false,
+      "value": "",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 37,
+        "y": 622.97,
+        "width": 356,
+        "height": 52
+      }
+    },
+    {
+      "tag": "input",
+      "name": "signup_as",
+      "id": "signupAs",
+      "type": "hidden",
+      "required": false,
+      "disabled": false,
+      "hidden": true,
+      "checked": false,
+      "value": "",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "tag": "input",
+      "name": "audience_type",
+      "id": "",
+      "type": "radio",
+      "required": true,
+      "disabled": false,
+      "hidden": false,
+      "checked": false,
+      "value": "family",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 66,
+        "y": 728.56,
+        "width": 19,
+        "height": 19
+      }
+    },
+    {
+      "tag": "input",
+      "name": "audience_type",
+      "id": "",
+      "type": "radio",
+      "required": true,
+      "disabled": false,
+      "hidden": false,
+      "checked": false,
+      "value": "school",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 66,
+        "y": 797.66,
+        "width": 19,
+        "height": 19
+      }
+    },
+    {
+      "tag": "input",
+      "name": "location",
+      "id": "location",
+      "type": "text",
+      "required": true,
+      "disabled": false,
+      "hidden": false,
+      "checked": false,
+      "value": "",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 37,
+        "y": 897.75,
+        "width": 356,
+        "height": 52
+      }
+    },
+    {
+      "tag": "input",
+      "name": "city_label",
+      "id": "",
+      "type": "hidden",
+      "required": false,
+      "disabled": false,
+      "hidden": true,
+      "checked": false,
+      "value": "",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "tag": "input",
+      "name": "city_id",
+      "id": "",
+      "type": "hidden",
+      "required": false,
+      "disabled": false,
+      "hidden": true,
+      "checked": false,
+      "value": "",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "tag": "input",
+      "name": "city_name",
+      "id": "",
+      "type": "hidden",
+      "required": false,
+      "disabled": false,
+      "hidden": true,
+      "checked": false,
+      "value": "",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "tag": "input",
+      "name": "city_region",
+      "id": "",
+      "type": "hidden",
+      "required": false,
+      "disabled": false,
+      "hidden": true,
+      "checked": false,
+      "value": "",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "tag": "input",
+      "name": "city_country",
+      "id": "",
+      "type": "hidden",
+      "required": false,
+      "disabled": false,
+      "hidden": true,
+      "checked": false,
+      "value": "",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "tag": "input",
+      "name": "city_country_code",
+      "id": "",
+      "type": "hidden",
+      "required": false,
+      "disabled": false,
+      "hidden": true,
+      "checked": false,
+      "value": "",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "tag": "input",
+      "name": "timezone",
+      "id": "",
+      "type": "hidden",
+      "required": false,
+      "disabled": false,
+      "hidden": true,
+      "checked": false,
+      "value": "America/New_York",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "tag": "input",
+      "name": "browser_timezone",
+      "id": "",
+      "type": "hidden",
+      "required": false,
+      "disabled": false,
+      "hidden": true,
+      "checked": false,
+      "value": "America/New_York",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "tag": "input",
+      "name": "timezone_fallback",
+      "id": "timezoneFallback",
+      "type": "text",
+      "required": false,
+      "disabled": true,
+      "hidden": true,
+      "checked": false,
+      "value": "",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "tag": "input",
+      "name": "email",
+      "id": "email",
+      "type": "email",
+      "required": true,
+      "disabled": false,
+      "hidden": false,
+      "checked": false,
+      "value": "",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 37,
+        "y": 1134.41,
+        "width": 356,
+        "height": 52
+      }
+    },
+    {
+      "tag": "input",
+      "name": "phone",
+      "id": "phone",
+      "type": "tel",
+      "required": false,
+      "disabled": false,
+      "hidden": false,
+      "checked": false,
+      "value": "",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "phoneHint",
+      "rect": {
+        "x": 37,
+        "y": 1227.41,
+        "width": 356,
+        "height": 52
+      }
+    },
+    {
+      "tag": "input",
+      "name": "reminder_preference",
+      "id": "",
+      "type": "radio",
+      "required": true,
+      "disabled": false,
+      "hidden": false,
+      "checked": false,
+      "value": "email",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 67,
+        "y": 1335,
+        "width": 19,
+        "height": 19
+      }
+    },
+    {
+      "tag": "input",
+      "name": "reminder_preference",
+      "id": "",
+      "type": "radio",
+      "required": false,
+      "disabled": false,
+      "hidden": false,
+      "checked": false,
+      "value": "whatsapp",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 67,
+        "y": 1411.16,
+        "width": 19,
+        "height": 19
+      }
+    },
+    {
+      "tag": "input",
+      "name": "reminder_preference",
+      "id": "",
+      "type": "radio",
+      "required": false,
+      "disabled": false,
+      "hidden": false,
+      "checked": false,
+      "value": "both",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 67,
+        "y": 1487.31,
+        "width": 19,
+        "height": 19
+      }
+    },
+    {
+      "tag": "input",
+      "name": "reminder_preference",
+      "id": "",
+      "type": "radio",
+      "required": false,
+      "disabled": false,
+      "hidden": false,
+      "checked": false,
+      "value": "none",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 67,
+        "y": 1563.47,
+        "width": 19,
+        "height": 19
+      }
+    },
+    {
+      "tag": "input",
+      "name": "reminder_consent",
+      "id": "reminderConsent",
+      "type": "checkbox",
+      "required": false,
+      "disabled": true,
+      "hidden": true,
+      "checked": false,
+      "value": "true",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 67,
+        "y": 1645.06,
+        "width": 32,
+        "height": 22
+      }
+    },
+    {
+      "tag": "button",
+      "name": "",
+      "id": "",
+      "type": "submit",
+      "required": false,
+      "disabled": false,
+      "hidden": false,
+      "checked": null,
+      "value": "",
+      "ariaInvalid": "",
+      "ariaDescribedBy": "",
+      "rect": {
+        "x": 37,
+        "y": 1717.5,
+        "width": 356,
+        "height": 52
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "success-family-email",
+      "name": "Family + Email reminders + no phone",
+      "expected": "success",
+      "passed": true,
+      "post_attempt_count": 1,
+      "payload_shape": {
+        "keys": [
+          "audience",
+          "audience_type",
+          "browser_timezone",
+          "city_country",
+          "city_country_code",
+          "city_id",
+          "city_label",
+          "city_name",
+          "city_region",
+          "consent",
+          "contact_name",
+          "email",
+          "family_school_classification",
+          "idempotency_key",
+          "location",
+          "location_time_acknowledgement",
+          "metadata",
+          "notes",
+          "parent_name",
+          "phone",
+          "region",
+          "reminder_consent",
+          "reminder_consent_ack",
+          "reminder_preference",
+          "signup_acknowledgement",
+          "signup_mode",
+          "source",
+          "source_landing_page",
+          "timezone",
+          "whatsapp"
+        ],
+        "metadata_keys": [
+          "audience_type",
+          "browser_timezone",
+          "city",
+          "class_schedule",
+          "family_school_classification",
+          "form_version",
+          "location_time_acknowledgement",
+          "raw_intake_id",
+          "referrer",
+          "reminder_consent",
+          "reminder_consent_acknowledged",
+          "reminder_consent_at",
+          "reminder_consent_policy_version",
+          "reminder_preference",
+          "requirement_id",
+          "signup_acknowledgement",
+          "signup_as",
+          "timezone_source",
+          "utm"
+        ],
+        "contact_name_present": true,
+        "email_present": true,
+        "phone_present": false,
+        "audience_type": "family",
+        "signup_as": "Family",
+        "location_present": true,
+        "timezone": "America/New_York",
+        "reminder_preference": "email",
+        "reminder_consent": true,
+        "idempotency_key_present": true,
+        "source": "one_time_public_signup"
+      },
+      "server_dry_run": {
+        "status": 200,
+        "success": true,
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "direct_signup_workflow": true,
+        "field_errors": null,
+        "guardrails": {
+          "no_database_write_performed": true,
+          "no_product_lead_created": true,
+          "no_crm_lead_created_or_updated": true,
+          "no_internal_note_created": true,
+          "no_transactional_follow_up_created": true,
+          "no_telegram_reminder_sent": true,
+          "no_email_sent": true,
+          "no_whatsapp_or_wapi_sent": true,
+          "no_checkout": true,
+          "no_access_granted": true,
+          "no_zoom_meeting_created": true,
+          "external_write_performed": false
+        }
+      },
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "div",
+          "id": "",
+          "name": "",
+          "text": "You're signed up. We saved your information and will send the current class details using your selected option. Reminder methodEmail Locatio",
+          "ariaInvalid": ""
+        },
+        "visibleErrors": [],
+        "status": "Signing you up…"
+      },
+      "console": []
+    },
+    {
+      "id": "success-school-email",
+      "name": "School + Email reminders + no phone",
+      "expected": "success",
+      "passed": true,
+      "post_attempt_count": 1,
+      "payload_shape": {
+        "keys": [
+          "audience",
+          "audience_type",
+          "browser_timezone",
+          "city_country",
+          "city_country_code",
+          "city_id",
+          "city_label",
+          "city_name",
+          "city_region",
+          "consent",
+          "contact_name",
+          "email",
+          "family_school_classification",
+          "idempotency_key",
+          "location",
+          "location_time_acknowledgement",
+          "metadata",
+          "notes",
+          "parent_name",
+          "phone",
+          "region",
+          "reminder_consent",
+          "reminder_consent_ack",
+          "reminder_preference",
+          "signup_acknowledgement",
+          "signup_mode",
+          "source",
+          "source_landing_page",
+          "timezone",
+          "whatsapp"
+        ],
+        "metadata_keys": [
+          "audience_type",
+          "browser_timezone",
+          "city",
+          "class_schedule",
+          "family_school_classification",
+          "form_version",
+          "location_time_acknowledgement",
+          "raw_intake_id",
+          "referrer",
+          "reminder_consent",
+          "reminder_consent_acknowledged",
+          "reminder_consent_at",
+          "reminder_consent_policy_version",
+          "reminder_preference",
+          "requirement_id",
+          "signup_acknowledgement",
+          "signup_as",
+          "timezone_source",
+          "utm"
+        ],
+        "contact_name_present": true,
+        "email_present": true,
+        "phone_present": false,
+        "audience_type": "school",
+        "signup_as": "School",
+        "location_present": true,
+        "timezone": "America/New_York",
+        "reminder_preference": "email",
+        "reminder_consent": true,
+        "idempotency_key_present": true,
+        "source": "one_time_public_signup"
+      },
+      "server_dry_run": {
+        "status": 200,
+        "success": true,
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "direct_signup_workflow": true,
+        "field_errors": null,
+        "guardrails": {
+          "no_database_write_performed": true,
+          "no_product_lead_created": true,
+          "no_crm_lead_created_or_updated": true,
+          "no_internal_note_created": true,
+          "no_transactional_follow_up_created": true,
+          "no_telegram_reminder_sent": true,
+          "no_email_sent": true,
+          "no_whatsapp_or_wapi_sent": true,
+          "no_checkout": true,
+          "no_access_granted": true,
+          "no_zoom_meeting_created": true,
+          "external_write_performed": false
+        }
+      },
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "div",
+          "id": "",
+          "name": "",
+          "text": "You're signed up. We saved your information and will send the current class details using your selected option. Reminder methodEmail Locatio",
+          "ariaInvalid": ""
+        },
+        "visibleErrors": [],
+        "status": "Signing you up…"
+      },
+      "console": []
+    },
+    {
+      "id": "success-family-none",
+      "name": "Family + No reminders + no phone",
+      "expected": "success",
+      "passed": true,
+      "post_attempt_count": 1,
+      "payload_shape": {
+        "keys": [
+          "audience",
+          "audience_type",
+          "browser_timezone",
+          "city_country",
+          "city_country_code",
+          "city_id",
+          "city_label",
+          "city_name",
+          "city_region",
+          "consent",
+          "contact_name",
+          "email",
+          "family_school_classification",
+          "idempotency_key",
+          "location",
+          "location_time_acknowledgement",
+          "metadata",
+          "notes",
+          "parent_name",
+          "phone",
+          "region",
+          "reminder_consent",
+          "reminder_consent_ack",
+          "reminder_preference",
+          "signup_acknowledgement",
+          "signup_mode",
+          "source",
+          "source_landing_page",
+          "timezone",
+          "whatsapp"
+        ],
+        "metadata_keys": [
+          "audience_type",
+          "browser_timezone",
+          "city",
+          "class_schedule",
+          "family_school_classification",
+          "form_version",
+          "location_time_acknowledgement",
+          "raw_intake_id",
+          "referrer",
+          "reminder_consent",
+          "reminder_consent_acknowledged",
+          "reminder_consent_at",
+          "reminder_consent_policy_version",
+          "reminder_preference",
+          "requirement_id",
+          "signup_acknowledgement",
+          "signup_as",
+          "timezone_source",
+          "utm"
+        ],
+        "contact_name_present": true,
+        "email_present": true,
+        "phone_present": false,
+        "audience_type": "family",
+        "signup_as": "Family",
+        "location_present": true,
+        "timezone": "America/New_York",
+        "reminder_preference": "none",
+        "reminder_consent": false,
+        "idempotency_key_present": true,
+        "source": "one_time_public_signup"
+      },
+      "server_dry_run": {
+        "status": 200,
+        "success": true,
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "direct_signup_workflow": true,
+        "field_errors": null,
+        "guardrails": {
+          "no_database_write_performed": true,
+          "no_product_lead_created": true,
+          "no_crm_lead_created_or_updated": true,
+          "no_internal_note_created": true,
+          "no_transactional_follow_up_created": true,
+          "no_telegram_reminder_sent": true,
+          "no_email_sent": true,
+          "no_whatsapp_or_wapi_sent": true,
+          "no_checkout": true,
+          "no_access_granted": true,
+          "no_zoom_meeting_created": true,
+          "external_write_performed": false
+        }
+      },
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "div",
+          "id": "",
+          "name": "",
+          "text": "You're signed up. We saved your information and will send the current class details using your selected option. Reminder methodNo reminders ",
+          "ariaInvalid": ""
+        },
+        "visibleErrors": [],
+        "status": "Signing you up…"
+      },
+      "console": []
+    },
+    {
+      "id": "success-school-none",
+      "name": "School + No reminders + no phone",
+      "expected": "success",
+      "passed": true,
+      "post_attempt_count": 1,
+      "payload_shape": {
+        "keys": [
+          "audience",
+          "audience_type",
+          "browser_timezone",
+          "city_country",
+          "city_country_code",
+          "city_id",
+          "city_label",
+          "city_name",
+          "city_region",
+          "consent",
+          "contact_name",
+          "email",
+          "family_school_classification",
+          "idempotency_key",
+          "location",
+          "location_time_acknowledgement",
+          "metadata",
+          "notes",
+          "parent_name",
+          "phone",
+          "region",
+          "reminder_consent",
+          "reminder_consent_ack",
+          "reminder_preference",
+          "signup_acknowledgement",
+          "signup_mode",
+          "source",
+          "source_landing_page",
+          "timezone",
+          "whatsapp"
+        ],
+        "metadata_keys": [
+          "audience_type",
+          "browser_timezone",
+          "city",
+          "class_schedule",
+          "family_school_classification",
+          "form_version",
+          "location_time_acknowledgement",
+          "raw_intake_id",
+          "referrer",
+          "reminder_consent",
+          "reminder_consent_acknowledged",
+          "reminder_consent_at",
+          "reminder_consent_policy_version",
+          "reminder_preference",
+          "requirement_id",
+          "signup_acknowledgement",
+          "signup_as",
+          "timezone_source",
+          "utm"
+        ],
+        "contact_name_present": true,
+        "email_present": true,
+        "phone_present": false,
+        "audience_type": "school",
+        "signup_as": "School",
+        "location_present": true,
+        "timezone": "America/New_York",
+        "reminder_preference": "none",
+        "reminder_consent": false,
+        "idempotency_key_present": true,
+        "source": "one_time_public_signup"
+      },
+      "server_dry_run": {
+        "status": 200,
+        "success": true,
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "direct_signup_workflow": true,
+        "field_errors": null,
+        "guardrails": {
+          "no_database_write_performed": true,
+          "no_product_lead_created": true,
+          "no_crm_lead_created_or_updated": true,
+          "no_internal_note_created": true,
+          "no_transactional_follow_up_created": true,
+          "no_telegram_reminder_sent": true,
+          "no_email_sent": true,
+          "no_whatsapp_or_wapi_sent": true,
+          "no_checkout": true,
+          "no_access_granted": true,
+          "no_zoom_meeting_created": true,
+          "external_write_performed": false
+        }
+      },
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "div",
+          "id": "",
+          "name": "",
+          "text": "You're signed up. We saved your information and will send the current class details using your selected option. Reminder methodNo reminders ",
+          "ariaInvalid": ""
+        },
+        "visibleErrors": [],
+        "status": "Signing you up…"
+      },
+      "console": []
+    },
+    {
+      "id": "success-whatsapp-phone",
+      "name": "WhatsApp reminders + valid phone + consent",
+      "expected": "success",
+      "passed": true,
+      "post_attempt_count": 1,
+      "payload_shape": {
+        "keys": [
+          "audience",
+          "audience_type",
+          "browser_timezone",
+          "city_country",
+          "city_country_code",
+          "city_id",
+          "city_label",
+          "city_name",
+          "city_region",
+          "consent",
+          "contact_name",
+          "email",
+          "family_school_classification",
+          "idempotency_key",
+          "location",
+          "location_time_acknowledgement",
+          "metadata",
+          "notes",
+          "parent_name",
+          "phone",
+          "region",
+          "reminder_consent",
+          "reminder_consent_ack",
+          "reminder_preference",
+          "signup_acknowledgement",
+          "signup_mode",
+          "source",
+          "source_landing_page",
+          "timezone",
+          "whatsapp"
+        ],
+        "metadata_keys": [
+          "audience_type",
+          "browser_timezone",
+          "city",
+          "class_schedule",
+          "family_school_classification",
+          "form_version",
+          "location_time_acknowledgement",
+          "raw_intake_id",
+          "referrer",
+          "reminder_consent",
+          "reminder_consent_acknowledged",
+          "reminder_consent_at",
+          "reminder_consent_policy_version",
+          "reminder_preference",
+          "requirement_id",
+          "signup_acknowledgement",
+          "signup_as",
+          "timezone_source",
+          "utm"
+        ],
+        "contact_name_present": true,
+        "email_present": true,
+        "phone_present": true,
+        "audience_type": "family",
+        "signup_as": "Family",
+        "location_present": true,
+        "timezone": "America/New_York",
+        "reminder_preference": "whatsapp",
+        "reminder_consent": true,
+        "idempotency_key_present": true,
+        "source": "one_time_public_signup"
+      },
+      "server_dry_run": {
+        "status": 200,
+        "success": true,
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "direct_signup_workflow": true,
+        "field_errors": null,
+        "guardrails": {
+          "no_database_write_performed": true,
+          "no_product_lead_created": true,
+          "no_crm_lead_created_or_updated": true,
+          "no_internal_note_created": true,
+          "no_transactional_follow_up_created": true,
+          "no_telegram_reminder_sent": true,
+          "no_email_sent": true,
+          "no_whatsapp_or_wapi_sent": true,
+          "no_checkout": true,
+          "no_access_granted": true,
+          "no_zoom_meeting_created": true,
+          "external_write_performed": false
+        }
+      },
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "div",
+          "id": "",
+          "name": "",
+          "text": "You're signed up. We saved your information and will send the current class details using your selected option. Reminder methodWhatsApp Loca",
+          "ariaInvalid": ""
+        },
+        "visibleErrors": [],
+        "status": "Signing you up…"
+      },
+      "console": []
+    },
+    {
+      "id": "success-both-phone",
+      "name": "Both reminders + valid phone + consent",
+      "expected": "success",
+      "passed": true,
+      "post_attempt_count": 1,
+      "payload_shape": {
+        "keys": [
+          "audience",
+          "audience_type",
+          "browser_timezone",
+          "city_country",
+          "city_country_code",
+          "city_id",
+          "city_label",
+          "city_name",
+          "city_region",
+          "consent",
+          "contact_name",
+          "email",
+          "family_school_classification",
+          "idempotency_key",
+          "location",
+          "location_time_acknowledgement",
+          "metadata",
+          "notes",
+          "parent_name",
+          "phone",
+          "region",
+          "reminder_consent",
+          "reminder_consent_ack",
+          "reminder_preference",
+          "signup_acknowledgement",
+          "signup_mode",
+          "source",
+          "source_landing_page",
+          "timezone",
+          "whatsapp"
+        ],
+        "metadata_keys": [
+          "audience_type",
+          "browser_timezone",
+          "city",
+          "class_schedule",
+          "family_school_classification",
+          "form_version",
+          "location_time_acknowledgement",
+          "raw_intake_id",
+          "referrer",
+          "reminder_consent",
+          "reminder_consent_acknowledged",
+          "reminder_consent_at",
+          "reminder_consent_policy_version",
+          "reminder_preference",
+          "requirement_id",
+          "signup_acknowledgement",
+          "signup_as",
+          "timezone_source",
+          "utm"
+        ],
+        "contact_name_present": true,
+        "email_present": true,
+        "phone_present": true,
+        "audience_type": "school",
+        "signup_as": "School",
+        "location_present": true,
+        "timezone": "America/New_York",
+        "reminder_preference": "both",
+        "reminder_consent": true,
+        "idempotency_key_present": true,
+        "source": "one_time_public_signup"
+      },
+      "server_dry_run": {
+        "status": 200,
+        "success": true,
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "direct_signup_workflow": true,
+        "field_errors": null,
+        "guardrails": {
+          "no_database_write_performed": true,
+          "no_product_lead_created": true,
+          "no_crm_lead_created_or_updated": true,
+          "no_internal_note_created": true,
+          "no_transactional_follow_up_created": true,
+          "no_telegram_reminder_sent": true,
+          "no_email_sent": true,
+          "no_whatsapp_or_wapi_sent": true,
+          "no_checkout": true,
+          "no_access_granted": true,
+          "no_zoom_meeting_created": true,
+          "external_write_performed": false
+        }
+      },
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "div",
+          "id": "",
+          "name": "",
+          "text": "You're signed up. We saved your information and will send the current class details using your selected option. Reminder methodEmail and Wha",
+          "ariaInvalid": ""
+        },
+        "visibleErrors": [],
+        "status": "Signing you up…"
+      },
+      "console": []
+    },
+    {
+      "id": "error-whatsapp-no-phone",
+      "name": "WhatsApp reminders + no phone",
+      "expected": "field_error",
+      "passed": true,
+      "post_attempt_count": 0,
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "input",
+          "id": "phone",
+          "name": "phone",
+          "text": "",
+          "ariaInvalid": "true"
+        },
+        "visibleErrors": [
+          {
+            "field": "phone",
+            "text": "Enter a WhatsApp number or choose a different reminder option."
+          }
+        ],
+        "status": ""
+      },
+      "expected_errors": [
+        {
+          "field": "phone",
+          "text": "Enter a WhatsApp number or choose a different reminder option."
+        }
+      ]
+    },
+    {
+      "id": "error-both-no-phone",
+      "name": "Both reminders + no phone",
+      "expected": "field_error",
+      "passed": true,
+      "post_attempt_count": 0,
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "input",
+          "id": "phone",
+          "name": "phone",
+          "text": "",
+          "ariaInvalid": "true"
+        },
+        "visibleErrors": [
+          {
+            "field": "phone",
+            "text": "Enter a WhatsApp number or choose a different reminder option."
+          }
+        ],
+        "status": ""
+      },
+      "expected_errors": [
+        {
+          "field": "phone",
+          "text": "Enter a WhatsApp number or choose a different reminder option."
+        }
+      ]
+    },
+    {
+      "id": "error-missing-audience",
+      "name": "Missing audience",
+      "expected": "field_error",
+      "passed": true,
+      "post_attempt_count": 0,
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "input",
+          "id": "",
+          "name": "audience_type",
+          "text": "",
+          "ariaInvalid": ""
+        },
+        "visibleErrors": [
+          {
+            "field": "audience_type",
+            "text": "Choose Family or School."
+          }
+        ],
+        "status": ""
+      },
+      "expected_errors": [
+        {
+          "field": "audience_type",
+          "text": "Choose Family or School."
+        }
+      ]
+    },
+    {
+      "id": "error-missing-location",
+      "name": "Missing location",
+      "expected": "field_error",
+      "passed": true,
+      "post_attempt_count": 0,
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "input",
+          "id": "location",
+          "name": "location",
+          "text": "",
+          "ariaInvalid": "true"
+        },
+        "visibleErrors": [
+          {
+            "field": "location",
+            "text": "Enter your city or location."
+          }
+        ],
+        "status": ""
+      },
+      "expected_errors": [
+        {
+          "field": "location",
+          "text": "Enter your city or location."
+        }
+      ]
+    },
+    {
+      "id": "error-missing-reminder",
+      "name": "Missing reminder choice",
+      "expected": "field_error",
+      "passed": true,
+      "post_attempt_count": 0,
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "input",
+          "id": "",
+          "name": "reminder_preference",
+          "text": "",
+          "ariaInvalid": ""
+        },
+        "visibleErrors": [
+          {
+            "field": "reminder_preference",
+            "text": "Choose Email, WhatsApp, Both, or No reminders."
+          }
+        ],
+        "status": ""
+      },
+      "expected_errors": [
+        {
+          "field": "reminder_preference",
+          "text": "Choose Email, WhatsApp, Both, or No reminders."
+        }
+      ]
+    },
+    {
+      "id": "error-invalid-email",
+      "name": "Invalid email",
+      "expected": "field_error",
+      "passed": true,
+      "post_attempt_count": 0,
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "input",
+          "id": "email",
+          "name": "email",
+          "text": "",
+          "ariaInvalid": "true"
+        },
+        "visibleErrors": [
+          {
+            "field": "email",
+            "text": "Enter a valid email address."
+          }
+        ],
+        "status": ""
+      },
+      "expected_errors": [
+        {
+          "field": "email",
+          "text": "Enter a valid email address."
+        }
+      ]
+    },
+    {
+      "id": "switch-whatsapp-to-email",
+      "name": "Switch WhatsApp to Email after phone error",
+      "expected": "phone optional and error clears",
+      "passed": true,
+      "post_attempt_count": 1,
+      "payload_shape": {
+        "keys": [
+          "audience",
+          "audience_type",
+          "browser_timezone",
+          "city_country",
+          "city_country_code",
+          "city_id",
+          "city_label",
+          "city_name",
+          "city_region",
+          "consent",
+          "contact_name",
+          "email",
+          "family_school_classification",
+          "idempotency_key",
+          "location",
+          "location_time_acknowledgement",
+          "metadata",
+          "notes",
+          "parent_name",
+          "phone",
+          "region",
+          "reminder_consent",
+          "reminder_consent_ack",
+          "reminder_preference",
+          "signup_acknowledgement",
+          "signup_mode",
+          "source",
+          "source_landing_page",
+          "timezone",
+          "whatsapp"
+        ],
+        "metadata_keys": [
+          "audience_type",
+          "browser_timezone",
+          "city",
+          "class_schedule",
+          "family_school_classification",
+          "form_version",
+          "location_time_acknowledgement",
+          "raw_intake_id",
+          "referrer",
+          "reminder_consent",
+          "reminder_consent_acknowledged",
+          "reminder_consent_at",
+          "reminder_consent_policy_version",
+          "reminder_preference",
+          "requirement_id",
+          "signup_acknowledgement",
+          "signup_as",
+          "timezone_source",
+          "utm"
+        ],
+        "contact_name_present": true,
+        "email_present": true,
+        "phone_present": false,
+        "audience_type": "family",
+        "signup_as": "Family",
+        "location_present": true,
+        "timezone": "America/New_York",
+        "reminder_preference": "email",
+        "reminder_consent": true,
+        "idempotency_key_present": true,
+        "source": "one_time_public_signup"
+      },
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "body",
+          "id": "",
+          "name": "",
+          "text": "Skip to signup form One Time MishnayosSign up Sign Up Now Back to Home Worldwide Mishnah learning — live from Eretz Yisrael Give your son a ",
+          "ariaInvalid": ""
+        },
+        "visibleErrors": [],
+        "status": "Signing you up…"
+      }
+    },
+    {
+      "id": "switch-email-to-none",
+      "name": "Switch Email to No reminders",
+      "expected": "consent hides and disables",
+      "passed": true,
+      "post_attempt_count": 1,
+      "consent_state_after_switch": {
+        "disabled": true,
+        "required": false,
+        "checked": false,
+        "hidden": true
+      },
+      "payload_shape": {
+        "keys": [
+          "audience",
+          "audience_type",
+          "browser_timezone",
+          "city_country",
+          "city_country_code",
+          "city_id",
+          "city_label",
+          "city_name",
+          "city_region",
+          "consent",
+          "contact_name",
+          "email",
+          "family_school_classification",
+          "idempotency_key",
+          "location",
+          "location_time_acknowledgement",
+          "metadata",
+          "notes",
+          "parent_name",
+          "phone",
+          "region",
+          "reminder_consent",
+          "reminder_consent_ack",
+          "reminder_preference",
+          "signup_acknowledgement",
+          "signup_mode",
+          "source",
+          "source_landing_page",
+          "timezone",
+          "whatsapp"
+        ],
+        "metadata_keys": [
+          "audience_type",
+          "browser_timezone",
+          "city",
+          "class_schedule",
+          "family_school_classification",
+          "form_version",
+          "location_time_acknowledgement",
+          "raw_intake_id",
+          "referrer",
+          "reminder_consent",
+          "reminder_consent_acknowledged",
+          "reminder_consent_at",
+          "reminder_consent_policy_version",
+          "reminder_preference",
+          "requirement_id",
+          "signup_acknowledgement",
+          "signup_as",
+          "timezone_source",
+          "utm"
+        ],
+        "contact_name_present": true,
+        "email_present": true,
+        "phone_present": false,
+        "audience_type": "family",
+        "signup_as": "Family",
+        "location_present": true,
+        "timezone": "America/New_York",
+        "reminder_preference": "none",
+        "reminder_consent": false,
+        "idempotency_key_present": true,
+        "source": "one_time_public_signup"
+      }
+    },
+    {
+      "id": "family-school-family",
+      "name": "Family to School and back",
+      "expected": "selected value remains correct",
+      "passed": true,
+      "selected": "family",
+      "hidden_signup_as": "Family",
+      "post_attempt_count": 0
+    },
+    {
+      "id": "double-click",
+      "name": "Double-click submit",
+      "expected": "one request",
+      "passed": true,
+      "post_attempt_count": 1,
+      "payload_shape": {
+        "keys": [
+          "audience",
+          "audience_type",
+          "browser_timezone",
+          "city_country",
+          "city_country_code",
+          "city_id",
+          "city_label",
+          "city_name",
+          "city_region",
+          "consent",
+          "contact_name",
+          "email",
+          "family_school_classification",
+          "idempotency_key",
+          "location",
+          "location_time_acknowledgement",
+          "metadata",
+          "notes",
+          "parent_name",
+          "phone",
+          "region",
+          "reminder_consent",
+          "reminder_consent_ack",
+          "reminder_preference",
+          "signup_acknowledgement",
+          "signup_mode",
+          "source",
+          "source_landing_page",
+          "timezone",
+          "whatsapp"
+        ],
+        "metadata_keys": [
+          "audience_type",
+          "browser_timezone",
+          "city",
+          "class_schedule",
+          "family_school_classification",
+          "form_version",
+          "location_time_acknowledgement",
+          "raw_intake_id",
+          "referrer",
+          "reminder_consent",
+          "reminder_consent_acknowledged",
+          "reminder_consent_at",
+          "reminder_consent_policy_version",
+          "reminder_preference",
+          "requirement_id",
+          "signup_acknowledgement",
+          "signup_as",
+          "timezone_source",
+          "utm"
+        ],
+        "contact_name_present": true,
+        "email_present": true,
+        "phone_present": false,
+        "audience_type": "family",
+        "signup_as": "Family",
+        "location_present": true,
+        "timezone": "America/New_York",
+        "reminder_preference": "none",
+        "reminder_consent": false,
+        "idempotency_key_present": true,
+        "source": "one_time_public_signup"
+      }
+    },
+    {
+      "id": "server-validation-refresh",
+      "name": "Refresh after a server validation failure",
+      "expected": "no malformed partial success state",
+      "passed": true,
+      "post_attempt_count": 1,
+      "before_reload": {
+        "activeElement": {
+          "tag": "body",
+          "id": "",
+          "name": "",
+          "text": "Skip to signup form One Time MishnayosSign up Sign Up Now Back to Home Worldwide Mishnah learning — live from Eretz Yisrael Give your son a ",
+          "ariaInvalid": ""
+        },
+        "visibleErrors": [
+          {
+            "field": "email",
+            "text": "Enter a valid email address."
+          }
+        ],
+        "status": "Please correct the highlighted fields."
+      },
+      "success_panel_after_reload_count": 0
+    },
+    {
+      "id": "mobile-widths",
+      "name": "Mobile widths 430px and 390px",
+      "expected": "responsive visible form",
+      "passed": true,
+      "screenshots": [
+        {
+          "width": 430,
+          "screenshotPath": "C:\\Users\\User\\BNA-onetime-final-integration-launch\\ops\\live-smokes\\2026-07-13T20-50-12-287Z-one-time-signup-430.png",
+          "metrics": {
+            "scrollWidth": 430,
+            "clientWidth": 430,
+            "formVisible": true
+          }
+        },
+        {
+          "width": 390,
+          "screenshotPath": "C:\\Users\\User\\BNA-onetime-final-integration-launch\\ops\\live-smokes\\2026-07-13T20-50-12-287Z-one-time-signup-390.png",
+          "metrics": {
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "formVisible": true
+          }
+        }
+      ],
+      "post_attempt_count": 0
+    },
+    {
+      "id": "keyboard-only",
+      "name": "Keyboard-only completion",
+      "expected": "success",
+      "passed": true,
+      "post_attempt_count": 1,
+      "success_visible": true,
+      "payload_shape": {
+        "keys": [
+          "audience",
+          "audience_type",
+          "browser_timezone",
+          "city_country",
+          "city_country_code",
+          "city_id",
+          "city_label",
+          "city_name",
+          "city_region",
+          "consent",
+          "contact_name",
+          "email",
+          "family_school_classification",
+          "idempotency_key",
+          "location",
+          "location_time_acknowledgement",
+          "metadata",
+          "notes",
+          "parent_name",
+          "phone",
+          "region",
+          "reminder_consent",
+          "reminder_consent_ack",
+          "reminder_preference",
+          "signup_acknowledgement",
+          "signup_mode",
+          "source",
+          "source_landing_page",
+          "timezone",
+          "whatsapp"
+        ],
+        "metadata_keys": [
+          "audience_type",
+          "browser_timezone",
+          "city",
+          "class_schedule",
+          "family_school_classification",
+          "form_version",
+          "location_time_acknowledgement",
+          "raw_intake_id",
+          "referrer",
+          "reminder_consent",
+          "reminder_consent_acknowledged",
+          "reminder_consent_at",
+          "reminder_consent_policy_version",
+          "reminder_preference",
+          "requirement_id",
+          "signup_acknowledgement",
+          "signup_as",
+          "timezone_source",
+          "utm"
+        ],
+        "contact_name_present": true,
+        "email_present": true,
+        "phone_present": false,
+        "audience_type": "family",
+        "signup_as": "Family",
+        "location_present": true,
+        "timezone": "America/New_York",
+        "reminder_preference": "none",
+        "reminder_consent": false,
+        "idempotency_key_present": true,
+        "source": "one_time_public_signup"
+      },
+      "errors_and_focus": {
+        "activeElement": {
+          "tag": "div",
+          "id": "",
+          "name": "",
+          "text": "You're signed up. We saved your information and will send the current class details using your selected option. Reminder methodNo reminders ",
+          "ariaInvalid": ""
+        },
+        "visibleErrors": [],
+        "status": "Signing you up…"
+      },
+      "checked_audience": [
+        "family"
+      ],
+      "checked_reminder": [
+        "none"
+      ]
+    }
+  ],
+  "passed": true
+}

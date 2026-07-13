@@ -757,3 +757,15 @@ Current status: `active`
 - The live proof used scoped Operations auth through Railway, started/read back the provider session for `rabbi_sheller_provider` / `one_time_mishnah_class`, read CRM contacts read-only, classified direct unauthenticated student-session 401 as expected, and verified the real `/student/login` shell does not show the preview/sample-data/no-writes banner.
 - Next current requirement is `REQ-20260713-935`; `REQ-20260713-936` remains blocked until its canary/owner gates pass.
 - Guardrails: no external send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS change, public auto-reply activation, or destructive production mutation occurred.
+
+## 2026-07-13 - REQ-20260713-935 Landing/Signup/Assets Responsive Closeout
+
+- `REQ-20260713-935` is Done.
+- Source SHA `11e5ba0d4da6ae8897294be81a567bb519943ab2` adds the One Time Rosh Hashanah 5787 campaign config/API and public copy: free promotional access until Friday, September 11, 2026 (Israel time), `$67/month afterward`, no Stripe trial object, no hidden trial, no card today, and paid service only after an active choice.
+- One Time Railway deployment `39b4820d-fe5a-456c-bdc1-ccc30befa1d5` reached `SUCCESS`; live `/api/deploy-info` returned exact SHA `11e5ba0d4da6ae8897294be81a567bb519943ab2`, source branch `codex/onetime-final-integration-launch`, and `target_app=one-time`.
+- Live responsive proof: `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/REPORT.md` passed landing and signup at 1440, 1024, 768, 430, and 390 widths with no horizontal overflow, no forbidden old trial copy, and zero actionless visible buttons.
+- Live signup proof: `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-form-matrix-live.md` passed Family/School, reminder options, validation errors, double-click, server-refresh, mobile widths, and keyboard-only completion at the exact SHA.
+- Live no-write proof: `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md` passed dry-run lead mapping without a product lead insert, CRM write, note creation, send, checkout, access grant, Zoom creation, or external write.
+- Visual readback passed for `landing-1440.png`, `landing-390.png`, and `signup-390.png`: the landing hero has a next-section cue on desktop/mobile and the narrow signup form remains readable.
+- Next current unblocked requirement is `REQ-20260713-937`; `REQ-20260713-936` remains blocked until canary/owner gates pass.
+- Guardrails: no checkout POST, payment link creation, member creation, access grant, email send, WhatsApp/WAPI send, Telegram send, social post, upload, charge, DNS/account write, CRM production write, provider mutation, credential mutation, public auto-reply activation, or destructive production mutation occurred.

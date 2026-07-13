@@ -929,3 +929,16 @@
 - Auth/admin proof: Operations login succeeded through Railway auth with `role=super_admin`; provider-session start/readback succeeded in `admin_on_provider_account` mode scoped to `rabbi_sheller_provider` / `one_time_mishnah_class`; read-only CRM contacts returned status 200 with cards and filtered results.
 - Student/login proof: direct unauthenticated student-session read returned expected 401; `/student/login` rendered cleanly with no startup session-probe console noise, no failed/bad requests, no horizontal overflow, and `preview_banner_visible=false`.
 - Guardrails: `password_returned=false`, `secrets_included=false`, `external_write_performed=false`, `no_send=true`, and no payment/access mutation, provider mutation, credential mutation, DNS change, public auto-reply activation, or destructive production mutation occurred.
+
+## REQ-20260713-935 Landing/Signup/Assets Responsive Evidence - 2026-07-13
+
+- Requirement: `REQ-20260713-935`.
+- Implementation: `config/service-provider-sites/one-time.json`, `src/lib/bna/one-time-campaign.js`, `server.js`, `public/one-time/index.html`, `ops/action-registry.json`, the One Time live smoke scripts, and focused One Time tests.
+- Campaign proof: `/api/one-time/campaign` returns `rosh_hashanah_5787_promo`, `free_access_until_label=Friday, September 11, 2026 (Israel time)`, `post_promo_price_label=$67/month afterward`, `stripe_trial_object=false`, `hidden_trial=false`, `trial_days=0`, `card_required_for_promotional_signup=false`, `paid_service_requires_active_choice=true`, and `external_write_performed=false`.
+- Deployment: One Time Railway deployment `39b4820d-fe5a-456c-bdc1-ccc30befa1d5` reached `SUCCESS`; live deploy-info returned exact SHA `11e5ba0d4da6ae8897294be81a567bb519943ab2`.
+- Responsive report: `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/REPORT.md`; JSON: `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/report.json`.
+- Screenshot evidence: `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/screenshots/landing-1440.png`, `signup-1440.png`, `landing-1024.png`, `signup-1024.png`, `landing-768.png`, `signup-768.png`, `landing-430.png`, `signup-430.png`, `landing-390.png`, and `signup-390.png`.
+- Landing smoke: `ops/live-smokes/2026-07-13T20-50-11-768Z-rabbi-onetime-landing-smoke.md`.
+- Signup matrix smoke: `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-form-matrix-live.md` and `.json`; mobile screenshot evidence `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-430.png` and `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-390.png`.
+- Interest dry-run smoke: `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md` and `.json`.
+- Guardrails: no signup POST outside dry-run/intercepted smoke, checkout, payment link, live charge, refund, subscription, access grant, email, WhatsApp/WAPI, Telegram, Zoom, upload, DNS/account mutation, CRM production write, provider mutation, credential mutation, or public auto-reply activation.

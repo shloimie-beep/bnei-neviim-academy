@@ -40448,3 +40448,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verified with `node --test tests/one-time-route-role-mapping.test.js`, `npm run test:onetime:focused`, `node --check scripts/smoke-onetime-auth-session-context-live.mjs`, exact-SHA separate-instance smoke, and exact-SHA auth/session-context live smoke.
 - Evidence: `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.md`, `report.json`, `provider-admin-crm-redacted.png`, and `student-login.png`.
 - Guardrails: no external send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS change, public auto-reply activation, or destructive production mutation occurred.
+
+## 2026-07-13 - One Time landing/signup campaign policy and responsive closeout
+
+- Completed `REQ-20260713-935` for the public landing/signup/assets/responsive launch path.
+- Added the One Time campaign config/API helper and updated the public landing copy to the approved Rosh Hashanah 5787 policy: free promotional access until Friday, September 11, 2026 (Israel time), `$67/month afterward`, no Stripe trial object, no hidden trial, no card today, and paid service only after active choice.
+- Deployed One Time SHA `11e5ba0d4da6ae8897294be81a567bb519943ab2`; Railway deployment `39b4820d-fe5a-456c-bdc1-ccc30befa1d5` reached `SUCCESS`.
+- Verified with focused One Time tests `82/82`, action watchdog, exact-SHA separate-instance smoke, landing smoke, responsive landing/signup smoke, signup form matrix smoke, and interest dry-run smoke.
+- Evidence: `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/REPORT.md`, screenshots under `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/screenshots/`, `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-form-matrix-live.md`, and `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md`.
+- Guardrails: no checkout, payment link, live charge/refund/subscription, member creation, access grant, email, WhatsApp/WAPI, Telegram, Zoom, upload, DNS/account mutation, CRM production write, provider mutation, credential mutation, public auto-reply activation, or destructive production mutation occurred.

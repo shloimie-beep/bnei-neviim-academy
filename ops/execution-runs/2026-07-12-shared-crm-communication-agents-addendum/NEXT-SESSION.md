@@ -2,7 +2,9 @@
 
 Active source: `RAW-20260713-010`
 
-Current requirement: `REQ-20260713-935` - Verify and repair One Time landing/signup/assets/responsive launch path.
+Current requirement: `REQ-20260713-937` - Reconcile Stripe Billing V2 and PR #132 into current master safely.
+
+`REQ-20260713-935` landing/signup/assets/responsive is Done. One Time deployment `39b4820d-fe5a-456c-bdc1-ccc30befa1d5` serves exact SHA `11e5ba0d4da6ae8897294be81a567bb519943ab2`; responsive report `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/REPORT.md`, signup matrix `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-form-matrix-live.md`, and interest dry-run `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md` passed. Do not redo the landing/signup campaign-policy repair unless verification regresses.
 
 `PKT-20260713-934A` member portal performance is locally implemented, verified, committed, pushed, deployed, and live-smoked. One Time deployment `c00813df-2dc8-47e3-97b2-c5152c20402d` serves exact SHA `20307e2638988b6fe5d10b8a649d87ed8a8522cb`; do not redo the 934A root-cause repair unless verification regresses.
 

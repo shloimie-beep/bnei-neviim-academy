@@ -2,13 +2,13 @@
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
   "created_at": "2026-07-12T20:11:59.374Z",
-  "updated_at": "2026-07-13T23:12:00+03:00",
+  "updated_at": "2026-07-13T23:55:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
   "current_control_correction": "RAW-20260713-010",
   "current_implementation_target": "one_time_final_integration_launch",
-  "current_batch": "3-landing-signup-assets-responsive",
-  "current_requirement": "REQ-20260713-935",
+  "current_batch": "5-stripe-billing-v2-reconciliation",
+  "current_requirement": "REQ-20260713-937",
   "current_blocked_requirement": "REQ-20260713-936"
 }

@@ -595,3 +595,15 @@ No deployment occurred for Gate 1. One Time is currently serving `49f3edda2da37e
 - One Time exact-SHA separate-instance smoke passed.
 - One Time exact-SHA auth/session-context smoke passed; report `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.md`.
 - Parent `REQ-20260713-934` is now Done. This closeout evidence update is documentation-only and should not redeploy over the already live-smoked app SHA.
+
+## REQ-20260713-935 Deployment Status
+
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true`, `BNA_DEPLOY_APP=one-time`, and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- Railway deployment: `39b4820d-fe5a-456c-bdc1-ccc30befa1d5` reached `SUCCESS`; guard target was `one-time-production / one-time-web / join.onetimeonetime.com`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned exact SHA `11e5ba0d4da6ae8897294be81a567bb519943ab2`, source branch `codex/onetime-final-integration-launch`, `target_app=one-time`, `target_project=one-time-production`, and `target_service=one-time-web`.
+- One Time exact-SHA separate-instance smoke passed.
+- One Time exact-SHA landing/signup/WhatsApp launcher smoke passed; report `ops/live-smokes/2026-07-13T20-50-11-768Z-rabbi-onetime-landing-smoke.md`.
+- One Time exact-SHA landing/signup responsive smoke passed; report `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/REPORT.md`.
+- One Time exact-SHA signup form matrix smoke passed; report `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-form-matrix-live.md`.
+- One Time interest dry-run live smoke passed; report `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md`.
+- This follow-up closeout/evidence update is documentation-only and should not redeploy over the already live-smoked product SHA.

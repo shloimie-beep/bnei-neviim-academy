@@ -1261,3 +1261,26 @@
 - PASS `npm run app:smoke:onetime-auth-session-context -- --base-url https://join.onetimeonetime.com --expected-sha e973ce50b86e7566034faf8a604133a4870e4d7b`; report `ops/ui-audits/2026-07-13-onetime-auth-admin-context-live/report.md`.
 - PASS visual readback of `provider-admin-crm-redacted.png` and `student-login.png`: provider CRM is scoped/redacted, student login is branded and has no preview/sample-data/no-writes banner.
 - Guardrails: no external send, payment/access mutation, CRM production write, provider mutation, credential mutation, DNS change, public auto-reply activation, or destructive production mutation occurred.
+
+## REQ-20260713-935 Landing/Signup/Assets Responsive Test Results
+
+- PASS `node --check src/lib/bna/one-time-campaign.js`.
+- PASS `node --check server.js`.
+- PASS `node --check` for `scripts/smoke-rabbi-onetime-landing-live.mjs`, `scripts/smoke-onetime-signup-form-matrix-live.mjs`, `scripts/smoke-onetime-separate-instance-live.mjs`, `scripts/smoke-public-ui-closeout.mjs`, `scripts/audit-onetime-final-launch-current-state.mjs`, and `scripts/smoke-onetime-landing-signup-responsive-live.mjs`.
+- PASS JSON parse checks for `package.json`, `ops/action-registry.json`, and `config/service-provider-sites/one-time.json`.
+- PASS `node --test tests/one-time-focused-landing.test.js`; 3/3 tests passed.
+- PASS `node --test tests/one-time-direct-signup-page.test.js`; 2/2 tests passed.
+- PASS `node --test tests/one-time-signup-form-matrix.test.js`; 4/4 tests passed.
+- PASS `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`; 1/1 tests passed.
+- PASS `npm run test:onetime:focused`; 82/82 tests passed.
+- PASS `npm run watchdog:actions`.
+- PASS `git diff --check`.
+- PASS local static harness responsive smoke at `http://127.0.0.1:4177`; report `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-local/REPORT.md` was local-only evidence.
+- PASS One Time Railway deploy and doctor: deployment `39b4820d-fe5a-456c-bdc1-ccc30befa1d5` reached `SUCCESS`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 11e5ba0d4da6ae8897294be81a567bb519943ab2`.
+- PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com --expected-sha 11e5ba0d4da6ae8897294be81a567bb519943ab2`; report `ops/live-smokes/2026-07-13T20-50-11-768Z-rabbi-onetime-landing-smoke.md`.
+- PASS `npm run app:smoke:onetime-landing-signup-responsive -- https://join.onetimeonetime.com --expected-sha 11e5ba0d4da6ae8897294be81a567bb519943ab2`; report `ops/ui-audits/2026-07-13-onetime-landing-signup-responsive-live/REPORT.md`.
+- PASS `npm run app:smoke:onetime-signup-form-matrix -- https://join.onetimeonetime.com --expected-sha 11e5ba0d4da6ae8897294be81a567bb519943ab2`; report `ops/live-smokes/2026-07-13T20-50-12-287Z-one-time-signup-form-matrix-live.md`.
+- PASS `npm run app:smoke:one-time-interest-dry-run -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T20-50-12-079Z-one-time-interest-dry-run-live-smoke.md`.
+- PASS visual readback of live `landing-1440.png`, `landing-390.png`, and `signup-390.png`.
+- Guardrails: live smokes performed no checkout POST, payment link, live charge/refund/subscription, member creation, access grant, email, WhatsApp/WAPI, Telegram, Zoom, upload, DNS/account mutation, provider mutation, CRM production write, or public auto-reply activation.
