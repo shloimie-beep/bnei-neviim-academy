@@ -441,15 +441,36 @@
 - `scripts/smoke-onetime-crm-signup-record-dto-live.mjs` / `package.json` - added a redacted read-only production smoke for selected-contact signup-record DTO behavior.
 - Tests pin timeline inclusion, conversation exclusion, redacted source context, and workspace/project scoping in `tests/crm-contact-service.test.js`, `tests/shared-crm-workbench-contract.test.js`, and `tests/service-provider-scope-routes.test.js`.
 - Runtime app-code commit `dab78d4e0b05b6e59affe08864e7207d2235652f` implemented the signup-record DTO slice.
-- Final deployed/proof commit `1318c67da0d79e7a158aa0b13d3085906ffcdf15` added the live smoke harness and is pushed to `origin/master`.
-- BNA Railway deployment `0fead06b-bad3-4ba9-a680-806f83397dec` reached `SUCCESS`; One Time Railway deployment `af6b2ea0-721e-42de-b487-fe9ef7ea27c8` reached `SUCCESS`.
-- BNA live `/api/deploy-info` returned `commit_sha=1318c67da0d79e7a158aa0b13d3085906ffcdf15`, `target_app=bna`.
+- Final One Time deployed/proof commit `1318c67da0d79e7a158aa0b13d3085906ffcdf15` added the live smoke harness and is pushed to `origin/master`; current BNA proof-refresh readback is `d12e31694f2a0475936c945f1d7ec0d0c2c35664`.
+- BNA Railway doctor reports current deployment `896c0a2f-ed48-4d44-ae6d-b415c669bd8d` reached `SUCCESS`; One Time Railway deployment `af6b2ea0-721e-42de-b487-fe9ef7ea27c8` reached `SUCCESS`.
+- BNA live `/api/deploy-info` currently returned `commit_sha=d12e31694f2a0475936c945f1d7ec0d0c2c35664`; target metadata is blank in the runtime payload.
 - One Time live `/api/deploy-info` returned `commit_sha=1318c67da0d79e7a158aa0b13d3085906ffcdf15`, `target_app=one-time`.
 - Live One Time CRM workbench smoke passed: `ops/live-smokes/2026-07-13T10-52-38-292Z-one-time-operations-crm-workbench-live-smoke.md`.
 - Live One Time provider route-module smoke passed: `ops/live-smokes/2026-07-13T10-52-38-477Z-onetime-provider-route-module-live-smoke.md`.
 - Live targeted signup-record DTO smoke passed with `skipped_no_live_signup_records`: `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-signup-record-dto-live-smoke.md`. It inspected 12 scoped cards, found no live direct signup rows in the sampled timelines, and created no synthetic data.
 - WhatsApp DTO regression smoke passed with `selected_contact_whatsapp_thread_match=true`: `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-whatsapp-thread-dto-live-smoke.md`.
 - Signup-context DTO regression smoke passed with `signup_context_match=true`: `ops/live-smokes/2026-07-13T10-53-15-856Z-one-time-crm-signup-context-dto-live-smoke.md`.
-- Operations workspace taxonomy smoke passed: `ops/live-smokes/2026-07-13T10-52-56-884Z-operations-workspace-taxonomy-live-smoke.md`.
+- Operations workspace taxonomy smoke passed: original report `ops/live-smokes/2026-07-13T10-52-56-884Z-operations-workspace-taxonomy-live-smoke.md`; current BNA proof-refresh head recheck report `ops/live-smokes/2026-07-13T11-00-32-825Z-operations-workspace-taxonomy-live-smoke.md`.
 - One Time performance gate passed at the deployed SHA: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw signup private data logging, or production data mutation.
+
+## CRM Website Assistant Thread Activity DTO - 2026-07-13
+
+- `server.js` - selected-contact Activity timelines now include scoped public `bna_assistant_threads` rows as redacted `assistant_thread` DTOs for canonical `bna_contacts` and legacy `bna_parent_leads`.
+- `server.js` / `src/lib/bna/crm/contact-service.js` - selected-contact Conversations and Tasks exclude `assistant_thread` operational rows.
+- `public/operations.html` / `public/js/operations-shell.js` - Activity labels render assistant-thread rows as `Website assistant`.
+- `scripts/smoke-onetime-crm-assistant-thread-dto-live.mjs` / `package.json` - added a redacted read-only production smoke for selected-contact assistant-thread DTO behavior.
+- Tests pin timeline inclusion, conversation exclusion, redacted source context, and workspace/project scoping in `tests/crm-contact-service.test.js`, `tests/shared-crm-workbench-contract.test.js`, and `tests/service-provider-scope-routes.test.js`.
+- Commit `8ea2cd06e1920eecfd1ae97b937c22d701c00099` implemented, pushed, deployed, and proved the slice.
+- BNA Railway deployment `55f38854-f00a-4432-bfdf-0dfcf6c400fc` reached `SUCCESS`; One Time Railway deployment `c2b6b88a-036a-4a33-93d9-3bd2f9de7719` reached `SUCCESS`.
+- BNA live `/api/deploy-info` returned `commit_sha=8ea2cd06e1920eecfd1ae97b937c22d701c00099`, `target_app=bna`.
+- One Time live `/api/deploy-info` returned `commit_sha=8ea2cd06e1920eecfd1ae97b937c22d701c00099`, `target_app=one-time`.
+- Live One Time CRM workbench smoke passed: `ops/live-smokes/2026-07-13T11-11-46-046Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Live One Time provider route-module smoke passed: `ops/live-smokes/2026-07-13T11-11-46-347Z-onetime-provider-route-module-live-smoke.md`.
+- Live targeted assistant-thread DTO smoke passed with `assistant_thread_match=true`: `ops/live-smokes/2026-07-13T11-11-46-025Z-one-time-crm-assistant-thread-dto-live-smoke.md`. It inspected one live scoped assistant-thread candidate, returned one Activity row, returned zero selected-contact Conversation rows for `assistant_thread`, and created no synthetic data.
+- Signup-record DTO regression smoke passed with `skipped_no_live_signup_records`: `ops/live-smokes/2026-07-13T11-12-08-074Z-one-time-crm-signup-record-dto-live-smoke.md`.
+- WhatsApp DTO regression smoke passed with `selected_contact_whatsapp_thread_match=true`: `ops/live-smokes/2026-07-13T11-12-07-959Z-one-time-crm-whatsapp-thread-dto-live-smoke.md`.
+- Signup-context DTO regression smoke passed with `signup_context_match=true`: `ops/live-smokes/2026-07-13T11-12-08-074Z-one-time-crm-signup-context-dto-live-smoke.md`.
+- Operations workspace taxonomy smoke passed: `ops/live-smokes/2026-07-13T11-12-08-098Z-operations-workspace-taxonomy-live-smoke.md`.
+- One Time performance gate passed at the deployed SHA: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw assistant body/contact logging, or production data mutation.

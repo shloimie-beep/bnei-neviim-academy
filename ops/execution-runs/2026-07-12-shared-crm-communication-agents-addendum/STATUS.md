@@ -292,13 +292,26 @@ Current status: `active`
 
 ## CRM Direct Signup Record Activity DTO - 2026-07-13
 
-- `REQ-20260712-302` remains in progress, with the direct signup-record Activity DTO slice implemented by runtime commit `dab78d4e0b05b6e59affe08864e7207d2235652f` and deployed/proved at `1318c67da0d79e7a158aa0b13d3085906ffcdf15`.
+- `REQ-20260712-302` remains in progress, with the direct signup-record Activity DTO slice implemented by runtime commit `dab78d4e0b05b6e59affe08864e7207d2235652f`, deployed/proved on One Time at `1318c67da0d79e7a158aa0b13d3085906ffcdf15`, and BNA-regression checked at current proof-refresh head `d12e31694f2a0475936c945f1d7ec0d0c2c35664`.
 - Selected-contact Activity timelines now include scoped direct `signups` rows as redacted `signup_record` DTOs for canonical contacts and legacy One Time leads.
 - Conversations and Tasks continue to exclude `signup_record` aggregate rows, so direct signup records do not masquerade as message threads or follow-up tasks.
 - DTO source context preserves no-send/no-access/no-payment guardrails: `no_send=true`, `external_write_performed=false`, `no_checkout=true`, `no_access_granted=true`, `student_name_returned=false`, `payment_link_returned=false`, and `checkout_session_returned=false`.
 - Added `app:smoke:onetime-crm-signup-record-dto` for redacted read-only production proof.
-- BNA Railway deployment `0fead06b-bad3-4ba9-a680-806f83397dec` reached `SUCCESS`; One Time Railway deployment `af6b2ea0-721e-42de-b487-fe9ef7ea27c8` reached `SUCCESS`.
-- Both live deploy-info endpoints returned `commit_sha=1318c67da0d79e7a158aa0b13d3085906ffcdf15` with target apps `bna` and `one-time`.
-- Live proof passed: exact-SHA One Time separate-instance smoke, One Time CRM workbench smoke, One Time provider route-module smoke, BNA workspace taxonomy smoke, WhatsApp DTO regression smoke, signup-context DTO regression smoke, and One Time performance gate.
+- BNA Railway doctor reports current deployment `896c0a2f-ed48-4d44-ae6d-b415c669bd8d` reached `SUCCESS`; One Time Railway deployment `af6b2ea0-721e-42de-b487-fe9ef7ea27c8` reached `SUCCESS`.
+- One Time live deploy-info returned `commit_sha=1318c67da0d79e7a158aa0b13d3085906ffcdf15` with `target_app=one-time`; BNA live deploy-info currently returns `commit_sha=d12e31694f2a0475936c945f1d7ec0d0c2c35664`, a proof-refresh head containing the same runtime changes.
+- Live proof passed: exact-SHA One Time separate-instance smoke, One Time CRM workbench smoke, One Time provider route-module smoke, BNA workspace taxonomy smoke including current-head recheck `ops/live-smokes/2026-07-13T11-00-32-825Z-operations-workspace-taxonomy-live-smoke.md`, WhatsApp DTO regression smoke, signup-context DTO regression smoke, and One Time performance gate.
 - Targeted signup-record DTO live probe wrote `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-signup-record-dto-live-smoke.md`; production returned 12 scoped cards but no live direct signup rows in the inspected timelines, so it recorded `skipped_no_live_signup_records` without creating synthetic data.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw signup private data logging, or production data mutation was performed by this DTO smoke.
+
+## CRM Website Assistant Thread Activity DTO - 2026-07-13
+
+- `REQ-20260712-302` remains in progress, with the website assistant-thread Activity DTO slice implemented, pushed, deployed, and live-smoked at `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- Selected-contact Activity timelines now include scoped public `bna_assistant_threads` rows as redacted `assistant_thread` DTOs for canonical contacts and legacy One Time leads.
+- Conversations and Tasks continue to exclude `assistant_thread` aggregate rows, so website assistant context does not masquerade as a customer message thread or CRM task.
+- DTO source context preserves no-send/no-body guardrails: `body_returned=false`, `message_body_returned=false`, `no_send=true`, and `external_write_performed=false`; the smoke records only counts and booleans, not assistant message bodies or contact identifiers.
+- Added `app:smoke:onetime-crm-assistant-thread-dto` for redacted read-only production proof.
+- BNA Railway deployment `55f38854-f00a-4432-bfdf-0dfcf6c400fc` reached `SUCCESS`; One Time Railway deployment `c2b6b88a-036a-4a33-93d9-3bd2f9de7719` reached `SUCCESS`.
+- One Time live deploy-info returned `commit_sha=8ea2cd06e1920eecfd1ae97b937c22d701c00099` with `target_app=one-time`; BNA live deploy-info returned the same SHA with `target_app=bna`.
+- Live proof passed: exact-SHA One Time separate-instance smoke, One Time CRM workbench smoke, One Time provider route-module smoke, BNA workspace taxonomy smoke, assistant-thread DTO smoke, WhatsApp DTO regression smoke, signup-context DTO regression smoke, signup-record DTO regression smoke, and One Time performance gate.
+- Targeted assistant-thread DTO live probe wrote `ops/live-smokes/2026-07-13T11-11-46-025Z-one-time-crm-assistant-thread-dto-live-smoke.md`; production returned `inspected_candidate_count=1` and `assistant_thread_match=true` with zero assistant-thread rows in selected-contact Conversations.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw assistant body/contact logging, or production data mutation was performed by this DTO smoke.

@@ -295,21 +295,44 @@ Global production readiness remains blocked only by known external full-launch f
 ## 2026-07-13 CRM Direct Signup Record Activity DTO Slice Deploy
 
 - Runtime app-code commit: `dab78d4e0b05b6e59affe08864e7207d2235652f`
-- Deployed/proof commit: `1318c67da0d79e7a158aa0b13d3085906ffcdf15`
+- One Time deployed/proof commit: `1318c67da0d79e7a158aa0b13d3085906ffcdf15`
+- Current BNA proof-refresh readback: `d12e31694f2a0475936c945f1d7ec0d0c2c35664`
 - Branch: `master`
 - Push: `git push origin master` succeeded.
 - One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_DEPLOY_APP=one-time`.
 - One Time Railway doctor: deployment `af6b2ea0-721e-42de-b487-fe9ef7ea27c8` reached `SUCCESS`.
 - One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=1318c67da0d79e7a158aa0b13d3085906ffcdf15`, `target_app=one-time`.
-- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_DEPLOY_APP=bna`.
-- BNA Railway doctor: deployment `0fead06b-bad3-4ba9-a680-806f83397dec` reached `SUCCESS`.
-- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=1318c67da0d79e7a158aa0b13d3085906ffcdf15`, `target_app=bna`.
+- BNA check: `npm run railway:doctor` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_DEPLOY_APP=bna`.
+- BNA Railway doctor: current deployment `896c0a2f-ed48-4d44-ae6d-b415c669bd8d` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=d12e31694f2a0475936c945f1d7ec0d0c2c35664`; current deploy-info target metadata is blank in the runtime payload.
 - One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1318c67da0d79e7a158aa0b13d3085906ffcdf15` passed.
 - One Time provider route-module smoke passed; report `ops/live-smokes/2026-07-13T10-52-38-477Z-onetime-provider-route-module-live-smoke.md`.
 - One Time Operations CRM smoke passed; report `ops/live-smokes/2026-07-13T10-52-38-292Z-one-time-operations-crm-workbench-live-smoke.md`.
 - Signup-record DTO live smoke passed with `skipped_no_live_signup_records`; report `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-signup-record-dto-live-smoke.md`.
 - WhatsApp DTO regression smoke passed; report `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-whatsapp-thread-dto-live-smoke.md`.
 - Signup-context DTO regression smoke passed; report `ops/live-smokes/2026-07-13T10-53-15-856Z-one-time-crm-signup-context-dto-live-smoke.md`.
-- Operations workspace taxonomy smoke passed; report `ops/live-smokes/2026-07-13T10-52-56-884Z-operations-workspace-taxonomy-live-smoke.md`.
+- Operations workspace taxonomy smoke passed; original report `ops/live-smokes/2026-07-13T10-52-56-884Z-operations-workspace-taxonomy-live-smoke.md`; current BNA proof-refresh head recheck report `ops/live-smokes/2026-07-13T11-00-32-825Z-operations-workspace-taxonomy-live-smoke.md`.
 - One Time performance regression gate passed against the deployed SHA; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw signup private data logging, or production data mutation.
+
+## 2026-07-13 CRM Website Assistant Thread Activity DTO Slice Deploy
+
+- App-code commit: `8ea2cd06e1920eecfd1ae97b937c22d701c00099`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_DEPLOY_APP=one-time`.
+- One Time Railway doctor: deployment `c2b6b88a-036a-4a33-93d9-3bd2f9de7719` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=8ea2cd06e1920eecfd1ae97b937c22d701c00099`, `target_app=one-time`.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_DEPLOY_APP=bna`.
+- BNA Railway doctor: deployment `55f38854-f00a-4432-bfdf-0dfcf6c400fc` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=8ea2cd06e1920eecfd1ae97b937c22d701c00099`, `target_app=bna`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8ea2cd06e1920eecfd1ae97b937c22d701c00099` passed.
+- One Time provider route-module smoke passed; report `ops/live-smokes/2026-07-13T11-11-46-347Z-onetime-provider-route-module-live-smoke.md`.
+- One Time Operations CRM smoke passed; report `ops/live-smokes/2026-07-13T11-11-46-046Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Assistant-thread DTO live smoke passed with `assistant_thread_match=true`; report `ops/live-smokes/2026-07-13T11-11-46-025Z-one-time-crm-assistant-thread-dto-live-smoke.md`.
+- Signup-record DTO regression smoke passed with `skipped_no_live_signup_records`; report `ops/live-smokes/2026-07-13T11-12-08-074Z-one-time-crm-signup-record-dto-live-smoke.md`.
+- WhatsApp DTO regression smoke passed; report `ops/live-smokes/2026-07-13T11-12-07-959Z-one-time-crm-whatsapp-thread-dto-live-smoke.md`.
+- Signup-context DTO regression smoke passed; report `ops/live-smokes/2026-07-13T11-12-08-074Z-one-time-crm-signup-context-dto-live-smoke.md`.
+- Operations workspace taxonomy smoke passed; report `ops/live-smokes/2026-07-13T11-12-08-098Z-operations-workspace-taxonomy-live-smoke.md`.
+- One Time performance regression gate passed against the deployed SHA; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw assistant body/contact logging, or production data mutation.

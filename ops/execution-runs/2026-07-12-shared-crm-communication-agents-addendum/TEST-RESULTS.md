@@ -899,14 +899,44 @@
 - PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
 - PASS `git push origin master` for final deployed/proof commit `1318c67da0d79e7a158aa0b13d3085906ffcdf15`.
 - PASS One Time Railway deploy/doctor; deployment `af6b2ea0-721e-42de-b487-fe9ef7ea27c8` reached `SUCCESS`.
-- PASS BNA Railway deploy/doctor; deployment `0fead06b-bad3-4ba9-a680-806f83397dec` reached `SUCCESS`.
-- PASS One Time and BNA live `/api/deploy-info`; both returned `1318c67da0d79e7a158aa0b13d3085906ffcdf15`.
+- PASS BNA Railway doctor; current deployment `896c0a2f-ed48-4d44-ae6d-b415c669bd8d` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned `1318c67da0d79e7a158aa0b13d3085906ffcdf15`.
+- PASS BNA live `/api/deploy-info`; currently returns proof-refresh head `d12e31694f2a0475936c945f1d7ec0d0c2c35664`, which contains the `1318c67da0d79e7a158aa0b13d3085906ffcdf15` runtime changes.
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1318c67da0d79e7a158aa0b13d3085906ffcdf15`.
 - PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 1318c67da0d79e7a158aa0b13d3085906ffcdf15`; report `ops/live-smokes/2026-07-13T10-52-38-477Z-onetime-provider-route-module-live-smoke.md`.
 - PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 1318c67da0d79e7a158aa0b13d3085906ffcdf15`; report `ops/live-smokes/2026-07-13T10-52-38-292Z-one-time-operations-crm-workbench-live-smoke.md`.
 - PASS `npm run app:smoke:onetime-crm-signup-record-dto`; report `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-signup-record-dto-live-smoke.md` recorded `skipped_no_live_signup_records` after inspecting 12 scoped cards and created no synthetic data.
 - PASS `npm run app:smoke:onetime-crm-whatsapp-thread-dto`; report `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-whatsapp-thread-dto-live-smoke.md` with `phone_candidate_count=2` and `selected_contact_whatsapp_thread_match=true`.
 - PASS `npm run app:smoke:onetime-crm-signup-context-dto`; report `ops/live-smokes/2026-07-13T10-53-15-856Z-one-time-crm-signup-context-dto-live-smoke.md` with `signup_context_match=true`.
-- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T10-52-56-884Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; original report `ops/live-smokes/2026-07-13T10-52-56-884Z-operations-workspace-taxonomy-live-smoke.md`; current BNA proof-refresh head recheck report `ops/live-smokes/2026-07-13T11-00-32-825Z-operations-workspace-taxonomy-live-smoke.md`.
 - PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 1318c67da0d79e7a158aa0b13d3085906ffcdf15`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw signup private data logging, or production data mutation was performed by this DTO smoke.
+
+## CRM Website Assistant Thread Activity DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --check scripts/smoke-onetime-crm-assistant-thread-dto-live.mjs`.
+- PASS package JSON parse after adding `app:smoke:onetime-crm-assistant-thread-dto`.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/service-provider-scope-routes.test.js`; 22/22 tests passed.
+- PASS `node --test tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js`; 9/9 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; finding_count 0.
+- PASS `npm run secrets:audit`; 9370 tracked paths checked.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for app-code commit `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- PASS One Time Railway deploy/doctor; deployment `c2b6b88a-036a-4a33-93d9-3bd2f9de7719` reached `SUCCESS`.
+- PASS BNA Railway deploy/doctor; deployment `55f38854-f00a-4432-bfdf-0dfcf6c400fc` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned `8ea2cd06e1920eecfd1ae97b937c22d701c00099`, `target_app=one-time`.
+- PASS BNA live `/api/deploy-info`; returned `8ea2cd06e1920eecfd1ae97b937c22d701c00099`, `target_app=bna`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 8ea2cd06e1920eecfd1ae97b937c22d701c00099`; report `ops/live-smokes/2026-07-13T11-11-46-347Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 8ea2cd06e1920eecfd1ae97b937c22d701c00099`; report `ops/live-smokes/2026-07-13T11-11-46-046Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-assistant-thread-dto`; report `ops/live-smokes/2026-07-13T11-11-46-025Z-one-time-crm-assistant-thread-dto-live-smoke.md` with `inspected_candidate_count=1`, `assistant_thread_match=true`, `assistant_thread_conversation_count=0`, and no synthetic data.
+- PASS `npm run app:smoke:onetime-crm-signup-record-dto`; report `ops/live-smokes/2026-07-13T11-12-08-074Z-one-time-crm-signup-record-dto-live-smoke.md` recorded `skipped_no_live_signup_records` after inspecting 12 scoped cards and created no synthetic data.
+- PASS `npm run app:smoke:onetime-crm-whatsapp-thread-dto`; report `ops/live-smokes/2026-07-13T11-12-07-959Z-one-time-crm-whatsapp-thread-dto-live-smoke.md` with `phone_candidate_count=2` and `selected_contact_whatsapp_thread_match=true`.
+- PASS `npm run app:smoke:onetime-crm-signup-context-dto`; report `ops/live-smokes/2026-07-13T11-12-08-074Z-one-time-crm-signup-context-dto-live-smoke.md` with `signup_context_match=true`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T11-12-08-098Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 8ea2cd06e1920eecfd1ae97b937c22d701c00099`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw assistant body/contact logging, or production data mutation was performed by this DTO smoke.

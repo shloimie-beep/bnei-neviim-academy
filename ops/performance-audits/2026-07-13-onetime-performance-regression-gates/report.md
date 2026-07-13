@@ -1,6 +1,6 @@
 # One Time Performance Regression Gates
 
-Generated: 2026-07-13T10:53:23.655Z
+Generated: 2026-07-13T11:12:30.483Z
 Requirement: REQ-20260713-911
 Status: PASSED
 
@@ -19,7 +19,7 @@ Local and production One Time performance instrumentation, budget, Server-Timing
 | `rum_client_route_transition` | PASS | RUM client records SPA route transitions as a separate metric. |
 | `budget_rum_bytes` | PASS | 6571 <= 7000 bytes |
 | `budget_provider_html_bytes` | PASS | 178961 <= 190000 bytes |
-| `budget_operations_shell_bytes` | PASS | 1153863 <= 1200000 bytes |
+| `budget_operations_shell_bytes` | PASS | 1153910 <= 1200000 bytes |
 | `budget_operations_bootstrap_bytes` | PASS | 2529 <= 5000 bytes |
 | `budget_crm_route_module_bytes` | PASS | 10041 <= 12000 bytes |
 | `budget_mailbox_route_module_bytes` | PASS | 17307 <= 20000 bytes |
@@ -31,7 +31,7 @@ Local and production One Time performance instrumentation, budget, Server-Timing
 | --- | ---: | ---: |
 | `rum_bytes` | 6571 | 7000 |
 | `provider_html_bytes` | 178961 | 190000 |
-| `operations_shell_bytes` | 1153863 | 1200000 |
+| `operations_shell_bytes` | 1153910 | 1200000 |
 | `operations_bootstrap_bytes` | 2529 | 5000 |
 | `crm_route_module_bytes` | 10041 | 12000 |
 | `mailbox_route_module_bytes` | 17307 | 20000 |
@@ -40,16 +40,16 @@ Local and production One Time performance instrumentation, budget, Server-Timing
 ## Live Checks
 
 Base URL: https://join.onetimeonetime.com
-Expected SHA: 1318c67da0d79e7a158aa0b13d3085906ffcdf15
-Observed SHA: 1318c67da0d79e7a158aa0b13d3085906ffcdf15
+Expected SHA: 8ea2cd06e1920eecfd1ae97b937c22d701c00099
+Observed SHA: 8ea2cd06e1920eecfd1ae97b937c22d701c00099
 
 | Check | Status | Detail |
 | --- | --- | --- |
-| `live_deploy_info_headers` | PASS | 507ms |
-| `live_health_db_pool_timing` | PASS | 754ms |
-| `live_one_time_shell_rum_loaded` | PASS | 624ms |
-| `live_rum_dry_run_contract` | PASS | 236ms |
-| `live_scoped_operations_crm_headers` | PASS | 5488ms |
+| `live_deploy_info_headers` | PASS | 544ms |
+| `live_health_db_pool_timing` | PASS | 424ms |
+| `live_one_time_shell_rum_loaded` | PASS | 471ms |
+| `live_rum_dry_run_contract` | PASS | 319ms |
+| `live_scoped_operations_crm_headers` | PASS | 3846ms |
 
 ## Guardrails
 

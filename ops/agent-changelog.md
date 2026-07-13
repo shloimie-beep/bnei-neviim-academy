@@ -39919,9 +39919,11 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   deployed/proof commit `1318c67da0d79e7a158aa0b13d3085906ffcdf15` are pushed
   to `origin/master`.
 - Deployed to One Time Railway deployment
-  `af6b2ea0-721e-42de-b487-fe9ef7ea27c8` and BNA Railway deployment
-  `0fead06b-bad3-4ba9-a680-806f83397dec`; both deploy-info endpoints returned
-  the exact SHA.
+  `af6b2ea0-721e-42de-b487-fe9ef7ea27c8`; One Time deploy-info returned the
+  exact SHA. BNA Railway doctor reports current deployment
+  `896c0a2f-ed48-4d44-ae6d-b415c669bd8d`, and BNA deploy-info currently returns
+  proof-refresh head `d12e31694f2a0475936c945f1d7ec0d0c2c35664`, which contains
+  the same runtime changes plus proof/report refreshes.
 - Verification passed: focused CRM/provider tests `31/31`, generated-shell
   check, action/protocol/secrets watchdogs, run validation, exact-SHA One Time
   route/CRM/provider smokes, BNA taxonomy smoke, WhatsApp DTO regression,
@@ -39932,3 +39934,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   inspected 12 scoped cards and recorded `skipped_no_live_signup_records`
   because the sampled production timelines had no direct signup rows; no
   synthetic data, sends, CRM mutations, or external writes were performed.
+
+## 2026-07-13 - Shared CRM website assistant-thread Activity DTO deployed
+
+- Added redacted `bna_assistant_threads` rows to selected-contact Activity as
+  `assistant_thread` DTOs, scoped to the One Time workspace/project and matched
+  to canonical contacts or legacy One Time lead references.
+- Kept `assistant_thread` rows out of selected-contact Conversations and Tasks;
+  source context pins `body_returned=false`, `message_body_returned=false`,
+  `no_send=true`, and `external_write_performed=false`.
+- Runtime/proof commit `8ea2cd06e1920eecfd1ae97b937c22d701c00099` is pushed
+  to `origin/master`.
+- Deployed to One Time Railway deployment
+  `c2b6b88a-036a-4a33-93d9-3bd2f9de7719` and BNA Railway deployment
+  `55f38854-f00a-4432-bfdf-0dfcf6c400fc`; both deploy-info endpoints returned
+  the exact SHA.
+- Verification passed: focused CRM/provider tests, generated-shell check,
+  action/protocol/secrets watchdogs, run validation, exact-SHA One Time
+  route/CRM/provider smokes, BNA taxonomy smoke, assistant-thread DTO smoke,
+  signup-record/WhatsApp/signup-context DTO regressions, and One Time
+  performance gate.
+- Targeted assistant-thread DTO live smoke found `assistant_thread_match=true`
+  after inspecting 1 scoped card and returned zero assistant-thread rows in
+  selected-contact Conversations; no synthetic data, sends, CRM mutations,
+  assistant message bodies, or external writes were performed.
