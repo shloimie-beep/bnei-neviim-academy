@@ -130,6 +130,37 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
         }),
         communication_type: 'follow_up_task',
       },
+      {
+        id: 14,
+        channel: 'student',
+        direction: 'internal',
+        body: 'Student linked: Levi Student',
+        source: 'bna_students',
+        source_context: JSON.stringify({
+          student_id: 14,
+          status: 'active',
+          no_send: true,
+          external_write_performed: false,
+        }),
+        occurred_at: '2026-07-12T13:20:00Z',
+        communication_type: 'student_link',
+      },
+      {
+        id: 15,
+        channel: 'membership',
+        direction: 'internal',
+        body: 'Membership linked: Levi Family - active',
+        source: 'bna_members',
+        source_context: JSON.stringify({
+          member_id: 15,
+          access_status: 'active',
+          access_enabled: true,
+          no_send: true,
+          external_write_performed: false,
+        }),
+        occurred_at: '2026-07-12T13:21:00Z',
+        communication_type: 'membership_access',
+      },
     ],
   });
 
@@ -142,6 +173,8 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.equal(conversations.conversations.length, 1);
   assert.equal(conversations.conversations[0].channel, 'whatsapp');
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'support_ticket'), false);
+  assert.equal(conversations.conversations.some((item) => item.communication_type === 'student_link'), false);
+  assert.equal(conversations.conversations.some((item) => item.communication_type === 'membership_access'), false);
   assert.equal(conversations.conversations[0].open_action, 'whatsapp');
   assert.equal(conversations.conversations[0].thread_key, 'phone:972501112222');
   assert.equal(conversations.conversations[0].from_address, '+972 50 111 2222');
@@ -158,6 +191,8 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
 
   assert.equal(timeline.timeline.some((item) => item.type === 'support_ticket'), true);
   assert.match(timeline.timeline.find((item) => item.type === 'support_ticket').body, /Support ticket OT-SUP-000013/);
+  assert.equal(timeline.timeline.some((item) => item.type === 'student_link'), true);
+  assert.equal(timeline.timeline.some((item) => item.type === 'membership_access'), true);
 });
 
 test('CRM contact service filter and ref helpers are stable', () => {
