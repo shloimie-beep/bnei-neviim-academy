@@ -81,6 +81,15 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] `RAW-20260713-005` / `REQ-20260713-950` through
+  `REQ-20260713-963`: One Time Rosh Hashanah Billing Platform V2. Register:
+  `tasks-pending/2026-07-13-onetime-rosh-hashanah-billing-platform-v2.md`.
+  Current status: dedicated worktree/branch
+  `codex/onetime-rosh-hashanah-billing-platform-v2` is active; raw packet is
+  preserved; first control/policy-correction batch is being registered. The
+  older 30-day Stripe trial policy is superseded for active One Time launch.
+  Live charges, refunds, notice batches, and paid-access mutations remain
+  blocked until a separate exact final launch packet is approved.
 - [x] `RAW-20260710-004` / `REQ-20260710-030` /
   `TASK-20260710-001`: Fix the Operations Rabbi email inbox filter logout
   glitch. Scope: Super Admin can switch to the Rabbi / One Time email inbox

@@ -75,3 +75,12 @@
 - RAW-20260713-003 authorizes bounded owner-only One Time email/WhatsApp test
   sends only to secure owner-test aliases, with hard allowlists, idempotency,
   rate limits, redacted evidence, and no unrestricted public auto-reply.
+- As of `RAW-20260713-005`, active One Time billing policy is no 30-day Stripe
+  trial. Rosh Hashanah pre-billing access is an application-level promotional
+  campaign, not a Stripe trial. Active UI, email, checkout, tests, and
+  automations must not publish or depend on `30-day free trial`,
+  `trial_period_days`, `trial_end`, or required `trial_will_end` launch flow.
+- Current One Time paid membership policy is `$67/month, plus applicable taxes
+  where required`, USD, monthly recurring, tax-exclusive, no free trial, no
+  failed-payment grace period, no automatic refunds/prorations, cancellation at
+  period end by default, and manual exceptional refund review only.

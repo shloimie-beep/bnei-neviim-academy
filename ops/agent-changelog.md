@@ -39958,3 +39958,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   after inspecting 1 scoped card and returned zero assistant-thread rows in
   selected-contact Conversations; no synthetic data, sends, CRM mutations,
   assistant message bodies, or external writes were performed.
+
+## 2026-07-13 - One Time Billing V2 goal registered
+
+- Preserved `RAW-20260713-005` from the Codex attachment and created the One
+  Time Rosh Hashanah Billing Platform V2 requirement register on dedicated
+  branch `codex/onetime-rosh-hashanah-billing-platform-v2`.
+- Recorded operator decisions that supersede the older active 30-day Stripe
+  trial policy: Rosh Hashanah application-level promotional access, `$67/month`
+  tax-exclusive membership, no Stripe trial, no failed-payment grace period,
+  manual exceptional refunds only, provider-owned Stripe account binding, and
+  no Stripe Connect/payout scope.
+- Created the first control-tower packet, current-code correction map, and
+  Product Quality compiler packet for the future provider Billing UI.
+- Guardrails: no live charge, refund, notice send, access mutation, Stripe
+  Connect/payout setup, credential mutation, or secret exposure was performed.

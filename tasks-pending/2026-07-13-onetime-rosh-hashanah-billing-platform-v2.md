@@ -1,0 +1,161 @@
+# Ramble Intake - 2026-07-13 - One Time Rosh Hashanah Billing Platform V2
+
+## Raw intake
+
+Preserved exactly at
+`raw-input/RAW-20260713-005-onetime-rosh-hashanah-billing-platform-v2.md`.
+
+The source is a `BNA_GOAL_MODE_EXECUTION_PACKET` for the One Time Provider
+Billing Platform V2. It supersedes the prior 30-day Stripe trial launch model
+with a Rosh Hashanah promotional-access conversion model, provider-owned Stripe
+account binding, $67/month monthly recurring membership, no Stripe trial, no
+grace period, manual exceptional-refund review, billing notices, subscriptions,
+invoices, payments, entitlements, automations, responsive provider Billing UI,
+sandbox E2E proof, and release handoff.
+
+## Raw queue record
+
+| Field | Value |
+|---|---|
+| Raw ID | `RAW-20260713-005` |
+| Source | `codex_chat` attachment |
+| Source file | `C:\Users\User\.codex\attachments\f7b9e33a-c693-4f81-b8c9-0e3c7bebebba\pasted-text.txt` |
+| Raw storage path | `raw-input/RAW-20260713-005-onetime-rosh-hashanah-billing-platform-v2.md` |
+| Parse status | `registered` |
+| Requirement register | `tasks-pending/2026-07-13-onetime-rosh-hashanah-billing-platform-v2.md` |
+| Packet folder | `ops/prompt-packets/2026-07-13-onetime-rosh-hashanah-billing-platform-v2/` |
+| Dedicated worktree | `C:\Users\User\BNA-onetime-billing-v2` |
+| Branch | `codex/onetime-rosh-hashanah-billing-platform-v2` |
+| Base SHA | `4a032b6e2ad21c02312edd7156a828e941e551d5` |
+
+## Goal-mode execution
+
+| Field | Value |
+|---|---|
+| Goal-mode requested | yes |
+| Active goal objective | Execute the One Time Provider Billing Platform V2 goal-mode packet through safe, unblocked implementation batches: raw capture, policy correction, provider billing architecture, sandbox Stripe billing, Billing UI, verifier proof, pushed branch, draft PR/release handoff, and terminal statuses/blockers without live charges or secret leakage. |
+| Goal tool used | yes |
+| GPT output contract | `tasks-pending/_template-goal-mode-correction-output.md` |
+| Execution directive | Register first, then work requirements in batches until terminal statuses. |
+| Terminal statuses required | Done / Already satisfied / Blocked / Needs operator decision / Failed / Archived |
+| Deploy/live-smoke required for app-visible work | yes |
+| Next requirement IDs to work | `REQ-20260713-950`, `REQ-20260713-951`, then `REQ-20260713-952` through `REQ-20260713-956` in safe backend/domain batches. |
+
+## Packet DAG
+
+| Packet | Requirement IDs | Role | Dependencies | Status | Terminal condition |
+|---|---|---|---|---|---|
+| `00-control-tower-and-policy-correction` | `REQ-20260713-950`, `REQ-20260713-951` | CONTROL_TOWER | raw capture, memory lookup, dedicated worktree | in_progress | raw/register/control map committed and old active trial assumptions mapped |
+| `01-provider-billing-domain-and-schema` | `REQ-20260713-952` | IMPLEMENTATION_PACKET | `00` | pending | provider-scoped billing domain/schema/migration contracts implemented and tested |
+| `02-products-prices-and-provider-account` | `REQ-20260713-953` | PROVIDER_SETUP_PACKET | `01` | pending | One Time product/price/provider account model exists, sandbox IDs mapped without secrets |
+| `03-rosh-hashanah-conversion` | `REQ-20260713-954` | IMPLEMENTATION_PACKET | `01`, `02`, `DEC-20260713-951` for live date | pending | canonical campaign, cohort, eligibility, consent, billing-start state implemented without Stripe trial |
+| `04-stripe-runtime-webhooks-and-invoices` | `REQ-20260713-955` | IMPLEMENTATION_PACKET | `01`, `02`, `03` | pending | checkout/subscription/webhook/invoice handling implemented with raw-body signature verification and idempotency |
+| `05-billing-automations-and-access` | `REQ-20260713-956`, `REQ-20260713-957`, `REQ-20260713-958` | IMPLEMENTATION_PACKET | `03`, `04` | pending | no-grace entitlement, notice, failed-payment, cancellation, refund-exception, and email/invoice automations implemented/gated |
+| `06-provider-billing-ui` | `REQ-20260713-959`, `REQ-20260713-960` | SPEC_COMPILER then IMPLEMENTATION_PACKET | `00`, current-state visual audit, PQC validation | generated | validated Product Quality packet, current-state screenshots, UI implementation, action/route registry, responsive proof |
+| `07-sandbox-e2e-verifier` | `REQ-20260713-961` | VERIFIER_PACKET | `01` through `06` | pending | synthetic TEST lifecycle verifier passes without real customer/funds/access/email |
+| `08-release-handoff` | `REQ-20260713-962`, `REQ-20260713-963` | DEPLOY_PACKET | `07` | pending | branch pushed, draft PR/handoff created, live activation blockers explicit |
+
+## Parsed requirements
+
+| ID | Requirement | Source IDs | Workspace/project | Owner | Category | Priority | Batch | Dependencies | Acceptance criteria | Implementation files | Deploy/live required | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `REQ-20260713-950` | Preserve the Billing V2 packet, create the dedicated worktree/branch lane, register decisions, memory corrections, packet DAG, and closeout rules. | `RAW-20260713-005:S1-S8` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | intake/control | P0 | `00-control-tower-and-policy-correction` | none | Raw input copied; register, memory pointers, task/ledger records, control-tower packet, and branch evidence exist; no secrets committed. | `raw-input/*`, `tasks-pending/*`, `memory/*`, `memory-topics/*`, `ops/prompt-packets/*`, `TASKS.md`, `ops/agent-task-ledger.jsonl` | no | In progress |
+| `REQ-20260713-951` | Audit current active code/copy/tests for superseded trial, grace, payout, refund, Connect, and revenue-share assumptions and map each to fix, archive, or live blocker. | `RAW-20260713-005:S6` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | policy-correction | P0 | `00-control-tower-and-policy-correction` | `REQ-20260713-950` | Correction map names old active artifacts and gives each a disposition; historical evidence is preserved but cannot drive new checkout/subscription behavior. | `ops/prompt-packets/.../00-current-code-correction-map.md` | no | In progress |
+| `REQ-20260713-952` | Implement provider-scoped billing domain/schema contracts for account binding, policies, products, prices, campaign, cohort members, consent, notices, customers, subscriptions, invoices, payments, refunds, automations, activity, webhooks, idempotency, and audit history. | `RAW-20260713-005:S9-S12` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | backend/schema | P0 | `01-provider-billing-domain-and-schema` | `REQ-20260713-951` | Models are provider-scoped, future-provider reusable, no duplicate billing systems, no BNA/One Time credential reuse, no Stripe Connect/payout schema in current scope. | to inspect: migrations, `server.js`, `src/lib/bna/*`, `src/lib/integrations/*`, tests | no until runtime deployed | Pending |
+| `REQ-20260713-953` | Model and seed the current One Time catalog: provider-owned Stripe account binding for Rabbi Eli Scheller, One Time Mishnayos Membership, `$67/month`, recurring monthly, tax-exclusive, no trial, stable sandbox product/price references stored without secrets. | `RAW-20260713-005:S2-S4,S11-S13` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | product/price/provider-setup | P0 | `02-products-prices-and-provider-account` | `REQ-20260713-952` | Product and price are canonical, browser cannot submit arbitrary Stripe price IDs, automatic tax is gated by provider account readiness, sandbox IDs are references only, no live price is published without explicit approval. | product/price registry, Stripe integration loader, tests | sandbox yes; live no | Pending |
+| `REQ-20260713-954` | Replace the 30-day Stripe trial launch with a Rosh Hashanah application-level promotional-access conversion campaign using one canonical `billing_start_at`, Asia/Jerusalem timezone, cohort eligibility, consent/payment readiness, and two paths: preauthorized scheduled first charge or payment-required checkout at cutoff. | `RAW-20260713-005:S2,S3,S14-S16` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | conversion/campaign | P0 | `03-rosh-hashanah-conversion` | `REQ-20260713-952`, `REQ-20260713-953`, `DEC-20260713-951` for live date | No `trial_period_days`, `trial_end`, active `trial_will_end`, or grace-period launch path; exact live billing-start decision blocks live conversion only, not sandbox/local proof. | campaign scheduler, checkout service, tests | sandbox yes; live blocked | Pending |
+| `REQ-20260713-955` | Implement Stripe checkout, subscriptions, webhooks, invoices, payments, refund-exception hooks, idempotency/replay/dead-letter, and webhook health for `/api/webhooks/stripe/rabbi` with raw-body signature verification and provider account binding. | `RAW-20260713-005:S17,S22,S24-S27` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | stripe-runtime | P0 | `04-stripe-runtime-webhooks-and-invoices` | `REQ-20260713-952`, `REQ-20260713-953` | Test/live mode is validated, webhook secrets are not logged, thin/snapshot events are normalized safely, historical trial-ending events are ignored, no real charge/refund occurs. | `server.js`, `src/lib/integrations/stripe.js`, lifecycle tests, sandbox smoke | sandbox yes; live blocked | Pending |
+| `REQ-20260713-956` | Implement payment-to-access lifecycle with no grace period: invoice paid grants/renews paid entitlement, invoice failed suspends immediately, payment recovered restores, cancel-at-period-end keeps access until period end, period end revokes, history preserved. | `RAW-20260713-005:S17,S19` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | entitlement/automation | P0 | `05-billing-automations-and-access` | `REQ-20260713-955` | No automatic grace access; no automatic refunds/prorations; entitlement transitions are audited, idempotent, provider scoped, and test-covered. | entitlement service/tests | deploy required before app done | Pending |
+| `REQ-20260713-957` | Build the pre-billing notice model/template/states and monthly invoice/receipt email workflow without live batch send. | `RAW-20260713-005:S5,S18,S19` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | billing-notice/email | P0 | `05-billing-automations-and-access` | `REQ-20260713-954`, `REQ-20260713-955` | Notice is not a marketing newsletter; copy discloses price, billing date, no trial, tax, cancellation/refund policy, action required; live sends require separate exact approval. | notice/email templates, automation queue/tests | deploy required; live send blocked | Pending |
+| `REQ-20260713-958` | Implement manual exceptional-refund workflow with reason, linked invoice/payment/customer, requested/reviewed by, explicit approval, Stripe refund ID after execution, test/live mode, and access decision. | `RAW-20260713-005:S2,S17,S19` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | refunds | P1 | `05-billing-automations-and-access` | `REQ-20260713-955`, `DEC-20260713-955` | Support ticket/message/cancellation/payment failure never auto-refunds; refund execution is disabled until authorized admin explicit confirmation; no live refund in this branch. | refund service/tests/UI later | deploy required before app done; live refund blocked | Pending |
+| `REQ-20260713-959` | Compile and validate the Product Quality packet for the provider Billing UI before UI implementation. | `RAW-20260713-005:S20-S23` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | UI/product-quality | P0 | `06-provider-billing-ui` | `REQ-20260713-950`, current-state visual audit | PQC JSON validates; UI scope, IA, routes, action states, state matrix, screenshots, accessibility, security, route/action registry, deployment gate, and DoR/DoD are explicit. | `tasks-pending/*.product-quality.json`, future UI files | no for compiler; yes for UI implementation | Generated |
+| `REQ-20260713-960` | Implement responsive provider Billing UI inside the dedicated One Time provider shell with categories Overview, Catalog, Billing, Automations, Settings and required views for products/prices/campaign/customers/subscriptions/invoices/payments/refunds/account/policies/permissions. | `RAW-20260713-005:S20-S23` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | UI | P1 | `06-provider-billing-ui` | `REQ-20260713-959`, `REQ-20260713-952` through `REQ-20260713-958` as data/API providers | UI is route-scoped, role-scoped, responsive at 1440/1024/768/430/390, action/route registry updated, no wall of debug/admin text, no raw IDs in overview, disabled/gated actions explain exact blockers. | provider shell modules, route/action registry, tests/smokes | yes | Pending |
+| `REQ-20260713-961` | Build and run sandbox E2E verifier for synthetic TEST identities across product/price, consent, payment method, checkout/subscription, webhook/invoice/payment, failed-payment, cancellation, notice preview, refund exception, and entitlement transitions. | `RAW-20260713-005:S25-S27` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | verifier | P0 | `07-sandbox-e2e-verifier` | `REQ-20260713-952` through `REQ-20260713-960` | No real customer/funds/access/email; stable sandbox product/price are not deleted; test data is idempotent; no trial/grace/Connect/payout path appears. | sandbox smoke scripts/tests/reports | sandbox yes; live no | Pending |
+| `REQ-20260713-962` | Produce release handoff, draft PR, verification matrix, migration/backout notes, and exact remaining live activation blockers. | `RAW-20260713-005:S29-S33` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | release-handoff | P0 | `08-release-handoff` | `REQ-20260713-961` | Branch is pushed, PR/handoff lists tests, deploy/live-smoke requirements, no-live-charge boundary, Stripe/Railway variables needed, and exact final approval packet required. | PR/handoff docs, changelog, ledger | yes before Done | Pending |
+| `REQ-20260713-963` | Keep live activation blocked until Shloimie approves the exact final launch packet: billing_start_at, live Stripe keys/webhook, final live price, cohort, consent/payment coverage, policy/copy, final SHA, notice send, and charge authorization. | `RAW-20260713-005:S31-S33` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Shloimie + Codex | live-boundary | P0 | all | `REQ-20260713-962` | No real customer is charged, refunded, emailed in batch, or granted/revoked paid access by this branch without the separate exact launch approval. | final report, release gate | live activation blocked | Blocked |
+
+## Decisions
+
+| ID | Decision | Missing information | Owner | Recommended option | Alternatives | Consequences | Exact action required | Blocks requirements | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| `DEC-20260713-950` | One Time no longer offers a 30-day Stripe trial. Active checkout, UI, email, tests, config, and automation must not use `trial_days=30`, `trial_period_days`, `trial_end`, current `one_time_warm_lead_intro_trial`, or required `customer.subscription.trial_will_end`. | none | Shloimie | Supersede old policy and preserve historical evidence as provenance only. | Keep old trial path as active. | Old path would violate the new commercial decision and charge schedule. | Remove active usage; map historical artifacts. | `REQ-20260713-951`, `REQ-20260713-954`, `REQ-20260713-955`, `REQ-20260713-961` | Decided |
+| `DEC-20260713-951` | Free promotional access lasts until the Rosh Hashanah cutoff as an application-level campaign, not a Stripe trial. | Exact canonical `billing_start_at` timestamp after comparing landing countdown and approved business date. | Shloimie | Use one canonical campaign record with `billing_start_at` in Asia/Jerusalem and local-time display. | Separate hardcoded dates by surface. | Drift between landing, email, scheduler, checkout, tests, and UI. | Codex must inspect current sources; Shloimie must approve exact live timestamp if sources disagree. | live conversion in `REQ-20260713-954`; sandbox can proceed | Needs operator decision after audit |
+| `DEC-20260713-952` | Current product is One Time Mishnayos Membership, `$67 USD/month`, recurring monthly, no free trial, tax-exclusive, full first charge at approved billing start, no partial charge before start. | none for sandbox; live price confirmation before final activation. | Shloimie | Model `$67/month, plus applicable taxes where required`; gate automatic tax on provider account readiness. | Tax-inclusive copy or no-tax-ever copy. | Incorrect customer-facing disclosure. | Implement price model and copy exactly; require final live price approval. | `REQ-20260713-953`, `REQ-20260713-957`, `REQ-20260713-963` | Decided |
+| `DEC-20260713-953` | One Time Stripe account owner is Rabbi Eli Scheller; future providers use their own Stripe accounts. | live account binding/readback before activation | Shloimie/Rabbi | Provider-scoped Stripe account-binding model with secret references, not shared BNA/One Time credentials. | Reuse BNA credentials or global platform key. | Cross-workspace payment/account leakage. | Implement provider binding and keep secrets local/Railway-only by reference. | `REQ-20260713-952`, `REQ-20260713-955`, `REQ-20260713-963` | Decided |
+| `DEC-20260713-954` | Stripe Connect, transfers, revenue splits, payout reports, commissions, and provider distribution are out of scope. | none | Shloimie | Display provider-scoped revenue totals only, no fund distribution. | Build Connect/payouts now. | Added legal/accounting complexity and live-money risk. | Block Connect/payout code paths and mark historical split docs as inactive for this branch. | `REQ-20260713-952`, `REQ-20260713-961` | Decided |
+| `DEC-20260713-955` | Refunds are manual exceptional-review only: no automatic refunds, no prorated refunds, non-refundable by default. | final support/legal copy before live customer launch | Shloimie | Build request/review/approval/audit flow; disable live execution until explicit confirmation. | Auto refund from cancellation, access failure, message, payment failure, or ticket. | Unauthorized money movement. | Implement manual workflow and tests; keep live refund blocked. | `REQ-20260713-958`, `REQ-20260713-963` | Decided |
+| `DEC-20260713-956` | Cancellation default is cancel-at-period-end, no automatic refund/proration, access continues until paid period ends, then paid entitlement is revoked while history remains. | none | Shloimie | Implement scheduled cancellation and period-end revoke. | Immediate delete/revoke or immediate refund. | Bad customer/accounting behavior and lost audit history. | Implement lifecycle state and tests. | `REQ-20260713-956` | Decided |
+| `DEC-20260713-957` | No grace period after failed payment; payment failure suspends paid entitlement immediately. | none | Shloimie | Immediate suspension with recovery path on paid invoice/payment. | Grace-period access. | Unpaid access continues against policy. | Remove active grace-period access state from One Time paid lifecycle. | `REQ-20260713-956`, `REQ-20260713-961` | Decided |
+| `DEC-20260713-958` | Monthly invoice/receipt emails are required for recurring billing. | sender/copy final live approval before batch send | Shloimie | Model Stripe invoice/receipt email and in-app billing history; live sends require exact approval. | Physical postal mail or marketing newsletter as notice. | Insufficient disclosure or wrong communication channel. | Implement preview and send-gated states. | `REQ-20260713-957` | Decided |
+| `DEC-20260713-959` | Workspace owners/admins may manage products/prices/publish live prices in the provider workspace, but publishing a price must not charge customers or start the campaign. | exact live permission roles/readback before launch | Shloimie | Separate price publication from campaign/charge authorization. | Combined publish-and-charge action. | Accidental live charges. | Gate UI/API actions separately. | `REQ-20260713-953`, `REQ-20260713-960`, `REQ-20260713-963` | Decided |
+| `DEC-20260713-960` | Railway sandbox config propagation is allowed only after confirming target `one-time-production` / `one-time-web`, env, no BNA target, no live key copied, and values are not echoed. | whether to mutate Railway vars in this branch after readback | Shloimie/Codex | Inspect target first; if writing, set only test-mode values through secret-safe commands. | Copy live key, mutate BNA service, or echo secrets. | Credential leak or wrong app config. | Run target guard/readback; write only with safe command and no secret output if needed for sandbox webhook proof. | `REQ-20260713-955`, `REQ-20260713-961` | Gated |
+| `DEC-20260713-961` | Live activation remains outside this branch. | final launch packet | Shloimie/Rabbi | Separate final approval packet after sandbox proof and PR/release handoff. | Let implementation branch charge real customers. | Unauthorized charges/access/email. | Shloimie must approve exact live packet before live charge/send/access mutation. | `REQ-20260713-963` | Blocked |
+
+## Open questions
+
+| ID | Question | Why it matters | Blocking? | Status |
+|---|---|---|---|---|
+| `Q-20260713-950` | What is the exact Rosh Hashanah `billing_start_at` timestamp in Asia/Jerusalem after comparing landing countdown/current approved date? | It anchors first charge, notices, eligibility, tests, UI, and scheduler. | Blocks live conversion only | Pending audit and operator decision if sources disagree |
+| `Q-20260713-951` | Should Codex propagate test-mode Stripe vars to Railway now after target guard readback, or keep sandbox verification local until UI/runtime code lands? | Webhook proof against `join.onetimeonetime.com` needs hosted env values; local proof does not. | Blocks hosted webhook smoke only | Pending target guard step |
+| `Q-20260713-952` | What final sender identity and customer notice copy should be used for live pre-billing notice batch? | Live customer email/send approval must be exact. | Blocks live batch send only | Pending later launch packet |
+
+## Durable memory candidates
+
+| ID | Memory candidate | Promote to MEMORY.md/topic? | Reason |
+|---|---|---|---|
+| `MEM-20260713-950` | One Time no longer offers a 30-day Stripe trial; active launch uses application-level Rosh Hashanah promotional access, not Stripe trial. | yes | Supersedes older active billing/product assumptions. |
+| `MEM-20260713-951` | One Time current membership product is `$67/month, plus applicable taxes where required`, tax-exclusive, no free trial. | yes | Product/copy/runtime source of truth. |
+| `MEM-20260713-952` | One Time paid access has no failed-payment grace period and no automatic refunds/prorations. | yes | Payment/access invariant. |
+| `MEM-20260713-953` | Provider billing must bind Stripe accounts per provider; Rabbi Eli Scheller owns One Time Stripe; no BNA/One Time credential reuse. | yes | Privacy/workspace/payment invariant. |
+
+## Suggested batches
+
+| Batch | Requirement IDs | Why this order | Verification |
+|---|---|---|---|
+| 0 - Control and correction | `REQ-20260713-950`, `REQ-20260713-951`, `REQ-20260713-959` | Prevent duplicate lane/collision and pin new policy before code edits. | `npm run pqc:validate -- tasks-pending/2026-07-13-onetime-rosh-hashanah-billing-platform-v2.product-quality.json`, `npm run secrets:audit`, `git diff --check` |
+| 1 - Domain/schema | `REQ-20260713-952`, `REQ-20260713-953` | Billing runtime needs canonical provider/account/product/price/policy data first. | focused model tests, existing product tests updated from trial to campaign |
+| 2 - Campaign and Stripe runtime | `REQ-20260713-954`, `REQ-20260713-955` | Conversion and checkout/webhook logic are the money boundary. | `node --test tests/stripe-billing-lifecycle.test.js`, `node --test tests/one-time-stripe-local-beta.test.js`, `npm run stripe:sandbox-smoke` |
+| 3 - Entitlements, notice, refunds | `REQ-20260713-956`, `REQ-20260713-957`, `REQ-20260713-958` | Access and customer communication must follow payment state. | lifecycle/access/email/refund tests, no-send proof |
+| 4 - Billing UI | `REQ-20260713-960` | UI needs backend states and PQC/current-state audit. | PQC, action/route registries, screenshots at required viewports, a11y/action/security watchdogs |
+| 5 - Verifier and handoff | `REQ-20260713-961`, `REQ-20260713-962`, `REQ-20260713-963` | Prove sandbox lifecycle and keep live activation separate. | full test list, sandbox report, draft PR/release handoff, live blockers |
+
+## Implementation map
+
+| ID | Files/routes/components | Plan | Verification | Commit | Pushed commit | Deployment/live-smoke |
+|---|---|---|---|---|---|---|
+| `REQ-20260713-950` | raw/register/memory/packet files | Create first bounded registration commit. | secrets audit, PQC explicit validate, diff check | pending | pending | n/a |
+| `REQ-20260713-951` | correction map plus affected source files later | Use `rg` findings to retire active trial/grace paths in code batches. | updated tests and old-term audit | pending | pending | n/a |
+| `REQ-20260713-959` | PQC JSON | Compile UI gate now; do current-state visual audit before UI code. | `npm run pqc:validate -- ...product-quality.json` | pending | pending | n/a |
+
+## Verification contract
+
+Run as requirements become relevant:
+
+- `node --test tests/stripe-billing-lifecycle.test.js`
+- `node --test tests/one-time-stripe-local-beta.test.js`
+- `node --test tests/one-time-product-system.test.js`
+- `node --test tests/rabbi-checkout-access.test.js`
+- `npm run stripe:sandbox-smoke`
+- `npm run one-time:setup:check -- --json`
+- `npm run test:onetime:focused`
+- `npm run secrets:audit`
+- `npm run watchdog:actions`
+- `npm run watchdog:links`
+- `npm run watchdog:security`
+- `npm run watchdog:workspace-scope`
+- `npm run watchdog:protocol-drift`
+- `npm run audit:governance:strict`
+- `npm run bna:run:validate`
+- `git diff --check`
+
+If a script does not exist in this repo, record that exact blocker or substitute
+the nearest existing scoped watchdog with proof.
+
+## Final audit
+
+| ID | Status | Evidence | Files changed | Verification | Remaining issue |
+|---|---|---|---|---|---|
+| `REQ-20260713-950` | Registered | raw copied; register/memory/task/changelog/ledger/control packet created in this branch | first registration batch | `npm run secrets:audit` pass; `git diff --check` pass with line-ending warnings only; explicit new-content secret-pattern scan pass; `npm run bna:run:validate` blocked by unrelated active-run evidence paths for `REQ-20260713-909` and `REQ-20260713-911` missing from this feature worktree | commit/push proof pending |
+| `REQ-20260713-951` | Registered | `ops/prompt-packets/.../00-current-code-correction-map.md` | first registration batch | old-term audit completed for first correction map; rerun after code fixes | active code still contains old trial/grace paths |
+| `REQ-20260713-959` | Generated | `tasks-pending/...product-quality.json`; `ops/product-quality-compiler/validation/latest-product-quality-validation.md` | first registration batch | `npm run pqc:validate -- tasks-pending/2026-07-13-onetime-rosh-hashanah-billing-platform-v2.product-quality.json` pass | current-state visual audit still required before UI code |
+| `REQ-20260713-963` | Blocked | live boundary in this register | none | n/a | final launch packet required before real charge/send/access mutation |

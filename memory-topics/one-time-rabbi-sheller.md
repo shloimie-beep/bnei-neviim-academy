@@ -68,3 +68,18 @@
   through secure aliases only. Do not expose full destinations in logs or proof,
   do not send to Rabbi/parents/students/leads without separate approval, and do
   not enable unrestricted public auto-reply for owner tests.
+- As of `RAW-20260713-005`, One Time Billing V2 supersedes the older active
+  30-day Stripe trial launch model. The current launch model is Rosh Hashanah
+  promotional access at the application layer, then paid recurring billing at
+  the approved `billing_start_at`; do not publish or implement active One Time
+  `30-day free trial` copy, `trial_period_days`, `trial_end`, or required
+  `customer.subscription.trial_will_end` workflow.
+- One Time Billing V2 product/policy from `RAW-20260713-005`: One Time
+  Mishnayos Membership, `$67/month, plus applicable taxes where required`,
+  monthly recurring, tax-exclusive, no free trial, cancel-at-period-end by
+  default, no failed-payment grace period, and no automatic refunds/prorations.
+- Rabbi Eli Scheller is the One Time Stripe account owner. One Time Stripe
+  credentials and billing records must stay scoped to
+  `rabbi_sheller_provider` / `one_time_mishnah_class`; do not reuse BNA Stripe
+  credentials for One Time or One Time Stripe credentials for BNA/future
+  providers.
