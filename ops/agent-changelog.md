@@ -39624,8 +39624,9 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   CRM route module, mailbox loads only its mailbox route stub, Operations
   assets stay absent, 390px CRM has no horizontal overflow, and no sends or
   production mutations occurred.
-- `REQ-20260713-908` remains in progress for mailbox/communications module
-  extraction, broader critical-path proof, and regression budget gates.
+- This interim CRM route-module marker is superseded by the deployed
+  mailbox/messages route-module slice below; regression budget gates continue
+  under `REQ-20260713-911`.
 
 ## 2026-07-13 - One Time mailbox and messages route modules deployed
 

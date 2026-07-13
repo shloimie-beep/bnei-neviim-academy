@@ -31,7 +31,7 @@ Current status: `active`
 - Baseline report: `ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md`.
 - Result: 160 measured samples, 0 skipped, 32 attention samples, no production writes, no failed-request budget breaches, no console-error budget breaches, and no direct slow API budget breaches.
 - Attention classification: public landing transfer (`large_transfer=16`) and tasks route DOM weight (`heavy_dom=16`).
-- `REQ-20260713-908` is in progress, `REQ-20260713-911` is ready, and `REQ-20260713-906` remains blocked only on secure owner aliases.
+- `REQ-20260713-908` is Done, `REQ-20260713-911` is ready, and `REQ-20260713-906` remains blocked only on secure owner aliases.
 
 ## 2026-07-13 Dedicated One Time Provider Shell Routing
 

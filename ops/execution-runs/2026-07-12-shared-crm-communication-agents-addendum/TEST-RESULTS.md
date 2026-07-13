@@ -46,7 +46,7 @@
 - PASS BNA Railway deploy through `railway:redeploy`; deployment `33571043-54ce-4631-99c1-b54209edebc7` reached `SUCCESS`.
 - PASS One Time Railway deploy through `railway:redeploy` with target profile `one-time`; deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754` reached `SUCCESS`.
 - PASS live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`: exact deploy-info SHA matched, default provider route loaded One Time shell without Operations CSS/JS, and explicit `ops_fallback=1` redirected to scoped Operations CRM.
-- Remaining: continue route-module extraction and performance budget comparison before marking all of `REQ-20260713-908` Done.
+- Superseded by later route-module slices: `REQ-20260713-908` is now Done after CRM, mailbox, and communications route-module deploy/live-smoke proof.
 
 ## 2026-07-13 CRM Route Module Extraction Slice
 
@@ -61,7 +61,7 @@
 - PASS One Time Railway deploy and doctor; deployment `fac38cc0-23c4-4158-8556-4c11e6c95215` reached `SUCCESS`.
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha a9447271e29ed0f30401b05f760f4d314f91c9a9`.
 - PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha a9447271e29ed0f30401b05f760f4d314f91c9a9`; report `ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md`.
-- Remaining: continue mailbox/communications extraction and performance/instrumentation gates before marking all of `REQ-20260713-908` Done.
+- Superseded by the mailbox/messages route-module slice below; performance/instrumentation gates continue under `REQ-20260713-911`.
 
 ## 2026-07-13 Mailbox And Messages Route Module Slice
 

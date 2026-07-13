@@ -86,7 +86,7 @@ Continue by inspecting and repairing:
 
 - continue remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`, especially email-thread DTO proof where live data exists and canonical aggregate breadth beyond signup/product leads;
 - `REQ-20260713-906` owner-only live integration tests are blocked on missing secure owner-test aliases, while Resend and One Time WAPI are ready;
-- keep `REQ-20260713-908` open for broader critical-path proof after the deployed route-module slices;
+- keep `REQ-20260713-908` proof visible as Done after the deployed CRM/mailbox/communications route-module slices;
 - start or queue `REQ-20260713-911` performance instrumentation/regression gates before calling lag fixed;
 - start `REQ-20260713-909` mobile CRM IA with current-state audit/PQC before broad contact-workspace UI edits;
 - keep `REQ-20260713-910` verifier/final report and `REQ-20260713-911` performance gates tied to owner-test, architecture, dedicated shell, and mobile CRM proof before calling lag fixed;
