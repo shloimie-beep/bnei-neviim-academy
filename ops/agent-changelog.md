@@ -39189,7 +39189,7 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   CRM workbench smoke with 12 scoped cards and read-only selected timeline, and
   deployed JS/CSS marker checks for Complete/Reopen task controls.
 
-## 2026-07-13 - Shared CRM Link member local verification
+## 2026-07-13 - Shared CRM Link member deployment
 
 - Added `ACTION-CRM-LINK-MEMBER` to the CRM contact workspace Access and Family
   tabs as an explicit first-party action.
@@ -39204,5 +39204,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Link member visibility and no write click, action watchdog 0 findings,
   protocol drift watchdog, secret audit, execution run validation, and diff
   check with line-ending warnings only.
-- Deployment is pending for this slice; the broader addendum goal remains
-  active.
+- Deployed commit `8ea9b798fe9187fbb5f311fbd6073b49f1befcf3` to BNA and One
+  Time production.
+- BNA Railway deployment `91234f89-084d-4dc0-bc8b-4de7fbd33325` and One Time
+  deployment `dc45500e-960c-4adf-8e78-dcb92a2a725c` reached `SUCCESS`.
+- BNA and One Time live `/api/deploy-info` both returned
+  `8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`.
+- Live proof passed: One Time separate-instance SHA smoke, One Time Operations
+  CRM workbench smoke with 12 scoped cards and read-only selected timeline, and
+  deployed JS/HTML marker checks for Link member controls.

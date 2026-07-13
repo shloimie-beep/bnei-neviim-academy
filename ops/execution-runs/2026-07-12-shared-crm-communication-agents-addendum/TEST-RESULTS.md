@@ -231,3 +231,10 @@
 - PASS `npm run secrets:audit` after Link member slice.
 - PASS `npm run bna:run:validate` after Link member slice; work remains on the broader addendum.
 - PASS `git diff --check` with line-ending warnings only after Link member slice.
+- PASS `git push origin master` for Link member commit `8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`.
+- PASS BNA Railway post-deploy doctor for deployment `91234f89-084d-4dc0-bc8b-4de7fbd33325`.
+- PASS One Time Railway post-deploy doctor for deployment `dc45500e-960c-4adf-8e78-dcb92a2a725c`.
+- PASS BNA and One Time deploy-info readbacks returned `commit_sha=8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T00-11-08-626Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only deployed JS/HTML marker checks for `ACTION-CRM-LINK-MEMBER`, `linkFirstPartyCrmMember`, `data-crm-member-link-state`, `access_status: 'paused'`, and `access_enabled: false`.

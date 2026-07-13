@@ -91,6 +91,12 @@
 - `server.js` - direct `bna_contacts` aggregate email fallback rollups for communications, support, tasks, and membership now require the row's workspace-mapped `bna_projects` record before matching by email, preventing same-email member/task/message bleed across BNA and One Time.
 - `ops/action-registry.json` - registers `ACTION-CRM-LINK-MEMBER` as active first-party local write with no portal link, access code, library/class access, send, payment, import, or external CRM write.
 - `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local CRM workbench smoke passed after verifying the Link member panel/action is visible on the Access tab without clicking the write action.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`.
+- BNA post-deploy doctor - Railway deployment `91234f89-084d-4dc0-bc8b-4de7fbd33325` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `dc45500e-960c-4adf-8e78-dcb92a2a725c` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-13T00-11-08-626Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the Link member slice with 12 scoped cards and read-only selected timeline.
+- Read-only deployed JS/HTML marker checks confirmed `ACTION-CRM-LINK-MEMBER`, `linkFirstPartyCrmMember`, `data-crm-member-link-state`, `access_status: 'paused'`, and `access_enabled: false` on `https://join.onetimeonetime.com`.
 - `raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md` - operator correction requiring the WhatsApp bot knowledge to state no portal/member/library access is being granted yet plus One Time landing header/button/mobile CTA polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md` - scoped local-verified handoff for bot knowledge and landing polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json` - focused Product Quality Compiler packet for the One Time header/CTA/spacing/mobile correction and bot access-fact guardrail.

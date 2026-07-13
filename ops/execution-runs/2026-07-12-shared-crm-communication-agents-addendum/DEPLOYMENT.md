@@ -31,3 +31,18 @@ Global production readiness remains blocked only by known external full-launch f
 - One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha ec1e893848f12242a30fd1fc59c236442997f30e` passed.
 - One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com` passed; report `ops/live-smokes/2026-07-12T23-51-23-358Z-one-time-operations-crm-workbench-live-smoke.md`.
 - Deployed asset marker checks passed for `ACTION-CRM-COMPLETE-TASK`, `ACTION-CRM-REOPEN-TASK`, `updateFirstPartyCrmLinkedTask`, `.crm-linked-task-card`, and `.crm-linked-task-meta`.
+
+## 2026-07-13 Link Member Slice Deploy
+
+- Commit: `8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=1` and `BNA_RAILWAY_TARGET_PROFILE=bna`.
+- BNA Railway doctor: deployment `91234f89-084d-4dc0-bc8b-4de7fbd33325` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`, `target_app=bna`.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=1` and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- One Time Railway doctor: deployment `dc45500e-960c-4adf-8e78-dcb92a2a725c` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8ea9b798fe9187fbb5f311fbd6073b49f1befcf3` passed.
+- One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com` passed; report `ops/live-smokes/2026-07-13T00-11-08-626Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Deployed JS/HTML marker checks passed for `ACTION-CRM-LINK-MEMBER`, `linkFirstPartyCrmMember`, `data-crm-member-link-state`, `access_status: 'paused'`, and `access_enabled: false`.
