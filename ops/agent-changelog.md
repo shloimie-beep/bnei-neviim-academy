@@ -39446,3 +39446,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   exact-SHA One Time route smoke, live One Time CRM workbench smoke, and
   read-only live DTO readback showing 12 scoped cards, 5 signup-context cards,
   0 duplicate email/phone cards, no sends, and no external writes.
+
+## 2026-07-13 - CRM student/member activity context deployed
+
+- Added scoped student-link and membership-access rows to selected-contact
+  Activity timelines for canonical contacts and legacy lead references.
+- Kept student/member aggregate rows out of Conversations and Tasks DTOs, so
+  access context does not appear as a fake message thread or task.
+- Verification passed: syntax checks, shared CRM/service-provider tests
+  `32/32`, local One Time CRM workbench smoke, focused One Time suite `77/77`,
+  action/link/security/protocol watchdogs, secret audit, execution-run
+  validation, BNA/One Time Railway doctors, exact-SHA One Time route smoke,
+  live One Time CRM workbench smoke, and read-only live DTO readback with
+  no sends or external writes. Current live One Time sample had no student or
+  membership rows, so live proof is route/exclusion health plus local/test row
+  coverage.

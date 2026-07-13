@@ -248,3 +248,13 @@
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha feaece026a62daaf1ff85bdb53ac25ffb246ab89` passed.
 - `ops/live-smokes/2026-07-13T03-52-25-026Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the signup-context aggregate slice.
 - Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `signup_context_cards=5`, `linked_lead_cards=5`, `duplicate_email_or_phone_count=0`, `no_send=true`, and `external_write_performed=false`; no raw contact data or message bodies were saved.
+- `server.js` - selected-contact timeline SQL now adds scoped `student_link` rows from `bna_students` and `membership_access` rows from `bna_members` for both canonical `bna_contacts` and legacy `bna_parent_leads` references.
+- `src/lib/bna/crm/contact-service.js` - fallback conversation DTO filtering now excludes student/member/signup aggregate rows in addition to task and support-ticket rows.
+- `tests/crm-contact-service.test.js` / `tests/service-provider-scope-routes.test.js` - tests pin Activity inclusion and Conversations/Tasks exclusion for student/member aggregate rows.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=381023aad5fdaf1b23ef4c7ab0c12327ee2d369b`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=381023aad5fdaf1b23ef4c7ab0c12327ee2d369b`.
+- BNA post-deploy doctor - Railway deployment `5b39768d-21ad-4d76-b414-d685447d3542` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `965166eb-7cbb-4935-aa43-9ca497978b4e` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 381023aad5fdaf1b23ef4c7ab0c12327ee2d369b` passed.
+- `ops/live-smokes/2026-07-13T04-03-00-662Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the student/member aggregate slice.
+- Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `total_student_activity_rows=0`, `total_membership_activity_rows=0`, `list_no_send=true`, and `list_external_write_performed=false`; current live sample had no student/member rows, so row behavior is proven by local smoke and tests.

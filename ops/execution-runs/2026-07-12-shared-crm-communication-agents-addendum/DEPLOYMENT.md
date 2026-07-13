@@ -182,3 +182,18 @@ Global production readiness remains blocked only by known external full-launch f
 - One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha feaece026a62daaf1ff85bdb53ac25ffb246ab89` passed.
 - One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench` passed; report `ops/live-smokes/2026-07-13T03-52-25-026Z-one-time-operations-crm-workbench-live-smoke.md`.
 - Read-only live DTO readback confirmed the deployed One Time CRM list returned 12 scoped cards, 5 cards with signup context, 5 cards with linked legacy leads, 0 duplicate email/phone cards, `no_send=true`, and `external_write_performed=false`.
+
+## 2026-07-13 CRM Student/Member Activity Context Slice Deploy
+
+- Commit: `381023aad5fdaf1b23ef4c7ab0c12327ee2d369b`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_RAILWAY_TARGET_PROFILE=bna`.
+- BNA Railway doctor: deployment `5b39768d-21ad-4d76-b414-d685447d3542` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=381023aad5fdaf1b23ef4c7ab0c12327ee2d369b`, `target_app=bna`.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- One Time Railway doctor: deployment `965166eb-7cbb-4935-aa43-9ca497978b4e` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=381023aad5fdaf1b23ef4c7ab0c12327ee2d369b`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 381023aad5fdaf1b23ef4c7ab0c12327ee2d369b` passed.
+- One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench` passed; report `ops/live-smokes/2026-07-13T04-03-00-662Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Read-only live DTO readback confirmed the deployed One Time CRM list returned 12 scoped cards with `no_send=true` and `external_write_performed=false`. The current sampled live data had `total_student_activity_rows=0` and `total_membership_activity_rows=0`; local smoke and DTO tests cover row behavior when records exist.
