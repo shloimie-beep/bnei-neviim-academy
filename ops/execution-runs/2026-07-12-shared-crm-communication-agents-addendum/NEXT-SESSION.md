@@ -1,7 +1,7 @@
 # Next Session
 
-Next unblocked batch: `3-onetime-dedicated-app-shell`
-Open requirement: `REQ-20260713-908`
+Next unblocked batch: `6-performance-regression-gates`
+Open requirement: `REQ-20260713-911`
 
 Current control correction:
 
@@ -31,22 +31,21 @@ Architecture/performance result:
 
 Immediate next action:
 
-1. Finish the `REQ-20260713-908` mailbox/messages route-module slice: commit, push, deploy exact SHA, and live-smoke that overview loads no route modules while CRM, mailbox, and communications each load only their own module.
+1. Start `REQ-20260713-911`: Server-Timing/trace IDs, API handler/database/pool timings, route-transition/RUM metrics, bundle/route budgets, and regression gates.
 2. Keep the deployed first-slice proof visible: commit `c0b8ab8139c6166d89527a949ce4dd70bf67df3a`, BNA Railway deployment `33571043-54ce-4631-99c1-b54209edebc7`, One Time Railway deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754`, and live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`.
 3. Keep the deployed CRM route-module proof visible: One Time Railway deployment `fac38cc0-23c4-4158-8556-4c11e6c95215`, exact-SHA smoke, and live route-module smoke `ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md`.
-4. Start or queue `REQ-20260713-911`: Server-Timing/trace IDs, API handler/database/pool timings, route-transition/RUM metrics, bundle/route budgets, and regression gates.
+4. Keep the deployed mailbox/messages route-module proof visible: One Time Railway deployment `df3a27b2-a930-430d-b29d-0d8390b62a17`, exact-SHA smoke, and live route-module smoke `ops/live-smokes/2026-07-13T06-59-53-991Z-onetime-provider-route-module-live-smoke.md`.
 5. Keep `REQ-20260713-906` blocked until the owner aliases are configured through the approved secret path.
 6. Do not enable public WhatsApp auto-reply, send to non-owner contacts, or expose raw destination values.
 
 Previous shared-CRM lane is no longer the first lane. Continue `REQ-20260712-302` / `REQ-20260712-303` only where they directly support the One Time-first packets or required BNA regression safety.
 
-Latest One Time app runtime SHA: `a9447271e29ed0f30401b05f760f4d314f91c9a9`
+Latest One Time app runtime SHA: `72650231e9d6eba9a367a59251cb58202f8910b1`
 
 Current proof:
 
-- `a9447271e29ed0f30401b05f760f4d314f91c9a9` is pushed to `origin/master` and deployed to One Time for the CRM route-module slice. BNA frontend parity remains deferred unless a shared runtime/security/scope change requires a BNA deploy.
+- `72650231e9d6eba9a367a59251cb58202f8910b1` is pushed to `origin/master` and deployed to One Time for the mailbox/messages route-module slice. BNA frontend parity remains deferred unless a shared runtime/security/scope change requires a BNA deploy.
 - `RAW-20260713-003` is registered as the active One Time-first control correction: One Time is the current canonical implementation/acceptance target, simultaneous BNA frontend parity is superseded for this phase, and BNA scope is shared API/security/privacy/database regression safety until a later BNA adoption packet.
-- BNA production `https://bneineviimacademy.org/api/deploy-info` returns that SHA.
 - One Time production `https://join.onetimeonetime.com/api/deploy-info` returns that SHA.
 - One Time signup Family/School behavior has live no-write browser proof and API dry-run proof.
 - `REQ-20260712-305` passed live transaction-rollback identity-isolation proof and is terminal Done.
@@ -87,7 +86,7 @@ Continue by inspecting and repairing:
 
 - continue remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`, especially email-thread DTO proof where live data exists and canonical aggregate breadth beyond signup/product leads;
 - `REQ-20260713-906` owner-only live integration tests are blocked on missing secure owner-test aliases, while Resend and One Time WAPI are ready;
-- start `REQ-20260713-908` dedicated One Time app shell using the ADR/baseline evidence;
+- keep `REQ-20260713-908` open for broader critical-path proof after the deployed route-module slices;
 - start or queue `REQ-20260713-911` performance instrumentation/regression gates before calling lag fixed;
 - start `REQ-20260713-909` mobile CRM IA with current-state audit/PQC before broad contact-workspace UI edits;
 - keep `REQ-20260713-910` verifier/final report and `REQ-20260713-911` performance gates tied to owner-test, architecture, dedicated shell, and mobile CRM proof before calling lag fixed;

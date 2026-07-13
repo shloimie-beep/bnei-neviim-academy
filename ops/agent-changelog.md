@@ -39626,3 +39626,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   production mutations occurred.
 - `REQ-20260713-908` remains in progress for mailbox/communications module
   extraction, broader critical-path proof, and regression budget gates.
+
+## 2026-07-13 - One Time mailbox and messages route modules deployed
+
+- Committed and pushed mailbox/messages route-module slice
+  `72650231e9d6eba9a367a59251cb58202f8910b1`, then deployed it to the One
+  Time Railway service `one-time-web`.
+- Railway deployment `df3a27b2-a930-430d-b29d-0d8390b62a17` reached
+  `SUCCESS`, and the One Time separate-instance smoke passed against the exact
+  deployed SHA.
+- Live route-module proof
+  `ops/live-smokes/2026-07-13T06-59-53-991Z-onetime-provider-route-module-live-smoke.md`
+  confirms default provider review loads no route modules, CRM loads only the
+  CRM route module, mailbox loads only the mailbox route module, communications
+  loads only the communications route module, Operations assets stay absent,
+  390px CRM has no horizontal overflow, and no sends or production mutations
+  occurred.
+- `REQ-20260713-908` is done; next is `REQ-20260713-911`
+  instrumentation/regression gates. `REQ-20260713-906` remains blocked until
+  secure owner aliases are configured.

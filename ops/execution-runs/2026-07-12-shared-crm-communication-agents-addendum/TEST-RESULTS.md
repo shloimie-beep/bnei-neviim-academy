@@ -72,7 +72,16 @@
 - PASS `node scripts/smoke-onetime-provider-crm-layout-local.mjs`.
 - PASS `npm run one-time:provider-route-module-budget -- --base-ref HEAD`; report confirms overview no module load, CRM/mailbox/communications isolated route modules, no Operations assets, and `provider.html` -4,183 bytes.
 - PASS `npm run watchdog:actions`, `npm run secrets:audit`, and `npm run bna:run:validate`.
-- Pending: commit, push, deploy exact SHA, and live-smoke mailbox/messages module isolation.
+- Done: commit/push/deploy/live-smoke completed for mailbox/messages module isolation.
+
+## One Time Mailbox/Messages Route Modules Deployed - 2026-07-13
+
+- PASS `git push origin master` for `72650231e9d6eba9a367a59251cb58202f8910b1`.
+- PASS One Time Railway deploy/doctor: deployment `df3a27b2-a930-430d-b29d-0d8390b62a17` reached `SUCCESS`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 72650231e9d6eba9a367a59251cb58202f8910b1`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 72650231e9d6eba9a367a59251cb58202f8910b1`; report `ops/live-smokes/2026-07-13T06-59-53-991Z-onetime-provider-route-module-live-smoke.md`.
+- PASS live route-module proof: overview loads no route modules; CRM, mailbox, and communications each load only their own module; Operations CSS/JS are absent; 390px CRM has no horizontal overflow; failed/bad/console counts are 0/0/0; no external send or production mutation was attempted.
+- Remaining: start `REQ-20260713-911` instrumentation/regression gates.
 
 - PASS `node --check server.js`
 - PASS `node --check src/lib/integrations/resend-inbound-crm.js`

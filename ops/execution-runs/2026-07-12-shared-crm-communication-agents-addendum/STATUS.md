@@ -44,6 +44,7 @@ Current status: `active`
 - CRM route-module slice is locally verified: the CRM renderer now lives in `public/js/one-time-provider-crm-route.js`, default provider overview shows a route placeholder without loading CRM, active CRM loads only the CRM module, mailbox loads only after navigation, and `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` passed.
 - CRM route-module slice is also deployed/live-smoked on One Time at `a9447271e29ed0f30401b05f760f4d314f91c9a9`: Railway deployment `fac38cc0-23c4-4158-8556-4c11e6c95215` reached `SUCCESS`, exact-SHA One Time separate-instance smoke passed, and `ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md` confirms overview loads no route module, CRM loads only the CRM module, mailbox loads only its stub, Operations assets stay absent, and no sends or production mutations occurred.
 - Mailbox/messages route-module slice is locally verified: mailbox review and signed mailbox render/load/thread helpers live in `public/js/one-time-provider-mailbox-route.js`; One Time review messages live in `public/js/one-time-provider-communications-route.js`; expanded route-module budget passed across overview, CRM, mailbox, and communications with no Operations CSS/JS.
+- Mailbox/messages route-module slice is deployed/live-smoked on One Time at `72650231e9d6eba9a367a59251cb58202f8910b1`: Railway deployment `df3a27b2-a930-430d-b29d-0d8390b62a17` reached `SUCCESS`, exact-SHA One Time separate-instance smoke passed, and `ops/live-smokes/2026-07-13T06-59-53-991Z-onetime-provider-route-module-live-smoke.md` confirms overview loads no route module, CRM/mailbox/communications each load only their own module, Operations assets stay absent, 390px CRM has no horizontal overflow, and no sends or production mutations occurred.
 
 ## Completed In This Batch
 
@@ -74,9 +75,9 @@ Current status: `active`
   `ONE_TIME_OWNER_TEST_EMAIL` and `ONE_TIME_OWNER_TEST_WHATSAPP` or approved
   equivalent aliases must be configured through the approved secret path.
 - `REQ-20260713-906` owner-only live integration tests are blocked only on
-  missing secure owner-test aliases; continue `REQ-20260713-908` dedicated
-  One Time shell and `REQ-20260713-911` performance gates while those aliases
-  are configured.
+  missing secure owner-test aliases; continue `REQ-20260713-911` performance
+  gates and only return to `REQ-20260713-908` for broader critical-path proof
+  while those aliases are configured.
 - Main addendum implementation remains open across the One Time app shell,
   mobile CRM IA, performance gates, verifier, and remaining Rabbi
   Telegram/ticket-approval proof.

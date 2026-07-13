@@ -243,10 +243,10 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T09:55:00+03:00",
+      "updated_at": "2026-07-13T10:01:00+03:00",
       "can_continue_without_operator": true,
       "blocker": "",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "REQ-20260713-907"
       ],
@@ -269,7 +269,14 @@
         "ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md",
         "ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.json",
         "Third slice local proof: mailbox route module now owns the One Time mailbox review renderer and signed mailbox render/load/thread helpers; communications route module owns the One Time review messages renderer; default overview still loads no route modules; CRM, mailbox, and communications each load only their own route module.",
-        "Local route-module budget report records provider.html delta -4183 bytes versus 305018774ce8bbad1ac0d31a7e1df08718c2c413; mailbox route module 17126 bytes; communications route module 2845 bytes; no Operations CSS/JS and no failed/bad/console counts across overview, CRM, mailbox, and communications."
+        "Local route-module budget report records provider.html delta -4183 bytes versus 305018774ce8bbad1ac0d31a7e1df08718c2c413; mailbox route module 17126 bytes; communications route module 2845 bytes; no Operations CSS/JS and no failed/bad/console counts across overview, CRM, mailbox, and communications.",
+        "Third mailbox/messages route-module slice committed and pushed at 72650231e9d6eba9a367a59251cb58202f8910b1; BNA Railway deployment df40fa3c-cb42-4778-b3df-2c8779154036 reached SUCCESS and One Time Railway deployment df3a27b2-a930-430d-b29d-0d8390b62a17 reached SUCCESS.",
+        "Live One Time exact-SHA route-module smoke passed for https://join.onetimeonetime.com at 72650231e9d6eba9a367a59251cb58202f8910b1: overview loads no route modules; CRM loads only CRM; mailbox loads only mailbox; communications loads only communications; Operations CSS/JS absent; 390px CRM route no horizontal overflow; no sends or production mutations.",
+        "ops/live-smokes/2026-07-13T07-00-00-213Z-onetime-provider-route-module-live-smoke.md",
+        "ops/live-smokes/2026-07-13T07-00-00-213Z-onetime-provider-route-module-live-smoke.json",
+        "Third mailbox/communications route-module slice committed and pushed at 72650231e9d6eba9a367a59251cb58202f8910b1; One Time Railway deployment df3a27b2-a930-430d-b29d-0d8390b62a17 reached SUCCESS.",
+        "Live One Time exact-SHA separate-instance smoke passed for https://join.onetimeonetime.com at 72650231e9d6eba9a367a59251cb58202f8910b1.",
+        "Live provider route-module smoke passed after mailbox/messages extraction: default provider review route loaded no route modules; CRM, mailbox, and communications loaded only their own modules; Operations CSS/JS stayed absent; 390px CRM route had no horizontal overflow; no sends or production mutations occurred."
       ],
       "verification": [
         "node --check server.js PASS",
@@ -311,7 +318,14 @@
         "npm run one-time:provider-route-module-budget -- --base-ref HEAD PASS after mailbox/communications extraction",
         "npm run watchdog:actions PASS after mailbox/communications extraction",
         "npm run secrets:audit PASS after mailbox/communications extraction",
-        "npm run bna:run:validate PASS after mailbox/communications extraction"
+        "npm run bna:run:validate PASS after mailbox/communications extraction",
+        "git commit/push 72650231e9d6eba9a367a59251cb58202f8910b1 PASS on master",
+        "BNA railway:doctor PASS deployment df40fa3c-cb42-4778-b3df-2c8779154036 SUCCESS",
+        "One Time railway:doctor PASS deployment df3a27b2-a930-430d-b29d-0d8390b62a17 SUCCESS",
+        "BNA and One Time /api/deploy-info both returned 72650231e9d6eba9a367a59251cb58202f8910b1",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 72650231e9d6eba9a367a59251cb58202f8910b1 PASS",
+        "npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 72650231e9d6eba9a367a59251cb58202f8910b1 PASS",
+        "git push origin master PASS for 72650231e9d6eba9a367a59251cb58202f8910b1"
       ],
       "implementation_files": [
         "public/provider.html",
@@ -332,7 +346,9 @@
         "scripts/smoke-onetime-provider-route-module-live.mjs",
         "ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md",
         "ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.json",
-        "tests/provider-mailbox-portal.test.js"
+        "tests/provider-mailbox-portal.test.js",
+        "ops/live-smokes/2026-07-13T07-00-00-213Z-onetime-provider-route-module-live-smoke.md",
+        "ops/live-smokes/2026-07-13T07-00-00-213Z-onetime-provider-route-module-live-smoke.json"
       ],
       "deployment_required": true,
       "id": "REQ-20260713-908",
@@ -343,8 +359,8 @@
       ],
       "category": "frontend_architecture",
       "batch_id": "3-onetime-dedicated-app-shell",
-      "implementation_status": "In progress: first dedicated-shell routing slice and second CRM route-module slice are deployed/live-smoked; third mailbox/communications route-module slice is locally verified and ready for commit/push/deploy/live smoke. Normal One Time provider login and /provider.html?admin_provider=one-time serve the dedicated provider shell by default; scoped Operations fallback requires ops_fallback=1; CRM, mailbox, and communications route behavior now lives behind dedicated route modules without eager-loading inactive modules. Full REQ-20260713-908 remains open for deploy/live proof of this third slice plus REQ-20260713-911 instrumentation and regression budget gates.",
-      "next_action": "Commit, push, deploy, and live-smoke the mailbox/communications route-module slice. Then start REQ-20260713-911 instrumentation and budget gates; keep REQ-20260713-906 blocked until secure owner aliases exist.",
+      "implementation_status": "Done: dedicated One Time provider shell routing is deployed; scoped Operations fallback requires explicit ops_fallback=1; CRM, mailbox, and communications route behavior lives behind dedicated route modules; default overview does not eagerly load route modules; active CRM/mailbox/communications routes load only their own module; local budget and live exact-SHA route-module smokes passed; no external sends or production mutations occurred.",
+      "next_action": "Start REQ-20260713-911 instrumentation and regression budget gates; keep REQ-20260713-906 blocked until secure owner aliases exist.",
       "acceptance_criteria": [
         "One Time startup no longer requires the giant shared BNA Operations monolith on the critical path.",
         "The dedicated shell loads only the One Time shell, active route module, active workspace data, and genuinely needed shared primitives.",
@@ -352,6 +368,22 @@
         "Existing route and authentication contracts are preserved during migration.",
         "Fallback/rollback path is documented until proof supports removal.",
         "One Time exact-SHA deployment and live smoke pass with performance proof."
+      ],
+      "completion": {
+        "completed_at": "2026-07-13T10:01:00+03:00",
+        "completed_sha": "72650231e9d6eba9a367a59251cb58202f8910b1",
+        "deployed_sha": "72650231e9d6eba9a367a59251cb58202f8910b1",
+        "live_smoke": "ops/live-smokes/2026-07-13T07-00-00-213Z-onetime-provider-route-module-live-smoke.md"
+      },
+      "implementation_commit": "72650231e9d6eba9a367a59251cb58202f8910b1",
+      "pushed_commit": "72650231e9d6eba9a367a59251cb58202f8910b1",
+      "deployed_commit": "72650231e9d6eba9a367a59251cb58202f8910b1",
+      "deployment_evidence": [
+        "BNA Railway deployment df40fa3c-cb42-4778-b3df-2c8779154036 reached SUCCESS.",
+        "One Time Railway deployment df3a27b2-a930-430d-b29d-0d8390b62a17 reached SUCCESS.",
+        "BNA and One Time production /api/deploy-info returned commit_sha=72650231e9d6eba9a367a59251cb58202f8910b1.",
+        "One Time separate-instance exact-SHA smoke passed for 72650231e9d6eba9a367a59251cb58202f8910b1.",
+        "One Time provider route-module live smoke report ops/live-smokes/2026-07-13T07-00-00-213Z-onetime-provider-route-module-live-smoke.md passed with no sends or production mutations."
       ]
     },
     {
