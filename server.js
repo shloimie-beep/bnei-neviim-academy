@@ -16655,6 +16655,469 @@ CREATE TABLE IF NOT EXISTS bna_parent_leads (
 );
 `;
 
+const communicationAgentNoSecretsCheck = "(api[_-]?key|access[_-]?token|refresh[_-]?token|secret|password|credential)";
+
+const createCommunicationAgentModelSQL = `
+CREATE TABLE IF NOT EXISTS bna_communication_agents (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  workspace_key TEXT NOT NULL DEFAULT '',
+  project_key TEXT NOT NULL DEFAULT '',
+  agent_key TEXT NOT NULL,
+  display_name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  purpose TEXT NOT NULL,
+  audience TEXT NOT NULL DEFAULT 'provider_public',
+  status TEXT NOT NULL DEFAULT 'draft',
+  active_version_id INTEGER,
+  source_type TEXT NOT NULL DEFAULT 'config',
+  source_ref TEXT NOT NULL,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_by TEXT NOT NULL DEFAULT 'system',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (workspace_key, project_key, agent_key)
+);
+ALTER TABLE bna_communication_agents ADD COLUMN IF NOT EXISTS workspace_key TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_communication_agents ADD COLUMN IF NOT EXISTS project_key TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_communication_agents ADD COLUMN IF NOT EXISTS description TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_communication_agents ADD COLUMN IF NOT EXISTS active_version_id INTEGER;
+ALTER TABLE bna_communication_agents ADD COLUMN IF NOT EXISTS created_by TEXT NOT NULL DEFAULT 'system';
+ALTER TABLE bna_communication_agents DROP CONSTRAINT IF EXISTS bna_communication_agents_workspace_id_project_id_agent_key_key;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_communication_agents_key
+  ON bna_communication_agents(workspace_key, project_key, agent_key);
+ALTER TABLE bna_communication_agents DROP CONSTRAINT IF EXISTS bna_communication_agents_status_check;
+ALTER TABLE bna_communication_agents
+  ADD CONSTRAINT bna_communication_agents_status_check
+  CHECK (status IN ('draft', 'published', 'disabled', 'archived'));
+ALTER TABLE bna_communication_agents DROP CONSTRAINT IF EXISTS bna_communication_agents_no_secret_metadata_check;
+ALTER TABLE bna_communication_agents
+  ADD CONSTRAINT bna_communication_agents_no_secret_metadata_check
+  CHECK (metadata::text !~* '${communicationAgentNoSecretsCheck}');
+
+CREATE TABLE IF NOT EXISTS bna_communication_agent_versions (
+  id SERIAL PRIMARY KEY,
+  agent_id INTEGER NOT NULL REFERENCES bna_communication_agents(id) ON DELETE CASCADE,
+  version_key TEXT NOT NULL,
+  version INTEGER NOT NULL DEFAULT 1,
+  status TEXT NOT NULL DEFAULT 'draft',
+  system_prompt TEXT NOT NULL DEFAULT '',
+  instructions TEXT NOT NULL DEFAULT '',
+  personality_tone TEXT NOT NULL DEFAULT '',
+  allowed_capabilities JSONB NOT NULL DEFAULT '[]'::jsonb,
+  prohibited_capabilities JSONB NOT NULL DEFAULT '[]'::jsonb,
+  escalation_rules JSONB NOT NULL DEFAULT '{}'::jsonb,
+  language_policy JSONB NOT NULL DEFAULT '{}'::jsonb,
+  response_policy JSONB NOT NULL DEFAULT '{}'::jsonb,
+  model_config JSONB NOT NULL DEFAULT '{}'::jsonb,
+  prompt_json JSONB NOT NULL DEFAULT '{}'::jsonb,
+  policy_json JSONB NOT NULL DEFAULT '{}'::jsonb,
+  knowledge_snapshot_version TEXT,
+  knowledge_snapshot_hash TEXT,
+  publication_status TEXT NOT NULL DEFAULT 'draft',
+  published_by TEXT,
+  published_at TIMESTAMP,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (agent_id, version_key)
+);
+ALTER TABLE bna_communication_agent_versions ADD COLUMN IF NOT EXISTS version INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE bna_communication_agent_versions ADD COLUMN IF NOT EXISTS system_prompt TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_communication_agent_versions ADD COLUMN IF NOT EXISTS instructions TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_communication_agent_versions ADD COLUMN IF NOT EXISTS personality_tone TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_communication_agent_versions ADD COLUMN IF NOT EXISTS allowed_capabilities JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE bna_communication_agent_versions ADD COLUMN IF NOT EXISTS prohibited_capabilities JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE bna_communication_agent_versions ADD COLUMN IF NOT EXISTS escalation_rules JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE bna_communication_agent_versions ADD COLUMN IF NOT EXISTS language_policy JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE bna_communication_agent_versions ADD COLUMN IF NOT EXISTS response_policy JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE bna_communication_agent_versions ADD COLUMN IF NOT EXISTS model_config JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE bna_communication_agent_versions ADD COLUMN IF NOT EXISTS knowledge_snapshot_version TEXT;
+ALTER TABLE bna_communication_agent_versions ADD COLUMN IF NOT EXISTS publication_status TEXT NOT NULL DEFAULT 'draft';
+ALTER TABLE bna_communication_agent_versions ADD COLUMN IF NOT EXISTS published_by TEXT;
+ALTER TABLE bna_communication_agents DROP CONSTRAINT IF EXISTS bna_communication_agents_active_version_fk;
+ALTER TABLE bna_communication_agents
+  ADD CONSTRAINT bna_communication_agents_active_version_fk
+  FOREIGN KEY (active_version_id) REFERENCES bna_communication_agent_versions(id) ON DELETE SET NULL;
+ALTER TABLE bna_communication_agent_versions DROP CONSTRAINT IF EXISTS bna_communication_agent_versions_status_check;
+ALTER TABLE bna_communication_agent_versions
+  ADD CONSTRAINT bna_communication_agent_versions_status_check
+  CHECK (status IN ('draft', 'published', 'disabled', 'archived'));
+ALTER TABLE bna_communication_agent_versions DROP CONSTRAINT IF EXISTS bna_communication_agent_versions_publication_status_check;
+ALTER TABLE bna_communication_agent_versions
+  ADD CONSTRAINT bna_communication_agent_versions_publication_status_check
+  CHECK (publication_status IN ('draft', 'published', 'paused', 'disabled', 'archived'));
+ALTER TABLE bna_communication_agent_versions DROP CONSTRAINT IF EXISTS bna_communication_agent_versions_no_secret_prompt_check;
+ALTER TABLE bna_communication_agent_versions
+  ADD CONSTRAINT bna_communication_agent_versions_no_secret_prompt_check
+  CHECK (
+    allowed_capabilities::text !~* '${communicationAgentNoSecretsCheck}'
+    AND prohibited_capabilities::text !~* '${communicationAgentNoSecretsCheck}'
+    AND escalation_rules::text !~* '${communicationAgentNoSecretsCheck}'
+    AND language_policy::text !~* '${communicationAgentNoSecretsCheck}'
+    AND response_policy::text !~* '${communicationAgentNoSecretsCheck}'
+    AND model_config::text !~* '${communicationAgentNoSecretsCheck}'
+    AND prompt_json::text !~* '${communicationAgentNoSecretsCheck}'
+    AND policy_json::text !~* '${communicationAgentNoSecretsCheck}'
+    AND metadata::text !~* '${communicationAgentNoSecretsCheck}'
+  );
+
+CREATE TABLE IF NOT EXISTS bna_communication_agent_knowledge_sources (
+  id SERIAL PRIMARY KEY,
+  agent_id INTEGER NOT NULL REFERENCES bna_communication_agents(id) ON DELETE CASCADE,
+  version_id INTEGER REFERENCES bna_communication_agent_versions(id) ON DELETE CASCADE,
+  workspace_key TEXT NOT NULL DEFAULT '',
+  project_key TEXT NOT NULL DEFAULT '',
+  title TEXT NOT NULL DEFAULT '',
+  source_type TEXT NOT NULL,
+  source_ref TEXT NOT NULL,
+  approved_content JSONB NOT NULL DEFAULT '{}'::jsonb,
+  extracted_facts JSONB NOT NULL DEFAULT '[]'::jsonb,
+  visibility TEXT NOT NULL DEFAULT 'public',
+  snapshot_hash TEXT,
+  publication_status TEXT NOT NULL DEFAULT 'published',
+  checksum TEXT,
+  status TEXT NOT NULL DEFAULT 'active',
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE bna_communication_agent_knowledge_sources ADD COLUMN IF NOT EXISTS workspace_key TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_communication_agent_knowledge_sources ADD COLUMN IF NOT EXISTS project_key TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_communication_agent_knowledge_sources ADD COLUMN IF NOT EXISTS title TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_communication_agent_knowledge_sources ADD COLUMN IF NOT EXISTS approved_content JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE bna_communication_agent_knowledge_sources ADD COLUMN IF NOT EXISTS extracted_facts JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE bna_communication_agent_knowledge_sources ADD COLUMN IF NOT EXISTS publication_status TEXT NOT NULL DEFAULT 'published';
+ALTER TABLE bna_communication_agent_knowledge_sources ADD COLUMN IF NOT EXISTS checksum TEXT;
+ALTER TABLE bna_communication_agent_knowledge_sources DROP CONSTRAINT IF EXISTS bna_communication_agent_knowledge_visibility_check;
+ALTER TABLE bna_communication_agent_knowledge_sources
+  ADD CONSTRAINT bna_communication_agent_knowledge_visibility_check
+  CHECK (visibility IN ('public', 'workspace', 'owner_only', 'internal_review'));
+ALTER TABLE bna_communication_agent_knowledge_sources DROP CONSTRAINT IF EXISTS bna_communication_agent_knowledge_publication_status_check;
+ALTER TABLE bna_communication_agent_knowledge_sources
+  ADD CONSTRAINT bna_communication_agent_knowledge_publication_status_check
+  CHECK (publication_status IN ('draft', 'pending', 'approved', 'published', 'rejected', 'archived'));
+ALTER TABLE bna_communication_agent_knowledge_sources DROP CONSTRAINT IF EXISTS bna_communication_agent_knowledge_status_check;
+ALTER TABLE bna_communication_agent_knowledge_sources
+  ADD CONSTRAINT bna_communication_agent_knowledge_status_check
+  CHECK (status IN ('active', 'superseded', 'disabled', 'archived'));
+ALTER TABLE bna_communication_agent_knowledge_sources DROP CONSTRAINT IF EXISTS bna_communication_agent_knowledge_no_secret_metadata_check;
+ALTER TABLE bna_communication_agent_knowledge_sources
+  ADD CONSTRAINT bna_communication_agent_knowledge_no_secret_metadata_check
+  CHECK (
+    approved_content::text !~* '${communicationAgentNoSecretsCheck}'
+    AND extracted_facts::text !~* '${communicationAgentNoSecretsCheck}'
+    AND metadata::text !~* '${communicationAgentNoSecretsCheck}'
+  );
+
+CREATE TABLE IF NOT EXISTS bna_communication_agent_channel_bindings (
+  id SERIAL PRIMARY KEY,
+  agent_id INTEGER NOT NULL REFERENCES bna_communication_agents(id) ON DELETE CASCADE,
+  version_id INTEGER REFERENCES bna_communication_agent_versions(id) ON DELETE SET NULL,
+  agent_version_id INTEGER REFERENCES bna_communication_agent_versions(id) ON DELETE SET NULL,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  workspace_key TEXT NOT NULL DEFAULT '',
+  project_key TEXT NOT NULL DEFAULT '',
+  channel_id TEXT NOT NULL DEFAULT '',
+  channel TEXT NOT NULL,
+  provider TEXT NOT NULL,
+  channel_binding_key TEXT NOT NULL UNIQUE,
+  reply_mode TEXT NOT NULL DEFAULT 'capture_only',
+  outbox_channel_key TEXT,
+  create_contact_on_inbound BOOLEAN NOT NULL DEFAULT TRUE,
+  create_conversation_on_inbound BOOLEAN NOT NULL DEFAULT TRUE,
+  create_task_on_inbound BOOLEAN NOT NULL DEFAULT FALSE,
+  human_handoff_mode TEXT NOT NULL DEFAULT 'needs_human_badge',
+  channel_formatting_policy JSONB NOT NULL DEFAULT '{}'::jsonb,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  last_health_check TIMESTAMP,
+  last_error_redacted TEXT,
+  status TEXT NOT NULL DEFAULT 'active',
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE bna_communication_agent_channel_bindings ADD COLUMN IF NOT EXISTS agent_version_id INTEGER REFERENCES bna_communication_agent_versions(id) ON DELETE SET NULL;
+ALTER TABLE bna_communication_agent_channel_bindings ADD COLUMN IF NOT EXISTS workspace_key TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_communication_agent_channel_bindings ADD COLUMN IF NOT EXISTS project_key TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_communication_agent_channel_bindings ADD COLUMN IF NOT EXISTS channel_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_communication_agent_channel_bindings ADD COLUMN IF NOT EXISTS human_handoff_mode TEXT NOT NULL DEFAULT 'needs_human_badge';
+ALTER TABLE bna_communication_agent_channel_bindings ADD COLUMN IF NOT EXISTS channel_formatting_policy JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE bna_communication_agent_channel_bindings ADD COLUMN IF NOT EXISTS active BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE bna_communication_agent_channel_bindings ADD COLUMN IF NOT EXISTS last_health_check TIMESTAMP;
+ALTER TABLE bna_communication_agent_channel_bindings ADD COLUMN IF NOT EXISTS last_error_redacted TEXT;
+ALTER TABLE bna_communication_agent_channel_bindings DROP CONSTRAINT IF EXISTS bna_communication_agent_channel_bindings_channel_check;
+ALTER TABLE bna_communication_agent_channel_bindings
+  ADD CONSTRAINT bna_communication_agent_channel_bindings_channel_check
+  CHECK (channel IN ('email', 'whatsapp', 'telegram', 'web', 'sms'));
+ALTER TABLE bna_communication_agent_channel_bindings DROP CONSTRAINT IF EXISTS bna_communication_agent_channel_bindings_reply_mode_check;
+ALTER TABLE bna_communication_agent_channel_bindings
+  ADD CONSTRAINT bna_communication_agent_channel_bindings_reply_mode_check
+  CHECK (reply_mode IN ('off', 'capture_only', 'draft', 'approval_gated', 'live'));
+ALTER TABLE bna_communication_agent_channel_bindings DROP CONSTRAINT IF EXISTS bna_communication_agent_channel_bindings_status_check;
+ALTER TABLE bna_communication_agent_channel_bindings
+  ADD CONSTRAINT bna_communication_agent_channel_bindings_status_check
+  CHECK (status IN ('active', 'disabled', 'archived'));
+ALTER TABLE bna_communication_agent_channel_bindings DROP CONSTRAINT IF EXISTS bna_communication_agent_channel_bindings_handoff_check;
+ALTER TABLE bna_communication_agent_channel_bindings
+  ADD CONSTRAINT bna_communication_agent_channel_bindings_handoff_check
+  CHECK (human_handoff_mode IN ('off', 'needs_human_badge', 'notify_operator', 'approval_required'));
+ALTER TABLE bna_communication_agent_channel_bindings DROP CONSTRAINT IF EXISTS bna_communication_agent_channel_bindings_no_secret_metadata_check;
+ALTER TABLE bna_communication_agent_channel_bindings
+  ADD CONSTRAINT bna_communication_agent_channel_bindings_no_secret_metadata_check
+  CHECK (
+    channel_formatting_policy::text !~* '${communicationAgentNoSecretsCheck}'
+    AND metadata::text !~* '${communicationAgentNoSecretsCheck}'
+  );
+
+CREATE TABLE IF NOT EXISTS bna_communication_agent_events (
+  id BIGSERIAL PRIMARY KEY,
+  agent_id INTEGER REFERENCES bna_communication_agents(id) ON DELETE SET NULL,
+  version_id INTEGER REFERENCES bna_communication_agent_versions(id) ON DELETE SET NULL,
+  channel_binding_id INTEGER REFERENCES bna_communication_agent_channel_bindings(id) ON DELETE SET NULL,
+  communication_id INTEGER REFERENCES bna_communications(id) ON DELETE SET NULL,
+  event_type TEXT NOT NULL,
+  event_status TEXT NOT NULL DEFAULT 'logged',
+  summary TEXT,
+  redacted_metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  occurred_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE bna_communication_agent_events DROP CONSTRAINT IF EXISTS bna_communication_agent_events_status_check;
+ALTER TABLE bna_communication_agent_events
+  ADD CONSTRAINT bna_communication_agent_events_status_check
+  CHECK (event_status IN ('logged', 'proposed', 'queued', 'sent', 'failed', 'blocked', 'skipped'));
+ALTER TABLE bna_communication_agent_events DROP CONSTRAINT IF EXISTS bna_communication_agent_events_no_secret_metadata_check;
+ALTER TABLE bna_communication_agent_events
+  ADD CONSTRAINT bna_communication_agent_events_no_secret_metadata_check
+  CHECK (redacted_metadata::text !~* '${communicationAgentNoSecretsCheck}');
+
+CREATE INDEX IF NOT EXISTS idx_bna_communication_agents_scope
+  ON bna_communication_agents(workspace_key, project_key, status);
+CREATE INDEX IF NOT EXISTS idx_bna_communication_agent_versions_agent
+  ON bna_communication_agent_versions(agent_id, status, version_key DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_communication_agent_knowledge_agent
+  ON bna_communication_agent_knowledge_sources(agent_id, version_id, status);
+CREATE INDEX IF NOT EXISTS idx_bna_communication_agent_knowledge_scope
+  ON bna_communication_agent_knowledge_sources(workspace_key, project_key, publication_status);
+CREATE INDEX IF NOT EXISTS idx_bna_communication_agent_bindings_scope
+  ON bna_communication_agent_channel_bindings(workspace_key, project_key, channel, provider, active, status);
+CREATE INDEX IF NOT EXISTS idx_bna_communication_agent_events_agent
+  ON bna_communication_agent_events(agent_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_communication_agent_events_communication
+  ON bna_communication_agent_events(communication_id, occurred_at DESC);
+
+WITH one_time_scope AS (
+  SELECT ws.id AS workspace_id, p.id AS project_id
+  FROM bna_workspace_settings ws
+  JOIN bna_projects p ON p.project_key = 'one_time_mishnah_class'
+  WHERE ws.workspace_key = 'rabbi_sheller_provider'
+  LIMIT 1
+),
+upsert_agent AS (
+  INSERT INTO bna_communication_agents (
+    workspace_id, project_id, workspace_key, project_key, agent_key, display_name,
+    description, purpose, audience, status, source_type, source_ref, metadata, created_by
+  )
+  SELECT
+    workspace_id,
+    project_id,
+    'rabbi_sheller_provider',
+    'one_time_mishnah_class',
+    'one_time_parent_information_agent',
+    'Rabbi Scheller''s Digital Assistant',
+    'Public One Time communication agent for prospective families and schools.',
+    'Public One Time parent information, class-link consent, and lead capture assistant.',
+    'provider_public',
+    'published',
+    'service_provider_bot_profile',
+    'config/service-provider-bots/one-time.json',
+    jsonb_build_object('seed', 'REQ-20260712-309', 'storage_policy', 'external_provider_connectors_only'),
+    'system'
+  FROM one_time_scope
+  ON CONFLICT (workspace_key, project_key, agent_key) DO UPDATE SET
+    workspace_id = EXCLUDED.workspace_id,
+    project_id = EXCLUDED.project_id,
+    display_name = EXCLUDED.display_name,
+    description = EXCLUDED.description,
+    purpose = EXCLUDED.purpose,
+    audience = EXCLUDED.audience,
+    status = EXCLUDED.status,
+    source_type = EXCLUDED.source_type,
+    source_ref = EXCLUDED.source_ref,
+    updated_at = NOW()
+  RETURNING id, workspace_id, project_id
+),
+upsert_version AS (
+  INSERT INTO bna_communication_agent_versions (
+    agent_id, version_key, version, status, system_prompt, instructions,
+    personality_tone, allowed_capabilities, prohibited_capabilities,
+    escalation_rules, language_policy, response_policy, model_config,
+    prompt_json, policy_json, knowledge_snapshot_version, knowledge_snapshot_hash,
+    publication_status, published_by, published_at, metadata
+  )
+  SELECT
+    id,
+    '2026-07-13-v3',
+    3,
+    'published',
+    'You are Rabbi Scheller''s public One Time Mishnayos communication assistant. Use only approved public facts and deterministic server actions.',
+    'Answer public questions, collect signup/contact information, respect consent, and escalate unknown or private questions.',
+    'Warm, concise, clear, one question at a time on WhatsApp; structured and concise over email.',
+    jsonb_build_array('answer_public_program_questions', 'collect_signup_interest', 'request_class_link_delivery', 'create_or_update_crm_contact', 'escalate_to_operator'),
+    jsonb_build_array('access_private_rabbi_telegram', 'view_bna_records', 'send_without_binding', 'store_external_provider_values', 'invent_pricing_or_portal_claims', 'release_raw_class_link_to_model_context'),
+    jsonb_build_object('unknown_facts', 'route_to_human', 'support_or_safety', 'needs_human_badge'),
+    jsonb_build_object('default_language', 'en', 'follow_contact_language_when_clear', true),
+    jsonb_build_object('whatsapp', 'short_paragraphs_one_question', 'email', 'subject_greeting_signature', 'class_link_release', 'server_action_only'),
+    jsonb_build_object('provider', 'openai', 'model_policy', 'railway_runtime_reference_only', 'raw_key_stored', false),
+    jsonb_build_object('source', 'config/service-provider-bots/one-time.json', 'raw_class_link_in_model_context', false),
+    jsonb_build_object('reply_modes', jsonb_build_array('capture_only', 'draft'), 'no_direct_sends', true),
+    'one_time_parent_information_agent:2026-07-13-v3:config',
+    'config/service-provider-bots/one-time.json',
+    'published',
+    'system',
+    NOW(),
+    jsonb_build_object('seed', 'REQ-20260712-309')
+  FROM upsert_agent
+  ON CONFLICT (agent_id, version_key) DO UPDATE SET
+    version = EXCLUDED.version,
+    status = EXCLUDED.status,
+    system_prompt = EXCLUDED.system_prompt,
+    instructions = EXCLUDED.instructions,
+    personality_tone = EXCLUDED.personality_tone,
+    allowed_capabilities = EXCLUDED.allowed_capabilities,
+    prohibited_capabilities = EXCLUDED.prohibited_capabilities,
+    escalation_rules = EXCLUDED.escalation_rules,
+    language_policy = EXCLUDED.language_policy,
+    response_policy = EXCLUDED.response_policy,
+    model_config = EXCLUDED.model_config,
+    prompt_json = EXCLUDED.prompt_json,
+    policy_json = EXCLUDED.policy_json,
+    knowledge_snapshot_version = EXCLUDED.knowledge_snapshot_version,
+    knowledge_snapshot_hash = EXCLUDED.knowledge_snapshot_hash,
+    publication_status = EXCLUDED.publication_status,
+    published_by = COALESCE(bna_communication_agent_versions.published_by, EXCLUDED.published_by),
+    published_at = COALESCE(bna_communication_agent_versions.published_at, EXCLUDED.published_at),
+    updated_at = NOW()
+  RETURNING id, agent_id
+),
+upsert_knowledge AS (
+  INSERT INTO bna_communication_agent_knowledge_sources (
+    agent_id, version_id, workspace_key, project_key, title, source_type, source_ref,
+    approved_content, extracted_facts, visibility, snapshot_hash, publication_status,
+    checksum, status, metadata
+  )
+  SELECT
+    v.agent_id,
+    v.id,
+    'rabbi_sheller_provider',
+    'one_time_mishnah_class',
+    'One Time public program facts',
+    'service_provider_bot_profile',
+    'config/service-provider-bots/one-time.json',
+    jsonb_build_object(
+      'program', 'One Time Mishnayos with Rabbi Eli Scheller',
+      'schedule', 'Live every day at 7:00 p.m. Israel time',
+      'local_location', 'HaGaon MiVilna 8, Ramat Beit Shemesh Alef',
+      'signup_route', 'https://join.onetimeonetime.com/one-time/',
+      'class_link_policy', 'Current class link is released only through a deterministic server action after contact resolution and permission.'
+    ),
+    jsonb_build_array(
+      'Program: One Time Mishnayos with Rabbi Eli Scheller',
+      'Schedule: Live every day at 7:00 p.m. Israel time',
+      'Local class: HaGaon MiVilna 8, Ramat Beit Shemesh Alef',
+      'Audience: families, schools, English-speaking homeschoolers, and boys joining the applicable class',
+      'Class-link release is server-authorized after contact resolution and permission'
+    ),
+    'public',
+    'one_time_parent_information_agent:2026-07-13-v3:config',
+    'published',
+    'one-time-public-knowledge-2026-07-13-v3',
+    'active',
+    jsonb_build_object('seed', 'REQ-20260712-309')
+  FROM upsert_version v
+  WHERE NOT EXISTS (
+    SELECT 1
+    FROM bna_communication_agent_knowledge_sources ks
+    WHERE ks.agent_id = v.agent_id
+      AND ks.version_id = v.id
+      AND ks.source_type = 'service_provider_bot_profile'
+      AND ks.source_ref = 'config/service-provider-bots/one-time.json'
+  )
+  RETURNING id
+)
+INSERT INTO bna_communication_agent_channel_bindings (
+  agent_id, version_id, agent_version_id, workspace_id, project_id, workspace_key,
+  project_key, channel_id, channel, provider, channel_binding_key,
+  reply_mode, outbox_channel_key, create_contact_on_inbound, create_conversation_on_inbound,
+  create_task_on_inbound, human_handoff_mode, channel_formatting_policy, active,
+  last_health_check, last_error_redacted, status, metadata
+)
+SELECT
+  a.id,
+  v.id,
+  v.id,
+  a.workspace_id,
+  a.project_id,
+  'rabbi_sheller_provider',
+  'one_time_mishnah_class',
+  binding.channel_id,
+  binding.channel,
+  binding.provider,
+  'rabbi_sheller_provider:one_time_mishnah_class:' || binding.channel || ':one_time_parent_information_agent',
+  binding.reply_mode,
+  binding.outbox_channel_key,
+  TRUE,
+  TRUE,
+  FALSE,
+  'needs_human_badge',
+  binding.channel_formatting_policy,
+  TRUE,
+  NOW(),
+  NULL,
+  'active',
+  jsonb_build_object('seed', 'REQ-20260712-309', 'storage_policy', 'external_provider_connectors_only')
+FROM upsert_agent a
+JOIN upsert_version v ON v.agent_id = a.id
+CROSS JOIN (
+  VALUES
+    ('one_time_inbound_email', 'email', 'resend', 'draft', NULL, jsonb_build_object('format', 'email', 'subject_required', true, 'signature', 'concise')),
+    ('one_time_wapi', 'whatsapp', 'wapi', 'capture_only', 'whatsapp:one_time_agent_reply', jsonb_build_object('format', 'whatsapp', 'short_paragraphs', true, 'one_question_at_a_time', true))
+) AS binding(channel_id, channel, provider, reply_mode, outbox_channel_key, channel_formatting_policy)
+ON CONFLICT (channel_binding_key) DO UPDATE SET
+  version_id = EXCLUDED.version_id,
+  agent_version_id = EXCLUDED.agent_version_id,
+  workspace_id = EXCLUDED.workspace_id,
+  project_id = EXCLUDED.project_id,
+  workspace_key = EXCLUDED.workspace_key,
+  project_key = EXCLUDED.project_key,
+  channel_id = EXCLUDED.channel_id,
+  reply_mode = EXCLUDED.reply_mode,
+  outbox_channel_key = EXCLUDED.outbox_channel_key,
+  create_contact_on_inbound = TRUE,
+  create_conversation_on_inbound = TRUE,
+  create_task_on_inbound = FALSE,
+  human_handoff_mode = EXCLUDED.human_handoff_mode,
+  channel_formatting_policy = EXCLUDED.channel_formatting_policy,
+  active = TRUE,
+  last_health_check = EXCLUDED.last_health_check,
+  last_error_redacted = NULL,
+  status = 'active',
+  updated_at = NOW();
+
+UPDATE bna_communication_agents a
+SET active_version_id = v.id,
+    updated_at = NOW()
+FROM bna_communication_agent_versions v
+WHERE v.agent_id = a.id
+  AND a.workspace_key = 'rabbi_sheller_provider'
+  AND a.project_key = 'one_time_mishnah_class'
+  AND a.agent_key = 'one_time_parent_information_agent'
+  AND v.version_key = '2026-07-13-v3';
+`;
+
 const createContactCommunicationsSQL = `
 CREATE TABLE IF NOT EXISTS bna_contact_communications (
   id SERIAL PRIMARY KEY,
@@ -34648,6 +35111,7 @@ async function initDb() {
     await pool.query(createParentAccountabilityPipelinesSQL);
     await pool.query(createContactCommunicationsSQL);
     await pool.query(createPlatformCommunicationsSQL);
+    await pool.query(createCommunicationAgentModelSQL);
     await pool.query(createInAppNotificationsSQL);
     await pool.query(createServiceProvidersSQL);
     if (createServiceProviderScopesSQL) await pool.query(createServiceProviderScopesSQL);
