@@ -94,6 +94,22 @@ Current status: `active`
 - One Time exact-SHA landing, separate-instance, provider route-module, and interest dry-run smokes passed; BNA exact-SHA Operations workspace taxonomy smoke passed.
 - Owner-only send readiness was rerun after the WAPI update: Resend is send-ready and WAPI is ready with one-time scoped credentials, but secure owner-test email/WhatsApp aliases are still missing, so no owner email/WhatsApp send or public auto-reply activation occurred.
 
+## 2026-07-13 Communication Agents UI
+
+- `REQ-20260712-312` is Done.
+- Added the dedicated One Time provider route module `public/js/one-time-provider-agents-route.js`.
+- The One Time provider shell now exposes Communication Agents separately from Super Admin Build/QA agent runs.
+- The Agents index includes Communication Agents, Knowledge, Channels, Test, and Activity.
+- Opening Rabbi Scheller's Digital Assistant shows Overview, Instructions, Knowledge, Channels, Permissions, Test, and Activity.
+- Channel cards show WhatsApp and Email bindings with contact capture on, automatic tasks off, WhatsApp gated by readiness/live activation, and Email in draft mode.
+- The Test panel is no-send and blocks raw class-link, portal-access, arbitrary task, payment, access-grant, and credential actions.
+- Commit `f799b5818fe408c53f1888213bd74732883f13d0` is pushed to `origin/master`.
+- One Time Railway deployment `aef4fa28-75ea-4759-b45d-9d29409aec85` reached `SUCCESS`; `https://join.onetimeonetime.com/api/deploy-info` returned the exact commit and `target_app=one-time`.
+- BNA Railway deployment `6ce036ae-4a54-4d5b-a15d-927ddc1885e8` reached `SUCCESS`; `https://bneineviimacademy.org/api/deploy-info` returned the exact commit and `target_app=bna`.
+- One Time exact-SHA separate-instance and provider route-module smokes passed. Evidence: `ops/live-smokes/2026-07-13T15-47-15-724Z-onetime-provider-route-module-live-smoke.md`.
+- BNA Operations taxonomy smoke rerun is a credential-only local-process blocker in this temp worktree because `OPS_USERNAME` and `OPS_PASSWORD` are unavailable; BNA deploy-info and Railway doctor passed at the exact SHA.
+- Owner-only email/WhatsApp sends remain blocked by missing secure owner-test aliases, so no owner send, public auto-reply activation, credential mutation, CRM write, payment/access change, or provider mutation occurred in this slice.
+
 ## Completed In This Batch
 
 - Created run and register for the addendum.

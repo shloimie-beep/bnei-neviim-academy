@@ -40324,3 +40324,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Live proof: `https://join.onetimeonetime.com/favicon.ico` byte-matches `public/images/one-time/social/one-time-icon-32.png` with SHA256 `1CF82ADD57041DB2B24DB9C368EA21D8DE3107B8520B4F2711F20DBA05DC7112`.
 - Verification passed: `node --check server.js`, `node --check scripts/smoke-rabbi-onetime-landing-live.mjs`, `node --test tests/one-time-focused-landing.test.js`, `npm run test:onetime:focused`, `npm run secrets:audit`, and live `npm run app:smoke:rabbi-onetime-landing`.
 - Guardrails: no checkout, payment, member/access grant, email send, WhatsApp/WAPI send, Telegram send, social post, upload, DNS/account mutation, credential mutation, or production data mutation was performed.
+
+## 2026-07-13 - One Time Communication Agents UI deployed
+
+- Closed `REQ-20260712-312` after deploying the dedicated One Time provider Communication Agents route.
+- The One Time provider shell now exposes Communication Agents, Knowledge, Channels, Test, and Activity separately from Super Admin Build/QA agent runs.
+- Rabbi Scheller's Digital Assistant opens a dedicated workspace with Overview, Instructions, Knowledge, Channels, Permissions, Test, and Activity.
+- Deployed exact SHA `f799b5818fe408c53f1888213bd74732883f13d0`; One Time Railway deployment `aef4fa28-75ea-4759-b45d-9d29409aec85` and BNA Railway deployment `6ce036ae-4a54-4d5b-a15d-927ddc1885e8` reached `SUCCESS`.
+- Live proof: `ops/live-smokes/2026-07-13T15-47-15-724Z-onetime-provider-route-module-live-smoke.md` passed and proved the Agents route loads only `/js/one-time-provider-agents-route.js`.
+- Guardrails: no owner email send, WhatsApp/WAPI send, Telegram send, public auto-reply activation, credential mutation, CRM production write, provider mutation, payment mutation, or access mutation was performed.

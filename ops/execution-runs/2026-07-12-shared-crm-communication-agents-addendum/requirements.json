@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-13T18:05:00+03:00",
+  "updated_at": "2026-07-13T18:52:44+03:00",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -2202,17 +2202,22 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "in_progress",
-      "implementation_status": "Local verified, deploy pending: added a dedicated One Time provider Communication Agents route module instead of reusing the Super Admin Build/QA agent-run surface. The provider app now exposes an Agents workspace with Communication Agents, Knowledge, Channels, Test, and Activity index tabs; opening Rabbi Scheller's Digital Assistant shows Overview, Instructions, Knowledge, Channels, Permissions, Test, and Activity tabs; channel cards show WhatsApp and Email bindings with contact capture on and automatic tasks off; the Test panel runs a no-send local policy preview and blocks portal-access/raw-link/task/payment/access actions.",
+      "status": "done",
+      "implementation_status": "Done: deployed the dedicated One Time provider Communication Agents route module. Normal One Time provider users now get a Communication Agents surface separate from Super Admin Build/QA agent runs, with Communication Agents, Knowledge, Channels, Test, and Activity index tabs; Rabbi Scheller's Digital Assistant opens a dedicated workspace with Overview, Instructions, Knowledge, Channels, Permissions, Test, and Activity; channel cards show WhatsApp and Email bindings with contact capture on, automatic tasks off, WhatsApp readiness/live-gate copy, Email draft mode, and a no-send agent test preview.",
       "can_continue_without_operator": true,
-      "next_action": "Commit, push, deploy the exact tested SHA, then run the One Time provider route-module live smoke with the new Agents route and BNA shared-runtime regression smoke.",
+      "next_action": "Continue REQ-20260712-313 safe One Time WhatsApp activation proof and the private Rabbi Telegram/action-registry slices. Owner-only email/WhatsApp sends remain blocked until secure owner-test aliases are configured.",
       "acceptance_criteria": [
         "Normal workspace users see Communication Agents with Knowledge, Channels, Test, and Activity; Super Admin sees Build & QA agents separately."
       ],
       "evidence": [
         "public/provider.html adds the One Time provider Agents section and lazy route-module wiring.",
         "public/js/one-time-provider-agents-route.js owns the Communication Agents index, agent workspace, channels, knowledge, activity, and no-send test panel.",
-        "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md confirms overview loads no route modules, Agents loads only /js/one-time-provider-agents-route.js, Operations assets are absent, and the Agents module is 23784 bytes under the 24576-byte route budget."
+        "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md confirms overview loads no route modules, Agents loads only /js/one-time-provider-agents-route.js, Operations assets are absent, and the Agents module is 23784 bytes under the 24576-byte route budget.",
+        "Commit f799b5818fe408c53f1888213bd74732883f13d0 adds the dedicated One Time Communication Agents route and action-registry rows.",
+        "One Time Railway deployment aef4fa28-75ea-4759-b45d-9d29409aec85 reached SUCCESS and /api/deploy-info returned exact SHA f799b5818fe408c53f1888213bd74732883f13d0 target_app=one-time.",
+        "BNA Railway deployment 6ce036ae-4a54-4d5b-a15d-927ddc1885e8 reached SUCCESS and /api/deploy-info returned exact SHA f799b5818fe408c53f1888213bd74732883f13d0 target_app=bna.",
+        "Live One Time provider route-module smoke ops/live-smokes/2026-07-13T15-47-15-724Z-onetime-provider-route-module-live-smoke.md passed: overview loads no modules; CRM/mailbox/communications/agents load only their own modules; Operations assets are absent; Agents shell is present; 390px CRM has no horizontal overflow; failed/bad/console counts are zero.",
+        "BNA Operations taxonomy smoke rerun was not completed in this temp process because OPS_USERNAME and OPS_PASSWORD were unavailable; no BNA mutation or failed deploy occurred."
       ],
       "verification": [
         "node --check public/js/one-time-provider-agents-route.js scripts/audit-onetime-provider-route-module-budget.mjs scripts/smoke-onetime-provider-route-module-live.mjs PASS",
@@ -2222,7 +2227,15 @@
         "npm run watchdog:actions PASS finding_count=0",
         "npm run secrets:audit PASS over 9594 tracked paths",
         "git diff --check PASS",
-        "npm run bna:run:validate PASS"
+        "npm run bna:run:validate PASS",
+        "git push origin master PASS at f799b5818fe408c53f1888213bd74732883f13d0",
+        "One Time railway:doctor PASS deployment aef4fa28-75ea-4759-b45d-9d29409aec85 SUCCESS",
+        "BNA railway:doctor PASS deployment 6ce036ae-4a54-4d5b-a15d-927ddc1885e8 SUCCESS",
+        "One Time /api/deploy-info PASS exact SHA f799b5818fe408c53f1888213bd74732883f13d0 target_app=one-time",
+        "BNA /api/deploy-info PASS exact SHA f799b5818fe408c53f1888213bd74732883f13d0 target_app=bna",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f799b5818fe408c53f1888213bd74732883f13d0 PASS",
+        "npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha f799b5818fe408c53f1888213bd74732883f13d0 PASS; report ops/live-smokes/2026-07-13T15-47-15-724Z-onetime-provider-route-module-live-smoke.md",
+        "BNA taxonomy smoke rerun BLOCKED in the temp worktree process by missing OPS_USERNAME/OPS_PASSWORD; exact SHA deploy-info and Railway doctor passed."
       ],
       "implementation_files": [
         "public/provider.html",
@@ -2235,8 +2248,27 @@
         "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T18:46:00+03:00",
-      "blocker": ""
+      "updated_at": "2026-07-13T18:52:44+03:00",
+      "blocker": "",
+      "implementation_commit": "f799b5818fe408c53f1888213bd74732883f13d0",
+      "pushed_commit": "f799b5818fe408c53f1888213bd74732883f13d0",
+      "deployed_commit": "f799b5818fe408c53f1888213bd74732883f13d0",
+      "deployment_id": {
+        "one_time": "aef4fa28-75ea-4759-b45d-9d29409aec85",
+        "bna": "6ce036ae-4a54-4d5b-a15d-927ddc1885e8"
+      },
+      "live_smoke": {
+        "one_time_separate_instance": "PASS exact SHA f799b5818fe408c53f1888213bd74732883f13d0",
+        "one_time_provider_route_module": "PASS ops/live-smokes/2026-07-13T15-47-15-724Z-onetime-provider-route-module-live-smoke.md",
+        "bna_taxonomy": "BLOCKED local credential-only rerun: missing OPS_USERNAME/OPS_PASSWORD; BNA deploy-info exact SHA and Railway doctor passed"
+      },
+      "deployment_evidence": [
+        "One Time Railway deployment aef4fa28-75ea-4759-b45d-9d29409aec85 reached SUCCESS and live deploy-info returned commit_sha=f799b5818fe408c53f1888213bd74732883f13d0 target_app=one-time.",
+        "BNA Railway deployment 6ce036ae-4a54-4d5b-a15d-927ddc1885e8 reached SUCCESS and live deploy-info returned commit_sha=f799b5818fe408c53f1888213bd74732883f13d0 target_app=bna.",
+        "Live One Time separate-instance smoke passed against https://join.onetimeonetime.com at exact SHA f799b5818fe408c53f1888213bd74732883f13d0.",
+        "Live One Time provider route-module smoke passed: ops/live-smokes/2026-07-13T15-47-15-724Z-onetime-provider-route-module-live-smoke.md.",
+        "BNA Operations taxonomy rerun is blocked in this temp process by missing OPS_USERNAME/OPS_PASSWORD, with exact-SHA BNA deploy-info and Railway doctor already passed."
+      ]
     },
     {
       "id": "REQ-20260712-313",

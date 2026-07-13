@@ -9,6 +9,21 @@ Record deploy/live-smoke proof or blockers.
 - BNA deploys only when a shared runtime change actually requires BNA regression proof.
 - The final One Time closeout must prove exact tested SHA, exact One Time target, no unnecessary BNA assets on the One Time critical path, performance budgets, mobile CRM behavior, owner-only communication tests, privacy/workspace isolation, and rollback path.
 
+## 2026-07-13 Communication Agents UI Deploy
+
+- Commit: `f799b5818fe408c53f1888213bd74732883f13d0`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- One Time deploy: `npm run railway:redeploy` with One Time target profile.
+- One Time Railway doctor: deployment `aef4fa28-75ea-4759-b45d-9d29409aec85` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=f799b5818fe408c53f1888213bd74732883f13d0`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f799b5818fe408c53f1888213bd74732883f13d0` passed.
+- One Time provider route-module smoke: `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha f799b5818fe408c53f1888213bd74732883f13d0` passed; report `ops/live-smokes/2026-07-13T15-47-15-724Z-onetime-provider-route-module-live-smoke.md`.
+- BNA deploy: `npm run railway:redeploy` with BNA target profile.
+- BNA Railway doctor: deployment `6ce036ae-4a54-4d5b-a15d-927ddc1885e8` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=f799b5818fe408c53f1888213bd74732883f13d0`, `target_app=bna`.
+- BNA Operations taxonomy smoke rerun was blocked in this temp process by missing `OPS_USERNAME` and `OPS_PASSWORD`; no failed BNA deploy, BNA production mutation, or external write occurred.
+
 ## 2026-07-12 Batch 1 Deploy
 
 - Commit: `966ded41b517433533f24370949426cfd1200213`

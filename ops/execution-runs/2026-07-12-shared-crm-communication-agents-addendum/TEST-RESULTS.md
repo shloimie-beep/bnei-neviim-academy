@@ -131,6 +131,24 @@
 - PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T08-14-46-620Z-one-time-operations-crm-workbench-live-smoke.md`.
 - Done: `REQ-20260713-911` performance instrumentation/regression gates are deployed and live-verified; `REQ-20260713-910` remains blocked by missing owner-test aliases in `REQ-20260713-906`.
 
+## 2026-07-13 Communication Agents UI
+
+- PASS `node --check public/js/one-time-provider-agents-route.js scripts/audit-onetime-provider-route-module-budget.mjs scripts/smoke-onetime-provider-route-module-live.mjs`.
+- PASS `node --test tests/one-time-provider-review-navigation.test.js` (10/10).
+- PASS `node --test tests/communication-agent-model.test.js tests/communication-agent-response-runtime.test.js tests/one-time-focused-landing.test.js` (14/14).
+- PASS `npm run one-time:provider-route-module-budget -- --base-ref HEAD`; report `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` confirmed overview loads no route modules and Agents loads only `/js/one-time-provider-agents-route.js`.
+- PASS `npm run watchdog:actions`.
+- PASS `npm run secrets:audit`.
+- PASS `git diff --check`.
+- PASS `npm run bna:run:validate`.
+- PASS `git push origin master` for `f799b5818fe408c53f1888213bd74732883f13d0`.
+- PASS One Time Railway doctor: deployment `aef4fa28-75ea-4759-b45d-9d29409aec85` reached `SUCCESS`.
+- PASS BNA Railway doctor: deployment `6ce036ae-4a54-4d5b-a15d-927ddc1885e8` reached `SUCCESS`.
+- PASS live deploy-info readback: One Time and BNA both returned `commit_sha=f799b5818fe408c53f1888213bd74732883f13d0`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f799b5818fe408c53f1888213bd74732883f13d0`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha f799b5818fe408c53f1888213bd74732883f13d0`; report `ops/live-smokes/2026-07-13T15-47-15-724Z-onetime-provider-route-module-live-smoke.md`.
+- BLOCKED BNA Operations taxonomy rerun in this temp process only because `OPS_USERNAME` and `OPS_PASSWORD` are not available; BNA exact-SHA deploy-info and Railway doctor passed.
+
 - PASS `node --check server.js`
 - PASS `node --check src/lib/integrations/resend-inbound-crm.js`
 - PASS `node --test tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js` (19/19)
