@@ -1,9 +1,9 @@
 # Next Session
 
-Next unblocked batch: `5-one-time-channel-activation`
-Open requirement: `REQ-20260713-902`
+Next unblocked batch: `6-rabbi-telegram-private-agent`
+Open requirement: `REQ-20260713-903`
 
-Latest One Time form runtime SHA: `881f892523eb9a20137377882e2452e45cd581ca`
+Latest One Time runtime SHA: `9fb436760872bab77019b3769652c8b517025c8d`
 
 Current proof:
 
@@ -26,11 +26,14 @@ Current proof:
 - Link member is deployed under `REQ-20260712-303` through `8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`: Access/Family tabs expose `ACTION-CRM-LINK-MEMBER`, the explicit click creates only a disabled first-party member shell (`access_status=paused`, `access_enabled=false`) with no portal link, class link, library access, send, payment, import, or external CRM write, direct contact aggregate email fallback rollups are now project-scoped by workspace before showing communications, support, tasks, or membership, BNA deployment `91234f89-084d-4dc0-bc8b-4de7fbd33325` and One Time deployment `dc45500e-960c-4adf-8e78-dcb92a2a725c` reached `SUCCESS`, and the One Time live CRM workbench smoke passed.
 - One Time bot/landing polish v2 is deployed under `REQ-20260712-310` through `3712308731910a6e77fb9a18ce18b57ae35f22dd`: the WhatsApp bot profile version `2026-07-13-v2` explicitly says "We are not giving portal access yet," the public landing/signup header and yellow CTA polish is live, BNA deployment `77191e2f-0aaf-4fde-ae2c-cf69ce299af8` and One Time deployment `38d75556-5a94-42d3-b8b3-65a5a3290fe7` reached `SUCCESS`, both deploy-info endpoints returned the SHA, and One Time route/landing smokes plus deployed marker checks passed.
 - One Time signup-form P0 is deployed under `REQ-20260713-901` through `881f892523eb9a20137377882e2452e45cd581ca`: Family/School are real `audience_type` radios, reminders have no default, phone/consent validation is conditional, No reminders no longer requires consent or phone, server-side validation matches the form, canonical One Time CRM contact capture is wired, and zero automatic CRM tasks are created. One Time Railway deployment `35633776-51a0-4185-9bd0-61d73c187d45` reached `SUCCESS`; exact-SHA route smoke, browser no-write/intercept submit, and direct API dry-run passed.
+- One Time public WhatsApp agent profile/policy is deployed under `REQ-20260713-902` through `9fb436760872bab77019b3769652c8b517025c8d`: the public profile is `one_time_parent_information_agent` version `2026-07-13-v3`, display name `Rabbi Scheller's Digital Assistant`, approved public facts include the 7:00 p.m. Israel schedule, local RBS Alef address, canonical `/one-time/signup`, and `ACTION-ONETIME-GET-CURRENT-CLASS-LINK`; raw class links remain redacted from prompt/audit/metadata/log paths and are allowed only in final channel delivery after server-authorized class-info request/consent. One Time Railway deployment `eac01ac4-5589-4c24-b21f-5aea52aeb8d6` reached `SUCCESS`; exact-SHA One Time route smoke and public WhatsApp readiness readback passed.
+- Public WhatsApp live auto-reply activation remains blocked by `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` not equaling `APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
 - Cleanup note: one attempted synthetic live-write DB-readback created `bna_contacts:37` and `bna_parent_leads:22` and both were archived through the production CRM API with `no_send=true` and `external_write_performed=false`. Local DB-level outbox cancellation/readback is blocked because the usable One Time Railway database URL is internal-only from this machine, while the stale local Supabase URL still fails DNS.
 
 Continue by inspecting and repairing:
 
-- Wave 2 public One Time WhatsApp lead agent (`REQ-20260713-902`), using the deployed form as the signup/contact-capture baseline;
+- Wave 3 private Rabbi Telegram workspace agent (`REQ-20260713-903`), keeping it separate from the public WhatsApp lead agent;
+- Wave 4 Rabbi ticket to Super Admin approval flow (`REQ-20260713-904`);
 - continue remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`, especially family/student linking;
 - canonical CRM contact aggregate service boundaries;
 - list, aggregate, timeline, conversations, and tasks DTOs;

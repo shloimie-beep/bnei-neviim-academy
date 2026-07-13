@@ -281,3 +281,8 @@
 - PASS `npm run bna:run:validate`; broader addendum work remains open.
 - PASS `git diff --check` with line-ending warnings only after the public WhatsApp agent slice.
 - BLOCKED/EXPECTED `node scripts/check-onetime-wapi-readiness.mjs`: no-send/no-write readiness shows outbound configured, One Time scoped credentials, provider setup ready, auto-reply ready/enabled/approved, and class link configured, but Telegram notifications are blocked until `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
+- PASS `git push origin master` for public WhatsApp agent commit `9fb436760872bab77019b3769652c8b517025c8d`.
+- PASS One Time Railway redeploy and doctor; deployment `eac01ac4-5589-4c24-b21f-5aea52aeb8d6` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; deployed SHA `9fb436760872bab77019b3769652c8b517025c8d`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 9fb436760872bab77019b3769652c8b517025c8d`.
+- PASS live `GET https://join.onetimeonetime.com/api/one-time/public-whatsapp`; response identified `Rabbi Scheller's Digital Assistant`, scoped workspace/project, class-link configured, full number hidden, no WhatsApp send, and no external write.

@@ -39287,6 +39287,14 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verification passed: provider bot tests `10/10`, One Time helper isolation
   tests `11/11`, focused One Time suite `76/76`, syntax checks, action
   watchdog, secret audit, execution-run validation, and diff check.
+- Deployed commit `9fb436760872bab77019b3769652c8b517025c8d` to One Time
+  production.
+- One Time Railway deployment `eac01ac4-5589-4c24-b21f-5aea52aeb8d6` reached
+  `SUCCESS`, and live `/api/deploy-info` returned the deployed SHA.
+- Live proof passed: exact-SHA One Time separate-instance smoke and public
+  WhatsApp readiness readback with the new assistant identity, scoped
+  workspace/project, class link configured, hidden phone number, no WhatsApp
+  send, and no external write.
 - WAPI readiness remains no-send/no-write and reports the exact live-activation
   blocker: `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` must equal
   `APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.

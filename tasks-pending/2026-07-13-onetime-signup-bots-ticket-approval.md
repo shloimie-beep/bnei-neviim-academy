@@ -10,7 +10,7 @@
 | ID | Wave | Title | Status | Evidence |
 | --- | --- | --- | --- | --- |
 | REQ-20260713-901 | 1 | Reproduce, repair, deploy, and live-verify the One Time production signup form | Deployed; live-smoked | Deployed SHA `881f892523eb9a20137377882e2452e45cd581ca`; production browser no-write submit, direct API dry-run, and route smoke passed |
-| REQ-20260713-902 | 2 | Public One Time WhatsApp lead agent and approved public knowledge/class-link runtime | Implemented locally; live activation blocked by approval flag | `config/service-provider-bots/one-time.json` v3, `ACTION-ONETIME-GET-CURRENT-CLASS-LINK`, focused bot tests, One Time focused suite, action watchdog, secrets audit, and WAPI readiness check |
+| REQ-20260713-902 | 2 | Public One Time WhatsApp lead agent and approved public knowledge/class-link runtime | Deployed; live activation blocked by approval flag | `config/service-provider-bots/one-time.json` v3, `ACTION-ONETIME-GET-CURRENT-CLASS-LINK`, focused bot tests, One Time focused suite, action watchdog, secrets audit, WAPI readiness check, One Time deploy-info, route smoke, and public WhatsApp readiness readback |
 | REQ-20260713-903 | 3 | Private Rabbi Telegram workspace agent separated from public WhatsApp | Pending | Blocked behind Wave 1 launch blocker |
 | REQ-20260713-904 | 4 | Rabbi ticket to Super Admin approval to Codex job flow | Pending | Blocked behind Wave 1 launch blocker |
 | REQ-20260713-905 | 5 | Action-registry parity, full matrices, final deploy/proof | Pending | Blocked behind Waves 1-4 |
@@ -77,3 +77,6 @@
 - PASS `git diff --check` with line-ending warnings only.
 - WAPI readiness no-send check: outbound configured, One Time scoped credential configured, provider setup ready, auto-reply ready/enabled/approved, class link configured, and no write/send/mutation/secret print performed.
 - Remaining live activation blocker: `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` must equal `APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
+- Deployed code commit `9fb436760872bab77019b3769652c8b517025c8d` to One Time Railway deployment `eac01ac4-5589-4c24-b21f-5aea52aeb8d6`; Railway doctor reached `SUCCESS`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 9fb436760872bab77019b3769652c8b517025c8d`.
+- PASS live `https://join.onetimeonetime.com/api/one-time/public-whatsapp` readiness readback: assistant `Rabbi Scheller's Digital Assistant`, subtitle `Public One Time WhatsApp lead agent`, workspace `rabbi_sheller_provider`, project `one_time_mishnah_class`, class link configured, full number hidden, and no WhatsApp send/external write performed.

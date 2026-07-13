@@ -138,3 +138,7 @@
 - `ops/action-registry.json` - registers `ACTION-ONETIME-GET-CURRENT-CLASS-LINK` as the server-authorized WhatsApp class-link action with raw-link redaction requirements.
 - `tests/service-provider-lead-bot.test.js` - covers public facts, no stale portal/trial/pricing claims, consent/request class-link policy, redacted audit body, and server guard wiring.
 - WAPI readiness no-send proof - `node scripts/check-onetime-wapi-readiness.mjs` reports outbound configured, One Time scoped credentials, provider setup ready, auto-reply ready/enabled/approved, class link configured, and Telegram notification approval missing; no WhatsApp send, CRM mutation, external write, or secret print occurred.
+- One Time Railway deployment `eac01ac4-5589-4c24-b21f-5aea52aeb8d6` - public WhatsApp agent profile/policy code commit `9fb436760872bab77019b3769652c8b517025c8d` deployed and reached `SUCCESS`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=9fb436760872bab77019b3769652c8b517025c8d`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 9fb436760872bab77019b3769652c8b517025c8d` passed.
+- One Time public WhatsApp readiness readback - `https://join.onetimeonetime.com/api/one-time/public-whatsapp` returned the new public assistant identity, scoped workspace/project, class link configured, full number hidden, no WhatsApp send, and no external write.
