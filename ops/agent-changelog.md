@@ -40150,3 +40150,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   public auto-reply enablement, provider mutation, credential mutation,
   payment/access mutation, raw Telegram value logging, raw contact/message
   logging, or destructive production mutation was performed.
+
+## 2026-07-13 - One Time metadata DB/review bridge implemented locally
+
+- Advanced `REQ-20260713-917` by wiring the One Time transcript metadata and
+  bot-knowledge handoff contract into private class-session review fields,
+  admin class-package readback, and the approval-gated Vimeo folder-library
+  review-package payload.
+- The persisted review projection keeps schema version, title, Torah fields,
+  confidence, review states, hashes, blockers, and bullet counts, while
+  omitting raw transcript-derived bullet bodies from the handoff projection.
+- Verification passed: `node --check server.js`, `node --check
+  src/lib/bna/one-time-vimeo-folder-library.js`, focused review bridge suite
+  `15/15`, and consolidated One Time Drive/media/transcription/metadata/member
+  library suite `62/62`.
+- Remaining gates: deploy/live readback, explicit helper-knowledge promotion
+  approval path, Vimeo private upload/folder approval, member publication, and
+  blocked UI evidence remain separate requirements.
+- Guardrails: no database write, Vimeo upload, Drive write, helper-knowledge
+  write, member publication, external send, provider mutation, credential
+  mutation, payment/access mutation, raw transcript commit, or secret storage
+  was performed.

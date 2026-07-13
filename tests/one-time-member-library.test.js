@@ -28,6 +28,10 @@ test('One Time class sessions are the package anchor with additive publishing co
     'duration_seconds',
     'transcript_status',
     'transcript_notes',
+    'metadata_draft',
+    'metadata_review_state',
+    'bot_knowledge_handoff',
+    'bot_knowledge_status',
     'source_sheet_draft',
     'package_status',
     'updated_by',
@@ -38,6 +42,10 @@ test('One Time class sessions are the package anchor with additive publishing co
   assert.match(server, /CHECK \(media_provider IN \('vimeo', 'manual_url', 'drive', 'placeholder'\)\)/);
   assert.match(server, /bna_class_sessions_transcript_status_check/);
   assert.match(server, /bna_class_sessions_package_status_check/);
+  assert.match(server, /bna_class_sessions_metadata_review_state_check/);
+  assert.match(server, /bna_class_sessions_bot_knowledge_status_check/);
+  assert.match(server, /idx_bna_class_sessions_metadata_review_state/);
+  assert.match(server, /idx_bna_class_sessions_bot_knowledge_status/);
   assert.match(server, /project_key = '\$\{ONE_TIME_PROJECT_KEY\}'/);
 });
 
@@ -96,7 +104,12 @@ test('Member library API returns only published tier-visible safe items', () => 
   assert.match(helper, /publish_status = 'published'/);
   assert.match(helper, /libraryVisibilityAllowsMember\(item\.library_visibility, tier, item\.required_tier\)/);
   const publicView = sliceBetween(server, 'function oneTimeMemberLibraryPublicView', 'function normalizeOneTimeClassroomModerationStatus');
+  const classPackageView = sliceBetween(server, 'function buildOneTimeClassPackage', 'function isOneTimeEditableSlideAsset');
+  assert.match(classPackageView, /metadata_review/);
+  assert.match(classPackageView, /bot_knowledge/);
+  assert.match(classPackageView, /private_admin_only:[\s\S]*metadata_draft[\s\S]*bot_knowledge_handoff/);
   assert.doesNotMatch(publicView, /approval_flag|approved_by|rollback_metadata|transcript_notes|private_admin_only|package_status/);
+  assert.doesNotMatch(publicView, /metadata_draft|bot_knowledge_handoff|bot_knowledge_status|transcript_text/);
   assert.match(server, /const ONE_TIME_ASSET_TYPES = new Set\(\['worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'thumbnail', 'transcript', 'example', 'other'\]\)/);
   assert.match(server, /function isOneTimeEditableSlideAsset/);
   assert.match(server, /!\s*isOneTimeEditableSlideAsset\(asset\)/);
@@ -145,7 +158,7 @@ test('Public member page uses the safe access-code API and does not expose admin
   assert.match(memberLibraryHtml, /currentMemberSessionToken/);
   assert.match(memberLibraryHtml, /Authorization = `Bearer \$\{sessionToken\}`/);
   assert.match(memberLibraryHtml, /Current One Time access/);
-  assert.match(memberLibraryHtml, /Forgot parent password\?/);
+  assert.match(memberLibraryHtml, /Parent account setup\/reset/);
   assert.match(memberLibraryHtml, /There is no separate classroom or library password/);
   assert.doesNotMatch(memberLibraryHtml, /Use fallback access code|Fallback access code|support recovery code|Recovery-code/i);
   assert.match(memberLibraryHtml, /setAccessPanelState/);

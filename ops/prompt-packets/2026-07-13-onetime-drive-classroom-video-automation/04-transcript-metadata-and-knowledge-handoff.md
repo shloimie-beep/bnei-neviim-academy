@@ -9,8 +9,8 @@ Requirement: `REQ-20260713-917`
 Workspace/project:
 `rabbi_sheller_provider` / `one_time_mishnah_class`
 
-Status: local contract committed, pushed, and deployed; studio sidecar
-integration verified locally; DB promotion worker/review UI integration pending
+Status: local DB/review integration implemented; deploy/live readback pending;
+bot-knowledge promotion remains approval-gated
 
 ## Product Quality Compiler Expansion
 
@@ -98,6 +98,15 @@ commands, evidence paths, deploy/readback proof, blockers, and next packet.
 - Studio sidecars now include the metadata draft and blocked bot-knowledge
   handoff so the prepared video package can move forward without leaking raw
   transcript bodies into committed reports.
+- `bna_class_sessions` now has private admin review fields for
+  `metadata_draft`, `metadata_review_state`, `bot_knowledge_handoff`, and
+  `bot_knowledge_status`.
+- The One Time class package admin API now reads, creates, and patches those
+  private fields while member-library/public readback stays redacted.
+- The Vimeo folder-library review-package payload now maps studio sidecar
+  metadata/handoff artifacts into a safe review projection: title, Torah
+  fields, confidence, states, hashes, blockers, and bullet count, without
+  storing raw transcript-derived bullet bodies in the handoff projection.
 
 ## Files Changed
 
@@ -107,6 +116,10 @@ commands, evidence paths, deploy/readback proof, blockers, and next packet.
 | `tests/one-time-transcript-metadata.test.js` | Tests extraction, sidecar priority, review gates, approval blockers, provider-scoped handoff, and raw transcript omission. |
 | `src/lib/bna/one-time-vimeo-studio-pipeline.js` | Adds metadata draft and bot-knowledge handoff artifacts to the studio sidecar and redacted safe report. |
 | `tests/one-time-vimeo-studio-pipeline.test.js` | Proves sidecar compatibility and report redaction for metadata/handoff artifacts. |
+| `src/lib/bna/one-time-vimeo-folder-library.js` | Carries safe metadata/handoff review projections into approval-gated class-package payloads and DB upserts. |
+| `server.js` | Adds class-session schema/API fields for private metadata review and bot-handoff status readback. |
+| `tests/one-time-vimeo-folder-library-workflow.test.js` | Proves studio sidecars become scoped private review-package contracts without raw bullet leakage. |
+| `tests/one-time-member-library.test.js` | Proves class-session schema/readback fields exist and public/member readback does not expose private review fields. |
 
 ## Evidence
 
@@ -116,14 +129,22 @@ commands, evidence paths, deploy/readback proof, blockers, and next packet.
 | Syntax check for `src/lib/bna/one-time-transcript-metadata.js` | Passed. |
 | `node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js tests/one-time-transcript-metadata.test.js` | Passed 54/54 on 2026-07-13 after commit/push/deploy. |
 | `node --test tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-transcript-metadata.test.js tests/one-time-long-transcription.test.js tests/one-time-vimeo-folder-library-workflow.test.js` | Passed 36/36 after studio sidecar metadata/handoff wiring. |
+| `node --check server.js` | Passed after DB/review integration. |
+| `node --check src/lib/bna/one-time-vimeo-folder-library.js` | Passed after DB/review integration. |
+| `node --test tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-member-library.test.js` | Passed 15/15 after class-session review-package bridge. |
+| `node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js tests/one-time-transcript-metadata.test.js tests/one-time-member-library.test.js` | Passed 62/62 after DB/review integration. |
 | One Time deploy-info | `https://join.onetimeonetime.com/api/deploy-info` returned `a8df4c9b9cc091028105a16430aae6927cd0b429` with `target_app=one-time`; metadata contract commit `2bf0c0d0e31c969f67556e1ee163ff0b9aa56ce6` is an ancestor. |
 | One Time live smokes | `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha a8df4c9b9cc091028105a16430aae6927cd0b429` passed; `npm run app:smoke:onetime-provider-route-module -- --base-url https://join.onetimeonetime.com --expected-sha a8df4c9b9cc091028105a16430aae6927cd0b429` passed. |
 
 ## Not Done In This Packet
 
-- The metadata/handoff contract is not yet wired into class-session
-  persistence, helper knowledge table, or review UI.
-- No database write, bot knowledge promotion, Drive write, Vimeo upload, member
-  publication, or external send was made.
-- `REQ-20260713-917` remains open until DB/review integration and any approved
-  bot-knowledge promotion path are actually proven.
+- No production database write, helper-knowledge promotion, Drive write, Vimeo
+  upload, member publication, or external send was made.
+- The helper-knowledge promotion remains an explicit later approval path: this
+  packet persists the scoped handoff status but does not write
+  `bna_helper_knowledge_items`.
+- Server-visible deploy/live readback for the new class-session fields remains
+  pending.
+- Review UI remains part of `PKT-20260713-004-07`, which is still blocked by
+  authenticated Operations/member latest-video evidence and Vimeo/publication
+  gates.

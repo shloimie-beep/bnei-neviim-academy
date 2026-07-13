@@ -66683,6 +66683,43 @@ function oneTimeWapiAutoReplyMessage(botPlan = {}) {
   return String(botPlan.reply_body || '').trim();
 }
 
+function oneTimeWapiAgentReplyPayload({ replyBody = '', botPlan = {}, recipient = {} } = {}) {
+  const body = String(replyBody || '').trim();
+  const classLink = configuredOneTimeLiveClassUrl();
+  const classLinkReleased = botPlan?.class_link_released === true;
+  const payload = {
+    workflow: 'one_time_agent_reply',
+    contact_id: recipient.lead_id || null,
+    crm_lead_id: recipient.lead_id || null,
+    signup_id: recipient.signup_id || null,
+    student_id: recipient.student_id || null,
+    agent_key: botPlan?.profile_key || ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.profile_key,
+    agent_version: botPlan?.profile_version || ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.version,
+    intent: botPlan?.intent || 'unknown',
+    access_state: botPlan?.access_state || 'anonymous',
+    class_info_state: botPlan?.class_info_state || null,
+    class_link_action_id: botPlan?.class_link_action_id || null,
+    class_link_requested: botPlan?.class_link_requested === true,
+    class_link_released: classLinkReleased,
+    recipient_phone: recipient.lead_id ? '' : normalizeWapiRecipient(recipient.to || recipient.phone || ''),
+    recipient_hash: safeRecipientHash(recipient.to || recipient.phone || ''),
+    raw_class_link_in_payload: false,
+    raw_prompt_in_payload: false,
+    raw_api_key_in_payload: false,
+  };
+  if (classLinkReleased && classLink && body.includes(classLink)) {
+    return {
+      ...payload,
+      reply_text_template: body.split(classLink).join('{{CURRENT_CLASS_LINK}}'),
+      class_link_delivery_alias: 'current_one_time_class_link',
+    };
+  }
+  return {
+    ...payload,
+    reply_text: body,
+  };
+}
+
 function wapiInboundLooksLikeOptOut(text = '') {
   return /\b(stop|unsubscribe|remove me|wrong number|do not message|don't message)\b/i.test(String(text || ''));
 }
@@ -67121,43 +67158,56 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
   plan.claim_persisted_before_send = true;
 
   try {
-    const sendResult = await sendWapiTextMessage({
-      to: recipient.to,
-      body: replyBody,
-      typingTime: 1,
-      noLinkPreview: false,
-      workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
-      project_key: ONE_TIME_PROJECT_KEY,
+    const deliveryKey = `one-time:agent-reply:${communication?.id || normalized.messageId || safeRecipientHash(recipient.to)}:${plan.copy_version}:v1`;
+    const outboxRow = await upsertAssistantDeliveryOutboxEvent(db, {
+      delivery_key: deliveryKey,
+      idempotency_key: deliveryKey,
+      channel_key: 'whatsapp:one_time_agent_reply',
+      conversation_key: `one-time-wapi:${communication?.thread_key || safeRecipientHash(normalized.chatId || recipient.to)}`,
+      recipient_identity_key: safeRecipientHash(recipient.to || recipient.phone || ''),
+      payload: {
+        ...oneTimeWapiAgentReplyPayload({ replyBody, botPlan, recipient }),
+        inbound_communication_id: communication?.id || null,
+        inbound_wapi_message_id: normalized.messageId || null,
+        wapi_webhook_log_id: webhookLogId || null,
+        outbound_communication_attempt_id: attempt.id,
+        workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+        project_key: ONE_TIME_PROJECT_KEY,
+        delivery_subject: 'one_time_provider_lead_bot_reply',
+      },
     });
-    const safeSendResult = botPlan?.class_link_released
-      ? {
-          ...sendResult,
-          response: {
-            id: wapiResponseMessageId(sendResult?.response),
-            restricted_payload_redacted: true,
-          },
-        }
-      : sendResult;
     const outbound = await updateOutboundWapiCommunicationResult(attempt.id, {
-      sendResult: safeSendResult,
-      summary: `One Time WhatsApp auto-reply sent to ${recipient.name || recipient.phone || recipient.to}`.slice(0, 240),
+      summary: outboxRow?.created
+        ? `One Time WhatsApp auto-reply queued for delivery to ${recipient.name || recipient.phone || recipient.to}`.slice(0, 240)
+        : `One Time WhatsApp auto-reply was already queued for ${recipient.name || recipient.phone || recipient.to}`.slice(0, 240),
       metadata: {
         auto_reply_type: 'provider_lead_bot_reply',
+        delivery_status: 'queued',
+        outbox_status: outboxRow?.created ? 'queued' : 'already_queued',
+        outbox_delivery_key: deliveryKey,
+        outbox_id: outboxRow?.id || null,
         inbound_communication_id: communication?.id || null,
         provider_lead_bot_profile: plan.profile_key,
+        provider_lead_bot_profile_version: plan.copy_version,
         provider_lead_bot_intent: plan.intent,
         class_link_released: plan.class_link_released,
         raw_class_link_in_metadata: false,
+        external_write_performed: false,
       },
     }, db);
-    plan.status = 'sent';
-    plan.sent = true;
+    plan.status = outboxRow?.created ? 'queued_for_delivery_outbox' : 'skipped_existing_delivery_outbox';
+    plan.sent = false;
+    plan.outbox_status = outboxRow?.created ? 'queued' : 'already_queued';
+    plan.outbox_channel_key = 'whatsapp:one_time_agent_reply';
+    plan.outbox_delivery_key = deliveryKey;
+    plan.outbox_id = outboxRow?.id || null;
     plan.outbound_communication_id = outbound?.id || attempt.id;
+    plan.external_write_performed = false;
     await stampWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
     return plan;
   } catch (error) {
     const safeError = botPlan?.class_link_released
-      ? Object.assign(new Error('Restricted-link WAPI send failed; provider response omitted'), { statusCode: error.statusCode })
+      ? Object.assign(new Error('Restricted-link WAPI outbox queue failed; payload omitted'), { statusCode: error.statusCode })
       : error;
     const outbound = await updateOutboundWapiCommunicationResult(attempt.id, {
       error: safeError,
@@ -67167,11 +67217,14 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
         provider_lead_bot_profile: plan.profile_key,
         provider_lead_bot_intent: plan.intent,
         class_link_released: plan.class_link_released,
+        outbox_status: 'queue_failed',
         raw_class_link_in_metadata: false,
+        external_write_performed: false,
       },
     }, db).catch(() => null);
-    plan.status = 'failed';
+    plan.status = 'outbox_queue_failed';
     plan.sent = false;
+    plan.outbox_status = 'queue_failed';
     plan.outbound_communication_id = outbound?.id || attempt.id;
     plan.error = safeError.message;
     await stampWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);

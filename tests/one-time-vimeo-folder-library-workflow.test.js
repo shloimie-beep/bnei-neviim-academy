@@ -91,6 +91,57 @@ test('folder workflow blocks sidecar attempts to route outside One Time', async 
   assert.equal(report.external_write_performed, false);
 });
 
+test('studio metadata sidecar becomes a scoped private review-package contract', async () => {
+  const folder = tempDrop();
+  makeVideo(folder, 'metadata-contract-synthetic-test.mp4', {
+    metadata_draft: {
+      schema_version: 'one_time_transcript_metadata.v1',
+      title: 'Mishnah Berachos Perek 1 Mishnah 1',
+      torah_metadata: {
+        masechta: 'Berachos',
+        masechta_transliterated: 'Berakhot',
+        perek: '1',
+        mishnah_range: '1',
+        topics: ['Shema at night'],
+      },
+      confidence: 0.91,
+      review_state: 'machine_complete',
+      transcript_sha256: 'transcript-hash',
+      approved_for_member_publish: false,
+      approved_for_bot_knowledge: false,
+      raw_transcript_included: false,
+      description_bullets: ['Raw private transcript-derived sentence should not be stored here.'],
+    },
+    bot_knowledge_handoff: {
+      schema_version: 'one_time_bot_knowledge_handoff.v1',
+      status: 'blocked',
+      blockers: ['metadata_not_approved_for_bot_knowledge'],
+      no_raw_transcript_body: true,
+      transcript_sha256: 'transcript-hash',
+      metadata_schema_version: 'one_time_transcript_metadata.v1',
+      knowledge_item: null,
+    },
+  });
+
+  const candidate = workflow.buildCandidate(path.join(folder, 'metadata-contract-synthetic-test.mp4'), folder, {
+    secrets: ['secret-token'],
+  });
+  const payload = candidate.class_package_payload;
+  const serialized = JSON.stringify(payload);
+
+  assert.equal(payload.workspace_key, workflow.ONE_TIME_WORKSPACE_KEY);
+  assert.equal(payload.project_key, workflow.ONE_TIME_PROJECT_KEY);
+  assert.equal(payload.metadata_review_state, 'machine_complete');
+  assert.equal(payload.metadata_draft.schema_version, 'one_time_transcript_metadata.v1');
+  assert.equal(payload.metadata_draft.torah_metadata.masechta, 'Berachos');
+  assert.equal(payload.metadata_draft.description_bullets_count, 1);
+  assert.equal(payload.metadata_draft.description_bullets, undefined);
+  assert.equal(payload.bot_knowledge_status, 'blocked');
+  assert.equal(payload.bot_knowledge_handoff.no_raw_transcript_body, true);
+  assert.equal(payload.bot_knowledge_handoff.knowledge_item_ready, false);
+  assert.doesNotMatch(serialized, /Raw private transcript-derived sentence/);
+});
+
 test('Vimeo upload requires apply and exact upload confirmation', async () => {
   const folder = tempDrop();
   makeVideo(folder);
