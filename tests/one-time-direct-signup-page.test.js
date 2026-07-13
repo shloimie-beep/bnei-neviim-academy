@@ -64,6 +64,7 @@ test('One Time direct signup route, registries, and landing CTAs are canonical',
   assert.match(signupHtml, /data-one-time-direct-signup-form/);
   assert.match(signupHtml, /name="contact_name"/);
   assert.match(signupHtml, /name="signup_as"/);
+  assert.match(signupHtml, /name="audience_type"/);
   assert.match(signupHtml, /data-signup-type-picker/);
   assert.match(signupHtml, /data-signup-type-option[^>]+data-value="Family"/);
   assert.match(signupHtml, /data-signup-type-option[^>]+data-value="School"/);
@@ -73,6 +74,7 @@ test('One Time direct signup route, registries, and landing CTAs are canonical',
   assert.doesNotMatch(signupHtml, /<option value="Family">Family<\/option>/);
   assert.doesNotMatch(signupHtml, /<option value="School">School<\/option>/);
   assert.doesNotMatch(signupHtml, /data-signup-type-trigger|data-signup-type-menu/);
+  assert.match(signupHtml, /name="location"/);
   assert.match(signupHtml, /name="city_label"/);
   assert.match(signupHtml, /name="city_id"/);
   assert.match(signupHtml, /name="city_name"/);
@@ -83,19 +85,19 @@ test('One Time direct signup route, registries, and landing CTAs are canonical',
   assert.match(signupHtml, /name="browser_timezone"/);
   assert.match(signupHtml, /name="timezone_fallback"/);
   assert.doesNotMatch(signupHtml, /cityOptions|CITY_OPTIONS|Choose the matching city|unambiguous city/);
-  assert.match(signupHtml, /City, ZIP\/postal code, or area/);
+  assert.match(signupHtml, /City, country, ZIP\/postal code, or area/);
   assert.match(signupHtml, /No city list is required/);
   assert.match(signupHtml, /area code/);
   assert.match(signupHtml, /name="email"/);
   assert.match(signupHtml, /name="phone"/);
-  assert.match(signupHtml, /name="signup_acknowledgement"/);
+  assert.match(signupHtml, /name="reminder_consent"/);
   assert.match(signupHtml, /name="reminder_preference" value="email"/);
   assert.match(signupHtml, /name="reminder_preference" value="whatsapp"/);
   assert.match(signupHtml, /name="reminder_preference" value="both"/);
   assert.match(signupHtml, /name="reminder_preference" value="none"/);
-  assert.match(signupHtml, /Use my detected time zone for class times\. By choosing reminders, I agree to receive class updates and can stop them at any time\./);
+  assert.match(signupHtml, /Confirm that we may send the selected class information and reminders\./);
   assert.match(signupHtml, /\.consent-check input:checked::before/);
-  assert.match(signupHtml, /id="signupAcknowledgement"[^>]+required/);
+  assert.match(signupHtml, /id="reminderConsent"[^>]+disabled/);
   assert.match(signupHtml, /Required for WhatsApp reminders/);
   assert.match(signupHtml, /class="required-dot"/);
   assert.doesNotMatch(signupHtml, /Add a phone number if you want WhatsApp reminders/i);
@@ -148,18 +150,21 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
         requiredDotCount: document.querySelectorAll('.required-dot:not([hidden])').length,
         phoneDotVisible: !document.querySelector('[data-phone-required-dot]')?.hidden,
         phoneHintVisible: !document.querySelector('[data-phone-hint]')?.hidden,
-        acknowledgementRequired: Boolean(document.querySelector('input[name="signup_acknowledgement"]')?.required),
-        acknowledgementChecked: Boolean(document.querySelector('input[name="signup_acknowledgement"]')?.checked),
+        reminderConsentRequired: Boolean(document.querySelector('input[name="reminder_consent"]')?.required),
+        reminderConsentDisabled: Boolean(document.querySelector('input[name="reminder_consent"]')?.disabled),
+        reminderConsentHidden: Boolean(document.querySelector('[data-reminder-consent-field]')?.hidden),
+        reminderConsentChecked: Boolean(document.querySelector('input[name="reminder_consent"]')?.checked),
         phoneLabel: document.querySelector('label[for="phone"]')?.textContent || '',
         consentText: document.querySelector('.consent-copy')?.textContent || '',
         signupTypePickerVisible: Boolean(document.querySelector('[data-signup-type-picker]')?.offsetParent),
         signupTypeOptionCount: document.querySelectorAll('[data-signup-type-option]').length,
         signupTypeVisibleOptionCount: Array.from(document.querySelectorAll('[data-signup-type-option]')).filter((node) => Boolean(node.offsetParent)).length,
         signupTypeSelectCount: document.querySelectorAll('select[name="signup_as"]').length,
-        signupTypeValue: document.querySelector('input[name="signup_as"]')?.value || '',
-        cityList: document.querySelector('input[name="city_label"]')?.getAttribute('list') || '',
-        cityPlaceholder: document.querySelector('input[name="city_label"]')?.getAttribute('placeholder') || '',
-        cityHint: document.querySelector('input[name="city_label"]')?.closest('.field')?.querySelector('.field-hint')?.textContent || '',
+        signupTypeValue: document.querySelector('input[name="audience_type"]:checked')?.value || '',
+        signupAsHiddenValue: document.querySelector('input[name="signup_as"]')?.value || '',
+        cityList: document.querySelector('input[name="location"]')?.getAttribute('list') || '',
+        cityPlaceholder: document.querySelector('input[name="location"]')?.getAttribute('placeholder') || '',
+        cityHint: document.querySelector('input[name="location"]')?.closest('.field')?.querySelector('.field-hint')?.textContent || '',
         timezone: document.querySelector('input[name="timezone"]')?.value || '',
         localClassTime: document.querySelector('[data-local-class-time]')?.textContent || '',
       }));
@@ -169,41 +174,44 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
       assert.equal(metrics.phoneDotVisible, false, `phone dot hidden before WhatsApp selection at ${width}`);
       assert.equal(metrics.phoneHintVisible, false, `phone hint hidden before WhatsApp selection at ${width}`);
       assert.doesNotMatch(metrics.phoneLabel, /optional/i, `phone label has no optional copy at ${width}`);
-      assert.equal(metrics.acknowledgementRequired, true, `acknowledgement required at ${width}`);
-      assert.equal(metrics.acknowledgementChecked, false, `acknowledgement not prechecked at ${width}`);
+      assert.equal(metrics.reminderConsentRequired, false, `reminder consent not required before reminder selection at ${width}`);
+      assert.equal(metrics.reminderConsentDisabled, true, `reminder consent disabled before reminder selection at ${width}`);
+      assert.equal(metrics.reminderConsentHidden, true, `reminder consent hidden before reminder selection at ${width}`);
+      assert.equal(metrics.reminderConsentChecked, false, `reminder consent not prechecked at ${width}`);
       assert.equal(metrics.signupTypePickerVisible, true, `Family/School buttons visible at ${width}`);
       assert.equal(metrics.signupTypeOptionCount, 2, `Family/School button count at ${width}`);
       assert.equal(metrics.signupTypeVisibleOptionCount, 2, `Family/School visible button count at ${width}`);
       assert.equal(metrics.signupTypeSelectCount, 0, `no Family/School select at ${width}`);
       assert.equal(metrics.signupTypeValue, '', `Family/School starts unselected at ${width}`);
+      assert.equal(metrics.signupAsHiddenValue, '', `compat signup_as starts empty at ${width}`);
       assert.equal(metrics.cityList, '', `city field is free text at ${width}`);
       assert.match(metrics.cityPlaceholder, /ZIP\/postal code|area/i, `location placeholder accepts zip/area at ${width}`);
       assert.match(metrics.cityHint, /No city list is required/i, `location hint removes city-picker ambiguity at ${width}`);
       assert.equal(metrics.timezone, 'America/Buenos_Aires', `detected timezone stored at ${width}`);
       assert.match(metrics.localClassTime, /where you are/i, `local class time displays at ${width}`);
-      assert.match(metrics.consentText, /detected time zone/i, `consent line mentions detected timezone at ${width}`);
-      assert.match(metrics.consentText, /reminders/i, `consent line mentions reminders at ${width}`);
+      assert.match(metrics.consentText, /selected class information and reminders/i, `consent line mentions selected reminders at ${width}`);
       assert.ok(metrics.scrollWidth <= metrics.clientWidth + 1, `no horizontal overflow at ${width}`);
     }
 
     await page.setViewportSize({ width: 430, height: 920 });
     await page.goto(`${baseUrl}/one-time/signup`, { waitUntil: 'domcontentloaded' });
     await page.fill('input[name="contact_name"]', 'Leah Cohen');
-    await page.click('[data-signup-type-option][data-value="Family"]');
+    await page.check('input[name="audience_type"][value="family"]');
     assert.equal(await page.locator('input[name="signup_as"]').inputValue(), 'Family');
-    assert.equal(await page.locator('[data-signup-type-option][data-value="Family"]').getAttribute('aria-pressed'), 'true');
-    await page.fill('input[name="city_label"]', '11230');
-    await page.dispatchEvent('input[name="city_label"]', 'input');
+    assert.equal(await page.locator('input[name="audience_type"]:checked').inputValue(), 'family');
+    await page.fill('input[name="location"]', '11230');
+    await page.dispatchEvent('input[name="location"]', 'input');
     await page.fill('input[name="email"]', 'leah@example.invalid');
     await page.check('input[name="reminder_preference"][value="whatsapp"]');
     assert.equal(await page.locator('[data-phone-required-dot]').evaluate((node) => !node.hidden), true);
     assert.equal(await page.locator('[data-phone-hint]').evaluate((node) => !node.hidden && /Required for WhatsApp reminders/.test(node.textContent || '')), true);
+    assert.equal(await page.locator('input[name="reminder_consent"]').evaluate((node) => !node.disabled && node.required), true);
     await page.click('button[data-action-id="ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT"]');
     await page.waitForSelector('[data-error-for="phone"].visible');
     assert.equal(requests.length, 0, 'WhatsApp selection without phone does not submit');
 
     await page.fill('input[name="phone"]', '+1 732 555 0100');
-    await page.check('input[name="signup_acknowledgement"]');
+    await page.check('input[name="reminder_consent"]');
     await page.click('button[data-action-id="ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT"]');
     await page.waitForSelector('[data-success-panel].active');
     assert.equal(requests.length, 1, 'valid signup submits once');
@@ -215,6 +223,8 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
     assert.equal(payload.phone, '+1 732 555 0100');
     assert.equal(payload.whatsapp, '+1 732 555 0100');
     assert.equal(payload.source_landing_page, '/one-time/signup');
+    assert.equal(payload.source, 'one_time_public_signup');
+    assert.ok(payload.idempotency_key);
     assert.equal(payload.signup_mode, 'one_time_class_signup');
     assert.equal(payload.signup_acknowledgement, true);
     assert.equal(payload.reminder_consent_ack, true);
@@ -261,15 +271,14 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
 
     await page.goto(`${baseUrl}/one-time/signup`, { waitUntil: 'domcontentloaded' });
     await page.fill('input[name="contact_name"]', 'Bais Torah');
-    await page.click('[data-signup-type-option][data-value="School"]');
+    await page.check('input[name="audience_type"][value="school"]');
     assert.equal(await page.locator('input[name="signup_as"]').inputValue(), 'School');
-    assert.equal(await page.locator('[data-signup-type-option][data-value="School"]').getAttribute('aria-pressed'), 'true');
-    assert.equal(await page.locator('[data-signup-type-option][data-value="Family"]').getAttribute('aria-pressed'), 'false');
-    await page.fill('input[name="city_label"]', 'Lakewood');
-    await page.dispatchEvent('input[name="city_label"]', 'input');
+    assert.equal(await page.locator('input[name="audience_type"]:checked').inputValue(), 'school');
+    await page.fill('input[name="location"]', 'Lakewood');
+    await page.dispatchEvent('input[name="location"]', 'input');
     await page.fill('input[name="email"]', 'school@example.invalid');
     await page.check('input[name="reminder_preference"][value="email"]');
-    await page.check('input[name="signup_acknowledgement"]');
+    await page.check('input[name="reminder_consent"]');
     await page.click('button[data-action-id="ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT"]');
     await page.waitForSelector('[data-success-panel].active');
     assert.equal(requests.length, 2, 'valid school signup submits once');

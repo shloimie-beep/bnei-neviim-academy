@@ -25925,7 +25925,9 @@ async function upsertContactIdentity({ contactId, workspaceId = null, identityTy
 async function upsertContactFromSignup(signup = {}, db = pool) {
   const email = normalizeEmail(signup.parent_email);
   const phone = normalizePhoneDigits(signup.parent_phone);
-  const workspaceId = await getWorkspaceIdForProjectKey(signup.project_key || DEFAULT_PROJECT_KEY, db);
+  const projectKey = signup.project_key || DEFAULT_PROJECT_KEY;
+  const workspaceId = await getWorkspaceIdForProjectKey(projectKey, db);
+  const isOneTimeProject = projectKey === ONE_TIME_PROJECT_KEY;
   let existing = null;
   if (email || phone) {
     existing = (await db.query(
@@ -25943,12 +25945,20 @@ async function upsertContactFromSignup(signup = {}, db = pool) {
     )).rows[0] || null;
   }
 
-  const tags = ['signup', 'parent', 'bna'].filter(Boolean);
+  const tags = isOneTimeProject
+    ? ['one-time', 'one-time-public-signup', 'one-time-direct-signup'].filter(Boolean)
+    : ['signup', 'parent', 'bna'].filter(Boolean);
   const metadata = {
+    ...(signup.metadata && typeof signup.metadata === 'object' && !Array.isArray(signup.metadata) ? signup.metadata : {}),
     signup_id: signup.id || null,
+    product_lead_id: signup.product_lead_id || null,
+    parent_lead_id: signup.parent_lead_id || null,
     student_name: signup.student_name || null,
-    source: 'website_signup',
+    project_key: projectKey,
+    source: isOneTimeProject ? 'one_time_public_signup' : 'website_signup',
   };
+  const source = isOneTimeProject ? 'one_time_public_signup' : 'website_signup';
+  const status = isOneTimeProject ? 'lead' : 'signup';
   const result = existing
     ? await db.query(
         `UPDATE bna_contacts
@@ -25956,8 +25966,8 @@ async function upsertContactFromSignup(signup = {}, db = pool) {
              full_name = COALESCE(NULLIF($2, ''), full_name),
              primary_email = COALESCE(NULLIF($3, ''), primary_email),
              primary_phone = COALESCE(NULLIF($4, ''), primary_phone),
-             status = CASE WHEN status IS NULL OR status = 'lead' THEN 'signup' ELSE status END,
-             source = COALESCE(source, 'website_signup'),
+              status = CASE WHEN status IS NULL OR status IN ('lead', 'signup') THEN $8 ELSE status END,
+              source = COALESCE(source, $9),
              tags = (
                SELECT ARRAY(
                  SELECT DISTINCT tag_value
@@ -25969,14 +25979,14 @@ async function upsertContactFromSignup(signup = {}, db = pool) {
              updated_at = NOW()
          WHERE id = $7
          RETURNING *`,
-        [workspaceId, signup.parent_name || '', email || '', signup.parent_phone || '', tags, JSON.stringify(metadata), existing.id]
+        [workspaceId, signup.parent_name || '', email || '', signup.parent_phone || '', tags, JSON.stringify(metadata), existing.id, status, source]
       )
     : await db.query(
         `INSERT INTO bna_contacts (
            workspace_id, full_name, primary_email, primary_phone, status, source, tags, metadata
-         ) VALUES ($1, $2, $3, $4, 'signup', 'website_signup', $5, $6::jsonb)
-         RETURNING *`,
-        [workspaceId, signup.parent_name || null, email || null, signup.parent_phone || null, tags, JSON.stringify(metadata)]
+          ) VALUES ($1, $2, $3, $4, $7, $8, $5, $6::jsonb)
+          RETURNING *`,
+        [workspaceId, signup.parent_name || null, email || null, signup.parent_phone || null, tags, JSON.stringify(metadata), status, source]
       );
   const contact = result.rows[0] || null;
   if (contact) {
@@ -81384,6 +81394,91 @@ async function createOneTimeProductLead(input = {}, db = pool) {
       )).rows[0];
     }
 
+    let canonicalContact = null;
+    if (directSignup) {
+      canonicalContact = await upsertContactFromSignup({
+        id: productRow.id,
+        product_lead_id: productRow.id,
+        parent_lead_id: crmLead.id,
+        parent_name: lead.parent_name,
+        parent_email: parentEmail,
+        parent_phone: parentPhone,
+        project_key: ONE_TIME_PROJECT_KEY,
+        metadata: {
+          source: 'one_time_direct_signup',
+          source_landing_page: productRow.source_landing_page || '/one-time/signup',
+          product_lead_id: productRow.id,
+          parent_lead_id: crmLead.id,
+          program_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
+          audience_type: lead.metadata?.audience_type || null,
+          family_school_classification: lead.metadata?.family_school_classification || null,
+          signup_as: lead.metadata?.signup_as || null,
+          city: lead.metadata?.city || null,
+          timezone: lead.timezone || null,
+          reminder_preference: lead.metadata?.reminder_preference || null,
+          reminder_channels: lead.metadata?.reminder_channels || [],
+          reminder_consent_at: lead.metadata?.reminder_consent_at || null,
+          no_automatic_crm_task_created: true,
+        },
+      }, runner);
+      if (canonicalContact?.id) {
+        await runner.query(
+          `UPDATE bna_product_leads
+           SET metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+               updated_at = NOW()
+           WHERE id = $1`,
+          [productRow.id, JSON.stringify({
+            canonical_contact_id: canonicalContact.id,
+            canonical_contact_key: `bna_contacts:${canonicalContact.id}`,
+          })]
+        );
+        await runner.query(
+          `UPDATE bna_parent_leads
+           SET metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+               updated_at = NOW()
+           WHERE id = $1`,
+          [crmLead.id, JSON.stringify({
+            canonical_contact_id: canonicalContact.id,
+            canonical_contact_key: `bna_contacts:${canonicalContact.id}`,
+          })]
+        );
+        await runner.query(
+          `INSERT INTO bna_communications (
+             workspace_id, project_id, contact_id, provider_id, channel, direction,
+             communication_type, from_name, from_address, subject, body_text,
+             provider, status, metadata
+           ) VALUES (
+             $1, $2, $3, NULL, 'web', 'inbound',
+             'one_time_public_signup', $4, $5, $6, $7,
+             'one_time_signup_form', 'logged', $8::jsonb
+           )
+           ON CONFLICT DO NOTHING`,
+          [
+            canonicalContact.workspace_id || null,
+            project.id,
+            canonicalContact.id,
+            limitText(lead.parent_name || '', 180),
+            parentEmail || null,
+            'One Time public signup',
+            limitText('One Time public signup captured. No automatic CRM task, portal login, payment, checkout, or access grant was created.', 1000),
+            JSON.stringify({
+              source: 'one_time_direct_signup',
+              product_lead_id: productRow.id,
+              parent_lead_id: crmLead.id,
+              canonical_contact_key: `bna_contacts:${canonicalContact.id}`,
+              reminder_preference: lead.metadata?.reminder_preference || null,
+              no_automatic_crm_task_created: true,
+              no_portal_onboarding: true,
+              no_member_login_created: true,
+              no_checkout: true,
+              no_payment: true,
+              no_access_granted: true,
+            }),
+          ]
+        );
+      }
+    }
+
     await runner.query(
       `INSERT INTO bna_contact_communications (
          project_id, contact_type, lead_id, channel, direction,
@@ -81433,8 +81528,10 @@ async function createOneTimeProductLead(input = {}, db = pool) {
     return {
       ...oneTimeProductLeadView(productRow),
       product_lead_created: productLeadCreated,
+      canonical_contact_id: canonicalContact?.id ? Number(canonicalContact.id) : null,
+      contact_key: canonicalContact?.id ? `bna_contacts:${canonicalContact.id}` : null,
       crm_lead_id: crmLead.id ? Number(crmLead.id) : null,
-      crm_source_table: 'bna_parent_leads',
+      crm_source_table: canonicalContact?.id ? 'bna_contacts' : 'bna_parent_leads',
       internal_crm_recorded: true,
       internal_follow_up_required: !directSignup,
       direct_signup_workflow: directSignup,
@@ -82621,6 +82718,12 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
     res.json({
       success: true,
       lead,
+      contact_key: lead.contact_key || (lead.canonical_contact_id ? `bna_contacts:${lead.canonical_contact_id}` : null),
+      signup_key: lead.id ? `bna_product_leads:${lead.id}` : null,
+      confirmation_queued: lead.confirmation_email_queued === true || lead.whatsapp_confirmation_queued === true,
+      reminder_preference: lead.metadata?.reminder_preference || lead.reminder_preference || null,
+      next_path: '/one-time',
+      duplicate_submission: lead.product_lead_created === false,
       no_send: true,
       no_checkout: true,
       no_access_granted: true,
@@ -82652,10 +82755,17 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
       internal_operator_notification_attempted: !skipTelegramReminder,
       external_write_performed: false,
       message: directSignup
-        ? "You're signed up. Check your email for the class link."
+        ? "You're signed up. We saved your information and will send the current class details using your selected option."
         : 'Your One Time signup was saved. Continue onboarding so the team can review the right next step.',
     });
   } catch (err) {
+    if (err.code === 'VALIDATION_ERROR' || err.field_errors) {
+      return res.status(err.statusCode || 400).json({
+        success: false,
+        code: 'VALIDATION_ERROR',
+        field_errors: err.field_errors || { form: err.message || 'Please correct the signup form.' },
+      });
+    }
     res.status(err.statusCode || 500).json({ success: false, error: err.message });
   }
 });

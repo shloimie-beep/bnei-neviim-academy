@@ -256,3 +256,11 @@
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`.
 - PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T00-11-08-626Z-one-time-operations-crm-workbench-live-smoke.md`.
 - PASS read-only deployed JS/HTML marker checks for `ACTION-CRM-LINK-MEMBER`, `linkFirstPartyCrmMember`, `data-crm-member-link-state`, `access_status: 'paused'`, and `access_enabled: false`.
+- PASS `node --check server.js`, `node --check src/lib/bna/one-time-signup-workflow.js`, and `node --check scripts/diagnose-onetime-signup-production.mjs` after the One Time signup P0 repair.
+- PASS `node --test tests/one-time-signup-form-matrix.test.js tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js` (17/17) after the One Time signup P0 repair.
+  - Covers Family/School + Email without phone, Family/School + No reminders without phone/consent, WhatsApp/Both phone errors, WhatsApp/Both valid phone + consent success, missing audience/location/reminder, invalid email, switching WhatsApp to Email, switching Email to No reminders, Family/School toggling, double-click submit, server validation recovery, mobile 430/390, and keyboard-only completion.
+- PASS `npm run test:onetime:focused` (76/76) after the One Time signup P0 repair.
+- PASS `npm run watchdog:actions` with `finding_count=0` after updating `ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT` and Family/School radio registry coverage.
+- PASS `npm run secrets:audit` after the One Time signup P0 repair.
+- PASS `npm run bna:run:validate` after the One Time signup P0 repair; broader addendum work remains open.
+- PASS `git diff --check` with line-ending warnings only after the One Time signup P0 repair.

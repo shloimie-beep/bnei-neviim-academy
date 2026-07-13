@@ -170,6 +170,17 @@ const REMINDER_PREFERENCES = Object.freeze({
   },
 });
 
+const ONE_TIME_SIGNUP_FIELD_MESSAGES = Object.freeze({
+  contact_name: 'Enter the parent or contact name.',
+  email_missing: 'Enter an email address.',
+  email_invalid: 'Enter a valid email address.',
+  audience_type: 'Choose Family or School.',
+  location: 'Enter your city or location.',
+  reminder_preference: 'Choose Email, WhatsApp, Both, or No reminders.',
+  phone: 'Enter a WhatsApp number or choose a different reminder option.',
+  reminder_consent: 'Confirm that we may send the selected class information and reminders.',
+});
+
 function compact(value = '') {
   return String(value || '').replace(/\s+/g, ' ').trim();
 }
@@ -193,6 +204,14 @@ function assertPublicSignupError(condition, message, statusCode = 400) {
   const error = new Error(message);
   error.statusCode = statusCode;
   throw error;
+}
+
+function oneTimeSignupValidationError(fieldErrors = {}) {
+  const error = new Error(Object.values(fieldErrors)[0] || 'Please correct the signup form.');
+  error.statusCode = 400;
+  error.code = 'VALIDATION_ERROR';
+  error.field_errors = fieldErrors;
+  return error;
 }
 
 function normalizeIanaTimezone(value = '') {
@@ -258,9 +277,10 @@ function normalizeReminderPreference(value) {
     none: 'none',
   }[normalized];
   if (!alias || !REMINDER_PREFERENCES[alias]) {
-    const error = new Error('Choose a class reminder preference.');
+    const error = new Error(ONE_TIME_SIGNUP_FIELD_MESSAGES.reminder_preference);
     error.statusCode = 400;
     error.code = 'missing_reminder_preference';
+    error.field_errors = { reminder_preference: ONE_TIME_SIGNUP_FIELD_MESSAGES.reminder_preference };
     throw error;
   }
   return REMINDER_PREFERENCES[alias];
@@ -278,10 +298,18 @@ function normalizeSignupAs(value = '') {
   const normalized = compact(value).toLowerCase();
   if (normalized === 'family') return 'Family';
   if (normalized === 'school') return 'School';
-  const error = new Error('Choose whether you are signing up as a family or a school.');
+  const error = new Error(ONE_TIME_SIGNUP_FIELD_MESSAGES.audience_type);
   error.statusCode = 400;
   error.code = 'missing_signup_as';
+  error.field_errors = { audience_type: ONE_TIME_SIGNUP_FIELD_MESSAGES.audience_type };
   throw error;
+}
+
+function normalizeSignupAsLoose(value = '') {
+  const normalized = compact(value).toLowerCase();
+  if (normalized === 'family') return 'Family';
+  if (normalized === 'school') return 'School';
+  return '';
 }
 
 function normalizeSignupUtm(input = {}) {
@@ -298,42 +326,101 @@ function normalizeSignupUtm(input = {}) {
   return utm;
 }
 
-function buildOneTimeSignupLeadInput(input = {}, { now = new Date() } = {}) {
-  const contactName = compact(input.contact_name || input.contactName || input.parent_name || input.parentName || input.name);
-  const signupAs = normalizeSignupAs(input.signup_as || input.signupAs || input.audience_type || input.audienceType);
-  const city = resolveOneTimeCitySelection(input);
-  const email = normalizeEmail(input.email || input.parent_email || input.parentEmail);
-  const phone = compact(input.phone || input.parent_phone || input.parentPhone || input.whatsapp || input.whatsapp_phone || input.whatsappPhone);
-  const preference = normalizeReminderPreference(input.reminder_preference || input.reminderPreference || input.class_reminders || input.classReminders);
+function validateOneTimeSignupInput(input = {}, { now = new Date() } = {}) {
   const inputMetadata = input.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata)
     ? input.metadata
     : {};
-  const acknowledgementGiven = isExplicitTrue(input.signup_acknowledgement)
-    || isExplicitTrue(input.signupAcknowledgement)
-    || isExplicitTrue(input.location_time_acknowledgement)
-    || isExplicitTrue(inputMetadata.signup_acknowledgement)
-    || isExplicitTrue(inputMetadata.location_time_acknowledgement);
-  const recurringConsentGiven = acknowledgementGiven && (
-    isExplicitTrue(input.reminder_consent_ack)
+  const contactName = compact(input.contact_name || input.contactName || input.parent_name || input.parentName || input.name);
+  const signupAs = normalizeSignupAsLoose(input.audience_type || input.audienceType || input.signup_as || input.signupAs);
+  const knownCity = findOneTimeCitySelection(input);
+  const location = compact(input.location || input.city_label || input.cityLabel || input.city || input.label || input.city_name || input.cityName || inputMetadata.city?.label || inputMetadata.city?.name || knownCity?.label);
+  const email = normalizeEmail(input.email || input.parent_email || input.parentEmail);
+  const phone = compact(input.phone || input.parent_phone || input.parentPhone || input.whatsapp || input.whatsapp_phone || input.whatsappPhone);
+  let preference = null;
+  const fieldErrors = {};
+
+  if (!contactName || contactName.length < 2 || contactName.length > 180) {
+    fieldErrors.contact_name = ONE_TIME_SIGNUP_FIELD_MESSAGES.contact_name;
+  }
+  if (!email) {
+    fieldErrors.email = ONE_TIME_SIGNUP_FIELD_MESSAGES.email_missing;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    fieldErrors.email = ONE_TIME_SIGNUP_FIELD_MESSAGES.email_invalid;
+  }
+  if (!signupAs) {
+    fieldErrors.audience_type = ONE_TIME_SIGNUP_FIELD_MESSAGES.audience_type;
+  }
+  if (!location) {
+    fieldErrors.location = ONE_TIME_SIGNUP_FIELD_MESSAGES.location;
+  }
+  try {
+    preference = normalizeReminderPreference(input.reminder_preference || input.reminderPreference || input.class_reminders || input.classReminders);
+  } catch {
+    fieldErrors.reminder_preference = ONE_TIME_SIGNUP_FIELD_MESSAGES.reminder_preference;
+  }
+
+  const submittedTimezone = normalizeIanaTimezone(input.timezone || input.timeZone || input.time_zone || inputMetadata.timezone || inputMetadata.city?.timezone || '');
+  const browserTimezone = normalizeIanaTimezone(input.browser_timezone || input.browserTimeZone || inputMetadata.browser_timezone || inputMetadata.browserTimezone || '');
+  const timezone = submittedTimezone || browserTimezone || knownCity?.timezone || '';
+  if (!timezone) {
+    fieldErrors.location = ONE_TIME_SIGNUP_FIELD_MESSAGES.location;
+  }
+
+  const recurringConsentGiven = isExplicitTrue(input.reminder_consent_ack)
     || isExplicitTrue(input.reminderConsentAck)
     || isExplicitTrue(input.reminder_consent)
+    || isExplicitTrue(input.reminderConsent)
     || isExplicitTrue(input.consent)
+    || isExplicitTrue(input.signup_acknowledgement)
+    || isExplicitTrue(input.signupAcknowledgement)
     || isExplicitTrue(inputMetadata.reminder_consent_acknowledged)
-    || isExplicitTrue(inputMetadata.reminder_consent)
-  );
-  assertPublicSignupError(Boolean(contactName), 'Contact name is required.');
-  assertPublicSignupError(Boolean(email), 'Email is required.');
-  assertPublicSignupError(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), 'Enter a valid email address.');
-  assertPublicSignupError(acknowledgementGiven, 'Check the box to confirm your class-time and reminder preferences.');
-  if (preference.channels.includes('whatsapp')) {
-    assertPublicSignupError(Boolean(normalizePhoneDigits(phone)), 'Phone / WhatsApp is required for WhatsApp reminders.');
+    || isExplicitTrue(inputMetadata.reminder_consent);
+
+  if (preference?.channels.includes('whatsapp') && !normalizePhoneDigits(phone)) {
+    fieldErrors.phone = ONE_TIME_SIGNUP_FIELD_MESSAGES.phone;
   }
-  if (preference.recurring_consent_required) {
-    assertPublicSignupError(recurringConsentGiven, 'Confirm reminder consent to receive class reminders.');
+  if (preference?.recurring_consent_required && !recurringConsentGiven) {
+    fieldErrors.reminder_consent = ONE_TIME_SIGNUP_FIELD_MESSAGES.reminder_consent;
   }
-  const consentAt = preference.recurring_consent_required && recurringConsentGiven
-    ? (now instanceof Date ? now : new Date(now)).toISOString()
-    : null;
+
+  if (Object.keys(fieldErrors).length) {
+    throw oneTimeSignupValidationError(fieldErrors);
+  }
+
+  const city = resolveOneTimeCitySelection({
+    ...input,
+    city_label: location,
+    city_name: compact(input.city_name || input.cityName || inputMetadata.city?.name) || location,
+    timezone,
+    browser_timezone: browserTimezone || timezone,
+  });
+  return {
+    contactName,
+    signupAs,
+    city,
+    email,
+    phone,
+    preference,
+    recurringConsentGiven,
+    consentAt: preference.recurring_consent_required && recurringConsentGiven
+      ? (now instanceof Date ? now : new Date(now)).toISOString()
+      : null,
+    inputMetadata,
+  };
+}
+
+function buildOneTimeSignupLeadInput(input = {}, { now = new Date() } = {}) {
+  const {
+    contactName,
+    signupAs,
+    city,
+    email,
+    phone,
+    preference,
+    recurringConsentGiven,
+    consentAt,
+    inputMetadata,
+  } = validateOneTimeSignupInput(input, { now });
   const sourceLandingPage = compact(input.source_landing_page || input.sourceLandingPage || input.route || '/one-time/signup') || '/one-time/signup';
   const referrer = compact(input.referrer || input.referer || input.metadata?.referrer).slice(0, 500);
   const metadata = {
@@ -360,8 +447,8 @@ function buildOneTimeSignupLeadInput(input = {}, { now = new Date() } = {}) {
     reminder_preference: preference.value,
     reminder_preference_label: preference.label,
     reminder_channels: preference.channels,
-    signup_acknowledgement: acknowledgementGiven,
-    location_time_acknowledgement: acknowledgementGiven,
+    signup_acknowledgement: preference.recurring_consent_required ? recurringConsentGiven : false,
+    location_time_acknowledgement: true,
     reminder_consent_acknowledged: preference.recurring_consent_required ? recurringConsentGiven : false,
     reminder_consent_at: consentAt,
     reminder_consent_policy_version: consentAt ? ONE_TIME_REMINDER_CONSENT_POLICY_VERSION : null,
@@ -897,6 +984,7 @@ module.exports = {
   ONE_TIME_CLASS_TIME_ZONE,
   ONE_TIME_LOCAL_CLASS_ACTIVATION_APPROVAL,
   ONE_TIME_LOCAL_CLASS_OPERATOR_POLICY_VERSION,
+  ONE_TIME_SIGNUP_FIELD_MESSAGES,
   ONE_TIME_REMINDER_CONSENT_POLICY_VERSION,
   ONE_TIME_REMINDER_MINUTES_BEFORE,
   ONE_TIME_SCHEDULE_VERSION,
@@ -913,6 +1001,7 @@ module.exports = {
   findOneTimeCitySelection,
   formatRecipientLocalTime,
   nextOneTimeClassSchedule,
+  validateOneTimeSignupInput,
   normalizeIanaTimezone,
   normalizeReminderPreference,
   oneTimeClassReminderEnvReadiness,

@@ -73,6 +73,16 @@ Current status: `active`
 - V2 live smokes passed: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 3712308731910a6e77fb9a18ce18b57ae35f22dd` and `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com` with report `ops/live-smokes/2026-07-13T00-26-05-640Z-rabbi-onetime-landing-smoke.md`.
 - The full channel-independent WhatsApp/email communication-agent model remains open.
 
+## One Time Signup Form P0 Slice
+
+- Operator P0 packet captured as `RAW-20260713-002`: Wave 1 must repair, deploy, and live-verify the One Time Mishnah signup form before continuing public WhatsApp, private Rabbi Telegram, and ticket-approval work.
+- Production failure reproduced on `https://join.onetimeonetime.com/one-time/signup` at live SHA `3712308731910a6e77fb9a18ce18b57ae35f22dd`: `Family + No reminders + no phone + no consent` attempted zero POSTs and focused the acknowledgement checkbox with `Check the box to confirm your class-time and reminder preferences.`
+- Root cause: the live frontend and server treated acknowledgement/consent as always required, so the `No reminders` branch was blocked by a conditional field that should not have applied. The repair also replaces custom Family/School selection behavior with canonical accessible `audience_type` radio state.
+- Local repair is verified and pending deploy: `public/one-time/signup.html` now uses one no-native-bubble validation path, real Family/School and reminder radio inputs, conditional phone/consent validation, no preselected reminders, field-specific accessible errors, one active submit request, and the required success copy.
+- Server repair is verified and pending deploy: `src/lib/bna/one-time-signup-workflow.js` exports the canonical signup validation rules, and `server.js` returns the validation response contract, upserts the canonical One Time CRM contact, links signup/legacy lead records, writes a signup communication event, creates zero automatic tasks, and returns `contact_key`/`signup_key`/`confirmation_queued`/`reminder_preference`/`next_path`/`duplicate_submission`.
+- Local verification passed: signup matrix/browser tests `17/17`, focused One Time suite `76/76`, action watchdog `finding_count=0`, secret audit, execution-run validation, syntax checks, and whitespace diff check with line-ending warnings only.
+- Next action: commit/push/deploy the exact tested Wave 1 SHA, run Railway doctor, and live-smoke the production form with no-write/intercept browser proof plus API dry-run proof unless a separate approved synthetic write is explicitly used.
+
 ## Identity Isolation Batch
 
 - `REQ-20260712-305` local code patch is applied and moved to `needs_verification`.

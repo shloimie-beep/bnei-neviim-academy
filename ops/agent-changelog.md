@@ -39236,3 +39236,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Live proof passed: One Time separate-instance SHA smoke, public Rabbi/One
   Time landing smoke, and deployed marker checks for yellow/header/shadow/CTA
   and signup-header changes.
+
+## 2026-07-13 - One Time signup form P0 local verification
+
+- Reproduced the production signup failure on live SHA
+  `3712308731910a6e77fb9a18ce18b57ae35f22dd`: Family + No reminders + no
+  phone + no consent created zero POSTs and focused the acknowledgement
+  checkbox with the old consent-required error.
+- Repaired the public signup form to use canonical `audience_type` radio
+  inputs, no preselected reminder value, conditional phone/consent validation,
+  accessible field-specific errors, duplicate-submit protection, and the
+  approved success experience.
+- Repaired the server contract so the first-step One Time signup uses the same
+  validation rules, returns field errors, upserts the canonical workspace CRM
+  contact, links signup/legacy lead context, writes a signup communication
+  event, returns `contact_key`/`signup_key` metadata, and creates zero automatic
+  CRM tasks.
+- Verification passed: syntax checks, signup matrix tests `17/17`, focused One
+  Time suite `76/76`, action watchdog 0 findings, secret audit, execution-run
+  validation, and diff check with line-ending warnings only.
+- Deployment is pending for this local-verified slice.

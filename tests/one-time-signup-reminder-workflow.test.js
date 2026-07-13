@@ -34,6 +34,7 @@ test('direct signup page is the canonical public form', () => {
   assert.match(signup, /href="\/one-time"[^>]*>Back to Home<\/a>/);
   assert.match(signup, /name="contact_name"/);
   assert.match(signup, /name="signup_as"/);
+  assert.match(signup, /name="audience_type"/);
   assert.match(signup, /data-signup-type-picker/);
   assert.match(signup, /data-signup-type-option[^>]+data-value="Family"/);
   assert.match(signup, /data-signup-type-option[^>]+data-value="School"/);
@@ -43,6 +44,7 @@ test('direct signup page is the canonical public form', () => {
   assert.doesNotMatch(signup, /<option value="Family">Family<\/option>/);
   assert.doesNotMatch(signup, /<option value="School">School<\/option>/);
   assert.doesNotMatch(signup, /data-signup-type-trigger|data-signup-type-menu/);
+  assert.match(signup, /name="location"/);
   assert.match(signup, /name="city_label"/);
   assert.match(signup, /name="city_id"/);
   assert.match(signup, /name="city_region"/);
@@ -53,12 +55,12 @@ test('direct signup page is the canonical public form', () => {
   assert.doesNotMatch(signup, /cityOptions|CITY_OPTIONS|Choose the matching city|unambiguous city/);
   assert.match(signup, /name="email"/);
   assert.match(signup, /name="phone"/);
-  assert.match(signup, /name="signup_acknowledgement"/);
+  assert.match(signup, /name="reminder_consent"/);
   assert.match(signup, /name="reminder_preference" value="email"/);
   assert.match(signup, /name="reminder_preference" value="whatsapp"/);
   assert.match(signup, /name="reminder_preference" value="both"/);
   assert.match(signup, /name="reminder_preference" value="none"/);
-  assert.match(signup, /Use my detected time zone for class times\. By choosing reminders, I agree to receive class updates and can stop them at any time\./);
+  assert.match(signup, /Confirm that we may send the selected class information and reminders\./);
   assert.match(signup, /class="required-dot"/);
   assert.match(signup, /data-phone-required-dot[^>]*hidden/);
   assert.match(signup, /data-phone-hint hidden>Required for WhatsApp reminders\./);
@@ -108,12 +110,12 @@ test('signup payload validation covers consent, free-text city timezone, and Wha
 
   assert.throws(
     () => buildOneTimeSignupLeadInput({ ...base, reminder_preference: 'email', signup_acknowledgement: false, consent: false }),
-    /Check the box/
+    /Confirm that we may send the selected class information and reminders/
   );
 
   assert.throws(
     () => buildOneTimeSignupLeadInput({ ...base, reminder_preference: 'whatsapp' }),
-    /Phone \/ WhatsApp is required/
+    /Enter a WhatsApp number or choose a different reminder option/
   );
   const whatsapp = buildOneTimeSignupLeadInput({ ...base, reminder_preference: 'whatsapp', phone: '+1 732 555 0101', reminder_consent_ack: true });
   assert.equal(whatsapp.whatsapp, '+1 732 555 0101');

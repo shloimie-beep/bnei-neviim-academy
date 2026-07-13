@@ -400,7 +400,9 @@
 
     .signup-type-option {
       display: grid;
-      gap: 2px;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: start;
+      gap: 10px;
       width: 100%;
       min-height: 58px;
       padding: 11px 12px;
@@ -413,7 +415,16 @@
       transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
     }
 
+    .signup-type-option input {
+      width: 19px;
+      height: 19px;
+      min-height: 19px;
+      margin: 2px 0 0;
+      accent-color: var(--black);
+    }
+
     .signup-type-option span {
+      display: block;
       font-weight: 940;
       line-height: 1.16;
     }
@@ -426,7 +437,7 @@
     }
 
     .signup-type-option:hover,
-    .signup-type-option[aria-pressed="true"] {
+    .signup-type-option:has(input:checked) {
       border-color: rgba(5, 5, 5, 0.48);
       background: var(--ice);
     }
@@ -861,30 +872,31 @@
         <h2 id="formTitle">Sign Up Now</h2>
         <form class="form-grid" id="signupForm" data-one-time-direct-signup-form novalidate>
           <div class="field">
-            <label for="contactName">Contact name <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
+            <label for="contactName">Parent or contact name <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
             <input id="contactName" name="contact_name" type="text" autocomplete="name" required>
-            <span class="field-error" data-error-for="contact_name">Enter the contact name.</span>
+            <span class="field-error" id="contactNameError" data-error-for="contact_name">Enter the parent or contact name.</span>
           </div>
 
-          <div class="field">
-            <span class="field-label" id="signupAsLabel">Signing up as <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></span>
-            <input id="signupAs" name="signup_as" type="hidden" data-signup-type-value required>
-            <div class="signup-type-picker" role="group" aria-labelledby="signupAsLabel" aria-describedby="signupAsError" tabindex="-1" data-signup-type-picker>
-              <button type="button" class="signup-type-option" data-signup-type-option data-value="Family" data-action-id="ACTION-ONETIME-SIGNUP-AS-FAMILY" aria-pressed="false">
-                <span>Family</span>
-                <small>For a parent or family signup.</small>
-              </button>
-              <button type="button" class="signup-type-option" data-signup-type-option data-value="School" data-action-id="ACTION-ONETIME-SIGNUP-AS-SCHOOL" aria-pressed="false">
-                <span>School</span>
-                <small>For a school or class group.</small>
-              </button>
+          <fieldset class="field" data-audience-fieldset>
+            <legend class="fieldset-label" id="audienceTypeLabel">Signing up as <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></legend>
+            <input id="signupAs" name="signup_as" type="hidden" data-signup-type-value>
+            <div class="signup-type-picker" data-signup-type-picker>
+              <label class="signup-type-option" data-signup-type-card data-action-id="ACTION-ONETIME-SIGNUP-AS-FAMILY">
+                <input type="radio" name="audience_type" value="family" required data-signup-type-option data-value="Family">
+                <span><span>Family</span><small>For a parent or family signup.</small></span>
+              </label>
+              <label class="signup-type-option" data-signup-type-card data-action-id="ACTION-ONETIME-SIGNUP-AS-SCHOOL">
+                <input type="radio" name="audience_type" value="school" required data-signup-type-option data-value="School">
+                <span><span>School</span><small>For a school or class group.</small></span>
+              </label>
             </div>
-            <span class="field-error" id="signupAsError" data-error-for="signup_as">Choose Family or School.</span>
-          </div>
+            <span class="field-error" id="audienceTypeError" data-error-for="audience_type">Choose Family or School.</span>
+          </fieldset>
 
           <div class="field">
-            <label for="city">Location <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
-            <input id="city" name="city_label" type="text" autocomplete="address-level2" placeholder="City, ZIP/postal code, or area" required>
+            <label for="location">Location <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
+            <input id="location" name="location" type="text" autocomplete="address-level2" placeholder="City, country, ZIP/postal code, or area" required>
+            <input type="hidden" name="city_label">
             <input type="hidden" name="city_id">
             <input type="hidden" name="city_name">
             <input type="hidden" name="city_region">
@@ -893,7 +905,7 @@
             <input type="hidden" name="timezone">
             <input type="hidden" name="browser_timezone">
             <span class="field-hint">Type a city, ZIP/postal code, area code, or neighborhood. No city list is required.</span>
-            <span class="field-error" data-error-for="city_label">Enter your city, ZIP/postal code, or area.</span>
+            <span class="field-error" id="locationError" data-error-for="location">Enter your city or location.</span>
           </div>
 
           <div class="field timezone-fallback" data-timezone-fallback hidden>
@@ -915,7 +927,7 @@
               <option value="Africa/Johannesburg"></option>
             </datalist>
             <span class="field-hint">Use an IANA time zone such as America/New_York.</span>
-            <span class="field-error" data-error-for="timezone_fallback">Enter a valid IANA time zone.</span>
+            <span class="field-error" id="timezoneFallbackError" data-error-for="timezone_fallback">Enter your city or location.</span>
           </div>
 
           <div class="local-time-card" data-local-class-time-status>
@@ -926,14 +938,14 @@
           <div class="field">
             <label for="email">Email <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
             <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required>
-            <span class="field-error" data-error-for="email">Enter a valid email address.</span>
+            <span class="field-error" id="emailError" data-error-for="email">Enter an email address.</span>
           </div>
 
           <div class="field">
             <label for="phone">Phone / WhatsApp <span class="required-dot" data-phone-required-dot aria-hidden="true" hidden></span><span class="sr-only" data-phone-required-copy hidden>required when WhatsApp reminders are selected</span></label>
             <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" aria-describedby="phoneHint">
             <span class="field-hint" id="phoneHint" data-phone-hint hidden>Required for WhatsApp reminders.</span>
-            <span class="field-error" data-error-for="phone">Enter a phone number for WhatsApp reminders.</span>
+            <span class="field-error" id="phoneError" data-error-for="phone">Enter a WhatsApp number or choose a different reminder option.</span>
           </div>
 
           <fieldset class="field" data-reminder-fieldset>
@@ -956,12 +968,12 @@
                 <span><strong>No daily reminders</strong><span>Sign up without recurring reminders.</span></span>
               </label>
             </div>
-            <label class="consent-check" for="signupAcknowledgement">
-              <input id="signupAcknowledgement" name="signup_acknowledgement" type="checkbox" value="yes" required>
-              <span class="consent-copy">Use my detected time zone for class times. By choosing reminders, I agree to receive class updates and can stop them at any time. <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></span>
+            <label class="consent-check" for="reminderConsent" data-reminder-consent-field hidden>
+              <input id="reminderConsent" name="reminder_consent" type="checkbox" value="true" disabled>
+              <span class="consent-copy">Confirm that we may send the selected class information and reminders. <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></span>
             </label>
-            <span class="field-error" data-error-for="signup_acknowledgement">Check the box to confirm your class-time and reminder preferences.</span>
-            <span class="field-error" data-error-for="reminder_preference">Choose a reminder option.</span>
+            <span class="field-error" id="reminderConsentError" data-error-for="reminder_consent">Confirm that we may send the selected class information and reminders.</span>
+            <span class="field-error" id="reminderPreferenceError" data-error-for="reminder_preference">Choose Email, WhatsApp, Both, or No reminders.</span>
           </fieldset>
 
           <button class="button" type="submit" data-action-id="ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT">Sign Up Now</button>
@@ -970,7 +982,9 @@
 
         <div class="success-panel" data-success-panel tabindex="-1">
           <h3>You're signed up.</h3>
-          <p>Check your email for the class link and class time in your city.</p>
+          <p>We saved your information and will send the current class details using your selected option.</p>
+          <dl data-success-details></dl>
+          <a class="button" href="/one-time">Back to Home</a>
         </div>
       </section>
     </main>
@@ -1000,17 +1014,42 @@
       const form = document.querySelector('[data-one-time-direct-signup-form]');
       const status = document.querySelector('[data-form-status]');
       const successPanel = document.querySelector('[data-success-panel]');
+      const successDetails = document.querySelector('[data-success-details]');
       const phoneInput = form?.elements.phone;
       const phoneHint = document.querySelector('[data-phone-hint]');
       const phoneRequiredDot = document.querySelector('[data-phone-required-dot]');
       const phoneRequiredCopy = document.querySelector('[data-phone-required-copy]');
       const reminderInputs = form ? Array.from(form.querySelectorAll('input[name="reminder_preference"]')) : [];
+      const audienceInputs = form ? Array.from(form.querySelectorAll('input[name="audience_type"]')) : [];
       const signupTypeInput = form?.elements.signup_as;
-      const signupTypePicker = document.querySelector('[data-signup-type-picker]');
-      const signupTypeOptions = Array.from(document.querySelectorAll('[data-signup-type-option]'));
+      const audienceFieldset = document.querySelector('[data-audience-fieldset]');
+      const reminderFieldset = document.querySelector('[data-reminder-fieldset]');
+      const reminderConsentField = document.querySelector('[data-reminder-consent-field]');
+      const reminderConsentInput = form?.elements.reminder_consent;
       const timezoneFallbackField = document.querySelector('[data-timezone-fallback]');
       const timezoneFallbackInput = form?.elements.timezone_fallback;
       const localClassTime = document.querySelector('[data-local-class-time]');
+      let isSubmitting = false;
+      let signupSucceeded = false;
+      const idempotencyKey = (window.crypto && typeof window.crypto.randomUUID === 'function')
+        ? window.crypto.randomUUID()
+        : `one-time-signup-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+      const FIELD_MESSAGES = {
+        contact_name: 'Enter the parent or contact name.',
+        email_missing: 'Enter an email address.',
+        email_invalid: 'Enter a valid email address.',
+        audience_type: 'Choose Family or School.',
+        location: 'Enter your city or location.',
+        reminder_preference: 'Choose Email, WhatsApp, Both, or No reminders.',
+        phone: 'Enter a WhatsApp number or choose a different reminder option.',
+        reminder_consent: 'Confirm that we may send the selected class information and reminders.',
+      };
+
+      window.OneTimeSignupValidation = {
+        messages: FIELD_MESSAGES,
+        validate: () => validateSignupForm().fieldErrors,
+      };
 
       function selectedReminder() {
         return reminderInputs.find((input) => input.checked)?.value || '';
@@ -1028,20 +1067,18 @@
       }
 
       function selectedSignupType() {
-        const value = String(signupTypeInput?.value || '').trim();
+        const value = audienceInputs.find((input) => input.checked)?.value || signupTypeInput?.value || '';
         return normalizeSignupType(value);
       }
 
       function setSignupType(value) {
         const normalized = normalizeSignupType(value);
         if (signupTypeInput) signupTypeInput.value = normalized;
-        signupTypeOptions.forEach((option) => {
-          const active = normalizeSignupType(option.dataset.value) === normalized;
-          option.setAttribute('aria-pressed', String(active));
+        audienceInputs.forEach((input) => {
+          input.checked = signupAudienceType(normalized) === input.value;
         });
         if (normalized) {
-          signupTypePicker?.removeAttribute('aria-invalid');
-          form?.querySelector('[data-error-for="signup_as"]')?.classList.remove('visible');
+          clearFieldError('audience_type');
         }
       }
 
@@ -1059,6 +1096,21 @@
         if (phoneHint) {
           phoneHint.hidden = !needsPhone;
           phoneHint.textContent = 'Required for WhatsApp reminders.';
+        }
+        if (!needsPhone) clearFieldError('phone');
+      }
+
+      function updateConsentRequirement() {
+        const reminder = selectedReminder();
+        const needsConsent = reminder === 'email' || reminder === 'whatsapp' || reminder === 'both';
+        if (!reminderConsentInput || !reminderConsentField) return;
+        reminderConsentField.hidden = !needsConsent;
+        reminderConsentInput.disabled = !needsConsent;
+        reminderConsentInput.required = needsConsent;
+        reminderConsentInput.setAttribute('aria-required', String(needsConsent));
+        if (!needsConsent) {
+          reminderConsentInput.checked = false;
+          clearFieldError('reminder_consent');
         }
       }
 
@@ -1153,6 +1205,7 @@
         timezoneFallbackField.hidden = !visible;
         timezoneFallbackInput.required = visible;
         timezoneFallbackInput.setAttribute('aria-required', String(visible));
+        timezoneFallbackInput.disabled = !visible;
         if (!visible) {
           timezoneFallbackInput.removeAttribute('aria-invalid');
           form?.querySelector('[data-error-for="timezone_fallback"]')?.classList.remove('visible');
@@ -1179,6 +1232,7 @@
       function setCityFields(cityLabel) {
         const city = String(cityLabel || '').trim();
         for (const [name, value] of Object.entries({
+          city_label: city,
           city_id: '',
           city_name: city,
           city_region: '',
@@ -1205,21 +1259,60 @@
         status.textContent = '';
       }
 
+      function escapeHtml(value) {
+        return String(value || '').replace(/[&<>"']/g, (char) => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[char]));
+      }
+
       function clearErrors() {
         form?.querySelectorAll('.field-error.visible').forEach((node) => node.classList.remove('visible'));
         form?.querySelectorAll('[aria-invalid="true"]').forEach((node) => node.removeAttribute('aria-invalid'));
-        form?.querySelector('[data-reminder-fieldset]')?.removeAttribute('aria-invalid');
+        form?.querySelectorAll('[aria-describedby]').forEach((node) => {
+          if (/Error\b/.test(node.getAttribute('aria-describedby') || '')) node.removeAttribute('aria-describedby');
+        });
+        audienceFieldset?.removeAttribute('aria-invalid');
+        reminderFieldset?.removeAttribute('aria-invalid');
       }
 
-      function showFieldError(name) {
+      function errorElementFor(name) {
+        return form?.querySelector(`[data-error-for="${name}"]`) || null;
+      }
+
+      function controlForField(name) {
+        if (name === 'audience_type') return audienceFieldset;
+        if (name === 'reminder_preference') return reminderFieldset;
+        if (name === 'reminder_consent') return reminderConsentInput;
+        if (name === 'location') return form?.elements.location;
+        return form?.elements[name];
+      }
+
+      function clearFieldError(name) {
+        const control = controlForField(name);
+        const error = errorElementFor(name);
+        control?.removeAttribute?.('aria-invalid');
+        if (control?.getAttribute?.('aria-describedby') === error?.id) control.removeAttribute('aria-describedby');
+        error?.classList.remove('visible');
+      }
+
+      function showFieldError(name, message) {
         const input = form?.elements[name];
-        const error = form?.querySelector(`[data-error-for="${name}"]`);
+        const error = errorElementFor(name);
+        if (error && message) error.textContent = message;
         if (name === 'reminder_preference') {
-          form?.querySelector('[data-reminder-fieldset]')?.setAttribute('aria-invalid', 'true');
-        } else if (name === 'signup_as') {
-          signupTypePicker?.setAttribute('aria-invalid', 'true');
+          reminderFieldset?.setAttribute('aria-invalid', 'true');
+          if (error?.id) reminderFieldset?.setAttribute('aria-describedby', error.id);
+        } else if (name === 'audience_type') {
+          audienceFieldset?.setAttribute('aria-invalid', 'true');
+          if (error?.id) audienceFieldset?.setAttribute('aria-describedby', error.id);
         } else {
-          input?.setAttribute('aria-invalid', 'true');
+          const control = name === 'location' ? form?.elements.location : input;
+          control?.setAttribute('aria-invalid', 'true');
+          if (error?.id) control?.setAttribute('aria-describedby', error.id);
         }
         error?.classList.add('visible');
       }
@@ -1233,12 +1326,60 @@
         return utm;
       }
 
-      function buildPayload({ contactName, signupAs, cityLabel, timezone, email, phone, reminder, acknowledgement }) {
-        const reminderConsent = acknowledgement && reminder !== 'none';
+      function validateSignupForm() {
+        const contactName = String(form.elements.contact_name.value || '').trim();
+        const signupAs = selectedSignupType();
+        const audienceType = signupAudienceType(signupAs);
+        const location = String(form.elements.location.value || '').trim();
+        const timezone = currentTimezone();
+        const email = String(form.elements.email.value || '').trim().toLowerCase();
+        const phone = String(form.elements.phone.value || '').trim();
+        const reminder = selectedReminder();
+        const reminderConsent = Boolean(reminderConsentInput?.checked);
+        const fieldErrors = {};
+
+        if (!contactName || contactName.length < 2 || contactName.length > 180) {
+          fieldErrors.contact_name = FIELD_MESSAGES.contact_name;
+        }
+        if (!email) {
+          fieldErrors.email = FIELD_MESSAGES.email_missing;
+        } else if (!isValidEmail(email)) {
+          fieldErrors.email = FIELD_MESSAGES.email_invalid;
+        }
+        if (!audienceType) fieldErrors.audience_type = FIELD_MESSAGES.audience_type;
+        if (!location || !timezone) fieldErrors.location = FIELD_MESSAGES.location;
+        if (!reminder) fieldErrors.reminder_preference = FIELD_MESSAGES.reminder_preference;
+        if (needsWhatsAppPhone(reminder) && !phone) fieldErrors.phone = FIELD_MESSAGES.phone;
+        if ((reminder === 'email' || reminder === 'whatsapp' || reminder === 'both') && !reminderConsent) {
+          fieldErrors.reminder_consent = FIELD_MESSAGES.reminder_consent;
+        }
+
+        return {
+          fieldErrors,
+          values: { contactName, signupAs, audienceType, location, timezone, email, phone, reminder, reminderConsent },
+        };
+      }
+
+      function renderValidation(fieldErrors) {
+        clearErrors();
+        Object.entries(fieldErrors || {}).forEach(([field, message]) => showFieldError(field, message));
+      }
+
+      function firstInvalidControl(fieldErrors) {
+        const order = ['contact_name', 'audience_type', 'location', 'email', 'reminder_preference', 'phone', 'reminder_consent'];
+        const field = order.find((name) => Object.prototype.hasOwnProperty.call(fieldErrors, name));
+        if (!field) return null;
+        if (field === 'audience_type') return audienceInputs[0] || audienceFieldset;
+        if (field === 'reminder_preference') return reminderInputs[0] || reminderFieldset;
+        if (field === 'reminder_consent') return reminderConsentInput;
+        if (field === 'location') return form.elements.location;
+        return form.elements[field];
+      }
+
+      function buildPayload({ contactName, signupAs, audienceType, location, timezone, email, phone, reminder, reminderConsent }) {
         const now = new Date().toISOString();
         const detectedBrowserTimezone = form.elements.browser_timezone?.value || '';
         const browserTimezone = detectedBrowserTimezone || timezone;
-        const signupType = signupAudienceType(signupAs);
         return {
           parent_name: contactName,
           contact_name: contactName,
@@ -1246,35 +1387,40 @@
           phone,
           whatsapp: needsWhatsAppPhone(reminder) ? phone : '',
           audience: 'parents',
-          audience_type: signupType,
-          family_school_classification: signupType,
+          audience_type: audienceType,
+          family_school_classification: audienceType,
           region: 'worldwide',
+          location,
           city_id: '',
-          city_label: cityLabel,
-          city_name: cityLabel,
+          city_label: location,
+          city_name: location,
           city_region: '',
           city_country: '',
           city_country_code: '',
           timezone,
           browser_timezone: browserTimezone,
+          reminder_preference: reminder,
+          reminder_consent: reminderConsent,
+          source: 'one_time_public_signup',
+          idempotency_key: idempotencyKey,
           source_landing_page: '/one-time/signup',
           signup_mode: 'one_time_class_signup',
-          signup_acknowledgement: acknowledgement,
+          signup_acknowledgement: reminderConsent,
           reminder_consent_ack: reminderConsent,
-          location_time_acknowledgement: acknowledgement,
+          location_time_acknowledgement: true,
           consent: reminderConsent,
-          notes: `${signupType === 'school' ? 'School' : 'Family'} signup for the One Time daily Mishnayos class.`,
+          notes: `${audienceType === 'school' ? 'School' : 'Family'} signup for the One Time daily Mishnayos class.`,
           metadata: {
-            raw_intake_id: 'RAW-20260712-004',
-            requirement_id: 'REQ-20260712-106',
-            form_version: 'one-time-direct-signup-v2',
+            raw_intake_id: 'RAW-20260713-002',
+            requirement_id: 'REQ-20260713-901',
+            form_version: 'one-time-direct-signup-v3',
             signup_as: signupAs,
-            audience_type: signupType,
-            family_school_classification: signupType,
+            audience_type: audienceType,
+            family_school_classification: audienceType,
             city: {
               id: '',
-              label: cityLabel,
-              name: cityLabel,
+              label: location,
+              name: location,
               region: '',
               country: '',
               country_code: '',
@@ -1285,8 +1431,8 @@
             reminder_consent_acknowledged: reminderConsent,
             reminder_consent_at: reminderConsent ? now : null,
             reminder_consent_policy_version: reminderConsent ? 'one-time-class-reminders-v1-2026-07-12' : null,
-            signup_acknowledgement: acknowledgement,
-            location_time_acknowledgement: acknowledgement,
+            signup_acknowledgement: reminderConsent,
+            location_time_acknowledgement: true,
             class_schedule: {
               source_timezone: 'Asia/Jerusalem',
               class_time: '19:00',
@@ -1313,132 +1459,109 @@
       }
 
       form?.elements.city_label?.addEventListener('input', () => {
-        setCityFields(form.elements.city_label.value);
+        setCityFields(form.elements.location.value);
+      });
+      form?.elements.location?.addEventListener('input', () => {
+        setCityFields(form.elements.location.value);
+        clearFieldError('location');
       });
 
       timezoneFallbackInput?.addEventListener('input', () => {
         setTimezone(timezoneFallbackInput.value);
+        clearFieldError('location');
       });
 
       reminderInputs.forEach((input) => {
-        input.addEventListener('change', updatePhoneRequirement);
-      });
-      updatePhoneRequirement();
-
-      signupTypeOptions.forEach((option) => {
-        option.addEventListener('click', () => setSignupType(option.dataset.value || ''));
-        option.addEventListener('keydown', (event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            setSignupType(option.dataset.value || '');
-          }
+        input.addEventListener('change', () => {
+          updatePhoneRequirement();
+          updateConsentRequirement();
+          clearFieldError('reminder_preference');
         });
       });
+      updatePhoneRequirement();
+      updateConsentRequirement();
+
+      audienceInputs.forEach((input) => {
+        input.addEventListener('change', () => {
+          setSignupType(input.value);
+          clearFieldError('audience_type');
+        });
+      });
+      ['contact_name', 'email', 'phone'].forEach((name) => {
+        form?.elements[name]?.addEventListener('input', () => clearFieldError(name));
+      });
+      reminderConsentInput?.addEventListener('change', () => clearFieldError('reminder_consent'));
 
       form?.addEventListener('submit', async (event) => {
         event.preventDefault();
-        clearErrors();
+        if (isSubmitting || signupSucceeded) return;
         clearStatus();
-
-        const contactName = String(form.elements.contact_name.value || '').trim();
-        const signupAs = selectedSignupType();
-        const cityLabel = String(form.elements.city_label.value || '').trim();
-        const timezone = currentTimezone();
-        const email = String(form.elements.email.value || '').trim().toLowerCase();
-        const phone = String(form.elements.phone.value || '').trim();
-        const reminder = selectedReminder();
-        const acknowledgement = Boolean(form.elements.signup_acknowledgement?.checked);
-        let invalid = false;
-
-        if (!contactName) {
-          showFieldError('contact_name');
-          invalid = true;
-        }
-        if (!signupAs) {
-          showFieldError('signup_as');
-          invalid = true;
-        }
-        if (!cityLabel) {
-          showFieldError('city_label');
-          invalid = true;
-        } else {
-          setCityFields(cityLabel);
-        }
-        if (!timezone) {
+        const validation = validateSignupForm();
+        if (validation.values.location) setCityFields(validation.values.location);
+        if (!validation.values.timezone) {
           setTimezoneFallbackVisible(true);
-          showFieldError('timezone_fallback');
-          invalid = true;
         } else {
-          setTimezone(timezone);
+          setTimezone(validation.values.timezone);
         }
-        if (!isValidEmail(email)) {
-          showFieldError('email');
-          invalid = true;
-        }
-        if (!reminder) {
-          showFieldError('reminder_preference');
-          invalid = true;
-        }
-        if (needsWhatsAppPhone(reminder) && !phone) {
-          showFieldError('phone');
-          invalid = true;
-        }
-        if (!acknowledgement) {
-          showFieldError('signup_acknowledgement');
-          invalid = true;
-        }
-
-        if (invalid) {
-          showStatus('error', 'Please fix the highlighted fields.');
-          const firstInvalid = form.querySelector('[aria-invalid="true"]');
-          if (firstInvalid?.matches('[data-signup-type-picker]')) {
-            signupTypeOptions[0]?.focus();
-          } else {
-            firstInvalid?.focus();
-          }
+        renderValidation(validation.fieldErrors);
+        if (Object.keys(validation.fieldErrors).length) {
+          const firstInvalid = firstInvalidControl(validation.fieldErrors);
+          firstInvalid?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+          window.setTimeout(() => firstInvalid?.focus?.(), 80);
           return;
         }
 
         const submitButton = form.querySelector('button[type="submit"]');
+        isSubmitting = true;
         submitButton.disabled = true;
-        showStatus('', 'Saving your signup...');
+        submitButton.textContent = 'Signing you up…';
+        showStatus('', 'Signing you up…');
 
         try {
           const response = await fetch('/api/one-time/interest', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(buildPayload({ contactName, signupAs, cityLabel, timezone, email, phone, reminder, acknowledgement }))
+            body: JSON.stringify(buildPayload(validation.values))
           });
           const result = await response.json().catch(() => ({}));
           if (!response.ok || result.success === false) {
+            if (result.field_errors && typeof result.field_errors === 'object') {
+              renderValidation(result.field_errors);
+              const firstInvalid = firstInvalidControl(result.field_errors);
+              firstInvalid?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+              window.setTimeout(() => firstInvalid?.focus?.(), 80);
+              throw new Error('Please correct the highlighted fields.');
+            }
             throw new Error(result.error || 'Could not save the signup.');
           }
 
           const productLeadId = result.product_lead_id || result.productLeadId || result.lead?.id || result.lead_id || '';
           const crmLeadId = result.crm_lead_id || result.crmLeadId || result.lead?.crm_lead_id || '';
+          const contactKey = result.contact_key || result.lead?.contact_key || '';
           const lead = {
-            parent_name: contactName,
-            contact_name: contactName,
-            email,
-            phone,
-            signup_as: signupAs,
-            audience_type: signupAudienceType(signupAs),
-            family_school_classification: signupAudienceType(signupAs),
-            city: cityLabel,
+            parent_name: validation.values.contactName,
+            contact_name: validation.values.contactName,
+            email: validation.values.email,
+            phone: validation.values.phone,
+            signup_as: validation.values.signupAs,
+            audience_type: validation.values.audienceType,
+            family_school_classification: validation.values.audienceType,
+            city: validation.values.location,
             city_context: {
               id: '',
-              label: cityLabel,
-              name: cityLabel,
+              label: validation.values.location,
+              name: validation.values.location,
               region: '',
               country: '',
               country_code: '',
-              timezone
+              timezone: validation.values.timezone
             },
-            timezone,
-            browser_timezone: form.elements.browser_timezone?.value || timezone,
-            reminder_preference: reminder,
+            timezone: validation.values.timezone,
+            browser_timezone: form.elements.browser_timezone?.value || validation.values.timezone,
+            reminder_preference: validation.values.reminder,
             product_lead_id: productLeadId ? String(productLeadId) : '',
             crm_lead_id: crmLeadId ? String(crmLeadId) : '',
+            contact_key: contactKey ? String(contactKey) : '',
             source_landing_page: '/one-time/signup',
             referrer: document.referrer || '',
             utm: utmParams()
@@ -1447,14 +1570,27 @@
             window.sessionStorage.setItem('oneTimeSignupLead', JSON.stringify(lead));
           } catch {}
 
+          signupSucceeded = true;
           form.hidden = true;
+          if (successDetails) {
+            const method = result.reminder_preference || validation.values.reminder;
+            const methodLabel = method === 'both' ? 'Email and WhatsApp' : method === 'whatsapp' ? 'WhatsApp' : method === 'email' ? 'Email' : 'No reminders';
+            successDetails.innerHTML = `
+              <div><dt>Reminder method</dt><dd>${escapeHtml(methodLabel)}</dd></div>
+              <div><dt>Location</dt><dd>${escapeHtml(validation.values.location)} (${escapeHtml(validation.values.timezone)})</dd></div>
+            `;
+          }
           successPanel?.classList.add('active');
-          showStatus('success', 'Signup received.');
           window.setTimeout(() => successPanel?.focus?.(), 40);
         } catch (error) {
           showStatus('error', error.message || 'Could not save the signup.');
-        } finally {
+          isSubmitting = false;
           submitButton.disabled = false;
+          submitButton.textContent = 'Sign Up Now';
+        } finally {
+          if (!signupSucceeded) {
+            isSubmitting = false;
+          }
         }
       });
     })();

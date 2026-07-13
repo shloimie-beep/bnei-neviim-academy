@@ -429,12 +429,12 @@
       "surface": "one_time_public_direct_signup",
       "route": "/one-time/signup",
       "selector_hint": "[data-one-time-direct-signup-form] button[type=\"submit\"]",
-      "expected_behavior": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required free-text location entry accepting city, ZIP/postal code, area code, or neighborhood, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
+      "expected_behavior": "Creates or links a first-party One Time product lead, legacy CRM lead source, and canonical workspace CRM contact from the direct public signup form with required parent/contact name, required Family or School audience_type radio choice, required free-text location accepting city, country, ZIP/postal code, area code, or neighborhood, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, required reminder preference, conditional reminder consent, route/referrer/UTM metadata, and no student name. It enqueues the approved immediate confirmation and Rabbi Telegram signup alert through scoped outbox records when configured, creates zero automatic CRM tasks, and does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "api_guarded",
-      "expected_result": "Posts direct signup payload to /api/one-time/interest, stores the free-text location entry plus detected/fallback IANA timezone, Family or School, reminder preference and consent, queues confirmation/alert outbox records idempotently, and returns no-checkout/no-access-grant metadata with no student-name field."
+        "expected_result": "Posts direct signup payload to /api/one-time/interest, stores the free-text location entry plus detected/fallback IANA timezone, audience_type, reminder preference and conditional consent, queues confirmation/alert outbox records idempotently when configured, returns contact_key/signup_key/confirmation_queued/reminder_preference/next_path/duplicate_submission plus no-checkout/no-access-grant metadata, and includes no student-name field."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -448,13 +448,13 @@
       "label": "Family",
       "surface": "one_time_public_direct_signup",
       "route": "/one-time/signup",
-      "selector_hint": "[data-signup-type-option][data-value=\"Family\"]",
-      "expected_behavior": "Sets the direct signup form's required signup_as value to Family through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "selector_hint": "input[name=\"audience_type\"][value=\"family\"]",
+      "expected_behavior": "Checks the direct signup form's required Family radio option, updates the compatibility signup_as value to Family, clears the audience validation error, and does not submit, send, charge, create access, or navigate.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "browser_static_and_submit",
-        "expected_result": "The Family button is visible at desktop and mobile widths, no Family/School select or dropdown trigger is required, clicking Family stores signup_as=Family, and submit payload metadata keeps signup_as as Family."
+        "expected_result": "The Family radio card is visible at desktop and mobile widths, no Family/School select or dropdown trigger is required, mouse/touch/keyboard activation checks audience_type=family, and submit payload metadata keeps signup_as=Family."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -468,13 +468,13 @@
       "label": "School",
       "surface": "one_time_public_direct_signup",
       "route": "/one-time/signup",
-      "selector_hint": "[data-signup-type-option][data-value=\"School\"]",
-      "expected_behavior": "Sets the direct signup form's required signup_as value to School through an always-visible in-page choice button, updates aria-pressed, clears the signup type validation error, and does not submit, send, charge, create access, or navigate.",
+      "selector_hint": "input[name=\"audience_type\"][value=\"school\"]",
+      "expected_behavior": "Checks the direct signup form's required School radio option, updates the compatibility signup_as value to School, clears the audience validation error, and does not submit, send, charge, create access, or navigate.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "browser_static",
-        "expected_result": "The School button is visible at desktop and mobile widths, no Family/School select or dropdown trigger is required, and clicking School stores signup_as=School without submitting."
+        "expected_result": "The School radio card is visible at desktop and mobile widths, no Family/School select or dropdown trigger is required, and mouse/touch/keyboard activation stores audience_type=school and signup_as=School without submitting."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
