@@ -40393,3 +40393,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no live charge, refund, notice send, invoice/receipt send,
   access mutation, provider mutation, deploy, credential mutation, production
   data mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 old-policy cleanup refreshed
+
+- Replaced remaining active parent invite/email/review/helper references to
+  the old 30-day trial with Rosh Hashanah promotional-access language and
+  metadata.
+- Added `ops/audits/2026-07-13-onetime-billing-v2-old-policy-active-audit.md`
+  to classify remaining legacy terms as historical, compatibility-only,
+  unrelated 30-day filters/notices, or superseded smoke scripts.
+- Verification passed: parent invite tests, shared review/agent-review tests,
+  focused Stripe/local beta/sandbox tests, workspace-scope watchdog,
+  protocol-drift watchdog, `node --check server.js`, `npm run secrets:audit`,
+  and `git diff --check`.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.

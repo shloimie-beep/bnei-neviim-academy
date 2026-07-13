@@ -1,4 +1,4 @@
-# Agent Mode Prompt - One Time Parent Trial Journey
+# Agent Mode Prompt - One Time Parent Promotional Access Journey
 
 Generated: 2026-07-09T14:26:22.079Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
@@ -64,7 +64,7 @@ Public prompt URL: https://join.onetimeonetime.com/agent-review-prompts/one-time
 
 ## Work To Perform
 
-Focus: no-password parent review journey, 30-day trial state, schedule/class link, library/resource access, student click/attendance visibility, billing/trial boundaries, and parent-safe support actions.
+Focus: no-password parent review journey, promotional access state, schedule/class link, library/resource access, student click/attendance visibility, billing boundaries, and parent-safe support actions.
 
 ## Exact Navigation
 
@@ -76,16 +76,16 @@ Focus: no-password parent review journey, 30-day trial state, schedule/class lin
 6. Inspect the header/top section spacing, role label, selected category, top subcategory position, filters, buttons, and mobile overflow. Buttons should have equal heights and predictable alignment.
 7. Find the schedule or next-class area. Record whether a brand-new parent can immediately see when class happens and what link to use.
 8. Find the library/resource area. Click the classroom/library link and verify it opens /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS or an equivalent TEST One Time classroom route.
-9. Find 30-day trial, billing, and access-state copy. Record whether it is clear without showing admin-only setup/debug information.
+9. Find promotional access, billing, and access-state copy. Record whether it is clear without showing admin-only setup/debug information.
 10. Find student click, attendance, or activity information. Record whether the parent can tell if the child clicked or attended.
 11. Find student login management. Confirm parent can reset the child password from parent scope, while parent forgot-password sends a reset to the signup email. Flag any separate classroom/recovery code as wrong.
 12. Find support/private question UI. Record whether it is parent-safe and does not send real messages in review mode.
-13. Open /one-time-email-review.html and inspect the parent welcome/trial email preview. Do not send email.
+13. Open /one-time-email-review.html and inspect the parent welcome/promotional access email preview. Do not send email.
 14. If any step fails, save a BLOCKED or FAIL report in Operations drop-off. Include exact route, click path, visible text, screenshot/DOM notes, and the smallest Codex-ready repair.
 
 ## Required Audit Output
 
-- PASS/FAIL for schedule visibility, class link visibility, library visibility, trial/billing clarity, student click/activity visibility, attendance visibility, support UI, and student-login management expectations.
+- PASS/FAIL for schedule visibility, class link visibility, library visibility, promotional access/billing clarity, student click/activity visibility, attendance visibility, support UI, and student-login management expectations.
 - PASS/FAIL for One Time only branding on live parent login/reset/setup surfaces, with no BNA Academy leakage, Hebrew/English toggle, test labels, expired setup flow, fallback classroom code, or recovery-code copy.
 - Top 5 UI/IA fixes in Codex-ready language, with severity labels P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE, P2-TYPOGRAPHY, or P3-POLISH.
 - Explicit missing pieces before Codex can send a real parent welcome email.

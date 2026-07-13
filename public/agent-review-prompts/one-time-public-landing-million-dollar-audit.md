@@ -70,7 +70,7 @@ Focus: public /one-time and /one-time/mishnayos campaign quality: black/yellow b
 1. Open /operations/agent-review?prompt=one-time-public-landing-million-dollar-audit first when available, then open this public prompt URL and keep the drop-off page available.
 2. Open https://join.onetimeonetime.com/one-time and https://join.onetimeonetime.com/one-time/mishnayos. If the canonical host is unavailable, use the current app base URL and record the base URL.
 3. Capture full-page, first-viewport, header/topbar crop, footer crop, and any helper-over-form crop for 1440px, 1024px, 768px, 430px, and 390px.
-4. Inspect the campaign countdown. It must use /api/one-time/campaign or explicit config, be Israel-time / Asia/Jerusalem, and point toward Rosh Hashanah / the new year rather than a generic resettable 30-day timer.
+4. Inspect the campaign countdown. It must use /api/one-time/campaign or explicit config, be Israel-time / Asia/Jerusalem, and point toward Rosh Hashanah / the new year rather than a generic resettable timer.
 5. Inspect the hero: brand signal, logo size, headline, CTAs, image/media treatment, first useful content y-position, and whether the next section is hinted without wasting the first viewport.
 6. Inspect the proof strip. Logos should look intentional as one clean strip; do not accept plain text pretending to be a missing logo asset.
 7. Inspect the public form. It may collect parent/student contact interest and route to /api/one-time/interest only. Success copy must not promise checkout, payment, access grant, portal setup, Zoom creation, email send, or WhatsApp send.

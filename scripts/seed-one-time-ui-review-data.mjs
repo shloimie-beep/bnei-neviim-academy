@@ -118,9 +118,9 @@ function buildUiReviewFixture(generatedAt) {
     },
     review_people: [
       { key: 'TEST-ONETIME-ADULT-LEAD', name: 'TEST One Time Adult Lead', role: 'parent', stage: 'New Lead', email_state: 'not_sent', payment_state: 'none' },
-      { key: 'TEST-ONETIME-STUDENT-MEMBER', name: 'TEST One Time Student Member', role: 'student', stage: 'Free Class Signup', email_state: 'delivered', payment_state: 'trial' },
+      { key: 'TEST-ONETIME-STUDENT-MEMBER', name: 'TEST One Time Student Member', role: 'student', stage: 'Free Class Signup', email_state: 'delivered', payment_state: 'promotional_access' },
       { key: 'TEST-ONETIME-PAID-MEMBER', name: 'TEST One Time Paid Member', role: 'parent', stage: 'Paid Member', email_state: 'clicked', payment_state: 'sandbox_paid' },
-      { key: 'TEST-ONETIME-FREE-TRIAL', name: 'TEST One Time Free Trial Member', role: 'parent', stage: 'Free Access / Trial', email_state: 'sent', payment_state: 'trial' },
+      { key: 'TEST-ONETIME-PROMO-ACCESS', name: 'TEST One Time Promotional Access Member', role: 'parent', stage: 'Promotional Access', email_state: 'sent', payment_state: 'promotional_access' },
       { key: 'TEST-ONETIME-INACTIVE', name: 'TEST One Time Inactive Member', role: 'parent', stage: 'Inactive', email_state: 'opened', payment_state: 'expired' },
       { key: 'TEST-ONETIME-BOUNCED', name: 'TEST One Time Bounced Contact', role: 'viewer', stage: 'Email Clicked', email_state: 'bounced', payment_state: 'none' },
       { key: 'TEST-ONETIME-WHATSAPP', name: 'TEST One Time WhatsApp Contact', role: 'viewer', stage: 'Interested', email_state: 'suppressed', payment_state: 'none' },
@@ -129,7 +129,7 @@ function buildUiReviewFixture(generatedAt) {
       'New Lead',
       'Email Clicked',
       'Free Class Signup',
-      'Free Access / Trial',
+      'Promotional Access',
       'Member Active',
       'Paid Member',
       'Inactive',
@@ -215,7 +215,7 @@ function buildExtensionSql(fixture) {
       ];
     });
   const accessRows = [
-    ['TEST-ONETIME-FREE-TRIAL-ACCESS', 'TEST One Time Free Trial Member', 'test.onetime.free.trial@example.test', 'live_class', 'active', 'TEST 30-day free trial review access', { access_state: '30_day_free_trial' }],
+    ['TEST-ONETIME-PROMO-ACCESS', 'TEST One Time Promotional Access Member', 'test.onetime.promotional.access@example.test', 'live_class', 'active', 'TEST promotional access review record', { access_state: 'rosh_hashanah_promotional_access' }],
     ['TEST-ONETIME-PAID-MEMBER-ACCESS', 'TEST One Time Paid Member', 'test.onetime.paid.member@example.test', 'live_class', 'active', 'TEST sandbox paid member review access', { access_state: 'sandbox_paid' }],
     ['TEST-ONETIME-INACTIVE-ACCESS', 'TEST One Time Inactive Member', 'test.onetime.inactive@example.test', 'library_only', 'archived', 'TEST inactive review access', { access_state: 'inactive' }],
   ].map((row) => [

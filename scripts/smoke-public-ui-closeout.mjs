@@ -211,7 +211,7 @@ async function installMockRoutes(context) {
       contentType: 'application/json',
       body: JSON.stringify({
         campaign: {
-          headline: '30 DAYS TO JOIN - START WITH 30 DAYS FREE',
+          headline: 'JOIN BEFORE ROSH HASHANAH - PROMOTIONAL ACCESS IS OPEN',
           deadline_configured: true,
           deadline_at: '2026-12-31T21:00:00.000Z',
           server_now: '2026-06-24T12:00:00.000Z',

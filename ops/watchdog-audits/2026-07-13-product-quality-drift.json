@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T12:52:27.876Z",
+  "generated_at": "2026-07-13T13:53:13.499Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -408,6 +408,9 @@
     "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json",
     "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/MANIFEST.md",
     "ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/manifest.json",
+    "ops/prompt-packets/2026-07-13-onetime-rosh-hashanah-billing-platform-v2/00-control-tower-and-policy-correction.md",
+    "ops/prompt-packets/2026-07-13-onetime-rosh-hashanah-billing-platform-v2/00-current-code-correction-map.md",
+    "ops/prompt-packets/2026-07-13-onetime-rosh-hashanah-billing-platform-v2/manifest.md",
     "ops/prompt-packets/README.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/00-control-tower.sample.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/01-current-state-visual-audit.sample.md",
@@ -662,6 +665,8 @@
     "tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md",
     "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md",
     "tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
+    "tasks-pending/2026-07-13-onetime-landing-image-addendum.md",
+    "tasks-pending/2026-07-13-onetime-rosh-hashanah-billing-platform-v2.md",
     "tasks-pending/2026-07-13-onetime-signup-bots-ticket-approval.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"

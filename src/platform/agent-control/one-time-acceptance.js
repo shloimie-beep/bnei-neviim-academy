@@ -25,7 +25,7 @@ const DEFAULT_STAGES = Object.freeze([
     requirement_id: 'REQ-20260621-906',
     status: 'verified_live',
     evidence: 'ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md',
-    acceptance: ['30-day trial model', '$67 renewal model', 'referral after first paid cycle', 'legal wording Decision remains scoped'],
+    acceptance: ['Rosh Hashanah promotional-access model', '$67 monthly membership model', 'referral after first paid cycle', 'legal wording Decision remains scoped'],
   },
   {
     key: 'payment_access_class_links',

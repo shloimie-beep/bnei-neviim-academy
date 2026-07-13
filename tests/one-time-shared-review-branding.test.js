@@ -51,7 +51,7 @@ test('shared One Time review data stays scoped, branded, and preview-only', () =
     'milestone_notice',
     'achievement_earned',
     'reward_ready',
-    'trial_confirmation',
+    'promotional_access_confirmation',
     'pre_renewal_reminder',
     'payment_receipt_preview',
     'payment_issue_preview',

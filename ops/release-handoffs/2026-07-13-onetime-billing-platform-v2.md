@@ -32,6 +32,7 @@ slice for One Time:
 | --- | --- | --- |
 | Raw/register/control | `raw-input/RAW-20260713-005-onetime-rosh-hashanah-billing-platform-v2.md`; `tasks-pending/2026-07-13-onetime-rosh-hashanah-billing-platform-v2.md`; `ops/prompt-packets/2026-07-13-onetime-rosh-hashanah-billing-platform-v2/` | Passed / registered |
 | Product quality packet | `tasks-pending/2026-07-13-onetime-rosh-hashanah-billing-platform-v2.product-quality.json`; `ops/product-quality-compiler/validation/latest-product-quality-validation.md` | Passed |
+| Old-policy active audit | `ops/audits/2026-07-13-onetime-billing-v2-old-policy-active-audit.md`; parent invite/email/review fixtures/prompt cleanup | Passed locally; live activation still blocked |
 | No-trial Stripe lifecycle | `tests/stripe-billing-lifecycle.test.js`; `tests/one-time-stripe-local-beta.test.js` | Passed |
 | Stripe sandbox API smoke | `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/STRIPE-SANDBOX-SMOKE.md` | Passed with synthetic test objects only |
 | Billing UI before/after | `ops/ui-audits/2026-07-13-onetime-billing-ui-current-state/report.md`; `ops/ui-audits/2026-07-13-onetime-billing-ui-after/report.md` | Passed |
@@ -49,6 +50,10 @@ slice for One Time:
 - `npm run stripe:railway-propagate`
 - `npm run stripe:railway-readback`
 - `node --test tests/one-time-billing-sandbox-e2e-verifier.test.js tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js`
+- `node --test tests/one-time-parent-trial-invite.test.js`
+- `node --test tests/one-time-shared-review-branding.test.js tests/agent-review-hub.test.js`
+- `node scripts/watchdog-workspace-scope-guardrails.mjs`
+- `npm run watchdog:protocol-drift`
 - `node --test tests/one-time-provider-review-navigation.test.js tests/one-time-provider-operations-login.test.js tests/one-time-stripe-local-beta.test.js tests/stripe-billing-lifecycle.test.js tests/one-time-shared-review-branding.test.js tests/rabbi-scheller-auth-navigation-contract.test.js`
 - `node scripts/audit-onetime-billing-ui-current-state.mjs --expect after --out-dir ops/ui-audits/2026-07-13-onetime-billing-ui-after`
 - `node scripts/audit-onetime-provider-route-module-budget.mjs`
@@ -114,6 +119,9 @@ merge commit before this doc refresh is
   notice, and final launch approval.
 - Historical trial evidence is preserved as provenance; new checkout and
   lifecycle paths do not use Stripe trial fields.
+- Parent invite/email/review fixtures now present active access as
+  promotional access with `trial_days: 0`, `stripe_trial_enabled: false`, no
+  checkout, and no payment creation.
 
 ### Product
 
