@@ -39399,3 +39399,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   watchdogs, secret audit, execution-run validation, BNA/One Time Railway
   doctors, exact-SHA One Time route smoke, deployed marker checks on both
   domains, and read-only live `/conversations` DTO proof.
+
+## 2026-07-13 - CRM task DTO actions deployed
+
+- Added explicit Complete/Reopen controls to server-owned task DTO rows in the
+  selected contact Tasks tab, with registered `ACTION-CRM-COMPLETE-TASK` and
+  `ACTION-CRM-REOPEN-TASK` markers.
+- The controls use the same scoped `api.updateTask` handler as linked follow-up
+  tasks and preserve the no-send/no-access/no-import/no-external-write CRM
+  workspace guardrails.
+- Verification passed: Operations build/generated-shell check, shared
+  CRM/service-provider tests `21/21`, local and live One Time CRM workbench
+  smokes, focused One Time suite `76/76`, action/link/security/protocol
+  watchdogs, secret audit, execution-run validation, BNA/One Time Railway
+  doctors, exact-SHA One Time route smoke, and deployed marker checks on both
+  domains.

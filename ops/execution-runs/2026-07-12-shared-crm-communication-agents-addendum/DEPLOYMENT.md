@@ -137,3 +137,18 @@ Global production readiness remains blocked only by known external full-launch f
 - One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench` passed; report `ops/live-smokes/2026-07-13T03-12-16-557Z-one-time-operations-crm-workbench-live-smoke.md`.
 - Deployed JS marker checks passed on BNA and One Time for `openFirstPartyCrmConversationThread`, literal email/WhatsApp conversation action markers, `No WhatsApp message was sent.`, and `Open WhatsApp thread`.
 - Live selected-contact `/conversations` DTO readback through Operations auth returned 12 scoped cards, 6 selected conversations, `open_actions=["whatsapp"]`, `no_send=true`, and `external_write_performed=false`.
+
+## 2026-07-13 CRM Task DTO Actions Slice Deploy
+
+- Commit: `09d239dd095e59299f06c5b3cd38893cd5696fb8`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_RAILWAY_TARGET_PROFILE=bna`.
+- BNA Railway doctor: deployment `91aab958-0b12-442b-bf15-545517abc9b9` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=09d239dd095e59299f06c5b3cd38893cd5696fb8`, `target_app=bna`.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- One Time Railway doctor: deployment `36827b53-3ffb-420e-ac37-2ef329db94ec` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=09d239dd095e59299f06c5b3cd38893cd5696fb8`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 09d239dd095e59299f06c5b3cd38893cd5696fb8` passed.
+- One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench` passed; report `ops/live-smokes/2026-07-13T03-23-44-897Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Deployed JS marker checks passed on BNA and One Time for `updateFirstPartyCrmTaskDto`, `data-crm-task-dto-actions`, `Completed from CRM contact workspace Tasks tab.`, and `Reopened by an explicit Reopen task click in the CRM contact workspace Tasks tab.`.

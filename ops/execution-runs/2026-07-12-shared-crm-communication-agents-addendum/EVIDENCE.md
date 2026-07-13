@@ -217,3 +217,12 @@
 - `ops/live-smokes/2026-07-13T02-57-50-282Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards and selected timeline read-only after the UI DTO-consumption slice.
 - Deployed JS marker check confirmed `getCrmContactConversations`, `getCrmContactTasks`, `data-crm-dto-source="contact-conversations"`, `data-crm-dto-source="contact-tasks"`, and `Promise.allSettled`.
 - Read-only live endpoint smoke through Operations auth returned scoped One Time CRM cards plus `/conversations` and `/tasks` DTOs with `aggregate_service=bna_crm_contact_service_v1`, page limits `[5,5]`, `no_send=true`, and `external_write_performed=false`.
+- `public/operations.html` / `public/js/operations-shell.js` - contact Tasks tab DTO rows now expose explicit Complete/Reopen controls with literal registered `ACTION-CRM-COMPLETE-TASK` and `ACTION-CRM-REOPEN-TASK` markers, using the same scoped `api.updateTask` handler as linked follow-up task actions.
+- `tests/shared-crm-workbench-contract.test.js` - contract test now pins `renderFirstPartyCrmTaskDtoActions`, `updateFirstPartyCrmTaskDto`, DTO task action markers, and the explicit Complete/Reopen audit notes.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=09d239dd095e59299f06c5b3cd38893cd5696fb8`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=09d239dd095e59299f06c5b3cd38893cd5696fb8`.
+- BNA post-deploy doctor - Railway deployment `91aab958-0b12-442b-bf15-545517abc9b9` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `36827b53-3ffb-420e-ac37-2ef329db94ec` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 09d239dd095e59299f06c5b3cd38893cd5696fb8` passed.
+- `ops/live-smokes/2026-07-13T03-23-44-897Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards and read-only selected timeline.
+- Deployed JS marker checks on both BNA and One Time confirmed `updateFirstPartyCrmTaskDto`, `data-crm-task-dto-actions`, `Completed from CRM contact workspace Tasks tab.`, and `Reopened by an explicit Reopen task click in the CRM contact workspace Tasks tab.`.
