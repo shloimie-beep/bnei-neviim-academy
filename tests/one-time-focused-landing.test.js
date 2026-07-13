@@ -10,6 +10,11 @@ test('One Time focused landing copy uses launch funnel offer and safe CTAs', () 
   assert.match(html, /Give your son a love for learning Torah\./);
   assert.match(html, /Sign Up Now/);
   assert.match(html, /href="\/one-time\/signup"/);
+  assert.match(html, /--yellow: #ede518;/);
+  assert.match(html, /\.site-header \{[\s\S]*background: rgba\(8, 9, 16, 0\.96\);[\s\S]*box-shadow: none;/);
+  assert.match(html, /\.section \{ position: relative; overflow: hidden; padding: clamp\(52px, 6vw, 82px\) 0; \}/);
+  assert.match(html, /\.hero-actions \{ margin-top: -10px; \}/);
+  assert.doesNotMatch(html, /inset 0 -2px 0 rgba\(5, 5, 5, 0\.28\)/);
   assert.doesNotMatch(html, /data-signup-modal/);
   assert.doesNotMatch(html, /data-signup-form/);
   assert.match(signup, /name="contact_name"/);
@@ -18,6 +23,9 @@ test('One Time focused landing copy uses launch funnel offer and safe CTAs', () 
   assert.match(signup, /name="email"/);
   assert.match(signup, /name="phone"/);
   assert.match(signup, /name="reminder_preference"/);
+  assert.match(signup, /<span>One Time Mishnayos<small>Sign up<\/small><\/span>/);
+  assert.match(signup, /box-shadow: 0 8px 18px rgba\(237, 229, 24, 0\.2\);/);
+  assert.doesNotMatch(signup, /box-shadow: 0 14px 34px rgba\(242, 229, 59, 0\.28\);/);
   assert.doesNotMatch(html, /name="student_name"|name="studentName"|name="learner_name"|name="learnerName"/);
   assert.doesNotMatch(signup, /name="student_name"|name="studentName"|name="learner_name"|name="learnerName"/);
   assert.doesNotMatch(signup, /preferred_class_format/);

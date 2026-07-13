@@ -29,6 +29,8 @@ test('One Time provider-bot profile has explicit GHL-style sections without priv
   assert.ok(profile.knowledge_base.approved_benefits.some((item) => /live hybrid Mishnayos/i.test(item)));
   assert.ok(profile.knowledge_base.approved_benefits.every((item) => !/parent portal|student portal|library|accountability/i.test(item)));
   assert.equal(profile.knowledge_base.access_policy.portal_access_status, 'not_currently_granted');
+  assert.match(profile.knowledge_base.access_policy.operator_correction, /not giving portal access yet/i);
+  assert.match(profile.knowledge_base.access_policy.safe_public_answer, /not giving portal access yet/i);
   assert.match(profile.knowledge_base.access_policy.safe_public_answer, /not being opened or promised yet/i);
   assert.equal(profile.policies.activation_mode, 'observe_only');
   assert.equal(schema.$id, 'bna.provider_lead_bot.v1');
@@ -210,6 +212,7 @@ test('program, portal, trial, and price replies use only safe unpublished bot fa
     contact: { contact_type: 'lead', lead_id: 19 },
   });
   assert.equal(benefits.intent, 'program_benefits');
+  assert.match(benefits.reply_body, /We are not giving portal access yet/);
   assert.match(benefits.reply_body, /Portal, library, student-login, parent-login, and member access are not being opened or promised yet/);
   assert.doesNotMatch(benefits.reply_body, /A parent portal and a student portal|Online class library|30-day|\$67/i);
   assert.equal(benefits.guardrails.portal_access_not_granted_by_bot, true);
@@ -268,6 +271,7 @@ test('natural-language prompt is knowledge-scoped and never receives the raw joi
   assert.match(prompt, /Robot Scheller/);
   assert.match(prompt, /Offer terms:/);
   assert.match(prompt, /Do not state a trial length, price, renewal term, payment flow, portal availability, library availability, or member access as an approved fact/);
+  assert.match(prompt, /We are not giving portal access yet/);
   assert.match(prompt, /Portal, library, student-login, parent-login, and member access are not being opened or promised yet/);
   assert.doesNotMatch(prompt, /30-day trial|\$67/);
   assert.match(prompt, /may not authorize a send/i);

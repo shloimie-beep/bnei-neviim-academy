@@ -1,7 +1,7 @@
 {
   "schema_version": "bna.provider_lead_bot.v1",
   "profile_key": "one_time_whatsapp_lead_bot",
-  "version": "2026-07-13-v1",
+  "version": "2026-07-13-v2",
   "scope": {
     "workspace_key": "rabbi_sheller_provider",
     "project_key": "one_time_mishnah_class",
@@ -90,7 +90,8 @@
       "library_access_status": "not_currently_granted",
       "student_login_status": "not_currently_granted",
       "parent_login_status": "not_currently_granted",
-      "safe_public_answer": "Portal, library, student-login, parent-login, and member access are not being opened or promised yet. The One Time team will verify access before any private link or login is provided."
+      "operator_correction": "As of 2026-07-13, the WhatsApp bot must plainly say that One Time is not giving portal access yet.",
+      "safe_public_answer": "We are not giving portal access yet. Portal, library, student-login, parent-login, and member access are not being opened or promised yet. The One Time team will verify access before any private link or login is provided."
     },
     "dynamic_sources": {
       "schedule": "bna_program_calendar_events:public_planned",

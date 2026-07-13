@@ -15,9 +15,9 @@
       --white: #ffffff;
       --paper: #f8f7f1;
       --muted-dark: #5b6268;
-      --yellow: #f0ff32;
-      --yellow-soft: #faff82;
-      --chrome: linear-gradient(115deg, rgba(255, 255, 255, 0.72) 0%, transparent 18%, transparent 58%, rgba(223, 248, 255, 0.68) 72%, transparent 100%), linear-gradient(180deg, #faff82 0%, #f0ff32 48%, #e8f525 100%);
+      --yellow: #ede518;
+      --yellow-soft: #fff46a;
+      --chrome: linear-gradient(115deg, rgba(255, 255, 255, 0.72) 0%, transparent 18%, transparent 58%, rgba(223, 248, 255, 0.68) 72%, transparent 100%), linear-gradient(180deg, #fff46a 0%, #ede518 52%, #e5dd16 100%);
       --ice: #dff8ff;
       --ice-strong: #8ee5ff;
       --line: rgba(255, 255, 255, 0.16);
@@ -93,66 +93,94 @@
       position: sticky;
       top: 0;
       z-index: 5;
-      border-bottom: 1px solid var(--line);
-      background: rgba(5, 5, 5, 0.94);
-      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(237, 229, 24, 0.2);
+      background: rgba(8, 9, 16, 0.96);
+      backdrop-filter: blur(12px);
     }
 
     .header-inner {
       width: min(1180px, calc(100% - 36px));
-      min-height: 74px;
+      min-height: 76px;
       margin: 0 auto;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 18px;
+      justify-content: flex-end;
+      gap: 8px;
     }
 
     .brand-lockup {
       display: inline-flex;
       align-items: center;
-      gap: 12px;
-      min-width: 0;
+      gap: 9px;
+      min-width: min(100%, 240px);
+      margin-right: auto;
+      color: var(--white);
+      font-weight: 950;
+      line-height: 1.08;
     }
 
     .brand-lockup img {
-      width: 120px;
-      height: auto;
+      width: 56px;
+      height: 56px;
+      flex: 0 0 auto;
+      padding: 4px;
+      border-radius: 8px;
+      background: var(--yellow);
+      object-fit: contain;
     }
 
     .brand-lockup span {
       display: block;
-      color: rgba(255, 255, 255, 0.74);
-      font-size: 0.78rem;
+      color: var(--white);
+      font-size: 0.92rem;
+      font-weight: 950;
+      line-height: 1.08;
+    }
+
+    .brand-lockup small {
+      display: block;
+      margin-top: 2px;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 0.68rem;
       font-weight: 850;
-      line-height: 1.1;
-      text-transform: uppercase;
     }
 
     .header-title {
       color: var(--white);
       font-weight: 900;
       min-width: 0;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(237, 229, 24, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 9px 11px;
+      font-size: 0.82rem;
+      white-space: nowrap;
     }
 
     .back-link {
       display: inline-flex;
       align-items: center;
-      min-height: 42px;
-      padding: 0 13px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 6px;
-      color: rgba(255, 255, 255, 0.82);
-      font-weight: 800;
+      justify-content: center;
+      min-height: 44px;
+      padding: 9px 11px;
+      border: 1px solid rgba(237, 229, 24, 0.2);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.06);
+      font-size: 0.82rem;
+      font-weight: 900;
       white-space: nowrap;
       transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
     }
 
     .back-link:hover,
     .back-link:focus-visible {
-      color: var(--white);
-      border-color: rgba(242, 229, 59, 0.68);
-      background: rgba(255, 255, 255, 0.07);
+      color: var(--black);
+      border-color: var(--yellow);
+      background: var(--yellow);
       outline: none;
     }
 
@@ -532,7 +560,7 @@
       border-radius: 6px;
       color: var(--black);
       background: var(--chrome);
-      box-shadow: 0 14px 34px rgba(242, 229, 59, 0.28);
+      box-shadow: 0 8px 18px rgba(237, 229, 24, 0.2);
       cursor: pointer;
       overflow: hidden;
       font-weight: 950;
@@ -555,7 +583,7 @@
     .button:focus-visible {
       transform: translateY(-1px);
       filter: saturate(1.08);
-      box-shadow: 0 18px 40px rgba(242, 229, 59, 0.34);
+      box-shadow: 0 10px 22px rgba(237, 229, 24, 0.24);
       outline: none;
     }
 
@@ -739,11 +767,12 @@
     @media (max-width: 640px) {
       .header-inner {
         width: min(100% - 28px, 1180px);
-        min-height: 66px;
+        min-height: 72px;
       }
 
       .brand-lockup img {
-        width: 98px;
+        width: 54px;
+        height: 54px;
       }
 
       .brand-lockup span {
@@ -809,8 +838,8 @@
     <header class="signup-header">
       <div class="header-inner">
         <a class="brand-lockup" href="/one-time" aria-label="One Time home">
-          <img src="/assets/one-time/brand/one-time-logo-white.webp" width="120" height="76" alt="One Time">
-          <span>Worldwide Mishnah Learning</span>
+          <img src="/images/one-time/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
+          <span>One Time Mishnayos<small>Sign up</small></span>
         </a>
         <div class="header-title">Sign Up Now</div>
         <a class="back-link" href="/one-time" data-action-id="ACTION-ONETIME-SIGNUP-BACK-HOME">Back to Home</a>

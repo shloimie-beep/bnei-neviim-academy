@@ -58,6 +58,9 @@ test('One Time direct signup route, registries, and landing CTAs are canonical',
   assert.match(server, /app\.get\(\['\/one-time\/signup', '\/one-time\/signup\/'\], sendOneTimeSignupPage\)/);
 
   assert.match(signupHtml, /data-one-time-signup-page/);
+  assert.match(signupHtml, /<img src="\/images\/one-time\/brand\/onetimelogo\.webp" width="56" height="56" alt="" aria-hidden="true">/);
+  assert.match(signupHtml, /<span>One Time Mishnayos<small>Sign up<\/small><\/span>/);
+  assert.match(signupHtml, /\.signup-header \{[\s\S]*background: rgba\(8, 9, 16, 0\.96\);[\s\S]*backdrop-filter: blur\(12px\);/);
   assert.match(signupHtml, /data-one-time-direct-signup-form/);
   assert.match(signupHtml, /name="contact_name"/);
   assert.match(signupHtml, /name="signup_as"/);

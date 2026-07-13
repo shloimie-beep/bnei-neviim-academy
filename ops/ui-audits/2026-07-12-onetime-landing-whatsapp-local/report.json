@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-12T22:12:05.756Z",
-  "base_url": "http://127.0.0.1:50149",
+  "generated_at": "2026-07-13T00:20:22.582Z",
+  "base_url": "http://127.0.0.1:59271",
   "requirement_id": "REQ-20260712-109",
   "fake_whatsapp_number_used": true,
   "full_number_returned_by_readiness": false,
@@ -22,7 +22,7 @@
       "screenshot": "landing-whatsapp-1440.png",
       "hero_cta_box": {
         "x": 130,
-        "y": 750.1416625976562,
+        "y": 755.265625,
         "width": 129.8125,
         "height": 48
       },
@@ -43,7 +43,7 @@
       "screenshot": "landing-whatsapp-1024.png",
       "hero_cta_box": {
         "x": 18,
-        "y": 628.938232421875,
+        "y": 629.942138671875,
         "width": 129.8125,
         "height": 48
       },
@@ -64,9 +64,9 @@
       "screenshot": "landing-whatsapp-768.png",
       "hero_cta_box": {
         "x": 18,
-        "y": 666.1251831054688,
+        "y": 667.1328735351562,
         "width": 129.8125,
-        "height": 48
+        "height": 47.99993896484375
       },
       "whatsapp_launcher_box": {
         "x": 686,
@@ -86,9 +86,9 @@
       "screenshot": "landing-whatsapp-430.png",
       "hero_cta_box": {
         "x": 14,
-        "y": 623.158203125,
+        "y": 603.16162109375,
         "width": 129.8125,
-        "height": 47.99993896484375
+        "height": 48
       },
       "whatsapp_launcher_box": {
         "x": 348,
@@ -107,7 +107,7 @@
       "screenshot": "landing-whatsapp-390.png",
       "hero_cta_box": {
         "x": 14,
-        "y": 607.157958984375,
+        "y": 587.1569213867188,
         "width": 129.8125,
         "height": 48
       },
