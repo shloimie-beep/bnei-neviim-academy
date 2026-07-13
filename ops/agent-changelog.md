@@ -39781,14 +39781,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   canonical keys, `parent_lead_id`, or same-project lead email.
 - Kept the DTO redacted: no arbitrary legacy metadata merge into the browser
   payload, and all rows keep `no_send=true` / `external_write_performed=false`.
+- Added `app:smoke:onetime-crm-contact-notes-dto` for redacted read-only
+  production proof of the contact-note DTO path.
 - Deployed commit `e0dd3d48543740efb32b35f64ad27cf0cc6e676b`: One Time
   Railway deployment `99ea47d8-a5a1-4403-b435-a732b7df21d1` and BNA Railway
   deployment `b35f96f7-f610-410a-b206-86b6900c07f0` reached `SUCCESS`; both
   deploy-info endpoints returned the exact SHA.
-- Verification passed: focused CRM/isolation tests `36/36`,
+- Verification passed: focused CRM/isolation tests `31/31`,
   `npm run operations:check-generated`, `npm run watchdog:actions`,
   `npm run secrets:audit`, One Time CRM workbench live smoke, email DTO live
   smoke, Operations taxonomy smoke, and exact-SHA One Time performance gate.
 - Targeted legacy contact-note live probe recorded no positive sample because
   production currently has no matching canonical legacy-note data; it created
-  no synthetic data and performed no external writes.
+  no synthetic data and performed no external writes. Report:
+  `ops/live-smokes/2026-07-13T09-00-20-964Z-one-time-crm-contact-notes-dto-live-smoke.md`.
