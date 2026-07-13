@@ -1,6 +1,6 @@
 # One Time Performance Regression Gates
 
-Generated: 2026-07-13T10:17:41.348Z
+Generated: 2026-07-13T10:35:21.820Z
 Requirement: REQ-20260713-911
 Status: PASSED
 
@@ -40,16 +40,16 @@ Local and production One Time performance instrumentation, budget, Server-Timing
 ## Live Checks
 
 Base URL: https://join.onetimeonetime.com
-Expected SHA: c2b0878b66a50679589ee240ebdbd194622008fa
-Observed SHA: c2b0878b66a50679589ee240ebdbd194622008fa
+Expected SHA: 35a0a5d2e0ad157e383537dfbb1518d2a8df33bd
+Observed SHA: 35a0a5d2e0ad157e383537dfbb1518d2a8df33bd
 
 | Check | Status | Detail |
 | --- | --- | --- |
-| `live_deploy_info_headers` | PASS | 545ms |
-| `live_health_db_pool_timing` | PASS | 419ms |
-| `live_one_time_shell_rum_loaded` | PASS | 481ms |
-| `live_rum_dry_run_contract` | PASS | 232ms |
-| `live_scoped_operations_crm_headers` | PASS | 1879ms |
+| `live_deploy_info_headers` | PASS | 568ms |
+| `live_health_db_pool_timing` | PASS | 543ms |
+| `live_one_time_shell_rum_loaded` | PASS | 621ms |
+| `live_rum_dry_run_contract` | PASS | 257ms |
+| `live_scoped_operations_crm_headers` | PASS | 4001ms |
 
 ## Guardrails
 

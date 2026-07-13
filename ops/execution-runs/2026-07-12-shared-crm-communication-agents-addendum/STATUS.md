@@ -278,3 +278,14 @@ Current status: `active`
 - Targeted signup-context DTO live probe wrote `ops/live-smokes/2026-07-13T10-17-24-142Z-one-time-crm-signup-context-dto-live-smoke.md`; production had `signup_context_candidate_count=1` and `signup_context_match=true` without creating synthetic data.
 - Owner-only live integration testing remains blocked only by missing secure owner aliases; refreshed readiness report `ops/watchdog-audits/2026-07-13T10-06-52-478Z-onetime-owner-test-readiness.md` shows Resend and WAPI ready, owner aliases missing, and no send performed.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw contact/message/destination logging, or production data mutation was performed by this DTO smoke.
+
+## CRM Phone / WhatsApp Communication Matching DTO - 2026-07-13
+
+- `REQ-20260712-302` remains in progress, with the selected-contact phone/WhatsApp communication matching slice implemented, pushed, deployed, and live-smoked at `35a0a5d2e0ad157e383537dfbb1518d2a8df33bd`.
+- Runtime app-code commit `c00b46668111bbc898ddc7a571fe8d3605d6384d` added workspace/project-scoped normalized phone matching for `bna_communications` rows on canonical `bna_contacts` and legacy One Time parent leads. Final deployed commit `35a0a5d2e0ad157e383537dfbb1518d2a8df33bd` adds the redacted live smoke harness and npm hook.
+- Selected-contact timelines/conversations now match communications by explicit contact id, scoped primary email, or scoped normalized primary phone. Source context stays redacted with no-send/external-write guardrails, and mailbox counts now include scoped phone-matched communication rows.
+- BNA Railway deployment `a6b1ffeb-038f-45a4-b04f-ff5dc00b3125` reached `SUCCESS`; One Time Railway deployment `61721d1e-977b-4ffe-a6a2-d8cda226abf1` reached `SUCCESS`.
+- Both live deploy-info endpoints returned `commit_sha=35a0a5d2e0ad157e383537dfbb1518d2a8df33bd` with target apps `bna` and `one-time`.
+- Live proof passed: exact-SHA One Time separate-instance smoke, One Time CRM workbench smoke, One Time provider route-module smoke, BNA workspace taxonomy smoke, One Time performance gate, signup-context regression smoke, and the new WhatsApp DTO smoke.
+- Targeted WhatsApp DTO live probe wrote `ops/live-smokes/2026-07-13T10-35-15-518Z-one-time-crm-whatsapp-thread-dto-live-smoke.md`; production returned `phone_candidate_count=2` and `selected_contact_whatsapp_thread_match=true` without synthetic data or external writes.
+- Owner-only email/WhatsApp sends remain blocked only by missing secure owner-test aliases; no owner-test send or public auto-reply activation was attempted in this slice.

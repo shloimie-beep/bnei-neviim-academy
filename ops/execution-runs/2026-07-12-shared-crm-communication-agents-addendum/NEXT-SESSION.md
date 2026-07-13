@@ -1,6 +1,6 @@
 # Next Session
 
-Next unblocked batch: none inside the One Time-first verifier lane until owner aliases are configured.
+Next unblocked batch: continue only non-send, non-credential work outside the owner-only verifier lane until owner aliases are configured.
 Open blocked requirement: `REQ-20260713-910`, blocked by `REQ-20260713-906`
 
 Current control correction:
@@ -40,10 +40,11 @@ Immediate next action:
 
 Previous shared-CRM lane is no longer the first lane. Continue `REQ-20260712-302` / `REQ-20260712-303` only where they directly support the One Time-first packets or required BNA regression safety.
 
-Latest One Time app runtime SHA: `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`
+Latest One Time app runtime SHA: `35a0a5d2e0ad157e383537dfbb1518d2a8df33bd`
 
 Current proof:
 
+- `35a0a5d2e0ad157e383537dfbb1518d2a8df33bd` is pushed to `origin/master` and deployed to BNA and One Time for the selected-contact phone/WhatsApp communication matching slice. BNA deployment `a6b1ffeb-038f-45a4-b04f-ff5dc00b3125` and One Time deployment `61721d1e-977b-4ffe-a6a2-d8cda226abf1` reached `SUCCESS`; both deploy-info endpoints returned the SHA. Live proof passed through One Time route/CRM/provider smokes, BNA taxonomy smoke, signup-context regression smoke, performance gate, and `ops/live-smokes/2026-07-13T10-35-15-518Z-one-time-crm-whatsapp-thread-dto-live-smoke.md` with `phone_candidate_count=2` and `selected_contact_whatsapp_thread_match=true`. No synthetic data, sends, or external writes were performed.
 - `72650231e9d6eba9a367a59251cb58202f8910b1` is pushed to `origin/master` and deployed to One Time for the mailbox/messages route-module slice. BNA frontend parity remains deferred unless a shared runtime/security/scope change requires a BNA deploy.
 - `RAW-20260713-003` is registered as the active One Time-first control correction: One Time is the current canonical implementation/acceptance target, simultaneous BNA frontend parity is superseded for this phase, and BNA scope is shared API/security/privacy/database regression safety until a later BNA adoption packet.
 - One Time production `https://join.onetimeonetime.com/api/deploy-info` returns that SHA.

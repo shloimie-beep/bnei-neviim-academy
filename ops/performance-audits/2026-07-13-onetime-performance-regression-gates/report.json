@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T10:17:41.348Z",
+  "generated_at": "2026-07-13T10:35:21.820Z",
   "requirement_id": "REQ-20260713-911",
   "status": "passed",
   "scope": "Local and production One Time performance instrumentation, budget, Server-Timing, trace-header, route RUM, and scoped CRM readback gate.",
@@ -173,23 +173,23 @@
   ],
   "live": {
     "base_url": "https://join.onetimeonetime.com",
-    "expected_sha": "c2b0878b66a50679589ee240ebdbd194622008fa",
-    "deployed_sha": "c2b0878b66a50679589ee240ebdbd194622008fa",
+    "expected_sha": "35a0a5d2e0ad157e383537dfbb1518d2a8df33bd",
+    "deployed_sha": "35a0a5d2e0ad157e383537dfbb1518d2a8df33bd",
     "checks": [
       {
         "id": "live_deploy_info_headers",
         "passed": true,
-        "detail": "545ms",
+        "detail": "568ms",
         "evidence": [
           "https://join.onetimeonetime.com/api/deploy-info"
         ],
         "details": {
-          "commit_sha": "c2b0878b66a50679589ee240ebdbd194622008fa",
+          "commit_sha": "35a0a5d2e0ad157e383537dfbb1518d2a8df33bd",
           "target_app": "one-time",
           "header_proof": {
-            "server_timing": "app;dur=0.5, handler;dur=0.5, db;dur=0;desc=\"queries:0\", pool;dur=0;desc=\"waits:0\"",
+            "server_timing": "app;dur=1.2, handler;dur=1.2, db;dur=0;desc=\"queries:0\", pool;dur=0;desc=\"waits:0\"",
             "trace_id_present": true,
-            "deploy_sha": "c2b0878b66a50679589ee240ebdbd194622008fa",
+            "deploy_sha": "35a0a5d2e0ad157e383537dfbb1518d2a8df33bd",
             "target_app": "one-time",
             "response_bytes": "276",
             "has_required_server_timing_metrics": true
@@ -202,7 +202,7 @@
       {
         "id": "live_health_db_pool_timing",
         "passed": true,
-        "detail": "419ms",
+        "detail": "543ms",
         "evidence": [
           "https://join.onetimeonetime.com/api/health"
         ],
@@ -210,9 +210,9 @@
           "status": "ok",
           "database": "connected",
           "header_proof": {
-            "server_timing": "app;dur=6.8, handler;dur=0, db;dur=6.1;desc=\"queries:1\", pool;dur=3.9;desc=\"waits:1\"",
+            "server_timing": "app;dur=56.1, handler;dur=0, db;dur=55.6;desc=\"queries:1\", pool;dur=2.3;desc=\"waits:1\"",
             "trace_id_present": true,
-            "deploy_sha": "c2b0878b66a50679589ee240ebdbd194622008fa",
+            "deploy_sha": "35a0a5d2e0ad157e383537dfbb1518d2a8df33bd",
             "target_app": "one-time",
             "response_bytes": "70",
             "has_required_server_timing_metrics": true
@@ -225,7 +225,7 @@
       {
         "id": "live_one_time_shell_rum_loaded",
         "passed": true,
-        "detail": "481ms",
+        "detail": "621ms",
         "evidence": [
           "https://join.onetimeonetime.com/one-time"
         ],
@@ -233,9 +233,9 @@
           "rum_client_loaded": true,
           "html_bytes_seen": 62100,
           "header_proof": {
-            "server_timing": "app;dur=1.1, handler;dur=1.1, db;dur=0;desc=\"queries:0\", pool;dur=0;desc=\"waits:0\"",
+            "server_timing": "app;dur=0.7, handler;dur=0.7, db;dur=0;desc=\"queries:0\", pool;dur=0;desc=\"waits:0\"",
             "trace_id_present": true,
-            "deploy_sha": "c2b0878b66a50679589ee240ebdbd194622008fa",
+            "deploy_sha": "35a0a5d2e0ad157e383537dfbb1518d2a8df33bd",
             "target_app": "one-time",
             "response_bytes": "0",
             "has_required_server_timing_metrics": true
@@ -248,7 +248,7 @@
       {
         "id": "live_rum_dry_run_contract",
         "passed": true,
-        "detail": "232ms",
+        "detail": "257ms",
         "evidence": [
           "https://join.onetimeonetime.com/api/performance/rum?dry_run=true"
         ],
@@ -259,9 +259,9 @@
           "route_id": "one_time_operations_contact_redaction_probe",
           "external_write_performed": false,
           "header_proof": {
-            "server_timing": "app;dur=2.2, handler;dur=2.2, db;dur=0;desc=\"queries:0\", pool;dur=0;desc=\"waits:0\"",
+            "server_timing": "app;dur=9.3, handler;dur=9.3, db;dur=0;desc=\"queries:0\", pool;dur=0;desc=\"waits:0\"",
             "trace_id_present": true,
-            "deploy_sha": "c2b0878b66a50679589ee240ebdbd194622008fa",
+            "deploy_sha": "35a0a5d2e0ad157e383537dfbb1518d2a8df33bd",
             "target_app": "one-time",
             "response_bytes": "324",
             "has_required_server_timing_metrics": true
@@ -274,7 +274,7 @@
       {
         "id": "live_scoped_operations_crm_headers",
         "passed": true,
-        "detail": "1879ms",
+        "detail": "4001ms",
         "evidence": [
           "https://join.onetimeonetime.com/api/bna/crm/contacts"
         ],
@@ -284,9 +284,9 @@
           "filtered_total": 4,
           "external_write_performed": false,
           "header_proof": {
-            "server_timing": "app;dur=26.4, handler;dur=1.9, db;dur=24.2;desc=\"queries:4\", pool;dur=0.3;desc=\"waits:4\"",
+            "server_timing": "app;dur=24.7, handler;dur=1.4, db;dur=23.1;desc=\"queries:4\", pool;dur=0.2;desc=\"waits:4\"",
             "trace_id_present": true,
-            "deploy_sha": "c2b0878b66a50679589ee240ebdbd194622008fa",
+            "deploy_sha": "35a0a5d2e0ad157e383537dfbb1518d2a8df33bd",
             "target_app": "one-time",
             "response_bytes": "0",
             "has_required_server_timing_metrics": true

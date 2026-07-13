@@ -39886,3 +39886,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Refreshed owner-test readiness remains blocked only by missing secure
   owner-test email/WhatsApp aliases; Resend and WAPI are ready and no send was
   attempted.
+
+## 2026-07-13 - Shared CRM phone / WhatsApp communication matching deployed
+
+- Added workspace/project-scoped normalized phone matching for selected-contact
+  `bna_communications` rows, covering canonical CRM contacts and legacy One Time
+  parent leads without browser-side unions.
+- Runtime app-code commit `c00b46668111bbc898ddc7a571fe8d3605d6384d` and
+  final deployed/proof commit `35a0a5d2e0ad157e383537dfbb1518d2a8df33bd` are
+  pushed to `origin/master`.
+- Deployed to BNA Railway deployment `a6b1ffeb-038f-45a4-b04f-ff5dc00b3125` and
+  One Time Railway deployment `61721d1e-977b-4ffe-a6a2-d8cda226abf1`; both
+  deploy-info endpoints returned the exact SHA.
+- Verification passed: focused CRM/provider tests `31/31`, generated-shell
+  check, action/protocol/secrets watchdogs, run validation, exact-SHA One Time
+  route/CRM/provider smokes, BNA taxonomy smoke, signup-context regression
+  smoke, WhatsApp DTO smoke, and One Time performance gate.
+- Targeted WhatsApp DTO live smoke:
+  `ops/live-smokes/2026-07-13T10-35-15-518Z-one-time-crm-whatsapp-thread-dto-live-smoke.md`
+  found `phone_candidate_count=2` and
+  `selected_contact_whatsapp_thread_match=true` with no synthetic data, sends,
+  or external writes.
