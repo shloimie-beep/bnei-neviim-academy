@@ -68,5 +68,5 @@ Drive intake orchestrator. Keep it narrow:
   deployment gates are explicitly verified;
 - keep Vimeo upload as a separate provider-gated packet.
 
-The Vimeo packet `PKT-20260713-004-05` remains in progress, not done, because
+The Vimeo packet `PKT-20260713-004-05` is `needs_operator_decision`, not done, because
 read-only account proof is not the same as private upload/write proof.

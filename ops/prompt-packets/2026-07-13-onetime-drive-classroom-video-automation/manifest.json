@@ -23,7 +23,7 @@
   "visual_audit_before_ui_implementation": true,
   "external_writes_authorized": false,
   "secret_values_printed": false,
-  "packet_dag_status": "metadata-knowledge-contract-local-complete",
+  "packet_dag_status": "vimeo-owner-readiness-needs-operator-decision",
   "packets": [
     {
       "packet_id": "PKT-20260713-004-00",
@@ -126,7 +126,7 @@
       ],
       "stage": "02-drive-intake-orchestrator",
       "packet_role": "IMPLEMENTATION_PACKET",
-      "status": "in_progress_local_implementation_complete_deploy_live_readback_pending",
+      "status": "done",
       "owner": "Codex",
       "scope": "Canonical One Time Drive video lane resolution, stable-file admission, idempotent content-job drafts, leases, retries, dead-letter states, and source provenance.",
       "out_of_scope": [
@@ -169,7 +169,7 @@
       ],
       "stage": "03-media-edit-and-long-transcription",
       "packet_role": "IMPLEMENTATION_PACKET",
-      "status": "in_progress_local_harness_complete_provider_private_fixture_pending",
+      "status": "partial_media_edit_done_transcription_provider_private_fixture_pending",
       "owner": "Codex",
       "scope": "Conservative media edit defaults, MKV handoff support, rendered-output verification, and later long-form private transcription.",
       "out_of_scope": [
@@ -217,7 +217,7 @@
       ],
       "stage": "04-transcript-metadata-and-knowledge-handoff",
       "packet_role": "IMPLEMENTATION_PACKET",
-      "status": "in_progress_local_contract_complete_db_review_integration_pending",
+      "status": "in_progress_local_contract_deployed_db_review_integration_pending",
       "owner": "Codex",
       "scope": "Versioned transcript metadata draft and provider-scoped bot knowledge handoff contracts with review gates and no raw transcript leakage.",
       "out_of_scope": [
@@ -244,6 +244,48 @@
       ],
       "validation_command": "node --test tests/one-time-transcript-metadata.test.js",
       "terminal_condition": "Local contract is validated; DB promotion worker/review UI integration remains pending.",
+      "handoff_target": "PKT-20260713-004-06",
+      "next_requirement": "REQ-20260713-919",
+      "next_packet": "PKT-20260713-004-06"
+    },
+    {
+      "packet_id": "PKT-20260713-004-05",
+      "parent_raw_id": "RAW-20260713-004",
+      "parent_packet_id": "PKT-20260713-004-00",
+      "child_packet_ids": [
+        "PKT-20260713-004-06"
+      ],
+      "depends_on_packet_ids": [
+        "PKT-20260713-004-00"
+      ],
+      "stage": "05-vimeo-owner-readiness-and-private-upload",
+      "packet_role": "PROVIDER_SETUP_PACKET",
+      "status": "needs_operator_decision",
+      "owner": "Codex + operator",
+      "scope": "Vimeo owner account readback, private test project/folder decision, upload scope/plan confirmation, and explicit synthetic private upload approval gate.",
+      "out_of_scope": [
+        "Real class upload",
+        "Synthetic upload without explicit approval",
+        "Vimeo privacy or folder mutation",
+        "Database mutation",
+        "Member publication",
+        "External sends"
+      ],
+      "affected_routes": [],
+      "affected_files": [
+        "src/lib/integrations/vimeo.js",
+        "scripts/vimeo-private-smoke.mjs",
+        "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/05-vimeo-owner-readiness-and-private-upload.md"
+      ],
+      "required_evidence": [
+        "secret-redacted credential readback",
+        "owner account confirmation",
+        "private test project or folder config",
+        "explicit approval for synthetic private upload",
+        "no public publish or token print"
+      ],
+      "validation_command": "node scripts/vimeo-private-smoke.mjs --json",
+      "terminal_condition": "Current state is Needs operator decision: keyholder token reads the owner account, but no private Vimeo test project/folder or synthetic upload approval is configured.",
       "handoff_target": "PKT-20260713-004-06",
       "next_requirement": "REQ-20260713-919",
       "next_packet": "PKT-20260713-004-06"
