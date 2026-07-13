@@ -39356,3 +39356,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `76/76`, action watchdog, protocol drift watchdog, secret audit,
   execution-run validation, BNA/One Time Railway doctors, exact-SHA One Time
   route smoke, live One Time CRM workbench smoke, and deployed JS marker checks.
+
+## 2026-07-13 - CRM conversation and task DTO routes deployed
+
+- Added canonical selected-contact `conversations` and `tasks` DTO envelopes to
+  `src/lib/bna/crm/contact-service.js`.
+- Added protected read-only `/api/bna/crm/contacts/:id/conversations` and
+  `/api/bna/crm/contacts/:id/tasks` routes, using server-derived
+  workspace/project scope and the existing contact timeline entitlement.
+- Registered the routes in `ops/route-registry.json` and added shared CRM API
+  path helpers in `public/js/crm/crm-api.js`.
+- Verification passed: syntax checks, shared CRM/service-provider/tenant tests,
+  focused One Time suite `76/76`, generated-shell check, action watchdog,
+  protocol drift, link/security route watchdogs, secret audit, execution-run
+  validation, BNA/One Time Railway doctors, exact-SHA One Time route smoke, live
+  CRM workbench smoke, and read-only live endpoint smoke for the new DTO routes.

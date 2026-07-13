@@ -184,3 +184,14 @@
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 15796035598280b3ae14d748e3673d6a186af5cd` passed.
 - `ops/live-smokes/2026-07-13T02-32-29-354Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the note/tag/owner/lifecycle actions slice with 12 scoped cards and read-only selected timeline.
 - Deployed JS marker checks confirmed `ACTION-CRM-ADD-NOTE`, `ACTION-CRM-ADD-TAG`, `ACTION-CRM-REMOVE-TAG`, `ACTION-CRM-ASSIGN-OWNER`, `ACTION-CRM-CHANGE-LIFECYCLE`, tag remove validation copy, and `create_follow_up_task: false`.
+- `src/lib/bna/crm/contact-service.js` - canonical contact service now returns separate paginated `conversations` and `tasks` DTO envelopes for a selected contact, with `no_send=true`, `external_write_performed=false`, and normalized task metadata from `source_context`.
+- `server.js` - added read-only protected `GET /api/bna/crm/contacts/:id/conversations` and `GET /api/bna/crm/contacts/:id/tasks`; both derive workspace/project server-side, require the existing contact timeline entitlement, and reuse server-side CRM timeline loaders instead of browser-side dataset unions.
+- `public/js/crm/crm-api.js` - shared CRM browser API exposes canonical path helpers for selected-contact conversations and tasks.
+- `ops/route-registry.json` - registers the two new private CRM DTO routes with workspace scope, no-send/no-external-write expectations, and no mutation/task-creation side effects.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=1a8bca34048a8b0213b0a608cae5320727f6747b`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=1a8bca34048a8b0213b0a608cae5320727f6747b`.
+- BNA post-deploy doctor - Railway deployment `aa2a2f07-7900-4eed-beb8-7fc47e20cfcd` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `11a938f8-387c-43e6-bfa9-5e91d10645fc` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1a8bca34048a8b0213b0a608cae5320727f6747b` passed.
+- `ops/live-smokes/2026-07-13T02-43-26-025Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards and selected timeline read-only.
+- Read-only live endpoint smoke through Operations auth returned scoped One Time CRM cards plus `/conversations` and `/tasks` DTOs with `aggregate_service=bna_crm_contact_service_v1`, page limits `[5,5]`, `no_send=true`, and `external_write_performed=false`.

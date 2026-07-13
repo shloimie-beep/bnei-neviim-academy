@@ -356,3 +356,25 @@
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 15796035598280b3ae14d748e3673d6a186af5cd`.
 - PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T02-32-29-354Z-one-time-operations-crm-workbench-live-smoke.md`.
 - PASS deployed JS marker checks for `ACTION-CRM-ADD-NOTE`, `ACTION-CRM-ADD-TAG`, `ACTION-CRM-REMOVE-TAG`, `ACTION-CRM-ASSIGN-OWNER`, `ACTION-CRM-CHANGE-LIFECYCLE`, tag remove validation copy, and no-auto-task marker.
+- PASS `node --check src/lib/bna/crm/contact-service.js` after adding selected-contact conversation/task DTOs.
+- PASS `node --check server.js` after adding selected-contact conversation/task routes.
+- PASS route registry JSON parse after registering `/api/bna/crm/contacts/:id/conversations` and `/api/bna/crm/contacts/:id/tasks`.
+- PASS `node --test tests/crm-contact-service.test.js` (4/4).
+- PASS `node --test tests/shared-crm-workbench-contract.test.js` (14/14).
+- PASS `node --test tests/service-provider-scope-routes.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js` (8/8).
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T02-40-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `node scripts/watchdog-link-audit.mjs`; report `ops/watchdog-audits/2026-07-13T02-40-watchdog-link-audit.md`.
+- PASS `node scripts/watchdog-security-routes.mjs`; report `ops/watchdog-audits/2026-07-13T02-40-watchdog-security-routes.md`.
+- PASS `npm run secrets:audit`; 9266 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM conversation/task DTO routes commit `1a8bca34048a8b0213b0a608cae5320727f6747b`.
+- PASS BNA Railway redeploy and doctor; deployment `aa2a2f07-7900-4eed-beb8-7fc47e20cfcd` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `11a938f8-387c-43e6-bfa9-5e91d10645fc` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `1a8bca34048a8b0213b0a608cae5320727f6747b`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1a8bca34048a8b0213b0a608cae5320727f6747b`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T02-43-26-025Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only live endpoint smoke through Operations auth for selected-contact `/conversations` and `/tasks`; returned scoped One Time DTOs with `no_send=true`, `external_write_performed=false`, `aggregate_service=bna_crm_contact_service_v1`, and page limits `[5,5]`.
