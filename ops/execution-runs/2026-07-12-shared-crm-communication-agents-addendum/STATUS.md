@@ -405,3 +405,23 @@ Current status: `active`
   communication-agent/version/knowledge loading and delivery-outbox execution
   to the canonical inbound path. Owner-only email/WhatsApp live sends remain
   blocked by `REQ-20260713-906`.
+## 2026-07-13 - Communication-Agent Metadata And Outbox Convergence Local Proof
+
+- Advanced `REQ-20260712-307` with the local communication-agent/outbox slice.
+- `src/lib/bna/crm/communication-agent-runtime.js` now loads the existing
+  published One Time provider lead-bot profile as the channel-assigned
+  communication agent for One Time email and WhatsApp.
+- Canonical inbound `bna_communications` metadata and redacted receipts now
+  include agent key, version, knowledge snapshot, binding key, reply mode, and
+  no-secret/no-raw-class-link flags.
+- `whatsapp:one_time_agent_reply` is now an allowed One Time delivery-outbox
+  channel; class-link replies store a placeholder in the outbox payload and
+  substitute the server-approved link only at final provider delivery.
+- `maybeSendOneTimeWapiAutoReply` now claims/dedupes the bot reply and queues
+  `assistant_delivery_outbox` instead of calling WAPI directly from the webhook
+  auto-reply handler.
+- Local verification passed: focused agent/inbound/outbox suite `30/30`,
+  adjacent inbound/outbox suite `16/16`, `node --check` for touched runtime
+  files, and `npm run bna:run:validate`.
+- Deployment/live smoke pending for this slice. Owner-only email/WhatsApp live
+  sends remain blocked by `REQ-20260713-906` until secure aliases exist.

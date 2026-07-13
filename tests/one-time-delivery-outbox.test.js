@@ -25,6 +25,7 @@ test('One Time delivery outbox scopes only the expected channel keys', () => {
     'telegram:one_time_rabbi_operator',
     'email:one_time_class_reminder',
     'whatsapp:one_time_class_reminder',
+    'whatsapp:one_time_agent_reply',
   ]);
   assert.equal(isOneTimeOutboxChannel('email:one_time_signup_confirmation'), true);
   assert.equal(isOneTimeOutboxChannel('email:bna_payment_reminder'), false);
@@ -119,6 +120,66 @@ test('class reminder WhatsApp request uses phone recipient and worldwide class i
   assert.match(request.text, /Your local time: .*12:00 p\.m\./);
   assert.match(request.text, /Israel time: 7:00 p\.m\./);
   assert.match(request.text, /Join Zoom:\nhttps:\/\/join\.example\.invalid\/one-time-class/);
+});
+
+test('WhatsApp agent reply request uses outbox payload and server-side class-link placeholder', () => {
+  const request = buildOneTimeOutboxDeliveryRequest({
+    outboxRow: {
+      id: 41,
+      delivery_key: 'one-time:agent-reply:202:v1',
+      channel_key: 'whatsapp:one_time_agent_reply',
+      payload: {
+        workflow: 'one_time_agent_reply',
+        crm_lead_id: 92,
+        agent_key: 'one_time_parent_information_agent',
+        agent_version: '2026-07-13-v3',
+        reply_text_template: 'Sure. I can send the current class link here: {{CURRENT_CLASS_LINK}}',
+        class_link_delivery_alias: 'current_one_time_class_link',
+        raw_class_link_in_payload: false,
+      },
+    },
+    contact: {
+      parent_phone: '+1 (732) 555-0101',
+    },
+    classJoinUrl,
+  });
+  assert.equal(request.transport, 'whatsapp');
+  assert.equal(request.kind, 'agent_reply');
+  assert.equal(request.provider, 'one_time_wapi');
+  assert.equal(request.to, '17325550101');
+  assert.match(request.text, /https:\/\/join\.example\.invalid\/one-time-class/);
+
+  const publicResult = publicOutboxDeliveryResult({
+    outboxRow: {
+      id: 41,
+      delivery_key: 'one-time:agent-reply:202:v1',
+      channel_key: 'whatsapp:one_time_agent_reply',
+    },
+    request,
+    status: 'sent',
+    providerResult: { response: { id: 'wamid.123' } },
+    attempts: 1,
+  });
+  assert.equal(publicResult.provider_message_id, null);
+  assert.equal(publicResult.raw_join_url_returned, false);
+  assert.equal(publicResult.message_body_returned, false);
+  assert.equal(JSON.stringify(publicResult).includes(classJoinUrl), false);
+  assert.equal(JSON.stringify(publicResult).includes('current class link'), false);
+
+  assert.throws(
+    () => buildOneTimeOutboxDeliveryRequest({
+      outboxRow: {
+        channel_key: 'whatsapp:one_time_agent_reply',
+        payload: {
+          recipient_phone: '+1 732 555 0101',
+          reply_text: `Join here: ${classJoinUrl}`,
+          raw_class_link_in_payload: true,
+        },
+      },
+      classJoinUrl,
+    }),
+    /raw class join link/
+  );
 });
 
 test('Rabbi Telegram request targets the role alias and blocks Zoom data', () => {

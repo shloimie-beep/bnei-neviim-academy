@@ -468,7 +468,7 @@ export function buildReport(now = new Date()) {
     ],
     remaining_live_blockers: [
       'Exact billing_start_at in Asia/Jerusalem must be approved.',
-      'Hosted Stripe webhook/Railway env readback must be verified before deploy/live smoke completion.',
+      'Deployed webhook delivery and live smoke must pass against the final deployed SHA.',
       'Final pre-billing notice sender, copy, and cohort need explicit approval before any send.',
       'Final live price/account/campaign launch packet and exact charge authorization are required before live charges.',
       'Refund execution and access automation remain disabled until explicit authorized-admin approval.',

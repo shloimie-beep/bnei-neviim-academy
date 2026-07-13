@@ -18,6 +18,8 @@ const VIMEO_UPLOAD_CONFIRMATION = 'UPLOAD_ONE_TIME_VIMEO_LIBRARY';
 const DEFAULT_DROP_FOLDER = path.join('media-inbox', 'one-time-vimeo-drop');
 const DEFAULT_REPORT_DIR = path.join('ops', 'one-time-mishnah', 'vimeo-folder-library');
 const SUPPORTED_VIDEO_EXTENSIONS = new Set(['.mp4', '.mov', '.m4v', '.webm', '.mkv']);
+const METADATA_REVIEW_STATES = new Set(['draft', 'machine_complete', 'needs_review', 'approved', 'rejected', 'superseded']);
+const BOT_KNOWLEDGE_STATUSES = new Set(['blocked', 'ready_for_scoped_promotion', 'promoted', 'rejected', 'superseded']);
 
 function compactText(value, max = 240) {
   return String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);
@@ -59,6 +61,16 @@ function normalizePackageStatus(value) {
   const text = String(value || '').trim().toLowerCase();
   if (['draft', 'review', 'approved', 'published', 'archived'].includes(text)) return text;
   return 'review';
+}
+
+function normalizeMetadataReviewState(value) {
+  const text = String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+  return METADATA_REVIEW_STATES.has(text) ? text : 'needs_review';
+}
+
+function normalizeBotKnowledgeStatus(value) {
+  const text = String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+  return BOT_KNOWLEDGE_STATUSES.has(text) ? text : 'blocked';
 }
 
 function normalizeLibraryVisibility(value) {
@@ -169,6 +181,49 @@ function metadataValue(metadata, ...keys) {
   return '';
 }
 
+function jsonObjectMetadata(metadata = {}, ...keys) {
+  for (const key of keys) {
+    const value = metadata[key];
+    if (value && typeof value === 'object' && !Array.isArray(value)) return value;
+  }
+  return {};
+}
+
+function metadataDraftForReview(metadata = {}) {
+  const draft = jsonObjectMetadata(metadata, 'metadata_draft', 'metadataDraft');
+  if (!Object.keys(draft).length) return {};
+  return {
+    schema_version: compactText(draft.schema_version || '', 120),
+    title: compactText(draft.title || '', 240),
+    torah_metadata: draft.torah_metadata && typeof draft.torah_metadata === 'object' && !Array.isArray(draft.torah_metadata)
+      ? draft.torah_metadata
+      : {},
+    confidence: Number.isFinite(Number(draft.confidence)) ? Number(draft.confidence) : 0,
+    review_state: normalizeMetadataReviewState(draft.review_state),
+    transcript_sha256: compactText(draft.transcript_sha256 || '', 160),
+    approved_for_member_publish: draft.approved_for_member_publish === true,
+    approved_for_bot_knowledge: draft.approved_for_bot_knowledge === true,
+    raw_transcript_included: draft.raw_transcript_included === true,
+    description_bullets_count: Array.isArray(draft.description_bullets) ? draft.description_bullets.length : 0,
+  };
+}
+
+function botKnowledgeHandoffForReview(metadata = {}) {
+  const handoff = jsonObjectMetadata(metadata, 'bot_knowledge_handoff', 'botKnowledgeHandoff');
+  if (!Object.keys(handoff).length) return {};
+  return {
+    schema_version: compactText(handoff.schema_version || '', 120),
+    status: normalizeBotKnowledgeStatus(handoff.status),
+    blockers: Array.isArray(handoff.blockers)
+      ? handoff.blockers.map((blocker) => compactText(blocker, 160)).filter(Boolean).slice(0, 12)
+      : [],
+    no_raw_transcript_body: handoff.no_raw_transcript_body === true,
+    transcript_sha256: compactText(handoff.transcript_sha256 || '', 160),
+    metadata_schema_version: compactText(handoff.metadata_schema_version || '', 120),
+    knowledge_item_ready: Boolean(handoff.knowledge_item),
+  };
+}
+
 function parseCandidateScope(metadata = {}) {
   const workspaceKey = compactText(metadataValue(metadata, 'workspace_key', 'workspaceKey'), 120);
   const projectKey = compactText(metadataValue(metadata, 'project_key', 'projectKey'), 120);
@@ -192,6 +247,8 @@ function buildClassPackagePayload(candidate, media = {}) {
   const parsed = mediaUrl ? vimeo.parseVimeoUrl(mediaUrl) : { ok: false, id: '' };
   const vimeoId = compactText(media.vimeo_id || metadataValue(metadata, 'vimeo_id', 'vimeoId') || parsed.id, 80);
   const transcriptStatus = normalizeTranscriptStatus(metadataValue(metadata, 'transcript_status', 'transcriptStatus'));
+  const metadataDraft = metadataDraftForReview(metadata);
+  const botKnowledgeHandoff = botKnowledgeHandoffForReview(metadata);
   const packageMetadata = {
     intake_source: 'one_time_vimeo_folder_library',
     raw_id: 'RAW-20260706-967',
@@ -221,6 +278,18 @@ function buildClassPackagePayload(candidate, media = {}) {
     duration_seconds: Math.max(0, Number(metadataValue(metadata, 'duration_seconds', 'durationSeconds') || 0) || 0),
     transcript_text: longText(metadataValue(metadata, 'transcript_text', 'transcript'), 60000),
     transcript_status: transcriptStatus,
+    metadata_draft: metadataDraft,
+    metadata_review_state: normalizeMetadataReviewState(
+      metadataValue(metadata, 'metadata_review_state', 'metadataReviewState')
+        || metadataDraft.review_state
+        || 'needs_review',
+    ),
+    bot_knowledge_handoff: botKnowledgeHandoff,
+    bot_knowledge_status: normalizeBotKnowledgeStatus(
+      metadataValue(metadata, 'bot_knowledge_status', 'botKnowledgeStatus')
+        || botKnowledgeHandoff.status
+        || 'blocked',
+    ),
     source_sheet_draft: longText(metadataValue(metadata, 'source_sheet_draft', 'sourceSheetDraft'), 60000),
     package_status: normalizePackageStatus(metadataValue(metadata, 'package_status', 'packageStatus') || 'review'),
     updated_by: compactText(metadataValue(metadata, 'updated_by', 'actor') || 'one-time-vimeo-folder-library', 120),
@@ -491,6 +560,10 @@ async function upsertReviewPackage(client, candidate, packagePayload, options = 
     packagePayload.duration_seconds || null,
     packagePayload.transcript_text || null,
     packagePayload.transcript_status,
+    JSON.stringify(packagePayload.metadata_draft || {}),
+    packagePayload.metadata_review_state,
+    JSON.stringify(packagePayload.bot_knowledge_handoff || {}),
+    packagePayload.bot_knowledge_status,
     packagePayload.source_sheet_draft || null,
     packagePayload.package_status,
     packagePayload.updated_by,
@@ -513,14 +586,18 @@ async function upsertReviewPackage(client, candidate, packagePayload, options = 
            duration_seconds = $13,
            transcript_text = $14,
            transcript_status = $15,
-           source_sheet_draft = $16,
-           package_status = $17,
-           updated_by = $18,
-           metadata = COALESCE(metadata, '{}'::jsonb) || $19::jsonb,
+           metadata_draft = $16::jsonb,
+           metadata_review_state = $17,
+           bot_knowledge_handoff = $18::jsonb,
+           bot_knowledge_status = $19,
+           source_sheet_draft = $20,
+           package_status = $21,
+           updated_by = $22,
+           metadata = COALESCE(metadata, '{}'::jsonb) || $23::jsonb,
            updated_at = NOW()
-       WHERE id = $20
+       WHERE id = $24
          AND project_id = $1
-       RETURNING id, project_id, title, media_provider, media_url, vimeo_id, package_status`,
+       RETURNING id, project_id, title, media_provider, media_url, vimeo_id, metadata_review_state, bot_knowledge_status, package_status`,
       [...values, existing.id],
     )).rows[0];
     return { action: 'updated_review_package', class_session: updated };
@@ -529,15 +606,17 @@ async function upsertReviewPackage(client, candidate, packagePayload, options = 
     `INSERT INTO bna_class_sessions (
        project_id, class_date, title, description, summary, media_provider, media_url,
        vimeo_id, thumbnail_url, masechta, perek, mishnah_range, duration_seconds,
-       transcript_text, transcript_status, source_sheet_draft, package_status,
+       transcript_text, transcript_status, metadata_draft, metadata_review_state,
+       bot_knowledge_handoff, bot_knowledge_status, source_sheet_draft, package_status,
        updated_by, metadata, updated_at
      ) VALUES (
        $1, $2, $3, $4, $5, $6, $7,
        $8, $9, $10, $11, $12, $13,
-       $14, $15, $16, $17,
-       $18, $19::jsonb, NOW()
+       $14, $15, $16::jsonb, $17,
+       $18::jsonb, $19, $20, $21,
+       $22, $23::jsonb, NOW()
      )
-     RETURNING id, project_id, title, media_provider, media_url, vimeo_id, package_status`,
+     RETURNING id, project_id, title, media_provider, media_url, vimeo_id, metadata_review_state, bot_knowledge_status, package_status`,
     values,
   )).rows[0];
   return { action: 'created_review_package', class_session: inserted };

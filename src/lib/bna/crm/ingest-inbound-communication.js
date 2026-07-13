@@ -1,5 +1,9 @@
 const crypto = require('crypto');
 const { normalizeEmail } = require('../../integrations/resend-client');
+const {
+  communicationAgentMetadata,
+  resolveAssignedCommunicationAgent,
+} = require('./communication-agent-runtime');
 
 function compact(value = '', max = 1000) {
   return String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);
@@ -59,6 +63,11 @@ function buildInboundPipelineReceipt({
   sender = {},
   taskCreated = false,
   agentReplyMode = 'capture_only',
+  agentLoaded = false,
+  agentKey = '',
+  agentVersion = '',
+  knowledgeSnapshotVersion = '',
+  outboxStatus = 'not_created',
 } = {}) {
   return {
     success: Boolean(success),
@@ -81,8 +90,12 @@ function buildInboundPipelineReceipt({
     raw_payload_returned: false,
     task_created: Boolean(taskCreated),
     unread: !duplicate && !ignored,
+    agent_loaded: Boolean(agentLoaded),
+    agent_key: compact(agentKey, 120) || null,
+    agent_version: compact(agentVersion, 120) || null,
+    knowledge_snapshot_version: compact(knowledgeSnapshotVersion, 240) || null,
     agent_reply_mode: agentReplyMode || 'capture_only',
-    outbox_status: 'not_created',
+    outbox_status: outboxStatus || 'not_created',
     external_write_performed: false,
     redacted_receipt: true,
   };
@@ -367,6 +380,12 @@ async function ingestInboundCommunication({
   if (!db || typeof db.query !== 'function') throw new Error('db.query is required');
   const normalizedDirection = compact(direction, 20) || 'inbound';
   const normalizedProvider = compact(provider, 80) || compact(channel, 80) || 'unknown';
+  const assignedAgent = resolveAssignedCommunicationAgent({
+    binding,
+    channel,
+    provider: normalizedProvider,
+  });
+  const agentMetadata = communicationAgentMetadata(assignedAgent);
   const emailMessageId = compact(threadHints.emailMessageId || metadata.email_message_id || '', 240);
   const wapiMessageId = compact(threadHints.wapiMessageId || metadata.wapi_message_id || providerMessageId || '', 240);
   const existing = await findExistingInboundCommunication(db, {
@@ -397,7 +416,13 @@ async function ingestInboundCommunication({
         providerEventId,
         threadKey: existing.thread_key || '',
         sender,
-        agentReplyMode: binding.replyMode || binding.reply_mode || 'capture_only',
+        taskCreated: false,
+        agentReplyMode: agentMetadata.agent_reply_mode || binding.replyMode || binding.reply_mode || 'capture_only',
+        agentLoaded: agentMetadata.agent_loaded,
+        agentKey: agentMetadata.agent_key || '',
+        agentVersion: agentMetadata.agent_version || '',
+        knowledgeSnapshotVersion: agentMetadata.knowledge_snapshot_version || '',
+        outboxStatus: agentMetadata.outbox_status || 'not_created',
       }),
       redacted_receipt: true,
     };
@@ -462,9 +487,7 @@ async function ingestInboundCommunication({
     message_persisted: true,
     timeline_projection: 'operations_communications_unified_timeline',
     unread: normalizedDirection === 'inbound',
-    agent_loaded: false,
-    agent_reply_mode: binding.replyMode || binding.reply_mode || 'capture_only',
-    outbox_status: 'not_created',
+    ...agentMetadata,
     external_write_performed: false,
     inbound_pipeline_version: '2026-07-13-v1',
     redacted_receipt: true,
@@ -527,7 +550,12 @@ async function ingestInboundCommunication({
       threadKey: communication?.thread_key || threadKey || '',
       sender,
       taskCreated: false,
-      agentReplyMode: binding.replyMode || binding.reply_mode || 'capture_only',
+      agentReplyMode: agentMetadata.agent_reply_mode || binding.replyMode || binding.reply_mode || 'capture_only',
+      agentLoaded: agentMetadata.agent_loaded,
+      agentKey: agentMetadata.agent_key || '',
+      agentVersion: agentMetadata.agent_version || '',
+      knowledgeSnapshotVersion: agentMetadata.knowledge_snapshot_version || '',
+      outboxStatus: agentMetadata.outbox_status || 'not_created',
     }),
     redacted_receipt: true,
     communication,

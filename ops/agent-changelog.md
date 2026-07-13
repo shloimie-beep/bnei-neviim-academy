@@ -40300,6 +40300,45 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   invoice/receipt send, access mutation, provider mutation, credential
   mutation, production data mutation, or secret exposure was performed.
 
+## 2026-07-13 - Canonical inbound agent metadata and outbox convergence local proof
+
+- Advanced `REQ-20260712-307` with local published communication-agent metadata
+  loading and delivery-outbox convergence.
+- One Time email and WhatsApp inbound now stamp the same published
+  `one_time_parent_information_agent` version and knowledge snapshot into
+  canonical inbound metadata and redacted receipts.
+- One Time WhatsApp public lead-agent replies now queue
+  `whatsapp:one_time_agent_reply` outbox rows after claim/dedupe instead of
+  sending directly from the webhook auto-reply handler.
+- Verification passed locally: focused agent/inbound/outbox suite `30/30`,
+  adjacent inbound/outbox suite `16/16`, runtime syntax checks, and run
+  validation.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram
+  send, public auto-reply enablement, provider mutation, credential mutation,
+  payment/access mutation, raw contact/message logging, or destructive
+  production mutation was performed by this local proof.
+
+## 2026-07-13 - One Time metadata DB/review bridge implemented locally
+
+- Advanced `REQ-20260713-917` by wiring the One Time transcript metadata and
+  bot-knowledge handoff contract into private class-session review fields,
+  admin class-package readback, and the approval-gated Vimeo folder-library
+  review-package payload.
+- The persisted review projection keeps schema version, title, Torah fields,
+  confidence, review states, hashes, blockers, and bullet counts, while
+  omitting raw transcript-derived bullet bodies from the handoff projection.
+- Verification passed: `node --check server.js`, `node --check
+  src/lib/bna/one-time-vimeo-folder-library.js`, focused review bridge suite
+  `15/15`, and consolidated One Time Drive/media/transcription/metadata/member
+  library suite `62/62`.
+- Remaining gates: deploy/live readback, explicit helper-knowledge promotion
+  approval path, Vimeo private upload/folder approval, member publication, and
+  blocked UI evidence remain separate requirements.
+- Guardrails: no database write, Vimeo upload, Drive write, helper-knowledge
+  write, member publication, external send, provider mutation, credential
+  mutation, payment/access mutation, raw transcript commit, or secret storage
+  was performed.
+
 ## 2026-07-13 - One Time Billing V2 hosted Stripe sandbox readback ready
 
 - Added a Billing-only Railway readback and guarded Stripe variable propagation

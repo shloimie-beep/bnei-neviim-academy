@@ -1034,3 +1034,12 @@
 - PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`; report `ops/live-smokes/2026-07-13T12-46-12-200Z-onetime-provider-route-module-live-smoke.md`.
 - PASS `npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`; report `ops/live-smokes/2026-07-13T12-46-11-923Z-operations-workspace-taxonomy-live-smoke.md`.
 - Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw Telegram chat/message value logging, raw contact/message logging, or destructive production mutation was performed by this slice proof.
+
+## Communication-Agent Metadata And Outbox Convergence Local Proof - 2026-07-13
+
+- PASS `node --test tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/one-time-delivery-outbox.test.js tests/service-provider-lead-bot.test.js tests/one-time-wapi-scope-contract.test.js`; 30/30 tests passed.
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/crm/ingest-inbound-communication.js; node --check src/lib/bna/crm/communication-agent-runtime.js; node --check src/lib/bna/one-time-delivery-outbox.js`.
+- PASS `npm run bna:run:validate`; work remains yes.
+- PASS `node --test tests/inbound-communication-ingest.test.js tests/resend-inbound-crm.test.js tests/one-time-wapi-scope-contract.test.js tests/one-time-delivery-outbox.test.js`; 16/16 tests passed.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw contact/message logging, or destructive production mutation was performed by this local proof.

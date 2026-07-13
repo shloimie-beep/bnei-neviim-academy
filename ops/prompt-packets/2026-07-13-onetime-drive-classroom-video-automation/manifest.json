@@ -218,11 +218,11 @@
       ],
       "stage": "04-transcript-metadata-and-knowledge-handoff",
       "packet_role": "IMPLEMENTATION_PACKET",
-      "status": "in_progress_local_contract_deployed_studio_sidecar_verified_db_review_integration_pending",
+      "status": "local_db_review_integration_implemented_deploy_readback_pending",
       "owner": "Codex",
       "scope": "Versioned transcript metadata draft, studio sidecar artifacts, and provider-scoped bot knowledge handoff contracts with review gates and no raw transcript leakage.",
       "out_of_scope": [
-        "Database promotion worker",
+        "Automatic database promotion worker",
         "Review UI integration",
         "Bot knowledge write",
         "Drive mutation",
@@ -234,8 +234,12 @@
       "affected_files": [
         "src/lib/bna/one-time-transcript-metadata.js",
         "src/lib/bna/one-time-vimeo-studio-pipeline.js",
+        "src/lib/bna/one-time-vimeo-folder-library.js",
+        "server.js",
         "tests/one-time-transcript-metadata.test.js",
         "tests/one-time-vimeo-studio-pipeline.test.js",
+        "tests/one-time-vimeo-folder-library-workflow.test.js",
+        "tests/one-time-member-library.test.js",
         "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/04-transcript-metadata-and-knowledge-handoff.md"
       ],
       "required_evidence": [
@@ -244,10 +248,12 @@
         "confidence and review gate tests",
         "bot knowledge approval blocker tests",
         "raw transcript omission tests",
-        "studio sidecar and safe report redaction tests"
+        "studio sidecar and safe report redaction tests",
+        "class-session schema and admin readback tests",
+        "folder workflow review-package contract tests"
       ],
-      "validation_command": "node --test tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-transcript-metadata.test.js tests/one-time-long-transcription.test.js tests/one-time-vimeo-folder-library-workflow.test.js",
-      "terminal_condition": "Local contract and studio sidecar integration are validated; DB promotion worker/review UI integration remains pending.",
+      "validation_command": "node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js tests/one-time-transcript-metadata.test.js tests/one-time-member-library.test.js",
+      "terminal_condition": "Metadata contract, studio sidecar integration, class-session persistence fields, admin review-package readback, and folder-workflow review payload mapping are validated locally; deploy/live readback and explicit bot-knowledge promotion remain separate gates.",
       "handoff_target": "PKT-20260713-004-06",
       "next_requirement": "REQ-20260713-919",
       "next_packet": "PKT-20260713-004-06"
