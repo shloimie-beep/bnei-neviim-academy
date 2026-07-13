@@ -30087,6 +30087,13 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     const params = [contactRef.id];
     const leadSuppression = crmTimelineSuppressionParts('l');
     const conditions = [`c.lead_id = $1`];
+    const emailConditions = [
+      `l.id = $1`,
+      `cm.project_id = l.project_id`,
+      `COALESCE(l.parent_email, '') <> ''`,
+      `lower(COALESCE(cm.from_address, cm.to_address, '')) = lower(l.parent_email)`,
+      `COALESCE(cm.status, '') <> 'archived'`,
+    ];
     const taskConditions = [`l.id = $1`, `t.stage <> 'archive'`];
     const suppressionConditions = [`l.id = $1`];
     const ticketConditions = [
@@ -30118,6 +30125,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     if (projectKey && !['platform', 'super_admin'].includes(projectKey)) {
       params.push(projectKey);
       conditions.push(`p.project_key = $${params.length}`);
+      emailConditions.push(`p.project_key = $${params.length}`);
       taskConditions.push(`p.project_key = $${params.length}`);
       suppressionConditions.push(`p.project_key = $${params.length}`);
       ticketConditions.push(`p.project_key = $${params.length}`);
@@ -30150,6 +30158,35 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
           LEFT JOIN bna_parent_leads l ON l.id = c.lead_id
           LEFT JOIN bna_projects p ON p.id = l.project_id
           WHERE ${conditions.join(' AND ')}
+         UNION ALL
+          SELECT
+            cm.id,
+            cm.channel,
+            cm.direction,
+            COALESCE(NULLIF(cm.body_text, ''), cm.subject, cm.communication_type, 'Communication') AS body,
+            NULL::text AS notes,
+            COALESCE(cm.provider, 'email') AS source,
+            COALESCE(cm.metadata, '{}'::jsonb) || jsonb_build_object(
+              'crm_contact_id', ('bna_parent_leads:' || l.id::text),
+              'source_table', 'bna_communications',
+              'canonical_email_match', true,
+              'no_send', true,
+              'external_write_performed', false
+            ) AS source_context,
+            cm.occurred_at,
+            cm.created_at,
+            COALESCE(cm.communication_type, 'communication') AS communication_type,
+            cm.subject,
+            cm.thread_key,
+            cm.external_message_id,
+            cm.from_address,
+            cm.to_address,
+            cm.provider,
+            cm.status
+          FROM bna_communications cm
+          JOIN bna_parent_leads l ON TRUE
+          LEFT JOIN bna_projects p ON p.id = l.project_id
+          WHERE ${emailConditions.join(' AND ')}
          UNION ALL
          SELECT
            t.id,
@@ -30349,7 +30386,17 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
 
   const params = [contactRef.id];
   const contactSuppression = crmTimelineSuppressionParts('bc');
-  const communicationConditions = [`contact_id = $1`];
+  const communicationConditions = [
+    `bc.id = $1`,
+    `COALESCE(cm.status, '') <> 'archived'`,
+    `(
+      cm.contact_id = bc.id
+      OR (
+        COALESCE(bc.primary_email, '') <> ''
+        AND lower(COALESCE(cm.from_address, cm.to_address, '')) = lower(bc.primary_email)
+      )
+    )`,
+  ];
   const pipelineConditions = [`contact_id = $1`];
   const taskConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(t.related_contact_email) = lower(bc.primary_email)`, `t.stage <> 'archive'`];
   const suppressionConditions = [`bc.id = $1`];
@@ -30359,7 +30406,8 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
   const attendanceConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(COALESCE(m.email, '')) = lower(bc.primary_email)`];
   if (workspaceKey && !['platform', 'super_admin'].includes(workspaceKey)) {
     params.push(workspaceKey);
-    communicationConditions.push(`workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
+    communicationConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
+    communicationConditions.push(`(cm.contact_id = bc.id OR cm.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length}) OR cm.metadata->>'workspace_key' = $${params.length})`);
     pipelineConditions.push(`workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     taskConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     suppressionConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
@@ -30370,6 +30418,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
   }
   if (projectKey && !['platform', 'super_admin'].includes(projectKey)) {
     params.push(projectKey);
+    communicationConditions.push(`(cm.contact_id = bc.id OR cm.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length}) OR cm.metadata->>'project_key' = $${params.length})`);
     taskConditions.push(`t.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     ticketConditions.push(`st.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
     studentConditions.push(`s.project_id IN (SELECT id FROM bna_projects WHERE project_key = $${params.length})`);
@@ -30382,23 +30431,30 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     `SELECT *
      FROM (
        SELECT
-         id,
-         channel,
-         direction,
-         COALESCE(NULLIF(body_text, ''), subject, communication_type, 'Communication') AS body,
-          provider AS source,
-          metadata AS source_context,
-          occurred_at,
-          created_at,
-          COALESCE(communication_type, 'communication') AS communication_type,
-          subject,
-          thread_key,
-          external_message_id,
-          from_address,
-          to_address,
-          provider,
-          status
-        FROM bna_communications
+         cm.id,
+         cm.channel,
+         cm.direction,
+         COALESCE(NULLIF(cm.body_text, ''), cm.subject, cm.communication_type, 'Communication') AS body,
+          COALESCE(cm.provider, 'email') AS source,
+          COALESCE(cm.metadata, '{}'::jsonb) || jsonb_build_object(
+            'crm_contact_id', ('bna_contacts:' || bc.id::text),
+            'source_table', 'bna_communications',
+            'canonical_email_match', (cm.contact_id IS DISTINCT FROM bc.id),
+            'no_send', true,
+            'external_write_performed', false
+          ) AS source_context,
+          cm.occurred_at,
+          cm.created_at,
+          COALESCE(cm.communication_type, 'communication') AS communication_type,
+          cm.subject,
+          cm.thread_key,
+          cm.external_message_id,
+          cm.from_address,
+          cm.to_address,
+          cm.provider,
+          cm.status
+        FROM bna_communications cm
+        JOIN bna_contacts bc ON bc.id = $1
         WHERE ${communicationConditions.join(' AND ')}
         UNION ALL
        SELECT

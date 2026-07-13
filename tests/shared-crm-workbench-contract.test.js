@@ -192,6 +192,22 @@ test('Operations CRM Link member action creates a disabled first-party member sh
   assert.doesNotMatch(operations.match(/function linkFirstPartyCrmMember[\s\S]*?async function archiveFirstPartyCrmContact/)?.[0] || '', /createMemberAccessCode|access-code|checkout|payment_link/i);
 });
 
+test('Operations CRM selected contact conversations include scoped email threads without browser union', () => {
+  assert.match(server, /lower\(COALESCE\(cm\.from_address, cm\.to_address, ''\)\) = lower\(bc\.primary_email\)/);
+  assert.match(server, /FROM bna_communications cm\s+JOIN bna_contacts bc ON bc\.id = \$1/);
+  assert.match(server, /cm\.metadata->>'workspace_key' = \$\$\{params\.length\}/);
+  assert.match(server, /cm\.metadata->>'project_key' = \$\$\{params\.length\}/);
+  assert.match(server, /'canonical_email_match', \(cm\.contact_id IS DISTINCT FROM bc\.id\)/);
+  assert.match(server, /cm\.project_id = l\.project_id/);
+  assert.match(server, /lower\(COALESCE\(cm\.from_address, cm\.to_address, ''\)\) = lower\(l\.parent_email\)/);
+  assert.match(server, /FROM bna_communications cm\s+JOIN bna_parent_leads l ON TRUE/);
+  assert.match(server, /'crm_contact_id', \('bna_parent_leads:' \|\| l\.id::text\)[\s\S]*'canonical_email_match', true/);
+  assert.match(server, /operationsCrmConversationRows\(contactRef, scope = \{\}, options = \{\}, db = pool\)[\s\S]*operationsCrmTimelineRows\(contactRef, scope, db\)/);
+  const contactWorkspaceLoader = operations.match(/async function loadFirstPartyCrmSubviewData[\s\S]*?function toggleFirstPartyCrmAddContact/)?.[0] || '';
+  assert.match(contactWorkspaceLoader, /api\.getCrmContactConversations\(contactId, \{ \.\.\.filters, limit: 25 \}/);
+  assert.doesNotMatch(contactWorkspaceLoader, /mergeContactAndUnifiedCommunications|normalizeUnifiedCommunicationRecord|bna_communications|contact_communications|mailbox_threads/i);
+});
+
 test('Operations CRM Link family and Link student actions are first-party no-access writes only', () => {
   assert.match(operations, /function renderFirstPartyCrmFamilyLinkPanel\(card = \{\}, readOnly = false\)/);
   assert.match(operations, /function renderFirstPartyCrmStudentLinkPanel\(card = \{\}, readOnly = false\)/);
@@ -323,5 +339,5 @@ test('CRM routes delegate DTOs through the canonical contact service', () => {
   assert.match(server, /const payload = await operationsCrmContactService\.getContactTasks\(req\.params\.id, scope, \{/);
   assert.match(contactService, /aggregate_service: 'bna_crm_contact_service_v1'/);
   assert.match(contactService, /open_action: openAction/);
-  assert.match(server, /thread_key,\s*external_message_id,\s*from_address,\s*to_address,\s*provider,\s*status/);
+  assert.match(server, /cm\.thread_key,\s*cm\.external_message_id,\s*cm\.from_address,\s*cm\.to_address,\s*cm\.provider,\s*cm\.status/);
 });
