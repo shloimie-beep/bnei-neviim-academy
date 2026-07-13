@@ -9,8 +9,8 @@ Requirement: `REQ-20260713-917`
 Workspace/project:
 `rabbi_sheller_provider` / `one_time_mishnah_class`
 
-Status: DB/review integration deployed; authenticated admin/database readback
-and bot-knowledge promotion remain approval-gated
+Status: Done for the backend metadata/handoff contract; deployed admin readback
+verified; bot-knowledge writes remain approval-gated and out of this packet
 
 ## Product Quality Compiler Expansion
 
@@ -134,6 +134,11 @@ commands, evidence paths, deploy/readback proof, blockers, and next packet.
 | `node --test tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-member-library.test.js` | Passed 15/15 after class-session review-package bridge. |
 | `node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js tests/one-time-transcript-metadata.test.js tests/one-time-member-library.test.js` | Passed 62/62 after DB/review integration. |
 | One Time deploy-info | `https://join.onetimeonetime.com/api/deploy-info` returned exact commit `87ff259ba2b4d4b27730a6ffb32a7693593b1749` with `target_app=one-time` at `2026-07-13T16:17:27+03:00`. |
+| `node --check scripts/smoke-one-time-metadata-review-live.mjs` | Passed after adding repeatable read-only live readback. |
+| `node --test tests/one-time-member-library.test.js` | Passed 8/8 after adding live-smoke contract coverage. |
+| `node --test tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-member-library.test.js` | Passed 16/16 after adding live-smoke contract coverage. |
+| `node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js tests/one-time-transcript-metadata.test.js tests/one-time-member-library.test.js` | Passed 63/63 after adding repeatable read-only metadata review smoke. |
+| `npm run app:smoke:one-time-metadata-review -- --expected-sha 43f7c33733880745d8f1191c86fe8e196ef68baa` | Passed read-only live admin readback. It verified deploy-info exact SHA `43f7c33733880745d8f1191c86fe8e196ef68baa`, `classes_returned=2`, list fields `metadata_draft`, `metadata_review_state`, `bot_knowledge_handoff`, and `bot_knowledge_status`, class-package detail sections `metadata_review`, `bot_knowledge`, and private-admin-only copies; `external_write_performed=false`. Local generated report: `ops/live-smokes/2026-07-13T13-25-21-345Z-one-time-metadata-review-live-smoke.md` (ignored by Git by policy). |
 | One Time live smokes | `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha a8df4c9b9cc091028105a16430aae6927cd0b429` passed; `npm run app:smoke:onetime-provider-route-module -- --base-url https://join.onetimeonetime.com --expected-sha a8df4c9b9cc091028105a16430aae6927cd0b429` passed. |
 
 ## Not Done In This Packet
@@ -143,9 +148,8 @@ commands, evidence paths, deploy/readback proof, blockers, and next packet.
 - The helper-knowledge promotion remains an explicit later approval path: this
   packet persists the scoped handoff status but does not write
   `bna_helper_knowledge_items`.
-- Authenticated admin/database readback for the new class-session fields remains
-  pending; the live deploy marker is proven at commit
-  `87ff259ba2b4d4b27730a6ffb32a7693593b1749`.
+- Authenticated admin/database readback for the new class-session fields is
+  verified read-only. No database write was performed by this readback.
 - Review UI remains part of `PKT-20260713-004-07`, which is still blocked by
   authenticated Operations/member latest-video evidence and Vimeo/publication
   gates.

@@ -5,6 +5,8 @@ const fs = require('node:fs');
 const server = fs.readFileSync('server.js', 'utf8');
 const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
 const memberLibraryHtml = fs.readFileSync('public/member-library.html', 'utf8');
+const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const metadataReviewLiveSmoke = fs.readFileSync('scripts/smoke-one-time-metadata-review-live.mjs', 'utf8');
 
 function sliceBetween(source, start, end) {
   const startIndex = source.indexOf(start);
@@ -119,6 +121,20 @@ test('Member library API returns only published tier-visible safe items', () => 
   assert.match(server, /app\.post\('\/api\/member-library\/items\/:id\/progress'/);
   assert.match(server, /recordOneTimeMemberWatchProgress/);
   assert.match(server, /app\.get\(\['\/member-library', '\/one-time-member-library'\]/);
+});
+
+test('metadata review live smoke is read-only and covers deployed admin package readback', () => {
+  assert.equal(packageJson.scripts['app:smoke:one-time-metadata-review'], 'node scripts/smoke-one-time-metadata-review-live.mjs');
+  assert.match(metadataReviewLiveSmoke, /loginOperations/);
+  assert.match(metadataReviewLiveSmoke, /one-time\/classes\?limit=5&status=all/);
+  assert.match(metadataReviewLiveSmoke, /metadata_draft/);
+  assert.match(metadataReviewLiveSmoke, /metadata_review_state/);
+  assert.match(metadataReviewLiveSmoke, /bot_knowledge_handoff/);
+  assert.match(metadataReviewLiveSmoke, /bot_knowledge_status/);
+  assert.match(metadataReviewLiveSmoke, /package_has_metadata_review/);
+  assert.match(metadataReviewLiveSmoke, /package_has_bot_knowledge/);
+  assert.match(metadataReviewLiveSmoke, /external_write_performed: false/);
+  assert.doesNotMatch(metadataReviewLiveSmoke, /method:\s*['"`](POST|PATCH|PUT|DELETE)['"`]/);
 });
 
 test('Visibility helpers keep smoke/private/admin states out of ordinary member readback', () => {

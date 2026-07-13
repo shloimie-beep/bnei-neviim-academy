@@ -218,7 +218,7 @@
       ],
       "stage": "04-transcript-metadata-and-knowledge-handoff",
       "packet_role": "IMPLEMENTATION_PACKET",
-      "status": "deployed_db_review_bridge_admin_readback_pending",
+      "status": "done_backend_contract_deployed_admin_readback_verified",
       "owner": "Codex",
       "scope": "Versioned transcript metadata draft, studio sidecar artifacts, and provider-scoped bot knowledge handoff contracts with review gates and no raw transcript leakage.",
       "out_of_scope": [
@@ -251,10 +251,11 @@
         "studio sidecar and safe report redaction tests",
         "class-session schema and admin readback tests",
         "folder workflow review-package contract tests",
-        "One Time deploy-info readback for commit 87ff259ba2b4d4b27730a6ffb32a7693593b1749"
+        "One Time deploy-info readback for commit 43f7c33733880745d8f1191c86fe8e196ef68baa",
+        "read-only live admin package field readback with no production mutation"
       ],
       "validation_command": "node --test tests/one-time-drive-video-orchestrator.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js tests/one-time-long-transcription.test.js tests/one-time-transcript-metadata.test.js tests/one-time-member-library.test.js",
-      "terminal_condition": "Metadata contract, studio sidecar integration, class-session persistence fields, admin review-package readback, and folder-workflow review payload mapping are validated locally and deployed to One Time commit 87ff259ba2b4d4b27730a6ffb32a7693593b1749; authenticated admin/database readback and explicit bot-knowledge promotion remain separate gates.",
+      "terminal_condition": "Metadata contract, studio sidecar integration, class-session persistence fields, admin review-package readback, and folder-workflow review payload mapping are validated locally, deployed to One Time commit 43f7c33733880745d8f1191c86fe8e196ef68baa, and verified by read-only live admin package readback. Helper-knowledge writes remain explicitly approval-gated and out of this packet.",
       "handoff_target": "PKT-20260713-004-06",
       "next_requirement": "REQ-20260713-919",
       "next_packet": "PKT-20260713-004-06"
