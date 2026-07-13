@@ -137,8 +137,9 @@ async function main() {
     assert(/name="reminder_preference" value="whatsapp"/.test(text), 'WhatsApp reminders choice missing');
     assert(/name="reminder_preference" value="both"/.test(text), 'email and WhatsApp reminders choice missing');
     assert(/name="reminder_preference" value="none"/.test(text), 'no daily reminders choice missing');
-    assert(/name="signup_acknowledgement"/.test(text), 'city/reminder acknowledgement checkbox missing');
-    assert(/\.consent-check input:checked::before/.test(text), 'acknowledgement checkbox checkmark style missing');
+    assert(/name="reminder_consent"/.test(text), 'reminder consent checkbox missing');
+    assert(/id="reminderConsent"[^>]+disabled/.test(text), 'reminder consent should start hidden and disabled until a reminder option is selected');
+    assert(/\.consent-check input:checked::before/.test(text), 'reminder consent checkbox checkmark style missing');
     assert(/class="required-dot"/.test(text), 'required red dots missing');
     assert(/data-phone-required-dot[^>]*hidden/.test(text), 'phone required dot should start hidden');
     assert(/data-phone-hint hidden>Required for WhatsApp reminders\./.test(text), 'WhatsApp phone hint missing');
