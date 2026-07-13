@@ -629,6 +629,8 @@ const ONE_TIME_LIBRARY_APPROVAL_FLAG = 'APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHI
 const ONE_TIME_MEDIA_PROVIDERS = new Set(['vimeo', 'manual_url', 'drive', 'placeholder']);
 const ONE_TIME_TRANSCRIPT_STATUSES = new Set(['draft', 'machine_complete', 'needs_review', 'review', 'approved', 'superseded', 'rejected']);
 const ONE_TIME_PACKAGE_STATUSES = new Set(['draft', 'review', 'approved', 'published', 'archived']);
+const ONE_TIME_METADATA_REVIEW_STATES = new Set(['draft', 'machine_complete', 'needs_review', 'approved', 'rejected', 'superseded']);
+const ONE_TIME_BOT_KNOWLEDGE_STATUSES = new Set(['blocked', 'ready_for_scoped_promotion', 'promoted', 'rejected', 'superseded']);
 const ONE_TIME_ASSET_TYPES = new Set(['worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'thumbnail', 'transcript', 'example', 'other']);
 const ONE_TIME_ASSET_SOURCE_TYPES = new Set(['manual_url', 'uploaded_placeholder', 'drive_placeholder']);
 const ONE_TIME_ASSET_STATUSES = new Set(['draft', 'review', 'approved', 'published', 'archived']);
@@ -17690,6 +17692,10 @@ ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_segments JSON
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_versions JSONB DEFAULT '{}';
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_glossary JSONB DEFAULT '[]';
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_release_audit JSONB DEFAULT '{}';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS metadata_draft JSONB DEFAULT '{}';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS metadata_review_state TEXT DEFAULT 'needs_review';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS bot_knowledge_handoff JSONB DEFAULT '{}';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS bot_knowledge_status TEXT DEFAULT 'blocked';
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS source_sheet_draft TEXT;
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS package_status TEXT DEFAULT 'draft';
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS updated_by TEXT;
@@ -17756,6 +17762,14 @@ ALTER TABLE bna_class_sessions ADD CONSTRAINT bna_class_sessions_transcript_stat
 ALTER TABLE bna_class_sessions DROP CONSTRAINT IF EXISTS bna_class_sessions_package_status_check;
 ALTER TABLE bna_class_sessions ADD CONSTRAINT bna_class_sessions_package_status_check
   CHECK (package_status IN ('draft', 'review', 'approved', 'published', 'archived'));
+ALTER TABLE bna_class_sessions DROP CONSTRAINT IF EXISTS bna_class_sessions_metadata_review_state_check;
+ALTER TABLE bna_class_sessions ADD CONSTRAINT bna_class_sessions_metadata_review_state_check
+  CHECK (metadata_review_state IN ('draft', 'machine_complete', 'needs_review', 'approved', 'rejected', 'superseded'));
+ALTER TABLE bna_class_sessions DROP CONSTRAINT IF EXISTS bna_class_sessions_bot_knowledge_status_check;
+ALTER TABLE bna_class_sessions ADD CONSTRAINT bna_class_sessions_bot_knowledge_status_check
+  CHECK (bot_knowledge_status IN ('blocked', 'ready_for_scoped_promotion', 'promoted', 'rejected', 'superseded'));
+CREATE INDEX IF NOT EXISTS idx_bna_class_sessions_metadata_review_state ON bna_class_sessions (project_id, metadata_review_state);
+CREATE INDEX IF NOT EXISTS idx_bna_class_sessions_bot_knowledge_status ON bna_class_sessions (project_id, bot_knowledge_status);
 
 CREATE TABLE IF NOT EXISTS one_time_class_assets (
   id BIGSERIAL PRIMARY KEY,
@@ -31706,6 +31720,14 @@ function normalizeOneTimePackageStatus(value = '') {
   return normalizeOneTimeSetValue(value, ONE_TIME_PACKAGE_STATUSES, 'draft');
 }
 
+function normalizeOneTimeMetadataReviewState(value = '') {
+  return normalizeOneTimeSetValue(value, ONE_TIME_METADATA_REVIEW_STATES, 'needs_review');
+}
+
+function normalizeOneTimeBotKnowledgeStatus(value = '') {
+  return normalizeOneTimeSetValue(value, ONE_TIME_BOT_KNOWLEDGE_STATUSES, 'blocked');
+}
+
 function normalizeOneTimeAssetType(value = '') {
   return normalizeOneTimeSetValue(value, ONE_TIME_ASSET_TYPES, 'worksheet');
 }
@@ -31820,6 +31842,10 @@ function oneTimeClassSessionView(row = {}) {
     transcript_versions: parseJsonObjectMaybe(row.transcript_versions),
     transcript_glossary: parseJsonArrayMaybe(row.transcript_glossary),
     transcript_release_audit: parseJsonObjectMaybe(row.transcript_release_audit),
+    metadata_draft: parseJsonObjectMaybe(row.metadata_draft),
+    metadata_review_state: normalizeOneTimeMetadataReviewState(row.metadata_review_state),
+    bot_knowledge_handoff: parseJsonObjectMaybe(row.bot_knowledge_handoff),
+    bot_knowledge_status: normalizeOneTimeBotKnowledgeStatus(row.bot_knowledge_status),
     source_sheet_draft: row.source_sheet_draft || '',
     package_status: normalizeOneTimePackageStatus(row.package_status),
     updated_by: row.updated_by || '',
@@ -31918,12 +31944,24 @@ function buildOneTimeClassPackage(classSession, assets = [], libraryItems = []) 
       text: session.transcript_text,
       notes: session.transcript_notes,
     },
+    metadata_review: {
+      state: session.metadata_review_state,
+      draft: session.metadata_draft,
+    },
+    bot_knowledge: {
+      status: session.bot_knowledge_status,
+      handoff: session.bot_knowledge_handoff,
+    },
     source_sheet_draft: session.source_sheet_draft,
     assets: activeAssets,
     library_items: libraryItems.map(oneTimeLibraryItemView),
     package_status: session.package_status,
     private_admin_only: {
       transcript_notes: session.transcript_notes,
+      metadata_draft: session.metadata_draft,
+      metadata_review_state: session.metadata_review_state,
+      bot_knowledge_handoff: session.bot_knowledge_handoff,
+      bot_knowledge_status: session.bot_knowledge_status,
       updated_by: session.updated_by,
     },
   };
@@ -80097,8 +80135,9 @@ app.post('/api/bna/one-time/classes', requireAdmin, async (req, res) => {
          transcript_text, transcript_status, transcript_notes,
          transcript_review_state, transcript_privacy_class, transcript_segments,
          transcript_versions, transcript_glossary, transcript_release_audit,
+         metadata_draft, metadata_review_state, bot_knowledge_handoff, bot_knowledge_status,
          source_sheet_draft, package_status, updated_by, updated_at
-       ) VALUES ($1, NULLIF($2, '')::date, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NULLIF($13, 0), $14, $15, $16, $17, $18, $19::jsonb, $20::jsonb, $21::jsonb, $22::jsonb, $23, $24, $25, NOW())
+       ) VALUES ($1, NULLIF($2, '')::date, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NULLIF($13, 0), $14, $15, $16, $17, $18, $19::jsonb, $20::jsonb, $21::jsonb, $22::jsonb, $23::jsonb, $24, $25::jsonb, $26, $27, $28, $29, NOW())
        RETURNING *`,
       [
         project.id,
@@ -80123,6 +80162,10 @@ app.post('/api/bna/one-time/classes', requireAdmin, async (req, res) => {
         oneTimeJsonField(body.transcript_versions || body.transcriptVersions || {}, {}),
         oneTimeJsonField(body.transcript_glossary || body.transcriptGlossary || [], []),
         oneTimeJsonField(body.transcript_release_audit || body.transcriptReleaseAudit || {}, {}),
+        oneTimeJsonField(body.metadata_draft || body.metadataDraft || {}, {}),
+        normalizeOneTimeMetadataReviewState(body.metadata_review_state || body.metadataReviewState || body.metadata_draft?.review_state || body.metadataDraft?.review_state || 'needs_review'),
+        oneTimeJsonField(body.bot_knowledge_handoff || body.botKnowledgeHandoff || {}, {}),
+        normalizeOneTimeBotKnowledgeStatus(body.bot_knowledge_status || body.botKnowledgeStatus || body.bot_knowledge_handoff?.status || body.botKnowledgeHandoff?.status || 'blocked'),
         oneTimeLongText(body.source_sheet_draft || body.sourceSheetDraft || '', 60000) || null,
         normalizeOneTimePackageStatus(body.package_status || body.packageStatus || 'draft'),
         actor,
@@ -80188,6 +80231,10 @@ app.patch('/api/bna/one-time/classes/:id', requireAdmin, async (req, res) => {
     if (body.transcript_versions !== undefined || body.transcriptVersions !== undefined) setJsonField('transcript_versions', oneTimeJsonField(body.transcript_versions || body.transcriptVersions || {}, {}));
     if (body.transcript_glossary !== undefined || body.transcriptGlossary !== undefined) setJsonField('transcript_glossary', oneTimeJsonField(body.transcript_glossary || body.transcriptGlossary || [], []));
     if (body.transcript_release_audit !== undefined || body.transcriptReleaseAudit !== undefined) setJsonField('transcript_release_audit', oneTimeJsonField(body.transcript_release_audit || body.transcriptReleaseAudit || {}, {}));
+    if (body.metadata_draft !== undefined || body.metadataDraft !== undefined) setJsonField('metadata_draft', oneTimeJsonField(body.metadata_draft || body.metadataDraft || {}, {}));
+    if (body.metadata_review_state !== undefined || body.metadataReviewState !== undefined) setField('metadata_review_state', normalizeOneTimeMetadataReviewState(body.metadata_review_state || body.metadataReviewState));
+    if (body.bot_knowledge_handoff !== undefined || body.botKnowledgeHandoff !== undefined) setJsonField('bot_knowledge_handoff', oneTimeJsonField(body.bot_knowledge_handoff || body.botKnowledgeHandoff || {}, {}));
+    if (body.bot_knowledge_status !== undefined || body.botKnowledgeStatus !== undefined) setField('bot_knowledge_status', normalizeOneTimeBotKnowledgeStatus(body.bot_knowledge_status || body.botKnowledgeStatus));
     if (body.source_sheet_draft !== undefined || body.sourceSheetDraft !== undefined) setField('source_sheet_draft', oneTimeLongText(body.source_sheet_draft || body.sourceSheetDraft || '', 60000) || null);
     if (body.package_status !== undefined || body.packageStatus !== undefined) setField('package_status', normalizeOneTimePackageStatus(body.package_status || body.packageStatus));
     if (body.media_url !== undefined || body.mediaUrl !== undefined || body.source_media_url !== undefined || body.media_provider !== undefined || body.mediaProvider !== undefined || body.vimeo_id !== undefined || body.vimeoId !== undefined) {
