@@ -176,6 +176,7 @@
     "app:smoke:one-time-study-assistant": "node scripts/smoke-one-time-study-assistant-live.mjs",
     "app:smoke:one-time-shared-review": "node scripts/smoke-one-time-shared-review-live.mjs",
     "app:smoke:onetime-separate-instance": "node scripts/smoke-onetime-separate-instance-live.mjs",
+    "app:smoke:onetime-provider-route-module": "node scripts/smoke-onetime-provider-route-module-live.mjs",
     "app:smoke:final-register-surfaces": "node scripts/smoke-final-register-surfaces-live.mjs",
     "app:smoke:developer-tester-ticket": "node scripts/smoke-developer-tester-ticket-live.mjs",
     "app:smoke:public-navigation-positioning": "node scripts/smoke-public-navigation-positioning-live.mjs",

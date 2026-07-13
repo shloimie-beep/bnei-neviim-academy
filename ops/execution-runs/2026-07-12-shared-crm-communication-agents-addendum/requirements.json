@@ -243,7 +243,7 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T09:26:00+03:00",
+      "updated_at": "2026-07-13T09:38:00+03:00",
       "can_continue_without_operator": true,
       "blocker": "",
       "status": "in_progress",
@@ -262,7 +262,12 @@
         "Second slice local proof: CRM renderer moved behind public/js/one-time-provider-crm-route.js; overview/provider default shows a route placeholder and does not load the CRM module; direct CRM route loads only the CRM module; mailbox module loads after mailbox navigation.",
         "Local CRM layout smoke report records routeModules=[crm] and confirms mailbox/communications modules are not eagerly loaded on the CRM route.",
         "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md",
-        "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.json"
+        "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.json",
+        "Second CRM route-module slice committed and pushed at a9447271e29ed0f30401b05f760f4d314f91c9a9; One Time Railway deployment fac38cc0-23c4-4158-8556-4c11e6c95215 reached SUCCESS.",
+        "Live One Time exact-SHA smoke passed for https://join.onetimeonetime.com at a9447271e29ed0f30401b05f760f4d314f91c9a9.",
+        "Live provider route-module smoke passed: default provider review route loaded no route modules and only a CRM placeholder; direct CRM route loaded only /js/one-time-provider-crm-route.js; mailbox route loaded only /js/one-time-provider-mailbox-route.js; Operations CSS/JS stayed absent; 390px CRM route had no horizontal overflow; no sends or production mutations occurred.",
+        "ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md",
+        "ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.json"
       ],
       "verification": [
         "node --check server.js PASS",
@@ -290,7 +295,12 @@
         "npm run watchdog:actions PASS after route-module extraction",
         "npm run secrets:audit PASS after route-module extraction",
         "npm run bna:run:validate PASS after route-module extraction",
-        "npm run one-time:provider-route-module-budget -- --base-ref HEAD PASS: provider.html shrank by 805 bytes, default overview loaded no route modules, CRM loaded only /js/one-time-provider-crm-route.js, mailbox loaded only its stub, Operations assets absent, and failed/bad/console counts were 0/0/0."
+        "npm run one-time:provider-route-module-budget -- --base-ref HEAD PASS: provider.html shrank by 805 bytes, default overview loaded no route modules, CRM loaded only /js/one-time-provider-crm-route.js, mailbox loaded only its stub, Operations assets absent, and failed/bad/console counts were 0/0/0.",
+        "node --check scripts/smoke-onetime-provider-route-module-live.mjs PASS",
+        "git push origin master PASS for a9447271e29ed0f30401b05f760f4d314f91c9a9",
+        "One Time railway:doctor PASS deployment fac38cc0-23c4-4158-8556-4c11e6c95215 SUCCESS",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha a9447271e29ed0f30401b05f760f4d314f91c9a9 PASS",
+        "npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha a9447271e29ed0f30401b05f760f4d314f91c9a9 PASS"
       ],
       "implementation_files": [
         "public/provider.html",
@@ -307,7 +317,10 @@
         "package.json",
         "scripts/audit-onetime-provider-route-module-budget.mjs",
         "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md",
-        "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.json"
+        "ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.json",
+        "scripts/smoke-onetime-provider-route-module-live.mjs",
+        "ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md",
+        "ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.json"
       ],
       "deployment_required": true,
       "id": "REQ-20260713-908",
@@ -318,8 +331,8 @@
       ],
       "category": "frontend_architecture",
       "batch_id": "3-onetime-dedicated-app-shell",
-      "implementation_status": "In progress: first dedicated-shell routing slice is deployed/live-smoked; second route-module slice is locally verified. Normal One Time provider login and /provider.html?admin_provider=one-time serve the dedicated provider shell by default; scoped Operations fallback requires ops_fallback=1; the CRM renderer now lives behind a dedicated CRM route module and is not eagerly loaded from the default provider overview. Full REQ-20260713-908 remains open for deploy/live proof of this route-module slice, additional route-module extraction, smaller critical-path proof, and budget comparison.",
-      "next_action": "Commit, push, deploy, and live-smoke the CRM route-module slice. Then continue moving mailbox/communications route behavior behind modules and compare route budgets against the 2026-07-13 baseline.",
+      "implementation_status": "In progress: first dedicated-shell routing slice is deployed/live-smoked; second CRM route-module slice is committed, pushed, deployed to One Time, and live-smoked. Normal One Time provider login and /provider.html?admin_provider=one-time serve the dedicated provider shell by default; scoped Operations fallback requires ops_fallback=1; the CRM renderer lives behind a dedicated CRM route module and is not eagerly loaded from the default provider overview. Full REQ-20260713-908 remains open for mailbox/communications route extraction, smaller critical-path proof across more routes, and regression budget gates.",
+      "next_action": "Continue mailbox/communications route-module extraction and start/queue REQ-20260713-911 instrumentation and budget gates. Keep REQ-20260713-906 blocked until secure owner aliases exist; do not perform owner sends or public auto-reply activation from this shell packet.",
       "acceptance_criteria": [
         "One Time startup no longer requires the giant shared BNA Operations monolith on the critical path.",
         "The dedicated shell loads only the One Time shell, active route module, active workspace data, and genuinely needed shared primitives.",

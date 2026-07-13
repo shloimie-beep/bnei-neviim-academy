@@ -39584,3 +39584,34 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `11/11`, local CRM layout smoke with route-module assertions, action
   watchdog, secrets audit, execution-run validation, and provider route-module
   budget audit.
+
+## 2026-07-13 - One Time CRM route module live-smoked
+
+- Committed and pushed CRM route module slice
+  `a9447271e29ed0f30401b05f760f4d314f91c9a9`, deployed it to One Time Railway
+  deployment `fac38cc0-23c4-4158-8556-4c11e6c95215`, and verified the live
+  One Time deploy-info SHA.
+- Added reusable live smoke `app:smoke:onetime-provider-route-module`; live
+  proof confirmed the provider overview loads no route module, the CRM route
+  loads only `/js/one-time-provider-crm-route.js`, the mailbox route loads only
+  its stub, Operations CSS/JS stay absent, 390px has no horizontal overflow,
+  and no sends or production mutations occurred.
+
+## 2026-07-13 - One Time CRM route module deployed
+
+- Committed and pushed `a9447271e29ed0f30401b05f760f4d314f91c9a9`, then
+  deployed it to the One Time Railway service `one-time-web`.
+- Railway deployment `fac38cc0-23c4-4158-8556-4c11e6c95215` reached
+  `SUCCESS`, and the One Time separate-instance smoke passed against the exact
+  deployed SHA.
+- Added repeatable live route-module smoke
+  `scripts/smoke-onetime-provider-route-module-live.mjs` and package script
+  `app:smoke:onetime-provider-route-module`.
+- Live proof
+  `ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md`
+  confirms default provider review loads no route modules, CRM loads only the
+  CRM route module, mailbox loads only its mailbox route stub, Operations
+  assets stay absent, 390px CRM has no horizontal overflow, and no sends or
+  production mutations occurred.
+- `REQ-20260713-908` remains in progress for mailbox/communications module
+  extraction, broader critical-path proof, and regression budget gates.

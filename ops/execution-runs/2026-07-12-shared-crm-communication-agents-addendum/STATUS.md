@@ -42,6 +42,7 @@ Current status: `active`
 - Registered `ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK` and added visible fallback links in the provider shell.
 - Verification passed: `node --check server.js`, provider login/review navigation browser tests, route-role/action-coverage tests, action watchdog, execution-run validation, signed local provider CRM layout smoke, BNA Railway deployment `33571043-54ce-4631-99c1-b54209edebc7`, One Time Railway deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754`, and live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`.
 - CRM route-module slice is locally verified: the CRM renderer now lives in `public/js/one-time-provider-crm-route.js`, default provider overview shows a route placeholder without loading CRM, active CRM loads only the CRM module, mailbox loads only after navigation, and `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` passed.
+- CRM route-module slice is also deployed/live-smoked on One Time at `a9447271e29ed0f30401b05f760f4d314f91c9a9`: Railway deployment `fac38cc0-23c4-4158-8556-4c11e6c95215` reached `SUCCESS`, exact-SHA One Time separate-instance smoke passed, and `ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md` confirms overview loads no route module, CRM loads only the CRM module, mailbox loads only its stub, Operations assets stay absent, and no sends or production mutations occurred.
 
 ## Completed In This Batch
 

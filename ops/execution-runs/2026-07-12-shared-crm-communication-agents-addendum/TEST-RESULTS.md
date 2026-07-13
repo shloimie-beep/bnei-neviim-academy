@@ -57,7 +57,11 @@
 - PASS `node scripts/smoke-onetime-provider-crm-layout-local.mjs`; report records `routeModules=["crm"]` and no eager mailbox/communications module load.
 - PASS `npm run one-time:provider-route-module-budget -- --base-ref HEAD`; report `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` shows `provider.html` shrank by 805 bytes, default overview loaded no route modules, CRM loaded only `/js/one-time-provider-crm-route.js`, mailbox loaded only its stub, Operations assets stayed absent, and failed/bad/console counts were `0/0/0`.
 - PASS `npm run watchdog:actions`, `npm run secrets:audit`, and `npm run bna:run:validate`.
-- Pending: commit, push, deploy exact SHA, and live-smoke the CRM route-module slice.
+- PASS commit/push at `a9447271e29ed0f30401b05f760f4d314f91c9a9` on `master`.
+- PASS One Time Railway deploy and doctor; deployment `fac38cc0-23c4-4158-8556-4c11e6c95215` reached `SUCCESS`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha a9447271e29ed0f30401b05f760f4d314f91c9a9`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha a9447271e29ed0f30401b05f760f4d314f91c9a9`; report `ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md`.
+- Remaining: continue mailbox/communications extraction and performance/instrumentation gates before marking all of `REQ-20260713-908` Done.
 
 - PASS `node --check server.js`
 - PASS `node --check src/lib/integrations/resend-inbound-crm.js`
