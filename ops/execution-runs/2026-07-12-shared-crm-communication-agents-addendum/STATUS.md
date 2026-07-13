@@ -334,3 +334,12 @@ Current status: `active`
 - Contract tests explicitly reject browser-side contact/conversation union helpers and pin the dedicated server DTO routes.
 - Live proof at SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`: One Time CRM workbench smoke passed with 12 scoped cards, assistant-thread DTO proof found a positive Activity match, WhatsApp and signup-context DTO regressions found positive matches, signup-record DTO safely skipped only because sampled production had no direct signup rows, and BNA taxonomy regression passed.
 - Remaining `REQ-20260712-302` work is shared CRM product/UI breadth and One Time-first action polish, not the canonical aggregate service contract itself.
+
+## Dedicated CRM Actions Closeout - 2026-07-13
+
+- `REQ-20260712-303` is Done. The dedicated contact workspace has URL/back-state and mobile one-pane behavior plus the full persisted first-party action matrix.
+- Implemented/deployed action coverage: Add Contact, field-specific Edit/Update through the CRM update form, Add Note, Add Tag, Remove Tag, Assign Owner, Change Lifecycle, Set/Change/Clear Follow-up, Create Task, Complete Task, Reopen Task, Open scoped email inbox/thread, Open WhatsApp thread, Link Family, Link Student, Link Member, and Archive Contact.
+- The email-thread action is represented by the existing registered `ACTION-CRM-OPEN-SCOPED-INBOX` control, which opens the scoped email inbox/thread context without browser-side data union.
+- Final closeout proof used the already-deployed One Time runtime SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`; no new runtime deploy was required.
+- Verification passed: focused CRM tests `46/46`, local One Time CRM workbench smoke, action watchdog finding_count `0`, and production read-only marker proof for 18 CRM action IDs on `https://join.onetimeonetime.com/operations.html`.
+- Guardrails: closeout performed no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, import, credential mutation, or production data mutation.

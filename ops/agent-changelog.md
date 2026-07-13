@@ -39991,3 +39991,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   signup-record, BNA taxonomy, and performance smokes passed at the deployed
   SHA. Remaining CRM work stays under `REQ-20260712-302` / `REQ-20260712-303`
   for One Time-first UI/action breadth, not the canonical aggregate service.
+
+## 2026-07-13 - Dedicated CRM contact workspace actions closed
+
+- Marked `REQ-20260712-303` Done. The dedicated contact workspace now has the
+  full persisted first-party action matrix on top of the deployed mobile/list
+  detail workspace: add contact, edit/update fields, notes, tags, owner,
+  lifecycle, follow-up, tasks, email/WhatsApp thread opening,
+  family/student/member linking, and archive.
+- Final closeout proof ran focused CRM tests `46/46`, local One Time CRM
+  workbench smoke, action watchdog finding_count `0`, and a read-only
+  production marker check against One Time deployed SHA
+  `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- No external send, WhatsApp/WAPI send, Telegram send, CRM write, provider
+  mutation, payment/access mutation, import, credential mutation, or production
+  data mutation was performed during closeout.

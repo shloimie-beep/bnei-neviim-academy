@@ -492,3 +492,11 @@
 - `tests/shared-crm-workbench-contract.test.js` pins the server-owned selected-contact routes and asserts `loadFirstPartyCrmSubviewData` does not use browser union helpers or raw `bna_communications`/`bna_contact_communications` merging.
 - `tests/crm-contact-service.test.js` covers the canonical list DTO, timeline DTO, separate conversations and tasks DTO envelopes, support-ticket/task classification, and Activity-only exclusions for signup, assistant, lifecycle, class attendance, suppression, delivery, and membership rows.
 - Deployed proof at `8ea2cd06e1920eecfd1ae97b937c22d701c00099` includes One Time CRM workbench readback, targeted assistant-thread, WhatsApp, signup-context, and signup-record DTO smokes, BNA taxonomy smoke, and One Time performance regression gate.
+
+## Dedicated CRM Actions - 2026-07-13
+
+- `REQ-20260712-303` is closed by deployed action-slice evidence already recorded in this run: Add Contact `de48d8ae`, Archive Contact `3293d352`, Complete/Reopen linked tasks `ec1e8938`, Link member `8ea9b798`, Link family/student `003e3e7f`, Follow-up set/change/clear `eee9a431`, Note/Tag/Owner/Lifecycle `15796035`, and task DTO state actions `09d239dd`.
+- `public/operations.html`, `public/js/operations-shell.js`, `ops/action-registry.json`, and `tests/shared-crm-workbench-contract.test.js` contain the full first-party CRM action matrix.
+- Production read-only marker proof on `https://join.onetimeonetime.com/operations.html` at One Time deploy-info SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099` found all 18 expected action IDs and reported `missing: []`.
+- Local workbench proof remains `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- Latest action watchdog proof: `npm run watchdog:actions` returned finding_count `0` during closeout.

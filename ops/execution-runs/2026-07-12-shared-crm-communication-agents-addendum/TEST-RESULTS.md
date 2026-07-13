@@ -965,3 +965,11 @@
 - PASS `npm run bna:run:validate`; broader addendum work remains open.
 - PASS live One Time CRM workbench, assistant-thread DTO, WhatsApp DTO, signup-context DTO, signup-record DTO, BNA taxonomy, and One Time performance regression smokes at deployed SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
 - `REQ-20260712-306` marked Done because its exact DTO/service acceptance contract is now implemented, deployed, and proved; no new deploy was required for this status-only closeout.
+
+## Dedicated CRM Actions Closeout - 2026-07-13
+
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js`; 46/46 tests passed.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; finding_count `0`.
+- PASS production read-only marker proof for 18 CRM action IDs on One Time deployed SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- `REQ-20260712-303` marked Done because URL/back-state, mobile one-pane contact detail, and the persisted action matrix are implemented and already deployed; no new runtime deploy was required for this status-only closeout.

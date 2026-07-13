@@ -345,3 +345,10 @@ Global production readiness remains blocked only by known external full-launch f
 - One Time Railway deployment `c2b6b88a-036a-4a33-93d9-3bd2f9de7719` reached `SUCCESS`; One Time `/api/deploy-info` returned exact SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099` and `target_app=one-time`.
 - Live proof remains: One Time exact-SHA separate-instance smoke, One Time provider route-module smoke, One Time Operations CRM workbench smoke, targeted assistant-thread DTO smoke, WhatsApp/signup-context/signup-record DTO regressions, BNA taxonomy smoke, and One Time performance gate.
 - `REQ-20260712-302` is closed only for the current One Time-first shared CRM phase; dedicated CRM actions, owner-test sends, and future BNA frontend adoption remain separate lanes.
+
+## 2026-07-13 Dedicated CRM Actions Closeout
+
+- No new runtime deploy was required for `REQ-20260712-303`; the closeout proves action slices already deployed into current One Time runtime SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- Production marker proof on `https://join.onetimeonetime.com/operations.html` found all 18 expected CRM action IDs with none missing.
+- Earlier bounded action slices deployed and live-smoked: Add Contact, Archive Contact, Complete/Reopen tasks, Link member, Link family/student, Set/Change/Clear follow-up, Add note/Add tag/Remove tag/Assign owner/Change lifecycle, and task DTO Complete/Reopen.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM write, provider mutation, payment/access mutation, import, credential mutation, or production data mutation was performed by the closeout proof.

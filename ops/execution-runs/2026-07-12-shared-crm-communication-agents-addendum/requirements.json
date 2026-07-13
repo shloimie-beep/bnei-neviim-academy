@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-13T14:36:00+03:00",
+  "updated_at": "2026-07-13T14:48:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -1283,10 +1283,10 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "in_progress",
-      "implementation_status": "Add Contact slice implemented, pushed, deployed to BNA and One Time, and live-smoked: Operations exposes ACTION-CRM-ADD-CONTACT, POST /api/bna/crm/contacts creates or updates one workspace-scoped first-party bna_contacts record, upserts workspace-scoped email/phone/WhatsApp identities, writes a local pipeline event, returns the stable bna_contacts:<id> contact key, and opens the saved contact workspace without external sends, access grants, imports, checkout, or automatic task creation. Archive Contact slice is implemented, pushed, deployed to BNA and One Time, and live-smoked: Operations exposes ACTION-CRM-ARCHIVE-CONTACT, the explicit click archives through the scoped CRM PATCH route with status=archived and create_follow_up_task=false, and deployed HTML readback confirms the action/function are present. Complete/Reopen task slice is implemented, pushed, deployed to BNA and One Time, and live-smoked: Operations exposes ACTION-CRM-COMPLETE-TASK and ACTION-CRM-REOPEN-TASK on linked follow-up tasks, updates only the scoped /api/bna/tasks/:id route, local smoke verifies the buttons without clicking a write, and deployed JS/CSS marker checks confirm the controls are live. Link member slice is implemented, pushed, deployed to BNA and One Time, and live-smoked: Operations exposes ACTION-CRM-LINK-MEMBER in Access/Family, creates only a disabled member shell with access_status=paused and access_enabled=false, the direct bna_contacts aggregate scopes email fallback rollups by the workspace-mapped project before showing communications, support, tasks, or membership, and deployed JS/HTML marker checks confirm the controls are live. Remaining actions include family/student linking.",
+      "status": "done",
+      "implementation_status": "Done. The dedicated CRM contact workspace opens from the contact index with URL/back-state and mobile one-pane behavior, and the full persisted action matrix is implemented through explicit first-party CRM actions: add contact, field-specific edit/update, add note, add/remove tag, assign owner, change lifecycle, schedule/change/clear follow-up, create task, complete/reopen linked and DTO tasks, open scoped email inbox/thread, open WhatsApp thread, link family, link student, link member, and archive contact. All actions use scoped BNA/One Time CRM routes or server-owned DTO handlers, preserve no-send/no-access/no-payment/no-import guardrails, and have deployed marker proof on One Time at SHA 8ea2cd06e1920eecfd1ae97b937c22d701c00099.",
       "can_continue_without_operator": true,
-      "next_action": "Continue dedicated contact workspace work only through the One Time-first mobile CRM IA packet and required shared-runtime safety checks.",
+      "next_action": "Done. Continue REQ-20260712-304 dead-end/internal-copy cleanup as the next unblocked shared CRM item, while owner-only live integration tests remain blocked by REQ-20260713-906 secure aliases.",
       "acceptance_criteria": [
         "Contact index opens a full workspace with URL/back-state persistence, mobile one-pane behavior, and persisted add/edit/tag/owner/lifecycle/follow-up/task/thread/family/archive actions."
       ],
@@ -1334,7 +1334,15 @@
         "Read-only deployed JS/HTML marker checks confirmed ACTION-CRM-LINK-MEMBER, linkFirstPartyCrmMember, data-crm-member-link-state, access_status: 'paused', and access_enabled: false on https://join.onetimeonetime.com.",
         "raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
         "tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
-        "ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json"
+        "ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json",
+        "public/operations.html and public/js/operations-shell.js expose ACTION-CRM-LINK-FAMILY and ACTION-CRM-LINK-STUDENT; Link family persists first-party relationship metadata/tags through the scoped CRM PATCH route and Link student creates a paused first-party student shell without login, access code, class access, payment, send, import, or external CRM write.",
+        "public/operations.html and public/js/operations-shell.js expose ACTION-CRM-SET-FOLLOW-UP, ACTION-CRM-CHANGE-FOLLOW-UP, and ACTION-CRM-CLEAR-FOLLOW-UP; the scoped CRM PATCH route persists empty follow-up values as null and records crm_action_id metadata without automatic task creation.",
+        "public/operations.html and public/js/operations-shell.js expose ACTION-CRM-ADD-NOTE, ACTION-CRM-ADD-TAG, ACTION-CRM-REMOVE-TAG, ACTION-CRM-ASSIGN-OWNER, and ACTION-CRM-CHANGE-LIFECYCLE; the scoped CRM PATCH route persists explicit empty tag lists and local action metadata.",
+        "public/operations.html and public/js/operations-shell.js expose ACTION-CRM-CREATE-TASK, ACTION-CRM-COMPLETE-TASK, and ACTION-CRM-REOPEN-TASK on linked tasks and server-owned Tasks DTO rows through the scoped task handler.",
+        "public/operations.html and public/js/operations-shell.js expose ACTION-CRM-OPEN-SCOPED-INBOX for email thread/inbox context and ACTION-CRM-OPEN-WHATSAPP-THREAD for WhatsApp conversations.",
+        "ops/action-registry.json registers the full dedicated CRM action matrix, including family/student/member linking, follow-up, task, email/WhatsApp thread, note/tag/owner/lifecycle, archive, and create contact actions.",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records local CRM workbench proof with focused selected-contact state, mobile Back behavior, action controls, and no writes.",
+        "Production read-only marker check on https://join.onetimeonetime.com/operations.html at deploy-info SHA 8ea2cd06e1920eecfd1ae97b937c22d701c00099 found all 18 expected dedicated CRM action markers with none missing."
       ],
       "verification": [
         "node --check server.js public/js/operations-shell.js scripts/smoke-onetime-operations-crm-workbench-local.mjs PASS after Add Contact slice",
@@ -1404,7 +1412,11 @@
         "BNA and One Time deploy-info returned commit_sha=8ea9b798fe9187fbb5f311fbd6073b49f1befcf3",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8ea9b798fe9187fbb5f311fbd6073b49f1befcf3 PASS",
         "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com PASS after Link member slice",
-        "curl.exe deployed JS/HTML marker checks PASS for ACTION-CRM-LINK-MEMBER, linkFirstPartyCrmMember, data-crm-member-link-state, access_status: 'paused', and access_enabled: false"
+        "curl.exe deployed JS/HTML marker checks PASS for ACTION-CRM-LINK-MEMBER, linkFirstPartyCrmMember, data-crm-member-link-state, access_status: 'paused', and access_enabled: false",
+        "node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js PASS 46/46 during REQ-20260712-303 closeout.",
+        "npm run one-time:smoke:operations-crm-workbench-local PASS during REQ-20260712-303 closeout.",
+        "npm run watchdog:actions PASS finding_count=0 during REQ-20260712-303 closeout.",
+        "Production read-only marker check PASS for ACTION-CRM-ADD-CONTACT, ADD-NOTE, ADD-TAG, REMOVE-TAG, ASSIGN-OWNER, CHANGE-LIFECYCLE, SET/CHANGE/CLEAR-FOLLOW-UP, CREATE/COMPLETE/REOPEN-TASK, OPEN-SCOPED-INBOX, OPEN-WHATSAPP-THREAD, LINK-FAMILY, LINK-STUDENT, LINK-MEMBER, and ARCHIVE-CONTACT."
       ],
       "implementation_files": [
         "public/js/operations-shell.js",
@@ -1441,9 +1453,14 @@
         "Link member slice deployed at 8ea9b798fe9187fbb5f311fbd6073b49f1befcf3.",
         "BNA production deploy-info readback commit_sha=8ea9b798fe9187fbb5f311fbd6073b49f1befcf3.",
         "One Time production deploy-info readback commit_sha=8ea9b798fe9187fbb5f311fbd6073b49f1befcf3.",
-        "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-13T00-11-08-626Z-one-time-operations-crm-workbench-live-smoke.md."
+        "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-13T00-11-08-626Z-one-time-operations-crm-workbench-live-smoke.md.",
+        "Link family/student slice deployed at 003e3e7fe23684a40131e53be280787811bcc8a4; BNA deployment f8ff55d2-ebe1-4f1e-8250-7a4d34e873a6 and One Time deployment 7e9d6c53-e77f-493a-82ea-573e6b1fcb29 reached SUCCESS; exact-SHA One Time route smoke and deployed JS marker checks passed.",
+        "Schedule/Change/Clear follow-up slice deployed at eee9a431dd426d8627652b972c3d3336eaf18362; BNA deployment 01b5cbf9-a187-4c5e-8e4e-a5e8985d3445 and One Time deployment 2eeead32-2f44-49b9-9a70-1528c3ad5945 reached SUCCESS; exact-SHA One Time route smoke, live CRM workbench smoke, deploy-info readbacks, and deployed JS marker checks passed.",
+        "Add note/Add tag/Remove tag/Assign owner/Change lifecycle slice deployed at 15796035598280b3ae14d748e3673d6a186af5cd; BNA deployment 7e32345a-71c3-4296-a899-f10710339020 and One Time deployment 8dc13638-9225-4c0f-99ca-bdc2bb5daab1 reached SUCCESS; exact-SHA One Time route smoke, live CRM workbench smoke, deploy-info readbacks, and deployed JS marker checks passed.",
+        "Contact task DTO actions slice deployed at 09d239dd095e59299f06c5b3cd38893cd5696fb8; BNA deployment 91aab958-0b12-442b-bf15-545517abc9b9 and One Time deployment 36827b53-3ffb-420e-ac37-2ef329db94ec reached SUCCESS; exact-SHA One Time route smoke, live CRM workbench smoke, deployed JS marker checks, and focused watchdogs/tests passed.",
+        "Current production One Time deploy-info returned commit_sha=8ea2cd06e1920eecfd1ae97b937c22d701c00099; read-only operations.html marker proof found the full CRM action matrix still live on that deployed SHA."
       ],
-      "updated_at": "2026-07-13T07:58:00+03:00",
+      "updated_at": "2026-07-13T14:48:00+03:00",
       "blocker": "",
       "correction_decision_ids": [
         "DEC-20260713-003",
@@ -1451,7 +1468,9 @@
       ],
       "acceptance_corrections": [
         "Current contact-workspace UI layout is not preserved merely because existing smoke tests pass; mobile CRM IA must proceed through REQ-20260713-909 before broad UI edits."
-      ]
+      ],
+      "completed_at": "2026-07-13T14:48:00+03:00",
+      "deployed_commit": "8ea2cd06e1920eecfd1ae97b937c22d701c00099"
     },
     {
       "id": "REQ-20260712-304",

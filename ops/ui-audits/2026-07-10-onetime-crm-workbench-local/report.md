@@ -1,7 +1,7 @@
 # One Time Operations CRM Workbench Local Smoke
 
 Status: PASS
-Generated: 2026-07-13T10:09:28.559Z
+Generated: 2026-07-13T11:38:23.750Z
 
 Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.
 
