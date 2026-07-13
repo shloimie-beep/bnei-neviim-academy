@@ -9144,6 +9144,7 @@
                 if (filters.student_id) params.set('student_id', filters.student_id);
                 return this.request('GET', '/students' + (params.toString() ? '?' + params.toString() : ''));
             },
+            createStudent(payload = {}) { return this.request('POST', '/students', payload); },
             getStudentBotSettings(filters = {}) {
                 const params = new URLSearchParams();
                 if (filters.student_id) params.set('student_id', filters.student_id);
@@ -16080,6 +16081,90 @@
             `;
         }
 
+        function firstPartyCrmTagSet(card = {}) {
+            return new Set((Array.isArray(card.tags) ? card.tags : []).map(tag => String(tag || '').trim()).filter(Boolean));
+        }
+
+        function renderFirstPartyCrmFamilyLinkPanel(card = {}, readOnly = false) {
+            const tags = firstPartyCrmTagSet(card);
+            const linked = tags.has('relationship:family') || tags.has('family:linked');
+            if (linked) {
+                return `
+                    <div class="contact-empty-card crm-linked-task-card" data-crm-family-link-state="linked">
+                        <div class="task-section-header compact">
+                            <div>
+                                <h3>Linked family</h3>
+                                <p class="notification-lock-note">Family relationship is linked on the CRM contact. This does not grant access, create a portal login, send a message, or write to an external CRM.</p>
+                            </div>
+                            <span class="status-chip">Linked</span>
+                        </div>
+                        <div class="crm-linked-task-meta">
+                            <span>Relationship: family</span>
+                            <span>Scope: ${escapeHtml(card.workspace_key || currentWorkspaceKey())}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            const disabled = readOnly || firstPartyCrmSaving;
+            return `
+                <div class="contact-empty-card crm-linked-task-card" data-crm-family-link-state="unlinked">
+                    <div class="task-section-header compact">
+                        <div>
+                            <h3>No family linked.</h3>
+                            <p class="notification-lock-note">Link this contact as a family relationship inside the first-party CRM only. No portal login, access grant, message, payment, import, or external CRM write runs.</p>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="task-action" type="button" onclick="linkFirstPartyCrmFamily(event, ${attrJson(card.id)})" data-action-id="ACTION-CRM-LINK-FAMILY" ${disabled ? `disabled aria-disabled="true" title="${escapeHtml(readOnly ? 'Link family is unavailable in read-only preview.' : '')}"` : ''}>${firstPartyCrmSaving ? 'Saving...' : 'Link family'}</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFirstPartyCrmStudentLinkPanel(card = {}, readOnly = false) {
+            const tags = firstPartyCrmTagSet(card);
+            const linkedStudentId = card.linked?.student_id || null;
+            const linked = Boolean(linkedStudentId) || tags.has('student:linked') || tags.has('crm-linked-student-shell');
+            if (linked) {
+                return `
+                    <div class="contact-empty-card crm-linked-task-card" data-crm-student-link-state="linked">
+                        <div class="task-section-header compact">
+                            <div>
+                                <h3>Linked student</h3>
+                                <p class="notification-lock-note">Student record is linked for CRM readback. Student login, access code, class access, and sends remain separately gated.</p>
+                            </div>
+                            <span class="status-chip">${linkedStudentId ? `Student #${escapeHtml(linkedStudentId)}` : 'Linked'}</span>
+                        </div>
+                        <div class="crm-linked-task-meta">
+                            <span>Student: ${escapeHtml(card.linked?.student_name || 'Linked student shell')}</span>
+                            <span>Access: Disabled until explicitly granted</span>
+                        </div>
+                    </div>
+                `;
+            }
+            const disabled = readOnly || firstPartyCrmSaving || !card.email;
+            const title = readOnly
+                ? 'Link student is unavailable in read-only preview.'
+                : (!card.email ? 'Add a parent email before linking a student shell.' : '');
+            return `
+                <div class="contact-empty-card crm-linked-task-card" data-crm-student-link-state="unlinked">
+                    <div class="task-section-header compact">
+                        <div>
+                            <h3>No student linked.</h3>
+                            <p class="notification-lock-note">Create a paused student shell for CRM linkage only. This does not create a student login, access code, class access, payment, send, or external CRM write.</p>
+                        </div>
+                    </div>
+                    <label>
+                        <span>Student name</span>
+                        <input type="text" data-crm-link-student-name placeholder="Student name" ${disabled ? 'disabled' : ''}>
+                    </label>
+                    <div class="task-actions">
+                        <button class="task-action" type="button" onclick="linkFirstPartyCrmStudent(event, ${attrJson(card.id)})" data-action-id="ACTION-CRM-LINK-STUDENT" ${disabled ? `disabled aria-disabled="true" title="${escapeHtml(title)}"` : ''}>${firstPartyCrmSaving ? 'Saving...' : 'Link student'}</button>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderFirstPartyCrmDetail(card = null) {
             if (!card) {
                 return `
@@ -16275,6 +16360,8 @@
                         ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : (window.BnaCrmContactWorkspace?.emptyState?.('follow_up') || 'No follow-up scheduled.'))}
                         ${renderContactDetailItem('Notes', card.summary || (window.BnaCrmContactWorkspace?.emptyState?.('notes') || 'No notes yet.'))}
                     </div>
+                    ${renderFirstPartyCrmFamilyLinkPanel(card, readOnly)}
+                    ${renderFirstPartyCrmStudentLinkPanel(card, readOnly)}
                     ${renderFirstPartyCrmMemberLinkPanel(card, readOnly)}
                 `;
             }
@@ -16632,6 +16719,110 @@
                 await openFirstPartyCrmContact(contactId, { captureScroll: false, syncUrl: false });
             } catch (error) {
                 firstPartyCrmError = error.message || 'Could not link CRM member shell.';
+            } finally {
+                firstPartyCrmSaving = false;
+                render();
+            }
+        }
+
+        async function linkFirstPartyCrmFamily(event, contactId) {
+            event.preventDefault();
+            if (!contactId || oneTimeViewAsRabbiActive()) return;
+            const card = selectedFirstPartyCrmCard() || {};
+            const tags = Array.from(firstPartyCrmTagSet(card));
+            if (!tags.includes('relationship:family')) tags.push('relationship:family');
+            if (!tags.includes('family:linked')) tags.push('family:linked');
+            const projectKey = projectKeyForWorkspaceKey(currentWorkspaceKey());
+            firstPartyCrmSaving = true;
+            firstPartyCrmError = '';
+            firstPartyCrmNotice = '';
+            render();
+            try {
+                await api.updateCrmContact(contactId, {
+                    workspace_key: currentWorkspaceKey(),
+                    project_key: projectKey,
+                    family_school_classification: 'family',
+                    relationship_context: 'family',
+                    tags,
+                    note_summary: 'Family relationship linked',
+                    note: 'Linked as a family relationship by an explicit Link family click in the CRM contact workspace. No portal login, access grant, message, payment, import, or external CRM write was performed.',
+                    create_follow_up_task: false,
+                    external_write_performed: false
+                });
+                firstPartyCrmNotice = 'Family relationship linked locally. No portal login, access grant, message, payment, import, or external CRM write ran.';
+                firstPartyCrmContactsCache.clear();
+                selectedFirstPartyCrmContactId = contactId;
+                firstPartyCrmActiveTab = 'family';
+                firstPartyCrmTimelinePayload = null;
+                await loadFirstPartyCrmContacts(null, { force: true });
+                await openFirstPartyCrmContact(contactId, { captureScroll: false, syncUrl: false });
+            } catch (error) {
+                firstPartyCrmError = error.message || 'Could not link CRM family relationship.';
+            } finally {
+                firstPartyCrmSaving = false;
+                render();
+            }
+        }
+
+        async function linkFirstPartyCrmStudent(event, contactId) {
+            event.preventDefault();
+            if (!contactId || oneTimeViewAsRabbiActive()) return;
+            const panel = event.currentTarget?.closest?.('[data-crm-student-link-state]');
+            const studentName = String(panel?.querySelector?.('[data-crm-link-student-name]')?.value || '').trim();
+            if (!studentName) {
+                firstPartyCrmError = 'Enter a student name before linking a student shell.';
+                render();
+                return;
+            }
+            const card = selectedFirstPartyCrmCard() || {};
+            const email = String(card.email || '').trim();
+            if (!email) {
+                firstPartyCrmError = 'Add a parent email before linking a student shell.';
+                render();
+                return;
+            }
+            const projectKey = projectKeyForWorkspaceKey(currentWorkspaceKey());
+            firstPartyCrmSaving = true;
+            firstPartyCrmError = '';
+            firstPartyCrmNotice = '';
+            render();
+            try {
+                const result = await api.createStudent({
+                    project_key: projectKey,
+                    workspace: currentWorkspaceKey(),
+                    name: studentName,
+                    parent_name: card.display_name || '',
+                    parent_email: email,
+                    parent_phone: card.phone || '',
+                    status: 'paused',
+                    tags: ['crm-linked-student-shell', 'student_access_not_granted'],
+                    notes: 'Created as a paused student shell by an explicit Link student click in the CRM contact workspace. No student login, access code, class access, payment, send, import, or external CRM write was performed.'
+                });
+                const studentId = result?.student?.id || '';
+                const tags = Array.from(firstPartyCrmTagSet(card));
+                for (const tag of ['student:linked', 'crm-linked-student-shell']) {
+                    if (!tags.includes(tag)) tags.push(tag);
+                }
+                await api.updateCrmContact(contactId, {
+                    workspace_key: currentWorkspaceKey(),
+                    project_key: projectKey,
+                    tags,
+                    note_summary: studentId ? `Linked paused student shell #${studentId}` : 'Linked paused student shell',
+                    note: `Linked paused student shell${studentId ? ` #${studentId}` : ''} for ${studentName}. No student login, access code, class access, payment, send, import, or external CRM write was performed.`,
+                    create_follow_up_task: false,
+                    external_write_performed: false
+                });
+                firstPartyCrmNotice = studentId
+                    ? `Student #${studentId} linked as a paused CRM shell. No student login, access code, class access, payment, send, import, or external CRM write ran.`
+                    : 'Student shell linked locally with access disabled. No student login, access code, class access, payment, send, import, or external CRM write ran.';
+                firstPartyCrmContactsCache.clear();
+                selectedFirstPartyCrmContactId = contactId;
+                firstPartyCrmActiveTab = 'family';
+                firstPartyCrmTimelinePayload = null;
+                await loadFirstPartyCrmContacts(null, { force: true });
+                await openFirstPartyCrmContact(contactId, { captureScroll: false, syncUrl: false });
+            } catch (error) {
+                firstPartyCrmError = error.message || 'Could not link CRM student shell.';
             } finally {
                 firstPartyCrmSaving = false;
                 render();

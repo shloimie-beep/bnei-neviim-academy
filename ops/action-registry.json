@@ -2880,6 +2880,44 @@
       ]
     },
     {
+      "action_id": "ACTION-CRM-LINK-FAMILY",
+      "label": "Link family",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-LINK-FAMILY\"]",
+      "expected_behavior": "Links the selected workspace CRM contact as a first-party family relationship only after an explicit click; the payload updates local CRM contact metadata/tags and writes a local CRM note, creates no portal login, grants no access, sends no message, charges no payment, performs no import, and writes no external CRM record. The action is disabled in read-only preview.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlement",
+      "status": "active_first_party_local_write_no_access_grant",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the action calls PATCH /api/bna/crm/contacts/:id with family relationship metadata, create_follow_up_task=false, and no external-write/access-copy."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-LINK-STUDENT",
+      "label": "Link student",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-LINK-STUDENT\"]",
+      "expected_behavior": "Creates or reuses a first-party paused student shell for the selected workspace CRM contact only after an explicit click and entered student name; the payload uses status=paused, creates no student login or access code, grants no class access, sends no message, charges no payment, performs no import, and writes no external CRM record. The action is disabled in read-only preview and when the contact has no parent email.",
+      "permission": "super_admin or scoped provider workspace role with CRM/student entitlement",
+      "status": "active_first_party_local_write_no_access_grant",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the action calls POST /api/bna/students with status=paused, then PATCHes the CRM contact with student linkage tags and no external-write/access-copy."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-CRM-LINK-MEMBER",
       "label": "Link member",
       "surface": "operations_contacts",

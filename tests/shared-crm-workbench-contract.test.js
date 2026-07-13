@@ -146,6 +146,32 @@ test('Operations CRM Link member action creates a disabled first-party member sh
   assert.doesNotMatch(operations.match(/function linkFirstPartyCrmMember[\s\S]*?async function archiveFirstPartyCrmContact/)?.[0] || '', /createMemberAccessCode|access-code|checkout|payment_link/i);
 });
 
+test('Operations CRM Link family and Link student actions are first-party no-access writes only', () => {
+  assert.match(operations, /function renderFirstPartyCrmFamilyLinkPanel\(card = \{\}, readOnly = false\)/);
+  assert.match(operations, /function renderFirstPartyCrmStudentLinkPanel\(card = \{\}, readOnly = false\)/);
+  assert.match(operations, /data-action-id="ACTION-CRM-LINK-FAMILY"/);
+  assert.match(operations, /data-action-id="ACTION-CRM-LINK-STUDENT"/);
+  assert.match(operations, /function linkFirstPartyCrmFamily\(event, contactId\)/);
+  assert.match(operations, /function linkFirstPartyCrmStudent\(event, contactId\)/);
+  assert.match(operations, /family_school_classification: 'family'/);
+  assert.match(operations, /relationship_context: 'family'/);
+  assert.match(operations, /create_follow_up_task: false/);
+  assert.match(operations, /await api\.createStudent\(\{/);
+  assert.match(operations, /status: 'paused'/);
+  assert.match(operations, /student_access_not_granted/);
+  assert.match(operations, /No student login, access code, class access, payment, send, import, or external CRM write/);
+  assert.match(operations, /No portal login, access grant, message, payment, import, or external CRM write/);
+  assert.match(operations, /Enter a student name before linking a student shell\./);
+  assert.match(operations, /Add a parent email before linking a student shell\./);
+  assert.match(operations, /createStudent\(payload = \{\}\) \{ return this\.request\('POST', '\/students', payload\); \}/);
+  assert.match(server, /const familySchoolClassification = limitText\(String\(body\.family_school_classification/);
+  assert.match(server, /metadata\.family_school_classification = familySchoolClassification/);
+  assert.match(server, /relationship_link_source = 'operations_crm_workbench'/);
+  assert.match(server, /SELECT s\.id[\s\S]*FROM bna_students s[\s\S]*s\.project_id = cp\.id[\s\S]*lower\(COALESCE\(s\.parent_email, ''\)\) = lower\(c\.primary_email\)/);
+  const studentFn = operations.match(/async function linkFirstPartyCrmStudent[\s\S]*?async function archiveFirstPartyCrmContact/)?.[0] || '';
+  assert.doesNotMatch(studentFn, /createStudentAccessCode|student_access_code|password|portal link|checkout|payment_link/i);
+});
+
 test('Operations CRM Archive Contact action is explicit and first-party only', () => {
   assert.match(operations, /data-action-id="ACTION-CRM-ARCHIVE-CONTACT"/);
   assert.match(operations, /function archiveFirstPartyCrmContact\(event, contactId\)/);

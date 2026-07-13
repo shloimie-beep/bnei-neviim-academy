@@ -29314,6 +29314,28 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
        COALESCE(NULLIF(c.metadata->>'next_follow_up_at', ''), NULLIF(c.metadata->>'follow_up_at', '')) AS next_follow_up_at,
        COALESCE(NULLIF(c.metadata->>'family_school_classification', ''), NULLIF(c.metadata->>'signup_as', '')) AS family_school_classification,
        (
+         SELECT s.id
+         FROM bna_students s
+         WHERE cp.id IS NOT NULL
+           AND s.project_id = cp.id
+           AND COALESCE(c.primary_email, '') <> ''
+           AND lower(COALESCE(s.parent_email, '')) = lower(c.primary_email)
+           AND COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
+         ORDER BY s.updated_at DESC NULLS LAST, s.id DESC
+         LIMIT 1
+       ) AS student_id,
+       (
+         SELECT s.name
+         FROM bna_students s
+         WHERE cp.id IS NOT NULL
+           AND s.project_id = cp.id
+           AND COALESCE(c.primary_email, '') <> ''
+           AND lower(COALESCE(s.parent_email, '')) = lower(c.primary_email)
+           AND COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
+         ORDER BY s.updated_at DESC NULLS LAST, s.id DESC
+         LIMIT 1
+       ) AS student_name,
+       (
          SELECT jsonb_build_object(
            'message_count', COUNT(*),
            'latest_thread_key', (ARRAY_AGG(cm.thread_key ORDER BY cm.occurred_at DESC NULLS LAST, cm.id DESC))[1],
@@ -29449,6 +29471,16 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
        END AS family_school_classification,
        l.parent_name,
        l.student_name,
+       (
+         SELECT s.id
+         FROM bna_students s
+         WHERE s.project_id = l.project_id
+           AND COALESCE(l.parent_email, '') <> ''
+           AND lower(COALESCE(s.parent_email, '')) = lower(l.parent_email)
+           AND COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
+         ORDER BY s.updated_at DESC NULLS LAST, s.id DESC
+         LIMIT 1
+       ) AS student_id,
        (
          SELECT jsonb_build_object(
            'message_count', COUNT(*),
@@ -50119,6 +50151,8 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
   const displayNameUpdate = limitText(String(body.display_name || body.full_name || body.parent_name || body.name || '').trim(), 180);
   const emailUpdate = normalizeEmail(body.email || body.parent_email || body.primary_email || '');
   const phoneUpdate = limitText(String(body.phone || body.parent_phone || body.primary_phone || '').trim(), 80);
+  const familySchoolClassification = limitText(String(body.family_school_classification || body.audience_type || body.signup_as || '').trim(), 80);
+  const relationshipContext = limitText(String(body.relationship_context || body.relationship || '').trim(), 120);
   const shouldCreateFollowUpTask = body.create_follow_up_task === true || String(body.create_follow_up_task || '').toLowerCase() === 'true';
   const tags = normalizeTextArray(body.tags);
 
@@ -50150,6 +50184,17 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
       if (emailUpdate) addField('parent_email', emailUpdate);
       if (phoneUpdate) addField('parent_phone', phoneUpdate);
       if (body.contact_notes || body.notes) addField('notes', limitText(String(body.contact_notes || body.notes), 4000));
+      const relationshipMetadata = {};
+      if (familySchoolClassification) relationshipMetadata.family_school_classification = familySchoolClassification;
+      if (relationshipContext) relationshipMetadata.relationship_context = relationshipContext;
+      if (familySchoolClassification || relationshipContext) {
+        relationshipMetadata.relationship_linked_at = new Date().toISOString();
+        relationshipMetadata.relationship_link_source = 'operations_crm_workbench';
+      }
+      if (Object.keys(relationshipMetadata).length) {
+        values.push(JSON.stringify(relationshipMetadata));
+        fields.push(`metadata = COALESCE(metadata, '{}'::jsonb) || $${values.length}::jsonb`);
+      }
 
       if (fields.length) {
         values.push(contactRef.id);
@@ -50233,6 +50278,12 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
       if (phoneUpdate) addField('primary_phone', phoneUpdate);
       if (assignedOwner) metadata.assigned_owner = assignedOwner;
       if (nextFollowUpAt) metadata.next_follow_up_at = nextFollowUpAt;
+      if (familySchoolClassification) metadata.family_school_classification = familySchoolClassification;
+      if (relationshipContext) metadata.relationship_context = relationshipContext;
+      if (familySchoolClassification || relationshipContext) {
+        metadata.relationship_linked_at = new Date().toISOString();
+        metadata.relationship_link_source = 'operations_crm_workbench';
+      }
       if (body.contact_notes || body.notes) metadata.summary = limitText(String(body.contact_notes || body.notes), 4000);
       if (Object.keys(metadata).length) {
         values.push(JSON.stringify(metadata));
