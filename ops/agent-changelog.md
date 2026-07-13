@@ -40299,3 +40299,11 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no owner email send, WhatsApp provider send, public auto-reply
   enablement, Telegram send, destructive CRM write, provider mutation,
   credential mutation, payment mutation, or access mutation was performed.
+## 2026-07-13 - One Time public agent shared across WhatsApp and email
+
+- Closed `REQ-20260712-310`: the One Time public parent-information agent is no longer a WhatsApp-only profile. It now declares `scope.channels=[whatsapp,email]`, one shared published agent version `2026-07-13-v3`, and one shared knowledge snapshot reference for WAPI WhatsApp and Resend inbound email.
+- WhatsApp remains `capture_only`; email remains `draft`; both bindings create contacts/conversations, suppress automatic CRM tasks, and keep class links out of model context/logs.
+- Runtime resolution now reads the published profile channel bindings and stamps `channel_binding_source`, `channel_id`, channel formatting, and shared-knowledge metadata onto inbound communications.
+- Verification passed from clean release worktree: syntax checks, focused communication-agent/inbound/outbox/WAPI/owner-readiness suite `41/41`, tracked secret audit over 9530 paths, One Time separate-instance live smoke, One Time provider route-module smoke, and BNA workspace taxonomy smoke.
+- Deployed exact SHA `6d659d76570d1089c768d9f404a6be985cb57863`; One Time Railway deployment `4d41a9d8-f34b-4238-afd5-2fd594443ac7` reached `SUCCESS`, and One Time/BNA deploy-info returned the exact SHA.
+- Guardrails: no owner-test email, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, credential mutation, payment/access mutation, raw private payload logging, or destructive production mutation was performed.

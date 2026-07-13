@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-13T16:09:00+03:00",
+  "updated_at": "2026-07-13T17:33:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -2022,10 +2022,10 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "in_progress",
-      "implementation_status": "Partial deployed verification completed for the existing WhatsApp provider-bot profile/runtime and One Time public landing: stale portal/member/library/trial/pricing claims are no longer bot-published, access facts are marked not currently granted, deterministic replies/system prompt avoid the old 30-day/$67 bot claims unless a future profile explicitly publishes them, and the v2 operator correction explicitly says We are not giving portal access yet. Public landing/header/button/mobile CTA/signup-header polish is live at commit 3712308731910a6e77fb9a18ce18b57ae35f22dd. Full channel-independent WhatsApp/email agent versioning remains open.",
+      "status": "done",
+      "implementation_status": "Done: the One Time parent information agent profile is now channel-independent instead of WhatsApp-only. `one-time.json` publishes one shared `one_time_parent_information_agent` version `2026-07-13-v3` and one shared knowledge snapshot reference for both WhatsApp/WAPI and Resend inbound email; WhatsApp remains `capture_only`, email remains `draft`, both create contacts/conversations, both keep automatic CRM tasks off, and both block raw class-link/model/log exposure. Runtime resolution now reads profile channel bindings, stamps shared knowledge/channel metadata on inbound records, and validation/schema/tests prevent stale WhatsApp-only drift or stale trial/pricing/portal/library claims.",
       "can_continue_without_operator": true,
-      "next_action": "Continue the full shared WhatsApp/email communication-agent knowledge bundle, channel-independent agent model, and channel bindings.",
+      "next_action": "Continue REQ-20260712-311 OpenAI communication-agent response runtime with deterministic policy gates. Owner-only live email/WhatsApp sends remain blocked by REQ-20260713-906 secure aliases.",
       "acceptance_criteria": [
         "One published agent version and knowledge snapshot power One Time WhatsApp and inbound email with channel-specific formatting and no stale claims."
       ],
@@ -2047,7 +2047,16 @@
         "One Time deployment 38d75556-5a94-42d3-b8b3-65a5a3290fe7 SUCCESS",
         "BNA and One Time live deploy-info commit_sha=3712308731910a6e77fb9a18ce18b57ae35f22dd",
         "Live deployed marker checks passed for yellow/header/shadow/CTA/signup-header changes",
-        "ops/live-smokes/2026-07-13T00-26-05-640Z-rabbi-onetime-landing-smoke.md"
+        "ops/live-smokes/2026-07-13T00-26-05-640Z-rabbi-onetime-landing-smoke.md",
+        "config/service-provider-bots/one-time.json scope.channels=[whatsapp,email], channel_bindings one_time_wapi + one_time_inbound_email, shared knowledge_snapshot_ref=one-time-public-knowledge-2026-07-13-v3",
+        "config/service-provider-bots/schema.json no longer requires scope.channel=whatsapp and now models communication-agent channel_bindings",
+        "src/lib/bna/crm/communication-agent-runtime.js resolves email/WhatsApp through profile channel_bindings and stamps channel_binding_source=profile_channel_bindings",
+        "commit 6d659d76570d1089c768d9f404a6be985cb57863 pushed to origin/master",
+        "One Time Railway deployment 4d41a9d8-f34b-4238-afd5-2fd594443ac7 reached SUCCESS",
+        "One Time production /api/deploy-info returned exact SHA 6d659d76570d1089c768d9f404a6be985cb57863 and target_app=one-time",
+        "BNA production /api/deploy-info returned exact SHA 6d659d76570d1089c768d9f404a6be985cb57863; BNA taxonomy smoke passed for shared-runtime regression",
+        "ops/live-smokes/2026-07-13T14-31-22-196Z-onetime-provider-route-module-live-smoke.md",
+        "ops/live-smokes/2026-07-13T14-31-48-215Z-operations-workspace-taxonomy-live-smoke.md"
       ],
       "verification": [
         "node --test tests\\service-provider-lead-bot.test.js tests\\one-time-focused-landing.test.js tests\\one-time-canonical-journey.test.js tests\\one-time-brand-helper-isolation.test.js tests\\one-time-shared-review-branding.test.js PASS 33/33",
@@ -2065,7 +2074,18 @@
         "npm run watchdog:protocol-drift PASS findings 0 after v2 polish",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 3712308731910a6e77fb9a18ce18b57ae35f22dd PASS",
         "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after v2 polish",
-        "live marker checks for deployed yellow/header/shadow/CTA/signup-header changes PASS"
+        "live marker checks for deployed yellow/header/shadow/CTA/signup-header changes PASS",
+        "node -e JSON.parse one-time.json/schema.json PASS",
+        "node --check src/lib/bna/crm/communication-agent-runtime.js PASS",
+        "node --check src/lib/bna/provider-lead-bot.js PASS",
+        "node --check server.js PASS",
+        "node --test tests/communication-agent-model.test.js tests/service-provider-lead-bot.test.js tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/one-time-delivery-outbox.test.js tests/one-time-wapi-scope-contract.test.js tests/one-time-owner-test-readiness.test.js PASS 41/41 from clean release worktree",
+        "npm run secrets:audit PASS over 9530 tracked paths from clean release worktree",
+        "npm run railway:doctor PASS for one-time-web / production",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 6d659d76570d1089c768d9f404a6be985cb57863 PASS",
+        "npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 6d659d76570d1089c768d9f404a6be985cb57863 PASS",
+        "npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org PASS",
+        "npm run bna:run:validate PASS before closeout update"
       ],
       "implementation_files": [
         "config/service-provider-bots/one-time.json",
@@ -2075,11 +2095,23 @@
         "public/one-time/signup.html",
         "tests/service-provider-lead-bot.test.js",
         "tests/one-time-focused-landing.test.js",
-        "tests/one-time-direct-signup-page.test.js"
+        "tests/one-time-direct-signup-page.test.js",
+        "config/service-provider-bots/schema.json",
+        "src/lib/bna/crm/communication-agent-runtime.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T03:27:00+03:00",
-      "blocker": ""
+      "updated_at": "2026-07-13T17:33:00+03:00",
+      "blocker": "",
+      "implementation_commit": "6d659d76570d1089c768d9f404a6be985cb57863",
+      "pushed_commit": "6d659d76570d1089c768d9f404a6be985cb57863",
+      "deployed_commit": "6d659d76570d1089c768d9f404a6be985cb57863",
+      "deployment_evidence": [
+        "One Time Railway deployment 4d41a9d8-f34b-4238-afd5-2fd594443ac7 reached SUCCESS after an initial fallback-404 window while Railway was deploying.",
+        "One Time production verified at https://join.onetimeonetime.com/api/deploy-info with commit_sha=6d659d76570d1089c768d9f404a6be985cb57863 and target_app=one-time.",
+        "One Time live smokes passed: separate-instance route matrix and provider route-module smoke.",
+        "BNA production deploy-info returned commit_sha=6d659d76570d1089c768d9f404a6be985cb57863; BNA workspace taxonomy smoke passed as shared-runtime regression proof.",
+        "No owner-test email, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, credential mutation, payment/access mutation, raw private payload logging, or destructive production mutation was performed."
+      ]
     },
     {
       "id": "REQ-20260712-311",

@@ -668,3 +668,51 @@
   send, public auto-reply enablement, provider mutation, credential mutation,
   payment/access mutation, raw private payload logging, or destructive
   production mutation was performed.
+
+## One Time Shared WhatsApp/Email Agent Closeout
+
+- Requirement: `REQ-20260712-310`.
+- Runtime commit / deployed head:
+  `6d659d76570d1089c768d9f404a6be985cb57863`.
+- Profile evidence: `config/service-provider-bots/one-time.json` no longer
+  scopes the agent to `channel=whatsapp`; it declares
+  `scope.channels=[whatsapp,email]`, the public
+  `one_time_parent_information_agent`, and two channel bindings.
+- Binding evidence: `one_time_wapi` uses channel `whatsapp`, provider `wapi`,
+  reply mode `capture_only`, outbox channel
+  `whatsapp:one_time_agent_reply`, contact/conversation capture on, and
+  automatic tasks off. `one_time_inbound_email` uses channel `email`, provider
+  `resend`, reply mode `draft`, no live outbox channel, contact/conversation
+  capture on, and automatic tasks off.
+- Knowledge evidence: both bindings use profile version `2026-07-13-v3` and
+  `knowledge_snapshot_ref=one-time-public-knowledge-2026-07-13-v3`; tests prove
+  the runtime returns the same `knowledge_snapshot_version`/hash for email and
+  WhatsApp while applying different channel formatting policies.
+- Schema/validation evidence: `config/service-provider-bots/schema.json` and
+  `src/lib/bna/provider-lead-bot.js` reject a WhatsApp-only scope, require
+  active email and WhatsApp bindings, require matching profile versions and
+  knowledge snapshot references, and require `create_task_on_inbound=false`.
+- Runtime evidence: `src/lib/bna/crm/communication-agent-runtime.js` resolves
+  channel bindings from the published profile and records
+  `channel_binding_source=profile_channel_bindings`, `channel_id`,
+  channel-specific formatting, and `shared_knowledge_snapshot=true`.
+- Test evidence: clean-release-worktree `node --test
+  tests/communication-agent-model.test.js tests/service-provider-lead-bot.test.js
+  tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js
+  tests/one-time-delivery-outbox.test.js tests/one-time-wapi-scope-contract.test.js
+  tests/one-time-owner-test-readiness.test.js` passed `41/41`; syntax checks
+  and `npm run secrets:audit` over 9530 tracked paths passed.
+- Deployment evidence: One Time Railway deployment
+  `4d41a9d8-f34b-4238-afd5-2fd594443ac7` reached `SUCCESS`; One Time
+  `/api/deploy-info` returned exact SHA
+  `6d659d76570d1089c768d9f404a6be985cb57863`, `target_app=one-time`.
+- Live smoke evidence: One Time separate-instance route smoke passed; provider
+  route-module smoke
+  `ops/live-smokes/2026-07-13T14-31-22-196Z-onetime-provider-route-module-live-smoke.md`.
+- BNA regression evidence: BNA `/api/deploy-info` returned exact SHA
+  `6d659d76570d1089c768d9f404a6be985cb57863`; workspace taxonomy smoke passed
+  with report
+  `ops/live-smokes/2026-07-13T14-31-48-215Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email, WhatsApp/WAPI provider send, Telegram send,
+  public auto-reply enablement, credential mutation, payment/access mutation,
+  raw private payload logging, or destructive production mutation was performed.
