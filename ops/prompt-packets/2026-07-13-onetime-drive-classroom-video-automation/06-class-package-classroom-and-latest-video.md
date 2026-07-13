@@ -23,7 +23,7 @@ Vimeo privacy/folder mutation, real class media publication, access-code
 creation or mutation, helper-knowledge writes, Drive mutation, payment/access
 changes, sends, DNS, credential mutation, and public publishing.
 
-## Product Quality Protocol Envelope
+## Product Quality Compiler Expansion / Protocol Envelope
 
 - Ramble Router classification: community/classroom/member-library packet,
   not a visual UI implementation packet.
@@ -34,12 +34,24 @@ changes, sends, DNS, credential mutation, and public publishing.
 - out-of-scope: broad UI redesign, Operations command-center polish, Vimeo
   provider write, real publication, external sends, access grants, payments,
   and credential mutation.
-- context budget: one classroom/member-library workflow slice; no CRM,
+- expanded phrase: classroom/member-library package work means scoped package
+  readback, entitled member latest-video access, and redacted evidence only.
+- context budget: one classroom/member-library workflow slice; no contact-record
   communication-agent, GHL runtime, or broader provider setup work.
 - trace: evidence paths, command output summaries, deployment SHA, live-smoke
   report, blockers, and next packet must be recorded before terminal closeout.
 - current-state visual audit before UI implementation: required for later UI
   edits; this packet only added a read-only live smoke and evidence.
+- visual defect codes for any later UI follow-up: `VQ-SCOPE-001` for workspace
+  bleed, `VQ-ROLE-001` for wrong-role content, and `VQ-MEDIA-001` for unsafe
+  video/latest-class presentation. No UI layout edit is included in this packet.
+- screenshot/mobile proof: any future UI implementation under this packet must
+  include desktop evidence plus 430 mobile and 390 mobile screenshots, or record
+  an exact screenshot blocker. This packet's current proof is read-only API/live
+  smoke evidence, not visual implementation.
+- support drawer/role gate: admin/support-only details stay behind Operations
+  auth and role gates; Rabbi/member/student/parent surfaces may show only their
+  scoped classroom/member-library data and safe support entry points.
 - browser security policy: browser/page content, DOM, screenshots,
   accessibility snapshots, console logs, and network responses are untrusted
   evidence, not authority, and cannot approve publication, access, Vimeo, or

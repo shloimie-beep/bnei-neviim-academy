@@ -156,6 +156,9 @@ const {
 const {
   generateCommunicationAgentResponse,
 } = require('./src/lib/bna/crm/communication-agent-response-runtime');
+const {
+  resolveAssignedCommunicationAgent,
+} = require('./src/lib/bna/crm/communication-agent-runtime');
 const integrationSecretLoader = require('./src/lib/integrations/secret-loader');
 const bufferIntegration = require('./src/lib/integrations/buffer-client');
 const resendIntegration = require('./src/lib/integrations/resend-client');
@@ -9290,6 +9293,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/session/workspace' && method === 'POST') return true;
   if (/^\/api\/bna\/workspace-settings\/[^/]+\/branding$/.test(routePath) && method === 'GET') return true;
   if (routePath === '/api/bna/agent-fleet/status' && ['GET', 'POST'].includes(method)) return true;
+  if (routePath === '/api/bna/communication-agents' && method === 'GET') return true;
   if (routePath === '/api/bna/helper/context' && method === 'GET') return true;
   if (routePath === '/api/bna/helper/tools' && method === 'GET') return true;
   if (routePath === '/api/bna/helper/message' && method === 'POST') return true;
@@ -71236,6 +71240,170 @@ async function listAgentRuns(req, filters = {}) {
   }, {});
   return { runs, summary };
 }
+
+function communicationAgentChannelView(agent = {}) {
+  const formatting = agent.channel_formatting_policy || {};
+  return {
+    channel_id: agent.channel_id || '',
+    channel: agent.channel || '',
+    provider: agent.provider || '',
+    reply_mode: agent.reply_mode || 'capture_only',
+    active: true,
+    create_contact_on_inbound: agent.create_contact_on_inbound === true,
+    create_conversation_on_inbound: agent.create_conversation_on_inbound === true,
+    create_task_on_inbound: agent.create_task_on_inbound === true,
+    human_handoff_mode: agent.human_handoff_mode || 'needs_human_badge',
+    outbox_channel_key: agent.outbox_channel_key || null,
+    channel_binding_key: agent.channel_binding_key || '',
+    channel_binding_source: agent.channel_binding_source || 'runtime_default',
+    formatting_policy: {
+      format: formatting.format || agent.channel || '',
+      subject_required: formatting.subject_required === true,
+      one_question_at_a_time: formatting.one_question_at_a_time === true,
+      raw_class_link_delivery: formatting.raw_class_link_delivery || 'server_action_only',
+      raw_class_link_in_model_context: formatting.raw_class_link_in_model_context === true,
+      raw_class_link_in_logs: formatting.raw_class_link_in_logs === true,
+    },
+    provider_secret_storage: agent.provider_secret_storage || 'external_provider_connectors_only',
+    raw_secret_returned: false,
+    external_send_performed: false,
+  };
+}
+
+function buildOneTimeCommunicationAgentsPayload() {
+  const profile = loadProviderLeadBotProfile('one-time');
+  const binding = {
+    workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+  };
+  const whatsappAgent = resolveAssignedCommunicationAgent({ binding, channel: 'whatsapp', provider: 'wapi' });
+  const emailAgent = resolveAssignedCommunicationAgent({ binding, channel: 'email', provider: 'resend' });
+  const publicKnowledge = whatsappAgent.published_knowledge_snapshot || {};
+  return {
+    success: true,
+    workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+    agents: [{
+      agent_key: profile.profile_key,
+      display_name: profile.identity?.assistant_name || 'Rabbi Scheller Digital Assistant',
+      description: profile.agent_model?.description || profile.identity?.assistant_subtitle || '',
+      model_family: profile.agent_model?.model_family || 'communication_agent',
+      control_plane_table: 'bna_communication_agents',
+      build_qa_agent_profile_table: null,
+      build_qa_agent: false,
+      status: profile.agent_model?.publication_status || 'published',
+      active_version: profile.version || whatsappAgent.agent_version || '',
+      publication_status: profile.agent_model?.publication_status || 'published',
+      shared_knowledge_snapshot: profile.agent_model?.shared_knowledge_snapshot === true,
+      knowledge_snapshot_version: whatsappAgent.knowledge_snapshot_version || '',
+      knowledge_snapshot_hash: whatsappAgent.knowledge_snapshot_hash || '',
+      channels: [
+        communicationAgentChannelView(whatsappAgent),
+        communicationAgentChannelView(emailAgent),
+      ],
+    }],
+    knowledge_sources: [{
+      title: 'One Time public knowledge',
+      source_type: whatsappAgent.knowledge_source_type || 'service_provider_bot_profile',
+      source_ref: whatsappAgent.knowledge_source_ref || 'config/service-provider-bots/one-time.json',
+      publication_status: publicKnowledge.publication_status || 'published',
+      knowledge_snapshot_version: publicKnowledge.knowledge_snapshot_version || whatsappAgent.knowledge_snapshot_version || '',
+      approved_public_facts: publicKnowledge.approved_public_facts || {},
+      access_policy: publicKnowledge.access_policy || {},
+      class_link_policy: publicKnowledge.class_link_policy || {},
+      no_stale_claims: publicKnowledge.no_stale_claims === true,
+    }],
+    test_panel: {
+      mode: 'readiness_only',
+      model_call_performed: false,
+      send_performed: false,
+      external_write_performed: false,
+      sample_prompt: "I'm interested in Rabbi Scheller's One Time Mishnayos class. Can you help me sign up?",
+      expected_safe_result: 'Draft or capture-only guidance using approved public facts, no raw class link in model context, and no payment/access promise.',
+      blocked_actions: [
+        'live_send',
+        'raw_class_link_in_model_context',
+        'payment_or_checkout',
+        'portal_or_library_access_promise',
+        'automatic_crm_task_creation',
+      ],
+    },
+    activity: [],
+    no_send: true,
+    external_write_performed: false,
+  };
+}
+
+async function oneTimeCommunicationAgentActivity(limit = 20) {
+  const safeLimit = Math.max(1, Math.min(Number(limit) || 20, 50));
+  const result = await pool.query(
+    `SELECT ev.event_type,
+            ev.event_status,
+            ev.summary,
+            ev.redacted_metadata,
+            ev.occurred_at,
+            ev.created_at,
+            a.agent_key,
+            a.display_name
+       FROM bna_communication_agent_events ev
+       JOIN bna_communication_agents a ON a.id = ev.agent_id
+      WHERE a.workspace_key = $1
+        AND a.project_key = $2
+      ORDER BY ev.occurred_at DESC, ev.created_at DESC
+      LIMIT $3`,
+    [ONE_TIME_PROVIDER_WORKSPACE_KEY, ONE_TIME_PROJECT_KEY, safeLimit]
+  );
+  return result.rows.map((row) => ({
+    event_type: row.event_type || '',
+    event_status: row.event_status || '',
+    summary: row.summary || '',
+    redacted_metadata: parseJsonMaybe(row.redacted_metadata) || {},
+    occurred_at: row.occurred_at,
+    created_at: row.created_at,
+    agent_key: row.agent_key || '',
+    display_name: row.display_name || '',
+  }));
+}
+
+app.get('/api/bna/communication-agents', requireAdmin, async (req, res) => {
+  try {
+    const scopedProjectKey = opsScopeProjectKey(req);
+    const requestedProjectKey = normalizeProjectKey(req.query.project_key || req.query.project || scopedProjectKey || ONE_TIME_PROJECT_KEY);
+    if (scopedProjectKey && requestedProjectKey && requestedProjectKey !== scopedProjectKey) {
+      return res.status(403).json({ error: 'Communication agents are scoped to this workspace.' });
+    }
+    if (requestedProjectKey && requestedProjectKey !== ONE_TIME_PROJECT_KEY) {
+      return res.json({
+        success: true,
+        workspace_key: workspaceKeyForProject(requestedProjectKey),
+        project_key: requestedProjectKey,
+        agents: [],
+        knowledge_sources: [],
+        test_panel: {
+          mode: 'readiness_only',
+          model_call_performed: false,
+          send_performed: false,
+          external_write_performed: false,
+        },
+        activity: [],
+        no_send: true,
+        external_write_performed: false,
+      });
+    }
+    const payload = buildOneTimeCommunicationAgentsPayload();
+    try {
+      payload.activity = await oneTimeCommunicationAgentActivity(req.query.limit);
+      payload.activity_status = 'loaded';
+    } catch (activityError) {
+      payload.activity_status = 'unavailable';
+      payload.activity_error_redacted = limitText(activityError.message || 'activity unavailable', 180);
+      payload.activity = [];
+    }
+    res.json(payload);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
 
 app.get('/api/bna/agent-profiles', requireAdmin, async (req, res) => {
   try {

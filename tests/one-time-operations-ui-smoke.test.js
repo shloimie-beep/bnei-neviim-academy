@@ -20,6 +20,7 @@ const ownerAllowedViews = [
   'calendar',
   'service_providers',
   'communications',
+  'agents',
   'automations',
   'tasks',
   'api_usage',
@@ -320,6 +321,78 @@ function defaultApiPayload(pathname) {
       fleet: { status: 'running', stale: false, last_seen_at: '2026-06-19T09:45:00.000Z' },
     };
   }
+  if (pathname === '/api/bna/communication-agents') {
+    return {
+      success: true,
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'one_time_mishnah_class',
+      agents: [{
+        agent_key: 'one_time_parent_information_agent',
+        display_name: "Rabbi Scheller's Digital Assistant",
+        description: 'Answers approved public One Time questions and captures interested parents.',
+        model_family: 'communication_agent',
+        control_plane_table: 'bna_communication_agents',
+        build_qa_agent_profile_table: null,
+        build_qa_agent: false,
+        publication_status: 'published',
+        active_version: '2026-07-13-v3',
+        knowledge_snapshot_version: '2026-07-13-v3',
+        knowledge_snapshot_hash: 'mocked',
+        channels: [
+          {
+            channel_id: 'one_time_wapi',
+            channel: 'whatsapp',
+            provider: 'wapi',
+            reply_mode: 'capture_only',
+            active: true,
+            create_contact_on_inbound: true,
+            create_conversation_on_inbound: true,
+            create_task_on_inbound: false,
+            human_handoff_mode: 'needs_human_badge',
+            formatting_policy: { raw_class_link_delivery: 'server_action_only' },
+            external_send_performed: false,
+          },
+          {
+            channel_id: 'one_time_inbound_email',
+            channel: 'email',
+            provider: 'resend',
+            reply_mode: 'draft',
+            active: true,
+            create_contact_on_inbound: true,
+            create_conversation_on_inbound: true,
+            create_task_on_inbound: false,
+            human_handoff_mode: 'needs_human_badge',
+            formatting_policy: { raw_class_link_delivery: 'server_action_only' },
+            external_send_performed: false,
+          },
+        ],
+      }],
+      knowledge_sources: [{
+        title: 'One Time public knowledge',
+        source_ref: 'config/service-provider-bots/one-time.json',
+        publication_status: 'published',
+        approved_public_facts: {
+          program: 'One Time Mishnayos with Rabbi Eli Scheller',
+          schedule: 'Live every day at 7:00 p.m. Israel time.',
+          signup_route: '/one-time/signup',
+        },
+        no_stale_claims: true,
+      }],
+      test_panel: {
+        mode: 'readiness_only',
+        model_call_performed: false,
+        send_performed: false,
+        external_write_performed: false,
+        sample_prompt: "I'm interested in Rabbi Scheller's One Time Mishnayos class.",
+        expected_safe_result: 'Capture-only guidance using approved public facts.',
+        blocked_actions: ['live_send', 'payment_or_checkout', 'portal_or_library_access_promise'],
+      },
+      activity: [],
+      no_send: true,
+      external_write_performed: false,
+      activity_status: 'loaded',
+    };
+  }
   if (pathname === '/api/bna/content-jobs') return { jobs: contentJobs };
   if (pathname === '/api/bna/class-sessions') return { sessions: [{ id: 41, project_key: 'one_time_mishnah_class', title: 'Mishnah Class', status: 'scheduled' }] };
   if (pathname === '/api/bna/project-meetings') return { meetings: projectMeetings };
@@ -546,12 +619,12 @@ test('One Time Operations UI exposes scoped owner modules, integrations, and no-
 
     assert.equal(initialContract.currentWorkspace, 'rabbi_sheller_provider');
     assert.equal(initialContract.roleLabel, 'Workspace Owner');
-    assert.deepEqual(initialContract.navLabels, ['Overview', 'Members', 'Content', 'Live', 'Schedule', 'Community', 'Comms', 'Auto', 'Payments', 'Tasks', 'Reports', 'Connectors', 'Setup']);
-    assert.deepEqual(initialContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'live_class_schedule', 'program_schedule', 'community_questions', 'communications', 'automations', 'payments_access', 'tasks_decisions', 'reporting_readiness', 'connector_setup', 'settings_setup']);
-    for (const expected of ['service_providers', 'contacts', 'content', 'live_classes', 'calendar', 'community', 'communications', 'automations', 'tasks', 'api_usage', 'integrations', 'settings']) {
+    assert.deepEqual(initialContract.navLabels, ['Overview', 'Members', 'Content', 'Live', 'Schedule', 'Community', 'Comms', 'Agents', 'Auto', 'Payments', 'Tasks', 'Reports', 'Connectors', 'Setup']);
+    assert.deepEqual(initialContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'live_class_schedule', 'program_schedule', 'community_questions', 'communications', 'communication_agents', 'automations', 'payments_access', 'tasks_decisions', 'reporting_readiness', 'connector_setup', 'settings_setup']);
+    for (const expected of ['service_providers', 'contacts', 'content', 'live_classes', 'calendar', 'community', 'communications', 'agents', 'automations', 'tasks', 'api_usage', 'integrations', 'settings']) {
       assert.ok(initialContract.navIds.includes(expected), `missing Rabbi-facing nav item ${expected}`);
     }
-    for (const hidden of ['dashboard', 'watchdog', 'agents', 'pipelines', 'internal_dialogue', 'platform_suite', 'admin', 'accounting', 'students', 'studio']) {
+    for (const hidden of ['dashboard', 'watchdog', 'pipelines', 'internal_dialogue', 'platform_suite', 'admin', 'accounting', 'students', 'studio']) {
       assert.equal(initialContract.navIds.includes(hidden), false, `raw support nav item should be demoted: ${hidden}`);
     }
     assert.equal(initialContract.hasStudentsText, false);
@@ -566,13 +639,14 @@ test('One Time Operations UI exposes scoped owner modules, integrations, and no-
     assert.ok(initialContract.sidebarLabels.some((label) => /Live/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Schedule/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Community/.test(label)));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Agents/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Reports/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Connectors/.test(label)));
     assert.ok(initialContract.sidebarSectionLabels.some((label) => /^Library/.test(label)));
     assert.ok(initialContract.sidebarSectionLabels.some((label) => /Meeting Drops/.test(label)));
     assert.ok(initialContract.sidebarSectionLabels.some((label) => /Source Prep/.test(label)));
     assert.equal(initialContract.sidebarSectionLabels.some((label) => /Selected|Repurpose|Newsletter|Prompts/.test(label)), false);
-    assert.equal(initialContract.sidebarLabels.some((label) => /Agents|Watchdog|Team|Accounting|Students/.test(label)), false);
+    assert.equal(initialContract.sidebarLabels.some((label) => /Watchdog|Team|Accounting|Students/.test(label)), false);
     assert.equal(initialContract.workspaceOptions.length, 0);
     assert.match(initialContract.workspaceSummary, /One Time Mishnah Class/);
     assert.doesNotMatch(initialContract.workspaceSummary, /Bnei Neviim|Dratler|Super Admin|School|Family/);
@@ -651,6 +725,7 @@ test('One Time Operations UI exposes scoped owner modules, integrations, and no-
       ['community', /One Time Mishnah Community|One Time community overview/],
       ['content', /Rabbi Meeting Intake|Meeting Drops|One Time Library/],
       ['live_classes', /Live Classes|Program Schedule|7:00 Mishnah Class/],
+      ['agents', /Communication Agents|Knowledge|Channels|No Live Send/],
       ['integrations', /Integrations|Google|Communications|Connectors/],
     ];
 
@@ -679,7 +754,7 @@ test('One Time Operations UI exposes scoped owner modules, integrations, and no-
       width: document.documentElement.clientWidth,
       scrollWidth: document.documentElement.scrollWidth,
       hasContentRail: Boolean(document.querySelector('[data-top-filter-rail][data-current-module="content"]')),
-      hasHiddenSupportNav: Array.from(document.querySelectorAll('.ops-sidebar-button')).some((item) => /Agents|Watchdog|Studio/.test(item.textContent || '')),
+      hasHiddenSupportNav: Array.from(document.querySelectorAll('.ops-sidebar-button')).some((item) => /Watchdog|Studio/.test(item.textContent || '')),
       hasModuleToolbar: Boolean(document.querySelector('[data-module-toolbar-id]')),
     }));
     assert.equal(mobileMetrics.hasContentRail, true);

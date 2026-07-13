@@ -102,6 +102,11 @@ test('Operations UI exposes Agents module, task launch panel, run portal, and va
   assert.doesNotThrow(() => new Function(operationsInlineScript()));
   assert.match(operations, /\{ id: 'agents', label: 'Agents', marker: 'AG' \}/);
   assert.match(operations, /case 'agents': content = renderAgents\(\); break;/);
+  assert.match(operations, /function renderCommunicationAgents\(\)/);
+  assert.match(operations, /function communicationAgentsViewActive/);
+  assert.match(operations, /getCommunicationAgents\(filters = \{\}\)/);
+  assert.match(operations, /Build & QA Agent Runs/);
+  assert.match(operations, /Communication Agents/);
   assert.match(operations, /function renderTaskAgentVerificationPanel/);
   assert.match(operations, /function renderAgentRunPortal/);
   assert.match(operations, /copyAgentPrompt/);

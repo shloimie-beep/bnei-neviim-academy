@@ -52,6 +52,13 @@ const MAIN_MODULES = [
     operations_view: 'communications',
   },
   {
+    id: 'communication_agents',
+    label: 'Communication Agents',
+    short_label: 'Agents',
+    default_section: 'knowledge',
+    operations_view: 'agents',
+  },
+  {
     id: 'automations',
     label: 'Automations',
     short_label: 'Auto',
@@ -159,6 +166,15 @@ const SECTION_SUBSECTION_MAP = {
       { id: 'no_send_log', label: 'No-send Log', source_view: 'communications', source_section: 'drafts' },
     ],
   },
+  communication_agents: {
+    label: 'Communication Agents',
+    subsections: [
+      { id: 'knowledge', label: 'Knowledge', source_view: 'agents', source_section: 'knowledge' },
+      { id: 'channels', label: 'Channels', source_view: 'agents', source_section: 'channels' },
+      { id: 'test', label: 'Test', source_view: 'agents', source_section: 'test' },
+      { id: 'activity', label: 'Activity', source_view: 'agents', source_section: 'activity' },
+    ],
+  },
   automations: {
     label: 'Automations',
     subsections: [
@@ -264,7 +280,6 @@ const REVIEW_LINKS = {
 const INTERNAL_MODULES = {
   platform_support_label: 'Platform Support',
   demoted: [
-    { id: 'agents', label: 'Agents', visibility: 'platform_support_demoted', surface: 'platform_support' },
     { id: 'watchdog', label: 'Watchdog', visibility: 'platform_support_demoted', surface: 'platform_support' },
     { id: 'pipelines', label: 'Pipelines', visibility: 'platform_support_demoted', surface: 'platform_support' },
     { id: 'internal_dialogue', label: 'Internal Dialogue', visibility: 'platform_support_demoted', surface: 'platform_support' },

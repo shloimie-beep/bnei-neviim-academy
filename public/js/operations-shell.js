@@ -69,11 +69,18 @@ const api = {
     getAgentFleetStatus() { return this.request('GET', '/agent-fleet/status'); },
     getAgentProfiles() { return this.request('GET', '/agent-profiles'); },
     getAgentRuns(filters = {}) {
-        const params = new URLSearchParams();
-        Object.entries(filters || {}).forEach(([key, value]) => {
-            if (value !== undefined && value !== null && value !== '' && value !== 'all') params.set(key, value);
-        });
-        return this.request('GET', '/agent-runs' + (params.toString() ? '?' + params.toString() : ''));
+const params = new URLSearchParams();
+Object.entries(filters || {}).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '' && value !== 'all') params.set(key, value);
+});
+return this.request('GET', '/agent-runs' + (params.toString() ? '?' + params.toString() : ''));
+    },
+    getCommunicationAgents(filters = {}) {
+const params = new URLSearchParams();
+Object.entries(filters || {}).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '' && value !== 'all') params.set(key, value);
+});
+return this.request('GET', '/communication-agents' + (params.toString() ? '?' + params.toString() : ''));
     },
     getAgentRun(runKey) { return this.request('GET', '/agent-runs/' + encodeURIComponent(runKey)); },
     createTaskAgentRun(taskId, payload = {}) { return this.request('POST', '/tasks/' + encodeURIComponent(taskId) + '/agent-runs', payload); },
@@ -789,6 +796,9 @@ let agentRunSummary = {};
 let agentRunsNotice = '';
 let agentRunsBusy = false;
 let agentRunsTab = 'ready';
+let communicationAgentsPayload = null;
+let communicationAgentsNotice = '';
+let communicationAgentsTab = 'knowledge';
 let agentRunDetail = null;
 let agentRunDetailEvents = [];
 let agentRunDetailArtifacts = [];
@@ -1335,6 +1345,16 @@ const AGENT_RUN_TABS = [
     { id: 'completed', label: 'Completed' },
     { id: 'all', label: 'All' }
 ];
+
+const COMMUNICATION_AGENT_TABS = [
+    { id: 'knowledge', label: 'Knowledge' },
+    { id: 'channels', label: 'Channels' },
+    { id: 'test', label: 'Test' },
+    { id: 'activity', label: 'Activity' }
+];
+if (currentView === 'agents' && COMMUNICATION_AGENT_TABS.some(tab => tab.id === initialSection)) {
+    communicationAgentsTab = initialSection;
+}
 
 const DASHBOARD_SUBTABS = [
     { id: 'overview', label: 'Overview' },
@@ -2025,9 +2045,7 @@ function renderSidebar() {
             </nav>
             ${showCurrentSections ? renderSidebarSubnav() : ''}
             <div class="ops-sidebar-footer">
-                ${isProviderWorkspace() && currentWorkspaceIsOneTime() && allowedViews().has('agents')
-                    ? '<button type="button" class="ops-sidebar-mini" onclick="switchView(\'agents\')">Platform Support</button>'
-                    : '<button type="button" class="ops-sidebar-mini" onclick="switchView(\'settings\')">Settings</button>'}
+                <button type="button" class="ops-sidebar-mini" onclick="switchView('settings')">Settings</button>
                 <button type="button" class="ops-sidebar-mini" onclick="openBnaHelperWithPrompt('Help me with this Operations screen. Show the relevant support, task, decision, or setup path without sending external messages.')">Help</button>
                 <a class="ops-sidebar-mini" href="/operations-login.html">Logout</a>
             </div>
@@ -2370,7 +2388,9 @@ function currentSubnavConfig() {
         watchdog: () => ({ tabs: [{ id: 'overview', label: 'Overview' }], active: 'overview', countSource: {}, label: 'Watchdog' }),
         pipelines: () => ({ tabs: PIPELINE_SUBTABS, active: pipelineSection, countSource: pipelineSubnavCounts(), label: 'Pipelines' }),
         tasks: () => ({ tabs: TASK_SUBTABS, active: taskFocus, countSource: taskViewState().tabCounts, label: 'Tasks' }),
-        agents: () => ({ tabs: AGENT_RUN_TABS, active: agentRunsTab, countSource: agentRunSubnavCounts(), label: 'Agents' }),
+agents: () => communicationAgentsViewActive()
+    ? ({ tabs: COMMUNICATION_AGENT_TABS, active: communicationAgentsTab, countSource: communicationAgentSubnavCounts(), label: 'Communication Agents' })
+    : ({ tabs: AGENT_RUN_TABS, active: agentRunsTab, countSource: agentRunSubnavCounts(), label: 'Build & QA Agents' }),
         students: () => ({ tabs: STUDENT_SUBTABS, active: studentSection, countSource: studentViewState().tabCounts, label: 'Students' }),
         contacts: () => ({ tabs: providerWorkspace ? PROVIDER_PARTICIPANT_SUBTABS : CONTACT_SUBTABS, active: contactSection, countSource: contactSubnavCounts(), label: providerWorkspace ? 'Participants / Members' : 'Parents / Contacts' }),
         intake: () => ({ tabs: INTAKE_SUBTABS, active: intakeSection, countSource: intakeSubnavCounts(), label: 'Intake Review' }),
@@ -2639,7 +2659,9 @@ function currentPrimaryAction() {
     if (currentView === 'pipelines') return '<button class="primary-button" onclick="createPipelineCardPrompt()">New Pipeline Card</button>';
     if (currentView === 'watchdog') return '<button class="primary-button" onclick="openCommandTarget(\'tasks\', \'tasks\')">Codex Work</button>';
     if (currentView === 'tasks') return '<button class="primary-button" onclick="openCommandTarget(\'tasks\', \'decisions\')">Decisions</button>';
-    if (currentView === 'agents') return '<button class="primary-button" onclick="refreshAgentRuns()">Refresh Runs</button>';
+    if (currentView === 'agents') return communicationAgentsViewActive()
+? '<button class="primary-button" onclick="refreshCommunicationAgents()">Refresh</button>'
+: '<button class="primary-button" onclick="refreshAgentRuns()">Refresh Runs</button>';
     if (currentView === 'students') return '<button class="primary-button" onclick="setStudentSection(\'list\')">Add / Open Student</button>';
     if (currentView === 'contacts' && isProviderWorkspace()) return '<button class="primary-button" onclick="setCurrentSection(\'participants\')">Open Members</button>';
     if (currentView === 'contacts') return '<button class="primary-button" onclick="addInterestedParentLead(event)">New Lead</button>';
@@ -2671,7 +2693,11 @@ function currentSectionLabel() {
     if (currentView === 'watchdog') return 'Overview';
     if (currentView === 'pipelines') return PIPELINE_SUBTABS.find(tab => tab.id === pipelineSection)?.label || 'Overview';
     if (currentView === 'tasks') return TASK_SUBTABS.find(tab => tab.id === taskFocus)?.label || 'Overview';
-    if (currentView === 'agents') return AGENT_RUN_TABS.find(tab => tab.id === agentRunsTab)?.label || 'Ready';
+    if (currentView === 'agents') {
+return communicationAgentsViewActive()
+    ? COMMUNICATION_AGENT_TABS.find(tab => tab.id === communicationAgentsTab)?.label || 'Knowledge'
+    : AGENT_RUN_TABS.find(tab => tab.id === agentRunsTab)?.label || 'Ready';
+    }
     if (currentView === 'students') return STUDENT_SUBTABS.find(tab => tab.id === studentSection)?.label || 'Overview';
     if (currentView === 'community') return COMMUNITY_SUBTABS.find(tab => tab.id === communitySection)?.label || 'Overview';
     if (currentView === 'studio') return STUDIO_SUBTABS.find(tab => tab.id === studioSection)?.label || 'Overview';
@@ -4711,6 +4737,14 @@ function taskAgentControlEnabled() {
     return opsMe?.scope?.type === 'all' && allowedViews().has('agents');
 }
 
+function communicationAgentsViewActive(workspaceKey = currentWorkspaceKey()) {
+    return currentView === 'agents' && currentWorkspaceIsOneTime(workspaceKey);
+}
+
+function communicationAgentTabIsValid(tabId) {
+    return COMMUNICATION_AGENT_TABS.some(tab => tab.id === tabId);
+}
+
 function agentRunStatusLabel(status) {
     return ({
         draft: 'Draft',
@@ -4745,10 +4779,22 @@ function agentRunTabId(run = {}) {
 function agentRunSubnavCounts() {
     const counts = { ready: 0, running: 0, needs_operator: 0, needs_verification: 0, failed: 0, completed: 0, all: agentRuns.length };
     agentRuns.forEach(run => {
-        const tab = agentRunTabId(run);
-        counts[tab] = Number(counts[tab] || 0) + 1;
+const tab = agentRunTabId(run);
+counts[tab] = Number(counts[tab] || 0) + 1;
     });
     return counts;
+}
+
+function communicationAgentSubnavCounts() {
+    const payload = communicationAgentsPayload || {};
+    const agents = Array.isArray(payload.agents) ? payload.agents : [];
+    const channelCount = agents.reduce((count, agent) => count + (Array.isArray(agent.channels) ? agent.channels.length : 0), 0);
+    return {
+knowledge: Array.isArray(payload.knowledge_sources) ? payload.knowledge_sources.length : 0,
+channels: channelCount,
+test: payload.test_panel ? 1 : 0,
+activity: Array.isArray(payload.activity) ? payload.activity.length : 0
+    };
 }
 
 function filteredAgentRuns() {
@@ -4877,9 +4923,238 @@ function renderScopedAgentStatus() {
     `;
 }
 
+function communicationAgentChannels(payload = communicationAgentsPayload || {}) {
+    const agents = Array.isArray(payload.agents) ? payload.agents : [];
+    return agents.flatMap(agent => (Array.isArray(agent.channels) ? agent.channels : []).map(channel => ({
+...channel,
+agent_display_name: agent.display_name || agent.agent_key || 'Communication agent'
+    })));
+}
+
+function communicationAgentPublicFactsRows(source = {}) {
+    const facts = source.approved_public_facts || {};
+    return Object.entries(facts).slice(0, 6).map(([key, value]) => {
+const rendered = Array.isArray(value)
+    ? value.join(', ')
+    : value && typeof value === 'object'
+        ? JSON.stringify(value)
+        : String(value || '');
+return [key.replace(/_/g, ' '), limitTextClient(rendered, 180)];
+    });
+}
+
+function renderCommunicationAgentKnowledge(payload) {
+    const agents = Array.isArray(payload.agents) ? payload.agents : [];
+    const sources = Array.isArray(payload.knowledge_sources) ? payload.knowledge_sources : [];
+    return `
+<section class="focus-panel compact-panel">
+    <div class="task-section-header">
+        <div>
+            <h3>Knowledge</h3>
+            <span>Approved public facts for the landing-page WhatsApp and signup capture assistant.</span>
+        </div>
+    </div>
+    <div class="task-board">
+        ${agents.length ? agents.map(agent => `
+            <article class="task-card">
+                <div class="task-card-main">
+                    <div class="task-row-meta">
+                        <span class="task-type-badge">${escapeHtml(agent.publication_status || agent.status || 'published')}</span>
+                        <span class="badge">${escapeHtml(agent.model_family || 'communication_agent')}</span>
+                        <span class="badge">Build QA: ${agent.build_qa_agent ? 'yes' : 'no'}</span>
+                    </div>
+                    <h3>${escapeHtml(agent.display_name || 'Rabbi Scheller Digital Assistant')}</h3>
+                    <p>${escapeHtml(agent.description || 'Landing-page communication assistant for approved public One Time facts.')}</p>
+                    <div class="task-inline-grid">
+                        <div class="task-inline-item"><div class="task-inline-label">Control plane</div><div class="task-inline-value">${escapeHtml(agent.control_plane_table || 'bna_communication_agents')}</div></div>
+                        <div class="task-inline-item"><div class="task-inline-label">Version</div><div class="task-inline-value">${escapeHtml(agent.active_version || agent.knowledge_snapshot_version || 'published')}</div></div>
+                        <div class="task-inline-item"><div class="task-inline-label">Knowledge hash</div><div class="task-inline-value">${escapeHtml(agent.knowledge_snapshot_hash || 'not returned')}</div></div>
+                    </div>
+                </div>
+            </article>
+        `).join('') : '<div class="task-empty">No communication agents are configured for this workspace yet.</div>'}
+    </div>
+    ${sources.length ? sources.map(source => {
+        const factRows = communicationAgentPublicFactsRows(source);
+        return `
+            <div class="detail-section">
+                <h3>${escapeHtml(source.title || 'Public knowledge source')}</h3>
+                <div class="task-inline-grid">
+                    <div class="task-inline-item"><div class="task-inline-label">Source</div><div class="task-inline-value">${escapeHtml(source.source_ref || source.source_type || 'service provider profile')}</div></div>
+                    <div class="task-inline-item"><div class="task-inline-label">Status</div><div class="task-inline-value">${escapeHtml(source.publication_status || 'published')}</div></div>
+                    <div class="task-inline-item"><div class="task-inline-label">No stale claims</div><div class="task-inline-value">${source.no_stale_claims ? 'Yes' : 'Needs review'}</div></div>
+                </div>
+                ${factRows.length ? `
+                    <div class="task-inline-grid">
+                        ${factRows.map(([label, value]) => `
+                            <div class="task-inline-item">
+                                <div class="task-inline-label">${escapeHtml(label)}</div>
+                                <div class="task-inline-text">${escapeHtml(value)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }).join('') : ''}
+</section>
+    `;
+}
+
+function renderCommunicationAgentChannels(payload) {
+    const channels = communicationAgentChannels(payload);
+    return `
+<section class="focus-panel compact-panel">
+    <div class="task-section-header">
+        <div>
+            <h3>Channels</h3>
+            <span>Landing-page lead capture channels, reply mode, and handoff policy.</span>
+        </div>
+    </div>
+    <div class="task-board">
+        ${channels.length ? channels.map(channel => `
+            <article class="task-card">
+                <div class="task-card-main">
+                    <div class="task-row-meta">
+                        <span class="task-type-badge">${escapeHtml(channel.channel || 'channel')}</span>
+                        <span class="badge">${escapeHtml(channel.provider || 'provider')}</span>
+                        <span class="badge">${escapeHtml(channel.reply_mode || 'capture_only')}</span>
+                    </div>
+                    <h3>${escapeHtml(channel.agent_display_name)} / ${escapeHtml(channel.channel_id || channel.channel || 'channel')}</h3>
+                    <p>${escapeHtml(channel.active ? 'Configured for inbound capture with human handoff guardrails.' : 'Channel is not active.')}</p>
+                    <div class="task-inline-grid">
+                        <div class="task-inline-item"><div class="task-inline-label">Create contact</div><div class="task-inline-value">${channel.create_contact_on_inbound ? 'Yes' : 'No'}</div></div>
+                        <div class="task-inline-item"><div class="task-inline-label">Create conversation</div><div class="task-inline-value">${channel.create_conversation_on_inbound ? 'Yes' : 'No'}</div></div>
+                        <div class="task-inline-item"><div class="task-inline-label">Create task</div><div class="task-inline-value">${channel.create_task_on_inbound ? 'Yes' : 'No'}</div></div>
+                        <div class="task-inline-item"><div class="task-inline-label">Handoff</div><div class="task-inline-value">${escapeHtml(channel.human_handoff_mode || 'needs_human_badge')}</div></div>
+                        <div class="task-inline-item"><div class="task-inline-label">Raw class link</div><div class="task-inline-value">${escapeHtml(channel.formatting_policy?.raw_class_link_delivery || 'server_action_only')}</div></div>
+                        <div class="task-inline-item"><div class="task-inline-label">External send</div><div class="task-inline-value">${channel.external_send_performed ? 'Performed' : 'Not performed'}</div></div>
+                    </div>
+                </div>
+            </article>
+        `).join('') : '<div class="task-empty">No channels are bound to this communication agent yet.</div>'}
+    </div>
+</section>
+    `;
+}
+
+function renderCommunicationAgentTest(payload) {
+    const test = payload.test_panel || {};
+    const blockedActions = Array.isArray(test.blocked_actions) ? test.blocked_actions : [];
+    return `
+<section class="focus-panel compact-panel">
+    <div class="task-section-header">
+        <div>
+            <h3>Test</h3>
+            <span>Readiness-only preview. No model call, WhatsApp send, checkout, or access mutation happens here.</span>
+        </div>
+    </div>
+    <div class="detail-section">
+        <div class="task-inline-grid">
+            <div class="task-inline-item"><div class="task-inline-label">Mode</div><div class="task-inline-value">${escapeHtml(test.mode || 'readiness_only')}</div></div>
+            <div class="task-inline-item"><div class="task-inline-label">Model call</div><div class="task-inline-value">${test.model_call_performed ? 'Performed' : 'Not performed'}</div></div>
+            <div class="task-inline-item"><div class="task-inline-label">Send</div><div class="task-inline-value">${test.send_performed ? 'Performed' : 'Not performed'}</div></div>
+            <div class="task-inline-item"><div class="task-inline-label">External write</div><div class="task-inline-value">${test.external_write_performed ? 'Performed' : 'Not performed'}</div></div>
+        </div>
+        <div class="task-inline-item">
+            <div class="task-inline-label">Sample prompt</div>
+            <div class="task-inline-text">${escapeHtml(test.sample_prompt || 'No sample prompt configured.')}</div>
+        </div>
+        <div class="task-inline-item">
+            <div class="task-inline-label">Expected safe result</div>
+            <div class="task-inline-text">${escapeHtml(test.expected_safe_result || 'Capture-only guidance using approved public facts.')}</div>
+        </div>
+        <div class="task-row-meta">
+            ${blockedActions.map(action => `<span class="badge">${escapeHtml(String(action).replace(/_/g, ' '))}</span>`).join('')}
+        </div>
+        <div class="task-actions detail-actions">
+            <button class="task-action primary" type="button" disabled>No Live Send</button>
+            <button class="task-action" type="button" onclick="refreshCommunicationAgents()">Refresh Readiness</button>
+        </div>
+    </div>
+</section>
+    `;
+}
+
+function renderCommunicationAgentActivity(payload) {
+    const activity = Array.isArray(payload.activity) ? payload.activity : [];
+    return `
+<section class="focus-panel compact-panel">
+    <div class="task-section-header">
+        <div>
+            <h3>Activity</h3>
+            <span>Redacted communication-agent events from the One Time workspace.</span>
+        </div>
+    </div>
+    <div class="timeline-list">
+        ${activity.length ? activity.map(item => `
+            <div class="timeline-item compact">
+                <span class="timeline-dot"></span>
+                <div>
+                    <strong>${escapeHtml(formatEventType(item.event_type || 'communication_agent_event'))}</strong>
+                    <p>${escapeHtml([item.event_status, item.summary, item.display_name, formatDateTime(item.occurred_at || item.created_at)].filter(Boolean).join(' / '))}</p>
+                </div>
+            </div>
+        `).join('') : `<div class="task-empty">${escapeHtml(payload.activity_status === 'unavailable' ? 'Activity is unavailable right now.' : 'No communication-agent activity has been recorded yet.')}</div>`}
+    </div>
+</section>
+    `;
+}
+
+function renderCommunicationAgentActiveTab(payload) {
+    const tab = communicationAgentTabIsValid(communicationAgentsTab) ? communicationAgentsTab : 'knowledge';
+    if (tab === 'channels') return renderCommunicationAgentChannels(payload);
+    if (tab === 'test') return renderCommunicationAgentTest(payload);
+    if (tab === 'activity') return renderCommunicationAgentActivity(payload);
+    return renderCommunicationAgentKnowledge(payload);
+}
+
+function renderCommunicationAgents() {
+    const payload = communicationAgentsPayload || {};
+    const agents = Array.isArray(payload.agents) ? payload.agents : [];
+    const channels = communicationAgentChannels(payload);
+    const knowledgeSources = Array.isArray(payload.knowledge_sources) ? payload.knowledge_sources : [];
+    const activity = Array.isArray(payload.activity) ? payload.activity : [];
+    const notice = communicationAgentsNotice || (payload.activity_status === 'unavailable' ? 'Activity could not be loaded; configuration is still shown.' : '');
+    return `
+<div class="container agent-control-center communication-agent-console" data-communication-agents-console>
+    <div class="page-heading task-heading">
+        <div>
+            <div class="page-kicker">One Time Lead Capture</div>
+            <h2>Communication Agents</h2>
+            <p>WhatsApp and signup-form capture readiness for the One Time landing page, with send and external-write gates kept closed.</p>
+        </div>
+        <div class="task-actions">
+            <button class="task-action primary" type="button" onclick="refreshCommunicationAgents()">Refresh</button>
+            <button class="task-action" type="button" onclick="openCommandTarget('contacts', 'leads')">Open Leads</button>
+        </div>
+    </div>
+    ${notice ? `<div class="settings-disabled-note">${escapeHtml(notice)}</div>` : ''}
+    <div class="metric-grid">
+        ${renderMetricButton('Agents', agents.length, 'Published communication agents', "setCurrentSection('knowledge')")}
+        ${renderMetricButton('Channels', channels.length, 'WhatsApp and email bindings', "setCurrentSection('channels')")}
+        ${renderMetricButton('No-send test', payload.test_panel ? 1 : 0, 'Readiness-only preview', "setCurrentSection('test')")}
+        ${renderMetricButton('Activity', activity.length, 'Redacted events', "setCurrentSection('activity')")}
+    </div>
+    ${!communicationAgentsPayload ? '<div class="task-empty">Loading communication agents...</div>' : renderCommunicationAgentActiveTab(payload)}
+    <section class="detail-section">
+        <h3>Guardrails</h3>
+        <div class="task-inline-grid">
+            <div class="task-inline-item"><div class="task-inline-label">No send</div><div class="task-inline-value">${payload.no_send === false ? 'Needs review' : 'Active'}</div></div>
+            <div class="task-inline-item"><div class="task-inline-label">External write</div><div class="task-inline-value">${payload.external_write_performed ? 'Performed' : 'Not performed'}</div></div>
+            <div class="task-inline-item"><div class="task-inline-label">Knowledge sources</div><div class="task-inline-value">${knowledgeSources.length}</div></div>
+        </div>
+    </section>
+</div>
+    `;
+}
+
 function renderAgents() {
+    if (communicationAgentsViewActive()) {
+return renderCommunicationAgents();
+    }
     if (!taskAgentControlEnabled()) {
-        return renderScopedAgentStatus();
+return renderScopedAgentStatus();
     }
     if (agentRunDeepKey) return renderAgentRunPortal();
     const visibleRows = filteredAgentRuns();
@@ -4892,9 +5167,9 @@ function renderAgents() {
         <div class="container agent-control-center">
             <div class="page-heading task-heading">
                 <div>
-                    <div class="page-kicker">Agent Control</div>
-                    <h2>Agent Runs</h2>
-                    <p>Closed-loop prompt handoff, progress, evidence, submit, seal, and blocker handling for Operations work.</p>
+            <div class="page-kicker">Agent Control</div>
+            <h2>Build & QA Agent Runs</h2>
+            <p>Closed-loop prompt handoff, progress, evidence, submit, seal, and blocker handling for internal Operations work.</p>
                 </div>
                 <div class="task-actions">
                     <button class="task-action primary" type="button" onclick="refreshAgentRuns()">Refresh</button>
@@ -5210,6 +5485,21 @@ function renderTasks() {
 async function refreshAgentRuns() {
     agentRunsNotice = '';
     await loadData({ background: true });
+}
+
+async function refreshCommunicationAgents() {
+    communicationAgentsNotice = 'Refreshing communication agents...';
+    render();
+    try {
+const filters = workspaceDataProjectFilters();
+communicationAgentsPayload = await api.getCommunicationAgents(filters);
+communicationAgentsNotice = communicationAgentsPayload?.activity_status === 'unavailable'
+    ? 'Activity could not be loaded; configuration is still shown.'
+    : '';
+    } catch (error) {
+communicationAgentsNotice = error.message || 'Unable to load communication agents.';
+    }
+    render();
 }
 
 function closeAgentRunPortal() {
@@ -15658,10 +15948,9 @@ function currentNavItem() {
     const sameView = navItems.filter(item => item.id === currentView);
     const exactSection = sameView.find(item => item.section && item.section === section);
     const defaultSection = sameView.find(item => item.navKey === 'overview_package_status') || sameView[0];
-    const oneTimeSupportLabels = {
-        agents: { id: 'agents', label: 'Platform Support', marker: 'PS' },
-        watchdog: { id: 'watchdog', label: 'Platform Support', marker: 'PS' }
-    };
+const oneTimeSupportLabels = {
+    watchdog: { id: 'watchdog', label: 'Platform Support', marker: 'PS' }
+};
     if (isProviderWorkspace() && currentWorkspaceIsOneTime() && oneTimeSupportLabels[currentView]) return oneTimeSupportLabels[currentView];
     return exactSection
         || defaultSection
@@ -17354,10 +17643,12 @@ async function loadData(options = {}) {
         const needsDialogueData = !oneTimeProgramLightPass && (needsDashboardData || ['internal_dialogue', 'communications'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['bot_permissions', 'automations'].includes(activeSettingsSection)));
         const needsProjectData = !oneTimeProgramLightPass && (needsDashboardData || ['pipelines', 'service_providers', 'studio', 'admin'].includes(activeView) || (activeView === 'settings' && ['workspace', 'workspace_core', 'users_roles', 'users_access'].includes(activeSettingsSection)));
         const needsTaskData = !oneTimeProgramLightPass && (needsDashboardData || ['watchdog', 'tasks', 'agents', 'pipelines', 'internal_dialogue'].includes(activeView));
-        const needsAgentFleetData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'agents', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView));
-        const needsQueueHealthData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'admin'].includes(activeView));
-        const canUseAgentControl = opsMe?.scope?.type === 'all';
-        const needsAgentRunData = !oneTimeProgramLightPass && canUseAgentControl && ['agents', 'tasks'].includes(activeView);
+const needsAgentFleetData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'agents', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView));
+const needsQueueHealthData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'admin'].includes(activeView));
+const canUseAgentControl = opsMe?.scope?.type === 'all';
+const communicationAgentsVisible = activeView === 'agents' && currentWorkspaceIsOneTime();
+const needsCommunicationAgentData = !oneTimeProgramLightPass && communicationAgentsVisible;
+const needsAgentRunData = !oneTimeProgramLightPass && canUseAgentControl && !communicationAgentsVisible && ['agents', 'tasks'].includes(activeView);
         const needsPeopleData = !oneTimeProgramLightPass && (needsDashboardData || ['contacts', 'admin'].includes(activeView) || (activeView === 'settings' && ['users_roles', 'users_access'].includes(activeSettingsSection)));
         const needsContactData = !oneTimeProgramLightPass && (needsDashboardData || ['contacts', 'communications', 'service_providers', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal', 'communications'].includes(activeSettingsSection)));
         const needsWapiPhonebookData = activeView === 'communications' && communicationsSection === 'whatsapp';
@@ -17556,8 +17847,18 @@ async function loadData(options = {}) {
             automations = automationsRes.value.automations || [];
             automationFiltersMeta = automationsRes.value.filters || automationFiltersMeta;
         }
-        if (integrationsReadinessRes.status === 'fulfilled' && integrationsReadinessRes.value) integrationsReadinessStatus = integrationsReadinessRes.value;
-        if (needsAgentRunData) {
+if (integrationsReadinessRes.status === 'fulfilled' && integrationsReadinessRes.value) integrationsReadinessStatus = integrationsReadinessRes.value;
+if (needsCommunicationAgentData) {
+    try {
+        communicationAgentsPayload = await api.getCommunicationAgents(workspaceDataProjectFilters());
+        communicationAgentsNotice = communicationAgentsPayload?.activity_status === 'unavailable'
+            ? 'Activity could not be loaded; configuration is still shown.'
+            : '';
+    } catch (error) {
+        communicationAgentsNotice = error.message || 'Unable to load communication agents.';
+    }
+}
+if (needsAgentRunData) {
             const [agentProfilesRes, agentRunsRes] = await Promise.allSettled([
                 api.getAgentProfiles(),
                 api.getAgentRuns({ limit: 150 }),
@@ -17913,7 +18214,7 @@ function currentSectionId() {
     if (currentView === 'watchdog') return 'overview';
     if (currentView === 'pipelines') return pipelineSection;
     if (currentView === 'tasks') return taskFocus;
-    if (currentView === 'agents') return agentRunsTab;
+    if (currentView === 'agents') return communicationAgentsViewActive() ? communicationAgentsTab : agentRunsTab;
     if (currentView === 'platform_suite') return 'overview';
     if (currentView === 'students') return studentSection;
     if (currentView === 'community') return communitySection;
@@ -17992,10 +18293,14 @@ function setCurrentSection(section) {
         selectedTaskId = null;
     }
     if (currentView === 'agents') {
-        agentRunsTab = AGENT_RUN_TABS.some(tab => tab.id === section) ? section : 'ready';
-        agentRunDeepKey = '';
-        agentRunDetail = null;
-        agentRunDetailEvents = [];
+if (communicationAgentsViewActive()) {
+    communicationAgentsTab = communicationAgentTabIsValid(section) ? section : 'knowledge';
+} else {
+    agentRunsTab = AGENT_RUN_TABS.some(tab => tab.id === section) ? section : 'ready';
+}
+agentRunDeepKey = '';
+agentRunDetail = null;
+agentRunDetailEvents = [];
         agentRunDetailArtifacts = [];
         agentRunDetailTask = null;
     }
@@ -18057,8 +18362,12 @@ function openCommandTarget(view, focus = '') {
         taskFocus = TASK_SUBTABS.some(tab => tab.id === normalizedFocus) ? normalizedFocus : 'tasks';
     }
     if (currentView === 'agents' && focus) {
-        agentRunsTab = AGENT_RUN_TABS.some(tab => tab.id === focus) ? focus : 'ready';
-        agentRunDeepKey = '';
+if (communicationAgentsViewActive()) {
+    communicationAgentsTab = communicationAgentTabIsValid(focus) ? focus : 'knowledge';
+} else {
+    agentRunsTab = AGENT_RUN_TABS.some(tab => tab.id === focus) ? focus : 'ready';
+}
+agentRunDeepKey = '';
     }
     if (currentView === 'students' && focus) {
         studentSection = focus === 'locked' || focus === 'tablet_access' ? 'tablet_access' : 'list';

@@ -1152,6 +1152,24 @@
       ]
     },
     {
+      "route": "/api/bna/communication-agents",
+      "surface": "operations_communication_agents_api",
+      "access": "private",
+      "required_role": "workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized_without_operations_session",
+      "expected_logged_in_behavior": "return_scoped_one_time_communication_agent_readiness_without_external_writes",
+      "privacy_risk": "medium",
+      "security_expectation": "Requires One Time workspace scope or Super Admin. Returns read-only communication-agent configuration, approved public knowledge metadata, channel readiness, disabled no-send test state, and redacted activity only; no model call, WhatsApp send, checkout, access grant, task creation, raw class link exposure, provider secret, or external write is performed.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/api/bna/one-time/transcript-privacy",
       "surface": "operations_api_one_time_transcript_privacy_readiness",
       "access": "private",

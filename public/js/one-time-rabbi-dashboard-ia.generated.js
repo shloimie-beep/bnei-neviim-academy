@@ -53,6 +53,13 @@ window.ONE_TIME_RABBI_DASHBOARD_IA = {
       "operations_view": "communications"
     },
     {
+      "id": "communication_agents",
+      "label": "Communication Agents",
+      "short_label": "Agents",
+      "default_section": "knowledge",
+      "operations_view": "agents"
+    },
+    {
       "id": "automations",
       "label": "Automations",
       "short_label": "Auto",
@@ -299,6 +306,35 @@ window.ONE_TIME_RABBI_DASHBOARD_IA = {
         }
       ]
     },
+    "communication_agents": {
+      "label": "Communication Agents",
+      "subsections": [
+        {
+          "id": "knowledge",
+          "label": "Knowledge",
+          "source_view": "agents",
+          "source_section": "knowledge"
+        },
+        {
+          "id": "channels",
+          "label": "Channels",
+          "source_view": "agents",
+          "source_section": "channels"
+        },
+        {
+          "id": "test",
+          "label": "Test",
+          "source_view": "agents",
+          "source_section": "test"
+        },
+        {
+          "id": "activity",
+          "label": "Activity",
+          "source_view": "agents",
+          "source_section": "activity"
+        }
+      ]
+    },
     "automations": {
       "label": "Automations",
       "subsections": [
@@ -527,12 +563,6 @@ window.ONE_TIME_RABBI_DASHBOARD_IA = {
   "internal_modules": {
     "platform_support_label": "Platform Support",
     "demoted": [
-      {
-        "id": "agents",
-        "label": "Agents",
-        "visibility": "platform_support_demoted",
-        "surface": "platform_support"
-      },
       {
         "id": "watchdog",
         "label": "Watchdog",
@@ -783,6 +813,37 @@ window.ONE_TIME_RABBI_DASHBOARD_IA = {
         }
       ]
     },
+    "communication_agents": {
+      "module_id": "communication_agents",
+      "label": "Communication Agents",
+      "default_item": "knowledge",
+      "items": [
+        {
+          "id": "knowledge",
+          "label": "Knowledge",
+          "source_view": "agents",
+          "source_section": "knowledge"
+        },
+        {
+          "id": "channels",
+          "label": "Channels",
+          "source_view": "agents",
+          "source_section": "channels"
+        },
+        {
+          "id": "test",
+          "label": "Test",
+          "source_view": "agents",
+          "source_section": "test"
+        },
+        {
+          "id": "activity",
+          "label": "Activity",
+          "source_view": "agents",
+          "source_section": "activity"
+        }
+      ]
+    },
     "automations": {
       "module_id": "automations",
       "label": "Automations",
@@ -988,6 +1049,7 @@ window.ONE_TIME_RABBI_DASHBOARD_IA = {
       "program_schedule": "Schedule",
       "community_questions": "Community",
       "communications": "Comms",
+      "communication_agents": "Agents",
       "automations": "Auto",
       "payments_access": "Payments",
       "tasks_decisions": "Tasks",

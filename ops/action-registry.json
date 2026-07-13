@@ -1371,12 +1371,34 @@
       "surface": "operations_agent_control_center",
       "route": "/operations?workspace=rabbi_sheller_provider&view=agents",
       "selector_hint": "[data-scoped-agent-status] Refresh, Codex Queue, Open Tasks, Open Task",
-      "expected_behavior": "Shows scoped One Time machine-work status, queue heartbeat, blockers, and task links for project owner/admin users without exposing Super Admin claim, submit, seal, or production mutation controls.",
+      "expected_behavior": "Replaced by ACTION-ONETIME-COMMUNICATION-AGENTS-VIEW for the One Time owner Agents route. The old scoped machine-work status remains in code only for non-One-Time scoped fallbacks and must not expose Super Admin claim, submit, seal, or production mutation controls.",
       "permission": "project_owner/project_admin",
-      "status": "active",
+      "status": "replaced_by_communication_agents_console",
+      "disabled_reason": "REQ-20260712-312 changes the One Time owner Agents route from scoped machine-work status to landing-page Communication Agents.",
       "test": {
-        "type": "browser_smoke",
-        "expected_result": "tests/one-time-operations-ui-smoke.test.js renders [data-scoped-agent-status], verifies One Time tasks, and confirms Claim/Seal controls are absent for scoped users."
+        "type": "static_and_browser_smoke",
+        "expected_result": "tests/one-time-operations-ui-smoke.test.js verifies Communication Agents on the One Time owner Agents route; Super Admin agent-run controls remain absent from that route."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENTS-VIEW",
+      "label": "Communication Agents",
+      "surface": "operations_communication_agents",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=agents",
+      "selector_hint": "[data-communication-agents-console] Refresh, Open Leads, Knowledge, Channels, Test, Activity, No Live Send",
+      "expected_behavior": "Shows the One Time landing-page WhatsApp/form capture communication-agent readiness console with Knowledge, Channels, Test, and Activity tabs. Refresh reads GET /api/bna/communication-agents. Open Leads navigates to scoped leads. The Test tab is readiness-only and the No Live Send control is disabled; no model call, WhatsApp send, checkout, access grant, task creation, or external write is performed from this console.",
+      "permission": "project_owner/project_admin",
+      "status": "active_read_only",
+      "handler": "GET /api/bna/communication-agents, setCurrentSection, openCommandTarget('contacts','leads')",
+      "test": {
+        "type": "browser_smoke_and_static",
+        "expected_result": "tests/one-time-operations-ui-smoke.test.js renders Communication Agents with Knowledge, Channels, Test, Activity, and No Live Send; tests/communication-agent-model.test.js verifies the read-only scoped API and no external write flags."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

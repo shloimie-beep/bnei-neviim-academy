@@ -24,6 +24,7 @@ const expectedMainModules = [
   ['program_schedule', 'Schedule'],
   ['community_questions', 'Community'],
   ['communications', 'Communications'],
+  ['communication_agents', 'Communication Agents'],
   ['automations', 'Automations'],
   ['payments_access', 'Payments & Access'],
   ['tasks_decisions', 'Tasks & Decisions'],
@@ -51,7 +52,7 @@ function assertClientReadable(label, context) {
   assert.equal(label.trim(), label, `${context} label should not need trimming`);
   assert.match(label, /[A-Za-z]/, `${context} label should contain readable text`);
   assert.doesNotMatch(label, /_/, `${context} label should not expose implementation keys`);
-  assert.doesNotMatch(label, /tasks-pending|requirement register|raw implementation|internal dialogue|watchdog|pipeline|api usage|agents/i, `${context} label should not expose internal support concepts`);
+  assert.doesNotMatch(label, /tasks-pending|requirement register|raw implementation|internal dialogue|watchdog|pipeline|api usage|agent runs|build & qa/i, `${context} label should not expose internal support concepts`);
 }
 
 test('One Time Rabbi dashboard IA exposes only approved main modules', () => {
@@ -78,7 +79,7 @@ test('internal support modules are hidden or demoted behind Platform Support', (
   assert.equal(ONE_TIME_RABBI_DASHBOARD_INTERNAL_MODULES.platform_support_label, 'Platform Support');
 
   const demotedIds = ONE_TIME_RABBI_DASHBOARD_INTERNAL_MODULES.demoted.map((module) => module.id);
-  assert.deepEqual(demotedIds, ['agents', 'watchdog', 'pipelines', 'internal_dialogue']);
+  assert.deepEqual(demotedIds, ['watchdog', 'pipelines', 'internal_dialogue']);
   for (const module of ONE_TIME_RABBI_DASHBOARD_INTERNAL_MODULES.demoted) {
     assert.equal(module.visibility, 'platform_support_demoted');
     assert.equal(module.surface, 'platform_support');
@@ -156,6 +157,21 @@ test('Classes & Content IA uses compact Rabbi-facing content sections', () => {
   );
   assert.equal(ONE_TIME_RABBI_DASHBOARD_TOP_RAIL_MODEL.classes_content.default_item, 'library');
   assert.deepEqual(ONE_TIME_RABBI_DASHBOARD_TOP_RAIL_MODEL.classes_content.items.map((item) => item.id), ['library', 'meeting_drops', 'source_prep', 'bundles']);
+});
+
+test('Communication Agents IA exposes landing-page lead capture sections', () => {
+  const communicationAgents = ONE_TIME_RABBI_DASHBOARD_SECTION_SUBSECTION_MAP.communication_agents.subsections;
+  assert.deepEqual(
+    communicationAgents.map((section) => [section.id, section.label, section.source_view, section.source_section]),
+    [
+      ['knowledge', 'Knowledge', 'agents', 'knowledge'],
+      ['channels', 'Channels', 'agents', 'channels'],
+      ['test', 'Test', 'agents', 'test'],
+      ['activity', 'Activity', 'agents', 'activity'],
+    ],
+  );
+  assert.equal(ONE_TIME_RABBI_DASHBOARD_TOP_RAIL_MODEL.communication_agents.default_item, 'knowledge');
+  assert.deepEqual(ONE_TIME_RABBI_DASHBOARD_TOP_RAIL_MODEL.communication_agents.items.map((item) => item.id), ['knowledge', 'channels', 'test', 'activity']);
 });
 
 test('workspace and project keys stay scoped to Rabbi Scheller One Time', () => {

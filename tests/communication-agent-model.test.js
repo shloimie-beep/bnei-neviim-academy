@@ -46,6 +46,24 @@ test('communication agents use first-party tables separate from build and QA age
   assert.doesNotMatch(createAgentControlSQL, /communication_agent/);
 });
 
+test('Communication Agents API is scoped and read-only for One Time Operations', () => {
+  const routeStart = server.indexOf("app.get('/api/bna/communication-agents'");
+  const routeEnd = server.indexOf("app.get('/api/bna/agent-profiles'", routeStart);
+  const routeSlice = server.slice(routeStart, routeEnd);
+  assert.match(server, /app\.get\('\/api\/bna\/communication-agents', requireAdmin/);
+  assert.match(server, /routePath === '\/api\/bna\/communication-agents' && method === 'GET'/);
+  assert.match(server, /buildOneTimeCommunicationAgentsPayload/);
+  assert.match(server, /resolveAssignedCommunicationAgent\(\{ binding, channel: 'whatsapp', provider: 'wapi' \}\)/);
+  assert.match(server, /resolveAssignedCommunicationAgent\(\{ binding, channel: 'email', provider: 'resend' \}\)/);
+  assert.match(server, /control_plane_table: 'bna_communication_agents'/);
+  assert.match(server, /build_qa_agent_profile_table: null/);
+  assert.match(server, /model_call_performed: false/);
+  assert.match(server, /send_performed: false/);
+  assert.match(server, /external_write_performed: false/);
+  assert.match(server, /raw_class_link_in_model_context/);
+  assert.doesNotMatch(routeSlice, /api[_-]?key|access[_-]?token|refresh[_-]?token|password/i);
+});
+
 test('communication-agent model has versions, knowledge, channel bindings, and events', () => {
   const agents = tableSlice('bna_communication_agents');
   const versions = tableSlice('bna_communication_agent_versions');
