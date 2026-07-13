@@ -39342,3 +39342,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `76/76`, action watchdog, protocol drift watchdog, secret audit,
   execution-run validation, BNA/One Time Railway doctors, exact-SHA One Time
   route smoke, live One Time CRM workbench smoke, and deployed JS marker checks.
+
+## 2026-07-13 - CRM note, tag, owner, and lifecycle actions deployed
+
+- Added explicit `ACTION-CRM-ADD-NOTE`, `ACTION-CRM-ADD-TAG`,
+  `ACTION-CRM-REMOVE-TAG`, `ACTION-CRM-ASSIGN-OWNER`, and
+  `ACTION-CRM-CHANGE-LIFECYCLE` actions to the shared CRM local update form.
+- Updated the scoped CRM PATCH route so a present `tags` payload is
+  authoritative, allowing the final tag to be removed and persisted as an empty
+  tag list.
+- Verification passed: Operations generated-shell check, shared CRM contract
+  tests `31/31`, local One Time CRM workbench smoke, focused One Time suite
+  `76/76`, action watchdog, protocol drift watchdog, secret audit,
+  execution-run validation, BNA/One Time Railway doctors, exact-SHA One Time
+  route smoke, live One Time CRM workbench smoke, and deployed JS marker checks.

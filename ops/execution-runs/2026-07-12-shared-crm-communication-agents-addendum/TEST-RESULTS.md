@@ -338,3 +338,21 @@
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha eee9a431dd426d8627652b972c3d3336eaf18362`.
 - PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T02-23-19-932Z-one-time-operations-crm-workbench-live-smoke.md`.
 - PASS deployed JS marker checks for `ACTION-CRM-SET-FOLLOW-UP`, `ACTION-CRM-CHANGE-FOLLOW-UP`, `ACTION-CRM-CLEAR-FOLLOW-UP`, `CRM follow-up cleared`, `crm_action_id: submitterActionId`, and clear-follow-up payload branch.
+- PASS `node --check server.js` after the CRM note/tag/owner/lifecycle action slice.
+- PASS `node --check public/js/operations-shell.js` after regenerating Operations shell.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/live-class-infrastructure.test.js` (31/31).
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions` with `finding_count=0`; report `ops/watchdog-audits/2026-07-13T02-28-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run secrets:audit`; 9266 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM note/tag/owner/lifecycle actions commit `15796035598280b3ae14d748e3673d6a186af5cd`.
+- PASS BNA Railway redeploy and doctor; deployment `7e32345a-71c3-4296-a899-f10710339020` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `8dc13638-9225-4c0f-99ca-bdc2bb5daab1` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `15796035598280b3ae14d748e3673d6a186af5cd`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 15796035598280b3ae14d748e3673d6a186af5cd`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T02-32-29-354Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS deployed JS marker checks for `ACTION-CRM-ADD-NOTE`, `ACTION-CRM-ADD-TAG`, `ACTION-CRM-REMOVE-TAG`, `ACTION-CRM-ASSIGN-OWNER`, `ACTION-CRM-CHANGE-LIFECYCLE`, tag remove validation copy, and no-auto-task marker.

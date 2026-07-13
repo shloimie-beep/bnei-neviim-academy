@@ -106,3 +106,18 @@ Global production readiness remains blocked only by known external full-launch f
 - One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha eee9a431dd426d8627652b972c3d3336eaf18362` passed.
 - One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com` passed; report `ops/live-smokes/2026-07-13T02-23-19-932Z-one-time-operations-crm-workbench-live-smoke.md`.
 - Deployed JS marker checks passed for `ACTION-CRM-SET-FOLLOW-UP`, `ACTION-CRM-CHANGE-FOLLOW-UP`, `ACTION-CRM-CLEAR-FOLLOW-UP`, `CRM follow-up cleared`, `crm_action_id: submitterActionId`, and the clear-follow-up payload branch.
+
+## 2026-07-13 CRM Note/Tag/Owner/Lifecycle Actions Slice Deploy
+
+- Commit: `15796035598280b3ae14d748e3673d6a186af5cd`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true`.
+- BNA Railway doctor: deployment `7e32345a-71c3-4296-a899-f10710339020` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=15796035598280b3ae14d748e3673d6a186af5cd`, `target_app=bna`.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_DEPLOY_APP=one-time`.
+- One Time Railway doctor: deployment `8dc13638-9225-4c0f-99ca-bdc2bb5daab1` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=15796035598280b3ae14d748e3673d6a186af5cd`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 15796035598280b3ae14d748e3673d6a186af5cd` passed.
+- One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com` passed; report `ops/live-smokes/2026-07-13T02-32-29-354Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Deployed JS marker checks passed for `ACTION-CRM-ADD-NOTE`, `ACTION-CRM-ADD-TAG`, `ACTION-CRM-REMOVE-TAG`, `ACTION-CRM-ASSIGN-OWNER`, `ACTION-CRM-CHANGE-LIFECYCLE`, tag remove validation copy, and `create_follow_up_task: false`.

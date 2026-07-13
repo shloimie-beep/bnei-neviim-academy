@@ -174,3 +174,13 @@
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha eee9a431dd426d8627652b972c3d3336eaf18362` passed.
 - `ops/live-smokes/2026-07-13T02-23-19-932Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the follow-up actions slice with 12 scoped cards and read-only selected timeline.
 - Deployed JS marker checks confirmed `ACTION-CRM-SET-FOLLOW-UP`, `ACTION-CRM-CHANGE-FOLLOW-UP`, `ACTION-CRM-CLEAR-FOLLOW-UP`, clear summary copy, and the `crm_action_id` payload marker.
+- `public/operations.html` / `public/js/operations-shell.js` - Operations CRM local update form now exposes explicit `ACTION-CRM-ADD-NOTE`, `ACTION-CRM-ADD-TAG`, `ACTION-CRM-REMOVE-TAG`, `ACTION-CRM-ASSIGN-OWNER`, and `ACTION-CRM-CHANGE-LIFECYCLE` controls.
+- `server.js` - scoped CRM PATCH route now treats a present `tags` field as authoritative, so removing the final tag persists an empty tag list instead of being ignored.
+- `ops/action-registry.json` - registers the note/tag/owner/lifecycle actions as active first-party local writes with no send, payment, access grant, import, historical sync, automatic task creation, or external CRM write.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=15796035598280b3ae14d748e3673d6a186af5cd`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=15796035598280b3ae14d748e3673d6a186af5cd`.
+- BNA post-deploy doctor - Railway deployment `7e32345a-71c3-4296-a899-f10710339020` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `8dc13638-9225-4c0f-99ca-bdc2bb5daab1` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 15796035598280b3ae14d748e3673d6a186af5cd` passed.
+- `ops/live-smokes/2026-07-13T02-32-29-354Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the note/tag/owner/lifecycle actions slice with 12 scoped cards and read-only selected timeline.
+- Deployed JS marker checks confirmed `ACTION-CRM-ADD-NOTE`, `ACTION-CRM-ADD-TAG`, `ACTION-CRM-REMOVE-TAG`, `ACTION-CRM-ASSIGN-OWNER`, `ACTION-CRM-CHANGE-LIFECYCLE`, tag remove validation copy, and `create_follow_up_task: false`.
