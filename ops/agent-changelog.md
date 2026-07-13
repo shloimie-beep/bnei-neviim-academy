@@ -6,6 +6,26 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-13T10:50:00+03:00 - One Time mobile CRM IA deployed
+
+- Implemented the One Time CRM mobile information architecture in the shared
+  Operations shell: selected-contact list/detail/subview/action-overflow states,
+  focused header with class/access context, section rail, contextual More
+  actions overflow, lazy Activity/Conversations/Tasks loading, and mobile
+  one-pane profile hiding.
+- Pushed commit `e971aa1e69eae63be8682b699b78d4b7733fefb8` to `master`.
+- Deployed the exact SHA to One Time Railway deployment
+  `2e905ada-4b0d-45e0-94ef-0e3681d065d0` and BNA Railway deployment
+  `c5f3632a-28da-4d52-97ba-14327e8d7197`; both live deploy-info endpoints
+  returned the exact commit.
+- Verification passed: local CRM workbench smoke, action watchdog/parity,
+  protocol drift watchdog, secrets audit, run validation, exact-SHA One Time
+  separate-instance smoke, One Time live CRM workbench smoke, BNA live app
+  smoke, and Operations workspace taxonomy smoke.
+- Guardrail: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation,
+  provider mutation, payment/access mutation, credential mutation, or production
+  data mutation was performed by this mobile CRM IA closeout.
+
 ## 2026-07-09T17:40:00+03:00 - Railway target profiles hardened
 
 - Added `config/railway-targets.json` with non-secret BNA and OneTime Railway

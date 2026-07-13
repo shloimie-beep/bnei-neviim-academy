@@ -680,3 +680,23 @@
 - PASS `npm run bna:run:validate` after adding `RAW-20260713-003`, superseding the simultaneous BNA/One Time frontend parity criterion for the current phase, and registering `REQ-20260713-905` through `REQ-20260713-911`.
 - PASS JSON parse/readback of `requirements.json`; new packet IDs are `REQ-20260713-905` through `REQ-20260713-911`.
 - PASS `git diff --check` with line-ending warnings only.
+
+## Mobile CRM Information Architecture - 2026-07-13
+
+- PASS `npm run operations:check-generated` after mobile CRM IA implementation.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/watchdog-action-registry.test.js`; 19/19 tests passed.
+- PASS `npm run watchdog:actions`; `ACTION-CRM-ACTION-OVERFLOW` is registered and action coverage/parity regenerated.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` covers split shell and monolith at 1440/1024/768/430/390, mobile list/detail/subview/action-overflow states, Back restoration, lazy conversations/tasks requests, no horizontal overflow, no console/page/request failures, and no writes.
+- PASS `npm run watchdog:protocol-drift`.
+- PASS `npm run secrets:audit`.
+- PASS `npm run bna:run:validate`.
+- PASS `git diff --cached --check`.
+- PASS `git push origin master` for commit `e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- PASS One Time Railway redeploy and doctor; deployment `2e905ada-4b0d-45e0-94ef-0e3681d065d0` reached `SUCCESS`.
+- PASS BNA Railway redeploy and doctor; deployment `c5f3632a-28da-4d52-97ba-14327e8d7197` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- PASS BNA live `/api/deploy-info`; returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- PASS `node scripts/smoke-onetime-separate-instance-live.mjs https://join.onetimeonetime.com --expected-sha e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T07-43-18-434Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke`; report `ops/live-smokes/2026-07-13T07-45-08-661Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T07-45-26-489Z-operations-workspace-taxonomy-live-smoke.md`.

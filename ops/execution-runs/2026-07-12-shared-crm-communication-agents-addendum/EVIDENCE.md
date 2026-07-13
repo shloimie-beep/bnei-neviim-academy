@@ -333,3 +333,19 @@
 - `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json` - added source `RAW-20260713-003`, marked `REQ-20260712-302` superseded in part for simultaneous BNA/One Time frontend parity, and added `REQ-20260713-905` through `REQ-20260713-911`.
 - `memory/2026-07-13.md`, `memory-topics/rabbi-scheller-onetime.md`, and `memory-topics/one-time-rabbi-sheller.md` - recorded the durable One Time-first correction and owner-only test-send policy.
 - `npm run bna:run:validate` passed after the control correction; requirement counts are now 12 not started, 5 in progress, and 3 done.
+
+## Mobile CRM Information Architecture - 2026-07-13
+
+- `public/operations.html`, `public/js/operations-shell.js`, and `public/css/operations-shell.css` - selected-contact CRM workspace now has list/detail/subview/action-overflow IA, focused header with class/access context, horizontal section rail, contextual More actions overflow, lazy Activity/Conversations/Tasks loading, and mobile one-pane profile hiding.
+- `scripts/smoke-onetime-operations-crm-workbench-local.mjs` and `tests/shared-crm-workbench-contract.test.js` - pinned mobile state markers, lazy subview requests, action overflow, class/access header visibility, and profile responsive state.
+- `ops/action-registry.json`, `ops/action-registry/one-time-action-coverage.md`, and `ops/action-registry/universal-action-parity.md` - registered `ACTION-CRM-ACTION-OVERFLOW` and refreshed action coverage/parity.
+- Local proof: `npm run operations:check-generated`, focused shared CRM/action-registry tests, `npm run watchdog:actions`, `npm run watchdog:protocol-drift`, `npm run secrets:audit`, `npm run bna:run:validate`, and `npm run one-time:smoke:operations-crm-workbench-local` passed.
+- Local visual proof: `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` covers split shell and monolith at 1440, 1024, 768, 430, and 390 with no horizontal overflow, no console/page/request failures, no writes, mobile Back restoration, and lazy conversations/tasks requests.
+- Commit `e971aa1e69eae63be8682b699b78d4b7733fefb8` pushed to `origin/master`.
+- One Time Railway deployment `2e905ada-4b0d-45e0-94ef-0e3681d065d0` reached `SUCCESS`; live deploy-info returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- BNA Railway deployment `c5f3632a-28da-4d52-97ba-14327e8d7197` reached `SUCCESS`; live deploy-info returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- One Time exact-SHA separate-instance smoke passed against `https://join.onetimeonetime.com`.
+- One Time Operations CRM live smoke passed: `ops/live-smokes/2026-07-13T07-43-18-434Z-one-time-operations-crm-workbench-live-smoke.md`.
+- BNA live app smoke passed: `ops/live-smokes/2026-07-13T07-45-08-661Z-live-app-smoke.md`.
+- Operations workspace taxonomy live smoke passed: `ops/live-smokes/2026-07-13T07-45-26-489Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, or production data mutation was performed by this mobile CRM IA closeout.

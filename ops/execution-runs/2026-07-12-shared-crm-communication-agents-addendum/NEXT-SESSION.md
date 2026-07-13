@@ -1,7 +1,7 @@
 # Next Session
 
-Next unblocked batch: `4-mobile-crm-information-architecture`
-Open requirement: `REQ-20260713-909`
+Next unblocked batch: `6-performance-regression-gates`
+Open requirement: `REQ-20260713-911`
 
 Current control correction:
 
@@ -31,17 +31,17 @@ Architecture/performance result:
 
 Immediate next action:
 
-1. Continue `REQ-20260713-909`: local implementation and local proof are complete; commit/push, deploy exact SHA to BNA and One Time, run Railway doctors and live route/CRM smokes, then mark Done only after live SHA proof.
+1. Start `REQ-20260713-911`: add instrumentation/regression gates for the One Time shell and CRM route-module path, then prove they do not regress BNA or One Time.
 2. Keep the deployed first-slice proof visible: commit `c0b8ab8139c6166d89527a949ce4dd70bf67df3a`, BNA Railway deployment `33571043-54ce-4631-99c1-b54209edebc7`, One Time Railway deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754`, and live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`.
 3. Keep the deployed CRM route-module proof visible: One Time Railway deployment `fac38cc0-23c4-4158-8556-4c11e6c95215`, exact-SHA smoke, and live route-module smoke `ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md`.
 4. Keep the deployed mailbox/messages route-module proof visible: One Time Railway deployment `df3a27b2-a930-430d-b29d-0d8390b62a17`, exact-SHA smoke, and live route-module smoke `ops/live-smokes/2026-07-13T06-59-53-991Z-onetime-provider-route-module-live-smoke.md`.
-5. Keep `REQ-20260713-906` blocked until the owner aliases are configured through the approved secret path.
-6. Queue `REQ-20260713-911` instrumentation/regression gates after or alongside the mobile CRM IA work, but do not call lag fixed until mobile proof and regression gates both pass.
+5. Keep the completed mobile CRM IA proof visible: commit `e971aa1e69eae63be8682b699b78d4b7733fefb8`, BNA Railway deployment `c5f3632a-28da-4d52-97ba-14327e8d7197`, One Time Railway deployment `2e905ada-4b0d-45e0-94ef-0e3681d065d0`, exact-SHA One Time smoke, One Time live CRM smoke `ops/live-smokes/2026-07-13T07-43-18-434Z-one-time-operations-crm-workbench-live-smoke.md`, BNA live smoke `ops/live-smokes/2026-07-13T07-45-08-661Z-live-app-smoke.md`, and Operations taxonomy smoke `ops/live-smokes/2026-07-13T07-45-26-489Z-operations-workspace-taxonomy-live-smoke.md`.
+6. Keep `REQ-20260713-906` blocked until the owner aliases are configured through the approved secret path.
 7. Do not enable public WhatsApp auto-reply, send to non-owner contacts, or expose raw destination values.
 
 Previous shared-CRM lane is no longer the first lane. Continue `REQ-20260712-302` / `REQ-20260712-303` only where they directly support the One Time-first packets or required BNA regression safety.
 
-Latest One Time app runtime SHA: `72650231e9d6eba9a367a59251cb58202f8910b1`
+Latest One Time app runtime SHA: `e971aa1e69eae63be8682b699b78d4b7733fefb8`
 
 Current proof:
 

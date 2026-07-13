@@ -58,11 +58,15 @@ Current status: `active`
 
 ## 2026-07-13 Mobile CRM IA Local Implementation
 
-- `REQ-20260713-909` now has a local implementation and proof; deploy/live proof is still required before Done.
+- `REQ-20260713-909` now has a local implementation and proof, and the deployed/live proof is complete.
 - Operations CRM selected-contact workspace now exposes `data-crm-mobile-ia="list-detail-subview-action"`, focused contact header, class/access context in the header, horizontal section rail, tab panels, contextual More actions overflow, lazy Activity/Conversations/Tasks loading, and mobile one-pane profile hiding.
 - Local proof passed: generated-shell consistency, shared CRM/action-registry tests, action watchdog, refreshed action parity reports, and `npm run one-time:smoke:operations-crm-workbench-local`.
 - The local CRM smoke report is `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`; it passes split shell and monolith at 1440, 1024, 768, 430, and 390 with no horizontal overflow, no console/page/request failures, no writes, mobile Back restoration, and lazy conversations/tasks requests.
-- Next: commit/push, deploy exact SHA to BNA and One Time, run Railway doctors and live One Time route/CRM smokes, then mark `REQ-20260713-909` Done only after deployed SHA proof.
+- Commit `e971aa1e69eae63be8682b699b78d4b7733fefb8` is pushed to `origin/master`.
+- One Time Railway deployment `2e905ada-4b0d-45e0-94ef-0e3681d065d0` reached `SUCCESS`; `https://join.onetimeonetime.com/api/deploy-info` returned the exact commit.
+- BNA Railway deployment `c5f3632a-28da-4d52-97ba-14327e8d7197` reached `SUCCESS`; `https://bneineviimacademy.org/api/deploy-info` returned the exact commit.
+- Live proof passed: One Time exact-SHA separate-instance smoke, One Time CRM workbench live smoke `ops/live-smokes/2026-07-13T07-43-18-434Z-one-time-operations-crm-workbench-live-smoke.md`, BNA live app smoke `ops/live-smokes/2026-07-13T07-45-08-661Z-live-app-smoke.md`, and Operations workspace taxonomy smoke `ops/live-smokes/2026-07-13T07-45-26-489Z-operations-workspace-taxonomy-live-smoke.md`.
+- `REQ-20260713-909` is Done. Next: start `REQ-20260713-911` instrumentation/regression gates; keep `REQ-20260713-906` blocked until secure owner aliases exist.
 
 ## Completed In This Batch
 
