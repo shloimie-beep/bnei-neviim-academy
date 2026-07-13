@@ -299,9 +299,9 @@
         "REQ-20260712-305"
       ],
       "status": "in_progress",
-      "implementation_status": "Add Contact slice implemented, pushed, deployed to BNA and One Time, and live-smoked: Operations exposes ACTION-CRM-ADD-CONTACT, POST /api/bna/crm/contacts creates or updates one workspace-scoped first-party bna_contacts record, upserts workspace-scoped email/phone/WhatsApp identities, writes a local pipeline event, returns the stable bna_contacts:<id> contact key, and opens the saved contact workspace without external sends, access grants, imports, checkout, or automatic task creation. Archive Contact slice is implemented, pushed, deployed to BNA and One Time, and live-smoked: Operations exposes ACTION-CRM-ARCHIVE-CONTACT, the explicit click archives through the scoped CRM PATCH route with status=archived and create_follow_up_task=false, and deployed HTML readback confirms the action/function are present. Complete/Reopen task slice is implemented, pushed, deployed to BNA and One Time, and live-smoked: Operations exposes ACTION-CRM-COMPLETE-TASK and ACTION-CRM-REOPEN-TASK on linked follow-up tasks, updates only the scoped /api/bna/tasks/:id route, local smoke verifies the buttons without clicking a write, and deployed JS/CSS marker checks confirm the controls are live. Remaining actions include family/member linking.",
+      "implementation_status": "Add Contact slice implemented, pushed, deployed to BNA and One Time, and live-smoked: Operations exposes ACTION-CRM-ADD-CONTACT, POST /api/bna/crm/contacts creates or updates one workspace-scoped first-party bna_contacts record, upserts workspace-scoped email/phone/WhatsApp identities, writes a local pipeline event, returns the stable bna_contacts:<id> contact key, and opens the saved contact workspace without external sends, access grants, imports, checkout, or automatic task creation. Archive Contact slice is implemented, pushed, deployed to BNA and One Time, and live-smoked: Operations exposes ACTION-CRM-ARCHIVE-CONTACT, the explicit click archives through the scoped CRM PATCH route with status=archived and create_follow_up_task=false, and deployed HTML readback confirms the action/function are present. Complete/Reopen task slice is implemented, pushed, deployed to BNA and One Time, and live-smoked: Operations exposes ACTION-CRM-COMPLETE-TASK and ACTION-CRM-REOPEN-TASK on linked follow-up tasks, updates only the scoped /api/bna/tasks/:id route, local smoke verifies the buttons without clicking a write, and deployed JS/CSS marker checks confirm the controls are live. Link member slice is locally verified and pending deploy: Operations exposes ACTION-CRM-LINK-MEMBER in Access/Family, creates only a disabled member shell with access_status=paused and access_enabled=false, and the direct bna_contacts aggregate scopes email fallback rollups by the workspace-mapped project before showing communications, support, tasks, or membership. Remaining actions include family/student linking.",
       "can_continue_without_operator": true,
-      "next_action": "Continue family/member linking and deeper persisted action parity.",
+      "next_action": "Commit/push/deploy the Link member slice, then continue family/student linking and deeper persisted action parity.",
       "acceptance_criteria": [
         "Contact index opens a full workspace with URL/back-state persistence, mobile one-pane behavior, and persisted add/edit/tag/owner/lifecycle/follow-up/task/thread/family/archive actions."
       ],
@@ -336,7 +336,12 @@
         "One Time deployment 8f022587-8b8e-474e-8c59-886b68e18faa SUCCESS at commit ec1e893848f12242a30fd1fc59c236442997f30e.",
         "BNA and One Time deploy-info returned commit_sha=ec1e893848f12242a30fd1fc59c236442997f30e.",
         "ops/live-smokes/2026-07-12T23-51-23-358Z-one-time-operations-crm-workbench-live-smoke.md records deployed One Time Operations CRM workbench smoke after Complete/Reopen task slice.",
-        "Read-only deployed asset marker checks confirmed ACTION-CRM-COMPLETE-TASK, ACTION-CRM-REOPEN-TASK, updateFirstPartyCrmLinkedTask, .crm-linked-task-card, and .crm-linked-task-meta on https://join.onetimeonetime.com."
+        "Read-only deployed asset marker checks confirmed ACTION-CRM-COMPLETE-TASK, ACTION-CRM-REOPEN-TASK, updateFirstPartyCrmLinkedTask, .crm-linked-task-card, and .crm-linked-task-meta on https://join.onetimeonetime.com.",
+        "public/operations.html exposes ACTION-CRM-LINK-MEMBER in Access and Family tabs with a read-only disabled state and email-required guard.",
+        "public/operations.html calls api.createMember with access_status=paused, access_enabled=false, access_not_granted=true, portal_link_created=false, and external_write_performed=false.",
+        "server.js direct bna_contacts aggregate joins the workspace-mapped bna_projects row and requires project_id matches for email fallback communications, support, tasks, and membership rollups.",
+        "ops/action-registry.json registers ACTION-CRM-LINK-MEMBER as an active first-party local write with no portal link, access code, library/class access, send, payment, import, or external CRM write.",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records local smoke PASS after verifying the Link member panel/action is visible without clicking a write."
       ],
       "verification": [
         "node --check server.js public/js/operations-shell.js scripts/smoke-onetime-operations-crm-workbench-local.mjs PASS after Add Contact slice",
@@ -387,7 +392,19 @@
         "BNA and One Time deploy-info returned commit_sha=ec1e893848f12242a30fd1fc59c236442997f30e",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha ec1e893848f12242a30fd1fc59c236442997f30e PASS",
         "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com PASS after Complete/Reopen task slice",
-        "curl.exe deployed JS/CSS marker checks PASS for ACTION-CRM-COMPLETE-TASK, ACTION-CRM-REOPEN-TASK, updateFirstPartyCrmLinkedTask, .crm-linked-task-card, and .crm-linked-task-meta"
+        "curl.exe deployed JS/CSS marker checks PASS for ACTION-CRM-COMPLETE-TASK, ACTION-CRM-REOPEN-TASK, updateFirstPartyCrmLinkedTask, .crm-linked-task-card, and .crm-linked-task-meta",
+        "node --check server.js PASS after Link member/member-aggregate isolation slice",
+        "node --check public/js/operations-shell.js PASS after Link member slice",
+        "node --check public/js/operations-deferred-renderers.js PASS after Link member slice",
+        "node --check scripts/smoke-onetime-operations-crm-workbench-local.mjs PASS after Link member slice",
+        "npm run operations:check-generated PASS after Link member slice",
+        "node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/live-class-infrastructure.test.js PASS 28/28 after Link member slice",
+        "npm run one-time:smoke:operations-crm-workbench-local PASS after Link member slice",
+        "npm run watchdog:actions PASS finding_count 0 after Link member slice",
+        "npm run watchdog:protocol-drift PASS after Link member slice",
+        "npm run secrets:audit PASS after Link member slice",
+        "npm run bna:run:validate PASS after Link member slice",
+        "git diff --check PASS with line-ending warnings only after Link member slice"
       ],
       "implementation_files": [
         "public/js/operations-shell.js",
@@ -402,7 +419,10 @@
         "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
         "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json",
         "ops/watchdog-audits/2026-07-12T22-54-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-07-12T23-08-watchdog-action-audit.md"
+        "ops/watchdog-audits/2026-07-12T23-08-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-07-13T00-03-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-07-13-product-quality-drift.md",
+        "ops/watchdog-audits/2026-07-13-product-quality-drift.json"
       ],
       "deployment_required": true,
       "deployment_evidence": [
@@ -419,7 +439,7 @@
         "One Time production deploy-info readback commit_sha=ec1e893848f12242a30fd1fc59c236442997f30e.",
         "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T23-51-23-358Z-one-time-operations-crm-workbench-live-smoke.md."
       ],
-      "updated_at": "2026-07-13T02:55:00+03:00",
+      "updated_at": "2026-07-13T03:04:00+03:00",
       "blocker": ""
     },
     {

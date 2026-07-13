@@ -23,10 +23,11 @@ Current proof:
 - Add Contact is deployed under `REQ-20260712-303` through `de48d8aef8b4764b5144a89edef9e269c102c25f`: the form is registered as `ACTION-CRM-ADD-CONTACT`, POST `/api/bna/crm/contacts` is workspace-scoped, identities are workspace-scoped, no external send/access/import/task creation runs, and the One Time live CRM workbench smoke passed after deploy.
 - Archive Contact is deployed under `REQ-20260712-303` through `3293d3528ace28938d5f13d8b65b485448c9ebc9`: the action is registered as `ACTION-CRM-ARCHIVE-CONTACT`, uses the scoped CRM PATCH path with `status=archived`, `create_follow_up_task=false`, and no external-write flags, BNA deployment `d454d665-4e81-43d7-868e-8c02888c0080` and One Time deployment `e4883410-13ce-4ad8-8d59-db5fc50effd4` reached `SUCCESS`, and the One Time live CRM workbench smoke passed.
 - Complete/Reopen task is deployed under `REQ-20260712-303` through `ec1e893848f12242a30fd1fc59c236442997f30e`: the Tasks tab exposes `ACTION-CRM-COMPLETE-TASK` and `ACTION-CRM-REOPEN-TASK` for linked follow-up tasks, uses scoped `PATCH /api/bna/tasks/:id`, BNA deployment `3b43615c-3fde-4fad-bb1c-326baed500aa` and One Time deployment `8f022587-8b8e-474e-8c59-886b68e18faa` reached `SUCCESS`, the One Time live CRM workbench smoke passed, and deployed JS/CSS marker checks confirmed the controls.
+- Link member is locally verified under `REQ-20260712-303` and pending deploy: Access/Family tabs expose `ACTION-CRM-LINK-MEMBER`, the explicit click creates only a disabled first-party member shell (`access_status=paused`, `access_enabled=false`) with no portal link, class link, library access, send, payment, import, or external CRM write, and direct contact aggregate email fallback rollups are now project-scoped by workspace before showing communications, support, tasks, or membership.
 
 Continue by inspecting and repairing:
 
-- continue remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`, especially family/member linking;
+- deploy the Link member slice, then continue remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`, especially family/student linking;
 - canonical CRM contact aggregate service boundaries;
 - list, aggregate, timeline, conversations, and tasks DTOs;
 - server-side reconciliation of contacts, parent leads, signups, students, members, access, attendance, lifecycle, communications, notes, tasks, tickets, and suppression/opt-out records;

@@ -530,6 +530,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
   ];
   const workspaceTabMetrics = {};
   let taskTabActionMetrics = { hasLinkedTaskPanel: false, hasCompleteTaskAction: false, hasReopenTaskAction: false };
+  let memberLinkMetrics = { hasMemberLinkPanel: false, hasLinkMemberAction: false };
   for (const tab of workspaceTabs) {
     await page.locator('.crm-workbench-tabs [role="tab"]', { hasText: tab.label }).click();
     await page.waitForFunction((label) => {
@@ -549,6 +550,12 @@ async function captureViewport(browser, baseUrl, viewport, target) {
         hasLinkedTaskPanel: Boolean(document.querySelector('[data-crm-linked-task-state]')),
         hasCompleteTaskAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-COMPLETE-TASK"]:not([disabled])')),
         hasReopenTaskAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-REOPEN-TASK"]')),
+      }));
+    }
+    if (tab.id === 'access') {
+      memberLinkMetrics = await page.evaluate(() => ({
+        hasMemberLinkPanel: Boolean(document.querySelector('[data-crm-member-link-state]')),
+        hasLinkMemberAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-LINK-MEMBER"]:not([disabled])')),
       }));
     }
   }
@@ -661,6 +668,8 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       taskTabActionMetrics.hasLinkedTaskPanel &&
       taskTabActionMetrics.hasCompleteTaskAction &&
       taskTabActionMetrics.hasReopenTaskAction &&
+      memberLinkMetrics.hasMemberLinkPanel &&
+      memberLinkMetrics.hasLinkMemberAction &&
       selectedMetrics.hasArchiveContactAction &&
       selectedMetrics.mobileBackControlHeight >= 40 &&
       Object.values(workspaceTabMetrics).every(Boolean) &&
@@ -714,6 +723,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     addContactMetrics,
     hasCreateTaskActionAfterSelect: selectedMetrics.hasCreateTaskAction,
     taskTabActionMetrics,
+    memberLinkMetrics,
     hasArchiveContactActionAfterSelect: selectedMetrics.hasArchiveContactAction,
     mobileBackControlHeightAfterSelect: selectedMetrics.mobileBackControlHeight,
     workspaceTabMetrics,
@@ -889,7 +899,7 @@ async function main() {
     '',
     '- One Time Operations CRM route renders the API-backed workbench.',
     '- Split shell and monolith fallback render the API-backed workbench.',
-    '- Search/filter/sort controls, Add Contact form, cards, shared CRM contract attributes, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe actions, explicit Create task/archive actions, and timeline readback are visible.',
+    '- Search/filter/sort controls, Add Contact form, cards, shared CRM contract attributes, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe actions, explicit Create task/archive actions, Link member disabled-shell action, and timeline readback are visible.',
     '- Overview, Activity, Conversations, Tasks, Access, Identity, and Family tabs are clickable and render non-disabled workspace panels.',
     '- Mobile selected-contact state hides the list and Back to contacts restores it.',
     '- Scoped One Time Inbox retains selected CRM contact context and keeps send gates visible.',

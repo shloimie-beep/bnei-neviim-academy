@@ -219,3 +219,15 @@
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha ec1e893848f12242a30fd1fc59c236442997f30e`.
 - PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-51-23-358Z-one-time-operations-crm-workbench-live-smoke.md`.
 - PASS read-only deployed JS/CSS marker checks for Complete/Reopen task controls and linked-task CSS.
+- PASS `node --check server.js` after Link member/member-aggregate isolation slice.
+- PASS `node --check public/js/operations-shell.js`.
+- PASS `node --check public/js/operations-deferred-renderers.js`.
+- PASS `node --check scripts/smoke-onetime-operations-crm-workbench-local.mjs`.
+- PASS `npm run operations:check-generated` after Link member slice.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/live-class-infrastructure.test.js` (28/28) after Link member slice.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` verifies `ACTION-CRM-LINK-MEMBER` is visible without clicking the write.
+- PASS `npm run watchdog:actions` finding_count `0` after Link member slice.
+- PASS `npm run watchdog:protocol-drift` after Link member slice.
+- PASS `npm run secrets:audit` after Link member slice.
+- PASS `npm run bna:run:validate` after Link member slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after Link member slice.

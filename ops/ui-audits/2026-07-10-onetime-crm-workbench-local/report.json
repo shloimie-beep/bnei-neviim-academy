@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "generated_at": "2026-07-12T23:44:33.201Z",
+  "generated_at": "2026-07-13T00:07:12.364Z",
   "target": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts + /operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
   "scope": "Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.",
   "guardrails": {
@@ -50,6 +50,10 @@
         "hasLinkedTaskPanel": true,
         "hasCompleteTaskAction": true,
         "hasReopenTaskAction": true
+      },
+      "memberLinkMetrics": {
+        "hasMemberLinkPanel": true,
+        "hasLinkMemberAction": true
       },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
@@ -140,6 +144,10 @@
         "hasCompleteTaskAction": true,
         "hasReopenTaskAction": true
       },
+      "memberLinkMetrics": {
+        "hasMemberLinkPanel": true,
+        "hasLinkMemberAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -228,6 +236,10 @@
         "hasLinkedTaskPanel": true,
         "hasCompleteTaskAction": true,
         "hasReopenTaskAction": true
+      },
+      "memberLinkMetrics": {
+        "hasMemberLinkPanel": true,
+        "hasLinkMemberAction": true
       },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
@@ -318,6 +330,10 @@
         "hasCompleteTaskAction": true,
         "hasReopenTaskAction": true
       },
+      "memberLinkMetrics": {
+        "hasMemberLinkPanel": true,
+        "hasLinkMemberAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -406,6 +422,10 @@
         "hasLinkedTaskPanel": true,
         "hasCompleteTaskAction": true,
         "hasReopenTaskAction": true
+      },
+      "memberLinkMetrics": {
+        "hasMemberLinkPanel": true,
+        "hasLinkMemberAction": true
       },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
@@ -496,6 +516,10 @@
         "hasCompleteTaskAction": true,
         "hasReopenTaskAction": true
       },
+      "memberLinkMetrics": {
+        "hasMemberLinkPanel": true,
+        "hasLinkMemberAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -584,6 +608,10 @@
         "hasLinkedTaskPanel": true,
         "hasCompleteTaskAction": true,
         "hasReopenTaskAction": true
+      },
+      "memberLinkMetrics": {
+        "hasMemberLinkPanel": true,
+        "hasLinkMemberAction": true
       },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
@@ -674,6 +702,10 @@
         "hasCompleteTaskAction": true,
         "hasReopenTaskAction": true
       },
+      "memberLinkMetrics": {
+        "hasMemberLinkPanel": true,
+        "hasLinkMemberAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -762,6 +794,10 @@
         "hasLinkedTaskPanel": true,
         "hasCompleteTaskAction": true,
         "hasReopenTaskAction": true
+      },
+      "memberLinkMetrics": {
+        "hasMemberLinkPanel": true,
+        "hasLinkMemberAction": true
       },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
@@ -852,6 +888,10 @@
         "hasCompleteTaskAction": true,
         "hasReopenTaskAction": true
       },
+      "memberLinkMetrics": {
+        "hasMemberLinkPanel": true,
+        "hasLinkMemberAction": true
+      },
       "hasArchiveContactActionAfterSelect": true,
       "mobileBackControlHeightAfterSelect": 40,
       "workspaceTabMetrics": {
@@ -920,7 +960,7 @@
       "pageErrors": [],
       "failedRequests": [],
       "badResponses": [],
-      "mailboxUrl": "http://127.0.0.1:56968/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
+      "mailboxUrl": "http://127.0.0.1:50487/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
       "passed": true
     }
   ]

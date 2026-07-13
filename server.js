@@ -29302,6 +29302,9 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
          FROM bna_communications cm
          WHERE cm.contact_id = c.id
             OR (
+              cp.id IS NOT NULL
+              AND cm.project_id = cp.id
+              AND
               COALESCE(c.primary_email, '') <> ''
               AND lower(COALESCE(cm.from_address, cm.to_address, '')) = lower(c.primary_email)
             )
@@ -29314,7 +29317,9 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
            'latest_ticket_title', (ARRAY_AGG(st.title ORDER BY st.updated_at DESC NULLS LAST, st.id DESC))[1]
          )
          FROM bna_support_tickets st
-         WHERE COALESCE(c.primary_email, '') <> ''
+         WHERE cp.id IS NOT NULL
+           AND st.project_id = cp.id
+           AND COALESCE(c.primary_email, '') <> ''
            AND lower(st.requester_email) = lower(c.primary_email)
        ) AS support,
        (
@@ -29326,7 +29331,9 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
            'status', (ARRAY_AGG(t.stage ORDER BY t.due_date ASC NULLS LAST, t.updated_at DESC NULLS LAST, t.id DESC))[1]
          )
          FROM bna_tasks t
-         WHERE COALESCE(c.primary_email, '') <> ''
+         WHERE cp.id IS NOT NULL
+           AND t.project_id = cp.id
+           AND COALESCE(c.primary_email, '') <> ''
            AND lower(t.related_contact_email) = lower(c.primary_email)
            AND t.stage <> 'archive'
        ) AS follow_up_task,
@@ -29339,7 +29346,9 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
            'source', 'bna_members'
          )
          FROM bna_members m
-         WHERE COALESCE(c.primary_email, '') <> ''
+         WHERE cp.id IS NOT NULL
+           AND m.project_id = cp.id
+           AND COALESCE(c.primary_email, '') <> ''
            AND lower(m.email) = lower(c.primary_email)
          ORDER BY m.updated_at DESC NULLS LAST, m.id DESC
          LIMIT 1
@@ -29364,6 +29373,14 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
        c.created_at
      FROM bna_contacts c
      LEFT JOIN bna_workspace_settings ws ON ws.id = c.workspace_id
+     LEFT JOIN bna_projects cp
+       ON cp.project_key = CASE
+         WHEN ws.workspace_key = 'rabbi_sheller_provider' THEN 'one_time_mishnah_class'
+         WHEN ws.workspace_key = 'bna' THEN 'bna'
+         WHEN ws.workspace_key = 'dratler_family' THEN 'dratler_family'
+         WHEN ws.workspace_key = 'super_admin' THEN 'super_admin'
+         ELSE ws.workspace_key
+       END
      WHERE ${contactConditions.join(' AND ')}
      ORDER BY c.updated_at DESC NULLS LAST, c.id DESC
      LIMIT $${contactLimitParam}`,

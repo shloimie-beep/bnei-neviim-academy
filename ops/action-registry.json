@@ -2764,6 +2764,25 @@
       ]
     },
     {
+      "action_id": "ACTION-CRM-LINK-MEMBER",
+      "label": "Link member",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-LINK-MEMBER\"]",
+      "expected_behavior": "Creates or reuses a first-party disabled member shell for the selected workspace CRM contact only after an explicit click; the payload uses access_status=paused and access_enabled=false, creates no portal link or access code, grants no library/class access, sends no message, charges no payment, performs no import, and writes no external CRM record. The action is disabled in read-only preview and when the contact has no email.",
+      "permission": "super_admin or scoped provider workspace role with CRM/member entitlement",
+      "status": "active_first_party_local_write_no_access_grant",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the action calls POST /api/bna/members with access_status=paused, access_enabled=false, and no external-write/access-copy; the One Time CRM workbench local smoke verifies the button is visible without clicking the write."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-CRM-ARCHIVE-CONTACT",
       "label": "Archive contact",
       "surface": "operations_contacts",

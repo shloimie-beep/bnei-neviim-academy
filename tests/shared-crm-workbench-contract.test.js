@@ -124,6 +124,28 @@ test('Operations CRM linked task state actions are explicit first-party updates'
   assert.match(server, /'agent_status'/);
 });
 
+test('Operations CRM Link member action creates a disabled first-party member shell only', () => {
+  assert.match(operations, /function renderFirstPartyCrmMemberLinkPanel\(card = \{\}, readOnly = false\)/);
+  assert.match(operations, /data-action-id="ACTION-CRM-LINK-MEMBER"/);
+  assert.match(operations, /function linkFirstPartyCrmMember\(event, contactId\)/);
+  assert.match(operations, /await api\.createMember\(\{/);
+  assert.match(operations, /access_status: 'paused'/);
+  assert.match(operations, /access_enabled: false/);
+  assert.match(operations, /portal_link_created: false/);
+  assert.match(operations, /access_not_granted: true/);
+  assert.match(operations, /No portal link, library access, class link, payment, send, import, or external CRM write/);
+  assert.match(operations, /Add an email before linking a member shell\./);
+  assert.match(server, /app\.post\('\/api\/bna\/members', requireAdmin, async \(req, res\) =>/);
+  assert.match(server, /access_enabled, notes, metadata/);
+  assert.match(server, /body\.access_enabled === undefined \? true : liveClassBoolean\(body\.access_enabled, true\)/);
+  assert.match(server, /const accessStatus = requireLiveAccessStatus\(body\.access_status \|\| body\.accessStatus, 'active'\)/);
+  assert.match(server, /LEFT JOIN bna_projects cp[\s\S]*WHEN ws\.workspace_key = 'rabbi_sheller_provider' THEN 'one_time_mishnah_class'/);
+  assert.match(server, /FROM bna_members m[\s\S]*AND m\.project_id = cp\.id[\s\S]*AND lower\(m\.email\) = lower\(c\.primary_email\)/);
+  assert.match(server, /FROM bna_communications cm[\s\S]*AND cm\.project_id = cp\.id[\s\S]*AND lower\(COALESCE\(cm\.from_address, cm\.to_address, ''\)\) = lower\(c\.primary_email\)/);
+  assert.match(server, /FROM bna_tasks t[\s\S]*AND t\.project_id = cp\.id[\s\S]*AND lower\(t\.related_contact_email\) = lower\(c\.primary_email\)/);
+  assert.doesNotMatch(operations.match(/function linkFirstPartyCrmMember[\s\S]*?async function archiveFirstPartyCrmContact/)?.[0] || '', /createMemberAccessCode|access-code|checkout|payment_link/i);
+});
+
 test('Operations CRM Archive Contact action is explicit and first-party only', () => {
   assert.match(operations, /data-action-id="ACTION-CRM-ARCHIVE-CONTACT"/);
   assert.match(operations, /function archiveFirstPartyCrmContact\(event, contactId\)/);

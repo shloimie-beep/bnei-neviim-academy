@@ -7519,6 +7519,45 @@ function renderFirstPartyCrmLinkedTaskPanel(card = {}, readOnly = false) {
     `;
 }
 
+function renderFirstPartyCrmMemberLinkPanel(card = {}, readOnly = false) {
+    const membership = card.membership_access || {};
+    if (membership.member_id) {
+        return `
+            <div class="contact-empty-card crm-linked-task-card" data-crm-member-link-state="linked">
+                <div class="task-section-header compact">
+                    <div>
+                        <h3>Linked member</h3>
+                        <p class="notification-lock-note">Member record is linked for CRM readback. Portal links, class links, library access, and sends remain separately gated.</p>
+                    </div>
+                    <span class="status-chip">${escapeHtml(contactStatusLabel(membership.access_status || 'linked'))}</span>
+                </div>
+                <div class="crm-linked-task-meta">
+                    <span>Member #${escapeHtml(membership.member_id)}</span>
+                    <span>Tier: ${escapeHtml(contactStatusLabel(membership.access_tier || 'library_only'))}</span>
+                    <span>Access: ${membership.access_enabled === false ? 'Disabled' : 'Configured'}</span>
+                </div>
+            </div>
+        `;
+    }
+    const disabled = readOnly || firstPartyCrmSaving || !card.email;
+    const title = readOnly
+        ? 'Link member is unavailable in read-only preview.'
+        : (!card.email ? 'Add an email before linking a member shell.' : '');
+    return `
+        <div class="contact-empty-card crm-linked-task-card" data-crm-member-link-state="unlinked">
+            <div class="task-section-header compact">
+                <div>
+                    <h3>No membership linked.</h3>
+                    <p class="notification-lock-note">Create a disabled member shell for CRM linkage only. This does not create a portal link, library access, class link, payment, send, or external CRM write.</p>
+                </div>
+            </div>
+            <div class="task-actions">
+                <button class="task-action" type="button" onclick="linkFirstPartyCrmMember(event, ${attrJson(card.id)})" data-action-id="ACTION-CRM-LINK-MEMBER" ${disabled ? `disabled aria-disabled="true" title="${escapeHtml(title)}"` : ''}>${firstPartyCrmSaving ? 'Saving...' : 'Link member'}</button>
+            </div>
+        </div>
+    `;
+}
+
 function renderFirstPartyCrmDetail(card = null) {
     if (!card) {
         return `
@@ -7686,6 +7725,7 @@ function renderFirstPartyCrmTabContent(card = {}, readOnly = false) {
                 ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
                 ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
             </div>
+            ${renderFirstPartyCrmMemberLinkPanel(card, readOnly)}
         `;
     }
     if (activeTab === 'identity') {
@@ -7713,6 +7753,7 @@ function renderFirstPartyCrmTabContent(card = {}, readOnly = false) {
                 ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : (window.BnaCrmContactWorkspace?.emptyState?.('follow_up') || 'No follow-up scheduled.'))}
                 ${renderContactDetailItem('Notes', card.summary || (window.BnaCrmContactWorkspace?.emptyState?.('notes') || 'No notes yet.'))}
             </div>
+            ${renderFirstPartyCrmMemberLinkPanel(card, readOnly)}
         `;
     }
     return `
@@ -8011,6 +8052,64 @@ async function updateFirstPartyCrmLinkedTask(event, contactId, mode = 'complete'
         await openFirstPartyCrmContact(contactId, { captureScroll: false, syncUrl: false });
     } catch (error) {
         firstPartyCrmError = error.message || 'Could not update CRM task.';
+    } finally {
+        firstPartyCrmSaving = false;
+        render();
+    }
+}
+
+async function linkFirstPartyCrmMember(event, contactId) {
+    event.preventDefault();
+    if (!contactId || oneTimeViewAsRabbiActive()) return;
+    const card = selectedFirstPartyCrmCard() || {};
+    if (card.membership_access?.member_id) {
+        firstPartyCrmNotice = `Member #${card.membership_access.member_id} is already linked for this contact.`;
+        render();
+        return;
+    }
+    const email = String(card.email || '').trim();
+    if (!email) {
+        firstPartyCrmError = 'Add an email before linking a member shell.';
+        render();
+        return;
+    }
+    const projectKey = projectKeyForWorkspaceKey(currentWorkspaceKey());
+    firstPartyCrmSaving = true;
+    firstPartyCrmError = '';
+    firstPartyCrmNotice = '';
+    render();
+    try {
+        const result = await api.createMember({
+            project_key: projectKey,
+            display_name: card.display_name || email,
+            email,
+            phone: card.phone || '',
+            access_tier: 'library_only',
+            access_status: 'paused',
+            access_enabled: false,
+            notes: 'Created as a disabled member shell by an explicit Link member click in the CRM contact workspace. No portal link, library access, class link, payment, send, import, or external CRM write was performed.',
+            metadata: {
+                source: 'crm_contact_workspace_link_member',
+                crm_contact_key: card.id || contactId,
+                workspace_key: currentWorkspaceKey(),
+                project_key: projectKey,
+                access_not_granted: true,
+                portal_link_created: false,
+                external_write_performed: false
+            }
+        });
+        const memberId = result?.member?.id || '';
+        firstPartyCrmNotice = memberId
+            ? `Member #${memberId} linked as a disabled CRM shell. No portal link, library access, class link, payment, send, import, or external CRM write ran.`
+            : 'Member shell linked locally with access disabled. No portal link, library access, class link, payment, send, import, or external CRM write ran.';
+        firstPartyCrmContactsCache.clear();
+        selectedFirstPartyCrmContactId = contactId;
+        firstPartyCrmActiveTab = 'access';
+        firstPartyCrmTimelinePayload = null;
+        await loadFirstPartyCrmContacts(null, { force: true });
+        await openFirstPartyCrmContact(contactId, { captureScroll: false, syncUrl: false });
+    } catch (error) {
+        firstPartyCrmError = error.message || 'Could not link CRM member shell.';
     } finally {
         firstPartyCrmSaving = false;
         render();

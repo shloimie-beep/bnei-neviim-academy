@@ -39188,3 +39188,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Live proof passed: One Time separate-instance SHA smoke, One Time Operations
   CRM workbench smoke with 12 scoped cards and read-only selected timeline, and
   deployed JS/CSS marker checks for Complete/Reopen task controls.
+
+## 2026-07-13 - Shared CRM Link member local verification
+
+- Added `ACTION-CRM-LINK-MEMBER` to the CRM contact workspace Access and Family
+  tabs as an explicit first-party action.
+- The action creates only a disabled member shell with `access_status=paused`
+  and `access_enabled=false`; it does not create a portal link, class link,
+  library access, message send, payment, import, or external CRM write.
+- Tightened the direct `bna_contacts` aggregate so email fallback rollups for
+  communications, support, tasks, and membership are project-scoped by the
+  contact workspace before display.
+- Verification passed: server/shell/smoke syntax checks, generated-shell check,
+  focused CRM/live-class tests `28/28`, local One Time CRM workbench smoke with
+  Link member visibility and no write click, action watchdog 0 findings,
+  protocol drift watchdog, secret audit, execution run validation, and diff
+  check with line-ending warnings only.
+- Deployment is pending for this slice; the broader addendum goal remains
+  active.

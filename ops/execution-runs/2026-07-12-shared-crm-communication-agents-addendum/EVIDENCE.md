@@ -86,6 +86,11 @@
 - One Time post-deploy doctor - Railway deployment `8f022587-8b8e-474e-8c59-886b68e18faa` reached `SUCCESS`.
 - `ops/live-smokes/2026-07-12T23-51-23-358Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the Complete/Reopen task slice with 12 scoped cards and read-only selected timeline.
 - Read-only deployed JS/CSS marker checks confirmed `ACTION-CRM-COMPLETE-TASK`, `ACTION-CRM-REOPEN-TASK`, `updateFirstPartyCrmLinkedTask`, `.crm-linked-task-card`, and `.crm-linked-task-meta` on `https://join.onetimeonetime.com`.
+- `public/operations.html` / `public/js/operations-shell.js` - Operations CRM Access and Family tabs now expose `ACTION-CRM-LINK-MEMBER` as an explicit first-party Link member action that creates a disabled member shell only.
+- `server.js` - the `/api/bna/members` payload path is used with `access_status=paused`, `access_enabled=false`, no access code, and metadata marking `access_not_granted`, `portal_link_created=false`, and `external_write_performed=false`.
+- `server.js` - direct `bna_contacts` aggregate email fallback rollups for communications, support, tasks, and membership now require the row's workspace-mapped `bna_projects` record before matching by email, preventing same-email member/task/message bleed across BNA and One Time.
+- `ops/action-registry.json` - registers `ACTION-CRM-LINK-MEMBER` as active first-party local write with no portal link, access code, library/class access, send, payment, import, or external CRM write.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local CRM workbench smoke passed after verifying the Link member panel/action is visible on the Access tab without clicking the write action.
 - `raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md` - operator correction requiring the WhatsApp bot knowledge to state no portal/member/library access is being granted yet plus One Time landing header/button/mobile CTA polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md` - scoped local-verified handoff for bot knowledge and landing polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json` - focused Product Quality Compiler packet for the One Time header/CTA/spacing/mobile correction and bot access-fact guardrail.
