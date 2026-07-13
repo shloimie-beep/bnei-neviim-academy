@@ -75,12 +75,28 @@ test('One Time promotional conversion and referral configuration is test-local a
   assert.equal(config.referral_credit.gates.invoice_credit_enabled, false);
   assert.equal(config.referral_credit.gates.real_invoice_credit_created, false);
   assert.equal(config.referral_credit.gates.external_write_performed, false);
+  assert.equal(config.billing_notice.requirement_id, 'REQ-20260713-957');
+  assert.equal(config.billing_notice.policy_key, 'one_time_rosh_hashanah_pre_billing_notice');
+  assert.equal(config.billing_notice.delivery.preview_enabled, true);
+  assert.equal(config.billing_notice.delivery.batch_send_enabled, false);
+  assert.equal(config.billing_notice.gates.email_send_enabled, false);
+  assert.ok(config.billing_notice.required_disclosures.includes('no_stripe_trial'));
+  assert.ok(config.billing_notice.required_disclosures.includes('manual_exception_refund_review_only'));
+  assert.equal(config.refund_review.requirement_id, 'REQ-20260713-958');
+  assert.equal(config.refund_review.policy_key, 'one_time_manual_exception_refund_review');
+  assert.equal(config.refund_review.automatic_refunds_enabled, false);
+  assert.equal(config.refund_review.prorated_refunds_enabled, false);
+  assert.equal(config.refund_review.gates.stripe_refund_create_enabled, false);
+  assert.ok(config.refund_review.required_review_fields.includes('stripe_invoice_id'));
+  assert.ok(config.refund_review.allowed_exception_reasons.includes('operator_approved_exception'));
 
   assert.equal(config.acceptance_storage.supported, true);
   assert.equal(config.acceptance_storage.test_local_mode_supported, true);
   assert.equal(config.acceptance_storage.record_count, 1);
   assert.ok(config.acceptance_storage.required_fields.includes('policy_version'));
   assert.ok(config.acceptance_storage.required_fields.includes('accepted_at'));
+  assert.ok(config.acceptance_storage.policy_versions.includes('one-time-rosh-hashanah-pre-billing-notice-v1'));
+  assert.ok(config.acceptance_storage.policy_versions.includes('one-time-manual-exception-refund-review-v1'));
   assert.equal(config.referral_records.length, 1);
   assert.equal(config.referral_records[0].activation_status, 'pending_first_paid_cycle');
   assert.equal(config.legal_wording_decision.blocks_public_copy, true);
@@ -122,15 +138,30 @@ test('Stripe local beta plan exposes preview/readiness only and blocks external 
   assert.equal(beta.launch_trial.no_failed_payment_grace_period, true);
   assert.equal(beta.referral_credit.activation_trigger, 'first_successful_paid_cycle');
   assert.equal(beta.referral_credit.manual_review_required, true);
+  assert.equal(beta.billing_notice.policy_key, 'one_time_rosh_hashanah_pre_billing_notice');
+  assert.equal(beta.billing_notice.preview_enabled, true);
+  assert.equal(beta.billing_notice.batch_send_enabled, false);
+  assert.equal(beta.billing_notice.live_send_enabled, false);
+  assert.equal(beta.refund_review.policy_key, 'one_time_manual_exception_refund_review');
+  assert.equal(beta.refund_review.manual_review_required, true);
+  assert.equal(beta.refund_review.automatic_refunds_enabled, false);
+  assert.equal(beta.refund_review.prorated_refunds_enabled, false);
+  assert.equal(beta.refund_review.refund_execution_enabled, false);
   assert.equal(beta.actions.checkout_preview_enabled, true);
   assert.equal(beta.actions.checkout_session_creation_enabled, false);
   assert.equal(beta.actions.subscription_creation_enabled, false);
   assert.equal(beta.actions.invoice_credit_enabled, false);
+  assert.equal(beta.actions.notice_email_send_enabled, false);
+  assert.equal(beta.actions.refund_execution_enabled, false);
   assert.equal(beta.actions.live_charge_enabled, false);
   assert.ok(beta.blocked_actions.includes('checkout_session_create'));
   assert.ok(beta.blocked_actions.includes('invoice_credit_apply'));
+  assert.ok(beta.blocked_actions.includes('notice_email_send'));
+  assert.ok(beta.blocked_actions.includes('stripe_refund_create'));
   assert.equal(beta.guardrails.no_customer_created, true);
   assert.equal(beta.guardrails.no_invoice_credit_created, true);
+  assert.equal(beta.guardrails.no_notice_email_sent, true);
+  assert.equal(beta.guardrails.no_refund_created, true);
   assert.equal(beta.guardrails.no_live_charge, true);
 });
 
@@ -140,6 +171,8 @@ test('promotional conversion/referral migration creates storage and seeds only d
     'bna_one_time_policy_acceptances',
     'bna_one_time_referrals',
     'bna_one_time_referral_credits',
+    'bna_one_time_billing_notices',
+    'bna_one_time_refund_reviews',
   ].forEach((table) => {
     assert.match(migration, new RegExp(`CREATE TABLE IF NOT EXISTS ${table}\\b`));
   });
@@ -162,8 +195,13 @@ test('promotional conversion/referral migration creates storage and seeds only d
   assert.match(migration, /invoice_credit_enabled BOOLEAN NOT NULL DEFAULT FALSE/);
   assert.match(migration, /real_invoice_credit_created BOOLEAN NOT NULL DEFAULT FALSE/);
   assert.match(migration, /external_write_performed BOOLEAN NOT NULL DEFAULT FALSE/);
-  assert.match(migration, /trial_referral_legal_wording/);
-  assert.match(migration, /DEC-20260621-901/);
+  assert.match(migration, /one_time_rosh_hashanah_pre_billing_notice/);
+  assert.match(migration, /one_time_manual_exception_refund_review/);
+  assert.match(migration, /send_enabled BOOLEAN NOT NULL DEFAULT FALSE/);
+  assert.match(migration, /refund_execution_enabled BOOLEAN NOT NULL DEFAULT FALSE/);
+  assert.match(migration, /automatic_refund BOOLEAN NOT NULL DEFAULT FALSE/);
+  assert.match(migration, /rosh_hashanah_billing_policy_copy/);
+  assert.match(migration, /DEC-20260713-950/);
   assert.match(migration, /public_output_allowed, metadata, updated_at/);
 });
 
@@ -192,8 +230,13 @@ test('server and Operations expose promotional conversion readback with disabled
   assert.match(operationsHtml, /Rosh Hashanah promotional access/);
   assert.match(operationsHtml, /No live charge, payment link, Stripe trial, access grant, or real invoice credit is enabled/);
   assert.match(operationsHtml, /Referral credit/);
+  assert.match(operationsHtml, /Billing notice/);
+  assert.match(operationsHtml, /Manual refund review/);
+  assert.match(operationsHtml, /one_time_rosh_hashanah_pre_billing_notice/);
+  assert.match(operationsHtml, /one_time_manual_exception_refund_review/);
   assert.match(operationsHtml, /Policy acceptance storage/);
   assert.match(operationsHtml, /invoice credits \${guardrails\.real_invoice_credits_enabled \? 'enabled' : 'disabled'}/);
+  assert.match(operationsHtml, /refunds \${guardrails\.refund_execution_enabled \? 'enabled' : 'disabled'}/);
   assert.doesNotMatch(operationsHtml, /30-day warm-lead intro trial/);
 });
 

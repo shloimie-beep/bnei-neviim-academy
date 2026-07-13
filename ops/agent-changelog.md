@@ -40011,3 +40011,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/`.
 - Guardrails: no live charge, refund, notice send, access mutation, Stripe
   Connect/payout setup, credential mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 notice and refund contracts modeled
+
+- Added no-send Rosh Hashanah pre-billing notice and monthly invoice/receipt
+  policy contracts with required disclosures for `$67/month`, taxes, no Stripe
+  trial, billing start, cancellation, manual refund review, and immediate
+  failed-payment suspension.
+- Added manual exceptional-refund review contract and SQL storage for linked
+  customer/invoice/payment/reason/reviewer/approval/access-decision fields while
+  keeping Stripe refund creation disabled.
+- Updated Operations readback and Stripe local beta preview to show notice and
+  refund guardrails without enabling email sends, refund creation, checkout,
+  live charges, or invoice credits.
+- Verification passed:
+  `node --test tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js`
+  (12/12), `node --test tests/one-time-stripe-local-beta.test.js` (5/5),
+  `npm run operations:build`, `npm run operations:check-generated`, and syntax
+  checks for the edited helpers.

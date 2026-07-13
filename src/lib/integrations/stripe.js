@@ -165,6 +165,11 @@ function buildOneTimeStripeLocalBetaPlan(payload = {}, options = {}) {
   const trialRules = trial.rules || {};
   const referral = config.referral_credit || payload.referral_credit || {};
   const referralReward = referral.reward || {};
+  const billingNotice = config.billing_notice || payload.billing_notice || {};
+  const noticeDelivery = billingNotice.delivery || {};
+  const noticeGates = billingNotice.gates || {};
+  const refundReview = config.refund_review || payload.refund_review || {};
+  const refundGates = refundReview.gates || {};
   return {
     provider: 'stripe',
     requirement_id: 'REQ-20260713-954',
@@ -208,12 +213,37 @@ function buildOneTimeStripeLocalBetaPlan(payload = {}, options = {}) {
       currency: String(referralReward.currency || 'USD').toUpperCase(),
       manual_review_required: true,
     },
+    billing_notice: {
+      policy_key: billingNotice.policy_key || 'one_time_rosh_hashanah_pre_billing_notice',
+      policy_version: billingNotice.policy_version || 'one-time-rosh-hashanah-pre-billing-notice-v1',
+      template_key: billingNotice.template_key || 'one_time_pre_billing_notice_v1',
+      preview_enabled: noticeDelivery.preview_enabled !== false,
+      batch_send_enabled: false,
+      live_send_enabled: false,
+      invoice_receipt_email_enabled: noticeGates.invoice_receipt_email_enabled === true,
+      required_disclosures: Array.isArray(billingNotice.required_disclosures)
+        ? billingNotice.required_disclosures
+        : [],
+    },
+    refund_review: {
+      policy_key: refundReview.policy_key || 'one_time_manual_exception_refund_review',
+      policy_version: refundReview.policy_version || 'one-time-manual-exception-refund-review-v1',
+      manual_review_required: true,
+      automatic_refunds_enabled: false,
+      prorated_refunds_enabled: false,
+      refund_execution_enabled: refundGates.stripe_refund_create_enabled === true,
+      allowed_exception_reasons: Array.isArray(refundReview.allowed_exception_reasons)
+        ? refundReview.allowed_exception_reasons
+        : [],
+    },
     actions: {
       checkout_preview_enabled: true,
       checkout_session_creation_enabled: false,
       subscription_creation_enabled: false,
       payment_method_collection_live_enabled: false,
       invoice_credit_enabled: false,
+      notice_email_send_enabled: false,
+      refund_execution_enabled: false,
       live_charge_enabled: false,
       external_write_performed: false,
     },
@@ -222,6 +252,8 @@ function buildOneTimeStripeLocalBetaPlan(payload = {}, options = {}) {
       'subscription_create',
       'payment_method_collection',
       'invoice_credit_apply',
+      'notice_email_send',
+      'stripe_refund_create',
       'live_charge',
     ],
     guardrails: {
@@ -229,6 +261,8 @@ function buildOneTimeStripeLocalBetaPlan(payload = {}, options = {}) {
       no_subscription_created: true,
       no_payment_method_collected: true,
       no_invoice_credit_created: true,
+      no_notice_email_sent: true,
+      no_refund_created: true,
       no_live_charge: true,
       external_write_performed: false,
     },

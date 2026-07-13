@@ -20077,8 +20077,13 @@ function renderOneTimeTrialReferralPanel() {
     const referral = config.referral_credit || {};
     const referralReward = referral.reward || {};
     const referralRules = referral.rules || {};
-            const acceptance = config.acceptance_storage || {};
-            const decision = config.legal_wording_decision || {};
+    const billingNotice = config.billing_notice || {};
+    const noticeDelivery = billingNotice.delivery || {};
+    const noticeGates = billingNotice.gates || {};
+    const refundReview = config.refund_review || {};
+    const refundGates = refundReview.gates || {};
+    const acceptance = config.acceptance_storage || {};
+    const decision = config.legal_wording_decision || {};
     const guardrails = config.guardrails || {};
     const blockers = Array.isArray(config.blockers) ? config.blockers : [];
     return `
@@ -20114,10 +20119,30 @@ function renderOneTimeTrialReferralPanel() {
                             <ul class="content-card-summary">
                                 <li><strong>Activation</strong><span>Only after first successful paid cycle</span></li>
                                 <li><strong>Reward</strong><span>${escapeHtml(referralReward.type || 'manual_month_credit_candidate')} ${escapeHtml(moneyFromCents(referralReward.amount_cents ?? 6700, referralReward.currency || 'USD'))}</span></li>
-                                <li><strong>Review</strong><span>${referralReward.application_mode === 'manual_after_admin_review' ? 'Manual admin review' : 'Manual review required'}</span></li>
-                                <li><strong>Abuse guard</strong><span>${referralRules.self_referrals_allowed === false ? 'No self-referrals' : 'Needs policy'}</span></li>
-                            </ul>
-                        </article>
+                        <li><strong>Review</strong><span>${referralReward.application_mode === 'manual_after_admin_review' ? 'Manual admin review' : 'Manual review required'}</span></li>
+                        <li><strong>Abuse guard</strong><span>${referralRules.self_referrals_allowed === false ? 'No self-referrals' : 'Needs policy'}</span></li>
+                    </ul>
+                </article>
+                <article class="content-card">
+                    <div class="content-card-title">Billing notice</div>
+                    <div class="content-card-meta">${escapeHtml(billingNotice.policy_key || 'one_time_rosh_hashanah_pre_billing_notice')} &middot; ${escapeHtml(billingNotice.policy_version || 'one-time-rosh-hashanah-pre-billing-notice-v1')}</div>
+                    <ul class="content-card-summary">
+                        <li><strong>Template</strong><span>${escapeHtml(billingNotice.template_key || 'one_time_pre_billing_notice_v1')}</span></li>
+                        <li><strong>Preview</strong><span>${noticeDelivery.preview_enabled === false ? 'Disabled' : 'Enabled'}</span></li>
+                        <li><strong>Batch send</strong><span>${noticeDelivery.batch_send_enabled || noticeGates.email_send_enabled ? 'Check required' : 'Disabled'}</span></li>
+                        <li><strong>Disclosures</strong><span>${escapeHtml((billingNotice.required_disclosures || []).slice(0, 3).join(', ') || 'price, tax, no trial')}</span></li>
+                    </ul>
+                </article>
+                <article class="content-card">
+                    <div class="content-card-title">Manual refund review</div>
+                    <div class="content-card-meta">${escapeHtml(refundReview.policy_key || 'one_time_manual_exception_refund_review')} &middot; ${escapeHtml(refundReview.policy_version || 'one-time-manual-exception-refund-review-v1')}</div>
+                    <ul class="content-card-summary">
+                        <li><strong>Default</strong><span>${escapeHtml(refundReview.default_refund_policy || 'manual exception review only')}</span></li>
+                        <li><strong>Automatic refunds</strong><span>${refundReview.automatic_refunds_enabled ? 'Check required' : 'Disabled'}</span></li>
+                        <li><strong>Stripe refund create</strong><span>${refundGates.stripe_refund_create_enabled ? 'Enabled' : 'Disabled'}</span></li>
+                        <li><strong>Required link</strong><span>${escapeHtml((refundReview.required_review_fields || []).slice(0, 3).join(', ') || 'customer, invoice, payment')}</span></li>
+                    </ul>
+                </article>
                 <article class="content-card">
                     <div class="content-card-title">Policy acceptance storage</div>
                     <div class="content-card-meta">${escapeHtml(acceptance.table || 'bna_one_time_policy_acceptances')} &middot; ${escapeHtml(String(acceptance.record_count || 0))} records</div>
@@ -20143,6 +20168,7 @@ function renderOneTimeTrialReferralPanel() {
                         <span class="tag">invoice credits ${guardrails.real_invoice_credits_enabled ? 'enabled' : 'disabled'}</span>
                         <span class="tag">checkout ${guardrails.checkout_creation_enabled ? 'enabled' : 'disabled'}</span>
                         <span class="tag">payment links ${guardrails.payment_link_creation_enabled ? 'enabled' : 'disabled'}</span>
+                        <span class="tag">refunds ${guardrails.refund_execution_enabled ? 'enabled' : 'disabled'}</span>
                         <span class="tag">external writes ${guardrails.external_write_performed ? 'performed' : 'none'}</span>
                     </div>
                     ${blockers.length ? `<p class="settings-disabled-note" style="margin-top:12px;">Blockers: ${escapeHtml(blockers.join(' / '))}</p>` : ''}

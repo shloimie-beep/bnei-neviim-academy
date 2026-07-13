@@ -89,6 +89,19 @@ const ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS = Object.freeze({
   activation_trigger: 'first_successful_paid_cycle',
 });
 
+const ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS = Object.freeze({
+  policy_key: 'one_time_rosh_hashanah_pre_billing_notice',
+  policy_version: 'one-time-rosh-hashanah-pre-billing-notice-v1',
+  template_key: 'one_time_pre_billing_notice_v1',
+  requirement_id: 'REQ-20260713-957',
+});
+
+const ONE_TIME_REFUND_REVIEW_POLICY_DEFAULTS = Object.freeze({
+  policy_key: 'one_time_manual_exception_refund_review',
+  policy_version: 'one-time-manual-exception-refund-review-v1',
+  requirement_id: 'REQ-20260713-958',
+});
+
 const ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS = Object.freeze({
   payment_policy_key: 'one_time_test_payment_to_access_v1',
   access_policy_key: 'one_time_approved_test_event_access_v1',
@@ -670,6 +683,8 @@ function buildOneTimePolicyAcceptanceStorageContract(rows = []) {
     policy_versions: [
       ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_version,
       ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS.policy_version,
+      ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS.policy_version,
+      ONE_TIME_REFUND_REVIEW_POLICY_DEFAULTS.policy_version,
     ],
     required_fields: [
       'project_id',
@@ -806,6 +821,116 @@ function buildOneTimeReferralCreditPolicy(input = {}) {
   };
 }
 
+function buildOneTimeBillingNoticePolicy(input = {}) {
+  const launchPolicy = input.launchPolicy && typeof input.launchPolicy === 'object' ? input.launchPolicy : {};
+  const renewal = launchPolicy.renewal || {};
+  const amountCents = safePositiveInteger(
+    input.amount_cents ?? input.amountCents ?? renewal.amount_cents,
+    ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.renewal_amount_cents,
+  );
+  const currency = String(input.currency || renewal.currency || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.currency).toUpperCase();
+  return {
+    requirement_id: ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS.requirement_id,
+    policy_key: input.policy_key || ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS.policy_key,
+    policy_version: input.policy_version || ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS.policy_version,
+    template_key: input.template_key || ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS.template_key,
+    status: 'draft_send_disabled',
+    mode: 'test_local_only',
+    billing_start_at: input.billing_start_at || launchPolicy.billing_start_at || null,
+    timezone: input.timezone || launchPolicy.timezone || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.timezone,
+    notice_types: [
+      'pre_billing_notice',
+      'monthly_invoice_receipt',
+      'payment_failed_notice',
+      'cancellation_confirmation',
+    ],
+    required_disclosures: [
+      'price_67_usd_monthly',
+      'plus_applicable_taxes',
+      'no_stripe_trial',
+      'billing_start_date',
+      'cancel_at_period_end',
+      'manual_exception_refund_review_only',
+      'failed_payment_suspends_access_immediately',
+    ],
+    copy_tokens: {
+      membership_name: 'One Time Mishnayos Membership',
+      display_price: `${currency === 'USD' ? '$' : `${currency} `}${(amountCents / 100).toFixed(2)} / month`,
+      tax_phrase: 'plus applicable taxes where required',
+      billing_start_at: input.billing_start_at || launchPolicy.billing_start_at || null,
+      timezone: input.timezone || launchPolicy.timezone || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.timezone,
+    },
+    delivery: {
+      channel: 'email',
+      sender_identity_required: true,
+      preview_enabled: true,
+      batch_send_enabled: false,
+      live_send_enabled: false,
+      send_requires_exact_approval: true,
+      no_marketing_newsletter: true,
+    },
+    gates: {
+      email_send_enabled: false,
+      invoice_receipt_email_enabled: false,
+      whatsapp_send_enabled: false,
+      telegram_send_enabled: false,
+      external_write_performed: false,
+    },
+    blockers: [
+      'billing_start_at_decision_required_before_live_notice',
+      'sender_identity_required_before_live_notice',
+      'customer_notice_copy_required_before_live_notice',
+      'recipient_cohort_review_required_before_batch_send',
+    ],
+  };
+}
+
+function buildOneTimeRefundReviewPolicy(input = {}) {
+  return {
+    requirement_id: ONE_TIME_REFUND_REVIEW_POLICY_DEFAULTS.requirement_id,
+    policy_key: input.policy_key || ONE_TIME_REFUND_REVIEW_POLICY_DEFAULTS.policy_key,
+    policy_version: input.policy_version || ONE_TIME_REFUND_REVIEW_POLICY_DEFAULTS.policy_version,
+    status: 'manual_review_required',
+    mode: 'test_local_only',
+    default_refund_policy: 'non_refundable_except_manual_exception',
+    cancellation_default: 'cancel_at_period_end',
+    automatic_refunds_enabled: false,
+    prorated_refunds_enabled: false,
+    refund_execution_enabled: false,
+    allowed_exception_reasons: [
+      'duplicate_charge',
+      'incorrect_charge',
+      'provider_cancelled_without_makeup_or_credit',
+      'legally_required',
+      'operator_approved_exception',
+    ],
+    required_review_fields: [
+      'member_id',
+      'stripe_customer_id',
+      'stripe_invoice_id',
+      'stripe_payment_intent_or_charge_id',
+      'refund_reason',
+      'requested_by',
+      'reviewed_by',
+      'approval_recorded_at',
+      'access_decision',
+      'test_or_live_mode',
+    ],
+    gates: {
+      refund_request_storage_enabled: true,
+      refund_preview_enabled: true,
+      stripe_refund_create_enabled: false,
+      automatic_access_revoke_enabled: false,
+      external_write_performed: false,
+    },
+    blockers: [
+      'final_refund_policy_copy_required_before_live_checkout',
+      'authorized_admin_approval_required_before_refund_execution',
+      'linked_invoice_payment_customer_required_before_refund_review',
+    ],
+  };
+}
+
 function oneTimeReferralRecordView(row = {}) {
   const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata) ? row.metadata : {};
   return {
@@ -831,6 +956,8 @@ function buildOneTimeTrialReferralConfiguration({
   const monthlyOffer = offerRows.find((offer) => offer?.offer_key === ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.offer_key) || {};
   const referralRows = (Array.isArray(referrals) ? referrals : []).map(oneTimeReferralRecordView);
   const launchPolicy = buildOneTimeLaunchTrialPolicy({ offer: monthlyOffer });
+  const billingNotice = buildOneTimeBillingNoticePolicy({ launchPolicy });
+  const refundReview = buildOneTimeRefundReviewPolicy();
   return {
     requirement_id: 'REQ-20260713-954',
     workspace_key: 'rabbi_sheller_provider',
@@ -840,6 +967,8 @@ function buildOneTimeTrialReferralConfiguration({
     launch_trial: launchPolicy,
     promotional_access: launchPolicy.promotional_access,
     referral_credit: buildOneTimeReferralCreditPolicy(),
+    billing_notice: billingNotice,
+    refund_review: refundReview,
     acceptance_storage: buildOneTimePolicyAcceptanceStorageContract(acceptances),
     referral_records: referralRows,
     legal_wording_decision: oneTimePolicyDecisionView(decisions),
@@ -850,6 +979,7 @@ function buildOneTimeTrialReferralConfiguration({
       payment_link_creation_enabled: false,
       email_send_enabled: false,
       whatsapp_send_enabled: false,
+      refund_execution_enabled: false,
       external_crm_write_enabled: false,
       external_write_performed: false,
     },
@@ -858,6 +988,7 @@ function buildOneTimeTrialReferralConfiguration({
       'billing_notice_and_policy_copy_required_before_public_copy',
       'billing_provider_and_test_checkout_required_before_live_card_collection',
       'accounting_owner_approval_required_before_real_invoice_credit_or_reward',
+      'authorized_admin_approval_required_before_refund_execution',
     ],
   };
 }
@@ -1466,6 +1597,8 @@ module.exports = {
   ONE_TIME_APPOINTMENT_STATUSES,
   ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS,
   ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS,
+  ONE_TIME_BILLING_NOTICE_POLICY_DEFAULTS,
+  ONE_TIME_REFUND_REVIEW_POLICY_DEFAULTS,
   ONE_TIME_DEFAULT_REGION_NOTES,
   ONE_TIME_READINESS_STATUSES,
   ONE_TIME_PRODUCT_READINESS_SECTIONS,
@@ -1500,6 +1633,8 @@ module.exports = {
   buildOneTimePolicyAcceptanceStorageContract,
   buildOneTimeLaunchTrialPolicy,
   buildOneTimeReferralCreditPolicy,
+  buildOneTimeBillingNoticePolicy,
+  buildOneTimeRefundReviewPolicy,
   oneTimeReferralRecordView,
   buildOneTimeTrialReferralConfiguration,
   oneTimeCheckoutRecordView,
