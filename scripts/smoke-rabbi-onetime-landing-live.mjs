@@ -7,6 +7,7 @@ const DEFAULT_BASE_URL = 'https://bneineviimacademy.org';
 function parseArgs(argv) {
   const options = {
     baseUrl: process.env.BNA_SMOKE_BASE_URL || process.env.BNA_LIVE_BASE_URL || DEFAULT_BASE_URL,
+    expectedSha: process.env.BNA_EXPECT_DEPLOYED_SHA || '',
     reportDir: path.join('ops', 'live-smokes'),
   };
   for (let index = 0; index < argv.length; index += 1) {
@@ -17,6 +18,11 @@ function parseArgs(argv) {
     } else if (arg === '--report-dir') {
       options.reportDir = argv[index + 1] || options.reportDir;
       index += 1;
+    } else if (arg === '--expected-sha') {
+      options.expectedSha = argv[index + 1] || options.expectedSha;
+      index += 1;
+    } else if (arg.startsWith('--expected-sha=')) {
+      options.expectedSha = arg.slice('--expected-sha='.length);
     } else if (arg === '--no-report') {
       options.reportDir = '';
     } else if (/^https?:\/\//i.test(arg)) {
@@ -24,6 +30,7 @@ function parseArgs(argv) {
     }
   }
   options.baseUrl = String(options.baseUrl || DEFAULT_BASE_URL).replace(/\/+$/, '');
+  options.expectedSha = String(options.expectedSha || '').trim();
   return options;
 }
 
@@ -41,6 +48,17 @@ async function fetchText(baseUrl, route, accept = 'text/html,application/javascr
   });
   const text = await response.text();
   return { route, response, text };
+}
+
+async function fetchJson(baseUrl, route) {
+  const response = await fetch(`${baseUrl}${route}`, {
+    redirect: 'manual',
+    headers: {
+      accept: 'application/json',
+      'cache-control': 'no-cache',
+    },
+  });
+  return { route, response, json: await response.json().catch(() => null) };
 }
 
 async function fetchBinary(baseUrl, route, accept = 'image/*,*/*;q=0.8') {
@@ -74,6 +92,7 @@ function writeReport(options, startedAt, checks, result) {
     `# Rabbi One Time Landing Smoke - ${startedAt}`,
     '',
     `App: ${options.baseUrl}`,
+    `Expected SHA: ${options.expectedSha || 'not asserted'}`,
     `Result: ${result}`,
     '',
     '## Checks',
@@ -104,6 +123,17 @@ async function main() {
   }
 
   try {
+    const deployInfo = await fetchJson(options.baseUrl, '/api/deploy-info');
+    assert(deployInfo.response.status === 200, `/api/deploy-info expected 200, got ${deployInfo.response.status}`);
+    assert(deployInfo.json?.status === 'ok', '/api/deploy-info did not report ok');
+    if (options.expectedSha) {
+      assert(
+        deployInfo.json?.commit_sha === options.expectedSha,
+        `/api/deploy-info expected commit_sha ${options.expectedSha}, got ${deployInfo.json?.commit_sha || 'unknown'}`
+      );
+    }
+    pass('Deploy info is readable and matches expected SHA when provided', deployInfo.json?.commit_sha || 'unknown');
+
     const page = await fetchText(options.baseUrl, '/rabbi');
     assert(page.response.status === 200, `/rabbi expected 200, got ${page.response.status}`);
     expectIncludes(page.text, [
@@ -118,11 +148,31 @@ async function main() {
       'content="https://join.onetimeonetime.com/images/one-time/social/one-time-link-preview-icon.png"',
       '<link rel="icon" href="/images/one-time/social/one-time-icon-32.png" sizes="32x32" type="image/png">',
       '<link rel="apple-touch-icon" href="/images/one-time/social/one-time-apple-touch-icon.png">',
+      'Free promotional access until <strong data-campaign-deadline-label>Friday, September 11, 2026 (Israel time)</strong>',
+      '<strong data-campaign-price-label>$67/month afterward</strong>',
+      'starts only after you actively choose it. No card today.',
     ], '/rabbi');
     expectNotMatches(page.text, /data-signup-modal|signup-strip|id="interestForm"|signupStudentName|name="student/i, '/rabbi');
     expectNotMatches(page.text, /Bnei Neviim Academy|BNA Academy|Hebrew|data-language-toggle|bna-social-preview|\/icons\/favicon/i, '/rabbi');
     expectNotMatches(page.text, /bna-helper-knowledge\.js|bna-bot-widget\.js|Robot Scheller|https:\/\/wa\.me\//i, '/rabbi');
+    expectNotMatches(page.text, /30 DAYS TO JOIN|START WITH 30 DAYS FREE|30-day trial|free trial|trial object|hidden trial/i, '/rabbi');
     pass('/rabbi has focused One Time branding, direct signup CTA, WhatsApp launcher, and no Academy chrome');
+
+    const campaignResponse = await fetchJson(options.baseUrl, '/api/one-time/campaign');
+    const campaign = campaignResponse.json?.campaign || {};
+    assert(campaignResponse.response.status === 200, `/api/one-time/campaign expected 200, got ${campaignResponse.response.status}`);
+    assert(campaign.free_access_until_date === '2026-09-11', `unexpected free_access_until_date ${campaign.free_access_until_date}`);
+    assert(campaign.free_access_until_label === 'Friday, September 11, 2026 (Israel time)', `unexpected deadline label ${campaign.free_access_until_label}`);
+    assert(campaign.post_promo_price_label === '$67/month afterward', `unexpected price label ${campaign.post_promo_price_label}`);
+    assert(campaign.time_zone === 'Asia/Jerusalem', `unexpected campaign timezone ${campaign.time_zone}`);
+    assert(campaign.trial_days === 0, `unexpected trial_days ${campaign.trial_days}`);
+    assert(campaign.stripe_trial_object === false, 'campaign must not expose a Stripe trial object');
+    assert(campaign.hidden_trial === false, 'campaign must not expose hidden trial semantics');
+    assert(campaign.card_required_for_promotional_signup === false, 'promotional signup must not require card');
+    assert(campaign.paid_service_requires_active_choice === true, 'paid service must require active customer choice');
+    assert(campaign.no_live_charge_performed === true, 'campaign readback must not perform live charge');
+    assert(campaign.external_write_performed === false, 'campaign readback must not perform external writes');
+    pass('One Time campaign API exposes Rosh Hashanah promo and no-trial billing guardrails');
 
     const smokeHost = new URL(options.baseUrl).hostname.toLowerCase();
     if (smokeHost.includes('onetimeonetime.com')) {

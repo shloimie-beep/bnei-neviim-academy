@@ -669,17 +669,17 @@
     },
     {
       "action_id": "ACTION-ONETIME-CAMPAIGN-TIMER-READBACK",
-      "label": "Removed campaign timer",
+      "label": "Rosh Hashanah promo readback",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
-      "selector_hint": "removed from /one-time public landing",
-      "expected_behavior": "Reads /api/one-time/campaign for server time and the configured deadline; if no deadline is configured it shows an operator-decision state instead of a fake reset timer.",
+      "selector_hint": "[data-rosh-hashanah-ticker]",
+      "expected_behavior": "Reads /api/one-time/campaign for the configured Asia/Jerusalem Rosh Hashanah promo date, visible deadline label, and $67/month-afterward copy; keeps promotional signup no-card-today and no-trial semantics without starting checkout, live charge, access, or external sends.",
       "permission": "public",
-      "status": "archived_removed_from_public_landing",
-      "disabled_reason": "Removed by RAW-20260710-007. The rebuilt public landing page does not show a campaign timer.",
+      "status": "active",
+      "disabled_reason": "",
       "test": {
         "type": "static_and_api_guarded",
-        "expected_result": "/api/one-time/campaign is read-only and exposes ONE_TIME_CAMPAIGN_DEADLINE_AT dependency without external writes."
+        "expected_result": "/api/one-time/campaign is read-only and exposes the Rosh Hashanah 5787 promo policy, $67/month afterward label, trial_days=0, no Stripe trial object, no card requirement, and no external writes."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -950,6 +950,24 @@
       "test": {
         "type": "static_and_browser",
         "expected_result": "The pause control toggles the carousel auto-advance state and stays accessible with keyboard/focus and reduced-motion handling."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TEACHING-CAROUSEL-DOT",
+      "label": "Select teaching photo",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-DOT\"]",
+      "expected_behavior": "Moves the public teaching-location carousel to the selected Rabbi Scheller teaching photo, updates aria-current and the desktop next-preview frame, remains keyboard accessible, and performs no external writes.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "The generated carousel pagination controls are action-registered, select only public optimized teaching-location images, and do not expose private data."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

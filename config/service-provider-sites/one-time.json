@@ -105,6 +105,31 @@
     "campaign_contract": "Daily live class signup at 7 p.m. Israel time.",
     "no_send_note": "Daily class reminders are available by email, WhatsApp, both, or not at all."
   },
+  "campaign": {
+    "key": "rosh_hashanah_5787_promo",
+    "offer_key": "one-time-rosh-hashanah-5787-promo",
+    "headline": "Rosh Hashanah special: free promotional access until Friday, September 11, 2026",
+    "time_zone": "Asia/Jerusalem",
+    "free_access_until_date": "2026-09-11",
+    "free_access_until_label": "Friday, September 11, 2026 (Israel time)",
+    "post_promo_price_label": "$67/month afterward",
+    "monthly_price_amount": 67,
+    "currency": "USD",
+    "billing_interval": "month",
+    "payment_cutoff_at": "2026-09-11T23:59:59+03:00",
+    "payment_cutoff_basis": "Israel calendar-date fallback from the approved Rosh Hashanah 5787 campaign date; no sunset time is invented.",
+    "stripe_trial_object": false,
+    "hidden_trial": false,
+    "trial_days": 0,
+    "card_required_for_promotional_signup": false,
+    "paid_service_requires_active_choice": true,
+    "surprise_subscription": false,
+    "tax_inclusive": false,
+    "automatic_refunds": false,
+    "grace_period": false,
+    "external_write_performed": false,
+    "source_raw_id": "RAW-20260713-010"
+  },
   "nav": [
     {
       "label": "Rabbi Eli",

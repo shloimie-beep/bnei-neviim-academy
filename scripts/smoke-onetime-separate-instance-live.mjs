@@ -72,6 +72,9 @@ try {
     assertText(route, result.text, /One Time Mishnayos/i, 'One Time focused brand missing');
     assertText(route, result.text, /Sign Up Now/i, 'signup CTA missing');
     assertText(route, result.text, /href="\/one-time\/signup"/i, 'direct signup page link missing');
+    assertText(route, result.text, /Free promotional access until <strong data-campaign-deadline-label>Friday, September 11, 2026 \(Israel time\)<\/strong>/i, 'Rosh Hashanah promo deadline copy missing');
+    assertText(route, result.text, /<strong data-campaign-price-label>\$67\/month afterward<\/strong>/i, '$67/month afterward copy missing');
+    assertText(route, result.text, /starts only after you actively choose it\. No card today\./i, 'no-card active-choice copy missing');
     assertNoText(route, result.text, /Your Child Can Love Learning Mishnayos/i, 'retired launch headline is still visible');
     assertNoText(route, result.text, /data-signup-modal|signup-strip|id="interestForm"|id="signupStudentName"|name="student/i, 'retired inline/modal/student signup field is still visible');
     assertNoText(route, result.text, /name="parentName"|name="region"|name="notes"/i, 'retired lead-capture field naming is still visible');
@@ -79,6 +82,7 @@ try {
     assertNoText(route, result.text, /classroom code|recovery code|fallback classroom password/i, 'retired classroom/recovery-code copy leaked into public funnel');
     assertNoText(route, result.text, /Learn Mishnayos Live with Rabbi Eli Scheller/i, 'stale Rabbi preview page is still being served');
     assertNoText(route, result.text, /Bnei Nevi'?im Academy|Torah Learning for Boys/i, 'BNA public homepage leaked into One Time target');
+    assertNoText(route, result.text, /30 DAYS TO JOIN|START WITH 30 DAYS FREE|30-day trial|free trial|trial object|hidden trial/i, 'old trial copy leaked into public funnel');
   }
 
   const signup = await fetchText('/one-time/signup');

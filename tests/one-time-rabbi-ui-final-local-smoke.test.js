@@ -649,9 +649,31 @@ function createServer() {
     if (url.pathname === '/api/one-time/campaign') {
       return json(res, {
         success: true,
-        configured: false,
-        deadline_at: null,
-        decision_id: 'DEC-20260622-ONE-TIME-CAMPAIGN-DEADLINE',
+        campaign: {
+          campaign_key: 'rosh_hashanah_5787_promo',
+          offer_key: 'one-time-rosh-hashanah-5787-promo',
+          headline: 'Rosh Hashanah special: free promotional access until Friday, September 11, 2026',
+          free_access_until_date: '2026-09-11',
+          free_access_until_label: 'Friday, September 11, 2026 (Israel time)',
+          post_promo_price_label: '$67/month afterward',
+          monthly_price_amount: 67,
+          currency: 'USD',
+          billing_interval: 'month',
+          deadline_at: '2026-09-11T23:59:59+03:00',
+          deadline_at_utc: '2026-09-11T20:59:59.000Z',
+          time_zone: 'Asia/Jerusalem',
+          deadline_configured: true,
+          deadline_timestamp_configured: true,
+          trial_days: 0,
+          stripe_trial_object: false,
+          hidden_trial: false,
+          card_required_for_promotional_signup: false,
+          paid_service_requires_active_choice: true,
+          surprise_subscription: false,
+          public_signup_no_card_today: true,
+          no_live_charge_performed: true,
+          external_write_performed: false,
+        },
         external_write_performed: false,
       });
     }
@@ -881,12 +903,12 @@ test('final local One Time / Rabbi UI QA harness covers scoped routes without ex
     });
     assert.equal(operationsContract.workspace, 'rabbi_sheller_provider');
     assert.equal(operationsContract.role, 'Workspace Owner');
-    assert.deepEqual(operationsContract.navLabels, ['Overview', 'Members', 'Classes & Content', 'Studio', 'Live Class', 'Schedule', 'Community', 'Communications', 'Automations', 'Payments', 'Tasks', 'Reporting', 'Integrations', 'Workspace Setup']);
-    assert.deepEqual(operationsContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'studio', 'live_class_schedule', 'program_schedule', 'community_questions', 'communications', 'automations', 'payments_access', 'tasks_decisions', 'reporting_readiness', 'connector_setup', 'settings_setup']);
-    for (const expected of ['service_providers', 'contacts', 'content', 'studio', 'live_classes', 'calendar', 'community', 'communications', 'automations', 'tasks', 'api_usage', 'integrations', 'settings']) {
+    assert.deepEqual(operationsContract.navLabels, ['Overview', 'Members', 'Content', 'Live', 'Schedule', 'Community', 'Comms', 'Agents', 'Auto', 'Payments', 'Tasks', 'Reports', 'Connectors', 'Setup']);
+    assert.deepEqual(operationsContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'live_class_schedule', 'program_schedule', 'community_questions', 'communications', 'communication_agents', 'automations', 'payments_access', 'tasks_decisions', 'reporting_readiness', 'connector_setup', 'settings_setup']);
+    for (const expected of ['service_providers', 'contacts', 'content', 'live_classes', 'calendar', 'community', 'communications', 'agents', 'automations', 'tasks', 'api_usage', 'integrations', 'settings']) {
       assert.ok(operationsContract.navIds.includes(expected), `operations missing Rabbi-facing module ${expected}`);
     }
-    for (const hidden of ['dashboard', 'watchdog', 'agents', 'platform_suite', 'admin', 'accounting', 'students']) {
+    for (const hidden of ['dashboard', 'watchdog', 'pipelines', 'internal_dialogue', 'platform_suite', 'admin', 'accounting', 'students', 'studio']) {
       assert.equal(operationsContract.navIds.includes(hidden), false, `operations should demote support/raw module ${hidden}`);
     }
     assert.equal(operationsContract.hasStudents, false, 'students module must be hidden/demoted in One Time provider scope');
@@ -912,10 +934,10 @@ test('final local One Time / Rabbi UI QA harness covers scoped routes without ex
     assert.equal(local.previewRequests.length, 1);
     assert.equal(local.previewRequests[0].method, 'POST');
 
-    await page.evaluate(() => window.switchView('agents'));
-    await page.waitForSelector('[data-one-time-task-lane]', { timeout: 15000 });
-    const taskLaneText = await page.locator('[data-one-time-task-lane]').textContent();
-    assert.match(taskLaneText, /One Time Agent Status/i);
+    await page.evaluate(() => window.switchView('tasks'));
+    await page.waitForSelector('[data-one-time-task-lane="board"]', { timeout: 15000 });
+    const taskLaneText = await page.locator('[data-one-time-task-lane="board"]').textContent();
+    assert.match(taskLaneText, /Rabbi \/ One Time Dialogue/i);
     assert.match(taskLaneText, /Complete One Time Operations UI/i);
 
     await gotoRoute(page, baseUrl, '/one-time');

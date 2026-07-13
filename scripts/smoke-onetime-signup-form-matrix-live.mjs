@@ -2,7 +2,31 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { chromium } from 'playwright';
 
-const baseUrl = (process.argv.find((arg) => !arg.startsWith('--') && /^https?:\/\//i.test(arg)) || 'https://join.onetimeonetime.com').replace(/\/$/, '');
+function parseArgs(argv) {
+  const options = {
+    baseUrl: process.env.ONETIME_BASE_URL || process.env.BNA_LIVE_BASE_URL || 'https://join.onetimeonetime.com',
+    expectedSha: process.env.BNA_EXPECT_DEPLOYED_SHA || '',
+  };
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+    if (arg === '--expected-sha') {
+      options.expectedSha = argv[index + 1] || options.expectedSha;
+      index += 1;
+    } else if (arg.startsWith('--expected-sha=')) {
+      options.expectedSha = arg.slice('--expected-sha='.length);
+    } else if (/^https?:\/\//i.test(arg)) {
+      options.baseUrl = arg;
+    } else if (!arg.startsWith('--') && !options.baseUrl) {
+      options.baseUrl = arg;
+    }
+  }
+  options.baseUrl = String(options.baseUrl || '').replace(/\/$/, '');
+  options.expectedSha = String(options.expectedSha || '').trim();
+  return options;
+}
+
+const options = parseArgs(process.argv.slice(2));
+const baseUrl = options.baseUrl;
 const outDir = path.resolve('ops/live-smokes');
 
 const FIELD_MESSAGES = {
@@ -400,12 +424,16 @@ async function main() {
   const report = {
     started_at: startedAt,
     base_url: baseUrl,
+    expected_sha: options.expectedSha || null,
     deploy_info: await fetchJson(`${baseUrl}/api/deploy-info`),
+    deployed_sha_matches_expected: false,
     cta_checks: [],
     initial_controls: [],
     scenarios: [],
     passed: false,
   };
+  report.deployed_sha_matches_expected = !options.expectedSha
+    || report.deploy_info.json?.commit_sha === options.expectedSha;
 
   const browser = await chromium.launch();
   try {
@@ -476,7 +504,11 @@ async function main() {
     && report.initial_controls.some((control) => control.name === 'audience_type' && control.value === 'school' && control.required && !control.disabled && !control.checked)
     && report.initial_controls.some((control) => control.name === 'reminder_consent' && control.disabled && !control.required && control.hidden)
     && report.initial_controls.some((control) => control.name === 'phone' && !control.required);
-  report.passed = requiredCtasOk && controlsOk && report.scenarios.every((scenario) => scenario.passed);
+  report.passed = report.deploy_info.ok
+    && report.deployed_sha_matches_expected
+    && requiredCtasOk
+    && controlsOk
+    && report.scenarios.every((scenario) => scenario.passed);
 
   const stamp = startedAt.replace(/[:.]/g, '-');
   const jsonPath = path.join(outDir, `${stamp}-one-time-signup-form-matrix-live.json`);
@@ -487,7 +519,9 @@ async function main() {
     '',
     `- Base URL: ${baseUrl}`,
     `- Started: ${startedAt}`,
+    `- Expected SHA: ${options.expectedSha || 'not asserted'}`,
     `- Deployed SHA: ${report.deploy_info.json?.commit_sha || 'unknown'}`,
+    `- SHA Match: ${report.deployed_sha_matches_expected ? 'yes' : 'no'}`,
     `- Status: ${report.passed ? 'PASSED' : 'FAILED'}`,
     `- Visible Sign Up Now CTAs: ${report.cta_checks.filter((cta) => !cta.hidden).length}`,
     '',
@@ -504,6 +538,7 @@ async function main() {
   await fs.writeFile(mdPath, `${lines.join('\n')}\n`);
   console.log(JSON.stringify({
     ok: report.passed,
+    expected_sha: options.expectedSha || null,
     deployed_sha: report.deploy_info.json?.commit_sha || null,
     json_path: jsonPath,
     md_path: mdPath,

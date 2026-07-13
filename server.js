@@ -113,6 +113,10 @@ const {
   ONE_TIME_RABBI_DASHBOARD_IA,
   ONE_TIME_RABBI_DASHBOARD_MAIN_MODULES,
 } = require('./src/platform/instances/one-time-rabbi-dashboard-ia');
+const oneTimeSiteConfig = require('./config/service-provider-sites/one-time.json');
+const {
+  buildOneTimeCampaignConfig,
+} = require('./src/lib/bna/one-time-campaign');
 const {
   hasContactLeadPipelineBuildIntent,
   hasInterestedParentLeadCaptureIntent,
@@ -11469,44 +11473,9 @@ app.get('/api/one-time/instance-config', (req, res) => {
 });
 
 function oneTimeCampaignConfig(now = new Date()) {
-  const startAt = String(process.env.ONE_TIME_CAMPAIGN_START_AT || '').trim();
-  const deadlineAt = String(process.env.ONE_TIME_CAMPAIGN_DEADLINE_AT || '').trim();
-  const timeZone = String(process.env.ONE_TIME_CAMPAIGN_TIME_ZONE || 'Asia/Jerusalem').trim();
-  const offerKey = String(process.env.ONE_TIME_CAMPAIGN_OFFER_KEY || 'one-time-30-day-free-trial').trim();
-  const startMs = startAt ? Date.parse(startAt) : NaN;
-  const deadlineMs = deadlineAt ? Date.parse(deadlineAt) : NaN;
-  const deadlineConfigured = Number.isFinite(deadlineMs);
-  const startConfigured = Number.isFinite(startMs);
-  const nowMs = now.getTime();
-  const active = deadlineConfigured && (!startConfigured || nowMs >= startMs) && nowMs < deadlineMs;
-  const expired = deadlineConfigured && nowMs >= deadlineMs;
-  return {
-    campaign_key: 'one-time-worldwide-mishnayos-launch',
-    offer_key: offerKey,
-    headline: '30 DAYS TO JOIN - START WITH 30 DAYS FREE',
-    start_at: startConfigured ? new Date(startMs).toISOString() : '',
-    deadline_at: deadlineConfigured ? new Date(deadlineMs).toISOString() : '',
-    time_zone: timeZone,
-    server_now: now.toISOString(),
-    deadline_configured: deadlineConfigured,
-    start_configured: startConfigured,
-    active,
-    expired,
-    editable_by: 'platform_super_admin',
-    audit_required_for_changes: true,
-    status: deadlineConfigured ? (expired ? 'expired' : active ? 'active' : 'scheduled') : 'needs_operator_decision',
-    decision: deadlineConfigured ? null : {
-      id: 'DEC-20260622-ONE-TIME-CAMPAIGN-DEADLINE',
-      missing_information: 'Exact campaign launch timestamp and 30-day enrollment deadline.',
-      owner: 'Shloimie / One Time launch owner',
-      recommended_option: 'Set ONE_TIME_CAMPAIGN_START_AT, ONE_TIME_CAMPAIGN_DEADLINE_AT, ONE_TIME_CAMPAIGN_TIME_ZONE, and ONE_TIME_CAMPAIGN_OFFER_KEY in the approved environment before public launch.',
-      alternatives: ['Keep the page in deadline-pending mode until launch approval is ready.'],
-      consequence: 'The page will not show a fake/resetting countdown.',
-      exact_next_action: 'Approve the launch timestamp and install the four ONE_TIME_CAMPAIGN_* variables.',
-    },
-    external_write_performed: false,
-    secrets_included: false,
-  };
+  // ONE_TIME_CAMPAIGN_DEADLINE_AT remains accepted as an environment override,
+  // but the default public offer is the configured Rosh Hashanah promo, not a trial.
+  return buildOneTimeCampaignConfig(oneTimeSiteConfig, { now, env: process.env });
 }
 
 app.get('/api/one-time/campaign', (req, res) => {

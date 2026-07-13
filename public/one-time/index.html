@@ -319,7 +319,7 @@
     .hero {
       position: relative;
       isolation: isolate;
-      min-height: calc(100svh - var(--header-height) - 39px);
+      min-height: min(760px, calc(92svh - var(--header-height) - 39px));
       display: grid;
       align-items: center;
       overflow: hidden;
@@ -374,6 +374,17 @@
       box-shadow: 0 0 18px rgba(240, 255, 50, 0.52);
     }
     .hero-schedule { margin: 0 0 26px; color: rgba(223, 248, 255, 0.9); font-size: clamp(1.2rem, 2.2vw, 1.65rem); font-weight: 800; }
+    .hero-offer {
+      max-width: 760px;
+      margin: -8px 0 28px;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: clamp(1rem, 1.4vw, 1.14rem);
+      line-height: 1.48;
+    }
+    .hero-offer strong {
+      color: var(--yellow);
+      font-weight: 950;
+    }
     .hero-actions, .final-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
     @keyframes hero-in { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -587,9 +598,10 @@
       .header-cta { min-height: 42px; padding: 0 11px; font-size: 0.82rem; }
       .icon-button { width: 42px; height: 42px; }
       .rosh-link { min-height: 36px; font-size: 0.82rem; }
-      .hero { min-height: calc(100svh - var(--header-height) - 36px); align-items: start; padding: 42px 0 126px; }
+      .hero { min-height: auto; align-items: start; padding: 42px 0 72px; }
       .hero .eyebrow { grid-template-columns: 36px minmax(0, auto) 36px; gap: 10px; font-size: clamp(0.95rem, 4vw, 1.06rem); text-align: center; }
       .hero-schedule { margin-bottom: 18px; }
+      .hero-offer { margin-bottom: 22px; font-size: 0.98rem; }
       .hero-actions { margin-top: -10px; }
       h1 { font-size: clamp(3.1rem, 16vw, 4.75rem); }
       .feature-grid, .benefit-grid, .audience-grid, .step-flow { grid-template-columns: 1fr; }
@@ -705,20 +717,28 @@
     </div>
   </header>
 
-  <section class="rosh-ticker" id="rosh-special" data-rosh-hashanah-ticker aria-label="Rosh Hashanah special countdown">
+  <section
+    class="rosh-ticker"
+    id="rosh-special"
+    data-rosh-hashanah-ticker
+    data-campaign-target-date="2026-09-11"
+    data-campaign-deadline-label="Friday, September 11, 2026 (Israel time)"
+    data-campaign-price-label="$67/month afterward"
+    aria-label="Rosh Hashanah special countdown"
+  >
     <a class="rosh-link" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">
       <span class="rosh-track">
-        <span class="rosh-text" data-ticker-text>ROSH HASHANAH SPECIAL</span>
-        <span class="rosh-text" data-ticker-text aria-hidden="true">ROSH HASHANAH SPECIAL</span>
+        <span class="rosh-text" data-ticker-text>ROSH HASHANAH SPECIAL &bull; FREE PROMOTIONAL ACCESS UNTIL SEPTEMBER 11, 2026 ISRAEL TIME &bull; $67/MONTH AFTERWARD &bull; SIGN UP NOW</span>
+        <span class="rosh-text" data-ticker-text aria-hidden="true">ROSH HASHANAH SPECIAL &bull; FREE PROMOTIONAL ACCESS UNTIL SEPTEMBER 11, 2026 ISRAEL TIME &bull; $67/MONTH AFTERWARD &bull; SIGN UP NOW</span>
       </span>
     </a>
   </section>
 
-  <button class="drawer-overlay" type="button" aria-label="Close navigation" data-drawer-overlay tabindex="-1"></button>
+  <button class="drawer-overlay" type="button" aria-label="Close navigation" data-drawer-overlay data-action-id="ACTION-ONETIME-PUBLIC-MOBILE-MENU" tabindex="-1"></button>
   <aside class="nav-drawer" id="siteDrawer" role="dialog" aria-modal="true" aria-label="One Time navigation" aria-hidden="true" data-drawer>
     <div class="drawer-head">
       <strong>One Time Menu</strong>
-      <button class="icon-button" type="button" aria-label="Close navigation" data-drawer-close>&times;</button>
+      <button class="icon-button" type="button" aria-label="Close navigation" data-drawer-close data-action-id="ACTION-ONETIME-PUBLIC-MOBILE-MENU">&times;</button>
     </div>
     <nav class="drawer-links" aria-label="One Time page sections">
       <a href="#receive" data-action-id="ACTION-ONETIME-PUBLIC-SECTION-NAV">What You Receive</a>
@@ -739,6 +759,10 @@
           <p class="eyebrow">Worldwide Mishnah learning &mdash; live from Eretz Yisrael</p>
           <h1 id="heroTitle">Give your son a love for learning Torah.</h1>
           <p class="hero-schedule">Live every day at 7:00 p.m. Israel time.</p>
+          <p class="hero-offer" data-campaign-offer-copy>
+            Free promotional access until <strong data-campaign-deadline-label>Friday, September 11, 2026 (Israel time)</strong>.
+            After the promotion, One Time is <strong data-campaign-price-label>$67/month afterward</strong> and starts only after you actively choose it. No card today.
+          </p>
           <div class="hero-actions">
             <a class="chrome-button cta-large hero-cta" href="/one-time/signup" data-signup-link data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
           </div>
@@ -983,6 +1007,13 @@
         }
       });
 
+      const campaignTicker = document.querySelector('[data-rosh-hashanah-ticker]');
+      const campaignState = {
+        targetDate: campaignTicker?.dataset.campaignTargetDate || '',
+        deadlineLabel: campaignTicker?.dataset.campaignDeadlineLabel || '',
+        priceLabel: campaignTicker?.dataset.campaignPriceLabel || ''
+      };
+
       function jerusalemDateParts(date) {
         const parts = new Intl.DateTimeFormat('en-CA', {
           timeZone: 'Asia/Jerusalem',
@@ -997,25 +1028,75 @@
         return map;
       }
 
-      function daysUntilRoshHashanah() {
+      function campaignDateParts(dateKey) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dateKey || ''));
+        if (!match) return null;
+        return { year: Number(match[1]), month: Number(match[2]), day: Number(match[3]) };
+      }
+
+      function daysUntilCampaignDate() {
+        const targetParts = campaignDateParts(campaignState.targetDate);
+        if (!targetParts) return 0;
         const nowParts = jerusalemDateParts(new Date());
         const current = Date.UTC(nowParts.year, nowParts.month - 1, nowParts.day);
-        const target = Date.UTC(2026, 8, 11);
+        const target = Date.UTC(targetParts.year, targetParts.month - 1, targetParts.day);
         return Math.max(0, Math.ceil((target - current) / 86400000));
       }
 
+      function campaignTickerDeadlineLabel() {
+        return String(campaignState.deadlineLabel || 'Rosh Hashanah')
+          .replace(/\s*\(Israel time\)/i, ' Israel time')
+          .toUpperCase();
+      }
+
       function updateTicker() {
-        const days = daysUntilRoshHashanah();
+        const days = daysUntilCampaignDate();
+        const deadline = campaignTickerDeadlineLabel();
+        const price = String(campaignState.priceLabel || '$67/month afterward').toUpperCase();
         const text = days > 0
-          ? `ROSH HASHANAH SPECIAL \u2022 ${days} DAYS TO ROSH HASHANAH \u2022 JOIN FREE UNTIL ROSH HASHANAH \u2022 SIGN UP NOW`
-          : 'ROSH HASHANAH SPECIAL \u2022 JOIN FREE UNTIL ROSH HASHANAH \u2022 SIGN UP NOW';
+          ? `ROSH HASHANAH SPECIAL \u2022 ${days} DAYS TO ROSH HASHANAH \u2022 FREE PROMOTIONAL ACCESS UNTIL ${deadline} \u2022 ${price} \u2022 SIGN UP NOW`
+          : `ROSH HASHANAH SPECIAL \u2022 FREE PROMOTIONAL ACCESS UNTIL ${deadline} \u2022 ${price} \u2022 SIGN UP NOW`;
         document.querySelectorAll('[data-ticker-text]').forEach((node) => {
           node.textContent = text;
         });
       }
 
+      function updateCampaignCopy() {
+        document.querySelectorAll('[data-campaign-deadline-label]').forEach((node) => {
+          node.textContent = campaignState.deadlineLabel;
+        });
+        document.querySelectorAll('[data-campaign-price-label]').forEach((node) => {
+          node.textContent = campaignState.priceLabel;
+        });
+      }
+
+      async function hydrateCampaign() {
+        if (!window.fetch) return;
+        try {
+          const response = await fetch('/api/one-time/campaign', {
+            headers: { accept: 'application/json' },
+            cache: 'no-store'
+          });
+          if (!response.ok) return;
+          const payload = await response.json();
+          const campaign = payload?.campaign || {};
+          campaignState.targetDate = campaign.free_access_until_date || campaignState.targetDate;
+          campaignState.deadlineLabel = campaign.free_access_until_label || campaignState.deadlineLabel;
+          campaignState.priceLabel = campaign.post_promo_price_label || campaignState.priceLabel;
+          campaignTicker?.setAttribute('data-campaign-target-date', campaignState.targetDate);
+          campaignTicker?.setAttribute('data-campaign-deadline-label', campaignState.deadlineLabel);
+          campaignTicker?.setAttribute('data-campaign-price-label', campaignState.priceLabel);
+          updateCampaignCopy();
+          updateTicker();
+        } catch {
+          // Keep the static campaign copy visible if the read-only config endpoint is unavailable.
+        }
+      }
+
+      updateCampaignCopy();
       updateTicker();
       window.setInterval(updateTicker, 15 * 60 * 1000);
+      hydrateCampaign();
 
       if (!reducedMotion.matches && 'IntersectionObserver' in window) {
         const revealItems = Array.from(document.querySelectorAll('.reveal'));
@@ -1055,6 +1136,7 @@
           dot.className = 'carousel-dot';
           dot.type = 'button';
           dot.dataset.dot = String(slideIndex);
+          dot.dataset.actionId = 'ACTION-ONETIME-TEACHING-CAROUSEL-DOT';
           dot.setAttribute('aria-label', `Show ${slide.dataset.location || `slide ${slideIndex + 1}`}`);
           dotsWrap?.appendChild(dot);
         });

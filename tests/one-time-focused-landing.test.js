@@ -1,6 +1,9 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const test = require('node:test');
+const {
+  buildOneTimeCampaignConfig,
+} = require('../src/lib/bna/one-time-campaign');
 
 test('One Time focused landing copy uses launch funnel offer and safe CTAs', () => {
   const html = fs.readFileSync('public/one-time/index.html', 'utf8');
@@ -45,6 +48,12 @@ test('One Time focused landing copy uses launch funnel offer and safe CTAs', () 
   assert.match(html, /Member Login/);
   assert.match(html, /data-rosh-hashanah-ticker/);
   assert.match(html, /ROSH HASHANAH SPECIAL/);
+  assert.match(html, /Free promotional access until <strong data-campaign-deadline-label>Friday, September 11, 2026 \(Israel time\)<\/strong>/);
+  assert.match(html, /<strong data-campaign-price-label>\$67\/month afterward<\/strong>/);
+  assert.match(html, /starts only after you actively choose it\. No card today\./);
+  assert.match(html, /data-campaign-target-date="2026-09-11"/);
+  assert.match(html, /data-campaign-deadline-label="Friday, September 11, 2026 \(Israel time\)"/);
+  assert.match(html, /data-campaign-price-label="\$67\/month afterward"/);
   assert.match(html, /Meet Rabbi Scheller/);
   assert.match(html, /As Seen Across the Jewish World/);
   assert.match(html, /<h3>Clarity<\/h3>/);
@@ -108,6 +117,55 @@ test('One Time focused landing copy uses launch funnel offer and safe CTAs', () 
   assert.doesNotMatch(html, /TEST-ONETIME-REVIEW-ACCESS/);
   assert.doesNotMatch(html, /Academy\s*&\s*Hotline/i);
   assert.doesNotMatch(html, /Academy and Hotline/i);
+  assert.doesNotMatch(html, /30 DAYS TO JOIN|START WITH 30 DAYS FREE|30-day trial|free trial|trial object|hidden trial/i);
+});
+
+test('One Time campaign config uses Rosh Hashanah promo policy without trial semantics', () => {
+  const siteConfig = JSON.parse(fs.readFileSync('config/service-provider-sites/one-time.json', 'utf8'));
+  const campaign = buildOneTimeCampaignConfig(siteConfig, {
+    now: new Date('2026-07-13T09:00:00+03:00'),
+    env: {},
+  });
+  assert.equal(campaign.campaign_key, 'rosh_hashanah_5787_promo');
+  assert.equal(campaign.offer_key, 'one-time-rosh-hashanah-5787-promo');
+  assert.equal(campaign.free_access_until_date, '2026-09-11');
+  assert.equal(campaign.free_access_until_label, 'Friday, September 11, 2026 (Israel time)');
+  assert.equal(campaign.post_promo_price_label, '$67/month afterward');
+  assert.equal(campaign.monthly_price_amount, 67);
+  assert.equal(campaign.currency, 'USD');
+  assert.equal(campaign.billing_interval, 'month');
+  assert.equal(campaign.time_zone, 'Asia/Jerusalem');
+  assert.equal(campaign.deadline_at, '2026-09-11T23:59:59+03:00');
+  assert.equal(campaign.deadline_at_utc, '2026-09-11T20:59:59.000Z');
+  assert.equal(campaign.deadline_configured, true);
+  assert.equal(campaign.deadline_timestamp_configured, true);
+  assert.equal(campaign.active, true);
+  assert.equal(campaign.trial_days, 0);
+  assert.equal(campaign.stripe_trial_object, false);
+  assert.equal(campaign.hidden_trial, false);
+  assert.equal(campaign.card_required_for_promotional_signup, false);
+  assert.equal(campaign.paid_service_requires_active_choice, true);
+  assert.equal(campaign.surprise_subscription, false);
+  assert.equal(campaign.tax_inclusive, false);
+  assert.equal(campaign.automatic_refunds, false);
+  assert.equal(campaign.grace_period, false);
+  assert.equal(campaign.public_signup_no_card_today, true);
+  assert.equal(campaign.no_live_charge_performed, true);
+  assert.equal(campaign.external_write_performed, false);
+
+  const boundaryActive = buildOneTimeCampaignConfig(siteConfig, {
+    now: new Date('2026-09-11T20:59:59.000Z'),
+    env: {},
+  });
+  assert.equal(boundaryActive.active, true);
+  assert.equal(boundaryActive.expired, false);
+
+  const boundaryExpired = buildOneTimeCampaignConfig(siteConfig, {
+    now: new Date('2026-09-11T21:00:00.000Z'),
+    env: {},
+  });
+  assert.equal(boundaryExpired.active, false);
+  assert.equal(boundaryExpired.expired, true);
 });
 
 test('One Time focused offer route and registries are declared', () => {
@@ -145,6 +203,13 @@ test('One Time focused offer route and registries are declared', () => {
   assert.ok(routes.has('/one-time-preview'));
 
   assert.equal(siteConfig.assets.teaching_gallery.length, 8);
+  assert.equal(siteConfig.campaign.free_access_until_date, '2026-09-11');
+  assert.equal(siteConfig.campaign.time_zone, 'Asia/Jerusalem');
+  assert.equal(siteConfig.campaign.post_promo_price_label, '$67/month afterward');
+  assert.equal(siteConfig.campaign.trial_days, 0);
+  assert.equal(siteConfig.campaign.stripe_trial_object, false);
+  assert.equal(siteConfig.campaign.hidden_trial, false);
+  assert.equal(siteConfig.campaign.card_required_for_promotional_signup, false);
   assert.ok(siteConfig.assets.teaching_gallery.every((entry) => entry.src.startsWith('/assets/one-time/rabbi/teaching-locations/')));
   assert.equal(siteConfig.assets.robot_scheller, '/assets/one-time/robot/robot-scheller-whatsapp.png');
   assert.ok(robotAsset.size < 500_000, `expected optimized Robot PNG below 500 KB, got ${robotAsset.size}`);
@@ -161,11 +226,13 @@ test('One Time focused offer route and registries are declared', () => {
   assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-PREV'));
   assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-NEXT'));
   assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE'));
+  assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-DOT'));
   assert.ok(actions.has('ACTION-ONETIME-MEMBER-LOGIN-LINK'));
   for (const id of [
     'ACTION-ONETIME-TEACHING-CAROUSEL-PREV',
     'ACTION-ONETIME-TEACHING-CAROUSEL-NEXT',
     'ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE',
+    'ACTION-ONETIME-TEACHING-CAROUSEL-DOT',
   ]) {
     const action = actionRegistry.actions.find((entry) => entry.action_id === id);
     assert.equal(action.status, 'active');
