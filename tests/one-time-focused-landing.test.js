@@ -124,6 +124,13 @@ test('One Time focused offer route and registries are declared', () => {
   assert.match(server, /app\.get\(\['\/', '\/index\.html', '\/public', '\/public\/'\]/);
   assert.match(server, /INSTANCE_RUNTIME_FLAGS\.single_tenant/);
   assert.match(server, /'\/one-time\/'/);
+  assert.match(server, /ONE_TIME_SINGLE_TENANT_ICON_ALIASES/);
+  assert.match(server, /\['\/favicon\.ico', 'public\/images\/one-time\/social\/one-time-icon-32\.png'\]/);
+  assert.match(server, /\['\/icons\/apple-touch-icon\.png', 'public\/images\/one-time\/social\/one-time-apple-touch-icon\.png'\]/);
+  assert.ok(
+    server.indexOf('ONE_TIME_SINGLE_TENANT_ICON_ALIASES') < server.indexOf("app.use(express.static('public'"),
+    'One Time single-tenant favicon aliases must run before shared public static assets'
+  );
   assert.match(operations, /function updateDocumentTitleForWorkspace\(\)/);
   assert.match(operations, /currentWorkspaceIsOneTime\(\)[\s\S]*document\.title = `\$\{workspaceName\} - Operations`/);
 

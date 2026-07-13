@@ -11415,6 +11415,25 @@ app.get('/parent.html', (req, res, next) => {
   return sendOneTimeParentReviewShell(req, res);
 });
 
+const ONE_TIME_SINGLE_TENANT_ICON_ALIASES = new Map([
+  ['/favicon.ico', 'public/images/one-time/social/one-time-icon-32.png'],
+  ['/icons/favicon-32.png', 'public/images/one-time/social/one-time-icon-32.png'],
+  ['/icons/favicon-16.png', 'public/images/one-time/social/one-time-icon-32.png'],
+  ['/icons/apple-touch-icon.png', 'public/images/one-time/social/one-time-apple-touch-icon.png'],
+  ['/icons/icon-192.png', 'public/images/one-time/social/one-time-icon-192.png'],
+  ['/icons/icon-512.png', 'public/images/one-time/social/one-time-icon-512.png'],
+]);
+
+function sendOneTimeSingleTenantIcon(req, res, next) {
+  if (!isOneTimeSingleTenantRuntime()) return next();
+  const assetPath = ONE_TIME_SINGLE_TENANT_ICON_ALIASES.get(req.path);
+  if (!assetPath) return next();
+  setPublicStaticAssetCacheHeader(res, assetPath);
+  return res.sendFile(path.join(__dirname, assetPath));
+}
+
+app.get(Array.from(ONE_TIME_SINGLE_TENANT_ICON_ALIASES.keys()), sendOneTimeSingleTenantIcon);
+
 app.use(express.static('public', {
   setHeaders(res, filePath) {
     const normalizedPath = String(filePath || '').replace(/\\/g, '/');

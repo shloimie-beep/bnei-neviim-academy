@@ -43,6 +43,18 @@ async function fetchText(baseUrl, route, accept = 'text/html,application/javascr
   return { route, response, text };
 }
 
+async function fetchBinary(baseUrl, route, accept = 'image/*,*/*;q=0.8') {
+  const response = await fetch(`${baseUrl}${route}`, {
+    redirect: 'manual',
+    headers: {
+      accept,
+      'cache-control': 'no-cache',
+    },
+  });
+  const buffer = Buffer.from(await response.arrayBuffer());
+  return { route, response, buffer };
+}
+
 function expectIncludes(text, expected, label) {
   for (const item of expected) {
     assert(text.includes(item), `${label} missing ${item}`);
@@ -103,11 +115,26 @@ async function main() {
       'class="one-time-whatsapp-launcher"',
       'href="/api/one-time/public-whatsapp/redirect?intent=free_class"',
       'data-action-id="ACTION-ONETIME-PUBLIC-WHATSAPP"',
+      'content="https://join.onetimeonetime.com/images/one-time/social/one-time-link-preview-icon.png"',
+      '<link rel="icon" href="/images/one-time/social/one-time-icon-32.png" sizes="32x32" type="image/png">',
+      '<link rel="apple-touch-icon" href="/images/one-time/social/one-time-apple-touch-icon.png">',
     ], '/rabbi');
     expectNotMatches(page.text, /data-signup-modal|signup-strip|id="interestForm"|signupStudentName|name="student/i, '/rabbi');
-    expectNotMatches(page.text, /Bnei Neviim Academy|BNA Academy|Hebrew|data-language-toggle/i, '/rabbi');
+    expectNotMatches(page.text, /Bnei Neviim Academy|BNA Academy|Hebrew|data-language-toggle|bna-social-preview|\/icons\/favicon/i, '/rabbi');
     expectNotMatches(page.text, /bna-helper-knowledge\.js|bna-bot-widget\.js|Robot Scheller|https:\/\/wa\.me\//i, '/rabbi');
     pass('/rabbi has focused One Time branding, direct signup CTA, WhatsApp launcher, and no Academy chrome');
+
+    const smokeHost = new URL(options.baseUrl).hostname.toLowerCase();
+    if (smokeHost.includes('onetimeonetime.com')) {
+      const favicon = await fetchBinary(options.baseUrl, '/favicon.ico');
+      const expectedIcon = fs.readFileSync('public/images/one-time/social/one-time-icon-32.png');
+      assert(favicon.response.status === 200, `/favicon.ico expected 200, got ${favicon.response.status}`);
+      assert(
+        favicon.buffer.equals(expectedIcon),
+        '/favicon.ico must return the One Time black/white icon on the One Time single-tenant domain'
+      );
+      pass('/favicon.ico returns the One Time black/white icon fallback');
+    }
 
     const whatsappResponse = await fetch(`${options.baseUrl}/api/one-time/public-whatsapp`, {
       headers: {
