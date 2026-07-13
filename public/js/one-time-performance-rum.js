@@ -42,12 +42,14 @@
   });
 
   function routeId() {
-    if (path.indexOf('/one-time') === 0) return 'public-landing';
-    if (path.indexOf('/provider') === 0) return 'provider-shell';
-    if (/view=contacts|section=crm_contacts/i.test(search)) return 'crm-workspace';
-    if (/view=communications/i.test(search)) return 'communications';
-    if (/view=tasks/i.test(search)) return 'tasks';
-    if (path.indexOf('/operations') === 0) return 'operations';
+    var currentPath = window.location.pathname || '/';
+    var currentSearch = window.location.search || '';
+    if (currentPath.indexOf('/one-time') === 0) return 'public-landing';
+    if (/view=contacts|section=crm_contacts/i.test(currentSearch)) return 'crm-workspace';
+    if (/view=communications/i.test(currentSearch)) return 'communications';
+    if (/view=tasks/i.test(currentSearch)) return 'tasks';
+    if (currentPath.indexOf('/provider') === 0) return 'provider-shell';
+    if (currentPath.indexOf('/operations') === 0) return 'operations';
     return 'other';
   }
 
@@ -84,6 +86,14 @@
     return connection && connection.effectiveType ? String(connection.effectiveType) : '';
   }
 
+  function isColdStart() {
+    try {
+      return !sessionStorage.getItem('one_time_rum_seen');
+    } catch (error) {
+      return true;
+    }
+  }
+
   function payload(metricName) {
     var navigation = performance.getEntriesByType('navigation')[0] || {};
     var paints = performance.getEntriesByType('paint').reduce(function (memo, entry) {
@@ -114,7 +124,7 @@
       },
       visibility_state: document.visibilityState || '',
       connection_type: connectionType(),
-      cold_start: !sessionStorage.getItem('one_time_rum_seen'),
+      cold_start: isColdStart(),
       no_pii_contract: true
     };
   }

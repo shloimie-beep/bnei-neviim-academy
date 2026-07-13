@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-07-13T08:01:18.958Z",
+  "generated_at": "2026-07-13T08:02:59.639Z",
   "requirement_id": "REQ-20260713-911",
   "status": "passed",
   "scope": "Local One Time performance instrumentation and regression-gate audit. No database, live HTTP, sends, payments, external accounts, or production writes.",
   "budgets": {
     "rum_bytes": {
-      "actual": 6303,
+      "actual": 6571,
       "max": 7000
     },
     "provider_html_bytes": {
@@ -96,7 +96,7 @@
     {
       "id": "budget_rum_bytes",
       "passed": true,
-      "detail": "6303 <= 7000 bytes",
+      "detail": "6571 <= 7000 bytes",
       "evidence": [
         "public/js/one-time-performance-rum.js",
         "public/provider.html",

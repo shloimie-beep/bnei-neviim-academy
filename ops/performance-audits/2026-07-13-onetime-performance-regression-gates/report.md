@@ -1,6 +1,6 @@
 # One Time Performance Regression Gates
 
-Generated: 2026-07-13T08:01:18.958Z
+Generated: 2026-07-13T08:02:59.639Z
 Requirement: REQ-20260713-911
 Status: PASSED
 
@@ -17,7 +17,7 @@ Local One Time performance instrumentation and regression-gate audit. No databas
 | `rum_client_entrypoints` | PASS | One Time landing, provider shell, Operations source, and generated bootstrap load the RUM client. |
 | `rum_client_privacy_contract` | PASS | RUM client redacts route details and avoids cookies/localStorage/DOM text capture. |
 | `rum_client_route_transition` | PASS | RUM client records SPA route transitions as a separate metric. |
-| `budget_rum_bytes` | PASS | 6303 <= 7000 bytes |
+| `budget_rum_bytes` | PASS | 6571 <= 7000 bytes |
 | `budget_provider_html_bytes` | PASS | 178961 <= 190000 bytes |
 | `budget_operations_shell_bytes` | PASS | 1153652 <= 1200000 bytes |
 | `budget_operations_bootstrap_bytes` | PASS | 2529 <= 5000 bytes |
@@ -29,7 +29,7 @@ Local One Time performance instrumentation and regression-gate audit. No databas
 
 | Budget | Actual | Max |
 | --- | ---: | ---: |
-| `rum_bytes` | 6303 | 7000 |
+| `rum_bytes` | 6571 | 7000 |
 | `provider_html_bytes` | 178961 | 190000 |
 | `operations_shell_bytes` | 1153652 | 1200000 |
 | `operations_bootstrap_bytes` | 2529 | 5000 |

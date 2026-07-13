@@ -496,6 +496,16 @@ function byteLengthOfChunk(chunk, encoding) {
   return Buffer.byteLength(String(chunk), encoding || 'utf8');
 }
 
+function responseByteHeaderValue(context, res) {
+  if (context.response_bytes > 0) return Math.max(0, Math.round(context.response_bytes));
+  const contentLength = Number(res.getHeader('Content-Length') || res.getHeader('content-length') || 0);
+  if (Number.isFinite(contentLength) && contentLength > 0) {
+    context.response_bytes = contentLength;
+    return Math.round(contentLength);
+  }
+  return 0;
+}
+
 function currentRequestPerformanceContext() {
   return requestPerformanceStore.getStore() || null;
 }
@@ -535,7 +545,7 @@ function setPerformanceResponseHeaders(req, res) {
   res.setHeader('X-BNA-Trace-Id', context.trace_id);
   if (deployment.commit_sha) res.setHeader('X-BNA-Deploy-SHA', safeHeaderToken(deployment.commit_sha));
   if (deployment.target_app) res.setHeader('X-BNA-Target-App', safeHeaderToken(deployment.target_app));
-  res.setHeader('X-BNA-Response-Bytes', String(Math.max(0, Math.round(context.response_bytes))));
+  res.setHeader('X-BNA-Response-Bytes', String(responseByteHeaderValue(context, res)));
   res.setHeader('Server-Timing', serverTimingValue(context));
 }
 
