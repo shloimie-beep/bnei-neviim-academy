@@ -286,3 +286,21 @@
 - PASS One Time live `/api/deploy-info`; deployed SHA `9fb436760872bab77019b3769652c8b517025c8d`.
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 9fb436760872bab77019b3769652c8b517025c8d`.
 - PASS live `GET https://join.onetimeonetime.com/api/one-time/public-whatsapp`; response identified `Rabbi Scheller's Digital Assistant`, scoped workspace/project, class-link configured, full number hidden, no WhatsApp send, and no external write.
+- PASS `node --check server.js` after the Rabbi Telegram ticket approval slice.
+- PASS `node --check scripts/telegram-kimi-bridge.mjs` after the Rabbi Telegram ticket approval slice.
+- PASS `node --test tests/rabbi-telegram-notifications.test.js tests/rabbi-telegram-ticket-approval.test.js` (20/20).
+- PASS `node --test tests/one-time-external-user-portal.test.js tests/one-time-delivery-outbox.test.js tests/action-registry-telegram-ui-bot.test.js` (76/76).
+- PASS `npm run test:onetime:focused` (76/76) after preserving the One Time dashboard IA owner/manager view contract.
+- PASS `npm run watchdog:actions` with `finding_count=0`; report `ops/watchdog-audits/2026-07-13T01-45-watchdog-action-audit.md`.
+- PASS `npm run secrets:audit`; 9265 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for Rabbi Telegram ticket approval commit `8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- PASS BNA Railway redeploy and doctor; deployment `6ddd918b-3c4a-453d-8a07-8b6a53407607` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `16a16da1-4ca7-491c-87f8-d1f9637de5f7` reached `SUCCESS`.
+- PASS BNA live `/api/deploy-info`; deployed SHA `8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- PASS One Time live `/api/deploy-info`; deployed SHA `8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- PASS live approval route unauthenticated guard on BNA and One Time: `401 Unauthorized`.
+- PASS `npm run telegram:rabbi:readiness` in no-send mode; Super Admin and Rabbi targets configured/ready, external_write_performed=false.
+- EXPECTED BLOCKER `node scripts/check-onetime-wapi-readiness.mjs`: no-send/no-write readiness remains blocked until `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.

@@ -102,6 +102,20 @@ Current status: `active`
 - Live proof passed: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 9fb436760872bab77019b3769652c8b517025c8d`.
 - Live public WhatsApp readiness readback returned `Rabbi Scheller's Digital Assistant`, `Public One Time WhatsApp lead agent`, scoped workspace/project, class link configured, full number hidden, and no WhatsApp send/external write performed.
 
+## Rabbi Telegram / Super Admin Ticket Approval Slice
+
+- `REQ-20260713-903` and `REQ-20260713-904` are in progress with a deployed private-ticket/approval-gate slice at `8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- Rabbi Telegram ticket capture is now separated from the public WhatsApp lead bot: scoped One Time Telegram tickets use `awaiting_super_admin_approval`, `assigned_to=Shloimie`, `suppress_task_creation=true`, and create zero initial Codex tasks/jobs.
+- Super Admin ticket alerts now include a redacted ticket summary plus inline actions for Approve for Codex, Ask Rabbi, Keep as Ticket, Reject, and Open in Operations.
+- The shared approval endpoint requires platform Super Admin and idempotently handles `approve_for_codex`, `ask_rabbi`, `keep_as_ticket`, and `reject`; Telegram callbacks call this endpoint instead of a separate mutation path.
+- Rabbi status notifications are scoped/redacted and can notify the Rabbi when a ticket is approved, needs more information, kept, or rejected.
+- Local verification passed: syntax checks, Rabbi Telegram notification/approval tests `20/20`, related One Time portal/action tests `76/76`, focused One Time suite `76/76`, action watchdog, secret audit, execution-run validation, and whitespace diff check.
+- BNA deployment `6ddd918b-3c4a-453d-8a07-8b6a53407607` and One Time deployment `16a16da1-4ca7-491c-87f8-d1f9637de5f7` reached `SUCCESS`; both deploy-info endpoints returned `8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- Live proof passed: exact-SHA One Time separate-instance smoke and unauthenticated `approval-action` route guard returning `401 Unauthorized` on both BNA and One Time.
+- Telegram readiness no-send audit reports Super Admin and Rabbi Telegram targets configured/ready; this local environment has `ticket_alerts_enabled=false` and `rabbi_communication_alerts_enabled=false`, so no live Telegram send/approval job was created.
+- Remaining Wave 3 work: full private Rabbi CRM/content/read/write action surface, content-parsing knowledge binding, and live receiver ownership/409 proof.
+- Remaining Wave 4 work: cleanup-safe live synthetic ticket alert/approval proof, Ask Rabbi round trip, Reject proof, and completion evidence notifications.
+
 ## Identity Isolation Batch
 
 - `REQ-20260712-305` local code patch is applied and moved to `needs_verification`.

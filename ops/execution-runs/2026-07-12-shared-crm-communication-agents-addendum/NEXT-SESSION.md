@@ -3,13 +3,13 @@
 Next unblocked batch: `6-rabbi-telegram-private-agent`
 Open requirement: `REQ-20260713-903`
 
-Latest One Time runtime SHA: `9fb436760872bab77019b3769652c8b517025c8d`
+Latest One Time runtime SHA: `8f6441523a5cd3547ecd4ba633dab90c8951ffd9`
 
 Current proof:
 
-- `3712308731910a6e77fb9a18ce18b57ae35f22dd` is pushed to `origin/master`.
+- `8f6441523a5cd3547ecd4ba633dab90c8951ffd9` is pushed to `origin/master`.
 - BNA production `https://bneineviimacademy.org/api/deploy-info` returns that SHA.
-- One Time production was advanced for the P0 signup-form repair; `https://join.onetimeonetime.com/api/deploy-info` returned `881f892523eb9a20137377882e2452e45cd581ca`.
+- One Time production `https://join.onetimeonetime.com/api/deploy-info` returns that SHA.
 - One Time signup Family/School behavior has live no-write browser proof and API dry-run proof.
 - `REQ-20260712-305` passed live transaction-rollback identity-isolation proof and is terminal Done.
 - `REQ-20260712-302` has a deployed partial shared CRM service/module slice: canonical contact service wrapper, shared browser CRM modules, Operations shared CRM markers, customer-facing empty states/actions, action registry coverage, and One Time Operations CRM workbench live smoke with 12 scoped cards and read-only timeline.
@@ -27,13 +27,15 @@ Current proof:
 - One Time bot/landing polish v2 is deployed under `REQ-20260712-310` through `3712308731910a6e77fb9a18ce18b57ae35f22dd`: the WhatsApp bot profile version `2026-07-13-v2` explicitly says "We are not giving portal access yet," the public landing/signup header and yellow CTA polish is live, BNA deployment `77191e2f-0aaf-4fde-ae2c-cf69ce299af8` and One Time deployment `38d75556-5a94-42d3-b8b3-65a5a3290fe7` reached `SUCCESS`, both deploy-info endpoints returned the SHA, and One Time route/landing smokes plus deployed marker checks passed.
 - One Time signup-form P0 is deployed under `REQ-20260713-901` through `881f892523eb9a20137377882e2452e45cd581ca`: Family/School are real `audience_type` radios, reminders have no default, phone/consent validation is conditional, No reminders no longer requires consent or phone, server-side validation matches the form, canonical One Time CRM contact capture is wired, and zero automatic CRM tasks are created. One Time Railway deployment `35633776-51a0-4185-9bd0-61d73c187d45` reached `SUCCESS`; exact-SHA route smoke, browser no-write/intercept submit, and direct API dry-run passed.
 - One Time public WhatsApp agent profile/policy is deployed under `REQ-20260713-902` through `9fb436760872bab77019b3769652c8b517025c8d`: the public profile is `one_time_parent_information_agent` version `2026-07-13-v3`, display name `Rabbi Scheller's Digital Assistant`, approved public facts include the 7:00 p.m. Israel schedule, local RBS Alef address, canonical `/one-time/signup`, and `ACTION-ONETIME-GET-CURRENT-CLASS-LINK`; raw class links remain redacted from prompt/audit/metadata/log paths and are allowed only in final channel delivery after server-authorized class-info request/consent. One Time Railway deployment `eac01ac4-5589-4c24-b21f-5aea52aeb8d6` reached `SUCCESS`; exact-SHA One Time route smoke and public WhatsApp readiness readback passed.
+- Rabbi Telegram ticket approval slice is deployed under `REQ-20260713-903` / `REQ-20260713-904` through `8f6441523a5cd3547ecd4ba633dab90c8951ffd9`: Rabbi Telegram ticket capture is approval-gated, creates zero initial tasks/jobs, Super Admin alert callbacks call the shared approval endpoint, the endpoint requires platform Super Admin and is idempotent for approve/ask/keep/reject, action-registry parity rows are present, BNA deployment `6ddd918b-3c4a-453d-8a07-8b6a53407607` and One Time deployment `16a16da1-4ca7-491c-87f8-d1f9637de5f7` reached `SUCCESS`, exact-SHA One Time route smoke passed, and unauthenticated approval-action attempts return `401` on both BNA and One Time.
+- Rabbi Telegram readiness no-send audit reports Super Admin and Rabbi targets configured/ready, but `ticket_alerts_enabled=false` and `rabbi_communication_alerts_enabled=false` in this environment. No live synthetic Telegram ticket alert/approval send or production task/job was created in this slice.
 - Public WhatsApp live auto-reply activation remains blocked by `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` not equaling `APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
 - Cleanup note: one attempted synthetic live-write DB-readback created `bna_contacts:37` and `bna_parent_leads:22` and both were archived through the production CRM API with `no_send=true` and `external_write_performed=false`. Local DB-level outbox cancellation/readback is blocked because the usable One Time Railway database URL is internal-only from this machine, while the stale local Supabase URL still fails DNS.
 
 Continue by inspecting and repairing:
 
-- Wave 3 private Rabbi Telegram workspace agent (`REQ-20260713-903`), keeping it separate from the public WhatsApp lead agent;
-- Wave 4 Rabbi ticket to Super Admin approval flow (`REQ-20260713-904`);
+- Wave 3 private Rabbi Telegram workspace agent (`REQ-20260713-903`), especially full CRM/content/read/write action surface, content-parsing knowledge binding, and live receiver ownership/409 proof;
+- Wave 4 Rabbi ticket to Super Admin approval flow (`REQ-20260713-904`), especially cleanup-safe live synthetic ticket alert/approval, Ask Rabbi round trip, Reject proof, and completion evidence notifications;
 - continue remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`, especially family/student linking;
 - canonical CRM contact aggregate service boundaries;
 - list, aggregate, timeline, conversations, and tasks DTOs;

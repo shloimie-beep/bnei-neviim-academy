@@ -39298,3 +39298,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - WAPI readiness remains no-send/no-write and reports the exact live-activation
   blocker: `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` must equal
   `APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
+
+## 2026-07-13 - Rabbi Telegram ticket approval gate deployed
+
+- Deployed the private Rabbi Telegram ticket approval slice at
+  `8f6441523a5cd3547ecd4ba633dab90c8951ffd9` to BNA and One Time.
+- Rabbi Telegram ticket capture now creates scoped One Time support tickets in
+  `awaiting_super_admin_approval`, assigns Shloimie, suppresses automatic task
+  creation, and creates zero initial Codex jobs.
+- Super Admin Telegram alerts now have redacted ticket context plus inline
+  Approve for Codex, Ask Rabbi, Keep as Ticket, Reject, and Open in Operations
+  actions wired through the shared approval endpoint.
+- Verification passed: Rabbi Telegram notification/approval tests `20/20`,
+  related One Time portal/action tests `76/76`, focused One Time suite `76/76`,
+  action watchdog, secret audit, execution-run validation, BNA/One Time Railway
+  doctors, exact-SHA One Time route smoke, and live unauth approval guard.
+- Remaining live-send blocker: this environment reports Telegram alert send
+  flags disabled, so no synthetic production Telegram ticket alert/approval
+  send or Codex job was created in this slice.

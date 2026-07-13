@@ -11,8 +11,8 @@
 | --- | --- | --- | --- | --- |
 | REQ-20260713-901 | 1 | Reproduce, repair, deploy, and live-verify the One Time production signup form | Deployed; live-smoked | Deployed SHA `881f892523eb9a20137377882e2452e45cd581ca`; production browser no-write submit, direct API dry-run, and route smoke passed |
 | REQ-20260713-902 | 2 | Public One Time WhatsApp lead agent and approved public knowledge/class-link runtime | Deployed; live activation blocked by approval flag | `config/service-provider-bots/one-time.json` v3, `ACTION-ONETIME-GET-CURRENT-CLASS-LINK`, focused bot tests, One Time focused suite, action watchdog, secrets audit, WAPI readiness check, One Time deploy-info, route smoke, and public WhatsApp readiness readback |
-| REQ-20260713-903 | 3 | Private Rabbi Telegram workspace agent separated from public WhatsApp | Pending | Blocked behind Wave 1 launch blocker |
-| REQ-20260713-904 | 4 | Rabbi ticket to Super Admin approval to Codex job flow | Pending | Blocked behind Wave 1 launch blocker |
+| REQ-20260713-903 | 3 | Private Rabbi Telegram workspace agent separated from public WhatsApp | In progress; deployed readiness/ticket slice | Private Rabbi target readiness, scoped status notifications, and public/private bot separation tests passed; full CRM/content action surface remains open |
+| REQ-20260713-904 | 4 | Rabbi ticket to Super Admin approval to Codex job flow | In progress; deployed approval-gate slice | Support-ticket approval lifecycle, Super Admin inline callbacks, no-initial-Codex-job guard, registry rows, deployment, live route guard, and tests passed; live synthetic send/approval remains send/cleanup gated |
 | REQ-20260713-905 | 5 | Action-registry parity, full matrices, final deploy/proof | Pending | Blocked behind Waves 1-4 |
 
 ## Wave 1 Acceptance Criteria
@@ -80,3 +80,28 @@
 - Deployed code commit `9fb436760872bab77019b3769652c8b517025c8d` to One Time Railway deployment `eac01ac4-5589-4c24-b21f-5aea52aeb8d6`; Railway doctor reached `SUCCESS`.
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 9fb436760872bab77019b3769652c8b517025c8d`.
 - PASS live `https://join.onetimeonetime.com/api/one-time/public-whatsapp` readiness readback: assistant `Rabbi Scheller's Digital Assistant`, subtitle `Public One Time WhatsApp lead agent`, workspace `rabbi_sheller_provider`, project `one_time_mishnah_class`, class link configured, full number hidden, and no WhatsApp send/external write performed.
+
+## Wave 3/4 Rabbi Telegram and Ticket Approval Proof
+
+- Deployed commit `8f6441523a5cd3547ecd4ba633dab90c8951ffd9` to BNA and One Time.
+- BNA Railway deployment `6ddd918b-3c4a-453d-8a07-8b6a53407607` reached `SUCCESS`; live `https://bneineviimacademy.org/api/deploy-info` returned the deployed SHA.
+- One Time Railway deployment `16a16da1-4ca7-491c-87f8-d1f9637de5f7` reached `SUCCESS`; live `https://join.onetimeonetime.com/api/deploy-info` returned the deployed SHA.
+- Rabbi Telegram readiness audit passed in no-send mode: Super Admin Telegram target and Rabbi Telegram target are both configured/ready, with no external write performed.
+- The Super Admin ticket alert formatter now includes ticket number, Rabbi/source scope, short title, affected section, requested result, severity, and Open in Operations link; the alert supports inline actions for Approve for Codex, Ask Rabbi, Keep as Ticket, Reject, and Open in Operations.
+- Rabbi Telegram ticket capture now posts `awaiting_super_admin_approval`, `assigned_to=Shloimie`, `suppress_task_creation=true`, and `requires_super_admin_approval=true`, returning zero initial tasks/jobs.
+- Approval route `POST /api/bna/support-tickets/:id/approval-action` requires platform Super Admin and supports idempotent `approve_for_codex`, `ask_rabbi`, `keep_as_ticket`, and `reject` actions.
+- Telegram callback buttons call the same shared approval endpoint; they do not create a separate mutation path.
+- PASS `node --check server.js`.
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`.
+- PASS `node --test tests/rabbi-telegram-notifications.test.js tests/rabbi-telegram-ticket-approval.test.js` (20/20).
+- PASS `node --test tests/one-time-external-user-portal.test.js tests/one-time-delivery-outbox.test.js tests/action-registry-telegram-ui-bot.test.js` (76/76).
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `npm run watchdog:actions` with `finding_count=0`.
+- PASS `npm run secrets:audit`.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS live unauthenticated approval guard: BNA and One Time both returned `401 Unauthorized` for unauthenticated `approval-action` attempts, with no ticket/job creation.
+- PASS One Time exact-SHA route smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- Post-deploy public WhatsApp readback still returns the public assistant identity, scoped workspace/project, configured class link, hidden full number, and no send/external write.
+- Remaining live-send blocker: the local readiness audit reports `ticket_alerts_enabled=false` and `rabbi_communication_alerts_enabled=false`, so no live Telegram ticket alert/approval send was performed from this environment.
+- Remaining WAPI blocker: public WhatsApp live auto-reply activation still requires `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.

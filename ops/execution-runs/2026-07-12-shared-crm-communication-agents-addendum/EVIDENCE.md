@@ -142,3 +142,15 @@
 - One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=9fb436760872bab77019b3769652c8b517025c8d`.
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 9fb436760872bab77019b3769652c8b517025c8d` passed.
 - One Time public WhatsApp readiness readback - `https://join.onetimeonetime.com/api/one-time/public-whatsapp` returned the new public assistant identity, scoped workspace/project, class link configured, full number hidden, no WhatsApp send, and no external write.
+- `src/lib/bna/telegram-notifications.js` - Super Admin ticket alerts now include affected section, requested result, Open in Operations link, and inline approval keyboard actions; Rabbi ticket status notifications are scoped and redacted.
+- `scripts/telegram-kimi-bridge.mjs` - Rabbi Telegram ticket capture now creates approval-gated tickets with zero initial tasks/jobs, and Super Admin Telegram callbacks call the shared support-ticket approval endpoint.
+- `server.js` - support tickets support the approval lifecycle statuses, Rabbi Telegram tickets skip automatic task creation, `POST /api/bna/support-tickets/:id/approval-action` requires platform Super Admin, and approval/ask/keep/reject actions are idempotent.
+- `ops/action-registry.json` - registers `ACTION-ONETIME-RABBI-TELEGRAM-TICKET-CREATE`, `ACTION-ONETIME-RABBI-TICKET-APPROVE-CODEX`, `ACTION-ONETIME-RABBI-TICKET-ASK-RABBI`, `ACTION-ONETIME-RABBI-TICKET-KEEP`, and `ACTION-ONETIME-RABBI-TICKET-REJECT`.
+- `tests/rabbi-telegram-notifications.test.js` and `tests/rabbi-telegram-ticket-approval.test.js` - cover the redacted alerts, approval keyboard, Rabbi status notifications, lifecycle statuses, zero initial Codex jobs, Super Admin-only approval endpoint, idempotency, callbacks, and action registry rows.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- BNA post-deploy doctor - Railway deployment `6ddd918b-3c4a-453d-8a07-8b6a53407607` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `16a16da1-4ca7-491c-87f8-d1f9637de5f7` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8f6441523a5cd3547ecd4ba633dab90c8951ffd9` passed.
+- Live approval route guard - unauthenticated `POST /api/bna/support-tickets/1/approval-action` returned `401 Unauthorized` on both BNA and One Time with no ticket/job creation.
+- `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md` - post-deploy no-send readiness audit reports Super Admin and Rabbi Telegram targets configured/ready, with alert send flags disabled in this environment.
