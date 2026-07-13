@@ -616,6 +616,26 @@ Current status: `active`
   raw destination/chat/token logging, or destructive production mutation was
   performed.
 
+## 2026-07-13 - One Time Activation Gate Blocked After No-Send Proof
+
+- `REQ-20260712-313` is now Blocked, not Done.
+- Current One Time live deploy-info returns exact SHA
+  `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`, and the exact-SHA
+  separate-instance route matrix passed.
+- Additional no-send activation contract proof passed after deployment:
+  communication-agent response runtime, canonical inbound pipeline/ingest,
+  delivery outbox/cron contracts, Resend inbound webhook/CRM, and
+  communication-agent model tests passed `39/39`; WAPI/Rabbi/bot policy tests
+  passed `30/30`.
+- Remaining blockers are external by design: missing secure owner-test
+  email/WhatsApp aliases for bounded owner sends, and missing
+  `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` for unrestricted public
+  WhatsApp auto-reply.
+- Guardrails: no owner email send, WhatsApp/WAPI provider send, Telegram send,
+  public auto-reply enablement, CRM production write, payment/access mutation,
+  raw destination/chat/token logging, or destructive production mutation was
+  performed.
+
 ## 2026-07-13 - One Time WAPI Safe Activation Gate Deployed
 
 - Deploy candidate `80b75432672d282855b350a2f7c5adc160e63623` was pushed to

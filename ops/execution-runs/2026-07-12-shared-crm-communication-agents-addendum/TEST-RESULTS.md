@@ -1160,3 +1160,12 @@
 - PASS-with-blocker post-deploy `npm run one-time:owner-test:readiness`: Resend/WAPI preflight ready; secure owner aliases missing; no owner send.
 - PASS post-deploy `BNA_RUNTIME_ENV_FILE=... BNA_RUNTIME_SECRETS_DIR=... npm run telegram:rabbi:readiness`: Rabbi Telegram dry-run ready; no Telegram send.
 - Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, CRM production write, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed by this deployed proof.
+
+## One Time Activation Gate Final No-Send Contract Proof - 2026-07-13
+
+- PASS final exact-SHA deploy-info readback: current One Time live SHA is `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`.
+- PASS no-send activation contract suite `39/39`: communication-agent response runtime, canonical inbound pipeline/ingest, delivery outbox/cron contracts, Resend inbound webhook/CRM, and communication-agent model.
+- PASS WAPI/Rabbi/bot policy suite `30/30`: One Time WAPI scoped send contract, provider lead bot, and Rabbi Telegram notifications.
+- `REQ-20260712-313` remains Blocked, not Done: owner-only live email/WhatsApp send/readback requires secure owner aliases, and unrestricted public WhatsApp auto-reply requires explicit `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` approval.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, CRM production write, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed by this proof.

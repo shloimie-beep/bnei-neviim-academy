@@ -40369,3 +40369,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Live deploy-info returned the exact SHA and `target_app=one-time`; One Time separate-instance, provider route-module, and Rabbi One Time landing/signup/WhatsApp launcher smokes passed.
 - Post-deploy WAPI readiness still reports provider setup ready while public auto-reply remains blocked by missing `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM`; post-deploy owner-test readiness remains blocked by missing secure owner aliases.
 - Guardrails: no owner email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply activation, CRM production write, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed.
+
+## 2026-07-13 - One Time activation gate blocked after no-send proof
+
+- Marked `REQ-20260712-313` Blocked after completing the remaining no-send proof. Current One Time live SHA `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c` passes exact-SHA deploy-info and separate-instance route matrix.
+- Additional no-send contract suites passed `39/39` and `30/30`, covering communication-agent response runtime, inbound pipeline, delivery outbox, Resend inbound, WAPI provider policy, provider lead bot, and Rabbi Telegram notifications.
+- Remaining blockers: secure owner-test aliases are missing for bounded owner sends, and unrestricted public WhatsApp auto-reply still lacks explicit `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM`.
+- Guardrails: no owner email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply activation, CRM production write, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed.

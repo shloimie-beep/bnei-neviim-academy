@@ -2295,10 +2295,10 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "in_progress",
-      "implementation_status": "Partial safe-activation proof deployed at One Time SHA 80b75432672d282855b350a2f7c5adc160e63623: WAPI readiness recognizes the One Time scoped Railway token without exposing its value; provider setup is ready; public auto-reply is fail-closed behind ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM; Rabbi Telegram readiness is green via ignored runtime env/secrets dry-run; owner-only email/WhatsApp sends remain blocked by missing secure owner-test aliases. No external email, WhatsApp, Telegram, CRM, payment/access, or public auto-reply send was performed.",
-      "can_continue_without_operator": true,
-      "next_action": "Continue only non-send activation checks until secure owner-test aliases exist; then perform bounded owner-only email/WhatsApp send/readback. Do not enable unrestricted public WhatsApp auto-reply until ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM is explicitly approved.",
+      "status": "blocked",
+      "implementation_status": "Blocked after completing the deployable no-send activation proof: One Time WAPI/Rabbi Telegram safe gate is deployed, exact-SHA live readback and route smokes pass, WAPI provider setup is ready, OpenAI/agent/inbound/outbox/Resend/WAPI/Rabbi policy contracts pass, public auto-reply remains fail-closed behind the Telegram confirmation flag, and owner-test email/WhatsApp sends remain blocked by missing secure owner aliases. No external email, WhatsApp, Telegram, CRM, payment/access, or public auto-reply send was performed.",
+      "can_continue_without_operator": false,
+      "next_action": "Operator/secure runtime owner must configure secure owner-test aliases to continue bounded owner sends, and must explicitly approve ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM before unrestricted public WhatsApp auto-reply activation. Continue other unblocked requirements meanwhile.",
       "acceptance_criteria": [
         "Contact capture works independently of AI reply readiness; WAPI auth/binding/contact/conversation/zero-task/idempotency/opt-out/OpenAI/outbox checks pass; WhatsApp live only after readiness; email remains draft."
       ],
@@ -2336,7 +2336,10 @@
         "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com --expected-sha 80b75432672d282855b350a2f7c5adc160e63623 PASS",
         "Post-deploy npm run one-time:wapi:readiness PASS-with-blocker: provider_setup.ready=true, auto_reply.ready=false only on Telegram confirmation, whatsapp_send_performed=false",
         "Post-deploy npm run one-time:owner-test:readiness PASS-with-blocker: Resend and WAPI preflight ready, owner aliases missing, no send",
-        "Post-deploy BNA_RUNTIME_ENV_FILE + BNA_RUNTIME_SECRETS_DIR npm run telegram:rabbi:readiness PASS: Rabbi profile ready, dry-run only, external_write_performed=false"
+        "Post-deploy BNA_RUNTIME_ENV_FILE + BNA_RUNTIME_SECRETS_DIR npm run telegram:rabbi:readiness PASS: Rabbi profile ready, dry-run only, external_write_performed=false",
+        "Post-deploy exact-SHA smoke rerun: npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 49f3edda2da37e3afd9bdf3056ab5f6fc91e981c PASS",
+        "No-send activation contract suite PASS 39/39: communication-agent response runtime, canonical inbound pipeline/ingest, delivery outbox/cron contracts, Resend inbound webhook/CRM, communication-agent model",
+        "No-send WAPI/Rabbi/bot policy suite PASS 30/30: WAPI scoped send contract, provider lead bot, Rabbi Telegram notifications"
       ],
       "implementation_files": [
         "src/lib/bna/telegram-notifications.js",
@@ -2350,14 +2353,18 @@
         "tests/one-time-external-setup-readiness.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T19:19:00+03:00",
-      "blocker": "Live owner email/WhatsApp sends are blocked by REQ-20260713-906 missing secure owner-test aliases; unrestricted public WhatsApp auto-reply is blocked by missing ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM approval.",
+      "updated_at": "2026-07-13T19:27:00+03:00",
+      "blocker": "Blocked on external configuration/approval: missing secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP/PHONE aliases for owner-only sends, and missing ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM for unrestricted public WhatsApp auto-reply.",
       "deployment_evidence": {
         "one_time_deployed_sha": "80b75432672d282855b350a2f7c5adc160e63623",
         "one_time_deployment_id": "74f45880-7a11-4b06-9632-d858843cb4fb",
         "one_time_deploy_info": "https://join.onetimeonetime.com/api/deploy-info returned exact SHA and target_app=one-time",
         "railway_doctor": "npm run railway:doctor for BNA_DEPLOY_APP=one-time reached SUCCESS for deployment 74f45880-7a11-4b06-9632-d858843cb4fb"
-      }
+      },
+      "blocker_owner": "Shloimie / secure runtime configuration owner",
+      "blocker_next_action": "Set secure owner-test aliases in Railway/keyholder without exposing raw values; separately approve ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM only when unrestricted public WhatsApp auto-reply should go live.",
+      "blocker_recommended_option": "Keep public auto-reply disabled; configure owner aliases first, rerun owner-test readiness, perform bounded owner-only email/WhatsApp send/readback, then decide public auto-reply confirmation as a separate approval.",
+      "blocker_consequence": "REQ-20260712-313 cannot be marked Done because live owner send/readback and public WhatsApp live activation are intentionally gated."
     },
     {
       "id": "REQ-20260712-314",
