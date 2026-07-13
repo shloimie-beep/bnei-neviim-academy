@@ -40472,3 +40472,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no owner email send, WhatsApp provider send, public auto-reply
   enablement, Telegram send, destructive CRM write, provider mutation,
   credential mutation, payment mutation, or access mutation was performed.
+
+## 2026-07-13 - One Time Billing V2 Stripe sandbox smoke refreshed
+
+- Reran `npm run stripe:sandbox-smoke` against the stored One Time Stripe
+  test credentials. The smoke passed with `sandbox_ready`, webhook signature
+  verification, live mode disabled, no real customer data, no real funds, and
+  redacted synthetic test-mode product/price/customer/checkout evidence.
+- Cleanup completed for the synthetic Stripe objects: checkout session
+  expired, customer deleted, and product deactivated. No live Stripe key,
+  customer, payment, refund, or access mutation was used.
+- Updated the Billing V2 register and release handoff with the latest Stripe
+  evidence and with the unrelated validator blockers: repo-wide audit
+  governance debt and shared-CRM missing evidence paths.
+- Verification passed: focused Billing Stripe verifier suite `14/14`,
+  One Time product/checkout/helper isolation suite `24/24`, focused One Time
+  suite `79/79`, generated Operations check, action/link/security/workspace
+  watchdogs, protocol drift watchdog, ledger JSONL parse, tracked secrets
+  audit, targeted new Stripe evidence secret scan, and `git diff --check`.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.

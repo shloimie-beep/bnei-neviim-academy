@@ -4,7 +4,7 @@ Status: draft PR mergeable; live activation blocked
 Branch: `codex/onetime-rosh-hashanah-billing-platform-v2`
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Primary requirements: `REQ-20260713-950` through `REQ-20260713-963`
-Branch head at latest merge verification: `ea909d4d47b421f71976897f86fdd79b330fced1`
+Branch head at latest merge verification before this evidence refresh: `ea909d4d47b421f71976897f86fdd79b330fced1`
 Current master/base SHA: `10960a86bba30aede6c72075ef1b5eb1a529f54d`
 Draft PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/132
 Release owner: release/integration agent after final operator launch packet
@@ -34,7 +34,7 @@ slice for One Time:
 | Product quality packet | `tasks-pending/2026-07-13-onetime-rosh-hashanah-billing-platform-v2.product-quality.json`; `ops/product-quality-compiler/validation/latest-product-quality-validation.md` | Passed |
 | Old-policy active audit | `ops/audits/2026-07-13-onetime-billing-v2-old-policy-active-audit.md`; parent invite/email/review fixtures/prompt cleanup | Passed locally; live activation still blocked |
 | No-trial Stripe lifecycle | `tests/stripe-billing-lifecycle.test.js`; `tests/one-time-stripe-local-beta.test.js` | Passed |
-| Stripe sandbox API smoke | `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/STRIPE-SANDBOX-SMOKE.md` | Passed with synthetic test objects only |
+| Stripe sandbox API smoke | `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/STRIPE-SANDBOX-SMOKE.md`; `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/2026-07-13T14-06-46-718Z-stripe-sandbox-smoke.md` | Passed with stored test credentials, synthetic test objects only, webhook signature verification, and cleanup |
 | Billing UI before/after | `ops/ui-audits/2026-07-13-onetime-billing-ui-current-state/report.md`; `ops/ui-audits/2026-07-13-onetime-billing-ui-after/report.md` | Passed |
 | Billing route-module budget | `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` | Passed |
 | Sandbox E2E verifier | `ops/verifier-runs/2026-07-13-onetime-billing-sandbox-e2e/latest.md` | Passed |
@@ -42,6 +42,8 @@ slice for One Time:
 | Branch/PR mergeability | PR #132 at latest verified merge `ea909d4d47b421f71976897f86fdd79b330fced1`; base `10960a86bba30aede6c72075ef1b5eb1a529f54d` | Passed: GitHub merge state `CLEAN`, draft/open |
 | Secret handling | `npm run secrets:audit`; targeted changed-file secret scan | Passed |
 | Generated Operations shell | `npm run operations:check-generated` | Passed |
+| One Time external setup readiness | `npm run one-time:setup:check` | Stripe sandbox readiness passed by redacted readback; overall setup check remains blocked only by campaign send approval fields |
+| Repo-wide audit/run validators | `npm run audit:governance:strict`; `npm run bna:run:validate` | Blocked by unrelated repo-wide audit debt and shared-CRM missing evidence paths outside Billing V2 scope |
 
 ## Commands Used
 
@@ -49,7 +51,14 @@ slice for One Time:
 - `npm run stripe:sandbox-e2e`
 - `npm run stripe:railway-propagate`
 - `npm run stripe:railway-readback`
+- `npm run one-time:setup:check`
+- `npm run test:onetime:focused`
+- `npm run watchdog:actions`
+- `npm run watchdog:links`
+- `npm run watchdog:security`
+- `npm run watchdog:workspace-scope`
 - `node --test tests/one-time-billing-sandbox-e2e-verifier.test.js tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js`
+- `node --test tests/one-time-product-system.test.js tests/rabbi-checkout-access.test.js tests/one-time-brand-helper-isolation.test.js`
 - `node --test tests/one-time-parent-trial-invite.test.js`
 - `node --test tests/one-time-shared-review-branding.test.js tests/agent-review-hub.test.js`
 - `node scripts/watchdog-workspace-scope-guardrails.mjs`
@@ -178,6 +187,8 @@ Latest merged base in this branch is
 - Generated Operations shell check: passed.
 - `npm run bna:run:validate` is still blocked by unrelated shared-CRM evidence
   paths outside this Billing V2 branch scope.
+- `npm run audit:governance:strict` is still blocked by old repo-wide audit
+  packages needing task mapping and is not a Stripe/Billing V2 failure.
 
 ### Remaining Live Blockers
 

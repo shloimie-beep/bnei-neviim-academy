@@ -371,7 +371,7 @@ test('server exposes scoped One Time product APIs and public draft routes', () =
   assert.match(server, /app\.get\(\['\/one-time\/member-login', '\/member', '\/member-portal'\], redirectOneTimeMemberHome\)/);
 });
 
-test('public One Time launch page is indexable, interest-only, and has no checkout call', () => {
+test('public One Time launch page is indexable, signup-first, and has no checkout call', () => {
   assert.match(oneTimeHtml, /<meta name="robots" content="index, follow">/);
   assert.match(oneTimeHtml, /One Time Mishnayos/);
   assert.match(oneTimeHtml, /Give your son a love for learning Torah\./);
@@ -392,7 +392,9 @@ test('public One Time launch page is indexable, interest-only, and has no checko
   assert.match(oneTimeSignupHtml, /signup_mode/);
   assert.match(oneTimeSignupHtml, /REQ-20260713-901/);
   assert.match(oneTimeSignupHtml, /\/api\/one-time\/interest/);
-  assert.doesNotMatch(oneTimeHtml, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
+  assert.match(oneTimeHtml, /href="\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class"/);
+  assert.match(oneTimeHtml, /data-action-id="ACTION-ONETIME-PUBLIC-WHATSAPP"/);
+  assert.doesNotMatch(oneTimeHtml, /https:\/\/wa\.me\//);
   assert.doesNotMatch(oneTimeHtml, /WhatsApp Robot Scheller/);
   assert.doesNotMatch(oneTimeHtml, /Consent is required before submitting/);
   assert.doesNotMatch(oneTimeHtml, /You're on the list\. We will follow up with the current One Time class details\./);
