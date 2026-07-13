@@ -91,6 +91,90 @@ function metadataValue(metadata = {}, ...keys) {
   return '';
 }
 
+function normalizeStateToken(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+function truthyFlag(value) {
+  if (typeof value === 'boolean') return value;
+  return /^(?:1|true|yes|on)$/i.test(String(value || '').trim());
+}
+
+function communicationPreferenceContext({ row = {}, metadata = {}, signupContext = {}, status = '' } = {}) {
+  const reminderPreference = normalizeStateToken(firstNonEmpty(
+    row.communication_preference,
+    row.reminder_preference,
+    signupContext.reminder_preference,
+    metadata.communication_preference,
+    metadata.reminder_preference
+  ));
+  const emailSuppressionState = normalizeStateToken(firstNonEmpty(
+    row.email_suppression_state,
+    signupContext.email_suppression_state,
+    metadata.email_suppression_state,
+    metadata.email_status
+  ));
+  const whatsappSuppressionState = normalizeStateToken(firstNonEmpty(
+    row.whatsapp_suppression_state,
+    signupContext.whatsapp_suppression_state,
+    metadata.whatsapp_suppression_state,
+    metadata.whatsapp_status
+  ));
+  const consentAt = firstNonEmpty(
+    row.reminder_consent_at,
+    signupContext.reminder_consent_at,
+    metadata.reminder_consent_at,
+    metadata.consent_at
+  );
+  const consentPolicyVersion = firstNonEmpty(
+    row.consent_policy_version,
+    signupContext.consent_policy_version,
+    signupContext.reminder_consent_policy_version,
+    metadata.consent_policy_version,
+    metadata.reminder_consent_policy_version
+  );
+  const whatsappSuppressed = truthyFlag(firstNonEmpty(
+    row.whatsapp_suppressed,
+    signupContext.whatsapp_suppressed,
+    metadata.whatsapp_suppressed,
+    metadata.whatsapp_stop,
+    metadata.whatsapp_unsubscribed
+  ));
+  const emailSuppressed = truthyFlag(firstNonEmpty(
+    row.email_suppressed,
+    signupContext.email_suppressed,
+    metadata.email_suppressed,
+    metadata.email_unsubscribed,
+    metadata.unsubscribed
+  ));
+  const blockedStates = new Set(['unsubscribed', 'suppressed', 'invalid', 'bounced', 'stopped', 'stop', 'wrong_number', 'do_not_contact']);
+  let suppressionStatus = 'none_recorded';
+  if (['suppressed', 'unsubscribed', 'invalid'].includes(status)) suppressionStatus = `contact_${status}`;
+  else if (emailSuppressed || blockedStates.has(emailSuppressionState)) suppressionStatus = `email_${emailSuppressionState || 'suppressed'}`;
+  else if (whatsappSuppressed || blockedStates.has(whatsappSuppressionState)) suppressionStatus = `whatsapp_${whatsappSuppressionState || 'suppressed'}`;
+
+  let consentStatus = 'not_recorded';
+  if (reminderPreference === 'none') consentStatus = 'not_required';
+  else if (consentAt || truthyFlag(metadata.contact_consent) || truthyFlag(metadata.class_info_consent)) consentStatus = 'consented';
+
+  return {
+    reminder_preference: reminderPreference || '',
+    consent_status: consentStatus,
+    consent_at: consentAt || null,
+    consent_policy_version: consentPolicyVersion || null,
+    email_suppression_state: emailSuppressionState || '',
+    whatsapp_suppression_state: whatsappSuppressionState || '',
+    suppression_status: suppressionStatus,
+    email_suppressed: emailSuppressed || blockedStates.has(emailSuppressionState),
+    whatsapp_suppressed: whatsappSuppressed || blockedStates.has(whatsappSuppressionState),
+    source: firstNonEmpty(signupContext.source, row.signup_source, metadata.source, 'first_party_crm'),
+  };
+}
+
 function deriveFamilySchoolClassification(row = {}, contactType = '') {
   const raw = String(firstNonEmpty(
     row.family_school_classification,
@@ -183,6 +267,7 @@ function toContactCard(row = {}, options = {}) {
   const timelineActivity = parseObject(row.timeline_activity);
   const classification = deriveFamilySchoolClassification(row, contactType);
   const signupId = firstNonEmpty(signupContext.signup_id, row.signup_id, row.product_lead_id, metadata.product_lead_id, metadata.signup_id);
+  const communicationPreferences = communicationPreferenceContext({ row, metadata, signupContext, status });
 
   return {
     id: String(id || `${source}:${displayName}:${email || phone}`),
@@ -199,6 +284,10 @@ function toContactCard(row = {}, options = {}) {
     email,
     phone,
     tags,
+    communication_preference: communicationPreferences.reminder_preference || 'not_set',
+    consent_status: communicationPreferences.consent_status,
+    suppression_status: communicationPreferences.suppression_status,
+    communication_preferences: communicationPreferences,
     source_label: humanCrmSourceLabel(firstNonEmpty(row.source_label, row.source_channel, row.lead_source, row.source), source),
     last_contact_at: firstNonEmpty(row.last_contact_at, row.last_communication_at, row.updated_at, row.created_at),
     next_follow_up_at: firstNonEmpty(row.next_follow_up_at, row.follow_up_at, row.due_at),

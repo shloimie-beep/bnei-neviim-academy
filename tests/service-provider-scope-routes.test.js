@@ -39,6 +39,8 @@ test('server wires service-provider scope and first-party CRM routes', () => {
   assert.match(server, /bna_product_leads/);
   assert.match(server, /signup_context/);
   assert.match(server, /one_time_public_signup/);
+  assert.match(server, /email_suppression_state/);
+  assert.match(server, /whatsapp_suppression_state/);
   assert.match(server, /'student_link' AS communication_type/);
   assert.match(server, /'membership_access' AS communication_type/);
   assert.match(server, /'class_attendance' AS communication_type/);

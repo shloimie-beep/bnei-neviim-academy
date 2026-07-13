@@ -70,6 +70,10 @@ test('maps first-party CRM reconciled context into one contact DTO', () => {
       status: 'new',
       audience_type: 'school',
       reminder_preference: 'email',
+      reminder_consent_at: '2026-07-13T06:00:00Z',
+      consent_policy_version: 'one-time-reminder-consent-v1',
+      email_suppression_state: 'active',
+      whatsapp_suppression_state: 'active',
       city_label: 'Ramat Beit Shemesh',
       timezone: 'Asia/Jerusalem',
     },
@@ -103,6 +107,10 @@ test('maps first-party CRM reconciled context into one contact DTO', () => {
   assert.equal(card.linked.signup_id, '456');
   assert.equal(card.signup_context.audience_type, 'school');
   assert.equal(card.signup_context.reminder_preference, 'email');
+  assert.equal(card.communication_preference, 'email');
+  assert.equal(card.consent_status, 'consented');
+  assert.equal(card.suppression_status, 'none_recorded');
+  assert.equal(card.communication_preferences.consent_policy_version, 'one-time-reminder-consent-v1');
   assert.equal(card.support.open_ticket_count, 1);
   assert.equal(card.follow_up_task.task_id, 31);
   assert.equal(card.class_context.trial_status, 'trial_or_free_class_interest');
@@ -125,6 +133,30 @@ test('CRM source labels hide internal table names', () => {
   });
   assert.equal(card.source_label, 'Lead intake');
   assert.doesNotMatch(card.source_label, /^bna_/);
+});
+
+test('CRM contact DTO exposes suppression and opt-out context without raw internals', () => {
+  const card = toContactCard({
+    id: 'bna_contacts:17',
+    contact_id: 17,
+    source_table: 'bna_contacts',
+    display_name: 'Suppressed Contact',
+    email: 'suppressed@example.test',
+    status: 'new',
+    metadata: {
+      reminder_preference: 'whatsapp',
+      reminder_consent_at: '2026-07-13T06:05:00Z',
+      whatsapp_suppression_state: 'wrong_number',
+      whatsapp_suppressed: true,
+    },
+  }, { source: 'bna_contacts', workspace_key: 'rabbi_sheller_provider', project_key: 'one_time_mishnah_class' });
+
+  assert.equal(card.communication_preference, 'whatsapp');
+  assert.equal(card.consent_status, 'consented');
+  assert.equal(card.suppression_status, 'whatsapp_wrong_number');
+  assert.equal(card.communication_preferences.whatsapp_suppressed, true);
+  assert.equal(card.communication_preferences.email_suppressed, false);
+  assert.equal(card.raw, undefined);
 });
 
 test('canonical CRM list collapses legacy lead duplicate under contact card', () => {
