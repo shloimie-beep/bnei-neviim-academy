@@ -69,6 +69,20 @@ test('Operations CRM local update form is first-party only and does not auto-cre
   assert.match(server, /const shouldCreateFollowUpTask = body\.create_follow_up_task === true \|\| String\(body\.create_follow_up_task \|\| ''\)\.toLowerCase\(\) === 'true';/);
 });
 
+test('Operations CRM follow-up actions are explicit and can clear persisted dates', () => {
+  assert.match(operations, /data-action-id="ACTION-CRM-SET-FOLLOW-UP"/);
+  assert.match(operations, /data-action-id="ACTION-CRM-CHANGE-FOLLOW-UP"/);
+  assert.match(operations, /data-action-id="ACTION-CRM-CLEAR-FOLLOW-UP"/);
+  assert.match(operations, /const submitterActionId = event\.submitter\?\.dataset\?\.actionId \|\| 'ACTION-CRM-CONTACT-SAFE-UPDATE';/);
+  assert.match(operations, /submitterActionId === 'ACTION-CRM-CLEAR-FOLLOW-UP'[\s\S]*\? ''/);
+  assert.match(operations, /'ACTION-CRM-SET-FOLLOW-UP', 'ACTION-CRM-CHANGE-FOLLOW-UP'/);
+  assert.match(operations, /crm_action_id: submitterActionId/);
+  assert.match(server, /const hasNextFollowUpField = Object\.prototype\.hasOwnProperty\.call\(body, 'next_follow_up_at'\)[\s\S]*Object\.prototype\.hasOwnProperty\.call\(body, 'next_follow_up_date'\);/);
+  assert.match(server, /if \(hasNextFollowUpField\) addField\('next_follow_up_date', nextFollowUpAt \|\| null\);/);
+  assert.match(server, /if \(hasNextFollowUpField\) metadata\.next_follow_up_at = nextFollowUpAt \|\| null;/);
+  assert.match(server, /crm_action_id: crmActionId \|\| null/);
+});
+
 test('Operations CRM Add Contact action is first-party and workspace-scoped', () => {
   assert.match(operations, /let firstPartyCrmAddContactOpen = false;/);
   assert.match(operations, /data-action-id="ACTION-CRM-ADD-CONTACT"/);

@@ -50146,6 +50146,8 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
   const noteText = limitText(String(body.note || body.note_body || body.body || '').trim(), 4000);
   const noteSummary = limitText(String(body.note_summary || body.summary || (noteText ? `CRM note: ${noteText}` : '')).trim(), 240);
   const nextFollowUpAt = String(body.next_follow_up_at || body.next_follow_up_date || '').trim();
+  const hasNextFollowUpField = Object.prototype.hasOwnProperty.call(body, 'next_follow_up_at')
+    || Object.prototype.hasOwnProperty.call(body, 'next_follow_up_date');
   const lifecycleStage = limitText(String(body.lifecycle_stage || body.status || '').trim(), 80);
   const assignedOwner = limitText(String(body.assigned_owner || body.owner || '').trim(), 120);
   const displayNameUpdate = limitText(String(body.display_name || body.full_name || body.parent_name || body.name || '').trim(), 180);
@@ -50153,6 +50155,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
   const phoneUpdate = limitText(String(body.phone || body.parent_phone || body.primary_phone || '').trim(), 80);
   const familySchoolClassification = limitText(String(body.family_school_classification || body.audience_type || body.signup_as || '').trim(), 80);
   const relationshipContext = limitText(String(body.relationship_context || body.relationship || '').trim(), 120);
+  const crmActionId = limitText(String(body.crm_action_id || body.action_id || '').trim(), 120);
   const shouldCreateFollowUpTask = body.create_follow_up_task === true || String(body.create_follow_up_task || '').toLowerCase() === 'true';
   const tags = normalizeTextArray(body.tags);
 
@@ -50177,7 +50180,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
         fields.push(`${field} = $${values.length}`);
       };
       if (lifecycleStage) addField('status', lifecycleStage);
-      if (nextFollowUpAt) addField('next_follow_up_date', nextFollowUpAt);
+      if (hasNextFollowUpField) addField('next_follow_up_date', nextFollowUpAt || null);
       if (assignedOwner) addField('owner', assignedOwner);
       if (tags.length) addField('tags', tags);
       if (displayNameUpdate) addField('parent_name', displayNameUpdate);
@@ -50210,7 +50213,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
         updated = (await pool.query('SELECT * FROM bna_parent_leads WHERE id = $1', [contactRef.id])).rows[0] || null;
       }
 
-      if (noteSummary || noteText || nextFollowUpAt || lifecycleStage || tags.length) {
+      if (noteSummary || noteText || hasNextFollowUpField || lifecycleStage || tags.length) {
         const result = await pool.query(
           `INSERT INTO bna_contact_communications (
              project_id, contact_type, lead_id, channel, direction, summary, body,
@@ -50233,6 +50236,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
               crm_contact_id: req.params.id,
               workspace_key: workspaceKey,
               project_key: scope.project_key,
+              crm_action_id: crmActionId || null,
               no_send: true,
               external_write_performed: false,
             }),
@@ -50241,6 +50245,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
               next_follow_up_at: nextFollowUpAt || null,
               tags,
               assigned_owner: assignedOwner || null,
+              crm_action_id: crmActionId || null,
               no_send: true,
               external_write_performed: false,
             }),
@@ -50277,9 +50282,10 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
       if (emailUpdate) addField('primary_email', emailUpdate);
       if (phoneUpdate) addField('primary_phone', phoneUpdate);
       if (assignedOwner) metadata.assigned_owner = assignedOwner;
-      if (nextFollowUpAt) metadata.next_follow_up_at = nextFollowUpAt;
+      if (hasNextFollowUpField) metadata.next_follow_up_at = nextFollowUpAt || null;
       if (familySchoolClassification) metadata.family_school_classification = familySchoolClassification;
       if (relationshipContext) metadata.relationship_context = relationshipContext;
+      if (crmActionId) metadata.crm_action_id = crmActionId;
       if (familySchoolClassification || relationshipContext) {
         metadata.relationship_linked_at = new Date().toISOString();
         metadata.relationship_link_source = 'operations_crm_workbench';
@@ -50312,7 +50318,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
         return res.status(404).json({ success: false, error: 'CRM contact not found in this workspace.', external_write_performed: false });
       }
 
-      if (noteSummary || noteText || nextFollowUpAt || lifecycleStage || tags.length) {
+      if (noteSummary || noteText || hasNextFollowUpField || lifecycleStage || tags.length) {
         const result = await pool.query(
           `INSERT INTO bna_contact_pipeline_events (
              workspace_id, contact_id, event_type, pipeline_status, summary, source, metadata
@@ -50330,6 +50336,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
               next_follow_up_at: nextFollowUpAt || null,
               tags,
               assigned_owner: assignedOwner || null,
+              crm_action_id: crmActionId || null,
               no_send: true,
               external_write_performed: false,
             }),

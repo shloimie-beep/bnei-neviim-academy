@@ -7467,6 +7467,10 @@ function renderFirstPartyCrmLocalUpdateForm(card = {}, readOnly = false) {
             <label class="crm-local-update-wide">Add note<textarea name="note_body" rows="3" placeholder="No notes yet."></textarea></label>
             <div class="task-actions">
                 <button class="task-action primary" type="submit" data-action-id="ACTION-CRM-CONTACT-SAFE-UPDATE" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>${firstPartyCrmSaving ? 'Saving...' : 'Save CRM update'}</button>
+                ${followUpValue
+                    ? `<button class="task-action" type="submit" data-action-id="ACTION-CRM-CHANGE-FOLLOW-UP" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>Change follow-up</button>`
+                    : `<button class="task-action" type="submit" data-action-id="ACTION-CRM-SET-FOLLOW-UP" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>Schedule follow-up</button>`}
+                ${followUpValue ? `<button class="task-action" type="submit" data-action-id="ACTION-CRM-CLEAR-FOLLOW-UP" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>Clear follow-up</button>` : ''}
             </div>
         </form>
     `;
@@ -7949,11 +7953,21 @@ async function saveFirstPartyCrmAction(event, contactId) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
+    const submitterActionId = event.submitter?.dataset?.actionId || 'ACTION-CRM-CONTACT-SAFE-UPDATE';
     const noteBody = String(data.get('note_body') || '').trim();
+    const followUpDate = submitterActionId === 'ACTION-CRM-CLEAR-FOLLOW-UP'
+        ? ''
+        : String(data.get('next_follow_up_at') || '').trim();
     const tags = String(data.get('tags') || '')
         .split(',')
         .map(tag => tag.trim())
         .filter(Boolean);
+    if (['ACTION-CRM-SET-FOLLOW-UP', 'ACTION-CRM-CHANGE-FOLLOW-UP'].includes(submitterActionId) && !followUpDate) {
+        firstPartyCrmError = 'Choose a follow-up date before saving.';
+        firstPartyCrmNotice = '';
+        render();
+        return;
+    }
     firstPartyCrmSaving = true;
     firstPartyCrmError = '';
     firstPartyCrmNotice = '';
@@ -7966,11 +7980,14 @@ async function saveFirstPartyCrmAction(event, contactId) {
             phone: data.get('phone') || '',
             status: data.get('status') || '',
             lifecycle_stage: data.get('status') || '',
-            next_follow_up_at: data.get('next_follow_up_at') || '',
+            next_follow_up_at: followUpDate,
             assigned_owner: data.get('assigned_owner') || '',
             tags,
             create_follow_up_task: false,
-            note_summary: noteBody ? `CRM note for selected contact` : 'CRM contact updated',
+            crm_action_id: submitterActionId,
+            note_summary: submitterActionId === 'ACTION-CRM-CLEAR-FOLLOW-UP'
+                ? 'CRM follow-up cleared'
+                : (noteBody ? `CRM note for selected contact` : 'CRM contact updated'),
             note_body: noteBody,
             no_send: true,
             external_write_performed: false

@@ -2956,6 +2956,63 @@
       ]
     },
     {
+      "action_id": "ACTION-CRM-SET-FOLLOW-UP",
+      "label": "Schedule follow-up",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-SET-FOLLOW-UP\"]",
+      "expected_behavior": "Schedules a first-party CRM follow-up date for the selected workspace contact only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the explicit Schedule follow-up action uses the scoped CRM PATCH route with create_follow_up_task=false and no external-write flags."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-CHANGE-FOLLOW-UP",
+      "label": "Change follow-up",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-CHANGE-FOLLOW-UP\"]",
+      "expected_behavior": "Changes the existing first-party CRM follow-up date for the selected workspace contact only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the explicit Change follow-up action uses the scoped CRM PATCH route with create_follow_up_task=false and no external-write flags."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-CLEAR-FOLLOW-UP",
+      "label": "Clear follow-up",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-CLEAR-FOLLOW-UP\"]",
+      "expected_behavior": "Clears the selected workspace contact's first-party CRM follow-up date only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the explicit Clear follow-up action can send an empty next_follow_up_at through the scoped CRM PATCH route and the server persists null instead of ignoring the update."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-CRM-CONTACT-SAFE-UPDATE",
       "label": "Save CRM update",
       "surface": "operations_contacts",
