@@ -40560,3 +40560,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no live charge, refund, notice send, invoice/receipt send,
   access mutation, provider mutation, deploy, credential mutation, production
   data mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 master-refresh PR readback verified
+
+- Verified draft PR #132 after the current-master merge push. GitHub reported
+  head `cc3e4f3a6b7483d692c44691e9e4cf22bb5a063c`, base
+  `dd018f6906b81926a215c63487ef2a230a79be49`, state `OPEN`, draft `true`, and
+  merge state `CLEAN`.
+- Updated the Billing V2 release handoff and requirement register so
+  `REQ-20260713-962` no longer claims the master-refresh PR readback is
+  pending.
+- Remaining gates are unchanged: deploy/live smoke, exact `billing_start_at`,
+  final notice sender/copy/cohort approval, final live Stripe approval,
+  campaign send approval, and explicit final launch authorization.
+- Guardrails: no live charge, refund, notice send, invoice/receipt send,
+  access mutation, provider mutation, deploy, credential mutation, production
+  data mutation, or secret exposure was performed.

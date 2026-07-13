@@ -1,11 +1,11 @@
 # One Time Provider Billing Platform V2 Release Handoff
 
-Status: draft PR master-refreshed; live activation blocked
+Status: draft PR master-refreshed and clean at readback; live activation blocked
 Branch: `codex/onetime-rosh-hashanah-billing-platform-v2`
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Primary requirements: `REQ-20260713-950` through `REQ-20260713-963`
-Current PR head: master-refresh merge commit containing this handoff update;
-exact pushed SHA is verified in PR closeout.
+Latest verified master-refresh PR head:
+`cc3e4f3a6b7483d692c44691e9e4cf22bb5a063c`
 Current master/base SHA: `dd018f6906b81926a215c63487ef2a230a79be49`
 Draft PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/132
 Release owner: release/integration agent after final operator launch packet
@@ -40,7 +40,7 @@ slice for One Time:
 | Billing route-module budget | `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` | Passed |
 | Sandbox E2E verifier | `ops/verifier-runs/2026-07-13-onetime-billing-sandbox-e2e/latest.md` | Passed |
 | Hosted Railway Stripe readback | `ops/deploy-readbacks/2026-07-13-onetime-billing-railway-readback.md`; `ops/deploy-readbacks/2026-07-13-onetime-billing-railway-propagation.md` | Passed for sandbox/test config; no deploy triggered |
-| Branch/PR mergeability | PR #132 master-refresh merge commit containing this handoff update; base `dd018f6906b81926a215c63487ef2a230a79be49` | Final GitHub merge-state readback required after pushing the merge commit; draft/open |
+| Branch/PR mergeability | PR #132 head `cc3e4f3a6b7483d692c44691e9e4cf22bb5a063c`; base `dd018f6906b81926a215c63487ef2a230a79be49` | Passed: GitHub merge state `CLEAN`, draft/open, verified after master-refresh push |
 | Secret handling | `npm run secrets:audit`; targeted changed-file secret scan | Passed |
 | Generated Operations shell | `npm run operations:check-generated` | Passed |
 | One Time external setup readiness | `npm run one-time:setup:check` | Stripe sandbox readiness passed by redacted readback; overall setup check remains blocked only by campaign send approval fields |
@@ -113,11 +113,10 @@ launch packet with:
 ## Draft PR
 
 Draft PR URL: https://github.com/shloimie-beep/bnei-neviim-academy/pull/132
-Draft PR merge state: final readback required after pushing the master-refresh
-merge commit containing this handoff update.
+Draft PR merge state: `CLEAN`, verified after the master-refresh merge push.
 Latest merged base in this branch is
-`dd018f6906b81926a215c63487ef2a230a79be49`; the exact pushed PR head SHA is
-reported in the PR closeout after the merge commit is created and pushed.
+`dd018f6906b81926a215c63487ef2a230a79be49`; verified master-refresh PR head was
+`cc3e4f3a6b7483d692c44691e9e4cf22bb5a063c`.
 
 ## Final Report
 
