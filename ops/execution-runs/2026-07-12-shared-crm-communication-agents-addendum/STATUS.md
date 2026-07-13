@@ -479,3 +479,41 @@ Current status: `active`
   `REQ-20260713-906` secure aliases; no external send, public auto-reply
   enablement, credential mutation, payment/access mutation, raw private payload
   logging, or destructive production mutation was performed.
+
+## 2026-07-13 - Communication-Agent Model Closeout
+
+- `REQ-20260712-309` is Done.
+- Runtime commit `98e449a5777158a1125ddfbcbd7925dd489d8f18` added a dedicated
+  communication-agent control model, and follow-up commit
+  `1e6a977818f1393fd3721d796d9c025e0ac95eb9` stabilized the model test.
+- `server.js` now creates `bna_communication_agents`,
+  `bna_communication_agent_versions`,
+  `bna_communication_agent_knowledge_sources`,
+  `bna_communication_agent_channel_bindings`, and
+  `bna_communication_agent_events` separately from `bna_agent_profiles`.
+- The One Time seed publishes `one_time_parent_information_agent` version
+  `2026-07-13-v3`, an approved public knowledge source, an email `draft`
+  binding, and a WhatsApp `capture_only` binding with
+  `create_task_on_inbound=false`.
+- The model has explicit version, instruction, policy, knowledge, formatting,
+  health, and event fields and rejects secret-shaped JSON values; provider
+  keys/tokens remain in Railway/connectors.
+- Clean-worktree verification passed: syntax checks, focused communication
+  agent/inbound/outbox/WAPI suite `37/37`, and secrets audit over 9522 tracked
+  paths.
+- One Time Railway deployment `7a02b4b9-c2cc-48ef-8376-e7755266836d` reached
+  `SUCCESS`; One Time `/api/deploy-info` returned exact SHA
+  `1e6a977818f1393fd3721d796d9c025e0ac95eb9`.
+- BNA `/api/deploy-info` returned exact SHA
+  `1e6a977818f1393fd3721d796d9c025e0ac95eb9` and BNA taxonomy smoke passed;
+  Railway doctor access passed, but the current Railway deployment status still
+  reported `BUILDING` during closeout.
+- Live proof passed: One Time separate-instance smoke, One Time CRM workbench
+  smoke, One Time provider route-module smoke, and BNA workspace taxonomy smoke.
+- Evidence reports: `ops/live-smokes/2026-07-13T14-04-45-139Z-one-time-operations-crm-workbench-live-smoke.md`,
+  `ops/live-smokes/2026-07-13T14-04-45-800Z-onetime-provider-route-module-live-smoke.md`,
+  and `ops/live-smokes/2026-07-13T14-04-45-310Z-operations-workspace-taxonomy-live-smoke.md`.
+- Owner-only live email/WhatsApp sends remain blocked by
+  `REQ-20260713-906` secure aliases; no external send, public auto-reply
+  enablement, provider mutation, credential mutation, payment/access mutation,
+  raw private payload logging, or destructive production mutation was performed.

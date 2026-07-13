@@ -1948,22 +1948,61 @@
       "depends_on": [
         "REQ-20260712-305"
       ],
-      "status": "not_started",
-      "implementation_status": "missing",
+      "status": "done",
+      "implementation_status": "Done: communication agents now have a dedicated first-party control model separate from bna_agent_profiles/build/QA agents. The model creates communication agents, versions, knowledge sources, channel bindings, and events with explicit instruction/policy/knowledge/binding fields, strict JSON no-secret checks, active version linkage, and seeded One Time email/WhatsApp bindings that do not store provider/API credentials or stale pricing/portal/trial claims. Deployed and live-smoked at SHA 1e6a977818f1393fd3721d796d9c025e0ac95eb9.",
       "can_continue_without_operator": true,
-      "next_action": "Continue REQ-20260712-309 after dependent earlier batches are validated.",
+      "next_action": "Continue REQ-20260712-310 and later Agents UI/private Rabbi Telegram slices. Owner-only real email/WhatsApp sends remain blocked by REQ-20260713-906 secure aliases.",
       "acceptance_criteria": [
         "Communication agents, versions, knowledge sources, channel bindings, and events are modeled separately from Codex/build/QA agents and never store provider/API secrets."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "server.js createCommunicationAgentModelSQL creates bna_communication_agents, bna_communication_agent_versions, bna_communication_agent_knowledge_sources, bna_communication_agent_channel_bindings, and bna_communication_agent_events separately from bna_agent_profiles.",
+        "server.js initDb runs createCommunicationAgentModelSQL before provider/service setup.",
+        "bna_agent_profiles remains limited to Codex Builder, Browser QA, Playwright Verifier, Research Agent, and Operator agent types.",
+        "Communication-agent JSON fields reject secret-shaped API key/token/password/credential strings while provider values remain in Railway/connectors.",
+        "One Time seed publishes one_time_parent_information_agent version 2026-07-13-v3, approved public program facts, email draft binding, and WhatsApp capture-only binding with create_task_on_inbound=false.",
+        "src/lib/bna/crm/communication-agent-runtime.js stamps inbound metadata with model_family=communication_agent, control_plane_table=bna_communication_agents, build_qa_agent_profile_table=null, and external_provider_connectors_only storage policy.",
+        "One Time CRM workbench live smoke report: ops/live-smokes/2026-07-13T14-04-45-139Z-one-time-operations-crm-workbench-live-smoke.md.",
+        "One Time provider route-module live smoke report: ops/live-smokes/2026-07-13T14-04-45-800Z-onetime-provider-route-module-live-smoke.md.",
+        "BNA workspace taxonomy live smoke report: ops/live-smokes/2026-07-13T14-04-45-310Z-operations-workspace-taxonomy-live-smoke.md."
+      ],
+      "verification": [
+        "PASS clean-worktree node --check server.js",
+        "PASS clean-worktree node --check src/lib/bna/crm/communication-agent-runtime.js",
+        "PASS clean-worktree node --test tests/communication-agent-model.test.js tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/one-time-delivery-outbox.test.js tests/service-provider-lead-bot.test.js tests/one-time-wapi-scope-contract.test.js (37/37)",
+        "PASS clean-worktree npm run secrets:audit (9522 tracked paths, 0 secret-risk files)",
+        "PASS main-worktree npm run bna:run:validate before runtime commit",
+        "PASS staged git diff --cached --check before runtime commit",
+        "PASS git push origin master for runtime commit 98e449a57 and test-stability commit 1e6a97781",
+        "PASS One Time Railway doctor: deployment 7a02b4b9-c2cc-48ef-8376-e7755266836d SUCCESS",
+        "PASS One Time deploy-info exact SHA 1e6a977818f1393fd3721d796d9c025e0ac95eb9 target_app=one-time",
+        "PASS BNA deploy-info exact SHA 1e6a977818f1393fd3721d796d9c025e0ac95eb9 target_app=bna",
+        "NOTE BNA Railway doctor access passed, but current deployment status still reported BUILDING during closeout; exact-SHA live deploy-info and BNA taxonomy smoke passed.",
+        "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1e6a977818f1393fd3721d796d9c025e0ac95eb9",
+        "PASS npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 1e6a977818f1393fd3721d796d9c025e0ac95eb9",
+        "PASS npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 1e6a977818f1393fd3721d796d9c025e0ac95eb9",
+        "PASS npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha 1e6a977818f1393fd3721d796d9c025e0ac95eb9"
+      ],
       "implementation_files": [
         "server.js",
-        "src/lib/bna/provider-lead-bot.js"
+        "src/lib/bna/crm/communication-agent-runtime.js",
+        "tests/communication-agent-model.test.js",
+        "src/lib/bna/agent-control.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T23:18:00+03:00",
-      "blocker": ""
+      "updated_at": "2026-07-13T17:09:00+03:00",
+      "blocker": "",
+      "implementation_commit": "98e449a5777158a1125ddfbcbd7925dd489d8f18",
+      "pushed_commit": "1e6a977818f1393fd3721d796d9c025e0ac95eb9",
+      "deployed_commit": "1e6a977818f1393fd3721d796d9c025e0ac95eb9",
+      "deployment_evidence": [
+        "One Time Railway deployment 7a02b4b9-c2cc-48ef-8376-e7755266836d reached SUCCESS.",
+        "One Time production verified at https://join.onetimeonetime.com/api/deploy-info with commit_sha=1e6a977818f1393fd3721d796d9c025e0ac95eb9 and target_app=one-time.",
+        "BNA production verified at https://bneineviimacademy.org/api/deploy-info with commit_sha=1e6a977818f1393fd3721d796d9c025e0ac95eb9 and target_app=bna.",
+        "BNA Railway doctor access passed for skillful-motivation / production, but the current deployment status still reported BUILDING during closeout; exact-SHA live metadata and BNA taxonomy smoke passed.",
+        "One Time live smokes passed: separate-instance, Operations CRM workbench, provider route-module.",
+        "BNA live workspace taxonomy smoke passed."
+      ]
     },
     {
       "id": "REQ-20260712-310",

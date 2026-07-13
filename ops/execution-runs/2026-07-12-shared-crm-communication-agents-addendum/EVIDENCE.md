@@ -615,6 +615,31 @@
   payment/access mutation, raw private payload logging, or destructive
   production mutation was performed.
 
+## Communication-Agent Model Closeout
+
+- Requirement: `REQ-20260712-309`.
+- Runtime commits: `98e449a5777158a1125ddfbcbd7925dd489d8f18` and deployed
+  head `1e6a977818f1393fd3721d796d9c025e0ac95eb9`.
+- Model evidence: `server.js` creates dedicated communication-agent tables,
+  not `bna_agent_profiles`, with explicit version, prompt/instruction/policy,
+  knowledge, binding, health, and event fields.
+- Runtime metadata evidence: `src/lib/bna/crm/communication-agent-runtime.js`
+  stamps inbound One Time email/WhatsApp metadata with
+  `model_family=communication_agent`, `control_plane_table=bna_communication_agents`,
+  `build_qa_agent_profile_table=null`, and
+  `provider_secret_storage=external_provider_connectors_only`.
+- Test evidence: clean-worktree syntax checks, focused suite `37/37`, secrets
+  audit over 9522 tracked paths, and `npm run bna:run:validate`.
+- Deployment evidence: One Time deployment
+  `7a02b4b9-c2cc-48ef-8376-e7755266836d` reached `SUCCESS`; One Time and BNA
+  deploy-info returned exact SHA `1e6a977818f1393fd3721d796d9c025e0ac95eb9`.
+- Live smoke evidence: `ops/live-smokes/2026-07-13T14-04-45-139Z-one-time-operations-crm-workbench-live-smoke.md`,
+  `ops/live-smokes/2026-07-13T14-04-45-800Z-onetime-provider-route-module-live-smoke.md`,
+  and `ops/live-smokes/2026-07-13T14-04-45-310Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no external send, no public auto-reply enablement, no credential/
+  payment/access mutation, no destructive CRM write, no provider mutation, and
+  no raw private payload logging.
+
 ## One Time WAPI Zero-Task Contact Capture Closeout
 
 - `REQ-20260712-308` is Done for code/deployment proof.

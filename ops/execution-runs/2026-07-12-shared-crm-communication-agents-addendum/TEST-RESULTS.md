@@ -1075,3 +1075,23 @@
 - PASS `npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha 7ec31290c08ede0957dbd60b2c3253979253feba`; report `ops/live-smokes/2026-07-13T13-44-53-216Z-operations-workspace-taxonomy-live-smoke.md`.
 - `REQ-20260712-308` marked Done for code/deploy proof; owner-only real WAPI send/inbound proof remains blocked by `REQ-20260713-906`.
 - Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw contact/message logging, or destructive production mutation was performed by this deployed closeout proof.
+
+## Communication-Agent Model Closeout - 2026-07-13
+
+- PASS clean-worktree `node --check server.js`.
+- PASS clean-worktree `node --check src/lib/bna/crm/communication-agent-runtime.js`.
+- PASS clean-worktree `node --test tests/communication-agent-model.test.js tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/one-time-delivery-outbox.test.js tests/service-provider-lead-bot.test.js tests/one-time-wapi-scope-contract.test.js`; 37/37 tests passed.
+- PASS clean-worktree `npm run secrets:audit`; 9522 tracked paths checked and 0 tracked secret-risk files found.
+- PASS main-worktree `npm run bna:run:validate` before runtime commit.
+- PASS staged `git diff --cached --check` and staged `server.js` syntax check before runtime commit.
+- PASS `git push origin master` for runtime commit `98e449a5777158a1125ddfbcbd7925dd489d8f18` and final deployed SHA `1e6a977818f1393fd3721d796d9c025e0ac95eb9`.
+- PASS One Time Railway doctor; deployment `7a02b4b9-c2cc-48ef-8376-e7755266836d` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned exact SHA `1e6a977818f1393fd3721d796d9c025e0ac95eb9`, `target_app=one-time`.
+- PASS BNA live `/api/deploy-info`; returned exact SHA `1e6a977818f1393fd3721d796d9c025e0ac95eb9`, `target_app=bna`.
+- NOTE BNA Railway doctor access passed, but current deployment status still reported `BUILDING`; live deploy-info and taxonomy smoke proved the exact SHA.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1e6a977818f1393fd3721d796d9c025e0ac95eb9`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 1e6a977818f1393fd3721d796d9c025e0ac95eb9`; report `ops/live-smokes/2026-07-13T14-04-45-139Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 1e6a977818f1393fd3721d796d9c025e0ac95eb9`; report `ops/live-smokes/2026-07-13T14-04-45-800Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha 1e6a977818f1393fd3721d796d9c025e0ac95eb9`; report `ops/live-smokes/2026-07-13T14-04-45-310Z-operations-workspace-taxonomy-live-smoke.md`.
+- `REQ-20260712-309` marked Done for code/deploy proof; owner-only real email/WhatsApp send proof remains blocked by `REQ-20260713-906`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw contact/message logging, or destructive production mutation was performed by this deployed closeout proof.
