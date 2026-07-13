@@ -39907,3 +39907,28 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   found `phone_candidate_count=2` and
   `selected_contact_whatsapp_thread_match=true` with no synthetic data, sends,
   or external writes.
+
+## 2026-07-13 - Shared CRM direct signup-record Activity DTO deployed
+
+- Added redacted direct `signups` rows to selected-contact Activity as
+  `signup_record` DTOs, scoped to the One Time workspace/project and matched to
+  canonical contacts or legacy One Time lead references.
+- Kept `signup_record` rows out of selected-contact Conversations and Tasks;
+  the DTO source context pins no-send/no-access/no-payment guardrails.
+- Runtime app-code commit `dab78d4e0b05b6e59affe08864e7207d2235652f` and final
+  deployed/proof commit `1318c67da0d79e7a158aa0b13d3085906ffcdf15` are pushed
+  to `origin/master`.
+- Deployed to One Time Railway deployment
+  `af6b2ea0-721e-42de-b487-fe9ef7ea27c8` and BNA Railway deployment
+  `0fead06b-bad3-4ba9-a680-806f83397dec`; both deploy-info endpoints returned
+  the exact SHA.
+- Verification passed: focused CRM/provider tests `31/31`, generated-shell
+  check, action/protocol/secrets watchdogs, run validation, exact-SHA One Time
+  route/CRM/provider smokes, BNA taxonomy smoke, WhatsApp DTO regression,
+  signup-context DTO regression, signup-record DTO smoke, and One Time
+  performance gate.
+- Targeted signup-record DTO live smoke:
+  `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-signup-record-dto-live-smoke.md`
+  inspected 12 scoped cards and recorded `skipped_no_live_signup_records`
+  because the sampled production timelines had no direct signup rows; no
+  synthetic data, sends, CRM mutations, or external writes were performed.

@@ -882,3 +882,31 @@
 - PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T10-34-52-326Z-operations-workspace-taxonomy-live-smoke.md`.
 - PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 35a0a5d2e0ad157e383537dfbb1518d2a8df33bd`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
 - Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw phone/message/contact logging, or production data mutation was performed by this DTO smoke.
+
+## CRM Direct Signup Record Activity DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/crm/contact-service.js`.
+- PASS `node --check scripts/smoke-onetime-crm-signup-record-dto-live.mjs`.
+- PASS package JSON parse after adding `app:smoke:onetime-crm-signup-record-dto`.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/service-provider-scope-routes.test.js`; 22/22 tests passed.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js`; 31/31 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; finding_count 0.
+- PASS `npm run secrets:audit`; 9369 tracked paths checked.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for final deployed/proof commit `1318c67da0d79e7a158aa0b13d3085906ffcdf15`.
+- PASS One Time Railway deploy/doctor; deployment `af6b2ea0-721e-42de-b487-fe9ef7ea27c8` reached `SUCCESS`.
+- PASS BNA Railway deploy/doctor; deployment `0fead06b-bad3-4ba9-a680-806f83397dec` reached `SUCCESS`.
+- PASS One Time and BNA live `/api/deploy-info`; both returned `1318c67da0d79e7a158aa0b13d3085906ffcdf15`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1318c67da0d79e7a158aa0b13d3085906ffcdf15`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 1318c67da0d79e7a158aa0b13d3085906ffcdf15`; report `ops/live-smokes/2026-07-13T10-52-38-477Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 1318c67da0d79e7a158aa0b13d3085906ffcdf15`; report `ops/live-smokes/2026-07-13T10-52-38-292Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-signup-record-dto`; report `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-signup-record-dto-live-smoke.md` recorded `skipped_no_live_signup_records` after inspecting 12 scoped cards and created no synthetic data.
+- PASS `npm run app:smoke:onetime-crm-whatsapp-thread-dto`; report `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-whatsapp-thread-dto-live-smoke.md` with `phone_candidate_count=2` and `selected_contact_whatsapp_thread_match=true`.
+- PASS `npm run app:smoke:onetime-crm-signup-context-dto`; report `ops/live-smokes/2026-07-13T10-53-15-856Z-one-time-crm-signup-context-dto-live-smoke.md` with `signup_context_match=true`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T10-52-56-884Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 1318c67da0d79e7a158aa0b13d3085906ffcdf15`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw signup private data logging, or production data mutation was performed by this DTO smoke.

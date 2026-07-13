@@ -289,3 +289,16 @@ Current status: `active`
 - Live proof passed: exact-SHA One Time separate-instance smoke, One Time CRM workbench smoke, One Time provider route-module smoke, BNA workspace taxonomy smoke, One Time performance gate, signup-context regression smoke, and the new WhatsApp DTO smoke.
 - Targeted WhatsApp DTO live probe wrote `ops/live-smokes/2026-07-13T10-35-15-518Z-one-time-crm-whatsapp-thread-dto-live-smoke.md`; production returned `phone_candidate_count=2` and `selected_contact_whatsapp_thread_match=true` without synthetic data or external writes.
 - Owner-only email/WhatsApp sends remain blocked only by missing secure owner-test aliases; no owner-test send or public auto-reply activation was attempted in this slice.
+
+## CRM Direct Signup Record Activity DTO - 2026-07-13
+
+- `REQ-20260712-302` remains in progress, with the direct signup-record Activity DTO slice implemented by runtime commit `dab78d4e0b05b6e59affe08864e7207d2235652f` and deployed/proved at `1318c67da0d79e7a158aa0b13d3085906ffcdf15`.
+- Selected-contact Activity timelines now include scoped direct `signups` rows as redacted `signup_record` DTOs for canonical contacts and legacy One Time leads.
+- Conversations and Tasks continue to exclude `signup_record` aggregate rows, so direct signup records do not masquerade as message threads or follow-up tasks.
+- DTO source context preserves no-send/no-access/no-payment guardrails: `no_send=true`, `external_write_performed=false`, `no_checkout=true`, `no_access_granted=true`, `student_name_returned=false`, `payment_link_returned=false`, and `checkout_session_returned=false`.
+- Added `app:smoke:onetime-crm-signup-record-dto` for redacted read-only production proof.
+- BNA Railway deployment `0fead06b-bad3-4ba9-a680-806f83397dec` reached `SUCCESS`; One Time Railway deployment `af6b2ea0-721e-42de-b487-fe9ef7ea27c8` reached `SUCCESS`.
+- Both live deploy-info endpoints returned `commit_sha=1318c67da0d79e7a158aa0b13d3085906ffcdf15` with target apps `bna` and `one-time`.
+- Live proof passed: exact-SHA One Time separate-instance smoke, One Time CRM workbench smoke, One Time provider route-module smoke, BNA workspace taxonomy smoke, WhatsApp DTO regression smoke, signup-context DTO regression smoke, and One Time performance gate.
+- Targeted signup-record DTO live probe wrote `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-signup-record-dto-live-smoke.md`; production returned 12 scoped cards but no live direct signup rows in the inspected timelines, so it recorded `skipped_no_live_signup_records` without creating synthetic data.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw signup private data logging, or production data mutation was performed by this DTO smoke.
