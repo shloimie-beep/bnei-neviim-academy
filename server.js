@@ -29676,6 +29676,40 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
   return rows;
 }
 
+const CRM_TIMELINE_SUPPRESSION_STATES = "'unsubscribed', 'suppressed', 'invalid', 'bounced', 'stopped', 'stop', 'wrong_number', 'do_not_contact'";
+const CRM_TIMELINE_TRUTHY_STATES = "'1', 'true', 'yes', 'on'";
+
+function crmTimelineSuppressionParts(alias) {
+  const metadata = `${alias}.metadata`;
+  const emailState = `lower(COALESCE(${metadata}->>'email_suppression_state', ${metadata}->>'email_unsubscribed', ${metadata}->>'unsubscribed', ''))`;
+  const emailTruthy = `lower(COALESCE(${metadata}->>'email_suppressed', ${metadata}->>'email_unsubscribed', ${metadata}->>'unsubscribed', ''))`;
+  const whatsappState = `lower(COALESCE(${metadata}->>'whatsapp_suppression_state', ''))`;
+  const whatsappTruthy = `lower(COALESCE(${metadata}->>'whatsapp_suppressed', ${metadata}->>'opt_out', ''))`;
+  const statusState = `lower(COALESCE(${alias}.status, ''))`;
+  const statusSuppressed = `${statusState} IN ('suppressed', 'unsubscribed', 'invalid')`;
+  const emailSuppressed = `(${emailState} IN (${CRM_TIMELINE_SUPPRESSION_STATES}) OR ${emailTruthy} IN (${CRM_TIMELINE_TRUTHY_STATES}))`;
+  const whatsappSuppressed = `(${whatsappState} IN (${CRM_TIMELINE_SUPPRESSION_STATES}) OR ${whatsappTruthy} IN (${CRM_TIMELINE_TRUTHY_STATES}))`;
+  return {
+    predicate: `(${statusSuppressed} OR ${emailSuppressed} OR ${whatsappSuppressed})`,
+    body: `CASE
+       WHEN ${statusSuppressed} THEN 'Contact communication is suppressed.'
+       WHEN ${whatsappSuppressed} THEN 'WhatsApp is not available for this contact.'
+       WHEN ${emailSuppressed} THEN 'Email is not available for this contact.'
+       ELSE 'Communication suppression recorded.'
+     END`,
+    status: `CASE
+       WHEN ${statusSuppressed} THEN ('contact_' || ${statusState})
+       WHEN ${whatsappSuppressed} THEN ('whatsapp_' || COALESCE(NULLIF(${whatsappState}, ''), 'suppressed'))
+       WHEN ${emailSuppressed} THEN ('email_' || COALESCE(NULLIF(${emailState}, ''), 'suppressed'))
+       ELSE 'suppressed'
+     END`,
+    emailState,
+    whatsappState,
+    emailSuppressed,
+    whatsappSuppressed,
+  };
+}
+
 async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
   if (!Number.isFinite(contactRef.id) || contactRef.id <= 0) return [];
   const workspaceKey = normalizeWorkspaceKey(scope.workspace_key);
@@ -29683,8 +29717,10 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
 
   if (contactRef.source === 'bna_parent_leads') {
     const params = [contactRef.id];
+    const leadSuppression = crmTimelineSuppressionParts('l');
     const conditions = [`c.lead_id = $1`];
     const taskConditions = [`l.id = $1`, `t.stage <> 'archive'`];
+    const suppressionConditions = [`l.id = $1`];
     const ticketConditions = [
       `l.id = $1`,
       `st.project_id = l.project_id`,
@@ -29715,6 +29751,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
       params.push(projectKey);
       conditions.push(`p.project_key = $${params.length}`);
       taskConditions.push(`p.project_key = $${params.length}`);
+      suppressionConditions.push(`p.project_key = $${params.length}`);
       ticketConditions.push(`p.project_key = $${params.length}`);
       studentConditions.push(`p.project_key = $${params.length}`);
       memberConditions.push(`p.project_key = $${params.length}`);
@@ -29902,6 +29939,38 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
          JOIN bna_parent_leads l ON TRUE
          LEFT JOIN bna_projects p ON p.id = l.project_id
          WHERE ${attendanceConditions.join(' AND ')}
+         UNION ALL
+         SELECT
+           (-1 * l.id) AS id,
+           'suppression' AS channel,
+           'internal' AS direction,
+           ${leadSuppression.body} AS body,
+           NULL::text AS notes,
+           'crm_suppression' AS source,
+           jsonb_build_object(
+             'crm_contact_id', ('bna_parent_leads:' || l.id::text),
+             'suppression_status', ${leadSuppression.status},
+             'email_suppression_state', NULLIF(${leadSuppression.emailState}, ''),
+             'whatsapp_suppression_state', NULLIF(${leadSuppression.whatsappState}, ''),
+             'email_suppressed', ${leadSuppression.emailSuppressed},
+             'whatsapp_suppressed', ${leadSuppression.whatsappSuppressed},
+             'no_send', true,
+             'external_write_performed', false
+           ) AS source_context,
+           COALESCE(l.updated_at, l.last_inbound_at, l.last_outbound_at, l.created_at) AS occurred_at,
+           l.created_at,
+           'communication_suppression' AS communication_type,
+           NULL::text AS subject,
+           NULL::text AS thread_key,
+           NULL::text AS external_message_id,
+           NULL::text AS from_address,
+           NULL::text AS to_address,
+           NULL::text AS provider,
+           ${leadSuppression.status} AS status
+         FROM bna_parent_leads l
+         LEFT JOIN bna_projects p ON p.id = l.project_id
+         WHERE ${suppressionConditions.join(' AND ')}
+           AND ${leadSuppression.predicate}
        ) timeline
        ORDER BY occurred_at DESC NULLS LAST, created_at DESC
        LIMIT 200`,
@@ -29911,9 +29980,11 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
   }
 
   const params = [contactRef.id];
+  const contactSuppression = crmTimelineSuppressionParts('bc');
   const communicationConditions = [`contact_id = $1`];
   const pipelineConditions = [`contact_id = $1`];
   const taskConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(t.related_contact_email) = lower(bc.primary_email)`, `t.stage <> 'archive'`];
+  const suppressionConditions = [`bc.id = $1`];
   const ticketConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(st.requester_email) = lower(bc.primary_email)`];
   const studentConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(COALESCE(s.parent_email, '')) = lower(bc.primary_email)`, `COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')`];
   const memberConditions = [`bc.id = $1`, `COALESCE(bc.primary_email, '') <> ''`, `lower(COALESCE(m.email, '')) = lower(bc.primary_email)`];
@@ -29923,6 +29994,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     communicationConditions.push(`workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     pipelineConditions.push(`workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     taskConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
+    suppressionConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     ticketConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     studentConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
     memberConditions.push(`bc.workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
@@ -30122,6 +30194,36 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
         JOIN bna_members m ON m.id = a.member_id
         JOIN bna_live_class_sessions ls ON ls.id = a.live_session_id
         JOIN bna_contacts bc ON ${attendanceConditions.join(' AND ')}
+        UNION ALL
+       SELECT
+         (-1 * bc.id) AS id,
+         'suppression' AS channel,
+         'internal' AS direction,
+         ${contactSuppression.body} AS body,
+         'crm_suppression' AS source,
+         jsonb_build_object(
+           'crm_contact_id', ('bna_contacts:' || bc.id::text),
+           'suppression_status', ${contactSuppression.status},
+           'email_suppression_state', NULLIF(${contactSuppression.emailState}, ''),
+           'whatsapp_suppression_state', NULLIF(${contactSuppression.whatsappState}, ''),
+           'email_suppressed', ${contactSuppression.emailSuppressed},
+           'whatsapp_suppressed', ${contactSuppression.whatsappSuppressed},
+           'no_send', true,
+           'external_write_performed', false
+         ) AS source_context,
+          COALESCE(bc.updated_at, bc.created_at) AS occurred_at,
+          bc.created_at,
+          'communication_suppression' AS communication_type,
+          NULL::text AS subject,
+          NULL::text AS thread_key,
+          NULL::text AS external_message_id,
+          NULL::text AS from_address,
+          NULL::text AS to_address,
+          NULL::text AS provider,
+          ${contactSuppression.status} AS status
+        FROM bna_contacts bc
+        WHERE ${suppressionConditions.join(' AND ')}
+          AND ${contactSuppression.predicate}
      ) timeline
      ORDER BY occurred_at DESC NULLS LAST, created_at DESC
      LIMIT 200`,
@@ -30141,6 +30243,7 @@ async function operationsCrmConversationRows(contactRef, scope = {}, options = {
       'membership_access',
       'signup_context',
       'class_attendance',
+      'communication_suppression',
     ].includes(row.communication_type) && ![
       'task',
       'support',
@@ -30148,6 +30251,7 @@ async function operationsCrmConversationRows(contactRef, scope = {}, options = {
       'membership',
       'signup',
       'attendance',
+      'suppression',
     ].includes(row.channel))
     .slice(0, limit);
 }

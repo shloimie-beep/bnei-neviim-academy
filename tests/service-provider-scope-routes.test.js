@@ -44,10 +44,13 @@ test('server wires service-provider scope and first-party CRM routes', () => {
   assert.match(server, /'student_link' AS communication_type/);
   assert.match(server, /'membership_access' AS communication_type/);
   assert.match(server, /'class_attendance' AS communication_type/);
+  assert.match(server, /'communication_suppression' AS communication_type/);
   assert.match(server, /bna_live_class_attendance/);
   assert.match(server, /'membership_access'[\s\S]*\.includes\(row\.communication_type\)/);
   assert.match(server, /'class_attendance'[\s\S]*\.includes\(row\.communication_type\)/);
+  assert.match(server, /'communication_suppression'[\s\S]*\.includes\(row\.communication_type\)/);
   assert.match(server, /'attendance'[\s\S]*\.includes\(row\.channel\)/);
+  assert.match(server, /'suppression'[\s\S]*\.includes\(row\.channel\)/);
 });
 test('provider and operations UIs expose scoped package surfaces', () => {
   const provider = read('public/provider.html');

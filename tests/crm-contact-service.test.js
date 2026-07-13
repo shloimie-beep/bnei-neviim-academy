@@ -178,6 +178,22 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
         occurred_at: '2026-07-12T13:22:00Z',
         communication_type: 'class_attendance',
       },
+      {
+        id: -7,
+        channel: 'suppression',
+        direction: 'internal',
+        body: 'WhatsApp is not available for this contact.',
+        source: 'crm_suppression',
+        source_context: JSON.stringify({
+          crm_contact_id: 'bna_contacts:7',
+          suppression_status: 'whatsapp_wrong_number',
+          whatsapp_suppressed: true,
+          no_send: true,
+          external_write_performed: false,
+        }),
+        occurred_at: '2026-07-12T13:23:00Z',
+        communication_type: 'communication_suppression',
+      },
     ],
   });
 
@@ -193,6 +209,7 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'student_link'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'membership_access'), false);
   assert.equal(conversations.conversations.some((item) => item.communication_type === 'class_attendance'), false);
+  assert.equal(conversations.conversations.some((item) => item.communication_type === 'communication_suppression'), false);
   assert.equal(conversations.conversations[0].open_action, 'whatsapp');
   assert.equal(conversations.conversations[0].thread_key, 'phone:972501112222');
   assert.equal(conversations.conversations[0].from_address, '+972 50 111 2222');
@@ -212,6 +229,8 @@ test('CRM contact service returns separate conversations and tasks DTO envelopes
   assert.equal(timeline.timeline.some((item) => item.type === 'student_link'), true);
   assert.equal(timeline.timeline.some((item) => item.type === 'membership_access'), true);
   assert.equal(timeline.timeline.some((item) => item.type === 'class_attendance'), true);
+  assert.equal(timeline.timeline.some((item) => item.type === 'communication_suppression'), true);
+  assert.equal(timeline.timeline.find((item) => item.type === 'communication_suppression').no_send, true);
 });
 
 test('CRM contact service filter and ref helpers are stable', () => {
