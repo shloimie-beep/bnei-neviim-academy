@@ -37,6 +37,9 @@ test('server wires service-provider scope and first-party CRM routes', () => {
   assert.match(server, /'support_ticket' AS communication_type/);
   assert.match(server, /bna_support_tickets/);
   assert.match(server, /row\.communication_type !== 'support_ticket'/);
+  assert.match(server, /bna_product_leads/);
+  assert.match(server, /signup_context/);
+  assert.match(server, /one_time_public_signup/);
 });
 test('provider and operations UIs expose scoped package surfaces', () => {
   const provider = read('public/provider.html');
@@ -58,6 +61,7 @@ test('provider and operations UIs expose scoped package surfaces', () => {
     'getCrmContactTasks',
     'renderFirstPartyCrmContactsPanel',
     'membership_access',
+    'signup_context',
     'follow_up_task',
     'id="rabbiMemberName"',
     "display_name: document.getElementById('rabbiMemberName')?.value || ''",

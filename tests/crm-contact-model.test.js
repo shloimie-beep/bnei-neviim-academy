@@ -65,6 +65,14 @@ test('maps first-party CRM reconciled context into one contact DTO', () => {
       latest_thread_key: 'thread-levi',
       latest_subject: 'Class details',
     },
+    signup_context: {
+      signup_id: '456',
+      status: 'new',
+      audience_type: 'school',
+      reminder_preference: 'email',
+      city_label: 'Ramat Beit Shemesh',
+      timezone: 'Asia/Jerusalem',
+    },
     support: {
       open_ticket_count: 1,
       latest_ticket_id: 22,
@@ -92,6 +100,9 @@ test('maps first-party CRM reconciled context into one contact DTO', () => {
   assert.equal(card.linked.student_name, 'Levi Student');
   assert.equal(card.membership_access.member_id, 14);
   assert.equal(card.mailbox.message_count, 3);
+  assert.equal(card.linked.signup_id, '456');
+  assert.equal(card.signup_context.audience_type, 'school');
+  assert.equal(card.signup_context.reminder_preference, 'email');
   assert.equal(card.support.open_ticket_count, 1);
   assert.equal(card.follow_up_task.task_id, 31);
   assert.equal(card.class_context.trial_status, 'trial_or_free_class_interest');
@@ -114,6 +125,49 @@ test('CRM source labels hide internal table names', () => {
   });
   assert.equal(card.source_label, 'Lead intake');
   assert.doesNotMatch(card.source_label, /^bna_/);
+});
+
+test('canonical CRM list collapses legacy lead duplicate under contact card', () => {
+  const scope = {
+    tenant_type: 'service_provider',
+    entitlement_plan: 'service_provider_plus',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  };
+  const result = filterCrmContacts([
+    {
+      id: 'bna_parent_leads:88',
+      parent_lead_id: 88,
+      source_table: 'bna_parent_leads',
+      parent_name: 'Duplicate Parent',
+      parent_email: 'duplicate@example.test',
+      parent_phone: '+1 555 010 1800',
+      metadata: {
+        canonical_contact_key: 'bna_contacts:99',
+        product_lead_id: 456,
+      },
+    },
+    {
+      id: 'bna_contacts:99',
+      contact_id: 99,
+      source_table: 'bna_contacts',
+      display_name: 'Duplicate Parent',
+      email: 'duplicate@example.test',
+      phone: '+1 555 010 1800',
+      signup_context: {
+        signup_id: '456',
+        audience_type: 'family',
+        reminder_preference: 'none',
+      },
+    },
+  ], {}, scope);
+
+  assert.equal(result.total, 1);
+  assert.equal(result.cards.length, 1);
+  assert.equal(result.cards[0].id, 'bna_contacts:99');
+  assert.equal(result.cards[0].linked.contact_id, 99);
+  assert.equal(result.cards[0].linked.signup_id, '456');
+  assert.equal(result.cards[0].signup_context.reminder_preference, 'none');
 });
 
 test('free provider cannot access full CRM filters', () => {

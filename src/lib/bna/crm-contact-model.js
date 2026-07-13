@@ -83,6 +83,14 @@ function numberOrZero(value) {
   return Number.isFinite(number) ? number : 0;
 }
 
+function metadataValue(metadata = {}, ...keys) {
+  for (const key of keys) {
+    const value = metadata[key];
+    if (value !== undefined && value !== null && String(value).trim() !== '') return value;
+  }
+  return '';
+}
+
 function deriveFamilySchoolClassification(row = {}, contactType = '') {
   const raw = String(firstNonEmpty(
     row.family_school_classification,
@@ -145,6 +153,7 @@ function humanCrmSourceLabel(value, fallback = '') {
 
 function toContactCard(row = {}, options = {}) {
   const source = options.source || row.source_table || row.source || 'unknown';
+  const metadata = parseObject(row.metadata);
   const id = firstNonEmpty(row.id, row.contact_id, row.person_id, row.lead_id, row.provider_id);
   const displayName = firstNonEmpty(
     row.display_name,
@@ -170,8 +179,10 @@ function toContactCard(row = {}, options = {}) {
   const support = parseObject(row.support);
   const followUpTask = parseObject(row.follow_up_task);
   const classContext = parseObject(row.class_context);
+  const signupContext = parseObject(row.signup_context);
   const timelineActivity = parseObject(row.timeline_activity);
   const classification = deriveFamilySchoolClassification(row, contactType);
+  const signupId = firstNonEmpty(signupContext.signup_id, row.signup_id, row.product_lead_id, metadata.product_lead_id, metadata.signup_id);
 
   return {
     id: String(id || `${source}:${displayName}:${email || phone}`),
@@ -195,10 +206,12 @@ function toContactCard(row = {}, options = {}) {
     linked: {
       contact_id: row.contact_id || null,
       person_id: row.person_id || null,
-      parent_lead_id: row.parent_lead_id || row.lead_id || null,
+      parent_lead_id: firstNonEmpty(row.parent_lead_id, row.lead_id, metadata.parent_lead_id),
       provider_profile_id: row.provider_profile_id || null,
       student_id: row.student_id || null,
-      signup_id: row.signup_id || null,
+      signup_id: signupId || null,
+      product_lead_id: signupId || null,
+      canonical_contact_key: firstNonEmpty(row.canonical_contact_key, metadata.canonical_contact_key),
       parent_name: firstNonEmpty(row.parent_name, row.linked_parent_name),
       student_name: firstNonEmpty(row.student_name, row.linked_student_name),
     },
@@ -235,6 +248,23 @@ function toContactCard(row = {}, options = {}) {
       access_context: firstNonEmpty(classContext.access_context, row.access_context),
       live_class_context: firstNonEmpty(classContext.live_class_context, row.live_class_context),
     },
+    signup_context: {
+      signup_id: signupId || null,
+      status: firstNonEmpty(signupContext.status, row.signup_status),
+      audience_type: firstNonEmpty(signupContext.audience_type, row.audience_type, metadataValue(metadata, 'audience_type', 'signup_as')),
+      reminder_preference: firstNonEmpty(signupContext.reminder_preference, row.reminder_preference, metadata.reminder_preference),
+      city_label: firstNonEmpty(
+        signupContext.city_label,
+        row.city_label,
+        metadata.city?.label,
+        metadata.city?.name,
+        metadata.city?.city
+      ),
+      timezone: firstNonEmpty(signupContext.timezone, row.timezone, metadata.timezone),
+      source_landing_page: firstNonEmpty(signupContext.source_landing_page, row.source_landing_page, metadata.source_landing_page),
+      latest_at: firstNonEmpty(signupContext.latest_at, row.signup_latest_at, row.updated_at, row.created_at),
+      source: firstNonEmpty(signupContext.source, row.signup_source, 'one_time_public_signup'),
+    },
     timeline_activity: {
       activity_count: numberOrZero(firstNonEmpty(timelineActivity.activity_count, row.timeline_activity_count)),
       latest_activity_at: firstNonEmpty(timelineActivity.latest_activity_at, row.latest_activity_at, row.last_contact_at),
@@ -243,6 +273,70 @@ function toContactCard(row = {}, options = {}) {
     editable_fields: ['display_name', 'email', 'phone', 'lifecycle_stage', 'next_follow_up_at', 'assigned_owner', 'tags', 'internal_note'],
     raw: options.includeRaw ? row : undefined,
   };
+}
+
+function canonicalCrmContactKey(card = {}) {
+  const linked = card.linked || {};
+  if (card.source === 'bna_contacts' && linked.contact_id) return `contact:${linked.contact_id}`;
+  if (linked.canonical_contact_key) return `contact-key:${linked.canonical_contact_key}`;
+  if (card.email) return `email:${card.workspace_key || ''}:${card.project_key || ''}:${card.email}`;
+  if (card.phone) return `phone:${card.workspace_key || ''}:${card.project_key || ''}:${card.phone}`;
+  return `source:${card.source}:${card.id}`;
+}
+
+function preferCanonicalCrmCard(existing = null, candidate = null) {
+  if (!existing) return candidate;
+  if (!candidate) return existing;
+  if (candidate.source === 'bna_contacts' && existing.source !== 'bna_contacts') return candidate;
+  if (existing.source === 'bna_contacts' && candidate.source !== 'bna_contacts') return existing;
+  const existingActivity = new Date(existing.timeline_activity?.latest_activity_at || existing.last_contact_at || 0).getTime() || 0;
+  const candidateActivity = new Date(candidate.timeline_activity?.latest_activity_at || candidate.last_contact_at || 0).getTime() || 0;
+  return candidateActivity > existingActivity ? candidate : existing;
+}
+
+function cardsReferToSameCrmContact(left = {}, right = {}) {
+  if ((left.workspace_key || '') !== (right.workspace_key || '')) return false;
+  if ((left.project_key || '') !== (right.project_key || '')) return false;
+  if (left.email && right.email && left.email === right.email) return true;
+  if (left.phone && right.phone && left.phone === right.phone) return true;
+  const leftCanonical = left.linked?.canonical_contact_key || '';
+  const rightCanonical = right.linked?.canonical_contact_key || '';
+  if (leftCanonical && (leftCanonical === rightCanonical || leftCanonical === right.id)) return true;
+  if (rightCanonical && (rightCanonical === leftCanonical || rightCanonical === left.id)) return true;
+  return false;
+}
+
+function dedupeCrmContactCards(cards = []) {
+  const byKey = new Map();
+  for (const card of cards) {
+    const directKey = canonicalCrmContactKey(card);
+    const emailKey = card.email ? `email:${card.workspace_key || ''}:${card.project_key || ''}:${card.email}` : '';
+    const phoneKey = card.phone ? `phone:${card.workspace_key || ''}:${card.project_key || ''}:${card.phone}` : '';
+    const keys = Array.from(new Set([directKey, emailKey, phoneKey].filter(Boolean)));
+    const existing = keys.map((key) => byKey.get(key)).find(Boolean) || null;
+    const preferred = preferCanonicalCrmCard(existing, card);
+    for (const key of keys) byKey.set(key, preferred);
+  }
+  const finalByKey = new Map();
+  for (const card of Array.from(new Set(byKey.values()))) {
+    const directKey = canonicalCrmContactKey(card);
+    const emailKey = card.email ? `email:${card.workspace_key || ''}:${card.project_key || ''}:${card.email}` : '';
+    const phoneKey = card.phone ? `phone:${card.workspace_key || ''}:${card.project_key || ''}:${card.phone}` : '';
+    const keys = Array.from(new Set([directKey, emailKey, phoneKey].filter(Boolean)));
+    const existing = keys.map((key) => finalByKey.get(key)).find(Boolean) || null;
+    const preferred = preferCanonicalCrmCard(existing, card);
+    for (const key of keys) finalByKey.set(key, preferred);
+  }
+  const result = [];
+  for (const card of Array.from(new Set(finalByKey.values()))) {
+    const index = result.findIndex((existing) => cardsReferToSameCrmContact(existing, card));
+    if (index === -1) {
+      result.push(card);
+    } else {
+      result[index] = preferCanonicalCrmCard(result[index], card);
+    }
+  }
+  return result;
 }
 
 function textIncludes(haystack, needle) {
@@ -284,6 +378,10 @@ function matchesFilters(card, filters = {}) {
       card.mailbox?.latest_subject,
       card.support?.latest_ticket_title,
       card.follow_up_task?.assigned_to,
+      card.signup_context?.audience_type,
+      card.signup_context?.reminder_preference,
+      card.signup_context?.city_label,
+      card.signup_context?.timezone,
     ].join(' ');
     if (!textIncludes(blob, filters.search)) return false;
   }
@@ -381,10 +479,10 @@ function filterCrmContacts(rows = [], filters = {}, scope = {}) {
     assertEntitlement(scope, ENTITLEMENTS.CRM_FILTERS);
   }
 
-  const cards = rows.map((row) => toContactCard(row, {
+  const cards = dedupeCrmContactCards(rows.map((row) => toContactCard(row, {
     workspace_key: scope.workspace_key,
     project_key: scope.project_key,
-  }));
+  })));
 
   const filtered = cards.filter((card) => matchesFilters(card, filters));
   const sorted = sortCards(filtered, filters.sort_key);
@@ -459,6 +557,7 @@ module.exports = {
   encodeCrmCursor,
   paginateCards,
   toContactCard,
+  dedupeCrmContactCards,
   matchesFilters,
   sortCards,
   buildFilterOptions,

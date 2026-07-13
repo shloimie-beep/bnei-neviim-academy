@@ -7382,17 +7382,59 @@ function firstPartyCrmLinkedSummary(card = {}) {
         linked.contact_id ? `Contact #${linked.contact_id}` : '',
         linked.provider_profile_id ? `Provider #${linked.provider_profile_id}` : ''
     ].filter(Boolean);
-    return parts.join(' / ') || 'No linked local record id loaded';
+    return parts.join(' / ') || 'No membership linked.';
+}
+
+function firstPartyCrmSignupAudienceLabel(value = '') {
+    const key = String(value || '').trim().toLowerCase();
+    if (key === 'school') return 'School';
+    if (key === 'family') return 'Family';
+    if (key === 'parents') return 'Family';
+    return key ? contactStatusLabel(key) : '';
+}
+
+function firstPartyCrmReminderPreferenceLabel(value = '') {
+    const key = String(value || '').trim().toLowerCase();
+    if (key === 'email') return 'Email reminders';
+    if (key === 'whatsapp') return 'WhatsApp reminders';
+    if (key === 'both') return 'Email and WhatsApp reminders';
+    if (key === 'none') return 'No reminders';
+    return key ? contactStatusLabel(key) : '';
 }
 
 function firstPartyCrmClassAccessSummary(card = {}) {
+    const signup = card.signup_context || {};
+    const signupParts = [
+        signup.status ? `Signup ${contactStatusLabel(signup.status)}` : '',
+        firstPartyCrmSignupAudienceLabel(signup.audience_type),
+        firstPartyCrmReminderPreferenceLabel(signup.reminder_preference),
+        signup.city_label ? String(signup.city_label) : '',
+        signup.timezone ? String(signup.timezone) : ''
+    ].filter(Boolean);
+    if (signupParts.length) return signupParts.slice(0, 5).join(' / ');
+
+    const membership = card.membership_access || {};
+    if (membership.member_id || membership.access_status || membership.access_tier) {
+        return [
+            membership.access_status ? `Membership ${contactStatusLabel(membership.access_status)}` : 'Membership linked',
+            membership.access_tier ? contactStatusLabel(membership.access_tier) : ''
+        ].filter(Boolean).join(' / ');
+    }
+
+    const classContext = card.class_context || {};
+    const classParts = [
+        classContext.class_type && classContext.class_type !== card.contact_type ? contactStatusLabel(classContext.class_type) : '',
+        classContext.live_class_context ? String(classContext.live_class_context) : ''
+    ].filter(Boolean);
+    if (classParts.length) return classParts.join(' / ');
+
     const tags = (card.tags || []).map(String);
     const classTags = tags.filter(tag => /class|trial|zoom|access|member|tier|library|free/i.test(tag));
     if (classTags.length) return classTags.slice(0, 4).join(', ');
     const blob = `${card.summary || ''} ${card.status || ''} ${card.source_label || ''}`;
-    if (/free[-\s]?class|trial|zoom/i.test(blob)) return 'Free class / trial interest needs follow-up readiness review';
-    if (/member|library|access|tier/i.test(blob)) return 'Member/access context is present; review access panel before messaging';
-    return 'No class/trial/access context loaded yet';
+    if (/free[-\s]?class|trial|zoom/i.test(blob)) return 'Class information requested.';
+    if (/member|library|access|tier/i.test(blob)) return 'Membership context present.';
+    return 'No class activity recorded.';
 }
 
 function selectedFirstPartyCrmCard(cards = null) {

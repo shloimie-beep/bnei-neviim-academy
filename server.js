@@ -29308,6 +29308,9 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
        c.status,
        c.source,
        c.tags,
+       c.metadata,
+       NULLIF(c.metadata->>'parent_lead_id', '') AS parent_lead_id,
+       NULLIF(c.metadata->>'canonical_contact_key', '') AS canonical_contact_key,
        COALESCE(NULLIF(c.metadata->>'assigned_owner', ''), NULLIF(c.metadata->>'owner', '')) AS assigned_owner,
        COALESCE(NULLIF(c.metadata->>'summary', ''), NULLIF(c.metadata->>'notes', '')) AS summary,
        c.updated_at AS last_contact_at,
@@ -29335,6 +29338,18 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
          ORDER BY s.updated_at DESC NULLS LAST, s.id DESC
          LIMIT 1
        ) AS student_name,
+       pl.id::text AS signup_id,
+       CASE WHEN pl.id IS NOT NULL THEN jsonb_build_object(
+         'signup_id', pl.id::text,
+         'status', pl.status,
+         'audience_type', COALESCE(NULLIF(pl.metadata->>'audience_type', ''), NULLIF(pl.metadata->>'signup_as', ''), pl.audience),
+         'reminder_preference', NULLIF(pl.metadata->>'reminder_preference', ''),
+         'city_label', COALESCE(NULLIF(pl.metadata->'city'->>'label', ''), NULLIF(pl.metadata->'city'->>'name', ''), NULLIF(pl.metadata->'city'->>'city', '')),
+         'timezone', COALESCE(NULLIF(pl.timezone, ''), NULLIF(pl.metadata->>'timezone', ''), NULLIF(pl.metadata->'city'->>'timezone', '')),
+         'source_landing_page', pl.source_landing_page,
+         'latest_at', COALESCE(pl.updated_at, pl.created_at),
+         'source', 'one_time_public_signup'
+       ) ELSE NULL END AS signup_context,
        (
          SELECT jsonb_build_object(
            'message_count', COUNT(*),
@@ -29406,6 +29421,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
          'activity_count',
            COALESCE((SELECT COUNT(*) FROM bna_communications cm WHERE cm.contact_id = c.id), 0)
            + COALESCE((SELECT COUNT(*) FROM bna_contact_pipeline_events pe WHERE pe.contact_id = c.id), 0)
+           + CASE WHEN pl.id IS NOT NULL THEN 1 ELSE 0 END
            + COALESCE((
              SELECT COUNT(*)
              FROM bna_support_tickets st
@@ -29418,6 +29434,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
            GREATEST(
              COALESCE((SELECT MAX(cm.occurred_at) FROM bna_communications cm WHERE cm.contact_id = c.id), '1970-01-01'::timestamp),
              COALESCE((SELECT MAX(pe.created_at) FROM bna_contact_pipeline_events pe WHERE pe.contact_id = c.id), '1970-01-01'::timestamp),
+             COALESCE(COALESCE(pl.updated_at, pl.created_at), '1970-01-01'::timestamp),
              COALESCE((
                SELECT MAX(COALESCE(st.updated_at, st.created_at))
                FROM bna_support_tickets st
@@ -29440,6 +29457,23 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
          WHEN ws.workspace_key = 'super_admin' THEN 'super_admin'
          ELSE ws.workspace_key
        END
+     LEFT JOIN LATERAL (
+       SELECT product_lead.*
+       FROM bna_product_leads product_lead
+       WHERE cp.id IS NOT NULL
+         AND product_lead.project_id = cp.id
+         AND COALESCE(product_lead.status, 'new') <> 'archived'
+         AND (
+           (NULLIF(c.metadata->>'product_lead_id', '') IS NOT NULL AND product_lead.id::text = NULLIF(c.metadata->>'product_lead_id', ''))
+           OR (COALESCE(c.primary_email, '') <> '' AND lower(COALESCE(product_lead.parent_email, '')) = lower(c.primary_email))
+           OR (
+             regexp_replace(COALESCE(c.primary_phone, ''), '[^0-9]+', '', 'g') <> ''
+             AND regexp_replace(COALESCE(NULLIF(product_lead.parent_phone, ''), NULLIF(product_lead.parent_whatsapp, ''), ''), '[^0-9]+', '', 'g') = regexp_replace(c.primary_phone, '[^0-9]+', '', 'g')
+           )
+         )
+       ORDER BY product_lead.updated_at DESC NULLS LAST, product_lead.created_at DESC NULLS LAST, product_lead.id DESC
+       LIMIT 1
+     ) pl ON TRUE
      WHERE ${contactConditions.join(' AND ')}
      ORDER BY c.updated_at DESC NULLS LAST, c.id DESC
      LIMIT $${contactLimitParam}`,
@@ -29475,6 +29509,8 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
        l.interest_level,
        l.source,
        l.tags,
+       l.metadata,
+       NULLIF(l.metadata->>'canonical_contact_key', '') AS canonical_contact_key,
        l.owner AS assigned_owner,
        l.notes AS summary,
        COALESCE(l.last_inbound_at, l.last_outbound_at, l.updated_at, l.created_at) AS last_contact_at,
@@ -29487,6 +29523,18 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
        END AS family_school_classification,
        l.parent_name,
        l.student_name,
+       pl.id::text AS signup_id,
+       CASE WHEN pl.id IS NOT NULL THEN jsonb_build_object(
+         'signup_id', pl.id::text,
+         'status', pl.status,
+         'audience_type', COALESCE(NULLIF(pl.metadata->>'audience_type', ''), NULLIF(pl.metadata->>'signup_as', ''), pl.audience),
+         'reminder_preference', NULLIF(pl.metadata->>'reminder_preference', ''),
+         'city_label', COALESCE(NULLIF(pl.metadata->'city'->>'label', ''), NULLIF(pl.metadata->'city'->>'name', ''), NULLIF(pl.metadata->'city'->>'city', '')),
+         'timezone', COALESCE(NULLIF(pl.timezone, ''), NULLIF(pl.metadata->>'timezone', ''), NULLIF(pl.metadata->'city'->>'timezone', '')),
+         'source_landing_page', pl.source_landing_page,
+         'latest_at', COALESCE(pl.updated_at, pl.created_at),
+         'source', 'one_time_public_signup'
+       ) ELSE NULL END AS signup_context,
        (
          SELECT s.id
          FROM bna_students s
@@ -29559,6 +29607,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
        jsonb_build_object(
          'activity_count',
            COALESCE((SELECT COUNT(*) FROM bna_contact_communications cc WHERE cc.lead_id = l.id), 0)
+           + CASE WHEN pl.id IS NOT NULL THEN 1 ELSE 0 END
            + COALESCE((
              SELECT COUNT(*)
              FROM bna_support_tickets st
@@ -29569,6 +29618,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
          'latest_activity_at',
            GREATEST(
              COALESCE((SELECT MAX(cc.occurred_at) FROM bna_contact_communications cc WHERE cc.lead_id = l.id), '1970-01-01'::timestamp),
+             COALESCE(COALESCE(pl.updated_at, pl.created_at), '1970-01-01'::timestamp),
              COALESCE((
                SELECT MAX(COALESCE(st.updated_at, st.created_at))
                FROM bna_support_tickets st
@@ -29579,10 +29629,26 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
              COALESCE(l.last_inbound_at, l.last_outbound_at, l.updated_at, l.created_at, '1970-01-01'::timestamp)
            ),
          'latest_activity_type', COALESCE((SELECT cc.source FROM bna_contact_communications cc WHERE cc.lead_id = l.id ORDER BY cc.occurred_at DESC NULLS LAST, cc.id DESC LIMIT 1), l.source)
-       ) AS timeline_activity,
+     ) AS timeline_activity,
        l.created_at
      FROM bna_parent_leads l
      LEFT JOIN bna_projects p ON p.id = l.project_id
+     LEFT JOIN LATERAL (
+       SELECT product_lead.*
+       FROM bna_product_leads product_lead
+       WHERE product_lead.project_id = l.project_id
+         AND COALESCE(product_lead.status, 'new') <> 'archived'
+         AND (
+           (NULLIF(l.metadata->>'product_lead_id', '') IS NOT NULL AND product_lead.id::text = NULLIF(l.metadata->>'product_lead_id', ''))
+           OR (COALESCE(l.parent_email, '') <> '' AND lower(COALESCE(product_lead.parent_email, '')) = lower(l.parent_email))
+           OR (
+             regexp_replace(COALESCE(l.parent_phone, ''), '[^0-9]+', '', 'g') <> ''
+             AND regexp_replace(COALESCE(NULLIF(product_lead.parent_phone, ''), NULLIF(product_lead.parent_whatsapp, ''), ''), '[^0-9]+', '', 'g') = regexp_replace(l.parent_phone, '[^0-9]+', '', 'g')
+           )
+         )
+       ORDER BY product_lead.updated_at DESC NULLS LAST, product_lead.created_at DESC NULLS LAST, product_lead.id DESC
+       LIMIT 1
+     ) pl ON TRUE
      WHERE ${leadConditions.join(' AND ')}
      ORDER BY COALESCE(l.last_inbound_at, l.last_outbound_at, l.updated_at, l.created_at) DESC NULLS LAST, l.id DESC
      LIMIT $${leadLimitParam}`,
