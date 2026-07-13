@@ -38967,3 +38967,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-crm-mailbox-roundtrip.png`.
   No production DB, send, import, payment, access, DNS, account, credential, or
   secret mutation was performed.
+
+## 2026-07-13 - One Time CRM Contacts/Inbox deployed and live-verified
+
+- Pushed commit `467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8` on
+  `codex/onetime-post-agent-delta-20260712-v3`.
+- Deployed `one-time-production / production / one-time-web` through Railway
+  deployment `3ea1e251-67aa-4137-85cc-82d38437ab8d`; deployment reached
+  `SUCCESS`.
+- Live verification passed:
+  `npm run one-time:target:guard`,
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8`,
+  and read-only `npm run app:smoke:onetime-operations-crm-workbench`.
+- Live CRM report:
+  `ops/live-smokes/2026-07-13T03-42-40-981Z-one-time-operations-crm-workbench-live-smoke.md`.
+- `REQ-20260712-806` and `REQ-20260712-807` are terminal `Done`; all seven
+  requirements in the execution run are done. The audit-governance report still
+  shows broad pre-existing audit mapping debt, not a blocker for this scoped
+  CRM closeout.

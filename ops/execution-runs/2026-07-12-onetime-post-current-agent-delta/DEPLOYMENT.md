@@ -1,6 +1,33 @@
 # Deployment
 
-Updated: 2026-07-12T23:12:00+03:00.
+Updated: 2026-07-13T06:43:00+03:00.
+
+`REQ-20260712-806` and `REQ-20260712-807` have now been deployed to the
+canonical One Time Railway web service.
+
+Latest CRM deployment proof:
+
+- Target: `one-time-production / production / one-time-web`
+- Domain: `https://join.onetimeonetime.com`
+- Branch: `codex/onetime-post-agent-delta-20260712-v3`
+- Commit: `467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8`
+- Railway deployment:
+  `3ea1e251-67aa-4137-85cc-82d38437ab8d`
+- Railway status: `SUCCESS`
+
+Latest live proof:
+
+- PASS `npm run one-time:target:guard`
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8`
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`
+- Live CRM report:
+  `ops/live-smokes/2026-07-13T03-42-40-981Z-one-time-operations-crm-workbench-live-smoke.md`
+
+The CRM live smoke was read-only. It logged into Operations, verified deployed
+CRM workbench markers, verified the scoped One Time CRM contacts API returned
+only the expected workspace/project, and verified a selected timeline readback
+without external-write flags. It did not save contact data, raw message bodies,
+screenshots, sends, payments, access grants, or external CRM writes.
 
 `REQ-20260712-802` has been deployed to the canonical One Time Railway web
 service.
@@ -80,12 +107,14 @@ execution proof, scheduler overlap check, and old Codex dispatcher pause.
 `REQ-20260712-802` changes the server-side ramble-to-done ingestion service.
 It is now deployed and live-smoked for the One Time web service.
 
-Current live One Time readback before implementation:
+Current live One Time readback history:
 
 - URL: `https://join.onetimeonetime.com`
 - deploy-info SHA before this run: `48c52797b2b8354de31f29aa87c1b95307967900`
-- deploy-info SHA after this deployment:
+- deploy-info SHA after the REQ802 deployment:
   `f0376e4539c31d80f917c90241bbffd91ee9c57c`
+- deploy-info SHA after the REQ806/REQ807 deployment:
+  `467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8`
 - Railway target: `one-time-production / production / one-time-web`
 
 Current repo head at baseline was newer:
@@ -101,14 +130,12 @@ following remain unauthorized: production contact imports, unapproved sends,
 separate class-reminder enqueueing, payments, access grants, historical CRM
 imports, DNS/account/credential changes, and secret exposure.
 
-CRM deployment gate:
+CRM deployment gate result:
 
-- `REQ-20260712-806` changes server/API and split-shell client code, so it is
-  server-visible/app-visible.
-- Do not deploy the CRM delta until
-  `node scripts/smoke-onetime-crm-journey-local-db.mjs` passes against an
-  approved local/test Postgres URL, or until the operator makes an explicit
-  owner decision accepting a blocked local-only closeout.
+- `REQ-20260712-806` changed server/API and split-shell client code, so it was
+  held until `node scripts/smoke-onetime-crm-journey-local-db.mjs` passed
+  against an approved isolated Railway `crm-test` Postgres service.
+- After that proof, the CRM delta was deployed as Railway deployment
+  `3ea1e251-67aa-4137-85cc-82d38437ab8d` and live-smoked read-only.
 - No production contact import, send, payment, access grant, external CRM write,
-  DNS/account/credential mutation, or secret exposure was performed in the
-  REQ806 implementation slice.
+  DNS/account/credential mutation, or secret exposure was performed.

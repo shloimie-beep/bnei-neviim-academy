@@ -1,6 +1,6 @@
 # Status
 
-As of 2026-07-12T23:58:00+03:00:
+As of 2026-07-13T06:43:00+03:00:
 
 - Goal-mode packet captured as `RAW-20260712-013`.
 - Fresh execution run initialized and `latest.json` points here.
@@ -12,10 +12,10 @@ As of 2026-07-12T23:58:00+03:00:
 - `origin/master` later advanced to
   `22cc6b88b Enable production response compression`; this branch will be
   rebased before push.
-- Live One Time deploy-info SHA after this deployment:
-  `f0376e4539c31d80f917c90241bbffd91ee9c57c`.
-- Railway deployment:
-  `fc4c5c45-89d4-4a99-a6f6-f3a9f58213c8` on
+- Live One Time deploy-info SHA after the latest deployment:
+  `467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8`.
+- Latest Railway web deployment:
+  `3ea1e251-67aa-4137-85cc-82d38437ab8d` on
   `one-time-production / production / one-time-web`, status `SUCCESS`.
 - Railway delivery cron service:
   `one-time-delivery-cron` id
@@ -53,16 +53,17 @@ tasks/lifecycle/access, and canonical-route proof/deploy.
 
 Current CRM implementation status:
 
-- `REQ-20260712-806` is blocked after a safe implementation slice. The branch
-  now adds the missing local-only CRM contact create/detail/note/task/task
-  update/thread/read/draft endpoints, split-shell API client methods, action
-  and route registry coverage, and canonical `/operations` browser proof.
-  Remaining acceptance proof is blocked until
-  `BNA_ONETIME_CRM_TEST_DATABASE_URL` points at a local/test Postgres database;
-  the local DB journey intentionally refuses production DB URLs.
+- `REQ-20260712-806` is done. The missing safe CRM Contacts/Inbox slice was
+  implemented, proved against an isolated Railway `crm-test` Postgres service,
+  committed as `467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8`, deployed to
+  `one-time-web`, and live-smoked read-only through the Operations CRM
+  workbench. The local DB journey still intentionally refuses production DB
+  URLs.
 
-Next implementation/cutover focus:
+Closeout status:
 
-- `REQ-20260712-807`: commit/push the scoped branch changes, then deploy/live
-  smoke only after the isolated DB blocker is cleared or a scoped owner
-  decision accepts this as a local-only blocked closeout.
+- `REQ-20260712-807` is done. The scoped branch was committed/pushed, Railway
+  deployment `3ea1e251-67aa-4137-85cc-82d38437ab8d` reached `SUCCESS`, the
+  SHA-pinned One Time smoke passed, and the read-only CRM live smoke passed
+  with no external-write flags. Remaining audit-governance findings are
+  pre-existing repo-wide audit mapping debt, not a blocker for this run.

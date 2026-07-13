@@ -24,23 +24,21 @@ Current completed batches:
   exists under
   `ops/surface-maps/2026-07-12-one-time-crm-contacts-inbox-surface-map.*`;
   JSON parse, focused CRM/inbox tests, and `npm run pqc:validate` passed.
-- `REQ-20260712-806`: blocked after safe implementation. The branch adds
-  scoped local-only CRM create/detail/note/task/task-update/thread/draft
-  endpoints, split-shell client methods, route/action registry rows, and
-  canonical `/operations` browser proof. The blocker is isolated mutation/reload
-  proof: set `BNA_ONETIME_CRM_TEST_DATABASE_URL` to a local/test Postgres URL,
-  then rerun `node scripts/smoke-onetime-crm-journey-local-db.mjs`.
-  A second blocker audit at
-  `ops/evidence/one-time-crm-journey-local-db/2026-07-12T23-54-03-blocker-audit.md`
-  found no local DB URL, no Postgres tools, no Docker, and no installed
-  in-process DB adapter.
+- `REQ-20260712-806`: done. The branch adds scoped local-only CRM
+  create/detail/note/task/task-update/thread/draft endpoints, split-shell
+  client methods, route/action registry rows, canonical `/operations` browser
+  proof, isolated Railway `crm-test` Postgres mutation/reload proof, and
+  deployed read-only Operations CRM live proof.
+- `REQ-20260712-807`: done. Commit
+  `467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8` was pushed, Railway deployment
+  `3ea1e251-67aa-4137-85cc-82d38437ab8d` reached `SUCCESS`, the SHA-pinned
+  One Time smoke passed, and the read-only CRM live smoke passed.
 
 Next requirements:
 
-- `REQ-20260712-807`: final closeout remains blocked on the isolated DB journey
-  unless the operator explicitly accepts local-only blocked closeout. Do not
-  deploy the CRM API/UI delta until mutation/reload proof passes or the deploy
-  gate is intentionally overridden with an owner decision.
+- None in this execution run. Future One Time CRM/UI/data work should start
+  from a new scoped requirement/register and preserve the no-send/no-import/
+  no-payment/no-access/no-DNS/no-secret constraints.
 
 Resume commands:
 
@@ -53,7 +51,7 @@ node --test tests/one-time-delivery-outbox-cron.test.js
 node --test tests/one-time-delivery-outbox.test.js
 node --test tests/ingestion/operator-ramble-service.test.js tests/ingestion/ramble-regression-suite.test.js tests/ingestion/w3-intake-service.test.js
 npm run one-time:target:guard
-npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f0376e4539c31d80f917c90241bbffd91ee9c57c
+npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8
 node -e "JSON.parse(require('fs').readFileSync('ops/product-specs/one-time/crm/contacts-inbox.v1.json','utf8')); JSON.parse(require('fs').readFileSync('ops/surface-maps/2026-07-12-one-time-crm-contacts-inbox-surface-map.json','utf8'))"
 node --test tests/crm-contact-model.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js
 npm run pqc:validate
@@ -61,7 +59,7 @@ node --check server.js
 node --check public/js/operations-shell.js
 node --test tests/service-provider-scope-routes.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/crm-contact-model.test.js
 node scripts/smoke-onetime-operations-crm-workbench-local.mjs
-node scripts/smoke-onetime-crm-journey-local-db.mjs
+npm run app:smoke:onetime-operations-crm-workbench
 npm run watchdog:actions
 ```
 

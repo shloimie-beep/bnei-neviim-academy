@@ -1,21 +1,22 @@
 {
   "run_id": "2026-07-12-onetime-post-current-agent-delta",
   "title": "One Time post-current-agent delta",
-  "updated_at": "2026-07-13T06:36:00+03:00",
+  "updated_at": "2026-07-13T06:43:00+03:00",
   "git_refs": {
     "working_branch": "codex/onetime-post-agent-delta-20260712-v3",
     "starting_head": "593b85c7ffe975dc5eff6f38b684f375385952dc",
     "origin_master_after_fetch": "593b85c7ffe975dc5eff6f38b684f375385952dc",
     "pre_active_agent_fetch_head": "b61db37a4e232023f745b568e3456536048a114a",
-    "live_onetime_deployed_commit": "f0376e4539c31d80f917c90241bbffd91ee9c57c",
-    "live_onetime_deployment_id": "fc4c5c45-89d4-4a99-a6f6-f3a9f58213c8",
+    "live_onetime_deployed_commit": "467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8",
+    "live_onetime_deployment_id": "3ea1e251-67aa-4137-85cc-82d38437ab8d",
     "live_onetime_delivery_cron_service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
     "live_onetime_delivery_cron_deployment_id": "df89ade6-86bc-4d2e-8384-54957fb7fada",
     "live_onetime_url": "https://join.onetimeonetime.com",
     "railway_crm_test_environment_id": "2a9b61fa-6d88-4405-b6d6-0120ff7f461f",
     "railway_crm_test_environment": "crm-test",
     "railway_crm_test_postgres_service_id": "ebbb512e-3d27-44e1-a85b-4be3871a6b2f",
-    "railway_crm_test_postgres_service_name": "Postgres-ib9s"
+    "railway_crm_test_postgres_service_name": "Postgres-ib9s",
+    "live_onetime_crm_workbench_live_smoke": "ops/live-smokes/2026-07-13T03-42-40-981Z-one-time-operations-crm-workbench-live-smoke.md"
   },
   "sources": [
     {
@@ -46,7 +47,7 @@
       "source_id": "RAW-20260712-013",
       "requirement_id": "REQ-20260712-801",
       "visible": false,
-      "status": "in_progress"
+      "status": "done"
     }
   ],
   "requirements": [
@@ -352,10 +353,10 @@
       "depends_on": [
         "REQ-20260712-805"
       ],
-      "status": "in_progress",
-      "implementation_status": "Local verified; deploy/live proof pending. Safe C3/C8 CRM slice now includes scoped first-party CRM create/detail/note/task/task-update/thread-read/draft-only endpoints, split-shell client methods, action/route registry coverage, canonical /operations browser proof, Railway crm-test Postgres proof, fresh-db bootstrap guard repair, and mailbox action alignment. Railway test DB service Postgres-ib9s in environment crm-test was used only with explicit remote-test guards; production DATABASE_URL was ignored and no send/import/payment/access/DNS/secret mutation occurred.",
+      "status": "done",
+      "implementation_status": "Implemented, pushed, deployed, and live-smoked. Safe C3/C8 CRM slice includes scoped first-party CRM create/detail/note/task/task-update/thread-read/draft-only endpoints, split-shell client methods, action/route registry coverage, canonical /operations browser proof, Railway crm-test Postgres mutation/reload proof, fresh-db bootstrap guard repair, and mailbox action alignment. One Time Railway deployment 3ea1e251-67aa-4137-85cc-82d38437ab8d reached SUCCESS and live read-only CRM workbench smoke passed on commit 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8. No production contact import, send, payment/access/DNS/account/credential mutation, external CRM write, or secret exposure occurred.",
       "can_continue_without_operator": true,
-      "next_action": "Continue REQ-20260712-807: deploy one-time-web and live-smoke exact SHA before marking REQ-20260712-806 terminal done.",
+      "next_action": "Done for this scoped CRM Contacts/Inbox implementation slice; continue only with new scoped packets for future CRM UI/data work.",
       "acceptance_criteria": [
         "Canonical /operations is used for browser proof.",
         "No browser-side joins among unrelated datasets.",
@@ -378,7 +379,11 @@
         "PASS node scripts/smoke-onetime-crm-journey-local-db.mjs with report ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-report.md and screenshot ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-crm-mailbox-roundtrip.png",
         "server.js fresh DB bootstrap no longer alters bna_content_jobs before the table exists",
         "public/js/operations-shell.js and public/operations.html mailbox action now use ACTION-CRM-CONTACT-MAILBOX-OPEN and openFirstPartyCrmMailbox for session restoration",
-        "ops/action-registry/actions.json, ops/product-specs/one-time/crm/contacts-inbox.v1.json, and packet spec rows aligned to ACTION-CRM-CONTACT-MAILBOX-OPEN"
+        "ops/action-registry/actions.json, ops/product-specs/one-time/crm/contacts-inbox.v1.json, and packet spec rows aligned to ACTION-CRM-CONTACT-MAILBOX-OPEN",
+        "Railway one-time-web deployment 3ea1e251-67aa-4137-85cc-82d38437ab8d SUCCESS on one-time-production / production / one-time-web",
+        "PASS npm run one-time:target:guard after deploy for join.onetimeonetime.com",
+        "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8",
+        "PASS npm run app:smoke:onetime-operations-crm-workbench; report ops/live-smokes/2026-07-13T03-42-40-981Z-one-time-operations-crm-workbench-live-smoke.md"
       ],
       "verification": [
         "PASS node --check server.js",
@@ -388,7 +393,11 @@
         "PASS node --check scripts/smoke-onetime-operations-crm-workbench-local.mjs",
         "PASS node --test tests/one-time-crm-local-db-smoke-guard.test.js tests/crm-contact-model.test.js tests/service-provider-scope-routes.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js (27/27)",
         "PASS JSON parse ops/action-registry/actions.json, ops/product-specs/one-time/crm/contacts-inbox.v1.json, ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.product-quality.json",
-        "PASS node scripts/smoke-onetime-crm-journey-local-db.mjs using Railway crm-test Postgres service Postgres-ib9s"
+        "PASS node scripts/smoke-onetime-crm-journey-local-db.mjs using Railway crm-test Postgres service Postgres-ib9s",
+        "PASS Railway service status one-time-web production deployment 3ea1e251-67aa-4137-85cc-82d38437ab8d SUCCESS",
+        "PASS npm run one-time:target:guard after deployment",
+        "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8",
+        "PASS npm run app:smoke:onetime-operations-crm-workbench read-only live smoke"
       ],
       "implementation_files": [
         "src/lib/bna/crm-contact-model.js",
@@ -409,10 +418,22 @@
         "tests/one-time-crm-local-db-smoke-guard.test.js",
         "ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-report.md",
         "ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-report.json",
-        "ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-crm-mailbox-roundtrip.png"
+        "ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-crm-mailbox-roundtrip.png",
+        "ops/live-smokes/2026-07-13T03-42-40-981Z-one-time-operations-crm-workbench-live-smoke.md",
+        "ops/live-smokes/2026-07-13T03-42-40-981Z-one-time-operations-crm-workbench-live-smoke.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T06:36:00+03:00"
+      "updated_at": "2026-07-13T06:43:00+03:00",
+      "implementation_commit": "467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8",
+      "pushed_commit": "467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8",
+      "deployed_commit": "467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8",
+      "deployment_id": "3ea1e251-67aa-4137-85cc-82d38437ab8d",
+      "deployment_evidence": [
+        "Railway deployment 3ea1e251-67aa-4137-85cc-82d38437ab8d reached SUCCESS on one-time-production / production / one-time-web.",
+        "Live target guard passed after deployment for join.onetimeonetime.com.",
+        "SHA-pinned live smoke passed: npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8.",
+        "Read-only live CRM workbench smoke passed: ops/live-smokes/2026-07-13T03-42-40-981Z-one-time-operations-crm-workbench-live-smoke.md."
+      ]
     },
     {
       "id": "REQ-20260712-807",
@@ -435,27 +456,63 @@
         "REQ-20260712-804",
         "REQ-20260712-806"
       ],
-      "status": "in_progress",
-      "implementation_status": "Final validation/deploy closeout started after REQ-20260712-806 Railway test DB proof passed. Commit/push, one-time-web deployment, live smoke, ledger/changelog, and terminal run validation remain.",
+      "status": "done",
+      "implementation_status": "Final closeout completed. Focused tests, watchdogs, PQC validation, audit-governance generation, scoped commit/push, Railway one-time-web deploy, SHA-pinned One Time live smoke, read-only Operations CRM workbench live smoke, ledger/changelog, and terminal run validation were completed. Remaining audit-governance findings are broad pre-existing audit mapping debt and are not blockers for this scoped run.",
       "can_continue_without_operator": true,
-      "next_action": "Run final watchdog/protocol validation, commit and push scoped changes, deploy one-time-web, live-smoke exact SHA, then update final ledger/changelog/status.",
+      "next_action": "Done for this execution run. Future work should use a new scoped requirement/register and must preserve no-send/no-import/no-payment/no-access/no-DNS/no-secret constraints.",
       "acceptance_criteria": [
         "Focused tests and watchdogs pass or exact blockers are recorded.",
         "Scoped changes are committed and pushed.",
         "Server-visible/app-visible changes are deployed and live-smoked by exact SHA.",
         "Ledger, changelog, status, evidence, deployment, and next-session files are updated."
       ],
-      "evidence": [],
+      "evidence": [
+        "Commit 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8 pushed to origin/codex/onetime-post-agent-delta-20260712-v3",
+        "Railway deployment 3ea1e251-67aa-4137-85cc-82d38437ab8d SUCCESS on one-time-production / production / one-time-web",
+        "PASS npm run one-time:target:guard after deployment",
+        "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8",
+        "PASS npm run app:smoke:onetime-operations-crm-workbench; report ops/live-smokes/2026-07-13T03-42-40-981Z-one-time-operations-crm-workbench-live-smoke.md",
+        "ops/watchdog-audits/2026-07-13-product-quality-drift.md",
+        "ops/audit-governance/2026-07-13T03-36-36-672Z-audit-governance.md"
+      ],
       "verification": [
-        "PENDING final validation"
+        "PASS git diff --check (CRLF warnings only)",
+        "PASS npm run bna:run:validate before deployment closeout",
+        "PASS npm run one-time:target:guard after deployment",
+        "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8",
+        "PASS npm run app:smoke:onetime-operations-crm-workbench read-only live smoke",
+        "PASS npm run watchdog:actions",
+        "PASS npm run pqc:validate",
+        "PASS npm run watchdog:protocol-drift",
+        "PASS npm run audit:governance (repo-wide pre-existing mapping debt remains)",
+        "PASS focused CRM/unit tests 27/27"
       ],
       "implementation_files": [
+        "ops/action-registry/actions.json",
+        "ops/product-specs/one-time/crm/contacts-inbox.v1.json",
+        "tests/one-time-crm-local-db-smoke-guard.test.js",
+        "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "scripts/smoke-onetime-crm-journey-local-db.mjs",
+        "public/operations.html",
+        "public/js/operations-shell.js",
+        "server.js",
         "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/",
         "ops/agent-task-ledger.jsonl",
-        "ops/agent-changelog.md"
+        "ops/agent-changelog.md",
+        "ops/live-smokes/2026-07-13T03-42-40-981Z-one-time-operations-crm-workbench-live-smoke.md",
+        "ops/live-smokes/2026-07-13T03-42-40-981Z-one-time-operations-crm-workbench-live-smoke.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T06:32:00+03:00"
+      "updated_at": "2026-07-13T06:43:00+03:00",
+      "implementation_commit": "467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8",
+      "pushed_commit": "467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8",
+      "deployed_commit": "467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8",
+      "deployment_id": "3ea1e251-67aa-4137-85cc-82d38437ab8d",
+      "deployment_evidence": [
+        "Railway deployment 3ea1e251-67aa-4137-85cc-82d38437ab8d reached SUCCESS on one-time-production / production / one-time-web.",
+        "SHA-pinned live smoke confirmed join.onetimeonetime.com served 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8.",
+        "Read-only Operations CRM live smoke passed without external-write flags."
+      ]
     }
   ]
 }

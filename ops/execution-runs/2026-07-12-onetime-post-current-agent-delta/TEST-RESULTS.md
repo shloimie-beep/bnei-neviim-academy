@@ -1,6 +1,6 @@
 # Test Results
 
-Current as of 2026-07-12T23:58:00+03:00.
+Current as of 2026-07-13T06:43:00+03:00.
 
 ## REQ-20260712-803
 
@@ -205,21 +205,31 @@ Result: PASS. Report:
 node scripts/smoke-onetime-crm-journey-local-db.mjs
 ```
 
-Result: BLOCKED. The script requires `BNA_ONETIME_CRM_TEST_DATABASE_URL` and
-intentionally ignores production `DATABASE_URL`. Report:
+Earlier result: BLOCKED. The script required
+`BNA_ONETIME_CRM_TEST_DATABASE_URL` and intentionally ignored production
+`DATABASE_URL`. Report:
 `ops/evidence/one-time-crm-journey-local-db/2026-07-12T20-46-07-389Z-report.md`.
+
+Final result: PASS against isolated Railway `crm-test` Postgres service
+`Postgres-ib9s` after explicit operator approval to create the Railway test DB.
+Report:
+`ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-report.md`.
+Screenshot:
+`ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-crm-mailbox-roundtrip.png`.
 
 ```powershell
 where.exe psql; where.exe initdb; where.exe pg_ctl; where.exe docker
 ```
 
-Result: BLOCKED. None of those tools are available in this shell.
+Result: historical blocker only. None of those tools were available in this
+shell, so the isolated DB proof was moved to Railway `crm-test`.
 
 ```bash
 node -e "for (const name of ['pg-mem','@electric-sql/pglite','postgres','better-sqlite3']) { try { require.resolve(name); console.log(name+':found') } catch { console.log(name+':not_found') } }"
 ```
 
-Result: BLOCKED. No in-process Postgres-compatible adapter is installed.
+Result: historical blocker only. No in-process Postgres-compatible adapter was
+installed.
 
 Blocker audit report:
 `ops/evidence/one-time-crm-journey-local-db/2026-07-12T23-54-03-blocker-audit.md`.
@@ -235,8 +245,8 @@ Result: PASS, 0 findings. Report:
 npm run watchdog:protocol-drift
 ```
 
-Result: PASS, 0 findings. Report:
-`ops/watchdog-audits/2026-07-12-product-quality-drift.md`.
+Result: PASS, 0 findings. Latest report:
+`ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
 
 ```bash
 npm run pqc:validate
@@ -249,7 +259,45 @@ Result: PASS, 77 passed and 0 failed. Report:
 npm run bna:run:validate
 ```
 
-Result: PASS, with 5 done, 1 blocked, and 1 not_started requirement.
+Earlier result: PASS, with 5 done, 1 blocked, and 1 not_started requirement.
+
+Final result: PASS, with all 7 requirements done.
+
+## REQ-20260712-807
+
+```bash
+git push origin codex/onetime-post-agent-delta-20260712-v3
+```
+
+Result: PASS. Commit `467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8` was pushed.
+
+```powershell
+$env:BNA_DEPLOY_APP='one-time'; npm run railway:redeploy
+```
+
+Result: PASS. Railway deployment
+`3ea1e251-67aa-4137-85cc-82d38437ab8d` reached `SUCCESS` on
+`one-time-production / production / one-time-web`.
+
+```bash
+npm run one-time:target:guard
+```
+
+Result: PASS after deployment.
+
+```bash
+npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8
+```
+
+Result: PASS. `/api/deploy-info` confirmed commit
+`467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8` on the One Time target.
+
+```bash
+npm run app:smoke:onetime-operations-crm-workbench
+```
+
+Result: PASS. Report:
+`ops/live-smokes/2026-07-13T03-42-40-981Z-one-time-operations-crm-workbench-live-smoke.md`.
 
 ```bash
 node --test tests/one-time-crm-live-smoke-contract.test.js tests/operations-saas-crm-redesign.test.js

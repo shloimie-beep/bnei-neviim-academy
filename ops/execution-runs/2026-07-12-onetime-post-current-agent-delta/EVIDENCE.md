@@ -173,12 +173,6 @@
   PASS `npm run bna:run:validate` after marking `REQ-20260712-805` done;
   counts were 5 done and 2 not_started.
 
-## Pending Evidence
-
-- `REQ-20260712-806`: blocked only on isolated DB mutation/reload proof. Safe
-  C3/C8 implementation evidence is recorded below.
-- `REQ-20260712-807`: commit/push/deploy/live-smoke evidence.
-
 ## REQ-20260712-806
 
 - Server/API implementation:
@@ -209,13 +203,65 @@
   `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
   Screenshots include 1440, 1024, 768, 430, and 390 widths plus the scoped
   One Time Inbox handoff.
-- Blocker evidence:
-  `node scripts/smoke-onetime-crm-journey-local-db.mjs` is blocked because
-  `BNA_ONETIME_CRM_TEST_DATABASE_URL` is not set. Report:
+- Cleared blocker history:
+  the first local DB journey was blocked because
+  `BNA_ONETIME_CRM_TEST_DATABASE_URL` was not set. Report:
   `ops/evidence/one-time-crm-journey-local-db/2026-07-12T20-46-07-389Z-report.md`.
-  The script intentionally ignores production `DATABASE_URL`.
-- Blocker audit:
+  A follow-up audit at
   `ops/evidence/one-time-crm-journey-local-db/2026-07-12T23-54-03-blocker-audit.md`
-  confirms this environment has no `BNA_ONETIME_CRM_TEST_DATABASE_URL`, no
-  `psql`/`initdb`/`pg_ctl`, no Docker, no installed in-process Postgres
-  adapter, and no usable local env/secret file in the worktree.
+  confirmed no local DB URL, no Postgres tooling, no Docker, no installed
+  in-process Postgres adapter, and no usable local env/secret file in the
+  worktree.
+- Operator-approved Railway test DB:
+  created isolated Railway environment `crm-test`
+  (`2a9b61fa-6d88-4405-b6d6-0120ff7f461f`) and Postgres service
+  `Postgres-ib9s` (`ebbb512e-3d27-44e1-a85b-4be3871a6b2f`) for test-only CRM
+  proof. The DB URL was used from Railway variables and was not printed or
+  committed.
+- Railway test DB guard:
+  `scripts/smoke-onetime-crm-journey-local-db.mjs` now allows Railway-hosted
+  DBs only when explicit remote-test and Railway-test flags are set and the
+  Railway environment name is test-like. Production `DATABASE_URL` remains
+  ignored.
+- Isolated mutation/reload proof:
+  PASS `node scripts/smoke-onetime-crm-journey-local-db.mjs` against Railway
+  `crm-test` Postgres. Report:
+  `ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-report.md`.
+  Screenshot:
+  `ops/evidence/one-time-crm-journey-local-db/2026-07-13T03-31-54-271Z-crm-mailbox-roundtrip.png`.
+- Deployment:
+  Railway `one-time-production / production / one-time-web` deployment
+  `3ea1e251-67aa-4137-85cc-82d38437ab8d` reached `SUCCESS` for commit
+  `467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8`.
+- Live proof:
+  PASS `npm run one-time:target:guard`.
+- SHA-pinned live smoke:
+  PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8`.
+- Read-only CRM live smoke:
+  PASS `npm run app:smoke:onetime-operations-crm-workbench`. Report:
+  `ops/live-smokes/2026-07-13T03-42-40-981Z-one-time-operations-crm-workbench-live-smoke.md`.
+  The smoke recorded counts/guard flags only and did not save contact data,
+  raw message bodies, screenshots, sends, payments, access grants, or external
+  CRM writes.
+
+## REQ-20260712-807
+
+- Scoped commit:
+  `467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8` on
+  `codex/onetime-post-agent-delta-20260712-v3`.
+- Push:
+  `origin/codex/onetime-post-agent-delta-20260712-v3` updated to
+  `467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8`.
+- Deployment:
+  Railway deployment `3ea1e251-67aa-4137-85cc-82d38437ab8d` reached
+  `SUCCESS` on `one-time-production / production / one-time-web`.
+- Target guard:
+  PASS `npm run one-time:target:guard`.
+- Live smoke:
+  PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 467ff7f25aa0a2fa9931cdb4fde6cd264cf4eeb8`.
+- CRM live smoke:
+  PASS `npm run app:smoke:onetime-operations-crm-workbench`.
+- Watchdogs/validators:
+  PASS `npm run watchdog:actions`; PASS `npm run pqc:validate`; PASS
+  `npm run watchdog:protocol-drift`; PASS `npm run audit:governance` with
+  broad pre-existing audit mapping debt still reported.
