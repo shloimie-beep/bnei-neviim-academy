@@ -409,7 +409,7 @@
 - BNA Railway deployment `b49f07c2-86e5-44d3-8092-e4ed1bdaed2e` reached `SUCCESS`; BNA deploy-info returned `commit_sha=ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
 - One Time Railway deployment `2645a6c7-3b51-4ae6-915f-5a267dacde22` reached `SUCCESS`; One Time deploy-info returned `commit_sha=ee9391d2bd4a1ff3ef41fc99296089254373a4d6` and `target_app=one-time`.
 - Live One Time CRM workbench smoke passed: `ops/live-smokes/2026-07-13T09-33-33-379Z-one-time-operations-crm-workbench-live-smoke.md`.
-- Live One Time provider route-module smoke passed: `ops/live-smokes/2026-07-13T09-27-55-073Z-onetime-provider-route-module-live-smoke.md`.
+- Live One Time provider route-module smoke passed: `ops/live-smokes/2026-07-13T09-33-33-717Z-onetime-provider-route-module-live-smoke.md`.
 - Live targeted delivery-outbox DTO smoke passed with `skipped_no_live_delivery_outbox`: `ops/live-smokes/2026-07-13T09-32-18-053Z-one-time-crm-delivery-outbox-dto-live-smoke.md`. It found 7 canonical contacts, no live outbox rows, and created no synthetic data.
 - BNA workspace taxonomy regression smoke passed: `ops/live-smokes/2026-07-13T09-28-14-579Z-operations-workspace-taxonomy-live-smoke.md`.
 - One Time performance gate passed at the deployed SHA: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.

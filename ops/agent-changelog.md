@@ -39808,7 +39808,7 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - App-code commit `fc36995bf85e31b988e1d7e1d756bf4e51e00ca4` is included in
   deployed head `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`; BNA deployment
   `b49f07c2-86e5-44d3-8092-e4ed1bdaed2e` and One Time deployment
-  `c7de0743-3989-43a4-8cba-0f012b96364a` reached `SUCCESS`.
+  `2645a6c7-3b51-4ae6-915f-5a267dacde22` reached `SUCCESS`.
 - Verification passed: focused CRM/signup tests `42/42`, full One Time focused
   suite `78/78`, generated-shell check, action/protocol/secrets watchdogs, run
   validation, exact-SHA One Time route/CRM/provider smokes, BNA taxonomy smoke,
@@ -39817,7 +39817,7 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   production currently has no live delivery-outbox rows in the inspected
   canonical contact set; it created no synthetic data and performed no external
   writes. Report:
-  `ops/live-smokes/2026-07-13T09-28-14-537Z-one-time-crm-delivery-outbox-dto-live-smoke.md`.
+  `ops/live-smokes/2026-07-13T09-32-18-053Z-one-time-crm-delivery-outbox-dto-live-smoke.md`.
 
 ## 2026-07-13 - One Time signup keyboard-card regression deployed
 
