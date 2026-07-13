@@ -169,6 +169,7 @@
     "app:smoke:one-time-personal-continuation": "node scripts/smoke-one-time-personal-continuation-live.mjs",
     "app:smoke:onetime-operations-crm-workbench": "node scripts/smoke-onetime-operations-crm-workbench-live.mjs",
     "app:smoke:onetime-crm-email-thread-dto": "node scripts/smoke-onetime-crm-email-thread-dto-live.mjs",
+    "app:smoke:onetime-crm-contact-notes-dto": "node scripts/smoke-onetime-crm-contact-notes-dto-live.mjs",
     "app:smoke:crm-identity-isolation": "node scripts/smoke-crm-identity-isolation-live.mjs",
     "app:smoke:rabbi-agent-review-proof-readiness": "node scripts/smoke-rabbi-agent-review-proof-readiness-live.mjs",
     "app:smoke:rabbi-agent-review-direct-proof": "node scripts/smoke-rabbi-agent-review-direct-proof.mjs",
