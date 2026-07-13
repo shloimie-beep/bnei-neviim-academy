@@ -40261,3 +40261,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no owner email send, WhatsApp provider send, public auto-reply
   enablement, Telegram send, destructive CRM write, provider mutation,
   credential mutation, payment mutation, or access mutation was performed.
+
+## 2026-07-13 - One Time classroom member-safe live proof strengthened
+
+- Hardened One Time member-safe classroom payloads so review and member
+  embedded classroom readback omit private transcript/admin keys instead of
+  returning blank private fields.
+- Deployed exact One Time SHA `22e50b2ee10fd0f78d17d5eb896d31a8a73402cd`.
+- Live smoke passed: admin packages with library items, review `today_video`,
+  synthetic member access-code entitlement with two visible items at
+  `live_class`, anonymous member/classroom 401 gates, and
+  `external_write_performed=false`.
+- Evidence: `ops/live-smokes/2026-07-13T14-06-30-661Z-one-time-classroom-library-readonly-live-smoke.md`.
+- Remaining gates: approved member publication, parent/student latest-video
+  proof, Vimeo-origin package integration, and Vimeo private upload approval.
