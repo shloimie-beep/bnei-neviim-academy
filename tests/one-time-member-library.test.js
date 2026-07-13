@@ -7,6 +7,7 @@ const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
 const memberLibraryHtml = fs.readFileSync('public/member-library.html', 'utf8');
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const metadataReviewLiveSmoke = fs.readFileSync('scripts/smoke-one-time-metadata-review-live.mjs', 'utf8');
+const classroomLibraryReadonlyLiveSmoke = fs.readFileSync('scripts/smoke-one-time-classroom-library-readonly-live.mjs', 'utf8');
 
 function sliceBetween(source, start, end) {
   const startIndex = source.indexOf(start);
@@ -135,6 +136,18 @@ test('metadata review live smoke is read-only and covers deployed admin package 
   assert.match(metadataReviewLiveSmoke, /package_has_bot_knowledge/);
   assert.match(metadataReviewLiveSmoke, /external_write_performed: false/);
   assert.doesNotMatch(metadataReviewLiveSmoke, /method:\s*['"`](POST|PATCH|PUT|DELETE)['"`]/);
+});
+
+test('classroom library live smoke is read-only and covers latest-video entitlement gates', () => {
+  assert.equal(packageJson.scripts['app:smoke:one-time-classroom-library-readonly'], 'node scripts/smoke-one-time-classroom-library-readonly-live.mjs');
+  assert.match(classroomLibraryReadonlyLiveSmoke, /loginOperations/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /one-time\/classes\?limit=10&status=all/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /admin class package list has published library items/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /review classroom exposes latest-video shape without private fields/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /anonymous member-library and classroom access stay blocked/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /external_write_performed: false/);
+  assert.match(classroomLibraryReadonlyLiveSmoke, /production_mutation_performed: false/);
+  assert.doesNotMatch(classroomLibraryReadonlyLiveSmoke, /method:\s*['"`](POST|PATCH|PUT|DELETE)['"`]/);
 });
 
 test('Visibility helpers keep smoke/private/admin states out of ordinary member readback', () => {

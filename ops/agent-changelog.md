@@ -40229,3 +40229,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - `REQ-20260713-917` is terminal for the backend metadata/handoff contract.
   Helper-knowledge writes, Vimeo upload, member publication, and review UI
   remain separate approval/gated requirements.
+
+## 2026-07-13 - One Time classroom/latest-video read-only gates verified
+
+- Added `scripts/smoke-one-time-classroom-library-readonly-live.mjs` and
+  `app:smoke:one-time-classroom-library-readonly` for repeatable read-only live
+  proof of the classroom/member-library gates.
+- Live smoke passed against One Time SHA
+  `43f7c33733880745d8f1191c86fe8e196ef68baa`: admin readback returned two
+  published One Time packages with library items, review classroom exposed a
+  safe `today_video`, anonymous member-library/classroom routes returned 401,
+  and `external_write_performed=false`.
+- `REQ-20260713-919` remains in progress because real member/access-code
+  entitlement, member publication, parent/student latest-video proof, and
+  Vimeo-origin package integration remain gated.
