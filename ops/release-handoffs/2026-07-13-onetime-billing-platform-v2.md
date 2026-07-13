@@ -1,6 +1,6 @@
 # One Time Provider Billing Platform V2 Release Handoff
 
-Status: draft PR created; live activation blocked
+Status: draft PR mergeable; live activation blocked
 Branch: `codex/onetime-rosh-hashanah-billing-platform-v2`
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Primary requirements: `REQ-20260713-950` through `REQ-20260713-963`
@@ -88,3 +88,4 @@ launch packet with:
 ## Draft PR
 
 Draft PR URL: https://github.com/shloimie-beep/bnei-neviim-academy/pull/132
+Draft PR merge state: `CLEAN` after master merge commit `3dbf9084a` was pushed.
