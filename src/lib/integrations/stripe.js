@@ -160,27 +160,44 @@ function buildOneTimeStripeLocalBetaPlan(payload = {}, options = {}) {
   const readiness = getStripeReadiness(options);
   const config = payload.trial_referral_config || payload.trialReferralConfig || payload || {};
   const trial = config.launch_trial || payload.launch_trial || {};
+  const promotionalAccess = config.promotional_access || trial.promotional_access || payload.promotional_access || {};
   const renewal = trial.renewal || {};
   const trialRules = trial.rules || {};
   const referral = config.referral_credit || payload.referral_credit || {};
   const referralReward = referral.reward || {};
   return {
     provider: 'stripe',
-    requirement_id: 'REQ-20260621-906',
+    requirement_id: 'REQ-20260713-954',
     mode: 'test_local_only',
     preview_only: true,
     external_write_performed: false,
     readiness,
+    promotional_access: {
+      policy_key: promotionalAccess.policy_key || trial.policy_key || 'one_time_rosh_hashanah_promotional_access',
+      conversion_policy_key: promotionalAccess.conversion_policy_key || trial.conversion_policy_key || 'one_time_rosh_hashanah_paid_conversion',
+      offer_key: promotionalAccess.offer_key || trial.offer_key || 'membership_67_monthly',
+      billing_start_at: promotionalAccess.billing_start_at || trial.billing_start_at || null,
+      timezone: promotionalAccess.timezone || trial.timezone || 'Asia/Jerusalem',
+      access_until_billing_start: promotionalAccess.access_until_billing_start !== false,
+      stripe_trial_enabled: false,
+    },
     launch_trial: {
-      policy_key: trial.policy_key || 'one_time_warm_lead_intro_trial',
-      policy_version: trial.policy_version || 'one-time-warm-lead-intro-trial-v1',
+      policy_key: trial.policy_key || 'one_time_rosh_hashanah_promotional_access',
+      conversion_policy_key: trial.conversion_policy_key || 'one_time_rosh_hashanah_paid_conversion',
+      policy_version: trial.policy_version || 'one-time-rosh-hashanah-promotional-access-v1',
       offer_key: trial.offer_key || 'membership_67_monthly',
-      trial_days: Number.isFinite(Number(trial.trial_days)) ? Number(trial.trial_days) : 30,
+      trial_days: 0,
+      stripe_trial_enabled: false,
+      billing_start_at: trial.billing_start_at || promotionalAccess.billing_start_at || null,
+      timezone: trial.timezone || promotionalAccess.timezone || 'Asia/Jerusalem',
       renewal_amount_cents: Number.isFinite(Number(renewal.amount_cents)) ? Number(renewal.amount_cents) : 6700,
       currency: String(renewal.currency || 'USD').toUpperCase(),
       billing_interval: renewal.billing_interval || 'month',
+      tax_behavior: renewal.tax_behavior || 'exclusive',
       card_required: trialRules.card_required !== false,
-      one_intro_trial_per_household: trialRules.one_intro_trial_per_household !== false,
+      billing_authorization_required: trialRules.billing_authorization_required !== false,
+      one_intro_trial_per_household: false,
+      no_failed_payment_grace_period: true,
     },
     referral_credit: {
       policy_key: referral.policy_key || 'one_time_referral_credit_after_first_paid_cycle',

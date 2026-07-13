@@ -39973,3 +39973,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Product Quality compiler packet for the future provider Billing UI.
 - Guardrails: no live charge, refund, notice send, access mutation, Stripe
   Connect/payout setup, credential mutation, or secret exposure was performed.
+
+## 2026-07-13 - One Time Billing V2 no-trial policy slice implemented locally
+
+- Updated the One Time billing/product policy from active 30-day Stripe trial to
+  Rosh Hashanah application-level promotional access with `$67/month`,
+  tax-exclusive paid conversion, `trial_days=0`, and no failed-payment grace.
+- Updated Stripe checkout/lifecycle helpers so checkout payloads omit
+  `trial_period_days`, legacy `customer.subscription.trial_will_end` events are
+  ignored, invoice/payment failures suspend paid entitlement immediately, and
+  cancellation/renewal/revenue states stay provider-scoped and audit-safe.
+- Updated the local migration seed and Operations readback copy to preserve the
+  old warm-lead trial as archived provenance while active panels show
+  promotional access/no Stripe trial/no live write guardrails.
+- Verification passed: `npm run operations:build`,
+  `node --test tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js`
+  (12/12), and `node --test tests/one-time-stripe-local-beta.test.js` (5/5).
+  The broader `tests/one-time-product-system.test.js` remains blocked by an
+  unrelated existing public landing-page WhatsApp redirect baseline mismatch.
+- Guardrails: no live charge, refund, notice send, access mutation, Stripe
+  Connect/payout setup, credential mutation, sandbox customer mutation, or secret
+  exposure was performed.

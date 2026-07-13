@@ -29,7 +29,6 @@ const ONE_TIME_BILLING_MODELS = Object.freeze(['recurring_monthly', 'fixed_durat
 const ONE_TIME_ACCESS_STATES = Object.freeze([
   'pending',
   'active',
-  'grace_period',
   'failed_payment',
   'past_due',
   'cancellation_requested',
@@ -65,15 +64,20 @@ const ONE_TIME_APPOINTMENT_STATUSES = Object.freeze([
 ]);
 
 const ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS = Object.freeze({
-  policy_key: 'one_time_warm_lead_intro_trial',
-  policy_version: 'one-time-warm-lead-intro-trial-v1',
+  policy_key: 'one_time_rosh_hashanah_promotional_access',
+  conversion_policy_key: 'one_time_rosh_hashanah_paid_conversion',
+  policy_version: 'one-time-rosh-hashanah-promotional-access-v1',
   offer_key: 'membership_67_monthly',
-  trial_days: 30,
+  billing_start_at: null,
+  timezone: 'Asia/Jerusalem',
+  trial_days: 0,
+  stripe_trial_enabled: false,
   renewal_amount_cents: 6700,
   currency: 'USD',
   billing_interval: 'month',
+  tax_behavior: 'exclusive',
   card_required: true,
-  one_intro_trial_per_household: true,
+  billing_authorization_required: true,
 });
 
 const ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS = Object.freeze({
@@ -192,9 +196,9 @@ const ONE_TIME_PRODUCT_READINESS_SECTIONS = Object.freeze([
       },
       {
         key: 'entitlements_grace_failed_cancel_refund_access',
-        label: 'Entitlements, grace, failed payment, cancellation, refund, and access expiration',
-        status: 'needs_operator_decision',
-        note: 'Access-state vocabulary is documented for implementation, but live payment and refund rules need approval.',
+        label: 'Entitlements, failed payment, cancellation, refund, and access expiration',
+        status: 'local_contract_present',
+        note: 'One Time Billing V2 policy has no failed-payment grace period; live payment and refund execution still need final launch approval.',
       },
       {
         key: 'intensive_completion_member_status',
@@ -404,19 +408,19 @@ const ONE_TIME_PRODUCT_READINESS_SECTIONS = Object.freeze([
   },
   {
     section_key: 'trial_referral_launch',
-    title: 'Trial And Referral Launch',
+    title: 'Promotional Billing And Referral Launch',
     items: [
       {
-        key: 'warm_lead_30_day_trial',
-        label: '30-day warm-lead intro trial',
+        key: 'rosh_hashanah_promotional_access',
+        label: 'Rosh Hashanah promotional access',
         status: 'local_contract_present',
-        note: 'Default trial policy is modeled locally for the $67 monthly membership without creating a checkout session.',
+        note: 'Application-level promotional access is modeled locally for the $67 monthly membership without creating a Stripe trial or checkout session.',
       },
       {
-        key: 'card_required_one_intro_trial',
-        label: 'Card-required and one intro trial per household',
+        key: 'card_required_no_stripe_trial',
+        label: 'Card-required paid conversion, no Stripe trial',
         status: 'local_contract_present',
-        note: 'Policy rules require card collection and one intro trial per household when a live checkout path is approved.',
+        note: 'Policy rules require billing authorization for the paid conversion and keep Stripe trial creation disabled.',
       },
       {
         key: 'policy_version_acceptance_storage',
@@ -599,7 +603,9 @@ function defaultOneTimeAccessPolicy() {
   return {
     state_keys: [...ONE_TIME_ACCESS_STATES],
     failed_payment_state: 'failed_payment',
-    grace_period_state: 'grace_period',
+    grace_period_state: null,
+    grace_period_days: 0,
+    access_during_grace: false,
     cancellation_state: 'cancellation_requested',
     refund_state: 'refund_pending',
     completion_state: 'completed',
@@ -614,15 +620,20 @@ function safePositiveInteger(value, fallback) {
   return Number.isFinite(number) && number > 0 ? Math.round(number) : fallback;
 }
 
-function oneTimePolicyDecisionView(decisions = [], decisionKey = 'trial_referral_legal_wording') {
+function safeNonNegativeInteger(value, fallback) {
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? Math.round(number) : fallback;
+}
+
+function oneTimePolicyDecisionView(decisions = [], decisionKey = 'rosh_hashanah_billing_policy_copy') {
   const rows = Array.isArray(decisions) ? decisions : [];
   const match = rows.find((decision) => String(decision?.decision_key || decision?.decisionKey || '') === decisionKey) || {};
   return {
     decision_key: decisionKey,
     status: match.status || 'decision_pending',
-    title: match.title || 'Approve trial and referral legal wording',
-    question: match.question || 'What exact public trial, card-required, renewal, referral, and credit wording may One Time use?',
-    context: match.context || 'Local implementation can store policy versions and acceptance records, but public/legal wording needs approval before publication.',
+    title: match.title || 'Approve Rosh Hashanah billing notice and policy wording',
+    question: match.question || 'What exact public billing-start, no-trial, tax, cancellation, refund, and notice wording may One Time use?',
+    context: match.context || 'Local implementation can store policy versions and acceptance records, but live billing notice and customer-facing legal copy need approval before publication.',
     needed_from: match.needed_from || 'Shloimie + legal/accounting owner',
     public_output_allowed: match.public_output_allowed === true,
     blocks_public_copy: match.status !== 'approved',
@@ -679,33 +690,54 @@ function buildOneTimePolicyAcceptanceStorageContract(rows = []) {
 
 function buildOneTimeLaunchTrialPolicy(input = {}) {
   const offer = input.offer && typeof input.offer === 'object' ? input.offer : {};
-  const trialDays = safePositiveInteger(input.trial_days ?? input.trialDays, ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.trial_days);
+  const trialDays = safeNonNegativeInteger(input.trial_days ?? input.trialDays, ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.trial_days);
   const renewalAmountCents = safePositiveInteger(
     input.renewal_amount_cents ?? input.renewalAmountCents ?? offer.price_amount_cents,
     ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.renewal_amount_cents,
   );
   const currency = String(input.currency || offer.currency || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.currency).toUpperCase();
+  const billingStartAt = input.billing_start_at || input.billingStartAt || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.billing_start_at;
+  const timezone = input.timezone || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.timezone;
   return {
-    requirement_id: 'REQ-20260621-906',
+    requirement_id: 'REQ-20260713-954',
     policy_key: input.policy_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_key,
+    conversion_policy_key: input.conversion_policy_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.conversion_policy_key,
     policy_version: input.policy_version || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_version,
     offer_key: input.offer_key || offer.offer_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.offer_key,
     status: 'local_contract_present',
     mode: 'test_local_only',
+    model: 'application_promotional_access_then_paid_conversion',
+    billing_start_at: billingStartAt,
+    timezone,
     trial_days: trialDays,
+    stripe_trial_enabled: false,
+    promotional_access: {
+      policy_key: input.policy_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_key,
+      conversion_policy_key: input.conversion_policy_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.conversion_policy_key,
+      offer_key: input.offer_key || offer.offer_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.offer_key,
+      access_until_billing_start: true,
+      billing_start_at: billingStartAt,
+      timezone,
+      stripe_trial_enabled: false,
+    },
     renewal: {
       amount_cents: renewalAmountCents,
       display_amount: `${currency === 'USD' ? '$' : `${currency} `}${(renewalAmountCents / 100).toFixed(2)}`,
       currency,
       billing_interval: input.billing_interval || offer.billing_interval || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.billing_interval,
-      starts_after_trial: true,
+      starts_after_trial: false,
+      starts_at: billingStartAt,
+      tax_behavior: input.tax_behavior || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.tax_behavior,
     },
     rules: {
       card_required: input.card_required !== undefined ? input.card_required === true : ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.card_required,
-      one_intro_trial_per_household: input.one_intro_trial_per_household !== undefined
-        ? input.one_intro_trial_per_household === true
-        : ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.one_intro_trial_per_household,
+      billing_authorization_required: input.billing_authorization_required !== undefined
+        ? input.billing_authorization_required === true
+        : ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.billing_authorization_required,
+      one_intro_trial_per_household: false,
       acceptance_required: true,
+      no_stripe_trial: true,
+      no_failed_payment_grace_period: true,
       household_match_keys: ['normalized_parent_email', 'normalized_parent_phone', 'normalized_student_name'],
     },
     acceptance: {
@@ -721,6 +753,7 @@ function buildOneTimeLaunchTrialPolicy(input = {}) {
       invoice_credit_enabled: false,
       payment_link_creation_enabled: false,
       access_grant_automation_enabled: false,
+      stripe_trial_enabled: false,
       external_write_performed: false,
     },
   };
@@ -797,13 +830,15 @@ function buildOneTimeTrialReferralConfiguration({
   const offerRows = Array.isArray(offers) ? offers : [];
   const monthlyOffer = offerRows.find((offer) => offer?.offer_key === ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.offer_key) || {};
   const referralRows = (Array.isArray(referrals) ? referrals : []).map(oneTimeReferralRecordView);
+  const launchPolicy = buildOneTimeLaunchTrialPolicy({ offer: monthlyOffer });
   return {
-    requirement_id: 'REQ-20260621-906',
+    requirement_id: 'REQ-20260713-954',
     workspace_key: 'rabbi_sheller_provider',
     project_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
     status: 'local_contract_present',
     mode: 'test_local_only',
-    launch_trial: buildOneTimeLaunchTrialPolicy({ offer: monthlyOffer }),
+    launch_trial: launchPolicy,
+    promotional_access: launchPolicy.promotional_access,
     referral_credit: buildOneTimeReferralCreditPolicy(),
     acceptance_storage: buildOneTimePolicyAcceptanceStorageContract(acceptances),
     referral_records: referralRows,
@@ -819,7 +854,8 @@ function buildOneTimeTrialReferralConfiguration({
       external_write_performed: false,
     },
     blockers: [
-      'legal_wording_decision_required_before_public_copy',
+      'billing_start_at_decision_required_before_live_conversion',
+      'billing_notice_and_policy_copy_required_before_public_copy',
       'billing_provider_and_test_checkout_required_before_live_card_collection',
       'accounting_owner_approval_required_before_real_invoice_credit_or_reward',
     ],
@@ -972,13 +1008,13 @@ function oneTimeProductOfferView(row = {}) {
   return {
     id: row.id ? Number(row.id) : null,
     offer_key: offerKey,
-    title: row.title || (defaultMonthly ? '$67 monthly membership' : 'Premium Masechta intensive'),
+    title: row.title || (defaultMonthly ? 'One Time Mishnayos Membership' : 'Premium Masechta intensive'),
     billing_model: billingModel,
     price_amount_cents: row.price_amount_cents === null || row.price_amount_cents === undefined
       ? (defaultMonthly ? 6700 : null)
       : Number(row.price_amount_cents),
     currency: row.currency || 'USD',
-    price_status: row.price_status || (defaultMonthly ? 'candidate_pending_approval' : 'decision_pending'),
+    price_status: row.price_status || (defaultMonthly ? 'current_policy' : 'decision_pending'),
     duration_weeks: row.duration_weeks === null || row.duration_weeks === undefined ? null : Number(row.duration_weeks),
     upfront_payment_supported: row.upfront_payment_supported === true || metadata.upfront_payment_supported === true || offerKey === 'premium_masechta_intensive',
     weekly_installments_supported: row.weekly_installments_supported === true || metadata.weekly_installments_supported === true || offerKey === 'premium_masechta_intensive',
@@ -990,7 +1026,11 @@ function oneTimeProductOfferView(row = {}) {
     checkout_enabled: false,
     payment_links_enabled: false,
     access_automation_enabled: false,
-    requires_operator_decision: true,
+    requires_operator_decision: !defaultMonthly,
+    tax_behavior: row.tax_behavior || metadata.tax_behavior || (defaultMonthly ? 'exclusive' : 'decision_pending'),
+    billing_start_at: row.billing_start_at || metadata.billing_start_at || null,
+    no_stripe_trial: defaultMonthly,
+    no_failed_payment_grace_period: defaultMonthly,
     no_live_billing_write: true,
     no_access_grant_performed: true,
     metadata,

@@ -166,7 +166,8 @@ test('One Time Batch 9/10 foundations model offers, booking, and portals without
   assert.equal(monthly.payment_links_enabled, false);
   assert.equal(monthly.access_automation_enabled, false);
   assert.equal(monthly.access_policy.failed_payment_state, 'failed_payment');
-  assert.equal(monthly.access_policy.grace_period_state, 'grace_period');
+  assert.equal(monthly.access_policy.grace_period_state, null);
+  assert.equal(monthly.access_policy.access_during_grace, false);
   assert.equal(monthly.access_policy.cancellation_state, 'cancellation_requested');
   assert.equal(monthly.access_policy.refund_state, 'refund_pending');
   assert.equal(monthly.access_policy.completion_state, 'completed');
@@ -389,7 +390,7 @@ test('public One Time launch page is indexable, interest-only, and has no checko
   assert.doesNotMatch(oneTimeHtml, /signup-strip/);
   assert.match(oneTimeSignupHtml, /source_landing_page/);
   assert.match(oneTimeSignupHtml, /signup_mode/);
-  assert.match(oneTimeSignupHtml, /REQ-20260712-106/);
+  assert.match(oneTimeSignupHtml, /REQ-20260713-901/);
   assert.match(oneTimeSignupHtml, /\/api\/one-time\/interest/);
   assert.doesNotMatch(oneTimeHtml, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
   assert.doesNotMatch(oneTimeHtml, /WhatsApp Robot Scheller/);

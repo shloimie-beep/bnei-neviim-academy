@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS bna_one_time_promotion_policies (
 ALTER TABLE bna_one_time_promotion_policies DROP CONSTRAINT IF EXISTS bna_one_time_promotion_policies_type_check;
 ALTER TABLE bna_one_time_promotion_policies
   ADD CONSTRAINT bna_one_time_promotion_policies_type_check
-  CHECK (policy_type IN ('trial', 'referral', 'cancellation_refund'));
+  CHECK (policy_type IN ('trial', 'promotional_access', 'referral', 'cancellation_refund'));
 ALTER TABLE bna_one_time_promotion_policies DROP CONSTRAINT IF EXISTS bna_one_time_promotion_policies_status_check;
 ALTER TABLE bna_one_time_promotion_policies
   ADD CONSTRAINT bna_one_time_promotion_policies_status_check
@@ -58,7 +58,7 @@ ALTER TABLE bna_one_time_policy_acceptances ADD COLUMN IF NOT EXISTS external_wr
 ALTER TABLE bna_one_time_policy_acceptances DROP CONSTRAINT IF EXISTS bna_one_time_policy_acceptances_policy_key_check;
 ALTER TABLE bna_one_time_policy_acceptances
   ADD CONSTRAINT bna_one_time_policy_acceptances_policy_key_check
-  CHECK (policy_key IN ('one_time_warm_lead_intro_trial', 'one_time_referral_credit_after_first_paid_cycle'));
+  CHECK (policy_key IN ('one_time_rosh_hashanah_promotional_access', 'one_time_warm_lead_intro_trial', 'one_time_referral_credit_after_first_paid_cycle'));
 ALTER TABLE bna_one_time_policy_acceptances DROP CONSTRAINT IF EXISTS bna_one_time_policy_acceptances_source_check;
 ALTER TABLE bna_one_time_policy_acceptances
   ADD CONSTRAINT bna_one_time_policy_acceptances_source_check
@@ -153,11 +153,18 @@ WITH program AS (
 ), policies AS (
   SELECT * FROM (VALUES
     (
+      'one_time_rosh_hashanah_promotional_access',
+      'one-time-rosh-hashanah-promotional-access-v1',
+      'promotional_access',
+      'Rosh Hashanah promotional access and paid conversion',
+      '{"trial_days":0,"stripe_trial_enabled":false,"offer_key":"membership_67_monthly","conversion_policy_key":"one_time_rosh_hashanah_paid_conversion","billing_start_at":null,"timezone":"Asia/Jerusalem","renewal_amount_cents":6700,"currency":"USD","billing_interval":"month","tax_behavior":"exclusive","card_required":true,"billing_authorization_required":true,"no_failed_payment_grace_period":true,"checkout_session_creation_enabled":false,"live_charges_enabled":false}'::jsonb
+    ),
+    (
       'one_time_warm_lead_intro_trial',
       'one-time-warm-lead-intro-trial-v1',
       'trial',
-      'Warm-lead 30-day intro trial',
-      '{"trial_days":30,"offer_key":"membership_67_monthly","renewal_amount_cents":6700,"currency":"USD","billing_interval":"month","card_required":true,"one_intro_trial_per_household":true,"pre_renewal_reminder_required":true,"checkout_session_creation_enabled":false,"live_charges_enabled":false}'::jsonb
+      'Superseded warm-lead 30-day intro trial',
+      '{"trial_days":30,"offer_key":"membership_67_monthly","renewal_amount_cents":6700,"currency":"USD","billing_interval":"month","card_required":true,"one_intro_trial_per_household":true,"pre_renewal_reminder_required":true,"checkout_session_creation_enabled":false,"live_charges_enabled":false,"superseded_by":"one_time_rosh_hashanah_promotional_access","superseded_raw_id":"RAW-20260713-005"}'::jsonb
     ),
     (
       'one_time_referral_credit_after_first_paid_cycle',
@@ -182,9 +189,10 @@ INSERT INTO bna_one_time_promotion_policies (
 )
 SELECT program.project_id, program.program_id, 'one_time_mishnah_class',
        policies.policy_key, policies.policy_version, policies.policy_type,
-       'needs_operator_decision', policies.title, policies.config,
+       CASE WHEN policies.policy_key = 'one_time_warm_lead_intro_trial' THEN 'archived' ELSE 'needs_operator_decision' END,
+       policies.title, policies.config,
        FALSE, FALSE, FALSE, FALSE,
-       '{"seeded_by":"one_time_trial_referral_config_migration","requirement_id":"REQ-20260621-906"}'::jsonb,
+       '{"seeded_by":"one_time_trial_referral_config_migration","requirement_id":"REQ-20260713-954","supersedes":"REQ-20260621-906"}'::jsonb,
        NOW()
 FROM program
 CROSS JOIN policies
