@@ -1,0 +1,960 @@
+{
+  "generated_at": "2026-07-13T13:22:51.378Z",
+  "baseUrl": "http://127.0.0.1:4317",
+  "shots": [
+    {
+      "file": "after-hero-toolbar-1440.png",
+      "width": 1440,
+      "height": 900,
+      "route": "/one-time",
+      "selector": ".hero",
+      "openDrawer": false,
+      "consoleErrors": [],
+      "httpErrors": [],
+      "rect": {
+        "width": 1440,
+        "height": 785,
+        "top": 115,
+        "bottom": 900
+      },
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "horizontalOverflow": false,
+      "header": {
+        "text": "One Time MishnayosWorldwide Mishnah Learning Home What You Receive What He’ll Gain Rabbi Scheller Member Login Sign Up Now",
+        "navDisplay": "none",
+        "menuDisplay": "grid",
+        "logoBackground": "rgb(5, 5, 5)",
+        "logoBorder": "rgba(237, 229, 24, 0.42)"
+      },
+      "hero": {
+        "backgroundImage": "linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 38%, rgba(5, 5, 5, 0.7) 66%, rgba(5, 5, 5, 0.9) 100%), radial-gradient(circle at 78% 34%, rgba(134, 232, 255, 0.24), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.14), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/hero/hero-classroom-background.webp\"), linear-gradient(130deg, rgb(5, 5, 5) 0%, rgb(7, 17, 23) 58%, rgb(12, 32, 41) 100%)",
+        "text": "Worldwide Mishnah learning — live from Eretz Yisrael Give your son a love for learning Torah. Live every day at 7:00 p.m. Israel time. Sign Up Now"
+      },
+      "benefitCards": [
+        {
+          "title": "Clarity",
+          "img": {
+            "src": "/assets/one-time/outcomes/clarity-class.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 29%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 341,
+            "height": 213
+          },
+          "visualRect": {
+            "width": 343,
+            "height": 215,
+            "top": 2107,
+            "left": 149
+          }
+        },
+        {
+          "title": "Accomplishment",
+          "img": {
+            "src": "/assets/one-time/outcomes/accomplishment-lakewood-class.webp",
+            "naturalWidth": 1024,
+            "naturalHeight": 768,
+            "complete": true,
+            "objectPosition": "50% 48%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 341,
+            "height": 213
+          },
+          "visualRect": {
+            "width": 343,
+            "height": 215,
+            "top": 2107,
+            "left": 548
+          }
+        },
+        {
+          "title": "Excitement for learning Torah",
+          "img": {
+            "src": "/assets/one-time/outcomes/excitement-learning-torah.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 54%",
+            "objectFit": "cover",
+            "transform": "matrix(1.1, 0, 0, 1.1, 0, 0)",
+            "width": 375,
+            "height": 234
+          },
+          "visualRect": {
+            "width": 343,
+            "height": 215,
+            "top": 2107,
+            "left": 948
+          }
+        }
+      ],
+      "whoBackground": "linear-gradient(rgba(5, 5, 5, 0.94) 0%, rgba(7, 17, 23, 0.82) 46%, rgba(5, 5, 5, 0.94) 100%), radial-gradient(circle at 50% 45%, rgba(134, 232, 255, 0.2), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 20% 18%, rgba(240, 255, 50, 0.08), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/backgrounds/who-its-for-norfolk-virginia.webp\")"
+    },
+    {
+      "file": "after-hero-toolbar-430.png",
+      "width": 430,
+      "height": 920,
+      "route": "/one-time",
+      "selector": ".hero",
+      "openDrawer": false,
+      "consoleErrors": [],
+      "httpErrors": [],
+      "rect": {
+        "width": 430,
+        "height": 816,
+        "top": 104,
+        "bottom": 920
+      },
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "horizontalOverflow": false,
+      "header": {
+        "text": "One Time MishnayosWorldwide Mishnah Learning Home What You Receive What He’ll Gain Rabbi Scheller Member Login Sign Up Now",
+        "navDisplay": "none",
+        "menuDisplay": "grid",
+        "logoBackground": "rgb(5, 5, 5)",
+        "logoBorder": "rgba(237, 229, 24, 0.42)"
+      },
+      "hero": {
+        "backgroundImage": "linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 38%, rgba(5, 5, 5, 0.7) 66%, rgba(5, 5, 5, 0.9) 100%), radial-gradient(circle at 78% 34%, rgba(134, 232, 255, 0.24), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.14), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/hero/hero-classroom-background.webp\"), linear-gradient(130deg, rgb(5, 5, 5) 0%, rgb(7, 17, 23) 58%, rgb(12, 32, 41) 100%)",
+        "text": "Worldwide Mishnah learning — live from Eretz Yisrael Give your son a love for learning Torah. Live every day at 7:00 p.m. Israel time. Sign Up Now"
+      },
+      "benefitCards": [
+        {
+          "title": "Clarity",
+          "img": {
+            "src": "/assets/one-time/outcomes/clarity-class.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 29%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 362,
+            "height": 226
+          },
+          "visualRect": {
+            "width": 364,
+            "height": 228,
+            "top": 2879,
+            "left": 33
+          }
+        },
+        {
+          "title": "Accomplishment",
+          "img": {
+            "src": "/assets/one-time/outcomes/accomplishment-lakewood-class.webp",
+            "naturalWidth": 1024,
+            "naturalHeight": 768,
+            "complete": true,
+            "objectPosition": "50% 48%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 362,
+            "height": 226
+          },
+          "visualRect": {
+            "width": 364,
+            "height": 228,
+            "top": 3323,
+            "left": 33
+          }
+        },
+        {
+          "title": "Excitement for learning Torah",
+          "img": {
+            "src": "/assets/one-time/outcomes/excitement-learning-torah.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 54%",
+            "objectFit": "cover",
+            "transform": "matrix(1.1, 0, 0, 1.1, 0, 0)",
+            "width": 398,
+            "height": 248
+          },
+          "visualRect": {
+            "width": 364,
+            "height": 228,
+            "top": 3767,
+            "left": 33
+          }
+        }
+      ],
+      "whoBackground": "linear-gradient(rgba(5, 5, 5, 0.94) 0%, rgba(7, 17, 23, 0.82) 46%, rgba(5, 5, 5, 0.94) 100%), radial-gradient(circle at 50% 45%, rgba(134, 232, 255, 0.2), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 20% 18%, rgba(240, 255, 50, 0.08), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/backgrounds/who-its-for-norfolk-virginia.webp\")"
+    },
+    {
+      "file": "after-hero-toolbar-390.png",
+      "width": 390,
+      "height": 920,
+      "route": "/one-time",
+      "selector": ".hero",
+      "openDrawer": false,
+      "consoleErrors": [],
+      "httpErrors": [],
+      "rect": {
+        "width": 390,
+        "height": 816,
+        "top": 104,
+        "bottom": 920
+      },
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "horizontalOverflow": false,
+      "header": {
+        "text": "One Time MishnayosWorldwide Mishnah Learning Home What You Receive What He’ll Gain Rabbi Scheller Member Login Sign Up Now",
+        "navDisplay": "none",
+        "menuDisplay": "grid",
+        "logoBackground": "rgb(5, 5, 5)",
+        "logoBorder": "rgba(237, 229, 24, 0.42)"
+      },
+      "hero": {
+        "backgroundImage": "linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 38%, rgba(5, 5, 5, 0.7) 66%, rgba(5, 5, 5, 0.9) 100%), radial-gradient(circle at 78% 34%, rgba(134, 232, 255, 0.24), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.14), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/hero/hero-classroom-background.webp\"), linear-gradient(130deg, rgb(5, 5, 5) 0%, rgb(7, 17, 23) 58%, rgb(12, 32, 41) 100%)",
+        "text": "Worldwide Mishnah learning — live from Eretz Yisrael Give your son a love for learning Torah. Live every day at 7:00 p.m. Israel time. Sign Up Now"
+      },
+      "benefitCards": [
+        {
+          "title": "Clarity",
+          "img": {
+            "src": "/assets/one-time/outcomes/clarity-class.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 29%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 322,
+            "height": 201
+          },
+          "visualRect": {
+            "width": 324,
+            "height": 203,
+            "top": 2879,
+            "left": 33
+          }
+        },
+        {
+          "title": "Accomplishment",
+          "img": {
+            "src": "/assets/one-time/outcomes/accomplishment-lakewood-class.webp",
+            "naturalWidth": 1024,
+            "naturalHeight": 768,
+            "complete": true,
+            "objectPosition": "50% 48%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 322,
+            "height": 201
+          },
+          "visualRect": {
+            "width": 324,
+            "height": 203,
+            "top": 3316,
+            "left": 33
+          }
+        },
+        {
+          "title": "Excitement for learning Torah",
+          "img": {
+            "src": "/assets/one-time/outcomes/excitement-learning-torah.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 54%",
+            "objectFit": "cover",
+            "transform": "matrix(1.1, 0, 0, 1.1, 0, 0)",
+            "width": 354,
+            "height": 221
+          },
+          "visualRect": {
+            "width": 324,
+            "height": 203,
+            "top": 3735,
+            "left": 33
+          }
+        }
+      ],
+      "whoBackground": "linear-gradient(rgba(5, 5, 5, 0.94) 0%, rgba(7, 17, 23, 0.82) 46%, rgba(5, 5, 5, 0.94) 100%), radial-gradient(circle at 50% 45%, rgba(134, 232, 255, 0.2), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 20% 18%, rgba(240, 255, 50, 0.08), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/backgrounds/who-its-for-norfolk-virginia.webp\")"
+    },
+    {
+      "file": "after-drawer-1440.png",
+      "width": 1440,
+      "height": 900,
+      "route": "/one-time",
+      "selector": "body",
+      "openDrawer": true,
+      "consoleErrors": [],
+      "httpErrors": [],
+      "rect": {
+        "width": 1440,
+        "height": 5429,
+        "top": 0,
+        "bottom": 5429
+      },
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "horizontalOverflow": false,
+      "header": {
+        "text": "One Time MishnayosWorldwide Mishnah Learning Home What You Receive What He’ll Gain Rabbi Scheller Member Login Sign Up Now",
+        "navDisplay": "none",
+        "menuDisplay": "grid",
+        "logoBackground": "rgb(5, 5, 5)",
+        "logoBorder": "rgba(237, 229, 24, 0.42)"
+      },
+      "hero": {
+        "backgroundImage": "linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 38%, rgba(5, 5, 5, 0.7) 66%, rgba(5, 5, 5, 0.9) 100%), radial-gradient(circle at 78% 34%, rgba(134, 232, 255, 0.24), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.14), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/hero/hero-classroom-background.webp\"), linear-gradient(130deg, rgb(5, 5, 5) 0%, rgb(7, 17, 23) 58%, rgb(12, 32, 41) 100%)",
+        "text": "Worldwide Mishnah learning — live from Eretz Yisrael Give your son a love for learning Torah. Live every day at 7:00 p.m. Israel time. Sign Up Now"
+      },
+      "benefitCards": [
+        {
+          "title": "Clarity",
+          "img": {
+            "src": "/assets/one-time/outcomes/clarity-class.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 29%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 341,
+            "height": 213
+          },
+          "visualRect": {
+            "width": 343,
+            "height": 215,
+            "top": 2109,
+            "left": 149
+          }
+        },
+        {
+          "title": "Accomplishment",
+          "img": {
+            "src": "/assets/one-time/outcomes/accomplishment-lakewood-class.webp",
+            "naturalWidth": 1024,
+            "naturalHeight": 768,
+            "complete": true,
+            "objectPosition": "50% 48%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 341,
+            "height": 213
+          },
+          "visualRect": {
+            "width": 343,
+            "height": 215,
+            "top": 2109,
+            "left": 548
+          }
+        },
+        {
+          "title": "Excitement for learning Torah",
+          "img": {
+            "src": "/assets/one-time/outcomes/excitement-learning-torah.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 54%",
+            "objectFit": "cover",
+            "transform": "matrix(1.1, 0, 0, 1.1, 0, 0)",
+            "width": 375,
+            "height": 234
+          },
+          "visualRect": {
+            "width": 343,
+            "height": 215,
+            "top": 2109,
+            "left": 948
+          }
+        }
+      ],
+      "whoBackground": "linear-gradient(rgba(5, 5, 5, 0.94) 0%, rgba(7, 17, 23, 0.82) 46%, rgba(5, 5, 5, 0.94) 100%), radial-gradient(circle at 50% 45%, rgba(134, 232, 255, 0.2), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 20% 18%, rgba(240, 255, 50, 0.08), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/backgrounds/who-its-for-norfolk-virginia.webp\")"
+    },
+    {
+      "file": "after-gain-1440.png",
+      "width": 1440,
+      "height": 1200,
+      "route": "/one-time",
+      "selector": "#gain",
+      "openDrawer": false,
+      "consoleErrors": [],
+      "httpErrors": [],
+      "rect": {
+        "width": 1440,
+        "height": 670,
+        "top": 245,
+        "bottom": 915
+      },
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "horizontalOverflow": false,
+      "header": {
+        "text": "One Time MishnayosWorldwide Mishnah Learning Home What You Receive What He’ll Gain Rabbi Scheller Member Login Sign Up Now",
+        "navDisplay": "none",
+        "menuDisplay": "grid",
+        "logoBackground": "rgb(5, 5, 5)",
+        "logoBorder": "rgba(237, 229, 24, 0.42)"
+      },
+      "hero": {
+        "backgroundImage": "linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 38%, rgba(5, 5, 5, 0.7) 66%, rgba(5, 5, 5, 0.9) 100%), radial-gradient(circle at 78% 34%, rgba(134, 232, 255, 0.24), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.14), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/hero/hero-classroom-background.webp\"), linear-gradient(130deg, rgb(5, 5, 5) 0%, rgb(7, 17, 23) 58%, rgb(12, 32, 41) 100%)",
+        "text": "Worldwide Mishnah learning — live from Eretz Yisrael Give your son a love for learning Torah. Live every day at 7:00 p.m. Israel time. Sign Up Now"
+      },
+      "benefitCards": [
+        {
+          "title": "Clarity",
+          "img": {
+            "src": "/assets/one-time/outcomes/clarity-class.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 29%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 341,
+            "height": 213
+          },
+          "visualRect": {
+            "width": 343,
+            "height": 215,
+            "top": 439,
+            "left": 149
+          }
+        },
+        {
+          "title": "Accomplishment",
+          "img": {
+            "src": "/assets/one-time/outcomes/accomplishment-lakewood-class.webp",
+            "naturalWidth": 1024,
+            "naturalHeight": 768,
+            "complete": true,
+            "objectPosition": "50% 48%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 341,
+            "height": 213
+          },
+          "visualRect": {
+            "width": 343,
+            "height": 215,
+            "top": 439,
+            "left": 548
+          }
+        },
+        {
+          "title": "Excitement for learning Torah",
+          "img": {
+            "src": "/assets/one-time/outcomes/excitement-learning-torah.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 54%",
+            "objectFit": "cover",
+            "transform": "matrix(1.1, 0, 0, 1.1, 0, 0)",
+            "width": 375,
+            "height": 234
+          },
+          "visualRect": {
+            "width": 343,
+            "height": 215,
+            "top": 439,
+            "left": 948
+          }
+        }
+      ],
+      "whoBackground": "linear-gradient(rgba(5, 5, 5, 0.94) 0%, rgba(7, 17, 23, 0.82) 46%, rgba(5, 5, 5, 0.94) 100%), radial-gradient(circle at 50% 45%, rgba(134, 232, 255, 0.2), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 20% 18%, rgba(240, 255, 50, 0.08), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/backgrounds/who-its-for-norfolk-virginia.webp\")"
+    },
+    {
+      "file": "after-gain-1024.png",
+      "width": 1024,
+      "height": 1200,
+      "route": "/one-time",
+      "selector": "#gain",
+      "openDrawer": false,
+      "consoleErrors": [],
+      "httpErrors": [],
+      "rect": {
+        "width": 1024,
+        "height": 606,
+        "top": 277,
+        "bottom": 883
+      },
+      "scrollWidth": 1024,
+      "clientWidth": 1024,
+      "horizontalOverflow": false,
+      "header": {
+        "text": "One Time MishnayosWorldwide Mishnah Learning Home What You Receive What He’ll Gain Rabbi Scheller Member Login Sign Up Now",
+        "navDisplay": "none",
+        "menuDisplay": "grid",
+        "logoBackground": "rgb(5, 5, 5)",
+        "logoBorder": "rgba(237, 229, 24, 0.42)"
+      },
+      "hero": {
+        "backgroundImage": "linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 38%, rgba(5, 5, 5, 0.7) 66%, rgba(5, 5, 5, 0.9) 100%), radial-gradient(circle at 78% 34%, rgba(134, 232, 255, 0.24), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.14), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/hero/hero-classroom-background.webp\"), linear-gradient(130deg, rgb(5, 5, 5) 0%, rgb(7, 17, 23) 58%, rgb(12, 32, 41) 100%)",
+        "text": "Worldwide Mishnah learning — live from Eretz Yisrael Give your son a love for learning Torah. Live every day at 7:00 p.m. Israel time. Sign Up Now"
+      },
+      "benefitCards": [
+        {
+          "title": "Clarity",
+          "img": {
+            "src": "/assets/one-time/outcomes/clarity-class.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 29%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 277,
+            "height": 173
+          },
+          "visualRect": {
+            "width": 279,
+            "height": 175,
+            "top": 431,
+            "left": 37
+          }
+        },
+        {
+          "title": "Accomplishment",
+          "img": {
+            "src": "/assets/one-time/outcomes/accomplishment-lakewood-class.webp",
+            "naturalWidth": 1024,
+            "naturalHeight": 768,
+            "complete": true,
+            "objectPosition": "50% 48%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 277,
+            "height": 173
+          },
+          "visualRect": {
+            "width": 279,
+            "height": 175,
+            "top": 431,
+            "left": 372
+          }
+        },
+        {
+          "title": "Excitement for learning Torah",
+          "img": {
+            "src": "/assets/one-time/outcomes/excitement-learning-torah.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 54%",
+            "objectFit": "cover",
+            "transform": "matrix(1.1, 0, 0, 1.1, 0, 0)",
+            "width": 305,
+            "height": 190
+          },
+          "visualRect": {
+            "width": 279,
+            "height": 175,
+            "top": 431,
+            "left": 708
+          }
+        }
+      ],
+      "whoBackground": "linear-gradient(rgba(5, 5, 5, 0.94) 0%, rgba(7, 17, 23, 0.82) 46%, rgba(5, 5, 5, 0.94) 100%), radial-gradient(circle at 50% 45%, rgba(134, 232, 255, 0.2), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 20% 18%, rgba(240, 255, 50, 0.08), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/backgrounds/who-its-for-norfolk-virginia.webp\")"
+    },
+    {
+      "file": "after-gain-430.png",
+      "width": 430,
+      "height": 1100,
+      "route": "/one-time",
+      "selector": "#gain",
+      "openDrawer": false,
+      "consoleErrors": [],
+      "httpErrors": [],
+      "rect": {
+        "width": 430,
+        "height": 1482,
+        "top": -211,
+        "bottom": 1272
+      },
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "horizontalOverflow": false,
+      "header": {
+        "text": "One Time MishnayosWorldwide Mishnah Learning Home What You Receive What He’ll Gain Rabbi Scheller Member Login Sign Up Now",
+        "navDisplay": "none",
+        "menuDisplay": "grid",
+        "logoBackground": "rgb(5, 5, 5)",
+        "logoBorder": "rgba(237, 229, 24, 0.42)"
+      },
+      "hero": {
+        "backgroundImage": "linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 38%, rgba(5, 5, 5, 0.7) 66%, rgba(5, 5, 5, 0.9) 100%), radial-gradient(circle at 78% 34%, rgba(134, 232, 255, 0.24), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.14), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/hero/hero-classroom-background.webp\"), linear-gradient(130deg, rgb(5, 5, 5) 0%, rgb(7, 17, 23) 58%, rgb(12, 32, 41) 100%)",
+        "text": "Worldwide Mishnah learning — live from Eretz Yisrael Give your son a love for learning Torah. Live every day at 7:00 p.m. Israel time. Sign Up Now"
+      },
+      "benefitCards": [
+        {
+          "title": "Clarity",
+          "img": {
+            "src": "/assets/one-time/outcomes/clarity-class.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 29%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 362,
+            "height": 226
+          },
+          "visualRect": {
+            "width": 364,
+            "height": 228,
+            "top": -75,
+            "left": 33
+          }
+        },
+        {
+          "title": "Accomplishment",
+          "img": {
+            "src": "/assets/one-time/outcomes/accomplishment-lakewood-class.webp",
+            "naturalWidth": 1024,
+            "naturalHeight": 768,
+            "complete": true,
+            "objectPosition": "50% 48%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 362,
+            "height": 226
+          },
+          "visualRect": {
+            "width": 364,
+            "height": 228,
+            "top": 369,
+            "left": 33
+          }
+        },
+        {
+          "title": "Excitement for learning Torah",
+          "img": {
+            "src": "/assets/one-time/outcomes/excitement-learning-torah.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 54%",
+            "objectFit": "cover",
+            "transform": "matrix(1.1, 0, 0, 1.1, 0, 0)",
+            "width": 398,
+            "height": 248
+          },
+          "visualRect": {
+            "width": 364,
+            "height": 228,
+            "top": 813,
+            "left": 33
+          }
+        }
+      ],
+      "whoBackground": "linear-gradient(rgba(5, 5, 5, 0.94) 0%, rgba(7, 17, 23, 0.82) 46%, rgba(5, 5, 5, 0.94) 100%), radial-gradient(circle at 50% 45%, rgba(134, 232, 255, 0.2), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 20% 18%, rgba(240, 255, 50, 0.08), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/backgrounds/who-its-for-norfolk-virginia.webp\")"
+    },
+    {
+      "file": "after-gain-390.png",
+      "width": 390,
+      "height": 1100,
+      "route": "/one-time",
+      "selector": "#gain",
+      "openDrawer": false,
+      "consoleErrors": [],
+      "httpErrors": [],
+      "rect": {
+        "width": 390,
+        "height": 1425,
+        "top": -183,
+        "bottom": 1243
+      },
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "horizontalOverflow": false,
+      "header": {
+        "text": "One Time MishnayosWorldwide Mishnah Learning Home What You Receive What He’ll Gain Rabbi Scheller Member Login Sign Up Now",
+        "navDisplay": "none",
+        "menuDisplay": "grid",
+        "logoBackground": "rgb(5, 5, 5)",
+        "logoBorder": "rgba(237, 229, 24, 0.42)"
+      },
+      "hero": {
+        "backgroundImage": "linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 38%, rgba(5, 5, 5, 0.7) 66%, rgba(5, 5, 5, 0.9) 100%), radial-gradient(circle at 78% 34%, rgba(134, 232, 255, 0.24), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.14), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/hero/hero-classroom-background.webp\"), linear-gradient(130deg, rgb(5, 5, 5) 0%, rgb(7, 17, 23) 58%, rgb(12, 32, 41) 100%)",
+        "text": "Worldwide Mishnah learning — live from Eretz Yisrael Give your son a love for learning Torah. Live every day at 7:00 p.m. Israel time. Sign Up Now"
+      },
+      "benefitCards": [
+        {
+          "title": "Clarity",
+          "img": {
+            "src": "/assets/one-time/outcomes/clarity-class.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 29%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 322,
+            "height": 201
+          },
+          "visualRect": {
+            "width": 324,
+            "height": 203,
+            "top": -47,
+            "left": 33
+          }
+        },
+        {
+          "title": "Accomplishment",
+          "img": {
+            "src": "/assets/one-time/outcomes/accomplishment-lakewood-class.webp",
+            "naturalWidth": 1024,
+            "naturalHeight": 768,
+            "complete": true,
+            "objectPosition": "50% 48%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 322,
+            "height": 201
+          },
+          "visualRect": {
+            "width": 324,
+            "height": 203,
+            "top": 390,
+            "left": 33
+          }
+        },
+        {
+          "title": "Excitement for learning Torah",
+          "img": {
+            "src": "/assets/one-time/outcomes/excitement-learning-torah.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 54%",
+            "objectFit": "cover",
+            "transform": "matrix(1.1, 0, 0, 1.1, 0, 0)",
+            "width": 354,
+            "height": 221
+          },
+          "visualRect": {
+            "width": 324,
+            "height": 203,
+            "top": 809,
+            "left": 33
+          }
+        }
+      ],
+      "whoBackground": "linear-gradient(rgba(5, 5, 5, 0.94) 0%, rgba(7, 17, 23, 0.82) 46%, rgba(5, 5, 5, 0.94) 100%), radial-gradient(circle at 50% 45%, rgba(134, 232, 255, 0.2), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 20% 18%, rgba(240, 255, 50, 0.08), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/backgrounds/who-its-for-norfolk-virginia.webp\")"
+    },
+    {
+      "file": "after-who-1440.png",
+      "width": 1440,
+      "height": 1000,
+      "route": "/one-time",
+      "selector": "#who",
+      "openDrawer": false,
+      "consoleErrors": [],
+      "httpErrors": [],
+      "rect": {
+        "width": 1440,
+        "height": 561,
+        "top": 199,
+        "bottom": 760
+      },
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "horizontalOverflow": false,
+      "header": {
+        "text": "One Time MishnayosWorldwide Mishnah Learning Home What You Receive What He’ll Gain Rabbi Scheller Member Login Sign Up Now",
+        "navDisplay": "none",
+        "menuDisplay": "grid",
+        "logoBackground": "rgb(5, 5, 5)",
+        "logoBorder": "rgba(237, 229, 24, 0.42)"
+      },
+      "hero": {
+        "backgroundImage": "linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 38%, rgba(5, 5, 5, 0.7) 66%, rgba(5, 5, 5, 0.9) 100%), radial-gradient(circle at 78% 34%, rgba(134, 232, 255, 0.24), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.14), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/hero/hero-classroom-background.webp\"), linear-gradient(130deg, rgb(5, 5, 5) 0%, rgb(7, 17, 23) 58%, rgb(12, 32, 41) 100%)",
+        "text": "Worldwide Mishnah learning — live from Eretz Yisrael Give your son a love for learning Torah. Live every day at 7:00 p.m. Israel time. Sign Up Now"
+      },
+      "benefitCards": [
+        {
+          "title": "Clarity",
+          "img": {
+            "src": "/assets/one-time/outcomes/clarity-class.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 29%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 341,
+            "height": 213
+          },
+          "visualRect": {
+            "width": 343,
+            "height": 215,
+            "top": -722,
+            "left": 149
+          }
+        },
+        {
+          "title": "Accomplishment",
+          "img": {
+            "src": "/assets/one-time/outcomes/accomplishment-lakewood-class.webp",
+            "naturalWidth": 1024,
+            "naturalHeight": 768,
+            "complete": true,
+            "objectPosition": "50% 48%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 341,
+            "height": 213
+          },
+          "visualRect": {
+            "width": 343,
+            "height": 215,
+            "top": -722,
+            "left": 548
+          }
+        },
+        {
+          "title": "Excitement for learning Torah",
+          "img": {
+            "src": "/assets/one-time/outcomes/excitement-learning-torah.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 54%",
+            "objectFit": "cover",
+            "transform": "matrix(1.1, 0, 0, 1.1, 0, 0)",
+            "width": 375,
+            "height": 234
+          },
+          "visualRect": {
+            "width": 343,
+            "height": 215,
+            "top": -722,
+            "left": 948
+          }
+        }
+      ],
+      "whoBackground": "linear-gradient(rgba(5, 5, 5, 0.94) 0%, rgba(7, 17, 23, 0.82) 46%, rgba(5, 5, 5, 0.94) 100%), radial-gradient(circle at 50% 45%, rgba(134, 232, 255, 0.2), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 20% 18%, rgba(240, 255, 50, 0.08), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/backgrounds/who-its-for-norfolk-virginia.webp\")"
+    },
+    {
+      "file": "after-who-430.png",
+      "width": 430,
+      "height": 950,
+      "route": "/one-time",
+      "selector": "#who",
+      "openDrawer": false,
+      "consoleErrors": [],
+      "httpErrors": [],
+      "rect": {
+        "width": 430,
+        "height": 1009,
+        "top": -50,
+        "bottom": 959
+      },
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "horizontalOverflow": false,
+      "header": {
+        "text": "One Time MishnayosWorldwide Mishnah Learning Home What You Receive What He’ll Gain Rabbi Scheller Member Login Sign Up Now",
+        "navDisplay": "none",
+        "menuDisplay": "grid",
+        "logoBackground": "rgb(5, 5, 5)",
+        "logoBorder": "rgba(237, 229, 24, 0.42)"
+      },
+      "hero": {
+        "backgroundImage": "linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 38%, rgba(5, 5, 5, 0.7) 66%, rgba(5, 5, 5, 0.9) 100%), radial-gradient(circle at 78% 34%, rgba(134, 232, 255, 0.24), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.14), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/hero/hero-classroom-background.webp\"), linear-gradient(130deg, rgb(5, 5, 5) 0%, rgb(7, 17, 23) 58%, rgb(12, 32, 41) 100%)",
+        "text": "Worldwide Mishnah learning — live from Eretz Yisrael Give your son a love for learning Torah. Live every day at 7:00 p.m. Israel time. Sign Up Now"
+      },
+      "benefitCards": [
+        {
+          "title": "Clarity",
+          "img": {
+            "src": "/assets/one-time/outcomes/clarity-class.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 29%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 362,
+            "height": 226
+          },
+          "visualRect": {
+            "width": 364,
+            "height": 228,
+            "top": -2137,
+            "left": 33
+          }
+        },
+        {
+          "title": "Accomplishment",
+          "img": {
+            "src": "/assets/one-time/outcomes/accomplishment-lakewood-class.webp",
+            "naturalWidth": 1024,
+            "naturalHeight": 768,
+            "complete": true,
+            "objectPosition": "50% 48%",
+            "objectFit": "cover",
+            "transform": "none",
+            "width": 362,
+            "height": 226
+          },
+          "visualRect": {
+            "width": 364,
+            "height": 228,
+            "top": -1693,
+            "left": 33
+          }
+        },
+        {
+          "title": "Excitement for learning Torah",
+          "img": {
+            "src": "/assets/one-time/outcomes/excitement-learning-torah.webp",
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "complete": true,
+            "objectPosition": "50% 54%",
+            "objectFit": "cover",
+            "transform": "matrix(1.1, 0, 0, 1.1, 0, 0)",
+            "width": 398,
+            "height": 248
+          },
+          "visualRect": {
+            "width": 364,
+            "height": 228,
+            "top": -1249,
+            "left": 33
+          }
+        }
+      ],
+      "whoBackground": "linear-gradient(rgba(5, 5, 5, 0.94) 0%, rgba(7, 17, 23, 0.82) 46%, rgba(5, 5, 5, 0.94) 100%), radial-gradient(circle at 50% 45%, rgba(134, 232, 255, 0.2), rgba(0, 0, 0, 0) 384px), radial-gradient(circle at 20% 18%, rgba(240, 255, 50, 0.08), rgba(0, 0, 0, 0) 288px), url(\"http://127.0.0.1:4317/assets/one-time/backgrounds/who-its-for-norfolk-virginia.webp\")"
+    },
+    {
+      "file": "after-signup-430.png",
+      "width": 430,
+      "height": 920,
+      "route": "/one-time/signup",
+      "selector": "body",
+      "openDrawer": false,
+      "consoleErrors": [],
+      "httpErrors": [],
+      "rect": {
+        "width": 430,
+        "height": 2096,
+        "top": 0,
+        "bottom": 2096
+      },
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "horizontalOverflow": false,
+      "header": null,
+      "hero": null,
+      "benefitCards": [],
+      "whoBackground": "none"
+    }
+  ],
+  "consoleErrors": []
+}

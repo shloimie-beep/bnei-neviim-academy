@@ -1,10 +1,32 @@
 {
-  "generated_at": "2026-07-13T00:20:22.582Z",
-  "base_url": "http://127.0.0.1:59271",
+  "generated_at": "2026-07-13T13:28:40.330Z",
+  "base_url": "http://127.0.0.1:57983",
   "requirement_id": "REQ-20260712-109",
   "fake_whatsapp_number_used": true,
   "full_number_returned_by_readiness": false,
   "write_requests": [],
+  "telemetry_requests": [
+    {
+      "method": "POST",
+      "path": "/api/performance/rum"
+    },
+    {
+      "method": "POST",
+      "path": "/api/performance/rum"
+    },
+    {
+      "method": "POST",
+      "path": "/api/performance/rum"
+    },
+    {
+      "method": "POST",
+      "path": "/api/performance/rum"
+    },
+    {
+      "method": "POST",
+      "path": "/api/performance/rum"
+    }
+  ],
   "helper_script_requests": [],
   "screenshots": [
     "landing-whatsapp-1440.png",
@@ -22,7 +44,7 @@
       "screenshot": "landing-whatsapp-1440.png",
       "hero_cta_box": {
         "x": 130,
-        "y": 755.265625,
+        "y": 753.2059936523438,
         "width": 129.8125,
         "height": 48
       },
@@ -43,7 +65,7 @@
       "screenshot": "landing-whatsapp-1024.png",
       "hero_cta_box": {
         "x": 18,
-        "y": 629.942138671875,
+        "y": 625.8441772460938,
         "width": 129.8125,
         "height": 48
       },
@@ -64,9 +86,9 @@
       "screenshot": "landing-whatsapp-768.png",
       "hero_cta_box": {
         "x": 18,
-        "y": 667.1328735351562,
+        "y": 663.1175537109375,
         "width": 129.8125,
-        "height": 47.99993896484375
+        "height": 48
       },
       "whatsapp_launcher_box": {
         "x": 686,
@@ -86,7 +108,7 @@
       "screenshot": "landing-whatsapp-430.png",
       "hero_cta_box": {
         "x": 14,
-        "y": 603.16162109375,
+        "y": 603.1544189453125,
         "width": 129.8125,
         "height": 48
       },
@@ -107,7 +129,7 @@
       "screenshot": "landing-whatsapp-390.png",
       "hero_cta_box": {
         "x": 14,
-        "y": 587.1569213867188,
+        "y": 585.1138916015625,
         "width": 129.8125,
         "height": 48
       },

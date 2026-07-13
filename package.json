@@ -185,6 +185,7 @@
     "app:smoke:rabbi-agent-review-proof-readiness": "node scripts/smoke-rabbi-agent-review-proof-readiness-live.mjs",
     "app:smoke:rabbi-agent-review-direct-proof": "node scripts/smoke-rabbi-agent-review-direct-proof.mjs",
     "app:smoke:one-time-transcript-privacy": "node scripts/smoke-one-time-transcript-privacy-live.mjs",
+    "app:smoke:one-time-metadata-review": "node scripts/smoke-one-time-metadata-review-live.mjs",
     "app:smoke:one-time-gamification": "node scripts/smoke-one-time-gamification-live.mjs",
     "app:smoke:one-time-community": "node scripts/smoke-one-time-community-live.mjs",
     "app:smoke:one-time-study-assistant": "node scripts/smoke-one-time-study-assistant-live.mjs",

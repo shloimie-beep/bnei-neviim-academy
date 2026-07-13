@@ -53,8 +53,14 @@ function staticPathFor(urlPath) {
   return urlPath;
 }
 
-async function serve(req, res, baseUrl, writeRequests) {
+async function serve(req, res, baseUrl, writeRequests, telemetryRequests) {
   const url = new URL(req.url || '/', baseUrl);
+  if (url.pathname === '/api/performance/rum') {
+    telemetryRequests.push({ method: req.method, path: url.pathname });
+    res.writeHead(204);
+    res.end();
+    return;
+  }
   if (!['GET', 'HEAD'].includes(req.method || 'GET')) {
     writeRequests.push({ method: req.method, path: url.pathname });
   }
@@ -155,8 +161,9 @@ async function assertHeroCtaClear(page, launcherBox) {
 async function run() {
   await mkdir(outDir, { recursive: true });
   const writeRequests = [];
+  const telemetryRequests = [];
   const server = createServer((req, res) => {
-    serve(req, res, 'http://127.0.0.1', writeRequests).catch((error) => {
+    serve(req, res, 'http://127.0.0.1', writeRequests, telemetryRequests).catch((error) => {
       res.writeHead(500, { 'content-type': 'text/plain; charset=utf-8' });
       res.end(error.stack || error.message);
     });
@@ -239,6 +246,7 @@ async function run() {
     fake_whatsapp_number_used: true,
     full_number_returned_by_readiness: false,
     write_requests: writeRequests,
+    telemetry_requests: telemetryRequests,
     helper_script_requests: helperScriptRequests,
     screenshots: results.map((item) => item.screenshot),
     results,
@@ -257,7 +265,8 @@ async function run() {
     '- PASS launcher uses /api/one-time/public-whatsapp/redirect?intent=free_class and has accessible labeling plus 44px+ target size.',
     '- PASS hero CTA is accessible, above the mobile bottom safe zone, and does not overlap the WhatsApp launcher.',
     '- PASS readiness returns no full number and no_send/no_external_write metadata; redirect uses only a smoke fake number.',
-    '- PASS no POST/write requests occurred.',
+    '- PASS no lead, WhatsApp, helper, CRM, send, checkout, or access-write POST requests occurred.',
+    `- INFO first-party privacy-safe RUM telemetry requests observed: ${telemetryRequests.length}.`,
     '',
     '## Screenshots',
     '',

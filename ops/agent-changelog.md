@@ -40367,6 +40367,20 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   promotion approval, Vimeo private upload/folder approval, member publication,
   and blocked UI evidence remain separate requirements.
 
+## 2026-07-13 - One Time metadata admin readback verified
+
+- Added `scripts/smoke-one-time-metadata-review-live.mjs` and
+  `app:smoke:one-time-metadata-review` for repeatable read-only live proof of
+  metadata review/admin package fields.
+- Live smoke passed against One Time SHA
+  `43f7c33733880745d8f1191c86fe8e196ef68baa`: class list returned two One
+  Time packages with metadata review and bot-knowledge fields, class-package
+  detail exposed `metadata_review`, `bot_knowledge`, and private-admin-only
+  copies, and `external_write_performed=false`.
+- `REQ-20260713-917` is terminal for the backend metadata/handoff contract.
+  Helper-knowledge writes, Vimeo upload, member publication, and review UI
+  remain separate approval/gated requirements.
+
 ## 2026-07-13 - One Time Billing V2 release handoff refreshed
 
 - Updated the Billing V2 release handoff with current branch head

@@ -30,6 +30,13 @@
   `one-time-web` Railway production service with `--skip-deploys`. Vimeo live
   upload remains blocked because the configured keyholder Vimeo token returned
   401 in private smoke; no upload or public publish was performed.
+- As of 2026-07-13, the owner-supplied Vimeo credential material validates as
+  app credentials (`client_id` plus `client_secret`) but not as a direct user
+  bearer token. The existing keyholder user access token reads the owner account
+  as `Shloimie Dratler`. Do not store or print the raw values. Private upload
+  remains blocked until a private Vimeo test project/folder is chosen, upload
+  scope/plan readiness is confirmed, and Shloimie explicitly approves the
+  synthetic private upload smoke.
 - One Time transcript-derived bot knowledge must use only approved scoped
   class transcript/session context and must not leak BNA Academy, unrelated
   provider, private student, or raw transcript evidence into member/student

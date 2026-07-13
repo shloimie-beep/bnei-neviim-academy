@@ -1,6 +1,6 @@
 # One Time Landing WhatsApp Local Smoke
 
-Generated: 2026-07-13T00:20:22.582Z
+Generated: 2026-07-13T13:28:40.330Z
 Requirement: REQ-20260712-109
 
 ## Result
@@ -10,7 +10,8 @@ Requirement: REQ-20260712-109
 - PASS launcher uses /api/one-time/public-whatsapp/redirect?intent=free_class and has accessible labeling plus 44px+ target size.
 - PASS hero CTA is accessible, above the mobile bottom safe zone, and does not overlap the WhatsApp launcher.
 - PASS readiness returns no full number and no_send/no_external_write metadata; redirect uses only a smoke fake number.
-- PASS no POST/write requests occurred.
+- PASS no lead, WhatsApp, helper, CRM, send, checkout, or access-write POST requests occurred.
+- INFO first-party privacy-safe RUM telemetry requests observed: 5.
 
 ## Screenshots
 

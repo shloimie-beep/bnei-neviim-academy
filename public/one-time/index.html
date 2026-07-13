@@ -33,6 +33,7 @@
 
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
+    html { scroll-padding-top: calc(var(--header-height) + 44px); }
     body {
       margin: 0;
       color: var(--white);
@@ -105,7 +106,8 @@
       flex: 0 0 auto;
       padding: 4px;
       border-radius: 8px;
-      background: var(--yellow);
+      border: 1px solid rgba(237, 229, 24, 0.42);
+      background: #050505;
       object-fit: contain;
       filter: none;
     }
@@ -124,7 +126,7 @@
       font-weight: 850;
     }
     .site-nav {
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: flex-end;
       gap: 8px;
@@ -209,7 +211,7 @@
       cursor: pointer;
       transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
     }
-    .menu-button { display: none; }
+    .menu-button { display: inline-grid; }
     .icon-button:hover, .icon-button:focus-visible {
       outline: none;
       border-color: var(--yellow);
@@ -315,8 +317,10 @@
       overflow: hidden;
       padding: 78px 0 100px;
       background:
+        linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 38%, rgba(5, 5, 5, 0.7) 66%, rgba(5, 5, 5, 0.9) 100%),
         radial-gradient(circle at 78% 34%, rgba(134, 232, 255, 0.24), transparent 24rem),
-        radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.13), transparent 18rem),
+        radial-gradient(circle at 19% 43%, rgba(240, 255, 50, 0.14), transparent 18rem),
+        url("/assets/one-time/hero/hero-classroom-background.webp") center 48% / cover no-repeat,
         linear-gradient(130deg, #050505 0%, #071117 58%, #0c2029 100%);
     }
     .hero::before {
@@ -366,6 +370,7 @@
     @keyframes hero-in { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
 
     .section { position: relative; overflow: hidden; padding: clamp(52px, 6vw, 82px) 0; }
+    #receive, #gain, #how-it-works, #who, #rabbi { scroll-margin-top: calc(var(--header-height) + 44px); }
     .section.dark {
       background:
         radial-gradient(circle at 18% 18%, rgba(134, 232, 255, 0.14), transparent 22rem),
@@ -425,9 +430,11 @@
     .benefit-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
     .benefit-card { min-height: 100%; display: grid; grid-template-rows: auto 1fr; gap: 18px; padding: 18px; border-radius: 8px; }
     .benefit-visual {
+      position: relative;
       aspect-ratio: 16 / 10;
       display: grid;
       place-items: center;
+      overflow: hidden;
       border: 1px solid rgba(223, 248, 255, 0.18);
       border-radius: 6px;
       color: rgba(255, 255, 255, 0.9);
@@ -437,6 +444,27 @@
       font-weight: 900;
       text-align: center;
       padding: 10px;
+    }
+    .benefit-visual--clarity,
+    .benefit-visual--accomplishment,
+    .benefit-visual--excitement {
+      padding: 0;
+    }
+    .benefit-visual img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      border-radius: 5px;
+      object-fit: cover;
+    }
+    .benefit-visual--clarity img { object-position: 50% 29%; }
+    .benefit-visual--accomplishment img { object-position: 50% 48%; }
+    .benefit-visual--excitement img {
+      object-position: 50% 54%;
+      transform: scale(1.1);
+      transform-origin: 50% 50%;
     }
     .benefit-body { display: grid; align-content: start; gap: 13px; }
     .benefit-body p { margin: 0; color: rgba(255, 255, 255, 0.84); }
@@ -458,11 +486,24 @@
       text-align: center;
     }
     .who-section {
-      background:
-        radial-gradient(circle at 50% 45%, rgba(134, 232, 255, 0.22), transparent 26rem),
-        radial-gradient(circle at 20% 18%, rgba(240, 255, 50, 0.08), transparent 18rem),
-        linear-gradient(180deg, #091923, #061017);
+      background: #050505;
     }
+    .who-section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(180deg, rgba(5, 5, 5, 0.94) 0%, rgba(7, 17, 23, 0.82) 46%, rgba(5, 5, 5, 0.94) 100%),
+        radial-gradient(circle at 50% 45%, rgba(134, 232, 255, 0.2), transparent 24rem),
+        radial-gradient(circle at 20% 18%, rgba(240, 255, 50, 0.08), transparent 18rem),
+        url("/assets/one-time/backgrounds/who-its-for-norfolk-virginia.webp");
+      background-position: center, center, center, center 43%;
+      background-size: 100% 100%, 100% 100%, 100% 100%, cover;
+      opacity: 0.96;
+      pointer-events: none;
+    }
+    .who-section > .wrap { position: relative; z-index: 1; }
     .audience-stage { position: relative; isolation: isolate; padding: clamp(18px, 3vw, 34px) 0; }
     .audience-stage::before {
       content: "";
@@ -544,6 +585,7 @@
       .hero-actions { margin-top: -10px; }
       h1 { font-size: clamp(3.1rem, 16vw, 4.75rem); }
       .feature-grid, .benefit-grid, .audience-grid, .step-flow { grid-template-columns: 1fr; }
+      .who-section::before { background-position: center, center, center, 50% 44%; }
       .step-flow::before { top: 42px; bottom: 42px; left: 50%; right: auto; width: 2px; height: auto; background: linear-gradient(180deg, transparent, var(--blue), var(--yellow), var(--blue), transparent); }
       .footer-inner, .footer-brand { grid-template-columns: 1fr; justify-items: center; text-align: center; }
       .footer-brand { display: grid; }
@@ -639,7 +681,7 @@
     <div class="wrap header-inner">
       <a class="brand-lockup" href="/one-time" aria-label="One Time Mishnayos home">
         <img src="/images/one-time/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
-        <span>One Time Mishnayos<small>Worldwide Mishnah learning</small></span>
+        <span>One Time Mishnayos<small>Worldwide Mishnah Learning</small></span>
       </a>
       <nav class="site-nav" aria-label="One Time public navigation">
         <a href="/one-time" aria-current="page" data-action-id="ACTION-ONETIME-PUBLIC-SECTION-NAV">Home</a>
@@ -727,15 +769,21 @@
         </div>
         <div class="benefit-grid">
           <article class="benefit-card reveal">
-            <div class="benefit-visual">Clarity image pending</div>
+            <div class="benefit-visual benefit-visual--clarity">
+              <img src="/assets/one-time/outcomes/clarity-class.webp" width="945" height="2048" alt="Rabbi Scheller teaching beside a Mishnah text display" loading="lazy" decoding="async">
+            </div>
             <div class="benefit-body"><span class="benefit-icon" aria-hidden="true"><svg><use href="#icon-target"></use></svg></span><h3>Clarity</h3><p>He&rsquo;ll understand the main points, the questions, and the logic behind each Mishnah&mdash;with review sheets and opportunities to ask Rabbi Scheller questions.</p></div>
           </article>
           <article class="benefit-card reveal">
-            <div class="benefit-visual">Accomplishment image pending</div>
+            <div class="benefit-visual benefit-visual--accomplishment">
+              <img src="/assets/one-time/outcomes/accomplishment-lakewood-class.webp" width="1024" height="768" alt="Rabbi Scheller learning with students around a classroom table" loading="lazy" decoding="async">
+            </div>
             <div class="benefit-body"><span class="benefit-icon" aria-hidden="true"><svg><use href="#icon-shield"></use></svg></span><h3>Accomplishment</h3><p>One perek a day gives him a clear goal, steady progress, and visible progress badges and milestones in his student portal.</p></div>
           </article>
           <article class="benefit-card reveal">
-            <div class="benefit-visual">Excitement image pending</div>
+            <div class="benefit-visual benefit-visual--excitement">
+              <img src="/assets/one-time/outcomes/excitement-learning-torah.webp" width="945" height="2048" alt="Students smiling during a One Time Torah learning class" loading="lazy" decoding="async">
+            </div>
             <div class="benefit-body"><span class="benefit-icon" aria-hidden="true"><svg><use href="#icon-spark"></use></svg></span><h3>Excitement for learning Torah</h3><p>A lively class and a real connection with Rabbi Scheller make Torah learning something he looks forward to each day.</p></div>
           </article>
         </div>
