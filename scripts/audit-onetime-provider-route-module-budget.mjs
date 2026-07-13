@@ -256,6 +256,7 @@ async function main() {
     crm_route_module: await fileBytes('public/js/one-time-provider-crm-route.js'),
     mailbox_route_module: await fileBytes('public/js/one-time-provider-mailbox-route.js'),
     communications_route_module: await fileBytes('public/js/one-time-provider-communications-route.js'),
+    rum_collector: await fileBytes('public/js/one-time-performance-rum.js'),
   };
   const sizeComparison = {
     base_ref: baseRef,
@@ -314,9 +315,9 @@ async function main() {
   const communications = routes.find((route) => route.id === 'communications');
   const checks = [
     {
-      id: 'provider_html_shrunk',
-      passed: sizeComparison.provider_html_delta_bytes < 0,
-      detail: `${sizeComparison.provider_html_delta_bytes} bytes`,
+      id: 'provider_html_delta_within_instrumentation_budget',
+      passed: sizeComparison.provider_html_delta_bytes <= 4096,
+      detail: `${sizeComparison.provider_html_delta_bytes} bytes <= 4096 bytes`,
     },
     {
       id: 'overview_no_crm_module',
@@ -361,11 +362,13 @@ async function main() {
       id: 'route_module_budgets',
       passed: currentBytes.crm_route_module <= 16384 &&
         currentBytes.mailbox_route_module <= 18432 &&
-        currentBytes.communications_route_module <= 8192,
+        currentBytes.communications_route_module <= 8192 &&
+        currentBytes.rum_collector <= 8192,
       detail: JSON.stringify({
         crm_route_module_bytes: currentBytes.crm_route_module,
         mailbox_route_module_bytes: currentBytes.mailbox_route_module,
         communications_route_module_bytes: currentBytes.communications_route_module,
+        rum_collector_bytes: currentBytes.rum_collector,
         crm_route_total_delta_bytes: sizeComparison.crm_route_total_delta_bytes,
       }),
     },
@@ -403,6 +406,7 @@ async function main() {
     `- CRM route module: ${sizeComparison.crm_route_module_bytes} bytes`,
     `- Mailbox route module: ${currentBytes.mailbox_route_module} bytes`,
     `- Communications route module: ${currentBytes.communications_route_module} bytes`,
+    `- One Time RUM collector: ${currentBytes.rum_collector} bytes`,
     `- Current provider.html + CRM module delta: ${sizeComparison.crm_route_total_delta_bytes} bytes`,
     '',
     '## Route Checks',

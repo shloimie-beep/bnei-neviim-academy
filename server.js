@@ -6,6 +6,7 @@ const path = require('path');
 const crypto = require('crypto');
 const vm = require('vm');
 const { spawn } = require('child_process');
+const { AsyncLocalStorage } = require('async_hooks');
 const ffmpegPath = require('ffmpeg-static');
 const { google } = require('googleapis');
 const {
@@ -468,9 +469,109 @@ loadLocalEnvFile(path.join(__dirname, '.env.local'));
 const app = express();
 const PORT = process.env.PORT || 8080;
 const HOST = process.env.HOST || process.env.BNA_BIND_HOST || '0.0.0.0';
+const requestPerformanceStore = new AsyncLocalStorage();
+
+function highResolutionMsSince(startNs) {
+  if (!startNs) return 0;
+  const elapsed = Number(process.hrtime.bigint() - startNs) / 1e6;
+  return Number.isFinite(elapsed) ? Math.max(0, Math.round(elapsed * 10) / 10) : 0;
+}
+
+function safeHeaderToken(value = '', fallback = '') {
+  const token = String(value || '')
+    .replace(/[^A-Za-z0-9_.:-]/g, '')
+    .slice(0, 96);
+  return token || fallback;
+}
+
+function createTraceId(req) {
+  const inbound = safeHeaderToken(req.headers['x-bna-trace-id'] || req.headers['x-request-id'] || '');
+  return inbound || `trace-${Date.now().toString(36)}-${crypto.randomBytes(6).toString('hex')}`;
+}
+
+function byteLengthOfChunk(chunk, encoding) {
+  if (!chunk) return 0;
+  if (Buffer.isBuffer(chunk)) return chunk.length;
+  if (typeof chunk === 'string') return Buffer.byteLength(chunk, encoding || 'utf8');
+  return Buffer.byteLength(String(chunk), encoding || 'utf8');
+}
+
+function currentRequestPerformanceContext() {
+  return requestPerformanceStore.getStore() || null;
+}
+
+function recordDbPerformance(kind, durationMs) {
+  const context = currentRequestPerformanceContext();
+  if (!context) return;
+  const duration = Number(durationMs || 0);
+  if (!Number.isFinite(duration) || duration < 0) return;
+  if (kind === 'pool') {
+    context.pool_wait_ms += duration;
+    context.pool_wait_count += 1;
+    return;
+  }
+  context.db_ms += duration;
+  context.db_query_count += 1;
+}
+
+function serverTimingValue(context) {
+  const totalMs = highResolutionMsSince(context.started_ns);
+  const dbMs = Math.round(context.db_ms * 10) / 10;
+  const poolMs = Math.round(context.pool_wait_ms * 10) / 10;
+  const handlerMs = Math.max(0, Math.round((totalMs - dbMs - poolMs) * 10) / 10);
+  return [
+    `app;dur=${totalMs}`,
+    `handler;dur=${handlerMs}`,
+    `db;dur=${dbMs};desc="queries:${context.db_query_count}"`,
+    `pool;dur=${poolMs};desc="waits:${context.pool_wait_count}"`,
+  ].join(', ');
+}
+
+function setPerformanceResponseHeaders(req, res) {
+  const context = req.performanceContext || currentRequestPerformanceContext();
+  if (!context || res.headersSent) return;
+  const deployment = buildDeploymentInfo();
+  res.setHeader('X-Request-Id', context.trace_id);
+  res.setHeader('X-BNA-Trace-Id', context.trace_id);
+  if (deployment.commit_sha) res.setHeader('X-BNA-Deploy-SHA', safeHeaderToken(deployment.commit_sha));
+  if (deployment.target_app) res.setHeader('X-BNA-Target-App', safeHeaderToken(deployment.target_app));
+  res.setHeader('X-BNA-Response-Bytes', String(Math.max(0, Math.round(context.response_bytes))));
+  res.setHeader('Server-Timing', serverTimingValue(context));
+}
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
+app.use((req, res, next) => {
+  const performanceContext = {
+    trace_id: createTraceId(req),
+    started_ns: process.hrtime.bigint(),
+    db_ms: 0,
+    db_query_count: 0,
+    pool_wait_ms: 0,
+    pool_wait_count: 0,
+    response_bytes: 0,
+  };
+  req.performanceContext = performanceContext;
+  const originalWrite = res.write.bind(res);
+  const originalEnd = res.end.bind(res);
+  const originalWriteHead = res.writeHead.bind(res);
+  res.write = function instrumentedWrite(chunk, encoding, callback) {
+    performanceContext.response_bytes += byteLengthOfChunk(chunk, encoding);
+    return originalWrite(chunk, encoding, callback);
+  };
+  res.end = function instrumentedEnd(chunk, encoding, callback) {
+    performanceContext.response_bytes += byteLengthOfChunk(chunk, encoding);
+    setPerformanceResponseHeaders(req, res);
+    return originalEnd(chunk, encoding, callback);
+  };
+  res.writeHead = function instrumentedWriteHead(...args) {
+    setPerformanceResponseHeaders(req, res);
+    return originalWriteHead(...args);
+  };
+  requestPerformanceStore.run(performanceContext, () => {
+    next();
+  });
+});
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'same-origin');
@@ -10823,6 +10924,57 @@ const pool = DATABASE_URL
       },
     };
 
+function instrumentQueryClientForPerformance(client) {
+  if (!client || typeof client.query !== 'function' || client.__bnaPerformanceWrapped) return client;
+  const originalQuery = client.query.bind(client);
+  client.query = async function instrumentedClientQuery(...args) {
+    const startedNs = process.hrtime.bigint();
+    try {
+      return await originalQuery(...args);
+    } finally {
+      recordDbPerformance('db', highResolutionMsSince(startedNs));
+    }
+  };
+  Object.defineProperty(client, '__bnaPerformanceWrapped', {
+    value: true,
+    enumerable: false,
+    configurable: false,
+  });
+  return client;
+}
+
+function instrumentPoolForPerformance(dbPool) {
+  if (!dbPool || dbPool.__bnaPerformanceWrapped) return dbPool;
+  if (typeof dbPool.query === 'function') {
+    const originalPoolQuery = dbPool.query.bind(dbPool);
+    dbPool.query = async function instrumentedPoolQuery(...args) {
+      const startedNs = process.hrtime.bigint();
+      try {
+        return await originalPoolQuery(...args);
+      } finally {
+        recordDbPerformance('db', highResolutionMsSince(startedNs));
+      }
+    };
+  }
+  if (typeof dbPool.connect === 'function') {
+    const originalConnect = dbPool.connect.bind(dbPool);
+    dbPool.connect = async function instrumentedPoolConnect(...args) {
+      const startedNs = process.hrtime.bigint();
+      const client = await originalConnect(...args);
+      recordDbPerformance('pool', highResolutionMsSince(startedNs));
+      return instrumentQueryClientForPerformance(client);
+    };
+  }
+  Object.defineProperty(dbPool, '__bnaPerformanceWrapped', {
+    value: true,
+    enumerable: false,
+    configurable: false,
+  });
+  return dbPool;
+}
+
+instrumentPoolForPerformance(pool);
+
 let stripeSdk = null;
 
 function getStripeClient(secretKey = '') {
@@ -10856,6 +11008,167 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 app.use(compression({ threshold: 1024 }));
+
+function sanitizePerformanceRoutePath(value = '') {
+  const raw = String(value || '/').slice(0, 1200);
+  let parsed;
+  try {
+    parsed = new URL(raw, 'https://bna.invalid');
+  } catch {
+    parsed = new URL('/', 'https://bna.invalid');
+  }
+  const allowedParams = new Set(['workspace', 'project', 'project_key', 'view', 'section', 'admin_provider', 'review', 'inbox']);
+  const params = new URLSearchParams();
+  for (const [key, paramValue] of parsed.searchParams.entries()) {
+    if (!allowedParams.has(key)) continue;
+    const cleanValue = String(paramValue || '')
+      .replace(/[^\w:-]/g, '')
+      .slice(0, 80);
+    if (cleanValue) params.set(key, cleanValue);
+  }
+  const pathOnly = parsed.pathname
+    .replace(/\/api\/bna\/crm\/contacts\/[^/?#]+/gi, '/api/bna/crm/contacts/[redacted-contact]')
+    .replace(/\/operations\/agents\/runs\/[^/?#]+/gi, '/operations/agents/runs/[redacted-run]')
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, '[redacted-email]')
+    .replace(/\b\d{8,}\b/g, '[redacted-number]');
+  const query = params.toString();
+  return `${pathOnly || '/'}${query ? `?${query}` : ''}`.slice(0, 320);
+}
+
+function finitePerformanceNumber(value, fallback = null) {
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? Math.round(number * 10) / 10 : fallback;
+}
+
+function normalizedPerformanceMetricName(value = '') {
+  const metric = String(value || 'route_transition')
+    .toLowerCase()
+    .replace(/[^a-z0-9_:-]/g, '_')
+    .slice(0, 80);
+  return metric || 'route_transition';
+}
+
+function performanceRouteIdFromPath(routePath = '') {
+  const pathValue = String(routePath || '/');
+  if (pathValue.startsWith('/one-time')) return 'public-landing';
+  if (pathValue.startsWith('/provider')) return 'provider-shell';
+  if (pathValue.includes('view=contacts') || pathValue.includes('section=crm_contacts')) return 'crm-workspace';
+  if (pathValue.includes('view=communications')) return 'communications';
+  if (pathValue.includes('view=tasks')) return 'tasks';
+  if (pathValue.startsWith('/operations')) return 'operations';
+  return 'other';
+}
+
+function inferPerformanceTargetApp(req, routePath = '') {
+  const host = String(req.headers.host || '').toLowerCase();
+  const route = String(routePath || '').toLowerCase();
+  if (
+    host.includes('onetimeonetime.com') ||
+    route.includes('/one-time') ||
+    route.includes('admin_provider=one-time') ||
+    route.includes('review=one-time') ||
+    route.includes('workspace=rabbi_sheller_provider') ||
+    INSTANCE_RUNTIME_FLAGS.app_instance === 'onetime'
+  ) {
+    return 'one-time';
+  }
+  return 'bna';
+}
+
+function compactPerformancePayload(body = {}, req, routePath, targetApp) {
+  const viewport = body.viewport && typeof body.viewport === 'object' ? body.viewport : {};
+  return {
+    nav_ms: finitePerformanceNumber(body.nav_ms ?? body.navigation_ms ?? body.navigationMs),
+    route_transition_ms: finitePerformanceNumber(body.route_transition_ms ?? body.routeTransitionMs),
+    fcp_ms: finitePerformanceNumber(body.fcp_ms ?? body.fcpMs),
+    lcp_ms: finitePerformanceNumber(body.lcp_ms ?? body.lcpMs),
+    cls: finitePerformanceNumber(body.cls),
+    long_task_total_ms: finitePerformanceNumber(body.long_task_total_ms ?? body.longTaskTotalMs),
+    resource_count: finitePerformanceNumber(body.resource_count ?? body.resourceCount),
+    transfer_kb: finitePerformanceNumber(body.transfer_kb ?? body.transferKb),
+    viewport_width: finitePerformanceNumber(viewport.width ?? body.viewport_width),
+    viewport_height: finitePerformanceNumber(viewport.height ?? body.viewport_height),
+    visibility_state: String(body.visibility_state || body.visibilityState || '').slice(0, 40),
+    connection_type: String(body.connection_type || body.connectionType || '').replace(/[^a-z0-9_-]/gi, '').slice(0, 40),
+    cold_start: body.cold_start === true || body.coldStart === true,
+    route_path: routePath,
+    target_app: targetApp,
+    no_pii_contract: true,
+    received_trace_id: req.performanceContext?.trace_id || '',
+  };
+}
+
+app.post('/api/performance/rum', async (req, res) => {
+  const body = req.body && typeof req.body === 'object' ? req.body : {};
+  const routePath = sanitizePerformanceRoutePath(body.route_path || body.routePath || req.headers.referer || '/');
+  const targetApp = inferPerformanceTargetApp(req, routePath);
+  const deployment = buildDeploymentInfo();
+  const metricName = normalizedPerformanceMetricName(body.metric_name || body.metricName);
+  const metricValueMs = finitePerformanceNumber(
+    body.metric_value_ms ?? body.metricValueMs ?? body.route_transition_ms ?? body.routeTransitionMs ?? body.nav_ms ?? body.navigation_ms,
+    0
+  );
+  const routeId = String(body.route_id || body.routeId || performanceRouteIdFromPath(routePath))
+    .replace(/[^a-z0-9_:-]/gi, '')
+    .slice(0, 100) || 'other';
+  const workspaceKey = routePath.includes('workspace=rabbi_sheller_provider') || targetApp === 'one-time'
+    ? 'rabbi_sheller_provider'
+    : '';
+  const projectKey = routePath.includes('one_time_mishnah_class') || targetApp === 'one-time'
+    ? 'one_time_mishnah_class'
+    : '';
+  const payload = compactPerformancePayload(body, req, routePath, targetApp);
+  const traceId = req.performanceContext?.trace_id || createTraceId(req);
+  const suppliedKey = String(body.idempotency_key || body.idempotencyKey || '').replace(/[^\w:-]/g, '').slice(0, 120);
+  const eventKey = suppliedKey || crypto
+    .createHash('sha256')
+    .update([targetApp, routeId, metricName, traceId, Math.floor(Date.now() / 30000)].join('|'))
+    .digest('hex')
+    .slice(0, 32);
+  const dryRun = ['1', 'true', 'yes'].includes(String(req.query.dry_run || body.dry_run || body.dryRun || '').toLowerCase());
+  let stored = false;
+  let storageStatus = dryRun ? 'dry_run' : 'skipped';
+  if (!dryRun) {
+    try {
+      await pool.query(
+        `INSERT INTO bna_performance_events
+          (event_key, source, target_app, workspace_key, project_key, route_id, route_path, metric_name, metric_value_ms, trace_id, deploy_sha, payload)
+         VALUES ($1, 'browser_rum', $2, NULLIF($3, ''), NULLIF($4, ''), $5, $6, $7, $8, $9, $10, $11::jsonb)
+         ON CONFLICT (event_key) DO NOTHING`,
+        [
+          eventKey,
+          targetApp,
+          workspaceKey,
+          projectKey,
+          routeId,
+          routePath,
+          metricName,
+          metricValueMs,
+          traceId,
+          deployment.commit_sha || '',
+          JSON.stringify(payload),
+        ]
+      );
+      stored = true;
+      storageStatus = 'stored';
+    } catch (error) {
+      storageStatus = 'storage_unavailable';
+    }
+  }
+  res.json({
+    success: true,
+    code: 'PERFORMANCE_RUM_ACCEPTED',
+    dry_run: dryRun,
+    stored,
+    storage_status: storageStatus,
+    event_key: eventKey,
+    trace_id: traceId,
+    route_id: routeId,
+    target_app: targetApp,
+    no_pii_contract: true,
+    external_write_performed: false,
+  });
+});
 
 function isOneTimeSingleTenantRuntime() {
   return INSTANCE_RUNTIME_FLAGS.single_tenant === true
@@ -12817,6 +13130,28 @@ CREATE TABLE IF NOT EXISTS bna_workspace_integrations (
   UNIQUE (workspace_key, integration_type)
 );
 CREATE INDEX IF NOT EXISTS idx_bna_workspace_integrations_workspace ON bna_workspace_integrations(workspace_key, integration_type);
+`;
+
+const createPerformanceEventsSQL = `
+CREATE TABLE IF NOT EXISTS bna_performance_events (
+  id SERIAL PRIMARY KEY,
+  event_key TEXT NOT NULL UNIQUE,
+  source TEXT NOT NULL DEFAULT 'browser_rum',
+  target_app TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  route_id TEXT,
+  route_path TEXT,
+  metric_name TEXT NOT NULL,
+  metric_value_ms NUMERIC,
+  trace_id TEXT,
+  deploy_sha TEXT,
+  payload JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_bna_performance_events_target_created ON bna_performance_events(target_app, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_performance_events_workspace_created ON bna_performance_events(workspace_key, project_key, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_performance_events_route_metric ON bna_performance_events(route_id, metric_name, created_at DESC);
 `;
 
 const createProjectBrandingSQL = `
@@ -33370,6 +33705,7 @@ async function initDb() {
     await pool.query(createWorkspacePlatformSQL);
     await pool.query(createWorkspaceAccountsSQL);
     await pool.query(createWorkspaceIntegrationsSQL);
+    await pool.query(createPerformanceEventsSQL);
     await pool.query(createProjectBrandingSQL);
     await pool.query(createContactIdentityAuditSQL);
     await pool.query(createWorkspaceNotesSQL);
@@ -44824,9 +45160,11 @@ function readDeploymentMetadata() {
   return {};
 }
 
+let deploymentInfoCache = null;
 function buildDeploymentInfo() {
+  if (deploymentInfoCache) return deploymentInfoCache;
   const metadata = readDeploymentMetadata();
-  return {
+  deploymentInfoCache = {
     status: 'ok',
     commit_sha: metadata.commit_sha
       || process.env.BNA_RELEASE_SHA
@@ -44843,6 +45181,7 @@ function buildDeploymentInfo() {
     target_project: metadata.target_project || '',
     target_service: metadata.target_service || '',
   };
+  return deploymentInfoCache;
 }
 
 app.get('/api/deploy-info', (req, res) => {
@@ -91141,6 +91480,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createWorkspacePlatformSQL);
     await pool.query(createWorkspaceAccountsSQL);
     await pool.query(createWorkspaceIntegrationsSQL);
+    await pool.query(createPerformanceEventsSQL);
     await pool.query(createProjectBrandingSQL);
     await pool.query(createContactIdentityAuditSQL);
     await pool.query(createWorkspaceNotesSQL);

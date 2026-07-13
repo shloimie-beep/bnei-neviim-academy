@@ -1,0 +1,174 @@
+{
+  "generated_at": "2026-07-13T08:01:18.958Z",
+  "requirement_id": "REQ-20260713-911",
+  "status": "passed",
+  "scope": "Local One Time performance instrumentation and regression-gate audit. No database, live HTTP, sends, payments, external accounts, or production writes.",
+  "budgets": {
+    "rum_bytes": {
+      "actual": 6303,
+      "max": 7000
+    },
+    "provider_html_bytes": {
+      "actual": 178961,
+      "max": 190000
+    },
+    "operations_shell_bytes": {
+      "actual": 1153652,
+      "max": 1200000
+    },
+    "operations_bootstrap_bytes": {
+      "actual": 2529,
+      "max": 5000
+    },
+    "crm_route_module_bytes": {
+      "actual": 10041,
+      "max": 12000
+    },
+    "mailbox_route_module_bytes": {
+      "actual": 17307,
+      "max": 20000
+    },
+    "communications_route_module_bytes": {
+      "actual": 2845,
+      "max": 5000
+    }
+  },
+  "checks": [
+    {
+      "id": "server_timing_headers",
+      "passed": true,
+      "detail": "Server emits trace/deploy/response-size timing headers.",
+      "evidence": [
+        "server.js"
+      ]
+    },
+    {
+      "id": "db_pool_timing_wrapped",
+      "passed": true,
+      "detail": "Pool query/connect and client query paths record db/pool timing.",
+      "evidence": [
+        "server.js"
+      ]
+    },
+    {
+      "id": "rum_endpoint_registered",
+      "passed": true,
+      "detail": "Privacy-safe browser RUM endpoint and table are registered.",
+      "evidence": [
+        "server.js"
+      ]
+    },
+    {
+      "id": "rum_route_path_sanitized_server",
+      "passed": true,
+      "detail": "Server sanitizes route paths before storing RUM.",
+      "evidence": [
+        "server.js"
+      ]
+    },
+    {
+      "id": "rum_client_entrypoints",
+      "passed": true,
+      "detail": "One Time landing, provider shell, Operations source, and generated bootstrap load the RUM client.",
+      "evidence": [
+        "public/one-time/index.html",
+        "public/provider.html",
+        "public/operations.html",
+        "public/operations-bootstrap.html"
+      ]
+    },
+    {
+      "id": "rum_client_privacy_contract",
+      "passed": true,
+      "detail": "RUM client redacts route details and avoids cookies/localStorage/DOM text capture.",
+      "evidence": [
+        "public/js/one-time-performance-rum.js"
+      ]
+    },
+    {
+      "id": "rum_client_route_transition",
+      "passed": true,
+      "detail": "RUM client records SPA route transitions as a separate metric.",
+      "evidence": [
+        "public/js/one-time-performance-rum.js"
+      ]
+    },
+    {
+      "id": "budget_rum_bytes",
+      "passed": true,
+      "detail": "6303 <= 7000 bytes",
+      "evidence": [
+        "public/js/one-time-performance-rum.js",
+        "public/provider.html",
+        "public/js/operations-shell.js",
+        "public/operations-bootstrap.html"
+      ]
+    },
+    {
+      "id": "budget_provider_html_bytes",
+      "passed": true,
+      "detail": "178961 <= 190000 bytes",
+      "evidence": [
+        "public/js/one-time-performance-rum.js",
+        "public/provider.html",
+        "public/js/operations-shell.js",
+        "public/operations-bootstrap.html"
+      ]
+    },
+    {
+      "id": "budget_operations_shell_bytes",
+      "passed": true,
+      "detail": "1153652 <= 1200000 bytes",
+      "evidence": [
+        "public/js/one-time-performance-rum.js",
+        "public/provider.html",
+        "public/js/operations-shell.js",
+        "public/operations-bootstrap.html"
+      ]
+    },
+    {
+      "id": "budget_operations_bootstrap_bytes",
+      "passed": true,
+      "detail": "2529 <= 5000 bytes",
+      "evidence": [
+        "public/js/one-time-performance-rum.js",
+        "public/provider.html",
+        "public/js/operations-shell.js",
+        "public/operations-bootstrap.html"
+      ]
+    },
+    {
+      "id": "budget_crm_route_module_bytes",
+      "passed": true,
+      "detail": "10041 <= 12000 bytes",
+      "evidence": [
+        "public/js/one-time-performance-rum.js",
+        "public/provider.html",
+        "public/js/operations-shell.js",
+        "public/operations-bootstrap.html"
+      ]
+    },
+    {
+      "id": "budget_mailbox_route_module_bytes",
+      "passed": true,
+      "detail": "17307 <= 20000 bytes",
+      "evidence": [
+        "public/js/one-time-performance-rum.js",
+        "public/provider.html",
+        "public/js/operations-shell.js",
+        "public/operations-bootstrap.html"
+      ]
+    },
+    {
+      "id": "budget_communications_route_module_bytes",
+      "passed": true,
+      "detail": "2845 <= 5000 bytes",
+      "evidence": [
+        "public/js/one-time-performance-rum.js",
+        "public/provider.html",
+        "public/js/operations-shell.js",
+        "public/operations-bootstrap.html"
+      ]
+    }
+  ]
+}
