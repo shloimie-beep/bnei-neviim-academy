@@ -39521,3 +39521,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   architecture/performance baseline, dedicated One Time app shell, mobile CRM
   IA, independent performance/integration verification, and performance
   instrumentation/regression gates.
+
+## 2026-07-13 - One Time owner-test readiness blocked on aliases
+
+- Added `src/lib/bna/one-time-owner-test-readiness.js` and
+  `scripts/check-onetime-owner-test-readiness.mjs` to run a no-send owner-test
+  preflight with destination source/fingerprint/length only.
+- Verified One Time Resend is connected, domain-verified, and send-ready; One
+  Time WAPI provider setup is ready with one-time scoped credentials, instance,
+  sender phone metadata, webhook secret, class link, live provider-bot mode, and
+  auto-reply approval.
+- Blocked `REQ-20260713-906` only because no secure owner-test email or
+  WhatsApp aliases are configured in local/keyholder/Railway readback. No
+  email, WhatsApp, Telegram, CRM mutation, public auto-reply activation,
+  Railway mutation, or external write occurred.

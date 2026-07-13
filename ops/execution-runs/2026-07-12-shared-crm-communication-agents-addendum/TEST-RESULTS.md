@@ -3,9 +3,19 @@
 ## 2026-07-13 One Time-First Addendum Control Correction
 
 - PASS JSON parse check for `requirements.json`, source-statement matrix, packet manifest, `latest.json`, and `run.json`.
-- PASS `npm run bna:run:validate` after recording `REQ-20260713-906` through `REQ-20260713-911`.
+- PASS `npm run bna:run:validate` after recording `REQ-20260713-905` through `REQ-20260713-911`.
 - PASS `npm run bna:run:next`; selected `REQ-20260713-907` as the next unblocked executable batch.
 - No owner email/WhatsApp send was attempted in the control-correction step.
+
+## 2026-07-13 Owner-Test Readiness Preflight
+
+- PASS `node --check src/lib/bna/one-time-owner-test-readiness.js`.
+- PASS `node --check scripts/check-onetime-owner-test-readiness.mjs`.
+- PASS `node --check scripts/check-onetime-external-setup-readiness.mjs`.
+- PASS `node --test tests/one-time-owner-test-readiness.test.js tests/one-time-delivery-outbox.test.js tests/one-time-signup-reminder-workflow.test.js` (19/19).
+- BLOCKED `npm run one-time:owner-test:readiness` only on missing secure owner-test email and WhatsApp aliases. Report: `ops/watchdog-audits/2026-07-13T05-10-06-583Z-onetime-owner-test-readiness.md`. No email, WhatsApp, CRM mutation, public auto-reply activation, or external write occurred.
+- BLOCKED `npm run one-time:wapi:readiness` only on Telegram notification approval being false; WAPI outbound/provider setup and auto-reply readiness were true, and `whatsapp_send_performed=false`.
+- PASS no-send One Time Resend readiness through `scripts/smoke-email.mjs` with `external_send_performed=false`.
 
 - PASS `node --check server.js`
 - PASS `node --check src/lib/integrations/resend-inbound-crm.js`

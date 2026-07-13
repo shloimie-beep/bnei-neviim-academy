@@ -1,22 +1,30 @@
 # Next Session
 
-Next unblocked batch: `1-owner-only-live-integration-tests`
+Next unblocked batch: `2-onetime-architecture-performance-baseline`
 Open requirement: `REQ-20260713-907`
 
 Current control correction:
 
 - `RAW-20260713-003` is registered as the One Time-first addendum.
-- `REQ-20260713-906` is Done: source matrix, correction decisions, packet manifest, and dated requirement register were recorded.
+- `REQ-20260713-905` is Done: source matrix, correction decisions, packet manifest, and dated requirement register were recorded.
 - `DEC-20260713-003`: One Time is the implementation and acceptance target now.
 - `DEC-20260713-004`: simultaneous BNA/One Time frontend parity under `REQ-20260712-302` is superseded for this phase; BNA adoption is later.
 - `DEC-20260713-005`: bounded owner-only email/WhatsApp tests are authorized only to secure Shloimie-controlled aliases with redacted evidence.
 
+Owner-test result:
+
+- `REQ-20260713-906` is blocked only on missing secure owner-test destinations.
+- `npm run one-time:owner-test:readiness` wrote `ops/watchdog-audits/2026-07-13T05-10-06-583Z-onetime-owner-test-readiness.md` and performed zero sends.
+- Resend is configured/connected/send-ready for One Time.
+- One Time WAPI provider setup is ready with one-time scoped credentials, instance metadata, sender phone metadata, class link, webhook secret, live provider-bot mode, and auto-reply approval.
+- Local/keyholder/Railway readback found no `ONE_TIME_OWNER_TEST_EMAIL` or `ONE_TIME_OWNER_TEST_WHATSAPP`/phone alias, so no owner send/readback was attempted.
+
 Immediate next action:
 
-1. Inspect `scripts/smoke-email.mjs`, `scripts/check-onetime-wapi-readiness.mjs`, and current One Time provider gates without printing secrets.
-2. Determine whether secure `owner_test_email` and `owner_test_whatsapp` aliases exist through approved config/Railway/keyholder paths.
-3. Run no-send/no-write readiness and dry-run/preflight first.
-4. If secure aliases or gates are missing, mark only `REQ-20260713-907` blocked with exact owner/next action and continue `REQ-20260713-908`.
+1. Start `REQ-20260713-907`: One Time architecture/performance baseline.
+2. Write the ADR comparing shared monolith, same-repo dedicated One Time frontend, and fully separate app.
+3. Collect repeated cold/warm route performance measurements before implementing the dedicated shell.
+4. Keep `REQ-20260713-906` blocked until the owner aliases are configured through the approved secret path.
 5. Do not enable public WhatsApp auto-reply, send to non-owner contacts, or expose raw destination values.
 
 Previous shared-CRM lane is no longer the first lane. Continue `REQ-20260712-302` / `REQ-20260712-303` only where they directly support the One Time-first packets or required BNA regression safety.
@@ -67,10 +75,10 @@ Current proof:
 Continue by inspecting and repairing:
 
 - continue remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`, especially email-thread DTO proof where live data exists and canonical aggregate breadth beyond signup/product leads;
-- start `REQ-20260713-906` owner-only live integration tests by inspecting existing guarded email/WAPI smoke paths and secure owner-test aliases, without enabling unrestricted public auto-reply;
+- `REQ-20260713-906` owner-only live integration tests are blocked on missing secure owner-test aliases, while Resend and One Time WAPI are ready;
 - start `REQ-20260713-907` One Time architecture/performance baseline before more broad lag fixes;
 - start `REQ-20260713-909` mobile CRM IA with current-state audit/PQC before broad contact-workspace UI edits;
-- keep `REQ-20260713-911` performance instrumentation/regression gates tied to the architecture baseline before calling lag fixed;
+- keep `REQ-20260713-910` verifier/final report and `REQ-20260713-911` performance gates tied to owner-test, architecture, dedicated shell, and mobile CRM proof before calling lag fixed;
 - Wave 3 private Rabbi Telegram workspace agent (`REQ-20260713-903`), especially full CRM/content/read/write action surface, content-parsing knowledge binding, and live receiver ownership/409 proof;
 - Wave 4 Rabbi ticket to Super Admin approval flow (`REQ-20260713-904`), especially cleanup-safe live synthetic ticket alert/approval, Ask Rabbi round trip, Reject proof, and completion evidence notifications;
 - continue remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`, especially email-thread DTO rows where live data is present and canonical aggregate breadth beyond signup/product leads;

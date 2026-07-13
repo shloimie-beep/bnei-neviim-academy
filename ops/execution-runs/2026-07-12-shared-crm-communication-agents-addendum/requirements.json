@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-13T07:47:20+03:00",
+  "updated_at": "2026-07-13T07:58:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -60,37 +60,10 @@
       "blocker": ""
     },
     {
+      "id": "REQ-20260713-905",
+      "title": "One Time-first control correction and BNA parity supersession",
+      "expected_result": "Register RAW-20260713-003, record that One Time is the current canonical implementation target, supersede simultaneous BNA frontend parity for this phase, and create replacement child packets while preserving existing evidence.",
       "source_id": "RAW-20260713-003",
-      "source_path": "raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
-      "workspace_key": "multi_workspace",
-      "project_key": "one_time_mishnah_class",
-      "owner": "Codex",
-      "priority": "P0",
-      "updated_at": "2026-07-13T07:47:20+03:00",
-      "can_continue_without_operator": true,
-      "blocker": "",
-      "status": "done",
-      "depends_on": [],
-      "evidence": [
-        "raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
-        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-003.json",
-        "tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
-        "ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json"
-      ],
-      "verification": [
-        "JSON parse PASS for requirements.json, source-statement matrix, packet manifest, latest.json, and run.json.",
-        "npm run bna:run:validate PASS after addendum registration.",
-        "npm run bna:run:next PASS and selected REQ-20260713-907 as the next unblocked executable batch."
-      ],
-      "implementation_files": [
-        "tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
-        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-003.json",
-        "ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json"
-      ],
-      "deployment_required": false,
-      "id": "REQ-20260713-906",
-      "title": "Record One Time-first control correction and packet DAG addendum",
-      "expected_result": "The addendum is captured as raw provenance, source statements are mapped, correction decisions are recorded, REQ-20260712-302 simultaneous parity is corrected without erasing evidence, and the active run points to One Time-first packets.",
       "source_statement_ids": [
         "SRC-20260713-003-001",
         "SRC-20260713-003-002",
@@ -98,17 +71,47 @@
         "SRC-20260713-003-012",
         "SRC-20260713-003-014"
       ],
+      "source_path": "raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
       "category": "run_control",
-      "batch_id": "0-onetime-first-control-correction",
-      "implementation_status": "Raw addendum, source-statement matrix, correction decisions, requirement register, and packet DAG manifest recorded in the existing active execution run; no app code or external send executed in this control step.",
-      "next_action": "Continue REQ-20260713-907 owner-only live integration tests; if secure aliases or gates are missing, block only that requirement and continue REQ-20260713-908.",
+      "priority": "P0",
+      "batch_id": "0-control-correction",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "Registered One Time-first scope correction, superseded simultaneous BNA frontend parity for this phase, and added replacement child packets to the active run.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260713-906 owner-only live integration tests; if secure aliases or gates are missing, block only that requirement and continue REQ-20260713-907.",
       "acceptance_criteria": [
-        "Raw addendum is preserved in raw-input with fingerprinted source metadata.",
-        "Existing active run is reused and no competing run is created.",
-        "One Time-first scope and BNA regression-only scope are recorded as decisions.",
-        "REQ-20260712-302 historical evidence is preserved while simultaneous frontend parity is superseded for this phase.",
-        "Packet DAG contains owner-test, architecture/performance, dedicated-shell, mobile CRM IA, and verifier packets."
-      ]
+        "Register RAW-20260713-003, record that One Time is the current canonical implementation target, supersede simultaneous BNA frontend parity for this phase, and create replacement child packets while preserving existing evidence."
+      ],
+      "evidence": [
+        "raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/BATCH-STATUS.md",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-003.json",
+        "tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
+        "ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json"
+      ],
+      "verification": [
+        "npm run bna:run:validate PASS after registering RAW-20260713-003 control correction",
+        "JSON parse PASS for requirements.json, source matrix, packet manifest, latest pointer, and run metadata.",
+        "npm run bna:run:validate PASS after addendum registration.",
+        "npm run bna:run:next selected REQ-20260713-906 as the next unblocked executable batch."
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json",
+        "memory-topics/rabbi-scheller-onetime.md",
+        "memory-topics/one-time-rabbi-sheller.md",
+        "tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
+        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-003.json",
+        "ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-13T07:58:00+03:00",
+      "blocker": ""
     },
     {
       "source_id": "RAW-20260713-003",
@@ -117,23 +120,40 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T07:47:20+03:00",
-      "can_continue_without_operator": true,
-      "blocker": "",
-      "status": "not_started",
+      "updated_at": "2026-07-13T08:08:00+03:00",
+      "can_continue_without_operator": false,
+      "blocker": "Missing secure owner-test destinations: ONE_TIME_OWNER_TEST_EMAIL (or approved alias) and ONE_TIME_OWNER_TEST_WHATSAPP/PHONE (or approved alias) are absent from local/keyholder/Railway readback. Resend and One Time WAPI provider setup are ready; no send was attempted.",
+      "status": "blocked",
       "depends_on": [
-        "REQ-20260713-906"
+        "REQ-20260713-905"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/watchdog-audits/2026-07-13T05-10-06-583Z-onetime-owner-test-readiness.md",
+        "ops/watchdog-audits/2026-07-13T05-10-06-583Z-onetime-owner-test-readiness.json",
+        "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md",
+        "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.json",
+        "scripts/smoke-email.mjs no-send one_time Resend readiness proof"
+      ],
+      "verification": [
+        "node --check src/lib/bna/one-time-owner-test-readiness.js PASS",
+        "node --check scripts/check-onetime-owner-test-readiness.mjs PASS",
+        "node --check scripts/check-onetime-external-setup-readiness.mjs PASS",
+        "node --test tests/one-time-owner-test-readiness.test.js tests/one-time-delivery-outbox.test.js tests/one-time-signup-reminder-workflow.test.js PASS 19/19",
+        "npm run one-time:owner-test:readiness produced redacted no-send blocker report; Resend send_allowed=true; WAPI provider_setup_ready=true; owner aliases missing; external_send_performed=false; whatsapp_send_performed=false; email_send_performed=false",
+        "npm run one-time:wapi:readiness produced redacted no-send report; WAPI provider setup and auto-reply ready; Telegram notification approval false; whatsapp_send_performed=false",
+        "scripts/smoke-email.mjs one_time resend-client no-send readiness PASS with external_send_performed=false"
+      ],
       "implementation_files": [
+        "src/lib/bna/one-time-owner-test-readiness.js",
+        "scripts/check-onetime-owner-test-readiness.mjs",
+        "scripts/check-onetime-external-setup-readiness.mjs",
         "scripts/smoke-email.mjs",
         "scripts/check-onetime-wapi-readiness.mjs",
-        "src/lib/bna/provider-lead-bot.js",
-        "server.js"
+        "tests/one-time-owner-test-readiness.test.js",
+        "package.json"
       ],
       "deployment_required": false,
-      "id": "REQ-20260713-907",
+      "id": "REQ-20260713-906",
       "title": "Owner-only live integration tests for One Time email and WhatsApp",
       "expected_result": "One Time email and WhatsApp owner-test paths are readiness-checked, preflighted, optionally sent only to secure Shloimie-controlled aliases, read back through provider and CRM evidence, idempotency-checked, and recorded with redacted evidence and strict send limits.",
       "source_statement_ids": [
@@ -144,8 +164,8 @@
       ],
       "category": "provider_owner_tests",
       "batch_id": "1-owner-only-live-integration-tests",
-      "implementation_status": "not_started",
-      "next_action": "Inspect scripts/smoke-email.mjs, One Time WAPI readiness, and secure owner-test alias availability without printing secrets; run no-send/no-write readiness and dry-run before any owner send.",
+      "implementation_status": "No-send owner-test readiness preflight is implemented and verified. Live owner email/WhatsApp sends are blocked only because secure owner-test aliases are absent from local, keyholder, and Railway readback. Resend and One Time WAPI provider setup are ready; zero sends, CRM mutations, public auto-reply activation, Railway mutation, or external writes were performed.",
+      "next_action": "Configure secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP or approved equivalent aliases through the approved secret path; rerun npm run one-time:owner-test:readiness, then perform bounded owner-only send/readback. Continue REQ-20260713-907 meanwhile.",
       "acceptance_criteria": [
         "Secure owner-test email and WhatsApp aliases are resolved from approved config/Railway/keyholder paths or a precise blocker is recorded.",
         "No raw destination value is hardcoded, pasted, committed, logged, screenshot, or reported.",
@@ -154,7 +174,12 @@
         "Each attempted send has a test-run ID and idempotency key.",
         "Provider readback and CRM contact/conversation/timeline readback are recorded where available.",
         "Public auto-reply remains separately gated and is not enabled merely for owner tests."
-      ]
+      ],
+      "blocker_owner": "Shloimie / secure runtime configuration owner",
+      "blocker_next_action": "Configure secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP or approved equivalent aliases in Railway/keyholder without exposing raw values; then rerun npm run one-time:owner-test:readiness and bounded owner-only send/readback.",
+      "blocker_recommended_option": "Set owner-test aliases as Railway variables for the One Time service and mirror only presence/fingerprint evidence in repo reports.",
+      "blocker_alternatives": "Use local keyholder aliases for Codex-only preflight, but production owner-send proof still needs Railway aliases or an approved runtime path.",
+      "blocker_consequence": "Owner-only live email/WhatsApp sends cannot be safely attempted without risking raw destination leakage or non-owner sends."
     },
     {
       "source_id": "RAW-20260713-003",
@@ -163,12 +188,12 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T07:47:20+03:00",
+      "updated_at": "2026-07-13T07:58:00+03:00",
       "can_continue_without_operator": true,
       "blocker": "",
       "status": "not_started",
       "depends_on": [
-        "REQ-20260713-906"
+        "REQ-20260713-905"
       ],
       "evidence": [],
       "verification": [],
@@ -180,13 +205,12 @@
         "src/"
       ],
       "deployment_required": false,
-      "id": "REQ-20260713-908",
+      "id": "REQ-20260713-907",
       "title": "One Time architecture and performance baseline",
       "expected_result": "An ADR chooses the One Time application architecture after inspecting current live/code state, route/surface map and instrumentation gaps are recorded, and repeated cold/warm desktop/tablet/mobile baseline measurements classify frontend, server, database, and third-party performance causes with explicit budgets.",
       "source_statement_ids": [
         "SRC-20260713-003-008",
-        "SRC-20260713-003-010",
-        "SRC-20260713-003-011"
+        "SRC-20260713-003-010"
       ],
       "category": "architecture_performance",
       "batch_id": "2-onetime-architecture-performance-baseline",
@@ -208,12 +232,12 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T07:47:20+03:00",
+      "updated_at": "2026-07-13T07:58:00+03:00",
       "can_continue_without_operator": true,
       "blocker": "",
       "status": "not_started",
       "depends_on": [
-        "REQ-20260713-908"
+        "REQ-20260713-907"
       ],
       "evidence": [],
       "verification": [],
@@ -225,7 +249,7 @@
         "tests/"
       ],
       "deployment_required": true,
-      "id": "REQ-20260713-909",
+      "id": "REQ-20260713-908",
       "title": "Dedicated One Time application shell and route-level modules",
       "expected_result": "One Time gets an incremental dedicated frontend shell/build artifact and route-level modules in the same repo, backed by shared domain/API contracts, with old-shell fallback, exact deployment proof, and measured smaller critical path.",
       "source_statement_ids": [
@@ -234,7 +258,7 @@
       "category": "frontend_architecture",
       "batch_id": "3-onetime-dedicated-app-shell",
       "implementation_status": "not_started",
-      "next_action": "Wait for ADR and baseline in REQ-20260713-908; then build the dedicated One Time shell incrementally with route/feature code splitting and fallback.",
+      "next_action": "Wait for ADR and baseline in REQ-20260713-907; then build the dedicated One Time shell incrementally with route/feature code splitting and fallback.",
       "acceptance_criteria": [
         "One Time startup no longer requires the giant shared BNA Operations monolith on the critical path.",
         "The dedicated shell loads only the One Time shell, active route module, active workspace data, and genuinely needed shared primitives.",
@@ -251,12 +275,12 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T07:47:20+03:00",
+      "updated_at": "2026-07-13T07:58:00+03:00",
       "can_continue_without_operator": true,
       "blocker": "",
       "status": "not_started",
       "depends_on": [
-        "REQ-20260713-906"
+        "REQ-20260713-905"
       ],
       "evidence": [],
       "verification": [],
@@ -269,7 +293,7 @@
         "ops/action-registry.json"
       ],
       "deployment_required": true,
-      "id": "REQ-20260713-910",
+      "id": "REQ-20260713-909",
       "title": "Mobile CRM information architecture",
       "expected_result": "The One Time CRM contact workspace is redesigned from an always-open wall of sections into list, detail, and subview/action states with focused mobile header, section rail, contextual overflow, lazy section data, stable URL/back behavior, accessibility, and responsive proof.",
       "source_statement_ids": [
@@ -297,15 +321,16 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "updated_at": "2026-07-13T07:47:20+03:00",
+      "updated_at": "2026-07-13T07:58:00+03:00",
       "can_continue_without_operator": true,
       "blocker": "",
       "status": "not_started",
       "depends_on": [
+        "REQ-20260713-906",
         "REQ-20260713-907",
         "REQ-20260713-908",
         "REQ-20260713-909",
-        "REQ-20260713-910"
+        "REQ-20260713-911"
       ],
       "evidence": [],
       "verification": [],
@@ -317,18 +342,16 @@
         "src/"
       ],
       "deployment_required": true,
-      "id": "REQ-20260713-911",
+      "id": "REQ-20260713-910",
       "title": "Performance and integration verifier/final report",
       "expected_result": "Independent verification proves owner-test readbacks without duplicate sends, secure recipient allowlists, exact One Time deployed SHA, bundle and performance budgets, mobile CRM screenshots/behavior, BNA privacy/regression safety, and final report sections for owner tests, architecture, performance, and CRM mobile IA.",
       "source_statement_ids": [
-        "SRC-20260713-003-011",
-        "SRC-20260713-003-015",
         "SRC-20260713-003-016"
       ],
       "category": "verifier_closeout",
       "batch_id": "5-performance-integration-verifier",
       "implementation_status": "not_started",
-      "next_action": "After owner-test, architecture, shell, and mobile CRM packets complete, verify without duplicate sends and write the final report sections required by the addendum.",
+      "next_action": "After owner-test, architecture, shell, mobile CRM, and performance-gate packets complete, verify without duplicate sends and write the final report sections required by the addendum.",
       "acceptance_criteria": [
         "Owner-test report includes test-run ID, channel, secure recipient label, masked destination, provider, provider message ID, send/delivery/readback status, CRM result, send count, duplicate prevention, and blocker where incomplete.",
         "Architecture report includes chosen architecture, rejected alternatives, old/new critical paths, shared contracts, One Time-specific modules, BNA adoption status, and rollback path.",
@@ -337,6 +360,50 @@
         "BNA privacy/regression safety is verified where shared runtime changed.",
         "No raw private destination or message body appears in evidence."
       ]
+    },
+    {
+      "id": "REQ-20260713-911",
+      "title": "Performance instrumentation, regression gates, and final proof sections",
+      "expected_result": "Privacy-safe production instrumentation, repeated route baselines, explicit budgets, database/API analysis, release gates, and a production performance report exist so the lag problem is not called fixed by one sample, cache headers, Brotli, or a green Railway health check alone.",
+      "source_id": "RAW-20260713-003",
+      "source_statement_ids": [
+        "SRC-20260713-003-011",
+        "SRC-20260713-003-015"
+      ],
+      "source_path": "raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
+      "workspace_key": "multi_workspace",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "performance_gates",
+      "priority": "P0",
+      "batch_id": "6-performance-regression-gates",
+      "depends_on": [
+        "REQ-20260713-907"
+      ],
+      "status": "not_started",
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "next_action": "After the architecture/performance baseline, add privacy-safe instrumentation, repeated performance reporting, release-gate budget checks, and final proof fields before calling lag fixed.",
+      "acceptance_criteria": [
+        "Instrumentation includes request ID, trace ID, Server-Timing, route duration, API handler duration, database duration, pool wait, response bytes, error status, frontend route transition duration, Web Vitals/RUM without personal data, deploy SHA, target app, and cold/warm classification where detectable.",
+        "Repeated cold/warm measurements and budgets are recorded for public One Time and authenticated One Time routes.",
+        "CRM endpoints have response limits, pagination, stable contact_key, tab-specific DTOs, database/index review, and no browser-side union of independent datasets.",
+        "Release gates cover bundle-size budgets, route chunk budgets, repeated Playwright performance smoke, CRM request/render limits, response-size limits, Web Vitals thresholds, eager Vimeo/player checks, compression/cache headers, and p95 live readback after deploy.",
+        "The lag requirement is not Done until root cause, ADR, smaller critical path, repeated tests, API/database budgets, mobile responsiveness, instrumentation, regression gates, exact deployed SHA, and linked evidence all exist."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "server.js",
+        "src/",
+        "public/",
+        "scripts/",
+        "tests/",
+        "ops/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-13T07:58:00+03:00",
+      "blocker": ""
     },
     {
       "id": "REQ-20260712-302",
@@ -359,7 +426,7 @@
       "status": "in_progress",
       "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked through the Identity/Family workspace slice. Canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, the One Time Operations CRM workbench API/timeline smoke passed, the crm_contact/filter/search/sort/list-scroll URL-state slice is deployed and live-smoked, the local CRM update form/no-auto-task policy slice is deployed and live-smoked, the dead-end Create task placeholder is replaced by deployed explicit ACTION-CRM-CREATE-TASK at commit ded53274e31f91abff7944c094bdcdfaa9c55c5e, Overview/Activity/Conversations/Tasks/Access tabs are deployed at commit 1c4880418954d984c08683ba0955a32549eb33aa with real customer-facing panels, the shared CRM contract/geometry slice is deployed at commit 909cb26d9a21a1e505ee30835ff31646b7c1c9cd with data attributes for shared component order, pane count, breakpoints, and 40px mobile back-control target, and the Identity/Family workspace slice is deployed at commit d1c0d3a596ad420876941445faad9f1e60c7ce48 with customer-facing identity, communication preference, consent/suppression, family/school, membership, class activity, follow-up, and notes panels.",
       "can_continue_without_operator": true,
-      "next_action": "Pause broad simultaneous BNA UI parity in this phase. Continue only shared CRM/domain/API work that directly supports One Time-first packets or required BNA regression safety; otherwise resume after REQ-20260713-907 through REQ-20260713-911 are terminal.",
+      "next_action": "Pause broad simultaneous BNA UI parity in this phase. Continue only shared CRM/domain/API work that directly supports One Time-first packets or required BNA regression safety; otherwise resume after REQ-20260713-906 through REQ-20260713-911 are terminal.",
       "acceptance_criteria": [
         "BNA and One Time use shared CRM shell/index/workspace/inbox/actions/components with only theme, logo, title, allowed fields/actions, channels, agents, and records varying by workspace.",
         "RAW-20260713-003 supersedes the simultaneous BNA/One Time frontend parity acceptance criterion for the current phase: One Time is the P0 implementation target; BNA frontend adoption is deferred while shared API/security/isolation regressions remain in scope."
@@ -560,7 +627,7 @@
         "One Time production deploy-info readback commit_sha=d1c0d3a596ad420876941445faad9f1e60c7ce48.",
         "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T23-34-34-660Z-one-time-operations-crm-workbench-live-smoke.md."
       ],
-      "updated_at": "2026-07-13T07:47:20+03:00",
+      "updated_at": "2026-07-13T07:58:00+03:00",
       "blocker": "",
       "correction_status": "superseded_in_part_by_RAW-20260713-003",
       "current_acceptance_scope": "One Time is the current canonical frontend/application acceptance target. Shared domain/API/security contracts remain active. Simultaneous BNA frontend parity is deferred to a later BNA adoption packet after One Time is stable, measured, deployed, and accepted.",
@@ -749,14 +816,14 @@
         "One Time production deploy-info readback commit_sha=8ea9b798fe9187fbb5f311fbd6073b49f1befcf3.",
         "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-13T00-11-08-626Z-one-time-operations-crm-workbench-live-smoke.md."
       ],
-      "updated_at": "2026-07-13T07:47:20+03:00",
+      "updated_at": "2026-07-13T07:58:00+03:00",
       "blocker": "",
       "correction_decision_ids": [
         "DEC-20260713-003",
         "DEC-20260713-004"
       ],
       "acceptance_corrections": [
-        "Current contact-workspace UI layout is not preserved merely because existing smoke tests pass; mobile CRM IA must proceed through REQ-20260713-910 before broad UI edits."
+        "Current contact-workspace UI layout is not preserved merely because existing smoke tests pass; mobile CRM IA must proceed through REQ-20260713-909 before broad UI edits."
       ]
     },
     {
@@ -1244,51 +1311,6 @@
       "deployment_required": true,
       "updated_at": "2026-07-13T01:22:00+03:00",
       "blocker": "External Stripe/campaign setup fields currently block full production readiness."
-    },
-    {
-      "id": "REQ-20260713-905",
-      "title": "One Time-first control correction and BNA parity supersession",
-      "expected_result": "Register RAW-20260713-003, record that One Time is the current canonical implementation target, supersede simultaneous BNA frontend parity for this phase, and create replacement child packets while preserving existing evidence.",
-      "source_id": "RAW-20260713-003",
-      "source_statement_ids": [
-        "SRC-20260713-003-001",
-        "SRC-20260713-003-002",
-        "SRC-20260713-003-003",
-        "SRC-20260713-003-012",
-        "SRC-20260713-003-014"
-      ],
-      "source_path": "raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
-      "workspace_key": "rabbi_sheller_provider",
-      "project_key": "one_time_mishnah_class",
-      "owner": "Codex",
-      "category": "run_control",
-      "priority": "P0",
-      "batch_id": "0-control-correction",
-      "depends_on": [],
-      "status": "done",
-      "implementation_status": "Registered One Time-first scope correction, superseded simultaneous BNA frontend parity for this phase, and added replacement child packets to the active run.",
-      "can_continue_without_operator": true,
-      "next_action": "Continue OWNER_ONLY_LIVE_INTEGRATION_TESTS and One Time architecture/performance baseline packets.",
-      "acceptance_criteria": [
-        "Register RAW-20260713-003, record that One Time is the current canonical implementation target, supersede simultaneous BNA frontend parity for this phase, and create replacement child packets while preserving existing evidence."
-      ],
-      "evidence": [
-        "raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
-        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json",
-        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/BATCH-STATUS.md"
-      ],
-      "verification": [
-        "npm run bna:run:validate PASS after registering RAW-20260713-003 control correction"
-      ],
-      "implementation_files": [
-        "raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
-        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json",
-        "memory-topics/rabbi-scheller-onetime.md",
-        "memory-topics/one-time-rabbi-sheller.md"
-      ],
-      "deployment_required": false,
-      "updated_at": "2026-07-13T07:56:00+03:00",
-      "blocker": ""
     }
   ],
   "sources": [

@@ -25,23 +25,25 @@ Source matrix: `ops/execution-runs/2026-07-12-shared-crm-communication-agents-ad
 
 | ID | Title | Status | Next Action |
 | --- | --- | --- | --- |
-| REQ-20260713-906 | Record One Time-first control correction and packet DAG addendum | Done | Continue `REQ-20260713-907`. |
-| REQ-20260713-907 | Owner-only live integration tests for One Time email and WhatsApp | Not started | Inspect guarded send scripts and secure owner aliases without printing secrets; run readiness/preflight first. |
-| REQ-20260713-908 | One Time architecture and performance baseline | Not started | Write ADR and collect repeated cold/warm performance baseline before app-shell implementation. |
-| REQ-20260713-909 | Dedicated One Time application shell and route-level modules | Not started | Wait for `REQ-20260713-908`, then implement incrementally with fallback and proof. |
-| REQ-20260713-910 | Mobile CRM information architecture | Not started | Create current-state visual audit and validated Product Quality packet before CRM UI edits. |
-| REQ-20260713-911 | Performance and integration verifier/final report | Not started | Wait for owner-test, architecture, shell, and mobile CRM packets; verify without duplicate sends. |
+| REQ-20260713-905 | One Time-first control correction and BNA parity supersession | Done | Continue `REQ-20260713-906`. |
+| REQ-20260713-906 | Owner-only live integration tests for One Time email and WhatsApp | Blocked on owner aliases | Configure secure owner-test email and WhatsApp aliases through the approved secret path; no send occurred. |
+| REQ-20260713-907 | One Time architecture and performance baseline | Not started | Write ADR and collect repeated cold/warm performance baseline before app-shell implementation. |
+| REQ-20260713-908 | Dedicated One Time application shell and route-level modules | Not started | Wait for `REQ-20260713-907`, then implement incrementally with fallback and proof. |
+| REQ-20260713-909 | Mobile CRM information architecture | Not started | Create current-state visual audit and validated Product Quality packet before CRM UI edits. |
+| REQ-20260713-910 | Performance and integration verifier/final report | Not started | Wait for owner-test, architecture, shell, mobile CRM, and performance-gate packets; verify without duplicate sends. |
+| REQ-20260713-911 | Performance instrumentation, regression gates, and final proof sections | Not started | Add instrumentation, repeated baseline reporting, budgets, DB/API checks, release gates, and performance proof after `REQ-20260713-907`. |
 
 ## Packet DAG
 
 | Packet | Requirement | Role | Status | Scope |
 | --- | --- | --- | --- | --- |
-| PKT-20260713-906 | REQ-20260713-906 | Control correction | Done | Register raw addendum, correction decisions, source matrix, and One Time-first run order. |
-| PKT-20260713-907 | REQ-20260713-907 | Provider test packet | Ready | Guarded owner-only email/WhatsApp readiness, preflight, optional send, provider readback, CRM readback, idempotency, redacted evidence. |
-| PKT-20260713-908 | REQ-20260713-908 | Architecture/performance packet | Ready | ADR, route/surface map, instrumentation, repeated baseline, budgets, root-cause classification. |
-| PKT-20260713-909 | REQ-20260713-909 | Implementation packet | Blocked by `REQ-20260713-908` | Dedicated One Time frontend shell and route modules with old-shell fallback. |
-| PKT-20260713-910 | REQ-20260713-910 | Product quality packet | Ready | CRM mobile IA current-state visual audit, PQC validation, list/detail/subview model, section rail, overflow actions, lazy data, screenshots. |
-| PKT-20260713-911 | REQ-20260713-911 | Verifier packet | Blocked by dependencies | Independent final proof for owner tests, performance, mobile CRM, BNA safety, and deployed SHA. |
+| PKT-20260713-905 | REQ-20260713-905 | Control correction | Done | Register raw addendum, correction decisions, source matrix, and One Time-first run order. |
+| PKT-20260713-906 | REQ-20260713-906 | Provider test packet | Blocked on owner aliases | Guarded owner-only email/WhatsApp readiness, preflight, optional send, provider readback, CRM readback, idempotency, redacted evidence. |
+| PKT-20260713-907 | REQ-20260713-907 | Architecture/performance packet | Ready | ADR, route/surface map, instrumentation, repeated baseline, budgets, root-cause classification. |
+| PKT-20260713-908 | REQ-20260713-908 | Implementation packet | Blocked by `REQ-20260713-907` | Dedicated One Time frontend shell and route modules with old-shell fallback. |
+| PKT-20260713-909 | REQ-20260713-909 | Product quality packet | Ready | CRM mobile IA current-state visual audit, PQC validation, list/detail/subview model, section rail, overflow actions, lazy data, screenshots. |
+| PKT-20260713-910 | REQ-20260713-910 | Verifier packet | Blocked by dependencies | Independent final proof for owner tests, performance, mobile CRM, BNA safety, and deployed SHA. |
+| PKT-20260713-911 | REQ-20260713-911 | Performance gates packet | Blocked by `REQ-20260713-907` | Privacy-safe instrumentation, repeated baseline reporting, budgets, DB/API analysis, release gates, and production performance report. |
 
 ## Guardrails
 
@@ -55,12 +57,12 @@ Source matrix: `ops/execution-runs/2026-07-12-shared-crm-communication-agents-ad
 
 ## Immediate Next Packet
 
-Start `PKT-20260713-907`:
+`PKT-20260713-906` is blocked only on secure owner-test aliases:
 
-1. Inspect existing guarded email smoke and One Time WAPI readiness scripts.
-2. Determine whether secure owner-test aliases are available through existing config/Railway/keyholder paths without printing raw values.
-3. Run no-send/no-write readiness and dry-run checks first.
-4. If aliases or gates are missing, record a precise blocker for `REQ-20260713-907` only and continue `REQ-20260713-908`.
-5. If aliases and guardrails are present, run at most one owner-test send per channel scenario and record redacted provider/CRM readback.
+1. `npm run one-time:owner-test:readiness` produced redacted no-send proof and did not send email or WhatsApp.
+2. Resend is configured/connected/send-ready for One Time.
+3. One Time WAPI provider setup is ready.
+4. Missing blocker: secure `ONE_TIME_OWNER_TEST_EMAIL` and `ONE_TIME_OWNER_TEST_WHATSAPP`/phone aliases were not found through local/keyholder/Railway readback.
+5. Continue `PKT-20260713-907` / `REQ-20260713-907` architecture/performance baseline while the owner aliases are configured.
 
 Do not solve the whole parent ramble. Complete only this packet's scope and record the next packet or blocker.

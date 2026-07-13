@@ -13,6 +13,15 @@ Current status: `active`
 - BNA frontend parity is deferred; BNA remains protected by privacy, security, shared runtime, database migration, workspace isolation, and branding regression checks.
 - No owner email/WhatsApp send, Railway mutation, app code change, or public auto-reply activation occurred during this control-correction step.
 
+## 2026-07-13 Owner-Test Readiness
+
+- `REQ-20260713-906` is blocked only on missing secure owner-test destinations.
+- Added the no-send owner-test readiness checker and report path.
+- Resend is configured, connected, domain-verified, and send-ready for One Time.
+- One Time WAPI provider setup is ready with one-time scoped credentials, instance metadata, sender phone metadata, webhook secret, and class link.
+- Public auto-reply readiness is true, but Telegram notification approval remains false.
+- Local/keyholder/Railway readback found no owner-test email or WhatsApp aliases, so no email, WhatsApp, CRM mutation, public auto-reply activation, Railway mutation, or external write was performed.
+
 ## Completed In This Batch
 
 - Created run and register for the addendum.
@@ -38,8 +47,15 @@ Current status: `active`
   `exact_recipient_segment_or_list`,
   `suppression_unsubscribe_proof`,
   `explicit_seed_packet_approval`.
-- Main addendum implementation is not complete; identity isolation is the first active implementation batch.
-- `REQ-20260712-305` is complete. Continue `REQ-20260712-306` next.
+- Owner-only live integration tests block on missing secure owner-test aliases:
+  `ONE_TIME_OWNER_TEST_EMAIL` and `ONE_TIME_OWNER_TEST_WHATSAPP` or approved
+  equivalent aliases must be configured through the approved secret path.
+- `REQ-20260713-906` owner-only live integration tests are blocked only on
+  missing secure owner-test aliases; continue `REQ-20260713-907` architecture
+  and performance baseline while those aliases are configured.
+- Main addendum implementation remains open across the One Time app shell,
+  mobile CRM IA, performance gates, verifier, and remaining Rabbi
+  Telegram/ticket-approval proof.
 
 ## Shared CRM Product Slice
 

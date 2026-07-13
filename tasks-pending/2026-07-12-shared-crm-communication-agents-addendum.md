@@ -84,4 +84,4 @@ Control correction:
 - `REQ-20260712-302` historical evidence remains valid, but simultaneous frontend parity is superseded for this phase by `DEC-20260713-004`.
 - Owner-only real email/WhatsApp tests are authorized only through secure aliases and redacted evidence; public auto-reply remains separately gated.
 
-Next packet: `PKT-20260713-907` / `REQ-20260713-907` owner-only live integration tests.
+Next packet: `PKT-20260713-906` / `REQ-20260713-906` owner-only live integration tests.

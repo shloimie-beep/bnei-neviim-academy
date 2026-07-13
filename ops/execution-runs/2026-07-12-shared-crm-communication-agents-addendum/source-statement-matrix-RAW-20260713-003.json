@@ -103,7 +103,7 @@
       "statement_id": "SRC-20260713-003-014",
       "source_id": "RAW-20260713-003",
       "source_statement": "Add packet DAG children for One Time first control correction, owner-only live integration tests, architecture and performance baseline, dedicated app shell, mobile CRM information architecture, and performance/integration verifier.",
-      "requirement_id": "REQ-20260713-910",
+      "requirement_id": "REQ-20260713-905",
       "classification": "packet_dag_requirement"
     },
     {
@@ -120,5 +120,6 @@
       "requirement_id": "REQ-20260713-910",
       "classification": "reporting_requirement"
     }
-  ]
+  ],
+  "updated_at": "2026-07-13T07:58:00+03:00"
 }

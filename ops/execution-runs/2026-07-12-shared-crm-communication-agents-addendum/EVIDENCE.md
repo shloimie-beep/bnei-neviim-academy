@@ -6,8 +6,12 @@
 - `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-003.json` - mapped source statements for the addendum.
 - `tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md` - dated requirement register and next packet handoff.
 - `ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json` - packet DAG manifest.
-- `requirements.json` - added `REQ-20260713-906` through `REQ-20260713-911` and decisions `DEC-20260713-003` through `DEC-20260713-005`.
+- `requirements.json` - added `REQ-20260713-905` through `REQ-20260713-911` and decisions `DEC-20260713-003` through `DEC-20260713-005`.
 - No external send, Railway mutation, deployment, public auto-reply activation, or app code change was performed in the control-correction step.
+- `src/lib/bna/one-time-owner-test-readiness.js` and `scripts/check-onetime-owner-test-readiness.mjs` - owner-test preflight/report layer that resolves owner aliases only by source/fingerprint/length and sends nothing by default.
+- `ops/watchdog-audits/2026-07-13T05-10-06-583Z-onetime-owner-test-readiness.md` / `.json` - no-send owner-test readiness report: Resend send-ready, One Time WAPI provider setup-ready, owner-test email and WhatsApp aliases missing, external_send_performed=false.
+- `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md` / `.json` - no-send WAPI readiness report: One Time scoped token, instance, sender phone metadata, webhook secret, class link, live provider bot mode, auto-reply approval, and provider setup are ready; Telegram notification approval is still false.
+- `node scripts/smoke-email.mjs --adapter resend-client --identity one_time ...` - no-send Resend readiness check passed with `external_send_performed=false`.
 
 - `ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md` - direct Codex proof replacing two operator Agent Mode prompt runs.
 - `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md` - Rabbi Telegram no-send readiness.

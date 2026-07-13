@@ -265,6 +265,28 @@ function redactedVariableSummary(variables = {}, { source, service, environment,
       normalizeValue(variables.ONE_TIME_PROVIDER_LEAD_BOT_MODE).toLowerCase() === 'live',
     one_time_provider_lead_bot_telegram_confirm_approved:
       normalizeValue(variables.ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM) === 'APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM',
+    one_time_owner_test_email_present: Boolean(normalizeValue(
+      variables.ONE_TIME_OWNER_TEST_EMAIL ||
+      variables.ONETIME_OWNER_TEST_EMAIL ||
+      variables.ONE_TIME_SHLOIMIE_TEST_EMAIL ||
+      variables.SHLOIMIE_OWNER_TEST_EMAIL ||
+      variables.OWNER_TEST_EMAIL ||
+      variables.BNA_OWNER_TEST_EMAIL,
+    )),
+    one_time_owner_test_whatsapp_present: Boolean(normalizeValue(
+      variables.ONE_TIME_OWNER_TEST_WHATSAPP ||
+      variables.ONE_TIME_OWNER_TEST_PHONE ||
+      variables.ONETIME_OWNER_TEST_WHATSAPP ||
+      variables.ONETIME_OWNER_TEST_PHONE ||
+      variables.ONE_TIME_SHLOIMIE_TEST_WHATSAPP ||
+      variables.ONE_TIME_SHLOIMIE_TEST_PHONE ||
+      variables.SHLOIMIE_OWNER_TEST_WHATSAPP ||
+      variables.SHLOIMIE_OWNER_TEST_PHONE ||
+      variables.OWNER_TEST_WHATSAPP ||
+      variables.OWNER_TEST_PHONE ||
+      variables.BNA_OWNER_TEST_WHATSAPP ||
+      variables.BNA_OWNER_TEST_PHONE,
+    )),
     vimeo_access_token_present: Boolean(normalizeValue(
       variables.VIMEO_ACCESS_TOKEN ||
       variables.ONE_TIME_VIMEO_ACCESS_TOKEN_ALIAS,

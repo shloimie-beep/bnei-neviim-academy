@@ -15,9 +15,10 @@ New addendum requirements:
 
 | ID | Requirement | Status |
 | --- | --- | --- |
-| REQ-20260713-906 | Record One Time-first control correction and packet DAG addendum | Done |
-| REQ-20260713-907 | Owner-only live integration tests for One Time email and WhatsApp | Not started |
-| REQ-20260713-908 | One Time architecture and performance baseline | Not started |
-| REQ-20260713-909 | Dedicated One Time application shell and route-level modules | Not started |
-| REQ-20260713-910 | Mobile CRM information architecture | Not started |
-| REQ-20260713-911 | Performance and integration verifier/final report | Not started |
+| REQ-20260713-905 | One Time-first control correction and BNA parity supersession | Done |
+| REQ-20260713-906 | Owner-only live integration tests for One Time email and WhatsApp | Blocked on owner aliases |
+| REQ-20260713-907 | One Time architecture and performance baseline | Not started |
+| REQ-20260713-908 | Dedicated One Time application shell and route-level modules | Not started |
+| REQ-20260713-909 | Mobile CRM information architecture | Not started |
+| REQ-20260713-910 | Performance and integration verifier/final report | Not started |
+| REQ-20260713-911 | Performance instrumentation, regression gates, and final proof sections | Not started |

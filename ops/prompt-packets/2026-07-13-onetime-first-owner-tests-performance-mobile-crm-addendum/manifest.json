@@ -8,8 +8,9 @@
   "project_key": "one_time_mishnah_class",
   "packet_dag_status": "active",
   "created_at": "2026-07-13T07:47:20+03:00",
+  "updated_at": "2026-07-13T08:08:00+03:00",
   "status": "active",
-  "global_rule": "Do not solve the whole parent ramble. Complete only this packet's scope and record the next packet or blocker.",
+  "global_rule": "Do not solve the whole parent ramble. Complete only this packet scope and record the next packet or blocker.",
   "control_decisions": [
     "DEC-20260713-003",
     "DEC-20260713-004",
@@ -17,246 +18,134 @@
   ],
   "packets": [
     {
-      "packet_id": "PKT-20260713-906",
+      "packet_id": "PKT-20260713-905",
       "role": "CONTROL_TOWER",
       "stage": "0-control-correction",
       "owner": "Codex",
       "status": "done",
-      "requirement_id": "REQ-20260713-906",
+      "requirement_id": "REQ-20260713-905",
       "depends_on": [],
-      "child_packet_ids": [
-        "PKT-20260713-907",
-        "PKT-20260713-908",
-        "PKT-20260713-909",
-        "PKT-20260713-910",
-        "PKT-20260713-911"
-      ],
       "scope": "Register the addendum, record One Time-first priority, preserve old shared-CRM evidence, supersede simultaneous BNA parity for this phase, and freeze owner-only testing/privacy gates.",
-      "out_of_scope": [
-        "External owner sends",
-        "App UI implementation",
-        "BNA feature parity",
-        "Public auto-reply activation"
-      ],
       "source_statement_coverage": [
         "SRC-20260713-003-001",
         "SRC-20260713-003-002",
         "SRC-20260713-003-003",
         "SRC-20260713-003-012",
         "SRC-20260713-003-014"
-      ],
-      "expected_output": [
-        "Raw addendum captured",
-        "requirements.json updated",
-        "dated register created",
-        "packet manifest created",
-        "next packet selected"
-      ],
-      "acceptance_criteria": [
-        "Existing active run is reused",
-        "No competing active run is created",
-        "REQ-20260712-302 history is preserved",
-        "One Time-first order is visible in NEXT-SESSION.md",
-        "bna execution-run validation passes"
-      ],
-      "evidence": [
-        "raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
-        "ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-003.json",
-        "tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md",
-        "ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json"
-      ],
-      "handback_rules": [
-        "Record the next packet or blocker in NEXT-SESSION.md",
-        "Do not mark app-visible work Done without deploy/live-smoke proof"
       ]
     },
     {
-      "packet_id": "PKT-20260713-907",
+      "packet_id": "PKT-20260713-906",
       "role": "PROVIDER_TEST_PACKET",
       "stage": "1-owner-only-live-integration-tests",
       "owner": "Codex",
-      "status": "ready",
-      "requirement_id": "REQ-20260713-907",
+      "status": "blocked_missing_owner_aliases",
+      "requirement_id": "REQ-20260713-906",
       "depends_on": [
-        "PKT-20260713-906"
+        "PKT-20260713-905"
       ],
-      "scope": "Run the maximum safe owner-only email and WhatsApp verification path through existing guarded scripts and provider paths, with secure aliases, idempotency, rate limits, provider readback, CRM readback, and redacted evidence.",
-      "out_of_scope": [
-        "Public WhatsApp auto-reply",
-        "Non-owner sends",
-        "Campaign lists",
-        "Payment or access messages",
-        "Raw destination logging"
-      ],
+      "scope": "Guarded owner-only email/WhatsApp readiness, preflight, optional send, provider readback, CRM readback, idempotency, and redacted evidence.",
       "source_statement_coverage": [
         "SRC-20260713-003-004",
         "SRC-20260713-003-005",
         "SRC-20260713-003-006",
         "SRC-20260713-003-007"
       ],
-      "acceptance_criteria": [
-        "Secure owner-test aliases are resolved or a precise blocker is recorded",
-        "No raw email address or phone number is committed or printed",
-        "No more than three owner-test emails and five owner-test WhatsApp messages occur in the run",
-        "Every attempted send has a test-run ID and idempotency key",
-        "Provider acceptance/status and CRM timeline/conversation readback are recorded where available",
-        "Public auto-reply remains separate and gated"
-      ],
-      "tests": [
-        "Inspect canonical email smoke before any send",
-        "Run One Time WAPI readiness in no-send/no-write mode",
-        "Run dry-run/preflight before any live owner send",
-        "Run provider and CRM redacted readbacks"
-      ],
-      "handback_rules": [
-        "If an alias or approved runtime gate is missing, mark only REQ-20260713-907 blocked and continue architecture/performance work",
-        "Do not retry uncertain provider responses without readback"
+      "evidence": [
+        "ops/watchdog-audits/2026-07-13T05-10-06-583Z-onetime-owner-test-readiness.md",
+        "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md"
       ]
     },
     {
-      "packet_id": "PKT-20260713-908",
+      "packet_id": "PKT-20260713-907",
       "role": "ARCHITECTURE_PERFORMANCE_PACKET",
       "stage": "2-architecture-performance-baseline",
       "owner": "Codex",
       "status": "ready",
-      "requirement_id": "REQ-20260713-908",
+      "requirement_id": "REQ-20260713-907",
       "depends_on": [
-        "PKT-20260713-906"
+        "PKT-20260713-905"
       ],
-      "scope": "Inspect One Time live/current architecture, write the ADR, map routes and surfaces, add or identify privacy-safe instrumentation, collect repeated cold/warm baseline measurements, classify root causes, and set budgets.",
-      "out_of_scope": [
-        "Full rewrite",
-        "Dedicated shell implementation",
-        "BNA adoption",
-        "Owner sends"
-      ],
+      "scope": "ADR, route/surface map, instrumentation gaps, repeated baseline, budgets, and root-cause classification.",
       "source_statement_coverage": [
         "SRC-20260713-003-008",
-        "SRC-20260713-003-010",
-        "SRC-20260713-003-011"
-      ],
-      "acceptance_criteria": [
-        "ADR compares shared monolith, dedicated same-repo One Time frontend, and separate app",
-        "Repeated baseline includes desktop, tablet, 430 px, 390 px, cold, warm, and throttled mobile profiles",
-        "Baseline reports p50/p75/p95/worst/failure rate",
-        "Server/API/database/frontend bottlenecks are classified without raw contact data",
-        "Budgets and release-gate plan are recorded"
-      ],
-      "tests": [
-        "Run repeated performance smoke scripts or create read-only measurement harness",
-        "Record no-write/no-send instrumentation proof",
-        "Validate execution run after ADR/baseline"
+        "SRC-20260713-003-010"
       ]
     },
     {
-      "packet_id": "PKT-20260713-909",
+      "packet_id": "PKT-20260713-908",
       "role": "IMPLEMENTATION_PACKET",
       "stage": "3-dedicated-onetime-app-shell",
       "owner": "Codex",
       "status": "blocked_by_dependency",
-      "requirement_id": "REQ-20260713-909",
+      "requirement_id": "REQ-20260713-908",
       "depends_on": [
-        "PKT-20260713-908"
+        "PKT-20260713-907"
       ],
-      "scope": "Incrementally build a dedicated One Time frontend shell and route-level modules in the same repo, backed by shared API/domain contracts, with old-shell fallback and exact performance proof.",
-      "out_of_scope": [
-        "Manual copy-paste into BNA",
-        "Fully separate repository unless ADR overturns the default",
-        "Removing old-shell fallback before proof"
-      ],
+      "scope": "Dedicated One Time frontend shell and route-level modules with old-shell fallback and exact performance proof.",
       "source_statement_coverage": [
         "SRC-20260713-003-009"
-      ],
-      "acceptance_criteria": [
-        "Dedicated One Time startup path excludes unrelated BNA Operations monolith code",
-        "Active route and feature modules load on demand",
-        "Existing live route and auth contracts are preserved",
-        "Rollback/fallback path is documented",
-        "One Time deploy and live smoke prove exact tested SHA"
-      ],
-      "tests": [
-        "Bundle/chunk budget check",
-        "One Time route smoke",
-        "BNA regression checks only when shared runtime changed",
-        "Performance repeated post-change smoke"
       ]
     },
     {
-      "packet_id": "PKT-20260713-910",
+      "packet_id": "PKT-20260713-909",
       "role": "PRODUCT_QUALITY_PACKET",
       "stage": "4-mobile-crm-information-architecture",
       "owner": "Codex",
       "status": "ready",
-      "requirement_id": "REQ-20260713-910",
+      "requirement_id": "REQ-20260713-909",
       "depends_on": [
-        "PKT-20260713-906"
+        "PKT-20260713-905"
       ],
-      "scope": "Create and validate the CRM contact-workspace Product Quality packet and current-state visual audit, then implement list/detail/subview state, focused mobile header, section rail, overflow actions, lazy tab data, URL state, and accessibility.",
-      "out_of_scope": [
-        "Broad CRM implementation without PQC validation",
-        "Always-open wall of cards/forms",
-        "New BNA visual parity"
-      ],
+      "scope": "Current-state visual audit, validated PQC packet, list/detail/subview state, section rail, overflow actions, lazy data, URL state, accessibility, and screenshots.",
       "source_statement_coverage": [
         "SRC-20260713-003-013"
-      ],
-      "acceptance_criteria": [
-        "PQC packet validates before UI code",
-        "Current-state visual audit exists before implementation",
-        "Mobile 390/430 list, detail, and subview/action states work",
-        "Only one primary section is visible at a time",
-        "Back to contacts restores list position and filters",
-        "Tabs/sections are semantic and keyboard/focus accessible",
-        "Screenshots cover 1440, 1024, 768, 430, and 390 plus required states"
-      ],
-      "tests": [
-        "npm run pqc:validate on the CRM mobile IA packet",
-        "Responsive Playwright screenshots",
-        "Accessibility/tab contract checks",
-        "Action registry/watchdog checks",
-        "One Time live smoke after deploy"
       ]
     },
     {
-      "packet_id": "PKT-20260713-911",
+      "packet_id": "PKT-20260713-910",
       "role": "VERIFIER_PACKET",
       "stage": "5-performance-and-integration-verifier",
       "owner": "Codex",
       "status": "blocked_by_dependency",
-      "requirement_id": "REQ-20260713-911",
+      "requirement_id": "REQ-20260713-910",
       "depends_on": [
+        "PKT-20260713-906",
         "PKT-20260713-907",
         "PKT-20260713-908",
         "PKT-20260713-909",
-        "PKT-20260713-910"
+        "PKT-20260713-911"
       ],
-      "scope": "Independently verify owner-test readbacks without duplicate sends, provider IDs, recipient allowlist, exact deployed SHA, bundle/performance budgets, mobile CRM screenshots/behavior, BNA privacy/regression safety, and absence of unrelated BNA bundles in One Time.",
-      "out_of_scope": [
-        "Creating new sends when readback can verify existing provider IDs",
-        "Relaxing budgets without ADR",
-        "Calling lag fixed from one sample"
+      "scope": "Independent final proof for owner tests, architecture, performance, mobile CRM, BNA safety, and deployed SHA without duplicate sends.",
+      "source_statement_coverage": [
+        "SRC-20260713-003-016"
+      ]
+    },
+    {
+      "packet_id": "PKT-20260713-911",
+      "role": "PERFORMANCE_GATES_PACKET",
+      "stage": "6-performance-regression-gates",
+      "owner": "Codex",
+      "status": "blocked_by_dependency",
+      "requirement_id": "REQ-20260713-911",
+      "depends_on": [
+        "PKT-20260713-907"
       ],
+      "scope": "Privacy-safe instrumentation, repeated baseline reporting, budgets, DB/API analysis, release gates, production performance report, and Done criteria.",
       "source_statement_coverage": [
         "SRC-20260713-003-011",
-        "SRC-20260713-003-015",
-        "SRC-20260713-003-016"
-      ],
-      "acceptance_criteria": [
-        "Final report includes owner-account test results, One Time architecture, performance, and CRM mobile IA sections",
-        "Repeated cold/warm measurements meet budgets or documented ADR exceptions",
-        "Exact One Time deployed SHA is verified",
-        "BNA regression/privacy checks pass where shared runtime changed",
-        "No raw private destination or message body appears in evidence"
-      ],
-      "tests": [
-        "Provider readback by message ID/test-run ID",
-        "Bundle and route performance budget checks",
-        "Live One Time route performance smoke",
-        "Mobile CRM visual/accessibility proof",
-        "Execution run, action, protocol, and secret audits"
+        "SRC-20260713-003-015"
       ]
     }
   ],
-  "blockers": [],
+  "blockers": [
+    {
+      "packet_id": "PKT-20260713-906",
+      "requirement_id": "REQ-20260713-906",
+      "status": "blocked_missing_owner_aliases",
+      "owner": "Shloimie / secure runtime configuration owner",
+      "next_action": "Configure secure ONE_TIME_OWNER_TEST_EMAIL and ONE_TIME_OWNER_TEST_WHATSAPP/PHONE aliases through the approved secret path."
+    }
+  ],
   "next_packet": "PKT-20260713-907"
 }
