@@ -243,7 +243,14 @@ test('Resend inbound event fetches full email and stores scoped CRM communicatio
   assert.equal(metadata.agent_key, 'one_time_parent_information_agent');
   assert.equal(metadata.agent_version, '2026-07-13-v3');
   assert.match(metadata.knowledge_snapshot_version, /^one_time_parent_information_agent:2026-07-13-v3:/);
+  assert.equal(metadata.published_knowledge_snapshot.knowledge_snapshot_version, metadata.knowledge_snapshot_version);
+  assert.equal(metadata.published_knowledge_snapshot.approved_public_facts.signup_route, '/one-time/signup');
+  assert.equal(metadata.published_knowledge_snapshot.access_policy.portal_access_status, 'not_currently_granted');
+  assert.equal(metadata.published_knowledge_snapshot.no_stale_claims, true);
+  assert.equal(metadata.channel_formatting_policy.format, 'email');
+  assert.equal(metadata.channel_formatting_policy.subject_required, true);
   assert.equal(metadata.communication_agent.reply_mode, 'draft');
+  assert.equal(metadata.communication_agent.channel_formatting_policy.format, 'email');
   assert.equal(metadata.communication_agent.raw_class_link_in_model_context, false);
   assert.equal(metadata.agent_reply_mode, 'draft');
   assert.equal(metadata.outbox_status, 'not_created');

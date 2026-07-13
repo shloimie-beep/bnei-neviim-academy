@@ -5,8 +5,10 @@ const test = require('node:test');
 const {
   ONE_TIME_AGENT_OUTBOX_CHANNEL_KEY,
   communicationAgentMetadata,
+  publishedKnowledgeSnapshot,
   resolveAssignedCommunicationAgent,
 } = require('../src/lib/bna/crm/communication-agent-runtime');
+const { loadProviderLeadBotProfile } = require('../src/lib/bna/provider-lead-bot');
 const { createAgentControlSQL } = require('../src/lib/bna/agent-control');
 
 const server = fs.readFileSync('server.js', 'utf8');
@@ -149,6 +151,14 @@ test('One Time email and WhatsApp resolve to the same communication-agent model 
   assert.equal(email.outbox_channel_key, null);
   assert.equal(whatsapp.reply_mode, 'capture_only');
   assert.equal(whatsapp.outbox_channel_key, ONE_TIME_AGENT_OUTBOX_CHANNEL_KEY);
+  assert.equal(email.knowledge_snapshot_version, whatsapp.knowledge_snapshot_version);
+  assert.equal(email.knowledge_snapshot_hash, whatsapp.knowledge_snapshot_hash);
+  assert.equal(email.published_knowledge_snapshot.knowledge_snapshot_version, email.knowledge_snapshot_version);
+  assert.equal(whatsapp.published_knowledge_snapshot.knowledge_snapshot_version, email.knowledge_snapshot_version);
+  assert.equal(email.channel_formatting_policy.format, 'email');
+  assert.equal(email.channel_formatting_policy.subject_required, true);
+  assert.equal(whatsapp.channel_formatting_policy.format, 'whatsapp');
+  assert.equal(whatsapp.channel_formatting_policy.one_question_at_a_time, true);
   assert.equal(email.create_task_on_inbound, false);
   assert.equal(whatsapp.create_task_on_inbound, false);
   assert.equal(email.raw_api_key_stored, false);
@@ -158,7 +168,32 @@ test('One Time email and WhatsApp resolve to the same communication-agent model 
   assert.equal(metadata.agent_model_family, 'communication_agent');
   assert.equal(metadata.agent_control_plane_table, 'bna_communication_agents');
   assert.equal(metadata.build_qa_agent_profile_table, null);
+  assert.equal(metadata.published_knowledge_snapshot.knowledge_snapshot_version, email.knowledge_snapshot_version);
+  assert.equal(metadata.published_knowledge_snapshot.approved_public_facts.signup_route, '/one-time/signup');
+  assert.equal(metadata.published_knowledge_snapshot.access_policy.portal_access_status, 'not_currently_granted');
+  assert.equal(metadata.published_knowledge_snapshot.no_stale_claims, true);
+  assert.equal(metadata.channel_formatting_policy.format, 'whatsapp');
   assert.equal(metadata.communication_agent.model_family, 'communication_agent');
   assert.equal(metadata.communication_agent.raw_api_key_stored, false);
   assert.equal(metadata.communication_agent.raw_secret_returned, false);
+});
+
+test('published One Time knowledge snapshot contains launch-safe public facts only', () => {
+  const profile = loadProviderLeadBotProfile('one-time');
+  const snapshot = publishedKnowledgeSnapshot(profile);
+  const serialized = JSON.stringify(snapshot);
+
+  assert.equal(snapshot.publication_status, 'published');
+  assert.equal(snapshot.profile_key, 'one_time_parent_information_agent');
+  assert.equal(snapshot.profile_version, '2026-07-13-v3');
+  assert.equal(snapshot.approved_public_facts.program, 'One Time Mishnayos with Rabbi Eli Scheller');
+  assert.equal(snapshot.approved_public_facts.schedule, 'Live every day at 7:00 p.m. Israel time.');
+  assert.equal(snapshot.approved_public_facts.signup_route, '/one-time/signup');
+  assert.equal(snapshot.access_policy.portal_access_status, 'not_currently_granted');
+  assert.equal(snapshot.access_policy.library_access_status, 'not_currently_granted');
+  assert.equal(snapshot.offer_status, 'not_published_for_bot');
+  assert.equal(snapshot.class_link_policy.deterministic_server_action_required, true);
+  assert.equal(snapshot.class_link_policy.raw_class_link_in_model_context, false);
+  assert.equal(snapshot.no_stale_claims, true);
+  assert.doesNotMatch(serialized, /30-day|\$67|portal availability|library availability|member area is open|student login is open/i);
 });

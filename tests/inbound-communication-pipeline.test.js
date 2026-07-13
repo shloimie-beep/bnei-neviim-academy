@@ -139,11 +139,20 @@ test('inbound service resolves binding, contact, conversation, message, unread, 
   assert.equal(metadata.agent_key, 'one_time_parent_information_agent');
   assert.equal(metadata.agent_version, '2026-07-13-v3');
   assert.match(metadata.knowledge_snapshot_version, /^one_time_parent_information_agent:2026-07-13-v3:/);
+  assert.equal(metadata.published_knowledge_snapshot.knowledge_snapshot_version, metadata.knowledge_snapshot_version);
+  assert.equal(metadata.published_knowledge_snapshot.approved_public_facts.signup_route, '/one-time/signup');
+  assert.equal(metadata.published_knowledge_snapshot.access_policy.parent_login_status, 'not_currently_granted');
+  assert.equal(metadata.published_knowledge_snapshot.no_stale_claims, true);
+  assert.equal(metadata.channel_formatting_policy.format, 'email');
+  assert.equal(metadata.channel_formatting_policy.subject_required, true);
   assert.equal(metadata.communication_agent.raw_api_key_stored, false);
   assert.equal(metadata.communication_agent.raw_class_link_in_model_context, false);
+  assert.equal(metadata.communication_agent.published_knowledge_snapshot.knowledge_snapshot_version, metadata.knowledge_snapshot_version);
+  assert.equal(metadata.communication_agent.channel_formatting_policy.format, 'email');
   assert.equal(metadata.agent_reply_mode, 'draft');
   assert.equal(metadata.outbox_status, 'not_created');
   assert.equal(metadata.external_write_performed, false);
+  assert.doesNotMatch(JSON.stringify(metadata.published_knowledge_snapshot), /30-day|\$67|portal availability|library availability|student login is open/i);
 
   assert.equal(result.receipt.redacted_receipt, true);
   assert.equal(result.receipt.sender.email_masked, 's***r@example.com');
@@ -200,6 +209,13 @@ test('inbound service accepts WhatsApp-shaped adapter input without creating an 
   assert.equal(metadata.agent_loaded, true);
   assert.equal(metadata.agent_key, 'one_time_parent_information_agent');
   assert.equal(metadata.agent_outbox_channel_key, 'whatsapp:one_time_agent_reply');
+  assert.match(metadata.knowledge_snapshot_version, /^one_time_parent_information_agent:2026-07-13-v3:/);
+  assert.equal(metadata.published_knowledge_snapshot.knowledge_snapshot_version, metadata.knowledge_snapshot_version);
+  assert.equal(metadata.published_knowledge_snapshot.approved_public_facts.signup_route, '/one-time/signup');
+  assert.equal(metadata.published_knowledge_snapshot.access_policy.portal_access_status, 'not_currently_granted');
+  assert.equal(metadata.channel_formatting_policy.format, 'whatsapp');
+  assert.equal(metadata.channel_formatting_policy.one_question_at_a_time, true);
+  assert.equal(metadata.communication_agent.channel_formatting_policy.format, 'whatsapp');
   assert.equal(metadata.outbox_status, 'not_created');
   assert.equal(metadata.external_write_performed, false);
 
