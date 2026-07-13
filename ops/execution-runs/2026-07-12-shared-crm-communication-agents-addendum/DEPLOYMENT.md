@@ -91,3 +91,18 @@ Global production readiness remains blocked only by known external full-launch f
 - One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=003e3e7fe23684a40131e53be280787811bcc8a4`, `target_app=one-time`.
 - One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 003e3e7fe23684a40131e53be280787811bcc8a4` passed.
 - Deployed JS marker checks passed for `ACTION-CRM-LINK-FAMILY`, `ACTION-CRM-LINK-STUDENT`, `linkFirstPartyCrmFamily`, `linkFirstPartyCrmStudent`, `student_access_not_granted`, and `relationship:family`.
+
+## 2026-07-13 CRM Follow-up Actions Slice Deploy
+
+- Commit: `eee9a431dd426d8627652b972c3d3336eaf18362`
+- Branch: `master`
+- Push: `git push origin master` succeeded.
+- BNA deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true`.
+- BNA Railway doctor: deployment `01b5cbf9-a187-4c5e-8e4e-a5e8985d3445` reached `SUCCESS`.
+- BNA live readback: `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=eee9a431dd426d8627652b972c3d3336eaf18362`, `target_app=bna`.
+- One Time deploy: `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=true` and `BNA_DEPLOY_APP=one-time`.
+- One Time Railway doctor: deployment `2eeead32-2f44-49b9-9a70-1528c3ad5945` reached `SUCCESS`.
+- One Time live readback: `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=eee9a431dd426d8627652b972c3d3336eaf18362`, `target_app=one-time`.
+- One Time smoke: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha eee9a431dd426d8627652b972c3d3336eaf18362` passed.
+- One Time Operations CRM smoke: `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com` passed; report `ops/live-smokes/2026-07-13T02-23-19-932Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Deployed JS marker checks passed for `ACTION-CRM-SET-FOLLOW-UP`, `ACTION-CRM-CHANGE-FOLLOW-UP`, `ACTION-CRM-CLEAR-FOLLOW-UP`, `CRM follow-up cleared`, `crm_action_id: submitterActionId`, and the clear-follow-up payload branch.

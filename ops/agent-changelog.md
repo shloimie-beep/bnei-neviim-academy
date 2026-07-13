@@ -39329,3 +39329,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `76/76`, action watchdog, secret audit, execution-run validation, BNA/One
   Time Railway doctors, exact-SHA One Time route smoke, and deployed JS marker
   checks.
+
+## 2026-07-13 - CRM follow-up actions deployed
+
+- Added explicit `ACTION-CRM-SET-FOLLOW-UP`, `ACTION-CRM-CHANGE-FOLLOW-UP`,
+  and `ACTION-CRM-CLEAR-FOLLOW-UP` actions to the shared CRM local update form.
+- Updated the scoped CRM PATCH route so clearing a follow-up date persists
+  `null` instead of being ignored, while still using `create_follow_up_task=false`
+  and no-send/no-access/no-import/no-external-write guardrails.
+- Verification passed: Operations generated-shell check, shared CRM contract
+  tests `30/30`, local One Time CRM workbench smoke, focused One Time suite
+  `76/76`, action watchdog, protocol drift watchdog, secret audit,
+  execution-run validation, BNA/One Time Railway doctors, exact-SHA One Time
+  route smoke, live One Time CRM workbench smoke, and deployed JS marker checks.

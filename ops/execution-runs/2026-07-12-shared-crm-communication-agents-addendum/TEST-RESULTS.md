@@ -320,3 +320,21 @@
 - PASS BNA and One Time live `/api/deploy-info`; deployed SHA `003e3e7fe23684a40131e53be280787811bcc8a4`.
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 003e3e7fe23684a40131e53be280787811bcc8a4`.
 - PASS deployed JS marker checks for Family/Student link actions.
+- PASS `node --check server.js` after the CRM Schedule/Change/Clear follow-up slice.
+- PASS `node --check public/js/operations-shell.js` after regenerating Operations shell for follow-up actions.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/live-class-infrastructure.test.js` (30/30).
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions` with `finding_count=0`; report `ops/watchdog-audits/2026-07-13T02-18-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run secrets:audit`; 9266 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM follow-up actions commit `eee9a431dd426d8627652b972c3d3336eaf18362`.
+- PASS BNA Railway redeploy and doctor; deployment `01b5cbf9-a187-4c5e-8e4e-a5e8985d3445` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `2eeead32-2f44-49b9-9a70-1528c3ad5945` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `eee9a431dd426d8627652b972c3d3336eaf18362`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha eee9a431dd426d8627652b972c3d3336eaf18362`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T02-23-19-932Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS deployed JS marker checks for `ACTION-CRM-SET-FOLLOW-UP`, `ACTION-CRM-CHANGE-FOLLOW-UP`, `ACTION-CRM-CLEAR-FOLLOW-UP`, `CRM follow-up cleared`, `crm_action_id: submitterActionId`, and clear-follow-up payload branch.

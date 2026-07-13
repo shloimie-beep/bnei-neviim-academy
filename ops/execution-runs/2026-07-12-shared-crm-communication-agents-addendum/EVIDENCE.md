@@ -164,3 +164,13 @@
 - One Time post-deploy doctor - Railway deployment `7e9d6c53-e77f-493a-82ea-573e6b1fcb29` reached `SUCCESS`.
 - One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 003e3e7fe23684a40131e53be280787811bcc8a4` passed.
 - Deployed JS marker checks confirmed `ACTION-CRM-LINK-FAMILY`, `ACTION-CRM-LINK-STUDENT`, `linkFirstPartyCrmFamily`, `linkFirstPartyCrmStudent`, `student_access_not_granted`, and `relationship:family`.
+- `public/operations.html` / `public/js/operations-shell.js` - Operations CRM local update form now exposes explicit `ACTION-CRM-SET-FOLLOW-UP`, `ACTION-CRM-CHANGE-FOLLOW-UP`, and `ACTION-CRM-CLEAR-FOLLOW-UP` buttons.
+- `server.js` - scoped CRM PATCH route accepts an explicit empty `next_follow_up_at` / `next_follow_up_date` field and persists it as `null`, with `crm_action_id` recorded in local CRM event metadata and `create_follow_up_task=false`.
+- `ops/action-registry.json` - registers the three follow-up actions as active first-party local writes with no send, payment, access grant, import, historical sync, automatic task creation, or external CRM write.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=eee9a431dd426d8627652b972c3d3336eaf18362`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=eee9a431dd426d8627652b972c3d3336eaf18362`.
+- BNA post-deploy doctor - Railway deployment `01b5cbf9-a187-4c5e-8e4e-a5e8985d3445` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `2eeead32-2f44-49b9-9a70-1528c3ad5945` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha eee9a431dd426d8627652b972c3d3336eaf18362` passed.
+- `ops/live-smokes/2026-07-13T02-23-19-932Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the follow-up actions slice with 12 scoped cards and read-only selected timeline.
+- Deployed JS marker checks confirmed `ACTION-CRM-SET-FOLLOW-UP`, `ACTION-CRM-CHANGE-FOLLOW-UP`, `ACTION-CRM-CLEAR-FOLLOW-UP`, clear summary copy, and the `crm_action_id` payload marker.
