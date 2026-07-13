@@ -50157,6 +50157,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
   const relationshipContext = limitText(String(body.relationship_context || body.relationship || '').trim(), 120);
   const crmActionId = limitText(String(body.crm_action_id || body.action_id || '').trim(), 120);
   const shouldCreateFollowUpTask = body.create_follow_up_task === true || String(body.create_follow_up_task || '').toLowerCase() === 'true';
+  const hasTagsField = Object.prototype.hasOwnProperty.call(body, 'tags');
   const tags = normalizeTextArray(body.tags);
 
   try {
@@ -50182,7 +50183,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
       if (lifecycleStage) addField('status', lifecycleStage);
       if (hasNextFollowUpField) addField('next_follow_up_date', nextFollowUpAt || null);
       if (assignedOwner) addField('owner', assignedOwner);
-      if (tags.length) addField('tags', tags);
+      if (hasTagsField) addField('tags', tags);
       if (displayNameUpdate) addField('parent_name', displayNameUpdate);
       if (emailUpdate) addField('parent_email', emailUpdate);
       if (phoneUpdate) addField('parent_phone', phoneUpdate);
@@ -50213,7 +50214,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
         updated = (await pool.query('SELECT * FROM bna_parent_leads WHERE id = $1', [contactRef.id])).rows[0] || null;
       }
 
-      if (noteSummary || noteText || hasNextFollowUpField || lifecycleStage || tags.length) {
+      if (noteSummary || noteText || hasNextFollowUpField || lifecycleStage || hasTagsField) {
         const result = await pool.query(
           `INSERT INTO bna_contact_communications (
              project_id, contact_type, lead_id, channel, direction, summary, body,
@@ -50277,7 +50278,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
         fields.push(`${field} = $${values.length}`);
       };
       if (lifecycleStage) addField('status', lifecycleStage);
-      if (tags.length) addField('tags', tags);
+      if (hasTagsField) addField('tags', tags);
       if (displayNameUpdate) addField('full_name', displayNameUpdate);
       if (emailUpdate) addField('primary_email', emailUpdate);
       if (phoneUpdate) addField('primary_phone', phoneUpdate);
@@ -50318,7 +50319,7 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
         return res.status(404).json({ success: false, error: 'CRM contact not found in this workspace.', external_write_performed: false });
       }
 
-      if (noteSummary || noteText || hasNextFollowUpField || lifecycleStage || tags.length) {
+      if (noteSummary || noteText || hasNextFollowUpField || lifecycleStage || hasTagsField) {
         const result = await pool.query(
           `INSERT INTO bna_contact_pipeline_events (
              workspace_id, contact_id, event_type, pipeline_status, summary, source, metadata

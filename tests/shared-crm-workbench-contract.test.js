@@ -83,6 +83,31 @@ test('Operations CRM follow-up actions are explicit and can clear persisted date
   assert.match(server, /crm_action_id: crmActionId \|\| null/);
 });
 
+test('Operations CRM note, tag, owner, and lifecycle actions are explicit local writes', () => {
+  for (const actionId of [
+    'ACTION-CRM-ADD-NOTE',
+    'ACTION-CRM-ADD-TAG',
+    'ACTION-CRM-REMOVE-TAG',
+    'ACTION-CRM-ASSIGN-OWNER',
+    'ACTION-CRM-CHANGE-LIFECYCLE',
+  ]) {
+    assert.match(operations, new RegExp(`data-action-id="${actionId}"`));
+  }
+  assert.match(operations, /name="tag_to_add"/);
+  assert.match(operations, /name="tag_to_remove"/);
+  assert.match(operations, /Enter a note before saving\./);
+  assert.match(operations, /Enter a tag before saving\./);
+  assert.match(operations, /Choose a tag to remove\./);
+  assert.match(operations, /Enter an owner before saving\./);
+  assert.match(operations, /CRM tag added: \$\{tagToAdd\}/);
+  assert.match(operations, /CRM tag removed: \$\{tagToRemove\}/);
+  assert.match(operations, /CRM owner assigned/);
+  assert.match(operations, /CRM lifecycle changed/);
+  assert.match(server, /const hasTagsField = Object\.prototype\.hasOwnProperty\.call\(body, 'tags'\);/);
+  assert.match(server, /if \(hasTagsField\) addField\('tags', tags\);/);
+  assert.match(server, /noteSummary \|\| noteText \|\| hasNextFollowUpField \|\| lifecycleStage \|\| hasTagsField/);
+});
+
 test('Operations CRM Add Contact action is first-party and workspace-scoped', () => {
   assert.match(operations, /let firstPartyCrmAddContactOpen = false;/);
   assert.match(operations, /data-action-id="ACTION-CRM-ADD-CONTACT"/);

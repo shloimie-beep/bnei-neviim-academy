@@ -7445,8 +7445,12 @@ function renderFirstPartyCrmLocalUpdateForm(card = {}, readOnly = false) {
     }
     const statusOptions = ['new', 'follow_up', 'active', 'signed_up', 'archived'];
     const currentStatus = card.status || 'new';
-    const tagsValue = Array.isArray(card.tags) ? card.tags.join(', ') : '';
+    const currentTags = Array.isArray(card.tags) ? card.tags.map(tag => String(tag || '').trim()).filter(Boolean) : [];
+    const tagsValue = currentTags.join(', ');
     const followUpValue = card.next_follow_up_at ? String(card.next_follow_up_at).slice(0, 10) : '';
+    const tagOptions = currentTags
+        .map(tag => `<option value="${escapeHtml(tag)}">${escapeHtml(tag)}</option>`)
+        .join('');
     return `
         <form class="crm-local-update-form" onsubmit="saveFirstPartyCrmAction(event, ${attrJson(card.id)})" data-crm-local-update-form>
             <div class="task-section-header compact">
@@ -7464,9 +7468,21 @@ function renderFirstPartyCrmLocalUpdateForm(card = {}, readOnly = false) {
                 <label>Follow-up<input name="next_follow_up_at" type="date" value="${escapeHtml(followUpValue)}"></label>
             </div>
             <label class="crm-local-update-wide">Tags<input name="tags" value="${escapeHtml(tagsValue)}" autocomplete="off" placeholder="Comma separated"></label>
+            <div class="settings-control-grid compact">
+                <label>Add tag<input name="tag_to_add" autocomplete="off" placeholder="Tag"></label>
+                <label>Remove tag<select name="tag_to_remove" ${currentTags.length ? '' : 'disabled aria-disabled="true"'}>
+                    <option value="">Choose tag</option>
+                    ${tagOptions}
+                </select></label>
+            </div>
             <label class="crm-local-update-wide">Add note<textarea name="note_body" rows="3" placeholder="No notes yet."></textarea></label>
             <div class="task-actions">
                 <button class="task-action primary" type="submit" data-action-id="ACTION-CRM-CONTACT-SAFE-UPDATE" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>${firstPartyCrmSaving ? 'Saving...' : 'Save CRM update'}</button>
+                <button class="task-action" type="submit" data-action-id="ACTION-CRM-ADD-NOTE" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>Add note</button>
+                <button class="task-action" type="submit" data-action-id="ACTION-CRM-ADD-TAG" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>Add tag</button>
+                <button class="task-action" type="submit" data-action-id="ACTION-CRM-REMOVE-TAG" ${firstPartyCrmSaving || !currentTags.length ? 'disabled aria-disabled="true" title="No tags to remove."' : ''}>Remove tag</button>
+                <button class="task-action" type="submit" data-action-id="ACTION-CRM-ASSIGN-OWNER" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>Assign owner</button>
+                <button class="task-action" type="submit" data-action-id="ACTION-CRM-CHANGE-LIFECYCLE" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>Change lifecycle</button>
                 ${followUpValue
                     ? `<button class="task-action" type="submit" data-action-id="ACTION-CRM-CHANGE-FOLLOW-UP" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>Change follow-up</button>`
                     : `<button class="task-action" type="submit" data-action-id="ACTION-CRM-SET-FOLLOW-UP" ${firstPartyCrmSaving ? 'disabled aria-disabled="true"' : ''}>Schedule follow-up</button>`}
@@ -7955,13 +7971,47 @@ async function saveFirstPartyCrmAction(event, contactId) {
     const data = new FormData(form);
     const submitterActionId = event.submitter?.dataset?.actionId || 'ACTION-CRM-CONTACT-SAFE-UPDATE';
     const noteBody = String(data.get('note_body') || '').trim();
+    const ownerValue = String(data.get('assigned_owner') || '').trim();
+    const tagToAdd = String(data.get('tag_to_add') || '').trim();
+    const tagToRemove = String(data.get('tag_to_remove') || '').trim();
     const followUpDate = submitterActionId === 'ACTION-CRM-CLEAR-FOLLOW-UP'
         ? ''
         : String(data.get('next_follow_up_at') || '').trim();
-    const tags = String(data.get('tags') || '')
+    let tags = String(data.get('tags') || '')
         .split(',')
         .map(tag => tag.trim())
         .filter(Boolean);
+    if (submitterActionId === 'ACTION-CRM-ADD-TAG') {
+        if (!tagToAdd) {
+            firstPartyCrmError = 'Enter a tag before saving.';
+            firstPartyCrmNotice = '';
+            render();
+            return;
+        }
+        const lowerTags = new Set(tags.map(tag => tag.toLowerCase()));
+        if (!lowerTags.has(tagToAdd.toLowerCase())) tags = [...tags, tagToAdd];
+    }
+    if (submitterActionId === 'ACTION-CRM-REMOVE-TAG') {
+        if (!tagToRemove) {
+            firstPartyCrmError = 'Choose a tag to remove.';
+            firstPartyCrmNotice = '';
+            render();
+            return;
+        }
+        tags = tags.filter(tag => tag.toLowerCase() !== tagToRemove.toLowerCase());
+    }
+    if (submitterActionId === 'ACTION-CRM-ADD-NOTE' && !noteBody) {
+        firstPartyCrmError = 'Enter a note before saving.';
+        firstPartyCrmNotice = '';
+        render();
+        return;
+    }
+    if (submitterActionId === 'ACTION-CRM-ASSIGN-OWNER' && !ownerValue) {
+        firstPartyCrmError = 'Enter an owner before saving.';
+        firstPartyCrmNotice = '';
+        render();
+        return;
+    }
     if (['ACTION-CRM-SET-FOLLOW-UP', 'ACTION-CRM-CHANGE-FOLLOW-UP'].includes(submitterActionId) && !followUpDate) {
         firstPartyCrmError = 'Choose a follow-up date before saving.';
         firstPartyCrmNotice = '';
@@ -7981,13 +8031,21 @@ async function saveFirstPartyCrmAction(event, contactId) {
             status: data.get('status') || '',
             lifecycle_stage: data.get('status') || '',
             next_follow_up_at: followUpDate,
-            assigned_owner: data.get('assigned_owner') || '',
+            assigned_owner: ownerValue,
             tags,
             create_follow_up_task: false,
             crm_action_id: submitterActionId,
             note_summary: submitterActionId === 'ACTION-CRM-CLEAR-FOLLOW-UP'
                 ? 'CRM follow-up cleared'
-                : (noteBody ? `CRM note for selected contact` : 'CRM contact updated'),
+                : (submitterActionId === 'ACTION-CRM-ADD-TAG'
+                    ? `CRM tag added: ${tagToAdd}`
+                    : (submitterActionId === 'ACTION-CRM-REMOVE-TAG'
+                        ? `CRM tag removed: ${tagToRemove}`
+                        : (submitterActionId === 'ACTION-CRM-ASSIGN-OWNER'
+                            ? 'CRM owner assigned'
+                            : (submitterActionId === 'ACTION-CRM-CHANGE-LIFECYCLE'
+                                ? 'CRM lifecycle changed'
+                                : (noteBody ? `CRM note for selected contact` : 'CRM contact updated'))))),
             note_body: noteBody,
             no_send: true,
             external_write_performed: false

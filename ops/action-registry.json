@@ -2956,6 +2956,101 @@
       ]
     },
     {
+      "action_id": "ACTION-CRM-ADD-NOTE",
+      "label": "Add note",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-ADD-NOTE\"]",
+      "expected_behavior": "Adds a first-party internal CRM note to the selected workspace contact only after an explicit click; it writes a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the explicit Add note action validates note body and uses the scoped CRM PATCH route with create_follow_up_task=false and no external-write flags."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-ADD-TAG",
+      "label": "Add tag",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-ADD-TAG\"]",
+      "expected_behavior": "Adds one first-party CRM tag to the selected workspace contact only after an explicit click; it writes the workspace-scoped local tag list and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the explicit Add tag action validates tag input and uses the scoped CRM PATCH route with create_follow_up_task=false and no external-write flags."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-REMOVE-TAG",
+      "label": "Remove tag",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-REMOVE-TAG\"]",
+      "expected_behavior": "Removes a selected first-party CRM tag from the selected workspace contact only after an explicit click; it can persist an empty tag list and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the explicit Remove tag action validates tag selection and the server persists empty tag lists instead of ignoring them."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-ASSIGN-OWNER",
+      "label": "Assign owner",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-ASSIGN-OWNER\"]",
+      "expected_behavior": "Assigns the selected workspace contact's first-party CRM owner only after an explicit click; it records local CRM metadata and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the explicit Assign owner action validates owner input and uses the scoped CRM PATCH route with create_follow_up_task=false and no external-write flags."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-CHANGE-LIFECYCLE",
+      "label": "Change lifecycle",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-CHANGE-LIFECYCLE\"]",
+      "expected_behavior": "Changes the selected workspace contact's first-party CRM lifecycle stage only after an explicit click; it records a local CRM event and performs no email, WhatsApp, Telegram, payment, access grant, import, historical sync, automatic task creation, or external CRM write.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "static_contract_and_local_smoke",
+        "expected_result": "tests/shared-crm-workbench-contract.test.js verifies the explicit Change lifecycle action uses the scoped CRM PATCH route with create_follow_up_task=false and no external-write flags."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-CRM-SET-FOLLOW-UP",
       "label": "Schedule follow-up",
       "surface": "operations_contacts",
