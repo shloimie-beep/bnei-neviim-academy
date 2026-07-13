@@ -81,6 +81,14 @@ function status(value) {
   return String(value || '').trim() ? 'configured' : 'missing';
 }
 
+function isStripeSandboxKey(value) {
+  return /^(?:sk|rk)_test_/i.test(String(value || '').trim());
+}
+
+function isStripeLiveKey(value) {
+  return /^(?:sk|rk)_live_/i.test(String(value || '').trim());
+}
+
 function normalizeValue(value) {
   return String(value || '').replace(/^\uFEFF/, '').trim();
 }
@@ -706,10 +714,10 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
     repoRoot,
     inspectKeyholder,
   );
-  const stripeLiveKeyPresent = /^sk_live_/i.test(genericStripeSecret.value);
+  const stripeLiveKeyPresent = isStripeLiveKey(genericStripeSecret.value);
   const stripeTestKeyReady =
-    /^sk_test_/i.test(stripeTestSecret.value) ||
-    (!stripeLiveKeyPresent && /^sk_test_/i.test(genericStripeSecret.value)) ||
+    isStripeSandboxKey(stripeTestSecret.value) ||
+    (!stripeLiveKeyPresent && isStripeSandboxKey(genericStripeSecret.value)) ||
     status(env.ONE_TIME_STRIPE_TEST_SECRET_KEY_ALIAS) === 'configured';
 
   const whapiToken = configuredFromEnvOrSecret(

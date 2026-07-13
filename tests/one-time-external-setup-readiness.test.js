@@ -27,7 +27,7 @@ test('One Time external setup readiness reports missing setup without writes or 
   assert.equal(report.ready_count, 0);
   assert.ok(report.blockers.find((item) => item.id === 'SETUP-ONETIME-RAILWAY-001'));
   assert.ok(report.blockers.find((item) => item.id === 'SETUP-ONETIME-DB-001'));
-  assert.doesNotMatch(JSON.stringify(report), /postgres:\/\/|sk_live_|sk_test_|secret-value/i);
+  assert.doesNotMatch(JSON.stringify(report), /postgres:\/\/|[sr]k_live_|[sr]k_test_|secret-value/i);
 });
 
 test('One Time external setup readiness can pass from aliases and readiness flags only', async () => {
@@ -67,7 +67,23 @@ test('One Time external setup readiness can pass from aliases and readiness flag
   assert.equal(report.email_send_performed, false);
   assert.equal(report.whatsapp_send_performed, false);
   assert.equal(report.dns_mutation_performed, false);
-  assert.doesNotMatch(JSON.stringify(report), /secret-value|postgres:\/\//);
+  assert.doesNotMatch(JSON.stringify(report), /secret-value|postgres:\/\/|[sr]k_live_|[sr]k_test_/i);
+});
+
+test('One Time setup readiness accepts Stripe restricted test keys without printing them', async () => {
+  const { buildOneTimeExternalSetupReadiness } = await import(setupUrl);
+  const report = buildOneTimeExternalSetupReadiness({
+    repoRoot: path.join(__dirname, '..'),
+    env: {
+      RABBI_STRIPE_TEST_SECRET_KEY: 'rk_test_unit_secret',
+      ONE_TIME_STRIPE_PRICE_ALIAS: 'stripe:test/price_67',
+    },
+  });
+
+  const stripe = report.items.find((item) => item.id === 'SETUP-ONETIME-STRIPE-001');
+  assert.equal(stripe.ready, true);
+  assert.deepEqual(stripe.missing_fields, []);
+  assert.doesNotMatch(JSON.stringify(report), /[sr]k_live_|[sr]k_test_|whsec_/i);
 });
 
 test('One Time railway-only mode isolates the first setup item', async () => {
@@ -155,7 +171,7 @@ test('One Time setup readiness blocks stale provisioning proof when current Rail
   assert.doesNotMatch(railway.warnings.join(' '), /Ready from guarded Railway provisioning report/);
   assert.equal(report.blockers.some((item) => item.id === 'SETUP-ONETIME-RAILWAY-001'), true);
   assert.equal(report.blockers.some((item) => item.id === 'SETUP-ONETIME-DB-001'), true);
-  assert.doesNotMatch(JSON.stringify(report), /postgres:\/\/|sk_live_|sk_test_/i);
+  assert.doesNotMatch(JSON.stringify(report), /postgres:\/\/|[sr]k_live_|[sr]k_test_/i);
 });
 
 test('One Time railway readback honors account auth instead of loading the BNA project token', async () => {
