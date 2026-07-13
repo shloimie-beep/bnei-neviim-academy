@@ -40384,9 +40384,9 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 ## 2026-07-13 - One Time Billing V2 release handoff refreshed
 
 - Updated the Billing V2 release handoff with current branch head
-  `2005bd590068825521a3485835d38798758433f5`, current master/base
-  `43f7c33733880745d8f1191c86fe8e196ef68baa`, PR #132 state, and final-report
-  sections required by the goal packet.
+  `1f52c17b0b23e7bdf5a65857b7a5b8d3fd95871a`, current master/base
+  `dc540e121a9bce02a8d0e738ec4e99a9c8edc831`, PR #132 state, and
+  final-report sections required by the goal packet.
 - Replaced the duplicated/stale final-audit table in the Billing V2 register
   with current evidence and blockers for `REQ-20260713-950` through
   `REQ-20260713-963`.
