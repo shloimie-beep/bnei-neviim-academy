@@ -881,11 +881,11 @@
             <legend class="fieldset-label" id="audienceTypeLabel">Signing up as <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></legend>
             <input id="signupAs" name="signup_as" type="hidden" data-signup-type-value>
             <div class="signup-type-picker" data-signup-type-picker>
-              <label class="signup-type-option" data-signup-type-card data-action-id="ACTION-ONETIME-SIGNUP-AS-FAMILY">
+              <label class="signup-type-option" tabindex="0" data-signup-type-card data-action-id="ACTION-ONETIME-SIGNUP-AS-FAMILY">
                 <input type="radio" name="audience_type" value="family" required data-signup-type-option data-value="Family">
                 <span><span>Family</span><small>For a parent or family signup.</small></span>
               </label>
-              <label class="signup-type-option" data-signup-type-card data-action-id="ACTION-ONETIME-SIGNUP-AS-SCHOOL">
+              <label class="signup-type-option" tabindex="0" data-signup-type-card data-action-id="ACTION-ONETIME-SIGNUP-AS-SCHOOL">
                 <input type="radio" name="audience_type" value="school" required data-signup-type-option data-value="School">
                 <span><span>School</span><small>For a school or class group.</small></span>
               </label>
@@ -951,19 +951,19 @@
           <fieldset class="field" data-reminder-fieldset>
             <legend class="fieldset-label">Class reminders <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></legend>
             <div class="radio-grid">
-              <label class="radio-card">
+              <label class="radio-card" tabindex="0">
                 <input type="radio" name="reminder_preference" value="email" required>
                 <span><strong>Email reminders</strong><span>Daily class reminders by email.</span></span>
               </label>
-              <label class="radio-card">
+              <label class="radio-card" tabindex="0">
                 <input type="radio" name="reminder_preference" value="whatsapp">
                 <span><strong>WhatsApp reminders</strong><span>Daily class reminders by WhatsApp.</span></span>
               </label>
-              <label class="radio-card">
+              <label class="radio-card" tabindex="0">
                 <input type="radio" name="reminder_preference" value="both">
                 <span><strong>Email and WhatsApp</strong><span>Use both reminder channels.</span></span>
               </label>
-              <label class="radio-card">
+              <label class="radio-card" tabindex="0">
                 <input type="radio" name="reminder_preference" value="none">
                 <span><strong>No daily reminders</strong><span>Sign up without recurring reminders.</span></span>
               </label>
@@ -1080,6 +1080,14 @@
         if (normalized) {
           clearFieldError('audience_type');
         }
+      }
+
+      function activateRadioCard(card) {
+        const input = card?.querySelector?.('input[type="radio"]');
+        if (!input || input.disabled) return;
+        input.checked = true;
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        input.focus();
       }
 
       function needsWhatsAppPhone(value = selectedReminder()) {
@@ -1485,6 +1493,13 @@
         input.addEventListener('change', () => {
           setSignupType(input.value);
           clearFieldError('audience_type');
+        });
+      });
+      form?.querySelectorAll('[data-signup-type-card], .radio-card').forEach((card) => {
+        card.addEventListener('keydown', (event) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          activateRadioCard(card);
         });
       });
       ['contact_name', 'email', 'phone'].forEach((name) => {

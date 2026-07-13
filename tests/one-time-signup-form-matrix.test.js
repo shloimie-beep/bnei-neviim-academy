@@ -204,6 +204,22 @@ test('One Time signup audience switching, duplicate submit, server validation, a
   }, { rejectOnce: true });
 
   await withPage(async ({ page, requests }) => {
+    await page.focus('[data-action-id="ACTION-ONETIME-SIGNUP-AS-SCHOOL"]');
+    await page.keyboard.press('Enter');
+    assert.equal(await page.locator('input[name="audience_type"]:checked').inputValue(), 'school');
+    await page.focus('.radio-card:has(input[name="reminder_preference"][value="none"])');
+    await page.keyboard.press('Enter');
+    assert.equal(await page.locator('input[name="reminder_preference"]:checked').inputValue(), 'none');
+    await page.focus('[data-action-id="ACTION-ONETIME-SIGNUP-AS-FAMILY"]');
+    await page.keyboard.press('Space');
+    assert.equal(await page.locator('input[name="audience_type"]:checked').inputValue(), 'family');
+    await page.focus('.radio-card:has(input[name="reminder_preference"][value="email"])');
+    await page.keyboard.press('Space');
+    assert.equal(await page.locator('input[name="reminder_preference"]:checked').inputValue(), 'email');
+    assert.equal(requests.length, 0);
+  });
+
+  await withPage(async ({ page, requests }) => {
     await page.focus('input[name="contact_name"]');
     await page.keyboard.type('Keyboard Parent');
     await page.focus('input[name="audience_type"][value="family"]');
