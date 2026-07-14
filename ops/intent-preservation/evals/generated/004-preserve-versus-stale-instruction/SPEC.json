@@ -1,0 +1,110 @@
+{
+  "spec_version": "intent-preservation-v1",
+  "spec_id": "SPEC-20990101-004",
+  "raw": {
+    "raw_id": "RAW-20990101-004",
+    "path": "ops/intent-preservation/evals/generated/004-preserve-versus-stale-instruction/RAW.md",
+    "capture_mode": "verbatim",
+    "sha256": "938f105fd3d79047a77adf451fd7b8bc5dcad96c7e35dc01dd67164450f97bc6",
+    "character_count": 139
+  },
+  "scope": {
+    "workspace": "rabbi_sheller_provider",
+    "project": "one_time_mishnah_class",
+    "routes": [
+      "/one-time"
+    ]
+  },
+  "global_invariants": [
+    {
+      "change_id": "CHG-20990101-004",
+      "source_spans": [
+        {
+          "span_id": "CHG-20990101-004:S01",
+          "start": 0,
+          "end": 139,
+          "quote": "Preserve the currently approved Accomplishment image C:\\Users\\User\\Downloads\\Lakewood 3.jpg. Supersede the older Toronto-image instruction."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "/one-time",
+      "screen": "One Time public landing",
+      "target": {
+        "section": "Gain cards",
+        "component": "Accomplishment image",
+        "selector": "[data-outcome=\"accomplishment\"]",
+        "accessible_name": "Accomplishment",
+        "current_text_anchor": "Accomplishment"
+      },
+      "primary_operation": "preserve",
+      "current_state": "Current state must be inspected before implementation.",
+      "required_state": "Preserve the currently approved Accomplishment image C:\\Users\\User\\Downloads\\Lakewood 3.jpg. Supersede the older Toronto-image instruction.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [
+        "C:\\Users\\User\\Downloads\\Lakewood 3.jpg"
+      ],
+      "must_remove": [],
+      "conflicts": [
+        {
+          "conflicting_change_id": "CHG-20260712-TORONTO",
+          "field": "asset_path",
+          "resolution": "Lakewood 3.jpg is newer and currently approved.",
+          "superseded_by": "CHG-20990101-004"
+        }
+      ],
+      "supersedes_ids": [
+        "CHG-20260712-TORONTO"
+      ],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "CHG-20990101-004-POS-001",
+            "text": "Preserve the currently approved Accomplishment image C:\\Users\\User\\Downloads\\Lakewood 3.jpg. Supersede the older Toronto-image instruction.\nC:\\Users\\User\\Downloads\\Lakewood 3.jpg"
+          }
+        ],
+        "negative": []
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    }
+  ],
+  "changes": [],
+  "source_coverage": [
+    {
+      "coverage_id": "COV-20990101-I001",
+      "span_id": "CHG-20990101-004:S01",
+      "start": 0,
+      "end": 139,
+      "quote": "Preserve the currently approved Accomplishment image C:\\Users\\User\\Downloads\\Lakewood 3.jpg. Supersede the older Toronto-image instruction.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": null,
+      "global_invariant_id": "CHG-20990101-004",
+      "reason": "Mapped to one global invariant by eval compiler."
+    }
+  ],
+  "readiness": {
+    "status": "ready_for_implementation",
+    "blocking_change_ids": [],
+    "notes": []
+  },
+  "fingerprint": "4f9c2570766daa4193bab38fcf6ad551d0bfcda915f4e7429617af7b4ab78a7a"
+}

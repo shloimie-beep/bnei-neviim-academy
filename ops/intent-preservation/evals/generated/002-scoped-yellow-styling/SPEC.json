@@ -1,0 +1,111 @@
+{
+  "spec_version": "intent-preservation-v1",
+  "spec_id": "SPEC-20990101-002",
+  "raw": {
+    "raw_id": "RAW-20990101-002",
+    "path": "ops/intent-preservation/evals/generated/002-scoped-yellow-styling/RAW.md",
+    "capture_mode": "verbatim",
+    "sha256": "fdc5c728288d05628eea03ea7616cc5b97f095011d660ec143375294f1f46b13",
+    "character_count": 123
+  },
+  "scope": {
+    "workspace": "rabbi_sheller_provider",
+    "project": "one_time_mishnah_class",
+    "routes": [
+      "/one-time"
+    ]
+  },
+  "global_invariants": [],
+  "changes": [
+    {
+      "change_id": "CHG-20990101-002",
+      "source_spans": [
+        {
+          "span_id": "CHG-20990101-002:S01",
+          "start": 0,
+          "end": 123,
+          "quote": "Make only \"Live daily Mishnayos\", \"Review support\", and \"Family and school signup\" labels yellow. Keep body copy unchanged."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "/one-time",
+      "screen": "One Time public landing",
+      "target": {
+        "section": "Landing labels",
+        "component": "labels",
+        "selector": ".feature-label",
+        "accessible_name": "",
+        "current_text_anchor": "Live daily Mishnayos"
+      },
+      "primary_operation": "style",
+      "current_state": "Current state must be inspected before implementation.",
+      "required_state": "Make only \"Live daily Mishnayos\", \"Review support\", and \"Family and school signup\" labels yellow. Keep body copy unchanged.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [
+          "Live daily Mishnayos",
+          "Review support",
+          "Family and school signup"
+        ],
+        "forbidden_targets": [
+          "body copy",
+          "section wrapper",
+          "all labels"
+        ],
+        "properties": [
+          "color: yellow"
+        ]
+      },
+      "viewport_behavior": [],
+      "must_preserve": [
+        "body copy unchanged"
+      ],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "CHG-20990101-002-POS-001",
+            "text": "Make only \"Live daily Mishnayos\", \"Review support\", and \"Family and school signup\" labels yellow. Keep body copy unchanged.\nbody copy unchanged"
+          }
+        ],
+        "negative": []
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    }
+  ],
+  "source_coverage": [
+    {
+      "coverage_id": "COV-20990101-001",
+      "span_id": "CHG-20990101-002:S01",
+      "start": 0,
+      "end": 123,
+      "quote": "Make only \"Live daily Mishnayos\", \"Review support\", and \"Family and school signup\" labels yellow. Keep body copy unchanged.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20990101-002",
+      "global_invariant_id": null,
+      "reason": "Mapped to one atomic change by eval compiler."
+    }
+  ],
+  "readiness": {
+    "status": "ready_for_implementation",
+    "blocking_change_ids": [],
+    "notes": []
+  },
+  "fingerprint": "4377bc9c02f3b26e9a868222c300b059363314b8ffe84f51ec8ee549fb520d4e"
+}

@@ -1,0 +1,885 @@
+{
+  "generated_at": "2026-07-14T04:43:57.165Z",
+  "total": 8,
+  "passed": 8,
+  "failed": 0,
+  "mutation_total": 11,
+  "mutation_passed": 11,
+  "results": [
+    {
+      "id": "001-containment-versus-repetition",
+      "description": "Several exact bullets must stay inside one Live Daily Mishnayos bubble with icon/title order.",
+      "draft_path": "ops/intent-preservation/evals/generated/001-containment-versus-repetition/RAW.md",
+      "draft_passed": true,
+      "pass_passed": true,
+      "draft_expected_failure_codes": [],
+      "pass_expected_failure_codes": [],
+      "pass_failure_codes": [],
+      "mutations_passed": 2,
+      "mutations_total": 2,
+      "mutation_results": [
+        {
+          "id": "FAIL-separate-cards",
+          "passed": true,
+          "expected_failure_codes": [
+            "IPG_CONTAINMENT_MISMATCH"
+          ],
+          "actual_failure_codes": [
+            "IPG_CONTAINMENT_MISMATCH"
+          ],
+          "errors": [
+            {
+              "code": "IPG_CONTAINMENT_MISMATCH",
+              "message": "Source requires containment inside the same Live Daily Mishnayos bubble.",
+              "path": "$.changes[0].layout.parent",
+              "severity": "error"
+            }
+          ]
+        },
+        {
+          "id": "FAIL-icon-below-list",
+          "passed": true,
+          "expected_failure_codes": [
+            "IPG_CONTAINMENT_MISMATCH"
+          ],
+          "actual_failure_codes": [
+            "IPG_CONTAINMENT_MISMATCH"
+          ],
+          "errors": [
+            {
+              "code": "IPG_CONTAINMENT_MISMATCH",
+              "message": "Source requires the icon above the bubble/list order.",
+              "path": "$.changes[0].layout.order",
+              "severity": "error"
+            }
+          ]
+        }
+      ],
+      "artifacts": {
+        "spec": "ops/intent-preservation/evals/generated/001-containment-versus-repetition/SPEC.json",
+        "receipt": "ops/intent-preservation/evals/generated/001-containment-versus-repetition/RECEIPT.md",
+        "prompt": "ops/intent-preservation/evals/generated/001-containment-versus-repetition/CODEX_PROMPT.md"
+      }
+    },
+    {
+      "id": "002-scoped-yellow-styling",
+      "description": "Only named labels may become yellow; body copy remains unchanged.",
+      "draft_path": "ops/intent-preservation/evals/generated/002-scoped-yellow-styling/RAW.md",
+      "draft_passed": true,
+      "pass_passed": true,
+      "draft_expected_failure_codes": [],
+      "pass_expected_failure_codes": [],
+      "pass_failure_codes": [],
+      "mutations_passed": 1,
+      "mutations_total": 1,
+      "mutation_results": [
+        {
+          "id": "FAIL-global-yellow",
+          "passed": true,
+          "expected_failure_codes": [
+            "IPG_STYLE_SCOPE_GLOBALIZED"
+          ],
+          "actual_failure_codes": [
+            "IPG_STYLE_SCOPE_GLOBALIZED"
+          ],
+          "errors": [
+            {
+              "code": "IPG_STYLE_SCOPE_GLOBALIZED",
+              "message": "Style scope appears globalized instead of allowlisted to named targets.",
+              "path": "$.changes[0].style_scope.allowed_targets",
+              "severity": "error"
+            }
+          ]
+        }
+      ],
+      "artifacts": {
+        "spec": "ops/intent-preservation/evals/generated/002-scoped-yellow-styling/SPEC.json",
+        "receipt": "ops/intent-preservation/evals/generated/002-scoped-yellow-styling/RECEIPT.md",
+        "prompt": "ops/intent-preservation/evals/generated/002-scoped-yellow-styling/CODEX_PROMPT.md"
+      }
+    },
+    {
+      "id": "003-unconditional-removal",
+      "description": "Exact removal instructions must remain unconditional.",
+      "draft_path": "ops/intent-preservation/evals/generated/003-unconditional-removal/RAW.md",
+      "draft_passed": true,
+      "pass_passed": true,
+      "draft_expected_failure_codes": [],
+      "pass_expected_failure_codes": [],
+      "pass_failure_codes": [],
+      "mutations_passed": 1,
+      "mutations_total": 1,
+      "mutation_results": [
+        {
+          "id": "FAIL-conditional-removal",
+          "passed": true,
+          "expected_failure_codes": [
+            "IPG_REMOVAL_CONDITIONALIZED"
+          ],
+          "actual_failure_codes": [
+            "IPG_REMOVAL_CONDITIONALIZED"
+          ],
+          "errors": [
+            {
+              "code": "IPG_REMOVAL_CONDITIONALIZED",
+              "message": "Unconditional removal became conditional.",
+              "path": "$.changes[0].required_state",
+              "severity": "error"
+            }
+          ]
+        }
+      ],
+      "artifacts": {
+        "spec": "ops/intent-preservation/evals/generated/003-unconditional-removal/SPEC.json",
+        "receipt": "ops/intent-preservation/evals/generated/003-unconditional-removal/RECEIPT.md",
+        "prompt": "ops/intent-preservation/evals/generated/003-unconditional-removal/CODEX_PROMPT.md"
+      }
+    },
+    {
+      "id": "004-preserve-versus-stale-instruction",
+      "description": "Current Accomplishment image supersedes older Toronto instruction.",
+      "draft_path": "ops/intent-preservation/evals/generated/004-preserve-versus-stale-instruction/RAW.md",
+      "draft_passed": true,
+      "pass_passed": true,
+      "draft_expected_failure_codes": [],
+      "pass_expected_failure_codes": [],
+      "pass_failure_codes": [],
+      "mutations_passed": 1,
+      "mutations_total": 1,
+      "mutation_results": [
+        {
+          "id": "FAIL-stale-asset-wins",
+          "passed": true,
+          "expected_failure_codes": [
+            "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL"
+          ],
+          "actual_failure_codes": [
+            "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL"
+          ],
+          "errors": [
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: currently approved",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: Accomplishment",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: C:\\Users\\User\\Downloads\\Lakewood 3.jpg. Supersede the older Toronto-image instruction",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 3",
+              "path": "$.changes",
+              "severity": "error"
+            }
+          ]
+        }
+      ],
+      "artifacts": {
+        "spec": "ops/intent-preservation/evals/generated/004-preserve-versus-stale-instruction/SPEC.json",
+        "receipt": "ops/intent-preservation/evals/generated/004-preserve-versus-stale-instruction/RECEIPT.md",
+        "prompt": "ops/intent-preservation/evals/generated/004-preserve-versus-stale-instruction/CODEX_PROMPT.md"
+      }
+    },
+    {
+      "id": "005-mobile-cta-invariant",
+      "description": "Mobile first load must show an enabled unobscured Sign Up Now control and preserve header actions.",
+      "draft_path": "ops/intent-preservation/evals/generated/005-mobile-cta-invariant/RAW.md",
+      "draft_passed": true,
+      "pass_passed": true,
+      "draft_expected_failure_codes": [],
+      "pass_expected_failure_codes": [],
+      "pass_failure_codes": [],
+      "mutations_passed": 2,
+      "mutations_total": 2,
+      "mutation_results": [
+        {
+          "id": "FAIL-missing-mobile-viewport",
+          "passed": true,
+          "expected_failure_codes": [
+            "IPG_MOBILE_CTA_VIEWPORT_MISSING"
+          ],
+          "actual_failure_codes": [
+            "IPG_MOBILE_CTA_VIEWPORT_MISSING"
+          ],
+          "errors": [
+            {
+              "code": "IPG_MOBILE_CTA_VIEWPORT_MISSING",
+              "message": "Missing mobile CTA viewport assertion 360x640.",
+              "path": "$.changes[0].viewport_behavior",
+              "severity": "error"
+            }
+          ]
+        },
+        {
+          "id": "FAIL-member-login-ambiguity-ready",
+          "passed": true,
+          "expected_failure_codes": [
+            "IPG_UNRESOLVED_CONTEXT_REFERENCE"
+          ],
+          "actual_failure_codes": [
+            "IPG_UNRESOLVED_CONTEXT_REFERENCE"
+          ],
+          "errors": [
+            {
+              "code": "IPG_UNRESOLVED_CONTEXT_REFERENCE",
+              "message": "Member Login top-bar versus opened-menu placement is material ambiguity and cannot be ready without resolution.",
+              "path": "$.source_coverage",
+              "severity": "error"
+            }
+          ]
+        }
+      ],
+      "artifacts": {
+        "spec": "ops/intent-preservation/evals/generated/005-mobile-cta-invariant/SPEC.json",
+        "receipt": "ops/intent-preservation/evals/generated/005-mobile-cta-invariant/RECEIPT.md",
+        "prompt": "ops/intent-preservation/evals/generated/005-mobile-cta-invariant/CODEX_PROMPT.md"
+      }
+    },
+    {
+      "id": "006-exact-copy-survival",
+      "description": "Every user-provided bullet remains byte-for-byte identical and ordered.",
+      "draft_path": "ops/intent-preservation/evals/generated/006-exact-copy-survival/RAW.md",
+      "draft_passed": true,
+      "pass_passed": true,
+      "draft_expected_failure_codes": [],
+      "pass_expected_failure_codes": [],
+      "pass_failure_codes": [],
+      "mutations_passed": 1,
+      "mutations_total": 1,
+      "mutation_results": [
+        {
+          "id": "FAIL-omitted-bullet",
+          "passed": true,
+          "expected_failure_codes": [
+            "IPG_EXACT_COPY_ASSERTION_MISSING",
+            "IPG_EXACT_COPY_ORDER_MISSING"
+          ],
+          "actual_failure_codes": [
+            "IPG_EXACT_COPY_ASSERTION_MISSING",
+            "IPG_EXACT_COPY_ORDER_MISSING"
+          ],
+          "errors": [
+            {
+              "code": "IPG_EXACT_COPY_ASSERTION_MISSING",
+              "message": "Exact payload item is missing byte-for-byte from assertions: Second exact bullet",
+              "path": "$.changes[0].acceptance_assertions",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_EXACT_COPY_ORDER_MISSING",
+              "message": "Ordered exact payload list is not preserved byte-for-byte in assertions.",
+              "path": "$.changes[0].acceptance_assertions",
+              "severity": "error"
+            }
+          ]
+        }
+      ],
+      "artifacts": {
+        "spec": "ops/intent-preservation/evals/generated/006-exact-copy-survival/SPEC.json",
+        "receipt": "ops/intent-preservation/evals/generated/006-exact-copy-survival/RECEIPT.md",
+        "prompt": "ops/intent-preservation/evals/generated/006-exact-copy-survival/CODEX_PROMPT.md"
+      }
+    },
+    {
+      "id": "007-generated-artifact-integrity",
+      "description": "Prompt must contain every change ID and the spec fingerprint; stale specs fail.",
+      "draft_path": "ops/intent-preservation/evals/generated/007-generated-artifact-integrity/RAW.md",
+      "draft_passed": true,
+      "pass_passed": true,
+      "draft_expected_failure_codes": [],
+      "pass_expected_failure_codes": [],
+      "pass_failure_codes": [],
+      "mutations_passed": 2,
+      "mutations_total": 2,
+      "mutation_results": [
+        {
+          "id": "FAIL-stale-fingerprint",
+          "passed": true,
+          "expected_failure_codes": [
+            "IPG_FINGERPRINT_MISMATCH"
+          ],
+          "actual_failure_codes": [
+            "IPG_FINGERPRINT_MISMATCH"
+          ],
+          "errors": [
+            {
+              "code": "IPG_FINGERPRINT_MISMATCH",
+              "message": "Spec fingerprint is stale or incorrect.",
+              "path": "$.fingerprint",
+              "severity": "error",
+              "expected_fingerprint": "de148e06a8d83b5c2f7c6511d45c0fa9eb2883cbc0930e074f475593db0f897b",
+              "recorded_fingerprint": "75365e5029804882c4fb06675bccab4cad715ee67da8d223119f6de7abdfb31b"
+            }
+          ]
+        },
+        {
+          "id": "FAIL-ambiguous-change-in-prompt",
+          "passed": true,
+          "expected_failure_codes": [
+            "IPG_PROMPT_NOT_READY"
+          ],
+          "actual_failure_codes": [],
+          "errors": []
+        }
+      ],
+      "artifacts": {
+        "spec": "ops/intent-preservation/evals/generated/007-generated-artifact-integrity/SPEC.json",
+        "receipt": "ops/intent-preservation/evals/generated/007-generated-artifact-integrity/RECEIPT.md",
+        "prompt": "ops/intent-preservation/evals/generated/007-generated-artifact-integrity/CODEX_PROMPT.md"
+      }
+    },
+    {
+      "id": "008-july-13-landing-mistranslation",
+      "description": "The July 13 broad fix-the-text source must stop at clarification instead of inventing a removal requirement.",
+      "draft_path": "ops/intent-preservation/evals/generated/008-july-13-landing-mistranslation/RAW.md",
+      "draft_passed": true,
+      "pass_passed": true,
+      "draft_expected_failure_codes": [
+        "IPG_RAW_IDENTIFIES_AS_SUMMARY"
+      ],
+      "pass_expected_failure_codes": [
+        "IPG_RAW_IDENTIFIES_AS_SUMMARY"
+      ],
+      "pass_failure_codes": [
+        "IPG_RAW_IDENTIFIES_AS_SUMMARY"
+      ],
+      "mutations_passed": 1,
+      "mutations_total": 1,
+      "mutation_results": [
+        {
+          "id": "FAIL-inferred-removal-ready",
+          "passed": true,
+          "expected_failure_codes": [
+            "IPG_RAW_IDENTIFIES_AS_SUMMARY",
+            "IPG_UNRESOLVED_CONTEXT_REFERENCE"
+          ],
+          "actual_failure_codes": [
+            "IPG_RAW_IDENTIFIES_AS_SUMMARY",
+            "IPG_HARD_SIGNAL_UNCOVERED",
+            "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+            "IPG_UNRESOLVED_CONTEXT_REFERENCE"
+          ],
+          "errors": [
+            {
+              "code": "IPG_RAW_IDENTIFIES_AS_SUMMARY",
+              "message": "Spec claims verbatim raw, but the raw source identifies itself as a summary/excerpt/compiled correction.",
+              "path": "$.raw.capture_mode",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 20260713",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:16:24:20260713",
+                "kind": "number",
+                "text": "20260713",
+                "start": 16,
+                "end": 24
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 007",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:25:28:007",
+                "kind": "number",
+                "text": "007",
+                "start": 25,
+                "end": 28
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 20260713",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:179:187:20260713",
+                "kind": "number",
+                "text": "20260713",
+                "start": 179,
+                "end": 187
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 005",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:188:191:005",
+                "kind": "number",
+                "text": "005",
+                "start": 188,
+                "end": 191
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 20260713",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:200:208:20260713",
+                "kind": "number",
+                "text": "20260713",
+                "start": 200,
+                "end": 208
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 001",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:209:212:001",
+                "kind": "number",
+                "text": "001",
+                "start": 209,
+                "end": 212
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: tasks-pending/2026-07-13-onetime-landing-image-addendum.md",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "asset_or_file:235:293:tasks-pending/2026-07-13-onetime-landing-image-addendum.md",
+                "kind": "asset_or_file",
+                "text": "tasks-pending/2026-07-13-onetime-landing-image-addendum.md",
+                "start": 235,
+                "end": 293
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 2026",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:249:253:2026",
+                "kind": "number",
+                "text": "2026",
+                "start": 249,
+                "end": 253
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 07",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:254:256:07",
+                "kind": "number",
+                "text": "07",
+                "start": 254,
+                "end": 256
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 13",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:257:259:13",
+                "kind": "number",
+                "text": "13",
+                "start": 257,
+                "end": 259
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 2026",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:306:310:2026",
+                "kind": "number",
+                "text": "2026",
+                "start": 306,
+                "end": 310
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 07",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:311:313:07",
+                "kind": "number",
+                "text": "07",
+                "start": 311,
+                "end": 313
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 00:17",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:320:325:00:17",
+                "kind": "number",
+                "text": "00:17",
+                "start": 320,
+                "end": 325
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 03:00",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:326:331:03:00",
+                "kind": "number",
+                "text": "03:00",
+                "start": 326,
+                "end": 331
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: C:\\Users\\User\\Downloads\\Lakewood 3.jpg",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "quoted_string:768:808:C:\\Users\\User\\Downloads\\Lakewood 3.jpg",
+                "kind": "quoted_string",
+                "text": "C:\\Users\\User\\Downloads\\Lakewood 3.jpg",
+                "start": 768,
+                "end": 808
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: C:\\Users\\User\\Downloads\\Lakewood 3.jpg` for Accomplishment",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "asset_or_file:769:827:C:\\Users\\User\\Downloads\\Lakewood 3.jpg` for Accomplishment",
+                "kind": "asset_or_file",
+                "text": "C:\\Users\\User\\Downloads\\Lakewood 3.jpg` for Accomplishment",
+                "start": 769,
+                "end": 827
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: 3",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "number:802:803:3",
+                "kind": "number",
+                "text": "3",
+                "start": 802,
+                "end": 803
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: Accomplishment",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "component_or_action:813:827:Accomplishment",
+                "kind": "component_or_action",
+                "text": "Accomplishment",
+                "start": 813,
+                "end": 827
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: Keep",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "preservation:831:835:Keep",
+                "kind": "preservation",
+                "text": "Keep",
+                "start": 831,
+                "end": 835
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: Keep",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "preservation:1040:1044:Keep",
+                "kind": "preservation",
+                "text": "Keep",
+                "start": 1040,
+                "end": 1044
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: black",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "named_color:1081:1086:black",
+                "kind": "named_color",
+                "text": "black",
+                "start": 1081,
+                "end": 1086
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: yellow",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "named_color:1087:1093:yellow",
+                "kind": "named_color",
+                "text": "yellow",
+                "start": 1087,
+                "end": 1093
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: Remove",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "removal:1170:1176:Remove",
+                "kind": "removal",
+                "text": "Remove",
+                "start": 1170,
+                "end": 1176
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: parent",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "position:1242:1248:parent",
+                "kind": "position",
+                "text": "parent",
+                "start": 1242,
+                "end": 1248
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: Preserve",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "preservation:1462:1470:Preserve",
+                "kind": "preservation",
+                "text": "Preserve",
+                "start": 1462,
+                "end": 1470
+              }
+            },
+            {
+              "code": "IPG_HARD_SIGNAL_UNCOVERED",
+              "message": "Hard signal is not covered or explicitly classified: after",
+              "path": "$.source_coverage",
+              "severity": "error",
+              "signal": {
+                "id": "position:1576:1581:after",
+                "kind": "position",
+                "text": "after",
+                "start": 1576,
+                "end": 1581
+              }
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 20260713",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 007",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 20260713",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 005",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 20260713",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 001",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: tasks-pending/2026-07-13-onetime-landing-image-addendum.md",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 2026",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 07",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 13",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 2026",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 07",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 00:17",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 03:00",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: C:\\Users\\User\\Downloads\\Lakewood 3.jpg",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: C:\\Users\\User\\Downloads\\Lakewood 3.jpg` for Accomplishment",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: 3",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: Accomplishment",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: Keep",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: Keep",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: black",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: yellow",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: Remove",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: parent",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: Preserve",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_READY_ASSERTION_MISSING_HARD_SIGNAL",
+              "message": "Ready spec assertions do not represent hard signal: after",
+              "path": "$.changes",
+              "severity": "error"
+            },
+            {
+              "code": "IPG_UNRESOLVED_CONTEXT_REFERENCE",
+              "message": "Unresolved contextual reference requires attached earlier source or clarification.",
+              "path": "$.source_coverage",
+              "severity": "error"
+            }
+          ]
+        }
+      ],
+      "artifacts": {}
+    }
+  ]
+}

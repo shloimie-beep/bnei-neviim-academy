@@ -40307,3 +40307,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verification passed from clean release worktree: syntax checks, focused communication-agent/inbound/outbox/WAPI/owner-readiness suite `41/41`, tracked secret audit over 9530 paths, One Time separate-instance live smoke, One Time provider route-module smoke, and BNA workspace taxonomy smoke.
 - Deployed exact SHA `6d659d76570d1089c768d9f404a6be985cb57863`; One Time Railway deployment `4d41a9d8-f34b-4238-afd5-2fd594443ac7` reached `SUCCESS`, and One Time/BNA deploy-info returned the exact SHA.
 - Guardrails: no owner-test email, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, credential mutation, payment/access mutation, raw private payload logging, or destructive production mutation was performed.
+
+## 2026-07-14 - Intent Preservation Gate protocol implemented
+
+- Captured `RAW-20260714-001` and created `tasks-pending/2026-07-14-intent-preservation-gate.md` for the protocol-only packet.
+- Added `docs/INTENT-PRESERVATION-GATE.md`, `ops/intent-preservation.schema.json`, `src/lib/bna/intent-preservation.js`, validation/receipt/prompt CLIs, package scripts, fixtures, evals, and regression tests for the mandatory intent-fidelity mutations.
+- Integrated the gate into ramble ingestion, ChatGPT drop-off validation, and prompt splitting so new implementation packets require verbatim provenance, a valid atomic spec, a generated receipt, and a generated Codex prompt with matching fingerprint.
+- Repaired root instruction loading by moving the full prior guide to `docs/BNA-AGENT-OPERATING-GUIDE-FULL.md`, replacing root `AGENTS.md` with concise 8,708-byte guidance, documenting the migration in `docs/AGENTS-MIGRATION-MAP.md`, and adding the UTF-8 byte-budget watchdog.
+- Verification passed: focused Node syntax checks, focused test suite `24/24`, `npm run intent:validate:fixtures`, `npm run intent:eval` with 8/8 eval cases and 11/11 mutations rejected, `npm run watchdog:agents-instructions`, `npm run pqc:validate`, `npm run pqc:validate:fixtures`, `npm run pqc:evals`, `npm run chatgpt:dropoff:scan`, and `npm run bna:run:status`.
+- Blocked for full closeout: `npm run watchdog:protocol-drift` reports unrelated pre-existing prompt packet findings in the One Time Drive/classroom and Zoom follow-up lanes. No product UI, landing-page repair, external send, provider mutation, payment/access mutation, or production data mutation was performed.

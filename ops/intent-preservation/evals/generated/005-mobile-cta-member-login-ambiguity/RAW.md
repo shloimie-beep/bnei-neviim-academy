@@ -1,0 +1,1 @@
+Treat "Member Login must be visibly written in the compact top bar" versus "Member Login may be in the opened menu" as unresolved unless the source explicitly chooses one.

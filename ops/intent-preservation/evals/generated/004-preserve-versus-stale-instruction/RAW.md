@@ -1,0 +1,1 @@
+Preserve the currently approved Accomplishment image C:\Users\User\Downloads\Lakewood 3.jpg. Supersede the older Toronto-image instruction.

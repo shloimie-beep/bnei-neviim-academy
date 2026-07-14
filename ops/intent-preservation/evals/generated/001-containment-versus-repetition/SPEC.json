@@ -1,0 +1,112 @@
+{
+  "spec_version": "intent-preservation-v1",
+  "spec_id": "SPEC-20990101-001",
+  "raw": {
+    "raw_id": "RAW-20990101-001",
+    "path": "ops/intent-preservation/evals/generated/001-containment-versus-repetition/RAW.md",
+    "capture_mode": "verbatim",
+    "sha256": "1e3a28a9e66a4305d0b02c339a1fbc935c063347897925dbf79acf5c2f3f0b7a",
+    "character_count": 198
+  },
+  "scope": {
+    "workspace": "rabbi_sheller_provider",
+    "project": "one_time_mishnah_class",
+    "routes": [
+      "/one-time"
+    ]
+  },
+  "global_invariants": [],
+  "changes": [
+    {
+      "change_id": "CHG-20990101-001",
+      "source_spans": [
+        {
+          "span_id": "CHG-20990101-001:S01",
+          "start": 0,
+          "end": 198,
+          "quote": "Add these exact bullets inside the same Live Daily Mishnayos bubble in order: \"Daily class link\", \"7:00 p.m. live class\", \"Review sheets\". Put the icon above the bubble and the title below the icon."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "/one-time",
+      "screen": "One Time public landing",
+      "target": {
+        "section": "Live Daily Mishnayos",
+        "component": "bubble",
+        "selector": "[data-live-daily-mishnayos]",
+        "accessible_name": "Live Daily Mishnayos",
+        "current_text_anchor": "Live Daily Mishnayos"
+      },
+      "primary_operation": "add",
+      "current_state": "Current state must be inspected before implementation.",
+      "required_state": "Add these exact bullets inside the same Live Daily Mishnayos bubble in order: \"Daily class link\", \"7:00 p.m. live class\", \"Review sheets\". Put the icon above the bubble and the title below the icon.",
+      "exact_payload": {
+        "items": [
+          "Daily class link",
+          "7:00 p.m. live class",
+          "Review sheets"
+        ]
+      },
+      "layout": {
+        "parent": "Live Daily Mishnayos bubble",
+        "sibling_before": "icon",
+        "sibling_after": "",
+        "order": [
+          "icon",
+          "title",
+          "bubble",
+          "Daily class link",
+          "7:00 p.m. live class",
+          "Review sheets"
+        ]
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "CHG-20990101-001-POS-001",
+            "text": "Add these exact bullets inside the same Live Daily Mishnayos bubble in order: \"Daily class link\", \"7:00 p.m. live class\", \"Review sheets\". Put the icon above the bubble and the title below the icon.\nDaily class link\n7:00 p.m. live class\nReview sheets"
+          }
+        ],
+        "negative": []
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    }
+  ],
+  "source_coverage": [
+    {
+      "coverage_id": "COV-20990101-001",
+      "span_id": "CHG-20990101-001:S01",
+      "start": 0,
+      "end": 198,
+      "quote": "Add these exact bullets inside the same Live Daily Mishnayos bubble in order: \"Daily class link\", \"7:00 p.m. live class\", \"Review sheets\". Put the icon above the bubble and the title below the icon.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20990101-001",
+      "global_invariant_id": null,
+      "reason": "Mapped to one atomic change by eval compiler."
+    }
+  ],
+  "readiness": {
+    "status": "ready_for_implementation",
+    "blocking_change_ids": [],
+    "notes": []
+  },
+  "fingerprint": "7db763387bf590013edd4cb4a2ed33234e940de9e3f8dc0327602c411cfa0e10"
+}

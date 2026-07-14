@@ -1,0 +1,1 @@
+Make only "Live daily Mishnayos", "Review support", and "Family and school signup" labels yellow. Keep body copy unchanged.

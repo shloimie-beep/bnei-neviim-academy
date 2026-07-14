@@ -1,0 +1,120 @@
+{
+  "spec_version": "intent-preservation-v1",
+  "spec_id": "SPEC-20990101-005",
+  "raw": {
+    "raw_id": "RAW-20990101-005",
+    "path": "ops/intent-preservation/evals/generated/005-mobile-cta-invariant/RAW.md",
+    "capture_mode": "verbatim",
+    "sha256": "1f41dd8b0d4fb4dbb734eb0993fc20ce5cc2eec4582962f2162073d30ec2eb71",
+    "character_count": 315
+  },
+  "scope": {
+    "workspace": "rabbi_sheller_provider",
+    "project": "one_time_mishnah_class",
+    "routes": [
+      "/one-time"
+    ]
+  },
+  "global_invariants": [],
+  "changes": [
+    {
+      "change_id": "CHG-20990101-005",
+      "source_spans": [
+        {
+          "span_id": "CHG-20990101-005:S01",
+          "start": 0,
+          "end": 315,
+          "quote": "When the mobile landing page first loads, at least one primary Sign Up Now control must be fully visible without scrolling. Assert 360x640, 375x667, 390x844, and 430x932. The visible control is enabled, unobscured, and goes to /one-time/signup. Preserve the logo, mobile navigation control, and Member Login action."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "/one-time",
+      "screen": "One Time public landing",
+      "target": {
+        "section": "Mobile header and hero",
+        "component": "primary CTA",
+        "selector": "a[href=\"/one-time/signup\"]",
+        "accessible_name": "Sign Up Now",
+        "current_text_anchor": "Sign Up Now"
+      },
+      "primary_operation": "behavior",
+      "current_state": "Current state must be inspected before implementation.",
+      "required_state": "When the mobile landing page first loads, at least one primary Sign Up Now control must be fully visible without scrolling. Assert 360x640, 375x667, 390x844, and 430x932. The visible control is enabled, unobscured, and goes to /one-time/signup. Preserve the logo, mobile navigation control, and Member Login action.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [
+        {
+          "viewport": "360x640",
+          "assertion": "360x640: Sign Up Now is fully visible without scrolling, enabled, unobscured, links to /one-time/signup, and preserves logo, mobile navigation control, and Member Login action."
+        },
+        {
+          "viewport": "375x667",
+          "assertion": "375x667: Sign Up Now is fully visible without scrolling, enabled, unobscured, links to /one-time/signup, and preserves logo, mobile navigation control, and Member Login action."
+        },
+        {
+          "viewport": "390x844",
+          "assertion": "390x844: Sign Up Now is fully visible without scrolling, enabled, unobscured, links to /one-time/signup, and preserves logo, mobile navigation control, and Member Login action."
+        },
+        {
+          "viewport": "430x932",
+          "assertion": "430x932: Sign Up Now is fully visible without scrolling, enabled, unobscured, links to /one-time/signup, and preserves logo, mobile navigation control, and Member Login action."
+        }
+      ],
+      "must_preserve": [
+        "logo",
+        "mobile navigation control",
+        "Member Login action"
+      ],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "CHG-20990101-005-POS-001",
+            "text": "When the mobile landing page first loads, at least one primary Sign Up Now control must be fully visible without scrolling. Assert 360x640, 375x667, 390x844, and 430x932. The visible control is enabled, unobscured, and goes to /one-time/signup. Preserve the logo, mobile navigation control, and Member Login action.\nlogo\nmobile navigation control\nMember Login action"
+          }
+        ],
+        "negative": []
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    }
+  ],
+  "source_coverage": [
+    {
+      "coverage_id": "COV-20990101-001",
+      "span_id": "CHG-20990101-005:S01",
+      "start": 0,
+      "end": 315,
+      "quote": "When the mobile landing page first loads, at least one primary Sign Up Now control must be fully visible without scrolling. Assert 360x640, 375x667, 390x844, and 430x932. The visible control is enabled, unobscured, and goes to /one-time/signup. Preserve the logo, mobile navigation control, and Member Login action.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20990101-005",
+      "global_invariant_id": null,
+      "reason": "Mapped to one atomic change by eval compiler."
+    }
+  ],
+  "readiness": {
+    "status": "ready_for_implementation",
+    "blocking_change_ids": [],
+    "notes": []
+  },
+  "fingerprint": "64334cda9c9bb5d5cfcd138089871a8f8d902308bbaa3e6c9667cda580c944f0"
+}

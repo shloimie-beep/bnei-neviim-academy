@@ -1,0 +1,1 @@
+When the mobile landing page first loads, at least one primary Sign Up Now control must be fully visible without scrolling. Assert 360x640, 375x667, 390x844, and 430x932. The visible control is enabled, unobscured, and goes to /one-time/signup. Preserve the logo, mobile navigation control, and Member Login action.

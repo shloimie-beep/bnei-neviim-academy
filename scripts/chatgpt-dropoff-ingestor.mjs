@@ -11,6 +11,11 @@ const require = createRequire(import.meta.url);
 const {
   ingestOperatorRamble,
 } = require('../src/platform/ingestion/operator-ramble-service');
+const {
+  generateChangeReceipt,
+  validateGeneratedPrompt,
+  validateIntentSpec,
+} = require('../src/lib/bna/intent-preservation');
 const packetStatus = require('../src/platform/ingestion/packet-status');
 const {
   isReadyPacketStatus,
@@ -26,6 +31,8 @@ const runtimeDir = path.join(repoRoot, '.runtime', 'chatgpt-dropoff-ingestor');
 const statePath = path.join(runtimeDir, 'state.json');
 const envLocalPath = path.join(repoRoot, '.env.local');
 const requiredPacketFiles = ['packet.json', 'RAW.md', 'CODEX_PROMPT.md', 'MANIFEST.json', 'status.json'];
+const intentSpecPacketTypes = new Set(['implementation_bundle', 'ui', 'product', 'correction', 'prompt', 'prompt_packet']);
+const INTENT_GATE_START_DATE = '2026-07-14';
 const helperBotPacketIds = new Set([
   'helper-bot-workspace-agent-01-audit-map',
   'helper-bot-workspace-agent-02-query-filter-results',
@@ -75,6 +82,11 @@ function readPacketJson(filePath, jsonErrors, fallback = {}) {
     });
     return fallback;
   }
+}
+
+function readOptionalJson(filePath, jsonErrors, fallback = null) {
+  if (!fs.existsSync(filePath)) return fallback;
+  return readPacketJson(filePath, jsonErrors, fallback);
 }
 
 function writeJson(filePath, value) {
@@ -221,6 +233,7 @@ function loadPacket(packetDir) {
   const packet = readPacketJson(path.join(packetDir, 'packet.json'), jsonErrors, {});
   const status = readPacketJson(path.join(packetDir, 'status.json'), jsonErrors, {});
   const manifest = readPacketJson(path.join(packetDir, 'MANIFEST.json'), jsonErrors, {});
+  const spec = readOptionalJson(path.join(packetDir, 'SPEC.json'), jsonErrors, null);
   const packetId = safePacketId(packet.packet_id || status.packet_id || manifest.packet_id, path.basename(packetDir));
   const fingerprint = fingerprintPacket(packetDir);
   const files = packetFiles(packetDir).map(relative);
@@ -237,7 +250,9 @@ function loadPacket(packetDir) {
     missingFiles: requiredPacketFiles.filter((name) => !fs.existsSync(path.join(packetDir, name))),
     rawText: readTextIfExists(path.join(packetDir, 'RAW.md'), 8000),
     codexPrompt: readTextIfExists(path.join(packetDir, 'CODEX_PROMPT.md'), 12000),
+    receiptText: readTextIfExists(path.join(packetDir, 'RECEIPT.md'), 12000),
     patchesText: readTextIfExists(path.join(packetDir, 'PATCHES.md'), 12000),
+    spec,
   };
 }
 
@@ -262,6 +277,94 @@ function isHelperBotPacket(loaded) {
     loaded.codexPrompt,
   ].join('\n').toLowerCase();
   return text.includes('helper-bot-workspace-agent');
+}
+
+function resolvePacketType(loaded) {
+  return String(loaded.packet.packet_type || loaded.manifest.packet_type || 'implementation_bundle').trim() || 'implementation_bundle';
+}
+
+function packetTimestamp(loaded) {
+  return loaded.packet.created_at || loaded.status.created_at || loaded.manifest.created_at || loaded.manifest.generated_at || '';
+}
+
+function isNewIntentGatePacket(loaded) {
+  const timestamp = packetTimestamp(loaded);
+  const ms = Date.parse(timestamp);
+  if (!Number.isFinite(ms)) return false;
+  return timestamp.slice(0, 10) >= INTENT_GATE_START_DATE;
+}
+
+function requiresIntentSpec(loaded) {
+  const type = resolvePacketType(loaded);
+  if (!intentSpecPacketTypes.has(type)) return false;
+  return loaded.packet.intent_preservation_required === true
+    || loaded.status.intent_preservation_required === true
+    || loaded.manifest.intent_preservation_required === true
+    || isNewIntentGatePacket(loaded);
+}
+
+function manifestIntentRecord(loaded) {
+  return loaded.manifest.intent_spec || loaded.manifest.intent_preservation || {};
+}
+
+function statusIntentRecord(loaded) {
+  return loaded.status.intent_spec || loaded.status.intent_preservation || {};
+}
+
+function intentRecordValue(record = {}, key) {
+  return record?.[key] || record?.[`spec_${key}`] || '';
+}
+
+function validateIntentPacket(loaded, findings) {
+  if (!requiresIntentSpec(loaded)) {
+    if (intentSpecPacketTypes.has(resolvePacketType(loaded)) && !loaded.spec) {
+      findings.push({ severity: 'info', code: 'legacy_intent_spec_missing', message: 'Legacy packet has no SPEC.json; historical compatibility mode only.' });
+    }
+    return;
+  }
+  if (!fs.existsSync(path.join(loaded.packetDir, 'SPEC.json'))) {
+    findings.push({ severity: 'blocker', code: 'missing_intent_spec', message: 'New implementation/product/prompt packets require SPEC.json.' });
+    return;
+  }
+  if (!fs.existsSync(path.join(loaded.packetDir, 'RECEIPT.md'))) {
+    findings.push({ severity: 'blocker', code: 'missing_intent_receipt', message: 'New packets require generated RECEIPT.md from SPEC.json.' });
+  }
+  const spec = loaded.spec;
+  if (!spec || typeof spec !== 'object') {
+    findings.push({ severity: 'blocker', code: 'invalid_intent_spec', message: 'SPEC.json is missing or invalid JSON.' });
+    return;
+  }
+  const validation = validateIntentSpec(spec, { root: loaded.packetDir, specPath: path.join(loaded.packetDir, 'SPEC.json') });
+  if (!validation.prompt_ready) {
+    findings.push({
+      severity: 'blocker',
+      code: 'intent_spec_validation_failed',
+      message: `SPEC.json is not ready for generated Codex prompt use: ${[...new Set(validation.errors.map((error) => error.code))].join(', ') || spec.readiness?.status}`,
+    });
+  }
+  const manifestRecord = manifestIntentRecord(loaded);
+  const statusRecord = statusIntentRecord(loaded);
+  for (const [recordName, record] of [['MANIFEST.json', manifestRecord], ['status.json', statusRecord]]) {
+    if (intentRecordValue(record, 'fingerprint') !== spec.fingerprint) {
+      findings.push({ severity: 'blocker', code: 'intent_spec_fingerprint_missing', message: `${recordName} must record the SPEC.json fingerprint.` });
+    }
+    if (intentRecordValue(record, 'raw_sha256') !== spec.raw?.sha256) {
+      findings.push({ severity: 'blocker', code: 'intent_raw_hash_missing', message: `${recordName} must record the raw SHA-256 from SPEC.json.` });
+    }
+    if (!intentRecordValue(record, 'path')) {
+      findings.push({ severity: 'blocker', code: 'intent_spec_path_missing', message: `${recordName} must record the SPEC.json path.` });
+    }
+  }
+  if (loaded.receiptText) {
+    const expectedReceipt = generateChangeReceipt(spec).trim();
+    if (loaded.receiptText.trim() !== expectedReceipt) {
+      findings.push({ severity: 'blocker', code: 'stale_intent_receipt', message: 'RECEIPT.md does not match deterministic output from SPEC.json.' });
+    }
+  }
+  const promptIntegrity = validateGeneratedPrompt(spec, loaded.codexPrompt || '');
+  for (const error of promptIntegrity.errors) {
+    findings.push({ severity: 'blocker', code: error.code.toLowerCase(), message: error.message });
+  }
 }
 
 function validatePacket(loaded, options = {}) {
@@ -322,6 +425,7 @@ function validatePacket(loaded, options = {}) {
   if (loaded.packet.external_writes_performed === true || loaded.status.external_writes_performed === true) {
     findings.push({ severity: 'blocker', code: 'declared_external_writes', message: 'Packet declares external_writes_performed=true.' });
   }
+  validateIntentPacket(loaded, findings);
   for (const secret of findSecretLikeText(loaded.packetDir).slice(0, 8)) {
     findings.push({ severity: 'blocker', code: 'secret_like_text', message: `Secret-like text found in ${secret.file}.` });
   }
@@ -372,8 +476,7 @@ function canonicalDropoffIntakeView(workflow = {}) {
 
 function buildCodexPickupTaskPayload(loaded, config = {}) {
   const packetTitle = loaded.packet.scope_summary || loaded.manifest.title || loaded.packetId;
-  const packetType = String(loaded.packet.packet_type || loaded.manifest.packet_type || 'implementation_bundle').trim()
-    || 'implementation_bundle';
+  const packetType = resolvePacketType(loaded);
   const typeLabel = packetType.replace(/[_-]+/g, ' ');
   const title = `Pick up ChatGPT ${typeLabel} packet: ${String(packetTitle).slice(0, 120)}`;
   const rawText = [
@@ -437,6 +540,9 @@ function buildCodexPickupTaskPayload(loaded, config = {}) {
       packet_type: packetType,
       packet_path: loaded.packetPath,
       fingerprint: loaded.fingerprint,
+      intent_spec_path: loaded.spec ? `${loaded.packetPath}/SPEC.json` : null,
+      intent_spec_fingerprint: loaded.spec?.fingerprint || null,
+      intent_raw_sha256: loaded.spec?.raw?.sha256 || null,
       files: loaded.files,
       packet_status: loaded.status.status || loaded.packet.status || null,
       canonical_ingestion: canonicalIngestion,
@@ -465,6 +571,9 @@ function buildCodexPickupTaskPayload(loaded, config = {}) {
       source_packet_type: packetType,
       source_packet_path: loaded.packetPath,
       source_packet_fingerprint: loaded.fingerprint,
+      intent_spec_path: loaded.spec ? `${loaded.packetPath}/SPEC.json` : null,
+      intent_spec_fingerprint: loaded.spec?.fingerprint || null,
+      intent_raw_sha256: loaded.spec?.raw?.sha256 || null,
       canonical_ingestion: canonicalIngestion,
     },
   };
@@ -683,6 +792,7 @@ export {
   fingerprintPacket,
   helperBotPacketIds,
   isHelperBotPacket,
+  requiresIntentSpec,
   listPacketDirs,
   loadPacket,
   parseArgs,

@@ -4,6 +4,12 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 const { pathToFileURL } = require('node:url');
+const {
+  generateChangeReceipt,
+  generateCodexPrompt,
+  sha256Text,
+  withFingerprint,
+} = require('../src/lib/bna/intent-preservation');
 
 async function loadIngestor() {
   return import(pathToFileURL(path.join(process.cwd(), 'scripts', 'chatgpt-dropoff-ingestor.mjs')).href);
@@ -25,6 +31,7 @@ function writePacket(dir, overrides = {}) {
   fs.writeFileSync(path.join(dir, 'packet.json'), `${JSON.stringify({
     packet_id: packetId,
     schema_version: 'bna.chatgpt_dropoff.v1',
+    created_at: overrides.created_at || undefined,
     source: 'chatgpt',
     workspace: 'rabbi_sheller_provider',
     project: 'one_time_mishnah_class',
@@ -49,6 +56,113 @@ function writePacket(dir, overrides = {}) {
   fs.writeFileSync(path.join(dir, 'PATCHES.md'), '# Patches\n\nNo patch yet.\n');
 }
 
+function sourceSpan(rawText) {
+  return {
+    span_id: 'SPAN-001',
+    start: 0,
+    end: rawText.length,
+    quote: rawText,
+  };
+}
+
+function buildReadyIntentSpec(rawText) {
+  const span = sourceSpan(rawText);
+  return withFingerprint({
+    spec_version: 'intent-preservation-v1',
+    spec_id: 'SPEC-20990101-001',
+    raw: {
+      raw_id: 'RAW-20990101-001',
+      path: 'RAW.md',
+      capture_mode: 'verbatim',
+      sha256: sha256Text(rawText),
+      character_count: rawText.length,
+    },
+    scope: {
+      workspace: 'rabbi_sheller_provider',
+      project: 'one_time_mishnah_class',
+      routes: ['/one-time'],
+    },
+    global_invariants: [],
+    changes: [{
+      change_id: 'CHG-20990101-001',
+      source_spans: [span],
+      classification: 'HARD_EXACT',
+      provenance: 'USER_STATED',
+      confidence: 1,
+      ambiguity_status: 'none',
+      route: '/one-time',
+      screen: 'One Time public landing',
+      target: {
+        section: 'Landing copy',
+        component: 'feature card',
+        selector: '',
+        accessible_name: '',
+        current_text_anchor: 'Monitored online platform',
+      },
+      primary_operation: 'remove',
+      current_state: 'Current state inspected before implementation.',
+      required_state: rawText,
+      exact_payload: {},
+      layout: { parent: '', sibling_before: '', sibling_after: '', order: [] },
+      style_scope: { allowed_targets: [], forbidden_targets: [], properties: [] },
+      viewport_behavior: [],
+      must_preserve: [],
+      must_remove: ['Monitored online platform', 'Questions with Rabbi Scheller'],
+      conflicts: [],
+      supersedes_ids: [],
+      acceptance_assertions: {
+        positive: [{ assertion_id: 'A-POS-001', text: rawText }],
+        negative: [{ assertion_id: 'A-NEG-001', text: 'Monitored online platform is absent. Questions with Rabbi Scheller is absent.' }],
+      },
+      dependencies: [],
+      resolution_question: { question: '', choices: [] },
+    }],
+    source_coverage: [{
+      coverage_id: 'COV-20990101-001',
+      span_id: span.span_id,
+      start: span.start,
+      end: span.end,
+      quote: span.quote,
+      classification: 'HARD_EXACT',
+      coverage_status: 'covered',
+      change_id: 'CHG-20990101-001',
+      global_invariant_id: null,
+      reason: 'Test packet atomic mapping.',
+    }],
+    readiness: {
+      status: 'ready_for_implementation',
+      blocking_change_ids: [],
+      notes: [],
+    },
+  });
+}
+
+function writeReadyIntentArtifacts(dir) {
+  const rawText = 'Remove Monitored online platform and Questions with Rabbi Scheller.';
+  fs.writeFileSync(path.join(dir, 'RAW.md'), rawText);
+  const spec = buildReadyIntentSpec(rawText);
+  fs.writeFileSync(path.join(dir, 'SPEC.json'), `${JSON.stringify(spec, null, 2)}\n`);
+  fs.writeFileSync(path.join(dir, 'RECEIPT.md'), generateChangeReceipt(spec));
+  fs.writeFileSync(path.join(dir, 'CODEX_PROMPT.md'), generateCodexPrompt(spec, { root: dir }));
+  const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'MANIFEST.json'), 'utf8'));
+  manifest.intent_preservation_required = true;
+  manifest.intent_spec = {
+    path: 'SPEC.json',
+    fingerprint: spec.fingerprint,
+    raw_sha256: spec.raw.sha256,
+  };
+  fs.writeFileSync(path.join(dir, 'MANIFEST.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+  const status = JSON.parse(fs.readFileSync(path.join(dir, 'status.json'), 'utf8'));
+  status.intent_preservation_required = true;
+  status.intent_spec = {
+    path: 'SPEC.json',
+    fingerprint: spec.fingerprint,
+    raw_sha256: spec.raw.sha256,
+  };
+  fs.writeFileSync(path.join(dir, 'status.json'), `${JSON.stringify(status, null, 2)}\n`);
+  return spec;
+}
+
 test('ChatGPT dropoff ingestor validates a ready packet and builds a Codex task payload', async () => {
   const ingestor = await loadIngestor();
   const dir = makePacketDir();
@@ -60,6 +174,7 @@ test('ChatGPT dropoff ingestor validates a ready packet and builds a Codex task 
 
   assert.equal(validation.ok, true);
   assert.equal(validation.ready, true);
+  assert.ok(validation.findings.some((finding) => finding.code === 'legacy_intent_spec_missing'));
   assert.equal(loaded.packetId, 'CHATGPT-DROPOFF-20990101-001');
   assert.equal(payload.assigned_to, 'Codex');
   assert.equal(payload.agent_executable, true);
@@ -126,6 +241,28 @@ test('ChatGPT dropoff ingestor blocks missing required files and secret-like con
   const invalidJson = ingestor.validatePacket(ingestor.loadPacket(invalidJsonDir));
   assert.equal(invalidJson.ok, false);
   assert.ok(invalidJson.findings.some((finding) => finding.code === 'invalid_json'));
+});
+
+test('ChatGPT dropoff ingestor requires valid intent spec artifacts for new implementation packets', async () => {
+  const ingestor = await loadIngestor();
+  const missingSpecDir = makePacketDir();
+  writePacket(missingSpecDir, { created_at: '2099-01-01T00:00:00.000Z' });
+  const missingSpec = ingestor.validatePacket(ingestor.loadPacket(missingSpecDir));
+  assert.equal(missingSpec.ok, false);
+  assert.ok(missingSpec.findings.some((finding) => finding.code === 'missing_intent_spec'));
+
+  const readyDir = makePacketDir();
+  writePacket(readyDir, { created_at: '2099-01-01T00:00:00.000Z' });
+  const spec = writeReadyIntentArtifacts(readyDir);
+  const ready = ingestor.validatePacket(ingestor.loadPacket(readyDir));
+  assert.equal(ready.ok, true);
+  assert.equal(ready.ready, true);
+  assert.ok(!ready.findings.some((finding) => finding.severity === 'blocker'));
+
+  const loaded = ingestor.loadPacket(readyDir);
+  const payload = ingestor.buildCodexPickupTaskPayload(loaded, { defaultProject: 'bna' });
+  assert.equal(payload.source_context.intent_spec_fingerprint, spec.fingerprint);
+  assert.equal(payload.source_context.intent_raw_sha256, spec.raw.sha256);
 });
 
 test('ChatGPT dropoff ingestor hardens status, ids, helper lanes, and write declarations', async () => {
@@ -207,7 +344,7 @@ test('ChatGPT dropoff ingestor force retry can reprocess a terminal packet statu
   const forcedValidation = ingestor.validatePacket(loaded, { force: true });
   assert.equal(forcedValidation.ok, true);
   assert.equal(forcedValidation.ready, true);
-  assert.deepEqual(forcedValidation.findings, []);
+  assert.ok(forcedValidation.findings.every((finding) => finding.severity === 'info'));
 });
 
 test('ChatGPT dropoff package scripts and agent fleet hook are wired', async () => {

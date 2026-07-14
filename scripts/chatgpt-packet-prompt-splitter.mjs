@@ -10,39 +10,39 @@ const outgoingRoot = path.join(repoRoot, 'ops', 'chatgpt-ramble-dropoff', 'outgo
 
 const DEFAULT_LANES = [
   {
-    suffix: 'control-tower-source-map',
-    role: 'control_tower_source_map',
-    title: 'Control Tower And Source Map',
-    scope: 'Preserve the raw source, classify the ramble, split it into child packet lanes, map source statements to requirements, and identify duplicates/blockers.',
-    output: 'A repo-visible prompt_packet or current_state_audit packet that contains the parent source map, child lane list, dependency order, and one recommended next packet.',
+    suffix: 'atomic-spec-receipt',
+    role: 'intent_preservation_spec',
+    title: 'Atomic Intent Spec And Receipt',
+    scope: 'Preserve the full raw source, create SPEC.json with one atomic change per independently testable operation, generate RECEIPT.md from the spec, and block unresolved ambiguities without implementation.',
+    output: 'A repo-visible prompt_packet containing RAW.md, SPEC.json, generated RECEIPT.md, generated CODEX_PROMPT.md only when the spec is ready, and exact blockers for unresolved atoms.',
   },
   {
-    suffix: 'current-state-audit',
-    role: 'current_state_audit',
-    title: 'Current State Audit',
-    scope: 'Audit the current repo/system state for this lane before implementation. Inspect relevant docs/files/routes and report what is already done, stale, missing, blocked, or risky.',
-    output: 'A repo-visible current_state_audit packet with inspected files/routes, findings, screenshots/evidence expectations where relevant, and exact implementation packets to generate next.',
+    suffix: 'ambiguity-resolution-audit',
+    role: 'intent_ambiguity_resolution',
+    title: 'Ambiguity Resolution Audit',
+    scope: 'Inspect repo history, current DOM/code, assets, screenshots, and prior raw files only to resolve ambiguous source atoms. Do not implement product code.',
+    output: 'A repo-visible current_state_audit packet that updates or blocks only the affected SPEC.json atoms with focused resolution questions and 2-3 choices.',
   },
   {
-    suffix: 'frontend-workflow-bundle',
-    role: 'implementation_bundle_frontend_workflow',
-    title: 'Frontend And Workflow Implementation Bundle',
-    scope: 'Draft focused frontend, UI workflow, route, prompt, or operator-experience changes only for this lane. Do not touch backend/data/provider setup unless the prompt explicitly scopes it.',
-    output: 'A repo-visible implementation_bundle packet with PATCHES.md or precise diffs, files inspected, tests expected, action/route registry impacts, and handback rules.',
+    suffix: 'pqc-product-completeness',
+    role: 'product_quality_compiler_packet',
+    title: 'PQC Completeness Packet',
+    scope: 'After the intent spec is validated and unambiguous, expand only those atoms through PQC for product completeness, states, screenshots, safety, and closeout gates.',
+    output: 'A repo-visible product-quality packet that references SPEC.json fingerprint and contains no implementation prompt that drifts from the validated spec.',
   },
   {
-    suffix: 'backend-data-tests-bundle',
-    role: 'implementation_bundle_backend_data_tests',
-    title: 'Backend Data And Tests Implementation Bundle',
-    scope: 'Draft focused backend, parser, queue, data contract, test, or script changes only for this lane. Do not implement broad UI polish or external provider mutations.',
-    output: 'A repo-visible implementation_bundle packet with PATCHES.md or precise diffs, migration/provider blockers, focused tests, and verification expectations.',
+    suffix: 'implementation-by-change-id',
+    role: 'implementation_bundle_by_change_id',
+    title: 'Implementation Bundle By Change ID',
+    scope: 'Prepare code changes only for validated implementation-ready change IDs. Every patch, test, and evidence item must name the change ID it satisfies.',
+    output: 'A repo-visible implementation_bundle packet with SPEC.json, RECEIPT.md, generated CODEX_PROMPT.md, PATCHES.md when useful, tests, and evidence expectations per change ID.',
   },
   {
-    suffix: 'verifier-synthesis-closeout',
-    role: 'verifier_synthesis_closeout',
-    title: 'Verifier Synthesis And Closeout',
-    scope: 'Verify child packet consistency, dedupe overlapping claims, identify missing proof, and produce the final Codex handoff order. Do not claim parent completion unless every child lane has terminal evidence.',
-    output: 'A repo-visible current_state_audit or prompt_packet with final audit table, blockers, proof gaps, and exact next Codex pickup commands.',
+    suffix: 'verifier-change-id-closeout',
+    role: 'verifier_change_id_closeout',
+    title: 'Verifier And Change-ID Closeout',
+    scope: 'Verify that implementation, tests, screenshots/evidence, packet status, and closeout records satisfy every included change ID without adding unscoped work.',
+    output: 'A repo-visible verifier packet with pass/fail/blocker status per change ID, spec fingerprint, stale prompt check, and exact next packet or blocker.',
   },
 ];
 
@@ -123,16 +123,19 @@ function relative(filePath) {
 
 function sourceBlock(rawText, options) {
   const sourcePath = options.rawFile ? options.rawFile.replace(/\\/g, '/') : '';
-  const sourceRef = sourcePath
-    ? `Read the full parent raw source from \`${sourcePath}\`.`
-    : 'The parent raw source is embedded below because no repo raw file was provided.';
-  const excerpt = String(rawText || '').trim().slice(0, 12000);
+  if (sourcePath) {
+    return [
+      `Read the full parent raw source from \`${sourcePath}\`.`,
+      '',
+      'Do not treat any prompt excerpt, summary, or shortened source as authority.',
+      'The authoritative source for SPEC.json hashing and source-span offsets is the full file above.',
+    ].join('\n');
+  }
   return [
-    sourceRef,
+    'The full parent raw source is embedded below because no repo raw file was provided.',
     '',
-    'Parent source excerpt:',
     '```text',
-    excerpt || '[no raw source provided]',
+    String(rawText || '').trim() || '[no raw source provided]',
     '```',
   ].join('\n');
 }
@@ -194,6 +197,8 @@ The folder must include:
 
 - \`packet.json\`
 - \`RAW.md\`
+- \`SPEC.json\`
+- \`RECEIPT.md\`
 - \`CODEX_PROMPT.md\`
 - \`MANIFEST.json\`
 - \`status.json\`
@@ -206,6 +211,14 @@ Set \`status.json.status\` to \`ready_for_codex_audit\` or
 Expected output from this lane:
 
 ${lane.output}
+
+## Intent Preservation Gate
+
+New implementation, UI, product, correction, and prompt packets must include a
+validated \`SPEC.json\`. \`CODEX_PROMPT.md\` must be generated from that spec and
+must include the spec fingerprint and every included change ID. If any atom is
+ambiguous, keep that atom blocked and do not include it in an implementation-
+ready prompt.
 
 ## Parent Source
 

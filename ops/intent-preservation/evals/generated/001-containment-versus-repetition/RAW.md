@@ -1,0 +1,1 @@
+Add these exact bullets inside the same Live Daily Mishnayos bubble in order: "Daily class link", "7:00 p.m. live class", "Review sheets". Put the icon above the bubble and the title below the icon.

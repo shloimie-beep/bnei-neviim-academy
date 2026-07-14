@@ -12,6 +12,9 @@ const {
   isoDate,
   normalizeSourceChannel,
 } = require('../../lib/bna/ramble-protocol');
+const {
+  buildDraftIntentSpec,
+} = require('../../lib/bna/intent-preservation');
 
 const OPERATOR_RAMBLE_SERVICE_VERSION = 'bna-operator-ramble-service-v1';
 
@@ -284,6 +287,18 @@ function ingestOperatorRamble(input = {}, options = {}) {
   const rawId = input.raw_id || input.rawId || formatStableId('raw', createdAt, 1);
   const source = normalizeRambleSource(input);
   const statements = splitSourceStatements(rawText, { raw_id: rawId });
+  const intentDraftSpec = buildDraftIntentSpec({
+    rawText,
+    rawId,
+    rawPath: input.raw_path || input.rawPath || input.source_path || input.sourcePath || `raw-input/${rawId}.md`,
+    specId: input.intent_spec_id || input.intentSpecId || `SPEC-${dateStamp(createdAt)}-001`,
+    createdAt,
+    scope: {
+      workspace: input.workspace_key || input.workspaceKey || 'bna',
+      project: input.project_key || input.projectKey || null,
+      routes: input.routes || [],
+    },
+  });
   const requirementRows = buildRequirementRows({
     statements,
     source,
@@ -349,6 +364,25 @@ function ingestOperatorRamble(input = {}, options = {}) {
     requirement_register_path: registerPath,
     source_statements: statements,
     no_lost_sentence_gate: noLostSentenceGate,
+    intent_preservation: {
+      contract_version: 'intent-preservation-v1',
+      operating_order: [
+        'VERBATIM_RAW',
+        'ATOMIC_SPEC',
+        'CHANGE_RECEIPT',
+        'AMBIGUITY_RESOLUTION',
+        'PQC',
+        'GENERATED_CODEX_PACKET',
+        'IMPLEMENTATION',
+        'ASSERTIONS_EVIDENCE',
+      ],
+      draft_spec: intentDraftSpec,
+      readiness: intentDraftSpec.readiness,
+      validator_command: 'npm run intent:validate -- <SPEC.json>',
+      receipt_command: 'npm run intent:receipt -- <SPEC.json> --out RECEIPT.md',
+      prompt_command: 'npm run intent:prompt -- <SPEC.json> --out CODEX_PROMPT.md',
+      implementation_ready: false,
+    },
     requirement_rows: requirementRows,
     execution_requirements: requirementRows.map((row) => ({
       id: row.execution_requirement_id,
@@ -545,6 +579,7 @@ function buildOperatorRambleGraph(input = {}, existingState = {}) {
       raw_input: rawText,
     }, existingState),
     worker_health: workflow.worker_health,
+    intent_preservation: workflow.intent_preservation,
     receipt: workflow.receipt,
   };
 }

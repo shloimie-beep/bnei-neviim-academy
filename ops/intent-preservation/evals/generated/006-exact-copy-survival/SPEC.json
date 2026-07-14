@@ -1,0 +1,109 @@
+{
+  "spec_version": "intent-preservation-v1",
+  "spec_id": "SPEC-20990101-006",
+  "raw": {
+    "raw_id": "RAW-20990101-006",
+    "path": "ops/intent-preservation/evals/generated/006-exact-copy-survival/RAW.md",
+    "capture_mode": "verbatim",
+    "sha256": "0cc6f51b80cb32bded5b2974fac4a3e39ea893f2c1d4edd97bf4dc465316a8cd",
+    "character_count": 100
+  },
+  "scope": {
+    "workspace": "rabbi_sheller_provider",
+    "project": "one_time_mishnah_class",
+    "routes": [
+      "/one-time"
+    ]
+  },
+  "global_invariants": [],
+  "changes": [
+    {
+      "change_id": "CHG-20990101-006",
+      "source_spans": [
+        {
+          "span_id": "CHG-20990101-006:S01",
+          "start": 0,
+          "end": 100,
+          "quote": "Use these exact bullets in order: \"First exact bullet\", \"Second exact bullet\", \"Third exact bullet\"."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "/one-time",
+      "screen": "One Time public landing",
+      "target": {
+        "section": "One Time public landing",
+        "component": "Landing section",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "add",
+      "current_state": "Current state must be inspected before implementation.",
+      "required_state": "Use these exact bullets in order: \"First exact bullet\", \"Second exact bullet\", \"Third exact bullet\".",
+      "exact_payload": {
+        "items": [
+          "First exact bullet",
+          "Second exact bullet",
+          "Third exact bullet"
+        ]
+      },
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "CHG-20990101-006-POS-001",
+            "text": "Use these exact bullets in order: \"First exact bullet\", \"Second exact bullet\", \"Third exact bullet\"."
+          },
+          {
+            "assertion_id": "CHG-20990101-006-POS-002",
+            "text": "First exact bullet\nSecond exact bullet\nThird exact bullet"
+          }
+        ],
+        "negative": []
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    }
+  ],
+  "source_coverage": [
+    {
+      "coverage_id": "COV-20990101-001",
+      "span_id": "CHG-20990101-006:S01",
+      "start": 0,
+      "end": 100,
+      "quote": "Use these exact bullets in order: \"First exact bullet\", \"Second exact bullet\", \"Third exact bullet\".",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20990101-006",
+      "global_invariant_id": null,
+      "reason": "Mapped to one atomic change by eval compiler."
+    }
+  ],
+  "readiness": {
+    "status": "ready_for_implementation",
+    "blocking_change_ids": [],
+    "notes": []
+  },
+  "fingerprint": "1eaf8442adde88b7353311106e313c71ae98b61cc73a3d2c228069e9222f2d15"
+}

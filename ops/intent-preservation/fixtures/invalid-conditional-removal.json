@@ -1,0 +1,110 @@
+{
+  "spec_version": "intent-preservation-v1",
+  "spec_id": "SPEC-20990101-003",
+  "raw": {
+    "raw_id": "RAW-20990101-003",
+    "path": "ops/intent-preservation/evals/generated/003-unconditional-removal/RAW.md",
+    "capture_mode": "verbatim",
+    "sha256": "ee49e2ae797320ded1a3883bc5600e4e1d2af034045a0ae1773c6fc5d8a3b4c2",
+    "character_count": 67
+  },
+  "scope": {
+    "workspace": "rabbi_sheller_provider",
+    "project": "one_time_mishnah_class",
+    "routes": [
+      "/one-time"
+    ]
+  },
+  "global_invariants": [],
+  "changes": [
+    {
+      "change_id": "CHG-20990101-003",
+      "source_spans": [
+        {
+          "span_id": "CHG-20990101-003:S01",
+          "start": 0,
+          "end": 67,
+          "quote": "Remove Monitored online platform and Questions with Rabbi Scheller."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "/one-time",
+      "screen": "One Time public landing",
+      "target": {
+        "section": "Landing copy",
+        "component": "feature cards",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": "Monitored online platform"
+      },
+      "primary_operation": "remove",
+      "current_state": "Current state must be inspected before implementation.",
+      "required_state": "Remove Monitored online platform and Questions with Rabbi Scheller where redundant.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [],
+      "must_remove": [
+        "Monitored online platform",
+        "Questions with Rabbi Scheller"
+      ],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "CHG-20990101-003-POS-001",
+            "text": "Remove Monitored online platform and Questions with Rabbi Scheller."
+          }
+        ],
+        "negative": [
+          {
+            "assertion_id": "CHG-20990101-003-NEG-001",
+            "text": "Remove Monitored online platform and Questions with Rabbi Scheller where redundant."
+          }
+        ]
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    }
+  ],
+  "source_coverage": [
+    {
+      "coverage_id": "COV-20990101-001",
+      "span_id": "CHG-20990101-003:S01",
+      "start": 0,
+      "end": 67,
+      "quote": "Remove Monitored online platform and Questions with Rabbi Scheller.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20990101-003",
+      "global_invariant_id": null,
+      "reason": "Mapped to one atomic change by eval compiler."
+    }
+  ],
+  "readiness": {
+    "status": "ready_for_implementation",
+    "blocking_change_ids": [],
+    "notes": []
+  },
+  "fingerprint": "dbbdc961b23edb818f633ee4ec61fbc6e92c7215d11c24a6b69f84ea7d57edd8",
+  "expected_failure_codes": [
+    "IPG_REMOVAL_CONDITIONALIZED"
+  ]
+}

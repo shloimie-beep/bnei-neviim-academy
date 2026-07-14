@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-07-14T04:44:43.617Z",
+  "mode": "explicit",
+  "files_scanned": [
+    "ops/intent-preservation/fixtures/valid-unconditional-removal.json"
+  ],
+  "total": 1,
+  "passed": 1,
+  "failed": 0,
+  "results": [
+    {
+      "file": "ops/intent-preservation/fixtures/valid-unconditional-removal.json",
+      "expected_failure_codes": [],
+      "actual_failure_codes": [],
+      "passed": true,
+      "errors": [],
+      "coverage": {
+        "hard_signal_count": 3,
+        "hard_signal_covered_count": 3,
+        "hard_signal_coverage_ratio": 1,
+        "actionable_span_count": 1,
+        "covered_actionable_span_count": 1,
+        "actionable_span_coverage_ratio": 1
+      }
+    }
+  ]
+}

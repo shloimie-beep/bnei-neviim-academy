@@ -1,0 +1,102 @@
+{
+  "spec_version": "intent-preservation-v1",
+  "spec_id": "SPEC-20990101-007",
+  "raw": {
+    "raw_id": "RAW-20990101-007",
+    "path": "ops/intent-preservation/evals/generated/007-generated-artifact-integrity/RAW.md",
+    "capture_mode": "verbatim",
+    "sha256": "9962807e711f6d46f0c4c204abecba1fb582209f3ef1450fe5fc037a790dd503",
+    "character_count": 43
+  },
+  "scope": {
+    "workspace": "rabbi_sheller_provider",
+    "project": "one_time_mishnah_class",
+    "routes": [
+      "/one-time"
+    ]
+  },
+  "global_invariants": [],
+  "changes": [
+    {
+      "change_id": "CHG-20990101-007",
+      "source_spans": [
+        {
+          "span_id": "CHG-20990101-007:S01",
+          "start": 0,
+          "end": 43,
+          "quote": "Replace \"old line\" with \"new line\" exactly."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "/one-time",
+      "screen": "One Time public landing",
+      "target": {
+        "section": "One Time public landing",
+        "component": "Landing section",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "replace",
+      "current_state": "Current state must be inspected before implementation.",
+      "required_state": "Replace \"old line\" with \"new line\" exactly.",
+      "exact_payload": {
+        "old_text": "old line",
+        "new_text": "new line"
+      },
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "CHG-20990101-007-POS-001",
+            "text": "Replace \"old line\" with \"new line\" exactly."
+          }
+        ],
+        "negative": []
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    }
+  ],
+  "source_coverage": [
+    {
+      "coverage_id": "COV-20990101-001",
+      "span_id": "CHG-20990101-007:S01",
+      "start": 0,
+      "end": 43,
+      "quote": "Replace \"old line\" with \"new line\" exactly.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20990101-007",
+      "global_invariant_id": null,
+      "reason": "Mapped to one atomic change by eval compiler."
+    }
+  ],
+  "readiness": {
+    "status": "ready_for_implementation",
+    "blocking_change_ids": [],
+    "notes": []
+  },
+  "fingerprint": "75365e5029804882c4fb06675bccab4cad715ee67da8d223119f6de7abdfb31b"
+}
