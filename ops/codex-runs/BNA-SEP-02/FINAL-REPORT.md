@@ -15,6 +15,8 @@ No approved decisions file was available, so repository creation and standalone 
 - Resolved SHA: `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`
 - Worktree: `C:\Users\User\.codex-worktrees\bna-sep-02-20260715T143000Z`
 - Branch: `codex/bna-sep-02-dor-gate-20260715T143000Z`
+- Gate commit: `0cdac3c52a816d3a87b42c1cc0af39f18ca69639`
+- Draft PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/135`
 
 ## Blocked Mutations
 
@@ -23,6 +25,8 @@ No approved decisions file was available, so repository creation and standalone 
 - No database or migration was created.
 - No DNS, account, credential, provider object, or production data was mutated.
 - No product code implementation was attempted.
+- Branch `codex/bna-sep-02-dor-gate-20260715T143000Z` was pushed.
+- Draft PR `https://github.com/shloimie-beep/bnei-neviim-academy/pull/135` was opened for evidence review.
 
 ## Required Missing Evidence
 

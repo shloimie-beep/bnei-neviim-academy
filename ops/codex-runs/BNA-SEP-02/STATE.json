@@ -53,14 +53,20 @@
     }
   ],
   "commit": {
-    "status": "pending"
+    "status": "local_commit_created",
+    "commit": "0cdac3c52a816d3a87b42c1cc0af39f18ca69639",
+    "message": "Record BNA SEP 02 DOR gate blocker"
   },
   "push": {
-    "status": "not_attempted"
+    "status": "pushed",
+    "remote": "origin",
+    "branch": "codex/bna-sep-02-dor-gate-20260715T143000Z"
   },
   "pull_request": {
-    "status": "not_attempted"
+    "status": "draft_open",
+    "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/135",
+    "number": 135
   },
   "next_command": "Provide ops/codex-runs/BNA-SEP-02/APPROVED-DECISIONS.json or BNA_SEP_02_APPROVED_DECISIONS_FILE, then rerun the BNA-SEP-02 Definition of Ready gate from a clean worktree.",
-  "updated_at": "2026-07-15T14:33:42.2139036Z"
+  "updated_at": "2026-07-15T14:37:18.0099970Z"
 }
