@@ -14,6 +14,8 @@ External mutations:
 - No staging/canary deployment.
 - No database migration.
 - No provider, One Time, Control Plane, email, payment, DNS, or account mutation.
+- Source-control push completed for branch `codex/bna-sep-01-speed-stabilization-20260715T135234Z`.
+- Draft PR opened: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/134`.
 
 Next safe deployment step:
 

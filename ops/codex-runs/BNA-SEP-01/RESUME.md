@@ -7,6 +7,8 @@ Worktree: `C:\Users\User\.codex-worktrees\bna-sep-01-20260715T135234Z`
 Branch: `codex/bna-sep-01-speed-stabilization-20260715T135234Z`
 Base SHA: `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`
 Scaffold commit: `d4b32fa80`
+Implementation commit: `3f4b999de35665898216606a5cb2bfa420f3b323`
+Draft PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/134`
 
 The original checkout at `C:\Users\User\BNA v2.0` was dirty before this run and was not staged, stashed, reset, cleaned, or used for implementation edits. All product work happened in the external worktree above.
 

@@ -10,8 +10,9 @@ Terminal status: `IMPLEMENTED_NEEDS_MEASUREMENT`
 - Worktree: `C:\Users\User\.codex-worktrees\bna-sep-01-20260715T135234Z`
 - Branch: `codex/bna-sep-01-speed-stabilization-20260715T135234Z`
 - Scaffold commit: `d4b32fa80`
-- Final implementation commit: recorded by `git rev-parse HEAD` after closeout commit
-- PR: not opened in this checkpoint
+- Implementation commit: `3f4b999de35665898216606a5cb2bfa420f3b323`
+- Final branch head: recorded by `git rev-parse HEAD` after the PR metadata closeout commit
+- Draft PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/134`
 
 ## 2. Original Checkout Safety
 
@@ -119,7 +120,12 @@ Browser accessibility, keyboard/touch, and 30-sample performance evidence remain
 
 ## 10. External Mutations And Deployment
 
-No external mutations, push, PR, staging deployment, canary deployment, or production deployment were attempted in this checkpoint.
+External source-control mutations:
+
+- Pushed branch `codex/bna-sep-01-speed-stabilization-20260715T135234Z`.
+- Opened draft PR `https://github.com/shloimie-beep/bnei-neviim-academy/pull/134`.
+
+No staging deployment, canary deployment, production deployment, database migration, provider write, external send, or production data mutation was attempted in this checkpoint.
 
 Deployment state: not authorized for production; staging/canary proof still required.
 

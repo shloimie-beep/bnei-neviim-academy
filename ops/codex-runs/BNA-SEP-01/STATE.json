@@ -20,7 +20,8 @@
     "path": "C:\\Users\\User\\.codex-worktrees\\bna-sep-01-20260715T135234Z",
     "base_head": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
     "scaffold_commit": "d4b32fa80 Record BNA SEP 01 run scaffold",
-    "final_commit_note": "A commit cannot contain its own final hash; use git rev-parse HEAD in the worktree after closeout."
+    "implementation_commit": "3f4b999de35665898216606a5cb2bfa420f3b323",
+    "final_commit_note": "A commit cannot contain its own final hash; use git rev-parse HEAD in the worktree after closeout metadata is committed."
   },
   "baseline": {
     "status": "browser_measurement_blocked_static_source_baseline_recorded",
@@ -194,16 +195,21 @@
     }
   ],
   "commit": {
-    "status": "pending_final_local_commit",
-    "note": "Commit hash is reported by git after closeout staging because the committed file cannot contain its own final hash."
+    "status": "local_commit_created",
+    "implementation_commit": "3f4b999de35665898216606a5cb2bfa420f3b323",
+    "implementation_message": "Stabilize BNA School admin boot",
+    "note": "A follow-up metadata commit records the PR and push state; use git rev-parse HEAD for final branch head."
   },
   "push": {
-    "status": "not_attempted",
-    "reason": "held until final local validation and operator/GitHub write readiness"
+    "status": "pushed",
+    "remote": "origin",
+    "branch": "codex/bna-sep-01-speed-stabilization-20260715T135234Z"
   },
   "pull_request": {
-    "status": "not_attempted",
-    "reason": "draft PR should include browser measurement blocker and final commit hash after push"
+    "status": "draft_open",
+    "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/134",
+    "number": 134,
+    "reason": "draft remains open until browser measurement and staging/canary proof are collected"
   },
   "deployment": {
     "status": "not_attempted",
@@ -211,5 +217,5 @@
     "reason": "no authorized staging/canary target or current production release authorization"
   },
   "next_command": "cd C:\\Users\\User\\.codex-worktrees\\bna-sep-01-20260715T135234Z && npm run school-admin:perf:budget && npm run school-admin:perf:audit",
-  "updated_at": "2026-07-15T14:23:37.0518052Z"
+  "updated_at": "2026-07-15T14:28:54.4557080Z"
 }
