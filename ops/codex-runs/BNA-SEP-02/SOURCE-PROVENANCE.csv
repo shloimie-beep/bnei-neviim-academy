@@ -1,0 +1,4 @@
+source_commit,source_path,symbol_or_behavior,evidence_status,selected_disposition,target_path_or_contract,dependencies_removed,tests,privacy_review
+cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c,DEFINITION-OF-READY.md,BNA-SEP-02 readiness gate,current_gate_source,leave_control_plane,,none,gate-only,no private data
+cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c,START-HERE.md,extraction package order,current_gate_source,leave_control_plane,,none,gate-only,no private data
+cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c,CODEX-02-ACADEMY-EXTRACTION-FOUNDATION.md,prompt contract,current_gate_source,leave_control_plane,,none,gate-only,no private data
