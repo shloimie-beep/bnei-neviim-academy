@@ -1,0 +1,70 @@
+﻿{
+    "run_id":  "BNA-SEP-01",
+    "phase":  "phase_2_read_canonical_sources",
+    "status":  "in_progress",
+    "repository":  {
+                       "branch":  "master",
+                       "remote_url":  "https://github.com/shloimie-beep/bnei-neviim-academy.git",
+                       "resolved_sha":  "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c"
+                   },
+    "original_checkout":  {
+                              "branch":  "safety/2026-07-14-bna-dirty-checkpoint",
+                              "path":  "C:\\Users\\User\\BNA v2.0",
+                              "unchanged_after_worktree_creation":  true,
+                              "dirty_status_hash":  "a206b56502b9dbeea84ac09b102d20049f31096caf55a8b899960b8785303a33",
+                              "dirty_line_count":  59
+                          },
+    "external_worktree":  {
+                              "branch":  "codex/bna-sep-01-speed-stabilization-20260715T135234Z",
+                              "path":  "C:\\Users\\User\\.codex-worktrees\\bna-sep-01-20260715T135234Z",
+                              "clean":  true,
+                              "head":  "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c"
+                          },
+    "baseline":  {
+                     "status":  "not_started",
+                     "routes":  [
+
+                                ]
+                 },
+    "after":  {
+                  "status":  "not_started",
+                  "routes":  [
+
+                             ]
+              },
+    "files_owned":  [
+
+                    ],
+    "collision_files":  [
+                            "server.js",
+                            "public/operations.html",
+                            "public/operations-bootstrap.html",
+                            "public/js/operations-shell.js",
+                            "public/parent.html",
+                            "public/student.html",
+                            "ops/route-registry.json",
+                            "ops/action-registry.json",
+                            "package.json"
+                        ],
+    "migrations":  [
+
+                   ],
+    "tests":  [
+
+              ],
+    "external_mutations":  [
+
+                           ],
+    "blockers":  [
+
+                 ],
+    "commit":  null,
+    "push":  null,
+    "pull_request":  null,
+    "deployment":  {
+                       "status":  "not_started",
+                       "reason":  "no implementation commit yet"
+                   },
+    "next_command":  "Read canonical sources and build FILE-OWNERSHIP.csv/COLLISION-HOTSPOTS.md before product edits.",
+    "updated_at":  "2026-07-15T13:53:47.9370361Z"
+}
