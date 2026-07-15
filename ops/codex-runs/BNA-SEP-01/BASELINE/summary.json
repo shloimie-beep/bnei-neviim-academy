@@ -1,0 +1,12 @@
+{
+  "run_id": "BNA-SEP-01",
+  "status": "browser_samples_blocked",
+  "browser_samples_captured": 0,
+  "browser_p50_p75_p95_available": false,
+  "source_baseline": {
+    "focused_school_admin_route": "absent",
+    "focused_school_admin_summary_api": "absent",
+    "school_admin_initial_request_budget_source": "CODEX-01 professional ceiling because no 30-sample baseline exists"
+  },
+  "blocker": "Collecting the required 30 cold and 30 warm samples per route/viewport requires approved authenticated local/staging sessions and a stable database/fixture target."
+}

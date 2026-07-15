@@ -1,70 +1,215 @@
-﻿{
-    "run_id":  "BNA-SEP-01",
-    "phase":  "phase_2_read_canonical_sources",
-    "status":  "in_progress",
-    "repository":  {
-                       "branch":  "master",
-                       "remote_url":  "https://github.com/shloimie-beep/bnei-neviim-academy.git",
-                       "resolved_sha":  "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c"
-                   },
-    "original_checkout":  {
-                              "branch":  "safety/2026-07-14-bna-dirty-checkpoint",
-                              "path":  "C:\\Users\\User\\BNA v2.0",
-                              "unchanged_after_worktree_creation":  true,
-                              "dirty_status_hash":  "a206b56502b9dbeea84ac09b102d20049f31096caf55a8b899960b8785303a33",
-                              "dirty_line_count":  59
-                          },
-    "external_worktree":  {
-                              "branch":  "codex/bna-sep-01-speed-stabilization-20260715T135234Z",
-                              "path":  "C:\\Users\\User\\.codex-worktrees\\bna-sep-01-20260715T135234Z",
-                              "clean":  true,
-                              "head":  "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c"
-                          },
-    "baseline":  {
-                     "status":  "not_started",
-                     "routes":  [
-
-                                ]
-                 },
-    "after":  {
-                  "status":  "not_started",
-                  "routes":  [
-
-                             ]
-              },
-    "files_owned":  [
-
-                    ],
-    "collision_files":  [
-                            "server.js",
-                            "public/operations.html",
-                            "public/operations-bootstrap.html",
-                            "public/js/operations-shell.js",
-                            "public/parent.html",
-                            "public/student.html",
-                            "ops/route-registry.json",
-                            "ops/action-registry.json",
-                            "package.json"
-                        ],
-    "migrations":  [
-
-                   ],
-    "tests":  [
-
-              ],
-    "external_mutations":  [
-
-                           ],
-    "blockers":  [
-
-                 ],
-    "commit":  null,
-    "push":  null,
-    "pull_request":  null,
-    "deployment":  {
-                       "status":  "not_started",
-                       "reason":  "no implementation commit yet"
-                   },
-    "next_command":  "Read canonical sources and build FILE-OWNERSHIP.csv/COLLISION-HOTSPOTS.md before product edits.",
-    "updated_at":  "2026-07-15T13:53:47.9370361Z"
+{
+  "run_id": "BNA-SEP-01",
+  "phase": "phase_9_closeout_checkpoint",
+  "status": "IMPLEMENTED_NEEDS_MEASUREMENT",
+  "repository": {
+    "remote_branch": "master",
+    "remote_url": "https://github.com/shloimie-beep/bnei-neviim-academy.git",
+    "resolved_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c"
+  },
+  "original_checkout": {
+    "branch": "safety/2026-07-14-bna-dirty-checkpoint",
+    "path": "C:\\Users\\User\\BNA v2.0",
+    "unchanged_after_worktree_creation": true,
+    "dirty_status_hash": "a206b56502b9dbeea84ac09b102d20049f31096caf55a8b899960b8785303a33",
+    "dirty_line_count": 59,
+    "mutation_policy": "not edited, staged, stashed, reset, or cleaned by this run"
+  },
+  "external_worktree": {
+    "branch": "codex/bna-sep-01-speed-stabilization-20260715T135234Z",
+    "path": "C:\\Users\\User\\.codex-worktrees\\bna-sep-01-20260715T135234Z",
+    "base_head": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+    "scaffold_commit": "d4b32fa80 Record BNA SEP 01 run scaffold",
+    "final_commit_note": "A commit cannot contain its own final hash; use git rev-parse HEAD in the worktree after closeout."
+  },
+  "baseline": {
+    "status": "browser_measurement_blocked_static_source_baseline_recorded",
+    "browser_samples_captured": 0,
+    "source_finding": "The resolved base SHA did not provide a focused /operations/school shell or /api/bna/school-admin/summary endpoint; School work entered through the broader Operations surface.",
+    "routes": [
+      "/operations-login.html",
+      "/operations/school",
+      "/operations/school?view=students",
+      "/operations/school?view=families",
+      "/operations/school?view=classes",
+      "/operations/school?view=attendance",
+      "/operations/school?view=progress",
+      "/parent",
+      "/student"
+    ],
+    "evidence": [
+      "ops/codex-runs/BNA-SEP-01/BASELINE/environment.json",
+      "ops/codex-runs/BNA-SEP-01/BASELINE/routes.json",
+      "ops/codex-runs/BNA-SEP-01/BASELINE/summary.json",
+      "ops/codex-runs/BNA-SEP-01/BASELINE/budgets.json"
+    ]
+  },
+  "after": {
+    "status": "static_budget_passed_browser_measurement_blocked",
+    "browser_samples_captured": 0,
+    "initial_requests_before_useful_action": 4,
+    "school_admin_js_gzip_bytes": 3945,
+    "school_admin_css_gzip_bytes": 1662,
+    "school_admin_html_bytes": 3019,
+    "useful_action_markers": [
+      "bna-school-admin-html-start",
+      "bna-school-admin-script-start",
+      "bna-school-admin-shell-ready",
+      "bna-school-admin-data-request-start",
+      "bna-school-admin-data-request-end",
+      "bna-school-admin-useful-action",
+      "bna-school-admin-navigation-to-useful-action"
+    ],
+    "evidence": [
+      "ops/codex-runs/BNA-SEP-01/AFTER/school-admin-static-summary.json",
+      "ops/codex-runs/BNA-SEP-01/AFTER/school-admin-static-summary.md",
+      "ops/codex-runs/BNA-SEP-01/AFTER/summary.json",
+      "ops/codex-runs/BNA-SEP-01/AFTER/summary.md"
+    ]
+  },
+  "files_owned": [
+    "server.js",
+    "public/school-admin.html",
+    "public/css/school-admin.css",
+    "public/js/school-admin.js",
+    "ops/route-registry.json",
+    "ops/action-registry.json",
+    "ops/action-registry/one-time-action-coverage.json",
+    "ops/action-registry/one-time-action-coverage.md",
+    "ops/action-registry/universal-action-parity.json",
+    "ops/action-registry/universal-action-parity.md",
+    "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "ops/product-quality-compiler/evals/latest-eval-report.json",
+    "ops/product-quality-compiler/evals/latest-eval-report.md",
+    "ops/watchdog-audits/2026-07-15-product-quality-drift.json",
+    "ops/watchdog-audits/2026-07-15-product-quality-drift.md",
+    "package.json",
+    "scripts/check-school-admin-performance-budget.mjs",
+    "scripts/audit-school-admin-performance.mjs",
+    "tests/school-admin-speed-surface.test.js",
+    "ops/codex-runs/BNA-SEP-01/**"
+  ],
+  "collision_files": [
+    "server.js",
+    "public/operations.html",
+    "public/operations-bootstrap.html",
+    "public/js/operations-shell.js",
+    "public/parent.html",
+    "public/student.html",
+    "ops/route-registry.json",
+    "ops/action-registry.json",
+    "package.json",
+    "ops/chatgpt-ramble-dropoff/CONTROL-TOWER.json",
+    "ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md"
+  ],
+  "migrations": [],
+  "tests": [
+    {
+      "command": "node --check server.js",
+      "result": "pass"
+    },
+    {
+      "command": "node --check scripts/check-school-admin-performance-budget.mjs",
+      "result": "pass"
+    },
+    {
+      "command": "node --check scripts/audit-school-admin-performance.mjs",
+      "result": "pass"
+    },
+    {
+      "command": "node --test tests/school-admin-speed-surface.test.js",
+      "result": "pass"
+    },
+    {
+      "command": "npm run school-admin:perf:budget",
+      "result": "pass"
+    },
+    {
+      "command": "npm run school-admin:perf:audit",
+      "result": "pass"
+    },
+    {
+      "command": "npm run operations:check-generated",
+      "result": "pass"
+    },
+    {
+      "command": "node --test tests/watchdog-action-registry.test.js",
+      "result": "pass"
+    },
+    {
+      "command": "node --test [98 relevant route/security/privacy/workspace/portal tests excluding Playwright-only one-time route mapping]",
+      "result": "pass"
+    },
+    {
+      "command": "npm run pqc:validate",
+      "result": "pass"
+    },
+    {
+      "command": "npm run pqc:validate:fixtures",
+      "result": "pass"
+    },
+    {
+      "command": "npm run pqc:evals",
+      "result": "pass"
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "result": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass_with_line_ending_warnings_only"
+    },
+    {
+      "command": "node --test tests/one-time-route-role-mapping.test.js",
+      "result": "blocked_missing_playwright_module"
+    }
+  ],
+  "external_mutations": [],
+  "blockers": [
+    {
+      "id": "BNA-SEP-01-BLOCKER-001",
+      "status": "open",
+      "owner": "operator_or_authorized_staging_runner",
+      "scope": "browser_performance_and_accessibility_measurement",
+      "reason": "The required 30 cold and 30 warm browser samples per route/viewport need an installed browser harness, a valid authenticated admin/parent/student local or staging session, and a stable database/fixture target. No private session or production/staging credential was available in this run.",
+      "next_safe_action": "Run the CODEX-01 browser harness against the final branch in an approved local/staging environment and store sanitized BASELINE/AFTER sample files before claiming performance fixed."
+    },
+    {
+      "id": "BNA-SEP-01-BLOCKER-002",
+      "status": "open",
+      "owner": "operator",
+      "scope": "deployment",
+      "reason": "No explicit staging/canary deployment target or production release authorization for this exact commit was available.",
+      "next_safe_action": "Deploy only the clean committed branch to an authorized BNA staging/canary target, then record deployment ID and live smoke proof."
+    },
+    {
+      "id": "BNA-SEP-01-BLOCKER-003",
+      "status": "open",
+      "owner": "operator_or_dependency_installer",
+      "scope": "one_time_browser_route_mapping_regression",
+      "reason": "The broader One Time route role mapping test requires the Playwright package, which is not installed in this clean worktree.",
+      "next_safe_action": "Install the repository's browser-test dependencies in the worktree or run the test in the standard browser-test environment, then rerun tests/one-time-route-role-mapping.test.js."
+    }
+  ],
+  "commit": {
+    "status": "pending_final_local_commit",
+    "note": "Commit hash is reported by git after closeout staging because the committed file cannot contain its own final hash."
+  },
+  "push": {
+    "status": "not_attempted",
+    "reason": "held until final local validation and operator/GitHub write readiness"
+  },
+  "pull_request": {
+    "status": "not_attempted",
+    "reason": "draft PR should include browser measurement blocker and final commit hash after push"
+  },
+  "deployment": {
+    "status": "not_attempted",
+    "terminal_gate": "READY_FOR_BNA_STAGING_OR_CANARY after browser evidence, or stay IMPLEMENTED_NEEDS_MEASUREMENT until then",
+    "reason": "no authorized staging/canary target or current production release authorization"
+  },
+  "next_command": "cd C:\\Users\\User\\.codex-worktrees\\bna-sep-01-20260715T135234Z && npm run school-admin:perf:budget && npm run school-admin:perf:audit",
+  "updated_at": "2026-07-15T14:23:37.0518052Z"
 }
