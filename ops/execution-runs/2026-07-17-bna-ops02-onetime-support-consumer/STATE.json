@@ -63,6 +63,14 @@
     "second_ticket_system": false,
     "academy_data_crossover": false
   },
+  "git_closeout": {
+    "implementation_commit_sha": "59c9870e7c9587835394389aab217121d498a5bb",
+    "final_head_sha": "recorded_in_final_response_after_checkpoint_commit",
+    "pushed_branch": true,
+    "draft_pr_created": false,
+    "draft_pr_blocker": "git push succeeded, but gh auth status reports invalid local token and the GitHub connector returned API 422: must be a collaborator when creating the draft PR.",
+    "manual_pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/new/codex/bna-ops02-onetime-support-consumer"
+  },
   "verification_completed": [
     "node --check src/lib/bna/one-time-support-consumer.js",
     "node --check server.js",

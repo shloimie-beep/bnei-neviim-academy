@@ -43,3 +43,4 @@ Base:
 
 - Real shared secret, production endpoint enablement, real Telegram dispatch, reverse-status delivery, provider-side action, and live smoke are intentionally out of scope and blocked pending explicit operator approval and credentials.
 - `docs/INTENT-PRESERVATION-GATE.md` was referenced by `AGENTS.md` but was missing on the clean remote base.
+- Draft PR creation is blocked by GitHub auth/permission. `git push` succeeded, but `gh auth status` reports an invalid local token and the GitHub connector returned API 422 `must be a collaborator`. Manual PR URL: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/new/codex/bna-ops02-onetime-support-consumer`.

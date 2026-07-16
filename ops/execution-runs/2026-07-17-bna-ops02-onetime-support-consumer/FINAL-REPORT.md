@@ -68,5 +68,6 @@ An early patch target hit the original workspace; only those introduced hunks we
 - Real Telegram dispatch worker for the queued BNA operator alert.
 - Signed reverse-status delivery to One Time.
 - Live smoke/deploy.
+- Draft PR creation is blocked by GitHub auth/permission: `gh auth status` reports an invalid local token, and the GitHub connector returned API 422 `must be a collaborator`. The branch was pushed and the manual PR creation URL is `https://github.com/shloimie-beep/bnei-neviim-academy/pull/new/codex/bna-ops02-onetime-support-consumer`.
 
 All of the above require explicit operator approval and are intentionally not performed in this lane.
