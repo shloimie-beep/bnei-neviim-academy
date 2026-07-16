@@ -1,0 +1,45 @@
+{
+  "task_id": "OT-89B",
+  "phase": "implemented_pending_publication",
+  "status": "checkpointed",
+  "completed_acceptance_ids": [
+    "packet.validated",
+    "worktree.created",
+    "state.persisted.initial",
+    "contract.fetched",
+    "contract.sha256.verified",
+    "contract.context.copied",
+    "consumer.implemented",
+    "migration.additive.created",
+    "routes.registered",
+    "actions.registered",
+    "operator.page.created",
+    "synthetic.tests.passed",
+    "mock.adapters.used",
+    "no.live.deployment",
+    "no.production.data",
+    "no.real.telegram.send"
+  ],
+  "blockers": [
+    {
+      "id": "full-suite-frozen-base-ui-smokes",
+      "status": "blocked",
+      "summary": "After dependency install, full npm test still has 11 unrelated UI/source-smoke failures. Focused OT-89B tests pass.",
+      "evidence": "ops/codex-runs/OT-89B/TEST-RESULTS.md"
+    },
+    {
+      "id": "no-live-canary-by-instruction",
+      "status": "blocked_by_prompt",
+      "summary": "Live deploy/canary, production data, real Telegram sends, DNS, and payments are forbidden by the packet.",
+      "evidence": "ops/codex-runs/OT-89B/DEPLOYMENT-CANARY.md"
+    }
+  ],
+  "branch": "codex/ot89b-bna-support-consumer",
+  "base": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "head": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "dirty_state": [
+    "implementation pending stage/commit"
+  ],
+  "next_action": "Stage OT-89B files, commit, push, and open a draft PR.",
+  "timestamp": "2026-07-16T09:32:58.2206300+03:00"
+}

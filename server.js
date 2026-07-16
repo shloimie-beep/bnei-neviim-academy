@@ -148,6 +148,9 @@ const {
   sendTelegramMessage: sendScopedTelegramMessage,
 } = require('./src/lib/bna/telegram-notifications');
 const {
+  installOneTimeSupportConsumerRoutes,
+} = require('./src/lib/bna/support/one-time-support-consumer');
+const {
   buildProviderLeadBotPlan,
   classifyProviderLeadBotIntent,
   providerLeadBotClassLinkAllowed,
@@ -11018,6 +11021,15 @@ app.post('/api/webhooks/stripe/rabbi', express.raw({ type: 'application/json', l
   } catch (err) {
     res.status(err.statusCode || 500).json({ success: false, error: err.message, blocker: err.blocker || undefined });
   }
+});
+
+installOneTimeSupportConsumerRoutes({
+  app,
+  express,
+  pool,
+  requireAdmin,
+  publicDir: path.join(__dirname, 'public'),
+  env: process.env,
 });
 
 // Middleware
@@ -24468,7 +24480,9 @@ async function createRawIntakeRecord({
     source_message_id,
     source_table,
   });
-  const channel = normalizeRawIntakeSourceChannel(normalizedSource.source_channel || source_channel || source_type || 'manual');
+  const rawSourceChannel = normalizeRawIntakeSourceChannel(source_channel || source_type || 'manual');
+  const normalizedSourceChannel = normalizeRawIntakeSourceChannel(normalizedSource.source_channel || 'manual');
+  const channel = rawSourceChannel === 'drive' ? rawSourceChannel : normalizedSourceChannel;
   const sourceMessageId = source_message_id || source_id || null;
   const sourceMessageIdText = sourceMessageId === null || sourceMessageId === undefined ? null : String(sourceMessageId);
   const rawTextHash = intakeStableHash([raw, String(transcriptText || '').trim()].filter(Boolean).join('\n'));
@@ -47853,7 +47867,7 @@ async function buildTelegramStatusCard() {
   const lock = runtimeFileStatSafe(path.join(runtimeDir, 'telegram-kimi-bridge.lock'));
   const log = runtimeFileStatSafe(path.join(runtimeDir, 'telegram-kimi-bridge.log'));
   const hostedRuntime = await loadAgentRuntimeStatus(TELEGRAM_SIDEKICK_RUNTIME_KEYS.shloimie)
-    || await loadAgentRuntimeStatus(TELEGRAM_SIDEKICK_RUNTIME_KEYS.legacyAcademy);
+    || await loadAgentRuntimeStatus('telegram-academy-bridge');
   const runtimeReadiness = buildTelegramRuntimeReadiness({
     tokenConfigured: token.configured || profileToken.configured,
     allowedChatIdsConfigured,
