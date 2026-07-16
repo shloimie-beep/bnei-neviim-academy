@@ -66,15 +66,44 @@ CREATE TABLE IF NOT EXISTS bna_onetime_support_alert_outbox (
   alert_key TEXT NOT NULL UNIQUE,
   bna_ticket_ref TEXT NOT NULL REFERENCES bna_onetime_support_events(bna_ticket_ref) ON DELETE CASCADE,
   support_ticket_id INTEGER REFERENCES bna_support_tickets(id) ON DELETE SET NULL,
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'claimed', 'sent', 'failed')),
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'leased', 'sent', 'failed', 'dead_letter')),
   attempts INTEGER NOT NULL DEFAULT 0,
+  lease_owner TEXT,
+  lease_generation INTEGER NOT NULL DEFAULT 0,
+  lease_expires_at TIMESTAMP,
+  next_attempt_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  last_attempt_at TIMESTAMP,
   payload JSONB NOT NULL DEFAULT '{}'::jsonb,
   last_error TEXT,
-  claimed_at TIMESTAMP,
+  safe_error JSONB NOT NULL DEFAULT '{}'::jsonb,
   sent_at TIMESTAMP,
+  dead_lettered_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS lease_owner TEXT;
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS lease_generation INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS lease_expires_at TIMESTAMP;
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS next_attempt_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS last_attempt_at TIMESTAMP;
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS safe_error JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS dead_lettered_at TIMESTAMP;
+ALTER TABLE bna_onetime_support_alert_outbox
+  DROP CONSTRAINT IF EXISTS bna_onetime_support_alert_outbox_status_check;
+UPDATE bna_onetime_support_alert_outbox
+SET status = 'leased'
+WHERE status = 'claimed';
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD CONSTRAINT bna_onetime_support_alert_outbox_status_check
+  CHECK (status IN ('pending', 'leased', 'sent', 'failed', 'dead_letter'));
 
 CREATE TABLE IF NOT EXISTS bna_onetime_support_decision_tokens (
   id SERIAL PRIMARY KEY,
@@ -98,6 +127,10 @@ CREATE INDEX IF NOT EXISTS idx_bna_onetime_support_nonces_expiry
   ON bna_onetime_support_nonces(expires_at);
 CREATE INDEX IF NOT EXISTS idx_bna_onetime_support_alert_claim
   ON bna_onetime_support_alert_outbox(status, created_at);
+CREATE INDEX IF NOT EXISTS idx_bna_onetime_support_alert_retry
+  ON bna_onetime_support_alert_outbox(status, next_attempt_at, created_at);
+CREATE INDEX IF NOT EXISTS idx_bna_onetime_support_alert_lease
+  ON bna_onetime_support_alert_outbox(status, lease_expires_at);
 CREATE INDEX IF NOT EXISTS idx_bna_onetime_support_history_ref
   ON bna_onetime_support_history(bna_ticket_ref, created_at);
 

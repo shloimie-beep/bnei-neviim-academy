@@ -16,6 +16,9 @@ const REDACTION_POLICY = 'ot89-redaction-v1';
 const MAX_BODY_BYTES = 131072;
 const NONCE_RETENTION_SECONDS = 86400;
 const TIMESTAMP_SKEW_SECONDS = 300;
+const ALERT_LEASE_SECONDS = 120;
+const ALERT_MAX_ATTEMPTS = 12;
+const ALERT_MAX_BACKOFF_SECONDS = 4 * 60 * 60;
 const JERUSALEM_TZ = 'Asia/Jerusalem';
 
 const CROCKFORD = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
@@ -100,6 +103,12 @@ function compact(value = '', max = 500) {
   return String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);
 }
 
+function clampNumber(value, { min = 0, max = Number.MAX_SAFE_INTEGER, fallback = min } = {}) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return fallback;
+  return Math.min(max, Math.max(min, Math.floor(number)));
+}
+
 function normalizeString(value = '', max = 6000) {
   return String(value || '')
     .normalize('NFC')
@@ -143,6 +152,30 @@ function sha256Hex(value) {
 
 function hmacSha256Hex(secret, value) {
   return crypto.createHmac('sha256', Buffer.from(String(secret || ''), 'utf8')).update(value).digest('hex');
+}
+
+function alertBackoffSeconds(attempts = 0) {
+  const attempt = clampNumber(attempts, { min: 1, max: ALERT_MAX_ATTEMPTS, fallback: 1 });
+  return Math.min(ALERT_MAX_BACKOFF_SECONDS, 60 * (2 ** Math.min(attempt - 1, 8)));
+}
+
+function safeAlertError(error) {
+  const reason = error instanceof Ot89Error ? error.reasonCode : (error?.code || error?.name || 'alert_send_failed');
+  return {
+    reason: compact(reason, 120),
+    message: redactSupportText(error?.message || reason || 'alert send failed', 500),
+    retryable: error instanceof Ot89Error ? Boolean(error.retryable) : true,
+  };
+}
+
+function telegramDrainGate({ env = process.env } = {}) {
+  if (!truthy(env.OT89_REAL_TELEGRAM_DELIVERY_ENABLED)) {
+    return { ok: false, reason: 'real_telegram_delivery_disabled' };
+  }
+  if (!truthy(env.OT89_BNA_BOT_SOLE_OWNER_VERIFIED)) {
+    return { ok: false, reason: 'bna_bot_sole_owner_not_verified' };
+  }
+  return { ok: true, reason: 'ready' };
 }
 
 function base64url(bytes) {
@@ -817,7 +850,26 @@ function createMemoryStore({ idFactory = newBnaTicketRef } = {}) {
         updated_at: input.received_at.toISOString(),
       };
       ticket.alert_payload = buildAlertPayload({ ticket, event: input.sanitized_event, triage: input.triage, sla: input.sla, tokens: tokenRecords });
-      alerts.set(ticket.alert_key, { alert_key: ticket.alert_key, status: 'pending', payload: ticket.alert_payload, attempts: 0 });
+      alerts.set(ticket.alert_key, {
+        id: alerts.size + 1,
+        alert_key: ticket.alert_key,
+        bna_ticket_ref: bnaTicketRef,
+        support_ticket_id: supportTicketId,
+        status: 'pending',
+        payload: ticket.alert_payload,
+        attempts: 0,
+        lease_generation: 0,
+        lease_owner: null,
+        lease_expires_at: null,
+        last_attempt_at: null,
+        next_attempt_at: input.received_at.toISOString(),
+        last_error: null,
+        safe_error: null,
+        sent_at: null,
+        dead_lettered_at: null,
+        created_at: input.received_at.toISOString(),
+        updated_at: input.received_at.toISOString(),
+      });
       events.set(input.event.event_id, ticket);
       sources.set(input.event.submission.source_ticket_id, ticket);
       return { duplicate: false, ticket, statusCode: 202 };
@@ -845,6 +897,56 @@ function createMemoryStore({ idFactory = newBnaTicketRef } = {}) {
     },
     async listAlerts() {
       return [...alerts.values()];
+    },
+    async claimAlertBatch({ leaseOwner = 'memory-ot89b-alert-drain', batchSize = 10, leaseSeconds = ALERT_LEASE_SECONDS, now = new Date() } = {}) {
+      const nowDateValue = now instanceof Date ? now : new Date(now);
+      const claimed = [];
+      for (const alert of alerts.values()) {
+        if (claimed.length >= batchSize) break;
+        const leaseExpired = alert.status === 'leased' && alert.lease_expires_at && Date.parse(alert.lease_expires_at) <= nowDateValue.getTime();
+        const retryDue = alert.status === 'failed' && (!alert.next_attempt_at || Date.parse(alert.next_attempt_at) <= nowDateValue.getTime());
+        if (alert.status !== 'pending' && !retryDue && !leaseExpired) continue;
+        alert.status = 'leased';
+        alert.attempts = clampNumber(alert.attempts, { min: 0 }) + 1;
+        alert.lease_generation = clampNumber(alert.lease_generation, { min: 0 }) + 1;
+        alert.lease_owner = leaseOwner;
+        alert.lease_expires_at = new Date(nowDateValue.getTime() + leaseSeconds * 1000).toISOString();
+        alert.last_attempt_at = nowDateValue.toISOString();
+        alert.updated_at = nowDateValue.toISOString();
+        claimed.push({ ...alert });
+      }
+      return claimed;
+    },
+    async markAlertSent({ alert_key, lease_owner, lease_generation, sent_at = new Date() } = {}) {
+      const alert = alerts.get(alert_key);
+      if (!alert || alert.status === 'sent') return { updated: false };
+      if (Number(lease_generation) && Number(alert.lease_generation) !== Number(lease_generation)) return { updated: false };
+      if (lease_owner && alert.lease_owner !== lease_owner) return { updated: false };
+      const sentDate = sent_at instanceof Date ? sent_at : new Date(sent_at);
+      alert.status = 'sent';
+      alert.sent_at = sentDate.toISOString();
+      alert.lease_owner = null;
+      alert.lease_expires_at = null;
+      alert.updated_at = sentDate.toISOString();
+      return { updated: true };
+    },
+    async markAlertFailed({ alert_key, lease_owner, lease_generation, error, maxAttempts = ALERT_MAX_ATTEMPTS, now = new Date() } = {}) {
+      const alert = alerts.get(alert_key);
+      if (!alert || alert.status === 'sent' || alert.status === 'dead_letter') return { updated: false };
+      if (Number(lease_generation) && Number(alert.lease_generation) !== Number(lease_generation)) return { updated: false };
+      if (lease_owner && alert.lease_owner !== lease_owner) return { updated: false };
+      const nowDateValue = now instanceof Date ? now : new Date(now);
+      const safeError = safeAlertError(error);
+      const deadLetter = !safeError.retryable || clampNumber(alert.attempts, { min: 0 }) >= maxAttempts;
+      alert.status = deadLetter ? 'dead_letter' : 'failed';
+      alert.last_error = safeError.message;
+      alert.safe_error = safeError;
+      alert.lease_owner = null;
+      alert.lease_expires_at = null;
+      alert.next_attempt_at = deadLetter ? null : new Date(nowDateValue.getTime() + alertBackoffSeconds(alert.attempts) * 1000).toISOString();
+      alert.dead_lettered_at = deadLetter ? nowDateValue.toISOString() : null;
+      alert.updated_at = nowDateValue.toISOString();
+      return { updated: true, dead_letter: deadLetter };
     },
   };
 }
@@ -912,15 +1014,44 @@ CREATE TABLE IF NOT EXISTS bna_onetime_support_alert_outbox (
   alert_key TEXT NOT NULL UNIQUE,
   bna_ticket_ref TEXT NOT NULL REFERENCES bna_onetime_support_events(bna_ticket_ref) ON DELETE CASCADE,
   support_ticket_id INTEGER REFERENCES bna_support_tickets(id) ON DELETE SET NULL,
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'claimed', 'sent', 'failed')),
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'leased', 'sent', 'failed', 'dead_letter')),
   attempts INTEGER NOT NULL DEFAULT 0,
+  lease_owner TEXT,
+  lease_generation INTEGER NOT NULL DEFAULT 0,
+  lease_expires_at TIMESTAMP,
+  next_attempt_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  last_attempt_at TIMESTAMP,
   payload JSONB NOT NULL DEFAULT '{}'::jsonb,
   last_error TEXT,
-  claimed_at TIMESTAMP,
+  safe_error JSONB NOT NULL DEFAULT '{}'::jsonb,
   sent_at TIMESTAMP,
+  dead_lettered_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS lease_owner TEXT;
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS lease_generation INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS lease_expires_at TIMESTAMP;
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS next_attempt_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS last_attempt_at TIMESTAMP;
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS safe_error JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD COLUMN IF NOT EXISTS dead_lettered_at TIMESTAMP;
+ALTER TABLE bna_onetime_support_alert_outbox
+  DROP CONSTRAINT IF EXISTS bna_onetime_support_alert_outbox_status_check;
+UPDATE bna_onetime_support_alert_outbox
+SET status = 'leased'
+WHERE status = 'claimed';
+ALTER TABLE bna_onetime_support_alert_outbox
+  ADD CONSTRAINT bna_onetime_support_alert_outbox_status_check
+  CHECK (status IN ('pending', 'leased', 'sent', 'failed', 'dead_letter'));
 
 CREATE TABLE IF NOT EXISTS bna_onetime_support_decision_tokens (
   id SERIAL PRIMARY KEY,
@@ -940,6 +1071,8 @@ CREATE INDEX IF NOT EXISTS idx_bna_onetime_support_events_status ON bna_onetime_
 CREATE INDEX IF NOT EXISTS idx_bna_onetime_support_events_account ON bna_onetime_support_events(onetime_account_id, updated_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_onetime_support_nonces_expiry ON bna_onetime_support_nonces(expires_at);
 CREATE INDEX IF NOT EXISTS idx_bna_onetime_support_alert_claim ON bna_onetime_support_alert_outbox(status, created_at);
+CREATE INDEX IF NOT EXISTS idx_bna_onetime_support_alert_retry ON bna_onetime_support_alert_outbox(status, next_attempt_at, created_at);
+CREATE INDEX IF NOT EXISTS idx_bna_onetime_support_alert_lease ON bna_onetime_support_alert_outbox(status, lease_expires_at);
 CREATE INDEX IF NOT EXISTS idx_bna_onetime_support_history_ref ON bna_onetime_support_history(bna_ticket_ref, created_at);
 `;
 }
@@ -1203,6 +1336,126 @@ function createPgStore(pool) {
         client.release();
       }
     },
+    async listAlerts() {
+      await ensureSchema(pool);
+      const result = await pool.query(
+        `SELECT * FROM bna_onetime_support_alert_outbox
+         ORDER BY created_at ASC, id ASC
+         LIMIT 100`
+      );
+      return result.rows;
+    },
+    async claimAlertBatch({ leaseOwner = 'ot89b-alert-drain', batchSize = 10, leaseSeconds = ALERT_LEASE_SECONDS, now = new Date() } = {}) {
+      await ensureSchema(pool);
+      const client = await pool.connect();
+      const boundedBatchSize = clampNumber(batchSize, { min: 1, max: 25, fallback: 10 });
+      const boundedLeaseSeconds = clampNumber(leaseSeconds, { min: 30, max: 15 * 60, fallback: ALERT_LEASE_SECONDS });
+      const leaseOwnerText = compact(leaseOwner || 'ot89b-alert-drain', 120);
+      try {
+        await client.query('BEGIN');
+        const result = await client.query(
+          `WITH candidates AS (
+             SELECT id
+             FROM bna_onetime_support_alert_outbox
+             WHERE (
+                status IN ('pending', 'failed')
+                AND COALESCE(next_attempt_at, created_at) <= NOW()
+             ) OR (
+                status = 'leased'
+                AND lease_expires_at IS NOT NULL
+                AND lease_expires_at <= NOW()
+             )
+             ORDER BY id ASC
+             LIMIT $1
+             FOR UPDATE SKIP LOCKED
+           )
+           UPDATE bna_onetime_support_alert_outbox outbox
+           SET status = 'leased',
+               attempts = attempts + 1,
+               lease_owner = $2,
+               lease_generation = lease_generation + 1,
+               lease_expires_at = NOW() + ($3 || ' seconds')::interval,
+               last_attempt_at = NOW(),
+               updated_at = NOW()
+           FROM candidates
+           WHERE outbox.id = candidates.id
+           RETURNING outbox.*`,
+          [boundedBatchSize, leaseOwnerText, boundedLeaseSeconds]
+        );
+        await client.query('COMMIT');
+        return result.rows;
+      } catch (error) {
+        try { await client.query('ROLLBACK'); } catch {}
+        throw error;
+      } finally {
+        client.release();
+      }
+    },
+    async markAlertSent({ id, alert_key, lease_owner, lease_generation, sent_at = new Date() } = {}) {
+      await ensureSchema(pool);
+      const result = await pool.query(
+        `UPDATE bna_onetime_support_alert_outbox
+         SET status = 'sent',
+             sent_at = COALESCE($4::timestamp, NOW()),
+             lease_owner = NULL,
+             lease_expires_at = NULL,
+             updated_at = NOW()
+         WHERE ($1::integer IS NULL OR id = $1)
+           AND ($2::text IS NULL OR alert_key = $2)
+           AND ($3::integer IS NULL OR lease_generation = $3)
+           AND ($5::text IS NULL OR lease_owner = $5)
+           AND status <> 'sent'
+         RETURNING *`,
+        [id || null, alert_key || null, lease_generation || null, sent_at instanceof Date ? sent_at.toISOString() : sent_at || null, lease_owner || null]
+      );
+      return { updated: Boolean(result.rows.length), alert: result.rows[0] || null, lease_owner };
+    },
+    async markAlertFailed({ id, alert_key, lease_owner, lease_generation, error, maxAttempts = ALERT_MAX_ATTEMPTS, now = new Date() } = {}) {
+      await ensureSchema(pool);
+      const safeError = safeAlertError(error);
+      const nowIso = now instanceof Date ? now.toISOString() : new Date(now).toISOString();
+      const result = await pool.query(
+        `WITH current_alert AS (
+           SELECT *,
+                  (attempts >= $5 OR $6::boolean = FALSE) AS should_dead_letter
+           FROM bna_onetime_support_alert_outbox
+           WHERE ($1::integer IS NULL OR id = $1)
+             AND ($2::text IS NULL OR alert_key = $2)
+             AND ($3::integer IS NULL OR lease_generation = $3)
+             AND ($10::text IS NULL OR lease_owner = $10)
+             AND status NOT IN ('sent', 'dead_letter')
+           LIMIT 1
+         )
+         UPDATE bna_onetime_support_alert_outbox outbox
+         SET status = CASE WHEN current_alert.should_dead_letter THEN 'dead_letter' ELSE 'failed' END,
+             last_error = $4,
+             safe_error = $7::jsonb,
+             next_attempt_at = CASE
+               WHEN current_alert.should_dead_letter THEN NULL
+               ELSE $8::timestamp + ((LEAST($9::integer, 60 * POWER(2, LEAST(GREATEST(current_alert.attempts, 1) - 1, 8)))::integer || ' seconds')::interval)
+             END,
+             dead_lettered_at = CASE WHEN current_alert.should_dead_letter THEN $8::timestamp ELSE NULL END,
+             lease_owner = NULL,
+             lease_expires_at = NULL,
+             updated_at = NOW()
+         FROM current_alert
+         WHERE outbox.id = current_alert.id
+         RETURNING outbox.*`,
+        [
+          id || null,
+          alert_key || null,
+          lease_generation || null,
+          safeError.message,
+          clampNumber(maxAttempts, { min: 1, max: 100, fallback: ALERT_MAX_ATTEMPTS }),
+          safeError.retryable,
+          JSON.stringify(safeError),
+          nowIso,
+          ALERT_MAX_BACKOFF_SECONDS,
+          lease_owner || null,
+        ]
+      );
+      return { updated: Boolean(result.rows.length), dead_letter: result.rows[0]?.status === 'dead_letter', alert: result.rows[0] || null };
+    },
   };
 }
 
@@ -1305,40 +1558,85 @@ async function handleSignedStatusRequest({ reqLike, rawBody, env = process.env, 
   };
 }
 
-async function drainAlertOutbox({ store, sender = null, env = process.env } = {}) {
-  if (!truthy(env.OT89_REAL_TELEGRAM_DELIVERY_ENABLED)) {
-    return { attempted: false, sent: 0, skipped: true, reason: 'real_telegram_delivery_disabled' };
+async function drainAlertOutbox({
+  store,
+  sender = null,
+  env = process.env,
+  leaseOwner = 'ot89b-alert-drain',
+  batchSize = 10,
+  leaseSeconds = ALERT_LEASE_SECONDS,
+  maxAttempts = ALERT_MAX_ATTEMPTS,
+  now = new Date(),
+} = {}) {
+  const gate = telegramDrainGate({ env });
+  if (!gate.ok) {
+    return { attempted: false, sent: 0, failed: 0, dead_lettered: 0, skipped: true, reason: gate.reason };
   }
-  if (!store || typeof store.listAlerts !== 'function') {
-    return { attempted: false, sent: 0, skipped: true, reason: 'alert_store_unavailable' };
+  if (!store || typeof store.claimAlertBatch !== 'function') {
+    return { attempted: false, sent: 0, failed: 0, dead_lettered: 0, skipped: true, reason: 'alert_store_unavailable' };
   }
-  const alerts = await store.listAlerts();
+  const nowDateValue = now instanceof Date ? now : new Date(now);
+  const alerts = await store.claimAlertBatch({ leaseOwner, batchSize, leaseSeconds, now: nowDateValue });
   let sent = 0;
-  for (const alert of alerts.filter((item) => item.status === 'pending')) {
-    if (sender) {
-      await sender(alert.payload);
+  let failed = 0;
+  let deadLettered = 0;
+  for (const alert of alerts) {
+    try {
+      let sendResult = null;
+      if (sender) {
+        sendResult = await sender(alert.payload, alert);
+      } else {
+        sendResult = await notifySuperAdminSupportTicket({
+          ticket: {
+            id: alert.payload.support_ticket_id,
+            ticket_number: alert.payload.bna_ticket_ref,
+            title: alert.payload.summary,
+            severity: alert.payload.severity,
+            category: alert.payload.category,
+            workspace_key: 'rabbi_sheller_provider',
+            project_key: 'one_time_mishnah_class',
+          },
+          context: {
+            source: 'ot89b_alert_outbox',
+            reviewPath: alert.payload.deep_link,
+            requested_result: 'Review One Time subscriber support ticket.',
+          },
+        });
+      }
+      if (sendResult && sendResult.sent === false) {
+        throw new Ot89Error('Telegram alert sender did not send', {
+          statusCode: 503,
+          reasonCode: compact(sendResult.blocker || 'telegram_alert_not_sent', 100).replace(/[^a-z0-9_:-]/gi, '_'),
+          retryable: true,
+        });
+      }
+      if (typeof store.markAlertSent === 'function') {
+        await store.markAlertSent({
+          id: alert.id,
+          alert_key: alert.alert_key,
+          lease_owner: alert.lease_owner || leaseOwner,
+          lease_generation: alert.lease_generation,
+          sent_at: nowDateValue,
+        });
+      }
       sent += 1;
-    } else {
-      await notifySuperAdminSupportTicket({
-        ticket: {
-          id: alert.payload.support_ticket_id,
-          ticket_number: alert.payload.bna_ticket_ref,
-          title: alert.payload.summary,
-          severity: alert.payload.severity,
-          category: alert.payload.category,
-          workspace_key: 'rabbi_sheller_provider',
-          project_key: 'one_time_mishnah_class',
-        },
-        context: {
-          source: 'ot89b_alert_outbox',
-          reviewPath: alert.payload.deep_link,
-          requested_result: 'Review One Time subscriber support ticket.',
-        },
-      });
-      sent += 1;
+    } catch (error) {
+      failed += 1;
+      if (typeof store.markAlertFailed === 'function') {
+        const result = await store.markAlertFailed({
+          id: alert.id,
+          alert_key: alert.alert_key,
+          lease_owner: alert.lease_owner || leaseOwner,
+          lease_generation: alert.lease_generation,
+          error,
+          maxAttempts,
+          now: nowDateValue,
+        });
+        if (result?.dead_letter) deadLettered += 1;
+      }
     }
   }
-  return { attempted: true, sent, skipped: false };
+  return { attempted: true, claimed: alerts.length, sent, failed, dead_lettered: deadLettered, skipped: false };
 }
 
 function errorResponse(error) {
@@ -1457,6 +1755,8 @@ module.exports = {
   BNA_REF_PATTERN,
   CONTRACT_VERSION,
   DIAGNOSTIC_OPERATION_CODES,
+  ALERT_LEASE_SECONDS,
+  ALERT_MAX_ATTEMPTS,
   EVENT_PATH,
   EVENT_TYPE,
   MAX_BODY_BYTES,
@@ -1466,6 +1766,7 @@ module.exports = {
   STATUS_PATH,
   TIMESTAMP_SKEW_SECONDS,
   Ot89Error,
+  alertBackoffSeconds,
   buildAlertPayload,
   calculateSla,
   canonicalString,
@@ -1490,6 +1791,7 @@ module.exports = {
   sanitizeEventForStorage,
   sha256Hex,
   stableStringify,
+  telegramDrainGate,
   validateAuthorizationSemantics,
   validateDiagnosticRequest,
   validateStatusRequestSchema,

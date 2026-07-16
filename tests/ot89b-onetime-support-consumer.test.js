@@ -337,8 +337,116 @@ test('decision tokens deny wrong identity and allow one protected use', async ()
   );
 });
 
+test('alert drain refuses real Telegram until BNA bot ownership is proven', async () => {
+  const store = consumer.createMemoryStore({ idFactory: () => 'bna_01J00000000000000000000009' });
+  await consumer.ingestSignedSupportEvent({ ...signedRequest(baseEvent()), env: env(), store, now: FIXED_NOW });
+  const result = await consumer.drainAlertOutbox({
+    store,
+    env: { OT89_REAL_TELEGRAM_DELIVERY_ENABLED: 'true' },
+    sender: async () => {
+      throw new Error('should not send');
+    },
+  });
+  assert.equal(result.skipped, true);
+  assert.equal(result.reason, 'bna_bot_sole_owner_not_verified');
+  assert.equal((await store.listAlerts())[0].status, 'pending');
+});
+
+test('alert outbox leases, backs off, retries, and sends exactly once', async () => {
+  const store = consumer.createMemoryStore({ idFactory: () => 'bna_01J00000000000000000000009' });
+  await consumer.ingestSignedSupportEvent({ ...signedRequest(baseEvent()), env: env(), store, now: FIXED_NOW });
+  const drainEnv = {
+    OT89_REAL_TELEGRAM_DELIVERY_ENABLED: 'true',
+    OT89_BNA_BOT_SOLE_OWNER_VERIFIED: 'true',
+  };
+  let calls = 0;
+  const first = await consumer.drainAlertOutbox({
+    store,
+    env: drainEnv,
+    leaseOwner: 'test-worker',
+    now: new Date(FIXED_NOW),
+    sender: async () => {
+      calls += 1;
+      throw new Error('Telegram outage token=super-secret-test-value');
+    },
+  });
+  assert.equal(first.claimed, 1);
+  assert.equal(first.sent, 0);
+  assert.equal(first.failed, 1);
+  let alert = (await store.listAlerts())[0];
+  assert.equal(alert.status, 'failed');
+  assert.equal(alert.attempts, 1);
+  assert.match(alert.last_error, /\[redacted-secret\]/);
+
+  const immediate = await consumer.drainAlertOutbox({
+    store,
+    env: drainEnv,
+    leaseOwner: 'test-worker',
+    now: new Date(FIXED_NOW),
+    sender: async () => {
+      calls += 1;
+      return { sent: true };
+    },
+  });
+  assert.equal(immediate.claimed, 0);
+
+  const retryAfter = new Date(Date.parse(alert.next_attempt_at) + 1000);
+  const second = await consumer.drainAlertOutbox({
+    store,
+    env: drainEnv,
+    leaseOwner: 'test-worker',
+    now: retryAfter,
+    sender: async () => {
+      calls += 1;
+      return { sent: true, message_id: 123 };
+    },
+  });
+  assert.equal(second.claimed, 1);
+  assert.equal(second.sent, 1);
+  assert.equal(second.failed, 0);
+  alert = (await store.listAlerts())[0];
+  assert.equal(alert.status, 'sent');
+  assert.equal(alert.attempts, 2);
+  assert.equal(calls, 2);
+
+  const third = await consumer.drainAlertOutbox({
+    store,
+    env: drainEnv,
+    leaseOwner: 'test-worker',
+    now: new Date(retryAfter.getTime() + 120000),
+    sender: async () => {
+      calls += 1;
+      return { sent: true };
+    },
+  });
+  assert.equal(third.claimed, 0);
+  assert.equal(calls, 2);
+});
+
+test('alert outbox dead-letters after bounded attempts', async () => {
+  const store = consumer.createMemoryStore({ idFactory: () => 'bna_01J00000000000000000000009' });
+  await consumer.ingestSignedSupportEvent({ ...signedRequest(baseEvent()), env: env(), store, now: FIXED_NOW });
+  const result = await consumer.drainAlertOutbox({
+    store,
+    env: {
+      OT89_REAL_TELEGRAM_DELIVERY_ENABLED: 'true',
+      OT89_BNA_BOT_SOLE_OWNER_VERIFIED: 'true',
+    },
+    maxAttempts: 1,
+    now: new Date(FIXED_NOW),
+    sender: async () => {
+      throw new Error('permanent telegram failure');
+    },
+  });
+  assert.equal(result.dead_lettered, 1);
+  const alert = (await store.listAlerts())[0];
+  assert.equal(alert.status, 'dead_letter');
+  assert.ok(alert.dead_lettered_at);
+});
+
 test('server hook, route registry, operator page, and migration cover OT-89B surfaces', () => {
   const server = fs.readFileSync('server.js', 'utf8');
+  const source = fs.readFileSync('src/lib/bna/support/one-time-support-consumer.js', 'utf8');
   const migration = fs.readFileSync('migrations/20260716-ot89b-onetime-support-consumer.sql', 'utf8');
   const page = fs.readFileSync('public/onetime-support-ticket.html', 'utf8');
   const routes = new Map(JSON.parse(fs.readFileSync('ops/route-registry.json', 'utf8')).routes.map((route) => [route.route, route]));
@@ -347,6 +455,10 @@ test('server hook, route registry, operator page, and migration cover OT-89B sur
   assert.match(server, /one-time-support-consumer/);
   assert.match(migration, /CREATE TABLE IF NOT EXISTS bna_onetime_support_events/);
   assert.match(migration, /bna_onetime_support_alert_outbox/);
+  assert.match(migration, /lease_owner TEXT/);
+  assert.match(migration, /dead_letter/);
+  assert.match(source, /FOR UPDATE SKIP LOCKED/);
+  assert.match(source, /OT89_BNA_BOT_SOLE_OWNER_VERIFIED/);
   assert.match(page, /api\/bna\/onetime\/support-tickets/);
   assert.match(page, /Unauthorized/);
   assert.doesNotMatch(page, /operations\.html/);
