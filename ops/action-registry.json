@@ -12,6 +12,82 @@
   },
   "actions": [
     {
+      "action_id": "ACTION-OT89B-SUPPORT-EVENT-INGEST",
+      "label": "Ingest One Time support event",
+      "surface": "internal_one_time_support_bridge",
+      "route": "/api/internal/integrations/onetime/support-events/v1",
+      "selector_hint": "signed POST with X-OT89-* headers",
+      "expected_behavior": "Accepts only the frozen signed OT89 v1 support event, validates active One Time subscriber authorization, and idempotently creates or returns one authoritative BNA support ticket reference.",
+      "permission": "private HMAC key plus active One Time entitlement assertion",
+      "status": "active_feature_flagged_default_off",
+      "handler": "installOneTimeSupportConsumerRoutes + ingestSignedSupportEvent",
+      "test": {
+        "type": "unit_contract_security",
+        "expected_result": "tests/ot89b-onetime-support-consumer.test.js covers contract hash, HMAC vector, valid ingest, duplicate, replay, collisions, entitlement failures, and redaction."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-OT89B-SUPPORT-STATUS-READ",
+      "label": "Read One Time support status",
+      "surface": "internal_one_time_support_bridge",
+      "route": "/api/internal/integrations/onetime/support-ticket-status/v1",
+      "selector_hint": "signed POST with source_ticket_id and onetime_account_id",
+      "expected_behavior": "Returns only the frozen status projection DTO for the matching One Time source ticket and account, without synchronous One Time UI calls or private BNA data.",
+      "permission": "private HMAC key",
+      "status": "active_feature_flagged_default_off",
+      "handler": "handleSignedStatusRequest",
+      "test": {
+        "type": "unit_contract_security",
+        "expected_result": "tests/ot89b-onetime-support-consumer.test.js verifies the status seam response fields exactly."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-OT89B-OPERATOR-TICKET-OPEN",
+      "label": "Open One Time support ticket",
+      "surface": "one_time_support_operator_view",
+      "route": "/operations/onetime/support-tickets/:bnaTicketRef",
+      "selector_hint": "Telegram alert deep link or direct operations URL with opaque bna_ reference",
+      "expected_behavior": "Loads a lightweight protected single-ticket page with sanitized summary, classification, SLA, owner queue, attachment status, and bounded history.",
+      "permission": "operations user",
+      "status": "active",
+      "handler": "GET /operations/onetime/support-tickets/:bnaTicketRef and GET /api/bna/onetime/support-tickets/:bnaTicketRef",
+      "test": {
+        "type": "static_and_unit",
+        "expected_result": "tests/ot89b-onetime-support-consumer.test.js verifies the page/API hook and privacy states."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-OT89B-TELEGRAM-TICKET-DECISION",
+      "label": "Decide One Time support alert",
+      "surface": "academy_telegram_bot",
+      "route": "telegram callback token",
+      "selector_hint": "opaque ot89 support decision token in alert payload",
+      "expected_behavior": "Allows only the protected configured operator identity to consume an opaque expiring single-use token; duplicate, wrong identity, expired, invalid, and stale callbacks are denied and audited.",
+      "permission": "protected super-admin Telegram identity",
+      "status": "mock_tested_real_delivery_default_off",
+      "handler": "consumeDecisionToken",
+      "test": {
+        "type": "unit_mock",
+        "expected_result": "tests/ot89b-onetime-support-consumer.test.js verifies wrong identity denial, one successful protected use, and duplicate denial."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-OPERATIONS-HELPER-OPEN",
       "label": "BNA Helper",
       "surface": "operations",
@@ -26,6 +102,86 @@
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-SCHOOL-ADMIN-TAB-NAV",
+      "label": "School section navigation",
+      "surface": "operations_school_admin",
+      "route": "/operations/school",
+      "selector_hint": "[data-school-admin-surface] [data-view][data-action-id=\"ACTION-SCHOOL-ADMIN-TAB-NAV\"]",
+      "expected_behavior": "Switches between the focused School Dashboard, Students, Families, Classes, Attendance, and Progress sections without loading Control Plane, provider, One Time, deployment, integration, or global-agent modules.",
+      "permission": "super_admin_or_school_admin",
+      "status": "active",
+      "handler": "public/js/school-admin.js tab click handler",
+      "test": {
+        "type": "node_test_and_budget",
+        "expected_result": "tests/school-admin-speed-surface.test.js and npm run school-admin:perf:budget verify route isolation and visible School navigation."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-SCHOOL-ADMIN-REFRESH",
+      "label": "Refresh School data",
+      "surface": "operations_school_admin",
+      "route": "/operations/school",
+      "selector_hint": "[data-school-admin-surface] [data-action-id=\"ACTION-SCHOOL-ADMIN-REFRESH\"]",
+      "expected_behavior": "Runs the bounded School summary refresh/search request only against /api/bna/school-admin/summary with stale-request cancellation and no external write.",
+      "permission": "super_admin_or_school_admin",
+      "status": "active",
+      "handler": "GET /api/bna/school-admin/summary",
+      "test": {
+        "type": "node_test_and_budget",
+        "expected_result": "tests/school-admin-speed-surface.test.js verifies the client only calls the School summary endpoint before useful action."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-SCHOOL-ADMIN-ROW-OPEN",
+      "label": "Open School row",
+      "surface": "operations_school_admin",
+      "route": "/operations/school",
+      "selector_hint": "[data-school-admin-surface] [data-action-id=\"ACTION-SCHOOL-ADMIN-ROW-OPEN\"]",
+      "expected_behavior": "Opens an already-loaded School student, family, class, attendance, or progress row in the local detail panel without fetching unrelated workspace data or performing a write.",
+      "permission": "super_admin_or_school_admin",
+      "status": "active",
+      "handler": "public/js/school-admin.js row-open handler",
+      "test": {
+        "type": "node_test",
+        "expected_result": "tests/school-admin-speed-surface.test.js verifies row-open action coverage and local-only handler wiring."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-SCHOOL-ADMIN-PORTAL-LINK",
+      "label": "Open School portal",
+      "surface": "operations_school_admin",
+      "route": "/operations/school",
+      "selector_hint": "[data-school-admin-surface] [data-action-id=\"ACTION-SCHOOL-ADMIN-PORTAL-LINK\"]",
+      "expected_behavior": "Navigates to the existing parent or student portal route without creating access codes, sends, payments, or cross-workspace grants.",
+      "permission": "super_admin_or_school_admin",
+      "status": "active",
+      "handler": "same-origin /parent and /student links",
+      "test": {
+        "type": "node_test",
+        "expected_result": "tests/school-admin-speed-surface.test.js verifies the links target only same-origin School portal routes."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
         "GOAL-CORE-010"
       ]
     },

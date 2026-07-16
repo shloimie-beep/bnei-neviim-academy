@@ -1,0 +1,76 @@
+{
+  "report_version": "school-admin-performance-static-v1",
+  "generated_at": "2026-07-15T14:26:31.867Z",
+  "commit": "",
+  "files": [
+    {
+      "path": "public/school-admin.html",
+      "bytes": 3019,
+      "gzip_bytes": 961
+    },
+    {
+      "path": "public/css/school-admin.css",
+      "bytes": 6210,
+      "gzip_bytes": 1662
+    },
+    {
+      "path": "public/js/school-admin.js",
+      "bytes": 15586,
+      "gzip_bytes": 3945
+    },
+    {
+      "path": "server.js",
+      "bytes": 4230594,
+      "gzip_bytes": 811245
+    },
+    {
+      "path": "ops/route-registry.json",
+      "bytes": 121816,
+      "gzip_bytes": 14649
+    },
+    {
+      "path": "ops/action-registry.json",
+      "bytes": 172789,
+      "gzip_bytes": 26013
+    }
+  ],
+  "initial_requests_before_useful_action": {
+    "document": 1,
+    "css": 1,
+    "js": 1,
+    "school_api": 1,
+    "total": 4
+  },
+  "useful_action_markers": {
+    "shell_ready": true,
+    "useful_action": true,
+    "measure": true,
+    "test_visible_dataset": true
+  },
+  "route_contract": {
+    "page_registered": true,
+    "api_registered": true,
+    "page_registry": true,
+    "api_registry": true,
+    "action_registry": true
+  },
+  "api_bounds": {
+    "default_limit": true,
+    "max_limit": true,
+    "sql_limit": true,
+    "masks_contacts": true,
+    "no_store": true,
+    "project_scope_guard": true
+  },
+  "excluded_initial_assets": {
+    "operations_shell": true,
+    "operations_deferred_renderers": true,
+    "one_time_runtime": true,
+    "provider_runtime": true,
+    "integrations_runtime": true
+  },
+  "browser_measurement": {
+    "status": "not_run_by_static_audit",
+    "blocker": "Run with installed npm dependencies, an authenticated local/staging session, and the CODEX-01 browser harness for 30 cold and warm samples."
+  }
+}

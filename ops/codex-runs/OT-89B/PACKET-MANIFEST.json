@@ -1,0 +1,102 @@
+﻿{
+    "task_id":  "OT-89B",
+    "packet_zip":  "C:\\Users\\User\\Downloads\\OT-89B-CODEX-PACKET.zip",
+    "packet_zip_sha256":  "71d6f342de59870b86b6e930c4f5d21fcd500b502a93860e43c87296252d7f37",
+    "extracted_dir":  "C:\\Users\\User\\AppData\\Local\\Temp\\codex-ot89b-packet-20260716-085632",
+    "validation":  {
+                       "manifest":  true,
+                       "checksums":  true,
+                       "paths_safe":  true,
+                       "symlinks":  false,
+                       "extracted":  true,
+                       "sha256sums_self_hashed":  false
+                   },
+    "files":  [
+                  {
+                      "path":  "ACCEPTANCE-CHECKLIST.md",
+                      "bytes":  4081,
+                      "sha256":  "3bd032cc5eceae7fbef755822797d90c4810fe566604b4acc27b8cc74c1b80e4"
+                  },
+                  {
+                      "path":  "CODEX-LAUNCHER.txt",
+                      "bytes":  917,
+                      "sha256":  "d95207371cad4a454aacf3affe1a02c534d54f09743c10794e3f579bb168c0e6"
+                  },
+                  {
+                      "path":  "CODEX-PROMPT.md",
+                      "bytes":  21848,
+                      "sha256":  "ed4a9ab82d202244b26ee675a516cd45d7c024f291c2244a84c0c28c5099558a"
+                  },
+                  {
+                      "path":  "MANIFEST.json",
+                      "bytes":  931,
+                      "sha256":  "e9e414924ff24ced05e4c9f76d111f28a806e71a5ed526a08669f78cef23cb39"
+                  },
+                  {
+                      "path":  "README-FIRST.md",
+                      "bytes":  1780,
+                      "sha256":  "e8cba8000763814ff28e4343114ab676c2e0aafcd35e73758999f7350c169aa6"
+                  },
+                  {
+                      "path":  "SHA256SUMS.txt",
+                      "bytes":  502,
+                      "sha256":  "f72057e8de5903906c33e703282ca36202d530c198a53d9670d8d3cc43d89ed2"
+                  },
+                  {
+                      "path":  "SOURCE-PINS.json",
+                      "bytes":  2376,
+                      "sha256":  "103d872ad7e264d3efc9c826384b249b92913212dc8cf19985c4217614badab5"
+                  }
+              ],
+    "source_pins":  {
+                        "task_id":  "OT-89B",
+                        "created_date":  "2026-07-16",
+                        "bna_repository":  "https://github.com/shloimie-beep/bnei-neviim-academy.git",
+                        "bna_repository_full_name":  "shloimie-beep/bnei-neviim-academy",
+                        "bna_default_branch_observed":  "master",
+                        "bna_default_head_observed":  "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+                        "bna_base_policy":  "Fetch the remote. Use the current remote default branch unless a repository-visible record explicitly marks another remote commit as the accepted BNA control-plane base. Never use an uncommitted local checkout or an unfinished draft separation PR as the base.",
+                        "onetime_repository_full_name":  "webcraft-media/onetimev2",
+                        "ot89a_pr":  36,
+                        "ot89a_contract_commit":  "0fe1b4668170f608d8763fb52d11b30f0150feb2",
+                        "ot89a_contract_path":  "ops/codex-runs/OT-89A/SUPPORT-EVENT-CONTRACT.json",
+                        "ot89a_contract_sha256":  "cfcd0ac55cbf9e59d7fefc7779af1aa5112fb410ee510882cb843492a556e512",
+                        "contract_version":  "1.0.0",
+                        "event_type":  "onetime.support.ticket.submitted.v1",
+                        "ingress_path":  "/api/internal/integrations/onetime/support-events/v1",
+                        "status_path":  "/api/internal/integrations/onetime/support-ticket-status/v1",
+                        "existing_bna_architecture":  {
+                                                          "ticket_tables":  [
+                                                                                "bna_support_tickets",
+                                                                                "bna_support_ticket_comments"
+                                                                            ],
+                                                          "helper_tool_registry":  "src/lib/bna/helper/tool-registry.js",
+                                                          "problem_resolution":  "src/platform/assistant/problem-resolution.js",
+                                                          "routing_contract":  "docs/architecture/bot-context-and-ticket-routing.md",
+                                                          "telegram_notifications":  "src/lib/bna/telegram-notifications.js",
+                                                          "telegram_bridge":  "scripts/telegram-kimi-bridge.mjs",
+                                                          "action_registry":  "ops/action-registry.json",
+                                                          "route_registry":  "ops/route-registry.json"
+                                                      },
+                        "collision_prs":  [
+                                              {
+                                                  "pr":  134,
+                                                  "branch":  "codex/bna-sep-01-speed-stabilization-20260715T135234Z",
+                                                  "head":  "d23cbc2f321b55ea073b0bb0ee5c887bf7be50a7",
+                                                  "status":  "IMPLEMENTED_NEEDS_MEASUREMENT"
+                                              },
+                                              {
+                                                  "pr":  135,
+                                                  "branch":  "codex/bna-sep-02-dor-gate-20260715T143000Z",
+                                                  "head":  "c5d4163d5e912b627dc077b4d0e8c13d2554594c",
+                                                  "status":  "BLOCKED_DEFINITION_OF_READY"
+                                              }
+                                          ],
+                        "implementation_branch":  "codex/ot89b-bna-support-consumer",
+                        "preferred_worktree":  "C:\\Users\\User\\BNA-ot89b-support-consumer",
+                        "dirty_checkout_forbidden":  "C:\\Users\\User\\BNA v2.0"
+                    },
+    "dirty_checkout_baseline":  {
+
+                                }
+}

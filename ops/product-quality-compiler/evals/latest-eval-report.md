@@ -1,6 +1,6 @@
 # Product Quality Compiler Eval Report
 
-Generated: 2026-07-02T18:02:42.670Z
+Generated: 2026-07-16T19:36:46.711Z
 Passed: 8
 Failed: 0
 Invalid fixture checks passed: 7/7
@@ -56,3 +56,4 @@ Fixture: `ops/product-quality-compiler/fixtures/valid-v3-browser-prompt-injectio
 | `ops/product-quality-compiler/fixtures/invalid-no-view-class.json` | PASS | PQC_MISSING_VIEW_CLASS | PQC_MISSING_VIEW_CLASS, PQC_MISSING_STATE_MATRIX, PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI |
 | `ops/product-quality-compiler/fixtures/invalid-ui-no-screenshots.json` | PASS | PQC_MISSING_SCREENSHOTS | PQC_MISSING_STATE_MATRIX, PQC_MISSING_SCREENSHOTS, PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI |
 | `ops/product-quality-compiler/fixtures/invalid-vague-clean-only.json` | PASS | PQC_VAGUE_UNEXPANDED | PQC_MISSING_STATE_MATRIX, PQC_MISSING_SCREENSHOTS, PQC_VAGUE_UNEXPANDED, PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI |
+

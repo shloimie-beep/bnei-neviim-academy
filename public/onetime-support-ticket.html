@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>One Time Support Ticket</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #132238;
+      --muted: #5b6675;
+      --line: #d8e0e8;
+      --paper: #f8faf7;
+      --panel: #ffffff;
+      --teal: #0f8a8d;
+      --navy: #112b46;
+      --yellow: #f2c94c;
+      --danger: #a33b3b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 15px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    header {
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+    .wrap {
+      width: min(1040px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 18px 0;
+    }
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(20px, 3vw, 30px);
+      letter-spacing: 0;
+      color: var(--navy);
+    }
+    .ref {
+      font: 13px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+      color: var(--muted);
+      word-break: break-word;
+    }
+    main.wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.75fr);
+      gap: 18px;
+      padding-top: 18px;
+    }
+    section, aside {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+    dl {
+      display: grid;
+      grid-template-columns: 138px minmax(0, 1fr);
+      gap: 8px 12px;
+      margin: 0;
+    }
+    dt { color: var(--muted); }
+    dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+    .summary {
+      padding: 12px;
+      border-left: 4px solid var(--teal);
+      background: #eef7f6;
+      margin-bottom: 14px;
+    }
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 14px;
+    }
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: #fff;
+      color: var(--navy);
+      font-size: 13px;
+    }
+    .pill.strong {
+      border-color: var(--teal);
+      color: var(--teal);
+      font-weight: 650;
+    }
+    .history {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+    .history li {
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+    .empty, .error {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+    .error { border-color: #e7b6b6; color: var(--danger); }
+    a.button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 0 12px;
+      border-radius: 6px;
+      border: 1px solid var(--navy);
+      background: var(--navy);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 650;
+    }
+    a.button:focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 2px;
+    }
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 20px, 1040px); }
+      .topline { align-items: flex-start; flex-direction: column; }
+      main.wrap { grid-template-columns: 1fr; }
+      dl { grid-template-columns: 1fr; }
+      dt { font-weight: 650; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap topline">
+      <div>
+        <h1>One Time Support Ticket</h1>
+        <div class="ref" id="ticketRef">Loading...</div>
+      </div>
+      <a class="button" href="/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=admin&section=tickets">Operations</a>
+    </div>
+  </header>
+  <main class="wrap" id="app" aria-live="polite">
+    <section class="empty">Loading ticket...</section>
+  </main>
+  <script>
+    const app = document.getElementById('app');
+    const ticketRefEl = document.getElementById('ticketRef');
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const ticketRef = pathParts[pathParts.length - 1] || '';
+    ticketRefEl.textContent = ticketRef || 'No ticket reference';
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      }[char]));
+    }
+
+    function fmt(value) {
+      if (!value) return 'Not set';
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+    }
+
+    function render(ticket) {
+      app.innerHTML = `
+        <section>
+          <div class="status-row">
+            <span class="pill strong">${escapeHtml(ticket.status)}</span>
+            <span class="pill">${escapeHtml(ticket.severity)}</span>
+            <span class="pill">${escapeHtml(ticket.classification)}</span>
+          </div>
+          <div class="summary">${escapeHtml(ticket.public_summary)}</div>
+          <h2>Ticket</h2>
+          <dl>
+            <dt>Reference</dt><dd>${escapeHtml(ticket.bna_ticket_ref)}</dd>
+            <dt>Ticket number</dt><dd>${escapeHtml(ticket.ticket_number || '')}</dd>
+            <dt>Source ticket</dt><dd>${escapeHtml(ticket.source_ticket_id || '')}</dd>
+            <dt>Category</dt><dd>${escapeHtml(ticket.category)}</dd>
+            <dt>Owner queue</dt><dd>${escapeHtml(ticket.owner_queue)}</dd>
+            <dt>Status version</dt><dd>${Number(ticket.status_version || 1)}</dd>
+          </dl>
+          <h2 style="margin-top:18px">History</h2>
+          <ul class="history">
+            ${(ticket.history || []).length ? ticket.history.map((item) => `
+              <li>
+                <strong>${escapeHtml(item.transition || item.event || 'update')}</strong>
+                <div>${escapeHtml(item.summary || item.status || '')}</div>
+                <small>${escapeHtml(fmt(item.created_at || item.at))}</small>
+              </li>
+            `).join('') : '<li>No history yet.</li>'}
+          </ul>
+        </section>
+        <aside>
+          <h2>Triage</h2>
+          <dl>
+            <dt>Confidence</dt><dd>${Math.round(Number(ticket.confidence || 0) * 100)}%</dd>
+            <dt>Reason</dt><dd>${escapeHtml(ticket.classification_reason)}</dd>
+            <dt>SLA due</dt><dd>${escapeHtml(fmt(ticket.sla && ticket.sla.due_at))}</dd>
+            <dt>Attachments</dt><dd>${(ticket.attachment_status || []).length ? ticket.attachment_status.map((item) => escapeHtml(item.filename)).join(', ') : 'None'}</dd>
+          </dl>
+        </aside>
+      `;
+    }
+
+    async function load() {
+      if (!/^bna_[0-9A-HJKMNP-TV-Z]{26}$/.test(ticketRef)) {
+        app.innerHTML = '<section class="error">Invalid ticket reference.</section>';
+        return;
+      }
+      try {
+        const res = await fetch(`/api/bna/onetime/support-tickets/${encodeURIComponent(ticketRef)}`, { credentials: 'same-origin' });
+        if (res.status === 401 || res.status === 403) {
+          app.innerHTML = '<section class="error">Unauthorized.</section>';
+          return;
+        }
+        if (res.status === 404) {
+          app.innerHTML = '<section class="empty">Ticket not found.</section>';
+          return;
+        }
+        if (!res.ok) throw new Error('Ticket request failed');
+        const data = await res.json();
+        render(data.ticket);
+      } catch (error) {
+        app.innerHTML = `<section class="error">${escapeHtml(error.message || 'Could not load ticket.')}</section>`;
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>

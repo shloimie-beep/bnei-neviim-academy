@@ -1,0 +1,28 @@
+﻿{
+    "task_id":  "OT-89B",
+    "bna_repository":  "https://github.com/shloimie-beep/bnei-neviim-academy.git",
+    "bna_remote_master_verified_sha":  "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+    "bna_base_policy_result":  "origin/master matched packet-observed SHA via git ls-remote; local object clone fallback used after GitHub clone fetch-pack failures.",
+    "worktree":  "C:\\Users\\User\\BNA-ot89b-support-consumer-local-20260716-0909",
+    "branch":  "codex/ot89b-bna-support-consumer",
+    "base_sha":  "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+    "origin":  "https://github.com/shloimie-beep/bnei-neviim-academy.git",
+    "contract":  {
+                     "repository":  "webcraft-media/onetimev2",
+                     "commit":  "0fe1b4668170f608d8763fb52d11b30f0150feb2",
+                     "path":  "ops/codex-runs/OT-89A/SUPPORT-EVENT-CONTRACT.json",
+                     "sha256":  "cfcd0ac55cbf9e59d7fefc7779af1aa5112fb410ee510882cb843492a556e512",
+                     "version":  "1.0.0",
+                     "event_type":  "onetime.support.ticket.submitted.v1"
+                 },
+    "feature_modes":  {
+                          "ingress_acceptance":  "default_off",
+                          "real_telegram_delivery":  "default_off",
+                          "real_attachment_fetch":  "default_off",
+                          "read_only_diagnostics":  "default_off",
+                          "outbound_status_notification":  "default_off"
+                      },
+    "external_mutations_allowed":  false,
+    "production_actions_allowed":  false,
+    "created_at":  "2026-07-16T09:08:39.3523019+03:00"
+}

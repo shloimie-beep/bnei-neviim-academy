@@ -1,0 +1,146 @@
+﻿[
+    {
+        "path":  "ops/codex-runs/OT-89A/ACCEPTANCE-MATRIX.md",
+        "type":  "blob",
+        "size":  12097,
+        "sha":  "be92322d606bc15ae950b6c88e5abd273b3085e1"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/AUTHORIZATION-MATRIX.md",
+        "type":  "blob",
+        "size":  8321,
+        "sha":  "a896f65f10a13a75ad7925d2dd50381414b4575c"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/CONTRACT-SHA256.txt",
+        "type":  "blob",
+        "size":  116,
+        "sha":  "e8aa91aa7dfbe007d02dc1df84e188f815e863bc"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/DECISIONS.md",
+        "type":  "blob",
+        "size":  1002,
+        "sha":  "364d5ee81274154b28e925b06801be8ec41869f2"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/DEPLOYMENT-CANARY.md",
+        "type":  "blob",
+        "size":  436,
+        "sha":  "b410f7eab74200f0fe52c5ccd2e2166106304ac6"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/DISCOVERY.md",
+        "type":  "blob",
+        "size":  1511,
+        "sha":  "baafa33590c748e5d6757f79864c7f988df7ac97"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/EXTERNAL-MUTATIONS.md",
+        "type":  "blob",
+        "size":  499,
+        "sha":  "19f5ed25de7ab87e2d8d24bcb7078689932080e9"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/FINAL.md",
+        "type":  "blob",
+        "size":  168,
+        "sha":  "7942719aadc606d54e54f32a1fd7106fa6723304"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/INPUTS.json",
+        "type":  "blob",
+        "size":  1208,
+        "sha":  "66abbf29a37c27d929e8c5296b7bc36f0ad94998"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/LOG.jsonl",
+        "type":  "blob",
+        "size":  507,
+        "sha":  "7e539b74926d4f132dc69591f7b67842a7322af3"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/MIGRATION-MANIFEST.md",
+        "type":  "blob",
+        "size":  232,
+        "sha":  "a0c4d439c655c07075b970774010181443618ada"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/ORIGINAL-PROMPT.md",
+        "type":  "blob",
+        "size":  4093,
+        "sha":  "c1d6cc5c6093a25363ec85cd08754e8d95140698"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/OT89A-ONETIME-PRODUCER",
+        "type":  "tree",
+        "size":  null,
+        "sha":  "5de9acdb1b34271b6c912b32d0c0ac6343c57ef3"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/OT89A-ONETIME-PRODUCER/CODEX-PROMPT.md",
+        "type":  "blob",
+        "size":  21896,
+        "sha":  "ba1f3482330fe098678cfa4d0c597a1f480ab7d7"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/PLAN.md",
+        "type":  "blob",
+        "size":  1199,
+        "sha":  "c759966243ccc9978c25d3902008ef928be8b63f"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/PR-BODY.md",
+        "type":  "blob",
+        "size":  796,
+        "sha":  "c268e83d1f6231bdc62f5c661253226595f85a75"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/RECEIPT.json",
+        "type":  "blob",
+        "size":  1213,
+        "sha":  "1ac19d559fccbb4cb5db1300f276343106ef5ea3"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/RESUME.md",
+        "type":  "blob",
+        "size":  1133,
+        "sha":  "691abb0f6ab9fc18348bad579531a107e4bb4747"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/SHA256SUMS.txt",
+        "type":  "blob",
+        "size":  560,
+        "sha":  "17d16cf09f1fbd57c5504342e7b74e139ad239cf"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/STATE.json",
+        "type":  "blob",
+        "size":  673,
+        "sha":  "b11612a5e824f9bcc283ac767c36e080c2c7b91b"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/SUPPORT-EVENT-CONTRACT.json",
+        "type":  "blob",
+        "size":  27223,
+        "sha":  "585054b0e70416389d346cda48497245852961e7"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/TASK.md",
+        "type":  "blob",
+        "size":  1524,
+        "sha":  "9b286d12943fb9c6a2a693c306c16bf0bae99cb9"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/TEST-RESULTS.md",
+        "type":  "blob",
+        "size":  549,
+        "sha":  "1e5b3ba3e6f77d1f2bef11241a04f1d55307833b"
+    },
+    {
+        "path":  "ops/codex-runs/OT-89A/TRIAGE-POLICY.md",
+        "type":  "blob",
+        "size":  12376,
+        "sha":  "afe9a14caaf11477354ed583d5b395429e8fcd13"
+    }
+]

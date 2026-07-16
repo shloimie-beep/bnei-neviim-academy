@@ -40410,3 +40410,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   auto-reply mutation, CRM production write, provider mutation, credential
   mutation, payment/access mutation, raw private payload logging, or destructive
   production mutation was performed.
+
+## 2026-07-16 - BNA-OPS-01 subscriber support consumer integrated locally
+
+- Integrated source heads `d23cbc2f321b55ea073b0bb0ee5c887bf7be50a7` and
+  `8861e9b0e9bf77ca9b74112cbb2d04b6fa2bfd88` on branch
+  `codex/bna-ops01-school-support-stabilization` from exact base
+  `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`.
+- Hardened the One Time subscriber support alert outbox with bounded leased
+  claims, lease owner/generation/expiry, retry/backoff, sent/failed/dead-letter
+  states, safe redacted errors, and `OT89_BNA_BOT_SOLE_OWNER_VERIFIED` gating
+  before any real Telegram delivery.
+- Verification passed: support consumer 14/14, merged school/action/support
+  suite 30/30, school performance budget, diff check, secret audit, PQC
+  validation/fixtures/evals, and protocol drift watchdog.
+- Remaining blocker: live synthetic Telegram canary requires safe BNA staging
+  and proof of sole ownership of the existing BNA bot token.
+- Guardrails: no production deployment, production customer contact, Telegram
+  send, email/WhatsApp send, credential mutation, payment/access mutation, or
+  production data mutation was performed.
