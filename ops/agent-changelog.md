@@ -40410,3 +40410,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   auto-reply mutation, CRM production write, provider mutation, credential
   mutation, payment/access mutation, raw private payload logging, or destructive
   production mutation was performed.
+
+## 2026-07-17 - BNA-OPS-02 One Time support consumer prepared
+
+- Added the signed BNA-side One Time subscriber-support consumer at
+  `/api/bna/integrations/one-time/support-tickets/v1`, before JSON middleware
+  so raw-body HMAC verification is fail-closed.
+- Reused `bna_support_tickets`, approval-gated source context,
+  `assistant_delivery_outbox`, and BNA operator Telegram alert formatting
+  instead of creating a second ticket system.
+- Added provider-off reverse status outbox storage and retry/dead-letter
+  contracts for received/triaged/decision-needed events.
+- Registered route/action coverage and refreshed action-registry generated
+  reports.
+- Verification passed: syntax checks, focused support/Rabbi Telegram tests
+  28/28, and action-registry watchdog 5/5.
+- Guardrails: no production runtime mutation, real Telegram send, Rabbi bot
+  token use, provider action, external send, charge, DNS, deployment,
+  credential mutation, automatic code execution from ticket, or Academy data
+  crossover was performed.

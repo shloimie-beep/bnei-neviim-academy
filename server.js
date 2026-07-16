@@ -147,6 +147,11 @@ const {
   notifyTelegramRoleAlias,
   sendTelegramMessage: sendScopedTelegramMessage,
 } = require('./src/lib/bna/telegram-notifications');
+const oneTimeSupportConsumer = require('./src/lib/bna/one-time-support-consumer');
+const {
+  ONE_TIME_SUPPORT_ENDPOINT_PATH,
+  createOneTimeSupportConsumerSQL,
+} = oneTimeSupportConsumer;
 const {
   buildProviderLeadBotPlan,
   classifyProviderLeadBotIntent,
@@ -11017,6 +11022,30 @@ app.post('/api/webhooks/stripe/rabbi', express.raw({ type: 'application/json', l
     res.json(result);
   } catch (err) {
     res.status(err.statusCode || 500).json({ success: false, error: err.message, blocker: err.blocker || undefined });
+  }
+});
+
+app.post(ONE_TIME_SUPPORT_ENDPOINT_PATH, express.raw({ type: 'application/json', limit: '64kb' }), async (req, res) => {
+  try {
+    const result = await oneTimeSupportConsumer.handleOneTimeSupportConsumerRequest({
+      db: pool,
+      rawBody: req.body,
+      headers: req.headers,
+      env: process.env,
+      now: new Date(),
+      reviewBaseUrl: configuredPublicBaseUrl(),
+      leaseOwner: 'bna-one-time-support-consumer-route',
+    });
+    res.status(result.statusCode || 202).json(result.body);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: err.publicMessage || err.message,
+      code: err.code || undefined,
+      no_send: true,
+      external_write_performed: false,
+      real_telegram_send_attempted: false,
+    });
   }
 });
 
@@ -35130,6 +35159,7 @@ async function initDb() {
     await pool.query(createSupportTicketsSQL);
     await pool.query(createTicketCompatibilityViewsSQL);
     await pool.query(createAssistantSQL);
+    await pool.query(createOneTimeSupportConsumerSQL);
     await pool.query(createBnaHelperSQL);
     await pool.query(createAgentRuntimeStatusSQL);
     await pool.query(normalizeTasksCategoryCheckSQL);
@@ -90362,9 +90392,20 @@ function isRabbiTelegramApprovalTicketContext(context = {}) {
     && String(context.relationship_scope || context.relationshipScope || '').trim() === 'one_time_external_admin_project_ticket';
 }
 
+function isOneTimeSupportConsumerTicketContext(context = {}) {
+  return String(context.workspace_key || context.workspaceKey || '').trim() === 'rabbi_sheller_provider'
+    && String(context.project_key || context.projectKey || '').trim() === 'one_time_mishnah_class'
+    && String(context.source || '').trim() === 'one_time_support_consumer'
+    && String(context.relationship_scope || context.relationshipScope || '').trim() === 'one_time_subscriber_support_ticket';
+}
+
+function isApprovalGatedSupportTicketContext(context = {}) {
+  return isRabbiTelegramApprovalTicketContext(context) || isOneTimeSupportConsumerTicketContext(context);
+}
+
 function supportTicketBlocksAutomaticTask(ticket = {}, body = {}) {
   const context = supportTicketContext(ticket.source_context || body.source_context || body.context);
-  if (isRabbiTelegramApprovalTicketContext(context)) return true;
+  if (isApprovalGatedSupportTicketContext(context)) return true;
   const status = safeSupportTicketStatus(ticket.status || body.status);
   if (['awaiting_super_admin_approval', 'needs_requester_information', 'kept_as_ticket', 'rejected'].includes(status)) return true;
   return Boolean(body.suppress_task_creation || body.suppressTaskCreation || body.requires_super_admin_approval || body.requiresSuperAdminApproval);
@@ -91092,10 +91133,14 @@ app.post('/api/bna/support-tickets/:id/approval-action', requireAdmin, async (re
     }
     const ticket = supportTicketView(ticketRow);
     const context = supportTicketContext(ticket.source_context);
-    if (!isRabbiTelegramApprovalTicketContext(context)) {
+    const oneTimeConsumerTicket = isOneTimeSupportConsumerTicketContext(context);
+    if (!isApprovalGatedSupportTicketContext(context)) {
       await client.query('ROLLBACK');
-      return res.status(400).json({ error: 'This approval action is only available for Rabbi One Time Telegram tickets.' });
+      return res.status(400).json({ error: 'This approval action is only available for approval-gated One Time support tickets.' });
     }
+    const approvalTicketLabel = oneTimeConsumerTicket ? 'One Time subscriber support ticket' : 'Rabbi Telegram support ticket';
+    const approvalSource = oneTimeConsumerTicket ? 'api' : 'telegram';
+    const approvalSourceChannel = oneTimeConsumerTicket ? 'one_time_support_consumer' : 'telegram';
     const idempotencyKey = String(req.body?.idempotency_key || req.body?.idempotencyKey || `${normalizedAction}:${ticket.id}`).slice(0, 180);
     const priorAction = context.super_admin_approval || {};
     if (priorAction.idempotency_key === idempotencyKey && priorAction.action === normalizedAction) {
@@ -91134,16 +91179,16 @@ app.post('/api/bna/support-tickets/:id/approval-action', requireAdmin, async (re
           : null;
       } else {
         task = await createTaskFromText({
-          title: `Approved Rabbi ticket ${ticket.ticket_number || `#${ticket.id}`}: ${ticket.title}`,
+          title: `Approved ${approvalTicketLabel} ${ticket.ticket_number || `#${ticket.id}`}: ${ticket.title}`,
           raw_text: ticket.description || ticket.title,
           notes: [
-            `Approved Rabbi Telegram support ticket ${ticket.ticket_number || `#${ticket.id}`}.`,
+            `Approved ${approvalTicketLabel} ${ticket.ticket_number || `#${ticket.id}`}.`,
             `Severity: ${ticket.severity}`,
             `Category: ${ticket.category}`,
             ticket.description || '',
           ].filter(Boolean).join('\n'),
-          source: 'telegram',
-          source_channel: 'telegram',
+          source: approvalSource,
+          source_channel: approvalSourceChannel,
           source_chat_id: context.chat_id || null,
           source_message_id: context.message_id || null,
           created_by: approver,
@@ -91159,10 +91204,14 @@ app.post('/api/bna/support-tickets/:id/approval-action', requireAdmin, async (re
             ...context,
             approval_action: 'approve_for_codex',
             support_ticket_id: ticket.id,
-            compiled_through: 'ramble_protocol_ticket_approval_v1',
+            compiled_through: oneTimeConsumerTicket
+              ? 'one_time_support_consumer_approval_v1'
+              : 'ramble_protocol_ticket_approval_v1',
           },
           ai_parsed: {
-            parser: 'rabbi-telegram-ticket-approval-v1',
+            parser: oneTimeConsumerTicket
+              ? 'one-time-support-consumer-approval-v1'
+              : 'rabbi-telegram-ticket-approval-v1',
             kind: 'ticket_handoff',
             support_ticket_id: ticket.id,
             workspace_key: 'rabbi_sheller_provider',
@@ -91173,12 +91222,14 @@ app.post('/api/bna/support-tickets/:id/approval-action', requireAdmin, async (re
         if (task?.id && !task.agent_job_id) {
           agentJob = await ensureAgentJobForTask({ ...task, project_key: ticket.project_key || ONE_TIME_PROJECT_KEY }, {
             agent_executable: true,
-            source: 'telegram',
-            source_channel: 'telegram',
+            source: approvalSource,
+            source_channel: approvalSourceChannel,
             source_chat_id: context.chat_id || null,
             source_message_id: context.message_id || null,
             ticket_id: ticket.id,
-            job_uid: `rabbi-ticket-${ticket.id}-approved-codex`,
+            job_uid: oneTimeConsumerTicket
+              ? `one-time-support-ticket-${ticket.id}-approved-codex`
+              : `rabbi-ticket-${ticket.id}-approved-codex`,
           }, client);
           task = await fetchTaskWithProject(task.id, client) || task;
         } else if (task?.agent_job_id) {
@@ -91213,15 +91264,15 @@ app.post('/api/bna/support-tickets/:id/approval-action', requireAdmin, async (re
       const update = await client.query(
         `UPDATE bna_support_tickets
          SET status = 'needs_requester_information',
-             assigned_to = 'Rabbi Elie Scheller',
-             source_context = $2::jsonb,
+             assigned_to = $2,
+             source_context = $3::jsonb,
              updated_at = NOW()
          WHERE id = $1
          RETURNING *`,
-        [ticket.id, JSON.stringify(actionContext)]
+        [ticket.id, oneTimeConsumerTicket ? 'Shloimie' : 'Rabbi Elie Scheller', JSON.stringify(actionContext)]
       );
       updatedTicket = supportTicketView(update.rows[0]);
-      commentBody = `Asked Rabbi for more information: ${question}`;
+      commentBody = `${oneTimeConsumerTicket ? 'Asked subscriber' : 'Asked Rabbi'} for more information: ${question}`;
       rabbiNotification = { status: 'needs_requester_information', question };
     }
 
@@ -91267,11 +91318,12 @@ app.post('/api/bna/support-tickets/:id/approval-action', requireAdmin, async (re
     if (commentBody) {
       await client.query(
         `INSERT INTO bna_support_ticket_comments (ticket_id, author, body, visibility, source, source_context)
-         VALUES ($1, $2, $3, 'project', 'telegram', $4::jsonb)`,
+         VALUES ($1, $2, $3, 'project', $4, $5::jsonb)`,
         [
           ticket.id,
           approver,
           commentBody,
+          approvalSource,
           JSON.stringify({
             action: normalizedAction,
             idempotency_key: idempotencyKey,
@@ -91283,7 +91335,7 @@ app.post('/api/bna/support-tickets/:id/approval-action', requireAdmin, async (re
     await client.query('COMMIT');
 
     let rabbi_notice = null;
-    if (rabbiNotification) {
+    if (rabbiNotification && !oneTimeConsumerTicket) {
       rabbi_notice = await notifyRabbiSupportTicketStatus({
         ticket: updatedTicket,
         context: rabbiNotification,
@@ -91292,6 +91344,15 @@ app.post('/api/bna/support-tickets/:id/approval-action', requireAdmin, async (re
         sent: false,
         blocker: error instanceof Error ? error.message : String(error),
       }));
+    } else if (rabbiNotification && oneTimeConsumerTicket) {
+      rabbi_notice = {
+        attempted: false,
+        sent: false,
+        blocker: 'one_time_subscriber_status_uses_signed_reverse_status_outbox',
+        provider_off: true,
+        no_send: true,
+        external_write_performed: false,
+      };
     }
 
     res.json({
@@ -93898,6 +93959,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createSupportTicketsSQL);
     await pool.query(createTicketCompatibilityViewsSQL);
     await pool.query(createAssistantSQL);
+    await pool.query(createOneTimeSupportConsumerSQL);
     await pool.query(createContentJobsSQL);
     await pool.query(createProjectMeetingsSQL);
     await pool.query(createClassSessionsSQL);

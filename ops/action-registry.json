@@ -1175,6 +1175,45 @@
       ]
     },
     {
+      "action_id": "ACTION-ONETIME-SUPPORT-CONSUMER-INTAKE",
+      "label": "Receive Signed Support Ticket",
+      "surface": "one_time_signed_support_consumer",
+      "route": "/api/bna/integrations/one-time/support-tickets/v1",
+      "selector_hint": "HTTPS POST with x-bna-onetime-event-id, x-bna-onetime-timestamp, and x-bna-onetime-signature",
+      "expected_behavior": "Validates the raw-body signature, replay window, event id, account/product allowlist, and signed entitlement proof; creates one BNA support ticket and queues a redacted platform operator Telegram alert without live send, provider mutation, Codex job, or Academy data crossover.",
+      "permission": "signed_one_time_support_producer",
+      "status": "active",
+      "test": {
+        "type": "synthetic_contract",
+        "expected_result": "Wrong signatures, altered bodies, stale/replayed events, wrong account/product, fake entitlement, oversized/malformed payloads, and attachments fail closed; valid fixtures persist once and queue provider-off reverse status events."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-SUPPORT-CONSUMER-OPERATOR-DECISION",
+      "label": "Decide Subscriber Ticket",
+      "surface": "super_admin_telegram_ticket_alert",
+      "route": "/api/bna/support-tickets/:id/approval-action",
+      "selector_hint": "Telegram callback ticket:approve|ask|keep|reject:<id> on source_context.relationship_scope=one_time_subscriber_support_ticket",
+      "expected_behavior": "Requires platform Super Admin, reuses the existing BNA support-ticket approval audit path, creates no task or job until explicit Approve for Codex, and keeps subscriber reverse-status delivery provider-off rather than sending through the Rabbi bot.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "test": {
+        "type": "synthetic_contract",
+        "expected_result": "Consumer ticket callbacks are idempotent, preserve source_context, record comments, do not notify Rabbi Telegram, and cannot bypass BNA capability/audit rules."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
       "action_id": "ACTION-ONETIME-RABBI-TICKET-APPROVE-CODEX",
       "label": "Approve for Codex",
       "surface": "super_admin_telegram_ticket_alert",

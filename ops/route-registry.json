@@ -806,6 +806,25 @@
       ]
     },
     {
+      "route": "/api/bna/integrations/one-time/support-tickets/v1",
+      "surface": "one_time_signed_support_consumer",
+      "access": "signed_integration",
+      "required_role": "one_time_support_producer",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_without_valid_hmac_timestamp_event_id_and_allowed_account_product",
+      "expected_logged_in_behavior": "persist_signed_event_to_bna_support_ticket_inbox_and_queue_redacted_operator_alert_without_live_send",
+      "privacy_risk": "high",
+      "security_expectation": "Requires application/json raw-body HMAC, timestamp replay window, event id idempotency, rabbi_sheller_provider / one_time_mishnah_class allowlist, active signed entitlement proof, redacted storage, and no Academy data crossover.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/api/rabbi/member/questions",
       "surface": "one_time_member_private_questions",
       "access": "private",

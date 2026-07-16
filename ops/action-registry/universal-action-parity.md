@@ -1,6 +1,6 @@
 # Universal Action Parity
 
-Generated at 2026-07-13T07:30:26.009Z.
+Generated at 2026-07-16T23:12:30.031Z.
 
 Requirement: REQ-20260623-013
 
@@ -13,12 +13,12 @@ Requirement: REQ-20260623-013
 - zero_missing_tests: pass (0)
 - zero_risky_actions_without_approval: pass (0)
 - telegram_request_parity_present: pass (80)
-- website_assistant_request_parity_present: pass (248)
-- agent_work_handoff_parity_present: pass (106)
+- website_assistant_request_parity_present: pass (263)
+- agent_work_handoff_parity_present: pass (121)
 
 ## Summary
 
-- Root registry actions: 161
+- Root registry actions: 176
 - Detailed typed actions: 87
 - Visible UI hooks: 71
 - Visible UI hooks classified: 71
@@ -33,18 +33,18 @@ Requirement: REQ-20260623-013
 | --- | ---: |
 | ui_button | 71 |
 | telegram_request | 80 |
-| website_assistant_request | 248 |
-| operations_helper_request | 216 |
-| automation_action | 114 |
-| agent_work_handoff | 106 |
+| website_assistant_request | 263 |
+| operations_helper_request | 226 |
+| automation_action | 115 |
+| agent_work_handoff | 121 |
 
 ## Visible Control Classifications
 
 | Classification | Count |
 | --- | ---: |
+| preview_then_approve | 46 |
 | read_only | 9 |
 | secure_deep_link_only | 6 |
-| preview_then_approve | 46 |
 | blocked_connector | 4 |
 | not_applicable | 2 |
 | executable | 4 |
@@ -70,12 +70,12 @@ Requirement: REQ-20260623-013
 | dashboard_layout | covered_by_canonical_registry | ACTION-ONETIME-PUBLIC-SECTION-NAV<br>open_internal_calendar<br>show_child_calendar |
 | email_campaign | covered_by_canonical_registry | ACTION-CRM-OPEN-SCOPED-INBOX<br>ACTION-ONETIME-PARENT-PASSWORD-REQUEST<br>ACTION-ONETIME-PROVIDER-SESSION-START<br>ACTION-OPERATIONS-EMAIL-INBOX-BNA<br>ACTION-OPERATIONS-EMAIL-INBOX-RABBI<br>ACTION-PARENT-ACCESS-LINK-EMAIL |
 | drip_sequence | covered_by_canonical_registry | draft_drip_sequence |
-| template_version | covered_by_canonical_registry | ACTION-CRM-REPLY-DRAFT-BLOCKED<br>ACTION-ONETIME-MEMBER-LIBRARY-APPROVE<br>ACTION-ONETIME-RABBI-TICKET-APPROVE-CODEX<br>ACTION-PROVIDER-CLASSROOM-DRAFT<br>ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT<br>ACTION-PROVIDER-MAILBOX-DRAFT |
+| template_version | covered_by_canonical_registry | ACTION-CRM-REPLY-DRAFT-BLOCKED<br>ACTION-ONETIME-COMMUNICATION-AGENT-COMPARE<br>ACTION-ONETIME-COMMUNICATION-AGENT-PUBLISH<br>ACTION-ONETIME-COMMUNICATION-AGENT-RESTORE<br>ACTION-ONETIME-COMMUNICATION-AGENT-SAVE-DRAFT<br>ACTION-ONETIME-MEMBER-LIBRARY-APPROVE |
 | automation | covered_by_canonical_registry | ACTION-HELPER-CREATE-AUTOMATION<br>draft_automation |
 | segment | covered_by_canonical_registry | ACTION-CRM-ACTION-OVERFLOW<br>ACTION-CRM-ADD-CONTACT<br>ACTION-CRM-ADD-NOTE<br>ACTION-CRM-ADD-TAG<br>ACTION-CRM-ARCHIVE-CONTACT<br>ACTION-CRM-ASSIGN-OWNER |
 | reminder | covered_by_canonical_registry | ACTION-CRM-SET-FOLLOW-UP<br>create_calendar_event<br>create_student_schedule_item<br>delete_calendar_event<br>open_calendar_event<br>pause_scheduled_email |
 | ticket | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>ACTION-ONETIME-RABBI-TELEGRAM-TICKET-CREATE<br>ACTION-ONETIME-RABBI-TICKET-APPROVE-CODEX<br>ACTION-ONETIME-RABBI-TICKET-ASK-RABBI<br>ACTION-ONETIME-RABBI-TICKET-KEEP<br>ACTION-ONETIME-RABBI-TICKET-REJECT |
-| support | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>create_help_request<br>create_report_problem_ticket<br>create_ticket<br>request_provider_contact<br>route_bug_to_codex |
+| support | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>ACTION-ONETIME-SUPPORT-CONSUMER-INTAKE<br>ACTION-ONETIME-SUPPORT-CONSUMER-OPERATOR-DECISION<br>create_help_request<br>create_report_problem_ticket<br>create_ticket |
 | file_intake | covered_by_canonical_registry | ACTION-HELPER-CAPTURE-RAW-INTAKE<br>ACTION-ONETIME-DRIVE-BRIEF-PREVIEW<br>google_drive_create_doc_preview<br>google_drive_create_folder_preview<br>google_drive_find_file_preview<br>google_drive_move_file_preview |
 | integration | covered_by_canonical_registry | ACTION-CRM-OPEN-WHATSAPP-THREAD<br>ACTION-INTEGRATION-SETUP-OPEN<br>ACTION-INTEGRATION-SETUP-VALIDATE<br>ACTION-ONETIME-GET-CURRENT-CLASS-LINK<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN<br>ACTION-ONETIME-LIVE-ZOOM-LINK-SEND |
 | billing | covered_by_canonical_registry | ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS |

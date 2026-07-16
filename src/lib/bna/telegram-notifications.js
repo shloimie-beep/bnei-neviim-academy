@@ -205,10 +205,13 @@ function supportTicketApprovalKeyboard({ ticket = {}, context = {} } = {}) {
   const ticketId = ticket.id || ticket.ticket_id || context.ticket_id || context.ticketId;
   const reviewPath = context.review_path || context.reviewPath || '/operations?view=admin&section=tickets';
   if (!ticketId) return null;
+  const askLabel = String(context.relationship_scope || context.relationshipScope || '').trim() === 'one_time_subscriber_support_ticket'
+    ? 'Ask for Info'
+    : 'Ask Rabbi';
   const keyboard = [
     [
       { text: 'Approve for Codex', callback_data: `ticket:approve:${ticketId}` },
-      { text: 'Ask Rabbi', callback_data: `ticket:ask:${ticketId}` },
+      { text: askLabel, callback_data: `ticket:ask:${ticketId}` },
     ],
     [
       { text: 'Keep as Ticket', callback_data: `ticket:keep:${ticketId}` },
