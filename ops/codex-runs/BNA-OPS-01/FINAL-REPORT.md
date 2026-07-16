@@ -8,7 +8,8 @@ Status: Local implementation verified; live canary blocked.
 - School route source head: `d23cbc2f321b55ea073b0bb0ee5c887bf7be50a7`
 - OT-89B consumer source head: `8861e9b0e9bf77ca9b74112cbb2d04b6fa2bfd88`
 - Branch: `codex/bna-ops01-school-support-stabilization`
-- Implementation commit: `ae4b48c0c651071c7f1e86098c857c132b6ebf22`
+- Implementation commit: `aaf138931c2fa86c48ac973339f5e12681e99afc`
+- Draft PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/137`
 
 ## Implementation Summary
 
