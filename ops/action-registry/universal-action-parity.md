@@ -1,6 +1,6 @@
 # Universal Action Parity
 
-Generated at 2026-07-15T14:22:28.761Z.
+Generated at 2026-07-16T19:29:25.524Z.
 
 Requirement: REQ-20260623-013
 
@@ -13,12 +13,12 @@ Requirement: REQ-20260623-013
 - zero_missing_tests: pass (0)
 - zero_risky_actions_without_approval: pass (0)
 - telegram_request_parity_present: pass (80)
-- website_assistant_request_parity_present: pass (265)
+- website_assistant_request_parity_present: pass (269)
 - agent_work_handoff_parity_present: pass (119)
 
 ## Summary
 
-- Root registry actions: 178
+- Root registry actions: 182
 - Detailed typed actions: 87
 - Visible UI hooks: 71
 - Visible UI hooks classified: 71
@@ -33,8 +33,8 @@ Requirement: REQ-20260623-013
 | --- | ---: |
 | ui_button | 71 |
 | telegram_request | 80 |
-| website_assistant_request | 265 |
-| operations_helper_request | 229 |
+| website_assistant_request | 269 |
+| operations_helper_request | 231 |
 | automation_action | 114 |
 | agent_work_handoff | 119 |
 
@@ -75,12 +75,12 @@ Requirement: REQ-20260623-013
 | segment | covered_by_canonical_registry | ACTION-CRM-ACTION-OVERFLOW<br>ACTION-CRM-ADD-CONTACT<br>ACTION-CRM-ADD-NOTE<br>ACTION-CRM-ADD-TAG<br>ACTION-CRM-ARCHIVE-CONTACT<br>ACTION-CRM-ASSIGN-OWNER |
 | reminder | covered_by_canonical_registry | ACTION-CRM-SET-FOLLOW-UP<br>create_calendar_event<br>create_student_schedule_item<br>delete_calendar_event<br>open_calendar_event<br>pause_scheduled_email |
 | ticket | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>ACTION-ONETIME-RABBI-TELEGRAM-TICKET-CREATE<br>ACTION-ONETIME-RABBI-TICKET-APPROVE-CODEX<br>ACTION-ONETIME-RABBI-TICKET-ASK-RABBI<br>ACTION-ONETIME-RABBI-TICKET-KEEP<br>ACTION-ONETIME-RABBI-TICKET-REJECT |
-| support | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>create_help_request<br>create_report_problem_ticket<br>create_ticket<br>request_provider_contact<br>route_bug_to_codex |
+| support | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>ACTION-OT89B-OPERATOR-TICKET-OPEN<br>ACTION-OT89B-SUPPORT-EVENT-INGEST<br>ACTION-OT89B-SUPPORT-STATUS-READ<br>ACTION-OT89B-TELEGRAM-TICKET-DECISION<br>create_help_request |
 | file_intake | covered_by_canonical_registry | ACTION-HELPER-CAPTURE-RAW-INTAKE<br>ACTION-ONETIME-DRIVE-BRIEF-PREVIEW<br>google_drive_create_doc_preview<br>google_drive_create_folder_preview<br>google_drive_find_file_preview<br>google_drive_move_file_preview |
 | integration | covered_by_canonical_registry | ACTION-CRM-OPEN-WHATSAPP-THREAD<br>ACTION-INTEGRATION-SETUP-OPEN<br>ACTION-INTEGRATION-SETUP-VALIDATE<br>ACTION-ONETIME-GET-CURRENT-CLASS-LINK<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN<br>ACTION-ONETIME-LIVE-ZOOM-LINK-SEND |
 | billing | covered_by_canonical_registry | ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS |
 | agent_work | covered_by_canonical_registry | ACTION-AGENT-RESULT-RECORD<br>ACTION-AGENT-REVIEW-COPY-PROMPT<br>ACTION-AGENT-REVIEW-COPY-SESSION<br>ACTION-AGENT-REVIEW-EXIT<br>ACTION-AGENT-REVIEW-MARK-BLOCKED<br>ACTION-AGENT-REVIEW-OPEN-CONTEXT |
-| deployment_status | covered_by_canonical_registry | ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS<br>ACTION-ONETIME-MEMBER-LIBRARY-SMOKE<br>ACTION-ONETIME-SCOPED-AGENT-STATUS<br>ACTION-PROVIDER-SECTION-NAVIGATION |
+| deployment_status | covered_by_canonical_registry | ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS<br>ACTION-ONETIME-MEMBER-LIBRARY-SMOKE<br>ACTION-ONETIME-SCOPED-AGENT-STATUS<br>ACTION-OT89B-SUPPORT-STATUS-READ<br>ACTION-PROVIDER-SECTION-NAVIGATION |
 
 ## Guardrails
 

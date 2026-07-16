@@ -1,0 +1,26 @@
+﻿[
+    {
+        "source":  "ops/codex-runs/OT-89A/AUTHORIZATION-MATRIX.md",
+        "dest":  "OT89A-AUTHORIZATION-MATRIX.md",
+        "bytes":  8321,
+        "sha256":  "48d3a958d4da75176665a5465943cc041089bd32304116e40ce324e40038f1ab"
+    },
+    {
+        "source":  "ops/codex-runs/OT-89A/TRIAGE-POLICY.md",
+        "dest":  "OT89A-TRIAGE-POLICY.md",
+        "bytes":  12376,
+        "sha256":  "2c2acf618ef641604ccfa84fde100f0cb57a9fb941e9c5d3f15956f55f33b049"
+    },
+    {
+        "source":  "ops/codex-runs/OT-89A/ACCEPTANCE-MATRIX.md",
+        "dest":  "OT89A-ACCEPTANCE-MATRIX.md",
+        "bytes":  12097,
+        "sha256":  "8fac8c4991317975b80d197fef85ae18ddd01364389bf779e6b3e099e1afad5b"
+    },
+    {
+        "source":  "ops/codex-runs/OT-89A/CONTRACT-SHA256.txt",
+        "dest":  "OT89A-CONTRACT-SHA256.txt",
+        "bytes":  116,
+        "sha256":  "642fd5486ffcda5e2044637d94f8572b33080caf92b8b89bbb5abbf1931fea98"
+    }
+]

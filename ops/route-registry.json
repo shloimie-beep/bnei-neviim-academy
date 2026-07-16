@@ -13,6 +13,70 @@
   },
   "routes": [
     {
+      "route": "/api/internal/integrations/onetime/support-events/v1",
+      "surface": "internal_one_time_support_bridge",
+      "access": "private_internal_hmac",
+      "required_role": "signed_active_one_time_subscriber_event",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_without_valid_ot89_hmac_and_active_subscriber_authorization",
+      "expected_logged_in_behavior": "accept_only_signed_ot89_v1_event_and_create_or_find_one_bna_ticket_idempotently",
+      "privacy_risk": "high",
+      "security_expectation": "Raw body is HMAC-verified before JSON parsing; raw user text is inert, redacted, and never used as command, SQL, URL, callback, prompt, or filesystem path.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/internal/integrations/onetime/support-ticket-status/v1",
+      "surface": "internal_one_time_support_bridge",
+      "access": "private_internal_hmac",
+      "required_role": "signed_one_time_status_reconciler",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_without_valid_ot89_hmac",
+      "expected_logged_in_behavior": "return_only_the_frozen_status_projection_fields_for_the_matching_source_ticket_and_account",
+      "privacy_risk": "high",
+      "security_expectation": "No synchronous One Time UI load and no private BNA notes, direct contact data, attachment locators, or database IDs returned.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/onetime/support-tickets/:bnaTicketRef",
+      "surface": "one_time_support_operator_view",
+      "access": "private",
+      "required_role": "operations_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "redirect_or_reject_through_operations_auth",
+      "expected_logged_in_behavior": "return_one_sanitized_ot89b_ticket_with_bounded_history_and_attachment_status",
+      "privacy_risk": "high",
+      "security_expectation": "Returns opaque BNA reference and sanitized triage/status only; no direct contact details, raw attachment locator, source context, or internal broad Operations shell payload.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/operations/onetime/support-tickets/:bnaTicketRef",
+      "surface": "one_time_support_operator_view",
+      "access": "private",
+      "required_role": "operations_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "redirect_or_reject_through_operations_auth",
+      "expected_logged_in_behavior": "load_lightweight_single_ticket_operator_page_without_the_broad_operations_shell",
+      "privacy_risk": "high",
+      "security_expectation": "Page loads only the narrow ticket API and handles loading, empty, error, unauthorized, keyboard, and mobile states.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/",
       "surface": "public_site",
       "access": "public",
