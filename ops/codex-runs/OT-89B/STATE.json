@@ -1,6 +1,6 @@
 {
   "task_id": "OT-89B",
-  "phase": "implemented_pending_publication",
+  "phase": "draft_pr_open",
   "status": "checkpointed",
   "completed_acceptance_ids": [
     "packet.validated",
@@ -18,7 +18,9 @@
     "mock.adapters.used",
     "no.live.deployment",
     "no.production.data",
-    "no.real.telegram.send"
+    "no.real.telegram.send",
+    "branch.pushed",
+    "draft_pr.opened"
   ],
   "blockers": [
     {
@@ -36,10 +38,12 @@
   ],
   "branch": "codex/ot89b-bna-support-consumer",
   "base": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
-  "head": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "head": "branch-tip-after-publication-evidence-commit",
+  "implementation_commit": "724b3822afa82eac59ab20363dc4d9c7677b2da0",
+  "draft_pr": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/136",
   "dirty_state": [
-    "implementation pending stage/commit"
+    "expected clean tracked worktree after publication evidence commit"
   ],
-  "next_action": "Stage OT-89B files, commit, push, and open a draft PR.",
-  "timestamp": "2026-07-16T09:32:58.2206300+03:00"
+  "next_action": "Review draft PR checks and resolve unrelated frozen-base UI/source-smoke blockers separately.",
+  "timestamp": "2026-07-16T09:34:00.0000000+03:00"
 }
