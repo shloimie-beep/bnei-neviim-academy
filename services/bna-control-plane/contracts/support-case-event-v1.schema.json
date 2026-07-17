@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bnei-neviim.com/contracts/bna-control-plane/support-case-event-v1.schema.json",
+  "title": "BNA Control Plane Support Case Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "event_id",
+    "event_type",
+    "occurred_at",
+    "producer",
+    "case",
+    "trace"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "1.0.0"
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^evt_[A-Za-z0-9_]{10,96}$"
+    },
+    "event_type": {
+      "enum": [
+        "support.case.created.v1",
+        "support.case.status_changed.v1",
+        "support.case.routing_changed.v1",
+        "support.case.sla_changed.v1",
+        "support.case.deleted.v1"
+      ]
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "producer": {
+      "$ref": "#/$defs/producer"
+    },
+    "case": {
+      "$ref": "#/$defs/case"
+    },
+    "trace": {
+      "$ref": "#/$defs/trace"
+    }
+  },
+  "$defs": {
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product",
+        "environment",
+        "deployment_id",
+        "source_commit"
+      ],
+      "properties": {
+        "product": {
+          "enum": [
+            "one_time",
+            "bna_school"
+          ]
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "deployment_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "source_commit": {
+          "type": "string",
+          "minLength": 7,
+          "maxLength": 40
+        }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_case_id",
+        "case_kind",
+        "severity",
+        "queue",
+        "status",
+        "redacted_summary",
+        "product_case_url",
+        "product_version",
+        "opened_at",
+        "updated_at"
+      ],
+      "properties": {
+        "product_case_id": {
+          "type": "string",
+          "pattern": "^case_[A-Za-z0-9_]{10,96}$"
+        },
+        "case_kind": {
+          "enum": [
+            "bug",
+            "access_login",
+            "class_live",
+            "billing",
+            "content",
+            "complaint",
+            "safety",
+            "other"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "sev1",
+            "sev2",
+            "sev3",
+            "sev4"
+          ]
+        },
+        "queue": {
+          "enum": [
+            "support_ops",
+            "school_ops",
+            "billing_ops",
+            "technical_ops",
+            "content_ops"
+          ]
+        },
+        "status": {
+          "enum": [
+            "new",
+            "triage",
+            "waiting_product",
+            "waiting_customer",
+            "in_progress",
+            "resolved",
+            "closed",
+            "deleted"
+          ]
+        },
+        "redacted_summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "product_case_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "product_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "opened_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "correlation_id"
+      ],
+      "properties": {
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^corr_[A-Za-z0-9_]{10,96}$"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "contract_version": "1.0.0",
+  "event_id": "evt_01JCONTROLPLANERESULT0001",
+  "event_type": "control.command.result.v1",
+  "occurred_at": "2026-07-17T08:11:00Z",
+  "producer": {
+    "product": "one_time",
+    "environment": "production",
+    "deployment_id": "one-time-prod-20260717",
+    "source_commit": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c"
+  },
+  "command_result": {
+    "command_id": "cmd_01JCONTROLPLANEASSIGN001",
+    "product_case_id": "case_01JCONTROLPLANEOT000001",
+    "result": "applied",
+    "result_code": "queue_changed",
+    "product_version": 5
+  },
+  "trace": {
+    "correlation_id": "corr_01JCONTROLPLANEOT000001"
+  }
+}

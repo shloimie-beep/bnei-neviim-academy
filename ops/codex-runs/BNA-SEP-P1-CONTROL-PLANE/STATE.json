@@ -1,0 +1,31 @@
+{
+    "schema_version":  "bna-sep-p1-state-v1",
+    "run_id":  "BNA-SEP-P1-CONTROL-PLANE",
+    "status":  "IMPLEMENTED_PENDING_PUBLISH",
+    "phase":  "safe_additive_review_scaffold",
+    "repository":  "shloimie-beep/bnei-neviim-academy",
+    "branch":  "codex/bna-sep-p1-control-plane-v1-20260717-114636",
+    "worktree":  "C:\\Users\\User\\.codex-worktrees\\BNA-SEP-P1-CONTROL-PLANE-20260717-114636\\worktree",
+    "source_master_sha":  "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+    "head_sha":  "pending first commit",
+    "draft_pr":  "pending",
+    "tests":  [
+                  "node --check services/bna-control-plane/src/app.js: PASS",
+                  "node --check services/bna-control-plane/src/security/signature.js: PASS",
+                  "node -e contract JSON parse: PASS",
+                  "node --test services/bna-control-plane/test/*.test.js: PASS, 37 tests",
+                  "npm run secrets:audit: PASS, 9617 tracked paths checked, 0 tracked secret-risk files found",
+                  "git diff --check: PASS",
+                  "rg forbidden boundary scan: PASS with expected policy/config/schema/test matches only"
+              ],
+    "blockers":  [
+                 ],
+    "external_effects":  [
+                             "local clone",
+                             "local worktree",
+                             "local feature branch"
+                         ],
+    "no_live_mutation_statement":  "No deployment, live database access, migration apply, Telegram send, provider mutation, DNS change, credential change or PR merge was performed.",
+    "next_action":  "Stage, commit, push feature branch, create draft PR, then update this run record with PR URL and final head SHA.",
+    "updated_at_utc":  "2026-07-17T12:05:00.3854173Z"
+}
