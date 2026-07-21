@@ -2,6 +2,10 @@
 
 - Active workspace categories are Super Admin, School, Service Provider, and
   Family.
+- Platform-facing canonical taxonomy separates `platform_control`,
+  `bna_school`, and the `one_time` external product connector. One Time's GHL
+  communications exception does not change BNA School's first-party CRM
+  architecture.
 - Content, communications, tasks, prompts, helper context, and portal data must
   preserve workspace/project scope.
 - BNA, One Time / Rabbi, provider, family, parent, and student data must not bleed

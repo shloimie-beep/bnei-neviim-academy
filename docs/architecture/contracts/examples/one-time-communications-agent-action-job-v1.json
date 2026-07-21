@@ -1,0 +1,58 @@
+{
+  "schema_version": "one-time-communications-agent-action-job-v1",
+  "job_type": "agent_action",
+  "job_id": "AA-ONETIME-COMMS-ARCH-V1",
+  "source_repository": "shloimie-beep/bnei-neviim-academy",
+  "source_ref": "codex/one-time-communications-architecture-v1",
+  "source_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "source_artifact_path": "docs/architecture/one-time-communications-architecture-v1.md",
+  "target_application": "Super Admin / Platform Control",
+  "target_workspace": "one_time",
+  "target_connector_id": "one_time",
+  "action_category": "communication_architecture",
+  "record_type": "connector_contract",
+  "canonical_system": "platform_control",
+  "human_owner": "Super Admin",
+  "prompt": "Record and validate the One Time communications ownership contract without changing BNA School CRM architecture or performing external mutations.",
+  "allowed_actions": [
+    "Read repository architecture and memory.",
+    "Write durable documentation and JSON contracts.",
+    "Run local deterministic contract assertions."
+  ],
+  "forbidden_actions": [
+    "Do not send email.",
+    "Do not send Telegram messages.",
+    "Do not mutate GHL.",
+    "Do not change DNS.",
+    "Do not deploy production.",
+    "Do not change BNA School CRM ownership."
+  ],
+  "required_save_behavior": "Save the result, verify the result readback, and record zero external mutations before the job can be verified.",
+  "completion_checklist": [
+    "One Time GHL exception is connector-scoped.",
+    "BNA School first-party architecture is preserved.",
+    "Human routing and three record types are explicit.",
+    "Telegram and Resend restrictions are explicit.",
+    "Result is saved and read back."
+  ],
+  "evidence_requirements": [
+    "Durable architecture paths.",
+    "Focused contract-test result.",
+    "Git branch, head, and draft PR.",
+    "Zero-external-mutation assertion."
+  ],
+  "idempotency_key": "one-time-communications-architecture-v1:DEC-20260721-002",
+  "status": "ready",
+  "result_readback_url": "/api/platform/agent-actions/AA-ONETIME-COMMS-ARCH-V1/results",
+  "communications_policy": {
+    "customer_communication_source_of_truth": "highlevel",
+    "product_account_source_of_truth": "one_time_app",
+    "telegram_is_canonical_transcript": false,
+    "ghl_write_required_for_customer_communication_changes": true,
+    "resend_usage": "security_token_email_only",
+    "default_inbound_owner": "Shloimie",
+    "ai_may_originate_torah_answer_in_rabbi_name": false,
+    "bna_school_architecture_preserved": true,
+    "external_mutation_authorized": false
+  }
+}

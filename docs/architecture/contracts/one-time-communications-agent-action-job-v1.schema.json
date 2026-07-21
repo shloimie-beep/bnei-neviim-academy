@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bneineviimacademy.org/schemas/one-time-communications-agent-action-job-v1.schema.json",
+  "title": "One Time Communications Agent Action Job v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "job_type",
+    "job_id",
+    "source_repository",
+    "source_ref",
+    "source_sha",
+    "source_artifact_path",
+    "target_application",
+    "target_workspace",
+    "target_connector_id",
+    "action_category",
+    "record_type",
+    "canonical_system",
+    "human_owner",
+    "prompt",
+    "allowed_actions",
+    "forbidden_actions",
+    "required_save_behavior",
+    "completion_checklist",
+    "evidence_requirements",
+    "idempotency_key",
+    "status",
+    "result_readback_url",
+    "communications_policy"
+  ],
+  "properties": {
+    "schema_version": { "const": "one-time-communications-agent-action-job-v1" },
+    "job_type": { "const": "agent_action" },
+    "job_id": { "type": "string", "pattern": "^AA-[A-Z0-9][A-Z0-9._-]{2,127}$" },
+    "source_repository": { "type": "string", "pattern": "^[^/]+/[^/]+$" },
+    "source_ref": { "type": "string", "minLength": 1 },
+    "source_sha": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "source_artifact_path": { "type": "string", "minLength": 1 },
+    "target_application": { "type": "string", "minLength": 1 },
+    "target_workspace": { "const": "one_time" },
+    "target_connector_id": { "const": "one_time" },
+    "source_workspace": { "enum": ["bna_school", "one_time"] },
+    "action_category": {
+      "enum": [
+        "communication_architecture",
+        "configuration_review",
+        "audit",
+        "verification"
+      ]
+    },
+    "record_type": {
+      "enum": [
+        "connector_contract",
+        "live_class_question",
+        "business_conversation",
+        "technical_ticket"
+      ]
+    },
+    "canonical_system": {
+      "enum": ["one_time_app", "highlevel", "platform_control", "telegram", "resend"]
+    },
+    "human_owner": { "enum": ["Shloimie", "Rabbi Eli", "Super Admin"] },
+    "prompt": { "type": "string", "minLength": 1, "maxLength": 20000 },
+    "allowed_actions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": { "type": "string", "minLength": 1, "maxLength": 1000 }
+    },
+    "forbidden_actions": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 50,
+      "items": { "type": "string", "minLength": 1, "maxLength": 1000 }
+    },
+    "required_save_behavior": { "type": "string", "minLength": 1, "maxLength": 2000 },
+    "completion_checklist": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": { "type": "string", "minLength": 1, "maxLength": 1000 }
+    },
+    "evidence_requirements": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": { "type": "string", "minLength": 1, "maxLength": 1000 }
+    },
+    "idempotency_key": { "type": "string", "minLength": 8, "maxLength": 200 },
+    "status": {
+      "enum": [
+        "draft",
+        "ready",
+        "claimed",
+        "in_progress",
+        "saved",
+        "blocked",
+        "failed",
+        "verified",
+        "superseded"
+      ]
+    },
+    "result_readback_url": {
+      "type": "string",
+      "pattern": "^/api/platform/agent-actions/[^/]+/results$"
+    },
+    "communications_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "customer_communication_source_of_truth",
+        "product_account_source_of_truth",
+        "telegram_is_canonical_transcript",
+        "ghl_write_required_for_customer_communication_changes",
+        "resend_usage",
+        "default_inbound_owner",
+        "ai_may_originate_torah_answer_in_rabbi_name",
+        "bna_school_architecture_preserved",
+        "external_mutation_authorized"
+      ],
+      "properties": {
+        "customer_communication_source_of_truth": { "const": "highlevel" },
+        "product_account_source_of_truth": { "const": "one_time_app" },
+        "telegram_is_canonical_transcript": { "const": false },
+        "ghl_write_required_for_customer_communication_changes": { "const": true },
+        "resend_usage": { "const": "security_token_email_only" },
+        "default_inbound_owner": { "const": "Shloimie" },
+        "ai_may_originate_torah_answer_in_rabbi_name": { "const": false },
+        "bna_school_architecture_preserved": { "const": true },
+        "external_mutation_authorized": { "const": false }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "record_type": { "const": "technical_ticket" } } },
+      "then": {
+        "required": ["source_workspace"],
+        "properties": {
+          "canonical_system": { "const": "platform_control" },
+          "human_owner": { "const": "Super Admin" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "record_type": { "const": "business_conversation" } } },
+      "then": {
+        "properties": {
+          "canonical_system": { "const": "highlevel" },
+          "human_owner": { "const": "Shloimie" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "record_type": { "const": "live_class_question" } } },
+      "then": {
+        "properties": {
+          "canonical_system": { "const": "one_time_app" }
+        }
+      }
+    }
+  ]
+}

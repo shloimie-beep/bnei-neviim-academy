@@ -1,0 +1,108 @@
+{
+  "schema_version": "super-admin-external-product-connector-v1",
+  "decision_id": "DEC-20260721-002",
+  "connector_id": "one_time",
+  "label": "One Time",
+  "connector_type": "external_product_connector",
+  "workspace_key": "one_time",
+  "project_key": "one_time_mishnayos",
+  "platform_owner": "platform_control",
+  "product_repository": "shloimie-beep/onetimev2",
+  "sources_of_truth": {
+    "customer_communications": {
+      "system": "highlevel",
+      "authority": "customer_communication_source_of_truth",
+      "canonical": true
+    },
+    "product_accounts": {
+      "system": "one_time_app",
+      "authority": "product_account_source_of_truth",
+      "canonical": true
+    },
+    "rabbi_interface": {
+      "system": "telegram",
+      "authority": "assigned_rabbi_torah_and_content_interface",
+      "canonical": false
+    },
+    "security_token_email": {
+      "system": "resend",
+      "authority": "security_token_delivery_transport_only",
+      "canonical": false,
+      "allowed_purposes": [
+        "login_token",
+        "email_verification_token",
+        "password_reset_token",
+        "equivalent_account_security_token"
+      ]
+    }
+  },
+  "bna_school_boundary": {
+    "workspace_key": "bna_school",
+    "crm_source_of_truth": "first_party_bna_operations",
+    "ghl_exception_applies": false,
+    "architecture_preserved": true
+  },
+  "human_routing": {
+    "default_inbound_owner": "Shloimie",
+    "rabbi_recipient": "Rabbi Eli",
+    "rabbi_allowlist": [
+      "assigned_substantive_torah_mishnah_halachic_question",
+      "rabbi_authored_newsletter_content_draft",
+      "approved_warm_enrollment_draft"
+    ],
+    "rabbi_denylist": [
+      "login",
+      "billing",
+      "support",
+      "scheduling",
+      "parent_administration",
+      "unknown_general"
+    ],
+    "ai_torah_answer_policy": "must_not_originate_in_rabbi_name"
+  },
+  "record_routes": {
+    "live_class_question": {
+      "record_type": "live_class_question",
+      "owner": "one_time",
+      "canonical_system": "one_time_app",
+      "bna_ticket_queue": false,
+      "source_workspace_required": false
+    },
+    "business_conversation": {
+      "record_type": "business_conversation",
+      "owner": "highlevel",
+      "canonical_system": "highlevel",
+      "bna_ticket_queue": false,
+      "source_workspace_required": false
+    },
+    "technical_ticket": {
+      "record_type": "technical_ticket",
+      "owner": "platform_control",
+      "canonical_system": "platform_control",
+      "bna_ticket_queue": false,
+      "source_workspace_required": true,
+      "allowed_source_workspaces": [
+        "bna_school",
+        "one_time"
+      ]
+    }
+  },
+  "telegram_contract": {
+    "canonical_transcript": false,
+    "interface_for": "assigned_rabbi_torah_and_content_work",
+    "ghl_write_required_for": [
+      "send",
+      "draft",
+      "status_change"
+    ],
+    "ai_may_originate_torah_answer": false
+  },
+  "write_policy": {
+    "external_mutations_authorized": false,
+    "email_send": false,
+    "telegram_send": false,
+    "ghl_mutation": false,
+    "dns_change": false,
+    "production_deployment": false
+  }
+}

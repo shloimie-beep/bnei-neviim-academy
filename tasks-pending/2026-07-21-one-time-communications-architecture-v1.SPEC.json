@@ -1,0 +1,880 @@
+{
+  "spec_version": "intent-preservation-v1",
+  "spec_id": "SPEC-20260721-002",
+  "raw": {
+    "raw_id": "RAW-20260721-002",
+    "path": "raw-input/RAW-20260721-002-one-time-communications-architecture-v1.md",
+    "capture_mode": "verbatim",
+    "sha256": "bb4e8cb591248ba404414d13d7b816c3dfdd6ef21566029bd9c4307c13d4aa48",
+    "character_count": 2449
+  },
+  "scope": {
+    "workspace": "platform_control",
+    "project": "one_time_mishnayos",
+    "routes": []
+  },
+  "global_invariants": [
+    {
+      "change_id": "CHG-20260721-010",
+      "source_spans": [
+        {
+          "span_id": "RAW-20260721-002:S010",
+          "start": 490,
+          "end": 510,
+          "quote": "One Time is not BNA."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "",
+      "screen": "All repository architecture surfaces",
+      "target": {
+        "section": "Durable architecture record",
+        "component": "One Time and BNA separation invariant",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "preserve",
+      "current_state": "One Time and BNA are already scope-separated, but global no-GHL wording obscures the new connector-only decision.",
+      "required_state": "Preserve One Time as an external product connector and preserve BNA School as a separate first-party workspace.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [
+        "One Time is not BNA."
+      ],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "A-POS-010",
+            "text": "Run this after the urgent event lane is stable.\n\n## Repository\n\n```text\nshloimie-beep/bnei-neviim-academy\n```\n\nBase from current master.\n\nCreate:\n\n```text\ncodex/one-time-communications-architecture-v1\n```\n\nOpen a draft PR against master.\n\n## Mission\n\nRecord the One Time-specific GHL communications decision without changing BNA School's own CRM architecture.\n\nThe platform model is:\n\n```text\nSuper Admin / Platform Control\n  BNA school workspace\n  One Time external product connector\n```\n\nOne Time is not BNA.\n\n## One Time communication ownership\n\nFor the One Time connector only:\n\n```text\nGHL:\ncustomer communication source of truth\n\nOne Time app:\nproduct/account source of truth\n\nTelegram:\nRabbi interface for assigned Torah questions/content\n\nResend:\nsecurity-token email only\n```\n\nBNA School keeps its own accepted first-party school operations architecture.\n\nDo not apply the One Time GHL exception globally to BNA.\n\n## Human routing\n\nDefault One Time inbound owner:\n\n```text\nShloimie\n```\n\nRabbi Eli receives only:\n\n- assigned substantive Torah/Mishnah/halachic questions;\n- Rabbi-authored newsletter/content drafts;\n- approved warm enrollment drafts.\n\nRabbi does not receive:\n\n- login;\n- billing;\n- support;\n- scheduling;\n- parent administration;\n- unknown/general messages.\n\n## Update durable memory\n\nCreate or update the appropriate:\n\n```text\nMEMORY.md\nmemory-topics/\ndocs/architecture/\nworkspace role map\nSuper Admin connector contracts\nAgent Action job schemas\n```\n\nPreserve raw operator direction in a dated intake/decision record.\n\n## Ticket types\n\nSeparate:\n\n```text\nlive_class_question\nbusiness_conversation\ntechnical_ticket\n```\n\nA live class question is owned by One Time.\n\nA business conversation is owned by GHL.\n\nA technical ticket is owned by Super Admin and includes source workspace.\n\nDo not route all of these into one BNA ticket queue.\n\n## Rabbi Telegram contract\n\nTelegram is not the canonical transcript.\n\nEvery send/draft/status change writes to GHL.\n\nDo not allow AI to originate Torah answers in Rabbi's name.\n\n## No external mutation\n\nNo email sends, Telegram sends, GHL mutations, DNS changes or production deployment in this lane.\n\n## Final response\n\nBegin exactly:\n\n```text\nONE_TIME_GHL_EXCEPTION: RECORDED | BLOCKED(<one action>)\nBNA_SCHOOL_ARCHITECTURE: PRESERVED\nSHLOIMIE_DEFAULT_OWNER: YES\nRABBI_TORAH_ONLY: YES\nRESEND_SECURITY_ONLY: YES\nEXTERNAL_MUTATIONS: 0\n```\n\nThen include branch/head/PR and durable paths.\n"
+          }
+        ],
+        "negative": [
+          {
+            "assertion_id": "A-NEG-010",
+            "text": "No contract makes One Time records, GHL conversations, or One Time technical tickets into BNA School records by default."
+          }
+        ]
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "CHG-20260721-001",
+      "source_spans": [
+        {
+          "span_id": "RAW-20260721-002:S001",
+          "start": 0,
+          "end": 47,
+          "quote": "Run this after the urgent event lane is stable."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "",
+      "screen": "Repository architecture and durable memory",
+      "target": {
+        "section": "Durable architecture record",
+        "component": "Lane prerequisite",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "behavior",
+      "current_state": "Current master has a global no-GHL rule and first-party BNA communication assumptions without this scoped One Time exception contract.",
+      "required_state": "Proceed only after the urgent lane is stable; stability is evidenced by a clean worktree and CLEAN draft PR state.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "A-POS-001",
+            "text": "Run this after the urgent event lane is stable."
+          }
+        ],
+        "negative": []
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    },
+    {
+      "change_id": "CHG-20260721-002",
+      "source_spans": [
+        {
+          "span_id": "RAW-20260721-002:S002",
+          "start": 111,
+          "end": 237,
+          "quote": "Base from current master.\n\nCreate:\n\n```text\ncodex/one-time-communications-architecture-v1\n```\n\nOpen a draft PR against master."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "",
+      "screen": "Repository architecture and durable memory",
+      "target": {
+        "section": "Durable architecture record",
+        "component": "Branch and PR contract",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "behavior",
+      "current_state": "Current master has a global no-GHL rule and first-party BNA communication assumptions without this scoped One Time exception contract.",
+      "required_state": "Base codex/one-time-communications-architecture-v1 from current origin/master and open a draft PR against master.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "A-POS-002",
+            "text": "Base from current master.\n\nCreate:\n\n```text\ncodex/one-time-communications-architecture-v1\n```\n\nOpen a draft PR against master."
+          },
+          {
+            "assertion_id": "A-POS-002-1",
+            "text": "Branch is exactly codex/one-time-communications-architecture-v1 and base branch is master."
+          }
+        ],
+        "negative": []
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    },
+    {
+      "change_id": "CHG-20260721-003",
+      "source_spans": [
+        {
+          "span_id": "RAW-20260721-002:S003",
+          "start": 549,
+          "end": 780,
+          "quote": "For the One Time connector only:\n\n```text\nGHL:\ncustomer communication source of truth\n\nOne Time app:\nproduct/account source of truth\n\nTelegram:\nRabbi interface for assigned Torah questions/content\n\nResend:\nsecurity-token email only"
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "",
+      "screen": "Repository architecture and durable memory",
+      "target": {
+        "section": "Durable architecture record",
+        "component": "One Time communication ownership",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "behavior",
+      "current_state": "Current master has a global no-GHL rule and first-party BNA communication assumptions without this scoped One Time exception contract.",
+      "required_state": "For the One Time external connector only: GHL owns customer communication truth; the One Time app owns product/account truth; Telegram is the Rabbi interface for assigned Torah questions/content; Resend sends security-token email only.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "A-POS-003",
+            "text": "For the One Time connector only:\n\n```text\nGHL:\ncustomer communication source of truth\n\nOne Time app:\nproduct/account source of truth\n\nTelegram:\nRabbi interface for assigned Torah questions/content\n\nResend:\nsecurity-token email only"
+          },
+          {
+            "assertion_id": "A-POS-003-1",
+            "text": "GHL: customer communication source of truth; One Time app: product/account source of truth; Telegram: Rabbi interface for assigned Torah questions/content; Resend: security-token email only."
+          }
+        ],
+        "negative": [
+          {
+            "assertion_id": "A-NEG-003-1",
+            "text": "BNA School communication ownership is unchanged."
+          }
+        ]
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    },
+    {
+      "change_id": "CHG-20260721-004",
+      "source_spans": [
+        {
+          "span_id": "RAW-20260721-002:S004",
+          "start": 786,
+          "end": 921,
+          "quote": "BNA School keeps its own accepted first-party school operations architecture.\n\nDo not apply the One Time GHL exception globally to BNA."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "",
+      "screen": "Repository architecture and durable memory",
+      "target": {
+        "section": "Durable architecture record",
+        "component": "BNA School preservation",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "preserve",
+      "current_state": "Current master has a global no-GHL rule and first-party BNA communication assumptions without this scoped One Time exception contract.",
+      "required_state": "Preserve BNA School first-party school operations and forbid applying the One Time GHL exception globally.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [
+        "BNA School"
+      ],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "A-POS-004",
+            "text": "BNA School keeps its own accepted first-party school operations architecture.\n\nDo not apply the One Time GHL exception globally to BNA."
+          }
+        ],
+        "negative": [
+          {
+            "assertion_id": "A-NEG-004-1",
+            "text": "The One Time GHL exception is absent from BNA School connector contracts."
+          }
+        ]
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    },
+    {
+      "change_id": "CHG-20260721-005",
+      "source_spans": [
+        {
+          "span_id": "RAW-20260721-002:S005",
+          "start": 941,
+          "end": 1281,
+          "quote": "Default One Time inbound owner:\n\n```text\nShloimie\n```\n\nRabbi Eli receives only:\n\n- assigned substantive Torah/Mishnah/halachic questions;\n- Rabbi-authored newsletter/content drafts;\n- approved warm enrollment drafts.\n\nRabbi does not receive:\n\n- login;\n- billing;\n- support;\n- scheduling;\n- parent administration;\n- unknown/general messages."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "",
+      "screen": "Repository architecture and durable memory",
+      "target": {
+        "section": "Durable architecture record",
+        "component": "Human routing",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "behavior",
+      "current_state": "Current master has a global no-GHL rule and first-party BNA communication assumptions without this scoped One Time exception contract.",
+      "required_state": "Default all One Time inbound ownership to Shloimie; route to Rabbi Eli only the enumerated Torah/content/warm-enrollment classes and never the enumerated login/billing/support/scheduling/parent-admin/unknown classes.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "One Time inbound routing contract",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": [
+          "default owner: Shloimie",
+          "Rabbi allowlist",
+          "Rabbi denylist including parent administration"
+        ]
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "A-POS-005",
+            "text": "Default One Time inbound owner:\n\n```text\nShloimie\n```\n\nRabbi Eli receives only:\n\n- assigned substantive Torah/Mishnah/halachic questions;\n- Rabbi-authored newsletter/content drafts;\n- approved warm enrollment drafts.\n\nRabbi does not receive:\n\n- login;\n- billing;\n- support;\n- scheduling;\n- parent administration;\n- unknown/general messages."
+          },
+          {
+            "assertion_id": "A-POS-005-1",
+            "text": "Shloimie is the default One Time inbound owner. Rabbi Eli receives only assigned substantive Torah/Mishnah/halachic questions, Rabbi-authored newsletter/content drafts, and approved warm enrollment drafts. Rabbi does not receive login, billing, support, scheduling, parent administration, or unknown/general messages."
+          }
+        ],
+        "negative": [
+          {
+            "assertion_id": "A-NEG-005-1",
+            "text": "No unknown/general One Time message defaults to Rabbi Eli."
+          }
+        ]
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    },
+    {
+      "change_id": "CHG-20260721-006",
+      "source_spans": [
+        {
+          "span_id": "RAW-20260721-002:S006",
+          "start": 1309,
+          "end": 1543,
+          "quote": "Create or update the appropriate:\n\n```text\nMEMORY.md\nmemory-topics/\ndocs/architecture/\nworkspace role map\nSuper Admin connector contracts\nAgent Action job schemas\n```\n\nPreserve raw operator direction in a dated intake/decision record."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "",
+      "screen": "Repository architecture and durable memory",
+      "target": {
+        "section": "Durable architecture record",
+        "component": "Durable records",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "preserve",
+      "current_state": "Current master has a global no-GHL rule and first-party BNA communication assumptions without this scoped One Time exception contract.",
+      "required_state": "Create dated raw intake, decision/register evidence, durable memory, architecture ADR, workspace role mapping, Super Admin connector contract, and Agent Action schemas.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [
+        "Preserve raw operator direction in a dated intake/decision record."
+      ],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "A-POS-006",
+            "text": "Create or update the appropriate:\n\n```text\nMEMORY.md\nmemory-topics/\ndocs/architecture/\nworkspace role map\nSuper Admin connector contracts\nAgent Action job schemas\n```\n\nPreserve raw operator direction in a dated intake/decision record."
+          },
+          {
+            "assertion_id": "A-POS-006-1",
+            "text": "Durable paths include MEMORY.md, memory-topics/, docs/architecture/, the workspace role map, Super Admin connector contracts, and Agent Action job schemas."
+          }
+        ],
+        "negative": []
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    },
+    {
+      "change_id": "CHG-20260721-007",
+      "source_spans": [
+        {
+          "span_id": "RAW-20260721-002:S007",
+          "start": 1562,
+          "end": 1859,
+          "quote": "Separate:\n\n```text\nlive_class_question\nbusiness_conversation\ntechnical_ticket\n```\n\nA live class question is owned by One Time.\n\nA business conversation is owned by GHL.\n\nA technical ticket is owned by Super Admin and includes source workspace.\n\nDo not route all of these into one BNA ticket queue."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "",
+      "screen": "Repository architecture and durable memory",
+      "target": {
+        "section": "Durable architecture record",
+        "component": "Ticket ownership taxonomy",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "behavior",
+      "current_state": "Current master has a global no-GHL rule and first-party BNA communication assumptions without this scoped One Time exception contract.",
+      "required_state": "Keep live_class_question, business_conversation, and technical_ticket distinct with owners One Time, GHL, and Super Admin respectively; technical_ticket requires source workspace.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "A-POS-007",
+            "text": "Separate:\n\n```text\nlive_class_question\nbusiness_conversation\ntechnical_ticket\n```\n\nA live class question is owned by One Time.\n\nA business conversation is owned by GHL.\n\nA technical ticket is owned by Super Admin and includes source workspace.\n\nDo not route all of these into one BNA ticket queue."
+          },
+          {
+            "assertion_id": "A-POS-007-1",
+            "text": "live_class_question is One Time-owned; business_conversation is GHL-owned; technical_ticket is Super Admin-owned and includes source_workspace."
+          }
+        ],
+        "negative": [
+          {
+            "assertion_id": "A-NEG-007-1",
+            "text": "The three record types do not share one BNA ticket queue."
+          }
+        ]
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    },
+    {
+      "change_id": "CHG-20260721-008",
+      "source_spans": [
+        {
+          "span_id": "RAW-20260721-002:S008",
+          "start": 1889,
+          "end": 2038,
+          "quote": "Telegram is not the canonical transcript.\n\nEvery send/draft/status change writes to GHL.\n\nDo not allow AI to originate Torah answers in Rabbi's name."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "",
+      "screen": "Repository architecture and durable memory",
+      "target": {
+        "section": "Durable architecture record",
+        "component": "Rabbi Telegram contract",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "behavior",
+      "current_state": "Current master has a global no-GHL rule and first-party BNA communication assumptions without this scoped One Time exception contract.",
+      "required_state": "Telegram is a non-canonical Rabbi interface. Every One Time send/draft/status change is represented in GHL, and AI may never originate Torah answers in Rabbi Eli's name.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "A-POS-008",
+            "text": "Telegram is not the canonical transcript.\n\nEvery send/draft/status change writes to GHL.\n\nDo not allow AI to originate Torah answers in Rabbi's name."
+          },
+          {
+            "assertion_id": "A-POS-008-1",
+            "text": "GHL is canonical for One Time communication transcripts and state changes."
+          }
+        ],
+        "negative": [
+          {
+            "assertion_id": "A-NEG-008-1",
+            "text": "Telegram is not canonical and AI does not originate Torah answers in Rabbi Eli's name."
+          }
+        ]
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    },
+    {
+      "change_id": "CHG-20260721-009",
+      "source_spans": [
+        {
+          "span_id": "RAW-20260721-002:S009",
+          "start": 2065,
+          "end": 2162,
+          "quote": "No email sends, Telegram sends, GHL mutations, DNS changes or production deployment in this lane."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "",
+      "screen": "Repository architecture and durable memory",
+      "target": {
+        "section": "Durable architecture record",
+        "component": "No external mutation",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "behavior",
+      "current_state": "Current master has a global no-GHL rule and first-party BNA communication assumptions without this scoped One Time exception contract.",
+      "required_state": "This lane performs zero email, Telegram, GHL, DNS, or production-deployment mutations.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "A-POS-009",
+            "text": "No email sends, Telegram sends, GHL mutations, DNS changes or production deployment in this lane."
+          },
+          {
+            "assertion_id": "A-POS-009-1",
+            "text": "EXTERNAL_MUTATIONS: 0"
+          }
+        ],
+        "negative": [
+          {
+            "assertion_id": "A-NEG-009-1",
+            "text": "No email send, Telegram send, GHL mutation, DNS change, or production deployment occurred."
+          }
+        ]
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    },
+    {
+      "change_id": "CHG-20260721-011",
+      "source_spans": [
+        {
+          "span_id": "RAW-20260721-002:S011",
+          "start": 2183,
+          "end": 2448,
+          "quote": "Begin exactly:\n\n```text\nONE_TIME_GHL_EXCEPTION: RECORDED | BLOCKED(<one action>)\nBNA_SCHOOL_ARCHITECTURE: PRESERVED\nSHLOIMIE_DEFAULT_OWNER: YES\nRABBI_TORAH_ONLY: YES\nRESEND_SECURITY_ONLY: YES\nEXTERNAL_MUTATIONS: 0\n```\n\nThen include branch/head/PR and durable paths."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "",
+      "screen": "Repository architecture and durable memory",
+      "target": {
+        "section": "Durable architecture record",
+        "component": "Final response contract",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "preserve",
+      "current_state": "Current master has a global no-GHL rule and first-party BNA communication assumptions without this scoped One Time exception contract.",
+      "required_state": "The final response begins with the exact six-line status block and then reports branch, head, PR, and durable paths.",
+      "exact_payload": {},
+      "layout": {
+        "parent": "",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": []
+      },
+      "style_scope": {
+        "allowed_targets": [],
+        "forbidden_targets": [],
+        "properties": []
+      },
+      "viewport_behavior": [],
+      "must_preserve": [
+        "Begin exactly:"
+      ],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "A-POS-011",
+            "text": "Begin exactly:\n\n```text\nONE_TIME_GHL_EXCEPTION: RECORDED | BLOCKED(<one action>)\nBNA_SCHOOL_ARCHITECTURE: PRESERVED\nSHLOIMIE_DEFAULT_OWNER: YES\nRABBI_TORAH_ONLY: YES\nRESEND_SECURITY_ONLY: YES\nEXTERNAL_MUTATIONS: 0\n```\n\nThen include branch/head/PR and durable paths."
+          },
+          {
+            "assertion_id": "A-POS-011-1",
+            "text": "ONE_TIME_GHL_EXCEPTION: RECORDED | BLOCKED(<one action>)\nBNA_SCHOOL_ARCHITECTURE: PRESERVED\nSHLOIMIE_DEFAULT_OWNER: YES\nRABBI_TORAH_ONLY: YES\nRESEND_SECURITY_ONLY: YES\nEXTERNAL_MUTATIONS: 0"
+          }
+        ],
+        "negative": []
+      },
+      "dependencies": [],
+      "resolution_question": {
+        "question": "",
+        "choices": []
+      }
+    }
+  ],
+  "source_coverage": [
+    {
+      "coverage_id": "COV-20260721-FULL",
+      "span_id": "RAW-20260721-002:FULL",
+      "start": 0,
+      "end": 2449,
+      "quote": "Run this after the urgent event lane is stable.\n\n## Repository\n\n```text\nshloimie-beep/bnei-neviim-academy\n```\n\nBase from current master.\n\nCreate:\n\n```text\ncodex/one-time-communications-architecture-v1\n```\n\nOpen a draft PR against master.\n\n## Mission\n\nRecord the One Time-specific GHL communications decision without changing BNA School's own CRM architecture.\n\nThe platform model is:\n\n```text\nSuper Admin / Platform Control\n  BNA school workspace\n  One Time external product connector\n```\n\nOne Time is not BNA.\n\n## One Time communication ownership\n\nFor the One Time connector only:\n\n```text\nGHL:\ncustomer communication source of truth\n\nOne Time app:\nproduct/account source of truth\n\nTelegram:\nRabbi interface for assigned Torah questions/content\n\nResend:\nsecurity-token email only\n```\n\nBNA School keeps its own accepted first-party school operations architecture.\n\nDo not apply the One Time GHL exception globally to BNA.\n\n## Human routing\n\nDefault One Time inbound owner:\n\n```text\nShloimie\n```\n\nRabbi Eli receives only:\n\n- assigned substantive Torah/Mishnah/halachic questions;\n- Rabbi-authored newsletter/content drafts;\n- approved warm enrollment drafts.\n\nRabbi does not receive:\n\n- login;\n- billing;\n- support;\n- scheduling;\n- parent administration;\n- unknown/general messages.\n\n## Update durable memory\n\nCreate or update the appropriate:\n\n```text\nMEMORY.md\nmemory-topics/\ndocs/architecture/\nworkspace role map\nSuper Admin connector contracts\nAgent Action job schemas\n```\n\nPreserve raw operator direction in a dated intake/decision record.\n\n## Ticket types\n\nSeparate:\n\n```text\nlive_class_question\nbusiness_conversation\ntechnical_ticket\n```\n\nA live class question is owned by One Time.\n\nA business conversation is owned by GHL.\n\nA technical ticket is owned by Super Admin and includes source workspace.\n\nDo not route all of these into one BNA ticket queue.\n\n## Rabbi Telegram contract\n\nTelegram is not the canonical transcript.\n\nEvery send/draft/status change writes to GHL.\n\nDo not allow AI to originate Torah answers in Rabbi's name.\n\n## No external mutation\n\nNo email sends, Telegram sends, GHL mutations, DNS changes or production deployment in this lane.\n\n## Final response\n\nBegin exactly:\n\n```text\nONE_TIME_GHL_EXCEPTION: RECORDED | BLOCKED(<one action>)\nBNA_SCHOOL_ARCHITECTURE: PRESERVED\nSHLOIMIE_DEFAULT_OWNER: YES\nRABBI_TORAH_ONLY: YES\nRESEND_SECURITY_ONLY: YES\nEXTERNAL_MUTATIONS: 0\n```\n\nThen include branch/head/PR and durable paths.\n",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": null,
+      "global_invariant_id": "CHG-20260721-010",
+      "reason": "Full verbatim source is preserved as the separation and fidelity invariant."
+    },
+    {
+      "coverage_id": "COV-20260721-001",
+      "span_id": "RAW-20260721-002:S001",
+      "start": 0,
+      "end": 47,
+      "quote": "Run this after the urgent event lane is stable.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-001",
+      "global_invariant_id": null,
+      "reason": "Atomic operator requirement mapped to its durable contract change."
+    },
+    {
+      "coverage_id": "COV-20260721-002",
+      "span_id": "RAW-20260721-002:S002",
+      "start": 111,
+      "end": 237,
+      "quote": "Base from current master.\n\nCreate:\n\n```text\ncodex/one-time-communications-architecture-v1\n```\n\nOpen a draft PR against master.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-002",
+      "global_invariant_id": null,
+      "reason": "Atomic operator requirement mapped to its durable contract change."
+    },
+    {
+      "coverage_id": "COV-20260721-003",
+      "span_id": "RAW-20260721-002:S003",
+      "start": 549,
+      "end": 780,
+      "quote": "For the One Time connector only:\n\n```text\nGHL:\ncustomer communication source of truth\n\nOne Time app:\nproduct/account source of truth\n\nTelegram:\nRabbi interface for assigned Torah questions/content\n\nResend:\nsecurity-token email only",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-003",
+      "global_invariant_id": null,
+      "reason": "Atomic operator requirement mapped to its durable contract change."
+    },
+    {
+      "coverage_id": "COV-20260721-004",
+      "span_id": "RAW-20260721-002:S004",
+      "start": 786,
+      "end": 921,
+      "quote": "BNA School keeps its own accepted first-party school operations architecture.\n\nDo not apply the One Time GHL exception globally to BNA.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-004",
+      "global_invariant_id": null,
+      "reason": "Atomic operator requirement mapped to its durable contract change."
+    },
+    {
+      "coverage_id": "COV-20260721-005",
+      "span_id": "RAW-20260721-002:S005",
+      "start": 941,
+      "end": 1281,
+      "quote": "Default One Time inbound owner:\n\n```text\nShloimie\n```\n\nRabbi Eli receives only:\n\n- assigned substantive Torah/Mishnah/halachic questions;\n- Rabbi-authored newsletter/content drafts;\n- approved warm enrollment drafts.\n\nRabbi does not receive:\n\n- login;\n- billing;\n- support;\n- scheduling;\n- parent administration;\n- unknown/general messages.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-005",
+      "global_invariant_id": null,
+      "reason": "Atomic operator requirement mapped to its durable contract change."
+    },
+    {
+      "coverage_id": "COV-20260721-006",
+      "span_id": "RAW-20260721-002:S006",
+      "start": 1309,
+      "end": 1543,
+      "quote": "Create or update the appropriate:\n\n```text\nMEMORY.md\nmemory-topics/\ndocs/architecture/\nworkspace role map\nSuper Admin connector contracts\nAgent Action job schemas\n```\n\nPreserve raw operator direction in a dated intake/decision record.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-006",
+      "global_invariant_id": null,
+      "reason": "Atomic operator requirement mapped to its durable contract change."
+    },
+    {
+      "coverage_id": "COV-20260721-007",
+      "span_id": "RAW-20260721-002:S007",
+      "start": 1562,
+      "end": 1859,
+      "quote": "Separate:\n\n```text\nlive_class_question\nbusiness_conversation\ntechnical_ticket\n```\n\nA live class question is owned by One Time.\n\nA business conversation is owned by GHL.\n\nA technical ticket is owned by Super Admin and includes source workspace.\n\nDo not route all of these into one BNA ticket queue.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-007",
+      "global_invariant_id": null,
+      "reason": "Atomic operator requirement mapped to its durable contract change."
+    },
+    {
+      "coverage_id": "COV-20260721-008",
+      "span_id": "RAW-20260721-002:S008",
+      "start": 1889,
+      "end": 2038,
+      "quote": "Telegram is not the canonical transcript.\n\nEvery send/draft/status change writes to GHL.\n\nDo not allow AI to originate Torah answers in Rabbi's name.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-008",
+      "global_invariant_id": null,
+      "reason": "Atomic operator requirement mapped to its durable contract change."
+    },
+    {
+      "coverage_id": "COV-20260721-009",
+      "span_id": "RAW-20260721-002:S009",
+      "start": 2065,
+      "end": 2162,
+      "quote": "No email sends, Telegram sends, GHL mutations, DNS changes or production deployment in this lane.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-009",
+      "global_invariant_id": null,
+      "reason": "Atomic operator requirement mapped to its durable contract change."
+    },
+    {
+      "coverage_id": "COV-20260721-010",
+      "span_id": "RAW-20260721-002:S011",
+      "start": 2183,
+      "end": 2448,
+      "quote": "Begin exactly:\n\n```text\nONE_TIME_GHL_EXCEPTION: RECORDED | BLOCKED(<one action>)\nBNA_SCHOOL_ARCHITECTURE: PRESERVED\nSHLOIMIE_DEFAULT_OWNER: YES\nRABBI_TORAH_ONLY: YES\nRESEND_SECURITY_ONLY: YES\nEXTERNAL_MUTATIONS: 0\n```\n\nThen include branch/head/PR and durable paths.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-011",
+      "global_invariant_id": null,
+      "reason": "Atomic operator requirement mapped to its durable contract change."
+    }
+  ],
+  "readiness": {
+    "status": "ready_for_implementation",
+    "blocking_change_ids": [],
+    "notes": [
+      "Documentation and contract-only lane; PQC app-visual expansion is not applicable.",
+      "No external mutation or production deployment is authorized."
+    ]
+  },
+  "fingerprint": "6f2d3038434fa41bb8d756544e74a05481ffa3e398cef0e21f483bc0677477b9"
+}

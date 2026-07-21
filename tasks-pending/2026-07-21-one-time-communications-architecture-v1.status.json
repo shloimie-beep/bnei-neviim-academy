@@ -1,0 +1,18 @@
+{
+  "packet_id": "PKT-20260721-002",
+  "status": "ready_for_publish",
+  "terminal_requirement_count": 8,
+  "blocked_requirement_ids": [],
+  "known_blocker": null,
+  "validation": {
+    "intent_preservation": "pass",
+    "focused_contract_tests": "pass_7_of_7",
+    "pqc_protocol": "pass_validation_fixtures_13_of_13_evals_8_of_8",
+    "protocol_drift": "pass_finding_count_0",
+    "secrets_audit": "pass_9635_paths_0_findings",
+    "git_diff_check": "pass",
+    "production_changed": false,
+    "external_mutations": 0
+  },
+  "updated_at": "2026-07-21T16:35:00+03:00"
+}
