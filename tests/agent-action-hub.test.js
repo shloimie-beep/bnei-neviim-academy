@@ -74,6 +74,73 @@ test('HighLevel export parser preserves canonical prompt text and deduplicates j
   assert.equal(parsed.secrets_included, false);
 });
 
+test('HighLevel export parser maps current Agent Mode export schema fields', () => {
+  const prompt = 'Job GHL-UI-01: custom-value folders and unresolved value review';
+  const exportJson = JSON.stringify({
+    schema_id: 'bna-agent-action-export',
+    schema_version: '1.0.0',
+    export_type: 'highlevel_agent_mode_queue',
+    source: {
+      repository: 'shloimie-beep/onetimev2',
+      registry_root: 'integrations/highlevel/registry/',
+      queue_path: 'integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json',
+      location_id: 'pBSnOK2nkdxp6gf9Rg3o',
+      location_fingerprint: '31fcbd2792f131dc',
+    },
+    ingestion: {
+      lane: 'highlevel_agent_mode',
+      required_readback: true,
+      idempotency_key_field: 'idempotency_key',
+    },
+    safety: {
+      no_send_default: true,
+      no_publish_default: true,
+    },
+    jobs: [
+      {
+        job_id: 'GHL-UI-01',
+        order: 1,
+        title: 'custom-value folders and unresolved value review',
+        ghl_location: {
+          location_id: 'pBSnOK2nkdxp6gf9Rg3o',
+          location_fingerprint: '31fcbd2792f131dc',
+        },
+        exact_target_ui_path: 'HighLevel > Settings > Custom Values',
+        canonical_source_files: [
+          'integrations/highlevel/registry/current.json',
+          'integrations/highlevel/registry/custom-values.yaml',
+        ],
+        exact_copy_paste_prompt: prompt,
+        allowed_assets: ['Custom-value folders matching the registry folder names.'],
+        forbidden_assets: ['message sends', 'workflow publish actions'],
+        expected_ghl_ids_to_capture: ['custom_value_folder_ids_if_visible'],
+        completion_checklist: ['Readback result ID was verified.'],
+        idempotency_key: 'one-time-ghl:GHL-UI-01:5992aa88997b126b',
+        bna_agent_action_dropoff: {
+          result_path: 'integrations/highlevel/agent-mode/results/GHL-UI-01.result.json',
+          readback_verification: 'After saving the result, reopen/read it and record the returned result ID.',
+          metadata: {
+            job_file: 'integrations/highlevel/agent-mode/jobs/GHL-UI-01-custom-value-folders-and-unresolved-value-review.json',
+          },
+        },
+      },
+    ],
+  });
+  const parsed = parseHighLevelAgentModeExport(exportJson, HIGHLEVEL_EXPORT_SOURCE);
+  assert.equal(parsed.jobs.length, 1);
+  assert.equal(parsed.schema_id, 'bna-agent-action-export');
+  assert.equal(parsed.registry_version, '1.0.0');
+  assert.equal(parsed.source.ref, 'codex/highlevel-api-finalize-agent-queue');
+  assert.equal(parsed.source.sha, '1000e8f46210a85f720f83fce2678b24a44fa94d');
+  assert.equal(parsed.jobs[0].prompt, prompt);
+  assert.equal(parsed.jobs[0].target_workspace, 'one_time');
+  assert.equal(parsed.jobs[0].target_ui_url, 'https://app.gohighlevel.com/');
+  assert.deepEqual(parsed.jobs[0].expected_asset_ids, ['custom_value_folder_ids_if_visible']);
+  assert.equal(parsed.jobs[0].metadata.exact_target_ui_path, 'HighLevel > Settings > Custom Values');
+  assert.equal(parsed.jobs[0].metadata.result_path, 'integrations/highlevel/agent-mode/results/GHL-UI-01.result.json');
+  assert.equal(parsed.jobs[0].metadata.ghl_location_fingerprint, '31fcbd2792f131dc');
+});
+
 test('HighLevel export parser rejects secret-like content', () => {
   const parsed = parseHighLevelAgentModeExport(JSON.stringify({
     jobs: [

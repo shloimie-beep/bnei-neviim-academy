@@ -1,20 +1,29 @@
 {
   "packet_id": "PKT-20260721-001",
-  "status": "blocked",
+  "status": "complete",
   "terminal_requirement_count": 9,
-  "blocked_requirement_ids": ["REQ-20260721-006"],
-  "known_blocker": {
-    "id": "BLOCK-20260721-001",
-    "requirement_id": "REQ-20260721-006",
-    "summary": "Missing One Time GHL Agent Mode export JSON at the requested path/ref."
-  },
+  "blocked_requirement_ids": [],
+  "known_blocker": null,
   "preview_url": "http://127.0.0.1:8095/operations/agent-actions",
   "validation": {
     "node_check_changed_js": "pass",
     "focused_tests": "pass",
+    "agent_action_idempotency_result_readback": "pass",
+    "highlevel_import_dry_run": "pass",
     "secrets_audit": "pass",
+    "git_diff_check": "pass",
     "preview_smoke": "pass",
     "production_changed": false
   },
-  "updated_at": "2026-07-21T11:55:00+03:00"
+  "highlevel_import": {
+    "jobs_imported": 14,
+    "source_repository": "shloimie-beep/onetimev2",
+    "source_ref": "codex/highlevel-api-finalize-agent-queue",
+    "source_sha": "1000e8f46210a85f720f83fce2678b24a44fa94d",
+    "source_path": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json",
+    "source_blob_sha": "8982b719dff696fff291fa868130b5900127f324",
+    "registry_version": "1.0.0",
+    "first_job_id": "GHL-UI-01"
+  },
+  "updated_at": "2026-07-21T12:05:00+03:00"
 }

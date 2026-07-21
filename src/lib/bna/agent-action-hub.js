@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const fs = require('fs');
+const https = require('https');
 const path = require('path');
 const {
   CANONICAL_WORKSPACES,
@@ -40,10 +41,12 @@ const AGENT_ACTION_TERMINAL_STATUSES = Object.freeze(['blocked', 'failed', 'veri
 
 const HIGHLEVEL_EXPORT_SOURCE = Object.freeze({
   repository: 'shloimie-beep/onetimev2',
-  ref: 'pull/93/head',
-  sha: '977e4453c34684cd06359f663d0e8f50dc3645f5',
+  ref: 'codex/highlevel-api-finalize-agent-queue',
+  sha: '1000e8f46210a85f720f83fce2678b24a44fa94d',
   artifact_path: 'integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json',
-  registry_version: 'missing-export-at-pr93-2026-07-21',
+  artifact_blob_sha: '8982b719dff696fff291fa868130b5900127f324',
+  artifact_url: 'https://raw.githubusercontent.com/shloimie-beep/onetimev2/1000e8f46210a85f720f83fce2678b24a44fa94d/integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json',
+  registry_version: 'highlevel-agent-mode-export-schema-1.0.0',
 });
 
 function sha256Hex(value = '') {
@@ -123,8 +126,22 @@ function agentActionJobFingerprint(job = {}) {
 }
 
 function buildAgentActionJobFromGhlExportItem(item = {}, index = 0, source = HIGHLEVEL_EXPORT_SOURCE) {
-  const prompt = String(item.canonical_prompt_text || item.canonicalPromptText || item.prompt_text || item.promptText || item.prompt || '').trim();
+  const prompt = String(item.exact_copy_paste_prompt || item.exactCopyPastePrompt || item.canonical_prompt_text || item.canonicalPromptText || item.prompt_text || item.promptText || item.prompt || '').trim();
   const targetWorkspace = resolveWorkspaceKey(item.target_workspace || item.targetWorkspace || item.workspace_key || item.workspace || 'one_time');
+  const dropoff = item.bna_agent_action_dropoff || item.bnaAgentActionDropoff || {};
+  const dropoffMetadata = dropoff.metadata && typeof dropoff.metadata === 'object' ? dropoff.metadata : {};
+  const expectedAssetIds = item.expected_ghl_ids_to_capture || item.expectedGhlIdsToCapture || item.expected_asset_ids || item.expectedAssetIds || item.expected_assets || item.expectedAssets || [];
+  const allowedActions = item.allowed_actions || item.allowedActions || item.prerequisites || [
+    'Perform only the UI work described by the exact copy/paste prompt.',
+    'Save every edited HighLevel workflow, bot, knowledge base, folder, or custom value screen.',
+    'Verify the saved state by reopening or reading the saved state.',
+  ];
+  const forbiddenActions = item.forbidden_actions || item.forbiddenActions || item.forbidden_assets || item.forbiddenAssets || [
+    'Do not import secrets.',
+    'Do not execute GHL automation automatically.',
+    'Do not send external messages.',
+    'Do not change BNA School data.',
+  ];
   const job = {
     job_type: AGENT_ACTION_JOB_TYPE,
     job_id: item.job_id || item.jobId || jobIdFromItem(item, index),
@@ -138,17 +155,12 @@ function buildAgentActionJobFromGhlExportItem(item = {}, index = 0, source = HIG
     source_fingerprint: '',
     target_application: item.target_application || item.targetApplication || 'HighLevel',
     target_workspace: targetWorkspace,
-    target_ui_url: item.target_ui_url || item.targetUiUrl || item.url || item.target_url || '',
+    target_ui_url: item.target_ui_url || item.targetUiUrl || item.url || item.target_url || 'https://app.gohighlevel.com/',
     prompt,
-    allowed_actions: normalizeStringList(item.allowed_actions || item.allowedActions || ['configure UI only inside the target application']),
-    forbidden_actions: normalizeStringList(item.forbidden_actions || item.forbiddenActions || [
-      'Do not import secrets.',
-      'Do not execute GHL automation automatically.',
-      'Do not send external messages.',
-      'Do not change BNA School data.',
-    ]),
-    required_save_behavior: compactText(item.required_save_behavior || item.requiredSaveBehavior || 'Save partial or completed result to the BNA Agent Action drop-off, then read back the saved result URL.', 800),
-    expected_asset_ids: normalizeStringList(item.expected_asset_ids || item.expectedAssetIds || item.expected_assets || item.expectedAssets || []),
+    allowed_actions: normalizeStringList(allowedActions),
+    forbidden_actions: normalizeStringList(forbiddenActions),
+    required_save_behavior: compactText(item.required_save_behavior || item.requiredSaveBehavior || dropoff.readback_verification || 'Save partial or completed result to the BNA Agent Action drop-off, then read back the saved result URL.', 800),
+    expected_asset_ids: normalizeStringList(expectedAssetIds),
     completion_checklist: normalizeStringList(item.completion_checklist || item.completionChecklist || item.checklist || []),
     evidence_requirements: normalizeStringList(item.evidence_requirements || item.evidenceRequirements || [
       'Saved Agent Action result.',
@@ -162,6 +174,16 @@ function buildAgentActionJobFromGhlExportItem(item = {}, index = 0, source = HIG
       source: 'highlevel_agent_mode_export',
       order: Number(item.order || item.sequence || index + 1),
       one_time_registry_version: source.registry_version || '',
+      exact_target_ui_path: item.exact_target_ui_path || item.exactTargetUiPath || '',
+      canonical_source_files: normalizeStringList(item.canonical_source_files || item.canonicalSourceFiles || []),
+      result_path: item.result_path || item.resultPath || dropoff.result_path || dropoffMetadata.result_file || '',
+      job_file: dropoffMetadata.job_file || '',
+      ghl_location_id: item.ghl_location?.location_id || item.ghlLocation?.locationId || '',
+      ghl_location_fingerprint: item.ghl_location?.location_fingerprint || item.ghlLocation?.locationFingerprint || '',
+      no_send: item.defaults?.no_send !== false,
+      no_publish: item.defaults?.no_publish !== false,
+      no_production_workflow_enrollment: item.defaults?.no_production_workflow_enrollment !== false,
+      no_live_payment_mutation: item.defaults?.no_live_payment_mutation !== false,
       external_write_performed: false,
       secrets_included: false,
     },
@@ -247,7 +269,12 @@ function parseHighLevelAgentModeExport(jsonText = '', source = HIGHLEVEL_EXPORT_
     success: rejected.length === 0,
     source,
     source_fingerprint: sourceFingerprint,
-    registry_version: parsed.registry_version || parsed.registryVersion || source.registry_version || '',
+    registry_version: parsed.registry_version || parsed.registryVersion || parsed.schema_version || parsed.schemaVersion || source.registry_version || '',
+    schema_id: parsed.schema_id || parsed.schemaId || '',
+    schema_version: parsed.schema_version || parsed.schemaVersion || '',
+    ingestion: parsed.ingestion || {},
+    source_metadata: parsed.source || {},
+    safety: parsed.safety || {},
     jobs,
     rejected,
     external_write_performed: false,
@@ -259,22 +286,68 @@ function findLocalHighLevelExport(repoRoot = process.cwd(), source = HIGHLEVEL_E
   const candidates = [
     process.env.ONE_TIME_GHL_AGENT_MODE_EXPORT_PATH,
     path.join(repoRoot, '..', 'onetimev2', source.artifact_path),
+    path.join(process.env.TEMP || process.env.TMP || '', 'onetimev2-agent-mode-current', source.artifact_path),
     path.join(repoRoot, '..', 'OneTime', source.artifact_path),
     path.join(repoRoot, 'integrations', 'highlevel', 'agent-mode', 'GHL-AGENT-MODE-EXPORT.json'),
   ].filter(Boolean);
   return candidates.find((candidate) => fs.existsSync(candidate)) || '';
 }
 
-function importHighLevelAgentModeExport({ repoRoot = process.cwd(), source = HIGHLEVEL_EXPORT_SOURCE, filePath = '' } = {}) {
+function fetchText(url, { timeoutMs = 10000 } = {}) {
+  return new Promise((resolve, reject) => {
+    const request = https.get(url, {
+      headers: {
+        'User-Agent': 'bna-agent-action-importer',
+        Accept: 'application/json,text/plain',
+      },
+      timeout: timeoutMs,
+    }, (response) => {
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        response.resume();
+        reject(new Error(`HTTP ${response.statusCode} while reading pinned HighLevel export.`));
+        return;
+      }
+      let text = '';
+      response.setEncoding('utf8');
+      response.on('data', (chunk) => {
+        text += chunk;
+      });
+      response.on('end', () => resolve(text));
+    });
+    request.on('timeout', () => {
+      request.destroy(new Error('Timed out while reading pinned HighLevel export.'));
+    });
+    request.on('error', reject);
+  });
+}
+
+async function importHighLevelAgentModeExport({ repoRoot = process.cwd(), source = HIGHLEVEL_EXPORT_SOURCE, filePath = '', allowNetwork = true } = {}) {
   const resolvedPath = filePath || findLocalHighLevelExport(repoRoot, source);
-  if (!resolvedPath) {
-    return highLevelImportBlocker(source);
+  if (resolvedPath) {
+    const text = fs.readFileSync(resolvedPath, 'utf8');
+    return {
+      ...parseHighLevelAgentModeExport(text, source),
+      resolved_path: resolvedPath,
+    };
   }
-  const text = fs.readFileSync(resolvedPath, 'utf8');
-  return {
-    ...parseHighLevelAgentModeExport(text, source),
-    resolved_path: resolvedPath,
-  };
+  if (allowNetwork && source.artifact_url) {
+    try {
+      const text = await fetchText(source.artifact_url);
+      return {
+        ...parseHighLevelAgentModeExport(text, source),
+        resolved_url: source.artifact_url,
+      };
+    } catch (error) {
+      return {
+        ...highLevelImportBlocker(source),
+        blocker: {
+          ...highLevelImportBlocker(source).blocker,
+          message: `${source.repository} ${source.ref} at ${source.sha} could not be read from the pinned raw export URL: ${compactText(error.message, 400)}`,
+        },
+      };
+    }
+  }
+  return highLevelImportBlocker(source);
 }
 
 function highLevelImportBlocker(source = HIGHLEVEL_EXPORT_SOURCE) {
@@ -288,8 +361,8 @@ function highLevelImportBlocker(source = HIGHLEVEL_EXPORT_SOURCE) {
     blocker: {
       id: 'BLOCK-20260721-001',
       requirement_id: 'REQ-20260721-006',
-      message: `${source.repository} ${source.ref} at ${source.sha} does not expose ${source.artifact_path}.`,
-      next_action: 'Provide or merge the exported GHL-AGENT-MODE-EXPORT.json artifact on a reachable One Time ref.',
+      message: `${source.repository} ${source.ref} at ${source.sha} did not provide a readable ${source.artifact_path} artifact to this importer run.`,
+      next_action: 'Provide a reachable pinned One Time export artifact or set ONE_TIME_GHL_AGENT_MODE_EXPORT_PATH to the exported GHL-AGENT-MODE-EXPORT.json file.',
     },
     external_write_performed: false,
     secrets_included: false,

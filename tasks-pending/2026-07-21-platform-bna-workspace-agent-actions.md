@@ -11,7 +11,7 @@ Branch: `codex/platform-bna-workspace-agent-actions`
 - Base: current `origin/master` at `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`.
 - Source refs fetched: PR #134 and PR #138.
 - Source PR rule: port safe semantics only; no mechanical merge.
-- External source blocker: One Time PR #93/current HighLevel branches did not contain `integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json`.
+- External source: One Time current HighLevel branch `codex/highlevel-api-finalize-agent-queue` contains `integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json` at SHA `1000e8f46210a85f720f83fce2678b24a44fa94d`.
 - Production deploy: explicitly out of scope.
 
 ## Requirement Register
@@ -23,16 +23,14 @@ Branch: `codex/platform-bna-workspace-agent-actions`
 | REQ-20260721-003 | Normal workspace switcher and routes | platform_control | `/operations`, `/operations/school`, `/operations/workspaces/one-time`, `/operations/agent-actions` exist and normal nav does not rely on View-as. | Done |
 | REQ-20260721-004 | Focused BNA school workspace | bna_school / bna_school | `/operations/school` shows BNA school workspace and bounded summary data without One Time leakage. | Done |
 | REQ-20260721-005 | Agent Action job/drop-off | platform_control / platform_operations | Required routes, API, job contract, statuses, controls, idempotency, emergency save, and readback rule exist while Agent Review remains. | Done |
-| REQ-20260721-006 | HighLevel Agent Mode import | one_time / one_time_mishnayos | Safe importer pins/ref/fingerprints/dedupes/imports no secrets and preserves prompt text. | Blocked on missing source artifact |
+| REQ-20260721-006 | HighLevel Agent Mode import | one_time / one_time_mishnayos | Safe importer pins/ref/fingerprints/dedupes/imports no secrets and preserves prompt text. | Done |
 | REQ-20260721-007 | Ticket routing correction | platform_control, bna_school, one_time | Live questions, business conversations, and technical tickets are distinct records with correct ownership. | Done |
 | REQ-20260721-008 | Registries and focused validation | platform_control | Route/action registries updated and focused checks run. | Done |
-| REQ-20260721-009 | Isolated preview | platform_control | Local/PR preview shows the new surfaces without production deployment. | Done with GHL import blocker visible |
+| REQ-20260721-009 | Isolated preview | platform_control | Local/PR preview shows the new surfaces without production deployment. | Done |
 
 ## Blockers
 
-| ID | Requirement | Exact blocker | Required action |
-|---|---|---|---|
-| BLOCK-20260721-001 | REQ-20260721-006 | `shloimie-beep/onetimev2` PR #93 SHA `977e4453c34684cd06359f663d0e8f50dc3645f5` and scanned HighLevel descendant branches do not contain `integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json`. | Provide or merge the exported `GHL-AGENT-MODE-EXPORT.json` artifact on a reachable One Time ref. |
+None.
 
 ## Closeout Evidence To Record
 
@@ -48,6 +46,7 @@ Branch: `codex/platform-bna-workspace-agent-actions`
 
 - Local preview URL: `http://127.0.0.1:8095/operations/agent-actions`.
 - Evidence: `ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/`.
-- Validation: changed JS parse PASS, focused tests PASS, secrets audit PASS, preview smoke PASS.
+- Validation: changed JS parse PASS, focused tests PASS, Agent Action idempotency/readback PASS, HighLevel import dry-run PASS, secrets audit PASS, `git diff --check` PASS, preview smoke PASS.
+- HighLevel import: `GHL_JOBS_IMPORTED=14`; first imported dry-run job `GHL-UI-01`.
 - Production changed: no.
-- Remaining blocker: `BLOCK-20260721-001`.
+- Remaining blocker: none.
