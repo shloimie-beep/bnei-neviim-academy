@@ -12946,9 +12946,9 @@ async function readbackAgentActionResult(jobId = '', { resultRef = '', idempoten
   }
 }
 
-function currentHighLevelImportPreview() {
+async function currentHighLevelImportPreview() {
   try {
-    return importHighLevelAgentModeExport({ repoRoot: __dirname });
+    return await importHighLevelAgentModeExport({ repoRoot: __dirname });
   } catch (error) {
     const blocked = highLevelImportBlocker();
     return {
@@ -13665,7 +13665,7 @@ app.get('/api/platform/agent-actions', requireAdmin, async (req, res) => {
   try {
     const identity = requirePlatformSuperAdmin(req, res);
     if (!identity) return;
-    const importPreview = currentHighLevelImportPreview();
+    const importPreview = await currentHighLevelImportPreview();
     await upsertImportedAgentActionJobs(importPreview, identity);
     const requestedJobId = compactAgentActionText(req.query?.job_id || req.query?.jobId || '', 160);
     const jobs = await listAgentActionJobs({ jobId: requestedJobId });
@@ -13696,7 +13696,7 @@ app.get('/api/platform/agent-actions/:jobId', requireAdmin, async (req, res) => 
   try {
     const identity = requirePlatformSuperAdmin(req, res);
     if (!identity) return;
-    const importPreview = currentHighLevelImportPreview();
+    const importPreview = await currentHighLevelImportPreview();
     await upsertImportedAgentActionJobs(importPreview, identity);
     const job = await getAgentActionJob(compactAgentActionText(req.params.jobId, 160));
     if (!job) return res.status(404).json({ success: false, error: 'Agent Action job not found.', external_write_performed: false });

@@ -40417,3 +40417,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Extended Agent Review architecture with separate Agent Action job/result tables, CSRF/idempotency/readback behavior, safe HighLevel import validation, and local-only no-database preview mode for the new read-only surfaces.
 - Validation passed: changed JS parse checks, focused taxonomy/Agent Action/route tests (`16/16`), `npm run secrets:audit`, and local preview smoke at `http://127.0.0.1:8095`.
 - `GHL_JOBS_IMPORTED=0` because the requested One Time export `integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json` is absent from PR #93 SHA `977e4453c34684cd06359f663d0e8f50dc3645f5` and scanned HighLevel descendant branches. Production was not deployed or changed.
+
+# 2026-07-21T12:05:00+03:00 - One Time HighLevel Agent Action queue imported
+
+- Located the current One Time HighLevel API lane at `shloimie-beep/onetimev2` ref `codex/highlevel-api-finalize-agent-queue`, SHA `1000e8f46210a85f720f83fce2678b24a44fa94d`, with `integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json` blob SHA `8982b719dff696fff291fa868130b5900127f324`.
+- Updated the safe read-only importer to pin that repository/ref/SHA/artifact, preserve exact `exact_copy_paste_prompt` text, map current export schema fields, dedupe jobs, reject secret-like payloads, and record registry/schema version `1.0.0`.
+- `GHL_JOBS_IMPORTED=14`; the isolated preview shows `GHL-UI-01` as the first dry-run One Time HighLevel UI Setup Agent Action job.
+- Validation passed: changed JS parse checks, focused taxonomy/Agent Action/route tests (`17/17`), HighLevel import dry-run, Agent Action completed-save/readback smoke, `npm run secrets:audit`, and `git diff --check`. Production was not deployed or changed.

@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-07-21T12:03:30+03:00",
+  "success": true,
+  "ghl_jobs_imported": 14,
+  "source_repository": "shloimie-beep/onetimev2",
+  "source_ref": "codex/highlevel-api-finalize-agent-queue",
+  "source_sha": "1000e8f46210a85f720f83fce2678b24a44fa94d",
+  "source_path": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json",
+  "source_blob_sha": "8982b719dff696fff291fa868130b5900127f324",
+  "schema_id": "bna-agent-action-export",
+  "schema_version": "1.0.0",
+  "registry_version": "1.0.0",
+  "first_job": {
+    "job_id": "GHL-UI-01",
+    "title": "custom-value folders and unresolved value review",
+    "status": "ready",
+    "target_workspace": "one_time",
+    "target_project": "one_time_mishnayos",
+    "prompt_starts": "Job GHL-UI-01: custom-value folders and unresolv"
+  },
+  "external_write_performed": false,
+  "secrets_included": false,
+  "blocker": null
+}

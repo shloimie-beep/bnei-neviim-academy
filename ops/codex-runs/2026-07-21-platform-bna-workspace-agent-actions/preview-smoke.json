@@ -1,5 +1,7 @@
 {
-  "generated_at": "2026-07-21T08:50:37.976Z",
+  "generated_at": "2026-07-21T09:00:42.661Z",
+  "ghl_jobs_imported": 14,
+  "first_imported_job": "GHL-UI-01",
   "evidence": [
     {
       "name": "super-admin",
@@ -8,7 +10,9 @@
       "hasSuperAdmin": true,
       "hasBna": true,
       "hasOneTime": true,
-      "hasAgentAction": true
+      "hasAgentAction": true,
+      "hasImportedGhlJob": false,
+      "hasImportedCount": false
     },
     {
       "name": "bna-school",
@@ -17,7 +21,9 @@
       "hasSuperAdmin": true,
       "hasBna": true,
       "hasOneTime": true,
-      "hasAgentAction": false
+      "hasAgentAction": false,
+      "hasImportedGhlJob": false,
+      "hasImportedCount": false
     },
     {
       "name": "one-time-connector",
@@ -26,7 +32,9 @@
       "hasSuperAdmin": true,
       "hasBna": true,
       "hasOneTime": true,
-      "hasAgentAction": true
+      "hasAgentAction": true,
+      "hasImportedGhlJob": false,
+      "hasImportedCount": true
     },
     {
       "name": "agent-actions",
@@ -35,7 +43,20 @@
       "hasSuperAdmin": true,
       "hasBna": true,
       "hasOneTime": true,
-      "hasAgentAction": true
+      "hasAgentAction": true,
+      "hasImportedGhlJob": true,
+      "hasImportedCount": true
+    },
+    {
+      "name": "agent-action-ghl-ui-01",
+      "url": "http://127.0.0.1:8095/operations/agent-actions/GHL-UI-01",
+      "screenshot": "ops\\codex-runs\\2026-07-21-platform-bna-workspace-agent-actions\\agent-action-ghl-ui-01.png",
+      "hasSuperAdmin": true,
+      "hasBna": true,
+      "hasOneTime": true,
+      "hasAgentAction": true,
+      "hasImportedGhlJob": true,
+      "hasImportedCount": true
     }
   ]
 }
