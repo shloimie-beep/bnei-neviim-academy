@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Admin - Platform Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;750&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/platform-workspaces.css">
+</head>
+<body>
+  <div class="platform-shell">
+    <aside class="platform-sidebar">
+      <div class="platform-brand">
+        <strong>Super Admin</strong>
+        <span>Platform Control</span>
+      </div>
+      <nav class="workspace-switcher" aria-label="Workspace switcher">
+        <a href="/operations" class="active" aria-current="page">Super Admin <span>Control</span></a>
+        <a href="/operations/school">BNA <span>School</span></a>
+        <a href="/operations/workspaces/one-time">One Time <span>Connector</span></a>
+      </nav>
+      <nav class="platform-nav" aria-label="Platform navigation">
+        <a href="/operations/agent-actions">Agent Actions</a>
+        <a href="/operations/agent-review">Agent Review</a>
+      </nav>
+    </aside>
+    <main class="platform-main">
+      <header class="platform-header">
+        <div>
+          <p class="platform-kicker">Platform Control</p>
+          <h1>Super Admin</h1>
+          <p>Control layer for platform operations, workspace routing, external connectors, and agent handoffs. BNA is a school workspace; One Time is an external product connector.</p>
+        </div>
+        <a class="button primary" href="/operations/agent-actions">Agent Actions</a>
+      </header>
+      <section class="grid three">
+        <article class="card">
+          <h2>Super Admin</h2>
+          <p class="muted">Canonical workspace: <strong>platform_control</strong></p>
+          <span class="status-pill ready">control layer</span>
+        </article>
+        <article class="card">
+          <h2>BNA</h2>
+          <p class="muted">Canonical workspace: <strong>bna_school</strong></p>
+          <a class="button" href="/operations/school">Open BNA</a>
+        </article>
+        <article class="card">
+          <h2>One Time</h2>
+          <p class="muted">Canonical workspace: <strong>one_time</strong></p>
+          <a class="button" href="/operations/workspaces/one-time">Open Connector</a>
+        </article>
+      </section>
+      <section class="card">
+        <h2>Agent Action drop-off</h2>
+        <p class="muted">Reusable Agent Mode jobs save through `/api/platform/agent-actions/:jobId/results` and require readback before completion.</p>
+        <div class="toolbar">
+          <a class="button primary" href="/operations/agent-actions">Agent Action queue</a>
+          <a class="button" href="/operations/agent-review">Existing Agent Review</a>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

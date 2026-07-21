@@ -40410,3 +40410,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   auto-reply mutation, CRM production write, provider mutation, credential
   mutation, payment/access mutation, raw private payload logging, or destructive
   production mutation was performed.
+# 2026-07-21T11:55:00+03:00 - Platform taxonomy, BNA workspace, and Agent Action drop-off
+
+- Registered `RAW-20260721-001` and packet `PKT-20260721-001` for the platform/BNA/One Time Agent Action lane.
+- Added canonical taxonomy resolver, compatibility aliases, non-destructive migration plan, ticket-routing records, BNA School route, One Time connector route, and Agent Action queue/drop-off routes.
+- Extended Agent Review architecture with separate Agent Action job/result tables, CSRF/idempotency/readback behavior, safe HighLevel import validation, and local-only no-database preview mode for the new read-only surfaces.
+- Validation passed: changed JS parse checks, focused taxonomy/Agent Action/route tests (`16/16`), `npm run secrets:audit`, and local preview smoke at `http://127.0.0.1:8095`.
+- `GHL_JOBS_IMPORTED=0` because the requested One Time export `integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json` is absent from PR #93 SHA `977e4453c34684cd06359f663d0e8f50dc3645f5` and scanned HighLevel descendant branches. Production was not deployed or changed.

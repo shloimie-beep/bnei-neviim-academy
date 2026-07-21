@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-07-21T08:50:37.976Z",
+  "evidence": [
+    {
+      "name": "super-admin",
+      "url": "http://127.0.0.1:8095/operations",
+      "screenshot": "ops\\codex-runs\\2026-07-21-platform-bna-workspace-agent-actions\\super-admin.png",
+      "hasSuperAdmin": true,
+      "hasBna": true,
+      "hasOneTime": true,
+      "hasAgentAction": true
+    },
+    {
+      "name": "bna-school",
+      "url": "http://127.0.0.1:8095/operations/school",
+      "screenshot": "ops\\codex-runs\\2026-07-21-platform-bna-workspace-agent-actions\\bna-school.png",
+      "hasSuperAdmin": true,
+      "hasBna": true,
+      "hasOneTime": true,
+      "hasAgentAction": false
+    },
+    {
+      "name": "one-time-connector",
+      "url": "http://127.0.0.1:8095/operations/workspaces/one-time",
+      "screenshot": "ops\\codex-runs\\2026-07-21-platform-bna-workspace-agent-actions\\one-time-connector.png",
+      "hasSuperAdmin": true,
+      "hasBna": true,
+      "hasOneTime": true,
+      "hasAgentAction": true
+    },
+    {
+      "name": "agent-actions",
+      "url": "http://127.0.0.1:8095/operations/agent-actions",
+      "screenshot": "ops\\codex-runs\\2026-07-21-platform-bna-workspace-agent-actions\\agent-actions.png",
+      "hasSuperAdmin": true,
+      "hasBna": true,
+      "hasOneTime": true,
+      "hasAgentAction": true
+    }
+  ]
+}

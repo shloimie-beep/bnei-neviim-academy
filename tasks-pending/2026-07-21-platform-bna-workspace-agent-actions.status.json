@@ -1,0 +1,20 @@
+{
+  "packet_id": "PKT-20260721-001",
+  "status": "blocked",
+  "terminal_requirement_count": 9,
+  "blocked_requirement_ids": ["REQ-20260721-006"],
+  "known_blocker": {
+    "id": "BLOCK-20260721-001",
+    "requirement_id": "REQ-20260721-006",
+    "summary": "Missing One Time GHL Agent Mode export JSON at the requested path/ref."
+  },
+  "preview_url": "http://127.0.0.1:8095/operations/agent-actions",
+  "validation": {
+    "node_check_changed_js": "pass",
+    "focused_tests": "pass",
+    "secrets_audit": "pass",
+    "preview_smoke": "pass",
+    "production_changed": false
+  },
+  "updated_at": "2026-07-21T11:55:00+03:00"
+}
