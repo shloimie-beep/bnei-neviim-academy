@@ -36,7 +36,17 @@
 | `REQ-20260721-025` | Define Agent Action job/result schemas and no-mutation examples. | Done | Job/result schemas and examples under `docs/architecture/contracts/`. |
 | `REQ-20260721-026` | Add and run focused assertions plus required protocol/safety checks. | Done | Focused test 7/7; intent coverage 6/6 and 11/11; PQC fixtures 13/13; evals 8/8; drift 0; run validation, secret audit, and diff check passed. |
 | `REQ-20260721-027` | Append ledger/changelog and final evidence. | Done | Ledger/changelog plus `ops/codex-runs/2026-07-21-one-time-communications-architecture-v1/TEST-RESULTS.md`. |
-| `REQ-20260721-028` | Commit, push, and open a draft PR against master. | In progress | Validation complete; scoped publish pending. |
+| `REQ-20260721-028` | Commit, push, and open a draft PR against master. | Done | Implementation commit `c46d11ec628ad636f78bb7c0f4f5bf6b645bc454` pushed; draft PR #140 opened against `master`. |
+
+## Publication
+
+- Implementation commit:
+  `c46d11ec628ad636f78bb7c0f4f5bf6b645bc454`
+- Head branch: `codex/one-time-communications-architecture-v1`
+- Base branch: `master`
+- Draft PR:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/140`
+- External mutations: `0`
 
 ## Guardrails
 

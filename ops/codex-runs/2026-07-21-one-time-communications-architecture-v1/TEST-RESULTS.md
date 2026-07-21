@@ -50,3 +50,11 @@ mutation was performed.
 - Credential changes: 0
 - Database/production data changes: 0
 - Production deployments: 0
+
+## Publication
+
+- Branch: `codex/one-time-communications-architecture-v1`
+- Implementation commit:
+  `c46d11ec628ad636f78bb7c0f4f5bf6b645bc454`
+- Draft PR against `master`:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/140`
