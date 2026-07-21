@@ -1,7 +1,10 @@
 # Communications Intake Memory
 
-- Inbound email, WAPI/WhatsApp, form, and portal communications are first-party
-  BNA intake.
+- BNA School inbound email, WAPI/WhatsApp, form, and portal communications are
+  first-party BNA intake.
+- For the One Time external connector only, GHL is the customer-communication
+  source of truth and Shloimie is the default inbound owner. The One Time app
+  remains authoritative for product/account state.
 - Important inbound parent/accountability/payment/provider signals should
   create redacted local alerts or follow-up tasks.
 - Do not auto-send, publish, or sync external connectors without explicit
@@ -17,12 +20,13 @@
 - For BNA school-wide parent reminders, prefer parents tied to current
   canonical BNA student records and exclude stale duplicates/signup-only
   records unless Shloimie explicitly broadens the audience.
-- For Rabbi / One Time, support tickets belong to Shloimie/super-admin review
-  and should ding Shloimie's Telegram. Rabbi communications, including scoped
-  email, WhatsApp/WAPI, provider messages, and student/class messages, should
-  ding Rabbi Scheller's Telegram once `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`
-  is configured. Alerts must be metadata-only and scoped to
-  `rabbi_sheller_provider` / `one_time_mishnah_class`.
+- For Rabbi / One Time, login, billing, support, scheduling, parent
+  administration, and unknown/general messages belong to Shloimie/Super Admin
+  routing. Rabbi Telegram receives only assigned substantive Torah/Mishnah/
+  halachic questions, Rabbi-authored newsletter/content drafts, and approved
+  warm enrollment drafts. Telegram is not the canonical transcript; every
+  One Time send, draft, or status change must be represented in GHL. AI must
+  not originate Torah answers in Rabbi Eli's name.
 - 2026-07-06 correction: the Webers are just away/on vacation and are not
   hosting today's BNA meeting. Do not describe them as having permanently left
   or stopped hosting unless Shloimie explicitly says that later.

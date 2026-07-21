@@ -1,11 +1,26 @@
 # One Time / Rabbi Sheller Memory
 
-- Workspace key: `rabbi_sheller_provider`.
-- Project key: `one_time_mishnah_class`.
+- Canonical connector workspace key: `one_time`; legacy runtime alias:
+  `rabbi_sheller_provider`.
+- Canonical project key: `one_time_mishnayos`; legacy runtime alias:
+  `one_time_mishnah_class`.
 - View class for Rabbi admin work: `RABBI_PROVIDER_ADMIN`.
 - Brand: black + yellow.
-- GHL-like means first-party BNA CRM/product patterns only. Do not add GHL,
-  LeadConnector, GHL env vars, GHL APIs, or external CRM writes.
+- As of `DEC-20260721-002`, One Time is the only scoped exception to the BNA
+  School no-GHL rule: GHL is the One Time customer-communication source of
+  truth. The One Time app remains the product/account source of truth. This
+  does not authorize provider writes and must never be applied to BNA School.
+- Telegram is the non-canonical Rabbi interface for assigned Torah/content;
+  every One Time send, draft, or status change must be represented in GHL.
+  Resend is limited to security-token email.
+- Shloimie is the default One Time inbound owner. Rabbi Eli receives only
+  assigned substantive Torah/Mishnah/halachic questions, Rabbi-authored
+  newsletter/content drafts, and approved warm enrollment drafts. He does not
+  receive login, billing, support, scheduling, parent administration, or
+  unknown/general messages. AI must not originate Torah answers in his name.
+- `live_class_question`, `business_conversation`, and `technical_ticket` are
+  distinct One Time, GHL, and Super Admin records. Technical tickets require
+  source workspace; none defaults into one BNA ticket queue.
 - Classroom/content/community pipeline is provider-specific and separate from
   BNA Academy classroom/content/video records.
 - One Time Vimeo, Stripe, CRM/mailbox, class/content, and member-library
