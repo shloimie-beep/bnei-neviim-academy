@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-07-12T09:05:00+03:00",
+  "updated_at": "2026-07-21T00:00:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -2610,6 +2610,168 @@
       "smoke_expectation": "tests/assistant-scope-policy.test.js verifies blocked dangerous assistant actions.",
       "related_goal_ids": [
         "GOAL-CORE-002",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/operations/school",
+      "surface": "bna_school_workspace",
+      "access": "private",
+      "required_role": "operations_session",
+      "workspace_scope_required": true,
+      "workspace_key": "bna_school",
+      "project_key": "bna_school",
+      "public_allowed": false,
+      "expected_logged_out_behavior": "redirect_to_operations_login_with_safe_returnTo",
+      "expected_logged_in_behavior": "load_focused_bna_school_workspace_without_one_time_private_product_data",
+      "privacy_risk": "private_school_summary",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/operations/workspaces/one-time",
+      "surface": "one_time_external_product_connector",
+      "access": "private",
+      "required_role": "platform_super_admin",
+      "workspace_scope_required": true,
+      "workspace_key": "one_time",
+      "project_key": "one_time_mishnayos",
+      "public_allowed": false,
+      "expected_logged_out_behavior": "redirect_to_operations_login_with_safe_returnTo",
+      "expected_logged_in_behavior": "load_one_time_connector_readiness_links_and_agent_action_import_status_without_private_product_data_by_default",
+      "privacy_risk": "connector_metadata_only",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/operations/agent-actions",
+      "surface": "agent_action_queue",
+      "access": "private",
+      "required_role": "platform_super_admin",
+      "workspace_scope_required": true,
+      "workspace_key": "platform_control",
+      "project_key": "platform_operations",
+      "public_allowed": false,
+      "expected_logged_out_behavior": "redirect_to_operations_login_with_safe_returnTo",
+      "expected_logged_in_behavior": "load_agent_action_queue_and_highlevel_import_status",
+      "privacy_risk": "internal_agent_prompt_metadata",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/operations/agent-actions/:jobId",
+      "surface": "agent_action_detail",
+      "access": "private",
+      "required_role": "platform_super_admin",
+      "workspace_scope_required": true,
+      "workspace_key": "platform_control",
+      "project_key": "platform_operations",
+      "public_allowed": false,
+      "expected_logged_out_behavior": "redirect_to_operations_login_with_safe_returnTo",
+      "expected_logged_in_behavior": "load_agent_action_job_detail",
+      "privacy_risk": "internal_agent_prompt_metadata",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/operations/agent-actions/:jobId/dropoff",
+      "surface": "agent_action_dropoff",
+      "access": "private",
+      "required_role": "platform_super_admin",
+      "workspace_scope_required": true,
+      "workspace_key": "platform_control",
+      "project_key": "platform_operations",
+      "public_allowed": false,
+      "expected_logged_out_behavior": "redirect_to_operations_login_with_safe_returnTo",
+      "expected_logged_in_behavior": "load_agent_action_save_and_readback_dropoff",
+      "privacy_risk": "internal_agent_result_metadata",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/platform/agent-actions",
+      "surface": "agent_action_queue_api",
+      "access": "private_api",
+      "required_role": "platform_super_admin",
+      "workspace_scope_required": true,
+      "workspace_key": "platform_control",
+      "project_key": "platform_operations",
+      "public_allowed": false,
+      "expected_logged_out_behavior": "401_or_login_redirect",
+      "expected_logged_in_behavior": "return_agent_action_contract_jobs_taxonomy_ticket_routing_and_import_status",
+      "privacy_risk": "internal_agent_prompt_metadata",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/platform/agent-actions/:jobId/results",
+      "surface": "agent_action_results_api",
+      "access": "private_api",
+      "required_role": "platform_super_admin",
+      "workspace_scope_required": true,
+      "workspace_key": "platform_control",
+      "project_key": "platform_operations",
+      "public_allowed": false,
+      "expected_logged_out_behavior": "401_or_login_redirect",
+      "expected_logged_in_behavior": "save_or_read_back_agent_action_result_with_idempotency",
+      "privacy_risk": "internal_agent_result_metadata",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/school-admin/summary",
+      "surface": "bna_school_summary_api",
+      "access": "private_api",
+      "required_role": "operations_session",
+      "workspace_scope_required": true,
+      "workspace_key": "bna_school",
+      "project_key": "bna_school",
+      "public_allowed": false,
+      "expected_logged_out_behavior": "401_or_login_redirect",
+      "expected_logged_in_behavior": "return_bounded_school_summary_counts_only",
+      "privacy_risk": "private_school_summary",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/platform/agent-actions/:jobId",
+      "surface": "agent_action_detail_api",
+      "access": "private_api",
+      "required_role": "platform_super_admin",
+      "workspace_scope_required": true,
+      "workspace_key": "platform_control",
+      "project_key": "platform_operations",
+      "public_allowed": false,
+      "expected_logged_out_behavior": "401_or_login_redirect",
+      "expected_logged_in_behavior": "return_single_agent_action_job_contract",
+      "privacy_risk": "internal_agent_prompt_metadata",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
         "GOAL-CORE-015"
       ]
     }

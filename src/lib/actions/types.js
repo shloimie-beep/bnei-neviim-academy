@@ -1,3 +1,8 @@
+const {
+  resolveRole,
+  resolveWorkspaceKey,
+} = require('../bna/workspace-taxonomy');
+
 const ACTION_CATEGORIES = [
   'tasks',
   'calendar',
@@ -18,13 +23,18 @@ const ACTION_CATEGORIES = [
 ];
 
 const WORKSPACES = {
-  PLATFORM: 'platform',
-  BNA: 'bna',
-  RABBI_SHELLER_PROVIDER: 'rabbi_sheller_provider',
+  PLATFORM: 'platform_control',
+  BNA: 'bna_school',
+  ONE_TIME: 'one_time',
+  RABBI_SHELLER_PROVIDER: 'one_time',
+  LEGACY_PLATFORM: 'bna_platform',
+  LEGACY_BNA: 'bna',
+  LEGACY_RABBI_SHELLER_PROVIDER: 'rabbi_sheller_provider',
 };
 
 const ROLES = {
-  SUPER_ADMIN: 'super_admin',
+  SUPER_ADMIN: 'platform_super_admin',
+  PLATFORM_SUPER_ADMIN: 'platform_super_admin',
   PLATFORM_MANAGER: 'platform_manager',
   SUPPORT_ADMIN: 'support_admin',
   TECHNICAL_AGENT: 'technical_agent',
@@ -69,19 +79,11 @@ function normalizeRole(value) {
     .trim()
     .toLowerCase()
     .replace(/[\s-]+/g, '_');
-  return ROLE_ALIASES[normalized] || normalized || ROLES.OPERATOR;
+  return resolveRole(ROLE_ALIASES[normalized] || normalized || ROLES.OPERATOR, ROLES.OPERATOR);
 }
 
 function normalizeWorkspace(value) {
-  const normalized = String(value || WORKSPACES.BNA)
-    .trim()
-    .toLowerCase()
-    .replace(/[\s-]+/g, '_');
-  if (['rabbi_sheller', 'sheller', 'one_time', 'one_time_mishnah_class'].includes(normalized)) {
-    return WORKSPACES.RABBI_SHELLER_PROVIDER;
-  }
-  if (normalized === 'school') return WORKSPACES.BNA;
-  return normalized || WORKSPACES.BNA;
+  return resolveWorkspaceKey(value || WORKSPACES.BNA, WORKSPACES.BNA);
 }
 
 function compactText(value, maxLength = 1000) {

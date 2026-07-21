@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One Time Connector - Super Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;750&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/platform-workspaces.css">
+</head>
+<body>
+  <div class="platform-shell">
+    <aside class="platform-sidebar">
+      <div class="platform-brand">
+        <strong>One Time</strong>
+        <span>External product connector</span>
+      </div>
+      <nav class="workspace-switcher" aria-label="Workspace switcher">
+        <a href="/operations">Super Admin <span>Control</span></a>
+        <a href="/operations/school">BNA <span>School</span></a>
+        <a href="/operations/workspaces/one-time" class="active" aria-current="page">One Time <span>Connector</span></a>
+      </nav>
+      <nav class="platform-nav" aria-label="One Time navigation">
+        <a href="https://join.onetimeonetime.com" target="_blank" rel="noopener">Application</a>
+        <a href="/operations/agent-actions">Agent Actions</a>
+      </nav>
+    </aside>
+    <main class="platform-main">
+      <header class="platform-header">
+        <div>
+          <p class="platform-kicker">External product connector</p>
+          <h1>One Time</h1>
+          <p>Readiness, source links, and Agent Action handoff for the separate One Time application and repository.</p>
+        </div>
+        <a class="button" href="/operations/agent-actions">Agent Actions</a>
+      </header>
+      <div id="oneTimeConnectorApp" class="grid"></div>
+    </main>
+  </div>
+  <script src="/js/one-time-connector.js"></script>
+</body>
+</html>

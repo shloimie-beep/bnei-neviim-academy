@@ -1830,9 +1830,9 @@ const PROJECT_FALLBACKS = [
 ];
 
 const WORKSPACE_FALLBACKS = [
-    { id: 'platform', workspace_key: 'platform', display_name: 'All Operations', workspace_type: 'super_admin', display_category: 'super_admin', description: 'Super Admin control across BNA workspaces, queues, settings, and guarded tools.' },
-    { id: 'bna', workspace_key: 'bna', display_name: 'BNA', workspace_type: 'school', display_category: 'school', description: 'The Bnei Neviim Academy micro-school workspace.' },
-    { id: 'rabbi_sheller_provider', workspace_key: 'rabbi_sheller_provider', display_name: 'One Time Mishnah Class', workspace_type: 'service_provider', display_category: 'service_provider', description: 'Service provider workspace for the One Time Mishnah Class and related 7:00 class work.' },
+    { id: 'platform', workspace_key: 'platform', display_name: 'Super Admin', workspace_type: 'super_admin', display_category: 'super_admin', description: 'Platform Control across workspaces, queues, settings, and guarded tools.' },
+    { id: 'bna', workspace_key: 'bna', display_name: 'BNA', workspace_type: 'school', display_category: 'school', description: 'School workspace for Bnei Neviim Academy.' },
+    { id: 'rabbi_sheller_provider', workspace_key: 'rabbi_sheller_provider', display_name: 'One Time', workspace_type: 'service_provider', display_category: 'service_provider', description: 'External product connector for One Time Mishnayos.' },
     { id: 'dratler_family', workspace_key: 'dratler_family', display_name: 'Dratler Family', workspace_type: 'family', display_category: 'family', description: 'Private family workspace for Shloimie household records and child plans.' }
 ];
 const WORKSPACE_CANONICAL_TYPES = ['school', 'service_provider', 'family'];
@@ -2039,6 +2039,7 @@ function renderSidebar() {
                 <div class="ops-sidebar-title">${escapeHtml(brandedTitle)}</div>
                 <div class="ops-sidebar-copy">${escapeHtml(brandedSubtitle)}</div>
             </div>
+            ${renderCanonicalWorkspaceSwitcher()}
             ${oneTimeWorkspace ? renderOneTimeWorkspaceSummary() : renderWorkspaceSwitcher()}
             <nav class="ops-sidebar-nav">
                 ${renderSidebarModuleList(navItems)}
@@ -2050,6 +2051,25 @@ function renderSidebar() {
                 <a class="ops-sidebar-mini" href="/operations-login.html">Logout</a>
             </div>
         </aside>
+    `;
+}
+
+function renderCanonicalWorkspaceSwitcher() {
+    const currentPath = window.location.pathname;
+    const links = [
+        { label: 'Super Admin', detail: 'Control', href: '/operations', active: currentPath === '/operations' },
+        { label: 'BNA', detail: 'School', href: '/operations/school', active: currentPath === '/operations/school' },
+        { label: 'One Time', detail: 'Connector', href: '/operations/workspaces/one-time', active: currentPath === '/operations/workspaces/one-time' }
+    ];
+    return `
+        <nav class="canonical-workspace-switcher" aria-label="Primary workspace switcher">
+            ${links.map(link => `
+                <a class="${link.active ? 'active' : ''}" href="${escapeHtml(link.href)}" data-action-id="ACTION-PLATFORM-WORKSPACE-SWITCHER-${escapeHtml(link.label).toUpperCase().replace(/[^A-Z0-9]+/g, '-')}">
+                    <span>${escapeHtml(link.label)}</span>
+                    <small>${escapeHtml(link.detail)}</small>
+                </a>
+            `).join('')}
+        </nav>
     `;
 }
 
