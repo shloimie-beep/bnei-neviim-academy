@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-07-13T10:35:00+03:00",
+  "updated_at": "2026-07-21T00:00:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -3446,6 +3446,216 @@
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PLATFORM-WORKSPACE-SWITCHER-SUPER-ADMIN",
+      "label": "Super Admin",
+      "surface": "operations_workspace_switcher",
+      "route": "/operations",
+      "selector_hint": ".canonical-workspace-switcher a[href=\"/operations\"]",
+      "expected_behavior": "Opens the Super Admin platform-control layer.",
+      "permission": "operations_session",
+      "status": "active",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PLATFORM-WORKSPACE-SWITCHER-BNA",
+      "label": "BNA",
+      "surface": "operations_workspace_switcher",
+      "route": "/operations/school",
+      "selector_hint": ".workspace-switcher a[href=\"/operations/school\"], .canonical-workspace-switcher a[href=\"/operations/school\"]",
+      "expected_behavior": "Opens the BNA school workspace route.",
+      "permission": "operations_session",
+      "status": "active",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PLATFORM-WORKSPACE-SWITCHER-ONE-TIME",
+      "label": "One Time",
+      "surface": "operations_workspace_switcher",
+      "route": "/operations/workspaces/one-time",
+      "selector_hint": ".workspace-switcher a[href=\"/operations/workspaces/one-time\"], .canonical-workspace-switcher a[href=\"/operations/workspaces/one-time\"]",
+      "expected_behavior": "Opens the One Time external product connector route.",
+      "permission": "operations_session",
+      "status": "active",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-ACTION-COPY-PROMPT",
+      "label": "Copy Prompt",
+      "surface": "agent_action_queue",
+      "route": "/operations/agent-actions",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-ACTION-COPY-PROMPT\"]",
+      "expected_behavior": "Copies the exact Agent Action prompt text.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-ACTION-OPEN-TARGET",
+      "label": "Open Target",
+      "surface": "agent_action_queue",
+      "route": "/operations/agent-actions",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-ACTION-OPEN-TARGET\"]",
+      "expected_behavior": "Opens the job target UI URL in a new tab without executing external writes.",
+      "permission": "platform_super_admin",
+      "status": "active_no_external_write",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-ACTION-I-STARTED",
+      "label": "I Started",
+      "surface": "agent_action_queue",
+      "route": "/operations/agent-actions",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-ACTION-I-STARTED\"]",
+      "expected_behavior": "Saves an in-progress Agent Action result using CSRF and idempotency.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-ACTION-SAVE-PARTIAL",
+      "label": "Save Partial Result",
+      "surface": "agent_action_dropoff",
+      "route": "/operations/agent-actions/:jobId/dropoff",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-ACTION-SAVE-PARTIAL\"]",
+      "expected_behavior": "Saves a partial result and supports readback.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-ACTION-SAVE-COMPLETED",
+      "label": "Save Completed Result",
+      "surface": "agent_action_dropoff",
+      "route": "/operations/agent-actions/:jobId/dropoff",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-ACTION-SAVE-COMPLETED\"]",
+      "expected_behavior": "Saves a completed result and requires readback before the job is verified.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-ACTION-READBACK",
+      "label": "Readback",
+      "surface": "agent_action_queue",
+      "route": "/operations/agent-actions",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-ACTION-READBACK\"]",
+      "expected_behavior": "Reads back the saved Agent Action result and verifies completed saves.",
+      "permission": "platform_super_admin",
+      "status": "active_when_result_exists",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-ACTION-RETRY",
+      "label": "Retry",
+      "surface": "agent_action_queue",
+      "route": "/operations/agent-actions",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-ACTION-RETRY\"]",
+      "expected_behavior": "Records a retry/in-progress Agent Action state with idempotency.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-ACTION-SUPERSEDE",
+      "label": "Supersede",
+      "surface": "agent_action_queue",
+      "route": "/operations/agent-actions",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-ACTION-SUPERSEDE\"]",
+      "expected_behavior": "Marks the Agent Action job superseded without external writes.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-CONNECTOR-OPEN-APP",
+      "label": "Open Target",
+      "surface": "one_time_external_product_connector",
+      "route": "/operations/workspaces/one-time",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-CONNECTOR-OPEN-APP\"]",
+      "expected_behavior": "Opens the separate One Time application.",
+      "permission": "platform_super_admin",
+      "status": "active_external_navigation_no_write",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-CONNECTOR-OPEN-AGENT-ACTIONS",
+      "label": "Agent Actions",
+      "surface": "one_time_external_product_connector",
+      "route": "/operations/workspaces/one-time",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-CONNECTOR-OPEN-AGENT-ACTIONS\"]",
+      "expected_behavior": "Opens the Agent Action queue filtered by operator context.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-OPEN-MODULE",
+      "label": "Open BNA School module",
+      "surface": "bna_school_workspace",
+      "route": "/operations/school",
+      "selector_hint": "[data-action-id=\"ACTION-BNA-SCHOOL-OPEN-MODULE\"]",
+      "expected_behavior": "Opens the existing Operations module with BNA School scope selected.",
+      "permission": "operations_session",
+      "status": "active",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
         "GOAL-CORE-006",
         "GOAL-CORE-015"
       ]

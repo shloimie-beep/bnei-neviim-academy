@@ -1,0 +1,109 @@
+{
+  "packet_id": "PKT-20260721-001",
+  "raw_id": "RAW-20260721-001",
+  "raw_path": "raw-input/RAW-20260721-001-platform-bna-workspace-agent-actions.md",
+  "raw_sha256": "sha256:7b3913c7a20e0dcaff563decf277aad7ef241a2560800548c4ed09966d48f538",
+  "title": "Separate Super Admin, BNA School Workspace, One Time connector, and Agent Action drop-off",
+  "source_channel": "codex_chat",
+  "repository": "shloimie-beep/bnei-neviim-academy",
+  "target_branch": "codex/platform-bna-workspace-agent-actions",
+  "base_branch": "master",
+  "known_master_head_at_intake": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "source_prs": [
+    {
+      "pr": 134,
+      "purpose": "Port only safe focused BNA school admin semantics."
+    },
+    {
+      "pr": 138,
+      "purpose": "Reuse only safe contract/signing/idempotency patterns."
+    }
+  ],
+  "canonical_taxonomy": {
+    "platform": {
+      "label": "Super Admin",
+      "workspace_key": "platform_control",
+      "project_key": "platform_operations",
+      "role": "platform_super_admin"
+    },
+    "school": {
+      "label": "BNA",
+      "subtitle": "School workspace",
+      "workspace_key": "bna_school",
+      "project_key": "bna_school"
+    },
+    "one_time": {
+      "label": "One Time",
+      "type": "external product connector",
+      "workspace_key": "one_time",
+      "project_key": "one_time_mishnayos",
+      "repository": "shloimie-beep/onetimev2",
+      "application": "https://join.onetimeonetime.com"
+    },
+    "aliases": {
+      "bna_platform": "platform_control",
+      "bna_school_platform": "bna_school",
+      "bna": "bna_school",
+      "rabbi_sheller_provider": "one_time",
+      "one_time_mishnah_class": "one_time_mishnayos"
+    }
+  },
+  "requirements": [
+    {
+      "id": "REQ-20260721-001",
+      "title": "Create clean isolated worktree, branch, and draft PR",
+      "status": "in_progress",
+      "acceptance": "Work is based on current master, PR #134/#138 refs are inspected without mechanical merge, branch is pushed, and a draft PR targets master."
+    },
+    {
+      "id": "REQ-20260721-002",
+      "title": "Implement canonical platform taxonomy and compatibility resolver",
+      "status": "planned",
+      "acceptance": "Super Admin is platform_control/platform_operations/platform_super_admin, BNA is bna_school, One Time is one_time/one_time_mishnayos, aliases resolve without destructive database rename, and migration plan is recorded."
+    },
+    {
+      "id": "REQ-20260721-003",
+      "title": "Expose normal workspace switcher and routes",
+      "status": "planned",
+      "acceptance": "Normal operator navigation offers Super Admin, BNA, and One Time without View-as/impersonation as the primary model; /operations, /operations/school, /operations/workspaces/one-time, and /operations/agent-actions are app-visible."
+    },
+    {
+      "id": "REQ-20260721-004",
+      "title": "Port safe BNA school workspace surface",
+      "status": "planned",
+      "acceptance": "/operations/school renders a focused BNA school workspace and uses a bounded BNA school summary API without exposing One Time/provider records."
+    },
+    {
+      "id": "REQ-20260721-005",
+      "title": "Create reusable Agent Action job/drop-off architecture",
+      "status": "planned",
+      "acceptance": "Agent Action routes/API exist, support the required job contract/statuses/categories, preserve Agent Review behavior, and enforce save plus readback before completion."
+    },
+    {
+      "id": "REQ-20260721-006",
+      "title": "Implement safe One Time HighLevel queue importer",
+      "status": "blocked",
+      "acceptance": "Importer pins onetimev2 repo/ref/SHA, validates/fingerprints schema, deduplicates jobs, imports no secrets, performs no GHL execution, preserves canonical prompt text, and records One Time registry version.",
+      "blocker": "Requested source artifact integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json was not present on PR #93 SHA 977e4453c34684cd06359f663d0e8f50dc3645f5 or scanned HighLevel descendant branches."
+    },
+    {
+      "id": "REQ-20260721-007",
+      "title": "Correct ticket-routing taxonomy",
+      "status": "planned",
+      "acceptance": "Live class questions, HighLevel-owned business conversations, and Super Admin technical tickets are distinct; One Time technical issues are not owned by BNA School; One Time operation does not depend on platform ticket availability."
+    },
+    {
+      "id": "REQ-20260721-008",
+      "title": "Register routes/actions and run focused validation",
+      "status": "planned",
+      "acceptance": "Route/action registries cover new visible controls, focused taxonomy/route/Agent Action tests pass, changed JS parses, secrets audit passes, and git diff is whitespace-clean."
+    },
+    {
+      "id": "REQ-20260721-009",
+      "title": "Provide isolated app preview without production deployment",
+      "status": "planned",
+      "acceptance": "An isolated local or PR environment preview shows Super Admin, BNA workspace, One Time connector, Agent Action queue, and the GHL import blocker/dry-run status without changing production."
+    }
+  ],
+  "generated_at": "2026-07-21T00:00:00+03:00"
+}

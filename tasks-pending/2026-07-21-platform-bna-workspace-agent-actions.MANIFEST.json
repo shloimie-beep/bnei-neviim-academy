@@ -1,0 +1,14 @@
+{
+  "packet_id": "PKT-20260721-001",
+  "raw_id": "RAW-20260721-001",
+  "raw_path": "raw-input/RAW-20260721-001-platform-bna-workspace-agent-actions.md",
+  "raw_sha256": "sha256:7b3913c7a20e0dcaff563decf277aad7ef241a2560800548c4ed09966d48f538",
+  "spec_path": "tasks-pending/2026-07-21-platform-bna-workspace-agent-actions.SPEC.json",
+  "spec_sha256": "sha256:adb3a4cafa8ee0e04db0eedef0f0e172c67da8ce44c6c58a91a68e6b3d1c221f",
+  "receipt_path": "tasks-pending/2026-07-21-platform-bna-workspace-agent-actions.RECEIPT.md",
+  "codex_prompt_path": "tasks-pending/2026-07-21-platform-bna-workspace-agent-actions.CODEX_PROMPT.md",
+  "status_path": "tasks-pending/2026-07-21-platform-bna-workspace-agent-actions.status.json",
+  "created_at": "2026-07-21T00:00:00+03:00",
+  "branch": "codex/platform-bna-workspace-agent-actions",
+  "production_changed": false
+}

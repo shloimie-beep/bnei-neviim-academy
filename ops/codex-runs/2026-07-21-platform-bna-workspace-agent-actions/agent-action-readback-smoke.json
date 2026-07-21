@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-07-21T12:04:36+03:00",
+  "preview_url": "http://127.0.0.1:8095",
+  "job_id": "GHL-UI-01",
+  "action": "save_completed",
+  "saved_success": true,
+  "result_ref": "AAR-607810b4cfd038db",
+  "completion_requires_readback": true,
+  "readback_success": true,
+  "readback_status": "verified",
+  "readback_verified": true,
+  "idempotency_key": "preview:GHL-UI-01:completed-readback-final-1784624676123",
+  "external_write_performed": false
+}
