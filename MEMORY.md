@@ -291,16 +291,17 @@
   requirements are Done, 1 is Blocked, and 0 remain Pending. The only blocker
   is `REQ-20260616-030`, live Rabbi/One Time payment-link creation pending
   explicit Stripe or Green Invoice choice plus credentials/payment links.
-- **No-GHL policy**: BNA does not use GHL, GoHighLevel, LeadConnector, or
-  LeadConnectorHQ as active runtime. Do not add new GHL code, MCP tools, env
-  vars, smoke checks, dashboard promises, docs, routes, prompts, or Telegram
-  actions. Historical files are archived under `docs/archive/legacy-ghl/`;
-  existing production data that used old CRM column names should be kept only
-  as `legacy_crm_*` compatibility references.
-- `DEC-20260630-NO-GHL-FIRST-PARTY-CRM`: BNA / One Time remains first-party
-  CRM/community. "GHL-like" means useful CRM/product pattern inspiration only,
-  not GHL runtime, LeadConnector, env vars, API tools, workflows, or external
-  CRM writes. A future reversal requires an explicit Decision first.
+- **BNA School no-GHL policy**: BNA School does not use GHL, GoHighLevel,
+  LeadConnector, or LeadConnectorHQ as active runtime. Do not add GHL code,
+  MCP tools, env vars, smoke checks, dashboard promises, routes, prompts, or
+  Telegram actions to `bna_school`. Historical files are archived under
+  `docs/archive/legacy-ghl/`; existing BNA production data that used old CRM
+  column names stays only as `legacy_crm_*` compatibility references.
+- `DEC-20260630-NO-GHL-FIRST-PARTY-CRM` remains the BNA School baseline.
+  `DEC-20260721-002` supersedes its One Time communications clause only: GHL is
+  the One Time external connector's customer-communication source of truth,
+  while the One Time app owns product/account state. This exception is not a
+  BNA School or platform-wide reversal.
 - **Whapi/WAPI**: Active WhatsApp API path. Outbound sends and webhook delivery
   logs use WAPI/Whapi credentials; Operations also has an explicit admin-only
   Whapi log sync that imports recent sent/received message history into
@@ -1165,10 +1166,15 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 
 **NOT:** Stock photos, corporate polish, bright colors, generic Jewish clipart
 
-## No-GHL Status
+## BNA School No-GHL Status And One Time Exception
 
+- As of 2026-07-21 / `DEC-20260721-002`, the no-GHL rule remains fully in
+  force for BNA School. The One Time external product connector is the only
+  exception: GHL is its customer-communication source of truth, while the One
+  Time app remains the product/account source of truth. Never promote this
+  exception to `bna_school` or a platform-wide default.
 - As of 2026-06-14, GHL, GoHighLevel, LeadConnector, and LeadConnectorHQ are
-  not active BNA runtime, social posting provider, CRM source of truth,
+  not active BNA School runtime, social posting provider, CRM source of truth,
   dashboard dependency, Telegram action path, smoke target, or MCP server.
 - Archived legacy code lives under `docs/archive/legacy-ghl/` for reference
   only. Do not revive it unless the operator explicitly creates a new task to
@@ -1179,10 +1185,11 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - Buffer is the active social scheduler connector. Whapi/WAPI is the active
   WhatsApp API path. Gmail/Google APIs, Green Invoice, Vimeo/Replit/provider
   apps, and future review widgets are connector candidates, not canonical CRM.
-- Existing old CRM identifiers in production data should be treated as
+- Existing old BNA CRM identifiers in production data should be treated as
   historical `legacy_crm_*` references only. Do not write new records back to
   retired GHL/LeadConnector systems, create tags there, depend on PIT tokens, or
-  expose retired setup controls in Operations.
+  expose retired setup controls in BNA School Operations. This historical-data
+  rule does not replace the separately contracted One Time connector boundary.
 
 ## Non-Negotiables
 
@@ -1596,7 +1603,25 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - One Time automation should reuse the Holy Flow agent-loop pattern as a design
   source only: task deck, one workflow at a time, observe-before-act, API first,
   operator walkthroughs for OAuth/vendor gates, and explicit confirmation
-  before any external connector writes. Do not add new GHL/LeadConnector writes.
+  before any external connector writes. `DEC-20260721-002` supersedes the prior
+  blanket One Time no-GHL sentence only for communications ownership: GHL is the
+  One Time customer-communication source of truth, but no GHL write is implied
+  or authorized by that decision.
+- One Time communications ownership is: GHL for customer conversations,
+  drafts, sends, and statuses; the One Time app for product/account state;
+  Telegram as the non-canonical Rabbi interface for assigned Torah/content;
+  and Resend for security-token email only. Every One Time send, draft, or
+  status change must be represented in GHL.
+- Shloimie is the default One Time inbound owner. Rabbi Eli receives only
+  assigned substantive Torah/Mishnah/halachic questions, Rabbi-authored
+  newsletter/content drafts, and approved warm enrollment drafts. Login,
+  billing, support, scheduling, parent administration, and unknown/general
+  messages stay with Shloimie/Super Admin routing. AI must not originate Torah
+  answers in Rabbi Eli's name.
+- Keep `live_class_question`, `business_conversation`, and `technical_ticket`
+  separate. Their owners are One Time, GHL, and Super Admin respectively;
+  technical tickets require `source_workspace`. Do not collapse them into one
+  BNA ticket queue.
 - One Time live site/payment behavior is preview-first: preview landing pages,
   offer copy, pricing, checkout/payment links, and public replacement require
   Shloimie approval before going live. The video library supports the live

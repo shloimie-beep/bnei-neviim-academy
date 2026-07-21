@@ -2,6 +2,18 @@
 
 - Rabbi Scheller / One Time is a service-provider workspace, not the BNA
   homepage.
+- As of `DEC-20260721-002`, One Time is an external product connector, not
+  BNA School. GHL owns One Time customer-communication truth; the One Time app
+  owns product/account truth; Telegram is a non-canonical interface for
+  assigned Rabbi Torah/content work; Resend is security-token email only.
+- Shloimie is the default inbound owner. Rabbi Eli receives only assigned
+  substantive Torah/Mishnah/halachic questions, Rabbi-authored newsletter or
+  content drafts, and approved warm enrollment drafts. Login, billing,
+  support, scheduling, parent administration, and unknown/general messages do
+  not route to Rabbi Eli. AI must not originate Torah answers in his name.
+- Keep live class questions, GHL business conversations, and Super Admin
+  technical tickets separate. Technical tickets require source workspace and
+  do not make BNA School the owner of One Time defects.
 - Pricing placeholders are `$67` and `$149`; live payment-link creation remains
   blocked until Stripe or Green Invoice choice and credentials/payment links are
   explicitly approved.

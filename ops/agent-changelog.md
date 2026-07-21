@@ -40410,3 +40410,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   auto-reply mutation, CRM production write, provider mutation, credential
   mutation, payment/access mutation, raw private payload logging, or destructive
   production mutation was performed.
+
+## 2026-07-21 - One Time GHL communications exception recorded
+
+- Recorded `DEC-20260721-002` from `RAW-20260721-002`: GHL is the One Time
+  customer-communication source of truth, the One Time app owns product/account
+  state, Telegram is the non-canonical Rabbi interface, and Resend is limited
+  to security-token email.
+- Preserved BNA School's first-party CRM/operations architecture and prohibited
+  applying the One Time exception to `bna_school` or as a platform-wide rule.
+- Recorded Shloimie as default inbound owner, Rabbi Eli's exact allowlist and
+  denylist, the no-AI-Torah-answer-in-Rabbi-name rule, and separate ownership
+  for live class questions, GHL business conversations, and Super Admin
+  technical tickets with source workspace.
+- Added the architecture ADR, workspace role-map update, Super Admin connector
+  schema/instance, Agent Action job/result schemas/examples, durable memory,
+  and focused contract assertions.
+- Verification passed: intent coverage 6/6 hard signals and 11/11 actionable
+  spans, focused tests 7/7, PQC fixtures 13/13, PQC evals 8/8, protocol drift
+  finding count 0, execution-run validation, secret audit, and diff check.
+- Guardrails: 0 email sends, 0 Telegram sends, 0 GHL mutations, 0 DNS changes,
+  0 credential/production-data mutations, and 0 production deployments.

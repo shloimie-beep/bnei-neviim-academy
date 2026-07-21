@@ -24,6 +24,41 @@
 - Rabbi Sheller / One Time: first provider workspace, separated from BNA Academy
   unless explicit cross-enrollment exists.
 
+### Platform And Connector Model
+
+The platform-facing taxonomy is:
+
+| Surface | Canonical workspace/project | Type | Communications boundary |
+| --- | --- | --- | --- |
+| Super Admin / Platform Control | `platform_control` / `platform_operations` | Platform control | Connector readiness and technical escalation; not a customer-communications source of truth. |
+| BNA School | `bna_school` / `bna_school` | School workspace | First-party BNA school operations and CRM architecture. |
+| One Time | `one_time` / `one_time_mishnayos` | External product connector | GHL is the customer-communication source of truth; the One Time app is the product/account source of truth. |
+
+Legacy runtime keys such as `platform`, `bna`, `rabbi_sheller_provider`, and
+`one_time_mishnah_class` remain compatibility aliases until a separately
+approved migration. The One Time connector decision does not rename, merge, or
+move BNA School records.
+
+### One Time Human And Record Routing
+
+- Shloimie is the default owner for One Time inbound communication.
+- Rabbi Eli receives only assigned substantive Torah/Mishnah/halachic
+  questions, Rabbi-authored newsletter/content drafts, and approved warm
+  enrollment drafts.
+- Rabbi Eli does not receive login, billing, support, scheduling, parent
+  administration, or unknown/general messages.
+- AI must not originate Torah answers in Rabbi Eli's name.
+
+| Record type | Owner | Canonical system | Queue rule |
+| --- | --- | --- | --- |
+| `live_class_question` | One Time | One Time app | Not a support ticket and not a BNA ticket. |
+| `business_conversation` | GHL | GHL | Not duplicated into BNA by default. |
+| `technical_ticket` | Super Admin | Platform Control | Requires `source_workspace`; a One Time technical ticket is not owned by BNA School. |
+
+Telegram is a Rabbi interface, not the canonical transcript. Every One Time
+communication send, draft, or status change must be represented in GHL. Resend
+is limited to security-token email delivery.
+
 ## Canonical Role Names
 
 The live database still accepts older compatibility values in some columns, so
