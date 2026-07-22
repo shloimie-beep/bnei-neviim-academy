@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-07-22",
+  "checked_at": "2026-07-22T20:05:00+03:00",
   "railway_project": "bd5b6d78-5e83-4e83-89b2-cd5f52ed7889",
   "environment_name": "bna-agent-actions-preview",
   "environment_id": "149f0cb8-9b79-41af-94b0-62e5c2a98328",
@@ -7,11 +7,18 @@
   "web_service_id": "b3e05965-1b96-441f-baee-5a708cc12e99",
   "database_url_present": false,
   "linked_postgres_service_present": false,
+  "service_instance_count": 1,
+  "current_preview_head": "adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe",
+  "current_preview_deployment_id": "79e7235c-03fc-44ed-a9e9-ba2cfb6c1e57",
   "memory_fallback_allowed_when_deployed": false,
   "deployed_behavior": "fail_closed_503",
-  "restart_readback": "blocked",
+  "forward_only_migration": "railway-migration-2026-07-22-agent-action-durability.sql",
+  "restart_readback": "blocked_no_disposable_postgres",
+  "local_postgres_integration_test": "skipped_BNA_AGENT_ACTION_TEST_DATABASE_URL_absent",
+  "agent_action_claim_lease": "implemented_pending_postgres_execution_proof",
+  "telegram_consumer_and_update_lease": "implemented_pending_postgres_execution_proof",
   "synthetic_provider_canary": "blocked",
-  "operator_action": "Attach one disposable PostgreSQL service to this exact preview environment so DATABASE_URL is injected into this exact preview web service.",
-  "production_changed": false,
+  "operator_action": "OPERATOR_DECISION_REQUIRED: authorize one disposable PostgreSQL service in the BNA isolated preview only; no production.",
+  "production_changed": "YES_TRANSIENT_RESTORED",
   "customer_messages_sent": 0
 }

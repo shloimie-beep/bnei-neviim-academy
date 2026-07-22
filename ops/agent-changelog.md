@@ -40490,3 +40490,29 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   feature branch. Full sanitized evidence is in
   `ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/production-deployment-incident.json`.
 - Incident verdict: `PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED`.
+
+# 2026-07-22T20:05:00+03:00 - OT-LAUNCH-01 durable PostgreSQL repository completed locally
+
+- Consolidated the existing Agent Action database path behind one canonical
+  PostgreSQL repository; no overlapping hub, dashboard, queue, or status model
+  was created.
+- Added additive claim-token/expiry/generation semantics, sanitized partial and
+  final result fingerprints, cross-job idempotency conflict rejection,
+  idempotent completion replay, readback verification, supersession, and audit
+  writes in database transactions.
+- Added one forward-only migration shared by Agent Actions and the existing
+  Rabbi Telegram adapter. Telegram now has generation-counted consumer leases,
+  expiring update-processing leases, completed-update marking, and handled-once
+  dedupe.
+- Added a real PostgreSQL two-process restart/concurrency proof harness. Focused
+  tests passed 49 with 0 failures; the PostgreSQL proof was the sole skip
+  because this machine has no local PostgreSQL runtime and no explicit
+  `BNA_AGENT_ACTION_TEST_DATABASE_URL`.
+- Read-only Railway inspection reconfirmed the isolated preview has exactly one
+  web service, no linked PostgreSQL instance, and no `DATABASE_URL`. Nothing in
+  Railway was created, linked, or reconfigured during the inspection; branch
+  publication remains restricted to the existing preview target.
+- Customer/GHL messages sent: 0. Production incident verdict remains
+  `PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED`.
+- Remaining action:
+  `OPERATOR_DECISION_REQUIRED: authorize one disposable PostgreSQL service in the BNA isolated preview only; no production.`

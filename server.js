@@ -248,7 +248,10 @@ const {
   sanitizeAgentActionResultInput,
 } = require('./src/lib/bna/agent-action-storage');
 const {
-  RABBI_PROVIDER_SCHEMA_SQL,
+  createPostgresAgentActionRepository,
+  resultFingerprint: agentActionResultFingerprint,
+} = require('./src/lib/bna/agent-action-postgres-repository');
+const {
   createOneTimeRabbiProviderAdapter,
   createPostgresRabbiRepository,
   handleTelegramWebhook,
@@ -12568,8 +12571,22 @@ function agentActionUsesMemoryStorage() {
   return !DATABASE_URL && allowsAgentActionMemoryStorage(process.env);
 }
 
+function agentActionPostgresRepository(db = pool) {
+  if (!DATABASE_URL) throw agentActionDatabaseError();
+  return createPostgresAgentActionRepository(db);
+}
+
 function failClosedAgentActionDatabase(error) {
   if (agentActionUsesMemoryStorage()) return null;
+  if (Number(error?.statusCode) >= 400 && Number(error?.statusCode) < 500) throw error;
+  agentActionStorageReadyPromise = null;
+  agentActionStorageLastCheck = {
+    mode: agentActionStorageMode({ env: process.env, databaseUrl: DATABASE_URL }),
+    ready: false,
+    durable: false,
+    checked_at: new Date().toISOString(),
+    blocker: 'Agent Action PostgreSQL operation failed.',
+  };
   throw agentActionDatabaseError(error);
 }
 
@@ -12583,9 +12600,7 @@ async function ensureAgentActionStorageReady(db = pool) {
   if (!agentActionStorageReadyPromise) {
     agentActionStorageReadyPromise = (async () => {
       try {
-        await db.query(createAgentReviewSessionsSQL);
-        await db.query(RABBI_PROVIDER_SCHEMA_SQL);
-        await db.query('SELECT 1 AS agent_action_storage_ready');
+        await agentActionPostgresRepository(db).ensureSchema();
         agentActionStorageLastCheck = { mode: 'postgres', ready: true, durable: true, checked_at: new Date().toISOString(), blocker: '' };
         return agentActionStorageLastCheck;
       } catch (error) {
@@ -12629,12 +12644,7 @@ async function recordAgentActionAudit(event = {}, db = pool) {
     return safeEvent;
   }
   try {
-    await db.query(
-      `INSERT INTO bna_agent_action_audit_events (event_id, job_id, result_ref, event_type, actor, sanitized_payload)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       ON CONFLICT (event_id) DO NOTHING`,
-      [safeEvent.event_id, safeEvent.job_id, safeEvent.result_ref, safeEvent.event_type, safeEvent.actor, JSON.stringify(safeEvent.sanitized_payload)]
-    );
+    await agentActionPostgresRepository(db).recordAudit(safeEvent);
     return safeEvent;
   } catch (error) {
     failClosedAgentActionDatabase(error);
@@ -12724,6 +12734,13 @@ function agentActionJobView(row = {}, req = null) {
     detail_url: `/operations/agent-actions/${encodeURIComponent(jobId)}`,
     latest_result_ref: row.latest_result_ref || metadata.latest_result_ref || null,
     latest_result_status: row.latest_result_status || metadata.latest_result_status || null,
+    claim: {
+      owner: row.claimed_by || null,
+      claimed_at: row.claimed_at || null,
+      expires_at: row.claim_expires_at || null,
+      generation: Number(row.claim_generation || 0),
+      token_exposed: false,
+    },
     metadata,
     created_at: row.created_at || null,
     updated_at: row.updated_at || null,
@@ -12774,6 +12791,28 @@ async function upsertAgentActionJob(job = {}, { identity = null } = {}, db = poo
       secrets_included: false,
     },
   };
+  if (!agentActionUsesMemoryStorage()) {
+    try {
+      return await agentActionPostgresRepository(db).upsertJob({
+        ...normalized,
+        title: compactAgentActionText(normalized.title || normalized.job_id, 200),
+        source_repository: compactAgentActionText(normalized.source_repository, 160),
+        source_ref: compactAgentActionText(normalized.source_ref, 160),
+        source_sha: compactAgentActionText(normalized.source_sha, 80),
+        source_artifact_path: compactAgentActionText(normalized.source_artifact_path, 500),
+        source_artifact_url: compactAgentActionText(normalized.source_artifact_url || '', 500),
+        source_fingerprint: compactAgentActionText(normalized.source_fingerprint || '', 120),
+        target_application: compactAgentActionText(normalized.target_application, 160),
+        target_ui_url: compactAgentActionText(normalized.target_ui_url, 800),
+        prompt: compactAgentActionText(normalized.prompt, 20000),
+        required_save_behavior: compactAgentActionText(normalized.required_save_behavior, 1200),
+        idempotency_key: compactAgentActionText(normalized.idempotency_key, 180),
+        result_readback_url: normalized.result_readback_url || `/api/platform/agent-actions/${encodeURIComponent(normalized.job_id)}/results`,
+      }, identity?.username || 'agent_action_importer');
+    } catch (error) {
+      failClosedAgentActionDatabase(error);
+    }
+  }
   try {
     const result = await db.query(
       `INSERT INTO bna_agent_action_jobs (
@@ -12874,36 +12913,28 @@ async function upsertImportedAgentActionJobs(importPreview = {}, identity = null
   }
   if (!agentActionUsesMemoryStorage() && importPreview.source?.sha && jobs.length) {
     const currentJobIds = jobs.map((job) => job.job_id);
-    const superseded = await pool.query(
-      `UPDATE bna_agent_action_jobs
-       SET status = 'superseded',
-           metadata = metadata || $3::jsonb,
-           updated_at = NOW()
-       WHERE source_repository = $1
-         AND job_id <> ALL($2::text[])
-         AND status <> 'superseded'
-       RETURNING job_id, source_sha`,
-      [
-        importPreview.source.repository,
+    try {
+      await agentActionPostgresRepository(pool).supersedeMissing({
+        sourceRepository: importPreview.source.repository,
         currentJobIds,
-        JSON.stringify({ superseded_by_source_sha: importPreview.source.sha, canonical_status: 'superseded' }),
-      ]
-    );
-    for (const row of superseded.rows) {
-      await recordAgentActionAudit({
-        event_id: `AAE-supersede-${sha256Hex(`${row.job_id}:${importPreview.source.sha}`).slice(0, 20)}`,
-        job_id: row.job_id,
-        event_type: 'source_superseded',
-        status: 'superseded',
-        source_sha: importPreview.source.sha,
+        sourceSha: importPreview.source.sha,
         actor: identity?.username || 'agent_action_importer',
       });
+    } catch (error) {
+      failClosedAgentActionDatabase(error);
     }
   }
   return saved;
 }
 
 async function listAgentActionJobs({ jobId = '' } = {}, db = pool) {
+  if (!agentActionUsesMemoryStorage()) {
+    try {
+      return await agentActionPostgresRepository(db).listJobs({ jobId });
+    } catch (error) {
+      failClosedAgentActionDatabase(error);
+    }
+  }
   try {
     const params = [];
     const where = jobId ? 'WHERE j.job_id = $1' : '';
@@ -12986,10 +13017,58 @@ async function saveAgentActionResult(jobId = '', body = {}, { req, identity = nu
     raw_id: 'RAW-20260721-001',
     requirement_id: 'REQ-20260721-005',
     external_write_performed: false,
+    result_only: true,
     secrets_included: false,
     customer_content_included: false,
     ignored_sensitive_fields: safeInput.ignored_sensitive_fields,
   };
+  if (!agentActionUsesMemoryStorage()) {
+    const actor = identity?.username || req?.opsUser || 'agent_action_dropoff';
+    const claimToken = sha256Hex(`platform_control:${job.job_id}:${actor}`);
+    const persistedResult = {
+      result_ref: resultRef,
+      job_id: job.job_id,
+      status,
+      summary,
+      evidence,
+      completion_checklist: checklist,
+      expected_asset_ids: assetIds,
+      idempotency_key: idempotencyKey,
+      submitted_by: actor,
+      submitted_ip: req ? getRequestIp(req) || null : null,
+      user_agent: req?.headers?.['user-agent'] || null,
+      metadata,
+    };
+    persistedResult.result_sha256 = agentActionResultFingerprint(persistedResult);
+    const auditEvent = {
+      event_id: `AAE-${sha256Hex(`${resultRef}:${status}:${action}`).slice(0, 20)}`,
+      job_id: job.job_id,
+      result_ref: resultRef,
+      event_type: action,
+      actor,
+      sanitized_payload: {
+        status,
+        source_sha: job.source_sha,
+        idempotency_fingerprint: `sha256:${sha256Hex(idempotencyKey).slice(0, 16)}`,
+        result_only: true,
+        secrets_included: false,
+        customer_content_included: false,
+      },
+    };
+    try {
+      return (await agentActionPostgresRepository(db).saveResult({
+        jobId: job.job_id,
+        result: persistedResult,
+        ownerRef: `platform_control:${actor}`,
+        claimToken,
+        leaseSeconds: 120,
+        action,
+        auditEvent,
+      })).result;
+    } catch (error) {
+      failClosedAgentActionDatabase(error);
+    }
+  }
   let client = db;
   let releaseClient = null;
   try {
@@ -13124,6 +13203,35 @@ function readbackMemoryAgentActionResult(jobId = '', { resultRef = '', idempoten
 }
 
 async function readbackAgentActionResult(jobId = '', { resultRef = '', idempotencyKey = '' } = {}, db = pool) {
+  if (!agentActionUsesMemoryStorage()) {
+    try {
+      return await agentActionPostgresRepository(db).readbackResult({
+        jobId,
+        resultRef,
+        idempotencyKey,
+        auditEventFactory: (row, verifiedStatus) => {
+          const metadata = parseAgentActionJsonCell(row.metadata, {});
+          return {
+            event_id: `AAE-readback-${sha256Hex(`${row.result_ref}:${verifiedStatus}`).slice(0, 20)}`,
+            job_id: jobId,
+            result_ref: row.result_ref,
+            event_type: 'readback',
+            actor: 'agent_action_readback',
+            sanitized_payload: {
+              status: verifiedStatus,
+              source_sha: safeAgentActionOpaqueIdentifier(metadata.source_sha || '', 80),
+              idempotency_fingerprint: row.idempotency_key ? `sha256:${sha256Hex(row.idempotency_key).slice(0, 16)}` : '',
+              result_only: true,
+              secrets_included: false,
+              customer_content_included: false,
+            },
+          };
+        },
+      });
+    } catch (error) {
+      failClosedAgentActionDatabase(error);
+    }
+  }
   try {
     const params = [jobId];
     let where = 'WHERE job_id = $1';
@@ -36345,7 +36453,7 @@ async function initDb() {
     await pool.query(createOpsAccessLinksSQL);
     await pool.query(createSecureDownloadsSQL);
     await pool.query(createAgentReviewSessionsSQL);
-    await pool.query(RABBI_PROVIDER_SCHEMA_SQL);
+    await agentActionPostgresRepository(pool).ensureSchema();
     await ensureWorkspacePlatformDefaultsOnce();
     await ensureDefaultProjects();
     await seedDefaultAutomations();
@@ -95058,6 +95166,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createOpsAccessLinksSQL);
     await pool.query(createSecureDownloadsSQL);
     await pool.query(createAgentReviewSessionsSQL);
+    await agentActionPostgresRepository(pool).ensureSchema();
     await pool.query(createBnaIndexesSQL);
     await pool.query(createWorkspaceLinkedColumnsSQL);
     await pool.query(createIdentityLinkingCompatibilitySQL);

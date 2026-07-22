@@ -41,7 +41,7 @@ Branch: `codex/platform-agent-actions-telegram-preview`
 - `git diff --check`: **PASS**.
 - Durable preview restart/readback: **BLOCKED** — isolated preview has no `DATABASE_URL` or linked Postgres service; deployed code remains fail-closed.
 - Private synthetic Telegram/GHL canary: **BLOCKED** by the same durable-store gate; no canary mutation attempted.
-- Customer messages sent: **0**. Production changed: **NO**.
+- Customer messages sent: **0**. Canonical incident verdict: **PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED**.
 
 ## Production incident correction and restoration
 
@@ -81,3 +81,26 @@ Branch: `codex/platform-agent-actions-telegram-preview`
   `Loading` after the expected database 503. The route now renders an explicit
   `Agent Action storage unavailable` blocker and keeps the result-only GitHub
   fallback visible.
+
+## Durable repository continuation
+
+- Added one canonical PostgreSQL repository for Agent Action job import,
+  generation-counted claim leases, partial/final sanitized results,
+  cross-job idempotency conflict rejection, idempotent completion replay,
+  readback verification, semantic source supersession, and audit events.
+- Added forward-only migration
+  `railway-migration-2026-07-22-agent-action-durability.sql` covering the Agent
+  Action tables plus Rabbi Telegram consumer/update lease and handled-once
+  fields. The migration contains no drop, truncate, or delete operation.
+- Added a two-process disposable PostgreSQL test that proves write/process
+  exit/new-process readback, one expired claim reclaim, one consumer-lease
+  reclaim, one expired Telegram update reclaim, and completed-update dedupe.
+- Current machine proof: focused suites **49 passed, 0 failed, 1 skipped**. The
+  skipped test is the real PostgreSQL integration test because
+  `BNA_AGENT_ACTION_TEST_DATABASE_URL` is not configured and no local
+  PostgreSQL service/runtime is installed.
+- Read-only Railway proof: the isolated preview still has one web service,
+  no linked Postgres instance, and no `DATABASE_URL`. No Railway mutation or
+  provider/customer send was performed.
+- Remaining action:
+  `OPERATOR_DECISION_REQUIRED: authorize one disposable PostgreSQL service in the BNA isolated preview only; no production.`

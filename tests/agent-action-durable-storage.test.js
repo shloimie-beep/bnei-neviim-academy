@@ -1,4 +1,6 @@
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const test = require('node:test');
 
 const {
@@ -7,6 +9,8 @@ const {
   agentActionStorageMode,
   sanitizeAgentActionResultInput,
 } = require('../src/lib/bna/agent-action-storage');
+
+const server = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
 
 test('deployed preview cannot opt into Agent Action memory storage', () => {
   const env = { RAILWAY_ENVIRONMENT_ID: 'preview', PLATFORM_PREVIEW_NO_DB: '1', AGENT_ACTION_STORAGE_MODE: 'memory' };
@@ -36,4 +40,14 @@ test('result sanitizer accepts result-only fields and drops customer/provider co
   assert.equal(sanitized.customer_content_included, false);
   assert.deepEqual(sanitized.ignored_sensitive_fields.sort(), ['customer_transcript', 'location_id', 'message_body']);
   assert.doesNotMatch(serialized, /not-safe|a\.person|212 555 0199|raw body|protected|never store/);
+});
+
+test('deployed APIs delegate to the single PostgreSQL repository for lifecycle and supersession', () => {
+  assert.match(server, /createPostgresAgentActionRepository/);
+  assert.match(server, /agentActionPostgresRepository\(db\)\.upsertJob/);
+  assert.match(server, /agentActionPostgresRepository\(db\)\.saveResult/);
+  assert.match(server, /agentActionPostgresRepository\(db\)\.readbackResult/);
+  assert.match(server, /agentActionPostgresRepository\(pool\)\.supersedeMissing/);
+  assert.match(server, /claimToken = sha256Hex\(`platform_control:/);
+  assert.match(server, /result_only: true/);
 });

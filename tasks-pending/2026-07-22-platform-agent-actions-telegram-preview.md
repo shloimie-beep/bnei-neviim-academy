@@ -5,7 +5,7 @@
 - Base: `master` at `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`
 - Workspace/project: `platform_control` / `platform_agent_actions_telegram_preview`
 - Status: `complete_preview`
-- External mutation guard: one operator-owned private Telegram canary and preview-only credential wiring; no customer send, GHL mutation, production-data mutation, or production deployment
+- External mutation guard: one operator-owned private Telegram canary and preview-only credential wiring; no customer send, GHL mutation, or production-data mutation. A transient unauthorized production source deployment occurred and was restored; canonical incident verdict: `PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED`.
 
 ## Current-source audit
 
@@ -71,14 +71,22 @@
 
 | ID | Follow-up requirement | Status | Evidence / blocker |
 | --- | --- | --- | --- |
-| REQ-20260722-010 | Durable preview PostgreSQL with fail-closed deployed behavior | Blocked externally | Code/tests complete; attach one disposable Postgres service to the named preview environment |
-| REQ-20260722-011 | Save/readback across restart/redeploy | Blocked by REQ-010 | Durable proof cannot run without preview `DATABASE_URL`; no memory fallback is permitted |
+| REQ-20260722-010 | Durable preview PostgreSQL with fail-closed deployed behavior | Implemented locally; blocked externally | One PostgreSQL repository and forward-only migration now cover jobs, leases, partial/final sanitized results, idempotent readback, supersession, audit, and Telegram leases/dedupe. Read-only Railway inspection still finds no preview `DATABASE_URL` or linked database. |
+| REQ-20260722-011 | Save/readback across restart/redeploy | Blocked by REQ-010 | A two-process disposable-PostgreSQL integration proof is implemented but skipped because no explicit `BNA_AGENT_ACTION_TEST_DATABASE_URL` exists; no memory fallback is permitted. |
 | REQ-20260722-012 | Reconcile current One Time queue without duplicates | Done locally | 31 unique jobs: 9 verified, 2 superseded, 20 blocked; exact PR #107 source/result hashes pinned |
 | REQ-20260722-013 | Prove semantic supersession of PR #139/#140 | Done | `semantic-supersession.json` records every source/adapted commit and exact included/missing paths |
-| REQ-20260722-014 | Real dedicated Telegram + One Time GHL provider adapter | Done locally | Signed webhook, private allowlist, single-consumer lease, dedupe/replay, synthetic-only opportunity/note draft, protected voice gate, no send |
+| REQ-20260722-014 | Real dedicated Telegram + One Time GHL provider adapter | Done locally; PostgreSQL execution proof blocked | Signed webhook, private allowlist, generation-counted single-consumer lease, update processing lease/reclaim, handled-once dedupe, replay window, synthetic-only opportunity/note draft, protected voice gate, no send. |
 | REQ-20260722-015 | Private Telegram + synthetic GHL draft canary | Blocked by REQ-010 | Provider bridge requires durable preview dedupe/audit/question state before any canary mutation |
 | REQ-20260722-016 | Operator-visible sanitized Preview | Done locally | Storage/provider/question/canary state and exact blocker; no tokens, IDs, contacts, or bodies |
 
 ### Single operator action
 
-Attach one disposable PostgreSQL service to the existing `bna-agent-actions-preview` Railway environment so it injects `DATABASE_URL` into the existing `bna-agent-actions-preview` web service. Do not attach or change any production service/environment.
+`OPERATOR_DECISION_REQUIRED: authorize one disposable PostgreSQL service in the BNA isolated preview only; no production.`
+
+### Durability implementation continuation
+
+- Forward-only migration: `railway-migration-2026-07-22-agent-action-durability.sql`.
+- Canonical repository: `src/lib/bna/agent-action-postgres-repository.js`; the existing server APIs delegate to it in PostgreSQL mode and retain memory only for local/test mode.
+- Focused verification currently passes with the real PostgreSQL integration proof explicitly skipped because no disposable URL is available. The proof starts one process to claim/save, stops it, starts a second process to read back, then verifies one expired Agent Action lease reclaim and handled-once Telegram update dedupe.
+- Read-only Railway inspection: environment `bna-agent-actions-preview`, one web service instance, deployment `79e7235c-03fc-44ed-a9e9-ba2cfb6c1e57`, head `adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe`, `DATABASE_URL` absent, linked Postgres absent.
+- Customer/GHL messages sent in this continuation: `0`. No Railway resource, variable, deployment, provider record, or production service was mutated.

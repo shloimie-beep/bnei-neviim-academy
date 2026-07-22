@@ -2,72 +2,11 @@ const crypto = require('crypto');
 const {
   normalizeRabbiAnswerInput,
 } = require('./one-time-rabbi-torah-console');
+const {
+  AGENT_ACTION_DURABILITY_MIGRATION_SQL,
+} = require('./agent-action-postgres-repository');
 
-const RABBI_PROVIDER_SCHEMA_SQL = `
-CREATE TABLE IF NOT EXISTS bna_one_time_rabbi_questions (
-  id SERIAL PRIMARY KEY,
-  question_ref TEXT NOT NULL UNIQUE,
-  opportunity_id TEXT NOT NULL UNIQUE,
-  contact_id TEXT NOT NULL,
-  conversation_id TEXT,
-  pipeline_id TEXT NOT NULL,
-  stage_id TEXT NOT NULL,
-  title TEXT NOT NULL DEFAULT 'Synthetic Torah question',
-  status TEXT NOT NULL DEFAULT 'assigned',
-  synthetic BOOLEAN NOT NULL DEFAULT TRUE,
-  draft_note_id TEXT,
-  draft_sha256 TEXT,
-  draft_saved_at TIMESTAMP,
-  audit_id TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS bna_one_time_rabbi_telegram_updates (
-  id SERIAL PRIMARY KEY,
-  update_id BIGINT NOT NULL UNIQUE,
-  update_fingerprint TEXT NOT NULL,
-  actor_fingerprint TEXT NOT NULL,
-  event_type TEXT NOT NULL,
-  outcome TEXT NOT NULL,
-  audit_id TEXT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS bna_one_time_rabbi_operator_state (
-  actor_fingerprint TEXT PRIMARY KEY,
-  question_ref TEXT,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS bna_one_time_rabbi_consumer_leases (
-  consumer_key TEXT PRIMARY KEY,
-  owner_ref TEXT NOT NULL,
-  expires_at TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS bna_one_time_rabbi_audit_events (
-  id SERIAL PRIMARY KEY,
-  audit_id TEXT NOT NULL UNIQUE,
-  event_type TEXT NOT NULL,
-  outcome TEXT NOT NULL,
-  question_ref TEXT,
-  actor_fingerprint TEXT,
-  safe_details JSONB NOT NULL DEFAULT '{}',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS bna_one_time_rabbi_canaries (
-  id SERIAL PRIMARY KEY,
-  canary_id TEXT NOT NULL UNIQUE,
-  status TEXT NOT NULL,
-  audit_id TEXT NOT NULL,
-  safe_outcome JSONB NOT NULL DEFAULT '{}',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-`;
+const RABBI_PROVIDER_SCHEMA_SQL = AGENT_ACTION_DURABILITY_MIGRATION_SQL;
 
 function sha256(value = '') {
   return crypto.createHash('sha256').update(String(value || '')).digest('hex');
@@ -148,29 +87,56 @@ function createPostgresRabbiRepository(db) {
     },
     async claimConsumer(ownerRef, ttlSeconds = 45) {
       const result = await db.query(
-        `INSERT INTO bna_one_time_rabbi_consumer_leases (consumer_key, owner_ref, expires_at)
-         VALUES ('one_time_rabbi_telegram', $1, NOW() + ($2::text || ' seconds')::interval)
+        `INSERT INTO bna_one_time_rabbi_consumer_leases (consumer_key, owner_ref, expires_at, lease_generation)
+         VALUES ('one_time_rabbi_telegram', $1, NOW() + make_interval(secs => $2::int), 1)
          ON CONFLICT (consumer_key) DO UPDATE SET
            owner_ref = EXCLUDED.owner_ref,
            expires_at = EXCLUDED.expires_at,
+           lease_generation = CASE
+             WHEN bna_one_time_rabbi_consumer_leases.owner_ref = EXCLUDED.owner_ref
+               AND bna_one_time_rabbi_consumer_leases.expires_at > NOW()
+             THEN bna_one_time_rabbi_consumer_leases.lease_generation
+             ELSE bna_one_time_rabbi_consumer_leases.lease_generation + 1
+           END,
            updated_at = NOW()
          WHERE bna_one_time_rabbi_consumer_leases.owner_ref = EXCLUDED.owner_ref
-            OR bna_one_time_rabbi_consumer_leases.expires_at < NOW()
-         RETURNING owner_ref`,
-        [ownerRef, String(ttlSeconds)]
+            OR bna_one_time_rabbi_consumer_leases.expires_at <= NOW()
+         RETURNING owner_ref, lease_generation, expires_at`,
+        [ownerRef, Math.max(15, Math.min(Number(ttlSeconds) || 45, 300))]
       );
       return result.rows[0]?.owner_ref === ownerRef;
     },
-    async claimUpdate({ updateId, updateFingerprint, actorFingerprint, eventType, auditId }) {
+    async claimUpdate({ updateId, updateFingerprint, actorFingerprint, eventType, auditId, ownerRef, ttlSeconds = 45 }) {
       const result = await db.query(
         `INSERT INTO bna_one_time_rabbi_telegram_updates
-           (update_id, update_fingerprint, actor_fingerprint, event_type, outcome, audit_id)
-         VALUES ($1, $2, $3, $4, 'accepted', $5)
-         ON CONFLICT (update_id) DO NOTHING
-         RETURNING update_id`,
-        [updateId, updateFingerprint, actorFingerprint, eventType, auditId]
+           (update_id, update_fingerprint, actor_fingerprint, event_type, outcome, audit_id,
+            lease_owner_ref, lease_expires_at, attempt_count)
+         VALUES ($1, $2, $3, $4, 'processing', $5, $6, NOW() + make_interval(secs => $7::int), 1)
+         ON CONFLICT (update_id) DO UPDATE SET
+           lease_owner_ref = EXCLUDED.lease_owner_ref,
+           lease_expires_at = EXCLUDED.lease_expires_at,
+           attempt_count = bna_one_time_rabbi_telegram_updates.attempt_count + 1,
+           outcome = 'processing'
+         WHERE bna_one_time_rabbi_telegram_updates.update_fingerprint = EXCLUDED.update_fingerprint
+           AND bna_one_time_rabbi_telegram_updates.handled_at IS NULL
+           AND bna_one_time_rabbi_telegram_updates.lease_expires_at <= NOW()
+         RETURNING update_id, attempt_count`,
+        [updateId, updateFingerprint, actorFingerprint, eventType, auditId, ownerRef, Math.max(15, Math.min(Number(ttlSeconds) || 45, 300))]
       );
       return Boolean(result.rows[0]);
+    },
+    async completeUpdate({ updateId, updateFingerprint, outcome }) {
+      return (await db.query(
+        `UPDATE bna_one_time_rabbi_telegram_updates
+         SET outcome = $3,
+             handled_at = COALESCE(handled_at, NOW()),
+             lease_expires_at = NULL
+         WHERE update_id = $1
+           AND update_fingerprint = $2
+           AND handled_at IS NULL
+         RETURNING update_id, outcome, handled_at, attempt_count`,
+        [updateId, updateFingerprint, outcome]
+      )).rows[0] || null;
     },
     async recordAudit(event) {
       await db.query(
@@ -455,7 +421,7 @@ async function handleTelegramWebhook({ update, headers = {}, repository, adapter
   const updateFingerprint = fingerprint(JSON.stringify({ update_id: updateId, message_id: message.message_id, date: message.date }), 'telegram-update');
   const auditId = `RTA-${sha256(`${updateId}:${updateFingerprint}`).slice(0, 16)}`;
   const eventType = message.voice ? 'voice' : 'text';
-  if (!await repository.claimUpdate({ updateId, updateFingerprint, actorFingerprint, eventType, auditId })) {
+  if (!await repository.claimUpdate({ updateId, updateFingerprint, actorFingerprint, eventType, auditId, ownerRef: config.ownerRef })) {
     return { success: true, accepted: false, outcome: 'duplicate_replay_rejected', audit_id: auditId, customer_messages_sent: 0 };
   }
   const text = String(message.text || '').trim();
@@ -492,6 +458,9 @@ async function handleTelegramWebhook({ update, headers = {}, repository, adapter
     }
   }
   await repository.recordAudit({ audit_id: auditId, event_type: `telegram_${eventType}`, outcome, actor_fingerprint: actorFingerprint, safe_details: { update_fingerprint: updateFingerprint, customer_messages_sent: 0, content_logged: false } });
+  if (typeof repository.completeUpdate === 'function') {
+    await repository.completeUpdate({ updateId, updateFingerprint, outcome });
+  }
   return { success: true, accepted: true, outcome, audit_id: auditId, customer_messages_sent: 0 };
 }
 
