@@ -40454,4 +40454,11 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Applied the live PR #139 and PR #140 descendants onto master `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c` without mechanically merging stale branches.
 - Added completed-result readback/idempotency/supersede coverage, an optional sanitized result-only `onetimev2` PR fallback, and provider-neutral `one_time_rabbi_torah_console` controls in provider-off/fake mode.
 - Re-verified the pinned One Time Agent Mode source at SHA `1000e8f46210a85f720f83fce2678b24a44fa94d`: `14` jobs, artifact blob `8982b719dff696fff291fa868130b5900127f324`, no secrets, and no external write.
-- Focused tests passed `37/37`; deterministic browser/API smoke, in-app browser smoke, secrets audit, and protocol drift check passed. Customer messages sent remained `0`; production was not changed.
+- Focused tests passed `38/38`; deterministic browser/API smoke, in-app browser smoke, secrets audit, and protocol drift check passed. Customer messages sent remained `0`; production was not changed.
+
+# 2026-07-22T11:07:00+03:00 - Agent Action Telegram preview published
+
+- Opened draft PR #141 against `master` and deployed the feature branch only to the isolated Railway environment/service `bna-agent-actions-preview`.
+- Live implementation deployment `9f44c549-65c2-4a27-a923-4db8896b6654` succeeded at commit `7cc2cf8eb78e79567c0190dab395ecb9fefcfebf`; the BNA production environment remained on master and was not redeployed.
+- Hosted browser/API proof passed with 14 imported jobs, every required result lifecycle transition, verified readback, sanitized fallback, provider-off/fake Rabbi Telegram foundation, and customer messages sent `0`.
+- Preview: `https://bna-agent-actions-preview-bna-agent-actions-preview.up.railway.app`; Agent Actions: `/operations/agent-actions`.

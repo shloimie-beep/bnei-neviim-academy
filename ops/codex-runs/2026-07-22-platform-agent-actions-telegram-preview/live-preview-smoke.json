@@ -1,0 +1,43 @@
+{
+  "generated_at": "2026-07-22T11:07:00+03:00",
+  "base_url": "https://bna-agent-actions-preview-bna-agent-actions-preview.up.railway.app",
+  "agent_action_route": "https://bna-agent-actions-preview-bna-agent-actions-preview.up.railway.app/operations/agent-actions",
+  "draft_pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/141",
+  "implementation_commit": "7cc2cf8eb78e79567c0190dab395ecb9fefcfebf",
+  "railway_environment": "bna-agent-actions-preview",
+  "railway_service": "bna-agent-actions-preview",
+  "railway_deployment_id": "9f44c549-65c2-4a27-a923-4db8896b6654",
+  "railway_deployment_status": "SUCCESS",
+  "authenticated_browser_smoke": true,
+  "workspace_surfaces": {
+    "super_admin": true,
+    "bna_school": true,
+    "one_time_connector": true
+  },
+  "ghl_jobs_imported": 14,
+  "first_job": "GHL-UI-01",
+  "lifecycle": {
+    "claim": "claimed",
+    "in_progress": "in_progress",
+    "partial_save": "saved",
+    "idempotency": true,
+    "completed_save": "saved",
+    "result_readback": "verified",
+    "result_readback_verified": true,
+    "supersede": "superseded"
+  },
+  "result_persistence": {
+    "hub_preferred": true,
+    "github_fallback_sanitized_result_only": true,
+    "ghl_completion_blocked_by_hub": false
+  },
+  "rabbi_telegram_foundation": {
+    "console_key": "one_time_rabbi_torah_console",
+    "mode": "provider_off",
+    "adapter": "fake",
+    "customer_messages_sent": 0
+  },
+  "external_write_performed_by_result_fallback": false,
+  "customer_messages_sent": 0,
+  "production_changed": false
+}

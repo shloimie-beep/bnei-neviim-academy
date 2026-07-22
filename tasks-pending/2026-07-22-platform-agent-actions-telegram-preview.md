@@ -4,7 +4,7 @@
 - Branch: `codex/platform-agent-actions-telegram-preview`
 - Base: `master` at `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`
 - Workspace/project: `platform_control` / `platform_agent_actions_telegram_preview`
-- Status: `ready_for_publish`
+- Status: `complete_preview`
 - External mutation guard: no customer send, GHL mutation, credential mutation, production-data mutation, or production deployment
 
 ## Current-source audit
@@ -19,14 +19,14 @@
 | ID | Requirement | Status | Acceptance / evidence |
 | --- | --- | --- | --- |
 | REQ-20260722-001 | Build from live master and current PR #139/#140 descendants without a stale mechanical merge | Done locally | Live SHAs pinned above; branch history records four adapted descendant commits |
-| REQ-20260722-002 | Preserve separate Super Admin, BNA School, and One Time connector surfaces | Done locally | Route/action registry assertions and browser smoke cover all three surfaces |
-| REQ-20260722-003 | Run Agent Action lifecycle with JSON claim/in-progress/partial/completed/readback/idempotency/supersede | Done locally | `preview-smoke.json` records every requested transition and verified result readback |
-| REQ-20260722-004 | Import the current One Time Agent Mode queue safely | Done locally | 14 jobs, pinned source SHA/blob, no secrets, no external write in `queue-import-proof.json` |
-| REQ-20260722-005 | Provide optional sanitized result-only GitHub fallback for `onetimev2` | Done locally | Deterministic result-only branch/path/PR payload; Hub preferred; GHL completion remains allowed when Hub is unavailable |
-| REQ-20260722-006 | Implement provider-neutral `one_time_rabbi_torah_console` foundation | Done locally | Fake/provider-off adapter, allowed action set, source-of-truth and no-second-transcript guards, confirmed-answer preview and bulk-draft gates |
-| REQ-20260722-007 | Run the minimal requested verification set only | Done locally | Focused tests 37/37, queue import, browser smoke, secrets audit, protocol drift 0, and diff check |
-| REQ-20260722-008 | Publish a draft PR and a non-production preview URL | Pending publication | Push branch, open draft PR against master, and obtain accessible non-production preview URL |
-| REQ-20260722-009 | Preserve safety invariants | Done locally | `CUSTOMER_MESSAGES_SENT=0`; no production deployment/change; actual preview readiness is provider-off with protected credentials absent |
+| REQ-20260722-002 | Preserve separate Super Admin, BNA School, and One Time connector surfaces | Done hosted | Route/action registry assertions and authenticated live browser smoke cover all three surfaces |
+| REQ-20260722-003 | Run Agent Action lifecycle with JSON claim/in-progress/partial/completed/readback/idempotency/supersede | Done hosted | `live-preview-smoke.json` records every requested transition and verified result readback |
+| REQ-20260722-004 | Import the current One Time Agent Mode queue safely | Done hosted | Hosted preview imports 14 jobs from the pinned source SHA/blob with no secrets or external GHL write |
+| REQ-20260722-005 | Provide optional sanitized result-only GitHub fallback for `onetimev2` | Done hosted | Deterministic result-only branch/path/PR payload; Hub preferred; hosted smoke confirms Hub availability never blocks GHL completion |
+| REQ-20260722-006 | Implement provider-neutral `one_time_rabbi_torah_console` foundation | Done hosted | Live connector reports provider-off/fake, canonical GHL source of truth, and customer messages sent 0 |
+| REQ-20260722-007 | Run the minimal requested verification set only | Done | Focused tests 38/38, queue import, local and hosted browser/API smoke, secrets audit, protocol drift 0, and diff check |
+| REQ-20260722-008 | Publish a draft PR and a non-production preview URL | Done | Draft PR #141 and isolated Railway preview are live at the recorded URLs |
+| REQ-20260722-009 | Preserve safety invariants | Done | `CUSTOMER_MESSAGES_SENT=0`; no production deployment/change; hosted preview is provider-off because protected Telegram/GHL credentials are absent |
 
 ## Scope boundaries
 
@@ -51,3 +51,13 @@
 - `ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/preview-smoke.json`
 - `ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/agent-action-hub.png`
 - `ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/in-app-browser-smoke.md`
+- `ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/live-preview-smoke.json`
+
+## Publication
+
+- Draft PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/141`
+- Preview URL: `https://bna-agent-actions-preview-bna-agent-actions-preview.up.railway.app`
+- Agent Action route: `https://bna-agent-actions-preview-bna-agent-actions-preview.up.railway.app/operations/agent-actions`
+- Isolated environment/service: `bna-agent-actions-preview` / `bna-agent-actions-preview`
+- Verified implementation deployment: `9f44c549-65c2-4a27-a923-4db8896b6654` at commit `7cc2cf8eb78e79567c0190dab395ecb9fefcfebf`
+- Exact remaining blocker: protected Rabbi Telegram bot/chat and One Time GHL credentials are absent, so provider mode remains off and no private canary ran.
