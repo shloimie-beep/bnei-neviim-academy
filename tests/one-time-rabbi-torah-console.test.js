@@ -54,6 +54,10 @@ test('readiness allows one operator-owned private canary only when every protect
       TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER: 'configured-not-returned',
       ONE_TIME_GHL_PRIVATE_INTEGRATION_TOKEN: 'configured-not-returned',
       ONE_TIME_GHL_LOCATION_ID: 'configured-not-returned',
+      ONE_TIME_RABBI_TELEGRAM_WEBHOOK_SECRET: 'configured-not-returned',
+      ONE_TIME_RABBI_SYNTHETIC_CONTACT_ID: 'configured-not-returned',
+      ONE_TIME_RABBI_CONSUMER_ENABLED: '1',
+      ONE_TIME_RABBI_SYNTHETIC_ONLY: '1',
     },
   });
   assert.equal(readiness.mode, 'private_canary_ready');

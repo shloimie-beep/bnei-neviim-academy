@@ -26,3 +26,19 @@ Branch: `codex/platform-agent-actions-telegram-preview`
 - GitHub fallback writes: `0` (plan/payload only).
 - Production changed: `false`.
 - Actual preview provider mode: `private_canary_ready`; protected credentials remain Railway-managed and are not present in repository evidence.
+
+## OT-LAUNCH-01 durable follow-up
+
+- Focused workspace/Agent Action/One Time/Telegram/GHL provider tests: **46/46 PASS**.
+- Deployed DB-failure policy tests: **PASS** (Railway/deployed runtime cannot select memory; sanitized `503 agent_action_database_unavailable`).
+- PR #107 queue reconciliation test: **PASS** (31 unique jobs; 9 verified, 2 superseded, 20 blocked; protected location ID absent).
+- Telegram provider contract: **PASS** (dedicated bot only, signed webhook, private allowlist, consumer lease, replay window, update dedupe, redacted audit).
+- GHL provider contract: **PASS** (synthetic-only note draft, save/readback, idempotency, no second transcript, no customer send).
+- Voice gate: **PASS** (protected transcription configuration required; raw audio not stored).
+- Semantic supersession: **PASS** (PR #139/#140 exact commit/path evidence, no missing paths).
+- Secrets audit: **PASS**, 9,689 tracked paths, 0 findings.
+- Protocol drift: **PASS**, 0 findings.
+- `git diff --check`: **PASS**.
+- Durable preview restart/readback: **BLOCKED** — isolated preview has no `DATABASE_URL` or linked Postgres service; deployed code remains fail-closed.
+- Private synthetic Telegram/GHL canary: **BLOCKED** by the same durable-store gate; no canary mutation attempted.
+- Customer messages sent: **0**. Production changed: **NO**.

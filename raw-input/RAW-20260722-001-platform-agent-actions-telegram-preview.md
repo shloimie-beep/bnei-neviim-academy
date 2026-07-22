@@ -27,3 +27,9 @@
 ## Parsed requirements
 
 `REQ-20260722-001` through `REQ-20260722-009` are tracked in the linked requirement register.
+
+## Follow-up source — OT-LAUNCH-01
+
+Continue PR #141 without creating a new branch, PR, preview, bot, GHL location, or customer transcript. Make Agent Action persistence durable in preview Postgres and fail closed when unavailable; reconcile the current One Time GHL registry/goal source; prove PR #139/#140 semantic supersession; implement a single-consumer private Telegram-to-GHL synthetic draft bridge; show sanitized operator Preview state; and run focused durable/provider/browser/security checks with zero customer sends and no production change.
+
+The authoritative queue update is One Time PR #107 at `1fb2d39285b5cf644f2a5bc04d27e1b7385db173`, with its sole sanitized final-organization result artifact. The isolated preview was verified to have no linked Postgres/`DATABASE_URL`; do not retry declined provisioning, do not weaken durability, and leave exactly one operator action to attach a disposable Postgres service to the named preview environment.

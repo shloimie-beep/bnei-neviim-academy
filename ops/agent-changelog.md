@@ -40462,3 +40462,11 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Live implementation deployment `9f44c549-65c2-4a27-a923-4db8896b6654` succeeded at commit `7cc2cf8eb78e79567c0190dab395ecb9fefcfebf`; the BNA production environment remained on master and was not redeployed.
 - Hosted browser/API proof passed with 14 imported jobs, every required result lifecycle transition, verified readback, sanitized fallback, provider-off/fake Rabbi Telegram foundation, and customer messages sent `0`.
 - Preview: `https://bna-agent-actions-preview-bna-agent-actions-preview.up.railway.app`; Agent Actions: `/operations/agent-actions`.
+
+# 2026-07-22T18:30:00+03:00 - OT-LAUNCH-01 durable Agent Actions follow-up
+
+- Changed deployed Agent Action storage policy to PostgreSQL-only and fail-closed; in-memory jobs/results/audit remain explicitly local/test-only.
+- Repinned the One Time queue to draft PR #107 head `1fb2d39285b5cf644f2a5bc04d27e1b7385db173` and its sole sanitized result artifact (Git blob `91719bc831bbe8a9b6032d6f27a946abe77b69f4`, SHA-256 `b5e116a99854c634b19bdee4653becb424d635368890ba5a92bca859841537cf`). Reconciliation now represents 9 verified, 2 superseded, and 20 blocked jobs without duplicates or protected provider IDs.
+- Added the dedicated private Telegram webhook/GHL adapter with signed-update validation, exact private-chat allowlist, PostgreSQL lease/dedupe/audit, synthetic-only question/draft handling, protected voice transcription, and permanently separate disabled confirm/send behavior for this follow-up.
+- Verified PR #139/#140 semantic supersession by exact source/adapted commit, patch/blob equivalence, and append-only line inclusion; no source paths are missing.
+- The isolated preview has no `DATABASE_URL` or linked Postgres service. Durable restart/readback and the synthetic provider canary remain fail-closed until one disposable Postgres service is attached to that preview environment. Customer messages sent: 0; production changed: no.

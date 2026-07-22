@@ -242,6 +242,20 @@ const {
   normalizeStringList: normalizeAgentActionStringList,
 } = require('./src/lib/bna/agent-action-hub');
 const {
+  allowsAgentActionMemoryStorage,
+  agentActionDatabaseError,
+  agentActionStorageMode,
+  sanitizeAgentActionResultInput,
+} = require('./src/lib/bna/agent-action-storage');
+const {
+  RABBI_PROVIDER_SCHEMA_SQL,
+  createOneTimeRabbiProviderAdapter,
+  createPostgresRabbiRepository,
+  handleTelegramWebhook,
+  providerReadiness: oneTimeRabbiProviderReadiness,
+  safeQuestionView: safeRabbiQuestionView,
+} = require('./src/lib/bna/one-time-rabbi-provider-adapter');
+const {
   CANONICAL_WORKSPACES,
   compatibilityMigrationPlan,
   legacyRuntimeWorkspaceKey,
@@ -3463,6 +3477,19 @@ CREATE TABLE IF NOT EXISTS bna_agent_action_results (
 );
 
 CREATE INDEX IF NOT EXISTS idx_bna_agent_action_results_job ON bna_agent_action_results(job_id, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS bna_agent_action_audit_events (
+  id SERIAL PRIMARY KEY,
+  event_id TEXT NOT NULL UNIQUE,
+  job_id TEXT NOT NULL,
+  result_ref TEXT,
+  event_type TEXT NOT NULL,
+  actor TEXT,
+  sanitized_payload JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_agent_action_audit_job ON bna_agent_action_audit_events(job_id, created_at DESC);
 `;
 
 function loadGoogleOAuthClient() {
@@ -12533,6 +12560,87 @@ async function saveAgentReviewResult(body = {}, { req, session = null, identity 
 
 const agentActionMemoryJobs = new Map();
 const agentActionMemoryResults = new Map();
+const agentActionMemoryAudit = [];
+let agentActionStorageReadyPromise = null;
+let agentActionStorageLastCheck = null;
+
+function agentActionUsesMemoryStorage() {
+  return !DATABASE_URL && allowsAgentActionMemoryStorage(process.env);
+}
+
+function failClosedAgentActionDatabase(error) {
+  if (agentActionUsesMemoryStorage()) return null;
+  throw agentActionDatabaseError(error);
+}
+
+async function ensureAgentActionStorageReady(db = pool) {
+  const mode = agentActionStorageMode({ env: process.env, databaseUrl: DATABASE_URL });
+  if (mode === 'memory_local_test_only') {
+    agentActionStorageLastCheck = { mode, ready: true, durable: false, checked_at: new Date().toISOString(), blocker: 'Local/test-only memory storage.' };
+    return agentActionStorageLastCheck;
+  }
+  if (mode !== 'postgres') throw agentActionDatabaseError();
+  if (!agentActionStorageReadyPromise) {
+    agentActionStorageReadyPromise = (async () => {
+      try {
+        await db.query(createAgentReviewSessionsSQL);
+        await db.query(RABBI_PROVIDER_SCHEMA_SQL);
+        await db.query('SELECT 1 AS agent_action_storage_ready');
+        agentActionStorageLastCheck = { mode: 'postgres', ready: true, durable: true, checked_at: new Date().toISOString(), blocker: '' };
+        return agentActionStorageLastCheck;
+      } catch (error) {
+        agentActionStorageReadyPromise = null;
+        agentActionStorageLastCheck = { mode: 'postgres', ready: false, durable: false, checked_at: new Date().toISOString(), blocker: 'Agent Action PostgreSQL health check failed.' };
+        throw agentActionDatabaseError(error);
+      }
+    })();
+  }
+  return agentActionStorageReadyPromise;
+}
+
+function agentActionStorageSnapshot() {
+  return agentActionStorageLastCheck || {
+    mode: agentActionStorageMode({ env: process.env, databaseUrl: DATABASE_URL }),
+    ready: false,
+    durable: false,
+    checked_at: null,
+    blocker: DATABASE_URL ? 'Agent Action PostgreSQL has not completed its health check.' : 'DATABASE_URL is absent.',
+  };
+}
+
+async function recordAgentActionAudit(event = {}, db = pool) {
+  const safeEvent = {
+    event_id: safeAgentActionOpaqueIdentifier(event.event_id || `AAE-${sha256Hex(JSON.stringify(event)).slice(0, 20)}`, 160),
+    job_id: safeAgentActionOpaqueIdentifier(event.job_id, 160),
+    result_ref: safeAgentActionOpaqueIdentifier(event.result_ref || '', 160) || null,
+    event_type: safeAgentActionOpaqueIdentifier(event.event_type || 'updated', 80),
+    actor: safeAgentActionOpaqueIdentifier(event.actor || 'agent_action_runtime', 160),
+    sanitized_payload: {
+      status: normalizeAgentActionStatus(event.status, 'draft'),
+      source_sha: safeAgentActionOpaqueIdentifier(event.source_sha || '', 80),
+      idempotency_fingerprint: event.idempotency_key ? `sha256:${sha256Hex(event.idempotency_key).slice(0, 16)}` : '',
+      result_only: true,
+      secrets_included: false,
+      customer_content_included: false,
+    },
+  };
+  if (agentActionUsesMemoryStorage()) {
+    if (!agentActionMemoryAudit.some((item) => item.event_id === safeEvent.event_id)) agentActionMemoryAudit.push({ ...safeEvent, created_at: new Date().toISOString() });
+    return safeEvent;
+  }
+  try {
+    await db.query(
+      `INSERT INTO bna_agent_action_audit_events (event_id, job_id, result_ref, event_type, actor, sanitized_payload)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (event_id) DO NOTHING`,
+      [safeEvent.event_id, safeEvent.job_id, safeEvent.result_ref, safeEvent.event_type, safeEvent.actor, JSON.stringify(safeEvent.sanitized_payload)]
+    );
+    return safeEvent;
+  } catch (error) {
+    failClosedAgentActionDatabase(error);
+    return safeEvent;
+  }
+}
 
 function requirePlatformSuperAdmin(req, res) {
   const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
@@ -12683,7 +12791,7 @@ async function upsertAgentActionJob(job = {}, { identity = null } = {}, db = poo
          $18, $19, $20,
          $21, $22, $23, $24, $25
        )
-       ON CONFLICT (idempotency_key) DO UPDATE SET
+       ON CONFLICT (job_id) DO UPDATE SET
          title = EXCLUDED.title,
          category = EXCLUDED.category,
          source_ref = EXCLUDED.source_ref,
@@ -12701,8 +12809,20 @@ async function upsertAgentActionJob(job = {}, { identity = null } = {}, db = poo
          expected_asset_ids = EXCLUDED.expected_asset_ids,
          completion_checklist = EXCLUDED.completion_checklist,
          evidence_requirements = EXCLUDED.evidence_requirements,
+         idempotency_key = EXCLUDED.idempotency_key,
+         status = CASE
+           WHEN bna_agent_action_jobs.source_sha IS DISTINCT FROM EXCLUDED.source_sha
+             OR bna_agent_action_jobs.idempotency_key IS DISTINCT FROM EXCLUDED.idempotency_key
+           THEN EXCLUDED.status
+           ELSE bna_agent_action_jobs.status
+         END,
          result_readback_url = EXCLUDED.result_readback_url,
-         metadata = bna_agent_action_jobs.metadata || EXCLUDED.metadata,
+         metadata = CASE
+           WHEN bna_agent_action_jobs.source_sha IS DISTINCT FROM EXCLUDED.source_sha
+             OR bna_agent_action_jobs.idempotency_key IS DISTINCT FROM EXCLUDED.idempotency_key
+           THEN EXCLUDED.metadata || jsonb_build_object('supersedes_source_sha', bna_agent_action_jobs.source_sha)
+           ELSE bna_agent_action_jobs.metadata || EXCLUDED.metadata
+         END,
          updated_at = NOW()
        RETURNING *`,
       [
@@ -12735,6 +12855,7 @@ async function upsertAgentActionJob(job = {}, { identity = null } = {}, db = poo
     );
     return result.rows[0];
   } catch (error) {
+    failClosedAgentActionDatabase(error);
     agentActionMemoryJobs.set(normalized.job_id, {
       ...normalized,
       created_by: identity?.username || 'agent_action_importer',
@@ -12750,6 +12871,34 @@ async function upsertImportedAgentActionJobs(importPreview = {}, identity = null
   const saved = [];
   for (const job of jobs) {
     saved.push(await upsertAgentActionJob(job, { identity }));
+  }
+  if (!agentActionUsesMemoryStorage() && importPreview.source?.sha && jobs.length) {
+    const currentJobIds = jobs.map((job) => job.job_id);
+    const superseded = await pool.query(
+      `UPDATE bna_agent_action_jobs
+       SET status = 'superseded',
+           metadata = metadata || $3::jsonb,
+           updated_at = NOW()
+       WHERE source_repository = $1
+         AND job_id <> ALL($2::text[])
+         AND status <> 'superseded'
+       RETURNING job_id, source_sha`,
+      [
+        importPreview.source.repository,
+        currentJobIds,
+        JSON.stringify({ superseded_by_source_sha: importPreview.source.sha, canonical_status: 'superseded' }),
+      ]
+    );
+    for (const row of superseded.rows) {
+      await recordAgentActionAudit({
+        event_id: `AAE-supersede-${sha256Hex(`${row.job_id}:${importPreview.source.sha}`).slice(0, 20)}`,
+        job_id: row.job_id,
+        event_type: 'source_superseded',
+        status: 'superseded',
+        source_sha: importPreview.source.sha,
+        actor: identity?.username || 'agent_action_importer',
+      });
+    }
   }
   return saved;
 }
@@ -12768,6 +12917,7 @@ async function listAgentActionJobs({ jobId = '' } = {}, db = pool) {
          SELECT result_ref, status
          FROM bna_agent_action_results r
          WHERE r.job_id = j.job_id
+           AND COALESCE(r.metadata->>'source_sha', '') = j.source_sha
          ORDER BY r.updated_at DESC, r.created_at DESC
          LIMIT 1
        ) latest ON TRUE
@@ -12779,7 +12929,8 @@ async function listAgentActionJobs({ jobId = '' } = {}, db = pool) {
       params
     );
     return result.rows;
-  } catch {
+  } catch (error) {
+    failClosedAgentActionDatabase(error);
     const rows = Array.from(agentActionMemoryJobs.values());
     return jobId ? rows.filter((row) => row.job_id === jobId) : rows;
   }
@@ -12809,10 +12960,11 @@ async function saveAgentActionResult(jobId = '', body = {}, { req, identity = nu
   const status = agentActionStatusFromBody(body);
   const action = String(body.action || body.action_type || body.actionType || status || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
   const completionIntent = body.completion_intent || body.completionIntent || (action === 'save_completed' ? 'completed' : action === 'save_partial' ? 'partial' : '');
-  const summary = compactAgentActionText(body.summary || body.result_summary || body.resultSummary || body.report_text || body.reportText || '', 6000);
-  const evidence = normalizeAgentActionStringList(body.evidence || body.evidence_notes || body.evidenceNotes);
-  const checklist = normalizeAgentActionStringList(body.completion_checklist || body.completionChecklist || body.checklist);
-  const assetIds = normalizeAgentActionStringList(body.expected_asset_ids || body.expectedAssetIds || body.asset_ids || body.assetIds);
+  const safeInput = sanitizeAgentActionResultInput(body, normalizeAgentActionStringList);
+  const summary = safeInput.summary;
+  const evidence = safeInput.evidence;
+  const checklist = safeInput.completion_checklist;
+  const assetIds = safeInput.expected_asset_ids;
   const idempotencyBasis = [
     AGENT_ACTION_RUN_ID,
     job.job_id,
@@ -12835,9 +12987,18 @@ async function saveAgentActionResult(jobId = '', body = {}, { req, identity = nu
     requirement_id: 'REQ-20260721-005',
     external_write_performed: false,
     secrets_included: false,
+    customer_content_included: false,
+    ignored_sensitive_fields: safeInput.ignored_sensitive_fields,
   };
+  let client = db;
+  let releaseClient = null;
   try {
-    const result = await db.query(
+    if (typeof db.connect === 'function') {
+      client = await db.connect();
+      releaseClient = () => client.release();
+      await client.query('BEGIN');
+    }
+    const result = await client.query(
       `INSERT INTO bna_agent_action_results (
          result_ref, job_id, status, summary, evidence, completion_checklist,
          expected_asset_ids, idempotency_key, submitted_by, submitted_ip,
@@ -12871,7 +13032,7 @@ async function saveAgentActionResult(jobId = '', body = {}, { req, identity = nu
         JSON.stringify(metadata),
       ]
     );
-    await db.query(
+    await client.query(
       `UPDATE bna_agent_action_jobs
        SET status = $2,
            claimed_by = COALESCE(claimed_by, $3),
@@ -12886,8 +13047,23 @@ async function saveAgentActionResult(jobId = '', body = {}, { req, identity = nu
         JSON.stringify({ latest_result_ref: result.rows[0].result_ref, latest_result_status: status }),
       ]
     );
+    await recordAgentActionAudit({
+      event_id: `AAE-${sha256Hex(`${resultRef}:${status}:${action}`).slice(0, 20)}`,
+      job_id: job.job_id,
+      result_ref: resultRef,
+      event_type: action,
+      status,
+      source_sha: job.source_sha,
+      idempotency_key: idempotencyKey,
+      actor: identity?.username || req?.opsUser || 'agent_action_dropoff',
+    }, client);
+    if (releaseClient) await client.query('COMMIT');
     return result.rows[0];
   } catch (error) {
+    if (releaseClient) {
+      try { await client.query('ROLLBACK'); } catch {}
+    }
+    failClosedAgentActionDatabase(error);
     const memoryResult = {
       result_ref: resultRef,
       job_id: job.job_id,
@@ -12914,6 +13090,8 @@ async function saveAgentActionResult(jobId = '', body = {}, { req, identity = nu
       updated_at: new Date().toISOString(),
     });
     return memoryResult;
+  } finally {
+    if (releaseClient) releaseClient();
   }
 }
 
@@ -12966,7 +13144,9 @@ async function readbackAgentActionResult(jobId = '', { resultRef = '', idempoten
       params
     );
     let row = result.rows[0] || null;
-    if (!row) return readbackMemoryAgentActionResult(jobId, { resultRef, idempotencyKey });
+    if (!row) return agentActionUsesMemoryStorage()
+      ? readbackMemoryAgentActionResult(jobId, { resultRef, idempotencyKey })
+      : null;
     const metadata = parseAgentActionJsonCell(row.metadata, {});
     const verifiedStatus = row.status === 'saved' && metadata.completion_intent === 'completed' ? 'verified' : row.status;
     const update = await db.query(
@@ -12994,8 +13174,19 @@ async function readbackAgentActionResult(jobId = '', { resultRef = '', idempoten
         [jobId, JSON.stringify({ latest_result_ref: row.result_ref, latest_result_status: 'verified' })]
       );
     }
+    await recordAgentActionAudit({
+      event_id: `AAE-readback-${sha256Hex(`${row.result_ref}:${verifiedStatus}`).slice(0, 20)}`,
+      job_id: jobId,
+      result_ref: row.result_ref,
+      event_type: 'readback',
+      status: verifiedStatus,
+      source_sha: metadata.source_sha,
+      idempotency_key: row.idempotency_key,
+      actor: 'agent_action_readback',
+    }, db);
     return row;
-  } catch {
+  } catch (error) {
+    failClosedAgentActionDatabase(error);
     return readbackMemoryAgentActionResult(jobId, { resultRef, idempotencyKey });
   }
 }
@@ -13013,6 +13204,43 @@ async function currentHighLevelImportPreview() {
       },
     };
   }
+}
+
+function oneTimeRabbiRepository(db = pool) {
+  if (!DATABASE_URL) throw agentActionDatabaseError();
+  return createPostgresRabbiRepository(db);
+}
+
+async function oneTimeRabbiProviderPreview() {
+  const readiness = oneTimeRabbiProviderReadiness(process.env);
+  const storage = agentActionStorageSnapshot();
+  if (!storage.ready || !storage.durable) {
+    return {
+      readiness,
+      synthetic_question: { status: 'blocked', blocker: storage.blocker || 'Preview PostgreSQL is unavailable.' },
+      last_canary: null,
+      exact_provider_off_blocker: readiness.blockers[0] || storage.blocker || 'Preview PostgreSQL is unavailable.',
+      customer_messages_sent: 0,
+    };
+  }
+  const repository = oneTimeRabbiRepository();
+  const [questions, lastCanary] = await Promise.all([repository.listQuestions(), repository.latestCanary()]);
+  const question = questions[0] ? safeRabbiQuestionView(questions[0]) : null;
+  return {
+    readiness,
+    synthetic_question: question || { status: 'not_created', blocker: 'Operator-owned synthetic Torah-question opportunity has not been registered.' },
+    last_canary: lastCanary ? {
+      canary_id: lastCanary.canary_id,
+      status: lastCanary.status,
+      audit_id: lastCanary.audit_id,
+      safe_outcome: parseAgentActionJsonCell(lastCanary.safe_outcome, {}),
+      updated_at: lastCanary.updated_at,
+    } : null,
+    exact_provider_off_blocker: readiness.blockers[0] || (question ? '' : 'operator_owned_synthetic_question_not_registered'),
+    provider_ids_exposed: false,
+    customer_content_included: false,
+    customer_messages_sent: 0,
+  };
 }
 
 async function countRowsSafely(tableName, whereClause = '', params = []) {
@@ -13719,10 +13947,12 @@ app.get('/api/platform/agent-actions', requireAdmin, async (req, res) => {
   try {
     const identity = requirePlatformSuperAdmin(req, res);
     if (!identity) return;
+    await ensureAgentActionStorageReady();
     const importPreview = await currentHighLevelImportPreview();
     await upsertImportedAgentActionJobs(importPreview, identity);
     const requestedJobId = safeAgentActionOpaqueIdentifier(req.query?.job_id || req.query?.jobId || '', 160);
     const jobs = await listAgentActionJobs({ jobId: requestedJobId });
+    const rabbiProviderPreview = await oneTimeRabbiProviderPreview();
     const baseUrl = requestBaseUrl(req);
     res.json({
       success: true,
@@ -13733,6 +13963,8 @@ app.get('/api/platform/agent-actions', requireAdmin, async (req, res) => {
         scope: identity.scope,
       },
       ...agentActionHubPayload({ baseUrl, importPreview }),
+      storage: agentActionStorageSnapshot(),
+      rabbi_provider_preview: rabbiProviderPreview,
       jobs: jobs.map((job) => agentActionJobView(job, req)),
       ghl_jobs_imported: Array.isArray(importPreview.jobs) ? importPreview.jobs.length : 0,
       external_write_performed: false,
@@ -13746,10 +13978,70 @@ app.get('/api/platform/agent-actions', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/platform/one-time-rabbi/preview', requireAdmin, async (req, res) => {
+  try {
+    const identity = requirePlatformSuperAdmin(req, res);
+    if (!identity) return;
+    res.json({ success: true, preview: await oneTimeRabbiProviderPreview(), external_write_performed: false });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: compactAgentActionText(err.message, 500), external_write_performed: false });
+  }
+});
+
+app.post('/api/platform/one-time-rabbi/actions', requireAdmin, async (req, res) => {
+  try {
+    const identity = requirePlatformSuperAdmin(req, res);
+    if (!identity) return;
+    await ensureAgentActionStorageReady();
+    if (!verifyAgentActionCsrf(req)) return res.status(403).json({ success: false, error: 'Missing or invalid Agent Action CSRF token.' });
+    const repository = oneTimeRabbiRepository();
+    const adapter = createOneTimeRabbiProviderAdapter({ repository, env: process.env });
+    const action = String(req.body?.action || '').trim();
+    let result;
+    if (action === 'discover_synthetic_question') {
+      const createIfMissing = req.body?.create_if_missing === true
+        && req.body?.confirmation === 'CREATE_OPERATOR_OWNED_SYNTHETIC_TORAH_QUESTION';
+      const row = await adapter.discoverSyntheticQuestion({ createIfMissing });
+      result = row ? safeRabbiQuestionView(row) : { status: 'not_found', synthetic: true };
+    } else if (action === 'list_assigned_questions') {
+      result = await adapter.listAssignedQuestions();
+    } else if (action === 'open_question') {
+      result = await adapter.openQuestion(safeAgentActionOpaqueIdentifier(req.body?.question_ref, 160));
+    } else if (action === 'preview_draft') {
+      result = await adapter.previewDraft(safeAgentActionOpaqueIdentifier(req.body?.question_ref, 160));
+    } else if (action === 'save_synthetic_draft' && req.body?.synthetic_canary === true) {
+      result = await adapter.saveDraft(safeAgentActionOpaqueIdentifier(req.body?.question_ref, 160), { text: req.body?.text });
+    } else {
+      return res.status(400).json({ success: false, error: 'Provider action is not allowed in this preview.' });
+    }
+    res.json({ success: true, action, result, customer_messages_sent: 0, production_changed: false });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: compactAgentActionText(err.message, 500), customer_messages_sent: 0, production_changed: false });
+  }
+});
+
+app.post('/api/platform/one-time-rabbi/telegram/webhook', async (req, res) => {
+  try {
+    const contentLength = Number(req.headers['content-length'] || 0);
+    if (contentLength > 64 * 1024) return res.status(413).json({ success: false, error: 'telegram_update_too_large' });
+    if (!String(req.headers['content-type'] || '').toLowerCase().startsWith('application/json')) {
+      return res.status(415).json({ success: false, error: 'telegram_json_required' });
+    }
+    await ensureAgentActionStorageReady();
+    const repository = oneTimeRabbiRepository();
+    const adapter = createOneTimeRabbiProviderAdapter({ repository, env: process.env });
+    const outcome = await handleTelegramWebhook({ update: req.body, headers: req.headers, repository, adapter, env: process.env });
+    res.json(outcome);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: compactAgentActionText(err.message, 300), customer_messages_sent: 0 });
+  }
+});
+
 app.get('/api/platform/agent-actions/:jobId', requireAdmin, async (req, res) => {
   try {
     const identity = requirePlatformSuperAdmin(req, res);
     if (!identity) return;
+    await ensureAgentActionStorageReady();
     const importPreview = await currentHighLevelImportPreview();
     await upsertImportedAgentActionJobs(importPreview, identity);
     const job = await getAgentActionJob(safeAgentActionOpaqueIdentifier(req.params.jobId, 160));
@@ -13774,6 +14066,7 @@ app.post('/api/platform/agent-actions/:jobId/results', requireAdmin, async (req,
   try {
     const identity = requirePlatformSuperAdmin(req, res);
     if (!identity) return;
+    await ensureAgentActionStorageReady();
     if (!verifyAgentActionCsrf(req)) {
       return res.status(403).json({
         success: false,
@@ -13810,6 +14103,7 @@ app.get('/api/platform/agent-actions/:jobId/results', requireAdmin, async (req, 
   try {
     const identity = requirePlatformSuperAdmin(req, res);
     if (!identity) return;
+    await ensureAgentActionStorageReady();
     const jobId = safeAgentActionOpaqueIdentifier(req.params.jobId, 160);
     const result = await readbackAgentActionResult(jobId, {
       resultRef: safeAgentActionOpaqueIdentifier(req.query?.result_ref || req.query?.resultRef || '', 160),
@@ -36051,6 +36345,7 @@ async function initDb() {
     await pool.query(createOpsAccessLinksSQL);
     await pool.query(createSecureDownloadsSQL);
     await pool.query(createAgentReviewSessionsSQL);
+    await pool.query(RABBI_PROVIDER_SCHEMA_SQL);
     await ensureWorkspacePlatformDefaultsOnce();
     await ensureDefaultProjects();
     await seedDefaultAutomations();

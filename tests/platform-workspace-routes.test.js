@@ -25,6 +25,9 @@ test('server registers requested private workspace and Agent Action routes', () 
     "app.get('/api/platform/agent-actions/:jobId', requireAdmin",
     "app.post('/api/platform/agent-actions/:jobId/results', requireAdmin",
     "app.get('/api/platform/agent-actions/:jobId/results', requireAdmin",
+    "app.get('/api/platform/one-time-rabbi/preview', requireAdmin",
+    "app.post('/api/platform/one-time-rabbi/actions', requireAdmin",
+    "app.post('/api/platform/one-time-rabbi/telegram/webhook'",
     "app.get('/api/bna/school-admin/summary', requireAdmin",
   ].forEach((snippet) => assert.ok(server.includes(snippet), snippet));
 });
@@ -86,6 +89,9 @@ test('route and action registries cover new visible surfaces', () => {
     '/api/platform/agent-actions',
     '/api/platform/agent-actions/:jobId',
     '/api/platform/agent-actions/:jobId/results',
+    '/api/platform/one-time-rabbi/preview',
+    '/api/platform/one-time-rabbi/actions',
+    '/api/platform/one-time-rabbi/telegram/webhook',
     '/api/bna/school-admin/summary',
   ].forEach((route) => assert.ok(routeSet.has(route), route));
 

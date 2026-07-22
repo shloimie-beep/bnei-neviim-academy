@@ -1,0 +1,25 @@
+{
+  "authoritative_pull_request": 107,
+  "source_repository": "shloimie-beep/onetimev2",
+  "source_ref": "codex/highlevel-final-results-20260722",
+  "source_sha": "1fb2d39285b5cf644f2a5bc04d27e1b7385db173",
+  "export_blob_sha": "01973e224cd7e2b7b18a4a9a7321ac71d33e633a",
+  "authoritative_result_path": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+  "authoritative_result_blob_sha": "91719bc831bbe8a9b6032d6f27a946abe77b69f4",
+  "authoritative_result_sha256": "b5e116a99854c634b19bdee4653becb424d635368890ba5a92bca859841537cf",
+  "source_jobs": 13,
+  "workflow_followups": 18,
+  "reconciled_jobs": 31,
+  "statuses": { "verified": 9, "superseded": 2, "blocked": 20 },
+  "facts": {
+    "canonical_workflows_found": 19,
+    "canonical_workflows_expected": 19,
+    "active_tested": 1,
+    "saved_reopened_draft_blocked": 18,
+    "duplicates": 0,
+    "broad_messages_sent": 0
+  },
+  "protected_provider_ids_imported": false,
+  "raw_messages_imported": false,
+  "secrets_imported": false
+}

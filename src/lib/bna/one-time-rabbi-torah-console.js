@@ -58,31 +58,38 @@ function buildOneTimeRabbiTorahConsoleReadiness({ env = process.env } = {}) {
   ]);
   const ghlTokenKey = firstConfigured(env, [
     'ONE_TIME_GHL_PRIVATE_INTEGRATION_TOKEN',
-    'ONE_TIME_HIGHLEVEL_ACCESS_TOKEN',
-    'HIGHLEVEL_ACCESS_TOKEN',
   ]);
   const ghlLocationKey = firstConfigured(env, [
     'ONE_TIME_GHL_LOCATION_ID',
-    'HIGHLEVEL_LOCATION_ID',
   ]);
+  const webhookSecretKey = firstConfigured(env, ['ONE_TIME_RABBI_TELEGRAM_WEBHOOK_SECRET']);
+  const syntheticContactKey = firstConfigured(env, ['ONE_TIME_RABBI_SYNTHETIC_CONTACT_ID']);
+  const consumerEnabled = /^(?:1|true|yes|on|enabled)$/i.test(String(env.ONE_TIME_RABBI_CONSUMER_ENABLED || '').trim());
+  const syntheticOnly = /^(?:1|true|yes|on|enabled)$/i.test(String(env.ONE_TIME_RABBI_SYNTHETIC_ONLY || '').trim());
   const missing = [];
   if (!telegramTokenKey) missing.push('protected_rabbi_telegram_bot_token');
   if (!telegramChatKey) missing.push('operator_owned_rabbi_telegram_chat');
   if (!ghlTokenKey) missing.push('protected_one_time_ghl_token');
   if (!ghlLocationKey) missing.push('one_time_ghl_location');
+  if (!webhookSecretKey) missing.push('telegram_webhook_secret');
+  if (!syntheticContactKey) missing.push('operator_owned_synthetic_contact');
+  if (!consumerEnabled) missing.push('single_telegram_consumer_enabled');
+  if (!syntheticOnly) missing.push('synthetic_only_provider_gate');
   const protectedProvidersReady = missing.length === 0;
   return {
     console_key: ONE_TIME_RABBI_TORAH_CONSOLE_KEY,
     workspace_key: ONE_TIME_RABBI_TORAH_WORKSPACE,
     project_key: ONE_TIME_RABBI_TORAH_PROJECT,
     mode: protectedProvidersReady ? 'private_canary_ready' : 'provider_off',
-    adapter: protectedProvidersReady ? 'provider_contract_only' : 'fake',
+    adapter: protectedProvidersReady ? 'telegram_webhook_and_ghl' : 'fake',
     provider_configured: protectedProvidersReady,
     configured_key_names: {
       telegram_token: telegramTokenKey || null,
       telegram_chat: telegramChatKey || null,
       ghl_token: ghlTokenKey || null,
       ghl_location: ghlLocationKey || null,
+      telegram_webhook_secret: webhookSecretKey || null,
+      synthetic_contact: syntheticContactKey || null,
     },
     blockers: missing,
     source_of_truth: TORAH_CONSOLE_SOURCE_OF_TRUTH,
@@ -95,6 +102,15 @@ function buildOneTimeRabbiTorahConsoleReadiness({ env = process.env } = {}) {
       exact_confirmation_required: true,
       customer_recipient_allowed: false,
       run_by_preview: false,
+    },
+    provider_contract: {
+      one_active_consumer: consumerEnabled,
+      private_chat_allowlist: Boolean(telegramChatKey),
+      signed_webhook: Boolean(webhookSecretKey),
+      replay_and_dedupe: true,
+      synthetic_only: syntheticOnly,
+      ghl_canonical_record: true,
+      customer_send_enabled: false,
     },
     customer_messages_sent: 0,
     external_write_performed: false,

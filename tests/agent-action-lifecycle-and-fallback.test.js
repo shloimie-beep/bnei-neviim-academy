@@ -15,8 +15,8 @@ const server = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
 const job = {
   job_id: 'GHL-UI-01',
   source_repository: 'shloimie-beep/onetimev2',
-  source_ref: 'codex/highlevel-api-finalize-agent-queue',
-  source_sha: '1000e8f46210a85f720f83fce2678b24a44fa94d',
+  source_ref: 'codex/highlevel-final-results-20260722',
+  source_sha: '1fb2d39285b5cf644f2a5bc04d27e1b7385db173',
   source_artifact_path: 'integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json',
   metadata: {
     result_path: 'integrations/highlevel/agent-mode/results/GHL-UI-01.result.json',
@@ -33,11 +33,11 @@ test('Agent Action API maps claim, in-progress, partial, completed, and supersed
   assert.match(server, /readback_at = COALESCE\(readback_at, NOW\(\)\)/);
 });
 
-test('hosted no-database previews use bounded in-memory Operations sessions', () => {
-  assert.match(server, /const platformPreviewMemorySessions = new Map\(\)/);
-  assert.match(server, /PLATFORM_PREVIEW_NO_DB && !DATABASE_URL[\s\S]*platformPreviewMemorySessions\.get\(sessionId\)/);
-  assert.match(server, /platformPreviewMemorySessions\.set\(sessionId,[\s\S]*expiresAt: expiresAt\.getTime\(\)/);
-  assert.match(server, /platformPreviewMemorySessions\.delete\(sessionId\)/);
+test('deployed Agent Action storage fails closed while memory remains local/test-only', () => {
+  assert.match(server, /allowsAgentActionMemoryStorage\(process\.env\)/);
+  assert.match(server, /throw agentActionDatabaseError\(error\)/);
+  assert.match(server, /await ensureAgentActionStorageReady\(\)/);
+  assert.match(server, /mode: 'postgres', ready: true, durable: true/);
 });
 test('sanitized GitHub fallback keeps result fields and removes secret/customer transcript input', () => {
   const result = {
@@ -75,7 +75,7 @@ test('GitHub fallback plan is deterministic, result-only, and pinned to current 
   const second = buildAgentActionGitHubFallbackPlan(result, job);
   assert.deepEqual(first, second);
   assert.equal(first.repository, 'shloimie-beep/onetimev2');
-  assert.equal(first.base_sha, '1000e8f46210a85f720f83fce2678b24a44fa94d');
+  assert.equal(first.base_sha, '1fb2d39285b5cf644f2a5bc04d27e1b7385db173');
   assert.equal(first.path, 'integrations/highlevel/agent-mode/results/GHL-UI-01.result.json');
   assert.match(first.branch, /^codex\/agent-mode-result-ghl-ui-01-/);
   assert.equal(first.sanitized_result_only, true);

@@ -130,8 +130,8 @@ test('HighLevel export parser maps current Agent Mode export schema fields', () 
   assert.equal(parsed.jobs.length, 1);
   assert.equal(parsed.schema_id, 'bna-agent-action-export');
   assert.equal(parsed.registry_version, '1.0.0');
-  assert.equal(parsed.source.ref, 'codex/highlevel-api-finalize-agent-queue');
-  assert.equal(parsed.source.sha, '1000e8f46210a85f720f83fce2678b24a44fa94d');
+  assert.equal(parsed.source.ref, 'codex/highlevel-final-results-20260722');
+  assert.equal(parsed.source.sha, '1fb2d39285b5cf644f2a5bc04d27e1b7385db173');
   assert.equal(parsed.jobs[0].prompt, prompt);
   assert.equal(parsed.jobs[0].target_workspace, 'one_time');
   assert.equal(parsed.jobs[0].target_ui_url, 'https://app.gohighlevel.com/');

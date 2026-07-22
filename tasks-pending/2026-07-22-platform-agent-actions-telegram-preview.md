@@ -61,3 +61,24 @@
 - Isolated environment/service: `bna-agent-actions-preview` / `bna-agent-actions-preview`
 - Verified provider-ready deployment: `173ea494-a6f5-4f7e-8a5d-869c4aa7a0c8` at commit `7bfa0c1e797862eba91e4350bfccf40cd802635e`
 - Exact remaining blocker: none for the requested foundation; customer sends remain intentionally disabled pending an exact confirmed Torah-answer workflow.
+
+## OT-LAUNCH-01 durable follow-up — 2026-07-22
+
+- Status: `blocked_external_preview_database`
+- Authoritative One Time source: PR #107, `codex/highlevel-final-results-20260722` at `1fb2d39285b5cf644f2a5bc04d27e1b7385db173`.
+- Authoritative result: `GHL-FINAL-ORGANIZATION-20260722.result.json`, Git blob `91719bc831bbe8a9b6032d6f27a946abe77b69f4`, SHA-256 `b5e116a99854c634b19bdee4653becb424d635368890ba5a92bca859841537cf`.
+- Preview database inspection: the isolated `bna-agent-actions-preview` environment has neither `DATABASE_URL` nor a linked disposable Postgres service. The deployed Agent Action API now fails closed; memory is local/test-only.
+
+| ID | Follow-up requirement | Status | Evidence / blocker |
+| --- | --- | --- | --- |
+| REQ-20260722-010 | Durable preview PostgreSQL with fail-closed deployed behavior | Blocked externally | Code/tests complete; attach one disposable Postgres service to the named preview environment |
+| REQ-20260722-011 | Save/readback across restart/redeploy | Blocked by REQ-010 | Durable proof cannot run without preview `DATABASE_URL`; no memory fallback is permitted |
+| REQ-20260722-012 | Reconcile current One Time queue without duplicates | Done locally | 31 unique jobs: 9 verified, 2 superseded, 20 blocked; exact PR #107 source/result hashes pinned |
+| REQ-20260722-013 | Prove semantic supersession of PR #139/#140 | Done | `semantic-supersession.json` records every source/adapted commit and exact included/missing paths |
+| REQ-20260722-014 | Real dedicated Telegram + One Time GHL provider adapter | Done locally | Signed webhook, private allowlist, single-consumer lease, dedupe/replay, synthetic-only opportunity/note draft, protected voice gate, no send |
+| REQ-20260722-015 | Private Telegram + synthetic GHL draft canary | Blocked by REQ-010 | Provider bridge requires durable preview dedupe/audit/question state before any canary mutation |
+| REQ-20260722-016 | Operator-visible sanitized Preview | Done locally | Storage/provider/question/canary state and exact blocker; no tokens, IDs, contacts, or bodies |
+
+### Single operator action
+
+Attach one disposable PostgreSQL service to the existing `bna-agent-actions-preview` Railway environment so it injects `DATABASE_URL` into the existing `bna-agent-actions-preview` web service. Do not attach or change any production service/environment.

@@ -44,13 +44,57 @@ const AGENT_ACTION_TERMINAL_STATUSES = Object.freeze(['blocked', 'failed', 'veri
 
 const HIGHLEVEL_EXPORT_SOURCE = Object.freeze({
   repository: 'shloimie-beep/onetimev2',
-  ref: 'codex/highlevel-api-finalize-agent-queue',
-  sha: '1000e8f46210a85f720f83fce2678b24a44fa94d',
+  ref: 'codex/highlevel-final-results-20260722',
+  sha: '1fb2d39285b5cf644f2a5bc04d27e1b7385db173',
   artifact_path: 'integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json',
-  artifact_blob_sha: '8982b719dff696fff291fa868130b5900127f324',
-  artifact_url: 'https://raw.githubusercontent.com/shloimie-beep/onetimev2/1000e8f46210a85f720f83fce2678b24a44fa94d/integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json',
-  registry_version: 'highlevel-agent-mode-export-schema-1.0.0',
+  artifact_blob_sha: '01973e224cd7e2b7b18a4a9a7321ac71d33e633a',
+  artifact_url: 'https://raw.githubusercontent.com/shloimie-beep/onetimev2/1fb2d39285b5cf644f2a5bc04d27e1b7385db173/integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json',
+  registry_path: 'integrations/highlevel/registry/current.json',
+  registry_blob_sha: '71c114d779952e0d4000df706286bf58f50a26a4',
+  readback_path: 'integrations/highlevel/agent-mode/results/ONE-TIME-CURRENT-STATE-20260722.json',
+  readback_blob_sha: '030f5d72bf6f752f3bd777fa94c2a849d5a9ebef',
+  authoritative_result_path: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json',
+  authoritative_result_blob_sha: '91719bc831bbe8a9b6032d6f27a946abe77b69f4',
+  authoritative_result_sha256: 'b5e116a99854c634b19bdee4653becb424d635368890ba5a92bca859841537cf',
+  registry_version: 'highlevel-agent-mode-export-schema-1.1.0',
 });
+
+const HIGHLEVEL_QUEUE_RECONCILIATION = Object.freeze({
+  'GHL-UI-01': { status: 'verified', canonical_status: 'completed', blocker: '' },
+  'GHL-UI-02': { status: 'verified', canonical_status: 'completed', blocker: '' },
+  'GHL-UI-03': { status: 'verified', canonical_status: 'completed', blocker: '' },
+  'GHL-UI-04': { status: 'verified', canonical_status: 'completed', blocker: '' },
+  'GHL-UI-05': { status: 'verified', canonical_status: 'completed', blocker: '' },
+  'GHL-UI-06': { status: 'blocked', canonical_status: 'blocked', blocker: 'The authoritative result does not prove a sending-domain readback.' },
+  'GHL-UI-07': { status: 'verified', canonical_status: 'completed', blocker: '' },
+  'GHL-UI-08': { status: 'superseded', canonical_status: 'superseded', blocker: 'The generic seed job is superseded by workflow-specific activation and controlled-test gates.' },
+  'GHL-UI-09': { status: 'superseded', canonical_status: 'superseded', blocker: 'The generic seed job is superseded by workflow-specific activation and controlled-test gates.' },
+  'GHL-UI-10': { status: 'verified', canonical_status: 'completed', blocker: '' },
+  'GHL-UI-11': { status: 'verified', canonical_status: 'completed', blocker: '' },
+  'GHL-UI-12': { status: 'verified', canonical_status: 'completed', blocker: '' },
+  'GHL-UI-13': { status: 'blocked', canonical_status: 'blocked', blocker: 'Phase-2 sender acceptance and a separately authorized reply test remain pending.' },
+});
+
+const HIGHLEVEL_WORKFLOW_FOLLOWUPS = Object.freeze([
+  ['OT-01', 'adult public signup trigger/filter and operator-owned controlled test not verified'],
+  ['OT-02A', 'approved migration cadence and audience acceptance missing'],
+  ['OT-02B', 'approved nurture audience, cadence, and content acceptance missing'],
+  ['OT-03', 'checkout-started event and approved abandonment window mapping not configured'],
+  ['OT-04', 'payment-active projection trigger and provider acceptance not configured'],
+  ['OT-05', 'payment-failed grace projection trigger and approved grace timing not configured'],
+  ['OT-06', 'subscription-canceled projection trigger and provider acceptance not configured'],
+  ['OT-13', 'refund or chargeback projection trigger and provider acceptance not configured'],
+  ['OT-07', 'secure companion trigger and operator-owned controlled test not configured'],
+  ['OT-08', 'portal-activated trigger and operator-owned controlled test not configured'],
+  ['OT-09', 'confirmed-class trigger, approved timing, and operator-owned controlled test not configured'],
+  ['OT-10', 'recording-published trigger and protected recording URL mapping not configured'],
+  ['OT-C01', 'approved production audience and explicit campaign authorization missing'],
+  ['OT-B01', 'bot-action trigger and input contract plus operator-owned controlled test not configured'],
+  ['OT-B02', 'next-confirmed-class lookup and operator-owned controlled test not configured'],
+  ['OT-B03', 'member-login companion lookup and operator-owned controlled test not configured'],
+  ['OT-B04', 'secure password-reset handoff and operator-owned controlled test not configured'],
+  ['OT-B05', 'opt-out trigger and channel-suppression mapping plus controlled test not configured'],
+]);
 
 const AGENT_ACTION_GITHUB_FALLBACK = Object.freeze({
   repository: 'shloimie-beep/onetimev2',
@@ -101,6 +145,25 @@ function normalizeStringList(value, maxItems = 50, maxLength = 600) {
   }
   if (!value) return [];
   return [compactText(typeof value === 'string' ? value : JSON.stringify(value), maxLength)];
+}
+
+function redactExportIdentifiers(value = '', item = {}, max = 2000) {
+  let text = String(value || '');
+  const protectedValues = [
+    item.ghl_location?.location_id,
+    item.ghlLocation?.locationId,
+    item.test_contact_rules?.contact_id,
+    item.testContactRules?.contactId,
+  ].filter(Boolean);
+  protectedValues.forEach((protectedValue) => {
+    text = text.split(String(protectedValue)).join('[protected-provider-id]');
+  });
+  return compactText(text, max);
+}
+
+function redactExportStringList(value, item = {}, maxItems = 50, maxLength = 600) {
+  return normalizeStringList(value, maxItems, maxLength)
+    .map((entry) => redactExportIdentifiers(entry, item, maxLength));
 }
 
 function sanitizeFallbackText(value = '', max = 2000) {
@@ -246,7 +309,7 @@ function agentActionJobFingerprint(job = {}) {
 }
 
 function buildAgentActionJobFromGhlExportItem(item = {}, index = 0, source = HIGHLEVEL_EXPORT_SOURCE) {
-  const prompt = String(item.exact_copy_paste_prompt || item.exactCopyPastePrompt || item.canonical_prompt_text || item.canonicalPromptText || item.prompt_text || item.promptText || item.prompt || '').trim();
+  const prompt = redactExportIdentifiers(item.exact_copy_paste_prompt || item.exactCopyPastePrompt || item.canonical_prompt_text || item.canonicalPromptText || item.prompt_text || item.promptText || item.prompt || '', item, 20000).trim();
   const targetWorkspace = resolveWorkspaceKey(item.target_workspace || item.targetWorkspace || item.workspace_key || item.workspace || 'one_time');
   const dropoff = item.bna_agent_action_dropoff || item.bnaAgentActionDropoff || {};
   const dropoffMetadata = dropoff.metadata && typeof dropoff.metadata === 'object' ? dropoff.metadata : {};
@@ -277,29 +340,30 @@ function buildAgentActionJobFromGhlExportItem(item = {}, index = 0, source = HIG
     target_workspace: targetWorkspace,
     target_ui_url: item.target_ui_url || item.targetUiUrl || item.url || item.target_url || 'https://app.gohighlevel.com/',
     prompt,
-    allowed_actions: normalizeStringList(allowedActions),
-    forbidden_actions: normalizeStringList(forbiddenActions),
+    allowed_actions: redactExportStringList(allowedActions, item),
+    forbidden_actions: redactExportStringList(forbiddenActions, item),
     required_save_behavior: compactText(item.required_save_behavior || item.requiredSaveBehavior || dropoff.readback_verification || 'Save partial or completed result to the BNA Agent Action drop-off, then read back the saved result URL.', 800),
     expected_asset_ids: normalizeStringList(expectedAssetIds),
-    completion_checklist: normalizeStringList(item.completion_checklist || item.completionChecklist || item.checklist || []),
-    evidence_requirements: normalizeStringList(item.evidence_requirements || item.evidenceRequirements || [
+    completion_checklist: redactExportStringList(item.completion_checklist || item.completionChecklist || item.checklist || [], item),
+    evidence_requirements: redactExportStringList(item.evidence_requirements || item.evidenceRequirements || [
       'Saved Agent Action result.',
       'Readback URL verified after save.',
       'No external GHL execution performed by BNA importer.',
-    ]),
+    ], item),
     idempotency_key: compactText(item.idempotency_key || item.idempotencyKey || `agent-action:ghl:${source.sha}:${jobIdFromItem(item, index)}`, 180),
-    status: normalizeAgentActionStatus(item.status, 'ready'),
+    status: normalizeAgentActionStatus(item.status, HIGHLEVEL_QUEUE_RECONCILIATION[item.job_id || item.jobId]?.status || 'ready'),
     result_readback_url: '',
     metadata: {
       source: 'highlevel_agent_mode_export',
       order: Number(item.order || item.sequence || index + 1),
       one_time_registry_version: source.registry_version || '',
       exact_target_ui_path: item.exact_target_ui_path || item.exactTargetUiPath || '',
-      canonical_source_files: normalizeStringList(item.canonical_source_files || item.canonicalSourceFiles || []),
+      canonical_source_files: redactExportStringList(item.canonical_source_files || item.canonicalSourceFiles || [], item),
       result_path: item.result_path || item.resultPath || dropoff.result_path || dropoffMetadata.result_file || '',
       job_file: dropoffMetadata.job_file || '',
-      ghl_location_id: item.ghl_location?.location_id || item.ghlLocation?.locationId || '',
       ghl_location_fingerprint: item.ghl_location?.location_fingerprint || item.ghlLocation?.locationFingerprint || '',
+      canonical_status: HIGHLEVEL_QUEUE_RECONCILIATION[item.job_id || item.jobId]?.canonical_status || 'active',
+      canonical_blocker: HIGHLEVEL_QUEUE_RECONCILIATION[item.job_id || item.jobId]?.blocker || '',
       no_send: item.defaults?.no_send !== false,
       no_publish: item.defaults?.no_publish !== false,
       no_production_workflow_enrollment: item.defaults?.no_production_workflow_enrollment !== false,
@@ -311,6 +375,66 @@ function buildAgentActionJobFromGhlExportItem(item = {}, index = 0, source = HIG
   job.source_fingerprint = agentActionJobFingerprint(job);
   job.result_readback_url = `/api/platform/agent-actions/${encodeURIComponent(job.job_id)}/results`;
   return job;
+}
+
+function buildHighLevelWorkflowFollowupJobs(source = HIGHLEVEL_EXPORT_SOURCE) {
+  return HIGHLEVEL_WORKFLOW_FOLLOWUPS.map(([workflowKey, blocker], index) => {
+    const jobId = `GHL-FOLLOWUP-${workflowKey}`;
+    return {
+      job_type: AGENT_ACTION_JOB_TYPE,
+      job_id: jobId,
+      title: `${workflowKey} activation and controlled-test follow-up`,
+      category: 'workflow_build',
+      source_repository: source.repository,
+      source_ref: source.ref,
+      source_sha: source.sha,
+      source_artifact_path: source.authoritative_result_path,
+      source_artifact_url: '',
+      source_fingerprint: `sha256:${source.authoritative_result_sha256}`,
+      target_application: 'HighLevel',
+      target_workspace: 'one_time',
+      target_ui_url: 'https://app.gohighlevel.com/',
+      prompt: `Reopen ${workflowKey}. Resolve only its recorded activation/test dependency: ${blocker}. Keep the workflow draft/off unless the exact dependency, operator-owned synthetic test, and explicit activation approval are present. Save and read back the sanitized result; do not send to a customer or broad audience.`,
+      allowed_actions: [
+        `Inspect and repair only ${workflowKey}.`,
+        'Use an operator-owned synthetic record for any separately authorized controlled test.',
+        'Save a sanitized result and verify readback.',
+      ],
+      forbidden_actions: [
+        'Do not send to a customer or broad audience.',
+        'Do not create a Student contact or credential.',
+        'Do not include provider IDs, contact data, message bodies, or secrets in the result.',
+      ],
+      required_save_behavior: 'Save sanitized result-only JSON, then read it back. BNA Hub remains optional for GHL completion.',
+      expected_asset_ids: [workflowKey],
+      completion_checklist: [
+        `Recorded blocker for ${workflowKey} is resolved or truthfully remains blocked.`,
+        'Workflow saved and reopened.',
+        'Any test was operator-owned and synthetic.',
+        'No customer or broad-audience message was sent.',
+      ],
+      evidence_requirements: [
+        'Sanitized status/readback only.',
+        `Authoritative result SHA-256 ${source.authoritative_result_sha256}.`,
+        'Zero customer sends.',
+      ],
+      idempotency_key: `one-time-ghl-followup:${source.sha}:${workflowKey}`,
+      status: 'blocked',
+      result_readback_url: `/api/platform/agent-actions/${encodeURIComponent(jobId)}/results`,
+      metadata: {
+        source: 'highlevel_final_organization_result',
+        order: 100 + index,
+        workflow_key: workflowKey,
+        canonical_status: 'blocked',
+        canonical_blocker: blocker,
+        authoritative_result_blob_sha: source.authoritative_result_blob_sha,
+        authoritative_result_sha256: source.authoritative_result_sha256,
+        prior_creation_saved_and_reopened: true,
+        external_write_performed: false,
+        secrets_included: false,
+      },
+    };
+  });
 }
 
 function validateAgentActionJob(job = {}) {
@@ -383,6 +507,18 @@ function parseHighLevelAgentModeExport(jsonText = '', source = HIGHLEVEL_EXPORT_
     const dedupeKey = job.idempotency_key || job.source_fingerprint || job.job_id;
     if (seen.has(dedupeKey)) return;
     seen.add(dedupeKey);
+    jobs.push(job);
+  });
+  const includesAuthoritativeCurrentQueue = rawJobs.some((item) => (item.job_id || item.jobId) === 'GHL-UI-13')
+    && String(parsed.schema_version || parsed.schemaVersion || '') === '1.1.0';
+  (includesAuthoritativeCurrentQueue ? buildHighLevelWorkflowFollowupJobs(source) : []).forEach((job, index) => {
+    const validation = validateAgentActionJob(job);
+    if (!validation.valid) {
+      rejected.push({ index: rawJobs.length + index, job_id: job.job_id, errors: validation.errors });
+      return;
+    }
+    if (seen.has(job.idempotency_key)) return;
+    seen.add(job.idempotency_key);
     jobs.push(job);
   });
   return {
@@ -521,6 +657,8 @@ module.exports = {
   AGENT_ACTION_STATUSES,
   AGENT_ACTION_TERMINAL_STATUSES,
   HIGHLEVEL_EXPORT_SOURCE,
+  HIGHLEVEL_QUEUE_RECONCILIATION,
+  HIGHLEVEL_WORKFLOW_FOLLOWUPS,
   AGENT_ACTION_GITHUB_FALLBACK,
   sha256Hex,
   compactText,
@@ -536,6 +674,7 @@ module.exports = {
   hasSecretLikeContent,
   agentActionJobFingerprint,
   buildAgentActionJobFromGhlExportItem,
+  buildHighLevelWorkflowFollowupJobs,
   validateAgentActionJob,
   parseHighLevelAgentModeExport,
   importHighLevelAgentModeExport,

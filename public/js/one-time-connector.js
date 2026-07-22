@@ -106,6 +106,39 @@
     `;
   }
 
+  function renderProviderPreview() {
+    const storage = state.data?.storage || {};
+    const provider = state.data?.rabbi_provider_preview || {};
+    const readiness = provider.readiness || {};
+    const question = provider.synthetic_question || {};
+    const canary = provider.last_canary || {};
+    const exactBlocker = provider.exact_provider_off_blocker || storage.blocker || '';
+    const cards = [
+      ['Agent Action job status', storage.durable ? 'durable' : 'blocked', storage.durable ? 'PostgreSQL ready' : (storage.blocker || 'PostgreSQL unavailable')],
+      ['Telegram provider readiness', readiness.telegram?.provider_ready ? 'ready' : 'blocked', readiness.telegram?.provider_ready ? 'Private signed consumer ready' : (readiness.blockers?.[0] || 'Provider gate absent')],
+      ['GHL location readiness', readiness.ghl?.provider_ready ? 'ready' : 'blocked', readiness.ghl?.provider_ready ? 'Synthetic-only canonical record access ready' : (readiness.blockers?.[0] || 'Provider gate absent')],
+      ['Synthetic question state', question.status || 'not_created', question.synthetic === true ? 'Operator-owned synthetic record' : (question.blocker || 'Synthetic record unavailable')],
+      ['Last sanitized canary', canary.status || 'not_run', canary.status ? `Audit ${canary.audit_id || 'recorded'} · zero customer sends` : 'No durable canary readback yet'],
+    ];
+    return `
+      <section class="card" aria-labelledby="oneTimeProviderPreviewTitle">
+        <div class="job-meta"><span class="status-pill ${exactBlocker ? 'blocked' : 'ready'}">Preview</span><span>Sanitized operator state</span></div>
+        <h2 id="oneTimeProviderPreviewTitle">Agent Actions + Rabbi provider Preview</h2>
+        <p class="muted">No tokens, chat IDs, provider record IDs, contact details, or message bodies are shown.</p>
+        <div class="grid two">
+          ${cards.map(([label, status, detail]) => `
+            <article class="card">
+              <div class="job-meta"><span class="status-pill ${status === 'ready' || status === 'durable' || status === 'pass' ? 'ready' : 'blocked'}">${escapeHtml(status)}</span></div>
+              <h3>${escapeHtml(label)}</h3>
+              <p class="muted">${escapeHtml(detail)}</p>
+            </article>
+          `).join('')}
+        </div>
+        ${exactBlocker ? `<div class="notice error"><strong>Provider-off blocker</strong><br>${escapeHtml(exactBlocker)}</div>` : '<div class="notice"><strong>Provider gates ready.</strong> Confirm/send remains disabled; customer messages sent: 0.</div>'}
+      </section>
+    `;
+  }
+
   function renderTicketRouting() {
     const records = state.data?.ticket_routing?.records || {};
     return `
@@ -135,6 +168,7 @@
       ${renderConnector()}
       ${renderHighLevel()}
       ${renderFoundations()}
+      ${renderProviderPreview()}
       ${renderTicketRouting()}
     `;
   }
@@ -144,7 +178,22 @@
       state.data = await requestJson('/api/platform/agent-actions');
       render();
     } catch (error) {
-      state.error = error.message;
+      try {
+        const provider = await requestJson('/api/platform/one-time-rabbi/preview');
+        state.data = {
+          storage: {
+            mode: 'unavailable',
+            ready: false,
+            durable: false,
+            blocker: error.message,
+          },
+          rabbi_provider_preview: provider?.preview || {},
+          highlevel_import: { blocker: { id: 'DATABASE_REQUIRED', message: error.message, next_action: 'Attach one disposable PostgreSQL service to this preview environment.' } },
+          jobs: [],
+        };
+      } catch (previewError) {
+        state.error = previewError.message;
+      }
       render();
     }
   }

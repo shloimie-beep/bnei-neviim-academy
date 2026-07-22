@@ -2774,6 +2774,48 @@
         "GOAL-CORE-006",
         "GOAL-CORE-015"
       ]
+    },
+    {
+      "route": "/api/platform/one-time-rabbi/preview",
+      "surface": "one_time_rabbi_provider_preview_api",
+      "access": "private_api",
+      "required_role": "platform_super_admin",
+      "workspace_scope_required": true,
+      "workspace_key": "one_time",
+      "project_key": "one_time_mishnayos",
+      "public_allowed": false,
+      "expected_logged_out_behavior": "401_or_login_redirect",
+      "expected_logged_in_behavior": "return_sanitized_storage_provider_question_and_canary_readiness",
+      "privacy_risk": "sanitized_provider_status_only",
+      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-015"]
+    },
+    {
+      "route": "/api/platform/one-time-rabbi/actions",
+      "surface": "one_time_rabbi_provider_actions_api",
+      "access": "private_api",
+      "required_role": "platform_super_admin",
+      "workspace_scope_required": true,
+      "workspace_key": "one_time",
+      "project_key": "one_time_mishnayos",
+      "public_allowed": false,
+      "expected_logged_out_behavior": "401_or_login_redirect",
+      "expected_logged_in_behavior": "perform_synthetic_only_list_open_preview_or_draft_save_with_csrf",
+      "privacy_risk": "synthetic_provider_write_no_customer_send",
+      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-015"]
+    },
+    {
+      "route": "/api/platform/one-time-rabbi/telegram/webhook",
+      "surface": "one_time_rabbi_telegram_webhook",
+      "access": "provider_signed_webhook",
+      "required_role": "dedicated_rabbi_bot_private_chat",
+      "workspace_scope_required": true,
+      "workspace_key": "one_time",
+      "project_key": "one_time_mishnayos",
+      "public_allowed": false,
+      "expected_logged_out_behavior": "require_telegram_secret_header_private_chat_allowlist_and_replay_window",
+      "expected_logged_in_behavior": "dedupe_and_process_operator_only_torah_controls",
+      "privacy_risk": "provider_webhook_redacted_audit_only",
+      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-015"]
     }
   ]
 }

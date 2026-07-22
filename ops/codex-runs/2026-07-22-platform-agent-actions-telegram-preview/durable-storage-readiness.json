@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-07-22",
+  "railway_project": "bd5b6d78-5e83-4e83-89b2-cd5f52ed7889",
+  "environment_name": "bna-agent-actions-preview",
+  "environment_id": "149f0cb8-9b79-41af-94b0-62e5c2a98328",
+  "web_service_name": "bna-agent-actions-preview",
+  "web_service_id": "b3e05965-1b96-441f-baee-5a708cc12e99",
+  "database_url_present": false,
+  "linked_postgres_service_present": false,
+  "memory_fallback_allowed_when_deployed": false,
+  "deployed_behavior": "fail_closed_503",
+  "restart_readback": "blocked",
+  "synthetic_provider_canary": "blocked",
+  "operator_action": "Attach one disposable PostgreSQL service to this exact preview environment so DATABASE_URL is injected into this exact preview web service.",
+  "production_changed": false,
+  "customer_messages_sent": 0
+}
