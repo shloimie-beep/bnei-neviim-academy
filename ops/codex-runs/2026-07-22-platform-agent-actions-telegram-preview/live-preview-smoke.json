@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-07-22T11:07:00+03:00",
+  "generated_at": "2026-07-22T11:22:00+03:00",
   "base_url": "https://bna-agent-actions-preview-bna-agent-actions-preview.up.railway.app",
   "agent_action_route": "https://bna-agent-actions-preview-bna-agent-actions-preview.up.railway.app/operations/agent-actions",
   "draft_pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/141",
-  "implementation_commit": "7cc2cf8eb78e79567c0190dab395ecb9fefcfebf",
+  "implementation_commit": "7bfa0c1e797862eba91e4350bfccf40cd802635e",
   "railway_environment": "bna-agent-actions-preview",
   "railway_service": "bna-agent-actions-preview",
-  "railway_deployment_id": "9f44c549-65c2-4a27-a923-4db8896b6654",
+  "railway_deployment_id": "173ea494-a6f5-4f7e-8a5d-869c4aa7a0c8",
   "railway_deployment_status": "SUCCESS",
   "authenticated_browser_smoke": true,
   "workspace_surfaces": {
@@ -33,8 +33,22 @@
   },
   "rabbi_telegram_foundation": {
     "console_key": "one_time_rabbi_torah_console",
-    "mode": "provider_off",
-    "adapter": "fake",
+    "mode": "private_canary_ready",
+    "adapter": "provider_contract_only",
+    "provider_configured": true,
+    "blockers": [],
+    "provider_validation": {
+      "dedicated_rabbi_bot_get_me": true,
+      "private_operator_chat_readback": true,
+      "one_time_ghl_location_readback": true
+    },
+    "operator_private_canary": {
+      "sent": true,
+      "messages_sent": 1,
+      "recipient_chat_type": "private",
+      "message_id_returned": true,
+      "ghl_messages_sent": 0
+    },
     "customer_messages_sent": 0
   },
   "external_write_performed_by_result_fallback": false,

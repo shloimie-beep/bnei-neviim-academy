@@ -5,7 +5,7 @@
 - Base: `master` at `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`
 - Workspace/project: `platform_control` / `platform_agent_actions_telegram_preview`
 - Status: `complete_preview`
-- External mutation guard: no customer send, GHL mutation, credential mutation, production-data mutation, or production deployment
+- External mutation guard: one operator-owned private Telegram canary and preview-only credential wiring; no customer send, GHL mutation, production-data mutation, or production deployment
 
 ## Current-source audit
 
@@ -23,10 +23,10 @@
 | REQ-20260722-003 | Run Agent Action lifecycle with JSON claim/in-progress/partial/completed/readback/idempotency/supersede | Done hosted | `live-preview-smoke.json` records every requested transition and verified result readback |
 | REQ-20260722-004 | Import the current One Time Agent Mode queue safely | Done hosted | Hosted preview imports 14 jobs from the pinned source SHA/blob with no secrets or external GHL write |
 | REQ-20260722-005 | Provide optional sanitized result-only GitHub fallback for `onetimev2` | Done hosted | Deterministic result-only branch/path/PR payload; Hub preferred; hosted smoke confirms Hub availability never blocks GHL completion |
-| REQ-20260722-006 | Implement provider-neutral `one_time_rabbi_torah_console` foundation | Done hosted | Live connector reports provider-off/fake, canonical GHL source of truth, and customer messages sent 0 |
+| REQ-20260722-006 | Implement provider-neutral `one_time_rabbi_torah_console` foundation | Done hosted | Live connector reports private-canary-ready/provider-contract-only, canonical GHL source of truth, one operator-only canary, and customer messages sent 0 |
 | REQ-20260722-007 | Run the minimal requested verification set only | Done | Focused tests 38/38, queue import, local and hosted browser/API smoke, secrets audit, protocol drift 0, and diff check |
 | REQ-20260722-008 | Publish a draft PR and a non-production preview URL | Done | Draft PR #141 and isolated Railway preview are live at the recorded URLs |
-| REQ-20260722-009 | Preserve safety invariants | Done | `CUSTOMER_MESSAGES_SENT=0`; no production deployment/change; hosted preview is provider-off because protected Telegram/GHL credentials are absent |
+| REQ-20260722-009 | Preserve safety invariants | Done | `CUSTOMER_MESSAGES_SENT=0`; no GHL mutation or production deployment/change; protected credentials are preview-only; the sole Telegram send was the operator-owned private canary |
 
 ## Scope boundaries
 
@@ -59,5 +59,5 @@
 - Preview URL: `https://bna-agent-actions-preview-bna-agent-actions-preview.up.railway.app`
 - Agent Action route: `https://bna-agent-actions-preview-bna-agent-actions-preview.up.railway.app/operations/agent-actions`
 - Isolated environment/service: `bna-agent-actions-preview` / `bna-agent-actions-preview`
-- Verified implementation deployment: `9f44c549-65c2-4a27-a923-4db8896b6654` at commit `7cc2cf8eb78e79567c0190dab395ecb9fefcfebf`
-- Exact remaining blocker: protected Rabbi Telegram bot/chat and One Time GHL credentials are absent, so provider mode remains off and no private canary ran.
+- Verified provider-ready deployment: `173ea494-a6f5-4f7e-8a5d-869c4aa7a0c8` at commit `7bfa0c1e797862eba91e4350bfccf40cd802635e`
+- Exact remaining blocker: none for the requested foundation; customer sends remain intentionally disabled pending an exact confirmed Torah-answer workflow.
