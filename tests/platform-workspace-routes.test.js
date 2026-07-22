@@ -73,6 +73,8 @@ test('Agent Action UI exposes required controls and save plus readback flow', ()
     'Retry',
     'Supersede',
   ].forEach((label) => assert.match(agentActionsJs + dropoff + dropoffJs, new RegExp(label)));
+  assert.match(agentActionsJs, /Agent Action storage unavailable/);
+  assert.match(agentActionsJs, /sanitized result-only GitHub fallback/);
   assert.match(dropoffJs, /state\.readback = await requestJson\(response\.readback_url\)/);
   assert.match(server, /ON CONFLICT \(idempotency_key\) DO UPDATE SET[\s\S]*bna_agent_action_results/);
   assert.match(server, /SET status = \$2,[\s\S]*readback_at = COALESCE\(readback_at, NOW\(\)\)/);

@@ -71,3 +71,13 @@ Branch: `codex/platform-agent-actions-telegram-preview`
 - Full sanitized incident ledger:
   `production-deployment-incident.json`.
 - Final incident verdict: **PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED**.
+
+## Final fail-closed browser correction
+
+- The authenticated deployed smoke confirmed workspace separation, the One
+  Time connector, sanitized fallback, provider readiness, synthetic question,
+  canary state, and the exact no-database blocker.
+- The smoke also found and corrected an Agent Actions UI state that remained on
+  `Loading` after the expected database 503. The route now renders an explicit
+  `Agent Action storage unavailable` blocker and keeps the result-only GitHub
+  fallback visible.

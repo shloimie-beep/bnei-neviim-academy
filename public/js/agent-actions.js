@@ -185,7 +185,14 @@
   function render() {
     if (!root) return;
     if (!state.payload) {
-      root.innerHTML = '<section class="card">Loading Agent Actions...</section>';
+      root.innerHTML = state.error
+        ? `<section class="card">
+            <span class="status-pill blocked">blocked</span>
+            <h2>Agent Action storage unavailable</h2>
+            <p class="muted">${escapeHtml(state.error)}</p>
+            <p class="muted">Attach one disposable PostgreSQL service to this preview environment. One Time completion can still use the sanitized result-only GitHub fallback.</p>
+          </section>`
+        : '<section class="card">Loading Agent Actions...</section>';
       return;
     }
     root.innerHTML = `
