@@ -42,3 +42,32 @@ Branch: `codex/platform-agent-actions-telegram-preview`
 - Durable preview restart/readback: **BLOCKED** — isolated preview has no `DATABASE_URL` or linked Postgres service; deployed code remains fail-closed.
 - Private synthetic Telegram/GHL canary: **BLOCKED** by the same durable-store gate; no canary mutation attempted.
 - Customer messages sent: **0**. Production changed: **NO**.
+
+## Production incident correction and restoration
+
+- The earlier `Production changed: NO` statement is superseded. Railway
+  production had been source-mapped to this feature branch and deployed the
+  feature series through `ffe56d8ea27c995affa267759b788ace3967dced`.
+- Containment/restoration: **PASS**. Production now tracks canonical `master`;
+  deployment `7ea83deb-34c2-4065-bb09-3267fd37ebbd` is active/successful at
+  `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`; the feature deployment is
+  removed.
+- Runtime/health: **PASS**. `GET /api/health` returned HTTP 200,
+  `status=ok`, `database=connected`, and exact `X-Bna-Deploy-Sha` readback for
+  canonical master. `/version` and `/ready` are not routes (404) but returned
+  the same canonical SHA header; `/api/health` is the repository's canonical
+  health/readiness route.
+- Database/migration integrity: **PASS**. A read-only production query found
+  zero of the nine preview-only Agent Action/Rabbi tables; no rows or migration
+  ledger entries were created and no audit write was performed.
+- Provider/customer integrity: **PASS**. The dedicated bot token exists, but
+  private-chat allowlist, webhook secret, One Time GHL PIT/location, synthetic
+  contact, consumer enablement, and send enablement are absent/off. Provider
+  calls observed: 0; Agent Action/Telegram/GHL customer effects: 0; customer
+  messages sent: 0.
+- Branch/environment isolation: **PASS**. Production tracks only `master`; the
+  existing `bna-agent-actions-preview` service/environment tracks only
+  `codex/platform-agent-actions-telegram-preview`.
+- Full sanitized incident ledger:
+  `production-deployment-incident.json`.
+- Final incident verdict: **PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED**.

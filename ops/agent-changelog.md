@@ -40470,3 +40470,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Added the dedicated private Telegram webhook/GHL adapter with signed-update validation, exact private-chat allowlist, PostgreSQL lease/dedupe/audit, synthetic-only question/draft handling, protected voice transcription, and permanently separate disabled confirm/send behavior for this follow-up.
 - Verified PR #139/#140 semantic supersession by exact source/adapted commit, patch/blob equivalence, and append-only line inclusion; no source paths are missing.
 - The isolated preview has no `DATABASE_URL` or linked Postgres service. Durable restart/readback and the synthetic provider canary remain fail-closed until one disposable Postgres service is attached to that preview environment. Customer messages sent: 0; production changed: no.
+
+# 2026-07-22T12:58:04+03:00 - Production source-trigger incident contained
+
+- Corrected the prior production-change statement: Railway production service
+  `skillful-motivation` had been mapped to
+  `codex/platform-agent-actions-telegram-preview` and deployed the feature
+  series through `ffe56d8ea27c995affa267759b788ace3967dced`.
+- Restored the production source trigger to canonical `master` and verified
+  active deployment `7ea83deb-34c2-4065-bb09-3267fd37ebbd` at
+  `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`. `/api/health` returned 200,
+  `database=connected`, and the same exact SHA in `X-Bna-Deploy-Sha`.
+- A read-only production audit found none of the nine preview-only Agent
+  Action/Rabbi tables, no application migration-ledger entry, no provider-ready
+  Telegram/GHL path, and no customer/provider effects. Customer messages sent:
+  0.
+- Permanently separated the mappings: production now tracks `master`; only the
+  existing isolated `bna-agent-actions-preview` environment/service tracks the
+  feature branch. Full sanitized evidence is in
+  `ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/production-deployment-incident.json`.
+- Incident verdict: `PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED`.

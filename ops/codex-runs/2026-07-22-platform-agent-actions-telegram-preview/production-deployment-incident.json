@@ -1,0 +1,136 @@
+{
+  "incident_id": "BNA-PROD-BRANCH-DRIFT-20260722",
+  "recorded_at": "2026-07-22T12:58:04+03:00",
+  "classification": "unauthorized_production_source_deployment",
+  "production_changed": "YES_TRANSIENT_RESTORED",
+  "restoration_status": "verified_restored",
+  "project": {
+    "id": "bd5b6d78-5e83-4e83-89b2-cd5f52ed7889",
+    "name": "skillful-motivation"
+  },
+  "production_target": {
+    "environment_id": "3ce30933-49c7-4b90-8c36-a5afd67df329",
+    "environment_name": "production",
+    "service_id": "4079db35-5f4a-44ef-a767-3406c74f6005",
+    "service_name": "skillful-motivation",
+    "canonical_branch": "master",
+    "canonical_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c"
+  },
+  "deployment_timeline": {
+    "before": {
+      "deployment_id": "cfc1bf62-544c-4152-8415-91f125f5f86f",
+      "sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+      "source_branch": "master",
+      "status_at_closeout": "removed",
+      "identification": "last observed canonical deployment before the feature-branch deployment series"
+    },
+    "unauthorized_feature_deployments": [
+      {
+        "deployment_id": "9bbaab12-7d72-4d81-86ba-c909eaa9f2b4",
+        "sha": "2ea17b0c04818e90aa32717bc313c9651bf193f0",
+        "status_at_closeout": "removed"
+      },
+      {
+        "deployment_id": "a133e0d9-82b2-46ff-9d68-6dac7f17f33d",
+        "sha": "7cc2cf8eb78e79567c0190dab395ecb9fefcfebf",
+        "status_at_closeout": "removed"
+      },
+      {
+        "deployment_id": "f42e98bc-aeb1-4723-ac4e-9375c9f3c82a",
+        "sha": "7bfa0c1e797862eba91e4350bfccf40cd802635e",
+        "status_at_closeout": "removed"
+      },
+      {
+        "deployment_id": "64dedbcf-24a2-4018-a6b8-53a17dfc4ecd",
+        "sha": "7c99c5844cf4f541ae971f5e0406135e6d341405",
+        "status_at_closeout": "removed"
+      },
+      {
+        "deployment_id": "1ba9d793-0838-427d-8f42-e3c118e4daaf",
+        "sha": "ffe56d8ea27c995affa267759b788ace3967dced",
+        "status_at_closeout": "removed"
+      }
+    ],
+    "restored": {
+      "deployment_id": "7ea83deb-34c2-4065-bb09-3267fd37ebbd",
+      "sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+      "source_branch": "master",
+      "status_at_closeout": "active_success"
+    }
+  },
+  "source_mapping": {
+    "production_before_containment": "codex/platform-agent-actions-telegram-preview",
+    "production_after_containment": "master",
+    "isolated_preview_environment_id": "149f0cb8-9b79-41af-94b0-62e5c2a98328",
+    "isolated_preview_service_id": "b3e05965-1b96-441f-baee-5a708cc12e99",
+    "isolated_preview_branch": "codex/platform-agent-actions-telegram-preview",
+    "mapping_verified": true
+  },
+  "runtime_verification": {
+    "health_url": "https://bneineviimacademy.org/api/health",
+    "health_status": 200,
+    "health_body": {
+      "status": "ok",
+      "database": "connected",
+      "social_post_provider": "buffer"
+    },
+    "deploy_sha_header": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+    "version_route_status": 404,
+    "version_route_deploy_sha_header": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+    "ready_route_status": 404,
+    "ready_route_deploy_sha_header": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+    "canonical_readiness_route": "/api/health"
+  },
+  "database_verification": {
+    "method": "read_only_information_schema_and_count_audit_from_restored_application_instance",
+    "preview_only_tables_checked": [
+      "bna_agent_action_audit_events",
+      "bna_agent_action_jobs",
+      "bna_agent_action_results",
+      "bna_one_time_rabbi_audit_events",
+      "bna_one_time_rabbi_canaries",
+      "bna_one_time_rabbi_consumer_leases",
+      "bna_one_time_rabbi_operator_state",
+      "bna_one_time_rabbi_questions",
+      "bna_one_time_rabbi_telegram_updates"
+    ],
+    "existing_preview_only_tables": [],
+    "row_counts": {},
+    "application_migration_ledger_present": false,
+    "schema_drift_detected": false,
+    "writes_performed_by_audit": 0
+  },
+  "provider_isolation_verification": {
+    "dedicated_rabbi_bot_token_present": true,
+    "private_chat_allowlist_present": false,
+    "telegram_webhook_secret_present": false,
+    "one_time_ghl_pit_present": false,
+    "one_time_ghl_location_present": false,
+    "synthetic_contact_present": false,
+    "consumer_enabled": false,
+    "send_enabled": false,
+    "automatic_provider_path_ready": false,
+    "provider_calls_observed": 0,
+    "customer_messages_sent": 0
+  },
+  "effect_verification": {
+    "agent_action_customer_effects": 0,
+    "telegram_customer_effects": 0,
+    "ghl_customer_effects": 0,
+    "production_data_rows_created": 0,
+    "production_config_changes": [
+      "production source branch restored to master"
+    ],
+    "variable_changes": 0,
+    "build_config_drift": false,
+    "customer_content_recorded": false,
+    "secrets_recorded": false
+  },
+  "containment": {
+    "completed": true,
+    "production_source_trigger_corrected": true,
+    "isolated_preview_source_trigger_verified": true,
+    "feature_branch_can_target_production": false,
+    "feature_lane_resumed_after_restoration": true
+  }
+}
