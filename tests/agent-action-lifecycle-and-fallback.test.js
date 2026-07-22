@@ -32,6 +32,13 @@ test('Agent Action API maps claim, in-progress, partial, completed, and supersed
   assert.match(server, /ON CONFLICT \(idempotency_key\) DO UPDATE SET/);
   assert.match(server, /readback_at = COALESCE\(readback_at, NOW\(\)\)/);
 });
+
+test('hosted no-database previews use bounded in-memory Operations sessions', () => {
+  assert.match(server, /const platformPreviewMemorySessions = new Map\(\)/);
+  assert.match(server, /PLATFORM_PREVIEW_NO_DB && !DATABASE_URL[\s\S]*platformPreviewMemorySessions\.get\(sessionId\)/);
+  assert.match(server, /platformPreviewMemorySessions\.set\(sessionId,[\s\S]*expiresAt: expiresAt\.getTime\(\)/);
+  assert.match(server, /platformPreviewMemorySessions\.delete\(sessionId\)/);
+});
 test('sanitized GitHub fallback keeps result fields and removes secret/customer transcript input', () => {
   const result = {
     job_id: 'GHL-UI-01',

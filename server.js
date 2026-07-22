@@ -3230,6 +3230,7 @@ const SESSION_COOKIE_NAME = 'bna_ops_session';
 const ACTIVE_WORKSPACE_COOKIE_NAME = 'bna_active_workspace';
 const AGENT_REVIEW_SESSION_COOKIE_NAME = 'bna_agent_review_session';
 const SESSION_TTL_MS = 1000 * 60 * 60 * 12;
+const platformPreviewMemorySessions = new Map();
 const OPS_ACCESS_LINK_TTL_MS = 1000 * 60 * 20;
 const OPERATOR_BOOTSTRAP_TTL_MS = Math.max(60 * 1000, Number(process.env.OPERATOR_BOOTSTRAP_TTL_MS || 1000 * 60 * 10));
 const OPERATOR_BOOTSTRAP_MAX_TTL_MS = Math.max(OPERATOR_BOOTSTRAP_TTL_MS, Number(process.env.OPERATOR_BOOTSTRAP_MAX_TTL_MS || 1000 * 60 * 15));
@@ -9704,6 +9705,15 @@ function inferParticipantsFromTranscript(text = '') {
 
 async function getValidSession(sessionId) {
   if (!sessionId) return null;
+  if (PLATFORM_PREVIEW_NO_DB && !DATABASE_URL) {
+    const session = platformPreviewMemorySessions.get(sessionId) || null;
+    if (!session) return null;
+    if (session.expiresAt <= Date.now()) {
+      platformPreviewMemorySessions.delete(sessionId);
+      return null;
+    }
+    return { ...session };
+  }
   const result = await pool.query(
     `SELECT * FROM bna_sessions WHERE session_id = $1 AND expires_at > NOW()`,
     [sessionId]
@@ -9716,12 +9726,23 @@ async function getValidSession(sessionId) {
 }
 
 async function clearSession(sessionId) {
+  if (PLATFORM_PREVIEW_NO_DB && !DATABASE_URL) {
+    if (sessionId) platformPreviewMemorySessions.delete(sessionId);
+    return;
+  }
   if (sessionId) {
     await pool.query(`DELETE FROM bna_sessions WHERE session_id = $1`, [sessionId]);
   }
 }
 
 async function cleanupExpiredSessions() {
+  if (PLATFORM_PREVIEW_NO_DB && !DATABASE_URL) {
+    const now = Date.now();
+    for (const [sessionId, session] of platformPreviewMemorySessions.entries()) {
+      if (session.expiresAt <= now) platformPreviewMemorySessions.delete(sessionId);
+    }
+    return;
+  }
   await pool.query(`DELETE FROM bna_sessions WHERE expires_at <= NOW()`);
   await pool.query(`DELETE FROM bna_ops_access_links WHERE expires_at <= NOW() OR used_at IS NOT NULL`);
   await pool.query(`DELETE FROM bna_secure_downloads WHERE expires_at <= NOW() OR used_at IS NOT NULL`);
@@ -9844,6 +9865,13 @@ function oneTimeOperationsReturnPath(value) {
 async function issueSession(username, db = pool) {
   const sessionId = generateSecureToken(32);
   const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+  if (PLATFORM_PREVIEW_NO_DB && !DATABASE_URL) {
+    platformPreviewMemorySessions.set(sessionId, {
+      username: String(username || ''),
+      expiresAt: expiresAt.getTime(),
+    });
+    return sessionId;
+  }
   await db.query(
     `INSERT INTO bna_sessions (session_id, username, expires_at) VALUES ($1, $2, $3)`,
     [sessionId, username, expiresAt]
