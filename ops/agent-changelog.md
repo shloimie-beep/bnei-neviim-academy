@@ -40448,3 +40448,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `c46d11ec628ad636f78bb7c0f4f5bf6b645bc454` on
   `codex/one-time-communications-architecture-v1` and opened draft PR #140
   against `master`.
+
+# 2026-07-22T10:38:00+03:00 - Agent Action Telegram preview ready for publication
+
+- Applied the live PR #139 and PR #140 descendants onto master `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c` without mechanically merging stale branches.
+- Added completed-result readback/idempotency/supersede coverage, an optional sanitized result-only `onetimev2` PR fallback, and provider-neutral `one_time_rabbi_torah_console` controls in provider-off/fake mode.
+- Re-verified the pinned One Time Agent Mode source at SHA `1000e8f46210a85f720f83fce2678b24a44fa94d`: `14` jobs, artifact blob `8982b719dff696fff291fa868130b5900127f324`, no secrets, and no external write.
+- Focused tests passed `37/37`; deterministic browser/API smoke, in-app browser smoke, secrets audit, and protocol drift check passed. Customer messages sent remained `0`; production was not changed.

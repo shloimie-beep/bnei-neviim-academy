@@ -10,6 +10,9 @@ const {
   workspaceTaxonomyPayload,
   ticketRoutingPayload,
 } = require('./workspace-taxonomy');
+const {
+  buildOneTimeRabbiTorahConsoleReadiness,
+} = require('./one-time-rabbi-torah-console');
 
 const AGENT_ACTION_JOB_TYPE = 'agent_action';
 const AGENT_ACTION_RUN_ID = 'AGENT-ACTION-20260721-PLATFORM-SEPARATION';
@@ -47,6 +50,17 @@ const HIGHLEVEL_EXPORT_SOURCE = Object.freeze({
   artifact_blob_sha: '8982b719dff696fff291fa868130b5900127f324',
   artifact_url: 'https://raw.githubusercontent.com/shloimie-beep/onetimev2/1000e8f46210a85f720f83fce2678b24a44fa94d/integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json',
   registry_version: 'highlevel-agent-mode-export-schema-1.0.0',
+});
+
+const AGENT_ACTION_GITHUB_FALLBACK = Object.freeze({
+  repository: 'shloimie-beep/onetimev2',
+  base_ref: HIGHLEVEL_EXPORT_SOURCE.ref,
+  base_sha: HIGHLEVEL_EXPORT_SOURCE.sha,
+  branch_prefix: 'codex/agent-mode-result',
+  result_root: 'integrations/highlevel/agent-mode/results',
+  persistence_mode: 'sanitized_result_only_pull_request',
+  hub_preferred: true,
+  hub_required_for_ghl_completion: false,
 });
 
 function sha256Hex(value = '') {
@@ -87,6 +101,112 @@ function normalizeStringList(value, maxItems = 50, maxLength = 600) {
   }
   if (!value) return [];
   return [compactText(typeof value === 'string' ? value : JSON.stringify(value), maxLength)];
+}
+
+function sanitizeFallbackText(value = '', max = 2000) {
+  return compactText(value, max)
+    .replace(/(api[_-]?key|token|secret|password|authorization|cookie)\s*=\[redacted\]/gi, '[redacted-sensitive-field]');
+}
+
+function sanitizeFallbackList(value, maxItems = 50, maxLength = 600) {
+  return normalizeStringList(value, maxItems, maxLength).map((item) => sanitizeFallbackText(item, maxLength));
+}
+
+function safeAgentActionFallbackSlug(value = '', fallback = 'result') {
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 56);
+  return normalized || fallback;
+}
+
+function safeAgentActionResultPath(job = {}) {
+  const configured = String(job?.metadata?.result_path || '').replace(/\\/g, '/').trim();
+  const root = `${AGENT_ACTION_GITHUB_FALLBACK.result_root}/`;
+  if (configured.startsWith(root) && configured.endsWith('.result.json') && !configured.includes('..')) return configured;
+  return `${root}${safeAgentActionFallbackSlug(job.job_id, 'agent-action')}.result.json`;
+}
+
+function sanitizeAgentActionResultForFallback(result = {}, job = {}) {
+  const metadata = result.metadata && typeof result.metadata === 'object' ? result.metadata : {};
+  const sanitized = {
+    schema_id: 'bna-agent-action-result-fallback',
+    schema_version: '1.0.0',
+    job_id: sanitizeFallbackText(result.job_id || job.job_id, 160),
+    result_ref: sanitizeFallbackText(result.result_ref || result.resultRef || '', 160),
+    status: normalizeAgentActionStatus(result.status, 'saved'),
+    completion_intent: ['partial', 'completed'].includes(metadata.completion_intent) ? metadata.completion_intent : null,
+    summary: sanitizeFallbackText(result.summary || '', 6000),
+    evidence: sanitizeFallbackList(result.evidence),
+    completion_checklist: sanitizeFallbackList(result.completion_checklist || result.completionChecklist),
+    expected_asset_ids: sanitizeFallbackList(result.expected_asset_ids || result.expectedAssetIds),
+    idempotency_key: sanitizeFallbackText(result.idempotency_key || result.idempotencyKey || '', 200),
+    source: {
+      repository: sanitizeFallbackText(job.source_repository || HIGHLEVEL_EXPORT_SOURCE.repository, 160),
+      ref: sanitizeFallbackText(job.source_ref || HIGHLEVEL_EXPORT_SOURCE.ref, 160),
+      sha: sanitizeFallbackText(job.source_sha || HIGHLEVEL_EXPORT_SOURCE.sha, 80),
+      artifact_path: sanitizeFallbackText(job.source_artifact_path || HIGHLEVEL_EXPORT_SOURCE.artifact_path, 500),
+    },
+    persistence: {
+      primary: 'bna_agent_action_hub',
+      fallback: 'github_result_only_pull_request',
+      ghl_completion_blocked_by_hub: false,
+    },
+    customer_messages_sent: 0,
+    secrets_included: false,
+  };
+  return sanitized;
+}
+
+function buildAgentActionGitHubFallbackPlan(result = {}, job = {}) {
+  const sanitized = sanitizeAgentActionResultForFallback(result, job);
+  const fingerprint = sha256Hex(JSON.stringify(sanitized)).slice(0, 12);
+  const jobSlug = safeAgentActionFallbackSlug(sanitized.job_id, 'agent-action');
+  const resultSlug = safeAgentActionFallbackSlug(sanitized.result_ref, fingerprint).slice(0, 24);
+  const branch = `${AGENT_ACTION_GITHUB_FALLBACK.branch_prefix}-${jobSlug}-${resultSlug}`.slice(0, 180);
+  const path = safeAgentActionResultPath(job);
+  return {
+    repository: AGENT_ACTION_GITHUB_FALLBACK.repository,
+    base_ref: AGENT_ACTION_GITHUB_FALLBACK.base_ref,
+    base_sha: AGENT_ACTION_GITHUB_FALLBACK.base_sha,
+    branch,
+    path,
+    commit_message: `Record sanitized Agent Mode result ${sanitized.job_id}`,
+    pull_request_title: `[Agent Mode result] ${sanitized.job_id}`,
+    pull_request_body: [
+      'Sanitized Agent Mode result-only fallback.',
+      '',
+      '- BNA Agent Action Hub remains the preferred persistence path.',
+      '- This fallback contains no credentials, customer transcript, or contact export.',
+      '- GHL completion does not depend on Hub availability.',
+      `- Source SHA: ${sanitized.source.sha}`,
+    ].join('\n'),
+    result: sanitized,
+    result_json: `${JSON.stringify(sanitized, null, 2)}\n`,
+    persistence_mode: AGENT_ACTION_GITHUB_FALLBACK.persistence_mode,
+    hub_preferred: true,
+    hub_required_for_ghl_completion: false,
+    sanitized_result_only: true,
+    secrets_included: false,
+    customer_transcript_included: false,
+    external_write_performed: false,
+  };
+}
+
+function agentActionResultPersistenceOptions({ result = {}, job = {}, hubAvailable = true } = {}) {
+  return {
+    preferred: hubAvailable ? 'bna_agent_action_hub' : 'github_result_only_pull_request',
+    hub: {
+      available: Boolean(hubAvailable),
+      preferred: true,
+      required_for_ghl_completion: false,
+    },
+    github_fallback: buildAgentActionGitHubFallbackPlan(result, job),
+    ghl_completion_allowed: true,
+    ghl_completion_blocked_by_hub: false,
+  };
 }
 
 function hasSecretLikeContent(value = '') {
@@ -383,6 +503,12 @@ function agentActionHubPayload({ baseUrl = AGENT_ACTION_PUBLIC_BASE_URL, importP
     ticket_routing: ticketRoutingPayload(),
     one_time_connector: CANONICAL_WORKSPACES.one_time,
     highlevel_import: importPreview,
+    result_persistence: {
+      preferred: 'bna_agent_action_hub',
+      github_fallback: AGENT_ACTION_GITHUB_FALLBACK,
+      ghl_completion_blocked_by_hub: false,
+    },
+    rabbi_telegram_foundation: buildOneTimeRabbiTorahConsoleReadiness(),
     external_write_performed: false,
   };
 }
@@ -395,12 +521,18 @@ module.exports = {
   AGENT_ACTION_STATUSES,
   AGENT_ACTION_TERMINAL_STATUSES,
   HIGHLEVEL_EXPORT_SOURCE,
+  AGENT_ACTION_GITHUB_FALLBACK,
   sha256Hex,
   compactText,
   normalizeAgentActionStatus,
   normalizeAgentActionCategory,
   agentActionResultIsTerminal,
   normalizeStringList,
+  sanitizeFallbackText,
+  safeAgentActionResultPath,
+  sanitizeAgentActionResultForFallback,
+  buildAgentActionGitHubFallbackPlan,
+  agentActionResultPersistenceOptions,
   hasSecretLikeContent,
   agentActionJobFingerprint,
   buildAgentActionJobFromGhlExportItem,

@@ -78,6 +78,34 @@
     `;
   }
 
+  function renderFoundations() {
+    const persistence = state.data?.result_persistence || {};
+    const fallback = persistence.github_fallback || {};
+    const telegram = state.data?.rabbi_telegram_foundation || {};
+    const telegramReady = telegram.mode === 'private_canary_ready';
+    return `
+      <section class="grid two">
+        <article class="card">
+          <div class="job-meta">
+            <span class="status-pill ready">Hub preferred</span>
+            <span>${escapeHtml(fallback.persistence_mode || 'sanitized result-only PR')}</span>
+          </div>
+          <h2>Result persistence fallback</h2>
+          <p class="muted">If the BNA Hub is unavailable, a sanitized result-only branch/PR can be prepared in ${escapeHtml(fallback.repository || 'shloimie-beep/onetimev2')}. GHL completion is never blocked by Hub availability.</p>
+        </article>
+        <article class="card">
+          <div class="job-meta">
+            <span class="status-pill ${telegramReady ? 'ready' : 'blocked'}">${escapeHtml(telegram.mode || 'provider_off')}</span>
+            <span>${escapeHtml(telegram.console_key || 'one_time_rabbi_torah_console')}</span>
+          </div>
+          <h2>Rabbi Telegram foundation</h2>
+          <p class="muted">Provider-neutral Torah question controls use GHL Conversations and the One Time Torah Questions pipeline as source of truth. No second transcript and no customer send.</p>
+          <p class="muted">Adapter: ${escapeHtml(telegram.adapter || 'fake')} · Customer messages sent: ${escapeHtml(telegram.customer_messages_sent ?? 0)}</p>
+        </article>
+      </section>
+    `;
+  }
+
   function renderTicketRouting() {
     const records = state.data?.ticket_routing?.records || {};
     return `
@@ -106,6 +134,7 @@
     root.innerHTML = `
       ${renderConnector()}
       ${renderHighLevel()}
+      ${renderFoundations()}
       ${renderTicketRouting()}
     `;
   }

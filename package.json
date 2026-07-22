@@ -7,6 +7,7 @@
     "start": "node scripts/railway-start.mjs",
     "dev": "node server.js",
     "test": "node --test",
+    "smoke:platform-agent-actions-preview": "node scripts/smoke-platform-agent-actions-preview.mjs",
     "test:onetime:focused": "node --test tests/one-time-rabbi-dashboard-ia.test.js tests/one-time-focused-landing.test.js tests/one-time-direct-signup-page.test.js tests/one-time-preview-page.test.js tests/one-time-onboarding-intake.test.js tests/service-provider-scope-routes.test.js tests/one-time-admin-mailbox-access.test.js tests/one-time-safe-view-as-navigation.test.js tests/one-time-route-role-mapping.test.js tests/crm-contact-model.test.js tests/one-time-crm-live-smoke-contract.test.js tests/one-time-operations-ui-smoke.test.js tests/one-time-provider-operations-login.test.js tests/one-time-signup-reminder-workflow.test.js tests/one-time-delivery-outbox.test.js tests/one-time-reminder-simulation-command.test.js tests/one-time-operator-test-handoff.test.js",
     "operations:build": "node scripts/split-operations-shell.mjs",
     "operations:check-generated": "node scripts/split-operations-shell.mjs --check",

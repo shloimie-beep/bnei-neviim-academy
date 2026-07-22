@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-07-22T10:35:00+03:00",
+  "success": true,
+  "ghl_jobs_imported": 14,
+  "source_repository": "shloimie-beep/onetimev2",
+  "source_ref": "codex/highlevel-api-finalize-agent-queue",
+  "source_sha": "1000e8f46210a85f720f83fce2678b24a44fa94d",
+  "artifact_path": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json",
+  "artifact_blob_sha": "8982b719dff696fff291fa868130b5900127f324",
+  "first_job": "GHL-UI-01",
+  "secrets_included": false,
+  "external_write_performed": false
+}

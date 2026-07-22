@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-07-22T07:31:33.128Z",
+  "base_url": "http://127.0.0.1:8098",
+  "job_id": "GHL-UI-01",
+  "lifecycle": {
+    "claim": "claimed",
+    "in_progress": "in_progress",
+    "partial_save": "saved",
+    "partial_idempotency_result_ref_match": true,
+    "completed_save": "saved",
+    "completed_readback": "verified",
+    "result_readback_verified": true,
+    "supersede": "superseded"
+  },
+  "result_persistence": {
+    "hub_preferred": true,
+    "github_fallback_repository": "shloimie-beep/onetimev2",
+    "github_fallback_path": "integrations/highlevel/agent-mode/results/GHL-UI-01.result.json",
+    "sanitized_result_only": true,
+    "ghl_completion_blocked_by_hub": false
+  },
+  "rabbi_telegram_foundation": {
+    "console_key": "one_time_rabbi_torah_console",
+    "mode": "provider_off",
+    "adapter": "fake",
+    "customer_messages_sent": 0
+  },
+  "browser_checks": [
+    {
+      "route": "/operations/agent-actions",
+      "passed": true
+    },
+    {
+      "route": "/operations/agent-actions/GHL-UI-01",
+      "passed": true
+    },
+    {
+      "route": "/operations/agent-actions/GHL-UI-01/dropoff",
+      "passed": true
+    },
+    {
+      "route": "/operations/school",
+      "passed": true
+    },
+    {
+      "route": "/operations/workspaces/one-time",
+      "passed": true
+    },
+    {
+      "check": "console_errors",
+      "passed": true,
+      "ignored_external_network_denied": 5
+    }
+  ],
+  "customer_messages_sent": 0,
+  "production_changed": false,
+  "external_write_performed": false
+}

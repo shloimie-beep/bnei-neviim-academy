@@ -232,6 +232,7 @@ const {
   AGENT_ACTION_RUN_ID,
   AGENT_ACTION_CATEGORIES,
   AGENT_ACTION_STATUSES,
+  agentActionResultPersistenceOptions,
   agentActionHubPayload,
   agentActionResultIsTerminal,
   compactText: compactAgentActionText,
@@ -12546,6 +12547,13 @@ function parseAgentActionJsonCell(value, fallback) {
   return parseJsonMaybe(value) || fallback;
 }
 
+function safeAgentActionOpaqueIdentifier(value = '', max = 200) {
+  return String(value || '')
+    .trim()
+    .replace(/[^a-z0-9._:/=@+-]/gi, '-')
+    .slice(0, max);
+}
+
 function agentActionJobView(row = {}, req = null) {
   const metadata = parseAgentActionJsonCell(row.metadata, {});
   const jobId = row.job_id || row.jobId;
@@ -12756,6 +12764,7 @@ async function getAgentActionJob(jobId = '', db = pool) {
 
 function agentActionStatusFromBody(body = {}) {
   const action = String(body.action || body.action_type || body.actionType || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+  if (action === 'claim' || action === 'claimed') return 'claimed';
   if (action === 'start' || action === 'i_started' || action === 'retry') return 'in_progress';
   if (action === 'supersede') return 'superseded';
   if (action === 'save_partial' || action === 'save_completed') return 'saved';
@@ -12783,7 +12792,7 @@ async function saveAgentActionResult(jobId = '', body = {}, { req, identity = nu
     body.idempotency_key || body.idempotencyKey || job.idempotency_key,
     summary.slice(0, 160),
   ].join('|');
-  const idempotencyKey = compactAgentActionText(body.idempotency_key || body.idempotencyKey || `${job.idempotency_key}:result:${sha256Hex(idempotencyBasis).slice(0, 16)}`, 200);
+  const idempotencyKey = safeAgentActionOpaqueIdentifier(body.idempotency_key || body.idempotencyKey || `${job.idempotency_key}:result:${sha256Hex(idempotencyBasis).slice(0, 16)}`, 200);
   const resultRef = `AAR-${sha256Hex(`${job.job_id}:${idempotencyKey}`).slice(0, 16)}`;
   const metadata = {
     action,
@@ -12880,6 +12889,34 @@ async function saveAgentActionResult(jobId = '', body = {}, { req, identity = nu
   }
 }
 
+function readbackMemoryAgentActionResult(jobId = '', { resultRef = '', idempotencyKey = '' } = {}) {
+  const rows = Array.from(agentActionMemoryResults.values())
+    .filter((row) => row.job_id === jobId)
+    .filter((row) => !resultRef || row.result_ref === resultRef)
+    .filter((row) => !idempotencyKey || row.idempotency_key === idempotencyKey)
+    .sort((a, b) => String(b.updated_at || '').localeCompare(String(a.updated_at || '')));
+  const row = rows[0] || null;
+  if (!row) return null;
+  const metadata = parseAgentActionJsonCell(row.metadata, {});
+  row.readback_at = row.readback_at || new Date().toISOString();
+  if (row.status === 'saved' && metadata.completion_intent === 'completed') row.status = 'verified';
+  row.metadata = { ...metadata, readback_verified: true, readback_required: false };
+  const memoryJob = agentActionMemoryJobs.get(jobId);
+  if (memoryJob && row.status === 'verified') {
+    agentActionMemoryJobs.set(jobId, {
+      ...memoryJob,
+      status: 'verified',
+      metadata: {
+        ...(parseAgentActionJsonCell(memoryJob.metadata, {})),
+        latest_result_ref: row.result_ref,
+        latest_result_status: 'verified',
+      },
+      updated_at: new Date().toISOString(),
+    });
+  }
+  return row;
+}
+
 async function readbackAgentActionResult(jobId = '', { resultRef = '', idempotencyKey = '' } = {}, db = pool) {
   try {
     const params = [jobId];
@@ -12901,7 +12938,7 @@ async function readbackAgentActionResult(jobId = '', { resultRef = '', idempoten
       params
     );
     let row = result.rows[0] || null;
-    if (!row) return null;
+    if (!row) return readbackMemoryAgentActionResult(jobId, { resultRef, idempotencyKey });
     const metadata = parseAgentActionJsonCell(row.metadata, {});
     const verifiedStatus = row.status === 'saved' && metadata.completion_intent === 'completed' ? 'verified' : row.status;
     const update = await db.query(
@@ -12931,18 +12968,7 @@ async function readbackAgentActionResult(jobId = '', { resultRef = '', idempoten
     }
     return row;
   } catch {
-    const rows = Array.from(agentActionMemoryResults.values())
-      .filter((row) => row.job_id === jobId)
-      .filter((row) => !resultRef || row.result_ref === resultRef)
-      .filter((row) => !idempotencyKey || row.idempotency_key === idempotencyKey)
-      .sort((a, b) => String(b.updated_at || '').localeCompare(String(a.updated_at || '')));
-    const row = rows[0] || null;
-    if (!row) return null;
-    const metadata = parseAgentActionJsonCell(row.metadata, {});
-    row.readback_at = row.readback_at || new Date().toISOString();
-    if (row.status === 'saved' && metadata.completion_intent === 'completed') row.status = 'verified';
-    row.metadata = { ...metadata, readback_verified: true, readback_required: false };
-    return row;
+    return readbackMemoryAgentActionResult(jobId, { resultRef, idempotencyKey });
   }
 }
 
@@ -13667,7 +13693,7 @@ app.get('/api/platform/agent-actions', requireAdmin, async (req, res) => {
     if (!identity) return;
     const importPreview = await currentHighLevelImportPreview();
     await upsertImportedAgentActionJobs(importPreview, identity);
-    const requestedJobId = compactAgentActionText(req.query?.job_id || req.query?.jobId || '', 160);
+    const requestedJobId = safeAgentActionOpaqueIdentifier(req.query?.job_id || req.query?.jobId || '', 160);
     const jobs = await listAgentActionJobs({ jobId: requestedJobId });
     const baseUrl = requestBaseUrl(req);
     res.json({
@@ -13698,7 +13724,7 @@ app.get('/api/platform/agent-actions/:jobId', requireAdmin, async (req, res) => 
     if (!identity) return;
     const importPreview = await currentHighLevelImportPreview();
     await upsertImportedAgentActionJobs(importPreview, identity);
-    const job = await getAgentActionJob(compactAgentActionText(req.params.jobId, 160));
+    const job = await getAgentActionJob(safeAgentActionOpaqueIdentifier(req.params.jobId, 160));
     if (!job) return res.status(404).json({ success: false, error: 'Agent Action job not found.', external_write_performed: false });
     res.json({
       success: true,
@@ -13727,7 +13753,8 @@ app.post('/api/platform/agent-actions/:jobId/results', requireAdmin, async (req,
         external_write_performed: false,
       });
     }
-    const result = await saveAgentActionResult(compactAgentActionText(req.params.jobId, 160), req.body || {}, { req, identity });
+    const result = await saveAgentActionResult(safeAgentActionOpaqueIdentifier(req.params.jobId, 160), req.body || {}, { req, identity });
+    const resultJob = await getAgentActionJob(result.job_id);
     res.json({
       success: true,
       result_ref: result.result_ref,
@@ -13735,6 +13762,11 @@ app.post('/api/platform/agent-actions/:jobId/results', requireAdmin, async (req,
       readback_url: `/api/platform/agent-actions/${encodeURIComponent(result.job_id)}/results?result_ref=${encodeURIComponent(result.result_ref)}`,
       operations_url: `/operations/agent-actions/${encodeURIComponent(result.job_id)}`,
       completion_requires_readback: parseAgentActionJsonCell(result.metadata, {}).completion_intent === 'completed',
+      result_persistence: agentActionResultPersistenceOptions({
+        result: agentActionResultView(result, req),
+        job: agentActionJobView(resultJob, req),
+        hubAvailable: true,
+      }),
       external_write_performed: false,
     });
   } catch (err) {
@@ -13750,10 +13782,10 @@ app.get('/api/platform/agent-actions/:jobId/results', requireAdmin, async (req, 
   try {
     const identity = requirePlatformSuperAdmin(req, res);
     if (!identity) return;
-    const jobId = compactAgentActionText(req.params.jobId, 160);
+    const jobId = safeAgentActionOpaqueIdentifier(req.params.jobId, 160);
     const result = await readbackAgentActionResult(jobId, {
-      resultRef: compactAgentActionText(req.query?.result_ref || req.query?.resultRef || '', 160),
-      idempotencyKey: compactAgentActionText(req.query?.idempotency_key || req.query?.idempotencyKey || '', 200),
+      resultRef: safeAgentActionOpaqueIdentifier(req.query?.result_ref || req.query?.resultRef || '', 160),
+      idempotencyKey: safeAgentActionOpaqueIdentifier(req.query?.idempotency_key || req.query?.idempotencyKey || '', 200),
     });
     if (!result) return res.status(404).json({ success: false, error: 'Agent Action result not found.', external_write_performed: false });
     res.json({
