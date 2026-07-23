@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "job_id": "OT-LAUNCH-01-TELEGRAM-SYNTHETIC-CONTACT-RECONCILIATION",
+  "checked_at": "2026-07-23T20:41:00+03:00",
+  "location_fingerprint": "sha256:31fcbd2792f131dc94275ef3674337fe46b277cdf61209702de1246d7f77a3e2",
+  "failure_boundary": "lookup",
+  "control_status": "BLOCKED",
+  "blocker": "one_exact_fictional_contact_not_proven",
+  "official_readback": {
+    "recent_contact_read": "succeeded",
+    "recent_contacts_inspected": 7,
+    "plausible_fictional_contacts": 0,
+    "exact_marker_reads_succeeded": 2,
+    "exact_marker_matches": 0,
+    "exact_marker_reads_timed_out": 1,
+    "duplicate_candidates": 0
+  },
+  "effect_reconciliation": {
+    "contact_creation_observed": false,
+    "contact_create_attempted_by_this_executor": false,
+    "contact_readback_completed": false,
+    "protected_handoff_completed": false,
+    "one_time_rabbi_synthetic_contact_id_present": false
+  },
+  "safety": {
+    "ghl_mutations": 0,
+    "workflow_enrollments": 0,
+    "email_sends": 0,
+    "whatsapp_sends": 0,
+    "telegram_sends": 0,
+    "customer_messages_sent": 0,
+    "student_contacts_created": 0,
+    "raw_contact_id_included": false,
+    "contact_details_included": false,
+    "credentials_included": false
+  },
+  "next_action": "Keep the HighLevel synthetic canary provider-off until the existing canonical fictional identity is supplied through the protected handoff or one exact existing contact is independently proven. Do not create another contact from this result."
+}
