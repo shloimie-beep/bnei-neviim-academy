@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-07-23T12:22:50+03:00",
+  "scope": "isolated_preview_only",
+  "source": {
+    "repository": "shloimie-beep/bnei-neviim-academy",
+    "branch": "codex/platform-agent-actions-telegram-preview",
+    "pull_request": 141,
+    "head": "b8bcfb01e735568a8bf13832ff74abe01cbb2cc1",
+    "worktree_clean_before_external_actions": true
+  },
+  "railway": {
+    "project_id": "bd5b6d78-5e83-4e83-89b2-cd5f52ed7889",
+    "environment_id": "149f0cb8-9b79-41af-94b0-62e5c2a98328",
+    "web_service_id": "b3e05965-1b96-441f-baee-5a708cc12e99",
+    "web_deployment_id": "07ee9027-178f-49d7-ae6e-311eb8567ddf",
+    "postgres_service_id": "deccba7f-ea6d-4c46-87c1-e8c045ba9d19",
+    "postgres_deployment_id": "6da1966f-1351-44cb-9347-f498e695e9c4",
+    "database_url_delivery": "private_service_reference",
+    "public_database_proxy_created": false,
+    "ssh_key_created": false
+  },
+  "runtime": {
+    "deploy_info_exact_head": true,
+    "health_status": "ok",
+    "database": "connected",
+    "agent_action_storage": "postgres",
+    "job_count": 31,
+    "job_status_counts": {
+      "verified": 9,
+      "superseded": 2,
+      "blocked": 20
+    },
+    "queue_source": "historical_pr_107_projection",
+    "queue_repin_required_for_pr_108": true
+  },
+  "restart_readback": {
+    "before_restart_projection_sha256": "7e4b64e239082ec31968b4fab15f3d2df7cd7a95f2454506a40d616e90fc6fac",
+    "after_restart_projection_sha256": "7e4b64e239082ec31968b4fab15f3d2df7cd7a95f2454506a40d616e90fc6fac",
+    "identical": true,
+    "job_count_preserved": 31,
+    "status_counts_preserved": true
+  },
+  "telegram": {
+    "dedicated_bot_identity_verified": true,
+    "signed_webhook_registered": true,
+    "max_connections": 1,
+    "allowed_updates": ["message"],
+    "pending_updates": 0,
+    "single_consumer_strategy": true,
+    "synthetic_only": true,
+    "private_operator_canary_count": 1,
+    "private_operator_canary_outcome": "listed",
+    "immediate_replay_outcome": "duplicate_replay_rejected",
+    "post_restart_replay_outcome": "duplicate_replay_rejected",
+    "durable_dedupe_verified": true
+  },
+  "highlevel_bridge": {
+    "provider_ready": false,
+    "customer_send_enabled": false,
+    "synthetic_contact_present": false,
+    "draft_canary_attempted": false,
+    "blocker": "operator_owned_synthetic_contact_absent"
+  },
+  "external_effects": {
+    "operator_private_telegram_messages": 1,
+    "customer_messages": 0,
+    "highlevel_mutations": 0,
+    "production_mutations_in_this_followup": 0
+  },
+  "historical_incident_verdict": "PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED"
+}

@@ -39,8 +39,16 @@ Branch: `codex/platform-agent-actions-telegram-preview`
 - Secrets audit: **PASS**, 9,689 tracked paths, 0 findings.
 - Protocol drift: **PASS**, 0 findings.
 - `git diff --check`: **PASS**.
-- Durable preview restart/readback: **BLOCKED** — isolated preview has no `DATABASE_URL` or linked Postgres service; deployed code remains fail-closed.
-- Private synthetic Telegram/GHL canary: **BLOCKED** by the same durable-store gate; no canary mutation attempted.
+- Durable preview restart/readback: **PASS**. The isolated preview now uses a
+  private Railway PostgreSQL service reference; a 31-job sanitized projection
+  retained the identical SHA-256 and status counts across an exact service
+  restart.
+- Private synthetic Telegram canary: **PASS**. One operator-owned private
+  `/questions` canary was accepted, an immediate replay was rejected, and the
+  same replay remained rejected after restart.
+- Synthetic GHL draft/save/readback canary: **PROVIDER_OFF** because the
+  operator-owned synthetic contact is absent. No contact was inferred or
+  created, and no GHL mutation was attempted.
 - Customer messages sent: **0**. Canonical incident verdict: **PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED**.
 
 ## Production incident correction and restoration
@@ -99,8 +107,24 @@ Branch: `codex/platform-agent-actions-telegram-preview`
   skipped test is the real PostgreSQL integration test because
   `BNA_AGENT_ACTION_TEST_DATABASE_URL` is not configured and no local
   PostgreSQL service/runtime is installed.
-- Read-only Railway proof: the isolated preview still has one web service,
-  no linked Postgres instance, and no `DATABASE_URL`. No Railway mutation or
-  provider/customer send was performed.
-- Remaining action:
-  `OPERATOR_DECISION_REQUIRED: authorize one disposable PostgreSQL service in the BNA isolated preview only; no production.`
+- The isolated Railway preview now has one web service and one private
+  PostgreSQL service. `DATABASE_URL` is supplied only by a Railway private
+  service reference; no public database proxy or SSH key was created.
+- Hosted proof at source
+  `b8bcfb01e735568a8bf13832ff74abe01cbb2cc1`: web deployment
+  `07ee9027-178f-49d7-ae6e-311eb8567ddf`, PostgreSQL deployment
+  `6da1966f-1351-44cb-9347-f498e695e9c4`, health `ok`, database connected,
+  storage `postgres`, 31 jobs (9 verified, 2 superseded, 20 blocked).
+- The 31-job queue is explicitly the historical PR #107 projection. Repinning
+  to accepted PR #108 jobs remains a separate reviewed importer change; this
+  proof does not relabel the historical queue as current.
+- Current machine proof remains **49 passed, 0 failed, 1 skipped**. The only
+  skip is the local real-PostgreSQL harness because this machine has no private
+  preview database route; the hosted restart/readback proof closes the deployed
+  durability requirement without opening a proxy.
+- External effects in this follow-up: one operator-private Telegram status
+  response, zero customer messages, zero GHL mutations, and zero production
+  mutations. Historical incident verdict remains
+  **PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED**.
+- Sanitized evidence:
+  `durability-telegram-live-proof.json`.

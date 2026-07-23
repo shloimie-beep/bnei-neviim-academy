@@ -40516,3 +40516,31 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED`.
 - Remaining action:
   `OPERATOR_DECISION_REQUIRED: authorize one disposable PostgreSQL service in the BNA isolated preview only; no production.`
+
+# 2026-07-23T12:22:50+03:00 - BNA durable preview and private Telegram proof completed
+
+- Attached one PostgreSQL service only to the isolated
+  `bna-agent-actions-preview` Railway environment and supplied
+  `DATABASE_URL` through a private service reference. No public database proxy
+  or SSH key was created.
+- Exact source `b8bcfb01e735568a8bf13832ff74abe01cbb2cc1` is healthy at web
+  deployment `07ee9027-178f-49d7-ae6e-311eb8567ddf`; PostgreSQL deployment
+  `6da1966f-1351-44cb-9347-f498e695e9c4` is successful.
+- A sanitized 31-job projection retained the identical SHA-256 and status
+  counts across a service restart, closing the hosted durability/readback
+  requirement.
+- Registered the dedicated bot's signed single-consumer webhook and ran one
+  operator-owned private `/questions` canary. Immediate replay and replay after
+  restart were both rejected, proving durable handled-once behavior.
+- The 31-job queue remains explicitly the historical PR #107 projection. It
+  was not relabeled as accepted PR #108 work; repinning remains a separate
+  reviewed importer change.
+- The synthetic GHL draft/save/readback sub-capability remains provider-off
+  because an operator-owned synthetic contact is absent. No contact was
+  inferred or created.
+- External effects: one operator-private Telegram status response, zero
+  customer messages, zero GHL mutations, and zero production mutations in this
+  follow-up. Historical incident verdict remains
+  `PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED`.
+- Sanitized proof:
+  `ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/durability-telegram-live-proof.json`.
