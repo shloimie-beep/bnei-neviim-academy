@@ -1,18 +1,26 @@
 {
   "schema_version": 1,
   "job_id": "OT-LAUNCH-01-TELEGRAM-SYNTHETIC-CONTACT-RECONCILIATION",
-  "checked_at": "2026-07-23T20:41:00+03:00",
+  "checked_at": "2026-07-23T20:46:29+03:00",
   "location_fingerprint": "sha256:31fcbd2792f131dc94275ef3674337fe46b277cdf61209702de1246d7f77a3e2",
   "failure_boundary": "lookup",
   "control_status": "BLOCKED",
-  "blocker": "one_exact_fictional_contact_not_proven",
+  "blocker": "official_exact_email_equality_lookup_returned_provider_504_on_the_one_bounded_retry",
   "official_readback": {
     "recent_contact_read": "succeeded",
     "recent_contacts_inspected": 7,
     "plausible_fictional_contacts": 0,
     "exact_marker_reads_succeeded": 2,
     "exact_marker_matches": 0,
-    "exact_marker_reads_timed_out": 1,
+    "previous_broad_marker_reads_timed_out": 1,
+    "bounded_exact_key_retry": {
+      "route": "official_advanced_contact_search",
+      "filter_semantics": "email_equals_operator_owned_synthetic_identity",
+      "http_status": 504,
+      "response_category": "provider",
+      "match_count": "unavailable",
+      "retry_exhausted": true
+    },
     "duplicate_candidates": 0
   },
   "effect_reconciliation": {
@@ -30,9 +38,10 @@
     "telegram_sends": 0,
     "customer_messages_sent": 0,
     "student_contacts_created": 0,
+    "broad_contact_operations": 0,
     "raw_contact_id_included": false,
     "contact_details_included": false,
     "credentials_included": false
   },
-  "next_action": "Keep the HighLevel synthetic canary provider-off until the existing canonical fictional identity is supplied through the protected handoff or one exact existing contact is independently proven. Do not create another contact from this result."
+  "next_action": "Keep the HighLevel synthetic canary provider-off. The one authorized exact-key retry was unavailable at the provider boundary, so no zero-match proof exists and contact creation is not permitted from this result."
 }
