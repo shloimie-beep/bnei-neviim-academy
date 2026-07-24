@@ -4629,5 +4629,81 @@
     "audit_log_event": "ui_navigation_no_write",
     "success_message": "Exited One Time preview.",
     "failure_message": "One Time preview exit failed."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [],
+    "validation": {
+      "channel": "dedicated_private_allowlisted_telegram_chat"
+    },
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations.html?view=agent-work"
+    ],
+    "ui_button_labels": [
+      "Refresh status",
+      "Open Operations"
+    ],
+    "telegram_intent_examples": [
+      "/status"
+    ],
+    "action_id": "control_plane_operations_status_read",
+    "label": "Read redacted control-plane status",
+    "description": "Read only the strict control-plane status envelope and render counts, opaque refs, state, timestamp, and bot-constructed same-origin HTTPS links.",
+    "category": "deployment_status",
+    "page_contexts": [
+      "bna_control_plane_operations_bot",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna"
+    ],
+    "execution_handler": "controlPlaneOperationsBot.readStatus",
+    "audit_log_event": "control_plane_operations_status_read",
+    "success_message": "Redacted control-plane status returned.",
+    "failure_message": "Control-plane status is unavailable; no upstream details were exposed."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [],
+    "validation": {
+      "channel": "dedicated_private_allowlisted_telegram_chat"
+    },
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations.html?view=agent-work"
+    ],
+    "ui_button_labels": [],
+    "telegram_intent_examples": [
+      "/help",
+      "/start"
+    ],
+    "action_id": "control_plane_operations_help_read",
+    "label": "Read control-plane bot help",
+    "description": "Return the fixed read-only bot contract and the pinned Operations HTTPS link without invoking an assistant model or action runner.",
+    "category": "support",
+    "page_contexts": [
+      "bna_control_plane_operations_bot",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna"
+    ],
+    "execution_handler": "controlPlaneOperationsBot.readHelp",
+    "audit_log_event": "control_plane_operations_help_read",
+    "success_message": "Read-only control-plane bot help returned.",
+    "failure_message": "Control-plane bot help could not be returned."
   }
 ]
