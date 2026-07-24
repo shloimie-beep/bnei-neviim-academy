@@ -40544,3 +40544,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED`.
 - Sanitized proof:
   `ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/durability-telegram-live-proof.json`.
+
+# 2026-07-24T10:52:07+03:00 - BNA control-plane Operations bot implemented
+
+- Added a replacement ADR/threat model that accepts only a separate,
+  default-off, redacted notifier/read-only status bot. The mutation allowlist is
+  empty.
+- Added a dedicated Telegram identity namespace, bot-ID pin, private allowlist,
+  owner lease, rate limit, kill/revoke gates, strict status schema, opaque refs,
+  counts, bot-built same-origin HTTPS links, replay state, and content-free
+  denied-action audit.
+- Kept the existing academy Telegram monolith unchanged. The new process has no
+  One Time runtime, session, cookie, import, transcript, provider-write, shell,
+  deploy, Codex, or product-database dependency.
+- Focused control-plane/shared-scope tests passed 31/31 and the visible action
+  watchdog returned 0 findings. Provider mode remains off; no live bot,
+  provider, database, deployment, production, customer, or One Time effect was
+  performed.
+- Sanitized handoff:
+  `ops/codex-runs/2026-07-24-bna-control-plane-operations-bot/HANDOFF.md`.
