@@ -1,0 +1,22 @@
+{
+  "packet_id": "PKT-20260721-002",
+  "status": "complete",
+  "terminal_requirement_count": 9,
+  "blocked_requirement_ids": [],
+  "known_blocker": null,
+  "implementation_commit": "c46d11ec628ad636f78bb7c0f4f5bf6b645bc454",
+  "head_branch": "codex/one-time-communications-architecture-v1",
+  "base_branch": "master",
+  "draft_pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/140",
+  "validation": {
+    "intent_preservation": "pass",
+    "focused_contract_tests": "pass_7_of_7",
+    "pqc_protocol": "pass_validation_fixtures_13_of_13_evals_8_of_8",
+    "protocol_drift": "pass_finding_count_0",
+    "secrets_audit": "pass_9635_paths_0_findings",
+    "git_diff_check": "pass",
+    "production_changed": false,
+    "external_mutations": 0
+  },
+  "updated_at": "2026-07-21T16:53:00+03:00"
+}

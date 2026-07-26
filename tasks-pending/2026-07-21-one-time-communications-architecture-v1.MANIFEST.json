@@ -1,0 +1,17 @@
+{
+  "packet_id": "PKT-20260721-002",
+  "raw_id": "RAW-20260721-002",
+  "raw_path": "raw-input/RAW-20260721-002-one-time-communications-architecture-v1.md",
+  "raw_sha256": "bb4e8cb591248ba404414d13d7b816c3dfdd6ef21566029bd9c4307c13d4aa48",
+  "spec_path": "tasks-pending/2026-07-21-one-time-communications-architecture-v1.SPEC.json",
+  "spec_sha256": "ebd6690e2dc3e42a030a376e46f04c305c078e1e22cc0ef4e4b6d0ab7a17c27d",
+  "spec_fingerprint": "6f2d3038434fa41bb8d756544e74a05481ffa3e398cef0e21f483bc0677477b9",
+  "receipt_path": "tasks-pending/2026-07-21-one-time-communications-architecture-v1.RECEIPT.md",
+  "codex_prompt_path": "tasks-pending/2026-07-21-one-time-communications-architecture-v1.CODEX_PROMPT.md",
+  "status_path": "tasks-pending/2026-07-21-one-time-communications-architecture-v1.status.json",
+  "created_at": "2026-07-21T16:30:00+03:00",
+  "branch": "codex/one-time-communications-architecture-v1",
+  "base_branch": "master",
+  "production_changed": false,
+  "external_mutations": 0
+}

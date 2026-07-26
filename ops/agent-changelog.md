@@ -40410,3 +40410,137 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   auto-reply mutation, CRM production write, provider mutation, credential
   mutation, payment/access mutation, raw private payload logging, or destructive
   production mutation was performed.
+# 2026-07-21T11:55:00+03:00 - Platform taxonomy, BNA workspace, and Agent Action drop-off
+
+- Registered `RAW-20260721-001` and packet `PKT-20260721-001` for the platform/BNA/One Time Agent Action lane.
+- Added canonical taxonomy resolver, compatibility aliases, non-destructive migration plan, ticket-routing records, BNA School route, One Time connector route, and Agent Action queue/drop-off routes.
+- Extended Agent Review architecture with separate Agent Action job/result tables, CSRF/idempotency/readback behavior, safe HighLevel import validation, and local-only no-database preview mode for the new read-only surfaces.
+- Validation passed: changed JS parse checks, focused taxonomy/Agent Action/route tests (`16/16`), `npm run secrets:audit`, and local preview smoke at `http://127.0.0.1:8095`.
+- `GHL_JOBS_IMPORTED=0` because the requested One Time export `integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json` is absent from PR #93 SHA `977e4453c34684cd06359f663d0e8f50dc3645f5` and scanned HighLevel descendant branches. Production was not deployed or changed.
+
+# 2026-07-21T12:05:00+03:00 - One Time HighLevel Agent Action queue imported
+
+- Located the current One Time HighLevel API lane at `shloimie-beep/onetimev2` ref `codex/highlevel-api-finalize-agent-queue`, SHA `1000e8f46210a85f720f83fce2678b24a44fa94d`, with `integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json` blob SHA `8982b719dff696fff291fa868130b5900127f324`.
+- Updated the safe read-only importer to pin that repository/ref/SHA/artifact, preserve exact `exact_copy_paste_prompt` text, map current export schema fields, dedupe jobs, reject secret-like payloads, and record registry/schema version `1.0.0`.
+- `GHL_JOBS_IMPORTED=14`; the isolated preview shows `GHL-UI-01` as the first dry-run One Time HighLevel UI Setup Agent Action job.
+- Validation passed: changed JS parse checks, focused taxonomy/Agent Action/route tests (`17/17`), HighLevel import dry-run, Agent Action completed-save/readback smoke, `npm run secrets:audit`, and `git diff --check`. Production was not deployed or changed.
+## 2026-07-21 - One Time GHL communications exception recorded
+
+- Recorded `DEC-20260721-002` from `RAW-20260721-002`: GHL is the One Time
+  customer-communication source of truth, the One Time app owns product/account
+  state, Telegram is the non-canonical Rabbi interface, and Resend is limited
+  to security-token email.
+- Preserved BNA School's first-party CRM/operations architecture and prohibited
+  applying the One Time exception to `bna_school` or as a platform-wide rule.
+- Recorded Shloimie as default inbound owner, Rabbi Eli's exact allowlist and
+  denylist, the no-AI-Torah-answer-in-Rabbi-name rule, and separate ownership
+  for live class questions, GHL business conversations, and Super Admin
+  technical tickets with source workspace.
+- Added the architecture ADR, workspace role-map update, Super Admin connector
+  schema/instance, Agent Action job/result schemas/examples, durable memory,
+  and focused contract assertions.
+- Verification passed: intent coverage 6/6 hard signals and 11/11 actionable
+  spans, focused tests 7/7, PQC fixtures 13/13, PQC evals 8/8, protocol drift
+  finding count 0, execution-run validation, secret audit, and diff check.
+- Guardrails: 0 email sends, 0 Telegram sends, 0 GHL mutations, 0 DNS changes,
+  0 credential/production-data mutations, and 0 production deployments.
+- Published implementation commit
+  `c46d11ec628ad636f78bb7c0f4f5bf6b645bc454` on
+  `codex/one-time-communications-architecture-v1` and opened draft PR #140
+  against `master`.
+
+# 2026-07-22T10:38:00+03:00 - Agent Action Telegram preview ready for publication
+
+- Applied the live PR #139 and PR #140 descendants onto master `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c` without mechanically merging stale branches.
+- Added completed-result readback/idempotency/supersede coverage, an optional sanitized result-only `onetimev2` PR fallback, and provider-neutral `one_time_rabbi_torah_console` controls in provider-off/fake mode.
+- Re-verified the pinned One Time Agent Mode source at SHA `1000e8f46210a85f720f83fce2678b24a44fa94d`: `14` jobs, artifact blob `8982b719dff696fff291fa868130b5900127f324`, no secrets, and no external write.
+- Focused tests passed `38/38`; deterministic browser/API smoke, in-app browser smoke, secrets audit, and protocol drift check passed. Customer messages sent remained `0`; production was not changed.
+
+# 2026-07-22T11:07:00+03:00 - Agent Action Telegram preview published
+
+- Opened draft PR #141 against `master` and deployed the feature branch only to the isolated Railway environment/service `bna-agent-actions-preview`.
+- Live implementation deployment `9f44c549-65c2-4a27-a923-4db8896b6654` succeeded at commit `7cc2cf8eb78e79567c0190dab395ecb9fefcfebf`; the BNA production environment remained on master and was not redeployed.
+- Hosted browser/API proof passed with 14 imported jobs, every required result lifecycle transition, verified readback, sanitized fallback, provider-off/fake Rabbi Telegram foundation, and customer messages sent `0`.
+- Preview: `https://bna-agent-actions-preview-bna-agent-actions-preview.up.railway.app`; Agent Actions: `/operations/agent-actions`.
+
+# 2026-07-22T18:30:00+03:00 - OT-LAUNCH-01 durable Agent Actions follow-up
+
+- Changed deployed Agent Action storage policy to PostgreSQL-only and fail-closed; in-memory jobs/results/audit remain explicitly local/test-only.
+- Repinned the One Time queue to draft PR #107 head `1fb2d39285b5cf644f2a5bc04d27e1b7385db173` and its sole sanitized result artifact (Git blob `91719bc831bbe8a9b6032d6f27a946abe77b69f4`, SHA-256 `b5e116a99854c634b19bdee4653becb424d635368890ba5a92bca859841537cf`). Reconciliation now represents 9 verified, 2 superseded, and 20 blocked jobs without duplicates or protected provider IDs.
+- Added the dedicated private Telegram webhook/GHL adapter with signed-update validation, exact private-chat allowlist, PostgreSQL lease/dedupe/audit, synthetic-only question/draft handling, protected voice transcription, and permanently separate disabled confirm/send behavior for this follow-up.
+- Verified PR #139/#140 semantic supersession by exact source/adapted commit, patch/blob equivalence, and append-only line inclusion; no source paths are missing.
+- The isolated preview has no `DATABASE_URL` or linked Postgres service. Durable restart/readback and the synthetic provider canary remain fail-closed until one disposable Postgres service is attached to that preview environment. Customer messages sent: 0; production changed: no.
+
+# 2026-07-22T12:58:04+03:00 - Production source-trigger incident contained
+
+- Corrected the prior production-change statement: Railway production service
+  `skillful-motivation` had been mapped to
+  `codex/platform-agent-actions-telegram-preview` and deployed the feature
+  series through `ffe56d8ea27c995affa267759b788ace3967dced`.
+- Restored the production source trigger to canonical `master` and verified
+  active deployment `7ea83deb-34c2-4065-bb09-3267fd37ebbd` at
+  `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`. `/api/health` returned 200,
+  `database=connected`, and the same exact SHA in `X-Bna-Deploy-Sha`.
+- A read-only production audit found none of the nine preview-only Agent
+  Action/Rabbi tables, no application migration-ledger entry, no provider-ready
+  Telegram/GHL path, and no customer/provider effects. Customer messages sent:
+  0.
+- Permanently separated the mappings: production now tracks `master`; only the
+  existing isolated `bna-agent-actions-preview` environment/service tracks the
+  feature branch. Full sanitized evidence is in
+  `ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/production-deployment-incident.json`.
+- Incident verdict: `PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED`.
+
+# 2026-07-22T20:05:00+03:00 - OT-LAUNCH-01 durable PostgreSQL repository completed locally
+
+- Consolidated the existing Agent Action database path behind one canonical
+  PostgreSQL repository; no overlapping hub, dashboard, queue, or status model
+  was created.
+- Added additive claim-token/expiry/generation semantics, sanitized partial and
+  final result fingerprints, cross-job idempotency conflict rejection,
+  idempotent completion replay, readback verification, supersession, and audit
+  writes in database transactions.
+- Added one forward-only migration shared by Agent Actions and the existing
+  Rabbi Telegram adapter. Telegram now has generation-counted consumer leases,
+  expiring update-processing leases, completed-update marking, and handled-once
+  dedupe.
+- Added a real PostgreSQL two-process restart/concurrency proof harness. Focused
+  tests passed 49 with 0 failures; the PostgreSQL proof was the sole skip
+  because this machine has no local PostgreSQL runtime and no explicit
+  `BNA_AGENT_ACTION_TEST_DATABASE_URL`.
+- Read-only Railway inspection reconfirmed the isolated preview has exactly one
+  web service, no linked PostgreSQL instance, and no `DATABASE_URL`. Nothing in
+  Railway was created, linked, or reconfigured during the inspection; branch
+  publication remains restricted to the existing preview target.
+- Customer/GHL messages sent: 0. Production incident verdict remains
+  `PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED`.
+- Remaining action:
+  `OPERATOR_DECISION_REQUIRED: authorize one disposable PostgreSQL service in the BNA isolated preview only; no production.`
+
+# 2026-07-23T12:22:50+03:00 - BNA durable preview and private Telegram proof completed
+
+- Attached one PostgreSQL service only to the isolated
+  `bna-agent-actions-preview` Railway environment and supplied
+  `DATABASE_URL` through a private service reference. No public database proxy
+  or SSH key was created.
+- Exact source `b8bcfb01e735568a8bf13832ff74abe01cbb2cc1` is healthy at web
+  deployment `07ee9027-178f-49d7-ae6e-311eb8567ddf`; PostgreSQL deployment
+  `6da1966f-1351-44cb-9347-f498e695e9c4` is successful.
+- A sanitized 31-job projection retained the identical SHA-256 and status
+  counts across a service restart, closing the hosted durability/readback
+  requirement.
+- Registered the dedicated bot's signed single-consumer webhook and ran one
+  operator-owned private `/questions` canary. Immediate replay and replay after
+  restart were both rejected, proving durable handled-once behavior.
+- The 31-job queue remains explicitly the historical PR #107 projection. It
+  was not relabeled as accepted PR #108 work; repinning remains a separate
+  reviewed importer change.
+- The synthetic GHL draft/save/readback sub-capability remains provider-off
+  because an operator-owned synthetic contact is absent. No contact was
+  inferred or created.
+- External effects: one operator-private Telegram status response, zero
+  customer messages, zero GHL mutations, and zero production mutations in this
+  follow-up. Historical incident verdict remains
+  `PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED`.
+- Sanitized proof:
+  `ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/durability-telegram-live-proof.json`.

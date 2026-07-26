@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-07-21T09:00:42.661Z",
+  "ghl_jobs_imported": 14,
+  "first_imported_job": "GHL-UI-01",
+  "evidence": [
+    {
+      "name": "super-admin",
+      "url": "http://127.0.0.1:8095/operations",
+      "screenshot": "ops\\codex-runs\\2026-07-21-platform-bna-workspace-agent-actions\\super-admin.png",
+      "hasSuperAdmin": true,
+      "hasBna": true,
+      "hasOneTime": true,
+      "hasAgentAction": true,
+      "hasImportedGhlJob": false,
+      "hasImportedCount": false
+    },
+    {
+      "name": "bna-school",
+      "url": "http://127.0.0.1:8095/operations/school",
+      "screenshot": "ops\\codex-runs\\2026-07-21-platform-bna-workspace-agent-actions\\bna-school.png",
+      "hasSuperAdmin": true,
+      "hasBna": true,
+      "hasOneTime": true,
+      "hasAgentAction": false,
+      "hasImportedGhlJob": false,
+      "hasImportedCount": false
+    },
+    {
+      "name": "one-time-connector",
+      "url": "http://127.0.0.1:8095/operations/workspaces/one-time",
+      "screenshot": "ops\\codex-runs\\2026-07-21-platform-bna-workspace-agent-actions\\one-time-connector.png",
+      "hasSuperAdmin": true,
+      "hasBna": true,
+      "hasOneTime": true,
+      "hasAgentAction": true,
+      "hasImportedGhlJob": false,
+      "hasImportedCount": true
+    },
+    {
+      "name": "agent-actions",
+      "url": "http://127.0.0.1:8095/operations/agent-actions",
+      "screenshot": "ops\\codex-runs\\2026-07-21-platform-bna-workspace-agent-actions\\agent-actions.png",
+      "hasSuperAdmin": true,
+      "hasBna": true,
+      "hasOneTime": true,
+      "hasAgentAction": true,
+      "hasImportedGhlJob": true,
+      "hasImportedCount": true
+    },
+    {
+      "name": "agent-action-ghl-ui-01",
+      "url": "http://127.0.0.1:8095/operations/agent-actions/GHL-UI-01",
+      "screenshot": "ops\\codex-runs\\2026-07-21-platform-bna-workspace-agent-actions\\agent-action-ghl-ui-01.png",
+      "hasSuperAdmin": true,
+      "hasBna": true,
+      "hasOneTime": true,
+      "hasAgentAction": true,
+      "hasImportedGhlJob": true,
+      "hasImportedCount": true
+    }
+  ]
+}

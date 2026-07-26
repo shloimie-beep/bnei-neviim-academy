@@ -1,0 +1,19 @@
+{
+  "schema_version": "one-time-communications-agent-action-result-v1",
+  "result_id": "AAR-ONETIME-COMMS-ARCH-V1",
+  "job_id": "AA-ONETIME-COMMS-ARCH-V1",
+  "job_source_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "status": "verified",
+  "summary": "The One Time-only communications ownership decision is recorded in durable architecture and contract artifacts while BNA School remains first-party.",
+  "evidence": [
+    "docs/architecture/one-time-communications-architecture-v1.md",
+    "docs/architecture/contracts/one-time-communications-connector-v1.json",
+    "tests/one-time-communications-architecture-contract.test.js"
+  ],
+  "readback_verified": true,
+  "external_mutations": [],
+  "production_deployed": false,
+  "bna_school_architecture_preserved": true,
+  "blocker": null,
+  "next_action": null
+}

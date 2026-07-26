@@ -1,0 +1,54 @@
+{
+  "verified_at": "2026-07-22",
+  "method": "current GitHub PR heads, commit path lists, patch-id comparison, exact blob comparison, and append-only line inclusion",
+  "pull_requests": [
+    {
+      "pr": 139,
+      "current_head": "9e7efb3179c63bbb52571a9fc811773a24bccb7a",
+      "commits": [
+        {
+          "source": "93b95ad1b27d19211e2462512540d5886f837522",
+          "adapted": "6caa25be41fbaeed681a1a0b85ed7f2ba9e39776",
+          "patch_id": "a1a7033",
+          "equivalence": "exact_patch_id_and_40_of_40_path_blobs",
+          "paths": ["docs/platform-workspace-taxonomy-migration-plan.md", "ops/action-registry.json", "ops/agent-changelog.md", "ops/agent-task-ledger.jsonl", "ops/chatgpt-ramble-dropoff/CONTROL-TOWER.json", "ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md", "ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/TEST-RESULTS.md", "ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/agent-actions.png", "ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/bna-school.png", "ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/one-time-connector.png", "ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/preview-smoke.json", "ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/super-admin.png", "ops/route-registry.json", "public/agent-action-dropoff.html", "public/agent-actions.html", "public/css/operations-shell.css", "public/css/platform-workspaces.css", "public/js/agent-action-dropoff.js", "public/js/agent-actions.js", "public/js/one-time-connector.js", "public/js/operations-shell.js", "public/js/school-admin.js", "public/one-time-connector.html", "public/operations-login.html", "public/platform-control.html", "public/school-admin.html", "raw-input/RAW-20260721-001-platform-bna-workspace-agent-actions.md", "server.js", "src/lib/actions/types.js", "src/lib/bna/agent-action-hub.js", "src/lib/bna/workspace-taxonomy.js", "tasks-pending/2026-07-21-platform-bna-workspace-agent-actions.CODEX_PROMPT.md", "tasks-pending/2026-07-21-platform-bna-workspace-agent-actions.MANIFEST.json", "tasks-pending/2026-07-21-platform-bna-workspace-agent-actions.RECEIPT.md", "tasks-pending/2026-07-21-platform-bna-workspace-agent-actions.SPEC.json", "tasks-pending/2026-07-21-platform-bna-workspace-agent-actions.md", "tasks-pending/2026-07-21-platform-bna-workspace-agent-actions.status.json", "tests/agent-action-hub.test.js", "tests/platform-workspace-routes.test.js", "tests/workspace-taxonomy.test.js"],
+          "missing_paths": []
+        },
+        {
+          "source": "9e7efb3179c63bbb52571a9fc811773a24bccb7a",
+          "adapted": "c9bb3d5a75c75c0d4aa53eb8f533d33cbf9236b4",
+          "patch_id": "7991b2f",
+          "equivalence": "exact_patch_id_and_14_of_14_path_blobs",
+          "paths": ["ops/agent-changelog.md", "ops/agent-task-ledger.jsonl", "ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/TEST-RESULTS.md", "ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/agent-action-ghl-ui-01.png", "ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/agent-action-readback-smoke.json", "ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/agent-actions.png", "ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/highlevel-import-proof.json", "ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/one-time-connector.png", "ops/codex-runs/2026-07-21-platform-bna-workspace-agent-actions/preview-smoke.json", "server.js", "src/lib/bna/agent-action-hub.js", "tasks-pending/2026-07-21-platform-bna-workspace-agent-actions.md", "tasks-pending/2026-07-21-platform-bna-workspace-agent-actions.status.json", "tests/agent-action-hub.test.js"],
+          "missing_paths": []
+        }
+      ],
+      "semantic_supersession": "complete",
+      "missing": []
+    },
+    {
+      "pr": 140,
+      "current_head": "d03e15f3f51c35a91d699dc29e316b3f87d31bcf",
+      "commits": [
+        {
+          "source": "c46d11ec628ad636f78bb7c0f4f5bf6b645bc454",
+          "adapted": "3c36bee85c817e88b8d77b10d22c4de9f7b63d8c",
+          "equivalence": "26_of_28_exact_path_blobs_plus_all_21_changelog_lines_and_1_ledger_line",
+          "paths": ["MEMORY.md", "docs/architecture/contracts/README.md", "docs/architecture/contracts/examples/one-time-communications-agent-action-job-v1.json", "docs/architecture/contracts/examples/one-time-communications-agent-action-result-v1.json", "docs/architecture/contracts/one-time-communications-agent-action-job-v1.schema.json", "docs/architecture/contracts/one-time-communications-agent-action-result-v1.schema.json", "docs/architecture/contracts/one-time-communications-connector-v1.json", "docs/architecture/contracts/super-admin-external-product-connector-v1.schema.json", "docs/architecture/no-ghl-policy.md", "docs/architecture/one-time-communications-architecture-v1.md", "docs/architecture/workspace-community-provider-role-map.md", "memory-topics/communications-intake.md", "memory-topics/email-resend.md", "memory-topics/one-time-rabbi-sheller.md", "memory-topics/rabbi-scheller-onetime.md", "memory-topics/workspace-model.md", "memory/2026-07-21.md", "ops/agent-changelog.md", "ops/agent-task-ledger.jsonl", "ops/codex-runs/2026-07-21-one-time-communications-architecture-v1/TEST-RESULTS.md", "raw-input/RAW-20260721-002-one-time-communications-architecture-v1.md", "tasks-pending/2026-07-21-one-time-communications-architecture-v1.CODEX_PROMPT.md", "tasks-pending/2026-07-21-one-time-communications-architecture-v1.MANIFEST.json", "tasks-pending/2026-07-21-one-time-communications-architecture-v1.RECEIPT.md", "tasks-pending/2026-07-21-one-time-communications-architecture-v1.SPEC.json", "tasks-pending/2026-07-21-one-time-communications-architecture-v1.md", "tasks-pending/2026-07-21-one-time-communications-architecture-v1.status.json", "tests/one-time-communications-architecture-contract.test.js"],
+          "append_only_paths": ["ops/agent-changelog.md", "ops/agent-task-ledger.jsonl"],
+          "missing_paths": []
+        },
+        {
+          "source": "d03e15f3f51c35a91d699dc29e316b3f87d31bcf",
+          "adapted": "e3f77bc1941251876825eadd27266e82b56c246c",
+          "equivalence": "3_of_5_exact_path_blobs_plus_all_4_changelog_lines_and_2_ledger_lines",
+          "paths": ["ops/agent-changelog.md", "ops/agent-task-ledger.jsonl", "ops/codex-runs/2026-07-21-one-time-communications-architecture-v1/TEST-RESULTS.md", "tasks-pending/2026-07-21-one-time-communications-architecture-v1.md", "tasks-pending/2026-07-21-one-time-communications-architecture-v1.status.json"],
+          "append_only_paths": ["ops/agent-changelog.md", "ops/agent-task-ledger.jsonl"],
+          "missing_paths": []
+        }
+      ],
+      "semantic_supersession": "complete",
+      "missing": []
+    }
+  ]
+}

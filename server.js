@@ -229,6 +229,46 @@ const {
   renderTaskAgentModePrompt,
 } = require('./src/lib/bna/agent-review-hub');
 const {
+  AGENT_ACTION_RUN_ID,
+  AGENT_ACTION_CATEGORIES,
+  AGENT_ACTION_STATUSES,
+  agentActionResultPersistenceOptions,
+  agentActionHubPayload,
+  agentActionResultIsTerminal,
+  compactText: compactAgentActionText,
+  highLevelImportBlocker,
+  importHighLevelAgentModeExport,
+  normalizeAgentActionStatus,
+  normalizeStringList: normalizeAgentActionStringList,
+} = require('./src/lib/bna/agent-action-hub');
+const {
+  allowsAgentActionMemoryStorage,
+  agentActionDatabaseError,
+  agentActionStorageMode,
+  sanitizeAgentActionResultInput,
+} = require('./src/lib/bna/agent-action-storage');
+const {
+  createPostgresAgentActionRepository,
+  resultFingerprint: agentActionResultFingerprint,
+} = require('./src/lib/bna/agent-action-postgres-repository');
+const {
+  createOneTimeRabbiProviderAdapter,
+  createPostgresRabbiRepository,
+  handleTelegramWebhook,
+  providerReadiness: oneTimeRabbiProviderReadiness,
+  safeQuestionView: safeRabbiQuestionView,
+} = require('./src/lib/bna/one-time-rabbi-provider-adapter');
+const {
+  CANONICAL_WORKSPACES,
+  compatibilityMigrationPlan,
+  legacyRuntimeWorkspaceKey,
+  resolveProjectKey,
+  resolveRole,
+  resolveWorkspaceKey,
+  ticketRoutingPayload,
+  workspaceTaxonomyPayload,
+} = require('./src/lib/bna/workspace-taxonomy');
+const {
   parseIntakeText,
   PARSER_VERSION: INTAKE_PARSER_VERSION,
   stableHash: intakeStableHash,
@@ -2787,6 +2827,7 @@ const DATABASE_URL =
   usableSecretValue(process.env.DATABASE_URL) ||
   usableSecretValue(readLocalSecretFile('railway-database-url.txt'));
 const ONE_TIME_REVIEW_ONLY_NO_DB = /^(?:1|true|yes)$/i.test(String(process.env.ONE_TIME_REVIEW_ONLY_NO_DB || ''));
+const PLATFORM_PREVIEW_NO_DB = /^(?:1|true|yes)$/i.test(String(process.env.PLATFORM_PREVIEW_NO_DB || ''));
 const PAYMENT_LINK = process.env.PAYMENT_LINK || '';
 const GOOGLE_MAPS_API_KEY =
   usableSecretValue(process.env.GOOGLE_MAPS_API_KEY) ||
@@ -3093,22 +3134,22 @@ const GOOGLE_ASSIGNMENT_REQUIRED_SCOPES = {
 };
 const GOOGLE_DRIVE_PIPELINE_ROOT_NAME = process.env.GOOGLE_DRIVE_PIPELINE_ROOT_NAME || 'BNA V2';
 
-if (!DATABASE_URL && !ONE_TIME_REVIEW_ONLY_NO_DB) {
+if (!DATABASE_URL && !ONE_TIME_REVIEW_ONLY_NO_DB && !PLATFORM_PREVIEW_NO_DB) {
   console.error('FATAL: DATABASE_URL not set');
   process.exit(1);
 }
 
 if (!OPS_USERNAME || !OPS_PASSWORD) {
-  if (ONE_TIME_REVIEW_ONLY_NO_DB) {
-    console.warn('ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.');
+  if (ONE_TIME_REVIEW_ONLY_NO_DB || PLATFORM_PREVIEW_NO_DB) {
+    console.warn('No database preview mode enabled: Operations auth is disabled for local-only preview routes.');
   } else {
     console.error('FATAL: OPS_USERNAME and OPS_PASSWORD must be set');
     process.exit(1);
   }
 }
 
-if (ONE_TIME_REVIEW_ONLY_NO_DB && !DATABASE_URL) {
-  console.warn('ONE_TIME_REVIEW_ONLY_NO_DB enabled: database-backed routes are unavailable; static One Time review routes and fixture APIs are enabled.');
+if ((ONE_TIME_REVIEW_ONLY_NO_DB || PLATFORM_PREVIEW_NO_DB) && !DATABASE_URL) {
+  console.warn('No database preview mode enabled: database-backed routes are unavailable; static preview routes and fixture APIs are enabled.');
 }
 
 function parseEnvBlock(rawValue) {
@@ -3206,6 +3247,7 @@ const SESSION_COOKIE_NAME = 'bna_ops_session';
 const ACTIVE_WORKSPACE_COOKIE_NAME = 'bna_active_workspace';
 const AGENT_REVIEW_SESSION_COOKIE_NAME = 'bna_agent_review_session';
 const SESSION_TTL_MS = 1000 * 60 * 60 * 12;
+const platformPreviewMemorySessions = new Map();
 const OPS_ACCESS_LINK_TTL_MS = 1000 * 60 * 20;
 const OPERATOR_BOOTSTRAP_TTL_MS = Math.max(60 * 1000, Number(process.env.OPERATOR_BOOTSTRAP_TTL_MS || 1000 * 60 * 10));
 const OPERATOR_BOOTSTRAP_MAX_TTL_MS = Math.max(OPERATOR_BOOTSTRAP_TTL_MS, Number(process.env.OPERATOR_BOOTSTRAP_MAX_TTL_MS || 1000 * 60 * 15));
@@ -3380,6 +3422,77 @@ CREATE TABLE IF NOT EXISTS bna_agent_review_results (
 
 CREATE INDEX IF NOT EXISTS idx_bna_agent_review_results_context ON bna_agent_review_results(context_key, workspace_key, project_key);
 CREATE INDEX IF NOT EXISTS idx_bna_agent_review_results_requirement ON bna_agent_review_results(requirement_id);
+
+CREATE TABLE IF NOT EXISTS bna_agent_action_jobs (
+  id SERIAL PRIMARY KEY,
+  job_id TEXT NOT NULL UNIQUE,
+  job_type TEXT NOT NULL DEFAULT 'agent_action',
+  title TEXT NOT NULL,
+  category TEXT NOT NULL,
+  source_repository TEXT NOT NULL,
+  source_ref TEXT NOT NULL,
+  source_sha TEXT NOT NULL,
+  source_artifact_path TEXT NOT NULL,
+  source_artifact_url TEXT,
+  source_fingerprint TEXT,
+  target_application TEXT NOT NULL,
+  target_workspace TEXT NOT NULL,
+  target_ui_url TEXT NOT NULL,
+  prompt TEXT NOT NULL,
+  allowed_actions JSONB DEFAULT '[]',
+  forbidden_actions JSONB DEFAULT '[]',
+  required_save_behavior TEXT NOT NULL,
+  expected_asset_ids JSONB DEFAULT '[]',
+  completion_checklist JSONB DEFAULT '[]',
+  evidence_requirements JSONB DEFAULT '[]',
+  idempotency_key TEXT NOT NULL UNIQUE,
+  status TEXT NOT NULL DEFAULT 'draft',
+  result_readback_url TEXT NOT NULL,
+  created_by TEXT,
+  claimed_by TEXT,
+  claimed_at TIMESTAMP,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_agent_action_jobs_status ON bna_agent_action_jobs(status, category);
+CREATE INDEX IF NOT EXISTS idx_bna_agent_action_jobs_target ON bna_agent_action_jobs(target_workspace, target_application);
+CREATE INDEX IF NOT EXISTS idx_bna_agent_action_jobs_source ON bna_agent_action_jobs(source_repository, source_ref, source_sha);
+
+CREATE TABLE IF NOT EXISTS bna_agent_action_results (
+  id SERIAL PRIMARY KEY,
+  result_ref TEXT NOT NULL UNIQUE,
+  job_id TEXT NOT NULL,
+  status TEXT NOT NULL,
+  summary TEXT,
+  evidence JSONB DEFAULT '[]',
+  completion_checklist JSONB DEFAULT '[]',
+  expected_asset_ids JSONB DEFAULT '[]',
+  idempotency_key TEXT NOT NULL UNIQUE,
+  submitted_by TEXT,
+  submitted_ip TEXT,
+  user_agent TEXT,
+  metadata JSONB DEFAULT '{}',
+  readback_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_agent_action_results_job ON bna_agent_action_results(job_id, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS bna_agent_action_audit_events (
+  id SERIAL PRIMARY KEY,
+  event_id TEXT NOT NULL UNIQUE,
+  job_id TEXT NOT NULL,
+  result_ref TEXT,
+  event_type TEXT NOT NULL,
+  actor TEXT,
+  sanitized_payload JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_agent_action_audit_job ON bna_agent_action_audit_events(job_id, created_at DESC);
 `;
 
 function loadGoogleOAuthClient() {
@@ -9622,6 +9735,15 @@ function inferParticipantsFromTranscript(text = '') {
 
 async function getValidSession(sessionId) {
   if (!sessionId) return null;
+  if (PLATFORM_PREVIEW_NO_DB && !DATABASE_URL) {
+    const session = platformPreviewMemorySessions.get(sessionId) || null;
+    if (!session) return null;
+    if (session.expiresAt <= Date.now()) {
+      platformPreviewMemorySessions.delete(sessionId);
+      return null;
+    }
+    return { ...session };
+  }
   const result = await pool.query(
     `SELECT * FROM bna_sessions WHERE session_id = $1 AND expires_at > NOW()`,
     [sessionId]
@@ -9634,12 +9756,23 @@ async function getValidSession(sessionId) {
 }
 
 async function clearSession(sessionId) {
+  if (PLATFORM_PREVIEW_NO_DB && !DATABASE_URL) {
+    if (sessionId) platformPreviewMemorySessions.delete(sessionId);
+    return;
+  }
   if (sessionId) {
     await pool.query(`DELETE FROM bna_sessions WHERE session_id = $1`, [sessionId]);
   }
 }
 
 async function cleanupExpiredSessions() {
+  if (PLATFORM_PREVIEW_NO_DB && !DATABASE_URL) {
+    const now = Date.now();
+    for (const [sessionId, session] of platformPreviewMemorySessions.entries()) {
+      if (session.expiresAt <= now) platformPreviewMemorySessions.delete(sessionId);
+    }
+    return;
+  }
   await pool.query(`DELETE FROM bna_sessions WHERE expires_at <= NOW()`);
   await pool.query(`DELETE FROM bna_ops_access_links WHERE expires_at <= NOW() OR used_at IS NOT NULL`);
   await pool.query(`DELETE FROM bna_secure_downloads WHERE expires_at <= NOW() OR used_at IS NOT NULL`);
@@ -9703,10 +9836,15 @@ function safeOperationsReturnPath(value) {
     const url = new URL(raw, 'https://bna.local');
     const allowedPaths = new Set([
       '/operations',
+      '/operations/school',
+      '/operations/workspaces/one-time',
+      '/operations/agent-actions',
       '/operations/agent-review',
       '/operations/agent-review/dropoff',
     ]);
-    if (url.origin !== 'https://bna.local' || !allowedPaths.has(url.pathname)) {
+    const agentActionDropoffPath = /^\/operations\/agent-actions\/[^/]+\/dropoff$/.test(url.pathname);
+    const agentActionDetailPath = /^\/operations\/agent-actions\/[^/]+$/.test(url.pathname);
+    if (url.origin !== 'https://bna.local' || (!allowedPaths.has(url.pathname) && !agentActionDropoffPath && !agentActionDetailPath)) {
       return fallback;
     }
     return `${url.pathname}${url.search}${url.hash}`;
@@ -9715,10 +9853,41 @@ function safeOperationsReturnPath(value) {
   }
 }
 
+function platformPreviewNoDbLocalRequest(req) {
+  if (!PLATFORM_PREVIEW_NO_DB || DATABASE_URL) return false;
+  const host = String(req.get?.('host') || req.hostname || '').toLowerCase().replace(/^\[/, '').replace(/\].*$/, '');
+  const hostName = host.split(':')[0];
+  const ip = String(req.ip || req.socket?.remoteAddress || '').toLowerCase();
+  return ['localhost', '127.0.0.1', '::1'].includes(hostName)
+    || ip === '127.0.0.1'
+    || ip === '::1'
+    || ip.endsWith('127.0.0.1');
+}
+
+function platformPreviewNoDbRequest(req) {
+  if (!platformPreviewNoDbLocalRequest(req)) return false;
+  const routePath = String(req.path || req.originalUrl || req.url || '').split('?')[0];
+  const method = String(req.method || 'GET').toUpperCase();
+  const exactGetPaths = new Set([
+    '/operations',
+    '/operations/school',
+    '/operations/workspaces/one-time',
+    '/operations/agent-actions',
+    '/api/platform/agent-actions',
+    '/api/bna/school-admin/summary',
+  ]);
+  if (method === 'GET' && exactGetPaths.has(routePath)) return true;
+  if (method === 'GET' && /^\/operations\/agent-actions\/[^/]+$/.test(routePath)) return true;
+  if (method === 'GET' && /^\/operations\/agent-actions\/[^/]+\/dropoff$/.test(routePath)) return true;
+  if (method === 'GET' && /^\/api\/platform\/agent-actions\/[^/]+$/.test(routePath)) return true;
+  if (['GET', 'POST'].includes(method) && /^\/api\/platform\/agent-actions\/[^/]+\/results$/.test(routePath)) return true;
+  return false;
+}
+
 function oneTimeOperationsReturnPath(value) {
   const requested = safeOperationsReturnPath(value);
   const url = new URL(requested, 'https://bna.local');
-  if (!url.searchParams.get('workspace')) url.searchParams.set('workspace', 'rabbi_sheller_provider');
+  if (!url.searchParams.get('workspace')) url.searchParams.set('workspace', 'one_time');
   if (!url.searchParams.get('view')) url.searchParams.set('view', 'tasks');
   return `${url.pathname}${url.search}${url.hash}`;
 }
@@ -9726,6 +9895,13 @@ function oneTimeOperationsReturnPath(value) {
 async function issueSession(username, db = pool) {
   const sessionId = generateSecureToken(32);
   const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+  if (PLATFORM_PREVIEW_NO_DB && !DATABASE_URL) {
+    platformPreviewMemorySessions.set(sessionId, {
+      username: String(username || ''),
+      expiresAt: expiresAt.getTime(),
+    });
+    return sessionId;
+  }
   await db.query(
     `INSERT INTO bna_sessions (session_id, username, expires_at) VALUES ($1, $2, $3)`,
     [sessionId, username, expiresAt]
@@ -10825,6 +11001,17 @@ async function requireProviderSession(req, res, next) {
 
 // Admin auth middleware - case insensitive
 async function requireAdmin(req, res, next) {
+  if (platformPreviewNoDbRequest(req)) {
+    req.opsUser = 'platform-preview';
+    req.opsIdentity = {
+      username: 'platform-preview',
+      role: 'platform_super_admin',
+      scope: { type: 'all', preview_only: true },
+      allowedViews: ['dashboard'],
+    };
+    return next();
+  }
+
   const viewAsAuth = applyOneTimeViewAsRabbiRequest(req, res);
   if (viewAsAuth.handled) {
     if (viewAsAuth.authenticated) return next();
@@ -11401,7 +11588,30 @@ function setPublicStaticAssetCacheHeader(res, normalizedPath) {
 
 function sendOperationsShell(req, res) {
   setOperationsShellCacheHeader(res);
+  if (platformPreviewNoDbRequest(req)) {
+    return res.sendFile(path.join(__dirname, 'public', 'platform-control.html'));
+  }
   res.sendFile(path.join(__dirname, 'public', 'operations-bootstrap.html'));
+}
+
+function sendBnaSchoolWorkspaceShell(req, res) {
+  setOperationsShellCacheHeader(res);
+  res.sendFile(path.join(__dirname, 'public', 'school-admin.html'));
+}
+
+function sendOneTimeConnectorShell(req, res) {
+  setOperationsShellCacheHeader(res);
+  res.sendFile(path.join(__dirname, 'public', 'one-time-connector.html'));
+}
+
+function sendAgentActionsShell(req, res) {
+  setOperationsShellCacheHeader(res);
+  res.sendFile(path.join(__dirname, 'public', 'agent-actions.html'));
+}
+
+function sendAgentActionDropoffShell(req, res) {
+  setOperationsShellCacheHeader(res);
+  res.sendFile(path.join(__dirname, 'public', 'agent-action-dropoff.html'));
 }
 
 function wantsOneTimeReviewQuery(req) {
@@ -12351,6 +12561,843 @@ async function saveAgentReviewResult(body = {}, { req, session = null, identity 
   return saved;
 }
 
+const agentActionMemoryJobs = new Map();
+const agentActionMemoryResults = new Map();
+const agentActionMemoryAudit = [];
+let agentActionStorageReadyPromise = null;
+let agentActionStorageLastCheck = null;
+
+function agentActionUsesMemoryStorage() {
+  return !DATABASE_URL && allowsAgentActionMemoryStorage(process.env);
+}
+
+function agentActionPostgresRepository(db = pool) {
+  if (!DATABASE_URL) throw agentActionDatabaseError();
+  return createPostgresAgentActionRepository(db);
+}
+
+function failClosedAgentActionDatabase(error) {
+  if (agentActionUsesMemoryStorage()) return null;
+  if (Number(error?.statusCode) >= 400 && Number(error?.statusCode) < 500) throw error;
+  agentActionStorageReadyPromise = null;
+  agentActionStorageLastCheck = {
+    mode: agentActionStorageMode({ env: process.env, databaseUrl: DATABASE_URL }),
+    ready: false,
+    durable: false,
+    checked_at: new Date().toISOString(),
+    blocker: 'Agent Action PostgreSQL operation failed.',
+  };
+  throw agentActionDatabaseError(error);
+}
+
+async function ensureAgentActionStorageReady(db = pool) {
+  const mode = agentActionStorageMode({ env: process.env, databaseUrl: DATABASE_URL });
+  if (mode === 'memory_local_test_only') {
+    agentActionStorageLastCheck = { mode, ready: true, durable: false, checked_at: new Date().toISOString(), blocker: 'Local/test-only memory storage.' };
+    return agentActionStorageLastCheck;
+  }
+  if (mode !== 'postgres') throw agentActionDatabaseError();
+  if (!agentActionStorageReadyPromise) {
+    agentActionStorageReadyPromise = (async () => {
+      try {
+        await agentActionPostgresRepository(db).ensureSchema();
+        agentActionStorageLastCheck = { mode: 'postgres', ready: true, durable: true, checked_at: new Date().toISOString(), blocker: '' };
+        return agentActionStorageLastCheck;
+      } catch (error) {
+        agentActionStorageReadyPromise = null;
+        agentActionStorageLastCheck = { mode: 'postgres', ready: false, durable: false, checked_at: new Date().toISOString(), blocker: 'Agent Action PostgreSQL health check failed.' };
+        throw agentActionDatabaseError(error);
+      }
+    })();
+  }
+  return agentActionStorageReadyPromise;
+}
+
+function agentActionStorageSnapshot() {
+  return agentActionStorageLastCheck || {
+    mode: agentActionStorageMode({ env: process.env, databaseUrl: DATABASE_URL }),
+    ready: false,
+    durable: false,
+    checked_at: null,
+    blocker: DATABASE_URL ? 'Agent Action PostgreSQL has not completed its health check.' : 'DATABASE_URL is absent.',
+  };
+}
+
+async function recordAgentActionAudit(event = {}, db = pool) {
+  const safeEvent = {
+    event_id: safeAgentActionOpaqueIdentifier(event.event_id || `AAE-${sha256Hex(JSON.stringify(event)).slice(0, 20)}`, 160),
+    job_id: safeAgentActionOpaqueIdentifier(event.job_id, 160),
+    result_ref: safeAgentActionOpaqueIdentifier(event.result_ref || '', 160) || null,
+    event_type: safeAgentActionOpaqueIdentifier(event.event_type || 'updated', 80),
+    actor: safeAgentActionOpaqueIdentifier(event.actor || 'agent_action_runtime', 160),
+    sanitized_payload: {
+      status: normalizeAgentActionStatus(event.status, 'draft'),
+      source_sha: safeAgentActionOpaqueIdentifier(event.source_sha || '', 80),
+      idempotency_fingerprint: event.idempotency_key ? `sha256:${sha256Hex(event.idempotency_key).slice(0, 16)}` : '',
+      result_only: true,
+      secrets_included: false,
+      customer_content_included: false,
+    },
+  };
+  if (agentActionUsesMemoryStorage()) {
+    if (!agentActionMemoryAudit.some((item) => item.event_id === safeEvent.event_id)) agentActionMemoryAudit.push({ ...safeEvent, created_at: new Date().toISOString() });
+    return safeEvent;
+  }
+  try {
+    await agentActionPostgresRepository(db).recordAudit(safeEvent);
+    return safeEvent;
+  } catch (error) {
+    failClosedAgentActionDatabase(error);
+    return safeEvent;
+  }
+}
+
+function requirePlatformSuperAdmin(req, res) {
+  const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
+  if (!identity || identity.scope?.type !== 'all') {
+    res.status(403).json({
+      success: false,
+      error: 'Agent Action requires a Super Admin platform-control session.',
+      external_write_performed: false,
+    });
+    return null;
+  }
+  return identity;
+}
+
+function agentActionCsrfToken(req, dayOffset = 0) {
+  const date = new Date(Date.now() + dayOffset * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  return crypto
+    .createHmac('sha256', agentReviewSigningSecret())
+    .update(`${agentReviewCsrfSubject(req)}:${date}:agent-action-v1`)
+    .digest('base64url');
+}
+
+function verifyAgentActionCsrf(req) {
+  const supplied = String(
+    req.headers['x-bna-agent-action-csrf'] ||
+    req.headers['x-bna-agent-review-csrf'] ||
+    req.body?.csrf_token ||
+    req.body?.csrfToken ||
+    ''
+  );
+  if (!supplied) return false;
+  return timingSafeStringEqual(supplied, agentActionCsrfToken(req, 0))
+    || timingSafeStringEqual(supplied, agentActionCsrfToken(req, -1))
+    || verifyAgentReviewCsrf(req);
+}
+
+function parseAgentActionJsonCell(value, fallback) {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === 'object') return value;
+  return parseJsonMaybe(value) || fallback;
+}
+
+function safeAgentActionOpaqueIdentifier(value = '', max = 200) {
+  return String(value || '')
+    .trim()
+    .replace(/[^a-z0-9._:/=@+-]/gi, '-')
+    .slice(0, max);
+}
+
+function agentActionJobView(row = {}, req = null) {
+  const metadata = parseAgentActionJsonCell(row.metadata, {});
+  const jobId = row.job_id || row.jobId;
+  const baseUrl = req ? requestBaseUrl(req) : '';
+  const resultReadbackUrl = row.result_readback_url || `/api/platform/agent-actions/${encodeURIComponent(jobId)}/results`;
+  return {
+    job_id: jobId,
+    job_type: row.job_type || 'agent_action',
+    title: row.title || jobId,
+    category: row.category || 'audit',
+    source_repository: row.source_repository,
+    source_ref: row.source_ref,
+    source_sha: row.source_sha,
+    source_artifact_path: row.source_artifact_path,
+    source_artifact_url: row.source_artifact_url || '',
+    source_fingerprint: row.source_fingerprint || '',
+    target_application: row.target_application,
+    target_workspace: resolveWorkspaceKey(row.target_workspace || 'bna_school'),
+    target_ui_url: row.target_ui_url,
+    prompt: row.prompt,
+    allowed_actions: parseAgentActionJsonCell(row.allowed_actions, []),
+    forbidden_actions: parseAgentActionJsonCell(row.forbidden_actions, []),
+    required_save_behavior: row.required_save_behavior,
+    expected_asset_ids: parseAgentActionJsonCell(row.expected_asset_ids, []),
+    completion_checklist: parseAgentActionJsonCell(row.completion_checklist, []),
+    evidence_requirements: parseAgentActionJsonCell(row.evidence_requirements, []),
+    idempotency_key: row.idempotency_key,
+    status: normalizeAgentActionStatus(row.status, 'draft'),
+    result_readback_url: resultReadbackUrl,
+    result_readback_absolute_url: baseUrl ? `${baseUrl}${resultReadbackUrl}` : resultReadbackUrl,
+    dropoff_url: `/operations/agent-actions/${encodeURIComponent(jobId)}/dropoff`,
+    detail_url: `/operations/agent-actions/${encodeURIComponent(jobId)}`,
+    latest_result_ref: row.latest_result_ref || metadata.latest_result_ref || null,
+    latest_result_status: row.latest_result_status || metadata.latest_result_status || null,
+    claim: {
+      owner: row.claimed_by || null,
+      claimed_at: row.claimed_at || null,
+      expires_at: row.claim_expires_at || null,
+      generation: Number(row.claim_generation || 0),
+      token_exposed: false,
+    },
+    metadata,
+    created_at: row.created_at || null,
+    updated_at: row.updated_at || null,
+    external_write_performed: false,
+  };
+}
+
+function agentActionResultView(row = {}, req = null) {
+  const metadata = parseAgentActionJsonCell(row.metadata, {});
+  const resultRef = row.result_ref || row.resultRef;
+  const jobId = row.job_id || row.jobId;
+  const readbackUrl = `/api/platform/agent-actions/${encodeURIComponent(jobId)}/results?result_ref=${encodeURIComponent(resultRef || '')}`;
+  return {
+    result_ref: resultRef,
+    job_id: jobId,
+    status: normalizeAgentActionStatus(row.status, 'saved'),
+    summary: row.summary || '',
+    evidence: parseAgentActionJsonCell(row.evidence, []),
+    completion_checklist: parseAgentActionJsonCell(row.completion_checklist, []),
+    expected_asset_ids: parseAgentActionJsonCell(row.expected_asset_ids, []),
+    idempotency_key: row.idempotency_key,
+    submitted_by: row.submitted_by || null,
+    metadata,
+    readback_at: row.readback_at || null,
+    readback_url: readbackUrl,
+    readback_absolute_url: req ? `${requestBaseUrl(req)}${readbackUrl}` : readbackUrl,
+    created_at: row.created_at || null,
+    updated_at: row.updated_at || null,
+    completion_requires_readback: metadata.completion_intent === 'completed',
+    readback_verified: Boolean(row.readback_at) || normalizeAgentActionStatus(row.status, '') === 'verified',
+    external_write_performed: false,
+  };
+}
+
+async function upsertAgentActionJob(job = {}, { identity = null } = {}, db = pool) {
+  const normalized = {
+    ...job,
+    target_workspace: resolveWorkspaceKey(job.target_workspace || 'bna_school'),
+    status: normalizeAgentActionStatus(job.status, 'ready'),
+    allowed_actions: normalizeAgentActionStringList(job.allowed_actions),
+    forbidden_actions: normalizeAgentActionStringList(job.forbidden_actions),
+    expected_asset_ids: normalizeAgentActionStringList(job.expected_asset_ids),
+    completion_checklist: normalizeAgentActionStringList(job.completion_checklist),
+    evidence_requirements: normalizeAgentActionStringList(job.evidence_requirements),
+    metadata: {
+      ...(job.metadata || {}),
+      external_write_performed: false,
+      secrets_included: false,
+    },
+  };
+  if (!agentActionUsesMemoryStorage()) {
+    try {
+      return await agentActionPostgresRepository(db).upsertJob({
+        ...normalized,
+        title: compactAgentActionText(normalized.title || normalized.job_id, 200),
+        source_repository: compactAgentActionText(normalized.source_repository, 160),
+        source_ref: compactAgentActionText(normalized.source_ref, 160),
+        source_sha: compactAgentActionText(normalized.source_sha, 80),
+        source_artifact_path: compactAgentActionText(normalized.source_artifact_path, 500),
+        source_artifact_url: compactAgentActionText(normalized.source_artifact_url || '', 500),
+        source_fingerprint: compactAgentActionText(normalized.source_fingerprint || '', 120),
+        target_application: compactAgentActionText(normalized.target_application, 160),
+        target_ui_url: compactAgentActionText(normalized.target_ui_url, 800),
+        prompt: compactAgentActionText(normalized.prompt, 20000),
+        required_save_behavior: compactAgentActionText(normalized.required_save_behavior, 1200),
+        idempotency_key: compactAgentActionText(normalized.idempotency_key, 180),
+        result_readback_url: normalized.result_readback_url || `/api/platform/agent-actions/${encodeURIComponent(normalized.job_id)}/results`,
+      }, identity?.username || 'agent_action_importer');
+    } catch (error) {
+      failClosedAgentActionDatabase(error);
+    }
+  }
+  try {
+    const result = await db.query(
+      `INSERT INTO bna_agent_action_jobs (
+         job_id, job_type, title, category, source_repository, source_ref,
+         source_sha, source_artifact_path, source_artifact_url, source_fingerprint,
+         target_application, target_workspace, target_ui_url, prompt,
+         allowed_actions, forbidden_actions, required_save_behavior,
+         expected_asset_ids, completion_checklist, evidence_requirements,
+         idempotency_key, status, result_readback_url, created_by, metadata
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6,
+         $7, $8, $9, $10,
+         $11, $12, $13, $14,
+         $15, $16, $17,
+         $18, $19, $20,
+         $21, $22, $23, $24, $25
+       )
+       ON CONFLICT (job_id) DO UPDATE SET
+         title = EXCLUDED.title,
+         category = EXCLUDED.category,
+         source_ref = EXCLUDED.source_ref,
+         source_sha = EXCLUDED.source_sha,
+         source_artifact_path = EXCLUDED.source_artifact_path,
+         source_artifact_url = EXCLUDED.source_artifact_url,
+         source_fingerprint = EXCLUDED.source_fingerprint,
+         target_application = EXCLUDED.target_application,
+         target_workspace = EXCLUDED.target_workspace,
+         target_ui_url = EXCLUDED.target_ui_url,
+         prompt = EXCLUDED.prompt,
+         allowed_actions = EXCLUDED.allowed_actions,
+         forbidden_actions = EXCLUDED.forbidden_actions,
+         required_save_behavior = EXCLUDED.required_save_behavior,
+         expected_asset_ids = EXCLUDED.expected_asset_ids,
+         completion_checklist = EXCLUDED.completion_checklist,
+         evidence_requirements = EXCLUDED.evidence_requirements,
+         idempotency_key = EXCLUDED.idempotency_key,
+         status = CASE
+           WHEN bna_agent_action_jobs.source_sha IS DISTINCT FROM EXCLUDED.source_sha
+             OR bna_agent_action_jobs.idempotency_key IS DISTINCT FROM EXCLUDED.idempotency_key
+           THEN EXCLUDED.status
+           ELSE bna_agent_action_jobs.status
+         END,
+         result_readback_url = EXCLUDED.result_readback_url,
+         metadata = CASE
+           WHEN bna_agent_action_jobs.source_sha IS DISTINCT FROM EXCLUDED.source_sha
+             OR bna_agent_action_jobs.idempotency_key IS DISTINCT FROM EXCLUDED.idempotency_key
+           THEN EXCLUDED.metadata || jsonb_build_object('supersedes_source_sha', bna_agent_action_jobs.source_sha)
+           ELSE bna_agent_action_jobs.metadata || EXCLUDED.metadata
+         END,
+         updated_at = NOW()
+       RETURNING *`,
+      [
+        normalized.job_id,
+        normalized.job_type || 'agent_action',
+        compactAgentActionText(normalized.title || normalized.job_id, 200),
+        normalized.category,
+        compactAgentActionText(normalized.source_repository, 160),
+        compactAgentActionText(normalized.source_ref, 160),
+        compactAgentActionText(normalized.source_sha, 80),
+        compactAgentActionText(normalized.source_artifact_path, 500),
+        compactAgentActionText(normalized.source_artifact_url || '', 500),
+        compactAgentActionText(normalized.source_fingerprint || '', 120),
+        compactAgentActionText(normalized.target_application, 160),
+        normalized.target_workspace,
+        compactAgentActionText(normalized.target_ui_url, 800),
+        compactAgentActionText(normalized.prompt, 20000),
+        JSON.stringify(normalized.allowed_actions),
+        JSON.stringify(normalized.forbidden_actions),
+        compactAgentActionText(normalized.required_save_behavior, 1200),
+        JSON.stringify(normalized.expected_asset_ids),
+        JSON.stringify(normalized.completion_checklist),
+        JSON.stringify(normalized.evidence_requirements),
+        compactAgentActionText(normalized.idempotency_key, 180),
+        normalized.status,
+        normalized.result_readback_url || `/api/platform/agent-actions/${encodeURIComponent(normalized.job_id)}/results`,
+        identity?.username || 'agent_action_importer',
+        JSON.stringify(normalized.metadata),
+      ]
+    );
+    return result.rows[0];
+  } catch (error) {
+    failClosedAgentActionDatabase(error);
+    agentActionMemoryJobs.set(normalized.job_id, {
+      ...normalized,
+      created_by: identity?.username || 'agent_action_importer',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+    return agentActionMemoryJobs.get(normalized.job_id);
+  }
+}
+
+async function upsertImportedAgentActionJobs(importPreview = {}, identity = null) {
+  const jobs = Array.isArray(importPreview.jobs) ? importPreview.jobs : [];
+  const saved = [];
+  for (const job of jobs) {
+    saved.push(await upsertAgentActionJob(job, { identity }));
+  }
+  if (!agentActionUsesMemoryStorage() && importPreview.source?.sha && jobs.length) {
+    const currentJobIds = jobs.map((job) => job.job_id);
+    try {
+      await agentActionPostgresRepository(pool).supersedeMissing({
+        sourceRepository: importPreview.source.repository,
+        currentJobIds,
+        sourceSha: importPreview.source.sha,
+        actor: identity?.username || 'agent_action_importer',
+      });
+    } catch (error) {
+      failClosedAgentActionDatabase(error);
+    }
+  }
+  return saved;
+}
+
+async function listAgentActionJobs({ jobId = '' } = {}, db = pool) {
+  if (!agentActionUsesMemoryStorage()) {
+    try {
+      return await agentActionPostgresRepository(db).listJobs({ jobId });
+    } catch (error) {
+      failClosedAgentActionDatabase(error);
+    }
+  }
+  try {
+    const params = [];
+    const where = jobId ? 'WHERE j.job_id = $1' : '';
+    if (jobId) params.push(jobId);
+    const result = await db.query(
+      `SELECT j.*,
+              latest.result_ref AS latest_result_ref,
+              latest.status AS latest_result_status
+       FROM bna_agent_action_jobs j
+       LEFT JOIN LATERAL (
+         SELECT result_ref, status
+         FROM bna_agent_action_results r
+         WHERE r.job_id = j.job_id
+           AND COALESCE(r.metadata->>'source_sha', '') = j.source_sha
+         ORDER BY r.updated_at DESC, r.created_at DESC
+         LIMIT 1
+       ) latest ON TRUE
+       ${where}
+       ORDER BY
+         COALESCE((j.metadata->>'order')::int, 9999),
+         j.created_at ASC,
+         j.job_id ASC`,
+      params
+    );
+    return result.rows;
+  } catch (error) {
+    failClosedAgentActionDatabase(error);
+    const rows = Array.from(agentActionMemoryJobs.values());
+    return jobId ? rows.filter((row) => row.job_id === jobId) : rows;
+  }
+}
+
+async function getAgentActionJob(jobId = '', db = pool) {
+  const rows = await listAgentActionJobs({ jobId }, db);
+  return rows[0] || null;
+}
+
+function agentActionStatusFromBody(body = {}) {
+  const action = String(body.action || body.action_type || body.actionType || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+  if (action === 'claim' || action === 'claimed') return 'claimed';
+  if (action === 'start' || action === 'i_started' || action === 'retry') return 'in_progress';
+  if (action === 'supersede') return 'superseded';
+  if (action === 'save_partial' || action === 'save_completed') return 'saved';
+  return normalizeAgentActionStatus(body.status, 'saved');
+}
+
+async function saveAgentActionResult(jobId = '', body = {}, { req, identity = null } = {}, db = pool) {
+  const job = await getAgentActionJob(jobId, db);
+  if (!job) {
+    const error = new Error('Agent Action job not found.');
+    error.statusCode = 404;
+    throw error;
+  }
+  const status = agentActionStatusFromBody(body);
+  const action = String(body.action || body.action_type || body.actionType || status || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+  const completionIntent = body.completion_intent || body.completionIntent || (action === 'save_completed' ? 'completed' : action === 'save_partial' ? 'partial' : '');
+  const safeInput = sanitizeAgentActionResultInput(body, normalizeAgentActionStringList);
+  const summary = safeInput.summary;
+  const evidence = safeInput.evidence;
+  const checklist = safeInput.completion_checklist;
+  const assetIds = safeInput.expected_asset_ids;
+  const idempotencyBasis = [
+    AGENT_ACTION_RUN_ID,
+    job.job_id,
+    action,
+    body.idempotency_key || body.idempotencyKey || job.idempotency_key,
+    summary.slice(0, 160),
+  ].join('|');
+  const idempotencyKey = safeAgentActionOpaqueIdentifier(body.idempotency_key || body.idempotencyKey || `${job.idempotency_key}:result:${sha256Hex(idempotencyBasis).slice(0, 16)}`, 200);
+  const resultRef = `AAR-${sha256Hex(`${job.job_id}:${idempotencyKey}`).slice(0, 16)}`;
+  const metadata = {
+    action,
+    completion_intent: completionIntent || null,
+    readback_required: completionIntent === 'completed',
+    result_readback_url: `/api/platform/agent-actions/${encodeURIComponent(job.job_id)}/results?result_ref=${encodeURIComponent(resultRef)}`,
+    source_repository: job.source_repository,
+    source_ref: job.source_ref,
+    source_sha: job.source_sha,
+    source_fingerprint: job.source_fingerprint,
+    raw_id: 'RAW-20260721-001',
+    requirement_id: 'REQ-20260721-005',
+    external_write_performed: false,
+    result_only: true,
+    secrets_included: false,
+    customer_content_included: false,
+    ignored_sensitive_fields: safeInput.ignored_sensitive_fields,
+  };
+  if (!agentActionUsesMemoryStorage()) {
+    const actor = identity?.username || req?.opsUser || 'agent_action_dropoff';
+    const claimToken = sha256Hex(`platform_control:${job.job_id}:${actor}`);
+    const persistedResult = {
+      result_ref: resultRef,
+      job_id: job.job_id,
+      status,
+      summary,
+      evidence,
+      completion_checklist: checklist,
+      expected_asset_ids: assetIds,
+      idempotency_key: idempotencyKey,
+      submitted_by: actor,
+      submitted_ip: req ? getRequestIp(req) || null : null,
+      user_agent: req?.headers?.['user-agent'] || null,
+      metadata,
+    };
+    persistedResult.result_sha256 = agentActionResultFingerprint(persistedResult);
+    const auditEvent = {
+      event_id: `AAE-${sha256Hex(`${resultRef}:${status}:${action}`).slice(0, 20)}`,
+      job_id: job.job_id,
+      result_ref: resultRef,
+      event_type: action,
+      actor,
+      sanitized_payload: {
+        status,
+        source_sha: job.source_sha,
+        idempotency_fingerprint: `sha256:${sha256Hex(idempotencyKey).slice(0, 16)}`,
+        result_only: true,
+        secrets_included: false,
+        customer_content_included: false,
+      },
+    };
+    try {
+      return (await agentActionPostgresRepository(db).saveResult({
+        jobId: job.job_id,
+        result: persistedResult,
+        ownerRef: `platform_control:${actor}`,
+        claimToken,
+        leaseSeconds: 120,
+        action,
+        auditEvent,
+      })).result;
+    } catch (error) {
+      failClosedAgentActionDatabase(error);
+    }
+  }
+  let client = db;
+  let releaseClient = null;
+  try {
+    if (typeof db.connect === 'function') {
+      client = await db.connect();
+      releaseClient = () => client.release();
+      await client.query('BEGIN');
+    }
+    const result = await client.query(
+      `INSERT INTO bna_agent_action_results (
+         result_ref, job_id, status, summary, evidence, completion_checklist,
+         expected_asset_ids, idempotency_key, submitted_by, submitted_ip,
+         user_agent, metadata
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6,
+         $7, $8, $9, $10,
+         $11, $12
+       )
+       ON CONFLICT (idempotency_key) DO UPDATE SET
+         status = EXCLUDED.status,
+         summary = EXCLUDED.summary,
+         evidence = EXCLUDED.evidence,
+         completion_checklist = EXCLUDED.completion_checklist,
+         expected_asset_ids = EXCLUDED.expected_asset_ids,
+         metadata = bna_agent_action_results.metadata || EXCLUDED.metadata,
+         updated_at = NOW()
+       RETURNING *`,
+      [
+        resultRef,
+        job.job_id,
+        status,
+        summary,
+        JSON.stringify(evidence),
+        JSON.stringify(checklist),
+        JSON.stringify(assetIds),
+        idempotencyKey,
+        identity?.username || req?.opsUser || 'agent_action_dropoff',
+        getRequestIp(req) || null,
+        req.headers['user-agent'] || null,
+        JSON.stringify(metadata),
+      ]
+    );
+    await client.query(
+      `UPDATE bna_agent_action_jobs
+       SET status = $2,
+           claimed_by = COALESCE(claimed_by, $3),
+           claimed_at = CASE WHEN claimed_at IS NULL AND $2 IN ('claimed', 'in_progress') THEN NOW() ELSE claimed_at END,
+           metadata = metadata || $4::jsonb,
+           updated_at = NOW()
+       WHERE job_id = $1`,
+      [
+        job.job_id,
+        status,
+        identity?.username || req?.opsUser || 'agent_action_dropoff',
+        JSON.stringify({ latest_result_ref: result.rows[0].result_ref, latest_result_status: status }),
+      ]
+    );
+    await recordAgentActionAudit({
+      event_id: `AAE-${sha256Hex(`${resultRef}:${status}:${action}`).slice(0, 20)}`,
+      job_id: job.job_id,
+      result_ref: resultRef,
+      event_type: action,
+      status,
+      source_sha: job.source_sha,
+      idempotency_key: idempotencyKey,
+      actor: identity?.username || req?.opsUser || 'agent_action_dropoff',
+    }, client);
+    if (releaseClient) await client.query('COMMIT');
+    return result.rows[0];
+  } catch (error) {
+    if (releaseClient) {
+      try { await client.query('ROLLBACK'); } catch {}
+    }
+    failClosedAgentActionDatabase(error);
+    const memoryResult = {
+      result_ref: resultRef,
+      job_id: job.job_id,
+      status,
+      summary,
+      evidence,
+      completion_checklist: checklist,
+      expected_asset_ids: assetIds,
+      idempotency_key: idempotencyKey,
+      submitted_by: identity?.username || req?.opsUser || 'agent_action_dropoff',
+      metadata,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    agentActionMemoryResults.set(idempotencyKey, memoryResult);
+    agentActionMemoryJobs.set(job.job_id, {
+      ...job,
+      status,
+      metadata: {
+        ...(parseAgentActionJsonCell(job.metadata, {})),
+        latest_result_ref: resultRef,
+        latest_result_status: status,
+      },
+      updated_at: new Date().toISOString(),
+    });
+    return memoryResult;
+  } finally {
+    if (releaseClient) releaseClient();
+  }
+}
+
+function readbackMemoryAgentActionResult(jobId = '', { resultRef = '', idempotencyKey = '' } = {}) {
+  const rows = Array.from(agentActionMemoryResults.values())
+    .filter((row) => row.job_id === jobId)
+    .filter((row) => !resultRef || row.result_ref === resultRef)
+    .filter((row) => !idempotencyKey || row.idempotency_key === idempotencyKey)
+    .sort((a, b) => String(b.updated_at || '').localeCompare(String(a.updated_at || '')));
+  const row = rows[0] || null;
+  if (!row) return null;
+  const metadata = parseAgentActionJsonCell(row.metadata, {});
+  row.readback_at = row.readback_at || new Date().toISOString();
+  if (row.status === 'saved' && metadata.completion_intent === 'completed') row.status = 'verified';
+  row.metadata = { ...metadata, readback_verified: true, readback_required: false };
+  const memoryJob = agentActionMemoryJobs.get(jobId);
+  if (memoryJob && row.status === 'verified') {
+    agentActionMemoryJobs.set(jobId, {
+      ...memoryJob,
+      status: 'verified',
+      metadata: {
+        ...(parseAgentActionJsonCell(memoryJob.metadata, {})),
+        latest_result_ref: row.result_ref,
+        latest_result_status: 'verified',
+      },
+      updated_at: new Date().toISOString(),
+    });
+  }
+  return row;
+}
+
+async function readbackAgentActionResult(jobId = '', { resultRef = '', idempotencyKey = '' } = {}, db = pool) {
+  if (!agentActionUsesMemoryStorage()) {
+    try {
+      return await agentActionPostgresRepository(db).readbackResult({
+        jobId,
+        resultRef,
+        idempotencyKey,
+        auditEventFactory: (row, verifiedStatus) => {
+          const metadata = parseAgentActionJsonCell(row.metadata, {});
+          return {
+            event_id: `AAE-readback-${sha256Hex(`${row.result_ref}:${verifiedStatus}`).slice(0, 20)}`,
+            job_id: jobId,
+            result_ref: row.result_ref,
+            event_type: 'readback',
+            actor: 'agent_action_readback',
+            sanitized_payload: {
+              status: verifiedStatus,
+              source_sha: safeAgentActionOpaqueIdentifier(metadata.source_sha || '', 80),
+              idempotency_fingerprint: row.idempotency_key ? `sha256:${sha256Hex(row.idempotency_key).slice(0, 16)}` : '',
+              result_only: true,
+              secrets_included: false,
+              customer_content_included: false,
+            },
+          };
+        },
+      });
+    } catch (error) {
+      failClosedAgentActionDatabase(error);
+    }
+  }
+  try {
+    const params = [jobId];
+    let where = 'WHERE job_id = $1';
+    if (resultRef) {
+      params.push(resultRef);
+      where += ` AND result_ref = $${params.length}`;
+    }
+    if (idempotencyKey) {
+      params.push(idempotencyKey);
+      where += ` AND idempotency_key = $${params.length}`;
+    }
+    const result = await db.query(
+      `SELECT *
+       FROM bna_agent_action_results
+       ${where}
+       ORDER BY updated_at DESC, created_at DESC
+       LIMIT 1`,
+      params
+    );
+    let row = result.rows[0] || null;
+    if (!row) return agentActionUsesMemoryStorage()
+      ? readbackMemoryAgentActionResult(jobId, { resultRef, idempotencyKey })
+      : null;
+    const metadata = parseAgentActionJsonCell(row.metadata, {});
+    const verifiedStatus = row.status === 'saved' && metadata.completion_intent === 'completed' ? 'verified' : row.status;
+    const update = await db.query(
+      `UPDATE bna_agent_action_results
+       SET status = $2,
+           readback_at = COALESCE(readback_at, NOW()),
+           metadata = metadata || $3::jsonb,
+           updated_at = NOW()
+       WHERE result_ref = $1
+       RETURNING *`,
+      [
+        row.result_ref,
+        verifiedStatus,
+        JSON.stringify({ readback_verified: true, readback_required: false }),
+      ]
+    );
+    row = update.rows[0] || row;
+    if (verifiedStatus === 'verified') {
+      await db.query(
+        `UPDATE bna_agent_action_jobs
+         SET status = 'verified',
+             metadata = metadata || $2::jsonb,
+             updated_at = NOW()
+         WHERE job_id = $1`,
+        [jobId, JSON.stringify({ latest_result_ref: row.result_ref, latest_result_status: 'verified' })]
+      );
+    }
+    await recordAgentActionAudit({
+      event_id: `AAE-readback-${sha256Hex(`${row.result_ref}:${verifiedStatus}`).slice(0, 20)}`,
+      job_id: jobId,
+      result_ref: row.result_ref,
+      event_type: 'readback',
+      status: verifiedStatus,
+      source_sha: metadata.source_sha,
+      idempotency_key: row.idempotency_key,
+      actor: 'agent_action_readback',
+    }, db);
+    return row;
+  } catch (error) {
+    failClosedAgentActionDatabase(error);
+    return readbackMemoryAgentActionResult(jobId, { resultRef, idempotencyKey });
+  }
+}
+
+async function currentHighLevelImportPreview() {
+  try {
+    return await importHighLevelAgentModeExport({ repoRoot: __dirname });
+  } catch (error) {
+    const blocked = highLevelImportBlocker();
+    return {
+      ...blocked,
+      blocker: {
+        ...blocked.blocker,
+        message: compactAgentActionText(error.message, 500),
+      },
+    };
+  }
+}
+
+function oneTimeRabbiRepository(db = pool) {
+  if (!DATABASE_URL) throw agentActionDatabaseError();
+  return createPostgresRabbiRepository(db);
+}
+
+async function oneTimeRabbiProviderPreview() {
+  const readiness = oneTimeRabbiProviderReadiness(process.env);
+  const storage = agentActionStorageSnapshot();
+  if (!storage.ready || !storage.durable) {
+    return {
+      readiness,
+      synthetic_question: { status: 'blocked', blocker: storage.blocker || 'Preview PostgreSQL is unavailable.' },
+      last_canary: null,
+      exact_provider_off_blocker: readiness.blockers[0] || storage.blocker || 'Preview PostgreSQL is unavailable.',
+      customer_messages_sent: 0,
+    };
+  }
+  const repository = oneTimeRabbiRepository();
+  const [questions, lastCanary] = await Promise.all([repository.listQuestions(), repository.latestCanary()]);
+  const question = questions[0] ? safeRabbiQuestionView(questions[0]) : null;
+  return {
+    readiness,
+    synthetic_question: question || { status: 'not_created', blocker: 'Operator-owned synthetic Torah-question opportunity has not been registered.' },
+    last_canary: lastCanary ? {
+      canary_id: lastCanary.canary_id,
+      status: lastCanary.status,
+      audit_id: lastCanary.audit_id,
+      safe_outcome: parseAgentActionJsonCell(lastCanary.safe_outcome, {}),
+      updated_at: lastCanary.updated_at,
+    } : null,
+    exact_provider_off_blocker: readiness.blockers[0] || (question ? '' : 'operator_owned_synthetic_question_not_registered'),
+    provider_ids_exposed: false,
+    customer_content_included: false,
+    customer_messages_sent: 0,
+  };
+}
+
+async function countRowsSafely(tableName, whereClause = '', params = []) {
+  try {
+    const result = await pool.query(`SELECT COUNT(*)::int AS count FROM ${tableName} ${whereClause}`, params);
+    return Number(result.rows[0]?.count || 0);
+  } catch {
+    return null;
+  }
+}
+
+async function bnaSchoolSummaryPayload(req) {
+  const [
+    students,
+    families,
+    classes,
+    sessions,
+  ] = await Promise.all([
+    countRowsSafely('bna_students'),
+    countRowsSafely('signups'),
+    countRowsSafely('bna_class_sessions'),
+    countRowsSafely('bna_class_sessions'),
+  ]);
+  return {
+    success: true,
+    workspace: CANONICAL_WORKSPACES.bna_school,
+    taxonomy: workspaceTaxonomyPayload(),
+    source: {
+      route: '/operations/school',
+      source_pr_semantics: 'PR #134 focused school workspace surface; bounded summary only.',
+      private_product_data_included: false,
+    },
+    cards: [
+      { id: 'students', label: 'Students', count: students, status: students === null ? 'unavailable' : 'ready' },
+      { id: 'families', label: 'Families', count: families, status: families === null ? 'unavailable' : 'ready' },
+      { id: 'classes', label: 'Classes', count: classes, status: classes === null ? 'unavailable' : 'ready' },
+      { id: 'sessions', label: 'Class sessions', count: sessions, status: sessions === null ? 'unavailable' : 'ready' },
+    ],
+    controls: [
+      { id: 'school-students', label: 'Students', target: '/operations?workspace=bna_school&view=students' },
+      { id: 'school-families', label: 'Families', target: '/operations?workspace=bna_school&view=contacts&section=families' },
+      { id: 'school-classes', label: 'Classes', target: '/operations?workspace=bna_school&view=live_classes' },
+      { id: 'school-progress', label: 'Progress', target: '/operations?workspace=bna_school&view=students&section=group_goal' },
+    ],
+    request_path: req?.path || '/operations/school',
+    external_write_performed: false,
+  };
+}
+
 function requireOneTimeViewAsSuperAdmin(req, res) {
   const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
   if (!identity || identity.scope?.type !== 'all') {
@@ -12995,6 +14042,202 @@ app.get('/api/bna/agent-review/results/:resultRef', requireAdmin, async (req, re
       result: row,
       external_write_performed: false,
     });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: safeAgentReviewText(err.message, 500),
+      external_write_performed: false,
+    });
+  }
+});
+
+app.get('/api/platform/agent-actions', requireAdmin, async (req, res) => {
+  try {
+    const identity = requirePlatformSuperAdmin(req, res);
+    if (!identity) return;
+    await ensureAgentActionStorageReady();
+    const importPreview = await currentHighLevelImportPreview();
+    await upsertImportedAgentActionJobs(importPreview, identity);
+    const requestedJobId = safeAgentActionOpaqueIdentifier(req.query?.job_id || req.query?.jobId || '', 160);
+    const jobs = await listAgentActionJobs({ jobId: requestedJobId });
+    const rabbiProviderPreview = await oneTimeRabbiProviderPreview();
+    const baseUrl = requestBaseUrl(req);
+    res.json({
+      success: true,
+      csrf_token: agentActionCsrfToken(req),
+      owner: {
+        username: identity.username,
+        role: resolveRole(identity.role, 'platform_super_admin'),
+        scope: identity.scope,
+      },
+      ...agentActionHubPayload({ baseUrl, importPreview }),
+      storage: agentActionStorageSnapshot(),
+      rabbi_provider_preview: rabbiProviderPreview,
+      jobs: jobs.map((job) => agentActionJobView(job, req)),
+      ghl_jobs_imported: Array.isArray(importPreview.jobs) ? importPreview.jobs.length : 0,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: compactAgentActionText(err.message, 500),
+      external_write_performed: false,
+    });
+  }
+});
+
+app.get('/api/platform/one-time-rabbi/preview', requireAdmin, async (req, res) => {
+  try {
+    const identity = requirePlatformSuperAdmin(req, res);
+    if (!identity) return;
+    res.json({ success: true, preview: await oneTimeRabbiProviderPreview(), external_write_performed: false });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: compactAgentActionText(err.message, 500), external_write_performed: false });
+  }
+});
+
+app.post('/api/platform/one-time-rabbi/actions', requireAdmin, async (req, res) => {
+  try {
+    const identity = requirePlatformSuperAdmin(req, res);
+    if (!identity) return;
+    await ensureAgentActionStorageReady();
+    if (!verifyAgentActionCsrf(req)) return res.status(403).json({ success: false, error: 'Missing or invalid Agent Action CSRF token.' });
+    const repository = oneTimeRabbiRepository();
+    const adapter = createOneTimeRabbiProviderAdapter({ repository, env: process.env });
+    const action = String(req.body?.action || '').trim();
+    let result;
+    if (action === 'discover_synthetic_question') {
+      const createIfMissing = req.body?.create_if_missing === true
+        && req.body?.confirmation === 'CREATE_OPERATOR_OWNED_SYNTHETIC_TORAH_QUESTION';
+      const row = await adapter.discoverSyntheticQuestion({ createIfMissing });
+      result = row ? safeRabbiQuestionView(row) : { status: 'not_found', synthetic: true };
+    } else if (action === 'list_assigned_questions') {
+      result = await adapter.listAssignedQuestions();
+    } else if (action === 'open_question') {
+      result = await adapter.openQuestion(safeAgentActionOpaqueIdentifier(req.body?.question_ref, 160));
+    } else if (action === 'preview_draft') {
+      result = await adapter.previewDraft(safeAgentActionOpaqueIdentifier(req.body?.question_ref, 160));
+    } else if (action === 'save_synthetic_draft' && req.body?.synthetic_canary === true) {
+      result = await adapter.saveDraft(safeAgentActionOpaqueIdentifier(req.body?.question_ref, 160), { text: req.body?.text });
+    } else {
+      return res.status(400).json({ success: false, error: 'Provider action is not allowed in this preview.' });
+    }
+    res.json({ success: true, action, result, customer_messages_sent: 0, production_changed: false });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: compactAgentActionText(err.message, 500), customer_messages_sent: 0, production_changed: false });
+  }
+});
+
+app.post('/api/platform/one-time-rabbi/telegram/webhook', async (req, res) => {
+  try {
+    const contentLength = Number(req.headers['content-length'] || 0);
+    if (contentLength > 64 * 1024) return res.status(413).json({ success: false, error: 'telegram_update_too_large' });
+    if (!String(req.headers['content-type'] || '').toLowerCase().startsWith('application/json')) {
+      return res.status(415).json({ success: false, error: 'telegram_json_required' });
+    }
+    await ensureAgentActionStorageReady();
+    const repository = oneTimeRabbiRepository();
+    const adapter = createOneTimeRabbiProviderAdapter({ repository, env: process.env });
+    const outcome = await handleTelegramWebhook({ update: req.body, headers: req.headers, repository, adapter, env: process.env });
+    res.json(outcome);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: compactAgentActionText(err.message, 300), customer_messages_sent: 0 });
+  }
+});
+
+app.get('/api/platform/agent-actions/:jobId', requireAdmin, async (req, res) => {
+  try {
+    const identity = requirePlatformSuperAdmin(req, res);
+    if (!identity) return;
+    await ensureAgentActionStorageReady();
+    const importPreview = await currentHighLevelImportPreview();
+    await upsertImportedAgentActionJobs(importPreview, identity);
+    const job = await getAgentActionJob(safeAgentActionOpaqueIdentifier(req.params.jobId, 160));
+    if (!job) return res.status(404).json({ success: false, error: 'Agent Action job not found.', external_write_performed: false });
+    res.json({
+      success: true,
+      csrf_token: agentActionCsrfToken(req),
+      job: agentActionJobView(job, req),
+      highlevel_import: importPreview,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: compactAgentActionText(err.message, 500),
+      external_write_performed: false,
+    });
+  }
+});
+
+app.post('/api/platform/agent-actions/:jobId/results', requireAdmin, async (req, res) => {
+  try {
+    const identity = requirePlatformSuperAdmin(req, res);
+    if (!identity) return;
+    await ensureAgentActionStorageReady();
+    if (!verifyAgentActionCsrf(req)) {
+      return res.status(403).json({
+        success: false,
+        error: 'Missing or invalid Agent Action CSRF token.',
+        external_write_performed: false,
+      });
+    }
+    const result = await saveAgentActionResult(safeAgentActionOpaqueIdentifier(req.params.jobId, 160), req.body || {}, { req, identity });
+    const resultJob = await getAgentActionJob(result.job_id);
+    res.json({
+      success: true,
+      result_ref: result.result_ref,
+      result: agentActionResultView(result, req),
+      readback_url: `/api/platform/agent-actions/${encodeURIComponent(result.job_id)}/results?result_ref=${encodeURIComponent(result.result_ref)}`,
+      operations_url: `/operations/agent-actions/${encodeURIComponent(result.job_id)}`,
+      completion_requires_readback: parseAgentActionJsonCell(result.metadata, {}).completion_intent === 'completed',
+      result_persistence: agentActionResultPersistenceOptions({
+        result: agentActionResultView(result, req),
+        job: agentActionJobView(resultJob, req),
+        hubAvailable: true,
+      }),
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: compactAgentActionText(err.message, 500),
+      external_write_performed: false,
+    });
+  }
+});
+
+app.get('/api/platform/agent-actions/:jobId/results', requireAdmin, async (req, res) => {
+  try {
+    const identity = requirePlatformSuperAdmin(req, res);
+    if (!identity) return;
+    await ensureAgentActionStorageReady();
+    const jobId = safeAgentActionOpaqueIdentifier(req.params.jobId, 160);
+    const result = await readbackAgentActionResult(jobId, {
+      resultRef: safeAgentActionOpaqueIdentifier(req.query?.result_ref || req.query?.resultRef || '', 160),
+      idempotencyKey: safeAgentActionOpaqueIdentifier(req.query?.idempotency_key || req.query?.idempotencyKey || '', 200),
+    });
+    if (!result) return res.status(404).json({ success: false, error: 'Agent Action result not found.', external_write_performed: false });
+    res.json({
+      success: true,
+      result: agentActionResultView(result, req),
+      job: agentActionJobView(await getAgentActionJob(jobId), req),
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: compactAgentActionText(err.message, 500),
+      external_write_performed: false,
+    });
+  }
+});
+
+app.get('/api/bna/school-admin/summary', requireAdmin, async (req, res) => {
+  try {
+    const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
+    if (!identity) return res.status(403).json({ success: false, error: 'BNA School workspace requires an Operations session.', external_write_performed: false });
+    res.json(await bnaSchoolSummaryPayload(req));
   } catch (err) {
     res.status(err.statusCode || 500).json({
       success: false,
@@ -35101,8 +36344,8 @@ async function createProviderIntakeRecord({ providerId = null, sessionKey = '', 
 
 // Initialize database
 async function initDb() {
-  if (ONE_TIME_REVIEW_ONLY_NO_DB && !DATABASE_URL) {
-    console.log('Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode');
+  if ((ONE_TIME_REVIEW_ONLY_NO_DB || PLATFORM_PREVIEW_NO_DB) && !DATABASE_URL) {
+    console.log('Skipping database initialization in no-database preview mode');
     return;
   }
   try {
@@ -35210,6 +36453,7 @@ async function initDb() {
     await pool.query(createOpsAccessLinksSQL);
     await pool.query(createSecureDownloadsSQL);
     await pool.query(createAgentReviewSessionsSQL);
+    await agentActionPostgresRepository(pool).ensureSchema();
     await ensureWorkspacePlatformDefaultsOnce();
     await ensureDefaultProjects();
     await seedDefaultAutomations();
@@ -93922,6 +95166,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createOpsAccessLinksSQL);
     await pool.query(createSecureDownloadsSQL);
     await pool.query(createAgentReviewSessionsSQL);
+    await agentActionPostgresRepository(pool).ensureSchema();
     await pool.query(createBnaIndexesSQL);
     await pool.query(createWorkspaceLinkedColumnsSQL);
     await pool.query(createIdentityLinkingCompatibilitySQL);
@@ -94183,6 +95428,14 @@ app.get('/operations/agent-review/dropoff', async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   return res.sendFile(path.join(__dirname, 'public', 'agent-review-dropoff.html'));
 });
+
+app.get('/operations/school', requireAdmin, sendBnaSchoolWorkspaceShell);
+
+app.get('/operations/workspaces/one-time', requireAdmin, sendOneTimeConnectorShell);
+
+app.get(['/operations/agent-actions', '/operations/agent-actions/:jobId'], requireAdmin, sendAgentActionsShell);
+
+app.get('/operations/agent-actions/:jobId/dropoff', requireAdmin, sendAgentActionDropoffShell);
 
 app.get('/agent-review/session', async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
