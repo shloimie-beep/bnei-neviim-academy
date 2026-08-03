@@ -2027,6 +2027,24 @@ async function loadLiveTasks(config) {
   return Array.isArray(result?.tasks) ? result.tasks : [];
 }
 
+async function loadTaskWatchCandidates(config) {
+  const paths = [
+    '/api/bna/tasks?task_view=mine&limit=1000',
+    '/api/bna/tasks?task_view=codex_queue&limit=1000',
+    '/api/bna/tasks?task_view=blocked&limit=1000',
+    '/api/bna/tasks?decision_view=needs_my_decision&limit=1000',
+    '/api/bna/tasks?task_view=done_activity&limit=1000',
+  ];
+  const results = await Promise.all(paths.map((endpoint) => appRequest(config, 'GET', endpoint)));
+  const byId = new Map();
+  for (const result of results) {
+    for (const task of Array.isArray(result?.tasks) ? result.tasks : []) {
+      if (task?.id) byId.set(String(task.id), task);
+    }
+  }
+  return [...byId.values()];
+}
+
 function taskControlSection(view = 'overview') {
   return ({
     mine: 'mine',
@@ -6128,7 +6146,9 @@ function readTaskWatchState() {
 }
 
 function durableTaskWatchCheckpoint(state = {}) {
-  const entries = Object.entries(state.tasks && typeof state.tasks === 'object' ? state.tasks : {}).slice(0, 1000);
+  const entries = Object.entries(state.tasks && typeof state.tasks === 'object' ? state.tasks : {})
+    .sort(([left], [right]) => Number(right) - Number(left))
+    .slice(0, 1000);
   return {
     initialized: Boolean(state.initialized ?? true),
     updated_at: new Date().toISOString(),
@@ -6218,7 +6238,7 @@ async function maybeTaskStatusWatch(config) {
 
   let tasks = [];
   try {
-    tasks = await loadLiveTasks(config);
+    tasks = await loadTaskWatchCandidates(config);
   } catch (error) {
     log(`Task watch skipped: ${error instanceof Error ? error.message : String(error)}`);
     return;

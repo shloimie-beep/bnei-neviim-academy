@@ -1,5 +1,9 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const test = require('node:test');
+
+const bridge = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'telegram-kimi-bridge.mjs'), 'utf8');
 
 const {
   classifyTelegramControlQuery,
@@ -74,4 +78,14 @@ test('task notifications only describe useful state transitions', () => {
     ),
     { kind: 'completed', label: 'Task completed' },
   );
+});
+
+test('task watcher loads bounded canonical views and keeps newest durable ids first', () => {
+  assert.match(bridge, /async function loadTaskWatchCandidates\(config\)/);
+  assert.match(bridge, /task_view=mine&limit=1000/);
+  assert.match(bridge, /task_view=codex_queue&limit=1000/);
+  assert.match(bridge, /decision_view=needs_my_decision&limit=1000/);
+  assert.match(bridge, /task_view=done_activity&limit=1000/);
+  assert.match(bridge, /sort\(\(\[left\], \[right\]\) => Number\(right\) - Number\(left\)\)/);
+  assert.match(bridge, /tasks = await loadTaskWatchCandidates\(config\)/);
 });
