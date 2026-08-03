@@ -173,6 +173,7 @@ let activeBridgeBotIdentity = null;
 let stopBridgeRuntimeHeartbeat = null;
 let bridgeShutdownInProgress = false;
 let durableProcessedUpdateId = null;
+let durableTaskWatchState = null;
 const recentNotificationTimes = [];
 
 function appendAgentTaskLedger(entry) {
@@ -3528,7 +3529,19 @@ async function loadDurableTelegramOffset(config) {
   if (!config?.runtimeAgentKey || !config.opsUsername || !config.opsPassword) return 0;
   try {
     const status = await appRequest(config, 'GET', '/api/bna/integrations/telegram/status');
-    const lastProcessed = Number(status?.card?.details?.bridge_runtime_details?.last_processed_update_id || 0);
+    const runtimeDetails = status?.card?.details?.bridge_runtime_details || {};
+    const taskWatchCheckpoint = runtimeDetails.task_watch_checkpoint;
+    if (taskWatchCheckpoint?.initialized && taskWatchCheckpoint.tasks && typeof taskWatchCheckpoint.tasks === 'object') {
+      durableTaskWatchState = taskWatchCheckpoint;
+      recentNotificationTimes.splice(
+        0,
+        recentNotificationTimes.length,
+        ...(Array.isArray(taskWatchCheckpoint.recent_notification_times)
+          ? taskWatchCheckpoint.recent_notification_times.filter(Number.isFinite).slice(-50)
+          : []),
+      );
+    }
+    const lastProcessed = Number(runtimeDetails.last_processed_update_id || 0);
     if (!Number.isSafeInteger(lastProcessed) || lastProcessed < 1) return 0;
     durableProcessedUpdateId = lastProcessed;
     return lastProcessed + 1;
@@ -3594,6 +3607,7 @@ async function reportBridgeRuntimeStatus(config, {
         allowed_chat_ids_count: Array.isArray(config.allowedChatIds) ? config.allowedChatIds.length : 0,
         codex_enabled: Boolean(config.codexEnabled),
         last_processed_update_id: durableProcessedUpdateId,
+        task_watch_checkpoint: durableTaskWatchState,
         ...details,
       },
     });
@@ -6100,7 +6114,7 @@ async function sendTaskCompletionReminders(config, chatId, replyToMessageId, tra
 function readTaskWatchState() {
   try {
     if (!fs.existsSync(telegramTaskWatchStateFile)) {
-      return { initialized: false, tasks: {} };
+      return durableTaskWatchState || { initialized: false, tasks: {} };
     }
     const parsed = JSON.parse(fs.readFileSync(telegramTaskWatchStateFile, 'utf8'));
     return {
@@ -6113,12 +6127,36 @@ function readTaskWatchState() {
   }
 }
 
+function durableTaskWatchCheckpoint(state = {}) {
+  const entries = Object.entries(state.tasks && typeof state.tasks === 'object' ? state.tasks : {}).slice(0, 1000);
+  return {
+    initialized: Boolean(state.initialized ?? true),
+    updated_at: new Date().toISOString(),
+    recent_notification_times: recentNotificationTimes.filter(Number.isFinite).slice(-50),
+    tasks: Object.fromEntries(entries.map(([key, task = {}]) => [key, {
+      id: task.id,
+      stage: String(task.stage || ''),
+      agent_status: String(task.agent_status || ''),
+      proof_status: String(task.proof_status || ''),
+      deploy_status: String(task.deploy_status || ''),
+      canary_status: String(task.canary_status || ''),
+      completed: Boolean(task.completed || task.completed_at || task.stage === 'done'),
+      verified: Boolean(task.verified || task.verified_at),
+      blocked: Boolean(task.blocked || task.blocked_reason || task.waiting_on || task.stage === 'blocked'),
+      assigned_to_owner: Boolean(task.assigned_to_owner || /shloimie|operator/i.test(String(task.assigned_to || ''))),
+    }])),
+  };
+}
+
 function writeTaskWatchState(state) {
-  fs.writeFileSync(telegramTaskWatchStateFile, JSON.stringify({
+  const localState = {
     initialized: true,
     updated_at: new Date().toISOString(),
     tasks: state.tasks || {},
-  }, null, 2));
+  };
+  durableTaskWatchState = durableTaskWatchCheckpoint(localState);
+  fs.writeFileSync(telegramTaskWatchStateFile, JSON.stringify(localState, null, 2));
+  return localState;
 }
 
 function watchedTaskSnapshot(task) {
@@ -6230,11 +6268,29 @@ async function maybeTaskStatusWatch(config) {
   }
   chunks.push(chunk.join('\n'));
 
+  // Persist the sanitized transition snapshot before any external send. A
+  // restart may suppress one ambiguous delivery, but it cannot replay the
+  // same transition and duplicate the operator notification.
+  writeTaskWatchState({ tasks: current });
+  const checkpoint = await reportBridgeRuntimeStatus(config, {
+    status: 'running',
+    details: { lifecycle: 'task_notification_checkpoint' },
+  });
+  if (!checkpoint?.success) {
+    writeTaskWatchState(state);
+    log('Task notification skipped because the durable deduplication checkpoint was unavailable.');
+    return;
+  }
+
   for (const text of chunks) {
     await sendReply(config.botToken, chatId, text, null, { includeModeKeyboard: false });
     recentNotificationTimes.push(Date.now());
   }
   writeTaskWatchState({ tasks: current });
+  await reportBridgeRuntimeStatus(config, {
+    status: 'running',
+    details: { lifecycle: 'task_notification_delivered' },
+  });
 }
 
 function codexQueueStartedText(tasks = []) {

@@ -22582,13 +22582,15 @@ function isTaskListLeadIn(line) {
 function parseRambleIntoTaskCandidates(ramble) {
   const text = String(ramble || '').trim();
   if (!text) return [];
-  if (hasDirectReplyInsteadOfCodexIntentForTasks(text)) return [];
-  if (isPureCapabilityQuestion(text)) return [];
-  if (hasInterestedParentLeadCaptureIntent(text) && !hasContactLeadPipelineBuildIntent(text)) return [];
+  const explicitTaskPrefix = /^(?:task|todo)\s*[:.-]\s*\S/i.test(text);
+  if (!explicitTaskPrefix && hasDirectReplyInsteadOfCodexIntentForTasks(text)) return [];
+  if (!explicitTaskPrefix && isPureCapabilityQuestion(text)) return [];
+  if (!explicitTaskPrefix && hasInterestedParentLeadCaptureIntent(text) && !hasContactLeadPipelineBuildIntent(text)) return [];
 
   const normalizedText = text.toLowerCase();
   const keepWholeRoutingTask =
-    hasCommentRequeueWorkflowIntent(text)
+    explicitTaskPrefix
+    || hasCommentRequeueWorkflowIntent(text)
     || (hasParserRoutingWorkIntent(text) && /\b(whatsapp|posts?|content section|backend|technical|recordings?)\b/.test(normalizedText))
     || (hasSourceSheetWorkflowIntent(text) && /\b(all (?:of the )?topics|any topic|not just questions|recordings?|content being uploaded|uploaded content)\b/.test(normalizedText));
 
@@ -22599,7 +22601,8 @@ function parseRambleIntoTaskCandidates(ramble) {
 
   const actionable = fragments.filter((line) =>
     !hasPromptPlanningIntent(line) && (
-      /\b(need|needs|fix|build|wire|set up|setup|configure|process|transcribe|send|call|email|pay|paid|mark|track|create|make|run|deploy|sync|finish|add|remove|change|update|parse|route|file|hide|stop|put|check|audit|queue|requeue|deal with|dealt with|ingested)\b|\b(get rid|you have to|we have to|have to|has to|you should|should have)\b/i.test(line)
+      explicitTaskPrefix
+      || /\b(need|needs|fix|build|wire|set up|setup|configure|process|transcribe|send|call|email|pay|paid|mark|track|create|make|run|deploy|sync|finish|add|remove|change|update|parse|route|file|hide|stop|put|check|verify|assign|archive|audit|queue|requeue|deal with|dealt with|ingested)\b|\b(get rid|you have to|we have to|have to|has to|you should|should have)\b/i.test(line)
       || /\b(plugins?|browser control|control(?:ling)? the browser)\b/i.test(line)
     )
   );
@@ -41037,11 +41040,6 @@ async function getWorkspaceProjectByKey(workspaceKey, db = pool) {
 
 async function getCanonicalPersonForOpsIdentity(identity, db = pool) {
   if (!identity) return null;
-  if (identity.role === 'super_admin' || identity.scope?.type === 'all') {
-    return (await db.query(
-      `SELECT * FROM bna_people WHERE lower(preferred_name) = 'shloimie' ORDER BY id ASC LIMIT 1`
-    )).rows[0] || null;
-  }
   const username = String(identity.username || '').trim();
   if (!username) return null;
   return (await db.query(
@@ -41054,6 +41052,62 @@ async function getCanonicalPersonForOpsIdentity(identity, db = pool) {
      LIMIT 1`,
     [username]
   )).rows[0] || null;
+}
+
+const TASK_ACTOR_ALIAS_STOP_WORDS = new Set([
+  'admin',
+  'administrator',
+  'academy',
+  'bna',
+  'com',
+  'email',
+  'manager',
+  'net',
+  'operations',
+  'operator',
+  'ops',
+  'org',
+  'platform',
+  'super',
+  'user',
+]);
+
+function taskActorAliases(identity = {}, person = null) {
+  const aliases = new Set();
+  const candidates = [
+    identity?.username,
+    identity?.displayName,
+    identity?.display_name,
+    person?.preferred_name,
+    person?.full_name,
+    person?.email,
+  ];
+
+  candidates.forEach((candidate) => {
+    const normalized = String(candidate || '').trim().toLowerCase().replace(/\s+/g, ' ');
+    if (!normalized) return;
+    if (normalized.length >= 3 && normalized.length <= 120 && !TASK_ACTOR_ALIAS_STOP_WORDS.has(normalized)) {
+      aliases.add(normalized);
+    }
+    normalized
+      .split(/[^a-z0-9]+/)
+      .filter((token) => token.length >= 3 && !TASK_ACTOR_ALIAS_STOP_WORDS.has(token))
+      .forEach((token) => aliases.add(token));
+  });
+
+  return [...aliases];
+}
+
+async function taskActorAliasesForRequest(req, db = pool) {
+  const identity = req?.opsIdentity || identifyOpsUser(req?.opsUser || OPS_USERNAME);
+  if (!identity) return [];
+  const person = await getCanonicalPersonForOpsIdentity(identity, db).catch(() => null);
+  return taskActorAliases(identity, person);
+}
+
+function taskActorOwnerMatchSql(ownerTextSql, aliases, addParam) {
+  if (!Array.isArray(aliases) || !aliases.length) return 'FALSE';
+  return `(${aliases.map((alias) => `POSITION(${addParam(alias)} IN ${ownerTextSql}) > 0`).join(' OR ')})`;
 }
 
 async function membershipRowsForPerson(personId, db = pool) {
@@ -72730,9 +72784,10 @@ app.post('/api/bna/agent-fleet/status', requireAdmin, async (req, res) => {
     ready_count = null,
     details = {},
   } = req.body || {};
-  const allowedStatus = ['unknown', 'running', 'stopped', 'error'].includes(String(status))
-    ? String(status)
-    : 'unknown';
+  const requestedStatus = String(status || 'unknown');
+  const allowedStatus = ['unknown', 'running', 'stopped', 'error'].includes(requestedStatus)
+    ? requestedStatus
+    : (requestedStatus.startsWith('blocked') ? 'error' : 'unknown');
 
   try {
     const result = await pool.query(
@@ -92045,9 +92100,15 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
   const ownerTextSql = `LOWER(COALESCE(assigned_to, '') || ' ' || COALESCE(decision_owner, '') || ' ' || COALESCE(waiting_on, ''))`;
   const scopeTextSql = `LOWER(COALESCE(resolved_project_key, '') || ' ' || COALESCE(resolved_project_name, '') || ' ' || COALESCE(resolved_project_short_name, '') || ' ' || COALESCE(title, '') || ' ' || COALESCE(display_title, '') || ' ' || COALESCE(summary, '') || ' ' || COALESCE(notes, '') || ' ' || COALESCE(raw_message, '') || ' ' || COALESCE(original_raw_message, ''))`;
   const archivedSql = `(COALESCE(stage, '') IN ('archive', 'archived') OR archived_at IS NOT NULL OR duplicate_archived_at IS NOT NULL OR decision_hidden_at IS NOT NULL)`;
+  const needsActorOwnerMatch = ['mine', 'my_tasks'].includes(normalizedTaskView)
+    || normalizedDecisionView === 'needs_my_decision';
+  const actorAliases = needsActorOwnerMatch
+    ? await taskActorAliasesForRequest(req).catch(() => [])
+    : [];
+  const actorOwnerMatchSql = taskActorOwnerMatchSql(ownerTextSql, actorAliases, addParam);
   const taskViewWhere = {
-    mine: `(status_bucket <> 'done' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
-    my_tasks: `(status_bucket <> 'done' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
+    mine: `(status_bucket <> 'done' AND ${actorOwnerMatchSql})`,
+    my_tasks: `(status_bucket <> 'done' AND ${actorOwnerMatchSql})`,
     one_time: `(status_bucket <> 'done' AND resolved_project_key = 'one_time_mishnah_class')`,
     one_time_tasks: `(status_bucket <> 'done' AND resolved_project_key = 'one_time_mishnah_class')`,
     codex_queue: `status_bucket = 'codex_queue'`,
@@ -92067,7 +92128,7 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
     outerWhere.push(taskViewWhere[normalizedTaskView]);
   }
   const decisionViewWhere = {
-    needs_my_decision: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
+    needs_my_decision: `(status_bucket = 'decisions' AND ${actorOwnerMatchSql})`,
     needs_rabbi: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(rabbi|scheller|sheller|provider)')`,
     needs_rabbi_scheller: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(rabbi|scheller|sheller|provider)')`,
     needs_external: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(external|credential|account|dns|domain|legal|billing|payment|railway|resend|vimeo|zoom|stripe|wapi|whapi|whatsapp)')`,

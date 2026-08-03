@@ -4083,12 +4083,13 @@ function currentTaskIdentityTokens() {
         opsMe?.displayName,
         opsMe?.display_name,
         opsMe?.preferred_name,
+        opsMe?.person?.preferred_name,
+        opsMe?.person?.full_name,
+        opsMe?.person?.email,
     ];
     const tokens = values
         .flatMap(value => String(value || '').toLowerCase().split(/[^a-z0-9]+/))
-        .filter(value => value.length >= 3 && !['admin', 'operations', 'super', 'bna', 'ops', 'user'].includes(value));
-    if (opsMe?.scope?.type === 'all') tokens.push('shloimie', 'shlomo', 'operator', 'manager');
-    if (!tokens.length) tokens.push('shloimie', 'shlomo', 'operator', 'manager');
+        .filter(value => value.length >= 3 && !['admin', 'administrator', 'academy', 'operations', 'operator', 'manager', 'platform', 'super', 'bna', 'com', 'email', 'net', 'ops', 'org', 'user'].includes(value));
     return [...new Set(tokens)];
 }
 

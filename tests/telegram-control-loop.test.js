@@ -60,4 +60,18 @@ test('task notifications only describe useful state transitions', () => {
     { kind: 'blocked', label: 'Blocked' },
   );
   assert.equal(usefulTaskTransition({ id: 3, stage: 'assigned' }, { id: 3, stage: 'in_progress' }), null);
+  assert.deepEqual(
+    usefulTaskTransition(
+      { id: 6, stage: 'assigned', assigned_to_owner: false },
+      { id: 6, stage: 'assigned', assigned_to_owner: true }
+    ),
+    { kind: 'assigned', label: 'Assigned to Shloimie' },
+  );
+  assert.deepEqual(
+    usefulTaskTransition(
+      { id: 7, stage: 'in_progress', completed: false },
+      { id: 7, stage: 'done', completed: true }
+    ),
+    { kind: 'completed', label: 'Task completed' },
+  );
 });

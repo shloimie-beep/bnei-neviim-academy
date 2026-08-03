@@ -67,8 +67,8 @@ function usefulTaskTransition(previous = null, current = {}) {
     || previous.deploy_status === 'failed'
     || previous.canary_status === 'failed';
   if (!previousFailed && currentFailed) return { kind: 'failed', label: 'Work failed' };
-  const wasDone = Boolean(previous.completed_at || previous.verified_at || previous.stage === 'done');
-  const isDone = Boolean(current.completed_at || current.verified_at || current.stage === 'done');
+  const wasDone = Boolean(previous.completed || previous.completed_at || previous.verified || previous.verified_at || previous.stage === 'done');
+  const isDone = Boolean(current.completed || current.completed_at || current.verified || current.verified_at || current.stage === 'done');
   if (!wasDone && isDone) {
     return current.verified_at
       ? { kind: 'completed', label: 'Completed and verified' }
@@ -77,11 +77,11 @@ function usefulTaskTransition(previous = null, current = {}) {
   if (previous.stage !== 'needs_decision' && current.stage === 'needs_decision') {
     return { kind: 'decision_required', label: 'Decision required' };
   }
-  const previousBlocked = Boolean(previous.blocked_reason || previous.waiting_on || previous.stage === 'blocked');
-  const currentBlocked = Boolean(current.blocked_reason || current.waiting_on || current.stage === 'blocked');
+  const previousBlocked = Boolean(previous.blocked || previous.blocked_reason || previous.waiting_on || previous.stage === 'blocked');
+  const currentBlocked = Boolean(current.blocked || current.blocked_reason || current.waiting_on || current.stage === 'blocked');
   if (!previousBlocked && currentBlocked) return { kind: 'blocked', label: 'Blocked' };
-  const wasMine = /shloimie|operator/i.test(String(previous.assigned_to || ''));
-  const isMine = /shloimie|operator/i.test(String(current.assigned_to || ''));
+  const wasMine = Boolean(previous.assigned_to_owner || /shloimie|operator/i.test(String(previous.assigned_to || '')));
+  const isMine = Boolean(current.assigned_to_owner || /shloimie|operator/i.test(String(current.assigned_to || '')));
   if (!wasMine && isMine) return { kind: 'assigned', label: 'Assigned to Shloimie' };
   return null;
 }

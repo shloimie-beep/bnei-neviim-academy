@@ -126,6 +126,13 @@ test('Operations moves resolved decisions to Done or actionable Tasks', () => {
   assert.match(operationsHtml, /if \(\['assigned', 'in_progress'\]\.includes\(stage\)\) return true;/);
 });
 
+test('explicit Telegram Task prefixes bypass conversational capture suppression', () => {
+  assert.match(server, /const explicitTaskPrefix = \/\^\(\?:task\|todo\)/);
+  assert.match(server, /!explicitTaskPrefix && hasDirectReplyInsteadOfCodexIntentForTasks\(text\)/);
+  assert.match(server, /const keepWholeRoutingTask =[\s\S]*explicitTaskPrefix[\s\S]*hasCommentRequeueWorkflowIntent/);
+  assert.match(server, /check\|verify\|assign\|archive\|audit/);
+});
+
 test('Decision cards expose Phase 8 choice context and comments', () => {
   assert.match(operationsHtml, /function decisionQuestionText/);
   assert.match(operationsHtml, /What should the \$\{cleaned\} be\?/);

@@ -94,6 +94,9 @@ test('academy bridge redacts chat routing and checkpoints Telegram updates after
   assert.match(bridge, /last_processed_update_id: durableProcessedUpdateId/);
   assert.match(bridge, /last_processed_update_id: candidate/);
   assert.match(bridge, /commitDurableTelegramCheckpoint\(config, update\.update_id, botIdentity\)/);
+  assert.match(bridge, /task_watch_checkpoint: durableTaskWatchState/);
+  assert.match(bridge, /task_notification_checkpoint/);
+  assert.match(bridge, /durable deduplication checkpoint was unavailable/);
   assert.match(bridge, /if \(!taskNotificationAllowed\(config\)\) \{[\s\S]*writeTaskWatchState\(\{ tasks: current \}\)/);
   assert.doesNotMatch(bridge, /AllowedChats=\$\{config\.allowedChatIds\.join/);
   assert.doesNotMatch(bridge, /Still working on your last message/);

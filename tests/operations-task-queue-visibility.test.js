@@ -66,4 +66,24 @@ test('tasks API exposes server-side filters for default Task and Decision views'
   assert.match(route, /needs_external_owner/);
   assert.match(route, /duplicate_of_task_id IS NOT NULL OR canonical_task_id IS NOT NULL/);
   assert.match(route, /decision_outcome/);
+  assert.match(route, /taskActorAliasesForRequest\(req\)/);
+  assert.match(route, /taskActorOwnerMatchSql/);
+  assert.doesNotMatch(route, /\(shloimie\|operator\|manager\)/);
+});
+
+test('My Tasks authority comes from the authenticated actor and canonical person', () => {
+  const identityResolver = serverSlice(
+    'async function getCanonicalPersonForOpsIdentity',
+    'async function buildWorkspaceDirectoryForIdentity'
+  );
+
+  assert.match(identityResolver, /JOIN bna_logins l ON l\.person_id = p\.id/);
+  assert.match(identityResolver, /taskActorAliases/);
+  assert.match(identityResolver, /identity\?\.username/);
+  assert.match(identityResolver, /person\?\.preferred_name/);
+  assert.doesNotMatch(identityResolver, /lower\(preferred_name\) = 'shloimie'/);
+
+  assert.match(operations, /opsMe\?\.person\?\.preferred_name/);
+  assert.match(operations, /opsMe\?\.person\?\.full_name/);
+  assert.doesNotMatch(operations, /tokens\.push\('shloimie'/);
 });
