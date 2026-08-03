@@ -16,7 +16,7 @@ function serverSlice(startNeedle, endNeedle) {
 test('Operations task lanes keep internal handoff briefs out of operator-facing views', () => {
   assert.doesNotMatch(operations, /Planned Briefs|Pending Briefs|Implementation Briefs/);
   assert.doesNotMatch(operations, /pending-briefs/);
-  assert.match(operations, /Codex Queue/);
+  assert.match(operations, /Bots \/ Agents/);
   for (const label of [
     'Active Now',
     'Needs Your Decision',
@@ -25,11 +25,11 @@ test('Operations task lanes keep internal handoff briefs out of operator-facing 
     'Full History / Search',
     'My Tasks',
     'One Time Tasks',
-    'Codex Queue',
-    'Blocked',
+    'Bots / Agents',
+    'Pending',
     'Due Soon',
     'Schedule',
-    'Done / Activity',
+    'Done',
     'Needs My Decision',
     'Needs Rabbi Scheller',
     'Needs External Owner',
@@ -66,4 +66,31 @@ test('tasks API exposes server-side filters for default Task and Decision views'
   assert.match(route, /needs_external_owner/);
   assert.match(route, /duplicate_of_task_id IS NOT NULL OR canonical_task_id IS NOT NULL/);
   assert.match(route, /decision_outcome/);
+  assert.match(route, /taskActorAliasesForRequest\(req\)/);
+  assert.match(route, /taskActorOwnerMatchSql/);
+  assert.doesNotMatch(route, /\(shloimie\|operator\|manager\)/);
+});
+
+test('My Tasks authority comes from the authenticated actor and canonical person', () => {
+  const identityResolver = serverSlice(
+    'async function getCanonicalPersonForOpsIdentity',
+    'async function buildWorkspaceDirectoryForIdentity'
+  );
+
+  assert.match(identityResolver, /JOIN bna_logins l ON l\.person_id = p\.id/);
+  assert.match(identityResolver, /taskActorAliases/);
+  assert.match(identityResolver, /identity\?\.username/);
+  assert.match(identityResolver, /person\?\.preferred_name/);
+  assert.doesNotMatch(identityResolver, /lower\(preferred_name\) = 'shloimie'/);
+
+  assert.match(operations, /opsMe\?\.person\?\.preferred_name/);
+  assert.match(operations, /opsMe\?\.person\?\.full_name/);
+  assert.doesNotMatch(operations, /tokens\.push\('shloimie'/);
+});
+
+test('Operations deep links load an exact task even when the bounded queue omits it', () => {
+  assert.match(operations, /selectedTaskId && !tasks\.some\(task => Number\(task\.id\) === Number\(selectedTaskId\)\)/);
+  assert.match(operations, /const selectedTaskRes = await api\.getTaskDetail\(Number\(selectedTaskId\)\)/);
+  assert.match(operations, /if \(selectedTaskRes\?\.task\) tasks = \[selectedTaskRes\.task, \.\.\.tasks\]/);
+  assert.match(operations, /Deep-linked task could not be loaded/);
 });

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bneineviimacademy.org/contracts/bna-control-summary-event-v1.schema.json",
+  "title": "BNA sanitized control summary event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "event_type", "event_id", "idempotency_key",
+    "source_product", "source_workspace", "source_object_type", "source_object_id",
+    "source_object_version", "occurred_at", "title", "status", "assignee",
+    "priority", "deep_link", "data_classification", "signature_algorithm",
+    "key_id", "signed_at", "replay_window_seconds"
+  ],
+  "properties": {
+    "schema_version": { "const": "bna.control_summary.v1" },
+    "event_type": {
+      "enum": [
+        "work_item.created", "work_item.updated", "decision.required", "ticket.opened",
+        "integration.blocked", "deploy.started", "deploy.failed", "deploy.succeeded",
+        "canary.failed", "canary.succeeded", "agent.result_recorded"
+      ]
+    },
+    "event_id": { "type": "string", "minLength": 8, "maxLength": 180 },
+    "idempotency_key": { "type": "string", "minLength": 8, "maxLength": 180 },
+    "source_product": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "source_workspace": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "source_object_type": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "source_object_id": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "source_object_version": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "title": { "type": "string", "minLength": 1, "maxLength": 240 },
+    "status": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "assignee": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "priority": { "type": "string", "enum": ["low", "normal", "today", "urgent"] },
+    "deep_link": { "type": "string", "format": "uri", "pattern": "^https://" },
+    "data_classification": { "const": "sanitized_summary" },
+    "signature_algorithm": { "const": "hmac-sha256" },
+    "key_id": { "type": "string", "minLength": 3, "maxLength": 80 },
+    "signed_at": { "type": "string", "format": "date-time" },
+    "replay_window_seconds": { "const": 300 }
+  }
+}
