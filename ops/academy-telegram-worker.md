@@ -1,6 +1,6 @@
 # Academy Telegram Worker
 
-Last updated: 2026-06-18
+Last updated: 2026-08-03
 
 ## Intended Hosted Runtime
 
@@ -33,6 +33,11 @@ Optional but useful:
 - `TELEGRAM_DEFAULT_REPLY_MODE`
 - `TELEGRAM_PRIMARY_AGENT`
 - `TELEGRAM_TASK_WATCH_INTERVAL_MS`
+- `TELEGRAM_TASK_NOTIFICATIONS_ENABLED=false` (enable only after a verified private-chat canary)
+- `TELEGRAM_NOTIFICATION_QUIET_START_HOUR=22`
+- `TELEGRAM_NOTIFICATION_QUIET_END_HOUR=7`
+- `TELEGRAM_NOTIFICATION_RATE_LIMIT_PER_HOUR=6`
+- `TELEGRAM_NOTIFICATION_TIME_ZONE=Asia/Jerusalem`
 - `GOOGLE_CLIENT_ID=${{skillful-motivation.GOOGLE_CLIENT_ID}}`
 - `GOOGLE_CLIENT_SECRET=${{skillful-motivation.GOOGLE_CLIENT_SECRET}}`
 - `GOOGLE_REFRESH_TOKEN=${{skillful-motivation.GOOGLE_REFRESH_TOKEN}}`
@@ -55,6 +60,17 @@ or pipeline-config blockers.
    - `bridge_runtime_healthy: true`
 3. Telegram `getWebhookInfo` should still show no webhook URL.
 4. Send `/status` from the allowed academy chat and confirm the worker replies.
+5. Confirm `/status` reports the canonical Tasks, Decisions, Pending, and
+   Bots/Agents counts plus a fresh fleet/runtime summary.
+6. Confirm `bridge_runtime_details.last_processed_update_id` advances only
+   after a handled Telegram update. Replaying an already checkpointed update
+   must not create a second task or a second notification.
+
+Task notifications are deduplicated transition notices, not a task-feed echo.
+They are feature-flagged off by default, suppress quiet hours, and emit only
+useful assignment, decision, blocked, completion, or failure transitions. The
+worker stores its latest processed Telegram update in the shared runtime row so
+a restart cannot replay already handled updates.
 
 Latest known-good proof from 2026-06-18:
 
@@ -99,6 +115,9 @@ Latest known-good proof from 2026-06-18:
 
 - The academy worker heartbeat reports into `bna_agent_runtime_status` under
   `telegram-academy-bridge`.
+- Telegram actor and token identities are hashed or masked in runtime details
+  and logs. Never add raw chat IDs, tokens, message bodies, or private task
+  payloads to logs, screenshots, handoffs, or repo files.
 - The web service Telegram status card prefers that DB heartbeat over local
   `.runtime/telegram-kimi-bridge.*` files, but local files remain a fallback
   for manual/local bridge runs.

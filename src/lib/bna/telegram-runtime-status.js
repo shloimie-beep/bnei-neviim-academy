@@ -1,4 +1,11 @@
 const LOCAL_TELEGRAM_LOCK_STALE_MINUTES = 60;
+const TELEGRAM_SIDEKICK_RUNTIME_KEYS = Object.freeze({
+  // The existing academy bridge is Shloimie's supported conversational and
+  // control-loop worker. Keep the legacy alias until every older status
+  // caller has moved to the named key contract.
+  shloimie: 'telegram-academy-bridge',
+  legacyAcademy: 'telegram-academy-bridge',
+});
 
 function isLocalLockStale(lock = {}) {
   return Boolean(lock.present && lock.age_minutes !== null && lock.age_minutes > LOCAL_TELEGRAM_LOCK_STALE_MINUTES);
@@ -102,6 +109,7 @@ function buildTelegramRuntimeReadiness({
 
 module.exports = {
   LOCAL_TELEGRAM_LOCK_STALE_MINUTES,
+  TELEGRAM_SIDEKICK_RUNTIME_KEYS,
   buildTelegramRuntimeReadiness,
   isHostedRuntimeFresh,
   isLocalLockStale,

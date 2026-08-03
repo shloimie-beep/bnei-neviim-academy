@@ -103,9 +103,9 @@ test('Operations moves resolved decisions to Done or actionable Tasks', () => {
   assert.match(operationsHtml, /const TASK_LANE_IDS = TASK_SUBTABS\.map\(tab => tab\.id\)/);
   assert.match(operationsHtml, /\{ id: 'mine', label: 'My Tasks' \}/);
   assert.match(operationsHtml, /\{ id: 'one_time', label: 'One Time Tasks' \}/);
-  assert.match(operationsHtml, /\{ id: 'done_activity', label: 'Done \/ Activity' \}/);
-  assert.match(operationsHtml, /\{ id: 'codex_queue', label: 'Codex Queue' \}/);
-  assert.match(operationsHtml, /\{ id: 'tasks', label: 'All Tasks' \}/);
+  assert.match(operationsHtml, /\{ id: 'done_activity', label: 'Done' \}/);
+  assert.match(operationsHtml, /\{ id: 'codex_queue', label: 'Bots \/ Agents' \}/);
+  assert.match(operationsHtml, /\{ id: 'tasks', label: 'Tasks' \}/);
   assert.match(operationsHtml, /done: \[\]/);
   assert.match(operationsHtml, /tasks: \[\]/);
   assert.match(operationsHtml, /done_activity: doneActivityTasks/);
@@ -155,9 +155,12 @@ test('Task toolbar uses workspace-aware filters without bucket wording', () => {
   assert.match(operationsHtml, /<span class="filter-label">Type<\/span>/);
   assert.match(operationsHtml, /Upcoming/);
   assert.match(operationsHtml, /No date/);
-  assert.match(operationsHtml, /Me \/ Shloimie/);
+  assert.match(operationsHtml, /\{ id: 'assigned_shloimie', label: 'Me' \}/);
   assert.match(operationsHtml, /Rabbi Elie Scheller/);
   assert.match(operationsHtml, /taskSignalFilter !== 'all'/);
+  assert.match(operationsHtml, /<span class="filter-label">Source<\/span>/);
+  assert.match(operationsHtml, /taskSourceFilter !== 'all'/);
+  assert.match(operationsHtml, /Source: \$\{escapeHtml\(taskSourceLabel\(task\)\)\}/);
 });
 
 test('Task calendar exposes selected-date task actions', () => {

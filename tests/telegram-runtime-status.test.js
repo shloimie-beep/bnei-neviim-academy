@@ -5,7 +5,13 @@ const vm = require('node:vm');
 
 const {
   buildTelegramRuntimeReadiness,
+  TELEGRAM_SIDEKICK_RUNTIME_KEYS,
 } = require('../src/lib/bna/telegram-runtime-status');
+
+test('Telegram runtime key contract resolves Shloimie to the canonical academy worker', () => {
+  assert.equal(TELEGRAM_SIDEKICK_RUNTIME_KEYS.shloimie, 'telegram-academy-bridge');
+  assert.equal(TELEGRAM_SIDEKICK_RUNTIME_KEYS.legacyAcademy, 'telegram-academy-bridge');
+});
 
 test('Telegram runtime readiness prefers fresh hosted academy worker heartbeat', () => {
   const readiness = buildTelegramRuntimeReadiness({
@@ -76,8 +82,22 @@ test('academy bridge source files wire hosted heartbeat reporting and status rea
   assert.match(bridge, /\/api\/bna\/agent-fleet\/status/);
   assert.match(bridge, /process_selector: process\.env\.BNA_RAILWAY_PROCESS/);
   assert.match(server, /async function buildTelegramStatusCard\(/);
-  assert.match(server, /loadAgentRuntimeStatus\('telegram-academy-bridge'\)/);
+  assert.match(server, /loadAgentRuntimeStatus\(TELEGRAM_SIDEKICK_RUNTIME_KEYS\.shloimie\)/);
+  assert.match(server, /TELEGRAM_SIDEKICK_RUNTIME_KEYS/);
   assert.match(server, /await buildTelegramStatusCard\(\)/);
+});
+
+test('academy bridge redacts chat routing and checkpoints Telegram updates after handling', () => {
+  const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
+
+  assert.match(bridge, /telegramActorRef\(chatId\)/);
+  assert.match(bridge, /last_processed_update_id: durableProcessedUpdateId/);
+  assert.match(bridge, /last_processed_update_id: candidate/);
+  assert.match(bridge, /commitDurableTelegramCheckpoint\(config, update\.update_id, botIdentity\)/);
+  assert.match(bridge, /if \(!taskNotificationAllowed\(config\)\) \{[\s\S]*writeTaskWatchState\(\{ tasks: current \}\)/);
+  assert.doesNotMatch(bridge, /AllowedChats=\$\{config\.allowedChatIds\.join/);
+  assert.doesNotMatch(bridge, /Still working on your last message/);
+  assert.doesNotMatch(bridge, /Text message received from chat .*text\.slice/);
 });
 
 test('academy bridge can use env-based Google Drive auth on hosted worker', () => {

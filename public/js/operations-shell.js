@@ -1139,7 +1139,7 @@ const TASK_FOCUS_ALIASES = {
 const normalizedInitialTaskSection = TASK_FOCUS_ALIASES[initialSection] || initialSection;
 let taskFocus = currentView === 'tasks' && ['mine', 'one_time', 'tasks', 'codex_queue', 'pending', 'due_soon', 'schedule', 'done_activity', 'archived', 'decisions', 'needs_my_decision', 'needs_rabbi_decision', 'needs_external_decision', 'decided', 'superseded_decisions', 'archived_decisions'].includes(normalizedInitialTaskSection)
     ? normalizedInitialTaskSection
-    : 'tasks';
+    : 'mine';
 let taskUrgencyFilter = 'all';
 let taskDateFilter = 'all';
 let taskProjectFilter = initialProject
@@ -1147,6 +1147,7 @@ let taskProjectFilter = initialProject
     : (initialWorkspaceKey && initialWorkspaceKey !== 'platform' ? projectKeyForWorkspaceKey(initialWorkspaceKey) : 'all');
 let taskCategoryFilter = 'all';
 let taskSignalFilter = 'all';
+let taskSourceFilter = 'all';
 let taskCalendarMode = ['month', 'week', 'day'].includes(String(initialParams.get('calendar_mode') || '').toLowerCase())
     ? String(initialParams.get('calendar_mode') || '').toLowerCase()
     : 'month';
@@ -1366,16 +1367,16 @@ const DASHBOARD_SUBTABS = [
 
 const TASK_SUBTABS = [
     { id: 'mine', label: 'My Tasks' },
+    { id: 'decisions', label: 'Decisions' },
+    { id: 'pending', label: 'Pending' },
+    { id: 'tasks', label: 'Tasks' },
+    { id: 'done_activity', label: 'Done' },
+    { id: 'codex_queue', label: 'Bots / Agents' },
     { id: 'one_time', label: 'One Time Tasks' },
-    { id: 'tasks', label: 'All Tasks' },
-    { id: 'codex_queue', label: 'Codex Queue' },
-    { id: 'pending', label: 'Blocked' },
     { id: 'due_soon', label: 'Due Soon' },
     { id: 'schedule', label: 'Schedule' },
-    { id: 'done_activity', label: 'Done / Activity' },
     { id: 'full_history', label: 'Full History / Search' },
     { id: 'archived', label: 'Archived' },
-    { id: 'decisions', label: 'Decisions' },
     { id: 'needs_my_decision', label: 'Needs My Decision' },
     { id: 'needs_rabbi_decision', label: 'Needs Rabbi Scheller' },
     { id: 'needs_external_decision', label: 'Needs External Owner' },
@@ -1425,7 +1426,7 @@ const RABBI_DIALOGUE_COLUMNS = [
 ];
 const TASK_SIGNAL_FILTERS = [
     { id: 'all', label: 'All owners' },
-    { id: 'assigned_shloimie', label: 'Me / Shloimie' },
+    { id: 'assigned_shloimie', label: 'Me' },
     { id: 'assigned_rabbi', label: 'Rabbi Ellie Scheller' },
     { id: 'other_team', label: 'Other team' },
     { id: 'unassigned', label: 'Unassigned' },
@@ -2583,7 +2584,7 @@ function operationsTopbarStatusChips() {
     const alerts = safeCount(() => inAppNotifications.filter(item => item.status === 'unread').length);
     return [
         { label: 'Need decision', value: decisions, tone: decisions ? 'attention' : 'ok', action: "openCommandTarget('tasks', 'decisions')", title: 'Human choices that unlock the next step.' },
-        { label: 'Codex Queue', value: codexQueue, tone: codexQueue ? 'active' : 'ok', action: "openCommandTarget('tasks', 'codex_queue')", title: 'Queued or running machine work.' },
+        { label: 'Bots / Agents', value: codexQueue, tone: codexQueue ? 'active' : 'ok', action: "openCommandTarget('tasks', 'codex_queue')", title: 'Queued or running bot and agent work.' },
         { label: 'Student accountability', value: accountability, tone: accountability ? 'attention' : 'ok', action: "openCommandTarget('students', 'accountability')", title: 'Students with accountability attention signals.' },
         { label: 'Alerts', value: alerts, tone: alerts ? 'attention' : 'ok', action: "openCommandTarget('dashboard', 'alerts')", title: 'Unread private Operations alerts.' },
     ];
@@ -3341,10 +3342,10 @@ function renderOperationsCommandCenter() {
             tone: metrics.decisions ? 'attention' : 'ok'
         },
         {
-            label: 'Codex Queue',
+            label: 'Bots / Agents',
             value: metrics.codexPending,
             note: `${metrics.codexInProgress} running. Machine work stays out of human Blocked.`,
-            action: 'Open Codex Queue',
+            action: 'Open Bots / Agents',
             target: "openCommandTarget('tasks', 'codex_queue')",
             tone: metrics.codexPending ? 'active' : 'ok'
         },
@@ -3802,6 +3803,7 @@ function taskPassesCurrentFilters(task = {}) {
         && (taskProjectFilter === 'all' || taskProjectKey(task) === taskProjectFilter)
         && (taskCategoryFilter === 'all' || taskCategoryKey(task) === taskCategoryFilter)
         && (taskSignalFilter === 'all' || taskMatchesSignalFilter(task, taskSignalFilter))
+        && (taskSourceFilter === 'all' || taskSourceKey(task) === taskSourceFilter)
         && taskMatchesDateFilter(task, taskDateFilter);
 }
 
@@ -3886,7 +3888,7 @@ function renderAgentStatusPanel(buckets) {
             : 'No queued agent work is waiting right now';
     const note = latestTitle
         ? `Next visible item: ${taskDisplayTitle({ title: latestTitle })}`
-        : 'Machine work appears in Codex Queue, never as human Blocked.';
+        : 'Machine work appears in Bots / Agents, separate from human Pending work.';
     const heartbeat = fleet.last_seen_at
         ? `Last seen ${formatDateTime(fleet.last_seen_at)}`
         : queued > 0
@@ -4073,13 +4075,38 @@ function renderQueueAuditTable(items = []) {
     `;
 }
 
+function currentTaskIdentityTokens() {
+    const values = [
+        opsMe?.username,
+        opsMe?.user,
+        opsMe?.email,
+        opsMe?.displayName,
+        opsMe?.display_name,
+        opsMe?.preferred_name,
+    ];
+    const tokens = values
+        .flatMap(value => String(value || '').toLowerCase().split(/[^a-z0-9]+/))
+        .filter(value => value.length >= 3 && !['admin', 'operations', 'super', 'bna', 'ops', 'user'].includes(value));
+    if (opsMe?.scope?.type === 'all') tokens.push('shloimie', 'shlomo', 'operator', 'manager');
+    if (!tokens.length) tokens.push('shloimie', 'shlomo', 'operator', 'manager');
+    return [...new Set(tokens)];
+}
+
+function taskBelongsToCurrentIdentity(task = {}) {
+    const haystack = [task.assigned_to, task.owner, task.decision_owner, task.waiting_on]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+    return currentTaskIdentityTokens().some(token => haystack.includes(token));
+}
+
 function taskViewState() {
     const { buckets } = getTaskBuckets();
     const codexQueueTasks = buckets.codex_queue.slice().sort(sortTasks);
     const regularTasks = buckets.tasks.slice().sort(sortTasks);
     const openTasks = [...buckets.decisions, ...buckets.pending, ...regularTasks, ...codexQueueTasks].sort(sortTasks);
     const myTasks = openTasks
-        .filter(task => taskMatchesSignalFilter(task, 'assigned_shloimie') || taskMatchesSignalFilter(task, 'needs_shloimie'))
+        .filter(taskBelongsToCurrentIdentity)
         .sort(sortTasks);
     const oneTimeTasks = openTasks.filter(taskIsOneTimeRecord).sort(sortTasks);
     const dueSoonTasks = openTasks.filter(task => taskIsDueWithinDays(task, 7)).sort(sortTasks);
@@ -4105,7 +4132,7 @@ function taskViewState() {
     });
     const staleTasks = staleTaskItems();
     const needsMyDecisionTasks = buckets.decisions
-        .filter(task => taskMatchesSignalFilter(task, 'needs_shloimie') || taskMatchesSignalFilter(task, 'assigned_shloimie'))
+        .filter(taskBelongsToCurrentIdentity)
         .sort(sortTasks);
     const needsRabbiDecisionTasks = buckets.decisions
         .filter(task => taskMatchesSignalFilter(task, 'needs_rabbi') || taskMatchesSignalFilter(task, 'assigned_rabbi'))
@@ -4145,22 +4172,24 @@ function taskViewState() {
     const focusTasks = [...(focusMap[normalizedFocus] || focusMap.tasks)].sort(sortTasks);
     const projectCounts = taskProjectCounts(focusTasks);
     const categoryCounts = taskCategoryCounts(focusTasks);
+    const sourceCounts = taskSourceCounts(focusTasks);
     const filteredTasks = focusTasks
         .filter(task => taskUrgencyFilter === 'all' || task.urgency === taskUrgencyFilter)
         .filter(task => taskProjectFilter === 'all' || taskProjectKey(task) === taskProjectFilter)
         .filter(task => taskCategoryFilter === 'all' || taskCategoryKey(task) === taskCategoryFilter)
         .filter(task => taskSignalFilter === 'all' || taskMatchesSignalFilter(task, taskSignalFilter))
+        .filter(task => taskSourceFilter === 'all' || taskSourceKey(task) === taskSourceFilter)
         .filter(task => taskMatchesDateFilter(task, taskDateFilter));
     const title = ({
         mine: 'My Tasks',
         one_time: 'One Time Tasks',
         decisions: 'Decisions',
-        pending: 'Blocked',
-        tasks: 'All Tasks',
-        codex_queue: 'Codex Queue',
+        pending: 'Pending',
+        tasks: 'Tasks',
+        codex_queue: 'Bots / Agents',
         due_soon: 'Due Soon',
         schedule: 'Schedule',
-        done_activity: 'Done / Activity',
+        done_activity: 'Done',
         full_history: 'Full History / Search',
         archived: 'Archived',
         needs_my_decision: 'Needs My Decision',
@@ -4199,6 +4228,7 @@ function taskViewState() {
         filteredTasks,
         projectCounts,
         categoryCounts,
+        sourceCounts,
         tabCounts,
         decisionCount,
         pendingCount,
@@ -4882,7 +4912,7 @@ function renderScopedAgentStatus() {
                 </div>
                 <div class="task-actions">
                     <button class="task-action primary" type="button" onclick="loadData({ background: true })">Refresh</button>
-                    <button class="task-action" type="button" onclick="openCommandTarget('tasks', 'codex_queue')">Codex Queue</button>
+                    <button class="task-action" type="button" onclick="openCommandTarget('tasks', 'codex_queue')">Bots / Agents</button>
                     <button class="task-action" type="button" onclick="openCommandTarget('tasks', 'tasks')">Open Tasks</button>
                 </div>
             </div>
@@ -5173,7 +5203,7 @@ return renderScopedAgentStatus();
                 </div>
                 <div class="task-actions">
                     <button class="task-action primary" type="button" onclick="refreshAgentRuns()">Refresh</button>
-                    <button class="task-action" type="button" onclick="openCommandTarget('tasks', 'codex_queue')">Codex Queue</button>
+                    <button class="task-action" type="button" onclick="openCommandTarget('tasks', 'codex_queue')">Bots / Agents</button>
                 </div>
             </div>
             ${agentRunsNotice ? `<div class="settings-disabled-note">${escapeHtml(agentRunsNotice)}</div>` : ''}
@@ -5470,8 +5500,8 @@ function renderTasks() {
             <div class="page-heading task-heading">
                 <div>
                     <div class="page-kicker">${oneTimeMode ? 'Rabbi / One Time Workspace' : 'Workspace Work'}</div>
-                    <h2>${oneTimeMode ? 'Task Dialogue Board' : 'Decisions, Tasks, Schedule'}</h2>
-                    <p>${oneTimeMode ? 'Decisions, blockers, task work, and completion history stay separated from provider schedule items.' : 'Human blockers stay in Blocked. Machine work has a Codex Queue. Owner, urgency, workspace, and dates are filters.'}</p>
+                    <h2>${oneTimeMode ? 'Task Dialogue Board' : 'Decisions, Pending, Tasks, Done'}</h2>
+                    <p>${oneTimeMode ? 'Decisions, blockers, task work, and completion history stay separated from provider schedule items.' : 'Decisions, pending blockers, actionable tasks, completed work, and bot/agent activity stay distinct. Owner, urgency, workspace, source, and dates are filters.'}</p>
                 </div>
             </div>
             ${taskWorkflowNotice ? `<div class="settings-disabled-note task-workflow-notice">${escapeHtml(taskWorkflowNotice)}</div>` : ''}
@@ -5752,7 +5782,7 @@ function renderTaskStatusToolbar(state = taskViewState()) {
                 <div>
                     <div class="local-toolbar-kicker">Workspace Status</div>
                     <strong class="local-toolbar-title">${escapeHtml(state.title || 'Tasks')}</strong>
-                    <p class="local-toolbar-copy">${Number(focusCount)} visible item${Number(focusCount) === 1 ? '' : 's'}${activeFilters.length ? ` after ${activeFilters.length} filter${activeFilters.length === 1 ? '' : 's'}` : ''}. Blocked is only for human or outside-service blockers; Codex Queue is separate.</p>
+                    <p class="local-toolbar-copy">${Number(focusCount)} visible item${Number(focusCount) === 1 ? '' : 's'}${activeFilters.length ? ` after ${activeFilters.length} filter${activeFilters.length === 1 ? '' : 's'}` : ''}. Pending is for human or outside-service blockers; Bots / Agents is separate.</p>
                 </div>
                 <div class="status-chip-row">
                     <button type="button" class="status-chip" onclick="openTaskModal()">Add Task</button>
@@ -5787,7 +5817,7 @@ function renderTaskOverview(state) {
             </div>
             <details class="workflow-details">
                 <summary>Workflow rule</summary>
-                <p>Captures become Decisions only when a human choice is needed, Waiting Externally only when held by a human or outside service, Active Now when work can move, and Codex Queue when machine work is in progress.</p>
+                <p>Captures become Decisions only when a human choice is needed, Pending only when held by a human or outside service, Tasks when work can move, and Bots / Agents when machine work is in progress.</p>
             </details>
         </section>
     `;
@@ -5815,7 +5845,7 @@ function renderTaskWorkflowStrip(state = {}) {
     };
     return `
         <section class="focus-panel compact-panel" aria-label="Task stage flow">
-            <div class="task-section-header"><h3>Status Flow</h3><span>Decisions / Tasks / Codex Queue / Blocked / Schedule / Done Activity</span></div>
+            <div class="task-section-header"><h3>Status Flow</h3><span>Decisions / Pending / Tasks / Done / Bots / Agents</span></div>
             <div class="task-overview-grid">
                 ${TASK_STAGE_FLOW.map(stage => renderMetricButton(stage.label, countForStage[stage.id] || 0, operationalLaneNote(stage.id), `setTaskFocus('${stage.id}')`)).join('')}
             </div>
@@ -5963,7 +5993,7 @@ function renderTaskActivitySummary(state = {}) {
     return `
         <div class="task-activity-summary">
             <strong>${Number(state.filteredTasks?.length || 0)} recent item${Number(state.filteredTasks?.length || 0) === 1 ? '' : 's'}</strong>
-            <span>Done / Activity rows open the same detail and action sheet as Tasks, with comments, timestamps, proof, and next actions.</span>
+            <span>Done rows open the same detail and action sheet as Tasks, with comments, timestamps, proof, and next actions.</span>
             <span>${Number(commentCount)} comment${Number(commentCount) === 1 ? '' : 's'} visible in this filtered set.</span>
         </div>
     `;
@@ -6211,10 +6241,20 @@ function renderTaskFilterPanel(state, extraClass = '', options = {}) {
                     <span class="filter-label">Owner</span>
                     ${renderTaskSignalFilters(state)}
                 </div>
-                <div class="filter-row">
-                    <span class="filter-label">Type</span>
-                    ${renderTaskCategoryFilters(state.categoryCounts)}
-                </div>
+        <div class="filter-row">
+            <span class="filter-label">Type</span>
+            ${renderTaskCategoryFilters(state.categoryCounts)}
+        </div>
+        <div class="filter-row">
+            <span class="filter-label">Source</span>
+            ${renderFilterSelect('setTaskFilter', 'source', taskSourceFilter, [
+                { value: 'all', label: `All (${state.focusTasks.length})` },
+                ...['bot', 'ticket', 'manual', 'agent', 'integration'].map(value => ({
+                    value,
+                    label: `${value.charAt(0).toUpperCase() + value.slice(1)} (${Number(state.sourceCounts?.[value] || 0)})`
+                }))
+            ], 'Task source filter')}
+        </div>
                 ${renderFilterCountNote(state.filteredTasks.length, state.focusTasks.length, 'task')}
             </div>
         </details>
@@ -6302,7 +6342,7 @@ function renderTaskOverviewStrip(state = {}) {
             ${renderTaskOverviewButton('one_time', 'One Time', state.oneTimeTaskCount, 'One Time scoped')}
             ${renderTaskOverviewButton('decisions', 'Decisions', state.decisionCount, 'Choices needed')}
             ${renderTaskOverviewButton('pending', 'Blocked', state.pendingCount, 'Human or external blockers')}
-            ${renderTaskOverviewButton('tasks', 'All Tasks', state.taskCount, 'Actionable work')}
+            ${renderTaskOverviewButton('tasks', 'Tasks', state.taskCount, 'Actionable work')}
             ${renderTaskOverviewButton('due_soon', 'Due Soon', state.dueSoonCount, 'Due within seven days')}
             ${renderTaskOverviewButton('schedule', 'Schedule', state.tabCounts?.schedule || 0, 'Planned work')}
             ${renderTaskOverviewButton('done_activity', 'Completed', state.activityCount, 'Closed work')}
@@ -6327,6 +6367,7 @@ function taskActiveFilterLabels() {
     if (taskProjectFilter !== 'all') labels.push(`Workspace: ${taskProjectLabel({ project_key: taskProjectFilter })}`);
     if (taskCategoryFilter !== 'all') labels.push(`Category: ${taskCategoryLabel(taskCategoryFilter)}`);
     if (taskSignalFilter !== 'all') labels.push(`Owner: ${taskSignalFilterLabel(taskSignalFilter)}`);
+    if (taskSourceFilter !== 'all') labels.push(`Source: ${taskSourceFilter.charAt(0).toUpperCase() + taskSourceFilter.slice(1)}`);
     return labels;
 }
 
@@ -6409,9 +6450,9 @@ function renderTaskEmpty(columnId) {
         mine: 'No tasks assigned to you match these filters.',
         one_time: 'No One Time tasks match these filters.',
         decisions: 'No decisions match these filters.',
-        pending: 'No blocked items match these filters.',
+        pending: 'No pending or blocked items match these filters.',
         tasks: 'No actionable tasks match these filters.',
-        codex_queue: 'No Codex Queue items match these filters.',
+        codex_queue: 'No bot or agent items match these filters.',
         due_soon: 'No due-soon items match these filters.',
         schedule: 'No scheduled items match these filters.',
         done_activity: 'No completed or recent activity items match these filters.',
@@ -6427,16 +6468,38 @@ function renderTaskEmpty(columnId) {
     return `<div class="task-empty">${escapeHtml(message)}</div>`;
 }
 
+function taskSourceKey(task = {}) {
+    const source = String(task.source || task.source_type || task.source_channel || '').toLowerCase();
+    const type = String(task.item_type || task.task_kind || '').toLowerCase();
+    if (task.bot_created || /telegram|bot/.test(source)) return 'bot';
+    if (task.support_ticket_id || /ticket|support/.test(source) || /ticket/.test(type)) return 'ticket';
+    if (task.agent_job_id || /agent|codex|kimi|system/.test(source) || /agent/.test(type)) return 'agent';
+    if (/integration|webhook|whatsapp|wapi|drive|calendar|email|zoom|stripe/.test(source)) return 'integration';
+    return 'manual';
+}
+
+function taskSourceLabel(task = {}) {
+    return ({ bot: 'Bot', ticket: 'Ticket', manual: 'Manual', agent: 'Agent', integration: 'Integration' })[taskSourceKey(task)] || 'Manual';
+}
+
+function taskSourceCounts(items = []) {
+    return items.reduce((counts, task) => {
+        const key = taskSourceKey(task);
+        counts[key] = (counts[key] || 0) + 1;
+        return counts;
+    }, {});
+}
+
 function taskBadgeLabel(task = {}, columnId = '') {
     const taskKind = String(task.task_kind || '').toLowerCase();
     if (taskKind === 'pending_access') return 'Blocked';
-    if (taskKind === 'agent_job') return 'Codex Queue';
-    if (taskKind === 'history') return 'Done / Activity';
+    if (taskKind === 'agent_job') return 'Bots / Agents';
+    if (taskKind === 'history') return 'Done';
     if (taskKind === 'decision') return 'Decision';
     const bucket = taskStatusBucket(task) || columnId;
     const agentStatus = String(task.agent_status || '').toLowerCase();
     if (bucket === 'done') return 'Done';
-    if (['queued', 'running'].includes(agentStatus) || taskMatchesCodexQueue(task)) return 'Codex Queue';
+    if (['queued', 'running'].includes(agentStatus) || taskMatchesCodexQueue(task)) return 'Bots / Agents';
     if (bucket === 'decisions') return 'Decision';
     if (bucket === 'pending') return 'Blocked';
     return 'Task';
@@ -6631,8 +6694,9 @@ function renderTaskCard(task, columnId) {
     return `
         <div class="task-row" title="${escapeHtml(task.title || '')}" data-helper-record-type="task" data-helper-record-id="${id}" onclick="openTaskDetail(event, ${id})">
             <div class="task-row-main">
-                <div class="task-card-badges">
-                    <span class="task-type-badge">${escapeHtml(taskBadgeLabel(task, columnId))}</span>
+        <div class="task-card-badges">
+            <span class="task-type-badge">${escapeHtml(taskBadgeLabel(task, columnId))}</span>
+            <span class="badge">Source: ${escapeHtml(taskSourceLabel(task))}</span>
                     ${workflowLabel ? `<span class="badge">${escapeHtml(workflowLabel)}</span>` : ''}
                     ${proofLabel && (columnId === 'done' || taskStatusBucket(task) === 'done') ? `<span class="badge ${/missing|broken/i.test(proofLabel) ? 'badge-urgency-urgent' : ''}">${escapeHtml(proofLabel)}</span>` : ''}
                     ${task.agent_status && task.agent_status !== 'none' ? `<span class="badge">Codex ${escapeHtml(String(task.agent_status).replace(/_/g, ' '))}</span>` : ''}
@@ -6725,7 +6789,7 @@ function renderTaskDetailPage(task, state = taskViewState()) {
         task.converted_task_id ? ['Converted task', `#${task.converted_task_id}`] : null,
         ['Stage', taskStageLabel(task)],
         ['Category', taskCategoryLabel(task.category)],
-        ['Source', task.source || 'dashboard'],
+        ['Source', `${taskSourceLabel(task)}${task.source ? ` / ${task.source}` : ''}`],
         ['Project', taskProjectLabel(task)],
         ['Urgency', formatUrgency(task.urgency)],
     ];
@@ -14968,7 +15032,7 @@ function taskMatchesSignalFilter(task = {}, signal = taskSignalFilter) {
     const bucket = taskStatusBucket(task);
     if (normalized === 'needs_shloimie') return /(shloimie|operator|manager)/.test(`${task.decision_owner || ''} ${task.waiting_on || ''}`.toLowerCase());
     if (normalized === 'needs_rabbi') return /(rabbi|scheller|sheller|provider)/.test(`${task.decision_owner || ''} ${task.waiting_on || ''}`.toLowerCase());
-    if (normalized === 'assigned_shloimie') return /shloimie|operator|manager/.test(String(task.assigned_to || '').toLowerCase());
+    if (normalized === 'assigned_shloimie') return taskBelongsToCurrentIdentity(task);
     if (normalized === 'assigned_rabbi') return /rabbi|scheller|sheller|provider/.test(String(task.assigned_to || '').toLowerCase());
     if (normalized === 'unassigned') return !String(task.assigned_to || task.decision_owner || task.waiting_on || '').trim();
     if (normalized === 'other_team') {
@@ -18405,6 +18469,7 @@ function setTaskFilter(kind, value) {
     if (kind === 'project') taskProjectFilter = value;
     if (kind === 'category') taskCategoryFilter = value;
     if (kind === 'signal') taskSignalFilter = value;
+    if (kind === 'source') taskSourceFilter = value;
     render();
 }
 
@@ -18912,6 +18977,7 @@ function resetTaskFilters() {
     taskProjectFilter = 'all';
     taskCategoryFilter = 'all';
     taskSignalFilter = 'all';
+    taskSourceFilter = 'all';
     render();
 }
 

@@ -60,6 +60,7 @@ export function parseProgressArgs(argv = []) {
     next: '',
     packet: '',
     task: '',
+    message: '',
     dryRun: true,
     send: false,
     json: false,
@@ -92,6 +93,9 @@ export function parseProgressArgs(argv = []) {
     } else if (arg === '--task' || arg.startsWith('--task=')) {
       args.task = optionValue(argv, index);
       if (!arg.includes('=')) index += 1;
+    } else if (arg === '--message' || arg.startsWith('--message=')) {
+      args.message = optionValue(argv, index);
+      if (!arg.includes('=')) index += 1;
     }
   }
   return args;
@@ -121,6 +125,11 @@ export function formatCodexProgressMessage(input = {}) {
   if (packet) lines.push(`- Packet: ${packet}`);
   if (task) lines.push(`- Task: ${task}`);
   return lines.join('\n');
+}
+
+export function buildTelegramProgressMessage(input = {}) {
+  const explicitMessage = compactLine(input.message, 3500);
+  return explicitMessage || formatCodexProgressMessage(input);
 }
 
 export function assertSafeTelegramProgressText(text) {
@@ -159,7 +168,7 @@ export async function sendTelegramProgress(config, text, { fetchImpl = fetch } =
 
 async function main() {
   const args = parseProgressArgs(process.argv.slice(2));
-  const message = formatCodexProgressMessage(args);
+  const message = buildTelegramProgressMessage(args);
   assertSafeTelegramProgressText(message);
 
   if (args.dryRun) {

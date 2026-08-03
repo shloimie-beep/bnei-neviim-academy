@@ -16,7 +16,7 @@ function serverSlice(startNeedle, endNeedle) {
 test('Operations task lanes keep internal handoff briefs out of operator-facing views', () => {
   assert.doesNotMatch(operations, /Planned Briefs|Pending Briefs|Implementation Briefs/);
   assert.doesNotMatch(operations, /pending-briefs/);
-  assert.match(operations, /Codex Queue/);
+  assert.match(operations, /Bots \/ Agents/);
   for (const label of [
     'Active Now',
     'Needs Your Decision',
@@ -25,11 +25,11 @@ test('Operations task lanes keep internal handoff briefs out of operator-facing 
     'Full History / Search',
     'My Tasks',
     'One Time Tasks',
-    'Codex Queue',
-    'Blocked',
+    'Bots / Agents',
+    'Pending',
     'Due Soon',
     'Schedule',
-    'Done / Activity',
+    'Done',
     'Needs My Decision',
     'Needs Rabbi Scheller',
     'Needs External Owner',

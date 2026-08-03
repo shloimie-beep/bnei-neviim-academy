@@ -9,10 +9,12 @@ test('workspace task UI exposes primary lanes and owner filters', () => {
   assert.match(operationsHtml, /const TASK_LANE_IDS = TASK_SUBTABS\.map\(tab => tab\.id\)/);
   assert.match(operationsHtml, /\{ id: 'mine', label: 'My Tasks' \}/);
   assert.match(operationsHtml, /\{ id: 'one_time', label: 'One Time Tasks' \}/);
-  assert.match(operationsHtml, /\{ id: 'codex_queue', label: 'Codex Queue' \}/);
-  assert.match(operationsHtml, /\{ id: 'pending', label: 'Blocked' \}/);
-  assert.match(operationsHtml, /\{ id: 'done_activity', label: 'Done \/ Activity' \}/);
-  assert.match(operationsHtml, /\{ id: 'assigned_shloimie', label: 'Me \/ Shloimie' \}/);
+  assert.match(operationsHtml, /\{ id: 'codex_queue', label: 'Bots \/ Agents' \}/);
+  assert.match(operationsHtml, /\{ id: 'pending', label: 'Pending' \}/);
+  assert.match(operationsHtml, /\{ id: 'done_activity', label: 'Done' \}/);
+  assert.match(operationsHtml, /\{ id: 'assigned_shloimie', label: 'Me' \}/);
+  assert.match(operationsHtml, /function taskSourceKey/);
+  assert.match(operationsHtml, /function taskSourceLabel/);
   assert.doesNotMatch(operationsHtml, /\{ id: 'agent_working', label: 'Agent Working' \}/);
   assert.doesNotMatch(operationsHtml, /\{ id: 'stale', label: 'Stale' \}/);
   assert.match(operationsHtml, /function taskStatusBucket/);

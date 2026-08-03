@@ -43,6 +43,19 @@ test('Codex Telegram progress rejects secret-shaped content', async () => {
   );
 });
 
+test('Codex Telegram progress accepts one bounded explicit canary message', async () => {
+  const { buildTelegramProgressMessage, parseProgressArgs } = await loadModule();
+  const args = parseProgressArgs([
+    '--message',
+    'BNA control bot is online. Use /status or ask “show my tasks”.',
+    '--send',
+  ]);
+
+  assert.equal(buildTelegramProgressMessage(args), 'BNA control bot is online. Use /status or ask “show my tasks”.');
+  assert.equal(args.dryRun, false);
+  assert.equal(args.send, true);
+});
+
 test('Codex Telegram progress send path does not expose chat target in result', async () => {
   const { sendTelegramProgress } = await loadModule();
   const calls = [];

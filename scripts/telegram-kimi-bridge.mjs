@@ -65,6 +65,14 @@ const {
 const {
   maskIdentifier,
 } = require('../src/lib/bna/telegram-chat-id-readback');
+const {
+  classifyTelegramControlQuery,
+  isQuietHour,
+  taskControlSource,
+  telegramActorRef,
+  telegramTokenFingerprint,
+  usefulTaskTransition,
+} = require('../src/lib/bna/telegram-control-loop');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -164,6 +172,8 @@ let activeBridgeConfig = null;
 let activeBridgeBotIdentity = null;
 let stopBridgeRuntimeHeartbeat = null;
 let bridgeShutdownInProgress = false;
+let durableProcessedUpdateId = null;
+const recentNotificationTimes = [];
 
 function appendAgentTaskLedger(entry) {
   const payload = {
@@ -412,6 +422,11 @@ function loadConfig() {
     driveWatchIntervalMs: Number(env.DRIVE_WATCH_INTERVAL_MS || 10000),
     taskWatchIntervalMs: Number(env.TELEGRAM_TASK_WATCH_INTERVAL_MS || 45000),
     runtimeHeartbeatMs: Number(env.TELEGRAM_BRIDGE_HEARTBEAT_MS || 45000),
+    taskNotificationsEnabled: String(env.TELEGRAM_TASK_NOTIFICATIONS_ENABLED || 'false').toLowerCase() === 'true',
+    notificationTimezone: env.BNA_TIME_ZONE || env.TZ || 'Asia/Jerusalem',
+    notificationQuietStartHour: Number(env.TELEGRAM_NOTIFICATION_QUIET_START_HOUR || 22),
+    notificationQuietEndHour: Number(env.TELEGRAM_NOTIFICATION_QUIET_END_HOUR || 7),
+    notificationRateLimitPerHour: Math.max(1, Number(env.TELEGRAM_NOTIFICATION_RATE_LIMIT_PER_HOUR || 6)),
   };
 }
 
@@ -2011,7 +2026,81 @@ async function loadLiveTasks(config) {
   return Array.isArray(result?.tasks) ? result.tasks : [];
 }
 
-async function formatLiveTaskQueueReply(config) {
+function taskControlSection(view = 'overview') {
+  return ({
+    mine: 'mine',
+    decisions: 'decisions',
+    blocked: 'pending',
+    codex_results: 'done_activity',
+  })[view] || 'mine';
+}
+
+function taskOperationsDeepLink(config, task, view = 'mine') {
+  const url = new URL('/operations', config.appUrl);
+  url.searchParams.set('view', 'tasks');
+  url.searchParams.set('section', taskControlSection(view));
+  url.searchParams.set('workspace', 'platform');
+  if (task?.id) url.searchParams.set('task', String(task.id));
+  return url.toString();
+}
+
+function taskMatchesControlView(task, view) {
+  const stage = String(task.stage || '').toLowerCase();
+  const owner = `${task.assigned_to || ''} ${task.decision_owner || ''} ${task.waiting_on || ''}`;
+  if (view === 'mine') return /shloimie|operator|manager/i.test(owner);
+  if (view === 'decisions') return stage === 'needs_decision' || String(task.item_type || task.task_kind || '').toLowerCase() === 'decision';
+  if (view === 'blocked') return stage === 'blocked' || Boolean(task.waiting_on || task.blocked_reason);
+  if (view === 'codex_results') {
+    return isAgentOwnedTask(task) && Boolean(task.completed_at || task.verified_at || stage === 'done');
+  }
+  return true;
+}
+
+function taskControlLine(config, task, view) {
+  const exactNextAction = task.next_action || task.next_action_label || task.blocked_reason || '';
+  const metadata = [
+    taskControlSource(task),
+    task.assigned_to ? `owner ${task.assigned_to}` : '',
+    task.waiting_on ? `waiting ${task.waiting_on}` : '',
+    exactNextAction ? `next ${String(exactNextAction).replace(/\s+/g, ' ').slice(0, 180)}` : '',
+    task.verified_at ? 'verified' : '',
+  ].filter(Boolean).join(' / ');
+  return [
+    `- #${task.id} ${taskSummaryTitle(task, 100)} [${task.stage || 'unknown'}]`,
+    metadata ? `  ${metadata}` : '',
+    `  ${taskOperationsDeepLink(config, task, view)}`,
+  ].filter(Boolean);
+}
+
+async function buildAcademyStatusReply(config) {
+  const [healthResult, deployResult, taskResult, fleetResult] = await Promise.allSettled([
+    appRequest(config, 'GET', '/api/health'),
+    appRequest(config, 'GET', '/api/deploy-info'),
+    loadLiveTasks(config),
+    appRequest(config, 'GET', '/api/bna/agent-fleet/status'),
+  ]);
+  const health = healthResult.status === 'fulfilled' ? healthResult.value : null;
+  const deploy = deployResult.status === 'fulfilled' ? deployResult.value : null;
+  const tasks = taskResult.status === 'fulfilled' ? taskResult.value : [];
+  const fleet = fleetResult.status === 'fulfilled' ? fleetResult.value : null;
+  const active = tasks.filter((task) => isActiveStage(task.stage));
+  const mine = active.filter((task) => taskMatchesControlView(task, 'mine')).length;
+  const decisions = active.filter((task) => taskMatchesControlView(task, 'decisions')).length;
+  const blocked = active.filter((task) => taskMatchesControlView(task, 'blocked')).length;
+  const queue = fleet?.queue || {};
+  const deploySha = String(deploy?.commit_sha || '').slice(0, 10);
+  return [
+    'BNA control status',
+    `- Worker: online / ${config.bridgeProfileLabel}`,
+    `- App: ${health?.status === 'ok' && health?.database === 'connected' ? 'online / database connected' : 'unavailable'}`,
+    `- Queue: ${mine} mine / ${decisions} decisions / ${blocked} blocked / ${Number(queue.pending || 0)} queued / ${Number(queue.in_progress || 0)} running`,
+    `- Agent fleet: ${fleet?.fleet?.status === 'running' && !fleet?.fleet?.stale ? 'online' : 'needs attention'}`,
+    `- Deploy: ${deploySha ? `${deploySha}${deploy?.source_branch ? ` / ${deploy.source_branch}` : ''}` : 'runtime SHA unavailable'}`,
+    `- Operations: ${taskOperationsDeepLink(config, null, 'mine')}`,
+  ].join('\n');
+}
+
+async function formatLiveTaskQueueReply(config, view = 'overview') {
   let tasks = [];
   let codexQueue = null;
   try {
@@ -2041,6 +2130,23 @@ async function formatLiveTaskQueueReply(config) {
   const mine = active.filter((task) => minePattern.test(String(task.assigned_to || task.author || '')));
   const localMediaJobs = listPendingJobs(50);
   const codexJobs = Array.isArray(codexQueue?.queue?.jobs) ? codexQueue.queue.jobs : [];
+
+  if (view !== 'overview') {
+    const matches = tasks
+      .filter((task) => view === 'codex_results' ? taskMatchesControlView(task, view) : isActiveStage(task.stage) && taskMatchesControlView(task, view))
+      .sort((a, b) => Date.parse(b.verified_at || b.completed_at || b.updated_at || b.created_at || 0) - Date.parse(a.verified_at || a.completed_at || a.updated_at || a.created_at || 0))
+      .slice(0, 8);
+    const labels = {
+      mine: 'My actionable tasks',
+      decisions: 'Open decisions',
+      blocked: 'Blocked work',
+      codex_results: 'Recent verified Codex results',
+    };
+    const lines = [`${labels[view] || 'Operations work'}: ${matches.length}`];
+    for (const task of matches) lines.push(...taskControlLine(config, task, view));
+    if (!matches.length) lines.push('- Nothing current in this view.');
+    return lines.join('\n');
+  }
 
   const lines = [
     isScopedProjectBot(config) ? 'Live One Time queue:' : 'Live Operations queue:',
@@ -2403,7 +2509,7 @@ function buildCodexPrompt(config, messageText, chatId, messageId, extraContext =
       : 'You may inspect and edit files when the operator asks for development work. For pure questions, answer directly.',
     '',
     'Operator message metadata:',
-    `- chat_id: ${chatId}`,
+    `- actor_ref: ${telegramActorRef(chatId)}`,
     `- message_id: ${messageId}`,
     `- received_at: ${date}`,
     '',
@@ -2547,7 +2653,7 @@ function buildApiFallbackMessages(config, messageText, chatId, messageId, extraC
 
   const user = [
     'Operator message metadata:',
-    `- chat_id: ${chatId}`,
+    `- actor_ref: ${telegramActorRef(chatId)}`,
     `- message_id: ${messageId}`,
     `- received_at: ${date}`,
     '',
@@ -3300,18 +3406,44 @@ async function runApiFallback(config, messageText, chatId, messageId) {
 }
 
 async function telegramRequest(botToken, method, payload = null, signal) {
-  const response = await fetch(`https://api.telegram.org/bot${botToken}/${method}`, {
-    method: payload ? 'POST' : 'GET',
-    headers: payload ? { 'Content-Type': 'application/json' } : undefined,
-    body: payload ? JSON.stringify(payload) : undefined,
-    signal,
-  });
-
-  const data = await response.json();
-  if (!data.ok) {
-    throw new Error(`Telegram ${method} failed: ${JSON.stringify(data)}`);
+  const maxAttempts = method === 'getUpdates' ? 1 : 3;
+  let lastError = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), method === 'getUpdates' ? 15000 : 12000);
+    const abortFromCaller = () => controller.abort();
+    if (signal) signal.addEventListener('abort', abortFromCaller, { once: true });
+    try {
+      const response = await fetch(`https://api.telegram.org/bot${botToken}/${method}`, {
+        method: payload ? 'POST' : 'GET',
+        headers: payload ? { 'Content-Type': 'application/json' } : undefined,
+        body: payload ? JSON.stringify(payload) : undefined,
+        signal: controller.signal,
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok && data.ok) return data.result;
+      const error = new Error(`Telegram ${method} failed (${Number(data.error_code || response.status || 0)}): ${String(data.description || 'request rejected').slice(0, 180)}`);
+      error.telegramStatus = Number(response.status || 0);
+      error.telegramCode = Number(data.error_code || 0);
+      error.retryAfterSeconds = Math.min(5, Number(data.parameters?.retry_after || 0));
+      throw error;
+    } catch (error) {
+      lastError = error;
+      const transient = error?.name === 'AbortError'
+        || Number(error?.telegramStatus || 0) === 429
+        || Number(error?.telegramStatus || 0) >= 500
+        || /fetch failed|network|socket|timeout|aborted/i.test(String(error?.message || error));
+      if (!transient || attempt >= maxAttempts) throw error;
+      const waitMs = error.retryAfterSeconds
+        ? error.retryAfterSeconds * 1000
+        : Math.min(2000, 250 * (2 ** (attempt - 1)));
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+    } finally {
+      clearTimeout(timeout);
+      if (signal) signal.removeEventListener('abort', abortFromCaller);
+    }
   }
-  return data.result;
+  throw lastError || new Error(`Telegram ${method} failed`);
 }
 
 function isTelegramGetUpdatesConflict(error) {
@@ -3367,21 +3499,67 @@ async function appRequest(config, method, endpoint, body = null) {
     return null;
   }
 
-  const response = await fetch(`${config.appUrl.replace(/\/+$/, '')}${endpoint}`, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Basic ${Buffer.from(`${config.opsUsername}:${config.opsPassword}`).toString('base64')}`,
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  let response;
+  try {
+    response = await fetch(`${config.appUrl.replace(/\/+$/, '')}${endpoint}`, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Basic ${Buffer.from(`${config.opsUsername}:${config.opsPassword}`).toString('base64')}`,
+      },
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 
   const text = await response.text();
   const data = text ? JSON.parse(text) : {};
   if (!response.ok) {
-    throw new Error(`BNA app ${endpoint} failed: ${response.status} ${text.slice(0, 300)}`);
+    throw new Error(`BNA app ${endpoint} failed with status ${response.status}`);
   }
   return data;
+}
+
+async function loadDurableTelegramOffset(config) {
+  if (!config?.runtimeAgentKey || !config.opsUsername || !config.opsPassword) return 0;
+  try {
+    const status = await appRequest(config, 'GET', '/api/bna/integrations/telegram/status');
+    const lastProcessed = Number(status?.card?.details?.bridge_runtime_details?.last_processed_update_id || 0);
+    if (!Number.isSafeInteger(lastProcessed) || lastProcessed < 1) return 0;
+    durableProcessedUpdateId = lastProcessed;
+    return lastProcessed + 1;
+  } catch (error) {
+    log(`Durable Telegram checkpoint read unavailable: ${error instanceof Error ? error.message : String(error)}`);
+    return 0;
+  }
+}
+
+async function commitDurableTelegramCheckpoint(config, updateId, botIdentity) {
+  const normalized = Number(updateId);
+  if (!Number.isSafeInteger(normalized) || normalized < 1 || !config?.runtimeAgentKey) return true;
+  const candidate = Math.max(Number(durableProcessedUpdateId || 0), normalized);
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    const result = await reportBridgeRuntimeStatus(config, {
+      status: 'running',
+      botIdentity,
+      details: {
+        lifecycle: 'update_checkpoint',
+        last_processed_update_id: candidate,
+      },
+    });
+    if (result?.success) {
+      durableProcessedUpdateId = candidate;
+      return true;
+    }
+    if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, attempt * 350));
+  }
+  const persistedOffset = await loadDurableTelegramOffset(config);
+  if (persistedOffset > normalized) return true;
+  throw new Error('Durable Telegram update checkpoint could not be saved.');
 }
 
 async function reportBridgeRuntimeStatus(config, {
@@ -3408,13 +3586,14 @@ async function reportBridgeRuntimeStatus(config, {
         bridge_profile: config.bridgeProfile || 'bna',
         bridge_profile_label: config.bridgeProfileLabel || 'BNA academy',
         bot_username: botIdentity?.username || '',
-        bot_id: botIdentity?.id || null,
+        bot_id_masked: botIdentity?.id ? maskIdentifier(botIdentity.id) : null,
         active_source: 'scripts/telegram-kimi-bridge.mjs',
         process_selector: process.env.BNA_RAILWAY_PROCESS || process.env.RAILWAY_PROCESS || process.env.PROCESS_TYPE || 'local',
         api_path: apiProviderPathLabel(config),
         telegram_default_reply_mode: config.telegramDefaultReplyMode || 'openai',
         allowed_chat_ids_count: Array.isArray(config.allowedChatIds) ? config.allowedChatIds.length : 0,
         codex_enabled: Boolean(config.codexEnabled),
+        last_processed_update_id: durableProcessedUpdateId,
         ...details,
       },
     });
@@ -3827,7 +4006,7 @@ async function handleTypedOperationsAction(config, msg, intentPlan) {
 
   if (actionRoute.kind !== 'typed_action') return false;
   if (!config.opsUsername || !config.opsPassword) {
-    log(`Typed action ${actionRoute.action_id} skipped for chat ${chatId}: Operations credentials missing`);
+    log(`Typed action ${actionRoute.action_id} skipped for ${telegramActorRef(chatId)}: Operations credentials missing`);
     return false;
   }
 
@@ -5322,7 +5501,7 @@ async function sendTelegramMessageWithReplyFallback(botToken, params) {
       delete withoutReply.reply_to_message_id;
       try {
         const result = await telegramRequest(botToken, 'sendMessage', withoutReply);
-        log(`Telegram sendMessage reply fallback used for chat ${params.chat_id}; original reply_to_message_id=${params.reply_to_message_id}`);
+        log(`Telegram sendMessage reply fallback used for ${telegramActorRef(params.chat_id)}; reply reference was unavailable.`);
         return result;
       } catch (fallbackError) {
         if (isTelegramMessageTooLongError(fallbackError) || !isTelegramMessageTooLongError(err)) {
@@ -5358,13 +5537,13 @@ async function sendReply(botToken, chatId, text, replyToMessageId, options = {})
         parts: chunks.length,
         chars: chunkText.length,
       });
-      log(`Telegram sendMessage delivered chat ${chatId} part ${i + 1}/${chunks.length} chars=${chunkText.length} message_id=${result?.message_id || 'unknown'}`);
+      log(`Telegram sendMessage delivered ${telegramActorRef(chatId)} part ${i + 1}/${chunks.length} chars=${chunkText.length}`);
     } catch (err) {
       if (!isTelegramMessageTooLongError(err)) {
         throw err;
       }
       const smallerChunks = splitTelegramText(chunks[i], TELEGRAM_FALLBACK_TEXT_LIMIT);
-      log(`Telegram sendMessage reported a too-long chunk for chat ${chatId}; retrying part ${i + 1}/${chunks.length} as ${smallerChunks.length} smaller part(s).`);
+      log(`Telegram sendMessage reported a too-long chunk for ${telegramActorRef(chatId)}; retrying part ${i + 1}/${chunks.length} as ${smallerChunks.length} smaller part(s).`);
       for (let j = 0; j < smallerChunks.length; j += 1) {
         const smallerText = `Part ${i + 1}.${j + 1}/${chunks.length}\n${smallerChunks[j]}`;
         const smallerParams = {
@@ -5384,7 +5563,7 @@ async function sendReply(botToken, chatId, text, replyToMessageId, options = {})
           parts: chunks.length,
           chars: smallerText.length,
         });
-        log(`Telegram sendMessage delivered chat ${chatId} part ${i + 1}.${j + 1}/${chunks.length} chars=${smallerText.length} message_id=${result?.message_id || 'unknown'}`);
+        log(`Telegram sendMessage delivered ${telegramActorRef(chatId)} part ${i + 1}.${j + 1}/${chunks.length} chars=${smallerText.length}`);
       }
     }
   }
@@ -5948,6 +6127,13 @@ function watchedTaskSnapshot(task) {
     title: taskSummaryTitle(task, 120),
     stage: String(task.stage || ''),
     assigned_to: String(task.assigned_to || ''),
+    waiting_on: String(task.waiting_on || ''),
+    blocked_reason: String(task.blocked_reason || ''),
+    source: String(task.source || task.source_type || ''),
+    agent_status: String(task.agent_status || ''),
+    proof_status: String(task.proof_status || ''),
+    deploy_status: String(task.deploy_status || ''),
+    canary_status: String(task.canary_status || ''),
     updated_at: task.updated_at || null,
     completed_at: task.completed_at || null,
     verified_at: task.verified_at || null,
@@ -5956,36 +6142,36 @@ function watchedTaskSnapshot(task) {
 }
 
 function taskWatchShouldTrack(task) {
-  return task?.id && isAgentOwnedTask(task);
+  if (!task?.id || String(task.stage || '') === 'archive') return false;
+  return isAgentOwnedTask(task)
+    || /shloimie|operator/i.test(String(task.assigned_to || task.decision_owner || ''))
+    || Boolean(task.waiting_on || task.blocked_reason)
+    || String(task.stage || '') === 'needs_decision'
+    || taskControlSource(task) === 'Ticket';
 }
 
-function taskWatchChangeLines(previous, current) {
-  const lines = [];
-  if (!previous) return lines;
+function taskWatchChangeLines(config, previous, current) {
+  const transition = usefulTaskTransition(previous, current);
+  if (!transition) return [];
+  const proof = current.verification_notes
+    ? ` / ${String(current.verification_notes).replace(/\s+/g, ' ').slice(0, 220)}`
+    : '';
+  return [
+    `${transition.label}: #${current.id} ${current.title}${proof}`,
+    taskOperationsDeepLink(config, current, transition.kind === 'decision_required' ? 'decisions' : transition.kind === 'blocked' ? 'blocked' : 'mine'),
+  ];
+}
 
-  if (previous.stage !== current.stage) {
-    if (current.stage === 'done') {
-      lines.push(`Task complete: #${current.id} ${current.title}`);
-    } else if (current.stage === 'archive') {
-      lines.push(`Task archived: #${current.id} ${current.title}`);
-    } else {
-      lines.push(`Task moved: #${current.id} ${current.title} (${previous.stage || 'unknown'} -> ${current.stage || 'unknown'})`);
-    }
-  }
-
-  if (!previous.verified_at && current.verified_at) {
-    lines.push(`Task verified: #${current.id} ${current.title}`);
-  }
-
-  if (current.stage === 'done' && !previous.completed_at && current.completed_at && previous.stage === current.stage) {
-    lines.push(`Task complete: #${current.id} ${current.title}`);
-  }
-
-  if (lines.length && current.verification_notes) {
-    lines.push(`Verified: ${String(current.verification_notes).replace(/\s+/g, ' ').slice(0, 400)}`);
-  }
-
-  return lines;
+function taskNotificationAllowed(config) {
+  if (!config.taskNotificationsEnabled) return false;
+  if (isQuietHour({
+    timeZone: config.notificationTimezone,
+    startHour: config.notificationQuietStartHour,
+    endHour: config.notificationQuietEndHour,
+  })) return false;
+  const oneHourAgo = Date.now() - (60 * 60 * 1000);
+  while (recentNotificationTimes.length && recentNotificationTimes[0] < oneHourAgo) recentNotificationTimes.shift();
+  return recentNotificationTimes.length < config.notificationRateLimitPerHour;
 }
 
 async function maybeTaskStatusWatch(config) {
@@ -6012,15 +6198,21 @@ async function maybeTaskStatusWatch(config) {
     return;
   }
 
+  if (!taskNotificationAllowed(config)) {
+    writeTaskWatchState({ tasks: current });
+    return;
+  }
+
   const notifications = [];
   for (const task of watched) {
     const previous = state.tasks[String(task.id)];
-    notifications.push(...taskWatchChangeLines(previous, task));
+    notifications.push(...taskWatchChangeLines(config, previous, task));
   }
 
-  writeTaskWatchState({ tasks: current });
-
-  if (!notifications.length) return;
+  if (!notifications.length) {
+    writeTaskWatchState({ tasks: current });
+    return;
+  }
 
   const chunks = [];
   let chunk = ['Task updates:'];
@@ -6040,7 +6232,9 @@ async function maybeTaskStatusWatch(config) {
 
   for (const text of chunks) {
     await sendReply(config.botToken, chatId, text, null, { includeModeKeyboard: false });
+    recentNotificationTimes.push(Date.now());
   }
+  writeTaskWatchState({ tasks: current });
 }
 
 function codexQueueStartedText(tasks = []) {
@@ -6060,7 +6254,7 @@ function enqueueAgentReplyJob(job) {
     position: queuedAhead + 1,
   };
   agentReplyQueue.push(queued);
-  log(`Queued Codex reply job ${queued.id} for chat ${queued.chatId} message ${queued.messageId}; position ${queued.position}`);
+  log(`Queued Codex reply job ${queued.id} for ${telegramActorRef(queued.chatId)}; position ${queued.position}`);
   processAgentReplyQueue().catch((error) => {
     log(`Agent reply queue failed: ${error instanceof Error ? error.message : String(error)}`);
   });
@@ -6086,7 +6280,7 @@ async function processAgentReplyQueue() {
 
 async function runAgentReplyJob(job) {
   const { config, text, chatId, messageId, prompt, trackedTasks = [] } = job;
-  log(`Starting Codex reply job ${job.id} for chat ${chatId} message ${messageId}`);
+  log(`Starting Codex reply job ${job.id} for ${telegramActorRef(chatId)}`);
   await telegramRequest(config.botToken, 'sendChatAction', {
     chat_id: chatId,
     action: 'typing',
@@ -6123,7 +6317,7 @@ async function runAgentReplyJob(job) {
     telegram_message_ids: delivery.message_ids.join(','),
   });
   await sendTaskCompletionReminders(config, chatId, messageId, trackedTasks);
-  log(`Completed Codex reply job ${job.id} for chat ${chatId} message ${messageId} via ${replyProvider}`);
+  log(`Completed Codex reply job ${job.id} for ${telegramActorRef(chatId)} via ${replyProvider}`);
 
   const decisionOptions = extractDecisionOptions(reply);
   if (decisionOptions.length) {
@@ -8557,6 +8751,18 @@ async function handleStructuredTextCommand(config, msg, intentPlan = {}) {
     return handleScopedStructuredTextCommand(config, msg);
   }
 
+  const controlQuery = classifyTelegramControlQuery(text);
+  if (controlQuery && controlQuery !== 'status') {
+    await sendReply(
+      config.botToken,
+      chatId,
+      await formatLiveTaskQueueReply(config, controlQuery),
+      messageId,
+      { includeModeKeyboard: false },
+    );
+    return true;
+  }
+
   if (text === '/help') {
     await sendReply(
       config.botToken,
@@ -10589,7 +10795,7 @@ async function handleTextMessage(config, msg) {
   const messageId = msg.message_id;
 
   if (!text) return;
-  log(`Text message received from chat ${chatId} message ${messageId}: ${text.slice(0, 120).replace(/\s+/g, ' ')}`);
+  log(`Text message received from ${telegramActorRef(chatId)} chars=${text.length} command=${/^\//.test(text) ? 'yes' : 'no'}`);
 
   if (config.allowedChatIds.length > 0 && !config.allowedChatIds.includes(chatId)) {
     await sendReply(config.botToken, chatId, 'This bot is private.', messageId);
@@ -10659,28 +10865,13 @@ async function handleTextMessage(config, msg) {
           `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'Assistant chat'}`,
           `Assistant chat: ${apiProviderConfigs(config).length ? 'configured' : 'not configured'}`,
           `Scoped Operations login: ${config.opsUsername && config.opsPassword ? 'configured' : 'missing'}`,
-          `Allowed chats: ${config.allowedChatIds.join(',') || 'all'}`,
+          `Allowed chats configured: ${config.allowedChatIds.length}`,
         ].join('\n'),
         messageId,
       );
       return;
     }
-    await sendReply(
-      config.botToken,
-      chatId,
-      [
-        'Bridge status: online',
-        `Profile: ${config.bridgeProfileLabel}`,
-        `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'Assistant chat'}`,
-        `Codex CLI: ${config.codexCommand}${config.codexModel ? ` (${config.codexModel})` : ''}`,
-        `Assistant chat: ${apiProviderConfigs(config).length ? 'configured' : 'not configured'}`,
-        'Workspace: BNA v2.0',
-        `Drive watcher: every ${Math.round(config.driveWatchIntervalMs / 1000)}s`,
-        `Codex queue: ${agentReplyQueue.length} waiting, ${agentReplyRunning ? '1 active' : '0 active'}`,
-        `Pending ops jobs: ${queueCount}`,
-      ].join('\n'),
-      messageId,
-    );
+    await sendReply(config.botToken, chatId, await buildAcademyStatusReply(config), messageId);
     return;
   }
 
@@ -10722,7 +10913,7 @@ async function handleTextMessage(config, msg) {
     message_id: messageId,
   });
   log(
-    `Intent plan for chat ${chatId} message ${messageId}: ` +
+    `Intent plan for ${telegramActorRef(chatId)}: ` +
     `${summarizedIntentPlan.primaryIntent} confidence=${summarizedIntentPlan.confidence} ` +
     `blocked=${summarizedIntentPlan.blockedHandlers.join(',') || 'none'} approval=${summarizedIntentPlan.requiresApproval ? 'yes' : 'no'}`
   );
@@ -10854,7 +11045,7 @@ async function handleTextMessage(config, msg) {
     captureSummary = await captureRambleToApp(config, text, chatId, messageId);
     captureSummary = await handleMultipartSpecContext(config, text, chatId, messageId, captureSummary);
     log(
-      `Capture summary for chat ${chatId} message ${messageId}: tasks=${captureSummary.tasksCreated || 0}, events=${captureSummary.eventsCreated || 0}, payments=${captureSummary.paymentIntakeCreated || 0}, contacts=${(captureSummary.contactLeadsCreated || 0) + (captureSummary.contactLeadsUpdated || 0) + (captureSummary.contactLeadsMatched || 0)}, contact_notes=${captureSummary.contactNotesCreated || 0}, comments=${captureSummary.commentsCreated || 0}, support_tickets=${captureSummary.supportTicketsCreated || 0}`
+      `Capture summary for ${telegramActorRef(chatId)}: tasks=${captureSummary.tasksCreated || 0}, events=${captureSummary.eventsCreated || 0}, payments=${captureSummary.paymentIntakeCreated || 0}, contacts=${(captureSummary.contactLeadsCreated || 0) + (captureSummary.contactLeadsUpdated || 0) + (captureSummary.contactLeadsMatched || 0)}, contact_notes=${captureSummary.contactNotesCreated || 0}, comments=${captureSummary.commentsCreated || 0}, support_tickets=${captureSummary.supportTicketsCreated || 0}`
     );
     appendMemoryEntry('BNA Capture', JSON.stringify(captureSummary), {
       chat_id: chatId,
@@ -11605,7 +11796,7 @@ async function main() {
   }
   activeTelegramCodexEnabled = Boolean(config.codexEnabled);
   activeBridgeConfig = config;
-  activeTokenFingerprint = config.botToken.slice(0, 10).replace(/[^a-zA-Z0-9_-]/g, '_');
+  activeTokenFingerprint = telegramTokenFingerprint(config.botToken);
 
   const botIdentity = await getBotIdentity(config.botToken);
   activeBridgeBotIdentity = botIdentity;
@@ -11619,27 +11810,28 @@ async function main() {
 
   updateBridgeLock({
     profile: config.bridgeProfileLabel,
-    bot_id: botIdentity.id || null,
+    bot_id_masked: botIdentity.id ? maskIdentifier(botIdentity.id) : null,
     bot_username: botIdentity.username || '',
     academy_bot_username: academyIdentity?.username || '',
     default_reply_mode: config.telegramDefaultReplyMode || 'openai',
     build_agent: config.codexEnabled ? (config.primaryAgent || 'codex') : 'disabled',
-    allowed_chat_ids: config.allowedChatIds,
+    allowed_chat_ids_count: config.allowedChatIds.length,
   });
 
   await ensurePollingMode(config.botToken);
+  const durableOffset = await loadDurableTelegramOffset(config);
   stopBridgeRuntimeHeartbeat = startBridgeRuntimeHeartbeat(config, botIdentity);
 
-  let offset = loadOffset();
+  let offset = Math.max(loadOffset(), durableOffset);
   let busy = false;
   let nextDriveWatchAt = 0;
   let nextTaskWatchAt = Date.now() + 5000;
   let consecutiveGetUpdatesConflicts = 0;
   log(
-    `Bridge starting. Profile=${config.bridgeProfileLabel} Bot=${botIdentity.username || botIdentity.firstName || botIdentity.id} TelegramDefault=${config.telegramDefaultReplyMode || 'openai'} BuildAgent=${config.codexEnabled ? (config.primaryAgent || 'codex') : 'disabled'} CodexModel=${config.codexModel || 'default'} ApiPath=${apiProviderPathLabel(config)} OpenAIKey=${config.openaiApiKey ? 'yes' : 'no'} KimiKey=${config.kimiApiKey ? 'yes' : 'no'} AllowedChats=${config.allowedChatIds.join(',') || 'all'}`
+    `Bridge starting. Profile=${config.bridgeProfileLabel} Bot=${botIdentity.username || botIdentity.firstName || 'verified'} TelegramDefault=${config.telegramDefaultReplyMode || 'openai'} BuildAgent=${config.codexEnabled ? (config.primaryAgent || 'codex') : 'disabled'} CodexModel=${config.codexModel || 'default'} ApiPath=${apiProviderPathLabel(config)} OpenAIKey=${config.openaiApiKey ? 'yes' : 'no'} KimiKey=${config.kimiApiKey ? 'yes' : 'no'} AllowedChatCount=${config.allowedChatIds.length} DurableOffset=${durableOffset ? 'yes' : 'no'}`
   );
   if (academyIdentity) {
-    log(`Academy token resolves to ${academyIdentity.username || academyIdentity.firstName || academyIdentity.id}`);
+    log(`Academy token resolves to ${academyIdentity.username || academyIdentity.firstName || 'verified academy bot'}`);
   }
 
   while (true) {
@@ -11696,12 +11888,17 @@ async function main() {
       }
 
       for (const update of updates) {
-        offset = update.update_id + 1;
-        saveOffset(offset);
+        const nextOffset = Number(update.update_id) + 1;
+        if (!Number.isSafeInteger(nextOffset) || nextOffset <= offset) continue;
 
         const msg = update.message;
         const callbackQuery = update.callback_query;
-        if (!msg && !callbackQuery) continue;
+        if (!msg && !callbackQuery) {
+          await commitDurableTelegramCheckpoint(config, update.update_id, botIdentity);
+          offset = nextOffset;
+          saveOffset(offset);
+          continue;
+        }
         const updateKind = callbackQuery
           ? `callback:${String(callbackQuery.data || '').slice(0, 80)}`
           : msg.text
@@ -11712,23 +11909,12 @@ async function main() {
         log(`Processing Telegram update ${update.update_id} (${updateKind})`);
 
         if (busy) {
-          if (msg) {
-            await sendReply(
-              config.botToken,
-              String(msg.chat.id),
-              'Still working on your last message. Send the next one in a moment.',
-              msg.message_id,
-            );
-          } else if (callbackQuery) {
-            await telegramRequest(config.botToken, 'answerCallbackQuery', {
-              callback_query_id: callbackQuery.id,
-              text: 'Still working. Try again in a moment.',
-            });
-          }
+          log(`Deferred Telegram update ${update.update_id} while another bounded handler was active.`);
           continue;
         }
 
         busy = true;
+        let handled = false;
         try {
           if (callbackQuery) {
             await handleCallbackQuery(config, callbackQuery);
@@ -11753,6 +11939,7 @@ async function main() {
               msg.message_id,
             );
           }
+          handled = true;
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
           log(`Message handling failed: ${message}`);
@@ -11774,8 +11961,14 @@ async function main() {
           } catch (sendError) {
             log(`Failed to send error reply: ${sendError instanceof Error ? sendError.message : String(sendError)}`);
           }
+          handled = true;
         } finally {
           busy = false;
+        }
+        if (handled) {
+          await commitDurableTelegramCheckpoint(config, update.update_id, botIdentity);
+          offset = nextOffset;
+          saveOffset(offset);
         }
       }
     } catch (error) {
