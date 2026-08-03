@@ -40410,3 +40410,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   auto-reply mutation, CRM production write, provider mutation, credential
   mutation, payment/access mutation, raw private payload logging, or destructive
   production mutation was performed.
+
+## 2026-08-03 - BNA control loop restored
+
+- Restored the single Railway Academy Telegram polling worker and verified a
+  fresh redacted heartbeat, one allowed private chat, no webhook, and no
+  competing local consumer or second fleet.
+- Added bounded `/status`, My Tasks, Decisions, Blocked, and recent Codex
+  control replies; canonical Telegram task capture; durable update/task-watch
+  checkpoints; useful-transition-only notifications; and exact Operations
+  deep links.
+- Made My Tasks actor-aware, exposed canonical Source filters/badges and
+  Decisions/Pending/Tasks/Done/Bots-Agent views, and made exact task URLs load
+  outside the bounded list.
+- Live proof: one accepted Telegram task with correct BNA/Shloimie/today/source
+  routing, one audit event, duplicate replay with zero new records, one
+  completion message bubble, and recoverable archive cleanup.
+- Verification: BNA focused 47/47, standalone One Time 80/80, generated and
+  canonical Operations checks, tracked secret audit across 9,628 paths, live
+  health/heartbeat, Railway doctor, live-app smoke 10/10, and authenticated
+  1920x935 plus 390x844 screenshots.
+- One Time remains independent; the signed summary-event producer is handed to
+  `OT-LIVE-001` and stays default-off.
