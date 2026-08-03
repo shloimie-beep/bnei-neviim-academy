@@ -22549,9 +22549,9 @@ function cleanTaskTitleForStorage(title, rawText = '') {
   return conciseTaskTitleFromRawText([rawText, candidate].filter(Boolean).join(' '));
 }
 
-function explainTaskCandidate(line) {
+function explainTaskCandidate(line, ownerOverride = null) {
   const category = inferTaskCategory(line);
-  const owner = inferTaskOwner(line) || 'Unassigned';
+  const owner = normalizeTaskAssignee(ownerOverride) || inferTaskOwner(line) || 'Unassigned';
   return [
     `Clear task extracted from Telegram input.`,
     `Owner: ${owner}.`,
@@ -22656,8 +22656,8 @@ function parseRambleIntoTaskCandidates(ramble) {
     return {
       title,
       clean_title: title,
-      summary: explainTaskCandidate(taskText),
-      notes: explainTaskCandidate(taskText),
+      summary: explainTaskCandidate(taskText, assignedTo),
+      notes: explainTaskCandidate(taskText, assignedTo),
       item_type: itemType,
       stage: itemType === 'decision' ? 'needs_decision' : 'assigned',
       category: inferTaskCategory(taskText),
@@ -24057,7 +24057,7 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
     assignedTo,
     source,
     createdBy,
-    explicitTaskKind: suppressAgentInference ? null : (input.task_kind || input.taskKind),
+    explicitTaskKind: suppressAgentInference ? 'task' : (input.task_kind || input.taskKind),
   });
   if (dialogue.taskKind === 'pending_access' && !waitingOn) {
     waitingOn = normalizeTaskWaitingOnKey(taskTextForRouting, 'external');
