@@ -131,6 +131,9 @@ test('explicit Telegram Task prefixes bypass conversational capture suppression'
   assert.match(server, /!explicitTaskPrefix && hasDirectReplyInsteadOfCodexIntentForTasks\(text\)/);
   assert.match(server, /const keepWholeRoutingTask =[\s\S]*explicitTaskPrefix[\s\S]*hasCommentRequeueWorkflowIntent/);
   assert.match(server, /check\|verify\|assign\|archive\|audit/);
+  assert.match(server, /function explicitTaskRoutingFields\(line\)/);
+  assert.match(server, /explicitRouting\?\.assignedTo[\s\S]*inferTaskOwner\(taskText\)/);
+  assert.match(server, /urgency: explicitRouting\?\.urgency \|\|/);
 });
 
 test('Decision cards expose Phase 8 choice context and comments', () => {

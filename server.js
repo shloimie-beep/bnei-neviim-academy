@@ -22579,6 +22579,29 @@ function isTaskListLeadIn(line) {
   return /^(?:put something on my list|task for myself)(?:\s+(?:just\s+)?a?)?$/i.test(String(line || '').trim());
 }
 
+function explicitTaskRoutingFields(line) {
+  const text = String(line || '').trim();
+  const assigneeMatch = text.match(
+    /\b(?:assign(?:ed)?\s+to|assignee\s*:|owner\s*:)\s*([a-z][a-z .'-]{1,80}?)(?=\s*(?:[.;]|\b(?:workspace|project|priority)\s*:|$))/i
+  );
+  const priorityMatch = text.match(/\bpriority\s*:\s*(urgent|today|this[ _-]?week|low)\b/i);
+  const routingMarker = text.search(
+    /\s+\b(?:assign(?:ed)?\s+to|assignee\s*:|owner\s*:|workspace\s*:|project\s*:|priority\s*:)/i
+  );
+  const taskText = (routingMarker >= 0 ? text.slice(0, routingMarker) : text)
+    .replace(/^(?:task|todo)\s*[:.-]\s*/i, '')
+    .replace(/[.;\s]+$/g, '')
+    .trim();
+  const priority = priorityMatch
+    ? priorityMatch[1].toLowerCase().replace(/[ _-]+/g, '_')
+    : null;
+  return {
+    taskText: taskText || text,
+    assignedTo: normalizeTaskAssignee(assigneeMatch?.[1]) || null,
+    urgency: priority === 'this_week' ? 'this_week' : priority,
+  };
+}
+
 function parseRambleIntoTaskCandidates(ramble) {
   const text = String(ramble || '').trim();
   if (!text) return [];
@@ -22615,24 +22638,30 @@ function parseRambleIntoTaskCandidates(ramble) {
   if (!candidates.length) return [];
 
   const mapped = candidates.map((line) => {
-    const title = polishTaskCandidateText(line);
-    const itemType = inferTaskItemType(line);
-    const waitingOn = itemType === 'decision' ? null : inferTaskWaitingOn(line);
+    const explicitRouting = explicitTaskPrefix ? explicitTaskRoutingFields(line) : null;
+    const taskText = explicitRouting?.taskText || line;
+    const title = polishTaskCandidateText(taskText);
+    const itemType = inferTaskItemType(taskText);
+    const waitingOn = itemType === 'decision' || explicitRouting?.assignedTo
+      ? null
+      : inferTaskWaitingOn(taskText);
     const assignedTo = itemType === 'decision'
       ? 'Shloimie'
-      : waitingOn
-        ? waitingOn
-        : inferTaskOwner(line);
+      : explicitRouting?.assignedTo
+        ? explicitRouting.assignedTo
+        : waitingOn
+          ? waitingOn
+          : inferTaskOwner(taskText);
     const agentExecutable = itemType !== 'decision' && !waitingOn && isAgentAssignee(assignedTo);
     return {
       title,
       clean_title: title,
-      summary: explainTaskCandidate(line),
-      notes: explainTaskCandidate(line),
+      summary: explainTaskCandidate(taskText),
+      notes: explainTaskCandidate(taskText),
       item_type: itemType,
       stage: itemType === 'decision' ? 'needs_decision' : 'assigned',
-      category: inferTaskCategory(line),
-      urgency: /urgent|asap|right away|immediately|today/i.test(line) ? 'urgent' : 'this_week',
+      category: inferTaskCategory(taskText),
+      urgency: explicitRouting?.urgency || (/urgent|asap|right away|immediately|today/i.test(taskText) ? 'urgent' : 'this_week'),
       assigned_to: assignedTo,
       decision_owner: itemType === 'decision' ? 'Shloimie' : null,
       waiting_on: waitingOn,
