@@ -87,3 +87,10 @@ test('My Tasks authority comes from the authenticated actor and canonical person
   assert.match(operations, /opsMe\?\.person\?\.full_name/);
   assert.doesNotMatch(operations, /tokens\.push\('shloimie'/);
 });
+
+test('Operations deep links load an exact task even when the bounded queue omits it', () => {
+  assert.match(operations, /selectedTaskId && !tasks\.some\(task => Number\(task\.id\) === Number\(selectedTaskId\)\)/);
+  assert.match(operations, /const selectedTaskRes = await api\.getTaskDetail\(Number\(selectedTaskId\)\)/);
+  assert.match(operations, /if \(selectedTaskRes\?\.task\) tasks = \[selectedTaskRes\.task, \.\.\.tasks\]/);
+  assert.match(operations, /Deep-linked task could not be loaded/);
+});

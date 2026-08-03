@@ -17833,7 +17833,27 @@ const needsAgentRunData = !oneTimeProgramLightPass && canUseAgentControl && !com
         if (peopleRes.status === 'fulfilled' && peopleRes.value?.people) people = peopleRes.value.people;
         if (workspaceUsersRes.status === 'fulfilled' && workspaceUsersRes.value?.users) workspaceUsers = workspaceUsersRes.value.users;
         if (workspaceRoleAuditRes.status === 'fulfilled' && workspaceRoleAuditRes.value?.audit_events) workspaceRoleAuditEvents = workspaceRoleAuditRes.value.audit_events;
-        if (tasksRes.status === 'fulfilled' && tasksRes.value?.tasks) tasks = tasksRes.value.tasks;
+if (tasksRes.status === 'fulfilled' && tasksRes.value?.tasks) tasks = tasksRes.value.tasks;
+if (needsTaskData && selectedTaskId && !tasks.some(task => Number(task.id) === Number(selectedTaskId))) {
+    try {
+        const selectedTaskRes = await api.getTaskDetail(Number(selectedTaskId));
+        if (selectedTaskRes?.task) tasks = [selectedTaskRes.task, ...tasks];
+        expandedTaskComments = {
+            ...expandedTaskComments,
+            [selectedTaskId]: selectedTaskRes?.comments || [],
+        };
+        expandedTaskActivity = {
+            ...expandedTaskActivity,
+            [selectedTaskId]: selectedTaskRes?.activity || [],
+        };
+        expandedTaskLatestJob = {
+            ...expandedTaskLatestJob,
+            [selectedTaskId]: selectedTaskRes?.latest_agent_job || null,
+        };
+    } catch (error) {
+        console.warn('Deep-linked task could not be loaded', error);
+    }
+}
         if (agentFleetRes.status === 'fulfilled' && agentFleetRes.value) agentFleetStatus = agentFleetRes.value;
         if (queueHealthRes.status === 'fulfilled' && queueHealthRes.value) queueHealth = queueHealthRes.value;
         if (supportTicketsRes.status === 'fulfilled' && supportTicketsRes.value?.tickets) supportTickets = supportTicketsRes.value.tickets;
