@@ -1,0 +1,13 @@
+{
+  "name": "bna-control-plane",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Isolated BNA Control Plane v1 contracts and tests.",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check": "node --check src/app.js && node --test test/*.test.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
