@@ -9208,7 +9208,7 @@ function identifyOpsUser(username, password = null) {
 }
 
 function isOneTimeStudioOperatorPathAllowed(routePath = '', method = 'GET') {
-  if (routePath === '/operations' && method === 'GET') return true;
+  if ((routePath === '/operations' || routePath === '/operations/school') && method === 'GET') return true;
   if (routePath === '/api/bna/auth/me' && method === 'GET') return true;
   if (routePath === '/api/bna/me' && method === 'GET') return true;
   if (routePath === '/api/bna/workspace-directory' && method === 'GET') return true;
@@ -9461,6 +9461,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/content-bundles' && ['GET', 'POST'].includes(method)) return true;
   if (/^\/api\/bna\/content-bundles\/\d+$/.test(routePath) && method === 'PATCH') return true;
   if (/^\/api\/bna\/content-bundles\/\d+\/generate$/.test(routePath) && method === 'POST') return true;
+  if (routePath === '/api/bna/school-admin/summary' && method === 'GET') return true;
   if (routePath === '/api/bna/students' && ['GET', 'POST'].includes(method)) return true;
   if (/^\/api\/bna\/students\/\d+$/.test(routePath) && ['PATCH', 'DELETE'].includes(method)) return true;
   if (/^\/api\/bna\/students\/\d+\/access-code$/.test(routePath) && method === 'POST') return true;
@@ -11402,6 +11403,11 @@ function setPublicStaticAssetCacheHeader(res, normalizedPath) {
 function sendOperationsShell(req, res) {
   setOperationsShellCacheHeader(res);
   res.sendFile(path.join(__dirname, 'public', 'operations-bootstrap.html'));
+}
+
+function sendSchoolAdminShell(req, res) {
+  setOperationsShellCacheHeader(res);
+  res.sendFile(path.join(__dirname, 'public', 'school-admin.html'));
 }
 
 function wantsOneTimeReviewQuery(req) {
@@ -55073,6 +55079,402 @@ function studentIdentityTags(student = {}, roles = []) {
   return [...tags].sort();
 }
 
+const SCHOOL_ADMIN_SUMMARY_DEFAULT_LIMIT = 40;
+const SCHOOL_ADMIN_SUMMARY_MAX_LIMIT = 80;
+
+function schoolAdminSummaryLimit(value) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return SCHOOL_ADMIN_SUMMARY_DEFAULT_LIMIT;
+  return Math.min(SCHOOL_ADMIN_SUMMARY_MAX_LIMIT, Math.max(1, Math.round(parsed)));
+}
+
+function schoolAdminSummaryOffset(value) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0) return 0;
+  return Math.round(parsed);
+}
+
+function schoolAdminSearchValue(value) {
+  const normalized = String(value || '').trim();
+  return normalized ? `%${normalized.replace(/[%_\\]/g, '\\$&')}%` : '';
+}
+
+function schoolAdminPage(rows, total, limit, offset) {
+  return {
+    rows,
+    total: Number(total || 0),
+    limit,
+    offset,
+    has_more: Number(offset || 0) + rows.length < Number(total || 0),
+  };
+}
+
+function schoolAdminStudentView(row = {}) {
+  return {
+    id: row.id,
+    name: row.name || '',
+    grade: row.grade || '',
+    status: row.status || '',
+    parent_name: row.parent_name || '',
+    masked_parent_email: maskEmail(row.parent_email || ''),
+    masked_parent_phone: maskPhone(row.parent_phone || ''),
+    open_goals: Number(row.open_goals || 0),
+    questions: Number(row.questions || 0),
+    attendance_percent: row.attendance_percent === null || row.attendance_percent === undefined ? null : Number(row.attendance_percent),
+    latest_attendance_status: row.latest_attendance_status || '',
+    latest_attendance_at: row.latest_attendance_at || null,
+    latest_progress_percent: row.latest_progress_percent === null || row.latest_progress_percent === undefined ? null : Number(row.latest_progress_percent),
+    latest_progress_at: row.latest_progress_at || null,
+    updated_at: row.updated_at || null,
+  };
+}
+
+function schoolAdminFamilyView(row = {}) {
+  return {
+    id: row.id,
+    source: row.source_type || 'signup',
+    parent_name: row.parent_name || '',
+    student_name: row.student_name || '',
+    student_grade: row.student_grade || row.student_grade_text || '',
+    masked_parent_email: maskEmail(row.parent_email || ''),
+    masked_parent_phone: maskPhone(row.parent_phone || ''),
+    status: row.status || '',
+    interest_level: row.interest_level || '',
+    payment_status: row.payment_status || '',
+    updated_at: row.updated_at || row.created_at || null,
+  };
+}
+
+function schoolAdminClassView(row = {}) {
+  return {
+    id: row.id,
+    title: row.title || '',
+    class_type: row.class_type || '',
+    starts_at: row.starts_at || null,
+    ends_at: row.ends_at || null,
+    status: row.status || '',
+    attendance_records: Number(row.attendance_records || 0),
+    present_records: Number(row.present_records || 0),
+  };
+}
+
+function schoolAdminAttendanceView(row = {}) {
+  return {
+    id: row.id,
+    class_id: row.class_id,
+    class_title: row.class_title || '',
+    student_id: row.student_id,
+    student_name: row.student_name || '',
+    attendance_date: row.attendance_date || null,
+    status: row.status || '',
+    updated_at: row.updated_at || row.created_at || null,
+  };
+}
+
+function schoolAdminProgressView(row = {}) {
+  return {
+    id: row.id,
+    student_id: row.student_id,
+    student_name: row.student_name || '',
+    title: row.title || '',
+    event_type: row.event_type || '',
+    progress_percent: row.progress_percent === null || row.progress_percent === undefined ? null : Number(row.progress_percent),
+    attendance_status: row.attendance_status || '',
+    occurred_at: row.occurred_at || row.created_at || null,
+    follow_up_required: Boolean(row.follow_up_required),
+  };
+}
+
+// Focused School admin summary used by /operations/school. This intentionally
+// avoids Control Plane, provider, One Time, global-agent, and integration data.
+app.get('/api/bna/school-admin/summary', requireAdmin, async (req, res) => {
+  const limit = schoolAdminSummaryLimit(req.query.limit);
+  const offset = schoolAdminSummaryOffset(req.query.offset);
+  const search = schoolAdminSearchValue(req.query.q);
+  res.setHeader('Cache-Control', 'no-store');
+
+  try {
+    const project = await getProjectByKey(DEFAULT_PROJECT_KEY);
+    assertProjectAccess(req, project);
+    const projectId = Number(project.id);
+    const workspaceId = await getWorkspaceIdForProjectKey(DEFAULT_PROJECT_KEY);
+    const studentConditions = [
+      's.project_id = $1',
+      "COALESCE(s.status, 'active') NOT IN ('archived', 'inactive')",
+    ];
+    const studentParams = [projectId];
+    if (search) {
+      studentParams.push(search);
+      studentConditions.push(`(
+        s.name ILIKE $${studentParams.length} ESCAPE '\\'
+        OR COALESCE(s.parent_name, '') ILIKE $${studentParams.length} ESCAPE '\\'
+        OR COALESCE(s.grade, '') ILIKE $${studentParams.length} ESCAPE '\\'
+      )`);
+    }
+
+    const signupConditions = [
+      's.project_id = $1',
+      "COALESCE(s.status, 'new') <> 'archived'",
+    ];
+    const signupParams = [projectId];
+    if (search) {
+      signupParams.push(search);
+      signupConditions.push(`(
+        s.parent_name ILIKE $${signupParams.length} ESCAPE '\\'
+        OR s.student_name ILIKE $${signupParams.length} ESCAPE '\\'
+        OR COALESCE(s.student_grade, '') ILIKE $${signupParams.length} ESCAPE '\\'
+      )`);
+    }
+
+    const leadConditions = [
+      'l.project_id = $1',
+      "COALESCE(l.status, 'interested') <> 'archived'",
+    ];
+    const leadParams = [projectId];
+    if (search) {
+      leadParams.push(search);
+      leadConditions.push(`(
+        l.parent_name ILIKE $${leadParams.length} ESCAPE '\\'
+        OR COALESCE(l.student_name, '') ILIKE $${leadParams.length} ESCAPE '\\'
+        OR COALESCE(l.student_grade, '') ILIKE $${leadParams.length} ESCAPE '\\'
+      )`);
+    }
+
+    const classConditions = [
+      workspaceId ? 'c.workspace_id = $1' : 'FALSE',
+      "COALESCE(c.status, 'scheduled') <> 'archived'",
+    ];
+    const classParams = workspaceId ? [workspaceId] : [];
+    if (search && workspaceId) {
+      classParams.push(search);
+      classConditions.push(`(
+        c.title ILIKE $${classParams.length} ESCAPE '\\'
+        OR COALESCE(c.class_type, '') ILIKE $${classParams.length} ESCAPE '\\'
+      )`);
+    }
+
+    const [
+      summaryResult,
+      studentsTotalResult,
+      studentsResult,
+      signupsTotalResult,
+      signupsResult,
+      leadsTotalResult,
+      leadsResult,
+      classesTotalResult,
+      classesResult,
+      attendanceResult,
+      progressResult,
+      groupGoalsResult,
+    ] = await Promise.all([
+      pool.query(
+        `SELECT
+           (SELECT COUNT(*) FROM bna_students WHERE project_id = $1 AND COALESCE(status, 'active') NOT IN ('archived', 'inactive'))::int AS active_students,
+           (SELECT COUNT(*) FROM signups WHERE project_id = $1 AND COALESCE(status, 'new') <> 'archived')::int AS family_signups,
+           (SELECT COUNT(*) FROM bna_parent_leads WHERE project_id = $1 AND COALESCE(status, 'interested') <> 'archived')::int AS parent_leads,
+           (SELECT COUNT(*) FROM bna_accountability_events WHERE project_id = $1 AND occurred_at >= CURRENT_DATE - INTERVAL '14 days')::int AS recent_progress_events,
+           (SELECT COUNT(*) FROM bna_accountability_events WHERE project_id = $1 AND COALESCE(NULLIF(trim(attendance_status), ''), '') <> '' AND occurred_at >= CURRENT_DATE - INTERVAL '14 days')::int AS recent_attendance_events,
+           (SELECT COUNT(*) FROM bna_classes WHERE workspace_id = $2 AND COALESCE(status, 'scheduled') <> 'archived')::int AS active_classes`,
+        [projectId, workspaceId]
+      ),
+      pool.query(`SELECT COUNT(*)::int AS total FROM bna_students s WHERE ${studentConditions.join(' AND ')}`, studentParams),
+      pool.query(
+        `SELECT s.id, s.name, s.parent_name, s.parent_email, s.parent_phone, s.grade, s.status, s.updated_at,
+                COALESCE(goal_counts.open_goals, 0)::int AS open_goals,
+                COALESCE(question_counts.questions, 0)::int AS questions,
+                attendance_counts.attendance_percent,
+                latest_attendance.attendance_status AS latest_attendance_status,
+                latest_attendance.attendance_at AS latest_attendance_at,
+                latest_progress.progress_percent AS latest_progress_percent,
+                latest_progress.progress_at AS latest_progress_at
+         FROM bna_students s
+         LEFT JOIN (
+           SELECT student_id, COUNT(*) AS open_goals
+           FROM bna_accountability_events
+           WHERE project_id = $1
+             AND event_type = 'student_goal'
+             AND COALESCE(progress_percent, 0) < 100
+           GROUP BY student_id
+         ) goal_counts ON goal_counts.student_id = s.id
+         LEFT JOIN (
+           SELECT student_id, COUNT(*) AS questions
+           FROM bna_accountability_events
+           WHERE project_id = $1 AND event_type = 'question'
+           GROUP BY student_id
+         ) question_counts ON question_counts.student_id = s.id
+         LEFT JOIN (
+           SELECT student_id,
+                  CASE WHEN COUNT(*) FILTER (WHERE COALESCE(NULLIF(trim(attendance_status), ''), '') <> '') > 0
+                    THEN ROUND(((COUNT(*) FILTER (WHERE lower(regexp_replace(COALESCE(attendance_status, ''), '[^a-z0-9]+', '_', 'g')) IN ('present', 'here', 'attended')))::numeric
+                      / (COUNT(*) FILTER (WHERE COALESCE(NULLIF(trim(attendance_status), ''), '') <> ''))::numeric) * 100)::int
+                    ELSE NULL
+                  END AS attendance_percent
+           FROM bna_accountability_events
+           WHERE project_id = $1
+           GROUP BY student_id
+         ) attendance_counts ON attendance_counts.student_id = s.id
+         LEFT JOIN LATERAL (
+           SELECT a.attendance_status,
+                  COALESCE(a.occurred_at, a.created_at, a.updated_at) AS attendance_at
+           FROM bna_accountability_events a
+           WHERE a.project_id = $1
+             AND a.student_id = s.id
+             AND COALESCE(NULLIF(trim(a.attendance_status), ''), '') <> ''
+           ORDER BY COALESCE(a.occurred_at, a.created_at, a.updated_at) DESC NULLS LAST, a.id DESC
+           LIMIT 1
+         ) latest_attendance ON TRUE
+         LEFT JOIN LATERAL (
+           SELECT a.progress_percent,
+                  COALESCE(a.occurred_at, a.created_at, a.updated_at) AS progress_at
+           FROM bna_accountability_events a
+           WHERE a.project_id = $1
+             AND a.student_id = s.id
+             AND a.progress_percent IS NOT NULL
+           ORDER BY COALESCE(a.occurred_at, a.created_at, a.updated_at) DESC NULLS LAST, a.id DESC
+           LIMIT 1
+         ) latest_progress ON TRUE
+         WHERE ${studentConditions.join(' AND ')}
+         ORDER BY lower(s.name) ASC, s.id ASC
+         LIMIT $${studentParams.length + 1} OFFSET $${studentParams.length + 2}`,
+        [...studentParams, limit, offset]
+      ),
+      pool.query(`SELECT COUNT(*)::int AS total FROM signups s WHERE ${signupConditions.join(' AND ')}`, signupParams),
+      pool.query(
+        `SELECT 'signup' AS source_type, s.id, s.parent_name, s.parent_email, s.parent_phone,
+                s.student_name, s.student_grade, s.status, s.payment_status, NULL::text AS interest_level,
+                s.updated_at, s.created_at
+         FROM signups s
+         WHERE ${signupConditions.join(' AND ')}
+         ORDER BY s.updated_at DESC NULLS LAST, s.created_at DESC, s.id DESC
+         LIMIT $${signupParams.length + 1} OFFSET $${signupParams.length + 2}`,
+        [...signupParams, limit, offset]
+      ),
+      pool.query(`SELECT COUNT(*)::int AS total FROM bna_parent_leads l WHERE ${leadConditions.join(' AND ')}`, leadParams),
+      pool.query(
+        `SELECT 'lead' AS source_type, l.id, l.parent_name, l.parent_email, l.parent_phone,
+                l.student_name, l.student_grade, l.status, NULL::text AS payment_status,
+                l.interest_level, l.updated_at, l.created_at
+         FROM bna_parent_leads l
+         WHERE ${leadConditions.join(' AND ')}
+         ORDER BY
+           CASE l.interest_level WHEN 'hot' THEN 1 WHEN 'warm' THEN 2 WHEN 'cool' THEN 3 ELSE 4 END,
+           COALESCE(l.next_follow_up_date, CURRENT_DATE + INTERVAL '365 days') ASC,
+           l.updated_at DESC NULLS LAST,
+           l.id DESC
+         LIMIT $${leadParams.length + 1} OFFSET $${leadParams.length + 2}`,
+        [...leadParams, limit, offset]
+      ),
+      workspaceId
+        ? pool.query(`SELECT COUNT(*)::int AS total FROM bna_classes c WHERE ${classConditions.join(' AND ')}`, classParams)
+        : Promise.resolve({ rows: [{ total: 0 }] }),
+      workspaceId
+        ? pool.query(
+          `SELECT c.id, c.title, c.class_type, c.starts_at, c.ends_at, c.status,
+                  COALESCE(attendance.attendance_records, 0)::int AS attendance_records,
+                  COALESCE(attendance.present_records, 0)::int AS present_records
+           FROM bna_classes c
+           LEFT JOIN (
+             SELECT class_id,
+                    COUNT(*) AS attendance_records,
+                    COUNT(*) FILTER (WHERE status = 'present') AS present_records
+             FROM bna_class_attendance
+             GROUP BY class_id
+           ) attendance ON attendance.class_id = c.id
+           WHERE ${classConditions.join(' AND ')}
+           ORDER BY c.starts_at ASC NULLS LAST, c.created_at DESC, c.id DESC
+           LIMIT $${classParams.length + 1} OFFSET $${classParams.length + 2}`,
+          [...classParams, limit, offset]
+        )
+        : Promise.resolve({ rows: [] }),
+      workspaceId
+        ? pool.query(
+          `SELECT a.id, a.class_id, c.title AS class_title, a.student_id, s.name AS student_name,
+                  a.attendance_date, a.status, a.updated_at, a.created_at
+           FROM bna_class_attendance a
+           JOIN bna_classes c ON c.id = a.class_id
+           LEFT JOIN bna_students s ON s.id = a.student_id
+           WHERE c.workspace_id = $1
+           ORDER BY a.attendance_date DESC, a.updated_at DESC NULLS LAST, a.id DESC
+           LIMIT $2`,
+          [workspaceId, limit]
+        )
+        : Promise.resolve({ rows: [] }),
+      pool.query(
+        `SELECT a.id, a.student_id, COALESCE(s.name, a.student_name) AS student_name, a.title,
+                a.event_type, a.progress_percent, a.attendance_status, a.occurred_at,
+                a.created_at, a.follow_up_required
+         FROM bna_accountability_events a
+         LEFT JOIN bna_students s ON s.id = a.student_id
+         WHERE a.project_id = $1
+           AND (
+             a.progress_percent IS NOT NULL
+             OR COALESCE(NULLIF(trim(a.attendance_status), ''), '') <> ''
+             OR a.event_type IN ('student_goal', 'learning_note', 'question')
+           )
+         ORDER BY COALESCE(a.occurred_at, a.created_at, a.updated_at) DESC NULLS LAST, a.id DESC
+         LIMIT $2`,
+        [projectId, limit]
+      ),
+      pool.query(
+        `SELECT id, title, target_minutes, status, start_date, due_date, updated_at
+         FROM bna_group_goals
+         WHERE project_id = $1
+           AND COALESCE(status, 'active') <> 'archived'
+         ORDER BY updated_at DESC NULLS LAST, due_date ASC NULLS LAST, id DESC
+         LIMIT $2`,
+        [projectId, Math.min(limit, 12)]
+      ),
+    ]);
+
+    const signups = signupsResult.rows.map(schoolAdminFamilyView);
+    const leads = leadsResult.rows.map(schoolAdminFamilyView);
+
+    res.json({
+      scope: {
+        workspace_key: 'bna',
+        project_key: DEFAULT_PROJECT_KEY,
+        surface: 'school_admin',
+      },
+      generated_at: new Date().toISOString(),
+      limits: {
+        limit,
+        offset,
+        max_limit: SCHOOL_ADMIN_SUMMARY_MAX_LIMIT,
+        search_applied: Boolean(search),
+      },
+      summary: summaryResult.rows[0] || {},
+      students: schoolAdminPage(studentsResult.rows.map(schoolAdminStudentView), studentsTotalResult.rows[0]?.total, limit, offset),
+      families: schoolAdminPage([...signups, ...leads].slice(0, limit), Number(signupsTotalResult.rows[0]?.total || 0) + Number(leadsTotalResult.rows[0]?.total || 0), limit, offset),
+      signups: schoolAdminPage(signups, signupsTotalResult.rows[0]?.total, limit, offset),
+      leads: schoolAdminPage(leads, leadsTotalResult.rows[0]?.total, limit, offset),
+      classes: schoolAdminPage(classesResult.rows.map(schoolAdminClassView), classesTotalResult.rows[0]?.total, limit, offset),
+      attendance: {
+        rows: attendanceResult.rows.map(schoolAdminAttendanceView),
+        limit,
+      },
+      progress: {
+        rows: progressResult.rows.map(schoolAdminProgressView),
+        limit,
+      },
+      group_goals: groupGoalsResult.rows.map((row) => ({
+        id: row.id,
+        title: row.title || '',
+        target_minutes: row.target_minutes === null || row.target_minutes === undefined ? null : Number(row.target_minutes),
+        status: row.status || '',
+        start_date: row.start_date || null,
+        due_date: row.due_date || null,
+        updated_at: row.updated_at || null,
+      })),
+      route_contract: {
+        initial_api_groups: ['school_admin_summary'],
+        excluded_before_useful_action: ['control_plane', 'provider_marketplace', 'one_time', 'global_agents', 'deployment', 'integration_readiness'],
+      },
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
 // BNA dashboard: students and accountability
 app.get('/api/bna/students', requireAdmin, async (req, res) => {
   try {
@@ -94286,6 +94688,7 @@ app.get('/agent-review/session', async (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'agent-review-session.html'));
 });
 
+app.get('/operations/school', requireAdmin, sendSchoolAdminShell);
 app.get(['/operations', '/operations/agents/runs/:runKey'], requireAdmin, sendOperationsShell);
 
 // Telegram webhook handler

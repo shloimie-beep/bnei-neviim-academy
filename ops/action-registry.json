@@ -30,6 +30,86 @@
       ]
     },
     {
+      "action_id": "ACTION-SCHOOL-ADMIN-TAB-NAV",
+      "label": "School section navigation",
+      "surface": "operations_school_admin",
+      "route": "/operations/school",
+      "selector_hint": "[data-school-admin-surface] [data-view][data-action-id=\"ACTION-SCHOOL-ADMIN-TAB-NAV\"]",
+      "expected_behavior": "Switches between the focused School Dashboard, Students, Families, Classes, Attendance, and Progress sections without loading Control Plane, provider, One Time, deployment, integration, or global-agent modules.",
+      "permission": "super_admin_or_school_admin",
+      "status": "active",
+      "handler": "public/js/school-admin.js tab click handler",
+      "test": {
+        "type": "node_test_and_budget",
+        "expected_result": "tests/school-admin-speed-surface.test.js and npm run school-admin:perf:budget verify route isolation and visible School navigation."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-SCHOOL-ADMIN-REFRESH",
+      "label": "Refresh School data",
+      "surface": "operations_school_admin",
+      "route": "/operations/school",
+      "selector_hint": "[data-school-admin-surface] [data-action-id=\"ACTION-SCHOOL-ADMIN-REFRESH\"]",
+      "expected_behavior": "Runs the bounded School summary refresh/search request only against /api/bna/school-admin/summary with stale-request cancellation and no external write.",
+      "permission": "super_admin_or_school_admin",
+      "status": "active",
+      "handler": "GET /api/bna/school-admin/summary",
+      "test": {
+        "type": "node_test_and_budget",
+        "expected_result": "tests/school-admin-speed-surface.test.js verifies the client only calls the School summary endpoint before useful action."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-SCHOOL-ADMIN-ROW-OPEN",
+      "label": "Open School row",
+      "surface": "operations_school_admin",
+      "route": "/operations/school",
+      "selector_hint": "[data-school-admin-surface] [data-action-id=\"ACTION-SCHOOL-ADMIN-ROW-OPEN\"]",
+      "expected_behavior": "Opens an already-loaded School student, family, class, attendance, or progress row in the local detail panel without fetching unrelated workspace data or performing a write.",
+      "permission": "super_admin_or_school_admin",
+      "status": "active",
+      "handler": "public/js/school-admin.js row-open handler",
+      "test": {
+        "type": "node_test",
+        "expected_result": "tests/school-admin-speed-surface.test.js verifies row-open action coverage and local-only handler wiring."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-SCHOOL-ADMIN-PORTAL-LINK",
+      "label": "Open School portal",
+      "surface": "operations_school_admin",
+      "route": "/operations/school",
+      "selector_hint": "[data-school-admin-surface] [data-action-id=\"ACTION-SCHOOL-ADMIN-PORTAL-LINK\"]",
+      "expected_behavior": "Navigates to the existing parent or student portal route without creating access codes, sends, payments, or cross-workspace grants.",
+      "permission": "super_admin_or_school_admin",
+      "status": "active",
+      "handler": "same-origin /parent and /student links",
+      "test": {
+        "type": "node_test",
+        "expected_result": "tests/school-admin-speed-surface.test.js verifies the links target only same-origin School portal routes."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
       "action_id": "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
       "label": "Robot Scheller public helper",
       "surface": "one_time_public_landing",

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>BNA School</title>
+  <link rel="manifest" href="/operations-manifest.json">
+  <link rel="stylesheet" href="/css/school-admin.css">
+  <script>
+    window.__bnaSchoolAdminBoot = {
+      started_at: performance.now(),
+      route_id: 'operations_school_admin'
+    };
+    performance.mark('bna-school-admin-html-start');
+  </script>
+</head>
+<body data-school-admin-surface>
+  <div class="school-shell">
+    <header class="school-topbar">
+      <div class="school-brand">
+        <span class="school-brand-mark" aria-hidden="true">BN</span>
+        <div>
+          <p class="school-kicker">Operations</p>
+          <h1>BNA School</h1>
+        </div>
+      </div>
+      <nav class="school-top-actions" aria-label="School admin links">
+        <a href="/operations" class="school-link">Full Operations</a>
+        <a href="/parent" class="school-link" data-action-id="ACTION-SCHOOL-ADMIN-PORTAL-LINK">Parent Portal</a>
+        <a href="/student" class="school-link" data-action-id="ACTION-SCHOOL-ADMIN-PORTAL-LINK">Student Portal</a>
+      </nav>
+    </header>
+
+    <nav class="school-tabs" id="schoolTabs" aria-label="School sections">
+      <button type="button" class="school-tab is-active" data-view="dashboard" data-action-id="ACTION-SCHOOL-ADMIN-TAB-NAV">Dashboard</button>
+      <button type="button" class="school-tab" data-view="students" data-action-id="ACTION-SCHOOL-ADMIN-TAB-NAV">Students</button>
+      <button type="button" class="school-tab" data-view="families" data-action-id="ACTION-SCHOOL-ADMIN-TAB-NAV">Families</button>
+      <button type="button" class="school-tab" data-view="classes" data-action-id="ACTION-SCHOOL-ADMIN-TAB-NAV">Classes</button>
+      <button type="button" class="school-tab" data-view="attendance" data-action-id="ACTION-SCHOOL-ADMIN-TAB-NAV">Attendance</button>
+      <button type="button" class="school-tab" data-view="progress" data-action-id="ACTION-SCHOOL-ADMIN-TAB-NAV">Progress</button>
+    </nav>
+
+    <section class="school-toolbar" aria-label="School search and refresh">
+      <form id="schoolSearchForm" class="school-search">
+        <label for="schoolSearch">Search</label>
+        <input id="schoolSearch" name="q" type="search" autocomplete="off" placeholder="Student, parent, class">
+        <button type="submit" data-action-id="ACTION-SCHOOL-ADMIN-REFRESH">Search</button>
+      </form>
+      <button type="button" id="schoolRefresh" class="school-refresh" data-action-id="ACTION-SCHOOL-ADMIN-REFRESH">Refresh</button>
+    </section>
+
+    <main id="schoolApp" class="school-main" aria-live="polite">
+      <section class="school-panel school-panel-loading">
+        <div class="school-loading-line"></div>
+        <div class="school-loading-line short"></div>
+      </section>
+    </main>
+  </div>
+  <script src="/js/school-admin.js" defer></script>
+</body>
+</html>
