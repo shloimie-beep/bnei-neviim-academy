@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-07-12T09:05:00+03:00",
+  "updated_at": "2026-09-09T18:30:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -25,6 +25,22 @@
       "target_variant_note": "On the One Time single-tenant runtime for join.onetimeonetime.com, this route serves the One Time focused public funnel instead of the BNA homepage.",
       "related_goal_ids": [
         "GOAL-CORE-003"
+      ]
+    },
+    {
+      "route": "/life-skills/",
+      "surface": "public_life_skills_bilingual_landing",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_anonymous_life_skills_landing_in_requested_hebrew_or_english_locale",
+      "expected_logged_in_behavior": "load_anonymous_life_skills_landing_in_requested_hebrew_or_english_locale",
+      "privacy_risk": "normal",
+      "security_expectation": "Static public landing only; exclude unverified testimonial copy, identity and image data. WhatsApp actions open the approved wa.me destination without collecting form data.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
       ]
     },
     {
