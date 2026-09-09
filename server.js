@@ -28,6 +28,14 @@ const {
   normalizeGreenInvoiceWebhookPayload,
 } = require('./src/lib/bna/green-invoice');
 const {
+  LIFE_SKILLS_WAPI_REPLY_COPY_VERSION,
+  LIFE_SKILLS_WAPI_REPLY_EN,
+  LIFE_SKILLS_WAPI_REPLY_HE,
+  buildLifeSkillsWapiReplyReadiness,
+  lifeSkillsWapiReplyBody,
+  lifeSkillsWapiReplyInboundBlockers,
+} = require('./src/lib/bna/life-skills-wapi-auto-reply');
+const {
   goalBoardBucket,
   goalBoardStatus,
   metadataAfterProgressUpdate,
@@ -2852,6 +2860,10 @@ const ONE_TIME_WAPI_SENDER_PHONE = String(
   process.env.ONE_TIME_WAPI_PHONE ||
   ''
 ).trim();
+const LIFE_SKILLS_WAPI_AUTO_REPLY_COOLDOWN_DAYS = Math.max(
+  1,
+  Number(process.env.LIFE_SKILLS_WAPI_AUTO_REPLY_COOLDOWN_DAYS || 14)
+);
 const ONE_TIME_WAPI_REQUIRED_SENDER_DIGITS = normalizePhoneDigits(
   process.env.ONE_TIME_WAPI_REQUIRED_SENDER_DIGITS ||
   process.env.ONE_TIME_WHATSAPP_REQUIRED_SENDER_DIGITS ||
@@ -68105,6 +68117,206 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
   }
 }
 
+function lifeSkillsWapiAutoReplyReadiness(scope = {}) {
+  return buildLifeSkillsWapiReplyReadiness({
+    env: process.env,
+    tokenPresent: Boolean(wapiCredentialsForScope(scope).token),
+    webhookSecretPresent: Boolean(usableSecretValue(process.env.WAPI_WEBHOOK_SECRET)),
+    oneTimeScope: isOneTimeWapiScope(scope),
+  });
+}
+
+async function stampLifeSkillsWapiAutoReplyPlan(communicationId, plan = {}, db = pool) {
+  if (!communicationId) return null;
+  const result = await db.query(
+    `UPDATE bna_contact_communications
+     SET source_context = COALESCE(source_context, '{}'::jsonb) || $2::jsonb,
+         metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb,
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      communicationId,
+      JSON.stringify({ life_skills_auto_reply: plan }),
+      JSON.stringify({ life_skills_auto_reply: plan }),
+    ]
+  );
+  return result.rows[0] || null;
+}
+
+async function recentLifeSkillsWapiAutoReplyExists({ communication, normalized, recipient }, db = pool) {
+  const inboundCommunicationId = communication?.id ? String(communication.id) : '';
+  const inboundMessageId = String(normalized.messageId || '').trim();
+  const recipientDigits = normalizePhoneDigits(recipient.phone || recipient.to || '');
+  const result = await db.query(
+    `SELECT id, metadata->>'delivery_status' AS delivery_status, metadata->>'wapi_message_id' AS wapi_message_id
+     FROM bna_contact_communications
+     WHERE source = 'wapi'
+       AND direction = 'outbound'
+       AND metadata->>'auto_reply_type' = 'life_skills_first_contact_ack'
+       AND COALESCE(metadata->>'delivery_status', 'attempted') NOT IN ('failed', 'not_configured')
+       AND (
+         ($1 <> '' AND (metadata->>'inbound_communication_id' = $1 OR source_context->>'inbound_communication_id' = $1))
+         OR ($2 <> '' AND (metadata->>'inbound_wapi_message_id' = $2 OR source_context->>'inbound_wapi_message_id' = $2))
+         OR (
+           $3 <> ''
+           AND regexp_replace(COALESCE(metadata->>'recipient_phone', ''), '\\D', '', 'g') = $3
+           AND occurred_at >= NOW() - ($4::text || ' days')::interval
+         )
+       )
+     ORDER BY occurred_at DESC, id DESC
+     LIMIT 1`,
+    [inboundCommunicationId, inboundMessageId, recipientDigits, String(LIFE_SKILLS_WAPI_AUTO_REPLY_COOLDOWN_DAYS)]
+  );
+  return result.rows[0] || null;
+}
+
+async function claimLifeSkillsWapiAutoReplyAttempt({ communication, normalized, recipient, webhookLogId, replyBody, language }, db = pool) {
+  const claimWithRunner = async (runner) => {
+    const duplicate = await recentLifeSkillsWapiAutoReplyExists({ communication, normalized, recipient }, runner);
+    if (duplicate) return { duplicate, attempt: null };
+    const sourceContext = {
+      auto_reply_type: 'life_skills_first_contact_ack',
+      inbound_communication_id: communication?.id || null,
+      inbound_wapi_message_id: normalized.messageId || null,
+      wapi_webhook_log_id: webhookLogId || null,
+      copy_version: LIFE_SKILLS_WAPI_REPLY_COPY_VERSION,
+      language,
+    };
+    const attempt = await createOutboundWapiCommunicationAttempt({
+      recipient,
+      messageBody: replyBody,
+      summary: 'Life Skills WhatsApp first-contact acknowledgment attempted',
+      projectId: communication?.project_id || recipient.project_id || null,
+      source: 'life_skills_first_contact_ack',
+      createdBy: 'Life Skills WhatsApp responder',
+      sourceContext,
+      metadata: sourceContext,
+    }, runner);
+    return { duplicate: null, attempt };
+  };
+
+  if (db !== pool || typeof db.connect !== 'function') return claimWithRunner(db);
+  const client = await db.connect();
+  try {
+    await client.query('BEGIN');
+    const recipientIdentity = normalizePhoneDigits(recipient.phone || recipient.to || '') || String(communication?.id || 'unknown');
+    await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`life-skills-first-contact-ack:${recipientIdentity}`]);
+    const claim = await claimWithRunner(client);
+    await client.query('COMMIT');
+    return claim;
+  } catch (error) {
+    await client.query('ROLLBACK').catch(() => null);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+async function maybeSendLifeSkillsWapiAutoReply({ normalized, communication, match, scope, webhookLogId }, db = pool) {
+  const readiness = lifeSkillsWapiAutoReplyReadiness(scope);
+  const messageText = String(normalized.messageText || '').trim();
+  const blockers = lifeSkillsWapiReplyInboundBlockers(normalized, readiness);
+  if (wapiInboundLooksLikeOptOut(messageText)) blockers.push('opt_out_or_wrong_number_language');
+  const plan = {
+    auto_reply_type: 'life_skills_first_contact_ack',
+    copy_version: LIFE_SKILLS_WAPI_REPLY_COPY_VERSION,
+    cooldown_days: LIFE_SKILLS_WAPI_AUTO_REPLY_COOLDOWN_DAYS,
+    status: 'blocked',
+    sent: false,
+    ...readiness,
+    blockers: [...new Set(blockers)],
+  };
+  if (plan.blockers.length) {
+    await stampLifeSkillsWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
+    return plan;
+  }
+
+  const recipientPhone = normalizeWapiRecipient(normalized.fromNumber || normalized.chatId || '');
+  if (!recipientPhone) {
+    plan.blockers.push('missing_reply_recipient');
+    await stampLifeSkillsWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
+    return plan;
+  }
+  const language = /[\u0590-\u05ff]/.test(messageText) ? 'he' : 'en';
+  const replyBody = lifeSkillsWapiReplyBody(messageText, {
+    hebrew: process.env.LIFE_SKILLS_WAPI_AUTO_REPLY_HE || LIFE_SKILLS_WAPI_REPLY_HE,
+    english: process.env.LIFE_SKILLS_WAPI_AUTO_REPLY_EN || LIFE_SKILLS_WAPI_REPLY_EN,
+  });
+  const recipient = {
+    to: recipientPhone,
+    phone: normalized.fromNumber || normalized.chatId || recipientPhone,
+    name: match?.matched_name || normalized.pushName || recipientPhone,
+    contact_type: communication?.contact_type || match?.contact_type || 'general',
+    lead_id: communication?.lead_id || match?.lead_id || null,
+    signup_id: communication?.signup_id || match?.signup_id || null,
+    student_id: communication?.student_id || match?.student_id || null,
+    project_id: communication?.project_id || match?.project_id || null,
+    match_source: match?.match_source || 'wapi_inbound_auto_reply',
+  };
+  const claim = await claimLifeSkillsWapiAutoReplyAttempt({
+    communication,
+    normalized,
+    recipient,
+    webhookLogId,
+    replyBody,
+    language,
+  }, db);
+  if (claim.duplicate) {
+    plan.status = 'skipped_recent_reply_exists';
+    plan.recent_reply_communication_id = claim.duplicate.id;
+    plan.language = language;
+    await stampLifeSkillsWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
+    return plan;
+  }
+  const attempt = claim.attempt;
+  plan.claim_persisted_before_send = true;
+  plan.language = language;
+  try {
+    const sendResult = await sendWapiTextMessage({
+      to: recipient.to,
+      body: replyBody,
+      workspace_key: scope.workspace_key || '',
+      project_key: scope.project_key || '',
+    });
+    const outbound = await updateOutboundWapiCommunicationResult(attempt.id, {
+      sendResult,
+      summary: 'Life Skills WhatsApp first-contact acknowledgment sent',
+      metadata: {
+        auto_reply_type: 'life_skills_first_contact_ack',
+        copy_version: LIFE_SKILLS_WAPI_REPLY_COPY_VERSION,
+        language,
+        inbound_communication_id: communication?.id || null,
+        inbound_wapi_message_id: normalized.messageId || null,
+        wapi_webhook_log_id: webhookLogId || null,
+      },
+    }, db);
+    plan.status = 'sent';
+    plan.sent = true;
+    plan.outbound_communication_id = outbound?.id || attempt.id;
+    plan.wapi_message_id = outbound?.metadata?.wapi_message_id || null;
+  } catch (error) {
+    const outbound = await updateOutboundWapiCommunicationResult(attempt.id, {
+      error,
+      summary: 'Life Skills WhatsApp first-contact acknowledgment failed',
+      metadata: {
+        auto_reply_type: 'life_skills_first_contact_ack',
+        copy_version: LIFE_SKILLS_WAPI_REPLY_COPY_VERSION,
+        language,
+        inbound_communication_id: communication?.id || null,
+        inbound_wapi_message_id: normalized.messageId || null,
+        wapi_webhook_log_id: webhookLogId || null,
+      },
+    }, db).catch(() => null);
+    plan.status = wapiErrorDeliveryStatus(error);
+    plan.sent = false;
+    plan.outbound_communication_id = outbound?.id || attempt.id;
+    plan.error = error.message;
+  }
+  await stampLifeSkillsWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
+  return plan;
+}
+
 async function resolveWapiOutboundRecipient(body = {}, db = pool) {
   const explicitTo = normalizeWapiRecipient(body.to || body.phone || body.chat_id || body.chatId);
   if (explicitTo) {
@@ -69340,20 +69552,28 @@ app.post('/api/webhooks/wapi', async (req, res) => {
         lead: providerBotLead,
       });
     }
-    const autoReplyResult = !isOneTimeWapiScope(webhookScope)
+    const autoReplyResult = communicationResult.duplicate
       ? {
-          auto_reply_type: 'provider_lead_bot_reply',
-          status: 'not_applicable_non_onetime_scope',
-          sent: false,
-          blockers: ['not_one_time_scope'],
-        }
-      : communicationResult.duplicate
-      ? {
-          auto_reply_type: 'provider_lead_bot_reply',
+          auto_reply_type: isOneTimeWapiScope(webhookScope)
+            ? 'provider_lead_bot_reply'
+            : 'life_skills_first_contact_ack',
           status: 'skipped_duplicate_inbound',
           sent: false,
           blockers: ['duplicate_inbound_message'],
         }
+      : !isOneTimeWapiScope(webhookScope)
+      ? await maybeSendLifeSkillsWapiAutoReply({
+          normalized,
+          communication: communicationResult.communication,
+          match: communicationResult.match,
+          scope: webhookScope,
+          webhookLogId: webhookLog.id,
+        }).catch((error) => ({
+          auto_reply_type: 'life_skills_first_contact_ack',
+          status: 'failed',
+          sent: false,
+          error: error.message,
+        }))
       : !oneTimeProviderLeadBotCaptureEnabled()
       ? {
           auto_reply_type: 'provider_lead_bot_reply',
@@ -69389,7 +69609,7 @@ app.post('/api/webhooks/wapi', async (req, res) => {
             ? `Duplicate WAPI message; linked to existing communication #${communicationResult.communication?.id}.`
             : `Filed into contact communications #${communicationResult.communication?.id}.`,
           autoReplyResult
-            ? `One Time auto-reply ${autoReplyResult.status || 'not_evaluated'}.`
+            ? `${isOneTimeWapiScope(webhookScope) ? 'One Time' : 'Life Skills'} auto-reply ${autoReplyResult.status || 'not_evaluated'}.`
             : null,
         ].filter(Boolean).join(' '),
       ]
@@ -69547,6 +69767,15 @@ app.get('/api/bna/wapi/diagnostics', requireAdmin, async (req, res) => {
     const requiredWapiEnv = credentials.one_time_scope
       ? ['ONE_TIME_WAPI_API_TOKEN or RABBI_SHELLER_WAPI_API_TOKEN or WAPI_API_TOKEN']
       : ['WAPI_API_TOKEN or WHAPI_API_TOKEN'];
+    const autoReplyReadiness = credentials.one_time_scope
+      ? oneTimeWapiAutoReplyReadiness({
+          workspace_key: diagnosticWorkspaceKey,
+          project_key: diagnosticProjectKey,
+        })
+      : lifeSkillsWapiAutoReplyReadiness({
+          workspace_key: diagnosticWorkspaceKey,
+          project_key: diagnosticProjectKey,
+        });
     const latestSyncRun = (await pool.query(
       `SELECT *
        FROM bna_wapi_sync_runs
@@ -69559,7 +69788,7 @@ app.get('/api/bna/wapi/diagnostics', requireAdmin, async (req, res) => {
       inbound_webhook_fail_closed_in_hosted_runtime: true,
       inbound_webhook_header_auth_only: true,
       insecure_local_webhook_test_enabled: WAPI_WEBHOOK_ALLOW_INSECURE_LOCAL_TEST,
-      provider_channel_binding_configured: Boolean(ONE_TIME_WAPI_WEBHOOK_SECRET || (isOneTimeSingleTenantRuntime() && process.env.WAPI_WEBHOOK_SECRET)),
+      provider_channel_binding_configured: Boolean(ONE_TIME_WAPI_WEBHOOK_SECRET || usableSecretValue(process.env.WAPI_WEBHOOK_SECRET)),
       provider_instance_metadata_present: Boolean(ONE_TIME_WAPI_INSTANCE_ID),
       provider_sender_phone_metadata_present: Boolean(ONE_TIME_WAPI_SENDER_PHONE),
       provider_instance_binding_enforced_when_configured: true,
@@ -69582,14 +69811,8 @@ app.get('/api/bna/wapi/diagnostics', requireAdmin, async (req, res) => {
       project_key: diagnosticProjectKey || null,
       send_endpoint: '/api/bna/contact-communications/send-whatsapp',
       sync_endpoint: '/api/bna/wapi/sync',
-      auto_reply_configured: oneTimeWapiAutoReplyReadiness({
-        workspace_key: diagnosticWorkspaceKey,
-        project_key: diagnosticProjectKey,
-      }).ready,
-      auto_reply_readiness: oneTimeWapiAutoReplyReadiness({
-        workspace_key: diagnosticWorkspaceKey,
-        project_key: diagnosticProjectKey,
-      }),
+      auto_reply_configured: autoReplyReadiness.ready,
+      auto_reply_readiness: autoReplyReadiness,
       latest_sync_run: latestSyncRun,
       required_outbound_env: credentials.token ? [] : requiredWapiEnv,
       required_sync_env: credentials.token ? [] : requiredWapiEnv,
