@@ -8,6 +8,11 @@ window.LIFE_SKILLS_CONFIG = Object.freeze({
   whatsappVerified: true,
   founderImage: "assets/images/founder-boy-hero-desktop.webp",
   founderImageApproved: true,
+  reviewPreview: false,
+  // The existing LB quote and portrait may be published only under this owner-confirmed scope.
+  privateTestimonialPreview: true,
+  testimonialConsentOwnerConfirmed: true,
+  testimonialConsentReference: "LS-LB-CONSENT-20260909-001",
   locationVerified: true,
   // Owner/operator approval of the published wording; not a claim of legal certification.
   legalReviewApproved: true,

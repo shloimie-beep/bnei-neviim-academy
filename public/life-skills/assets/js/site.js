@@ -5,6 +5,7 @@
   "he": {
     "brand": "כישורי חיים",
     "tagline": "לחיים שלמים",
+    "preview": "תצוגה לבדיקת האתר — לא אתר שפורסם.",
     "navTeaching": "מה לומדים",
     "navFounder": "על שלמה",
     "navFaq": "שאלות נפוצות"
@@ -12,6 +13,7 @@
   "en": {
     "brand": "Life Skills",
     "tagline": "",
+    "preview": "Website review preview — not a published service page.",
     "navTeaching": "What children learn",
     "navFounder": "About Shlomo",
     "navFaq": "Common questions"
