@@ -1,0 +1,371 @@
+:root {
+  --school-ink: #10233d;
+  --school-muted: #5a6d7d;
+  --school-cream: #f8f4e8;
+  --school-paper: #fffdf7;
+  --school-line: #d9e3df;
+  --school-teal: #0f8c8c;
+  --school-cyan: #38b8cf;
+  --school-navy: #142f52;
+  --school-warn: #c0761a;
+  --school-ok: #1f8f5f;
+  --school-danger: #b74444;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--school-ink);
+  background: var(--school-cream);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+.school-shell {
+  min-height: 100vh;
+}
+
+.school-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px clamp(16px, 3vw, 32px);
+  background: var(--school-navy);
+  color: white;
+}
+
+.school-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.school-brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  background: rgba(56, 184, 207, 0.16);
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.school-brand h1,
+.school-brand p {
+  margin: 0;
+}
+
+.school-brand h1 {
+  font-size: clamp(1.3rem, 2vw, 1.9rem);
+  line-height: 1.1;
+}
+
+.school-kicker {
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.school-top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.school-link,
+.school-tab,
+.school-refresh,
+.school-search button,
+.school-row-button,
+.school-action {
+  border: 1px solid var(--school-line);
+  border-radius: 6px;
+  background: var(--school-paper);
+  color: var(--school-ink);
+  min-height: 38px;
+  padding: 8px 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.school-link {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.school-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 12px clamp(16px, 3vw, 32px);
+  background: #eaf6f4;
+  border-bottom: 1px solid var(--school-line);
+}
+
+.school-tab {
+  white-space: nowrap;
+  background: transparent;
+}
+
+.school-tab.is-active {
+  border-color: var(--school-teal);
+  background: var(--school-teal);
+  color: white;
+}
+
+.school-toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px clamp(16px, 3vw, 32px);
+  background: var(--school-paper);
+  border-bottom: 1px solid var(--school-line);
+}
+
+.school-search {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  flex: 1;
+}
+
+.school-search label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--school-muted);
+}
+
+.school-search input {
+  width: min(100%, 360px);
+  min-height: 38px;
+  border: 1px solid var(--school-line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: white;
+  color: var(--school-ink);
+}
+
+.school-search button,
+.school-refresh,
+.school-action.primary {
+  border-color: var(--school-teal);
+  background: var(--school-teal);
+  color: white;
+}
+
+.school-main {
+  padding: clamp(16px, 3vw, 32px);
+}
+
+.school-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.school-panel {
+  background: var(--school-paper);
+  border: 1px solid var(--school-line);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.school-panel h2,
+.school-panel h3,
+.school-card h3,
+.school-card p,
+.school-panel p {
+  margin-top: 0;
+}
+
+.school-panel h2 {
+  font-size: 1.2rem;
+}
+
+.school-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.school-card,
+.school-row {
+  background: white;
+  border: 1px solid var(--school-line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.school-card strong {
+  display: block;
+  font-size: 1.6rem;
+  line-height: 1.1;
+  color: var(--school-navy);
+}
+
+.school-card span,
+.school-muted,
+.school-meta {
+  color: var(--school-muted);
+  font-size: 0.88rem;
+}
+
+.school-list {
+  display: grid;
+  gap: 10px;
+}
+
+.school-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.school-row h3 {
+  margin-bottom: 4px;
+  font-size: 1rem;
+}
+
+.school-row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.school-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #eaf6f4;
+  color: var(--school-navy);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.school-chip.warn {
+  background: #fff2dc;
+  color: var(--school-warn);
+}
+
+.school-chip.ok {
+  background: #e7f6ee;
+  color: var(--school-ok);
+}
+
+.school-detail {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.school-empty,
+.school-error {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px dashed var(--school-line);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.school-error {
+  border-color: rgba(183, 68, 68, 0.35);
+  color: var(--school-danger);
+}
+
+.school-panel-loading {
+  max-width: 680px;
+}
+
+.school-loading-line {
+  height: 14px;
+  width: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e0ebe7, #f6fbfa, #e0ebe7);
+  background-size: 220% 100%;
+  animation: schoolLoading 1.1s linear infinite;
+  margin: 8px 0;
+}
+
+.school-loading-line.short {
+  width: 54%;
+}
+
+@keyframes schoolLoading {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -220% 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .school-topbar,
+  .school-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .school-top-actions {
+    justify-content: flex-start;
+  }
+
+  .school-grid,
+  .school-card-grid,
+  .school-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .school-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .school-search {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .school-search input {
+    width: 100%;
+  }
+
+  .school-link,
+  .school-tab,
+  .school-refresh,
+  .school-search button,
+  .school-row-button,
+  .school-action {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}

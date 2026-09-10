@@ -1,0 +1,2 @@
+route,viewport,mode,request_group,count_before_useful_action,total_count,status,note
+all,all,baseline,unknown,,,blocked,"No browser request waterfall captured"

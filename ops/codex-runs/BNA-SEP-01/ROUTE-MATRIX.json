@@ -1,0 +1,153 @@
+{
+  "run_id": "BNA-SEP-01",
+  "status": "implemented_source_backed_needs_browser_measurement",
+  "updated_at": "2026-07-15T14:13:53.3994380Z",
+  "journeys": [
+    {
+      "id": "login",
+      "url": "/operations-login.html",
+      "role": "school_admin",
+      "auth": "public login form",
+      "useful_action_marker": "form rendered, input accepts focus/typing, submit handler attached",
+      "implementation_status": "unchanged existing route"
+    },
+    {
+      "id": "school_admin_dashboard",
+      "url": "/operations/school",
+      "role": "school_admin",
+      "auth": "requireAdmin",
+      "shell": "public/school-admin.html",
+      "assets_before_useful_action": [
+        "/css/school-admin.css",
+        "/js/school-admin.js"
+      ],
+      "apis_before_useful_action": [
+        "/api/bna/school-admin/summary?view=dashboard&limit=40"
+      ],
+      "useful_action_marker": "bna-school-admin-useful-action",
+      "visible_actions": [
+        "ACTION-SCHOOL-ADMIN-TAB-NAV",
+        "ACTION-SCHOOL-ADMIN-REFRESH",
+        "ACTION-SCHOOL-ADMIN-PORTAL-LINK"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "id": "students",
+      "url": "/operations/school?view=students",
+      "role": "school_admin",
+      "auth": "requireAdmin",
+      "apis_before_useful_action": [
+        "/api/bna/school-admin/summary?view=students&limit=40"
+      ],
+      "useful_action_marker": "bna-school-admin-useful-action",
+      "visible_actions": [
+        "ACTION-SCHOOL-ADMIN-TAB-NAV",
+        "ACTION-SCHOOL-ADMIN-REFRESH",
+        "ACTION-SCHOOL-ADMIN-ROW-OPEN"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "id": "families",
+      "url": "/operations/school?view=families",
+      "role": "school_admin",
+      "auth": "requireAdmin",
+      "apis_before_useful_action": [
+        "/api/bna/school-admin/summary?view=families&limit=40"
+      ],
+      "useful_action_marker": "bna-school-admin-useful-action",
+      "visible_actions": [
+        "ACTION-SCHOOL-ADMIN-TAB-NAV",
+        "ACTION-SCHOOL-ADMIN-REFRESH",
+        "ACTION-SCHOOL-ADMIN-ROW-OPEN"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "id": "classes",
+      "url": "/operations/school?view=classes",
+      "role": "school_admin",
+      "auth": "requireAdmin",
+      "apis_before_useful_action": [
+        "/api/bna/school-admin/summary?view=classes&limit=40"
+      ],
+      "useful_action_marker": "bna-school-admin-useful-action",
+      "visible_actions": [
+        "ACTION-SCHOOL-ADMIN-TAB-NAV",
+        "ACTION-SCHOOL-ADMIN-REFRESH",
+        "ACTION-SCHOOL-ADMIN-ROW-OPEN"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "id": "attendance",
+      "url": "/operations/school?view=attendance",
+      "role": "school_admin",
+      "auth": "requireAdmin",
+      "apis_before_useful_action": [
+        "/api/bna/school-admin/summary?view=attendance&limit=40"
+      ],
+      "useful_action_marker": "bna-school-admin-useful-action",
+      "visible_actions": [
+        "ACTION-SCHOOL-ADMIN-TAB-NAV",
+        "ACTION-SCHOOL-ADMIN-REFRESH",
+        "ACTION-SCHOOL-ADMIN-ROW-OPEN"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "id": "progress",
+      "url": "/operations/school?view=progress",
+      "role": "school_admin",
+      "auth": "requireAdmin",
+      "apis_before_useful_action": [
+        "/api/bna/school-admin/summary?view=progress&limit=40"
+      ],
+      "useful_action_marker": "bna-school-admin-useful-action",
+      "visible_actions": [
+        "ACTION-SCHOOL-ADMIN-TAB-NAV",
+        "ACTION-SCHOOL-ADMIN-REFRESH",
+        "ACTION-SCHOOL-ADMIN-ROW-OPEN"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "id": "parent_portal",
+      "url": "/parent",
+      "role": "parent",
+      "auth": "existing parent portal auth/session",
+      "useful_action_marker": "existing parent portal marker or browser harness target required",
+      "implementation_status": "unchanged compatibility route"
+    },
+    {
+      "id": "student_portal",
+      "url": "/student",
+      "role": "student",
+      "auth": "existing student portal auth/session",
+      "useful_action_marker": "existing student portal marker or browser harness target required",
+      "implementation_status": "unchanged compatibility route"
+    }
+  ],
+  "api_contracts": [
+    {
+      "route": "/api/bna/school-admin/summary",
+      "method": "GET",
+      "auth": "requireAdmin",
+      "project_scope": "DEFAULT_PROJECT_KEY (bna) plus assertProjectAccess",
+      "cache": "no-store",
+      "default_limit": 40,
+      "max_limit": 80,
+      "sort": "deterministic by updated/created date then id where supported",
+      "private_field_policy": "parent email and phone are masked; response is no-store",
+      "excluded_groups": [
+        "control_plane",
+        "provider_marketplace",
+        "one_time",
+        "global_agents",
+        "deployment",
+        "integration_readiness"
+      ]
+    }
+  ]
+}
