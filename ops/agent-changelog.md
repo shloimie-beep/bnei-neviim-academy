@@ -40470,3 +40470,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Scope remains the `/life-skills/` static bundle and focused release test;
   academy homepage, app/login routes, DNS, email, providers, and unrelated
   repository work were not changed.
+
+## 2026-09-10 - Life Skills mobile first-view correction prepared
+
+- Imported the production output from approved source PR
+  `sdratler/inner-leadership#21` at merge commit
+  `0af6981cbab1c5e79ebc0ffb4d29bd08020b7729` into only
+  `public/life-skills/`.
+- Moved the existing practical-parent-guidance sentence into the lower safe
+  area of the mobile photograph, tightened the upper hero, and kept the real
+  founder-and-boy faces unobstructed.
+- Changed the mobile hero action to `Find out more on WhatsApp` /
+  `לפרטים בוואטסאפ`, with a content-driven one-line button visible before
+  scrolling at 390, 360 and 320 pixel phone widths.
+- Added a persistent `HE` / `EN` switch to the mobile toolbar without removing
+  the existing menu language controls.
+- Scope remains the `/life-skills/` static bundle; desktop presentation,
+  curriculum slider, academy homepage, DNS, email, providers and unrelated
+  repository work were not changed.
