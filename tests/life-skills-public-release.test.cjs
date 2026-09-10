@@ -66,6 +66,22 @@ test('public artifact includes the current owner logo, testimonial order, and mo
   assert.doesNotMatch(decodedBundle, /550 ₪ למפגש אישי של 60 דקות/);
 });
 
+test('public artifact includes the approved UX refinement', () => {
+  const bundle = read('assets/js/site-react.js');
+  const decodedBundle = bundle.replace(/\\u([0-9a-f]{4})/gi, (_, code) => String.fromCharCode(Number.parseInt(code, 16)));
+  const css = read('assets/css/site.css');
+
+  assert.match(bundle, /The Life Skills approach/);
+  assert.match(bundle, /Intrinsic motivation/);
+  assert.match(bundle, /Self-governance/);
+  assert.match(bundle, /Handling frustration/);
+  assert.match(decodedBundle, /הגישה של כישורי חיים/);
+  assert.match(css, /border:2px solid var\(--gold\)/);
+  assert.match(css, /object-position:66% 50%/);
+  assert.match(bundle, /footer-whatsapp/);
+  assert.match(bundle, /footer-phone/);
+});
+
 test('Life Skills route is registered as anonymous-safe', () => {
   const registry = JSON.parse(fs.readFileSync(path.join(ROOT, 'ops', 'route-registry.json'), 'utf8'));
   const route = registry.routes.find((entry) => entry.route === '/life-skills/');
