@@ -1,0 +1,34 @@
+[
+  {
+    "label": "raw_email_field",
+    "patch": {
+      "case": {
+        "customer_email": "family@example.test"
+      }
+    }
+  },
+  {
+    "label": "phone_in_summary",
+    "patch": {
+      "case": {
+        "redacted_summary": "Caller asked for help at 555-111-2222."
+      }
+    }
+  },
+  {
+    "label": "query_string_url",
+    "patch": {
+      "case": {
+        "product_case_url": "https://join.onetimeonetime.com/support/cases/case_01JCONTROLPLANEOT000001?token=abc"
+      }
+    }
+  },
+  {
+    "label": "raw_message_field",
+    "patch": {
+      "case": {
+        "message_body": "quoted customer text"
+      }
+    }
+  }
+]

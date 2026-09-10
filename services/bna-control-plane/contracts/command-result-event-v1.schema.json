@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bnei-neviim.com/contracts/bna-control-plane/command-result-event-v1.schema.json",
+  "title": "BNA Control Plane Command Result Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "event_id",
+    "event_type",
+    "occurred_at",
+    "producer",
+    "command_result",
+    "trace"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "1.0.0"
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^evt_[A-Za-z0-9_]{10,96}$"
+    },
+    "event_type": {
+      "const": "control.command.result.v1"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "producer": {
+      "$ref": "support-case-event-v1.schema.json#/$defs/producer"
+    },
+    "command_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command_id",
+        "product_case_id",
+        "result",
+        "result_code",
+        "product_version"
+      ],
+      "properties": {
+        "command_id": {
+          "type": "string",
+          "pattern": "^cmd_[A-Za-z0-9_]{10,96}$"
+        },
+        "product_case_id": {
+          "type": "string",
+          "pattern": "^case_[A-Za-z0-9_]{10,96}$"
+        },
+        "result": {
+          "enum": [
+            "accepted",
+            "applied",
+            "rejected",
+            "conflict",
+            "expired",
+            "failed"
+          ]
+        },
+        "result_code": {
+          "enum": [
+            "queue_changed",
+            "severity_changed",
+            "information_requested",
+            "case_closed",
+            "case_reopened",
+            "stale_product_version",
+            "not_authorized",
+            "product_policy_rejected",
+            "product_deleted",
+            "temporary_failure"
+          ]
+        },
+        "product_version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "trace": {
+      "$ref": "support-case-event-v1.schema.json#/$defs/trace"
+    }
+  }
+}

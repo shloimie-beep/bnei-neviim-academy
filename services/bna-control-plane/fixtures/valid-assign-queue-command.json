@@ -1,0 +1,25 @@
+{
+  "contract_version": "1.0.0",
+  "command_id": "cmd_01JCONTROLPLANEASSIGN001",
+  "command_type": "support.case.assign_queue.v1",
+  "requested_at": "2026-07-17T08:10:00Z",
+  "issuer": {
+    "service": "bna_control_plane",
+    "environment": "production",
+    "deployment_id": "bna-cp-v1-20260717",
+    "source_commit": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+    "operator_id": "op_01JCONTROLPLANEOP000001"
+  },
+  "target": {
+    "product": "one_time",
+    "product_case_id": "case_01JCONTROLPLANEOT000001",
+    "expected_product_version": 4
+  },
+  "instruction": {
+    "queue": "technical_ops",
+    "reason_code": "routing_correction"
+  },
+  "trace": {
+    "correlation_id": "corr_01JCONTROLPLANEOT000001"
+  }
+}

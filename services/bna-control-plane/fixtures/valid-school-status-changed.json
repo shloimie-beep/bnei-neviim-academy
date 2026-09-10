@@ -1,0 +1,28 @@
+{
+  "contract_version": "1.0.0",
+  "event_id": "evt_01JCONTROLPLANESCHOOL0001",
+  "event_type": "support.case.status_changed.v1",
+  "occurred_at": "2026-07-17T08:05:00Z",
+  "producer": {
+    "product": "bna_school",
+    "environment": "production",
+    "deployment_id": "bna-school-prod-20260717",
+    "source_commit": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c"
+  },
+  "case": {
+    "product_case_id": "case_01JCONTROLPLANESCHOOL001",
+    "case_kind": "class_live",
+    "severity": "sev3",
+    "queue": "school_ops",
+    "status": "waiting_product",
+    "redacted_summary": "Classroom roster sync needs product review.",
+    "product_case_url": "https://school.bneineviimacademy.org/support/cases/case_01JCONTROLPLANESCHOOL001",
+    "product_version": 9,
+    "opened_at": "2026-07-17T07:45:00Z",
+    "updated_at": "2026-07-17T08:05:00Z",
+    "closed_at": null
+  },
+  "trace": {
+    "correlation_id": "corr_01JCONTROLPLANESCHOOL001"
+  }
+}
