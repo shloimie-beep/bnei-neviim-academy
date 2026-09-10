@@ -40450,3 +40450,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Scope remains the `/life-skills/` static bundle and focused release test;
   academy homepage, app/login routes, DNS, email, providers, and unrelated
   repository work were not changed.
+
+## 2026-09-10 - Life Skills approved UX refinement prepared
+
+- Imported the production output from approved source PR
+  `sdratler/inner-leadership#20` at merge commit
+  `a50c1780a64f4cad1df67bd32e080ac48dda2c24` into only
+  `public/life-skills/`.
+- Rebuilt the approach as a bounded, lighter photographic feature with
+  separate intrinsic-motivation principles, the connected SODAS sequence and
+  a three-step frustration response, while preserving the existing bilingual
+  copy and twelve-module slider.
+- Rebuilt the grass-photo founder section as a face-safe side-by-side
+  composition, centered the FAQ, and simplified the footer around the approved
+  logo, WhatsApp control and linked `053-493-2631` telephone number.
+- Preserved the owner-confirmed `LB, 2024` testimonial before About, the exact
+  Hebrew logo plus live `Life Skills` English label, and the monthly fee of
+  `2,200 ₪` / `₪2,200` for four sessions.
+- Scope remains the `/life-skills/` static bundle and focused release test;
+  academy homepage, app/login routes, DNS, email, providers, and unrelated
+  repository work were not changed.
