@@ -84,8 +84,44 @@ test('public artifact includes the approved UX refinement', () => {
   assert.match(bundle, /mobile-language-direct/);
   assert.match(bundle, /Find out more on WhatsApp/);
   assert.match(decodedBundle, /לפרטים בוואטסאפ/);
-  assert.match(css, /max-width:310px/);
+  assert.match(css, /max-width:284px/);
   assert.match(css, /white-space:nowrap/);
+});
+
+test('Life Skills route owns its favicon, install identity, and social metadata', () => {
+  const html = read('index.html');
+  const manifest = JSON.parse(read('manifest.webmanifest'));
+
+  assert.match(html, /href="favicon\.ico"/);
+  assert.match(html, /href="icons\/apple-touch-icon\.png"/);
+  assert.match(html, /href="manifest\.webmanifest"/);
+  assert.match(html, /rel="canonical" href="https:\/\/bneineviimacademy\.org\/life-skills\/"/);
+  assert.match(html, /property="og:image" content="https:\/\/bneineviimacademy\.org\/life-skills\/assets\/images\/life-skills-social-preview\.png"/);
+  assert.match(html, /name="twitter:card" content="summary_large_image"/);
+  assert.doesNotMatch(html, /Bnei Nevi['’]im Academy/);
+  assert.equal(manifest.scope, '/life-skills/');
+  assert.equal(manifest.start_url, '/life-skills/?lang=he');
+  assert.equal(manifest.icons[0].src, 'icons/icon-192.png');
+  for (const required of [
+    'favicon.ico',
+    'icons/favicon-16.png',
+    'icons/favicon-32.png',
+    'icons/apple-touch-icon.png',
+    'icons/icon-192.png',
+    'icons/icon-512.png',
+    'assets/images/life-skills-social-preview.png',
+  ]) {
+    assert.ok(fs.statSync(path.join(SITE, required)).size > 0, required);
+  }
+});
+
+test('all Life Skills WhatsApp controls use the exact locale-specific prefills', () => {
+  const bundle = read('assets/js/site-react.js');
+  const decodedBundle = bundle.replace(/\\u([0-9a-f]{4})/gi, (_, code) => String.fromCharCode(Number.parseInt(code, 16)));
+
+  assert.match(decodedBundle, /אשמח לשמוע עוד על כישורי חיים עבור הבן שלי\./);
+  assert.match(decodedBundle, /I'd like to learn more about Life Skills for my son\./);
+  assert.match(bundle, /searchParams\.set\("text"/);
 });
 
 test('Life Skills route is registered as anonymous-safe', () => {

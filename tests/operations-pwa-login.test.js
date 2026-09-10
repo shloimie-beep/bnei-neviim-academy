@@ -19,7 +19,7 @@ test('Operations login installs and resumes as the Operations PWA', () => {
   assert.equal(operationsManifest.scope, '/operations');
   assert.equal(operationsManifest.icons[0].src, '/icons/operations-icon.svg');
   assert.equal(operationsManifest.background_color, '#f8f5ee');
-  assert.match(serviceWorker, /bna-public-v10/);
+  assert.match(serviceWorker, /bna-public-v11/);
 });
 
 test('public and parent installs do not open Operations', () => {

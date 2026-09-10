@@ -32,7 +32,7 @@ test('public, parent, and Operations PWAs keep separate launch identities', () =
 });
 
 test('public service worker caches only the anonymous public shell', () => {
-  assert.match(serviceWorker, /const CACHE_NAME = 'bna-public-v10'/);
+  assert.match(serviceWorker, /const CACHE_NAME = 'bna-public-v11'/);
   assert.match(serviceWorker, /const PRIVATE_APP_PREFIXES = \[/);
   for (const privatePrefix of [
     "'/operations'",
@@ -44,6 +44,8 @@ test('public service worker caches only the anonymous public shell', () => {
     assert.match(serviceWorker, new RegExp(privatePrefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
   assert.match(serviceWorker, /if \(isPrivateAppPath\(url\.pathname\)\) return;/);
+  assert.match(serviceWorker, /const LIFE_SKILLS_PREFIX = '\/life-skills'/);
+  assert.match(serviceWorker, /if \(isLifeSkillsPath\(url\.pathname\)\) return;/);
   assert.doesNotMatch(serviceWorker, /\/operations-manifest\.json/);
   assert.doesNotMatch(serviceWorker, /\/parent-manifest\.json/);
 });

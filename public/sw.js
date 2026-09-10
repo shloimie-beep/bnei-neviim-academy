@@ -1,4 +1,5 @@
-const CACHE_NAME = 'bna-public-v10';
+const CACHE_NAME = 'bna-public-v11';
+const LIFE_SKILLS_PREFIX = '/life-skills';
 const APP_SHELL = [
   '/',
   '/signup.html',
@@ -29,6 +30,10 @@ function isPrivateAppPath(pathname) {
   return PRIVATE_APP_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(prefix + '/'));
 }
 
+function isLifeSkillsPath(pathname) {
+  return pathname === LIFE_SKILLS_PREFIX || pathname.startsWith(`${LIFE_SKILLS_PREFIX}/`);
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -51,6 +56,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.pathname.startsWith('/api/')) return;
   if (isPrivateAppPath(url.pathname)) return;
+  if (isLifeSkillsPath(url.pathname)) return;
 
   event.respondWith(
     fetch(request)
