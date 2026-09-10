@@ -40488,3 +40488,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Scope remains the `/life-skills/` static bundle; desktop presentation,
   curriculum slider, academy homepage, DNS, email, providers and unrelated
   repository work were not changed.
+
+## 2026-09-10 - Life Skills route identity and mobile visual correction prepared
+
+- Imported the freshly validated Life Skills output into only
+  `public/life-skills/`, preserving the current bilingual content, approved
+  logo pixels, founder photographs, testimonial and twelve-module experience.
+- Added route-owned favicon, touch/install icons, manifest and static social
+  metadata so `/life-skills/` no longer inherits the Academy browser/share
+  identity.
+- Bumped the public shell cache to `bna-public-v11` and explicitly bypassed
+  `/life-skills` requests, preventing the Academy offline fallback from
+  flashing or replacing the Life Skills route while preserving the Academy
+  shell and all private-route exclusions.
+- Restyled the mobile toolbar, first-view hero, approach photograph/cards and
+  founder section; the language switch remains visible and the real rabbit
+  photograph is now an unobscured art-directed panel rather than a covered
+  background.
+- All Life Skills WhatsApp controls now generate the exact locale-specific
+  approved inquiry text. No WhatsApp provider greeting, outbound message,
+  Academy homepage, DNS, email, login/app route or CRE-010 mutation was made.
