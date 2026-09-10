@@ -12,13 +12,6 @@ function read(relative) {
   return fs.readFileSync(path.join(SITE, relative), 'utf8');
 }
 
-function filesBelow(root) {
-  return fs.readdirSync(root, { withFileTypes: true }).flatMap((entry) => {
-    const target = path.join(root, entry.name);
-    return entry.isDirectory() ? filesBelow(target) : [target];
-  });
-}
-
 test('publishes the bilingual Life Skills static entrypoint and approved assets', () => {
   const html = read('index.html');
   const config = read('assets/js/config.js');
@@ -45,16 +38,16 @@ test('publishes the bilingual Life Skills static entrypoint and approved assets'
   }
 });
 
-test('public artifact excludes the unverified LB testimonial and associated image', () => {
-  const allFiles = filesBelow(SITE);
-  assert.equal(allFiles.some((file) => /l-bars|testimonial/i.test(path.basename(file))), false);
-  const publicText = allFiles
-    .filter((file) => /\.(?:html|js|css|json|txt|svg)$/i.test(file))
-    .map((file) => fs.readFileSync(file, 'utf8'))
-    .join('\n');
-  for (const marker of ['Medication is no longer relevant', 'l-bars-2024', 'PrivateTestimonial', 'L Bars, 2024']) {
-    assert.equal(publicText.includes(marker), false, marker);
-  }
+test('public artifact keeps only the owner-confirmed LB testimonial treatment', () => {
+  const config = read('assets/js/config.js');
+  const bundle = read('assets/js/site-react.js');
+
+  assert.match(config, /testimonialConsentOwnerConfirmed: true/);
+  assert.match(config, /testimonialConsentReference: "LS-LB-CONSENT-20260909-001"/);
+  assert.match(bundle, /Medication is no longer relevant/);
+  assert.match(bundle, /images\/l-bars-2024\.png/);
+  assert.ok(fs.statSync(path.join(SITE, 'assets/images/l-bars-2024.png')).size > 0);
+  assert.doesNotMatch(bundle, /L Bars, 2024/);
 });
 
 test('Life Skills route is registered as anonymous-safe', () => {
