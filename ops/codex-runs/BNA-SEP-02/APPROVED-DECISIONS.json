@@ -1,0 +1,15 @@
+{
+  "schema_version": "bna-sep-02-decisions-v1",
+  "status": "missing",
+  "selected_source": null,
+  "selected_source_sha256": null,
+  "authorize_repository_creation": false,
+  "target_repository": null,
+  "school_production_domain": null,
+  "approved_first_slice": null,
+  "account_migration_choice": null,
+  "payment_ownership_choice": null,
+  "approver_identity": null,
+  "approval_timestamp": null,
+  "blocker": "No approved decisions file was present at ops/codex-runs/BNA-SEP-02/APPROVED-DECISIONS.json in the verified legacy remote branch, and BNA_SEP_02_APPROVED_DECISIONS_FILE was not supplied."
+}

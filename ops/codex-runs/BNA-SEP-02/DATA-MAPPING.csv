@@ -1,0 +1,5 @@
+mapping_area,status,evidence,blocker,next_action
+repository_decisions,BLOCKED,APPROVED-DECISIONS.json,no approved decisions file,provide approved decisions
+identity_household_guardian_learner,PARTIAL,DATA-OWNERSHIP-MATRIX.csv,no accepted mapping ledger,approve mapping schema and run aggregate readback
+classes_attendance_progress,PARTIAL,DATA-OWNERSHIP-MATRIX.csv,no accepted source counts/checksums,run privacy-safe ownership readback
+payments,BLOCKED,DECISIONS-NEEDED.md,payment ownership not approved,approve or exclude billing from first slice
