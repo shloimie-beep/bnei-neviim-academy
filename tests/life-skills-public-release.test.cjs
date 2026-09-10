@@ -80,6 +80,12 @@ test('public artifact includes the approved UX refinement', () => {
   assert.match(css, /object-position:66% 50%/);
   assert.match(bundle, /footer-whatsapp/);
   assert.match(bundle, /footer-phone/);
+  assert.match(bundle, /hero-photo-support/);
+  assert.match(bundle, /mobile-language-direct/);
+  assert.match(bundle, /Find out more on WhatsApp/);
+  assert.match(decodedBundle, /לפרטים בוואטסאפ/);
+  assert.match(css, /max-width:310px/);
+  assert.match(css, /white-space:nowrap/);
 });
 
 test('Life Skills route is registered as anonymous-safe', () => {
