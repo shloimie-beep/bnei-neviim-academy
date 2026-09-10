@@ -40432,3 +40432,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   1920x935 plus 390x844 screenshots.
 - One Time remains independent; the signed summary-event producer is handed to
   `OT-LIVE-001` and stays default-off.
+
+## 2026-09-10 - Life Skills bilingual logo and copy correction prepared
+
+- Imported the production-only output from approved source PR
+  `sdratler/inner-leadership#19` at merge commit
+  `7ff2f5a55e49023cc167776186064126aabfdb16` into only
+  `public/life-skills/`.
+- English now displays the locked Hebrew leaf artwork beside the live words
+  `Life Skills`; Hebrew keeps the same approved lockup. The logo master remains
+  byte-identical at SHA256
+  `a95609b2ce76f5062be6619e5131430f11b99d7579148affebb2b545f66cc07c`.
+- Moved the existing owner-confirmed `LB, 2024` testimonial before the founder
+  / About section in both languages.
+- Replaced the old per-session fee wording with only `2,200 ₪ לארבעה מפגשים
+  בחודש.` and `₪2,200 for four sessions a month.`
+- Scope remains the `/life-skills/` static bundle and focused release test;
+  academy homepage, app/login routes, DNS, email, providers, and unrelated
+  repository work were not changed.

@@ -2,6 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -48,6 +49,21 @@ test('public artifact keeps only the owner-confirmed LB testimonial treatment', 
   assert.match(bundle, /images\/l-bars-2024\.png/);
   assert.ok(fs.statSync(path.join(SITE, 'assets/images/l-bars-2024.png')).size > 0);
   assert.doesNotMatch(bundle, /L Bars, 2024/);
+});
+
+test('public artifact includes the current owner logo, testimonial order, and monthly pricing corrections', () => {
+  const bundle = read('assets/js/site-react.js');
+  const decodedBundle = bundle.replace(/\\u([0-9a-f]{4})/gi, (_, code) => String.fromCharCode(Number.parseInt(code, 16)));
+  const css = read('assets/css/site.css');
+  const logo = fs.readFileSync(path.join(SITE, 'assets/images/LS_LOGO_HE_LEAF_APPROVED_20260910.png'));
+
+  assert.equal(crypto.createHash('sha256').update(logo).digest('hex'), 'a95609b2ce76f5062be6619e5131430f11b99d7579148affebb2b545f66cc07c');
+  assert.match(bundle, /brand-hebrew-logo/);
+  assert.match(bundle, /Life Skills/);
+  assert.match(decodedBundle, /₪2,200 for four sessions a month\./);
+  assert.match(decodedBundle, /2,200 ₪ לארבעה מפגשים בחודש\./);
+  assert.doesNotMatch(decodedBundle, /₪550 for an individual 60-minute session/);
+  assert.doesNotMatch(decodedBundle, /550 ₪ למפגש אישי של 60 דקות/);
 });
 
 test('Life Skills route is registered as anonymous-safe', () => {
