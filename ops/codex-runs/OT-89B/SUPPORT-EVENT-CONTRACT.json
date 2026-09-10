@@ -1,0 +1,848 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ot89:contract:onetime-bna-subscriber-support-event:1.0.0",
+  "title": "OT89 One Time subscriber support event",
+  "description": "Frozen v1 contract for an authenticated active One Time subscriber support submission. The event contains sanitized user-supplied text and private attachment locators; it never contains attachment bytes, public attachment URLs, direct contact details, credentials, or session tokens.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "event_type",
+    "event_id",
+    "occurred_at",
+    "producer",
+    "submission",
+    "actor",
+    "authorization",
+    "ticket",
+    "attachments",
+    "privacy",
+    "trace"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "1.0.0"
+    },
+    "event_type": {
+      "const": "onetime.support.ticket.submitted.v1"
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+      "description": "Stable across all delivery retries. Generated once when the durable outbox row is committed."
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "service",
+        "environment",
+        "deployment_id",
+        "source_commit"
+      ],
+      "properties": {
+        "service": {
+          "const": "onetime"
+        },
+        "environment": {
+          "enum": [
+            "development",
+            "staging",
+            "production"
+          ]
+        },
+        "deployment_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        }
+      }
+    },
+    "submission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_ticket_id",
+        "receipt_id",
+        "outbox_id"
+      ],
+      "properties": {
+        "source_ticket_id": {
+          "type": "string",
+          "pattern": "^ots_[0-9A-HJKMNP-TV-Z]{26}$"
+        },
+        "receipt_id": {
+          "type": "string",
+          "pattern": "^otr_[0-9A-HJKMNP-TV-Z]{26}$"
+        },
+        "outbox_id": {
+          "type": "string",
+          "pattern": "^otx_[0-9A-HJKMNP-TV-Z]{26}$"
+        }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "onetime_user_id",
+        "onetime_account_id"
+      ],
+      "properties": {
+        "onetime_user_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{5,127}$"
+        },
+        "onetime_account_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{5,127}$"
+        }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_version",
+        "authenticated",
+        "account_id",
+        "entitlement_product",
+        "entitlement_id",
+        "entitlement_status",
+        "checked_at",
+        "valid_until"
+      ],
+      "properties": {
+        "policy_version": {
+          "const": "ot89-subscriber-support-v1"
+        },
+        "authenticated": {
+          "const": true
+        },
+        "account_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{5,127}$"
+        },
+        "entitlement_product": {
+          "const": "one_time"
+        },
+        "entitlement_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{5,127}$"
+        },
+        "entitlement_status": {
+          "const": "active"
+        },
+        "checked_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_until": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Null is valid for a non-expiring active entitlement."
+        }
+      }
+    },
+    "ticket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "title",
+        "message",
+        "issue_details",
+        "client_context",
+        "reply_preference"
+      ],
+      "properties": {
+        "category": {
+          "enum": [
+            "bug",
+            "access_login",
+            "class_zoom",
+            "billing",
+            "content",
+            "complaint",
+            "other"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 120
+        },
+        "message": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 6000
+        },
+        "reply_preference": {
+          "enum": [
+            "in_app",
+            "email",
+            "whatsapp"
+          ]
+        },
+        "issue_details": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "steps_to_reproduce",
+            "expected_behavior",
+            "actual_behavior",
+            "occurrence",
+            "first_observed_at",
+            "error_code",
+            "provider"
+          ],
+          "properties": {
+            "steps_to_reproduce": {
+              "type": "array",
+              "maxItems": 10,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "expected_behavior": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1500
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "actual_behavior": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1500
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "occurrence": {
+              "enum": [
+                "once",
+                "intermittent",
+                "always",
+                "not_applicable"
+              ]
+            },
+            "first_observed_at": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "error_code": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[A-Z0-9][A-Z0-9._:-]{0,99}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "provider": {
+              "enum": [
+                "none",
+                "authentication",
+                "zoom",
+                "payments",
+                "content_delivery",
+                "other"
+              ]
+            }
+          }
+        },
+        "client_context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "route_template",
+            "app_release",
+            "locale",
+            "timezone"
+          ],
+          "properties": {
+            "route_template": {
+              "type": "string",
+              "pattern": "^/[A-Za-z0-9_./\\[\\]-]{0,255}$",
+              "description": "A normalized route template only. Query strings, fragments, user IDs, emails, and arbitrary URLs are forbidden."
+            },
+            "app_release": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "locale": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 35
+            },
+            "timezone": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          }
+        }
+      }
+    },
+    "attachments": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "attachment_id",
+          "normalized_filename",
+          "media_type",
+          "size_bytes",
+          "sha256",
+          "transfer_locator",
+          "normalization",
+          "storage_class",
+          "content_disposition"
+        ],
+        "properties": {
+          "attachment_id": {
+            "type": "string",
+            "pattern": "^ota_[0-9A-HJKMNP-TV-Z]{26}$"
+          },
+          "normalized_filename": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[^/\\\\\\u0000-\\u001F\\u007F]+$"
+          },
+          "media_type": {
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/webp",
+              "text/plain"
+            ]
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5242880
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "transfer_locator": {
+            "type": "string",
+            "pattern": "^onetime-private-blob://ota_[0-9A-HJKMNP-TV-Z]{26}$"
+          },
+          "normalization": {
+            "enum": [
+              "image-decoded-and-reencoded",
+              "utf8-text-normalized"
+            ]
+          },
+          "storage_class": {
+            "const": "private"
+          },
+          "content_disposition": {
+            "const": "attachment"
+          },
+          "pixel_width": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 8000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pixel_height": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 8000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "media_type": {
+                  "const": "text/plain"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "size_bytes": {
+                  "maximum": 1048576
+                },
+                "normalization": {
+                  "const": "utf8-text-normalized"
+                },
+                "pixel_width": {
+                  "type": "null"
+                },
+                "pixel_height": {
+                  "type": "null"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "normalization": {
+                  "const": "image-decoded-and-reencoded"
+                },
+                "pixel_width": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 8000
+                },
+                "pixel_height": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 8000
+                }
+              },
+              "required": [
+                "pixel_width",
+                "pixel_height"
+              ]
+            }
+          }
+        ]
+      },
+      "description": "The producer must also enforce a 10 MiB aggregate size limit and a 20 megapixel decoded-image limit."
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "redaction_policy",
+        "content_state",
+        "contains_raw_secrets",
+        "contains_direct_contact_details",
+        "redacted_fields",
+        "redaction_count"
+      ],
+      "properties": {
+        "redaction_policy": {
+          "const": "ot89-redaction-v1"
+        },
+        "content_state": {
+          "const": "sanitized_user_text"
+        },
+        "contains_raw_secrets": {
+          "const": false
+        },
+        "contains_direct_contact_details": {
+          "const": false
+        },
+        "redacted_fields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "ticket.title",
+              "ticket.message",
+              "ticket.issue_details.steps_to_reproduce",
+              "ticket.issue_details.expected_behavior",
+              "ticket.issue_details.actual_behavior",
+              "attachments.normalized_filename"
+            ]
+          }
+        },
+        "redaction_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "correlation_id",
+        "request_id"
+      ],
+      "properties": {
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{5,127}$"
+        },
+        "request_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{5,127}$"
+        }
+      }
+    }
+  },
+  "x-ot89-contract": {
+    "frozen": true,
+    "contract_version": "1.0.0",
+    "compatibility_rule": "Version 1.0.0 is immutable. Any field, validation, transport, signature, authorization, idempotency, or semantic change requires a new versioned contract and a new endpoint version. Consumers must reject unknown event_type or contract_version values.",
+    "event_delivery": {
+      "method": "POST",
+      "request_target": "/api/internal/integrations/onetime/support-events/v1",
+      "content_type": "application/json",
+      "body_encoding": "UTF-8 without BOM. Serialize once; calculate the digest from those bytes; sign and transmit those exact bytes.",
+      "max_body_bytes": 131072,
+      "https_required": true,
+      "request_headers": {
+        "X-OT89-Key-Id": "Configured identifier for the One Time to BNA HMAC key.",
+        "X-OT89-Timestamp": "Unix time in whole seconds.",
+        "X-OT89-Nonce": "Base64url without padding for 24 cryptographically random bytes.",
+        "X-OT89-Signature": "v1= followed by lowercase hexadecimal HMAC-SHA256.",
+        "X-OT89-Event-Id": "Must exactly equal the event_id in the signed body."
+      },
+      "signature": {
+        "algorithm": "HMAC-SHA256",
+        "canonical_string_lines": [
+          "Uppercase HTTP method",
+          "Exact request-target path, excluding scheme and host",
+          "X-OT89-Timestamp value",
+          "X-OT89-Nonce value",
+          "Lowercase hexadecimal SHA-256 of the raw request body"
+        ],
+        "line_separator": "LF",
+        "trailing_line_separator": false,
+        "header_format": "v1=lowercase_hex_hmac_sha256",
+        "constant_time_compare_required": true,
+        "timestamp_skew_seconds": 300,
+        "nonce_retention_seconds": 86400,
+        "secret_storage": "Runtime secret manager or protected environment only; never source control, logs, tickets, or Telegram.",
+        "test_vector": {
+          "warning": "Non-production interoperability vector only.",
+          "secret_utf8": "ot89-test-secret-do-not-use",
+          "method": "POST",
+          "request_target": "/api/internal/integrations/onetime/support-events/v1",
+          "timestamp": "1784116800",
+          "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYX",
+          "raw_body_utf8": "{\"contract_version\":\"1.0.0\",\"event_id\":\"evt_01J00000000000000000000000\"}",
+          "raw_body_sha256": "2046bb01ef883c374a07c480a1c915c610930f4e3827c052f0e166e10abce2e5",
+          "canonical_string": "POST\n/api/internal/integrations/onetime/support-events/v1\n1784116800\nAAECAwQFBgcICQoLDA0ODxAREhMUFRYX\n2046bb01ef883c374a07c480a1c915c610930f4e3827c052f0e166e10abce2e5",
+          "signature_header": "v1=dddf2aa3aa413fad852e37237ad3355ec70f7bd7a1876fa5f260eed882570773"
+        }
+      },
+      "verification_order": [
+        "Reject non-HTTPS or wrong method/path.",
+        "Reject a body larger than 131072 bytes before parsing.",
+        "Require all signing headers and syntactically validate them.",
+        "Reject timestamps outside a 300-second absolute clock skew.",
+        "Calculate the raw-body SHA-256 and verify HMAC in constant time before JSON parsing.",
+        "Parse JSON, validate this exact schema, and require the header event ID to equal the body event ID.",
+        "In one database transaction, reserve the key ID plus nonce for 86400 seconds, reject replay, enforce authorization semantics, and apply event/source-ticket idempotency while creating or finding the BNA ticket."
+      ],
+      "responses": {
+        "accepted_new": {
+          "status": 202,
+          "body": {
+            "accepted": true,
+            "duplicate": false,
+            "event_id": "evt_01J00000000000000000000000",
+            "source_ticket_id": "ots_01J00000000000000000000001",
+            "bna_ticket_ref": "bna_01J00000000000000000000002",
+            "ingestion_status": "accepted",
+            "status_version": 1,
+            "received_at": "2026-07-15T12:00:01Z"
+          }
+        },
+        "accepted_duplicate": {
+          "status": 200,
+          "rule": "Return the original BNA reference and do not create a ticket, history row, attachment transfer, or alert again."
+        },
+        "non_retryable": {
+          "status_codes": [
+            400,
+            401,
+            403,
+            404,
+            409,
+            413,
+            422
+          ],
+          "rule": "The producer records a terminal delivery failure and moves the outbox item to dead letter without pretending delivery succeeded."
+        },
+        "retryable": {
+          "status_codes": [
+            408,
+            425,
+            429,
+            500,
+            502,
+            503,
+            504
+          ],
+          "rule": "The producer retries asynchronously. Network, DNS, TLS, and timeout failures are also retryable."
+        }
+      }
+    },
+    "idempotency": {
+      "event_id": "Unique for the immutable event and reused for every retry.",
+      "source_ticket_id": "Unique for the subscriber submission and protected by a second uniqueness constraint.",
+      "body_fingerprint": "Lowercase hexadecimal SHA-256 of the raw event body.",
+      "exact_duplicate": "Same event_id and body fingerprint returns the original ticket reference.",
+      "event_collision": "Same event_id with a different body fingerprint is a security event and returns HTTP 409.",
+      "source_collision": "A new event_id for an existing source_ticket_id may return the original ticket only when the normalized immutable payload fingerprint matches; otherwise return HTTP 409.",
+      "alert_key": "support:new:bna_ticket_ref:v1 is unique. Retry never creates a second initial alert."
+    },
+    "producer_retry_policy": {
+      "request_connect_timeout_seconds": 5,
+      "request_total_timeout_seconds": 15,
+      "maximum_attempts": 12,
+      "maximum_age_seconds": 172800,
+      "backoff": "Exponential with full jitter, 30-second base, 6-hour cap.",
+      "dead_letter_state": "DEAD_LETTER",
+      "reconciliation": "A scheduled reconciler retries eligible pending rows, refreshes local status projections, and can requeue dead-letter rows only through an audited operator action."
+    },
+    "status_projection": {
+      "method": "POST",
+      "authentication": "The same One Time to BNA HMAC scheme signs the actual request-target and the exact UTF-8 JSON request body.",
+      "allowed_statuses": [
+        "new",
+        "triage",
+        "pending_operator",
+        "waiting_customer",
+        "in_progress",
+        "resolved",
+        "closed",
+        "rejected"
+      ],
+      "response_fields": [
+        "source_ticket_id",
+        "bna_ticket_ref",
+        "status",
+        "public_summary",
+        "status_version",
+        "updated_at"
+      ],
+      "user_request_rule": "The One Time subscriber status page reads only its local cached projection. It never synchronously loads, embeds, or waits for BNA.",
+      "request_target": "/api/internal/integrations/onetime/support-ticket-status/v1",
+      "request_fields": [
+        "source_ticket_id",
+        "onetime_account_id"
+      ]
+    },
+    "attachment_transfer": {
+      "method": "GET",
+      "request_target_template": "/api/internal/support/attachments/v1/attachment_id",
+      "authentication": "BNA signs the actual request-target with the separate BNA to One Time HMAC key using the same timestamp, nonce, and canonical-string rules and the SHA-256 of an empty body.",
+      "authorization": "One Time permits only an attachment referenced by an already delivered signed event and only for the BNA service principal.",
+      "response": "Private binary response with Content-Type, Content-Length, Content-Disposition: attachment, X-OT89-Content-SHA256, Cache-Control: private, no-store, and X-Content-Type-Options: nosniff.",
+      "consumer_validation": "BNA enforces the event metadata limits, streams with a hard byte cap, verifies media type and SHA-256, stores a private copy, and never follows redirects.",
+      "expiry": "The locator is opaque and non-expiring as a database identifier; authorization is evaluated on every retrieval. No bearer token or public URL is embedded in the event."
+    },
+    "attachment_policy": {
+      "maximum_count": 3,
+      "maximum_each_bytes": 5242880,
+      "maximum_text_bytes": 1048576,
+      "maximum_total_bytes": 10485760,
+      "maximum_image_dimension_pixels": 8000,
+      "maximum_decoded_image_megapixels": 20,
+      "allowed_media_types": [
+        "image/png",
+        "image/jpeg",
+        "image/webp",
+        "text/plain"
+      ],
+      "forbidden_examples": [
+        "SVG",
+        "HTML",
+        "PDF",
+        "archives",
+        "office documents",
+        "executables",
+        "scripts",
+        "polyglot files"
+      ],
+      "normalization": "Images are fully decoded with decompression-bomb limits, metadata removed, and re-encoded. Text must be valid UTF-8, have NUL and unsafe control characters removed, and be stored with a .txt filename.",
+      "serving": "Private authenticated download only, forced attachment disposition, no inline rendering, and nosniff."
+    },
+    "status_response_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_ticket_id",
+        "bna_ticket_ref",
+        "status",
+        "public_summary",
+        "status_version",
+        "updated_at"
+      ],
+      "properties": {
+        "source_ticket_id": {
+          "type": "string",
+          "pattern": "^ots_[0-9A-HJKMNP-TV-Z]{26}$"
+        },
+        "bna_ticket_ref": {
+          "type": "string",
+          "pattern": "^bna_[0-9A-HJKMNP-TV-Z]{26}$"
+        },
+        "status": {
+          "enum": [
+            "new",
+            "triage",
+            "pending_operator",
+            "waiting_customer",
+            "in_progress",
+            "resolved",
+            "closed",
+            "rejected"
+          ]
+        },
+        "public_summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "status_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "authorization_semantics": {
+      "account_equality": "actor.onetime_account_id must exactly equal authorization.account_id.",
+      "proof_freshness": "authorization.checked_at must not be more than 300 seconds before occurred_at and must not be more than 60 seconds after occurred_at.",
+      "valid_until": "When non-null, valid_until must be later than checked_at and not earlier than occurred_at.",
+      "consumer_rule": "BNA validates these signed assertions in addition to schema validation. A schema-valid event that violates them is rejected without ticket creation."
+    },
+    "status_request_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_ticket_id",
+        "onetime_account_id"
+      ],
+      "properties": {
+        "source_ticket_id": {
+          "type": "string",
+          "pattern": "^ots_[0-9A-HJKMNP-TV-Z]{26}$"
+        },
+        "onetime_account_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{5,127}$"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "contract_version": "1.0.0",
+      "event_type": "onetime.support.ticket.submitted.v1",
+      "event_id": "evt_01J00000000000000000000000",
+      "occurred_at": "2026-07-15T12:00:00Z",
+      "producer": {
+        "service": "onetime",
+        "environment": "staging",
+        "deployment_id": "staging-20260715-1200",
+        "source_commit": "0123456789abcdef0123456789abcdef01234567"
+      },
+      "submission": {
+        "source_ticket_id": "ots_01J00000000000000000000001",
+        "receipt_id": "otr_01J00000000000000000000002",
+        "outbox_id": "otx_01J00000000000000000000003"
+      },
+      "actor": {
+        "onetime_user_id": "usr_demo_000001",
+        "onetime_account_id": "acct_demo_000001"
+      },
+      "authorization": {
+        "policy_version": "ot89-subscriber-support-v1",
+        "authenticated": true,
+        "account_id": "acct_demo_000001",
+        "entitlement_product": "one_time",
+        "entitlement_id": "ent_demo_000001",
+        "entitlement_status": "active",
+        "checked_at": "2026-07-15T11:59:59Z",
+        "valid_until": null
+      },
+      "ticket": {
+        "category": "bug",
+        "title": "Class page does not load",
+        "message": "The class page shows an application error after sign-in.",
+        "reply_preference": "in_app",
+        "issue_details": {
+          "steps_to_reproduce": [
+            "Sign in",
+            "Open the class page"
+          ],
+          "expected_behavior": "The class page opens.",
+          "actual_behavior": "An application error is shown.",
+          "occurrence": "always",
+          "first_observed_at": "2026-07-15T11:45:00Z",
+          "error_code": "CLASS_PAGE_ERROR",
+          "provider": "none"
+        },
+        "client_context": {
+          "route_template": "/account/classes/[classId]",
+          "app_release": "2026.07.15.1",
+          "locale": "en-US",
+          "timezone": "Asia/Jerusalem"
+        }
+      },
+      "attachments": [],
+      "privacy": {
+        "redaction_policy": "ot89-redaction-v1",
+        "content_state": "sanitized_user_text",
+        "contains_raw_secrets": false,
+        "contains_direct_contact_details": false,
+        "redacted_fields": [],
+        "redaction_count": 0
+      },
+      "trace": {
+        "correlation_id": "corr_demo_000001",
+        "request_id": "req_demo_000001"
+      }
+    }
+  ]
+}
