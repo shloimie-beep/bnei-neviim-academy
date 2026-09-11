@@ -5,6 +5,7 @@ const test = require('node:test');
 
 const {
   LIFE_SKILLS_WAPI_REPLY_CONFIRM,
+  LIFE_SKILLS_WAPI_REPLY_COPY_VERSION,
   LIFE_SKILLS_WAPI_REPLY_EN,
   LIFE_SKILLS_WAPI_REPLY_HE,
   buildLifeSkillsWapiReplyReadiness,
@@ -13,9 +14,12 @@ const {
   lifeSkillsWapiReplyLanguage,
 } = require('../src/lib/bna/life-skills-wapi-auto-reply');
 
-test('uses the exact approved bilingual launch greetings', () => {
-  assert.equal(LIFE_SKILLS_WAPI_REPLY_HE, 'שלום! איך אפשר לעזור?');
-  assert.equal(LIFE_SKILLS_WAPI_REPLY_EN, 'Hi! How can I help?');
+test('uses the exact approved MKT-050 Section 8 first-contact replies', () => {
+  assert.equal(LIFE_SKILLS_WAPI_REPLY_COPY_VERSION, '2026-09-11-mkt050-section-8-v1');
+  assert.equal(LIFE_SKILLS_WAPI_REPLY_HE, 'תודה שפניתם לשלמה. כדי לבדוק אפשרות לתיאום, אפשר לכתוב את גיל הילד, האזור ומתי נוח לשוחח. אין צורך לשלוח כאן היסטוריה אישית מפורטת. שלמה חוזר בתוך שני ימי עבודה, ובדרך כלל מוקדם יותר.');
+  assert.equal(LIFE_SKILLS_WAPI_REPLY_EN, 'Thank you for contacting Shlomo. To explore arrangements, please share your child’s age, your area and a convenient time to speak. There is no need to send a detailed personal history here. Shlomo replies within two working days, usually sooner.');
+  assert.doesNotMatch(LIFE_SKILLS_WAPI_REPLY_HE, /https?:\/\//);
+  assert.doesNotMatch(LIFE_SKILLS_WAPI_REPLY_EN, /https?:\/\//);
   assert.equal(lifeSkillsWapiReplyLanguage('שלום, אשמח לקבל פרטים'), 'he');
   assert.equal(lifeSkillsWapiReplyLanguage('Hi, I would like details'), 'en');
   assert.equal(lifeSkillsWapiReplyBody('שלום'), LIFE_SKILLS_WAPI_REPLY_HE);

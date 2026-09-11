@@ -1,6 +1,6 @@
-const LIFE_SKILLS_WAPI_REPLY_COPY_VERSION = '2026-09-09-launch-v1';
-const LIFE_SKILLS_WAPI_REPLY_HE = 'שלום! איך אפשר לעזור?';
-const LIFE_SKILLS_WAPI_REPLY_EN = 'Hi! How can I help?';
+const LIFE_SKILLS_WAPI_REPLY_COPY_VERSION = '2026-09-11-mkt050-section-8-v1';
+const LIFE_SKILLS_WAPI_REPLY_HE = 'תודה שפניתם לשלמה. כדי לבדוק אפשרות לתיאום, אפשר לכתוב את גיל הילד, האזור ומתי נוח לשוחח. אין צורך לשלוח כאן היסטוריה אישית מפורטת. שלמה חוזר בתוך שני ימי עבודה, ובדרך כלל מוקדם יותר.';
+const LIFE_SKILLS_WAPI_REPLY_EN = 'Thank you for contacting Shlomo. To explore arrangements, please share your child’s age, your area and a convenient time to speak. There is no need to send a detailed personal history here. Shlomo replies within two working days, usually sooner.';
 const LIFE_SKILLS_WAPI_REPLY_CONFIRM = 'APPROVE_LIFE_SKILLS_WAPI_AUTO_REPLY';
 
 function truthy(value) {
