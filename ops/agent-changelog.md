@@ -40508,3 +40508,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - All Life Skills WhatsApp controls now generate the exact locale-specific
   approved inquiry text. No WhatsApp provider greeting, outbound message,
   Academy homepage, DNS, email, login/app route or CRE-010 mutation was made.
+
+## 2026-09-11 - Life Skills approved bilingual hero masters prepared
+
+- Imported the validated static assets from source PR
+  `sdratler/inner-leadership#23` at merge commit
+  `9956e396dfb19d5ae6e3ce2a1136b107027679b7` into only
+  `public/life-skills/`.
+- Replaced the two superseded generic hero plates with the four exact
+  owner-approved locale/orientation masters and preserved their verified
+  SHA256 bindings.
+- Kept the Academy homepage, login/app routes, DNS, email configuration,
+  service worker isolation, Life Skills favicon/manifest/social metadata and
+  route registry unchanged.
+- The toolbar and WhatsApp CTA remain real accessible controls. The mobile
+  language switch is visible at 390, 360 and 320 pixel widths, and the full
+  hero plus CTA remains inside each tested first viewport.
+- Source and downstream focused tests pass; external public deployment and
+  public URL readback are recorded after the production PR is merged.

@@ -31,8 +31,10 @@ test('publishes the bilingual Life Skills static entrypoint and approved assets'
   for (const required of [
     'assets/fonts/FrankRuhlLibre-wght.ttf',
     'assets/fonts/Heebo-wght.ttf',
-    'assets/images/founder-boy-hero-desktop.webp',
-    'assets/images/founder-boy-hero-mobile.webp',
+    'assets/images/founder-boy-hero-en-desktop.png',
+    'assets/images/founder-boy-hero-en-mobile.png',
+    'assets/images/founder-boy-hero-he-desktop.png',
+    'assets/images/founder-boy-hero-he-mobile.png',
     'assets/images/meir-bunny.png',
   ]) {
     assert.ok(fs.statSync(path.join(SITE, required)).size > 0, required);
@@ -80,12 +82,27 @@ test('public artifact includes the approved UX refinement', () => {
   assert.match(css, /object-position:66% 50%/);
   assert.match(bundle, /footer-whatsapp/);
   assert.match(bundle, /footer-phone/);
-  assert.match(bundle, /hero-photo-support/);
+  assert.match(bundle, /hero-semantics/);
+  assert.doesNotMatch(bundle, /hero-photo-support/);
   assert.match(bundle, /mobile-language-direct/);
-  assert.match(bundle, /Find out more on WhatsApp/);
-  assert.match(decodedBundle, /לפרטים בוואטסאפ/);
-  assert.match(css, /max-width:284px/);
+  assert.match(bundle, /Message on WhatsApp/);
+  assert.match(decodedBundle, /שלחו הודעה בוואטסאפ/);
+  assert.match(css, /left:8\.501594%/);
+  assert.match(css, /width:83\.103082%/);
   assert.match(css, /white-space:nowrap/);
+});
+
+test('public hero files match the four exact owner-approved masters', () => {
+  const expected = {
+    'founder-boy-hero-en-mobile.png': 'ee2924444efc3d21dda5186b3a1107c3fde935ce4c76ded75ae3458aa99c7a71',
+    'founder-boy-hero-he-mobile.png': '56dc8fcbe99f16d723a8b07b41eda8ebb03eb27716829b8c786f27b82a3ddcbe',
+    'founder-boy-hero-en-desktop.png': '5c28d22d7b6b784eb6becb4cfabb7977c80a304b5bcaca93943564ed74394f50',
+    'founder-boy-hero-he-desktop.png': '74c7d3258770abdab5c146e1211c4cbd16e0738840d5c274390f9a707f8dd824',
+  };
+  for (const [name, sha256] of Object.entries(expected)) {
+    const bytes = fs.readFileSync(path.join(SITE, 'assets', 'images', name));
+    assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), sha256, name);
+  }
 });
 
 test('Life Skills route owns its favicon, install identity, and social metadata', () => {
@@ -115,13 +132,11 @@ test('Life Skills route owns its favicon, install identity, and social metadata'
   }
 });
 
-test('all Life Skills WhatsApp controls use the exact locale-specific prefills', () => {
+test('all Life Skills WhatsApp controls use the verified direct destination', () => {
   const bundle = read('assets/js/site-react.js');
-  const decodedBundle = bundle.replace(/\\u([0-9a-f]{4})/gi, (_, code) => String.fromCharCode(Number.parseInt(code, 16)));
-
-  assert.match(decodedBundle, /אשמח לשמוע עוד על כישורי חיים עבור הבן שלי\./);
-  assert.match(decodedBundle, /I'd like to learn more about Life Skills for my son\./);
-  assert.match(bundle, /searchParams\.set\("text"/);
+  assert.match(bundle, /https:\/\/wa\.me\/972534932631/);
+  assert.doesNotMatch(bundle, /searchParams\.set\("text"/);
+  assert.doesNotMatch(bundle, /[?&]text=/);
 });
 
 test('Life Skills route is registered as anonymous-safe', () => {
