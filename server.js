@@ -36,6 +36,13 @@ const {
   lifeSkillsWapiReplyInboundBlockers,
 } = require('./src/lib/bna/life-skills-wapi-auto-reply');
 const {
+  buildLifeSkillsSheetCrmReadiness,
+  isLifeSkillsInboundInquiry,
+  lifeSkillsSheetCrmConfig,
+  messageAttribution,
+  upsertLifeSkillsSheetLead,
+} = require('./src/lib/bna/life-skills-sheet-crm');
+const {
   goalBoardBucket,
   goalBoardStatus,
   metadataAfterProgressUpdate,
@@ -17891,6 +17898,30 @@ CREATE TABLE IF NOT EXISTS bna_wapi_webhook_log (
 );
 `;
 
+const createLifeSkillsSheetCrmSyncSQL = `CREATE TABLE IF NOT EXISTS bna_life_skills_sheet_crm_sync (
+  id SERIAL PRIMARY KEY,
+  provider_message_id TEXT NOT NULL UNIQUE,
+  communication_id INTEGER REFERENCES bna_contact_communications(id) ON DELETE SET NULL,
+  webhook_log_id INTEGER REFERENCES bna_wapi_webhook_log(id) ON DELETE SET NULL,
+  phone_e164 TEXT NOT NULL,
+  to_number TEXT NOT NULL,
+  push_name TEXT,
+  has_media BOOLEAN NOT NULL DEFAULT FALSE,
+  message_type TEXT,
+  occurred_at TIMESTAMP,
+  attribution JSONB NOT NULL DEFAULT '{}',
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'synced', 'blocked_configuration', 'failed')),
+  attempt_count INTEGER NOT NULL DEFAULT 0,
+  sheet_row INTEGER,
+  sheet_receipt JSONB NOT NULL DEFAULT '{}',
+  last_error TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_bna_life_skills_sheet_crm_sync_recovery
+  ON bna_life_skills_sheet_crm_sync (status, updated_at);
+`;
+
 const createWapiSyncRunsSQL = `
 CREATE TABLE IF NOT EXISTS bna_wapi_sync_runs (
   id SERIAL PRIMARY KEY,
@@ -35210,6 +35241,7 @@ async function initDb() {
     await pool.query(createTorahLearningEntriesSQL);
     await pool.query(createGreenInvoiceWebhookLogSQL);
     await pool.query(createWapiWebhookLogSQL);
+    await pool.query(createLifeSkillsSheetCrmSyncSQL);
     await pool.query(createWapiSyncRunsSQL);
     await pool.query(createWapiPhonebookCorrectionsSQL);
     await pool.query(createAccountabilityEventsSQL);
@@ -69394,6 +69426,109 @@ async function importWhatsappMessages({ messages = [], workspaceKey = 'bna', dry
   };
 }
 
+function lifeSkillsSheetCrmSafeError(error) {
+  return String(error?.message || 'Google Sheets upsert failed').replace(/\s+/g, ' ').trim().slice(0, 240);
+}
+
+function lifeSkillsSheetCrmClient() {
+  let auth = null;
+  try { auth = createGoogleClientFromRefreshToken(); } catch {}
+  const readiness = buildLifeSkillsSheetCrmReadiness({ env: process.env, googleReady: Boolean(auth) });
+  return { readiness, sheets: readiness.ready ? google.sheets({ version: 'v4', auth }) : null };
+}
+
+function lifeSkillsSheetCrmResultView(result = {}) {
+  return {
+    status: result.status || 'not_evaluated',
+    action: result.action || null,
+    row: Number.isInteger(result.row) ? result.row : null,
+    replaySuppressed: result.replay_suppressed === true,
+    durable: result.durable === true,
+    blockers: Array.isArray(result.blockers) ? result.blockers : [],
+  };
+}
+
+function lifeSkillsSheetCrmNormalizedOutboxRecord(record = {}) {
+  return {
+    messageId: record.provider_message_id || '',
+    fromNumber: record.phone_e164 || '',
+    chatId: record.phone_e164 || '',
+    toNumber: record.to_number || '',
+    pushName: record.push_name || '',
+    hasMedia: Boolean(record.has_media),
+    messageType: record.message_type || '',
+    messageText: record.has_media ? '' : '[inbound content retained outside the sheet]',
+    occurredAt: record.occurred_at || null,
+  };
+}
+
+async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = {}, webhookLogId = null, communicationId = null } = {}) {
+  const config = lifeSkillsSheetCrmConfig(process.env);
+  const eligibility = isLifeSkillsInboundInquiry({ normalized, scope, config });
+  if (!eligibility.eligible) return { status: 'skipped_ineligible', blockers: eligibility.blockers };
+  const clientConfig = lifeSkillsSheetCrmClient();
+  if (!clientConfig.readiness.ready) return { status: 'blocked_configuration', blockers: clientConfig.readiness.blockers };
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`life-skills-sheet-crm:${eligibility.phone}`]);
+    const stored = (await client.query(
+      'INSERT INTO bna_life_skills_sheet_crm_sync (provider_message_id, communication_id, webhook_log_id, phone_e164, to_number, push_name, has_media, message_type, occurred_at, attribution) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9::timestamp, NOW()), $10::jsonb) ON CONFLICT (provider_message_id) DO UPDATE SET communication_id = COALESCE(bna_life_skills_sheet_crm_sync.communication_id, EXCLUDED.communication_id), webhook_log_id = COALESCE(bna_life_skills_sheet_crm_sync.webhook_log_id, EXCLUDED.webhook_log_id), updated_at = NOW() RETURNING *',
+      [normalized.messageId, communicationId, webhookLogId, eligibility.phone, normalized.toNumber, normalized.pushName || null, Boolean(normalized.hasMedia), normalized.messageType || null, normalized.occurredAt || null, JSON.stringify(messageAttribution(payload))]
+    )).rows[0];
+    if (stored.status === 'synced') {
+      await client.query('COMMIT');
+      return { status: 'synced', action: stored.sheet_receipt?.action || null, row: stored.sheet_row || null, replay_suppressed: true, durable: true };
+    }
+    await client.query('UPDATE bna_life_skills_sheet_crm_sync SET status = $2, attempt_count = attempt_count + 1, last_error = NULL, updated_at = NOW() WHERE id = $1', [stored.id, 'pending']);
+    try {
+      const sheetResult = await upsertLifeSkillsSheetLead({ sheets: clientConfig.sheets, normalized, payload, scope, config });
+      await client.query('UPDATE bna_life_skills_sheet_crm_sync SET status = $2, sheet_row = $3, sheet_receipt = $4::jsonb, last_error = NULL, updated_at = NOW() WHERE id = $1', [stored.id, 'synced', sheetResult.row || null, JSON.stringify({ action: sheetResult.action, provider_message_count: String(sheetResult.providerMessageIds || '').split(',').filter(Boolean).length })]);
+      await client.query('COMMIT');
+      return { status: 'synced', action: sheetResult.action, row: sheetResult.row || null, durable: true };
+    } catch (error) {
+      await client.query('UPDATE bna_life_skills_sheet_crm_sync SET status = $2, last_error = $3, updated_at = NOW() WHERE id = $1', [stored.id, 'failed', lifeSkillsSheetCrmSafeError(error)]);
+      await client.query('COMMIT');
+      return { status: 'pending_recovery', durable: true, blockers: ['sheet_upsert_failed'] };
+    }
+  } catch (error) {
+    await client.query('ROLLBACK').catch(() => null);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+async function recoverLifeSkillsSheetCrm(limit = 25) {
+  const pending = await pool.query('SELECT * FROM bna_life_skills_sheet_crm_sync WHERE status IN ($1, $2) ORDER BY updated_at ASC, id ASC LIMIT $3', ['pending', 'failed', Math.min(Math.max(Number(limit) || 25, 1), 25)]);
+  const recovered = [];
+  for (const record of pending.rows) {
+    const result = await syncLifeSkillsInboundToSheet({
+      normalized: lifeSkillsSheetCrmNormalizedOutboxRecord(record),
+      payload: { ...(record.attribution || {}) },
+      scope: {},
+      webhookLogId: record.webhook_log_id || null,
+      communicationId: record.communication_id || null,
+    });
+    recovered.push({ syncId: record.id, ...lifeSkillsSheetCrmResultView(result) });
+  }
+  return recovered;
+}
+
+app.get('/api/bna/life-skills-sheet-crm/readiness', requireAdmin, (req, res) => {
+  const { readiness } = lifeSkillsSheetCrmClient();
+  res.json({ ready: readiness.ready, blockers: readiness.blockers, sheetName: readiness.config.sheetName, responseOwner: readiness.config.responseOwner });
+});
+
+app.post('/api/bna/life-skills-sheet-crm/recover', requireAdmin, async (req, res) => {
+  try {
+    const recovered = await recoverLifeSkillsSheetCrm(req.body?.limit);
+    res.json({ success: true, recovered });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Life Skills Sheet CRM recovery failed' });
+  }
+});
+
 app.get('/api/webhooks/wapi', (req, res) => {
   res.json({
     success: true,
@@ -69552,6 +69687,15 @@ app.post('/api/webhooks/wapi', async (req, res) => {
         lead: providerBotLead,
       });
     }
+    const lifeSkillsSheetCrmResult = isOneTimeWapiScope(webhookScope)
+      ? { status: 'skipped_non_life_skills_scope', blockers: ['one_time_scope'] }
+      : await syncLifeSkillsInboundToSheet({
+          normalized,
+          payload,
+          scope: webhookScope,
+          webhookLogId: webhookLog.id,
+          communicationId: communicationResult.communication?.id || null,
+        });
     const autoReplyResult = communicationResult.duplicate
       ? {
           auto_reply_type: isOneTimeWapiScope(webhookScope)
@@ -69608,6 +69752,9 @@ app.post('/api/webhooks/wapi', async (req, res) => {
           communicationResult.duplicate
             ? `Duplicate WAPI message; linked to existing communication #${communicationResult.communication?.id}.`
             : `Filed into contact communications #${communicationResult.communication?.id}.`,
+          !isOneTimeWapiScope(webhookScope)
+            ? `Life Skills Sheet CRM ${lifeSkillsSheetCrmResult.status || 'not_evaluated'}.`
+            : null,
           autoReplyResult
             ? `${isOneTimeWapiScope(webhookScope) ? 'One Time' : 'Life Skills'} auto-reply ${autoReplyResult.status || 'not_evaluated'}.`
             : null,
@@ -69654,6 +69801,7 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       messageId: normalized.messageId,
       hasMedia: normalized.hasMedia,
       mediaType: normalized.mediaType,
+      lifeSkillsSheetCrmStatus: lifeSkillsSheetCrmResult?.status || null,
       autoReplyStatus: autoReplyResult?.status || null,
       providerBotProfile: providerBotPlan?.profile_key || null,
       providerBotIntent: providerBotPlan?.intent || null,
@@ -69700,6 +69848,7 @@ app.post('/api/webhooks/wapi', async (req, res) => {
             rawClassLinkReturned: false,
           }
         : null,
+      lifeSkillsSheetCrm: lifeSkillsSheetCrmResultView(lifeSkillsSheetCrmResult),
       autoReply: autoReplyResult
         ? {
             status: autoReplyResult.status,
