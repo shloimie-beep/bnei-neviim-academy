@@ -112,8 +112,11 @@ test('Life Skills route owns its favicon, install identity, and social metadata'
   assert.match(html, /href="favicon\.ico"/);
   assert.match(html, /href="icons\/apple-touch-icon\.png"/);
   assert.match(html, /href="manifest\.webmanifest"/);
-  assert.match(html, /rel="canonical" href="https:\/\/bneineviimacademy\.org\/life-skills\/"/);
-  assert.match(html, /property="og:image" content="https:\/\/bneineviimacademy\.org\/life-skills\/assets\/images\/life-skills-social-preview\.png"/);
+  assert.match(html, /rel="canonical" href="https:\/\/bneineviimacademy\.org\/life-skills\/\?lang=he"/);
+  assert.match(html, /rel="alternate" hreflang="en" href="https:\/\/bneineviimacademy\.org\/life-skills\/\?lang=en"/);
+  assert.match(html, /property="og:image" content="https:\/\/bneineviimacademy\.org\/life-skills\/assets\/images\/og\/LS_OG_MASTER_HE_V1_20260913\.png"/);
+  assert.match(html, /property="og:image:width" content="1376"/);
+  assert.match(html, /property="og:image:height" content="768"/);
   assert.match(html, /name="twitter:card" content="summary_large_image"/);
   assert.doesNotMatch(html, /Bnei Nevi['’]im Academy/);
   assert.equal(manifest.scope, '/life-skills/');
@@ -126,10 +129,16 @@ test('Life Skills route owns its favicon, install identity, and social metadata'
     'icons/apple-touch-icon.png',
     'icons/icon-192.png',
     'icons/icon-512.png',
-    'assets/images/life-skills-social-preview.png',
+    'assets/images/og/LS_OG_MASTER_HE_V1_20260913.png',
   ]) {
     assert.ok(fs.statSync(path.join(SITE, required)).size > 0, required);
   }
+
+  const social = fs.readFileSync(path.join(SITE, 'assets/images/og/LS_OG_MASTER_HE_V1_20260913.png'));
+  assert.equal(
+    crypto.createHash('sha256').update(social).digest('hex'),
+    '209bdb5a7c6fa8573dead56e22d1213787e7e080f2d701fbe5901480029313ab'
+  );
 });
 
 test('all Life Skills WhatsApp controls use the verified direct destination', () => {
