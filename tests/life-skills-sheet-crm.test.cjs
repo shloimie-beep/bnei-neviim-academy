@@ -29,8 +29,11 @@ test('normalizes WAPI numbers and fails closed until the scoped Google CRM gate 
 
 test('auth-bound inbound validation rejects outbound, delivery-status, and wrong-business-number events', async () => {
   const sheets = new Sheets();
+  const channelBoundConfig = { ...config(), requiredChannelId: 'life-skills-channel' };
   assert.equal(crm.isLifeSkillsInboundInquiry({ normalized: inbound({ fromMe: true }), config: config() }).eligible, false);
   assert.equal((await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound({ toNumber: '+972500000000' }), config: config() })).action, 'skipped_ineligible');
+  assert.equal(crm.isLifeSkillsInboundInquiry({ normalized: inbound({ toNumber: '', channelId: 'life-skills-channel' }), config: channelBoundConfig }).eligible, true);
+  assert.equal(crm.isLifeSkillsInboundInquiry({ normalized: inbound({ toNumber: '', channelId: 'another-channel' }), config: channelBoundConfig }).eligible, false);
   assert.equal((await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound({ messageId: 'bna-scope-message' }), scope: { project_key: 'bna', workspace_key: 'bna' }, config: config() })).action, 'created');
   assert.equal((await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound(), scope: { project_key: 'one_time_mishnah_class' }, config: config() })).action, 'skipped_ineligible');
   assert.equal(sheets.appendCalls, 1);
