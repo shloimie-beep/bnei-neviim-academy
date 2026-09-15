@@ -66,8 +66,12 @@ function isLifeSkillsInboundInquiry({ normalized = {}, scope = {}, config = life
   const blockers = [];
   const projectKey = String(scope.project_key || scope.project || '').trim().toLowerCase();
   const workspaceKey = String(scope.workspace_key || scope.workspace || '').trim().toLowerCase();
-  if (projectKey && projectKey !== 'life_skills') blockers.push('non_life_skills_project_scope');
-  if (workspaceKey && workspaceKey !== 'life_skills') blockers.push('non_life_skills_workspace_scope');
+  // The shared receiver authenticates ordinary WAPI traffic in its canonical BNA
+  // scope. The destination-number binding below—not a synthetic Life Skills
+  // project scope—decides whether this message belongs in the Life Skills CRM.
+  // One Time remains explicitly excluded from this separate CRM lane.
+  if (projectKey === 'one_time_mishnah_class') blockers.push('one_time_project_scope');
+  if (workspaceKey === 'rabbi_sheller_provider') blockers.push('one_time_workspace_scope');
   if (normalized.fromMe) blockers.push('outbound_from_me');
   if (String(normalized.messageStatus || '').trim()) blockers.push('delivery_status_event');
   if (!String(normalized.messageId || '').trim()) blockers.push('missing_provider_message_id');

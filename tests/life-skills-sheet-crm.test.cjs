@@ -31,8 +31,9 @@ test('auth-bound inbound validation rejects outbound, delivery-status, and wrong
   const sheets = new Sheets();
   assert.equal(crm.isLifeSkillsInboundInquiry({ normalized: inbound({ fromMe: true }), config: config() }).eligible, false);
   assert.equal((await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound({ toNumber: '+972500000000' }), config: config() })).action, 'skipped_ineligible');
+  assert.equal((await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound({ messageId: 'bna-scope-message' }), scope: { project_key: 'bna', workspace_key: 'bna' }, config: config() })).action, 'created');
   assert.equal((await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound(), scope: { project_key: 'one_time_mishnah_class' }, config: config() })).action, 'skipped_ineligible');
-  assert.equal(sheets.appendCalls, 0);
+  assert.equal(sheets.appendCalls, 1);
 });
 
 test('first inbound message creates the minimal lead, Today next action, source attribution, and no message body', async () => {
