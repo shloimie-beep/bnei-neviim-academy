@@ -45,6 +45,7 @@ function lifeSkillsSheetCrmConfig(env = {}) {
     sheetName: normalizeText(env.LIFE_SKILLS_SHEET_CRM_SHEET_NAME || DEFAULT_SHEET_NAME, 100),
     responseOwner: normalizeText(env.LIFE_SKILLS_SHEET_CRM_RESPONSE_OWNER || 'Shlomo', 120),
     requiredBusinessDigits: String(env.LIFE_SKILLS_WAPI_REQUIRED_SENDER_DIGITS || '972534932631').replace(/\D/g, ''),
+    requiredChannelId: normalizeText(env.LIFE_SKILLS_WAPI_CHANNEL_ID || env.WHAPI_CHANNEL_ID || '', 180),
     defaultCountry: String(env.LIFE_SKILLS_SHEET_CRM_DEFAULT_COUNTRY || '972').replace(/\D/g, ''),
     timeZone: normalizeText(env.LIFE_SKILLS_SHEET_CRM_TIMEZONE || 'Asia/Jerusalem', 80),
   };
@@ -79,7 +80,10 @@ function isLifeSkillsInboundInquiry({ normalized = {}, scope = {}, config = life
   const phone = normalizeLifeSkillsPhone(normalized.fromNumber || normalized.chatId || '', config.defaultCountry);
   if (!phone) blockers.push('missing_or_invalid_sender_phone');
   const destinationDigits = String(normalized.toNumber || '').replace(/\D/g, '');
-  if (!destinationDigits || !config.requiredBusinessDigits || !destinationDigits.endsWith(config.requiredBusinessDigits)) blockers.push('unbound_life_skills_business_number');
+  const destinationBound = Boolean(destinationDigits && config.requiredBusinessDigits && destinationDigits.endsWith(config.requiredBusinessDigits));
+  const channelId = normalizeText(normalized.channelId || normalized.instanceId, 180);
+  const channelBound = Boolean(config.requiredChannelId && channelId && channelId === config.requiredChannelId);
+  if (!destinationBound && !channelBound) blockers.push('unbound_life_skills_business_number');
   return { eligible: blockers.length === 0, blockers, phone };
 }
 
