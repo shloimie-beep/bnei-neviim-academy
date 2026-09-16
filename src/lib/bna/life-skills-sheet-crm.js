@@ -155,7 +155,7 @@ function initialLeadRow({ normalized = {}, payload = {}, config = lifeSkillsShee
   const receivedIso = Number.isFinite(receivedAt.getTime()) ? receivedAt.toISOString() : new Date(now).toISOString();
   const attribution = messageAttribution(payload);
   if (headerMap.missingMachine?.length) throw new Error('Life Skills CRM machine headers are unresolved');
-  const row = Array(Math.max(headerMap.maxColumnIndex + 1, ...Object.values({ ...headerMap.columns, ...headerMap.machine }).map(columnIndex)) + 1).fill('');
+  const row = Array(Math.max(headerMap.maxColumnIndex + 1, ...Object.values({ ...headerMap.columns, ...headerMap.machine }).map(columnIndex))).fill('');
   const set = (column, value) => { row[columnIndex(column)] = value; };
   set(headerMap.columns.leadId, stableLeadId(phone)); set(headerMap.columns.receivedAt, receivedIso); set(headerMap.columns.parentName, normalizeText(normalized.pushName, 120)); set(headerMap.columns.phone, phone);
   set(headerMap.columns.language, detectedLanguage(normalized.messageText || '')); set(headerMap.columns.source, attribution.source || 'WhatsApp'); set(headerMap.columns.campaign, attribution.campaign);

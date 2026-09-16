@@ -94,6 +94,7 @@ test('uses the current named-header map, leaves AA:AI onboarding fields alone, a
   const sheets = new Sheets([...headers, ...onboardingHeaders]);
   await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound(), config: config() });
   const row = sheets.grid[1];
+  assert.equal(row.length, 39);
   const aj = ci('AJ');
   assert.deepEqual(sheets.grid[0].slice(26, 35), onboardingHeaders);
   assert.deepEqual(sheets.grid[0].slice(35, 39), Object.values(crm.MACHINE_HEADERS));
