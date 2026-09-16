@@ -156,3 +156,12 @@ test('Life Skills route is registered as anonymous-safe', () => {
   assert.equal(route.public_allowed, true);
   assert.equal(route.workspace_scope_required, false);
 });
+
+test('public HE/EN copy promises monthly reports and no recurring parent calls', () => {
+  const html = read('index.html');
+  const bundle = read('assets/js/site-react.js').replace(/\\u([0-9a-f]{4})/gi, (_, code) => String.fromCharCode(Number.parseInt(code, 16)));
+  assert.match(html, /דוחות התקדמות חודשיים להורים/);
+  assert.match(bundle, /monthly progress reports/);
+  assert.match(bundle, /דוחות התקדמות חודשיים/);
+  assert.doesNotMatch(bundle, /15-minute|15 דקות|weekly parent|שיחת הורים שבועית|Google Meet/);
+});
