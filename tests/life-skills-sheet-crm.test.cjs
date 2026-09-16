@@ -8,12 +8,12 @@ const headers = ['Lead ID', 'Date received', 'Parent/adult name', 'Child name', 
 function ci(column) { let value = 0; for (const letter of column) value = value * 26 + letter.charCodeAt(0) - 64; return value - 1; }
 function range(raw) { const match = String(raw).match(/!([A-Z]+)(\d+)(?::([A-Z]+)(\d+))?$/i); if (!match) throw new Error(`range ${raw}`); return { a: match[1].toUpperCase(), r: Number(match[2]), b: (match[3] || match[1]).toUpperCase(), z: Number(match[4] || match[2]) }; }
 class Sheets {
-  constructor() { this.grid = [headers.slice()]; this.appendCalls = 0; this.failAfterAppend = false; this.failOnce = false; this.spreadsheets = { values: { get: this.get.bind(this), batchGet: this.batchGet.bind(this), batchUpdate: this.batchUpdate.bind(this), append: this.append.bind(this) } }; }
-  ensure(row) { while (this.grid.length < row) this.grid.push(Array(30).fill('')); return this.grid[row - 1]; }
+  constructor(headerRow = headers) { this.grid = [headerRow.slice()]; this.appendCalls = 0; this.failAfterAppend = false; this.failOnce = false; this.spreadsheets = { values: { get: this.get.bind(this), batchGet: this.batchGet.bind(this), batchUpdate: this.batchUpdate.bind(this), append: this.append.bind(this) } }; }
+  ensure(row) { while (this.grid.length < row) this.grid.push(Array(60).fill('')); return this.grid[row - 1]; }
   get({ range: raw }) { const p = range(raw); const values = []; for (let row = p.r; row <= p.z; row += 1) values.push((this.grid[row - 1] || Array(30).fill('')).slice(ci(p.a), ci(p.b) + 1)); while (values.length && values.at(-1).every((v) => !v)) values.pop(); return Promise.resolve({ data: { values } }); }
   batchGet({ ranges }) { return Promise.all(ranges.map((raw) => this.get({ range: raw }))).then((items) => ({ data: { valueRanges: items.map((item) => item.data) } })); }
   batchUpdate({ requestBody }) { for (const write of requestBody.data || []) { const p = range(write.range); const row = this.ensure(p.r); for (const [index, value] of (write.values?.[0] || []).entries()) row[ci(p.a) + index] = value; } return Promise.resolve({ data: {} }); }
-  append({ requestBody }) { this.appendCalls += 1; if (this.failOnce) { this.failOnce = false; return Promise.reject(new Error('synthetic Sheets outage')); } const row = this.grid.length + 1; this.grid.push((requestBody.values?.[0] || []).slice()); if (this.failAfterAppend) { this.failAfterAppend = false; return Promise.reject(new Error('synthetic response lost after append')); } return Promise.resolve({ data: { updates: { updatedRange: `'Leads'!A${row}:AD${row}` } } }); }
+  append({ range: targetRange, requestBody }) { this.appendCalls += 1; if (this.failOnce) { this.failOnce = false; return Promise.reject(new Error('synthetic Sheets outage')); } const row = this.grid.length + 1; this.grid.push((requestBody.values?.[0] || []).slice()); if (this.failAfterAppend) { this.failAfterAppend = false; return Promise.reject(new Error('synthetic response lost after append')); } const end = String(targetRange).match(/:([A-Z]+)'?$/i)?.[1] || 'AD'; return Promise.resolve({ data: { updates: { updatedRange: `'Leads'!A${row}:${end}${row}` } } }); }
 }
 function config() { return { spreadsheetId: 'synthetic-sheet', sheetName: 'Leads', responseOwner: 'Shlomo', requiredBusinessDigits: '972534932631', defaultCountry: '972', timeZone: 'Asia/Jerusalem' }; }
 function inbound(extra = {}) { return { messageId: 'provider-message-1', fromNumber: '+972 52 555 0101', toNumber: '+972 53 493 2631', pushName: 'Synthetic Parent', messageText: 'Neutral inquiry', occurredAt: '2026-09-14T08:05:00.000Z', fromMe: false, hasMedia: false, messageStatus: '', ...extra }; }
@@ -87,4 +87,43 @@ test('receiver integration uses a phone advisory lock and durable recovery witho
   assert.match(integration, /life-skills-sheet-crm\/recover/);
   assert.match(server, /lifeSkillsSheetCrm: lifeSkillsSheetCrmResultView/);
   assert.doesNotMatch(integration, /sendWapiTextMessage/);
+});
+
+test('uses the current named-header map, leaves AA:AI onboarding fields alone, and preserves notes on a second inbound message', async () => {
+  const onboardingHeaders = ['Form sent', 'Form submitted', 'Payment link sent', 'Payment method', 'Payment status', 'Payment allocation', 'Booking status', 'Message receipt', 'Update provenance'];
+  const sheets = new Sheets([...headers, ...onboardingHeaders]);
+  await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound(), config: config() });
+  const row = sheets.grid[1];
+  const aj = ci('AJ');
+  assert.deepEqual(sheets.grid[0].slice(26, 35), onboardingHeaders);
+  assert.deepEqual(sheets.grid[0].slice(35, 39), Object.values(crm.MACHINE_HEADERS));
+  assert.equal(row[aj], 'provider-message-1');
+  assert.equal(row[aj + 3], 'Shlomo');
+  row[24] = 'Synthetic operator note';
+  row[26] = 'FORM_SENT'; row[27] = 'FORM_SUBMITTED'; row[28] = 'PAYMENT_LINK_SENT';
+  await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound({ messageId: 'provider-message-2', occurredAt: '2026-09-14T10:00:00.000Z' }), config: config() });
+  assert.equal(sheets.grid.length, 2);
+  assert.equal(row[24], 'Synthetic operator note');
+  assert.deepEqual(row.slice(26, 29), ['FORM_SENT', 'FORM_SUBMITTED', 'PAYMENT_LINK_SENT']);
+  assert.equal(row[aj], 'provider-message-1, provider-message-2');
+});
+
+test('resolves reordered headers by name and rejects missing or ambiguous header contracts', async () => {
+  const reordered = ['Phone', ...headers.filter((header) => header !== 'Phone'), 'Form sent', 'Form submitted', 'Payment link sent', 'Payment method', 'Payment status', 'Payment allocation', 'Booking status', 'Message receipt', 'Update provenance', ...Object.values(crm.MACHINE_HEADERS)];
+  const sheets = new Sheets(reordered);
+  await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound(), config: config() });
+  const row = sheets.grid[1];
+  assert.equal(row[reordered.indexOf('Phone')], '+972525550101');
+  assert.equal(row[reordered.indexOf('Inbound provider message IDs')], 'provider-message-1');
+  assert.throws(() => crm.resolveSheetHeaderMap([...reordered, 'Phone']), /ambiguous header/);
+  assert.throws(() => crm.resolveSheetHeaderMap(reordered.filter((header) => header !== 'Next action')), /required header missing/);
+});
+
+test('actual inbound producer output is accepted by the shared stable-ID consumer contract without renaming', () => {
+  const produced = crm.initialLeadRow({ normalized: inbound(), config: config() });
+  const producedLeadId = produced[0];
+  // Matches the P2 onboarding contract: LS-LEAD and LS-WAPI stable IDs are both valid.
+  assert.match(producedLeadId, /^LS-(?:LEAD|WAPI)-[A-Za-z0-9-]+$/);
+  assert.match(producedLeadId, /^LS-WAPI-[a-f0-9]{16}$/);
+  assert.equal(crm.SHEET_FIELD_MAP_VERSION, 'life-skills-inbound-v2');
 });
