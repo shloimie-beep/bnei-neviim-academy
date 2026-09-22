@@ -1,0 +1,44 @@
+{
+  "generated_at": "2026-07-02T13:15:00.000Z",
+  "source_pr": {
+    "number": 62,
+    "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/62",
+    "title": "[codex] Reconcile One Time launch cleanup",
+    "state": "OPEN",
+    "is_draft": true,
+    "mergeable": "CONFLICTING",
+    "changed_files": 1351,
+    "head_ref": "codex/one-time-launch-cleanup-20260702-no-workflow",
+    "base_ref": "master"
+  },
+  "clean_branch": "codex/one-time-ui-recording-clean-integration-20260702",
+  "decision": "Treat PR #62 as source bundle only; do not broad-merge or force-merge.",
+  "extracted": [
+    "clean prior One Time launch setup commits from PR #63",
+    "background-agent readback evidence",
+    "newest Drive recording trace evidence without raw transcript body",
+    "UI correction Product Quality packet DAG",
+    "guarded TEST/mock UI-review seed and cleanup scripts",
+    "Railway provisioning/readback and setup-checker readiness updates",
+    "join.onetimeonetime.com Railway domain readback and GoDaddy DNS task",
+    "provider setup status readback",
+    "top visible operator task readback",
+    "active execution-run/register/ledger/changelog/memory closeout records"
+  ],
+  "excluded": [
+    "broad PR #62 conflict merge",
+    "unrelated obsolete evidence dumps",
+    "workflow file changes",
+    "secrets",
+    "raw provider payloads",
+    "raw transcript or private recording body",
+    "live campaign send",
+    "live payment",
+    "WhatsApp broadcast",
+    "apex/root DNS mutation",
+    "production hard delete",
+    "paid-user cancellation",
+    "GHL/LeadConnector runtime"
+  ],
+  "status": "ready_for_focused_pr_after_validation_commit_push"
+}

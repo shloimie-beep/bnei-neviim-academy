@@ -1,0 +1,366 @@
+{
+  "generated_at": "2026-06-24T19:27:27.609Z",
+  "no_production_mutation": true,
+  "candidate_jobs": [
+    {
+      "job_id": 65,
+      "in_required_repair_range": true,
+      "title": "content_job:65",
+      "fingerprint_sha256": "f719e2abdd6e9a15d5e3c25a940722d568c2cf4ece84424dfe1a1f88842bd2ca"
+    },
+    {
+      "job_id": 67,
+      "in_required_repair_range": true,
+      "title": "content_job:67",
+      "fingerprint_sha256": "2134a59dd20571d0d56ecf54aa7bd1ce2d350a6eadb17fa4276577e180213dca"
+    },
+    {
+      "job_id": 68,
+      "in_required_repair_range": true,
+      "title": "content_job:68",
+      "fingerprint_sha256": "04392a2d408609917dbc5e5f0f16afb63123d99c8917730871fb8a499613c962"
+    },
+    {
+      "job_id": 69,
+      "in_required_repair_range": true,
+      "title": "content_job:69",
+      "fingerprint_sha256": "b764af3449469fd9807c4e34da5c10f63835bf9dc6db719d5a27a8fda1aeb8dd"
+    },
+    {
+      "job_id": 70,
+      "in_required_repair_range": true,
+      "title": "content_job:70",
+      "fingerprint_sha256": "99189a9711767d88d0c987d1522dd72f42a938f6b6aca8868a5f58f1655c8dbc"
+    },
+    {
+      "job_id": 72,
+      "in_required_repair_range": true,
+      "title": "content_job:72",
+      "fingerprint_sha256": "4292c6e10a25dad9bf231be3a06db2eb2f1aa25d55aeb169194b75c5892b3ca1"
+    },
+    {
+      "job_id": 73,
+      "in_required_repair_range": true,
+      "title": "content_job:73",
+      "fingerprint_sha256": "aa5fc9cdb46ec5ccc87d9d38d9ad13a9ffa5926860c2a18115837a308fc8eb2a"
+    },
+    {
+      "job_id": 74,
+      "in_required_repair_range": true,
+      "title": "content_job:74",
+      "fingerprint_sha256": "c87c55f77e2c28aa436642823b2d12a3c25eb40fe05428e3e06628bc7ae861db"
+    }
+  ],
+  "approved_candidate_jobs": [],
+  "excluded_jobs": [
+    {
+      "job_id": 2,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 4,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 5,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 6,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 7,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 8,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 9,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 10,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 11,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 12,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 13,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 14,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 16,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 17,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 18,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 19,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 20,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 21,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 22,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 23,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 24,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 25,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 26,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 27,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 28,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 29,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 30,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 31,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 32,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 33,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 34,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 35,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 36,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 37,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 38,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 39,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 40,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 41,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 42,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 43,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 44,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 45,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 46,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 47,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 48,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 49,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 50,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 51,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 52,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 53,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 54,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 56,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 57,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 58,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 59,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 62,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 63,
+      "reason": "outside requested guarded backfill job range"
+    },
+    {
+      "job_id": 64,
+      "reason": "no structured class/progress output available for backfill"
+    },
+    {
+      "job_id": 66,
+      "reason": "no structured class/progress output available for backfill"
+    },
+    {
+      "job_id": 71,
+      "reason": "no structured class/progress output available for backfill"
+    },
+    {
+      "job_id": 75,
+      "reason": "no structured class/progress output available for backfill"
+    },
+    {
+      "job_id": 76,
+      "reason": "no structured class/progress output available for backfill"
+    },
+    {
+      "job_id": 77,
+      "reason": "no structured class/progress output available for backfill"
+    },
+    {
+      "job_id": 78,
+      "reason": "no structured class/progress output available for backfill"
+    },
+    {
+      "job_id": 79,
+      "reason": "no structured class/progress output available for backfill"
+    },
+    {
+      "job_id": 80,
+      "reason": "no structured class/progress output available for backfill"
+    },
+    {
+      "job_id": 81,
+      "reason": "no structured class/progress output available for backfill"
+    }
+  ],
+  "safe_to_apply": false,
+  "row_level_change_plan": [],
+  "blocking_ambiguities": [],
+  "ambiguity_exclusions": [],
+  "duplicate_exclusions": [],
+  "duplicate_groups": [
+    {
+      "fingerprint_sha256": "df8392055eee00c07ff77149bd10df1b4ff95eb4d3f2db24c301c00ada6cfab4",
+      "job_ids": [
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    }
+  ],
+  "expected_row_counts": {},
+  "transaction_boundaries": [
+    "BEGIN",
+    "lock each candidate bna_content_jobs row FOR UPDATE",
+    "upsert by deterministic natural keys",
+    "write audit event with source fingerprints and counts",
+    "COMMIT"
+  ],
+  "rollback_strategy": [
+    "Take a production DB snapshot before apply.",
+    "Store inserted/updated row ids and previous values in the audit event.",
+    "Rollback restores before values and deletes inserted rows by audit id in one transaction."
+  ],
+  "snapshot_backup_requirement": "Production database snapshot and exported candidate rows are required before apply.",
+  "idempotency": {
+    "natural_keys": [],
+    "duplicate_uploads_excluded": 0,
+    "rerun_after_success_expected_writes": 0,
+    "dry_run_performs_no_writes": true
+  },
+  "apply_command": "node scripts/class-drive-intake-reconcile.cjs backfill --apply --gate APPLY_GUARDED_CLASS_BACKFILL --jobs 64-81",
+  "rollback_command": "node scripts/class-drive-intake-reconcile.cjs rollback --gate APPLY_GUARDED_CLASS_BACKFILL --audit-id <audit_event_id>",
+  "required_gate_phrase": "APPLY_GUARDED_CLASS_BACKFILL",
+  "dry_run_plan_file": "BACKFILL-DRY-RUN.md"
+}

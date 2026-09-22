@@ -1,0 +1,480 @@
+{
+  "generated_at": "2026-07-08T17:42:56.422Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "repeats": 2,
+  "external_write_performed": false,
+  "auth_available": true,
+  "auth_source": "ONE_TIME_OPS",
+  "operations_login": {
+    "ok": true,
+    "status": 200,
+    "duration_ms": 615,
+    "blocker": "",
+    "cookie_recorded": false
+  },
+  "api_timings": [
+    {
+      "path": "/api/health",
+      "method": "GET",
+      "samples": [
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 545,
+          "bytes": 70,
+          "cache_control": "",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "status",
+            "database",
+            "social_post_provider"
+          ]
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 247,
+          "bytes": 70,
+          "cache_control": "",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "status",
+            "database",
+            "social_post_provider"
+          ]
+        }
+      ],
+      "summary": {
+        "count": 2,
+        "min_ms": 247,
+        "median_ms": 247,
+        "p95_ms": 545,
+        "max_ms": 545
+      }
+    },
+    {
+      "path": "/api/one-time/instance-config",
+      "method": "GET",
+      "samples": [
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 229,
+          "bytes": 950,
+          "cache_control": "",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "app_mode",
+            "app_instance",
+            "single_tenant",
+            "workspace_key",
+            "project_key",
+            "brand_key",
+            "public_language",
+            "student_bot_enabled",
+            "bna_accountability_enabled",
+            "sefaria_study_assistant_enabled",
+            "enabled_modules",
+            "disabled_features",
+            "app_visible",
+            "secrets_included",
+            "external_write_performed"
+          ]
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 231,
+          "bytes": 950,
+          "cache_control": "",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "app_mode",
+            "app_instance",
+            "single_tenant",
+            "workspace_key",
+            "project_key",
+            "brand_key",
+            "public_language",
+            "student_bot_enabled",
+            "bna_accountability_enabled",
+            "sefaria_study_assistant_enabled",
+            "enabled_modules",
+            "disabled_features",
+            "app_visible",
+            "secrets_included",
+            "external_write_performed"
+          ]
+        }
+      ],
+      "summary": {
+        "count": 2,
+        "min_ms": 229,
+        "median_ms": 229,
+        "p95_ms": 231,
+        "max_ms": 231
+      }
+    },
+    {
+      "path": "/operations",
+      "method": "GET",
+      "samples": [
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 1434,
+          "bytes": 2357206,
+          "cache_control": "no-store",
+          "content_type": "text/html; charset=UTF-8",
+          "json_keys": []
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 1156,
+          "bytes": 2357206,
+          "cache_control": "no-store",
+          "content_type": "text/html; charset=UTF-8",
+          "json_keys": []
+        }
+      ],
+      "summary": {
+        "count": 2,
+        "min_ms": 1156,
+        "median_ms": 1156,
+        "p95_ms": 1434,
+        "max_ms": 1434
+      }
+    },
+    {
+      "path": "/api/member-library",
+      "method": "GET",
+      "samples": [
+        {
+          "status": 401,
+          "ok": false,
+          "duration_ms": 241,
+          "bytes": 44,
+          "cache_control": "",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "error"
+          ]
+        },
+        {
+          "status": 401,
+          "ok": false,
+          "duration_ms": 269,
+          "bytes": 44,
+          "cache_control": "",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "error"
+          ]
+        }
+      ],
+      "summary": {
+        "count": 2,
+        "min_ms": 241,
+        "median_ms": 241,
+        "p95_ms": 269,
+        "max_ms": 269
+      }
+    },
+    {
+      "path": "/api/one-time-classroom?review=one-time",
+      "method": "GET",
+      "samples": [
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 252,
+          "bytes": 3262,
+          "cache_control": "",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "success",
+            "classroom",
+            "internal_fields_hidden",
+            "test_only",
+            "external_write_performed"
+          ]
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 242,
+          "bytes": 3262,
+          "cache_control": "",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "success",
+            "classroom",
+            "internal_fields_hidden",
+            "test_only",
+            "external_write_performed"
+          ]
+        }
+      ],
+      "summary": {
+        "count": 2,
+        "min_ms": 242,
+        "median_ms": 242,
+        "p95_ms": 252,
+        "max_ms": 252
+      }
+    },
+    {
+      "path": "/api/provider-portal/session",
+      "method": "GET",
+      "samples": [
+        {
+          "status": 401,
+          "ok": false,
+          "duration_ms": 238,
+          "bytes": 40,
+          "cache_control": "no-store",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "error"
+          ]
+        },
+        {
+          "status": 401,
+          "ok": false,
+          "duration_ms": 251,
+          "bytes": 40,
+          "cache_control": "no-store",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "error"
+          ]
+        }
+      ],
+      "summary": {
+        "count": 2,
+        "min_ms": 238,
+        "median_ms": 238,
+        "p95_ms": 251,
+        "max_ms": 251
+      }
+    },
+    {
+      "path": "/api/bna/helper/context?workspace_key=bna&project_key=bna",
+      "method": "GET",
+      "samples": [
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 263,
+          "bytes": 26682,
+          "cache_control": "no-store",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "success",
+            "helperName",
+            "helperScope",
+            "accessSummary",
+            "suggestedActions",
+            "knowledgeSources",
+            "toneProfile",
+            "safetyPolicy",
+            "actor",
+            "workspace",
+            "allowedTools",
+            "tools",
+            "integrationReadiness",
+            "pageContext"
+          ]
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 252,
+          "bytes": 26682,
+          "cache_control": "no-store",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "success",
+            "helperName",
+            "helperScope",
+            "accessSummary",
+            "suggestedActions",
+            "knowledgeSources",
+            "toneProfile",
+            "safetyPolicy",
+            "actor",
+            "workspace",
+            "allowedTools",
+            "tools",
+            "integrationReadiness",
+            "pageContext"
+          ]
+        }
+      ],
+      "summary": {
+        "count": 2,
+        "min_ms": 252,
+        "median_ms": 252,
+        "p95_ms": 263,
+        "max_ms": 263
+      }
+    }
+  ],
+  "helper_timings": [
+    {
+      "name": "deterministic navigation",
+      "status": 200,
+      "ok": true,
+      "duration_ms": 264,
+      "planner": "deterministic",
+      "helper_status": "planned",
+      "action_count": 1,
+      "first_tool": "open_operations_view",
+      "response_bytes": 582
+    },
+    {
+      "name": "deterministic performance report",
+      "status": 200,
+      "ok": true,
+      "duration_ms": 261,
+      "planner": "deterministic",
+      "helper_status": "confirmation_required",
+      "action_count": 1,
+      "first_tool": "create_support_ticket",
+      "response_bytes": 850
+    },
+    {
+      "name": "complex planning fallback",
+      "status": 200,
+      "ok": true,
+      "duration_ms": 380,
+      "planner": "deterministic",
+      "helper_status": "planned",
+      "action_count": 1,
+      "first_tool": "create_task",
+      "response_bytes": 1081
+    }
+  ],
+  "browser_timings": [
+    {
+      "id": "operations-desktop",
+      "path": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": "1440x1000",
+      "selector_found": true,
+      "navigation_ms": 2507,
+      "click_ms": 57,
+      "click_label": "switchView communications",
+      "console_error_count": 0,
+      "console_errors": [],
+      "failed_request_count": 0,
+      "failed_requests": [],
+      "screenshot": "ops/performance-audits/2026-07-08-app-backend-helper-performance/operations-desktop.png",
+      "title": "One Time Mishnah Class - Operations",
+      "ready_state": "complete",
+      "dom_nodes": 1518,
+      "script_count": 5,
+      "stylesheet_count": 6,
+      "button_count": 168,
+      "link_count": 1,
+      "iframe_count": 0,
+      "body_text_length": 22527,
+      "horizontal_overflow": false,
+      "transfer_size": 139891,
+      "resource_count": 28,
+      "dom_content_loaded_ms": 1146,
+      "load_event_ms": 1146
+    },
+    {
+      "id": "provider-desktop",
+      "path": "/provider.html?admin_provider=one-time&section=communications",
+      "viewport": "1440x960",
+      "selector_found": true,
+      "navigation_ms": 2070,
+      "click_ms": null,
+      "click_label": "",
+      "console_error_count": 1,
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ],
+      "failed_request_count": 0,
+      "failed_requests": [],
+      "screenshot": "ops/performance-audits/2026-07-08-app-backend-helper-performance/provider-desktop.png",
+      "title": "Admin on Rabbi One Time Provider Account",
+      "ready_state": "complete",
+      "dom_nodes": 418,
+      "script_count": 3,
+      "stylesheet_count": 5,
+      "button_count": 35,
+      "link_count": 11,
+      "iframe_count": 0,
+      "body_text_length": 801,
+      "horizontal_overflow": false,
+      "transfer_size": 31815,
+      "resource_count": 5,
+      "dom_content_loaded_ms": 848,
+      "load_event_ms": 848
+    },
+    {
+      "id": "member-library-mobile",
+      "path": "/member-library",
+      "viewport": "390x844",
+      "selector_found": true,
+      "navigation_ms": 1969,
+      "click_ms": 15,
+      "click_label": "fallback drawer toggle",
+      "console_error_count": 0,
+      "console_errors": [],
+      "failed_request_count": 0,
+      "failed_requests": [],
+      "screenshot": "ops/performance-audits/2026-07-08-app-backend-helper-performance/member-library-mobile.png",
+      "title": "One Time Member Library",
+      "ready_state": "complete",
+      "dom_nodes": 71,
+      "script_count": 4,
+      "stylesheet_count": 2,
+      "button_count": 4,
+      "link_count": 8,
+      "iframe_count": 0,
+      "body_text_length": 333,
+      "horizontal_overflow": false,
+      "transfer_size": 22288,
+      "resource_count": 3,
+      "dom_content_loaded_ms": 741,
+      "load_event_ms": 741
+    },
+    {
+      "id": "classroom-mobile",
+      "path": "/one-time-classroom",
+      "viewport": "390x844",
+      "selector_found": true,
+      "navigation_ms": 2098,
+      "click_ms": 14,
+      "click_label": "fallback drawer toggle",
+      "console_error_count": 0,
+      "console_errors": [],
+      "failed_request_count": 0,
+      "failed_requests": [],
+      "screenshot": "ops/performance-audits/2026-07-08-app-backend-helper-performance/classroom-mobile.png",
+      "title": "One Time Mishnah Classroom",
+      "ready_state": "complete",
+      "dom_nodes": 139,
+      "script_count": 3,
+      "stylesheet_count": 4,
+      "button_count": 14,
+      "link_count": 7,
+      "iframe_count": 0,
+      "body_text_length": 727,
+      "horizontal_overflow": false,
+      "transfer_size": 54172,
+      "resource_count": 4,
+      "dom_content_loaded_ms": 879,
+      "load_event_ms": 879
+    }
+  ],
+  "first_fix_recommendation": {
+    "target": "api_latency",
+    "reason": "/operations median 1156ms is the slowest measured API path."
+  },
+  "passed": true
+}

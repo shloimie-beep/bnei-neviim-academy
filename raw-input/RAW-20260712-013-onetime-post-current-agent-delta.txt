@@ -1,0 +1,847 @@
+BNA_GOAL_MODE_EXECUTION_PACKET
+
+TITLE
+One Time post-current-agent delta: automatic ramble-to-done repair, Railway delivery cron migration, and production CRM Contacts/Inbox completion
+
+REPOSITORY
+C:\Users\User\BNA v2.0
+
+THIS IS A CONTINUATION, NOT A NEW REBUILD
+
+Another agent has recently been pushing One Time corrections. Do not recreate already implemented landing, owner-shell, CRM, dispatcher, signup, or verification work.
+
+Known existing source material that must be continued:
+
+- AGENTS.md
+- docs/BNA-RAMBLE-TO-DONE.md
+- docs/RAMBLE-ROUTER.md
+- docs/PRODUCT-QUALITY-OPERATING-SYSTEM.md
+- ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md
+- tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.md
+- raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md
+- ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/
+- existing REQ-20260711-003 through REQ-20260711-009
+
+The last read-only audit saw origin/master around e5efbb15, but another agent may have pushed after that. Fetch and report the actual current SHA. Do not assume the audit SHA remains current.
+
+OPERATOR AUTHORIZATION CORRECTION
+
+The operator has explicitly authorized normal scoped commit, push, deployment, and live smoke for this work.
+
+Supersede the stale deployment gate in DEC-20260711-003 and any corresponding “Needs operator decision” status that exists only because production deployment previously awaited approval.
+
+Do not pause to ask whether you may deploy.
+
+This authorization does not authorize:
+
+- creating or importing production contacts for testing;
+- sending unapproved email, WhatsApp, or Telegram messages;
+- running the separate class-reminders job;
+- charging payments;
+- granting member access;
+- importing historical CRM data;
+- exposing or changing secrets;
+- changing DNS.
+
+The Railway delivery cron is authorized to deliver records that have already been approved and placed in the delivery outbox. It must not independently enqueue messages.
+
+PHASE 0 — COLLISION-SAFE CURRENT-STATE RECONCILIATION
+
+Before editing:
+
+1. Read NEXT-SESSION.md and the control tower.
+2. Run and record:
+   - git status --short --branch
+   - git diff --stat
+   - git log --oneline --decorate -25
+   - git rev-parse HEAD
+   - git rev-parse origin/master
+3. Identify:
+   - files currently dirty;
+   - commits recently pushed by the active agent;
+   - current Railway deployed SHA;
+   - current state of REQ-20260711-003 through REQ-20260711-009.
+4. Do not reset, clean, checkout over, or overwrite another agent’s work.
+5. Do not resume the stale dirty worktree:
+   C:\Users\User\BNA-onetime-p0p1-corrective-20260711
+   if NEXT-SESSION.md still marks it unsafe.
+6. Start from a clean worktree based on the newest origin/master after the active push stabilizes.
+7. Generate a delta matrix with these statuses:
+   - already implemented and live verified;
+   - implemented but not deployed;
+   - partially implemented;
+   - missing;
+   - contradicted by a newer operator correction.
+8. Implement only the partial or missing rows.
+9. Reuse existing requirement IDs. Create child IDs under the existing requirements rather than creating another duplicate One Time CRM/landing epic.
+
+Do not begin overlapping edits while another process is actively writing the same files. Read-only auditing and the delta matrix may proceed while the lane is busy.
+
+WORKSTREAM A — MAKE RAMBLE COMPILATION AUTOMATIC AND EXECUTABLE
+
+The operator must be able to ramble naturally through ChatGPT, Telegram text, or Telegram voice without prepending a protocol prompt.
+
+Do not add another user-facing wrapper template.
+
+Inspect and extend the existing implementation in:
+
+- src/lib/bna/ramble-source-coverage.js
+- the canonical intake routes in server.js
+- scripts/telegram-kimi-bridge.mjs
+- scripts/chatgpt-dropoff-ingestor.mjs
+- scripts/agent-fleet-supervisor.mjs
+- scripts/lib/chatgpt-dropoff-context.mjs
+- the canonical parser and intake service
+- existing Ramble Router, PQC, packet, ledger, and execution-run code
+
+A1. Capture
+
+Every nontrivial multi-request ramble must automatically receive:
+
+- immutable intake ID;
+- source channel;
+- source message ID;
+- received timestamp;
+- content hash;
+- ordered source-statement IDs;
+- exact raw-source pointer;
+- correction/supersession relationships.
+
+Raw content containing personal information or secrets must remain in the private database or approved secure storage. Commit only sanitized specifications and source hashes to Git.
+
+A2. Real specification compiler
+
+Replace generic output such as:
+
+“Implement and prove this exact source requirement.”
+
+A requirement cannot become implementation-ready unless it contains:
+
+- exact workspace and project;
+- actor and role;
+- canonical route;
+- component hierarchy;
+- exact layout geometry;
+- exact typography;
+- exact colors, borders, radii, shadows, and motion;
+- data fields and their source tables/models;
+- every visible action and its endpoint;
+- mutation and audit behavior;
+- loading, empty, populated, saving, success, failure, disabled, and permission-denied states;
+- desktop, tablet, and mobile geometry;
+- keyboard and accessibility behavior;
+- dependencies;
+- forbidden behavior;
+- executable acceptance assertions;
+- required evidence.
+
+Use the existing OpenAI integration with structured JSON output. Store OPENAI_API_KEY only in the Railway service that performs specification compilation or natural-language bot work.
+
+If OpenAI is unavailable or returns invalid output:
+
+- leave the intake in specification_pending or retry;
+- record a redacted provider error;
+- do not use a generic deterministic fallback;
+- do not mark it implementation_ready.
+
+A3. Readiness validator
+
+Update readiness rules so implementation_ready requires:
+
+- specification_status=validated;
+- schema validity;
+- resolved repo route/component references;
+- no generic placeholder phrases;
+- no unresolved contradictions;
+- 100% source-statement ownership;
+- at least one executable criterion per actionable statement.
+
+Explicitly ban readiness when requirements contain only phrases such as:
+
+- make it professional;
+- use shared spacing;
+- improve the buttons;
+- implement and prove this;
+- make it beautiful;
+- match GHL.
+
+A4. Guaranteed materialization
+
+Every validated actionable requirement must create:
+
+- one parent work packet;
+- one owning child packet;
+- one task record;
+- one agent job;
+- dependency links;
+- verification criteria;
+- lifecycle events.
+
+A registered requirement without a task/job link is not execution-ready.
+
+Required lifecycle:
+
+received
+→ captured
+→ specification_pending
+→ specification_validated
+→ materialized
+→ assigned
+→ in_progress
+→ locally_verified
+→ deployed
+→ live_verified
+→ done
+
+Blocked, rejected, superseded, and failed must be separate terminal states.
+
+A5. Bounded packet DAG
+
+Do not generate 30–40 MB Markdown prompts.
+
+Use:
+
+- one immutable raw source;
+- one canonical requirement graph;
+- small child packets grouped by independently testable workflow;
+- stable source and requirement IDs linking every packet.
+
+Target each packet below 150 KB. Preserve the existing hard limits of 1 MB per loaded file and 3 MB per immutable bundle.
+
+A6. Long Telegram rambles
+
+Remove silent truncation behavior.
+
+Replace local clipped multipart storage with durable ordered sessions:
+
+- session ID;
+- chunk sequence;
+- per-chunk hash;
+- source message ID;
+- completion marker or debounce completion;
+- total byte count;
+- reconstruction hash.
+
+A long ramble must either reconstruct exactly or split into explicitly linked child intakes. It may never silently discard text.
+
+A7. Status receipt
+
+Add one status readback that answers:
+
+- What was captured?
+- Which source statements became requirements?
+- Which corrections superseded older requirements?
+- Which requirements are unresolved?
+- Which child packet owns each requirement?
+- Which agent/job is working on it?
+- Which commit implemented it?
+- Which tests proved it?
+- Which SHA is deployed?
+- Which requirements remain blocked?
+
+“Registered” must never be displayed as “implemented.”
+
+A8. Protocol tests
+
+Add golden fixtures using real One Time landing, CRM, and Telegram rambles.
+
+Tests must prove:
+
+- 50 vague statements do not become ready merely because 50 placeholders exist;
+- failed OpenAI compilation remains pending;
+- every validated requirement has a task and job;
+- every source statement is owned or explicitly classified as non-actionable;
+- corrections supersede old requirements;
+- a ramble longer than 30,000 characters is reconstructed without loss;
+- rich specification fields survive parser, persistence, API readback, task materialization, and worker pickup;
+- Done cannot be reached without deployment and live evidence when the result is app-visible.
+
+WORKSTREAM B — MOVE THE DELIVERY DISPATCHER TO RAILWAY CRON
+
+Do not rebuild the dispatcher. Current master already contains:
+
+- src/lib/bna/one-time-delivery-outbox.js
+- POST /api/cron/one-time/delivery-outbox
+- locking with FOR UPDATE SKIP LOCKED;
+- retry/backoff and dead-letter behavior;
+- Resend, WAPI/Whapi, and scoped Rabbi Telegram delivery;
+- redacted delivery logging;
+- focused dispatcher tests.
+
+Verify those facts against current HEAD and modify only missing pieces.
+
+B1. Add the short-lived runner
+
+Create:
+
+scripts/run-one-time-delivery-outbox-cron.mjs
+
+Exact contract:
+
+- Require process.env.CRON_SECRET.
+- Read the endpoint from ONE_TIME_DELIVERY_OUTBOX_URL with the production URL as the documented default.
+- POST to:
+  https://join.onetimeonetime.com/api/cron/one-time/delivery-outbox
+- Header:
+  x-cron-secret: process.env.CRON_SECRET
+- Header:
+  content-type: application/json
+- Body:
+  {"dry_run":false,"limit":25}
+- Abort after 30 seconds.
+- Never call a class-reminders route.
+- Print only:
+  status
+  success
+  processed_count
+  sent_count
+  failed_count
+  dead_lettered_count
+  due_count
+  external_send_performed
+- Never print recipients, message bodies, Zoom/class URLs, cookies, provider responses, or secrets.
+- Exit 0 only on HTTP success and application success.
+- Exit nonzero on missing configuration, timeout, non-2xx response, invalid JSON, or success=false.
+- Close every timer/resource and terminate.
+
+B2. Add separate Railway configuration
+
+Create:
+
+railway.one-time-delivery-cron.json
+
+Configure:
+
+- builder: the same build system used by the repository;
+- start command:
+  node scripts/run-one-time-delivery-outbox-cron.mjs
+- cron schedule:
+  */5 * * * *
+- restart policy:
+  NEVER
+
+Do not add the cron schedule to the current web service’s railway.json. That could turn one-time-web into a short-lived cron service.
+
+Create a separate Railway service named:
+
+one-time-delivery-cron
+
+Use:
+
+- same repository;
+- production environment;
+- config path /railway.one-time-delivery-cron.json;
+- no public domain;
+- no persistent volume;
+- no replicas beyond the scheduled execution.
+
+Give the cron service only:
+
+- CRON_SECRET
+- ONE_TIME_DELIVERY_OUTBOX_URL
+
+The one-time-web service retains:
+
+- the matching CRON_SECRET;
+- database credentials;
+- Resend credentials;
+- WAPI/Whapi credentials;
+- Telegram credentials;
+- approved sender configuration.
+
+Do not copy OPENAI_API_KEY into the delivery cron service.
+
+OPENAI_API_KEY belongs only to the separate ramble compiler and natural-language bot features. If AI-generated message copy is ever required, generate and approve it before enqueueing the final body. Delivery must remain deterministic.
+
+B3. Scripts and tests
+
+Add:
+
+- package.json command:
+  one-time:delivery-outbox:cron
+- tests/one-time-delivery-outbox-cron.test.js
+- documented ONE_TIME_DELIVERY_OUTBOX_URL in .env.example without a secret value
+
+Tests must prove:
+
+- missing CRON_SECRET fails before fetch;
+- exact URL, method, header, and body;
+- timeout behavior;
+- non-2xx failure;
+- invalid JSON failure;
+- success=false failure;
+- redacted output;
+- no class-reminders request;
+- process exits and leaves no open handles.
+
+B4. Deploy and cut over
+
+1. Deploy the separate Railway cron service.
+2. Verify its schedule is */5 * * * * UTC.
+3. Run one redacted empty-queue proof.
+4. Confirm the service terminates successfully.
+5. Confirm duplicate/overlapping executions cannot double-send.
+6. Confirm no class-reminders job ran.
+7. Confirm two consecutive Railway executions succeed.
+8. Only then disable/delete the Codex automation:
+   one-time-delivery-outbox-dispatcher
+9. Do not leave both schedulers active.
+10. Record the cutover timestamp and Railway service/deployment IDs without recording secrets.
+
+WORKSTREAM C — BUILD THE PROFESSIONAL ONE TIME CRM AS VERTICAL WORKFLOWS
+
+Do not redesign random sidebar sections independently.
+
+Create or update this canonical blueprint:
+
+ops/product-specs/one-time/crm/contacts-inbox.v1.json
+
+The blueprint must drive production UI, tests, PQC validation, and future ramble deltas.
+
+C0. Canonical shell
+
+Desktop measurements:
+
+- left application sidebar: 236px expanded;
+- sticky application header: 66px;
+- selected-module subsection rail: 48px;
+- main canvas maximum width: 1480px;
+- desktop canvas inset: 24px;
+- tablet inset: 16px;
+- mobile inset: 12px.
+
+Visual tokens:
+
+- shell background: #07131F;
+- secondary shell: #0D2233;
+- page background: #F4F7FA;
+- surface: #FFFFFF;
+- primary text: #0B1F33;
+- muted text: #607286;
+- border: #D8E2EB;
+- One Time yellow: #EDE518;
+- ice-blue focus: #42BFE8;
+- selected-row fill: rgba(237,229,24,0.10);
+- error: #B42318;
+- success: #16794B.
+
+Application typography:
+
+- Inter, ui-sans-serif, system-ui, sans-serif;
+- page title: 24px/32px, weight 750;
+- contact name heading: 22px/28px, weight 750;
+- section heading: 16px/24px, weight 700;
+- body: 14px/20px, weight 400;
+- control text: 14px/20px, weight 600;
+- metadata: 12px/16px, weight 400;
+- uppercase field labels: 11px/16px, weight 700, letter-spacing 0.04em.
+
+Controls:
+
+- standard control height: 40px;
+- mobile touch target: minimum 44px;
+- button horizontal padding: 16px;
+- button/icon gap: 8px;
+- control radius: 8px;
+- panel radius: 8px;
+- panel padding: 16px;
+- panel gap: 16px;
+- border: 1px;
+- normal panel shadow: 0 1px 2px rgba(11,31,51,0.06);
+- elevated drawer shadow: -12px 0 32px rgba(11,31,51,0.16).
+
+Do not use mixed 8px, 16px, and 999px radii for ordinary cards and buttons. Full-pill radius is reserved for status chips.
+
+C1. Contacts index
+
+The Contacts page is a complete index, not a left-card list beside a random detail panel.
+
+Header:
+
+- 72px minimum height;
+- title and result count on the left;
+- “Add Contact” primary button on the right;
+- Add Contact width 120px.
+
+Toolbar:
+
+- 56px minimum height;
+- 12px gap;
+- search flexes with minimum width 280px;
+- Status width 144px;
+- Source width 168px;
+- Tags width 168px;
+- Owner width 160px;
+- Sort width 160px;
+- More Filters icon button 40px square;
+- Clear Filters text button appears only when filters are active;
+- search debounce 250ms;
+- stale requests must be aborted.
+
+Desktop table row:
+
+- 76px height;
+- 14px horizontal padding;
+- checkbox column 44px;
+- Contact minimum 240px;
+- Lifecycle 128px;
+- Family/School 128px;
+- Reminder 136px;
+- Source 168px;
+- Last Activity 144px;
+- Owner 144px;
+- Follow-up 144px;
+- overflow action 48px;
+- avatar 36px;
+- contact name 14px/20px weight 700;
+- secondary line 12px/16px;
+- lifecycle chip 24px high.
+
+Use server-side cursor pagination with 50 contacts per page. Do not load all contacts or all timelines on initial route load.
+
+Clicking any contact row or contact name must open a dedicated full contact workspace. It must not inject an unexplained detail card into the list.
+
+Browser Back must restore:
+
+- search;
+- filters;
+- sort;
+- cursor/page;
+- scroll position.
+
+At widths below 900px, replace the table with 76px contact cards and show one pane at a time.
+
+C2. Full contact workspace
+
+Route state must contain a stable canonical contact key. Use the existing route framework; do not create a second standalone CRM application.
+
+Header:
+
+- 80px minimum height;
+- 40px Back button;
+- 48px avatar;
+- contact name;
+- lifecycle chip;
+- secondary email/phone line;
+- action buttons in this order:
+  Email
+  WhatsApp
+  Add Note
+  Schedule Follow-up
+  More
+
+Email and WhatsApp must show one concise disabled tooltip when provider readiness or consent is missing. Do not display large internal “no-send” explanations.
+
+Desktop body:
+
+- main column: minmax(0,1fr);
+- inspector: 360px;
+- gutter: 16px.
+
+At 1024–1279px, the inspector becomes a 400px right drawer.
+
+At 899px and below, display one full-width pane at a time.
+
+Tabs, exactly:
+
+- Overview
+- Activity
+- Conversations
+- Tasks
+- Access
+
+Tab height: 40px.
+
+Inspector sections, exactly:
+
+1. Identity
+2. Family & Membership
+3. Tags
+4. Next Follow-up
+
+Required fields:
+
+- full/contact name;
+- primary email;
+- phone/WhatsApp;
+- city;
+- timezone;
+- family or school;
+- preferred reminder channel;
+- consent timestamp;
+- lifecycle;
+- source and attribution;
+- assigned owner;
+- tags;
+- next follow-up;
+- related task;
+- linked family;
+- linked students;
+- linked member/access record;
+- class/trial status;
+- attendance;
+- library status;
+- access status;
+- suppression/opt-out;
+- created time;
+- updated time;
+- last activity.
+
+Activity layout:
+
+- newest first;
+- 40px event icon rail;
+- 12px vertical row padding;
+- 1px separators;
+- event actor, timestamp, channel, summary, and linked record;
+- Notes composer minimum height 104px;
+- Add Note button aligned bottom-right.
+
+C3. Canonical server DTO and endpoints
+
+Do not perform joins among unrelated datasets in the browser.
+
+Create one server-side canonical contact DTO that reconciles authorized One Time records from existing sources without creating duplicate person records.
+
+The DTO must provide:
+
+- contact_key;
+- workspace_id;
+- project_id;
+- identity;
+- channels;
+- lifecycle;
+- attribution;
+- ownership;
+- tags;
+- reminder preferences and consent;
+- family/student/member relationships;
+- class/trial/access summary;
+- next follow-up;
+- active task summary;
+- last activity;
+- unread thread counts.
+
+Use these canonical endpoint contracts, extending existing routes rather than adding parallel implementations:
+
+- GET /api/bna/crm/contacts
+- POST /api/bna/crm/contacts
+- GET /api/bna/crm/contacts/:contactKey
+- PATCH /api/bna/crm/contacts/:contactKey
+- GET /api/bna/crm/contacts/:contactKey/timeline
+- POST /api/bna/crm/contacts/:contactKey/notes
+- POST /api/bna/crm/contacts/:contactKey/tasks
+- PATCH /api/bna/crm/tasks/:taskId
+- GET /api/bna/crm/contacts/:contactKey/threads
+- POST /api/bna/crm/threads/:threadId/messages
+
+The message endpoint must enqueue through the existing guarded outbox. It must never call providers directly from browser code.
+
+Each mutation must:
+
+1. validate authenticated role;
+2. validate workspace and project;
+3. validate field-level permission;
+4. mutate the canonical record;
+5. write one audit event;
+6. return the updated DTO;
+7. show saving state;
+8. show success confirmation;
+9. roll back optimistic UI on failure;
+10. persist after page reload.
+
+Required mutations:
+
+- create contact;
+- edit approved identity fields;
+- change lifecycle;
+- assign owner;
+- add/remove tags;
+- add internal note;
+- set/change/clear follow-up;
+- create task;
+- complete/reopen task;
+- archive contact;
+- open linked email thread;
+- open linked WhatsApp thread when configured and consented.
+
+C4. Inbox
+
+At widths of 1280px and above:
+
+- thread list: 340px;
+- conversation: minmax(480px,1fr);
+- contact inspector: 320px;
+- gutters: 1px borders rather than floating card gaps.
+
+Thread row:
+
+- height 72px;
+- 14px horizontal padding;
+- avatar 36px;
+- sender 14px/20px weight 700;
+- preview 12px/16px;
+- timestamp 11px/16px;
+- unread indicator 8px;
+- channel badge 22px high.
+
+Conversation:
+
+- header 64px;
+- scrollable message body;
+- composer minimum 88px;
+- send button 40px;
+- visible queued/sent/failed status;
+- do not label a queued message as sent.
+
+At 1024–1279px, contact inspector opens as a 400px drawer.
+
+Below 900px:
+
+- show thread list or conversation, never squeezed side-by-side;
+- use a 44px Back control;
+- retain selected contact and thread in URL/session state.
+
+Opening a thread from the contact record must retain the contact. Returning from Inbox must reopen the same contact and tab.
+
+C5. Tasks and pipeline
+
+Tasks:
+
+- title;
+- owner;
+- due date/time;
+- timezone;
+- priority;
+- status;
+- linked contact;
+- completion timestamp;
+- audit event.
+
+Task creation belongs in the Tasks tab and Schedule Follow-up action. Do not scatter duplicate task forms across the page.
+
+Pipeline is implemented only after canonical lifecycle mutations and persistence pass.
+
+Pipeline columns must come from the canonical lifecycle registry. Do not create a second stage field exclusively for Kanban.
+
+C6. Workspace isolation
+
+Every server query must scope by workspace/project before returning data.
+
+Required negative proof:
+
+- create colliding BNA and One Time fixtures with similar names/emails in the isolated test database;
+- One Time role receives only One Time records;
+- Rabbi role cannot request a BNA contact by changing an ID or query parameter;
+- View as Rabbi uses the same shell but rejects mutations server-side;
+- Super Admin sees multiple workspaces only after explicit workspace selection;
+- no BNA source labels, BNA parent lead descriptions, internal infrastructure, keys, diagnostics, or command-agent panels appear in normal Rabbi mode.
+
+C7. Performance
+
+Budgets:
+
+- CRM route-specific initial JavaScript: maximum 250 KB gzip;
+- maximum six initial CRM API requests;
+- list API p95 server time: 600ms or less;
+- selected contact detail p95 server time: 400ms or less;
+- click-to-skeleton: 100ms or less;
+- usable selected record: 1.5 seconds or less on desktop broadband;
+- no full Operations rerender after a field mutation;
+- no N+1 timeline/member/thread queries.
+
+Requirements:
+
+- defer CRM code until CRM is selected;
+- remove sequential loading of unrelated datasets;
+- use the narrow list DTO for the index;
+- fetch full detail only after selection;
+- fetch timeline/conversations/tasks/access by active tab;
+- cancel stale requests;
+- cache identical list queries for 30 seconds;
+- use optimistic updates with rollback;
+- paginate rather than render all 503 contacts;
+- remove duplicate overview metrics, API workbench panels, legacy review blocks, and empty command-bot panels from normal Rabbi CRM.
+
+C8. Canonical-route verification
+
+All browser tests must load the real canonical:
+
+/operations
+
+They must prove it is served through operations-bootstrap.html and the generated assets.
+
+Do not map /operations to operations.html inside a smoke test.
+
+Do not prove CRM behavior by searching source markers in operations.html.
+
+Required browser journeys:
+
+1. Log in as One Time owner.
+2. Land in the canonical scoped Operations shell.
+3. Open Contacts.
+4. Search a persisted isolated-test contact.
+5. Apply and clear filters.
+6. Open the full contact workspace.
+7. Add a note.
+8. Change lifecycle.
+9. Add/remove a tag.
+10. Set, change, and clear follow-up.
+11. Create and complete a task.
+12. Reload after each mutation and prove persistence.
+13. Open the mailbox thread.
+14. Return and retain selected contact.
+15. Verify a BNA-only fixture is absent.
+16. Verify View as Rabbi rejects writes.
+17. Capture 1440, 1024, 768, 430, and 390 screenshots.
+
+Use an isolated test database for mutation proof. Do not create production contacts merely to satisfy a smoke test.
+
+C9. Delivery sequence
+
+Create bounded implementation packets:
+
+- OT-CRM-01: canonical DTO, query scoping, list, pagination, performance;
+- OT-CRM-02: full contact workspace and mutations;
+- OT-CRM-03: timeline, inbox handoff, guarded composer;
+- OT-CRM-04: tasks, lifecycle pipeline, access relationships;
+- OT-CRM-05: canonical-route browser verification, responsive screenshots, deployment.
+
+Each source requirement is owned by exactly one packet.
+
+Finish and verify packets in dependency order. Do not open several overlapping agents on operations-shell.js, server.js, or the CRM model simultaneously.
+
+DEPLOYMENT
+
+After focused tests and protocol checks pass:
+
+1. Commit each bounded package with its requirement IDs.
+2. Push the clean branch.
+3. Use the repository’s normal protected merge/release path.
+4. Deploy the exact tested SHA to Railway production.
+5. Run Railway doctor.
+6. Run canonical One Time live smokes.
+7. Capture deployed screenshots.
+8. Update the existing execution run, ledger, changelog, and requirement statuses.
+9. Do not stop at “PR opened” or “deployment pending.”
+10. A visible requirement is Done only after deployed SHA, live route readback, screenshot, and test evidence agree.
+
+FINAL RESPONSE
+
+Return:
+
+- actual starting SHA;
+- active-agent changes preserved;
+- requirements already satisfied;
+- requirements newly implemented;
+- files changed by workstream;
+- child packet status;
+- tests and measured performance;
+- Railway cron service and redacted execution results;
+- Codex dispatcher automation disabled after cutover;
+- deployed SHA and URL;
+- screenshot paths;
+- live-verified requirement matrix;
+- exact remaining blockers.
+
+Do not respond with another generic plan. Execute the delta through deployment.

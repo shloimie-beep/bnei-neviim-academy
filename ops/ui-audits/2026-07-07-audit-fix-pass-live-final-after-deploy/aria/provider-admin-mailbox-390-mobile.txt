@@ -1,0 +1,99 @@
+- banner:
+  - strong: OneTimeOneTime
+  - text: Admin on Rabbi provider account
+  - link "Public site":
+    - /url: /
+  - link "Directory":
+    - /url: /service-providers
+  - link "Provider home":
+    - /url: /provider
+  - link "Assistant/help":
+    - /url: "#bnaBotPanel"
+  - link "Join":
+    - /url: /providers/join?onboard=provider
+- strong: ADMIN ON RABBI ACCOUNT
+- text: You are seeing the Rabbi / One Time provider portal as a scoped provider session. Super Admin tools are hidden here; actions stay inside rabbi_sheller_provider / one_time_mishnah_class.
+- link "Return to Super Admin Inbox":
+  - /url: /operations?workspace=platform&view=communications&section=email&inbox=rabbi
+- main:
+  - heading "Rabbi Elie Scheller" [level=1]
+  - paragraph: Rabbi / One Time provider account, opened by Super Admin.
+  - button "Sign Out"
+  - navigation "Provider workspace sections":
+    - button "Overview"
+    - button "CRM"
+    - button "Mailbox"
+    - button "Calendar"
+    - button "Parent Portal"
+    - button "Student Portal"
+    - button "Class Media"
+    - button "Content"
+    - button "Communications"
+    - button "Automations"
+    - button "Integrations"
+    - button "WhatsApp Setup"
+    - button "Reporting"
+    - button "Settings"
+    - button "Support"
+    - button "Website Import"
+    - button "Access Checklist"
+  - heading "Mailbox" [level=2]
+  - paragraph: "[redacted-email] messages captured into the One Time CRM."
+  - text: "One Time CRM Inbox: [redacted-email] Email replies available Parent and student email stored in One Time CRM"
+  - textbox "Search mailbox":
+    - /placeholder: Search sender, subject, or message
+  - button "Search"
+  - complementary "Mailbox threads":
+    - 'button "OneTimeOneTime Mishnah One Time Mishnayos member login link Hi Codex Test Parent, Use this private link to open your One Time Mishnayos member area: https://bneineviim... Updated 1 message"':
+      - strong: OneTimeOneTime Mishnah
+      - text: "One Time Mishnayos member login link Hi Codex Test Parent, Use this private link to open your One Time Mishnayos member area: https://bneineviim... Updated 1 message"
+    - 'button "OneTimeOneTime Mishnah One Time Mishnayos member login link Hi Codex Test Parent, Use this private link to open your One Time Mishnayos member area: https://bneineviim... Updated 1 message"':
+      - strong: OneTimeOneTime Mishnah
+      - text: "One Time Mishnayos member login link Hi Codex Test Parent, Use this private link to open your One Time Mishnayos member area: https://bneineviim... Updated 1 message"
+    - 'button "OneTimeOneTime Mishnah One Time Mishnayos access is ready Hi Codex Test Parent, Your One Time Mishnayos access is ready. Member login: https://bneineviimacademy.org/... Updated 1 message"':
+      - strong: OneTimeOneTime Mishnah
+      - text: "One Time Mishnayos access is ready Hi Codex Test Parent, Your One Time Mishnayos access is ready. Member login: https://bneineviimacademy.org/... Updated 1 message"
+    - 'button "Bnei Neviim Academy Office One Time Mishnayos member login link Hi Codex Auth Support Smoke, Use this private link to open your One Time Mishnayos member area: https://bne... Updated 1 message"':
+      - strong: Bnei Neviim Academy Office
+      - text: "One Time Mishnayos member login link Hi Codex Auth Support Smoke, Use this private link to open your One Time Mishnayos member area: https://bne... Updated 1 message"
+    - 'button "Bnei Neviim Academy Office One Time Mishnayos member login link Hi Codex Auth Support Smoke, Use this private link to open your One Time Mishnayos member area: https://bne... Updated 1 message"':
+      - strong: Bnei Neviim Academy Office
+      - text: "One Time Mishnayos member login link Hi Codex Auth Support Smoke, Use this private link to open your One Time Mishnayos member area: https://bne... Updated 1 message"
+    - 'button "Bnei Neviim Academy Office One Time Mishnayos member login link Hi Codex Auth Support Smoke, Use this private link to open your One Time Mishnayos member area: https://bne... Updated 1 message"':
+      - strong: Bnei Neviim Academy Office
+      - text: "One Time Mishnayos member login link Hi Codex Auth Support Smoke, Use this private link to open your One Time Mishnayos member area: https://bne... Updated 1 message"
+    - 'button "Bnei Neviim Academy Office One Time Mishnayos member login link Hi Codex Auth Support Smoke, Use this private link to open your One Time Mishnayos member area: https://bne... Updated 1 message"':
+      - strong: Bnei Neviim Academy Office
+      - text: "One Time Mishnayos member login link Hi Codex Auth Support Smoke, Use this private link to open your One Time Mishnayos member area: https://bne... Updated 1 message"
+    - button "Bnei Neviim Academy Office One Time Mishnayos access update Hi Codex Rabbi Live Smoke, There was an update to your One Time Mishnayos access. Reply here if this looks ... Updated 1 message":
+      - strong: Bnei Neviim Academy Office
+      - text: One Time Mishnayos access update Hi Codex Rabbi Live Smoke, There was an update to your One Time Mishnayos access. Reply here if this looks ... Updated 1 message
+    - 'button "Bnei Neviim Academy Office One Time Mishnayos member login link Hi Codex Rabbi Live Smoke, Use this private link to open your One Time Mishnayos member area: https://bnein... Updated 1 message"':
+      - strong: Bnei Neviim Academy Office
+      - text: "One Time Mishnayos member login link Hi Codex Rabbi Live Smoke, Use this private link to open your One Time Mishnayos member area: https://bnein... Updated 1 message"
+    - 'button "Bnei Neviim Academy Office One Time Mishnayos access was added Hi Codex Rabbi Live Smoke, One Time Mishnayos access was added manually by the office. Member login: https:... Updated 1 message"':
+      - strong: Bnei Neviim Academy Office
+      - text: "One Time Mishnayos access was added Hi Codex Rabbi Live Smoke, One Time Mishnayos access was added manually by the office. Member login: https:... Updated 1 message"
+    - button "Rabbi Scheller Office One Time Mishnayos access update Hi Codex Rabbi Smoke, There was an update to your One Time Mishnayos access. Reply here if this looks wrong. Updated 1 message":
+      - strong: Rabbi Scheller Office
+      - text: One Time Mishnayos access update Hi Codex Rabbi Smoke, There was an update to your One Time Mishnayos access. Reply here if this looks wrong. Updated 1 message
+    - 'button "Rabbi Scheller Office One Time Mishnayos member login link Hi Codex Rabbi Smoke, Use this private link to open your One Time Mishnayos member area: http://127.0.0.1:8... Updated 1 message"':
+      - strong: Rabbi Scheller Office
+      - text: "One Time Mishnayos member login link Hi Codex Rabbi Smoke, Use this private link to open your One Time Mishnayos member area: http://127.0.0.1:8... Updated 1 message"
+    - 'button "Rabbi Scheller Office One Time Mishnayos access was added Hi Codex Rabbi Smoke, One Time Mishnayos access was added manually by the office. Member login: http://127.... Updated 1 message"':
+      - strong: Rabbi Scheller Office
+      - text: "One Time Mishnayos access was added Hi Codex Rabbi Smoke, One Time Mishnayos access was added manually by the office. Member login: http://127.... Updated 1 message"
+  - heading "One Time Mishnayos member login link" [level=3]
+  - paragraph: No reply target found
+  - text: 1 message
+  - article:
+    - strong: To [redacted-email]
+    - text: One Time Mishnayos member login link skipped 01/07/2026, 19:07:52 dry_run
+    - paragraph: "Hi Codex Test Parent, Use this private link to open your One Time Mishnayos member area: https://bneineviimacademy.org/rabbi-member?token=rabbi_b1c0c2fb6b699a52067a46f39a5fa8d72c413f401cde777a37a3ab647effcd32 If you did not request this link, you can ignore this email."
+  - text: Reply
+  - textbox "Reply":
+    - /placeholder: Write the reply here. Save Draft stores it in the One Time CRM; Send Reply uses the approved email flow after confirmation.
+  - paragraph: No inbound sender address is available for this thread.
+  - button "Save Draft" [disabled]
+  - button "Send Reply" [disabled]
+- button "BNA Helper"

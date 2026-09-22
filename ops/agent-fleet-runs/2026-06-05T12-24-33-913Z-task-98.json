@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-06-05T12:24:33.913Z",
+  "task_id": 98,
+  "ok": true,
+  "codex_exit_code": 0,
+  "codex_final": "STATUS: done\n\nSUMMARY: Investigated the Telegram exchange. The saved OpenAI reply was complete, but the bridge could make it look cut off by auto-capturing a pure speaker-label question as a task and appending capture text. I hardened the bridge so exploratory capability questions stay conversational, OpenAI/Codex see the tail of today’s Telegram memory for “what just happened” questions, and sent replies now log Telegram chunk counts/message IDs.\n\nVERIFICATION: `node --check server.js` passed; `node --check scripts\\telegram-kimi-bridge.mjs` passed; `node --check scripts\\agent-fleet-supervisor.mjs` passed; `npm test` passed 20/20; JSONL ledger parse passed. Initial `npm test -- --runInBand` failed because this repo uses Node’s test runner, not Jest.\n\nFILES: [scripts/telegram-kimi-bridge.mjs](<C:/Users/User/BNA v2.0/scripts/telegram-kimi-bridge.mjs>), [ops/agent-changelog.md](<C:/Users/User/BNA v2.0/ops/agent-changelog.md>), [ops/agent-task-ledger.jsonl](<C:/Users/User/BNA v2.0/ops/agent-task-ledger.jsonl>).",
+  "codex_error": "",
+  "codex_log": ".runtime/agent-fleet/task-98-2026-06-05T12-14-16-753Z.codex.log",
+  "codex_last_message": ".runtime/agent-fleet/task-98-2026-06-05T12-14-16-753Z.last-message.txt",
+  "verification_results": [
+    {
+      "command": "node --check server.js",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "node --check scripts/telegram-kimi-bridge.mjs",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "node --check scripts/agent-fleet-supervisor.mjs",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "npm test",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "> bna-website@1.0.0 test\n> node --test\n\n✔ Listening goal full completion (0.6312ms)\n✔ Listening goal partial completion (0.0862ms)\n✔ Listening goal over completion caps at 100 (0.158ms)\n✔ Inside goal full inside completion (0.1072ms)\n✔ Inside goal listening without following counts as half (0.086ms)\n✔ Inside goal half inside and half listening reaches 75 percent (0.0732ms)\n✔ Parsed Torah timer maps inside, listening, and distracted minutes (0.3976ms)\n✔ Parsed Torah percentage update maps to active inside goal minutes (0.1305ms)\n✔ Parsed Torah listening-only shorthand maps to half credit for inside goals (0.1128ms)\n✔ Parsed engagement-only percentage does not become daily completion (0.1495ms)\n✔ Inside goal distracted time does not count (0.0873ms)\n✔ Group progress all complete (0.1071ms)\n✔ Group progress one incomplete (0.0434ms)\n✔ Goal minutes 0 throws validation error (0.265ms)\n✔ Trip progress carried-over only rounds to 12 percent (0.1103ms)\n✔ Trip progress carried-over plus one completed day reaches 15 percent (0.0647ms)\n✔ Daily 100 percent does not imply full trip completion after one day (0.0481ms)\n✔ Group trip progress stays locked at 15 percent when everyone is at 15 (0.0547ms)\n✔ Group trip progress keeps raw average when one student is at 99 (0.0428ms)\n✔ Trip progress reaches 100 only when all students are at 100 (0.0477ms)\nℹ tests 20\nℹ suites 0\nℹ pass 20\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 175.6446",
+      "stderr": ""
+    },
+    {
+      "command": "npm run openai:smoke",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "> bna-website@1.0.0 openai:smoke\n> node scripts/smoke-openai-sidekick.mjs\n\nOpenAI sidekick smoke: PASS\n\nRepo files: 8 readable\nTranscript exports: 18\nProtected app endpoints: 10 readable\nDrive folders: 7 readable\nOpenAI model: gpt-4.1-mini\n\nActive Codex tasks: 4 (101, 100, 72, 65)\nStudents: Amitai Kosofsky, Eitan Chaim Golombo, Hillel Baraka, Huda Weber, Menachem Mendel Dratler\nTranscript jobs: 19\nPending payment names detected: Hillel Baraka\nDrive raw folder: 00 Upload Here - Raw Media Intake\n\nReport: ops/openai-smokes/2026-06-05T12-24-33-797Z-openai-sidekick-smoke.md",
+      "stderr": ""
+    }
+  ]
+}

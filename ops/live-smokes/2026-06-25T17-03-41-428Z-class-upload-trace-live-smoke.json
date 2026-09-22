@@ -1,0 +1,39 @@
+{
+  "started_at": "2026-06-25T17:03:41.428Z",
+  "app_url": "https://bneineviimacademy.org",
+  "job_id": 78,
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "cookie bna_ops_session"
+    },
+    {
+      "name": "Content job source readback",
+      "ok": true,
+      "detail": "Drive Class Sunday balak (transcribed, 04 Parsed)"
+    },
+    {
+      "name": "Drive-backed content job state is explicit",
+      "ok": true,
+      "detail": "processed state transcribed / 04 Parsed with 77315 transcript chars"
+    },
+    {
+      "name": "Parse-run linkage matches content job state",
+      "ok": true,
+      "detail": "parsed Drive job was not present in the recent parse-run listing"
+    }
+  ],
+  "result": "processed_readback_verified",
+  "job_title": "Drive Class Sunday balak",
+  "source_type": "google_drive",
+  "workspace_key": "",
+  "project_key": "bna",
+  "drive_stage": "04 Parsed",
+  "status": "transcribed",
+  "drive_file_id": "1Fq_4BCquWGwsNzHvbCuf8ew5HQxn01gH",
+  "created_at": "2026-06-21T10:04:38.843Z",
+  "transcript_chars": 77315,
+  "blocker": "Historical sanitized credential blocker note retained after the job reached processed state.",
+  "parse_run_id": null
+}

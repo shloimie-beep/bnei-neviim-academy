@@ -1,0 +1,552 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260708-011",
+  "parent_raw_id": "RAW-20260708-009",
+  "source_statement_ids": [
+    "SRC-20260708-009-001",
+    "SRC-20260708-009-002",
+    "SRC-20260708-009-003",
+    "SRC-20260708-009-004",
+    "SRC-20260708-009-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [
+      "PKT-20260708-012"
+    ],
+    "consumes": [
+      "raw-input/RAW-20260708-009-onetime-launch-ready-live-parent-student.md",
+      "tasks-pending/2026-07-08-onetime-launch-ready-parent-student-invite.md",
+      "server.js",
+      "src/lib/bna/rabbi-emails.js",
+      "public/one-time-parent.html",
+      "public/member-library.html",
+      "public/one-time-classroom.html"
+    ],
+    "produces": [
+      "server.js",
+      "src/lib/bna/rabbi-emails.js",
+      "public/one-time-parent.html",
+      "public/member-library.html",
+      "public/one-time-classroom.html",
+      "tests/one-time-parent-trial-invite.test.js",
+      "tests/workspace-scope-guardrails.test.js",
+      "tasks-pending/2026-07-08-onetime-launch-ready-parent-student-invite.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-launch-ready-parent-student-invite/01-launch-invite-setup.product-quality.json",
+    "terminal_condition": "Batch is complete when live invite route no longer defaults to test data, OneTime setup/library/classroom launch path removes BNA/test/fallback-first leaks, focused tests and watchdog pass, and live resend remains blocked until the exact student name is supplied.",
+    "handoff_target": "tasks-pending/2026-07-08-onetime-launch-ready-parent-student-invite.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "in_progress",
+  "title": "OneTime Launch-Ready Parent Invite And Access Setup",
+  "created_at": "2026-07-08T15:02:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL",
+    "EMAIL_PROVIDER_SETUP"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260708-009",
+    "classification": [
+      "BUG_REPORT",
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "COMMUNICATIONS_EMAIL",
+      "EXTERNAL_WRITE_REQUEST",
+      "SECURITY_PRIVACY",
+      "DECISION_REQUIRED"
+    ],
+    "confidence": 0.94,
+    "reasons": [
+      "The operator reported visible test/student labels in a live-intended parent invite.",
+      "The request names BNA/Academy brand bleed, fallback code UX, email voice, and live resend as launch blockers.",
+      "A real external email send is requested but the live OneTime student name is not explicit."
+    ],
+    "affected_product_surfaces": [
+      "OneTime parent invite email and setup/access entry journey"
+    ],
+    "likely_external_provider_blockers": [
+      "Live resend requires exact student display name and post-fix dry-run proof."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "01-launch-invite-setup",
+      "02-agent-mode-launch-audit-autonomy"
+    ],
+    "next_exact_packet": "After invite/setup launch blockers are fixed, create PKT-20260708-012 for Agent Mode autonomous start/drop-off prompt hardening."
+  },
+  "operator_intent_summary": "Make the OneTime parent/student invite journey feel like a real launch experience, not a Codex test harness: no test labels, no BNA bleed, no fallback-code-first workflow, clear warm parent copy, and no live resend until the exact live student identity is confirmed.",
+  "raw_quotes": [
+    "it still says test student",
+    "get everything ready for a live student a 100% Live email to me",
+    "there should be nothing about BNA",
+    "there is no like fall back classroom password",
+    "remove unnecessary link back to the main website",
+    "million dollar app"
+  ],
+  "decisions_captured": [
+    "DEC-20260708-008"
+  ],
+  "out_of_scope": [
+    "No payment or checkout creation.",
+    "No Zoom meeting mutation.",
+    "No Vimeo/Drive upload.",
+    "No live email resend until the exact live student display name is supplied.",
+    "No use of BNA school student records as OneTime live student records unless explicitly named for this OneTime invite."
+  ],
+  "affected_surfaces": [
+    "OneTime parent invite route",
+    "OneTime parent setup page",
+    "OneTime member library access entry",
+    "OneTime classroom access entry",
+    "OneTime parent invite email template"
+  ],
+  "affected_routes": [
+    "/api/bna/one-time/parent-trial-invite",
+    "/one-time-parent",
+    "/member-library and /one-time-classroom"
+  ],
+  "affected_files": [
+    "server.js",
+    "src/lib/bna/rabbi-emails.js",
+    "public/one-time-parent.html",
+    "public/member-library.html",
+    "public/one-time-classroom.html",
+    "tests/one-time-parent-trial-invite.test.js",
+    "tests/workspace-scope-guardrails.test.js"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "server.js parent-trial invite route",
+      "src/lib/bna/rabbi-emails.js parent_trial_invite template",
+      "public/one-time-parent.html setup page",
+      "public/member-library.html access panel",
+      "public/one-time-classroom.html access panel"
+    ],
+    "observed": [
+      "Live invite route defaults studentName to TEST One Time Student.",
+      "Live invite route adds TEST and codex-test tags and notes.",
+      "Parent setup success links include OneTime public home.",
+      "Member library and classroom pages present fallback access code details in normal no-code state.",
+      "Member library and classroom base palettes still use teal/cream colors that conflict with the black/yellow OneTime rule."
+    ],
+    "known_blockers": [
+      "Exact live student display name remains unknown."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "million-dollar",
+      "launch-ready",
+      "professional",
+      "working",
+      "clean",
+      "test",
+      "BNA bleed",
+      "fallback classroom password"
+    ],
+    "expanded_phrases": {
+      "million-dollar": "Concrete launch standard: no test labels, no cross-brand flashes, compact mobile-safe first screen, all visible controls either work or are removed/hidden, copy sounds parent-facing, and proof exists.",
+      "launch-ready": "The normal user path must be production-mode by default, with test/smoke behavior only behind an explicit flag.",
+      "professional": "Email copy must sound like a real parent welcome from OneTime/Rabbi voice, not a dry system notification.",
+      "working": "Every visible action in the touched path has a handler, valid URL, or is hidden until support context requires it.",
+      "clean": "The touched launch path has only role-relevant controls, no unnecessary public-site links, no diagnostic/test language, and compact spacing on mobile.",
+      "test": "Production invites must not write TEST tags, codex-test tags, TEST student names, or walkthrough-only notes.",
+      "BNA bleed": "OneTime pages, emails, and loading states must not show Academy names, BNA URLs, BNA helper copy, or BNA palette defaults.",
+      "fallback classroom password": "Fallback code/password entry is support-only, hidden by default, and never presented as the normal classroom join path."
+    },
+    "first_party_pattern_interpretation": "Use existing first-party OneTime member access tables and parent password setup tokens, while keeping BNA school records and branding out of the OneTime launch path."
+  },
+  "design_pattern_references": [
+    "brand-kit/one-time/README.md",
+    "brand-kit/one-time/copy.md",
+    "memory-topics/brand-kits.md",
+    "memory-topics/workspace-scope-isolation.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260708-039",
+      "statement": "Production OneTime parent invite records must not use test labels by default.",
+      "expected_result": "The send path only writes test/codex labels when an explicit smoke/test mode is supplied.",
+      "acceptance_criteria": [
+        "No default TEST student name.",
+        "No default TEST or codex-test tags.",
+        "No walkthrough/archive notes in production invite records.",
+        "Dry run exposes the selected invite mode."
+      ]
+    },
+    {
+      "id": "REQ-20260708-043",
+      "statement": "Production OneTime parent invite copy must be parent-facing and specific.",
+      "expected_result": "The email welcomes the parent/student into OneTime, clearly names setup/library/classroom/live-shiur links, and contains no BNA/backend/test wording.",
+      "acceptance_criteria": [
+        "Subject is warmer than a generic status line.",
+        "Body names parent setup, live shiur, library, and classroom.",
+        "Body contains no Academy/BNA/test/backend wording.",
+        "Reply/help line stays OneTime scoped."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "RAW and requirement register exist.",
+      "Current code inspection found the TEST fallback and test tags.",
+      "Memory confirms OneTime must remain black/yellow and separate from BNA.",
+      "Live resend is separated from implementation and blocked on exact student display name."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/one-time-parent?reset=TOKEN",
+      "viewport": 1440,
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open fresh setup link.",
+      "expected_visible_title": "OneTimeOneTime Parent Setup",
+      "expected_visible_message": "Parent setup is opening on OneTime.",
+      "expected_primary_action": "Save parent password",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["BNA", "Academy", "TEST"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Form labels identify password fields.",
+      "accessibility_expectation": "Keyboard submit works and status is announced.",
+      "test_smoke_assertion": "HTML contains /api/parent-portal/password/reset and no Academy copy.",
+      "requirement_id": "REQ-20260708-041"
+    },
+    "empty": {
+      "route": "/member-library",
+      "viewport": 390,
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open without secure access.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "Open from secure invite link or ask support.",
+      "expected_primary_action": "Contact support",
+      "expected_secondary_actions": ["Show support access code"],
+      "forbidden_content": ["BNA", "Academy", "Use fallback access code as primary"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "No-access help is visible without exposing records.",
+      "accessibility_expectation": "Hidden support fallback can be opened by keyboard.",
+      "test_smoke_assertion": "Fallback details are hidden unless support=1 or error state.",
+      "requirement_id": "REQ-20260708-042"
+    },
+    "populated": {
+      "route": "/one-time-classroom?code=ACCESS",
+      "viewport": 1440,
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open classroom from invite/library link.",
+      "expected_visible_title": "One Time Mishnah Classroom",
+      "expected_visible_message": "Current OneTime access",
+      "expected_primary_action": "Play Video",
+      "expected_secondary_actions": ["Library", "Questions/support"],
+      "forbidden_content": ["BNA", "Academy", "TEST classroom"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Access status and classroom content have readable headings.",
+      "accessibility_expectation": "Top actions fit mobile and desktop.",
+      "test_smoke_assertion": "Normal route does not apply review shell or test copy.",
+      "requirement_id": "REQ-20260708-041"
+    },
+    "filtered_empty": {
+      "route": "/member-library",
+      "viewport": 430,
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Search/filter library after access opens.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "No matching lessons yet.",
+      "expected_primary_action": "Clear search",
+      "expected_secondary_actions": ["Newest", "Materials", "Worksheets"],
+      "forbidden_content": ["BNA", "Academy"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filter rail remains reachable.",
+      "accessibility_expectation": "Search input is labeled.",
+      "test_smoke_assertion": "Filters do not overflow mobile viewport.",
+      "requirement_id": "REQ-20260708-041"
+    },
+    "error": {
+      "route": "/one-time-parent?reset=EXPIRED",
+      "viewport": 390,
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit expired token.",
+      "expected_visible_title": "Set parent password",
+      "expected_visible_message": "Open the newest invite email or reply for a fresh link.",
+      "expected_primary_action": "Save parent password",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["BNA", "Academy", "TEST"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error appears in status region.",
+      "accessibility_expectation": "Error does not rely on color only.",
+      "test_smoke_assertion": "Expired copy stays OneTime scoped.",
+      "requirement_id": "REQ-20260708-041"
+    },
+    "blocked_setup": {
+      "route": "/api/bna/one-time/parent-trial-invite",
+      "viewport": 1440,
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Attempt live send without student name.",
+      "expected_visible_title": "API error",
+      "expected_visible_message": "student_name is required for launch-ready invite",
+      "expected_primary_action": "Provide student name",
+      "expected_secondary_actions": ["Dry run"],
+      "forbidden_content": ["TEST One Time Student"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "JSON error is explicit.",
+      "accessibility_expectation": "Operations UI should surface the blocker clearly.",
+      "test_smoke_assertion": "Route has validation for live student name.",
+      "requirement_id": "REQ-20260708-040"
+    },
+    "preview_only": {
+      "route": "/api/bna/one-time/parent-trial-invite?dry_run=1",
+      "viewport": 1024,
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Run dry-run preview.",
+      "expected_visible_title": "Dry run JSON",
+      "expected_visible_message": "no_send=true",
+      "expected_primary_action": "Confirm send after review",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["BNA", "Academy"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "No browser state required.",
+      "accessibility_expectation": "Operations presentation should be readable.",
+      "test_smoke_assertion": "Dry run returns invite_mode=production and no_send=true.",
+      "requirement_id": "REQ-20260708-039"
+    },
+    "success_readback": {
+      "route": "/api/bna/rabbi/communications",
+      "viewport": 1024,
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "After approved live send.",
+      "expected_visible_title": "Communications readback",
+      "expected_visible_message": "status=sent provider=resend",
+      "expected_primary_action": "Open communication",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["full reset token", "full access code", "BNA subject"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Operations table labels status and provider.",
+      "accessibility_expectation": "Readback can be copied without exposing secrets.",
+      "test_smoke_assertion": "Readback confirms sent only after decision is resolved.",
+      "requirement_id": "REQ-20260708-046"
+    },
+    "permission_denied": {
+      "route": "/api/bna/one-time/parent-trial-invite",
+      "viewport": 1024,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Call route without admin credentials.",
+      "expected_visible_title": "Unauthorized",
+      "expected_visible_message": "Unauthorized",
+      "expected_primary_action": "Login",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["preview links", "recipient data"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "JSON error only.",
+      "accessibility_expectation": "Operations login handles user-facing state.",
+      "test_smoke_assertion": "Route remains requireAdmin.",
+      "requirement_id": "REQ-20260708-039"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time-classroom",
+      "viewport": 390,
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open classroom on mobile.",
+      "expected_visible_title": "One Time Mishnah Classroom",
+      "expected_visible_message": "Secure link/current access keeps this classroom private.",
+      "expected_primary_action": "Show support access code only if needed",
+      "expected_secondary_actions": ["Library", "Questions/support"],
+      "forbidden_content": ["horizontal overflow", "BNA colors", "fallback code first"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Top actions wrap without overlap.",
+      "accessibility_expectation": "Buttons stay tappable and text fits.",
+      "test_smoke_assertion": "CSS and smoke assert no overflow at 390.",
+      "requirement_id": "REQ-20260708-042"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "/one-time-parent", "viewport": 1440 },
+      { "route": "/one-time-parent", "viewport": 1024 },
+      { "route": "/one-time-parent", "viewport": 768 },
+      { "route": "/one-time-parent", "viewport": 430 },
+      { "route": "/one-time-parent", "viewport": 390 }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-ONETIME-001",
+        "route": "/member-library and /one-time-classroom",
+        "viewport": 390,
+        "screenshot_before": "pending",
+        "screenshot_after_or_blocker": "pending",
+        "defect_codes": ["VQ-BRAND-001"],
+        "severity": "P1",
+        "user_impact": "The OneTime launch path can feel like BNA/test tooling instead of a real OneTime class.",
+        "expected_fix": "Apply OneTime black/yellow launch styling and remove BNA/test/fallback-first copy.",
+        "requirement_id": "REQ-20260708-041"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Forms keep visible labels.",
+      "Status/error messages are text, not color-only.",
+      "Mobile buttons wrap without overlap at 390px."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Save parent password",
+      "selector_or_action_key": "ACTION-ONETIME-PARENT-PASSWORD-SET",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "/api/parent-portal/password/reset",
+      "registry_required": true
+    },
+    {
+      "label": "Send parent invite",
+      "selector_or_action_key": "ACTION-ONETIME-PARENT-INVITE-SEND",
+      "action_state": "NEEDS_SHLOIMIE_SETUP",
+      "owner": "Shloimie",
+      "external_write": true,
+      "handler_or_blocker": "Blocked until exact live student display name is supplied.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "writes": [
+      "bna_students project-scoped OneTime row",
+      "bna_parent_leads project-scoped OneTime row",
+      "one_time_members",
+      "one_time_member_access",
+      "bna_parent_password_reset_tokens",
+      "bna_email_log only after approved send"
+    ],
+    "forbidden_writes": [
+      "BNA Academy student/classroom records",
+      "payment/checkout records",
+      "external Zoom/Vimeo/Drive writes"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "privacy_notes": [
+      "Do not commit full recipient, reset token, access code, or Zoom password.",
+      "Do not reuse BNA student identity as OneTime student without explicit instruction."
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "id": "B1",
+      "scope": "launch-ready invite route, email copy, setup/access entry cleanup",
+      "instructions": [
+        "Remove production defaults that create test student names or test tags.",
+        "Require real parent/student names for live send.",
+        "Keep explicit test/smoke mode available for future safe smokes.",
+        "Remove BNA/home link leakage from setup/access entry.",
+        "Hide fallback access code unless support context or error state requires it."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "server.js",
+      "src/lib/bna/rabbi-emails.js",
+      "public/one-time-parent.html",
+      "public/member-library.html",
+      "public/one-time-classroom.html",
+      "tests/one-time-parent-trial-invite.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "server.js",
+      "src/lib/bna/rabbi-emails.js",
+      "public/one-time-parent.html",
+      "public/member-library.html",
+      "public/one-time-classroom.html",
+      "tests/one-time-parent-trial-invite.test.js",
+      "tests/workspace-scope-guardrails.test.js"
+    ],
+    "max_files_to_edit": 7,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Agent Mode autonomy and deeper visual audit are split into the next packet.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-launch-ready-parent-student-invite/01-launch-invite-setup.product-quality.json",
+    "node --test tests/one-time-parent-trial-invite.test.js tests/workspace-scope-guardrails.test.js",
+    "node scripts/watchdog-workspace-scope-guardrails.mjs --json",
+    "node --check server.js"
+  ],
+  "evidence": {
+    "required": [
+      "focused test output",
+      "workspace-scope watchdog output",
+      "live no-send dry run after deploy",
+      "blocked resend note if DEC-20260708-008 remains unresolved"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "Implementation files inspected and patched.",
+      "PQC validator passes.",
+      "Focused tests and watchdog pass.",
+      "No secret/token/access-code/full Zoom URL committed.",
+      "Production no-send dry run proves launch path no longer uses test labels.",
+      "Live email is sent only after exact student name is supplied."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260708-009-onetime-launch-ready-live-parent-student.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-08-onetime-launch-ready-parent-student-invite/01-launch-invite-setup.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "node --test",
+      "node scripts/watchdog-workspace-scope-guardrails.mjs --json"
+    ],
+    "skipped_actions_policy": "Skip live resend until DEC-20260708-008 is resolved.",
+    "blocker_decisions": [
+      "DEC-20260708-008"
+    ],
+    "evidence_paths": [
+      "tasks-pending/2026-07-08-onetime-launch-ready-parent-student-invite.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-08-onetime-launch-ready-parent-student-invite.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-08-onetime-launch-ready-parent-student-invite/02-agent-mode-autonomous-audit.product-quality.json"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "node scripts/watchdog-workspace-scope-guardrails.mjs --json",
+    "expected_result": "findings=[] and coverage includes OneTime launch invite/setup no-test/no-BNA checks"
+  },
+  "next_packet": "PKT-20260708-012 Agent Mode autonomous launch audit prompts and drop-off hardening"
+}

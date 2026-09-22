@@ -1,0 +1,12 @@
+{
+  "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+  "viewport": "390-mobile",
+  "checks": {
+    "horizontal_overflow": false,
+    "unlabeled_button_count": 0,
+    "inputs_without_labels": 8,
+    "has_h1": false,
+    "browser_content_untrusted": true
+  },
+  "note": "Automated heuristics supplement, not replace, visual inspection and axe/manual accessibility review."
+}

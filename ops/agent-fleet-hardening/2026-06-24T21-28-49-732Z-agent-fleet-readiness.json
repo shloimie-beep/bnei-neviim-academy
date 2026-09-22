@@ -1,0 +1,213 @@
+{
+  "generated_at": "2026-06-24T21:28:49.731Z",
+  "requirement_id": "REQ-20260624-045",
+  "report_version": "bna-agent-fleet-readiness-v1",
+  "ok": true,
+  "permission_tiers": {
+    "tier_0": {
+      "id": 0,
+      "label": "Tier 0",
+      "name": "read_audit_test_report",
+      "summary": "Read-only audit, local status, local tests, dry-run previews, reports, and evidence capture.",
+      "automatic": true
+    },
+    "tier_1": {
+      "id": 1,
+      "label": "Tier 1",
+      "name": "local_code_and_draft_pr",
+      "summary": "Local code edits, local tests, isolated worktrees/branches, commits, pushes, and draft PR preparation after lane ownership is declared.",
+      "automatic": true
+    },
+    "tier_2": {
+      "id": 2,
+      "label": "Tier 2",
+      "name": "release_deploy_live_smoke",
+      "summary": "Merge, deploy, Railway doctor, and live-smoke release work only after parent release gates authorize it.",
+      "automatic": false,
+      "requires_parent_gate": true
+    },
+    "tier_3": {
+      "id": 3,
+      "label": "Tier 3",
+      "name": "external_or_production_mutation",
+      "summary": "Sends, charges, refunds, DNS, public publishing, account permission changes, credential changes, production data mutation, Drive writes, and class backfill.",
+      "automatic": false,
+      "requires_explicit_decision": true,
+      "blocked_by_default": true
+    }
+  },
+  "permission_lines": [
+    "- Tier 0: Read-only audit, local status, local tests, dry-run previews, reports, and evidence capture.",
+    "- Tier 1: Local code edits, local tests, isolated worktrees/branches, commits, pushes, and draft PR preparation after lane ownership is declared.",
+    "- Tier 2: Merge, deploy, Railway doctor, and live-smoke release work only after parent release gates authorize it.",
+    "- Tier 3: Sends, charges, refunds, DNS, public publishing, account permission changes, credential changes, production data mutation, Drive writes, and class backfill."
+  ],
+  "permission_checks": [
+    {
+      "command": "npm test",
+      "tier": 0,
+      "tier_key": "tier_0",
+      "allowed_without_decision": true,
+      "blocked_by_default": false,
+      "reason": "read/audit/test/report command"
+    },
+    {
+      "command": "git commit -m \"checkpoint\"",
+      "tier": 1,
+      "tier_key": "tier_1",
+      "allowed_without_decision": true,
+      "blocked_by_default": false,
+      "reason": "local implementation or draft-PR command"
+    },
+    {
+      "command": "npm run railway:doctor",
+      "tier": 2,
+      "tier_key": "tier_2",
+      "allowed_without_decision": false,
+      "blocked_by_default": false,
+      "requires_parent_gate": true,
+      "reason": "release/deploy/live-smoke command requires parent release gate"
+    },
+    {
+      "command": "APPLY_GUARDED_CLASS_BACKFILL=true npm run class:backfill",
+      "tier": 3,
+      "tier_key": "tier_3",
+      "allowed_without_decision": false,
+      "blocked_by_default": true,
+      "reason": "matches external write, production mutation, credential/account, send, charge, publish, Drive write, or class backfill guard"
+    },
+    {
+      "command": "node scripts/send-parent-update.mjs --send",
+      "tier": 3,
+      "tier_key": "tier_3",
+      "allowed_without_decision": false,
+      "blocked_by_default": true,
+      "reason": "matches external write, production mutation, credential/account, send, charge, publish, Drive write, or class backfill guard"
+    }
+  ],
+  "startup_shortcuts": [
+    {
+      "action": "start",
+      "command": "cd C:\\Users\\User\\Documents\\Codex\\2026-06-24\\issue-20-parent-run ; npm run agent:fleet:start",
+      "expected": "starts hidden watcher under the current Windows login with bounded retries"
+    },
+    {
+      "action": "stop",
+      "command": "cd C:\\Users\\User\\Documents\\Codex\\2026-06-24\\issue-20-parent-run ; powershell -ExecutionPolicy Bypass -File scripts/start-agent-fleet.ps1 -Stop",
+      "expected": "stops only the PID recorded in the agent-fleet lock"
+    },
+    {
+      "action": "restart",
+      "command": "cd C:\\Users\\User\\Documents\\Codex\\2026-06-24\\issue-20-parent-run ; npm run agent:fleet:restart",
+      "expected": "stops the recorded PID, clears stale lock, and starts with bounded retries"
+    },
+    {
+      "action": "status",
+      "command": "cd C:\\Users\\User\\Documents\\Codex\\2026-06-24\\issue-20-parent-run ; npm run agent:fleet:status",
+      "expected": "reads local lock plus API queue/status when credentials are available"
+    },
+    {
+      "action": "open_log",
+      "command": "cd C:\\Users\\User\\Documents\\Codex\\2026-06-24\\issue-20-parent-run ; powershell -ExecutionPolicy Bypass -File scripts/start-agent-fleet.ps1 -OpenLog",
+      "expected": "opens local output/error logs without printing secrets into chat"
+    },
+    {
+      "action": "watchdog_start",
+      "command": "cd C:\\Users\\User\\Documents\\Codex\\2026-06-24\\issue-20-parent-run ; npm run watchdog:start",
+      "expected": "starts watchdog mode on the existing supervisor script"
+    },
+    {
+      "action": "watchdog_stop",
+      "command": "cd C:\\Users\\User\\Documents\\Codex\\2026-06-24\\issue-20-parent-run ; powershell -ExecutionPolicy Bypass -File scripts/start-watchdog.ps1 -Stop",
+      "expected": "stops only the watchdog PID recorded in its lock"
+    },
+    {
+      "action": "watchdog_status",
+      "command": "cd C:\\Users\\User\\Documents\\Codex\\2026-06-24\\issue-20-parent-run ; npm run watchdog:status",
+      "expected": "reads watchdog lock plus API runtime status when credentials are available"
+    }
+  ],
+  "parent_coordination_audit": {
+    "ok": true,
+    "generated_at": "2026-06-24T21:28:49.644Z",
+    "finding_count": 0,
+    "findings": [],
+    "counts": {
+      "requirements": 9,
+      "tasks": 6,
+      "lanes": 8
+    }
+  },
+  "synthetic_proof": {
+    "synthetic_id": "51db2f8fb2ce22e1",
+    "external_write_performed": false,
+    "stages": {
+      "github_intake_preview": {
+        "trusted_source": true,
+        "idempotency_key": "c3ff468c52eebf82712b3b1634d1e21162f9689cfd46c095ecc19df42fc7bf90"
+      },
+      "claim_preview": {
+        "agent_job_id": 77045,
+        "task_id": 45045,
+        "claim_status": "would_claim_without_production_mutation"
+      },
+      "worktree_preview": {
+        "worktree": "C:\\Users\\User\\Documents\\Codex\\2026-06-24\\issue-20-parent-run",
+        "branch": "codex/issue-20-parent-run-20260624",
+        "commit": "332a445a4239"
+      },
+      "result_api_preview": {
+        "success": true,
+        "executed": false,
+        "dry_run": true,
+        "idempotency_key": "agent-result:synthetic:51db2f8fb2ce22e1",
+        "external_write_performed": false
+      },
+      "operations_activity_preview": {
+        "evidence_links": [
+          {
+            "label": "latest-agent-fleet-readiness.md",
+            "kind": "repo_file",
+            "repo_path": "ops/agent-fleet-hardening/latest-agent-fleet-readiness.md",
+            "url": null,
+            "status": "valid"
+          }
+        ],
+        "github_links": [
+          {
+            "label": "GitHub issue",
+            "kind": "github_issue",
+            "url": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/20",
+            "status": "unchecked"
+          },
+          {
+            "label": "GitHub comment",
+            "kind": "github_comment",
+            "url": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/20#issuecomment-999045",
+            "status": "unchecked"
+          }
+        ],
+        "would_render_activity_links": true
+      },
+      "github_status_preview": {
+        "idempotency_key": "bna-github-status:3447b354b597b5cdc76a3ddb65dde5f1",
+        "target_url": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/20#issuecomment-999045",
+        "would_create_comment": true,
+        "would_update_comment": false,
+        "external_write_performed": false
+      },
+      "parent_closeout_preview": {
+        "requirement_id": "REQ-20260624-045",
+        "terminal_status_if_real": "done_or_blocked_after_validation",
+        "parent_run_not_marked_complete": true
+      }
+    }
+  },
+  "guardrails": [
+    "No second agent fleet created.",
+    "No production mutation.",
+    "No deploy/live smoke.",
+    "No GitHub status comment posted.",
+    "No send, charge, DNS, credential, Drive write, account-permission, public-publish, or class-backfill action."
+  ]
+}

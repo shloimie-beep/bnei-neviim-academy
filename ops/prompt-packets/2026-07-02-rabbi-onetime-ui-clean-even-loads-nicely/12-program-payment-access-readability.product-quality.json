@@ -1,0 +1,677 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-814",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-004",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802",
+      "PKT-20260702-805",
+      "PKT-20260702-806",
+      "PKT-20260702-807",
+      "PKT-20260702-808",
+      "PKT-20260702-809",
+      "PKT-20260702-810",
+      "PKT-20260702-811",
+      "PKT-20260702-812",
+      "PKT-20260702-813"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-participants-readability/screenshots/operations-access-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-participants-readability/screenshots/operations-access-390-mobile.png",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "produces": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/report.md",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/12-program-payment-access-readability.product-quality.json",
+    "terminal_condition": "The One Time Program Payment / Access route renders contained tabs, readable access roster text, and a compact command-bot empty state on desktop and mobile without changing payment, payout, access-sync, connector, CRM, API, or bot behavior.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Program Payment Access Readability Cleanup",
+  "created_at": "2026-07-03T00:08:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "PAYMENT_PROVIDER_SETUP"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "PAYMENTS_ACCESS",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.9,
+    "reasons": [
+      "Fresh screenshots show the Program tab rail clipped on desktop and mobile.",
+      "The Payment / Access table card is forced into a side column with dark-on-dark table text.",
+      "The Command Bot Actions empty panel is large and bright, dominating the payment/access route."
+    ],
+    "affected_product_surfaces": [
+      "One Time Operations Program Payment / Access route"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "Payment, payout, Stripe, access-sync, checkout, connector setup, and live access grants are out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state",
+      "06-task-dialogue-lane-contrast",
+      "07-task-route-layout-density",
+      "08-provider-review-load-error",
+      "09-student-review-mobile-readability",
+      "10-automation-center-readability",
+      "11-participants-members-readability",
+      "12-program-payment-access-readability"
+    ],
+    "next_exact_packet": "After this payment/access readability cleanup, continue manual screenshot-reviewed packets for CRM contact detail polish, IA/nav/filter cleanup, or remaining portal defects."
+  },
+  "operator_intent_summary": "Make the One Time Program Payment / Access route feel even and clean by fixing clipped tabs, unreadable access table text, and oversized empty command-bot presentation.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "even",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No payment, payout, Stripe, checkout, access-sync, access grant, member entitlement, connector setup, CRM/contact, bot preview, typed action, API, route access, or helper behavior change.",
+    "No email, WhatsApp, Telegram, Drive, Vimeo, Zoom, DNS, account, campaign, external CRM write, external send/publish/upload/payment, raw private evidence, or secret exposure.",
+    "No GHL runtime or LeadConnector reference."
+  ],
+  "affected_surfaces": [
+    "One Time Operations Program Payment / Access route"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "public/css/one-time-operations.css",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/operations.html renderProviderProgramWorkspace",
+      "public/operations.html renderProviderAccessPanel",
+      "public/operations.html renderTopFilterRail",
+      "public/operations.html renderCommandBotPanel",
+      "public/css/one-time-operations.css One Time Operations route overrides",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-participants-readability/screenshots/operations-access-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-participants-readability/screenshots/operations-access-390-mobile.png"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "The Program subtab rail clips tabs at the right edge on desktop and mobile.",
+      "The Payment / Access table header and row text are dark-on-dark and hard to read.",
+      "The payment/access card is forced into a narrow side column by the inherited dashboard grid.",
+      "The Command Bot Actions empty panel is bright, oversized, and visually louder than the payment/access readiness content."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "even",
+      "loads nicely",
+      "payment/access"
+    ],
+    "expanded_phrases": {
+      "clean": "The payment/access route should read like a compact Operations readiness view, not a mix of clipped navigation, hidden table text, and a dominant empty bot panel.",
+      "even": "Top tabs, heading, access table, guardrail copy, and command-bot empty state should align within a consistent One Time admin surface.",
+      "loads nicely": "Once data loads, the route should immediately show a readable Payment / Access title, contained tabs, readable access row text, and an empty command-bot state that does not overpower the page.",
+      "payment/access": "For this packet, payment/access means read-only local Operations readiness display only. It does not enable checkout, charge, payout, access sync, Stripe, connector setup, member entitlement changes, or live access grants.",
+      "CRM": "For this packet, CRM appears only as an out-of-scope first-party BNA Operations data boundary. No CRM/contact data model, import, external CRM runtime, send, or mutation work is included."
+    },
+    "first_party_pattern_interpretation": "The payment/access route remains a first-party BNA Operations provider-readiness view scoped to rabbi_sheller_provider / one_time_mishnah_class."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-814",
+      "statement": "Fix One Time Program Payment / Access readability so the Program subtab rail is contained, the access table text is readable, and the command-bot empty state no longer dominates the route.",
+      "expected_result": "Desktop and mobile payment/access screenshots show wrapped/contained tabs, readable table headers and row text, and a compact dark command-bot empty state with no horizontal overflow.",
+      "acceptance_criteria": [
+        "The provider program route has a scoped One Time route marker for CSS targeting.",
+        "The One Time Program top filter rail wraps or contains all tabs on desktop and mobile without clipping text.",
+        "Payment / Access table headers, row values, section counters, and disabled/no-sync guardrail copy are readable in the One Time dark theme.",
+        "The Command Bot Actions empty state is visually quiet and proportionate to the access content.",
+        "Payment/access behavior, CRM/contact data, command bot actions, APIs, action registry, route access, and external-provider guardrails are unchanged."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and broad UI cleanup register exist for RAW-20260702-008.",
+      "Current screenshot evidence shows the payment/access clipping and readability defects.",
+      "The likely fix is scoped to route marker markup and One Time Operations CSS overrides.",
+      "No payment, access, external provider, credential, connector, account, or legal/financial decision is required for local visual implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the payment/access route before provider data finishes loading.",
+      "expected_visible_title": "Payment / Access",
+      "expected_visible_message": "Loading BNA Operations",
+      "expected_primary_action": "Open Schedule",
+      "expected_secondary_actions": [
+        "Ask / Search",
+        "Menu"
+      ],
+      "forbidden_content": [
+        "clipped top tabs",
+        "dark-on-dark access table"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The Operations shell keeps one visible h1 and readable route heading.",
+      "accessibility_expectation": "Loading and loaded states are readable.",
+      "test_smoke_assertion": "Audit waits for loading shell to clear before screenshot capture.",
+      "requirement_id": "REQ-20260702-814"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load payment/access route with no typed bot actions.",
+      "expected_visible_title": "Payment / Access",
+      "expected_visible_message": "No typed actions are registered for this page yet.",
+      "expected_primary_action": "Open Schedule",
+      "expected_secondary_actions": [
+        "Ask / Search"
+      ],
+      "forbidden_content": [
+        "oversized bright empty command-bot panel"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty bot state remains inside the Command Bot Actions section.",
+      "accessibility_expectation": "Empty-state text remains readable without dominating the page.",
+      "test_smoke_assertion": "Command bot empty-state bounds fit within the route content.",
+      "requirement_id": "REQ-20260702-814"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+      "viewport": 1024,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load route with one or more provider access rows.",
+      "expected_visible_title": "Payment / Access",
+      "expected_visible_message": "participants",
+      "expected_primary_action": "Open Schedule",
+      "expected_secondary_actions": [
+        "Launch / Checkout",
+        "Mishnayos Membership",
+        "Membership Tiers"
+      ],
+      "forbidden_content": [
+        "table headers hidden by dark text",
+        "tabs clipped at right edge"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Access table remains a table with visible headers.",
+      "accessibility_expectation": "Headers and row text meet readable contrast.",
+      "test_smoke_assertion": "No console/page errors on payment/access route.",
+      "requirement_id": "REQ-20260702-814"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile payment/access route.",
+      "expected_visible_title": "Payment / Access",
+      "expected_visible_message": "1 participants",
+      "expected_primary_action": "Payment / Access",
+      "expected_secondary_actions": [
+        "Program Overview",
+        "Launch / Checkout"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "partially cut tab labels"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Tab buttons retain role and selected state.",
+      "accessibility_expectation": "Tab labels are visible or wrapped within the rail.",
+      "test_smoke_assertion": "Mobile screenshot has no horizontal overflow.",
+      "requirement_id": "REQ-20260702-814"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Provider/access data fails or returns empty data.",
+      "expected_visible_title": "Payment / Access",
+      "expected_visible_message": "No payment",
+      "expected_primary_action": "Open Schedule",
+      "expected_secondary_actions": [
+        "Ask / Search"
+      ],
+      "forbidden_content": [
+        "raw private payload",
+        "unreadable error/empty state"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty/error text remains visible in the route flow.",
+      "accessibility_expectation": "Error/empty state is not visually obscured.",
+      "test_smoke_assertion": "Console/network errors are recorded in audit but page layout remains readable.",
+      "requirement_id": "REQ-20260702-814"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Render payment/access route where payment/access sync remains gated.",
+      "expected_visible_title": "Payment / Access",
+      "expected_visible_message": "No payment, payout, or access sync fires",
+      "expected_primary_action": "Open Schedule",
+      "expected_secondary_actions": [
+        "Launch / Checkout"
+      ],
+      "forbidden_content": [
+        "payment/access actions appearing enabled"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Guardrail copy remains visible.",
+      "accessibility_expectation": "Guardrail copy is readable on dark surface.",
+      "test_smoke_assertion": "No payment, payout, connector, or access mutation is triggered.",
+      "requirement_id": "REQ-20260702-814"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Command bot panel renders preview-only or no typed actions.",
+      "expected_visible_title": "Command Bot Actions",
+      "expected_visible_message": "Sensitive actions require approval",
+      "expected_primary_action": "Preview",
+      "expected_secondary_actions": [
+        "Ask / Search"
+      ],
+      "forbidden_content": [
+        "bright empty card overpowering access panel"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Command bot section remains a section with heading.",
+      "accessibility_expectation": "Preview/no-action state remains readable.",
+      "test_smoke_assertion": "No bot mutation is triggered.",
+      "requirement_id": "REQ-20260702-814"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Provider access rows and counts load successfully.",
+      "expected_visible_title": "Payment / Access",
+      "expected_visible_message": "1 participants",
+      "expected_primary_action": "Open Schedule",
+      "expected_secondary_actions": [
+        "Program Overview",
+        "Launch / Checkout",
+        "Questions / Posts"
+      ],
+      "forbidden_content": [
+        "clipped rail",
+        "dark-on-dark table"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Toolbar tabs and access table keep semantic structure.",
+      "accessibility_expectation": "Counts, rows, and guardrail text are readable.",
+      "test_smoke_assertion": "Full route audit reports findings_count=0.",
+      "requirement_id": "REQ-20260702-814"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+      "viewport": 390,
+      "auth_role": "logged_out_or_wrong_scope",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Operations without an authorized session.",
+      "expected_visible_title": "BNA Operations",
+      "expected_visible_message": "Sign in",
+      "expected_primary_action": "Sign in",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "private payment/access metadata"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Login controls retain labels.",
+      "accessibility_expectation": "Route-specific CSS does not expose or distort the login state.",
+      "test_smoke_assertion": "Private route access remains unchanged.",
+      "requirement_id": "REQ-20260702-814"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile menu/helper while on the Payment / Access route.",
+      "expected_visible_title": "Payment / Access",
+      "expected_visible_message": "Provider Workspace Admin",
+      "expected_primary_action": "Menu",
+      "expected_secondary_actions": [
+        "Ask",
+        "Open Schedule"
+      ],
+      "forbidden_content": [
+        "route content hidden behind closed helper",
+        "horizontal overflow"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile controls preserve aria states.",
+      "accessibility_expectation": "Route content stays readable before and after mobile chrome controls.",
+      "test_smoke_assertion": "Full mobile audit screenshot is non-overlapping.",
+      "requirement_id": "REQ-20260702-814"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+        "viewport": 1440,
+        "state": "success_readback",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+        "viewport": 1024,
+        "state": "populated",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+        "viewport": 768,
+        "state": "filtered_empty",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+        "viewport": 430,
+        "state": "mobile_drawer_or_detail_state",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+        "viewport": 390,
+        "state": "mobile_drawer_or_detail_state",
+        "required": true
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260702-814-001",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-participants-readability/screenshots/operations-access-390-mobile.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/screenshots/operations-access-390-mobile.png",
+        "defect_codes": [
+          "VQ-LAYOUT-001",
+          "VQ-CONTRAST-001",
+          "VQ-TEXT-001"
+        ],
+        "severity": "P1",
+        "user_impact": "The route looks unfinished because tabs are cut off, the access table is hard to read, and the empty bot panel overpowers the payment/access readiness content.",
+        "expected_fix": "Add a route marker and scoped One Time program CSS for wrapping tabs, readable access table/guardrail surface, and compact command-bot empty state.",
+        "requirement_id": "REQ-20260702-814"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Program subtab labels remain visible and selected tab state remains clear.",
+      "Payment / Access table headers and row values meet readable contrast.",
+      "No payment/access action appears enabled by the visual cleanup."
+    ],
+    "test_expectations": [
+      "Audit has missing_h1=0.",
+      "Audit has visible unlabeled controls=0.",
+      "Payment/access screenshot/probe reports no horizontal overflow or clipped active tab label."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Program top tabs",
+      "selector_or_action_key": "[data-top-filter-rail][data-current-module=\"service_providers\"] .ops-filter-tab",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations Program",
+      "external_write": false,
+      "handler_or_blocker": "Existing setCurrentSection handler; unchanged by this packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Open Schedule",
+      "selector_or_action_key": "setCurrentSection('schedule')",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations Program",
+      "external_write": false,
+      "handler_or_blocker": "Existing primary route action; unchanged by this packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Payment / Access row display",
+      "selector_or_action_key": "renderProviderAccessPanel()",
+      "action_state": "DISABLED_NOT_IN_SCOPE",
+      "owner": "One Time Operations Program",
+      "external_write": false,
+      "handler_or_blocker": "Display-only table; payments/access sync remain explicitly disabled.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "read_paths": [
+      "Existing Operations provider/access data loaders"
+    ],
+    "write_paths": [],
+    "fixtures_or_seed": [
+      "Existing local One Time review/audit fixtures"
+    ],
+    "data_privacy_notes": [
+      "Use redacted local audit screenshots only.",
+      "Do not commit raw private participant/contact/payment data, secrets, or account data."
+    ],
+    "unchanged_contracts": [
+      "Provider access row shape",
+      "Service provider subtab ids",
+      "Command bot supported action filtering",
+      "Route access and workspace scoping"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "privacy_scope": "Private Operations view scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+    "forbidden_data": [
+      "Raw private contact/student/parent/provider/payment data",
+      "Secrets, API keys, tokens, session cookies, or account identifiers",
+      "External send/publish/charge/access-grant proof"
+    ],
+    "required_checks": [
+      "No payment, payout, checkout, or access-sync write.",
+      "No command bot mutation.",
+      "No new GHL/LeadConnector runtime.",
+      "No route access behavior change."
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-REQ-20260702-814-A",
+      "scope": "Add route marker and scoped One Time Program Payment / Access CSS overrides.",
+      "files_allowed": [
+        "public/operations.html",
+        "public/css/one-time-operations.css"
+      ],
+      "verification": [
+        "PQC validation",
+        "local One Time smoke test",
+        "full Rabbi / One Time current-state audit",
+        "watchdog:actions",
+        "watchdog:protocol-drift"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 5,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "This packet only covers the Program Payment / Access route visuals. Payment setup, checkout, access grants, billing copy, CRM detail redesign, and connector decisions must split into later packets.",
+    "split_if_exceeds": true,
+    "context_risk_level": "low"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/12-program-payment-access-readability.product-quality.json",
+      "expected_result": "Product Quality packet passes validation."
+    },
+    {
+      "command": "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "expected_result": "One Time review routes still pass without console/page errors or external writes."
+    },
+    {
+      "command": "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:8095 --out=ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability",
+      "expected_result": "Full local visual audit captures 75 screenshots with no automated findings."
+    },
+    {
+      "command": "npm run watchdog:actions",
+      "expected_result": "Action registry watchdog remains finding_count 0."
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "expected_result": "Protocol drift watchdog remains findings 0."
+    }
+  ],
+  "evidence": {
+    "before": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-participants-readability/screenshots/operations-access-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-participants-readability/screenshots/operations-access-390-mobile.png"
+    ],
+    "after_required": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/screenshots/operations-access-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/screenshots/operations-access-390-mobile.png"
+    ],
+    "record_updates": [
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Route marker and scoped CSS are implemented.",
+      "Local screenshots show contained Program tabs, readable payment/access table text, and compact command-bot empty state on desktop/mobile.",
+      "Payment/access, connector, bot, API, and route access behavior are unchanged.",
+      "Watchdogs pass and records are updated."
+    ],
+    "terminal_status": "local_verified_deploy_live_smoke_blocked_until_DEC-20260702-801"
+  },
+  "trace": {
+    "raw_id": "RAW-20260702-008",
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/12-program-payment-access-readability.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "npm run pqc:validate",
+      "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "node scripts/audit-rabbi-onetime-current-state.mjs",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "skipped_actions_policy": "No external provider, payment, payout, checkout, access grant, CRM import/write, send, upload, DNS, account, bot mutation, or production deploy action in this local packet.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/screenshots/operations-access-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/screenshots/operations-access-390-mobile.png"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "requirement_ids": [
+      "REQ-20260702-814"
+    ],
+    "decision_ids": [
+      "DEC-20260702-801"
+    ],
+    "ledger_event": "rabbi_onetime_payment_access_readability_verified_local"
+  },
+  "drift_watchdog": {
+    "command": "npm run watchdog:protocol-drift",
+    "required": true,
+    "expected_result": "findings=0",
+    "record_report": true,
+    "blocker_policy": "If unrelated historical drift appears, record it separately and do not mark this packet terminally done without explaining scope."
+  },
+  "next_packet": {
+    "recommended": "Continue manual screenshot-reviewed cleanup for CRM contact detail polish, IA/nav/filter cleanup, or remaining One Time portal defects.",
+    "path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "app_visible": true
+}

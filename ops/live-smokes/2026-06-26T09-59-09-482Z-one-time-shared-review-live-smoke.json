@@ -1,0 +1,273 @@
+{
+  "started_at": "2026-06-26T09:59:09.482Z",
+  "app_url": "https://bneineviimacademy.org",
+  "routes": [
+    {
+      "label": "landing",
+      "path": "/one-time/"
+    },
+    {
+      "label": "provider",
+      "path": "/provider.html?review=one-time"
+    },
+    {
+      "label": "parent",
+      "path": "/parent.html?review=one-time"
+    },
+    {
+      "label": "student",
+      "path": "/student.html?review=one-time"
+    },
+    {
+      "label": "classroom",
+      "path": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS"
+    },
+    {
+      "label": "email",
+      "path": "/one-time-email-review.html"
+    },
+    {
+      "label": "operations",
+      "path": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview"
+    }
+  ],
+  "viewports": [
+    {
+      "name": "mobile390",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "tablet768",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "desktop1440",
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "auth_source": "railway",
+  "checks": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 558,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "landing mobile390",
+      "ok": true,
+      "duration_ms": 4887,
+      "details": {
+        "title": "Learn Mishnayos Live with Rabbi Eli Scheller",
+        "bytes": 3799,
+        "image_count": 9
+      }
+    },
+    {
+      "name": "provider mobile390",
+      "ok": true,
+      "duration_ms": 2033,
+      "details": {
+        "title": "OneTimeOneTime Rabbi Workspace Review",
+        "bytes": 1351,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "parent mobile390",
+      "ok": true,
+      "duration_ms": 2127,
+      "details": {
+        "title": "OneTimeOneTime Parent Review",
+        "bytes": 1710,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "student mobile390",
+      "ok": true,
+      "duration_ms": 2163,
+      "details": {
+        "title": "OneTimeOneTime Student Review",
+        "bytes": 2301,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "classroom mobile390",
+      "ok": true,
+      "duration_ms": 2045,
+      "details": {
+        "title": "One Time Mishnah Classroom",
+        "bytes": 2058,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "email mobile390",
+      "ok": true,
+      "duration_ms": 1502,
+      "details": {
+        "title": "One Time Email Review",
+        "bytes": 8424,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "operations mobile390",
+      "ok": true,
+      "duration_ms": 6003,
+      "details": {
+        "title": "One Time Mishnah Class - Operations",
+        "bytes": 1962,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "landing tablet768",
+      "ok": true,
+      "duration_ms": 2084,
+      "details": {
+        "title": "Learn Mishnayos Live with Rabbi Eli Scheller",
+        "bytes": 3824,
+        "image_count": 9
+      }
+    },
+    {
+      "name": "provider tablet768",
+      "ok": true,
+      "duration_ms": 1957,
+      "details": {
+        "title": "OneTimeOneTime Rabbi Workspace Review",
+        "bytes": 1351,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "parent tablet768",
+      "ok": true,
+      "duration_ms": 2293,
+      "details": {
+        "title": "OneTimeOneTime Parent Review",
+        "bytes": 1710,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "student tablet768",
+      "ok": true,
+      "duration_ms": 2709,
+      "details": {
+        "title": "OneTimeOneTime Student Review",
+        "bytes": 2301,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "classroom tablet768",
+      "ok": true,
+      "duration_ms": 1728,
+      "details": {
+        "title": "One Time Mishnah Classroom",
+        "bytes": 2058,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "email tablet768",
+      "ok": true,
+      "duration_ms": 1337,
+      "details": {
+        "title": "One Time Email Review",
+        "bytes": 8424,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "operations tablet768",
+      "ok": true,
+      "duration_ms": 5385,
+      "details": {
+        "title": "One Time Mishnah Class - Operations",
+        "bytes": 1962,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "landing desktop1440",
+      "ok": true,
+      "duration_ms": 2119,
+      "details": {
+        "title": "Learn Mishnayos Live with Rabbi Eli Scheller",
+        "bytes": 3824,
+        "image_count": 9
+      }
+    },
+    {
+      "name": "provider desktop1440",
+      "ok": true,
+      "duration_ms": 1914,
+      "details": {
+        "title": "OneTimeOneTime Rabbi Workspace Review",
+        "bytes": 1353,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "parent desktop1440",
+      "ok": true,
+      "duration_ms": 2250,
+      "details": {
+        "title": "OneTimeOneTime Parent Review",
+        "bytes": 1733,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "student desktop1440",
+      "ok": true,
+      "duration_ms": 2180,
+      "details": {
+        "title": "OneTimeOneTime Student Review",
+        "bytes": 2323,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "classroom desktop1440",
+      "ok": true,
+      "duration_ms": 1825,
+      "details": {
+        "title": "One Time Mishnah Classroom",
+        "bytes": 2058,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "email desktop1440",
+      "ok": true,
+      "duration_ms": 1334,
+      "details": {
+        "title": "One Time Email Review",
+        "bytes": 8424,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "operations desktop1440",
+      "ok": true,
+      "duration_ms": 5189,
+      "details": {
+        "title": "One Time Mishnah Class - Operations",
+        "bytes": 2448,
+        "image_count": 2
+      }
+    }
+  ]
+}

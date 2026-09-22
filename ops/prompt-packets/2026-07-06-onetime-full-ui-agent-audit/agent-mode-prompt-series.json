@@ -1,0 +1,54 @@
+{
+  "packet_id": "onetime-full-ui-agent-audit-prompts-20260706-911",
+  "raw_id": "RAW-20260706-911",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "canonical_target": "https://join.onetimeonetime.com/",
+  "preview_target": "https://bneineviimacademy.org/one-time/",
+  "dropoff_mode": "repo_file_packet_preferred_github_comment_fallback",
+  "prompt_order": [
+    {
+      "file": "01-control-tower-current-state-agent-mode.md",
+      "packet_id": "onetime-ui-audit-20260706-911-control-tower",
+      "run_order": 1,
+      "parallel_group": "control",
+      "purpose": "Create route/surface map and coordinate child audits."
+    },
+    {
+      "file": "02-public-funnel-agent-mode.md",
+      "packet_id": "onetime-ui-audit-20260706-911-public-funnel",
+      "run_order": 2,
+      "parallel_group": "surface-audits",
+      "purpose": "Audit public One Time funnel, signup/member paths, CTAs, and public privacy."
+    },
+    {
+      "file": "03-rabbi-operations-backend-agent-mode.md",
+      "packet_id": "onetime-ui-audit-20260706-911-rabbi-operations",
+      "run_order": 2,
+      "parallel_group": "surface-audits",
+      "purpose": "Audit logged-in Rabbi Operations/backend IA, filters, tabs, toolbar, WhatsApp scope, Studio, and action states."
+    },
+    {
+      "file": "04-portals-classroom-agent-mode.md",
+      "packet_id": "onetime-ui-audit-20260706-911-portals-classroom",
+      "run_order": 2,
+      "parallel_group": "surface-audits",
+      "purpose": "Audit provider/member/parent/student/classroom/email review portals."
+    },
+    {
+      "file": "05-cross-system-consistency-agent-mode.md",
+      "packet_id": "onetime-ui-audit-20260706-911-cross-system-synthesis",
+      "run_order": 3,
+      "parallel_group": "synthesis",
+      "purpose": "Deduplicate findings and compile small implementation-ready Codex repair packets."
+    }
+  ],
+  "hard_limits": [
+    "no source edits",
+    "no deploys",
+    "no WhatsApp/email/Telegram sends",
+    "no payments or access grants",
+    "no DNS, credential, provider-account, Drive, or production-data mutations",
+    "no passwords, cookies, API keys, raw private contact exports, raw WhatsApp bodies, raw transcript bodies, payment data, or unredacted private screenshots"
+  ]
+}

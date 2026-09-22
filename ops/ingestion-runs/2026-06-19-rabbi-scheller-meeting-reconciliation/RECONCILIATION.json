@@ -1,0 +1,106 @@
+{
+  "reconciliation_run_id": "2026-06-19-rabbi-scheller-meeting-reconciliation",
+  "generated_at": "2026-06-19T08:38:00Z",
+  "external_write_performed": false,
+  "production_mutation_performed": false,
+  "raw_private_text_committed": false,
+  "new_visible_records_created": 0,
+  "new_task_rows_inserted": 0,
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "newest_candidate": {
+    "status": "already_parsed",
+    "source_new_or_existing": "existing_already_parsed",
+    "drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+    "filename": "2026-06-18-rabbi-elie-scheller.md",
+    "mime_type": "text/markdown",
+    "size": 17954,
+    "created_time": "2026-06-18T17:16:22.555Z",
+    "modified_time": "2026-06-18T17:16:21.504Z",
+    "sha256": "023c6c44dde92f7c460ca999c1f16143257928531d4609c2ac1aac4a95eb423b",
+    "drive_md5_available": false
+  },
+  "drive_search_evidence": [
+    {
+      "method": "search",
+      "query": "Scheller",
+      "top_result_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+      "top_result_modified_time": "2026-06-18T17:16:21.504Z"
+    },
+    {
+      "method": "search",
+      "query": "",
+      "special_filter_query_str": "modifiedTime > '2026-06-18T17:16:21' and trashed = false and mimeType != 'application/vnd.google-apps.folder'",
+      "result_count": 1,
+      "only_relevant_result_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI"
+    },
+    {
+      "method": "recent_documents",
+      "top_k": 30,
+      "newest_relevant_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+      "newest_relevant_modified_time": "2026-06-18T17:16:21.504Z"
+    }
+  ],
+  "prior_ingestion_evidence": {
+    "ingestion_run_id": "2026-06-19-one-time-drive-brief-dry-run",
+    "source_path": "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/SOURCE.md",
+    "parse_path": "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/PARSE.json",
+    "created_or_updated_path": "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/CREATED-OR-UPDATED.json",
+    "duplicates_path": "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/DUPLICATES.json",
+    "verification_path": "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/VERIFICATION.md",
+    "raw_text_present": false,
+    "raw_text_committed_to_git": false
+  },
+  "proposed_item_counts_from_prior_parse": {
+    "decisions": 17,
+    "tasks": 17,
+    "calendar_events": 17,
+    "content_items": 2,
+    "community_records": 1,
+    "integration_items": 9,
+    "notes": 1,
+    "total": 64
+  },
+  "classification_counts": {
+    "source_candidates": {
+      "already_satisfied": 1,
+      "duplicate": 0,
+      "partially_implemented": 0,
+      "missing": 0,
+      "blocked": 0,
+      "needs_operator_decision": 0,
+      "supersedes_existing": 0,
+      "unrelated_bna_data": 0
+    },
+    "proposed_records": {
+      "already_satisfied_by_existing_parse": 64,
+      "duplicate": 0,
+      "partially_implemented": 0,
+      "missing": 0,
+      "blocked": 0,
+      "needs_operator_decision": 0,
+      "supersedes_existing": 0,
+      "unrelated_bna_data": 0
+    }
+  },
+  "dedupe_result": {
+    "exact_source_already_parsed": true,
+    "duplicate_visible_cards_created": 0,
+    "production_database_write_attempted": false,
+    "duplicate_policy": "source_key plus record_key; update same record only after operator-approved reconciliation, never duplicate visible cards"
+  },
+  "routing_acceptance": {
+    "one_time_only": true,
+    "workspace_key": "rabbi_sheller_provider",
+    "project_key": "one_time_mishnah_class",
+    "default_bna_workspace_allowed": false,
+    "public_or_bna_school_records_created": 0,
+    "no_bna_school_tasks_into_one_time": true
+  },
+  "remaining_actions": [
+    {
+      "status": "needs_operator_decision",
+      "summary": "Operator must approve any future visible insertion/update of the 64 already parsed proposed records after reviewing the reconciliation packet."
+    }
+  ]
+}

@@ -1,0 +1,610 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260707-130",
+  "parent_raw_id": "RAW-20260707-013",
+  "source_statement_ids": [
+    "SRC-20260707-013-001",
+    "SRC-20260707-013-002",
+    "SRC-20260707-013-003",
+    "SRC-20260707-013-004",
+    "SRC-20260707-013-005",
+    "SRC-20260707-013-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260705-101",
+    "child_packet_ids": [
+      "PKT-20260707-134",
+      "PKT-20260707-135"
+    ],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260707-013-onetime-brand-helper-toolbar-isolation.md",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+      "public/one-time/index.html",
+      "public/js/bna-bot-widget.js",
+      "public/js/app-select.js",
+      "server.js"
+    ],
+    "produces": [
+      "public/one-time/index.html",
+      "public/js/bna-bot-widget.js",
+      "public/js/app-select.js",
+      "server.js",
+      "tests/one-time-brand-helper-isolation.test.js",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-07-onetime-brand-helper-toolbar-isolation/00-onetime-brand-helper-toolbar-isolation.product-quality.json",
+    "terminal_condition": "The public One Time landing page renders in the One Time black/yellow English-only scope, mounts One Time Helper, avoids BNA language/nav/dropdown bleed, and stores helper threads under one_time_mishnah_class.",
+    "handoff_target": "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "One Time Public Brand And Helper Isolation",
+  "created_at": "2026-07-07T19:05:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "PUBLIC_MARKETING"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260707-013",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY",
+      "DEPLOY_RELEASE"
+    ],
+    "confidence": 0.95,
+    "reasons": [
+      "The operator identified a concrete One Time public brand leak: BNA colors and Hebrew/English toggle behavior should not appear.",
+      "The operator requested the One Time helper on the actual landing page.",
+      "The operator also raised parent/student helper scope and toolbar density, which are captured as child packets rather than mixed into this public landing patch."
+    ],
+    "affected_product_surfaces": [
+      "One Time public landing and public helper"
+    ],
+    "likely_external_provider_blockers": [
+      "None for mounting/scoping the helper and local UI theme.",
+      "No email, Telegram, Stripe, billing, access, Zoom, Vimeo, Drive, DNS, or external send is approved in this packet."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-onetime-brand-helper-toolbar-isolation",
+      "01-onetime-parent-student-helper-scope",
+      "02-top-toolbar-filter-density-audit"
+    ],
+    "next_exact_packet": "After this public landing/helper isolation patch, create the parent/student helper-scope packet and top-toolbar/filter visual audit packet."
+  },
+  "operator_intent_summary": "One Time Mishnah must not inherit BNA brand chrome, BNA language controls, or BNA default component colors. The One Time helper should exist on the landing page and be scoped to One Time, while parent/student helper behavior and toolbar/filter density get separate scoped packets.",
+  "raw_quotes": [
+    "there shouldn't be any overlap between The Branding of DNA and one time mishna",
+    "the page like flashes that Hebrew English toggle in the BNA colors",
+    "there is no Hebrew English it's just in English",
+    "the one-time Mission class helper so that also should exist on the actual landing page",
+    "scoped for the student their scope for the parents",
+    "top toolbar with like these pills that just takes up two space too much space"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260707-130",
+      "decision": "Public landing helper isolation can ship first; authenticated parent/student helper scope must be a child packet.",
+      "status": "open"
+    },
+    {
+      "id": "DEC-20260707-131",
+      "decision": "Top toolbar and filter density needs a current-state visual audit before global layout changes.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No live parent/student login email send.",
+    "No billing, payment, Stripe, access grant, password reset, Zoom, Vimeo, Drive, WhatsApp, Telegram, DNS, or external-provider write.",
+    "No transcript RAG, Rabbi statement retrieval, attendance readback, or billing display implementation in this packet.",
+    "No global toolbar/filter/sidebar redesign across Operations, provider, parent, and student routes.",
+    "No Hebrew UI for One Time public landing."
+  ],
+  "affected_surfaces": [
+    "One Time public marketing landing",
+    "One Time public helper launcher/panel",
+    "One Time public select control styling"
+  ],
+  "affected_routes": [
+    "/one-time",
+    "/api/bna/assistant/chat"
+  ],
+  "affected_files": [
+    "public/one-time/index.html",
+    "public/js/bna-bot-widget.js",
+    "public/js/app-select.js",
+    "server.js",
+    "tests/one-time-brand-helper-isolation.test.js",
+    "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+    "ops/agent-task-ledger.jsonl",
+    "ops/agent-changelog.md"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/one-time/index.html has a One Time-specific black/yellow landing page and native region select but did not mount the helper widget.",
+      "public/js/bna-bot-widget.js only switches to One Time Helper on member/classroom/provider-participant surfaces.",
+      "public/js/app-select.js uses BNA-blue default styling unless a specific surface override exists.",
+      "server.js normalizes One Time member surfaces but not One Time public/helper role surface names."
+    ],
+    "known_blockers": [
+      "Broader parent/student helper data and transcript retrieval are blocked into a child packet.",
+      "Toolbar/filter density requires a current-state visual audit child packet."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "million-dollar app",
+      "overlap between branding",
+      "flashes",
+      "BNA colors",
+      "helper should exist",
+      "scoped for the student",
+      "scoped for the parents",
+      "top toolbar",
+      "pills takes up too much space",
+      "mobile",
+      "arranged in a nice way"
+    ],
+    "expanded_phrases": {
+      "million-dollar app": "Stable role-scoped IA, no brand bleed, equal controls, mobile/desktop proof, and no private-data leakage.",
+      "overlap between branding": "One Time public surfaces use black/yellow assets and copy, not BNA cream/navy/teal or BNA language controls.",
+      "flashes": "Shared component styling must be scoped before enhancement appears so first paint and enhanced state are both One Time-themed.",
+      "helper should exist": "The public helper scripts mount on /one-time and display One Time Helper copy.",
+      "scoped for the student": "Student helper transcript/class/library behavior belongs in a later authenticated student packet.",
+      "scoped for the parents": "Parent helper billing/attendance behavior belongs in a later authenticated parent packet.",
+      "top toolbar": "Toolbar/subcategory/filter density belongs in a later visual audit packet with route matrix and screenshots."
+    },
+    "first_party_pattern_interpretation": "Use the first-party BNA platform helper and route/action registry while scoping the One Time surface by workspace/project and visible copy. Do not introduce external CRM runtime behavior."
+  },
+  "design_pattern_references": [
+    "config/brands/one-time.json",
+    "config/service-provider-sites/one-time.json",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260707-131",
+      "statement": "The public One Time landing page must remain English-only and visually scoped to One Time without BNA nav, language, or default dropdown styling.",
+      "expected_result": "/one-time first paint and enhanced select state use One Time black/yellow styling and no Hebrew/English toggle.",
+      "acceptance_criteria": [
+        "Landing HTML does not mount shared BNA site nav or language toggle.",
+        "Landing HTML sets an explicit One Time app-select surface.",
+        "Shared select enhancer contains a One Time-specific dark/yellow style override."
+      ]
+    },
+    {
+      "id": "REQ-20260707-132",
+      "statement": "The One Time public landing page must mount a One Time-scoped helper.",
+      "expected_result": "The helper launcher and panel say One Time Helper and describe One Time class/signup support without BNA school goals or admin copy.",
+      "acceptance_criteria": [
+        "Landing HTML loads helper knowledge before the bot widget.",
+        "Widget detects One Time public routes and uses One Time public helper copy.",
+        "One Time helper body class uses the black/yellow helper theme."
+      ]
+    },
+    {
+      "id": "REQ-20260707-133",
+      "statement": "One Time helper threads must be project-scoped to one_time_mishnah_class.",
+      "expected_result": "Assistant surface normalization accepts One Time public/parent/student labels and creates One Time public threads under the One Time project.",
+      "acceptance_criteria": [
+        "Server normalizes one_time_public distinctly from generic public.",
+        "Server chooses one_time_mishnah_class for One Time assistant surfaces.",
+        "Safe public assistant boundary names One Time public class/signup context."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw intake and register exist.",
+      "Affected route list is limited to /one-time and the assistant chat endpoint.",
+      "Current One Time landing, helper widget, select enhancer, and assistant surface normalizer were inspected.",
+      "Parent/student helper transcript, attendance, and billing behavior are explicitly out of this implementation batch.",
+      "No external send, payment/access, or private-data mutation is approved."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/one-time",
+      "viewport": 1440,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /one-time before campaign API returns.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "Enrollment deadline will be posted before launch",
+      "expected_primary_action": "Start 30 Days Free",
+      "expected_secondary_actions": ["See How It Works", "One Time Helper"],
+      "forbidden_content": ["Hebrew/English toggle", "BNA Helper", "Bnei Neviim Academy nav"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Announcement and countdown use readable live status text.",
+      "accessibility_expectation": "Helper launcher is focusable and named One Time Helper.",
+      "test_smoke_assertion": "HTML and widget contract include One Time helper scripts and no BNA site nav mount.",
+      "requirement_id": "REQ-20260707-132"
+    },
+    "empty": {
+      "route": "/one-time#start-free",
+      "viewport": 1024,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the interest form before typing.",
+      "expected_visible_title": "Start with 30 days free.",
+      "expected_visible_message": "Parent name, Email, Phone / WhatsApp, Region, Notes",
+      "expected_primary_action": "Start Free",
+      "expected_secondary_actions": ["Member Login", "One Time Helper"],
+      "forbidden_content": ["BNA-blue region dropdown", "Hebrew/English toggle", "Operations dashboard"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Select enhancer preserves label and listbox semantics.",
+      "accessibility_expectation": "Dropdown text contrast is readable against One Time dark panel.",
+      "test_smoke_assertion": "app-select.js includes html[data-app-select-surface=\"one-time\"] styling.",
+      "requirement_id": "REQ-20260707-131"
+    },
+    "populated": {
+      "route": "/one-time",
+      "viewport": 1440,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open helper after scripts load.",
+      "expected_visible_title": "One Time Helper",
+      "expected_visible_message": "One Time Mishnayos class, signup, member access, schedule, worksheets, or questions for Rabbi Scheller",
+      "expected_primary_action": "Send",
+      "expected_secondary_actions": ["Chat history", "Close"],
+      "forbidden_content": ["BNA Helper", "BNA school goals", "parent dashboards"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Helper panel is an aside with label One Time Helper.",
+      "accessibility_expectation": "Panel, launcher, close, history, and send controls remain keyboard reachable.",
+      "test_smoke_assertion": "Widget has one_time_public surface config and One Time Helper copy.",
+      "requirement_id": "REQ-20260707-132"
+    },
+    "filtered_empty": {
+      "route": "/one-time",
+      "viewport": 768,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open helper history with no prior thread.",
+      "expected_visible_title": "Previous chats",
+      "expected_visible_message": "No previous chats yet",
+      "expected_primary_action": "Write a message",
+      "expected_secondary_actions": ["Close"],
+      "forbidden_content": ["other students", "admin data", "BNA school records"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "History empty state is announced inside the helper panel.",
+      "accessibility_expectation": "Empty state is text-visible and not color-only.",
+      "test_smoke_assertion": "storage prefix separates one_time_public from generic public.",
+      "requirement_id": "REQ-20260707-133"
+    },
+    "error": {
+      "route": "/one-time",
+      "viewport": 430,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit helper message while assistant endpoint is unavailable.",
+      "expected_visible_title": "One Time Helper",
+      "expected_visible_message": "Assistant unavailable.",
+      "expected_primary_action": "Send",
+      "expected_secondary_actions": ["Close"],
+      "forbidden_content": ["stack trace", "raw JSON", "secret", "token"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error appears as assistant message, not browser alert.",
+      "accessibility_expectation": "Composer re-enables after failure.",
+      "test_smoke_assertion": "No private or admin data appears in fallback copy.",
+      "requirement_id": "REQ-20260707-132"
+    },
+    "blocked_setup": {
+      "route": "/one-time",
+      "viewport": 390,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Ask for private billing, attendance, transcript, or access-code information from public helper.",
+      "expected_visible_title": "One Time Helper",
+      "expected_visible_message": "Public helper does not show private student, family, billing, access-code, or account details.",
+      "expected_primary_action": "Use the right scoped path",
+      "expected_secondary_actions": ["Ask public class question"],
+      "forbidden_content": ["billing status", "attendance record", "student transcript body", "access code"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Boundary message is plain text in assistant thread.",
+      "accessibility_expectation": "No disabled mystery controls; user sees a clear next safe path.",
+      "test_smoke_assertion": "Out-of-scope private helper requirements remain in child packet, not public helper implementation.",
+      "requirement_id": "REQ-20260707-133"
+    },
+    "preview_only": {
+      "route": "/one-time",
+      "viewport": 1440,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use the public landing before final signup/checkout approval.",
+      "expected_visible_title": "Start with 30 days free.",
+      "expected_visible_message": "Your request was saved. We will follow up with next steps.",
+      "expected_primary_action": "Start Free",
+      "expected_secondary_actions": ["Member Login"],
+      "forbidden_content": ["checkout", "charge", "access grant"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Form status uses aria-live.",
+      "accessibility_expectation": "Status text is readable after submit.",
+      "test_smoke_assertion": "No payment/access implementation is changed by this packet.",
+      "requirement_id": "REQ-20260707-131"
+    },
+    "success_readback": {
+      "route": "/api/bna/assistant/chat",
+      "viewport": 1024,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Send a public One Time helper message with surface one_time_public.",
+      "expected_visible_title": "Assistant response",
+      "expected_visible_message": "One Time public surface is stored as one_time_public.",
+      "expected_primary_action": "Return assistant message",
+      "expected_secondary_actions": ["Return thread id"],
+      "forbidden_content": ["BNA project fallback for One Time surface", "private data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "API JSON is verified through test/readback, not trusted as authority for external writes.",
+      "accessibility_expectation": "N/A for API readback.",
+      "test_smoke_assertion": "Server contains oneTimeAssistantProjectKeyForSurface and normalizeAssistantSurface one_time_public handling.",
+      "requirement_id": "REQ-20260707-133"
+    },
+    "permission_denied": {
+      "route": "/one-time",
+      "viewport": 430,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Ask public helper to show admin, student, parent, billing, or attendance details.",
+      "expected_visible_title": "One Time Helper",
+      "expected_visible_message": "I cannot show or collect private student, family, billing, access-code, or account details in this public chat.",
+      "expected_primary_action": "Use scoped login path",
+      "expected_secondary_actions": ["Ask public One Time question"],
+      "forbidden_content": ["private record", "email body", "student attendance", "billing amount"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Denied response is visible in the assistant thread.",
+      "accessibility_expectation": "No raw data appears behind hidden controls.",
+      "test_smoke_assertion": "Security privacy fields and helper copy forbid private public data.",
+      "requirement_id": "REQ-20260707-133"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time",
+      "viewport": 390,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the One Time helper on a 390px viewport.",
+      "expected_visible_title": "One Time Helper",
+      "expected_visible_message": "Write a message",
+      "expected_primary_action": "Send",
+      "expected_secondary_actions": ["Close", "Chat history"],
+      "forbidden_content": ["horizontal page overflow", "overlapping helper/composer", "BNA-blue helper header"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile helper sheet preserves aside label and visible close button.",
+      "accessibility_expectation": "Composer remains reachable above the keyboard and no content overlaps.",
+      "test_smoke_assertion": "Existing mobile assistant layout tests plus focused One Time helper contract pass.",
+      "requirement_id": "REQ-20260707-132"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "/one-time", "viewport": 1440, "state": "landing" },
+      { "route": "/one-time", "viewport": 1024, "state": "form" },
+      { "route": "/one-time", "viewport": 768, "state": "helper" },
+      { "route": "/one-time", "viewport": 430, "state": "mobile landing" },
+      { "route": "/one-time", "viewport": 390, "state": "mobile helper" }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260707-130-001",
+        "route": "/one-time",
+        "viewport": 430,
+        "screenshot_before": "needs_current_state_browser_capture",
+        "screenshot_after_or_blocker": "required_after_patch_or_live_smoke",
+        "defect_codes": ["VQ-BRAND-001", "VQ-LAYOUT-001"],
+        "severity": "P1",
+        "user_impact": "BNA-blue shared component styling or missing One Time helper makes the public One Time funnel feel like the wrong product.",
+        "expected_fix": "Mount One Time Helper and scope shared select/helper styling to the One Time public surface.",
+        "requirement_id": "REQ-20260707-131"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Helper launcher must have aria-label One Time Helper.",
+      "Helper panel must preserve focusable close, history, textarea, and send controls.",
+      "Region select enhancement must preserve native select value, label, keyboard behavior, and listbox semantics.",
+      "No Hebrew/English language toggle appears on the One Time public page."
+    ],
+    "blocked_items": []
+  },
+  "action_states": [
+    {
+      "label": "One Time Helper",
+      "selector_or_action_key": ".bna-bot-launcher",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "public/js/bna-bot-widget.js opens local helper panel and calls /api/bna/assistant/chat for chat only.",
+      "registry_required": true
+    },
+    {
+      "label": "Start Free",
+      "selector_or_action_key": "ACTION-ONETIME-INTEREST-FORM",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing /api/one-time/interest lead intake; no payment/access/send in this packet.",
+      "registry_required": true
+    },
+    {
+      "label": "Region",
+      "selector_or_action_key": "select[name=\"region\"]",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "public/js/app-select.js enhancement with One Time surface style.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "visible_fields": [
+      "One Time public landing copy",
+      "Interest form fields already present",
+      "Helper anonymous id",
+      "Helper surface one_time_public",
+      "Helper page path"
+    ],
+    "storage": [
+      "bna_assistant_threads surface one_time_public",
+      "bna_assistant_threads project/workspace id resolved from one_time_mishnah_class"
+    ],
+    "forbidden_data": [
+      "private student records",
+      "parent billing details",
+      "attendance records",
+      "class transcript bodies",
+      "admin configuration diagnostics",
+      "external provider credentials"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "privacy_boundary": "Anonymous One Time public helper may answer public landing/class/signup questions and collect public lead/support text only; parent/student billing, attendance, transcript, access, and account data require authenticated scoped packets.",
+    "forbidden_actions": [
+      "external send",
+      "payment or charge",
+      "access grant",
+      "password reset",
+      "DNS or provider mutation",
+      "private data display"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-20260707-130-1",
+      "scope": "One Time public landing helper and brand-scope isolation only.",
+      "requirements": ["REQ-20260707-131", "REQ-20260707-132", "REQ-20260707-133"],
+      "instructions": [
+        "Add explicit One Time app-select surface to public/one-time/index.html.",
+        "Load helper knowledge and bot widget on public/one-time/index.html.",
+        "Add One Time public surface detection, copy, helper theme reuse, and public lead nudges in public/js/bna-bot-widget.js.",
+        "Add One Time app-select dark/yellow theme in public/js/app-select.js.",
+        "Normalize One Time helper surfaces and choose one_time_mishnah_class for One Time assistant threads in server.js.",
+        "Add focused tests."
+      ],
+      "out_of_scope": [
+        "Parent/student authenticated helper implementation",
+        "Toolbar/filter global redesign",
+        "External sends or payment/access/provider mutations"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/one-time/index.html",
+      "public/js/bna-bot-widget.js",
+      "public/js/app-select.js",
+      "server.js",
+      "tests/universal-assistant-contract.test.js",
+      "tests/app-select-dropdown.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/one-time/index.html",
+      "public/js/bna-bot-widget.js",
+      "public/js/app-select.js",
+      "server.js",
+      "tests/one-time-brand-helper-isolation.test.js",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "max_files_to_edit": 8,
+    "max_routes_to_touch": 2,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Parent/student helper and toolbar/filter density are separate child packets because they involve authenticated data and multi-route layout work.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "required": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-07-onetime-brand-helper-toolbar-isolation/00-onetime-brand-helper-toolbar-isolation.product-quality.json",
+      "node --test tests/one-time-brand-helper-isolation.test.js tests/universal-assistant-contract.test.js tests/app-select-dropdown.test.js tests/one-time-focused-landing.test.js tests/one-time-canonical-journey.test.js",
+      "npm run watchdog:protocol-drift"
+    ],
+    "live_smoke_required": true,
+    "manual_browser_check": [
+      "/one-time at 1440, 430, and 390",
+      "Open helper and confirm One Time Helper copy and no horizontal overflow",
+      "Open Region dropdown and confirm black/yellow styling"
+    ]
+  },
+  "evidence": {
+    "required_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/watchdog-audits/2026-07-07-product-quality-drift.md",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md"
+    ],
+    "screenshot_evidence_required": true,
+    "deploy_evidence_required": true
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "Raw intake, register, and PQC validation exist.",
+      "One Time landing loads helper scripts and explicit One Time select surface.",
+      "Helper widget shows One Time Helper on public One Time routes and uses black/yellow surface class.",
+      "Server normalizes One Time helper surfaces and scopes One Time helper threads to one_time_mishnah_class.",
+      "Focused tests pass.",
+      "Protocol drift watchdog passes.",
+      "Changes are committed, pushed, deployed, and live-smoked before terminal Done.",
+      "Parent/student helper scope and toolbar/filter layout remain open child packets with next action."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260707-013-onetime-brand-helper-toolbar-isolation.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-07-onetime-brand-helper-toolbar-isolation/00-onetime-brand-helper-toolbar-isolation.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "Read current files",
+      "Patch scoped files",
+      "Run PQC validator",
+      "Run focused tests",
+      "Run protocol drift watchdog",
+      "Commit/push/deploy/live-smoke"
+    ],
+    "skipped_actions_policy": "No external sends, no payment/access, no parent/student private data readback, and no global toolbar redesign in this packet.",
+    "blocker_decisions": [
+      "DEC-20260707-130",
+      "DEC-20260707-131"
+    ],
+    "evidence_paths": [
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md#final-audit",
+    "next_packet_path": "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "0 findings or exact blocker recorded."
+  },
+  "next_packet": {
+    "id": "PKT-20260707-134",
+    "title": "One Time Parent Student Helper Scope",
+    "status": "pending_child_packet",
+    "reason": "Parent billing/attendance and student class/transcript/Rabbi-reference behavior requires authenticated data boundaries and separate verification."
+  },
+  "app_visible": true
+}

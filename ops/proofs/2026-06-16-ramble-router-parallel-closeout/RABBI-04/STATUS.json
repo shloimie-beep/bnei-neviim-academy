@@ -1,0 +1,9 @@
+{
+  "workstream_id": "RABBI-04",
+  "cycle_id": "2026-06-16-ramble-router-parallel-chatgpt-to-codex",
+  "status": "blocked_needs_human_decision",
+  "title": "Rabbi / One Time product and 7pm class model",
+  "proof_path": "ops/proofs/2026-06-16-ramble-router-parallel-closeout/RABBI-04/",
+  "needed_from_shloimie": "Approve pricing, provider of record, business/payment ownership, Rabbi bot chat ID, final assets, and exact 7pm class model.",
+  "notes": "Core One Time infrastructure has prior live proof; launch/product/account decisions remain blocked."
+}

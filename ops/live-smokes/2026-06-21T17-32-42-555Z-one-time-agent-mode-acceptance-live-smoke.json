@@ -1,0 +1,25 @@
+{
+  "started_at": "2026-06-21T17:32:42.555Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "cookie bna_ops_session"
+    },
+    {
+      "name": "Agent Mode acceptance API passes with no writes",
+      "ok": true,
+      "detail": "6 stages, 4 blockers"
+    },
+    {
+      "name": "Operations ships Agent Mode acceptance panel",
+      "ok": true,
+      "detail": "Operations panel marker and disabled live-agent blocker shipped"
+    }
+  ],
+  "requirement_id": "REQ-20260621-910",
+  "stage_count": 6,
+  "blocker_count": 4,
+  "status": "pass"
+}

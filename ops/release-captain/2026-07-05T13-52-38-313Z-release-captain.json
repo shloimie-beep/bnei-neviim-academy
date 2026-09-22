@@ -1,0 +1,338 @@
+{
+  "ok": false,
+  "generated_at": "2026-07-05T13:52:38.313Z",
+  "mode": "release_captain_read_only",
+  "production_mutation_performed": false,
+  "external_write_performed": false,
+  "secrets_redacted": true,
+  "state": "local_changes_need_verify_commit_push",
+  "summary": "local changes need verify commit push",
+  "next_actions": [
+    "Finish the scoped edit batch, then run the focused tests and smokes.",
+    "Stage only the scoped files, commit, push, and open or update the PR.",
+    "After merge, run the approved deployment path and live smoke before marking app-visible work Done."
+  ],
+  "git": {
+    "branch": "codex/release-captain-onetime-ui-20260705",
+    "expected_branch": null,
+    "allow_detached": false,
+    "detached_allowed": false,
+    "branch_matches_expected": true,
+    "head": "9ee594573ed20d58d5a49fb6158418a89749f0fa",
+    "upstream": "",
+    "remote_branch": "origin/codex/release-captain-onetime-ui-20260705",
+    "remote_head": "",
+    "head_pushed": false,
+    "dirty": {
+      "total": 37,
+      "staged": 0,
+      "modified": 29,
+      "untracked": 8,
+      "sample": [
+        {
+          "status": " M",
+          "path": "TASKS.md"
+        },
+        {
+          "status": " M",
+          "path": "memory/2026-07-05.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/action-registry/one-time-action-coverage.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/action-registry/one-time-action-coverage.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/action-registry/universal-action-parity.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/action-registry/universal-action-parity.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/agent-changelog.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/agent-task-ledger.jsonl"
+        },
+        {
+          "status": " M",
+          "path": "ops/one-time-mishnah/operator-ui-review/qa-harness-local-report.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/one-time-mishnah/operator-ui-review/qa-harness-local-report.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/desktop.png"
+        },
+        {
+          "status": " M",
+          "path": "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/mobile-agents.png"
+        },
+        {
+          "status": " M",
+          "path": "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/watchdog-audits/2026-07-05-product-quality-drift.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/watchdog-audits/2026-07-05-product-quality-drift.md"
+        },
+        {
+          "status": " M",
+          "path": "package.json"
+        },
+        {
+          "status": " M",
+          "path": "public/css/one-time-operations.css"
+        },
+        {
+          "status": " M",
+          "path": "public/operations.html"
+        },
+        {
+          "status": " M",
+          "path": "scripts/validate-product-quality-packets.mjs"
+        },
+        {
+          "status": " M",
+          "path": "scripts/watchdog-product-quality-drift.mjs"
+        },
+        {
+          "status": " M",
+          "path": "src/platform/instances/one-time-rabbi-dashboard-ia.js"
+        },
+        {
+          "status": " M",
+          "path": "tests/one-time-operations-brand-css.test.js"
+        },
+        {
+          "status": " M",
+          "path": "tests/one-time-operations-ui-smoke.test.js"
+        },
+        {
+          "status": " M",
+          "path": "tests/one-time-rabbi-dashboard-ia.test.js"
+        },
+        {
+          "status": " M",
+          "path": "tests/one-time-rabbi-ui-final-local-smoke.test.js"
+        },
+        {
+          "status": "??",
+          "path": "ops/prompt-packets/2026-07-05-release-captain-onetime-ui-recovery/"
+        },
+        {
+          "status": "??",
+          "path": "ops/release-captain/"
+        },
+        {
+          "status": "??",
+          "path": "ops/ui-audits/2026-07-05-release-captain-onetime-ui/"
+        },
+        {
+          "status": "??",
+          "path": "ops/watchdog-audits/2026-07-05T13-45-watchdog-action-audit.md"
+        },
+        {
+          "status": "??",
+          "path": "raw-input/RAW-20260705-008-release-captain-onetime-ui-recovery.md"
+        },
+        {
+          "status": "??",
+          "path": "scripts/release-captain.mjs"
+        },
+        {
+          "status": "??",
+          "path": "tasks-pending/2026-07-05-release-captain-onetime-ui-recovery.md"
+        },
+        {
+          "status": "??",
+          "path": "tests/release-captain.test.js"
+        }
+      ]
+    }
+  },
+  "active_run": {
+    "run_dir": "ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation",
+    "run_id": "2026-07-02-background-drive-ui-launch-continuation",
+    "active": true,
+    "expected_branch": null,
+    "pr_number": null,
+    "pr_url": null,
+    "status_counts": {
+      "done": 6,
+      "blocked": 4
+    },
+    "open_requirements": [
+      {
+        "id": "REQ-20260702-102",
+        "status": "blocked",
+        "owner": "Codex",
+        "next_action": "After branch/pointer state is clean, run npm run agent:fleet:status, npm run agent:fleet:readiness, then npm run agent:fleet:restart only if readiness is OK.",
+        "blocker": "Agent fleet supervisor is not running reliably; readiness reports active pointer drift and branch drift."
+      },
+      {
+        "id": "REQ-20260702-103",
+        "status": "blocked",
+        "owner": "Codex",
+        "next_action": "Restore app/API reachability for dry-run reprocess, run dry-run parser repair for content_job 101, then apply private Drive transcript doc sync only after exact approval.",
+        "blocker": "Content job 101 is discovered and transcribed, but no structured parser/class/UI output exists and no private Drive transcript-library doc has been written."
+      },
+      {
+        "id": "REQ-20260702-108",
+        "status": "blocked",
+        "owner": "Codex",
+        "next_action": "Provide or label the remaining exact aliases: One Time Zoom session/join alias, VIMEO_ACCESS_TOKEN, ONE_TIME_DRIVE_DROP_FOLDER_ALIAS, Rabbi Stripe test key and $67/month price/product aliases, Whapi/WAPI instance/phone aliases.",
+        "blocker": "Remaining provider/campaign setup is exact: Zoom session/join alias, Vimeo access token and Drive drop-folder alias, Stripe sandbox key/product price, Whapi/WAPI instance/phone, and campaign copy/list/suppression/approval."
+      },
+      {
+        "id": "REQ-20260702-110",
+        "status": "blocked",
+        "owner": "Codex",
+        "next_action": "Run full validation, commit/push PR #64 updates, mark ready/merge if checks pass, deploy one-time-web, then run DB bootstrap via Railway SSH and live smoke.",
+        "blocker": "DB bootstrap cannot run from local Railway env because the Postgres host is internal-only; deploy one-time-web first and run bootstrap inside the Railway service."
+      }
+    ]
+  },
+  "release_gate_blockers": [
+    "Current HEAD is not confirmed pushed to origin/codex/release-captain-onetime-ui-20260705.",
+    "Working tree has dirty or untracked files; do not deploy from a mixed dirty worktree."
+  ],
+  "open_prs": [
+    {
+      "number": 63,
+      "title": "[codex] Clean One Time launch setup integration",
+      "branch": "codex/one-time-clean-integration-20260702",
+      "base": "master",
+      "draft": true,
+      "merge_state": "DIRTY",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/63"
+    },
+    {
+      "number": 62,
+      "title": "[codex] Reconcile One Time launch cleanup",
+      "branch": "codex/one-time-launch-cleanup-20260702-no-workflow",
+      "base": "master",
+      "draft": true,
+      "merge_state": "DIRTY",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/62"
+    },
+    {
+      "number": 51,
+      "title": "[codex] Repair One Time Operations UI shell",
+      "branch": "codex/rabbi-onetime-comms-scope-release-20260629",
+      "base": "master",
+      "draft": true,
+      "merge_state": "DIRTY",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
+    }
+  ],
+  "merged_prs": [
+    {
+      "number": 96,
+      "title": "Record dirty worktree deploy closeout",
+      "branch": "codex/deploy-closeout-records-20260705",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/96"
+    },
+    {
+      "number": 95,
+      "title": "Clarify One Time email review coverage",
+      "branch": "codex/deploy-closeout-evidence-20260705",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/95"
+    },
+    {
+      "number": 94,
+      "title": "Ship dirty worktree release cleanup batch",
+      "branch": "codex/dirty-worktree-release-cleanup-20260705",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/94"
+    },
+    {
+      "number": 93,
+      "title": "Record Operations login live evidence",
+      "branch": "codex/operations-login-live-evidence-20260705",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/93"
+    },
+    {
+      "number": 92,
+      "title": "Fix Operations login redirect loop",
+      "branch": "codex/operations-login-glitch-20260705",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/92"
+    },
+    {
+      "number": 91,
+      "title": "Record PR87 live deployment evidence",
+      "branch": "codex/pr87-live-evidence-20260705",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/91"
+    },
+    {
+      "number": 90,
+      "title": "[codex] Publish ChatGPT dropoff workflow",
+      "branch": "codex/chatgpt-dropoff-publish-defaults-20260704",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/90"
+    },
+    {
+      "number": 89,
+      "title": "Studio content engine release",
+      "branch": "codex/studio-content-engine-release-20260704",
+      "base": "codex/rabbi-onetime-ui-cleanup-release-20260703",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/89"
+    }
+  ],
+  "command_health": {
+    "gh_open_prs": "ok",
+    "gh_merged_prs": "ok",
+    "bna_run_status": "ok"
+  },
+  "run_status_text": "> bna-website@1.0.0 bna:run:status\n> node scripts/bna-execution-run.mjs status\n\nExecution run: ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation\nRequirement status counts:\n- blocked: 4\n- done: 6\nWork remains: yes\nValidation passed."
+}

@@ -1,0 +1,11 @@
+# Role / Scope Findings
+
+| finding_id | severity | route | viewport | defect_codes | expected_fix |
+| --- | --- | --- | --- | --- | --- |
+| VQF-033 | P2 | /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library | 1440-desktop | VQ-IA-004,VQ-CRED-005 | Keep support diagnostics in a role-gated support drawer and show only actionable readiness/status in the Rabbi workflow. |
+| VQF-036 | P2 | /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library | 1024-desktop-tablet | VQ-IA-004,VQ-CRED-005 | Keep support diagnostics in a role-gated support drawer and show only actionable readiness/status in the Rabbi workflow. |
+| VQF-039 | P2 | /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library | 768-tablet | VQ-IA-004,VQ-CRED-005 | Keep support diagnostics in a role-gated support drawer and show only actionable readiness/status in the Rabbi workflow. |
+| VQF-042 | P2 | /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library | 430-mobile | VQ-IA-004,VQ-CRED-005 | Keep support diagnostics in a role-gated support drawer and show only actionable readiness/status in the Rabbi workflow. |
+| VQF-045 | P2 | /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library | 390-mobile | VQ-IA-004,VQ-CRED-005 | Keep support diagnostics in a role-gated support drawer and show only actionable readiness/status in the Rabbi workflow. |
+| VQF-070 | P1 | /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class | 1024-desktop-tablet | VQ-DATA-004,VQ-CRED-002 | Move raw/debug/provider details behind a support drawer or replace with user-actionable status copy. |
+| VQF-071 | P2 | /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class | 1024-desktop-tablet | VQ-IA-004,VQ-CRED-005 | Keep support diagnostics in a role-gated support drawer and show only actionable readiness/status in the Rabbi workflow. |

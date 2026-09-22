@@ -1,0 +1,52 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "cleanup_mode": true,
+  "seed_key": "req022_safe_repeatable_seed_v1",
+  "seed_prefix": "TEST_REQ022",
+  "run_id": "20260618_local",
+  "required_coverage": [
+    "school_workspace",
+    "service_provider_workspace",
+    "family_workspace",
+    "workspace_roles",
+    "students",
+    "assignments",
+    "tasks",
+    "decisions",
+    "calendar",
+    "content_research",
+    "community",
+    "automations",
+    "hebrew_portal_fixture",
+    "helper_action_audit",
+    "cleanup_path"
+  ],
+  "target_projects": [
+    "test_req022_20260618_local_school",
+    "test_req022_20260618_local_provider",
+    "test_req022_20260618_local_family"
+  ],
+  "target_workspaces": [
+    {
+      "key": "test_req022_20260618_local_school_workspace",
+      "type": "school"
+    },
+    {
+      "key": "test_req022_20260618_local_provider_workspace",
+      "type": "service_provider"
+    },
+    {
+      "key": "test_req022_20260618_local_family_workspace",
+      "type": "family"
+    }
+  ],
+  "safety": {
+    "default_dry_run": true,
+    "apply_requires_confirmation": "APPLY_REQ022_TEST_SEED",
+    "cleanup_requires_confirmation": "CLEANUP_REQ022_TEST_SEED",
+    "no_external_writes": true,
+    "cleanup_selector": "TEST_REQ022 prefix and req022 metadata only",
+    "secrets_printed": false
+  }
+}

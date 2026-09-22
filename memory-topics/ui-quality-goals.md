@@ -1,0 +1,32 @@
+# UI Quality Goals
+
+- BNA UI should feel polished, calm, operator-grade, and mobile-safe.
+- Visible controls must work, be registered, or be disabled/coming soon with a
+  reason.
+- Mobile pages must avoid horizontal overflow.
+- Operations pages should favor compact, scannable work surfaces over giant
+  unexplained cards.
+- Top toolbars/top sections should not waste first-viewport space. Filters,
+  subcategories, and primary actions should sit close to the content they
+  control and collapse cleanly on 430/390 mobile.
+- Broad UI audit prompt packets should be parallel-friendly when possible:
+  independent Agent Mode sessions can audit separate surfaces at the same time,
+  with a later synthesis/join packet after at least two reports exist.
+- Parallel Agent Mode UI audits should save their findings into the BNA
+  Operations Agent Review task/drop-off flow first. GitHub packets or marked
+  comments are fallback handoffs, not the primary path, because Agent Mode
+  sessions may not have GitHub write access.
+- Agent Review drop-off is a tracked workflow state, not a final reminder:
+  Start Audit, Copy Agent Prompt, keep/open drop-off, save pass/fail/blocked,
+  verify AGR readback, then answer in chat.
+- Browser QA / Agent Mode verifiers should not ask Shloimie whether to submit,
+  seal, or report a blocked/fail run after they have enough evidence. The
+  autonomous loop is to save the result in Operations, name the blocker and
+  exact next action, verify readback when possible, and then report briefly in
+  chat.
+- Agent Mode UI audit prompts must be navigation-first templates: start from
+  Super Admin, name exact click paths and visible labels, require the agent to
+  navigate to Rabbi/provider/student/classroom views itself, and require
+  `FAIL`/`BLOCKED` Operations drop-off even when navigation breaks.
+- Relevant standing goals: `GOAL-CORE-001` through `GOAL-CORE-005` and
+  `GOAL-CORE-015`.

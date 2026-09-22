@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-06-05T12:13:12.980Z",
+  "task_id": 49,
+  "ok": true,
+  "codex_exit_code": 0,
+  "codex_final": "STATUS: done\n\nSUMMARY: Improved spoken Torah parser mapping so timer updates can capture inside/following, listening-without-following, distracted time, timer duration, daily Torah progress, and private accountability events without keeping parser intake in Content. I did not mark the live task done.\n\nVERIFICATION: `node --check server.js` passed; `node --check scripts\\telegram-kimi-bridge.mjs` passed; `node --test tests\\torah-learning.test.js` passed; `npm test` passed 20/20.\n\nFILES: [server.js](<C:/Users/User/BNA v2.0/server.js:2615>), [src/lib/bna/torah-learning.js](<C:/Users/User/BNA v2.0/src/lib/bna/torah-learning.js:95>), [tests/torah-learning.test.js](<C:/Users/User/BNA v2.0/tests/torah-learning.test.js:84>), [scripts/telegram-kimi-bridge.mjs](<C:/Users/User/BNA v2.0/scripts/telegram-kimi-bridge.mjs:3068>), [ops/agent-changelog.md](<C:/Users/User/BNA v2.0/ops/agent-changelog.md:1380>).",
+  "codex_error": "",
+  "codex_log": ".runtime/agent-fleet/task-49-2026-06-05T12-03-36-525Z.codex.log",
+  "codex_last_message": ".runtime/agent-fleet/task-49-2026-06-05T12-03-36-525Z.last-message.txt",
+  "verification_results": [
+    {
+      "command": "node --check server.js",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "node --check scripts/telegram-kimi-bridge.mjs",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "node --check scripts/agent-fleet-supervisor.mjs",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "npm test",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "> bna-website@1.0.0 test\n> node --test\n\n✔ Listening goal full completion (0.6568ms)\n✔ Listening goal partial completion (0.0856ms)\n✔ Listening goal over completion caps at 100 (0.113ms)\n✔ Inside goal full inside completion (0.0991ms)\n✔ Inside goal listening without following counts as half (0.0687ms)\n✔ Inside goal half inside and half listening reaches 75 percent (0.0615ms)\n✔ Parsed Torah timer maps inside, listening, and distracted minutes (0.3302ms)\n✔ Parsed Torah percentage update maps to active inside goal minutes (0.1109ms)\n✔ Parsed Torah listening-only shorthand maps to half credit for inside goals (0.102ms)\n✔ Parsed engagement-only percentage does not become daily completion (0.1206ms)\n✔ Inside goal distracted time does not count (0.0874ms)\n✔ Group progress all complete (0.1067ms)\n✔ Group progress one incomplete (0.043ms)\n✔ Goal minutes 0 throws validation error (0.2753ms)\n✔ Trip progress carried-over only rounds to 12 percent (0.1111ms)\n✔ Trip progress carried-over plus one completed day reaches 15 percent (0.0671ms)\n✔ Daily 100 percent does not imply full trip completion after one day (0.0459ms)\n✔ Group trip progress stays locked at 15 percent when everyone is at 15 (0.0557ms)\n✔ Group trip progress keeps raw average when one student is at 99 (0.0505ms)\n✔ Trip progress reaches 100 only when all students are at 100 (0.0538ms)\nℹ tests 20\nℹ suites 0\nℹ pass 20\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 169.321",
+      "stderr": ""
+    },
+    {
+      "command": "npm run openai:smoke",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "> bna-website@1.0.0 openai:smoke\n> node scripts/smoke-openai-sidekick.mjs\n\nOpenAI sidekick smoke: PASS\n\nRepo files: 8 readable\nTranscript exports: 18\nProtected app endpoints: 10 readable\nDrive folders: 7 readable\nOpenAI model: gpt-4.1-mini\n\nActive Codex tasks: 4 (98, 72, 65, 49)\nStudents: Amitai Kosofsky, Eitan Chaim Golombo, Hillel Baraka, Huda Weber, Menachem Mendel Dratler\nTranscript jobs: 19\nPending payment names detected: Hillel Baraka\nDrive raw folder: 00 Upload Here - Raw Media Intake\n\nReport: ops/openai-smokes/2026-06-05T12-13-12-869Z-openai-sidekick-smoke.md",
+      "stderr": ""
+    }
+  ]
+}

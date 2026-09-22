@@ -1,0 +1,31 @@
+{
+  "generated_at": "2026-06-24T12:59:22.764Z",
+  "goal": "BNA VIMEO - COMPLETE SAFE MEDIA INTEGRATION AND PRIVATE TESTING",
+  "branch": "codex/closeout-vimeo-media-20260624",
+  "command": "node scripts/vimeo-private-smoke.mjs --json",
+  "safe_write_policy": {
+    "real_class_recordings_uploaded": false,
+    "public_publish_performed": false,
+    "existing_production_assets_modified_or_deleted": false,
+    "token_printed": false
+  },
+  "objects": [],
+  "result": {
+    "provider": "vimeo",
+    "status": "preview_only",
+    "readiness_status": "preview_only",
+    "ready": false,
+    "reason": "Private synthetic Vimeo smoke is opt-in and was not enabled.",
+    "next_action": "Set BNA_VIMEO_PRIVATE_SMOKE=1 only after token, intended test account, test project, and synthetic media are confirmed.",
+    "external_write_performed": false,
+    "public_publish_performed": false,
+    "ok": false,
+    "smoke_ran": false
+  },
+  "redacted_asset_id": null,
+  "destination": null,
+  "privacy": null,
+  "upload_result": "skipped_preview_only",
+  "playback_result": "not_run_no_asset",
+  "cleanup_or_test_only_state": "not_applicable_no_asset"
+}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform UI Harness</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/platform-ui/platform-ui.css">
+</head>
+<body class="platform-ui-page">
+  <div data-platform-ui-root></div>
+  <noscript>This harness needs JavaScript enabled.</noscript>
+  <script src="/js/platform-ui/platform-ui-fixtures.js"></script>
+  <script src="/js/platform-ui/platform-ui.js"></script>
+  <script>
+    window.PlatformUi.init('[data-platform-ui-root]', {
+      workspaceId: new URLSearchParams(window.location.search).get('workspace') || 'bna',
+      moduleKey: new URLSearchParams(window.location.search).get('module') || 'overview'
+    });
+  </script>
+</body>
+</html>

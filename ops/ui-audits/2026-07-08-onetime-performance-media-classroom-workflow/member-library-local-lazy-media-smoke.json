@@ -1,0 +1,60 @@
+{
+  "ok": true,
+  "generated_at": "2026-07-08T08:24:03.397Z",
+  "results": [
+    {
+      "width": 1440,
+      "height": 920,
+      "elapsedMs": 360,
+      "before": {
+        "filters": true,
+        "iframes": 0,
+        "rawVimeoOpenLink": false,
+        "overflow": false,
+        "railScroll": true,
+        "hasPlay": true,
+        "cardWidth": 380
+      },
+      "after": {
+        "iframes": 1,
+        "progressText": true,
+        "overflow": false,
+        "cardWidth": 380
+      },
+      "console": [
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\ui-audits\\2026-07-08-onetime-performance-media-classroom-workflow\\member-library-local-after-1440.png"
+    },
+    {
+      "width": 430,
+      "height": 860,
+      "elapsedMs": 172,
+      "before": {
+        "filters": true,
+        "iframes": 0,
+        "rawVimeoOpenLink": false,
+        "overflow": false,
+        "railScroll": true,
+        "hasPlay": true,
+        "cardWidth": 398
+      },
+      "after": {
+        "iframes": 1,
+        "progressText": true,
+        "overflow": false,
+        "cardWidth": 398
+      },
+      "console": [
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\ui-audits\\2026-07-08-onetime-performance-media-classroom-workflow\\member-library-local-after-430.png"
+    }
+  ]
+}

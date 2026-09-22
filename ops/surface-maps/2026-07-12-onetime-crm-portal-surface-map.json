@@ -1,0 +1,45 @@
+{
+  "surface_map_id": "SURF-20260712-004",
+  "raw_id": "RAW-20260712-004",
+  "status": "initial_needs_audit",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "RABBI_PROVIDER_ADMIN",
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL",
+    "PUBLIC_MARKETING"
+  ],
+  "routes": [
+    "/operations?workspace=rabbi_sheller_provider&view=contacts",
+    "/operations?workspace=rabbi_sheller_provider&view=communications",
+    "/rabbi-member",
+    "/one-time-parent",
+    "/student",
+    "/one-time-classroom",
+    "/member-library",
+    "/one-time/",
+    "/api/one-time/public-whatsapp/redirect",
+    "/api/bna/auth/me"
+  ],
+  "likely_files": [
+    "server.js",
+    "public/operations.html",
+    "public/js/operations-shell.js",
+    "src/lib/bna/crm-contact-model.js",
+    "src/lib/bna/provider-lead-bot.js",
+    "src/lib/bna/one-time-product-system.js",
+    "public/rabbi-member.html",
+    "public/one-time-parent-review.html",
+    "public/one-time-classroom.html",
+    "public/member-library.html",
+    "public/student.html"
+  ],
+  "dirty_lane_warning": [
+    "features/one-time-landing/* is untracked in the current worktree and must not be edited until ownership is clear."
+  ],
+  "blocked_by": [
+    "DEC-20260712-101"
+  ]
+}

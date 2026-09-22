@@ -1,0 +1,109 @@
+{
+  "generated_at": "2026-06-18T15:30:29.140Z",
+  "ok": true,
+  "selected_source": "keyholder:openaiv2.txt",
+  "sources": [
+    {
+      "source": "process.env:OPENAI_API_KEY",
+      "present": false,
+      "length": 0,
+      "normalized_length": 0,
+      "fingerprint": "",
+      "surrounding_quotes": false,
+      "newline": false,
+      "carriage_return": false,
+      "bom": false,
+      "normalization_changed_value": false
+    },
+    {
+      "source": "keyholder:openaiv2.txt",
+      "present": true,
+      "length": 164,
+      "normalized_length": 164,
+      "fingerprint": "f74957cf4b14",
+      "surrounding_quotes": false,
+      "newline": false,
+      "carriage_return": false,
+      "bom": false,
+      "normalization_changed_value": false
+    },
+    {
+      "source": "keyholder:openai-api-key.txt",
+      "present": false,
+      "length": 0,
+      "normalized_length": 0,
+      "fingerprint": "",
+      "surrounding_quotes": false,
+      "newline": false,
+      "carriage_return": false,
+      "bom": false,
+      "normalization_changed_value": false
+    },
+    {
+      "source": ".secrets/openai-api-key.txt",
+      "present": true,
+      "length": 165,
+      "normalized_length": 164,
+      "fingerprint": "02079c0b5ca1",
+      "surrounding_quotes": false,
+      "newline": false,
+      "carriage_return": false,
+      "bom": true,
+      "normalization_changed_value": true
+    },
+    {
+      "source": ".env.local:OPENAI_API_KEY",
+      "present": true,
+      "length": 164,
+      "normalized_length": 164,
+      "fingerprint": "df69acc2e029",
+      "surrounding_quotes": false,
+      "newline": false,
+      "carriage_return": false,
+      "bom": false,
+      "normalization_changed_value": false
+    }
+  ],
+  "keyholder_dir": "C:\\Users\\User\\BNA-Keyholder",
+  "env_file_equality": false,
+  "openai_base_url_present": true,
+  "openai_org_present": false,
+  "openai_project_present": false,
+  "railway": {
+    "ok": true,
+    "attempted": true,
+    "service": "skillful-motivation",
+    "environment": "production",
+    "openai_api_key": {
+      "source": "railway:OPENAI_API_KEY",
+      "present": true,
+      "length": 164,
+      "normalized_length": 164,
+      "fingerprint": "02079c0b5ca1",
+      "surrounding_quotes": false,
+      "newline": false,
+      "carriage_return": false,
+      "bom": false,
+      "normalization_changed_value": false
+    },
+    "openai_base_url_present": false,
+    "openai_org_present": false,
+    "openai_project_present": false
+  },
+  "models": {
+    "status": 200,
+    "ok": true,
+    "x_request_id": "b388900d-681e-478c-b1ff-c39cb1c7a9a8",
+    "error_type": "",
+    "error_code": "",
+    "error_message": ""
+  },
+  "responses": {
+    "status": 200,
+    "ok": true,
+    "x_request_id": "req_1074504798a84946898d89c68337b494",
+    "error_type": "",
+    "error_code": "",
+    "error_message": ""
+  }
+}

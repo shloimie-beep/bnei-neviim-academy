@@ -1,0 +1,54 @@
+{
+  "schema_version": "bna.chatgpt_prompt_split.v1",
+  "generated_at": "2026-07-09T06:44:36.734Z",
+  "batch_id": "20260709-chatgpt-multi-window-and-kimi-fallback",
+  "parent_raw_id": "RAW-20260709-003",
+  "title": "ChatGPT multi-window and Kimi fallback",
+  "workspace": "bna_platform",
+  "project": "",
+  "raw_file": "raw-input/RAW-20260709-003-chatgpt-multi-window-and-kimi-fallback.md",
+  "prompt_count": 5,
+  "prompts": [
+    {
+      "prompt_id": "20260709-chatgpt-multi-window-and-kimi-fallback-01-control-tower-source-map",
+      "packet_role": "control_tower_source_map",
+      "lane_key": "bna-platform-general-control-tower-source-map",
+      "path": "ops/chatgpt-ramble-dropoff/outgoing/20260709-chatgpt-multi-window-and-kimi-fallback/prompts/01-control-tower-source-map.md",
+      "packet_id_to_create": "20260709-chatgpt-multi-window-and-kimi-fallback-01-control-tower-source-map",
+      "scope": "Preserve the raw source, classify the ramble, split it into child packet lanes, map source statements to requirements, and identify duplicates/blockers."
+    },
+    {
+      "prompt_id": "20260709-chatgpt-multi-window-and-kimi-fallback-02-current-state-audit",
+      "packet_role": "current_state_audit",
+      "lane_key": "bna-platform-general-current-state-audit",
+      "path": "ops/chatgpt-ramble-dropoff/outgoing/20260709-chatgpt-multi-window-and-kimi-fallback/prompts/02-current-state-audit.md",
+      "packet_id_to_create": "20260709-chatgpt-multi-window-and-kimi-fallback-02-current-state-audit",
+      "scope": "Audit the current repo/system state for this lane before implementation. Inspect relevant docs/files/routes and report what is already done, stale, missing, blocked, or risky."
+    },
+    {
+      "prompt_id": "20260709-chatgpt-multi-window-and-kimi-fallback-03-frontend-workflow-bundle",
+      "packet_role": "implementation_bundle_frontend_workflow",
+      "lane_key": "bna-platform-general-frontend-workflow-bundle",
+      "path": "ops/chatgpt-ramble-dropoff/outgoing/20260709-chatgpt-multi-window-and-kimi-fallback/prompts/03-frontend-workflow-bundle.md",
+      "packet_id_to_create": "20260709-chatgpt-multi-window-and-kimi-fallback-03-frontend-workflow-bundle",
+      "scope": "Draft focused frontend, UI workflow, route, prompt, or operator-experience changes only for this lane. Do not touch backend/data/provider setup unless the prompt explicitly scopes it."
+    },
+    {
+      "prompt_id": "20260709-chatgpt-multi-window-and-kimi-fallback-04-backend-data-tests-bundle",
+      "packet_role": "implementation_bundle_backend_data_tests",
+      "lane_key": "bna-platform-general-backend-data-tests-bundle",
+      "path": "ops/chatgpt-ramble-dropoff/outgoing/20260709-chatgpt-multi-window-and-kimi-fallback/prompts/04-backend-data-tests-bundle.md",
+      "packet_id_to_create": "20260709-chatgpt-multi-window-and-kimi-fallback-04-backend-data-tests-bundle",
+      "scope": "Draft focused backend, parser, queue, data contract, test, or script changes only for this lane. Do not implement broad UI polish or external provider mutations."
+    },
+    {
+      "prompt_id": "20260709-chatgpt-multi-window-and-kimi-fallback-05-verifier-synthesis-closeout",
+      "packet_role": "verifier_synthesis_closeout",
+      "lane_key": "bna-platform-general-verifier-synthesis-closeout",
+      "path": "ops/chatgpt-ramble-dropoff/outgoing/20260709-chatgpt-multi-window-and-kimi-fallback/prompts/05-verifier-synthesis-closeout.md",
+      "packet_id_to_create": "20260709-chatgpt-multi-window-and-kimi-fallback-05-verifier-synthesis-closeout",
+      "scope": "Verify child packet consistency, dedupe overlapping claims, identify missing proof, and produce the final Codex handoff order. Do not claim parent completion unless every child lane has terminal evidence."
+    }
+  ],
+  "handoff_rule": "Paste one prompt into one ChatGPT window. Each window creates only its assigned packet folder and status.json."
+}

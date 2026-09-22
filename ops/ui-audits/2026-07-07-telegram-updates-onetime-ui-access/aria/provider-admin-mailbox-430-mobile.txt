@@ -1,0 +1,47 @@
+- banner:
+  - strong: OneTimeOneTime
+  - text: Admin on Rabbi provider account
+  - link "Public site":
+    - /url: /
+  - link "Directory":
+    - /url: /service-providers
+  - link "Provider home":
+    - /url: /provider
+  - link "Assistant/help":
+    - /url: "#bnaBotPanel"
+  - link "Join":
+    - /url: /providers/join?onboard=provider
+- strong: ADMIN ON RABBI ACCOUNT
+- text: You are seeing the Rabbi / One Time provider portal as a scoped provider session. Super Admin tools are hidden here; actions stay inside rabbi_sheller_provider / one_time_mishnah_class.
+- link "Return to Super Admin Inbox":
+  - /url: /operations?workspace=platform&view=communications&section=email&inbox=rabbi
+- main:
+  - heading "Rabbi Elie Scheller" [level=1]
+  - paragraph: Rabbi / One Time provider account, opened by Super Admin.
+  - button "Sign Out"
+  - navigation "Provider workspace sections":
+    - button "Overview"
+    - button "CRM"
+    - button "Mailbox"
+    - button "Calendar"
+    - button "Parent Portal"
+    - button "Student Portal"
+    - button "Class Media"
+    - button "Content"
+    - button "Communications"
+    - button "Automations"
+    - button "Integrations"
+    - button "WhatsApp Setup"
+    - button "Reporting"
+    - button "Settings"
+    - button "Support"
+    - button "Website Import"
+    - button "Access Checklist"
+  - heading "Mailbox" [level=2]
+  - paragraph: "[redacted-email] messages captured into the One Time CRM."
+  - text: Resend inbound
+  - textbox "Search mailbox":
+    - /placeholder: Search sender, subject, or message
+  - button "Search"
+  - paragraph: Loading mailbox...
+- button "BNA Helper"

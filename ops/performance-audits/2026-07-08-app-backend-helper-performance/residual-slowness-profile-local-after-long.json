@@ -1,0 +1,703 @@
+{
+  "base_url": "http://127.0.0.1:8100",
+  "path": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+  "out_suffix": "local-after-long",
+  "captured_at": "2026-07-08T20:35:17.403Z",
+  "credentials_source": "ONE_TIME_OPS",
+  "login": {
+    "ok": true,
+    "status": 200,
+    "duration_ms": 1590,
+    "response_bytes": 477,
+    "cookie": "present",
+    "blocker": ""
+  },
+  "marks": {
+    "dom_content_loaded_ms": 441,
+    "shell_visible_ms": 1798,
+    "overview_visible_ms": 1807,
+    "capture_complete_ms": 15822,
+    "page_marks": [
+      {
+        "name": "domcontentloaded",
+        "time_ms": 439,
+        "detail": {}
+      },
+      {
+        "name": "load",
+        "time_ms": 555,
+        "detail": {}
+      },
+      {
+        "name": "overview_visible",
+        "time_ms": 1807,
+        "detail": {}
+      },
+      {
+        "name": "capture_complete",
+        "time_ms": 15821,
+        "detail": {}
+      }
+    ]
+  },
+  "navigation": {
+    "dom_content_loaded_ms": 440,
+    "load_event_ms": 555,
+    "duration_ms": 555,
+    "transfer_size": 1988,
+    "encoded_body_size": 1688
+  },
+  "fetches": [
+    {
+      "url": "/api/bna/auth/me",
+      "method": "GET",
+      "start_ms": 430,
+      "end_ms": 1331,
+      "duration_ms": 901,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/service-providers?approved_only=false",
+      "method": "GET",
+      "start_ms": 1345,
+      "end_ms": null,
+      "duration_ms": null,
+      "status": null,
+      "ok": null
+    },
+    {
+      "url": "/api/bna/auth/me",
+      "method": "GET",
+      "start_ms": 4552,
+      "end_ms": 5439,
+      "duration_ms": 888,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-directory?workspace=rabbi_sheller_provider",
+      "method": "GET",
+      "start_ms": 5440,
+      "end_ms": null,
+      "duration_ms": null,
+      "status": null,
+      "ok": null
+    },
+    {
+      "url": "/api/bna/workspace-platform?workspace=rabbi_sheller_provider",
+      "method": "GET",
+      "start_ms": 5440,
+      "end_ms": 7938,
+      "duration_ms": 2498,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-settings/rabbi_sheller_provider/branding",
+      "method": "GET",
+      "start_ms": 5440,
+      "end_ms": 7692,
+      "duration_ms": 2252,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/pipeline-cards?workspace=rabbi_sheller_provider",
+      "method": "GET",
+      "start_ms": 5440,
+      "end_ms": 7227,
+      "duration_ms": 1786,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/projects",
+      "method": "GET",
+      "start_ms": 5440,
+      "end_ms": 7226,
+      "duration_ms": 1786,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/signups?",
+      "method": "GET",
+      "start_ms": 5441,
+      "end_ms": 7676,
+      "duration_ms": 2235,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/parent-leads?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider",
+      "method": "GET",
+      "start_ms": 5441,
+      "end_ms": 9097,
+      "duration_ms": 3656,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/service-providers?approved_only=false",
+      "method": "GET",
+      "start_ms": 5441,
+      "end_ms": null,
+      "duration_ms": null,
+      "status": null,
+      "ok": null
+    },
+    {
+      "url": "/api/bna/contact-communications?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider",
+      "method": "GET",
+      "start_ms": 5441,
+      "end_ms": 9199,
+      "duration_ms": 3757,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/content-jobs?project_key=one_time_mishnah_class",
+      "method": "GET",
+      "start_ms": 5441,
+      "end_ms": 8746,
+      "duration_ms": 3304,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/class-sessions?project_key=one_time_mishnah_class",
+      "method": "GET",
+      "start_ms": 5442,
+      "end_ms": 9131,
+      "duration_ms": 3689,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/project-meetings?project=one_time_mishnah_class",
+      "method": "GET",
+      "start_ms": 5442,
+      "end_ms": 9474,
+      "duration_ms": 4032,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/one-time/classes?limit=120",
+      "method": "GET",
+      "start_ms": 5442,
+      "end_ms": 10572,
+      "duration_ms": 5130,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/one-time/classroom",
+      "method": "GET",
+      "start_ms": 5442,
+      "end_ms": 9331,
+      "duration_ms": 3889,
+      "status": 403,
+      "ok": false
+    },
+    {
+      "url": "/api/bna/one-time/question-moderation?limit=80",
+      "method": "GET",
+      "start_ms": 5442,
+      "end_ms": 10159,
+      "duration_ms": 4717,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/content-prompts",
+      "method": "GET",
+      "start_ms": 5442,
+      "end_ms": null,
+      "duration_ms": null,
+      "status": null,
+      "ok": null
+    },
+    {
+      "url": "/api/bna/content-bundles",
+      "method": "GET",
+      "start_ms": 5443,
+      "end_ms": 9957,
+      "duration_ms": 4514,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/notifications?status=all&workspace=rabbi_sheller_provider&limit=100",
+      "method": "GET",
+      "start_ms": 5443,
+      "end_ms": 10188,
+      "duration_ms": 4745,
+      "status": 403,
+      "ok": false
+    },
+    {
+      "url": "/api/bna/notification-preferences?workspace=rabbi_sheller_provider",
+      "method": "GET",
+      "start_ms": 5443,
+      "end_ms": 10392,
+      "duration_ms": 4949,
+      "status": 403,
+      "ok": false
+    }
+  ],
+  "fetch_summary": {
+    "count": 22,
+    "before_overview_count": 2,
+    "after_overview_count": 20,
+    "median_ms": 3656,
+    "p95_ms": 5130,
+    "max_ms": 5130,
+    "top_slowest": [
+      {
+        "method": "GET",
+        "path": "/api/bna/one-time/classes?limit=120",
+        "start_ms": 5442,
+        "duration_ms": 5130,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/notification-preferences?workspace=rabbi_sheller_provider",
+        "start_ms": 5443,
+        "duration_ms": 4949,
+        "status": 403,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/notifications?status=all&workspace=rabbi_sheller_provider&limit=100",
+        "start_ms": 5443,
+        "duration_ms": 4745,
+        "status": 403,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/one-time/question-moderation?limit=80",
+        "start_ms": 5442,
+        "duration_ms": 4717,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/content-bundles",
+        "start_ms": 5443,
+        "duration_ms": 4514,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/project-meetings?project=one_time_mishnah_class",
+        "start_ms": 5442,
+        "duration_ms": 4032,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/one-time/classroom",
+        "start_ms": 5442,
+        "duration_ms": 3889,
+        "status": 403,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/contact-communications?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider",
+        "start_ms": 5441,
+        "duration_ms": 3757,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/class-sessions?project_key=one_time_mishnah_class",
+        "start_ms": 5442,
+        "duration_ms": 3689,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/parent-leads?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider",
+        "start_ms": 5441,
+        "duration_ms": 3656,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/content-jobs?project_key=one_time_mishnah_class",
+        "start_ms": 5441,
+        "duration_ms": 3304,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/workspace-platform?workspace=rabbi_sheller_provider",
+        "start_ms": 5440,
+        "duration_ms": 2498,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/workspace-settings/rabbi_sheller_provider/branding",
+        "start_ms": 5440,
+        "duration_ms": 2252,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/signups",
+        "start_ms": 5441,
+        "duration_ms": 2235,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/pipeline-cards?workspace=rabbi_sheller_provider",
+        "start_ms": 5440,
+        "duration_ms": 1786,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/projects",
+        "start_ms": 5440,
+        "duration_ms": 1786,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/auth/me",
+        "start_ms": 430,
+        "duration_ms": 901,
+        "status": 200,
+        "after_overview": false
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/auth/me",
+        "start_ms": 4552,
+        "duration_ms": 888,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/service-providers?approved_only=false",
+        "start_ms": 1345,
+        "duration_ms": null,
+        "status": null,
+        "after_overview": false
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/workspace-directory?workspace=rabbi_sheller_provider",
+        "start_ms": 5440,
+        "duration_ms": null,
+        "status": null,
+        "after_overview": true
+      }
+    ],
+    "by_family": [
+      {
+        "path": "/api/bna/one-time/classes",
+        "count": 1,
+        "total_ms": 5130,
+        "max_ms": 5130,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 5130
+      },
+      {
+        "path": "/api/bna/notification-preferences",
+        "count": 1,
+        "total_ms": 4949,
+        "max_ms": 4949,
+        "statuses": [
+          403
+        ],
+        "avg_ms": 4949
+      },
+      {
+        "path": "/api/bna/notifications",
+        "count": 1,
+        "total_ms": 4745,
+        "max_ms": 4745,
+        "statuses": [
+          403
+        ],
+        "avg_ms": 4745
+      },
+      {
+        "path": "/api/bna/one-time/question-moderation",
+        "count": 1,
+        "total_ms": 4717,
+        "max_ms": 4717,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 4717
+      },
+      {
+        "path": "/api/bna/content-bundles",
+        "count": 1,
+        "total_ms": 4514,
+        "max_ms": 4514,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 4514
+      },
+      {
+        "path": "/api/bna/project-meetings",
+        "count": 1,
+        "total_ms": 4032,
+        "max_ms": 4032,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 4032
+      },
+      {
+        "path": "/api/bna/one-time/classroom",
+        "count": 1,
+        "total_ms": 3889,
+        "max_ms": 3889,
+        "statuses": [
+          403
+        ],
+        "avg_ms": 3889
+      },
+      {
+        "path": "/api/bna/contact-communications",
+        "count": 1,
+        "total_ms": 3757,
+        "max_ms": 3757,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 3757
+      },
+      {
+        "path": "/api/bna/class-sessions",
+        "count": 1,
+        "total_ms": 3689,
+        "max_ms": 3689,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 3689
+      },
+      {
+        "path": "/api/bna/parent-leads",
+        "count": 1,
+        "total_ms": 3656,
+        "max_ms": 3656,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 3656
+      },
+      {
+        "path": "/api/bna/content-jobs",
+        "count": 1,
+        "total_ms": 3304,
+        "max_ms": 3304,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 3304
+      },
+      {
+        "path": "/api/bna/workspace-platform",
+        "count": 1,
+        "total_ms": 2498,
+        "max_ms": 2498,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 2498
+      },
+      {
+        "path": "/api/bna/workspace-settings/rabbi_sheller_provider/branding",
+        "count": 1,
+        "total_ms": 2252,
+        "max_ms": 2252,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 2252
+      },
+      {
+        "path": "/api/bna/signups",
+        "count": 1,
+        "total_ms": 2235,
+        "max_ms": 2235,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 2235
+      },
+      {
+        "path": "/api/bna/auth/me",
+        "count": 2,
+        "total_ms": 1789,
+        "max_ms": 901,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 895
+      },
+      {
+        "path": "/api/bna/pipeline-cards",
+        "count": 1,
+        "total_ms": 1786,
+        "max_ms": 1786,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1786
+      },
+      {
+        "path": "/api/bna/projects",
+        "count": 1,
+        "total_ms": 1786,
+        "max_ms": 1786,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1786
+      },
+      {
+        "path": "/api/bna/service-providers",
+        "count": 2,
+        "total_ms": 0,
+        "max_ms": 0,
+        "statuses": [],
+        "avg_ms": 0
+      },
+      {
+        "path": "/api/bna/workspace-directory",
+        "count": 1,
+        "total_ms": 0,
+        "max_ms": 0,
+        "statuses": [],
+        "avg_ms": 0
+      },
+      {
+        "path": "/api/bna/content-prompts",
+        "count": 1,
+        "total_ms": 0,
+        "max_ms": 0,
+        "statuses": [],
+        "avg_ms": 0
+      }
+    ]
+  },
+  "long_tasks": {
+    "count": 0,
+    "total_ms": 0,
+    "max_ms": 0,
+    "top": []
+  },
+  "resources": {
+    "count": 28,
+    "transfer_size": 7393132,
+    "encoded_body_size": 7384732,
+    "scripts": [
+      {
+        "path": "/js/platform-ui/platform-ui-fixtures.js",
+        "transfer_size": 18400,
+        "encoded_body_size": 18100,
+        "duration_ms": 6
+      },
+      {
+        "path": "/js/platform-ui/platform-ui.js",
+        "transfer_size": 46137,
+        "encoded_body_size": 45837,
+        "duration_ms": 6
+      },
+      {
+        "path": "/js/app-select.js",
+        "transfer_size": 19763,
+        "encoded_body_size": 19463,
+        "duration_ms": 7
+      },
+      {
+        "path": "/js/operations-shell.js",
+        "transfer_size": 1185217,
+        "encoded_body_size": 1184917,
+        "duration_ms": 11
+      }
+    ],
+    "styles": [
+      {
+        "path": "/css2",
+        "transfer_size": 1042,
+        "encoded_body_size": 742,
+        "duration_ms": 190
+      },
+      {
+        "path": "/css/bna-app-shell.css",
+        "transfer_size": 35186,
+        "encoded_body_size": 34886,
+        "duration_ms": 5
+      },
+      {
+        "path": "/css/platform-ui/platform-ui.css",
+        "transfer_size": 17186,
+        "encoded_body_size": 16886,
+        "duration_ms": 6
+      },
+      {
+        "path": "/css/operations-shell.css",
+        "transfer_size": 218822,
+        "encoded_body_size": 218522,
+        "duration_ms": 6
+      },
+      {
+        "path": "/css/one-time-operations.css",
+        "transfer_size": 66816,
+        "encoded_body_size": 66516,
+        "duration_ms": 6
+      }
+    ]
+  },
+  "dom": {
+    "dom_nodes": 518,
+    "button_count": 122,
+    "link_count": 3,
+    "script_count": 5,
+    "stylesheet_count": 6,
+    "body_text_length": 2229,
+    "body_text_preview": "One Time Mishnah Class Provider workspace for members, classes, Studio, communications, payments, tasks, and setup. CURRENT WORKSPACE One Time Mishnah Class Provider / Workspace Manager Scoped Overview Workspace Setup Overview OV Members MB Classes & Content CC Studio ST Live Class LC Schedule SC Community CO Communications CM Automations AU Payments PA Tasks TS Reporting RP Integrations IN Back to all modules PROGRAM SECTIONS Overview Choose a section for this workspace. Overview 0 Launch 0 Program 0 Membership 0 Content 0 Schedule 0 Questions 0 Access 0 Settings 0 Platform Support Help Logout ONE TIME MISHNAH CLASS / OVERVIEW / OVERVIEW Overview Members 1 Classes 0 Studio 0 Setup 0 One Tim",
+    "error_banners": [],
+    "one_time_route": "overview",
+    "title": "One Time Mishnah Class - Operations"
+  },
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  "failed_requests": []
+}

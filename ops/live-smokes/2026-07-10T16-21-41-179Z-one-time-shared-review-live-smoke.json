@@ -1,0 +1,270 @@
+{
+  "started_at": "2026-07-10T16:21:41.179Z",
+  "app_url": "https://join.onetimeonetime.com",
+  "routes": [
+    {
+      "label": "landing",
+      "path": "/one-time/"
+    },
+    {
+      "label": "provider",
+      "path": "/provider.html?review=one-time"
+    },
+    {
+      "label": "parent",
+      "path": "/parent.html?review=one-time"
+    },
+    {
+      "label": "student",
+      "path": "/student.html?review=one-time"
+    },
+    {
+      "label": "classroom",
+      "path": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS"
+    },
+    {
+      "label": "email",
+      "path": "/one-time-email-review.html"
+    },
+    {
+      "label": "operations",
+      "path": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview"
+    }
+  ],
+  "viewports": [
+    {
+      "name": "mobile390",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "tablet768",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "desktop1440",
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "auth_source": "missing",
+  "checks": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 441,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "landing mobile390",
+      "ok": true,
+      "duration_ms": 1866,
+      "details": {
+        "title": "Give Your Son A Love For Torah | One Time Mishnayos",
+        "bytes": 4891,
+        "image_count": 13
+      }
+    },
+    {
+      "name": "provider mobile390",
+      "ok": true,
+      "duration_ms": 1718,
+      "details": {
+        "title": "One Time Rabbi Workspace Review",
+        "bytes": 1158,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "parent mobile390",
+      "ok": true,
+      "duration_ms": 1117,
+      "details": {
+        "title": "One Time Parent Review",
+        "bytes": 1880,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "student mobile390",
+      "ok": true,
+      "duration_ms": 1410,
+      "details": {
+        "title": "One Time Student Review",
+        "bytes": 2054,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "classroom mobile390",
+      "ok": true,
+      "duration_ms": 1131,
+      "details": {
+        "title": "One Time Mishnah Classroom",
+        "bytes": 2416,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "email mobile390",
+      "ok": true,
+      "duration_ms": 1103,
+      "details": {
+        "title": "One Time Email Review",
+        "bytes": 8383,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "operations mobile390",
+      "ok": true,
+      "skipped": true,
+      "duration_ms": 0,
+      "details": {
+        "reason": "Operations authentication setup failed; authenticated Operations route not checked. Operations login did not succeed"
+      }
+    },
+    {
+      "name": "landing tablet768",
+      "ok": true,
+      "duration_ms": 1853,
+      "details": {
+        "title": "Give Your Son A Love For Torah | One Time Mishnayos",
+        "bytes": 4925,
+        "image_count": 13
+      }
+    },
+    {
+      "name": "provider tablet768",
+      "ok": true,
+      "duration_ms": 1449,
+      "details": {
+        "title": "One Time Rabbi Workspace Review",
+        "bytes": 1198,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "parent tablet768",
+      "ok": true,
+      "duration_ms": 1125,
+      "details": {
+        "title": "One Time Parent Review",
+        "bytes": 1880,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "student tablet768",
+      "ok": true,
+      "duration_ms": 1425,
+      "details": {
+        "title": "One Time Student Review",
+        "bytes": 2085,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "classroom tablet768",
+      "ok": true,
+      "duration_ms": 1130,
+      "details": {
+        "title": "One Time Mishnah Classroom",
+        "bytes": 2523,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "email tablet768",
+      "ok": true,
+      "duration_ms": 1250,
+      "details": {
+        "title": "One Time Email Review",
+        "bytes": 8544,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "operations tablet768",
+      "ok": true,
+      "skipped": true,
+      "duration_ms": 0,
+      "details": {
+        "reason": "Operations authentication setup failed; authenticated Operations route not checked. Operations login did not succeed"
+      }
+    },
+    {
+      "name": "landing desktop1440",
+      "ok": true,
+      "duration_ms": 2173,
+      "details": {
+        "title": "Give Your Son A Love For Torah | One Time Mishnayos",
+        "bytes": 5007,
+        "image_count": 13
+      }
+    },
+    {
+      "name": "provider desktop1440",
+      "ok": true,
+      "duration_ms": 1801,
+      "details": {
+        "title": "One Time Rabbi Workspace Review",
+        "bytes": 1200,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "parent desktop1440",
+      "ok": true,
+      "duration_ms": 1261,
+      "details": {
+        "title": "One Time Parent Review",
+        "bytes": 1880,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "student desktop1440",
+      "ok": true,
+      "duration_ms": 1386,
+      "details": {
+        "title": "One Time Student Review",
+        "bytes": 2107,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "classroom desktop1440",
+      "ok": true,
+      "duration_ms": 1134,
+      "details": {
+        "title": "One Time Mishnah Classroom",
+        "bytes": 2523,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "email desktop1440",
+      "ok": true,
+      "duration_ms": 1127,
+      "details": {
+        "title": "One Time Email Review",
+        "bytes": 8544,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "operations desktop1440",
+      "ok": true,
+      "skipped": true,
+      "duration_ms": 0,
+      "details": {
+        "reason": "Operations authentication setup failed; authenticated Operations route not checked. Operations login did not succeed"
+      }
+    }
+  ]
+}

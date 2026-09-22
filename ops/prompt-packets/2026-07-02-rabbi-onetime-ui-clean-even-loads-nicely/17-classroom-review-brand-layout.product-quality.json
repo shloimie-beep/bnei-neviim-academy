@@ -1,0 +1,681 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-819",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-004",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802",
+      "PKT-20260702-805",
+      "PKT-20260702-818"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/design-references/2026-07-01-brand-kit-correction/BRAND-KIT-CORRECTION.md",
+      "memory-topics/one-time-rabbi-sheller.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/screenshots/one-time-classroom-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/screenshots/one-time-classroom-review-390-mobile.png",
+      "public/one-time-classroom.html",
+      "public/css/one-time-shared-review.css",
+      "config/brands/one-time.json"
+    ],
+    "produces": [
+      "public/one-time-classroom.html",
+      "config/brands/one-time.json",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/report.md",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/17-classroom-review-brand-layout.product-quality.json",
+    "terminal_condition": "The One Time classroom review route renders as a black/yellow One Time classroom surface with contained video/details/thread panels on desktop and mobile, without changing classroom APIs, access-code behavior, reply submission, helper behavior, route access, or external-provider behavior.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Classroom Review Brand And Layout Cleanup",
+  "created_at": "2026-07-03T02:05:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "MEMBER_PARENT_PORTAL"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "COMMUNITY_CLASSROOM",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.91,
+    "reasons": [
+      "Latest classroom-review screenshots show the route still using a pale generic review-app treatment while the authoritative One Time brand is black plus yellow.",
+      "Desktop classroom screenshot shows the Today / Live video and descriptive copy competing in one card, with the text area visually colliding with the video thumbnail/player.",
+      "The fix can be scoped to presentation and layout inside the classroom review page without changing classroom data, access-code, helper, reply, moderation, route, or external provider behavior."
+    ],
+    "affected_product_surfaces": [
+      "One Time classroom review/member classroom"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "Real Google Classroom, Vimeo, Zoom, Drive, email, payment, access-grant, and external-provider writes are out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state",
+      "06-task-dialogue-lane-contrast",
+      "07-task-route-layout-density",
+      "08-provider-review-load-error",
+      "09-student-review-mobile-readability",
+      "10-automation-center-readability",
+      "11-participants-members-readability",
+      "12-program-payment-access-readability",
+      "13-communications-provider-messages-readability",
+      "14-program-overview-readability",
+      "15-settings-workspace-readability",
+      "16-member-login-brand-helper-readability",
+      "17-classroom-review-brand-layout"
+    ],
+    "next_exact_packet": "After this classroom review cleanup, continue screenshot-reviewed IA/nav/filter cleanup or CRM contact-detail polish."
+  },
+  "operator_intent_summary": "Make the One Time classroom route feel clean, even, and correctly branded by replacing the generic pale review-page styling with a contained One Time black/yellow classroom layout and fixing the video/details card so it loads neatly.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "even",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No classroom API, review-mode data API, access-code validation, reply submission, helper API, moderation API, route registry, auth, entitlement, payment, access grant, send, or external-provider behavior change.",
+    "No Google Classroom, Google Calendar, Drive, Vimeo, Zoom, email, WhatsApp, Telegram, SMS, Stripe/payment, DNS, account mutation, upload, publish, or external CRM write.",
+    "No GHL runtime or LeadConnector reference.",
+    "No raw private member, student, parent, provider, classroom reply, token, secret, or contact evidence."
+  ],
+  "affected_surfaces": [
+    "One Time classroom review/member classroom"
+  ],
+  "affected_routes": [
+    "/one-time-classroom",
+    "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS"
+  ],
+  "affected_files": [
+    "public/one-time-classroom.html",
+    "config/brands/one-time.json",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/one-time-classroom.html inline styles and renderToday markup",
+      "public/css/one-time-shared-review.css shared One Time review overrides",
+      "config/brands/one-time.json committed One Time palette and asset paths",
+      "tests/one-time-rabbi-ui-final-local-smoke.test.js route coverage",
+      "tests/one-time-classroom-calendar-community-bot.test.js classroom contract coverage",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/screenshots/one-time-classroom-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/screenshots/one-time-classroom-review-390-mobile.png"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "Classroom review body and panels render as pale generic cards instead of a One Time black/yellow classroom surface.",
+      "Desktop Today / Live card puts a video/player and text in a cramped side-by-side layout where copy visually competes with the media.",
+      "Thread/reply areas use pale yellow review styling that is not aligned with the updated One Time dark member surfaces."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "even",
+      "loads nicely"
+    ],
+    "expanded_phrases": {
+      "clean": "The classroom route should read as a polished One Time learning surface, not a leftover generic review page.",
+      "even": "Hero, access panel, content panels, video block, calendar, curriculum, participation, questions, threads, and reply form should share black/yellow One Time colors, spacing, and readable card structure.",
+      "loads nicely": "The first loaded classroom screenshots should show contained media/details and no text/video overlap or horizontal overflow on desktop, tablet, or mobile."
+    },
+    "first_party_pattern_interpretation": "The route remains a first-party One Time classroom/member review surface scoped to rabbi_sheller_provider / one_time_mishnah_class."
+  },
+  "design_pattern_references": [
+    "ops/design-references/2026-07-01-brand-kit-correction/BRAND-KIT-CORRECTION.md",
+    "memory-topics/one-time-rabbi-sheller.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-819",
+      "statement": "Fix the One Time classroom review/member classroom route so it uses the One Time black/yellow brand and its video, details, and reply panels are contained/readable on desktop and mobile.",
+      "expected_result": "Desktop and mobile screenshots show a dark One Time classroom surface with yellow primary actions, readable panels, non-overlapping video/details layout, and contained Rabbi Threads reply form.",
+      "acceptance_criteria": [
+        "The classroom route uses One Time black/yellow/white/muted styling and no longer reads as a pale generic review app.",
+        "The Today / Live media and lesson details are arranged so text never overlays or visually collides with the video/player/thumbnail on desktop, tablet, or mobile.",
+        "Hero, access panel, content panels, item cards, details, participation rows, thread messages, response form, inputs, and buttons are readable with no horizontal overflow.",
+        "Review-only and no-write copy remains visible for test review mode.",
+        "Classroom access-code loading, review-mode API path, member API path, reply submission, helper mounting, nav links, route access, and external-provider behavior remain unchanged."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and broad UI cleanup register exist for RAW-20260702-008.",
+      "Brand memory and design reference confirm One Time is black/yellow.",
+      "Current screenshots show the classroom route using generic pale styling and a fragile desktop Today / Live layout.",
+      "The likely fix is scoped to classroom review markup/CSS only.",
+      "No member data, auth, send, payment, access, credential, privacy, legal, or financial decision is required for local visual implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": 390,
+      "auth_role": "review_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the review classroom route before the review fixture response renders.",
+      "expected_visible_title": "One Time Mishnah Classroom",
+      "expected_visible_message": "Opening classroom",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": [
+        "Assistant/help",
+        "Return to public site"
+      ],
+      "forbidden_content": [
+        "BNA school classroom data",
+        "open external write confirmation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Access form remains labeled.",
+      "accessibility_expectation": "Loading/access state is readable on mobile.",
+      "test_smoke_assertion": "Review route reaches a rendered classroom state without console/page errors.",
+      "requirement_id": "REQ-20260702-819"
+    },
+    "empty": {
+      "route": "/one-time-classroom",
+      "viewport": 390,
+      "auth_role": "no_access_code_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open classroom route without a saved code.",
+      "expected_visible_title": "Access Code",
+      "expected_visible_message": "Your code unlocks only your member-visible classroom records.",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": [
+        "One Time home",
+        "Member home"
+      ],
+      "forbidden_content": [
+        "private member records",
+        "BNA school goals"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Access code input keeps accessible purpose.",
+      "accessibility_expectation": "Empty/access form is readable on the dark One Time surface.",
+      "test_smoke_assertion": "No private classroom data renders before access code success.",
+      "requirement_id": "REQ-20260702-819"
+    },
+    "populated": {
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": 1440,
+      "auth_role": "review_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the review classroom route with the TEST review code.",
+      "expected_visible_title": "Today / Live",
+      "expected_visible_message": "Pesachim Perek 10 Review Class",
+      "expected_primary_action": "Fallback Vimeo Link",
+      "expected_secondary_actions": [
+        "Submit For Review",
+        "Assistant/help"
+      ],
+      "forbidden_content": [
+        "text overlapping video",
+        "generic pale classroom shell"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Classroom sections keep h2 headings and list structure.",
+      "accessibility_expectation": "Media, details, and cards have readable contrast and spacing.",
+      "test_smoke_assertion": "Focused probe confirms no video/details overlap and no horizontal overflow.",
+      "requirement_id": "REQ-20260702-819"
+    },
+    "filtered_empty": {
+      "route": "/one-time-classroom#worksheets",
+      "viewport": 430,
+      "auth_role": "member_without_published_video",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Render member-safe classroom data with no current video or worksheet item.",
+      "expected_visible_title": "Today / Live",
+      "expected_visible_message": "No member-visible video is published yet.",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": [
+        "Assistant/help"
+      ],
+      "forbidden_content": [
+        "collapsed empty state with unreadable text",
+        "external upload prompt"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty classroom state remains in the Today / Live section.",
+      "accessibility_expectation": "Empty text is readable on mobile.",
+      "test_smoke_assertion": "Empty state card uses dark/readable One Time styling.",
+      "requirement_id": "REQ-20260702-819"
+    },
+    "error": {
+      "route": "/one-time-classroom",
+      "viewport": 390,
+      "auth_role": "invalid_code_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit an invalid classroom code.",
+      "expected_visible_title": "Access Code",
+      "expected_visible_message": "Could not open classroom",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": [
+        "Member home"
+      ],
+      "forbidden_content": [
+        "raw API payload",
+        "raw private member data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Status/error text remains visible next to the access form.",
+      "accessibility_expectation": "Error copy is readable on the dark panel.",
+      "test_smoke_assertion": "No raw token or private response body appears in page text.",
+      "requirement_id": "REQ-20260702-819"
+    },
+    "blocked_setup": {
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": 1440,
+      "auth_role": "review_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open review route while real external classroom and video provider writes remain approval-gated.",
+      "expected_visible_title": "One Time Mishnah Classroom",
+      "expected_visible_message": "No writes will be performed.",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": [
+        "Fallback Vimeo Link"
+      ],
+      "forbidden_content": [
+        "live Google Classroom write",
+        "live upload confirmation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Review-only setup copy remains visible.",
+      "accessibility_expectation": "Blocked/no-write copy remains readable.",
+      "test_smoke_assertion": "Review-only path still reports no writes.",
+      "requirement_id": "REQ-20260702-819"
+    },
+    "preview_only": {
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": 390,
+      "auth_role": "review_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit the Rabbi Threads reply form in review mode.",
+      "expected_visible_title": "Rabbi Threads",
+      "expected_visible_message": "Preview submitted locally for UI review. No database write occurred.",
+      "expected_primary_action": "Submit For Review",
+      "expected_secondary_actions": [
+        "Assistant/help"
+      ],
+      "forbidden_content": [
+        "database write performed",
+        "public chat publication"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Reply textarea and submit button stay accessible.",
+      "accessibility_expectation": "Reply form fits in the dark thread panel on mobile.",
+      "test_smoke_assertion": "Review-mode reply submit still clears locally and does not write.",
+      "requirement_id": "REQ-20260702-819"
+    },
+    "success_readback": {
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": 1024,
+      "auth_role": "review_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Review classroom fixture renders all member-safe data.",
+      "expected_visible_title": "Six Sedarim",
+      "expected_visible_message": "Approved Participation",
+      "expected_primary_action": "Fallback Vimeo Link",
+      "expected_secondary_actions": [
+        "Submit For Review"
+      ],
+      "forbidden_content": [
+        "BNA school accountability records",
+        "shared classroom records from another workspace"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Curriculum details and participation rows remain readable and sectioned.",
+      "accessibility_expectation": "Tablet screenshot has no horizontal overflow and cards stay contained.",
+      "test_smoke_assertion": "Full local audit captures classroom screenshots with no automated findings.",
+      "requirement_id": "REQ-20260702-819"
+    },
+    "permission_denied": {
+      "route": "/one-time-classroom",
+      "viewport": 390,
+      "auth_role": "wrong_or_missing_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open member-safe classroom route with a missing/wrong code.",
+      "expected_visible_title": "Access Code",
+      "expected_visible_message": "Your code unlocks only your member-visible classroom records.",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": [
+        "Return to public site"
+      ],
+      "forbidden_content": [
+        "private classroom data",
+        "student records from another workspace"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Denied/no-code state remains form based.",
+      "accessibility_expectation": "No-code state remains readable.",
+      "test_smoke_assertion": "Logged-out/no-code route does not expose member/private API data.",
+      "requirement_id": "REQ-20260702-819"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": 430,
+      "auth_role": "review_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the mobile classroom route, then open Assistant/help.",
+      "expected_visible_title": "One Time Helper",
+      "expected_visible_message": "One Time member help",
+      "expected_primary_action": "Send",
+      "expected_secondary_actions": [
+        "Close"
+      ],
+      "forbidden_content": [
+        "helper hiding the classroom page while closed",
+        "BNA Helper title on One Time classroom surface"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Closed helper remains aria-hidden/inert and open helper has accessible controls.",
+      "accessibility_expectation": "Classroom cards remain readable with the closed launcher present.",
+      "test_smoke_assertion": "Final smoke still passes helper mount on One Time classroom route.",
+      "requirement_id": "REQ-20260702-819"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS", "viewport": 1440, "state": "populated", "required": true },
+      { "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS", "viewport": 1024, "state": "success_readback", "required": true },
+      { "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS", "viewport": 768, "state": "success_readback", "required": true },
+      { "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS", "viewport": 430, "state": "mobile_drawer_or_detail_state", "required": true },
+      { "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS", "viewport": 390, "state": "mobile_drawer_or_detail_state", "required": true }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260702-819-001",
+        "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 1440,
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/screenshots/one-time-classroom-review-1440-desktop.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/screenshots/one-time-classroom-review-1440-desktop.png",
+        "defect_codes": [
+          "VQ-BRAND-001",
+          "VQ-LAYOUT-007",
+          "VQ-CONTRAST-001"
+        ],
+        "severity": "P1",
+        "user_impact": "The classroom route does not match the One Time brand and the main lesson card feels cramped/fragile.",
+        "expected_fix": "Use dark One Time surfaces and restructure the Today / Live media/details card to prevent overlap.",
+        "requirement_id": "REQ-20260702-819"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Classroom navigation links remain visible and readable.",
+      "Access code form and Rabbi Threads reply form keep visible/programmatic labels.",
+      "Media iframe retains a descriptive title and the fallback video link remains keyboard reachable.",
+      "Cards, details, and thread messages fit without horizontal overflow at 390, 430, 768, 1024, and 1440 widths."
+    ],
+    "test_expectations": [
+      "Audit has no generated h1/label/horizontal-overflow findings.",
+      "Focused classroom probe confirms video/details do not overlap and the route has no horizontal overflow.",
+      "Existing classroom tests still pass."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Open Classroom",
+      "selector_or_action_key": "accessForm submit / loadClassroom()",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time classroom",
+      "external_write": false,
+      "handler_or_blocker": "Existing access-code load behavior; unchanged by this visual packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Submit For Review",
+      "selector_or_action_key": "thread response form submit",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time classroom",
+      "external_write": false,
+      "handler_or_blocker": "Existing review-mode local no-write behavior; unchanged.",
+      "registry_required": false
+    },
+    {
+      "label": "Fallback Vimeo Link",
+      "selector_or_action_key": "media link",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time classroom",
+      "external_write": false,
+      "handler_or_blocker": "Existing external navigation link; no upload or provider write.",
+      "registry_required": false
+    },
+    {
+      "label": "Assistant/help",
+      "selector_or_action_key": "data-bna-assistant-open / window.BNAAssistant.open()",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time classroom",
+      "external_write": false,
+      "handler_or_blocker": "Existing helper open behavior; unchanged.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "read_paths": [
+      "Existing /api/one-time-review/classroom fixture endpoint",
+      "Existing /api/one-time-classroom?code=... member-safe endpoint"
+    ],
+    "write_paths": [],
+    "fixtures_or_seed": [
+      "Existing TEST-ONETIME-REVIEW-ACCESS fixture"
+    ],
+    "data_privacy_notes": [
+      "Use review fixture screenshots only.",
+      "Do not commit raw member access codes except the existing TEST review code, private classroom replies, raw student/parent/member records, tokens, or secrets."
+    ],
+    "unchanged_contracts": [
+      "reviewMode API path",
+      "loadClassroom access-code behavior",
+      "localStorage classroom code behavior",
+      "thread response no-write review-mode behavior",
+      "helper mount and scope behavior"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "privacy_scope": "Member-safe One Time classroom route with review fixture mode and private member data only after a valid One Time access code.",
+    "forbidden_data": [
+      "Raw member session token or non-test access code",
+      "Raw private member/student/parent/provider/classroom reply/contact records",
+      "Secrets, API keys, account identifiers, or cookies",
+      "External send/publish/upload/access-grant/payment/connector proof"
+    ],
+    "required_checks": [
+      "No classroom API or auth behavior changes.",
+      "No live send, upload, publish, payment, access grant, connector, account, or external-provider mutation.",
+      "No route registry behavior change.",
+      "No GHL/LeadConnector runtime."
+    ],
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-REQ-20260702-819-A",
+      "scope": "Update One Time classroom review page brand colors, panel styles, and media/details layout only.",
+      "files_allowed": [
+        "public/one-time-classroom.html",
+        "config/brands/one-time.json"
+      ],
+      "verification": [
+        "PQC validation",
+        "local classroom/review tests",
+        "focused classroom brand/layout probe",
+        "full Rabbi / One Time current-state audit",
+        "watchdog:actions",
+        "watchdog:protocol-drift"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/one-time-classroom.html",
+      "public/css/one-time-shared-review.css",
+      "config/brands/one-time.json",
+      "tests/one-time-classroom-calendar-community-bot.test.js",
+      "tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "files_allowed_to_edit": [
+      "public/one-time-classroom.html",
+      "config/brands/one-time.json",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "This packet only covers the classroom review/member classroom visual shell. Operations classroom admin, member library, CRM/contact details, provider portals, real classroom writes, uploads, sends, payments, and deploy proof must split into later packets.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/17-classroom-review-brand-layout.product-quality.json",
+      "expected_result": "Product Quality packet passes validation."
+    },
+    {
+      "command": "node --test tests/one-time-classroom-calendar-community-bot.test.js tests/one-time-community-moderation-workflow.test.js tests/one-time-shared-review-branding.test.js",
+      "expected_result": "Classroom contracts and shared review branding remain intact."
+    },
+    {
+      "command": "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "expected_result": "One Time review routes still pass without console/page errors or external writes."
+    },
+    {
+      "command": "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:8095 --out=ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout",
+      "expected_result": "Full local visual audit captures 75 screenshots with no automated findings and classroom screenshots reflect the One Time dark brand/layout."
+    },
+    {
+      "command": "npm run watchdog:actions",
+      "expected_result": "Action registry watchdog remains finding_count 0."
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "expected_result": "Protocol drift watchdog remains findings 0."
+    }
+  ],
+  "evidence": {
+    "before": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/screenshots/one-time-classroom-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/screenshots/one-time-classroom-review-390-mobile.png"
+    ],
+    "after_required": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/screenshots/one-time-classroom-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/screenshots/one-time-classroom-review-390-mobile.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/probe/classroom-brand-layout-probe.json"
+    ],
+    "record_updates": [
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Classroom route renders with One Time black/yellow styling and contained panels.",
+      "Today / Live media and details do not overlap or visually collide on desktop/tablet/mobile.",
+      "Access code form, review-mode copy, curriculum, participation, top questions, reply queue, Rabbi Threads, reply form, nav, helper, API paths, and no-write preview behavior are unchanged.",
+      "Focused probe, local tests, full audit screenshots, action watchdog, protocol drift watchdog, register, changelog, and ledger are updated."
+    ],
+    "terminal_status": "local_verified_deploy_live_smoke_blocked_until_DEC-20260702-801"
+  },
+  "trace": {
+    "raw_id": "RAW-20260702-008",
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/17-classroom-review-brand-layout.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "npm run pqc:validate",
+      "node --test tests/one-time-classroom-calendar-community-bot.test.js tests/one-time-community-moderation-workflow.test.js tests/one-time-shared-review-branding.test.js",
+      "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "focused Playwright classroom brand/layout probe",
+      "node scripts/audit-rabbi-onetime-current-state.mjs",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "skipped_actions_policy": "No classroom API/auth behavior change, no live Google Classroom/Calendar/Drive/Vimeo/Zoom/email/WhatsApp/Telegram/SMS/payment/access grant/upload/publish/DNS/account mutation, no GHL/LeadConnector runtime, no production deploy in this local packet.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/screenshots/one-time-classroom-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/screenshots/one-time-classroom-review-390-mobile.png"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "requirement_ids": [
+      "REQ-20260702-819"
+    ],
+    "decision_ids": [
+      "DEC-20260702-801"
+    ],
+    "ledger_event": "rabbi_onetime_classroom_review_brand_layout_verified_local"
+  },
+  "drift_watchdog": {
+    "command": "npm run watchdog:protocol-drift",
+    "required": true,
+    "expected_result": "findings=0"
+  },
+  "next_packet": {
+    "recommended": "Continue screenshot-reviewed IA/nav/filter cleanup or CRM contact-detail polish.",
+    "path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "app_visible": true
+}

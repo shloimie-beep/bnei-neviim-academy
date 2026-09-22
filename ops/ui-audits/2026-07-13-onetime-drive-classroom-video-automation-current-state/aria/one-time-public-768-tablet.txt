@@ -1,0 +1,151 @@
+- link "Skip to content":
+  - /url: "#main"
+- banner:
+  - link "One Time Mishnayos home":
+    - /url: /one-time
+    - text: One Time Mishnayos Worldwide Mishnah learning
+  - link "Sign Up Now":
+    - /url: /one-time/signup
+  - button "Open navigation"
+- region "Rosh Hashanah special countdown":
+  - link "ROSH HASHANAH SPECIAL • 60 DAYS TO ROSH HASHANAH • JOIN FREE UNTIL ROSH HASHANAH • SIGN UP NOW":
+    - /url: /one-time/signup
+- button "Close navigation"
+- main:
+  - region "Give your son a love for learning Torah.":
+    - paragraph: Worldwide Mishnah learning — live from Eretz Yisrael
+    - heading "Give your son a love for learning Torah." [level=1]
+    - paragraph: Live every day at 7:00 p.m. Israel time.
+    - link "Sign Up Now":
+      - /url: /one-time/signup
+  - region "What You Receive":
+    - heading "What You Receive" [level=2]
+    - paragraph: A complete online dashboard for learning, progress tracking, reminders, and communication.
+    - img "Smiling One Time Mishnayos student"
+    - article:
+      - heading "Live daily Mishnayos class" [level=3]
+    - article:
+      - heading "Online class library" [level=3]
+    - article:
+      - heading "Student portal" [level=3]
+    - article:
+      - heading "Parent portal" [level=3]
+    - article:
+      - heading "Review sheets" [level=3]
+    - article:
+      - heading "Daily reminders" [level=3]
+    - article:
+      - heading "Questions with Rabbi Scheller" [level=3]
+    - article:
+      - heading "Monitored online platform" [level=3]
+  - region "What He’ll Gain":
+    - heading "What He’ll Gain" [level=2]
+    - article:
+      - text: Clarity image pending
+      - heading "Clarity" [level=3]
+      - paragraph: He’ll understand the main points, the questions, and the logic behind each Mishnah—with review sheets and opportunities to ask Rabbi Scheller questions.
+    - article:
+      - text: Accomplishment image pending
+      - heading "Accomplishment" [level=3]
+      - paragraph: One perek a day gives him a clear goal, steady progress, and visible progress badges and milestones in his student portal.
+    - article:
+      - text: Excitement image pending
+      - heading "Excitement for learning Torah" [level=3]
+      - paragraph: A lively class and a real connection with Rabbi Scheller make Torah learning something he looks forward to each day.
+  - region "How It Works":
+    - heading "How It Works" [level=2]
+    - paragraph: Join the live class now and stay updated as we continue refining the technology that brings Torah learning to boys around the world.
+    - article:
+      - heading "Sign up" [level=3]
+    - article:
+      - heading "Receive the class link" [level=3]
+    - article:
+      - heading "Enjoy the live class" [level=3]
+  - region "Who It’s For":
+    - heading "Who It’s For" [level=2]
+    - paragraph: Built for families, homeschoolers, schools, and local boys who want a clear daily Mishnayos rhythm.
+    - article:
+      - heading "Families" [level=3]
+    - article:
+      - heading "English-speaking homeschoolers" [level=3]
+    - article:
+      - heading "Schools" [level=3]
+    - article:
+      - heading "Local boys in Ramat Beit Shemesh Alef" [level=3]
+      - paragraph: Free live class at 7:00 p.m.
+  - region "A world-renowned Torah teacher.":
+    - paragraph: Meet Rabbi Scheller
+    - heading "A world-renowned Torah teacher." [level=2]
+    - paragraph: Rabbi Eli Scheller has taught Torah to students and audiences across the Jewish world. His clarity, warmth, and energy help boys understand what they are learning and look forward to coming back.
+    - figure:
+      - img "Rabbi Eli Scheller holding the One Time book"
+    - heading "Teaching Torah Across the Jewish World" [level=3]
+    - figure "Atlanta, Georgia Rabbi Scheller teaching a large student group.":
+      - img "Rabbi Eli Scheller teaching students in Atlanta, Georgia"
+      - strong: Atlanta, Georgia
+      - text: Rabbi Scheller teaching a large student group.
+    - figure "Baltimore, Maryland Large live teaching session with students.":
+      - img "Rabbi Eli Scheller teaching students in Baltimore, Maryland"
+      - strong: Baltimore, Maryland
+      - text: Large live teaching session with students.
+    - figure "Flatbush, New York Students gathered for Torah learning.":
+      - img "Rabbi Eli Scheller teaching students in Flatbush, New York"
+      - strong: Flatbush, New York
+      - text: Students gathered for Torah learning.
+    - figure "Hollywood, Florida Classroom teaching with engaged boys.":
+      - img "Rabbi Eli Scheller teaching students in Hollywood, Florida"
+      - strong: Hollywood, Florida
+      - text: Classroom teaching with engaged boys.
+    - figure "Lakewood, New Jersey Evening Torah gathering with Rabbi Scheller.":
+      - img "Rabbi Eli Scheller teaching students in Lakewood, New Jersey"
+      - strong: Lakewood, New Jersey
+      - text: Evening Torah gathering with Rabbi Scheller.
+    - figure "Miami, Florida Large outdoor teaching event.":
+      - img "Rabbi Eli Scheller teaching students in Miami, Florida"
+      - strong: Miami, Florida
+      - text: Large outdoor teaching event.
+    - figure "Philadelphia, Pennsylvania Rabbi Scheller speaking to a full room.":
+      - img "Rabbi Eli Scheller teaching students in Philadelphia, Pennsylvania"
+      - strong: Philadelphia, Pennsylvania
+      - text: Rabbi Scheller speaking to a full room.
+    - figure "Silver Spring, Maryland Classroom learning with Rabbi Scheller.":
+      - img "Rabbi Eli Scheller teaching students in Silver Spring, Maryland"
+      - strong: Silver Spring, Maryland
+      - text: Classroom learning with Rabbi Scheller.
+    - button "Previous teaching location": ‹
+    - button "Next teaching location": ›
+    - button "Pause teaching location carousel": "||"
+    - button "Show Atlanta, Georgia"
+    - button "Show Baltimore, Maryland"
+    - button "Show Flatbush, New York"
+    - button "Show Hollywood, Florida"
+    - button "Show Lakewood, New Jersey"
+    - button "Show Miami, Florida"
+    - button "Show Philadelphia, Pennsylvania"
+    - button "Show Silver Spring, Maryland"
+    - heading "As Seen Across the Jewish World" [level=3]
+    - img "TorahAnytime"
+    - img "24Six"
+    - img "The Loop"
+    - img "NakiRadio"
+    - img "Mishpacha"
+  - region "Ready to join the live class?":
+    - heading "Ready to join the live class?" [level=2]
+    - link "Sign Up Now":
+      - /url: /one-time/signup
+- contentinfo:
+  - img "One Time"
+  - paragraph: Worldwide Mishnah learning with Rabbi Eli Scheller.
+  - navigation "Footer":
+    - link "Home":
+      - /url: /one-time
+    - link "Sign Up Now":
+      - /url: /one-time/signup
+    - link "Privacy":
+      - /url: /one-time/privacy.html
+    - link "Terms":
+      - /url: /one-time/terms.html
+    - link "Member Login":
+      - /url: /rabbi-member
+- link "Open WhatsApp for One Time Mishnayos class information":
+  - /url: /api/one-time/public-whatsapp/redirect?intent=free_class

@@ -1,0 +1,33 @@
+{
+  "schema_version": "clean_launch_live_smoke.v1",
+  "created_at": "2026-07-07T20:31:31+03:00",
+  "commit": "af220573",
+  "branch": "master",
+  "deployment_id": "795f3f77-e4f1-4ff1-aaf9-0c54d3ae2e01",
+  "deployment_status": "SUCCESS",
+  "live_checks": [
+    {
+      "url": "https://bneineviimacademy.org/operations",
+      "status": 401,
+      "expected": "protected route remains protected",
+      "passed": true
+    },
+    {
+      "url": "https://bneineviimacademy.org/operations.html",
+      "status": 200,
+      "expected": "Operations shell returns without stale archive action",
+      "bytes": 2313435,
+      "has_archive_label": false,
+      "has_archive_function": false,
+      "has_operations_shell": true,
+      "passed": true
+    }
+  ],
+  "status": "passed",
+  "remaining_blockers": [
+    "Generated ChatGPT pickup/watchdog/queue artifacts require separate retention/dedupe cleanup.",
+    "One Time provider aliases remain account-owner gated.",
+    "join.onetimeonetime.com Railway target remains unavailable in this local context.",
+    "Drive/private transcript sync and external sends/payments/DNS/access/provider writes require exact approved packets."
+  ]
+}

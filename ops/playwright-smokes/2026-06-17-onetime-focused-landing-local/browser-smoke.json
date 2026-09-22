@@ -1,0 +1,47 @@
+[
+  {
+    "name": "mobile-390",
+    "width": 390,
+    "height": 844,
+    "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-onetime-focused-landing-local\\mobile-390.png",
+    "title": "Worldwide OneTime Mishnayos - Draft Offer",
+    "h1": "Worldwide OneTime Mishnayos",
+    "cta": "Join the Shir",
+    "price": "$67 planned",
+    "hasAcademyHotline": false,
+    "heroBackground": "linear-gradient(90deg, rgba(20, 17, 15, 0.9) 0%, rgba(20, 17, 15, 0.66) 44%, rgba(20, 17, 15, 0.24) 100%), url(\"http://localhost:8080/images/sitting%20on%20grass.jpg\")",
+    "hasHorizontalOverflow": false,
+    "scrollWidth": 390,
+    "clientWidth": 390
+  },
+  {
+    "name": "tablet-768",
+    "width": 768,
+    "height": 1024,
+    "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-onetime-focused-landing-local\\tablet-768.png",
+    "title": "Worldwide OneTime Mishnayos - Draft Offer",
+    "h1": "Worldwide OneTime Mishnayos",
+    "cta": "Join the Shir",
+    "price": "$67 planned",
+    "hasAcademyHotline": false,
+    "heroBackground": "linear-gradient(90deg, rgba(20, 17, 15, 0.9) 0%, rgba(20, 17, 15, 0.66) 44%, rgba(20, 17, 15, 0.24) 100%), url(\"http://localhost:8080/images/sitting%20on%20grass.jpg\")",
+    "hasHorizontalOverflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "name": "desktop-1440",
+    "width": 1440,
+    "height": 1000,
+    "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-onetime-focused-landing-local\\desktop-1440.png",
+    "title": "Worldwide OneTime Mishnayos - Draft Offer",
+    "h1": "Worldwide OneTime Mishnayos",
+    "cta": "Join the Shir",
+    "price": "$67 planned",
+    "hasAcademyHotline": false,
+    "heroBackground": "linear-gradient(90deg, rgba(20, 17, 15, 0.9) 0%, rgba(20, 17, 15, 0.66) 44%, rgba(20, 17, 15, 0.24) 100%), url(\"http://localhost:8080/images/sitting%20on%20grass.jpg\")",
+    "hasHorizontalOverflow": false,
+    "scrollWidth": 1440,
+    "clientWidth": 1440
+  }
+]

@@ -1,0 +1,843 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260706-940",
+  "parent_raw_id": "RAW-20260706-909",
+  "source_statement_ids": [
+    "SRC-20260706-909-001",
+    "SRC-20260706-909-002",
+    "SRC-20260706-909-003",
+    "SRC-20260706-909-004",
+    "SRC-20260706-909-005",
+    "SRC-20260706-909-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260706-909-onetime-crm-mailbox-goal.md",
+      "tasks-pending/2026-07-06-onetime-crm-mailbox-goal.md",
+      "src/lib/integrations/resend-inbound-crm.js",
+      "src/lib/integrations/resend-client.js",
+      "public/provider.html",
+      "server.js"
+    ],
+    "produces": [
+      "server.js",
+      "public/provider.html",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "tests/provider-mailbox.test.js",
+      "tasks-pending/2026-07-06-onetime-crm-mailbox-goal.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-06-onetime-crm-mailbox/00-mailbox-mvp.product-quality.json",
+    "terminal_condition": "Rabbi / One Time provider portal has a scoped mailbox MVP that lists and opens email threads from bna_communications, saves local reply drafts, and can send only through the guarded Resend sender path when readiness and explicit confirmation pass.",
+    "handoff_target": "tasks-pending/2026-07-06-onetime-crm-mailbox-goal.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "One Time CRM Mailbox MVP",
+  "created_at": "2026-07-06T16:00:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "EMAIL_PROVIDER_SETUP"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260706-909",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "CRM_PIPELINE",
+      "COMMUNICATIONS_EMAIL",
+      "PROVIDER_SETUP",
+      "EXTERNAL_WRITE_REQUEST",
+      "SECURITY_PRIVACY",
+      "DEPLOY_RELEASE"
+    ],
+    "confidence": 0.94,
+    "reasons": [
+      "Operator asked for a real Rabbi mailbox instead of a fake CRM/inquiry tray.",
+      "Operator used product-quality language including CRM and multi-million dollar quality.",
+      "Email receiving and reply sending involve external-provider readiness, privacy, and explicit-send approval rules.",
+      "The immediate implementation can stay scoped to one major module: One Time provider mailbox."
+    ],
+    "affected_product_surfaces": [
+      "Provider portal Mailbox section",
+      "Provider-scoped mailbox API",
+      "One Time Resend readiness/reporting"
+    ],
+    "likely_external_provider_blockers": [
+      "Production live inbound capture requires RESEND_WEBHOOK_SECRET for /api/resend/inbound.",
+      "Production reply sending requires Resend sender readiness for info@onetimeonetime.com and explicit confirmation.",
+      "Bulk broadcast email is out of scope and requires a separate campaign packet with unsubscribe/suppression/list-source proof.",
+      "Physical mailing address must be configured in runtime env/keyholder and not committed to tracked files."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-mailbox-mvp",
+      "01-mailbox-verification",
+      "02-bulk-campaign-follow-up-if-approved"
+    ],
+    "next_exact_packet": "Implement 00-mailbox-mvp after this packet validates."
+  },
+  "operator_intent_summary": "Build Rabbi a real One Time CRM mailbox for info@onetimeonetime.com so he can log in, see emails, open threads, and use a guarded reply workflow inside the first-party provider portal.",
+  "raw_quotes": [
+    "He wants to just log into his email and see it.",
+    "Can you just build that for me right now?",
+    "Let's give him a CRM. Let's give him the inbox.",
+    "Like a really nice one. Like a multi-million dollar CRM inbox.",
+    "There's already a Rabbi list, but he wants to see his inbox."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260706-940",
+      "decision": "The physical mailing address is approved by the operator for future email compliance footer use but must be stored in runtime config, not tracked source.",
+      "status": "needs_deploy_config"
+    },
+    {
+      "id": "DEC-20260706-941",
+      "decision": "Bulk broadcast sending is a later guarded packet; this packet builds mailbox/inbox plus guarded one-thread replies.",
+      "status": "blocked_follow_up"
+    },
+    {
+      "id": "DEC-20260630-NO-GHL-FIRST-PARTY-CRM",
+      "decision": "CRM means first-party BNA CRM patterns only; no GHL or LeadConnector runtime.",
+      "status": "decided"
+    }
+  ],
+  "out_of_scope": [
+    "No bulk broadcast/campaign send in this packet.",
+    "No hard-coded physical mailing address or raw private address in tracked source.",
+    "No DNS mutation, webhook creation inside Resend dashboard, provider account mutation, credential copy, or secret exposure.",
+    "No payment/access grant, Stripe/GreenInvoice mutation, WhatsApp send, Telegram send, Drive write, Vimeo/Zoom action, or public/member-library publication.",
+    "No GHL runtime, LeadConnector references, or external CRM writes.",
+    "No unrelated BNA school, parent, student, provider, platform, or super-admin data in the Rabbi mailbox."
+  ],
+  "affected_surfaces": [
+    "One Time provider portal mailbox",
+    "Provider-scoped mailbox API",
+    "Email provider readiness status for mailbox use"
+  ],
+  "affected_routes": [
+    "/provider",
+    "/api/provider-portal/mailbox",
+    "/api/provider-portal/mailbox/:threadKey"
+  ],
+  "affected_files": [
+    "server.js",
+    "public/provider.html",
+    "ops/action-registry.json",
+    "ops/route-registry.json",
+    "tests/provider-mailbox.test.js",
+    "tasks-pending/2026-07-06-onetime-crm-mailbox-goal.md",
+    "ops/agent-task-ledger.jsonl",
+    "ops/agent-changelog.md"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "src/lib/integrations/resend-inbound-crm.js already writes recognized One Time inbound messages into bna_communications.",
+      "src/lib/integrations/resend-client.js already exposes guarded sendResendEmail.",
+      "server.js has Resend inbound webhook routes and admin email draft/send routes, but no provider-scoped mailbox API.",
+      "public/provider.html has Parent Inquiries and response drafts, but not a real email mailbox.",
+      "docs/integrations/RESEND.md documents inbound receiving and CRM routing."
+    ],
+    "known_blockers": [
+      "Live production inbound proof depends on RESEND_WEBHOOK_SECRET and Resend webhook configuration.",
+      "Live reply send depends on Resend readiness and explicit confirmation.",
+      "Compliance footer mailing address value is runtime-only and not committed."
+    ],
+    "observed_visual_defects": [
+      "Provider portal has an Inquiries tray that says drafts do not send email; this does not satisfy the operator's real mailbox request.",
+      "Email Review route previews templates but does not show received mail threads.",
+      "Provider-facing normal workflow lacks a dedicated, readable email thread view."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "CRM",
+      "multi-million dollar",
+      "working",
+      "configured",
+      "bulk email",
+      "inbox"
+    ],
+    "expanded_phrases": {
+      "CRM": "For this packet, CRM means a first-party One Time mailbox attached to scoped contacts and communications: thread list, contact metadata, activity timeline, reply draft/send state, and workspace scoping.",
+      "multi-million dollar": "The mailbox should be credible and polished: clear hierarchy, contained layout, useful states, readable mobile, no debug clutter, and no fake actions.",
+      "million-dollar": "The mailbox must use exact IA, state, action, and evidence requirements instead of a vague visual polish claim.",
+      "working": "Working means received messages load from the scoped backend, selected thread opens, drafts save locally, guarded sends either succeed with readback or return a clear blocker, and errors are visible.",
+      "configured": "Configured means sender, reply-to, inbound webhook, domain, and mailing-address readiness are shown as ready or blocked with owner/next action without exposing secret values.",
+      "clean": "Clean means aligned list/detail layout, readable labels, contained cards, no debug clutter, mobile reflow, clear state messages, and no fake actions.",
+      "bulk email": "Bulk email is not part of this implementation slice; it requires recipient source, unsubscribe/suppression readiness, compliance footer config, seed proof, and a separate approval packet.",
+      "inbox": "Inbox means a list/detail email mailbox for info@onetimeonetime.com, not only template previews or generic inquiry cards."
+    },
+    "first_party_pattern_interpretation": "Use first-party BNA CRM patterns only: scoped contact matching, communication timelines, thread detail, local notes/drafts, guarded quick actions, and no GHL/LeadConnector runtime."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md",
+    "memory-topics/email-resend.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260706-940",
+      "statement": "Compile and validate the scoped One Time CRM mailbox MVP packet before product code edits.",
+      "expected_result": "PQC packet names exact mailbox routes, role scope, states, actions, data, privacy, external-provider policy, and evidence gates.",
+      "acceptance_criteria": [
+        "Packet validates with npm run pqc:validate.",
+        "Packet splits bulk broadcast sending out of scope.",
+        "Packet forbids hard-coded private physical mailing address."
+      ]
+    },
+    {
+      "id": "REQ-20260706-941",
+      "statement": "Build the provider-scoped mailbox backend for thread list and thread detail.",
+      "expected_result": "Authorized One Time provider sessions can list and open email threads from bna_communications scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+      "acceptance_criteria": [
+        "Mailbox API returns no unrelated workspace records.",
+        "Thread list includes sender, subject, preview, latest status, date, unread/follow-up signals, and contact metadata where available.",
+        "Thread detail includes chronological inbound/outbound messages and attachment metadata without raw secret headers."
+      ]
+    },
+    {
+      "id": "REQ-20260706-942",
+      "statement": "Build the provider portal Mailbox UI.",
+      "expected_result": "Provider portal has a Mailbox section with inbox list, selected thread, contact panel, readiness card, and reply composer states.",
+      "acceptance_criteria": [
+        "Desktop layout supports list/detail scanning.",
+        "Mobile layout stacks cleanly with a visible back-to-list/detail pattern.",
+        "Loading, empty, populated, filtered-empty, error, blocked setup, preview-only, success-readback, permission-denied, and mobile detail states are represented."
+      ]
+    },
+    {
+      "id": "REQ-20260706-943",
+      "statement": "Build local reply draft and guarded reply-send behavior.",
+      "expected_result": "Rabbi can save a draft without sending; send attempts require explicit confirmation and Resend readiness, then log outbound messages into the same thread.",
+      "acceptance_criteria": [
+        "Draft save performs no external write.",
+        "Send path uses the existing guarded Resend helper and returns readiness blockers when not configured.",
+        "Successful send writes an outbound bna_communications row tied to the thread."
+      ]
+    },
+    {
+      "id": "REQ-20260706-944",
+      "statement": "Expose sender and compliance readiness safely.",
+      "expected_result": "Mailbox readiness reports sender, reply-to, domain, inbound webhook, and mailing address configured/missing state without secret or private-address exposure.",
+      "acceptance_criteria": [
+        "Exact mailing address is not committed to tracked source.",
+        "UI shows whether mailing address config exists, not the raw value.",
+        "Missing setup rows name owner and next action."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Affected workspace/project are exactly rabbi_sheller_provider / one_time_mishnah_class.",
+      "Affected routes are limited to provider portal mailbox and provider mailbox APIs.",
+      "Existing current-state code paths for Resend inbound, Resend send, and provider portal were inspected.",
+      "External writes are either draft-only or guarded by explicit confirmation and readiness.",
+      "Bulk broadcast send is split out of scope.",
+      "Physical mailing address stays runtime-only.",
+      "No product decision is required for local mailbox read/draft implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/provider#mailbox",
+      "viewport": 1440,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Mailbox before API fetch returns.",
+      "expected_visible_title": "Mailbox",
+      "expected_visible_message": "Loading mailbox...",
+      "expected_primary_action": "None until loaded",
+      "expected_secondary_actions": [
+        "Refresh"
+      ],
+      "forbidden_content": [
+        "raw JSON",
+        "secret headers",
+        "unrelated workspace messages"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mailbox region has a heading and loading status.",
+      "accessibility_expectation": "Loading text is readable and does not trap focus.",
+      "test_smoke_assertion": "UI renders loading state before mocked mailbox data resolves.",
+      "requirement_id": "REQ-20260706-942"
+    },
+    "empty": {
+      "route": "/provider#mailbox",
+      "viewport": 1440,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Mailbox API returns zero scoped email threads.",
+      "expected_visible_title": "Mailbox",
+      "expected_visible_message": "No emails have arrived at info@onetimeonetime.com yet.",
+      "expected_primary_action": "Refresh",
+      "expected_secondary_actions": [
+        "Open setup status"
+      ],
+      "forbidden_content": [
+        "fake message cards",
+        "bulk-send CTA"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state is inside the mailbox main region.",
+      "accessibility_expectation": "Empty-state copy is readable and not color-only.",
+      "test_smoke_assertion": "Empty mailbox state distinguishes true empty from loading.",
+      "requirement_id": "REQ-20260706-942"
+    },
+    "populated": {
+      "route": "/provider#mailbox",
+      "viewport": 1024,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Mailbox API returns one or more scoped threads.",
+      "expected_visible_title": "Mailbox",
+      "expected_visible_message": "Thread list and selected email are visible.",
+      "expected_primary_action": "Open thread",
+      "expected_secondary_actions": [
+        "Search",
+        "Refresh",
+        "Save draft"
+      ],
+      "forbidden_content": [
+        "BNA school private records",
+        "platform diagnostics in normal workflow"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Thread list and detail panel have labels.",
+      "accessibility_expectation": "Thread cards and reply controls have visible focus and readable labels.",
+      "test_smoke_assertion": "Selecting a thread displays chronological messages.",
+      "requirement_id": "REQ-20260706-942"
+    },
+    "filtered_empty": {
+      "route": "/provider#mailbox",
+      "viewport": 768,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Search returns no matching scoped threads.",
+      "expected_visible_title": "Mailbox",
+      "expected_visible_message": "No emails match this search.",
+      "expected_primary_action": "Clear search",
+      "expected_secondary_actions": [
+        "Refresh"
+      ],
+      "forbidden_content": [
+        "unscoped search results"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filtered result count is visible.",
+      "accessibility_expectation": "Clear search control is keyboard reachable.",
+      "test_smoke_assertion": "Search filter can be cleared and does not call external providers.",
+      "requirement_id": "REQ-20260706-942"
+    },
+    "error": {
+      "route": "/provider#mailbox",
+      "viewport": 430,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Mailbox API returns an error.",
+      "expected_visible_title": "Mailbox",
+      "expected_visible_message": "Mailbox could not load.",
+      "expected_primary_action": "Retry",
+      "expected_secondary_actions": [
+        "Open setup status"
+      ],
+      "forbidden_content": [
+        "stack trace",
+        "raw SQL error",
+        "secret values"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error has a labeled status and retry button.",
+      "accessibility_expectation": "Error is visible in text and not color-only.",
+      "test_smoke_assertion": "API error renders retryable error state.",
+      "requirement_id": "REQ-20260706-942"
+    },
+    "blocked_setup": {
+      "route": "/provider#mailbox",
+      "viewport": 1440,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Resend sender or inbound webhook readiness is missing.",
+      "expected_visible_title": "Setup status",
+      "expected_visible_message": "Receiving or sending needs setup before live use.",
+      "expected_primary_action": "Review blocker",
+      "expected_secondary_actions": [
+        "Save draft only",
+        "Refresh readiness"
+      ],
+      "forbidden_content": [
+        "secret values",
+        "raw private physical address"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked setup card names owner, reason, and next action.",
+      "accessibility_expectation": "Blocked setup state remains readable on mobile and desktop.",
+      "test_smoke_assertion": "Blocked send returns no external write and clear blocker.",
+      "requirement_id": "REQ-20260706-944"
+    },
+    "preview_only": {
+      "route": "/provider#mailbox",
+      "viewport": 390,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Save a reply draft without sending.",
+      "expected_visible_title": "Reply draft",
+      "expected_visible_message": "Draft saved. No email was sent.",
+      "expected_primary_action": "Send reply",
+      "expected_secondary_actions": [
+        "Keep draft",
+        "Cancel"
+      ],
+      "forbidden_content": [
+        "silent external send",
+        "bulk campaign controls"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Draft saved state appears near the composer.",
+      "accessibility_expectation": "No-send status is explicit text.",
+      "test_smoke_assertion": "Draft API returns no_send=true and external_write_performed=false.",
+      "requirement_id": "REQ-20260706-943"
+    },
+    "success_readback": {
+      "route": "/provider#mailbox",
+      "viewport": 1440,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "A guarded reply send succeeds in a mocked or approved environment.",
+      "expected_visible_title": "Reply sent",
+      "expected_visible_message": "Reply was sent and saved to the thread.",
+      "expected_primary_action": "View thread",
+      "expected_secondary_actions": [
+        "Refresh mailbox"
+      ],
+      "forbidden_content": [
+        "unlogged sent email"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Success readback is announced and remains in the mailbox region.",
+      "accessibility_expectation": "Success state is visible and not color-only.",
+      "test_smoke_assertion": "Successful mocked send writes outbound communication with provider message id.",
+      "requirement_id": "REQ-20260706-943"
+    },
+    "permission_denied": {
+      "route": "/api/provider-portal/mailbox",
+      "viewport": 430,
+      "auth_role": "logged_out_or_wrong_scope",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Call mailbox API without a valid One Time provider session.",
+      "expected_visible_title": "Access denied",
+      "expected_visible_message": "Provider session required.",
+      "expected_primary_action": "Sign in",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "thread previews",
+        "contact names",
+        "email bodies"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Denied state has a heading or status.",
+      "accessibility_expectation": "No private data is exposed in denied state.",
+      "test_smoke_assertion": "Unauthorized mailbox calls return no message data.",
+      "requirement_id": "REQ-20260706-941"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/provider#mailbox",
+      "viewport": 390,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Select a thread on mobile.",
+      "expected_visible_title": "Email thread",
+      "expected_visible_message": "Selected thread detail is visible with back-to-inbox.",
+      "expected_primary_action": "Back to inbox",
+      "expected_secondary_actions": [
+        "Save draft",
+        "Send reply"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "hidden close/back control",
+        "overlapping composer"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile thread detail has a heading and back control.",
+      "accessibility_expectation": "Touch targets are usable and composer does not overlap content.",
+      "test_smoke_assertion": "Mobile detail opens and returns to list without layout overflow.",
+      "requirement_id": "REQ-20260706-942"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/provider#mailbox",
+        "viewport": 1440,
+        "state": "populated",
+        "required": true
+      },
+      {
+        "route": "/provider#mailbox",
+        "viewport": 1024,
+        "state": "populated",
+        "required": true
+      },
+      {
+        "route": "/provider#mailbox",
+        "viewport": 768,
+        "state": "filtered_empty",
+        "required": true
+      },
+      {
+        "route": "/provider#mailbox",
+        "viewport": 430,
+        "state": "error_or_blocked_setup",
+        "required": true
+      },
+      {
+        "route": "/provider#mailbox",
+        "viewport": 390,
+        "state": "mobile_drawer_or_detail_state",
+        "required": true
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260706-940-001",
+        "route": "/provider#mailbox",
+        "viewport": 390,
+        "screenshot_before": "blocked_before_implementation_new_surface",
+        "screenshot_after_or_blocker": "ops/playwright-smokes/2026-07-06-onetime-crm-mailbox-local/mobile-mailbox.png",
+        "defect_codes": [
+          "VQ-CRM-001",
+          "VQ-LAYOUT-001",
+          "VQ-TEXT-001"
+        ],
+        "severity": "P1",
+        "user_impact": "Rabbi currently has an inquiry tray and template review, not a real mobile-readable email mailbox.",
+        "expected_fix": "Create a dedicated mailbox surface with list/detail, readable thread cards, mobile selected-thread state, and guarded reply controls.",
+        "requirement_id": "REQ-20260706-942"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Mailbox region has one clear heading and readable status text.",
+      "Thread list items are buttons with accessible labels.",
+      "Selected thread state is visible in text, not color-only.",
+      "Reply composer textarea, Save Draft, and Send Reply controls have names and focus states.",
+      "Mobile detail state has a clear Back to inbox control.",
+      "Setup blockers identify owner, reason, and next action in text."
+    ],
+    "test_expectations": [
+      "No horizontal overflow at 390px.",
+      "No unlabeled visible controls in the mailbox region.",
+      "Keyboard users can tab from thread list to composer controls."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Open Mailbox",
+      "selector_or_action_key": "ACTION-ONETIME-MAILBOX-OPEN",
+      "action_state": "WORKS_NOW",
+      "owner": "Rabbi provider admin",
+      "external_write": false,
+      "handler_or_blocker": "Switch provider portal section to mailbox and load scoped threads.",
+      "registry_required": true
+    },
+    {
+      "label": "Refresh Mailbox",
+      "selector_or_action_key": "ACTION-ONETIME-MAILBOX-REFRESH",
+      "action_state": "WORKS_NOW",
+      "owner": "Rabbi provider admin",
+      "external_write": false,
+      "handler_or_blocker": "GET /api/provider-portal/mailbox.",
+      "registry_required": true
+    },
+    {
+      "label": "Open Email Thread",
+      "selector_or_action_key": "ACTION-ONETIME-MAILBOX-THREAD-OPEN",
+      "action_state": "WORKS_NOW",
+      "owner": "Rabbi provider admin",
+      "external_write": false,
+      "handler_or_blocker": "GET /api/provider-portal/mailbox/:threadKey.",
+      "registry_required": true
+    },
+    {
+      "label": "Save Reply Draft",
+      "selector_or_action_key": "ACTION-ONETIME-MAILBOX-DRAFT-SAVE",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Rabbi provider admin",
+      "external_write": false,
+      "handler_or_blocker": "POST /api/provider-portal/mailbox/:threadKey/draft saves local draft only and sends nothing.",
+      "registry_required": true
+    },
+    {
+      "label": "Send Reply",
+      "selector_or_action_key": "ACTION-ONETIME-MAILBOX-REPLY-SEND",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Rabbi provider admin / Shloimie setup",
+      "external_write": true,
+      "handler_or_blocker": "POST /api/provider-portal/mailbox/:threadKey/send requires Resend readiness and explicit confirmation; otherwise returns blocker.",
+      "registry_required": true
+    },
+    {
+      "label": "Bulk Email Campaign",
+      "selector_or_action_key": "ACTION-ONETIME-BULK-EMAIL-CAMPAIGN",
+      "action_state": "DISABLED_NOT_IN_SCOPE",
+      "owner": "Future campaign packet",
+      "external_write": true,
+      "handler_or_blocker": "Out of scope until recipient source, unsubscribe/suppression, copy, compliance footer, seed proof, and approval packet exist.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "read_paths": [
+      "bna_communications where workspace/project scope matches One Time and channel=email",
+      "bna_contacts for matched sender/contact metadata",
+      "Resend readiness helper for sender/domain/readiness without secrets"
+    ],
+    "write_paths": [
+      "Reply draft metadata on the latest outbound or thread-level bna_communications row, or a local draft communication row with no_send metadata",
+      "Outbound bna_communications row after a guarded successful Resend send"
+    ],
+    "fields": [
+      "thread_key",
+      "subject",
+      "from_name",
+      "from_address",
+      "to_address",
+      "body_text",
+      "body_html",
+      "status",
+      "occurred_at",
+      "provider",
+      "external_message_id",
+      "contact_id",
+      "contact name",
+      "contact email",
+      "attachment metadata",
+      "draft body",
+      "readiness status"
+    ],
+    "privacy_notes": [
+      "Do not expose secret headers, API keys, cookies, tokens, or authorization-like headers.",
+      "Do not show unrelated workspace communications.",
+      "Do not commit raw private mailing address.",
+      "Do not commit raw private email bodies in evidence."
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "privacy_scope": "Private provider portal view scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+    "forbidden_data": [
+      "Unrelated BNA school, parent, student, provider, or super-admin data",
+      "Raw secret headers or provider auth payloads",
+      "Exact physical mailing address in tracked source",
+      "Raw private email body in repo evidence",
+      "GHL or LeadConnector runtime"
+    ],
+    "required_checks": [
+      "Provider session required for all mailbox APIs.",
+      "Mailbox query asserts scoped provider workspace/project.",
+      "Wrong-scope sessions receive no thread data.",
+      "External reply send requires explicit confirmation and Resend readiness.",
+      "Bulk send route/control is not implemented in this packet."
+    ],
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-REQ-20260706-940-A",
+      "scope": "Validate Product Quality packet and implement provider mailbox read APIs.",
+      "files_allowed": [
+        "server.js",
+        "tests/provider-mailbox.test.js"
+      ],
+      "verification": [
+        "npm run pqc:validate -- ops/prompt-packets/2026-07-06-onetime-crm-mailbox/00-mailbox-mvp.product-quality.json",
+        "node --test tests/provider-mailbox.test.js"
+      ]
+    },
+    {
+      "batch_id": "BATCH-REQ-20260706-940-B",
+      "scope": "Implement provider portal Mailbox UI and local draft/send controls.",
+      "files_allowed": [
+        "public/provider.html",
+        "server.js",
+        "tests/provider-mailbox.test.js"
+      ],
+      "verification": [
+        "node --check server.js",
+        "node --test tests/provider-mailbox.test.js",
+        "browser smoke where local server is available"
+      ]
+    },
+    {
+      "batch_id": "BATCH-REQ-20260706-940-C",
+      "scope": "Update registries, evidence, ledger, and changelog.",
+      "files_allowed": [
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "tasks-pending/2026-07-06-onetime-crm-mailbox-goal.md",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "verification": [
+        "npm run watchdog:actions",
+        "npm run watchdog:protocol-drift"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "server.js",
+      "public/provider.html",
+      "src/lib/integrations/resend-client.js",
+      "src/lib/integrations/resend-inbound-crm.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json"
+    ],
+    "files_allowed_to_edit": [
+      "server.js",
+      "public/provider.html",
+      "tests/provider-mailbox.test.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "tasks-pending/2026-07-06-onetime-crm-mailbox-goal.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "max_files_to_edit": 8,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "This packet is allowed to edit more than four files because registry/evidence/test files are required for a real app-visible mailbox closeout. It still touches one major surface only.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate -- ops/prompt-packets/2026-07-06-onetime-crm-mailbox/00-mailbox-mvp.product-quality.json",
+      "expected_result": "Product Quality packet passes validation."
+    },
+    {
+      "command": "node --check server.js",
+      "expected_result": "Server syntax passes."
+    },
+    {
+      "command": "node --test tests/provider-mailbox.test.js",
+      "expected_result": "Mailbox routes, scope checks, draft no-send, and guarded send behavior pass."
+    },
+    {
+      "command": "npm run watchdog:actions",
+      "expected_result": "Visible mailbox actions have registry coverage."
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "expected_result": "No product-quality protocol drift is introduced."
+    }
+  ],
+  "evidence": {
+    "before": [
+      "public/provider.html existing Parent Inquiries section",
+      "src/lib/integrations/resend-inbound-crm.js inbound CRM writer"
+    ],
+    "after_required": [
+      "tests/provider-mailbox.test.js",
+      "ops/playwright-smokes/2026-07-06-onetime-crm-mailbox-local/report.md",
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/watchdog-audits/2026-07-06-product-quality-drift.md"
+    ],
+    "record_updates": [
+      "tasks-pending/2026-07-06-onetime-crm-mailbox-goal.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Provider-scoped mailbox APIs list/open only One Time email threads.",
+      "Provider portal Mailbox UI works for loading, empty, populated, search, error, setup-blocked, draft, and mobile detail states.",
+      "Draft save is no-send and visibly says no email was sent.",
+      "Send reply path is guarded by explicit confirmation and Resend readiness.",
+      "No bulk broadcast send is implemented.",
+      "Physical mailing address is runtime-only and not committed.",
+      "Route/action registries are updated.",
+      "Focused tests and watchdogs pass.",
+      "App-visible work has deploy/live-smoke proof before terminal Done, or a precise deploy blocker remains."
+    ],
+    "terminal_status": "local_verified_pending_deploy_live_smoke_unless_release_runs"
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260706-909-onetime-crm-mailbox-goal.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-06-onetime-crm-mailbox/00-mailbox-mvp.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "npm run pqc:validate",
+      "node --check server.js",
+      "node --test tests/provider-mailbox.test.js",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "skipped_actions_policy": "No bulk email campaign, DNS mutation, provider dashboard webhook creation, credential copy, payment/access write, WhatsApp/Telegram send, Drive write, Vimeo/Zoom action, GHL runtime, or production data mutation in this packet.",
+    "blocker_decisions": [
+      "DEC-20260706-940",
+      "DEC-20260706-941"
+    ],
+    "evidence_paths": [
+      "ops/playwright-smokes/2026-07-06-onetime-crm-mailbox-local/report.md",
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-06-onetime-crm-mailbox-goal.md",
+    "next_packet_path": "tasks-pending/2026-07-06-onetime-crm-mailbox-goal.md",
+    "requirement_ids": [
+      "REQ-20260706-940",
+      "REQ-20260706-941",
+      "REQ-20260706-942",
+      "REQ-20260706-943",
+      "REQ-20260706-944",
+      "REQ-20260706-945",
+      "REQ-20260706-946"
+    ],
+    "decision_ids": [
+      "DEC-20260706-940",
+      "DEC-20260706-941"
+    ],
+    "ledger_event": "onetime_crm_mailbox_mvp_local_verified"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "findings=0",
+    "record_report": true,
+    "blocker_policy": "If unrelated historical drift appears, record separately and do not claim terminal Done without explaining scope."
+  },
+  "next_packet": {
+    "recommended": "After mailbox MVP local verification, run deploy/live smoke or create a separate bulk broadcast/campaign packet if Rabbi needs newsletters.",
+    "path": "tasks-pending/2026-07-06-onetime-crm-mailbox-goal.md"
+  },
+  "app_visible": true
+}

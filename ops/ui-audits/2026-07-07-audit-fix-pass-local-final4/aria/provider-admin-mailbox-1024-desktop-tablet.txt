@@ -1,0 +1,25 @@
+- banner:
+  - strong: OneTimeOneTime
+  - text: Admin on Rabbi provider account
+  - link "Public site":
+    - /url: /
+  - link "Directory":
+    - /url: /service-providers
+  - link "Provider home":
+    - /url: /provider
+  - link "Assistant/help":
+    - /url: "#bnaBotPanel"
+  - link "Join":
+    - /url: /providers/join?onboard=provider
+  - text: ADMIN ON RABBI ACCOUNT
+- strong: ADMIN ON RABBI ACCOUNT
+- text: You are opening the Rabbi / One Time provider portal as a scoped provider session. Super Admin tools are hidden here; actions stay inside rabbi_sheller_provider / one_time_mishnah_class.
+- link "Return to Super Admin Inbox":
+  - /url: /operations?workspace=platform&view=communications&section=email&inbox=rabbi
+- main:
+  - heading "One Time provider session required" [level=1]
+  - paragraph: Start from Operations to open the Rabbi account safely. This page never asks for Rabbi, student, or member passwords.
+  - paragraph: This URL is the scoped Rabbi / One Time provider-session landing page. It only opens private provider data after Operations creates a valid provider session cookie.
+  - link "Open Read-only Review Preview":
+    - /url: /provider.html?review=one-time&section=mailbox
+- button "BNA Helper"

@@ -1,0 +1,131 @@
+{
+  "run_id": "2026-06-24-clean-slate-system-closeout",
+  "raw_id": "RAW-20260624-003",
+  "created_at": "2026-06-24T16:20:00+03:00",
+  "updated_at": "2026-06-24T16:45:00+03:00",
+  "control_branch": "codex/clean-slate-integration-20260624",
+  "integration_app_base_sha": "161f8623c50d7ef226066d101bfa58c28aff2346",
+  "draft_pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16",
+  "master_sha": "a9528b2d9467174d76d4c25bfb028f9308f24b4f",
+  "source_pr_heads": {
+    "pr_14": {
+      "branch": "codex/integration-navigation-owner-review-20260624",
+      "head": "f9625e8c15e0a63a272582e839bf42b100cd6714",
+      "includes": [
+        "PR #12 history",
+        "PR #13 history"
+      ]
+    },
+    "pr_15": {
+      "branch": "codex/rabbi-scheller-parity-20260624",
+      "head": "1ab57eac802ef172a5e96651dabc203d3420cbd9",
+      "deployed_relation": "Railway metadata proves deployed commit 8f8b0b458a95d146777808dbdf1f760618632615; later head is evidence-only."
+    }
+  },
+  "deployed_sha": "8f8b0b458a95d146777808dbdf1f760618632615",
+  "preservation": {
+    "branch": "codex/preserve-rabbi-closeout-20260624",
+    "sha": "487a660ba62db91efb139adb62f11f47044d2ffe"
+  },
+  "forbidden_central_files": [
+    "AGENTS.md",
+    "MEMORY.md",
+    "TASKS.md",
+    "ops/execution-runs/latest.json",
+    "ops/agent-task-ledger.jsonl",
+    "ops/agent-changelog.md",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.json",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.md",
+    "tasks-pending/2026-06-24-clean-slate-control-tower-reconciliation.md"
+  ],
+  "approved_external_effects": {
+    "control_goal": [
+      "fetch",
+      "inspect",
+      "commit_non_secret_local_work",
+      "push_preservation_and_control_branches",
+      "open_draft_pr"
+    ],
+    "lanes_after_control": [
+      "read_only_external_production_inspection_when_configured",
+      "Stripe sandbox testing when approved sandbox secrets are available",
+      "private synthetic Vimeo test upload only with approved test token/folder/asset",
+      "guarded class backfill only after required safeguards and final approval"
+    ],
+    "never_without_explicit_final_approval": [
+      "production deployment",
+      "production database mutation",
+      "real class backfill",
+      "live Stripe charge/refund/subscription",
+      "real Vimeo publish/unpublish/delete",
+      "real email/SMS/Telegram/WhatsApp send",
+      "DNS change",
+      "credential rotation"
+    ]
+  },
+  "reserved_for_final_integrator": [
+    "merge_lane_branches",
+    "edit_central_run_task_memory_ledger_changelog_files",
+    "run_release_wide_validation",
+    "open_or_update_release_pr",
+    "deploy_and_live_smoke_after_explicit_approval"
+  ],
+  "expected_merge_order": [
+    "public-ui",
+    "portal-auth-nav",
+    "assistant-ramble-usage",
+    "class-drive-intake",
+    "stripe-sandbox",
+    "vimeo-media",
+    "operator-walkthrough"
+  ],
+  "release_gates": [
+    "all_lane_results_terminal",
+    "forbidden_central_file_check",
+    "npm run bna:run:validate",
+    "npm run bna:run:status",
+    "npm run bna:run:next",
+    "npm run bna:run:blockers",
+    "npm run secrets:audit",
+    "git diff --check",
+    "focused_lane_tests",
+    "deploy_live_smoke_only_after_final_approval"
+  ],
+  "lanes": [
+    {
+      "name": "public-ui",
+      "branch": "codex/closeout-public-ui-20260624",
+      "handoff_path": "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/public-ui/HANDOFF.md"
+    },
+    {
+      "name": "portal-auth-nav",
+      "branch": "codex/closeout-portal-auth-nav-20260624",
+      "handoff_path": "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/portal-auth-nav/HANDOFF.md"
+    },
+    {
+      "name": "class-drive-intake",
+      "branch": "codex/closeout-class-drive-intake-20260624",
+      "handoff_path": "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/HANDOFF.md"
+    },
+    {
+      "name": "assistant-ramble-usage",
+      "branch": "codex/closeout-assistant-ramble-usage-20260624",
+      "handoff_path": "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/HANDOFF.md"
+    },
+    {
+      "name": "stripe-sandbox",
+      "branch": "codex/closeout-stripe-sandbox-20260624",
+      "handoff_path": "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/HANDOFF.md"
+    },
+    {
+      "name": "vimeo-media",
+      "branch": "codex/closeout-vimeo-media-20260624",
+      "handoff_path": "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/vimeo-media/HANDOFF.md"
+    },
+    {
+      "name": "operator-walkthrough",
+      "branch": "codex/closeout-operator-walkthrough-20260624",
+      "handoff_path": "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/operator-walkthrough/HANDOFF.md"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "status": "fail",
+  "message": "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-operations-root]') to be visible\u001b[22m\n",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "status": "pass",
+      "details": {
+        "endpoint": "/api/health"
+      }
+    },
+    {
+      "name": "operations login session",
+      "status": "pass",
+      "details": {
+        "user_role": "super_admin",
+        "scope_type": "unknown"
+      }
+    },
+    {
+      "name": "scoped WAPI phonebook report",
+      "status": "pass",
+      "details": {
+        "groups": 0,
+        "scope": "workspace"
+      }
+    },
+    {
+      "name": "sanitized WhatsApp messages readback",
+      "status": "pass",
+      "details": {
+        "count": 0
+      }
+    },
+    {
+      "name": "operations WhatsApp HTML markers",
+      "status": "pass",
+      "details": {
+        "endpoint": "/operations?workspace=rabbi_sheller_provider&view=communications&section=whatsapp"
+      }
+    }
+  ],
+  "dom_results": []
+}

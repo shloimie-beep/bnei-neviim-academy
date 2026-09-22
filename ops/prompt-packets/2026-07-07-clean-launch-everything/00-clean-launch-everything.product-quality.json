@@ -1,0 +1,665 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260707-140",
+  "parent_raw_id": "RAW-20260707-014",
+  "source_statement_ids": [
+    "SRC-20260707-014-001"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [
+      "PKT-20260707-141-worktree-inventory",
+      "PKT-20260707-142-safe-release-batches",
+      "PKT-20260707-143-generated-artifact-cleanup"
+    ],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260707-014-clean-launch-everything.md",
+      "tasks-pending/2026-07-07-clean-launch-everything.md",
+      "ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation",
+      "git status",
+      "Railway deployment state"
+    ],
+    "produces": [
+      "worktree inventory",
+      "safe commits",
+      "deployment and live-smoke proof",
+      "explicit blocker table"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-07-clean-launch-everything/00-clean-launch-everything.product-quality.json",
+    "terminal_condition": "All safe launchable work is committed, pushed, deployed, and live-smoked; all unsafe or external-owner work is explicitly blocked without staging unrelated dirty files.",
+    "handoff_target": "tasks-pending/2026-07-07-clean-launch-everything.md"
+  },
+  "stage": "STAGE_5_DEPLOY_LIVE_SMOKE",
+  "packet_role": "DEPLOY_PACKET",
+  "status": "ready_for_codex",
+  "title": "Clean Launch Everything Safely",
+  "created_at": "2026-07-07T19:16:00+03:00",
+  "workspace_key": "platform",
+  "project_key": "bna_operations_and_one_time_launch",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "RABBI_PROVIDER_ADMIN",
+    "PUBLIC_MARKETING",
+    "INTERNAL_AGENT_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260707-014",
+    "classification": [
+      "SUPER_RAMBLE",
+      "PRODUCT_QUALITY",
+      "VERIFIER_CLOSEOUT",
+      "DEPLOY_RELEASE",
+      "SECURITY_PRIVACY",
+      "DECISION_REQUIRED"
+    ],
+    "confidence": 0.98,
+    "reasons": [
+      "The operator requested clean, push, deploy, and launch everything across the current workspace.",
+      "The current worktree contains tracked dirty code plus a large number of untracked generated artifacts.",
+      "The active execution run has remaining blockers that cannot be solved by blindly staging files."
+    ],
+    "affected_product_surfaces": [
+      "BNA Operations",
+      "One Time public/provider/member/student surfaces",
+      "agent fleet and ChatGPT drop-off artifact queues",
+      "Railway production release lane"
+    ],
+    "likely_external_provider_blockers": [
+      "One Time provider aliases for Zoom/Vimeo/Stripe/Whapi remain account-owner gated.",
+      "join.onetimeonetime.com separate Railway target is not configured in this local Railway context.",
+      "Drive/private transcript sync, external sends, payments, DNS writes, access grants, and provider account mutations require exact approved packets."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": false,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-clean-launch-everything",
+      "01-worktree-inventory",
+      "02-safe-release-batches",
+      "03-generated-artifact-cleanup",
+      "04-blocker-closeout"
+    ],
+    "next_exact_packet": "Inventory the dirty worktree and separate safe launchable work from unrelated generated artifacts and external-owner blockers."
+  },
+  "operator_intent_summary": "Clean the workspace, push all safe launchable work, deploy it, and make the app launch-ready without sweeping unsafe, unrelated, private, credentialed, or unverified artifacts into Git.",
+  "raw_quotes": [
+    "let's clean up everything",
+    "launch everything",
+    "push everything",
+    "deploy, clean, push, deploy, everything"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260707-140",
+      "decision": "Do not interpret 'push everything' as permission to commit secrets, raw private data, unrelated dirty work, or unverified generated artifacts.",
+      "status": "accepted_by_guardrail"
+    },
+    {
+      "id": "DEC-20260707-141",
+      "decision": "Safe launchable batches may be committed and deployed without asking for ordering confirmation.",
+      "status": "accepted_by_goal_mode"
+    }
+  ],
+  "out_of_scope": [
+    "Blind git add of the full dirty worktree.",
+    "Deleting or reverting user/agent dirty work solely to make git status clean.",
+    "Payment, DNS, external email/WhatsApp/Telegram sends, credential mutations, provider account writes, access grants, Drive/Vimeo uploads, or Stripe live charges without an exact approved packet.",
+    "Committing raw private message bodies, contact exports, student/parent private records, secrets, passwords, or private screenshots.",
+    "Declaring blocked historical execution-run requirements done without the required external account or runtime proof."
+  ],
+  "affected_surfaces": [
+    "Git worktree and release lane",
+    "BNA Operations",
+    "One Time public/provider/member/student surfaces",
+    "Agent fleet/dropoff generated artifacts",
+    "Railway production deployment"
+  ],
+  "affected_routes": [
+    "/one-time",
+    "/operations",
+    "/rabbi-member",
+    "/student-login",
+    "/parent-login",
+    "Railway production service"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "scripts/agent-fleet-supervisor.mjs",
+    "tests/*.test.js",
+    "ops/agent-task-ledger.jsonl",
+    "ops/agent-changelog.md",
+    "ops/release-captain/*",
+    "ops/chatgpt-ramble-dropoff/**",
+    "ops/watchdog-audits/**",
+    "ops/queue-audits/**"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "git status short tracked and untracked output",
+      "git diff for tracked dirty files",
+      "active execution run requirements and blockers",
+      "Railway deployment status",
+      "test and watchdog commands relevant to safe batches"
+    ],
+    "known_blockers": [
+      "Active execution run still has blocked requirements for agent fleet drift, Drive parser/private transcript workflow, provider aliases, and one-time Railway bootstrap context.",
+      "Worktree contains many generated untracked pickup/audit artifacts that need classification before staging.",
+      "Separate join.onetimeonetime.com release-captain target is not configured in the current local Railway context."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "clean up everything",
+      "launch everything",
+      "push everything",
+      "deploy everything"
+    ],
+    "expanded_phrases": {
+      "clean": "Produce a classified release-ready worktree: safe scoped work committed and pushed, generated clutter summarized or parked, and blockers recorded without destructive deletion.",
+      "clean up everything": "Classify dirty files, commit safe work, leave unrelated work untouched, and record exact blockers.",
+      "launch everything": "Deploy only verified app-visible work and live-smoke the affected routes.",
+      "push everything": "Push all safe scoped commits, not secrets/private data/unverified generated junk.",
+      "deploy everything": "Use the approved Railway release path and confirm terminal deployment success."
+    },
+    "first_party_pattern_interpretation": "Release cleanup is an audit-first operation: inventory, validate, stage narrowly, commit, push, deploy, smoke, then ledger/changelog closeout."
+  },
+  "design_pattern_references": [
+    "AGENTS.md",
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/PRODUCT-QUALITY-OPERATING-SYSTEM.md",
+    "docs/BNA-RAMBLE-TO-DONE.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260707-140",
+      "statement": "Capture and validate the release-cleanup request before staging broad work.",
+      "expected_result": "Raw intake, register, and PQC packet exist and pass validation.",
+      "acceptance_criteria": [
+        "RAW-20260707-014 exists.",
+        "tasks-pending/2026-07-07-clean-launch-everything.md exists.",
+        "This PQC packet validates."
+      ]
+    },
+    {
+      "id": "REQ-20260707-141",
+      "statement": "Inventory the worktree and classify dirty tracked/untracked changes before staging.",
+      "expected_result": "Every dirty category is either launchable, generated/noise, blocked, or external-owner.",
+      "acceptance_criteria": [
+        "Tracked dirty files inspected by diff.",
+        "Untracked artifact groups summarized.",
+        "Secret/private-data risk scan runs on any staged content."
+      ]
+    },
+    {
+      "id": "REQ-20260707-142",
+      "statement": "Commit and push safe launchable batches only.",
+      "expected_result": "Scoped commits are pushed; unrelated dirty files are not swept into Git.",
+      "acceptance_criteria": [
+        "No blind git add.",
+        "Focused tests/watchdogs pass.",
+        "git diff --cached --check passes before commit."
+      ]
+    },
+    {
+      "id": "REQ-20260707-143",
+      "statement": "Deploy and live-smoke app-visible safe batches.",
+      "expected_result": "Railway deployment reaches SUCCESS and affected routes pass live smoke/readback.",
+      "acceptance_criteria": [
+        "Deployment ID recorded.",
+        "Live smoke/readback evidence recorded.",
+        "No app-visible change is marked Done without live proof or blocker."
+      ]
+    },
+    {
+      "id": "REQ-20260707-144",
+      "statement": "Resolve generated artifact clutter safely.",
+      "expected_result": "Generated pickup/audit files are summarized, ignored, staged if canonical proof, or left blocked without deletion.",
+      "acceptance_criteria": [
+        "No destructive cleanup of unknown user work.",
+        "No large duplicate artifact flood committed without a reason.",
+        "Cleanup decision is documented."
+      ]
+    },
+    {
+      "id": "REQ-20260707-145",
+      "statement": "Record exact blockers for anything not launchable now.",
+      "expected_result": "Remaining external/account-owner/provider/runtime blockers include owner and next action.",
+      "acceptance_criteria": [
+        "Provider alias blockers remain explicit.",
+        "join.onetimeonetime.com local target blocker remains explicit.",
+        "Drive/private transcript and external send/payment/DNS guardrails remain explicit."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Goal-mode permission exists from operator.",
+      "Raw intake/register/PQC are created.",
+      "Guardrails against blind staging and external writes are explicit.",
+      "Active execution-run blockers are known.",
+      "No external account mutation is required to start inventory and safe release work."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "git status",
+      "viewport": "terminal",
+      "auth_role": "Codex",
+      "workspace_project": "platform",
+      "how_to_enter_state": "Run git status --short.",
+      "expected_visible_title": "Dirty worktree loading",
+      "expected_visible_message": "Command returns tracked and untracked paths without staging.",
+      "expected_primary_action": "Classify",
+      "expected_secondary_actions": [
+        "Validate",
+        "Commit safe batch",
+        "Block unsafe batch"
+      ],
+      "forbidden_content": [
+        "blind git add .",
+        "secret values",
+        "raw private data"
+      ],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Not applicable.",
+      "accessibility_expectation": "Not applicable.",
+      "test_smoke_assertion": "git diff --cached --check passes for staged batches.",
+      "requirement_id": "REQ-20260707-141"
+    },
+    "empty": {
+      "route": "git diff --cached --name-only",
+      "viewport": "terminal",
+      "auth_role": "Codex",
+      "workspace_project": "platform",
+      "how_to_enter_state": "Before staging any broad work, inspect the cached diff.",
+      "expected_visible_title": "No staged leftovers",
+      "expected_visible_message": "Either no staged files or only the intentional scoped batch.",
+      "expected_primary_action": "Inspect cached diff",
+      "expected_secondary_actions": ["Stage narrow files", "Unstage unsafe files"],
+      "forbidden_content": ["unreviewed generated artifact flood", "secrets", "raw private data"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Not applicable.",
+      "accessibility_expectation": "Not applicable.",
+      "test_smoke_assertion": "git diff --cached --name-only matches the batch scope.",
+      "requirement_id": "REQ-20260707-142"
+    },
+    "populated": {
+      "route": "git diff",
+      "viewport": "terminal",
+      "auth_role": "Codex",
+      "workspace_project": "platform",
+      "how_to_enter_state": "Inspect tracked dirty files and candidate untracked proof artifacts.",
+      "expected_visible_title": "Classified dirty work",
+      "expected_visible_message": "Each candidate path has a launchable, generated, blocked, or external-owner classification.",
+      "expected_primary_action": "Classify and test",
+      "expected_secondary_actions": ["Commit safe batch", "Record blocker"],
+      "forbidden_content": ["blind git add .", "unmapped source statements", "private data"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Not applicable.",
+      "accessibility_expectation": "Not applicable.",
+      "test_smoke_assertion": "Inventory report is recorded in tasks-pending register.",
+      "requirement_id": "REQ-20260707-141"
+    },
+    "filtered_empty": {
+      "route": "artifact inventory",
+      "viewport": "terminal",
+      "auth_role": "Codex",
+      "workspace_project": "platform",
+      "how_to_enter_state": "Filter untracked ChatGPT pickup/watchdog/queue artifacts by folder and purpose.",
+      "expected_visible_title": "Generated artifact groups",
+      "expected_visible_message": "No artifact group is committed wholesale without validation.",
+      "expected_primary_action": "Summarize artifact groups",
+      "expected_secondary_actions": ["Stage canonical proof only", "Leave local generated output"],
+      "forbidden_content": ["duplicate pickup flood", "raw untrusted ChatGPT output treated as authority"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Not applicable.",
+      "accessibility_expectation": "Not applicable.",
+      "test_smoke_assertion": "Generated-artifact decision is documented.",
+      "requirement_id": "REQ-20260707-144"
+    },
+    "error": {
+      "route": "tests/watchdogs/deploy",
+      "viewport": "terminal",
+      "auth_role": "Codex",
+      "workspace_project": "platform",
+      "how_to_enter_state": "A verification, watchdog, commit, push, deploy, or live smoke fails.",
+      "expected_visible_title": "Launch blocker",
+      "expected_visible_message": "Failure is recorded with command, owner, and next action.",
+      "expected_primary_action": "Block or repair",
+      "expected_secondary_actions": ["Rerun after fix", "Leave item open"],
+      "forbidden_content": ["marking failed work done", "hiding failed deployment"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Not applicable.",
+      "accessibility_expectation": "Not applicable.",
+      "test_smoke_assertion": "Failure has exact blocker record.",
+      "requirement_id": "REQ-20260707-145"
+    },
+    "blocked_setup": {
+      "route": "external provider setup",
+      "viewport": "terminal",
+      "auth_role": "Codex",
+      "workspace_project": "one_time_mishnah_class",
+      "how_to_enter_state": "A task requires provider aliases, credentials, DNS, sends, payment, Drive/Vimeo upload, or access grants.",
+      "expected_visible_title": "External setup blocker",
+      "expected_visible_message": "Owner, missing info, recommended option, alternatives, consequence, and exact next action are recorded.",
+      "expected_primary_action": "Record blocker",
+      "expected_secondary_actions": ["Continue unblocked work"],
+      "forbidden_content": ["external write without approval", "secret exposure"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Not applicable.",
+      "accessibility_expectation": "Not applicable.",
+      "test_smoke_assertion": "Blocker table lists provider/account-owner items.",
+      "requirement_id": "REQ-20260707-145"
+    },
+    "preview_only": {
+      "route": "live route smoke",
+      "viewport": 1024,
+      "auth_role": "anonymous or test-safe preview",
+      "workspace_project": "platform + one_time_mishnah_class",
+      "how_to_enter_state": "Run live smoke/readback after deployment without mutating private data.",
+      "expected_visible_title": "Preview-safe route readback",
+      "expected_visible_message": "Route loads and selectors match expected scope.",
+      "expected_primary_action": "Read-only smoke",
+      "expected_secondary_actions": ["Capture screenshot", "Record report"],
+      "forbidden_content": ["payment charge", "email send", "access grant"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Route-specific labels remain accessible.",
+      "accessibility_expectation": "No obvious overlap or mobile overflow on affected UI.",
+      "test_smoke_assertion": "Live route returns 2xx and expected selectors.",
+      "requirement_id": "REQ-20260707-143"
+    },
+    "success_readback": {
+      "route": "Railway production",
+      "viewport": "terminal",
+      "auth_role": "Codex",
+      "workspace_project": "platform",
+      "how_to_enter_state": "Push safe commit and wait for Railway deployment SUCCESS.",
+      "expected_visible_title": "Deployment success",
+      "expected_visible_message": "Deployment ID and live smoke proof are recorded.",
+      "expected_primary_action": "Record deployment",
+      "expected_secondary_actions": [
+        "Record deployment ID",
+        "Record evidence"
+      ],
+      "forbidden_content": [
+        "private data leak",
+        "failed deployment called done"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Route-specific smoke should preserve existing accessibility expectations.",
+      "accessibility_expectation": "No obvious overlap or mobile overflow on affected UI surfaces.",
+      "test_smoke_assertion": "Live readback returns 2xx and route-specific selectors.",
+      "requirement_id": "REQ-20260707-143"
+    },
+    "permission_denied": {
+      "route": "private/external action",
+      "viewport": "terminal",
+      "auth_role": "Codex",
+      "workspace_project": "platform",
+      "how_to_enter_state": "A requested launch step needs account owner approval, credentials, or a private/external mutation.",
+      "expected_visible_title": "Permission denied or not approved",
+      "expected_visible_message": "The task is blocked rather than bypassed.",
+      "expected_primary_action": "Record blocked decision",
+      "expected_secondary_actions": ["Continue safe work"],
+      "forbidden_content": ["credential workaround", "unapproved send/payment/DNS write"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Not applicable.",
+      "accessibility_expectation": "Not applicable.",
+      "test_smoke_assertion": "No external mutation command is run.",
+      "requirement_id": "REQ-20260707-145"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "affected mobile UI route",
+      "viewport": 390,
+      "auth_role": "anonymous or test-safe role",
+      "workspace_project": "platform + one_time_mishnah_class",
+      "how_to_enter_state": "If a committed app-visible batch touches UI, open the affected route at mobile width.",
+      "expected_visible_title": "Mobile route remains usable",
+      "expected_visible_message": "No horizontal overflow, overlap, or missing primary action.",
+      "expected_primary_action": "Mobile live smoke",
+      "expected_secondary_actions": ["Capture screenshot", "Record overflow readback"],
+      "forbidden_content": ["horizontal overflow", "overlapping buttons", "wrong-brand chrome"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Controls remain named and reachable.",
+      "accessibility_expectation": "Touch targets remain stable and visible.",
+      "test_smoke_assertion": "Mobile live smoke has 0 automated findings or explicit blocker.",
+      "requirement_id": "REQ-20260707-143"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "affected live route if UI changes are committed", "viewport": 1440, "state": "desktop readback" },
+      { "route": "affected live route if UI changes are committed", "viewport": 1024, "state": "tablet readback" },
+      { "route": "affected live route if UI changes are committed", "viewport": 768, "state": "narrow tablet readback" },
+      { "route": "affected live route if UI changes are committed", "viewport": 430, "state": "large mobile readback" },
+      { "route": "affected live route if UI changes are committed", "viewport": 390, "state": "mobile readback" }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260707-140-001",
+        "route": "release cleanup",
+        "viewport": 390,
+        "screenshot_before": "only required for app-visible UI batches",
+        "screenshot_after_or_blocker": "live smoke screenshot or explicit not-app-visible blocker",
+        "defect_codes": ["VQ-LAYOUT-001", "VQ-BRAND-001"],
+        "severity": "P1",
+        "user_impact": "Unverified app-visible cleanup could leave broken mobile layout or wrong-scope UI live.",
+        "expected_fix": "Run route-specific visual smoke for any app-visible code batch.",
+        "requirement_id": "REQ-20260707-143"
+      }
+    ]
+  },
+  "accessibility": {
+    "required": true,
+    "expectations": [
+      "Do not regress existing accessible names for affected routes.",
+      "Run route-specific smoke where UI changes are committed."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Stage safe batch",
+      "selector_or_action_key": "git add -- <scoped paths>",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Only after diff inspection and verification.",
+      "registry_required": false
+    },
+    {
+      "label": "Deploy production",
+      "selector_or_action_key": "Railway auto deploy / approved release path",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": true,
+      "handler_or_blocker": "Allowed only for pushed safe app-visible commits; blocked for unrelated dirty work.",
+      "registry_required": false
+    },
+    {
+      "label": "External provider mutation",
+      "selector_or_action_key": "email/whatsapp/stripe/dns/drive/vimeo/access/credential",
+      "action_state": "NEEDS_SHLOIMIE_SETUP",
+      "owner": "Shloimie / provider account owner",
+      "external_write": true,
+      "handler_or_blocker": "Requires exact approved packet and missing provider details.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "allowed": [
+      "Git metadata",
+      "redacted status summaries",
+      "test/smoke evidence without private data"
+    ],
+    "forbidden": [
+      "secrets",
+      "passwords",
+      "raw private messages",
+      "contact exports",
+      "raw student/parent records",
+      "payment credentials"
+    ]
+  },
+  "security_privacy": {
+    "risk_level": "high",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true,
+    "requirements": [
+      "Inspect staged files before commit.",
+      "Do not commit secret-like content or raw private bodies.",
+      "Do not mutate external providers without exact approval.",
+      "Keep wrong-scope/private routes protected."
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "id": "B0",
+      "title": "Control packet",
+      "requirements": [
+        "REQ-20260707-140"
+      ],
+      "verification": [
+        "npm run pqc:validate -- ops/prompt-packets/2026-07-07-clean-launch-everything/00-clean-launch-everything.product-quality.json"
+      ]
+    },
+    {
+      "id": "B1",
+      "title": "Worktree inventory",
+      "requirements": [
+        "REQ-20260707-141",
+        "REQ-20260707-144",
+        "REQ-20260707-145"
+      ],
+      "verification": [
+        "git status --short",
+        "git diff --stat",
+        "targeted file inspections"
+      ]
+    },
+    {
+      "id": "B2",
+      "title": "Safe release batches",
+      "requirements": [
+        "REQ-20260707-142",
+        "REQ-20260707-143"
+      ],
+      "verification": [
+        "focused tests",
+        "watchdogs",
+        "Railway deployment list",
+        "live route smoke"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "large",
+    "source_files_to_read": [
+      "git status output",
+      "active execution run requirements",
+      "tracked dirty diffs",
+      "relevant package scripts"
+    ],
+    "files_allowed_to_edit": [
+      "raw-input/RAW-20260707-014-clean-launch-everything.md",
+      "tasks-pending/2026-07-07-clean-launch-everything.md",
+      "ops/prompt-packets/2026-07-07-clean-launch-everything/**",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md",
+      "safe scoped files after inspection"
+    ],
+    "max_files_to_edit": 30,
+    "max_routes_to_touch": 5,
+    "max_major_surfaces": 4,
+    "split_threshold_reason": "The dirty worktree includes code, tests, release reports, repeated generated artifacts, and external-provider blockers.",
+    "split_if_exceeds": "Split into separate commits for code, evidence, generated-artifact cleanup, and blocker documentation.",
+    "context_risk_level": "high"
+  },
+  "tests": {
+    "required": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-07-clean-launch-everything/00-clean-launch-everything.product-quality.json",
+      "focused tests for any committed code batch",
+      "npm run watchdog:actions when action registry/UI actions change",
+      "npm run watchdog:protocol-drift before closeout",
+      "live smoke for deployed app-visible changes"
+    ]
+  },
+  "evidence": {
+    "required": [
+      "worktree inventory summary",
+      "commit hash(es)",
+      "push confirmation",
+      "deployment ID",
+      "live-smoke/readback report",
+      "blocker table"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "Raw/register/PQC are committed and pushed.",
+      "Safe launchable work is committed and pushed.",
+      "App-visible changes are deployed and live-smoked.",
+      "Unlaunchable items have exact blockers.",
+      "No staged leftovers remain from this packet.",
+      "Goal is marked complete only if all safe work is launched and all unsafe work is terminally blocked."
+    ]
+  },
+  "trace": {
+    "ledger_required": true,
+    "changelog_required": true,
+    "raw_input_path": "raw-input/RAW-20260707-014-clean-launch-everything.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-07-clean-launch-everything/00-clean-launch-everything.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "git status and diff inventory",
+      "focused tests/watchdogs",
+      "scoped git add/commit/push",
+      "Railway deployment status readback",
+      "live smoke only for app-visible committed work"
+    ],
+    "skipped_actions_policy": "Skip or block external writes, secrets/private data, unverified generated artifact floods, and unrelated dirty work.",
+    "blocker_decisions": [
+      "Provider aliases and separate One Time Railway target are blocked unless exact account/runtime details are available.",
+      "Generated artifact cleanup must not delete unknown user/agent work."
+    ],
+    "evidence_paths": [
+      "tasks-pending/2026-07-07-clean-launch-everything.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-07-clean-launch-everything.md",
+    "next_packet_path": "tasks-pending/2026-07-07-clean-launch-everything.md",
+    "raw_id": "RAW-20260707-014",
+    "requirement_ids": [
+      "REQ-20260707-140",
+      "REQ-20260707-141",
+      "REQ-20260707-142",
+      "REQ-20260707-143",
+      "REQ-20260707-144",
+      "REQ-20260707-145"
+    ]
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "0 product-quality drift findings or exact blocker."
+  },
+  "next_packet": {
+    "id": "PKT-20260707-141-worktree-inventory",
+    "title": "Worktree Inventory And Safe Release Classification",
+    "reason": "The next step is to classify dirty/untracked files before any broad staging."
+  }
+}

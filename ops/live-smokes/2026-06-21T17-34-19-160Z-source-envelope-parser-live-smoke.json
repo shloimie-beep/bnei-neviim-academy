@@ -1,0 +1,31 @@
+{
+  "started_at": "2026-06-21T17:34:19.160Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "cookie bna_ops_session"
+    },
+    {
+      "name": "Dry-run parse source envelope fixture",
+      "ok": true,
+      "detail": "parse run 21"
+    },
+    {
+      "name": "Envelope has required fields and Dratler default",
+      "ok": true,
+      "detail": "family_meeting dratler_family/dratler_family"
+    },
+    {
+      "name": "Operations fragment overrides local item scope",
+      "ok": true,
+      "detail": "task internal_super_admin/bna_operations"
+    }
+  ],
+  "dry_run": true,
+  "raw_intake_stable_id": "RAW-20260621-005",
+  "parse_run_id": 21,
+  "source_envelope_summary": "family_meeting dratler_family/dratler_family",
+  "operations_override_summary": "task internal_super_admin/bna_operations"
+}

@@ -1,0 +1,192 @@
+{
+  "status": "pass",
+  "app_url": "https://bneineviimacademy.org",
+  "deployment_id": "d6c09c49-8372-42d7-8b3b-a049ab24ad63",
+  "deployed_commit": "c98c06d7735ec19dec1684684a594de0636064c7",
+  "operations_path": "/operations?workspace=rabbi_sheller_provider&view=tasks&section=tasks",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "status": "pass",
+      "details": {
+        "endpoint": "/api/health"
+      }
+    },
+    {
+      "name": "operations login session",
+      "status": "pass",
+      "details": {
+        "user_role": "super_admin",
+        "scope_type": "all"
+      }
+    },
+    {
+      "name": "operations HTML bundle markers",
+      "status": "pass",
+      "details": {
+        "endpoint": "/operations?workspace=rabbi_sheller_provider&view=tasks&section=tasks"
+      }
+    },
+    {
+      "name": "mobile live DOM filter rail checks",
+      "status": "pass",
+      "details": {
+        "widths": [
+          430,
+          390,
+          360
+        ],
+        "checks": 3
+      }
+    }
+  ],
+  "dom_results": [
+    {
+      "width": 430,
+      "currentModule": "tasks",
+      "railExists": true,
+      "trackRole": "tablist",
+      "filterIds": [
+        "mine",
+        "one_time",
+        "tasks",
+        "codex_queue",
+        "pending",
+        "due_soon",
+        "schedule",
+        "done_activity",
+        "archived",
+        "decisions",
+        "needs_my_decision",
+        "needs_rabbi_decision",
+        "needs_external_decision",
+        "decided",
+        "superseded_decisions",
+        "archived_decisions"
+      ],
+      "oneRow": true,
+      "trackOverflowX": "auto",
+      "moduleToolbarCount": 0,
+      "sidebarLabels": [
+        "Dashboard DB",
+        "Watchdog WG",
+        "Program PG",
+        "Agents AG",
+        "Program Suite PS",
+        "Members MB",
+        "Community CO",
+        "Content CT",
+        "Live LC",
+        "Schedule SC",
+        "Communications CM",
+        "Tasks TS",
+        "Automations AU",
+        "Integrations IN",
+        "Reporting RP",
+        "Settings SE"
+      ],
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "bodyScrollWidth": 430,
+      "bodyClientWidth": 430
+    },
+    {
+      "width": 390,
+      "currentModule": "tasks",
+      "railExists": true,
+      "trackRole": "tablist",
+      "filterIds": [
+        "mine",
+        "one_time",
+        "tasks",
+        "codex_queue",
+        "pending",
+        "due_soon",
+        "schedule",
+        "done_activity",
+        "archived",
+        "decisions",
+        "needs_my_decision",
+        "needs_rabbi_decision",
+        "needs_external_decision",
+        "decided",
+        "superseded_decisions",
+        "archived_decisions"
+      ],
+      "oneRow": true,
+      "trackOverflowX": "auto",
+      "moduleToolbarCount": 0,
+      "sidebarLabels": [
+        "Dashboard DB",
+        "Watchdog WG",
+        "Program PG",
+        "Agents AG",
+        "Program Suite PS",
+        "Members MB",
+        "Community CO",
+        "Content CT",
+        "Live LC",
+        "Schedule SC",
+        "Communications CM",
+        "Tasks TS",
+        "Automations AU",
+        "Integrations IN",
+        "Reporting RP",
+        "Settings SE"
+      ],
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390
+    },
+    {
+      "width": 360,
+      "currentModule": "tasks",
+      "railExists": true,
+      "trackRole": "tablist",
+      "filterIds": [
+        "mine",
+        "one_time",
+        "tasks",
+        "codex_queue",
+        "pending",
+        "due_soon",
+        "schedule",
+        "done_activity",
+        "archived",
+        "decisions",
+        "needs_my_decision",
+        "needs_rabbi_decision",
+        "needs_external_decision",
+        "decided",
+        "superseded_decisions",
+        "archived_decisions"
+      ],
+      "oneRow": true,
+      "trackOverflowX": "auto",
+      "moduleToolbarCount": 0,
+      "sidebarLabels": [
+        "Dashboard DB",
+        "Watchdog WG",
+        "Program PG",
+        "Agents AG",
+        "Program Suite PS",
+        "Members MB",
+        "Community CO",
+        "Content CT",
+        "Live LC",
+        "Schedule SC",
+        "Communications CM",
+        "Tasks TS",
+        "Automations AU",
+        "Integrations IN",
+        "Reporting RP",
+        "Settings SE"
+      ],
+      "scrollWidth": 360,
+      "clientWidth": 360,
+      "bodyScrollWidth": 360,
+      "bodyClientWidth": 360
+    }
+  ]
+}

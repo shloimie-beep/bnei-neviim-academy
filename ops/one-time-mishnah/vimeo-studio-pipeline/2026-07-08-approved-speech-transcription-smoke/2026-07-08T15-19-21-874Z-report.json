@@ -1,0 +1,120 @@
+{
+  "ok": true,
+  "generated_at": "2026-07-08T15:19:21.874Z",
+  "workflow": "one_time_vimeo_studio_pipeline",
+  "raw_id": "RAW-20260708-011",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "folder": "media-inbox/onetime-vimeo-studio-speech-transcription-smoke",
+  "folder_relative_to_repo": "media-inbox/onetime-vimeo-studio-speech-transcription-smoke",
+  "processed_folder": "media-inbox/onetime-vimeo-studio-speech-transcription-smoke-processed",
+  "processed_folder_relative_to_repo": "media-inbox/onetime-vimeo-studio-speech-transcription-smoke-processed",
+  "render_requested": true,
+  "transcription_requested": true,
+  "external_ai_transcription_performed": true,
+  "external_write_performed": false,
+  "production_mutation_performed": false,
+  "member_visibility_performed": false,
+  "candidates": [
+    {
+      "id": "7c2b5ef262a185cb",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "title": "Synthetic Speech Transcription Smoke",
+      "source_file": {
+        "relative_path": "synthetic-speech/synthetic-one-time-speech-smoke.mp4",
+        "name": "synthetic-one-time-speech-smoke.mp4",
+        "extension": ".mp4",
+        "size_bytes": 656317
+      },
+      "metadata_sources": [
+        "class.json"
+      ],
+      "safety": {
+        "synthetic_test": true,
+        "contains_sensitive_data": false,
+        "real_class_recording": false
+      },
+      "trim_plan": {
+        "source_duration_seconds": 5.98,
+        "trim_start_seconds": 0,
+        "trim_end_seconds": 0,
+        "content_end_seconds": 5.98,
+        "output_content_seconds": 5.98,
+        "opener_seconds": 1,
+        "strategy": "sidecar_or_manifest",
+        "edge_detection": {
+          "enabled": false,
+          "status": "not_used"
+        },
+        "note": "V1 records deterministic trim points; automatic semantic class-start/class-end detection is a later approval packet."
+      },
+      "opener": {
+        "title": "One Time Mishnah",
+        "subtitle": "Synthetic transcription smoke",
+        "seconds": 1
+      },
+      "transcript": {
+        "present": true,
+        "status": "review",
+        "length": 73,
+        "sha256": "32e598043f89f6f4"
+      },
+      "output": {
+        "rendered": true,
+        "video_path": "media-inbox/onetime-vimeo-studio-speech-transcription-smoke-processed/7c2b5ef262a185cb-Synthetic-Speech-Transcription-Smoke/Synthetic-Speech-Transcription-Smoke.edited.mp4",
+        "sidecar_path": "media-inbox/onetime-vimeo-studio-speech-transcription-smoke-processed/7c2b5ef262a185cb-Synthetic-Speech-Transcription-Smoke/Synthetic-Speech-Transcription-Smoke.edited.json",
+        "video_exists": true,
+        "sidecar_exists": true
+      },
+      "blockers": [],
+      "transcription_result": {
+        "status": "transcribed",
+        "provider": "openai",
+        "model": "gpt-4o-mini-transcribe",
+        "credential_source": "keyholder:openaiv2.txt",
+        "credential_source_type": "keyholder",
+        "transcript_present": true,
+        "transcript_length": 73,
+        "transcript_sha256": "32e598043f89f6f4",
+        "attempted_credential_count": 1
+      },
+      "vimeo_dry_run": {
+        "workflow": "one_time_vimeo_folder_library",
+        "dry_run": true,
+        "external_write_performed": false,
+        "production_mutation_performed": false,
+        "member_visibility_performed": false,
+        "summary": {
+          "candidate_count": 1,
+          "ready_for_review_count": 1,
+          "upload_blocked_count": 0,
+          "review_package_written_count": 0,
+          "published_count": 0,
+          "blockers_count": 0
+        },
+        "candidates": [
+          {
+            "id": "3d6614a7bad13f06",
+            "title": "Synthetic Speech Transcription Smoke",
+            "upload_status": "not_requested",
+            "review_package_status": "not_requested",
+            "publish_status": "not_requested",
+            "publish_ready": false,
+            "blockers": []
+          }
+        ]
+      }
+    }
+  ],
+  "blockers": [],
+  "next_actions": [
+    "Real Vimeo upload, production DB review-package writes, member visibility, and bot knowledge promotion remain separate approval-gated packets."
+  ],
+  "summary": {
+    "candidate_count": 1,
+    "rendered_count": 1,
+    "sidecar_count": 1,
+    "blockers_count": 0
+  }
+}

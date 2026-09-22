@@ -1,0 +1,22 @@
+- banner:
+  - strong: OneTimeOneTime
+  - text: Eli Scheller program workspace
+  - link "One Time":
+    - /url: /one-time
+  - link "Parent":
+    - /url: /parent.html?review=one-time
+  - link "Student":
+    - /url: /student.html?review=one-time
+  - link "Classroom":
+    - /url: /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+  - link "Email Review":
+    - /url: /one-time-email-review.html
+  - text: TEST review mode
+- main:
+  - heading "Provider portal" [level=1]
+  - paragraph: Approved BNA network providers can manage their own profile and services.
+  - text: driveDropoffLinks is not defined Username
+  - textbox "Username"
+  - text: Password
+  - textbox "Password"
+  - button "Sign In"

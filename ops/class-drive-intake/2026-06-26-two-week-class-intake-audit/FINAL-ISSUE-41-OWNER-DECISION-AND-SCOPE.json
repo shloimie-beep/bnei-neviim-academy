@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-06-30T05:32:10.297Z",
+  "source": "Codex chat owner packet 2026-06-30",
+  "issue": 41,
+  "branch": "codex/issue41-class-question-fallback-20260628",
+  "pull_request": 49,
+  "question_rows_total": 13,
+  "student_specific_matched_rows": 7,
+  "general_class_question_rows": 6,
+  "student_match_blocked_rows": 0,
+  "score_progress_rows_approved": 0,
+  "task_research_candidates_approved": 25,
+  "general_class_question_fanout_approved": false,
+  "general_class_question_target": "class_scoped_question_or_review_record",
+  "owner_decision": "Six unclear questions are general class questions, not student-specific questions. Do not ask again.",
+  "production_writes_allowed_only_through_guarded_apply": true,
+  "required_approval_id": "ISSUE41-FINAL-SHLOIMIE-QUESTION-TASK-PARSER-APPLY-NO-SCORE-PROGRESS",
+  "parser_backlog_job_ids": [
+    21,
+    25,
+    26,
+    30,
+    31,
+    56,
+    57,
+    58,
+    59,
+    71
+  ],
+  "recording_digest_count": 29,
+  "general_class_question_refs": [
+    "question:c516d14ee4e5d49f",
+    "question:1a8cf5034c4c839f",
+    "question:51aa618b95a7d29d",
+    "question:2158d47f6c0c2923",
+    "question:8f9c41ec6da4ca8c",
+    "question:e1d44fb96cef6915"
+  ],
+  "student_specific_question_refs": [
+    "question:d7297f7b6a534cd7",
+    "question:fa503a5ec9da60db",
+    "question:5a39d7e6e9c73fd9",
+    "question:f6c6b9b262d1ded1",
+    "question:21aaf39597e516fe",
+    "question:6019529478340587",
+    "question:60209685cc7d6f18"
+  ],
+  "guardrails": {
+    "no_raw_transcript_body_export": true,
+    "no_drive_write": true,
+    "no_class_backfill": true,
+    "no_ai_call": true,
+    "no_send_publish_or_public_output": true,
+    "no_score_progress_write": true,
+    "no_general_class_question_fanout": true
+  }
+}

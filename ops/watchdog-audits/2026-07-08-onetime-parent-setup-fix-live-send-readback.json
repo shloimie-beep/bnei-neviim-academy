@@ -1,0 +1,84 @@
+{
+  "id": "WATCH-20260708-ONETIME-PARENT-SETUP-FIX-LIVE-SEND",
+  "raw_id": "RAW-20260708-008",
+  "requirement_ids": [
+    "REQ-20260708-036",
+    "REQ-20260708-037",
+    "REQ-20260708-038"
+  ],
+  "app_fix_commit": "85613771f16dd9d2ed8947a50e2b0b48b9952f3e",
+  "deployments": [
+    {
+      "surface": "bna-main-service",
+      "deployment_id": "198ae4df-d25a-4920-a850-c4552a04d175",
+      "status": "SUCCESS"
+    },
+    {
+      "surface": "one-time-web",
+      "deployment_id": "2b4af747-513f-440f-b532-a06695c4f80c",
+      "status": "SUCCESS"
+    }
+  ],
+  "route_smoke": {
+    "url_redacted": "https://join.onetimeonetime.com/one-time-parent?reset=TESTTOKEN",
+    "status": 200,
+    "title": "OneTimeOneTime Parent Setup",
+    "has_onetime": true,
+    "has_bna_or_academy": false,
+    "has_reset_form": true
+  },
+  "dry_run": {
+    "host": "https://join.onetimeonetime.com",
+    "endpoint": "/api/bna/one-time/parent-trial-invite",
+    "success": true,
+    "no_send": true,
+    "parent_portal_path": "/one-time-parent",
+    "classroom_path": "/one-time-classroom",
+    "member_library_path": "/member-library",
+    "live_class_url_included": true,
+    "scoped_to": {
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class"
+    }
+  },
+  "sender_readiness": {
+    "configured": true,
+    "send_allowed": true,
+    "from_email_redacted": "in***@onetimeonetime.com"
+  },
+  "live_send": {
+    "host": "https://join.onetimeonetime.com",
+    "success": true,
+    "email_sent": true,
+    "recipient_redacted": "sd***@gmail.com",
+    "student_id": 11,
+    "lead_id": 7,
+    "member_id": "11",
+    "member_access_id": "22",
+    "one_time_public_base_url": "https://join.onetimeonetime.com",
+    "classroom_path": "/one-time-classroom",
+    "member_library_path": "/member-library",
+    "live_class_url_included": true,
+    "member_access_expires_at": "2026-08-07T11:48:30.944Z",
+    "parent_password_setup_expires_at": "2026-07-15T11:48:30.964Z"
+  },
+  "communications_readback": {
+    "id": 4,
+    "email_type": "one_time_parent_trial_invite",
+    "template_key": "parent_trial_invite",
+    "status": "sent",
+    "provider": "resend",
+    "recipient_redacted": "sd***@gmail.com",
+    "subject_has_academy_or_bna": false,
+    "created_at": "2026-07-08T11:48:31.339Z"
+  },
+  "guardrails": [
+    "No setup token committed.",
+    "No member access code committed.",
+    "No full recipient address committed.",
+    "No full Zoom URL or Zoom password committed.",
+    "No payment or checkout created.",
+    "No Zoom mutation performed.",
+    "The resend was sent from the OneTime service API, not the Academy service API."
+  ]
+}

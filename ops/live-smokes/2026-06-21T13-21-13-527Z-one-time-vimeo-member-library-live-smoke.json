@@ -1,0 +1,36 @@
+{
+  "started_at": "2026-06-21T13:21:13.527Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "operations login",
+      "ok": true,
+      "duration_ms": 1026,
+      "data": {
+        "cookie": "[redacted]",
+        "role": "super_admin",
+        "scope": {
+          "type": "all",
+          "projectKey": "[redacted]"
+        }
+      }
+    },
+    {
+      "name": "manual Vimeo API workflow",
+      "ok": false,
+      "duration_ms": 2074,
+      "error": "smoke member preview was not visible"
+    }
+  ],
+  "summary": {
+    "vimeo_selected": false,
+    "manual_vimeo_ready": false,
+    "automated_upload_enabled": false,
+    "temporary_class_created": false,
+    "temporary_item_published": false,
+    "temporary_item_rolled_back": false,
+    "member_library_smoke_rolled_back": false,
+    "operations_widths_checked": [],
+    "member_library_widths_checked": []
+  }
+}

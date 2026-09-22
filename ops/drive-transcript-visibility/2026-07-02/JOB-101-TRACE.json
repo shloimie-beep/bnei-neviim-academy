@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-07-02T15:50:00.000Z",
+  "mode": "read_only_no_raw_transcript_body",
+  "content_job_id": 101,
+  "status": "blocked_needs_dry_run_parser_repair",
+  "source_discovered": true,
+  "queue_status": "transcribed",
+  "queue_stage": "03 Transcribed",
+  "transcript_character_count": 39920,
+  "raw_transcript_body_committed": false,
+  "parser_request_status": "unknown",
+  "structured_output_status": "unknown",
+  "canonical_write_status": "unknown",
+  "production_mutation_performed": false,
+  "evidence_paths": [
+    "ops/drive-transcript-visibility/2026-07-02/class-intake-audit/JOB-PIPELINE-TRACE.md",
+    "ops/class-drive-intake/2026-06-25-issue-24-newest-recording/NEWEST-RECORDING-TRACE.md"
+  ],
+  "next_action": "Run dry-run parser repair for content job 101 without committing raw transcript text."
+}

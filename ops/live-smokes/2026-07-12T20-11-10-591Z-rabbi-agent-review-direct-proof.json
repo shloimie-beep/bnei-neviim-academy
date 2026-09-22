@@ -1,0 +1,199 @@
+{
+  "checked_at": "2026-07-12T20:11:10.592Z",
+  "status": "direct_codex_verified",
+  "verification_mode": "codex_direct_verification_substituting_for_operator_agent_mode",
+  "operator_instruction": "On 2026-07-12 the operator instructed Codex to run whatever verifications can be run directly instead of requiring the operator to run the Agent Mode prompts.",
+  "app_url": "https://bneineviimacademy.org",
+  "one_time_url": "https://join.onetimeonetime.com",
+  "commands": [
+    {
+      "name": "refresh Rabbi Agent Review read-only proof readiness",
+      "command": "C:\\Program Files\\nodejs\\node.exe scripts/smoke-rabbi-agent-review-proof-readiness-live.mjs",
+      "ok": true,
+      "duration_ms": 2806,
+      "output_tail": [
+        "  \"report\": \"ops/live-smokes/2026-07-12T20-11-10-627Z-rabbi-agent-review-proof-readiness-live.md\",",
+        "  \"latest_report\": \"ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md\",",
+        "  \"missing_terminal_prompt_count\": 2,",
+        "  \"next_agent_mode_prompts\": [",
+        "    \"https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md\",",
+        "    \"https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md\"",
+        "  ]",
+        "}"
+      ]
+    },
+    {
+      "name": "refresh Rabbi Telegram no-send readiness",
+      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-rabbi-telegram-ticket-readiness.mjs",
+      "ok": true,
+      "duration_ms": 43,
+      "output_tail": [
+        "        \"chat_id_configured\": true,",
+        "        \"ops_username_configured\": true,",
+        "        \"ops_password_configured\": true,",
+        "        \"ready\": true",
+        "      }",
+        "    }",
+        "  }",
+        "}"
+      ]
+    },
+    {
+      "name": "focused direct proof tests",
+      "command": "C:\\Program Files\\nodejs\\node.exe --test tests/agent-review-hub.test.js tests/bna-helper-tools.test.js tests/rabbi-telegram-notifications.test.js tests/production-readiness-gate.test.js tests/production-unblocker.test.js",
+      "ok": true,
+      "duration_ms": 315,
+      "output_tail": [
+        "ℹ tests 54",
+        "ℹ suites 0",
+        "ℹ pass 54",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 278.565"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "latest approved Rabbi Telegram live smoke sent to Rabbi role alias",
+      "ok": true,
+      "details": {
+        "report": "ops/live-smokes/2026-07-12T20-03-41-435Z-rabbi-telegram-live-smoke.json",
+        "status": 200,
+        "role_alias": "one_time_rabbi_operator",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class"
+      }
+    },
+    {
+      "name": "Rabbi Telegram no-send readiness is ready",
+      "ok": true,
+      "details": {
+        "path": "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json",
+        "status": "ready",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class"
+      }
+    },
+    {
+      "name": "Rabbi helper scope map has 163 locked wrapper-backed contracts",
+      "ok": true,
+      "details": {
+        "path": "ops/helper-tool-scope/rabbi-one-time-tool-scope-map.json",
+        "contract_count": 163,
+        "surface_counts": {
+          "operations": 97,
+          "parent": 19,
+          "provider": 30,
+          "rabbi": 2,
+          "student": 15
+        }
+      }
+    },
+    {
+      "name": "live Agent Review public prompts, artifacts, and hub readbacks are reachable",
+      "ok": true,
+      "details": {
+        "proof_path": "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json",
+        "prompt_readback_count": 2,
+        "artifact_readback_count": 3,
+        "hub_prompt_state_count": 2
+      }
+    }
+  ],
+  "prompt_readbacks": [
+    {
+      "prompt_key": "rabbi-telegram-helper-ticket-smoke",
+      "requirement_id": "REQ-20260708-101",
+      "url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md",
+      "status": 200,
+      "marker_count": 8
+    },
+    {
+      "prompt_key": "rabbi-helper-tool-scope-map",
+      "requirement_id": "REQ-20260708-093",
+      "url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md",
+      "status": 200,
+      "marker_count": 8
+    }
+  ],
+  "artifact_readbacks": [
+    {
+      "path": "/agent-review-artifacts/rabbi-one-time-tool-scope-map.json",
+      "url": "https://join.onetimeonetime.com/agent-review-artifacts/rabbi-one-time-tool-scope-map.json",
+      "status": 200
+    },
+    {
+      "path": "/agent-review-artifacts/rabbi-one-time-tool-scope-map.md",
+      "url": "https://join.onetimeonetime.com/agent-review-artifacts/rabbi-one-time-tool-scope-map.md",
+      "status": 200
+    },
+    {
+      "path": "/agent-review-artifacts/account-bot-scope-template.json",
+      "url": "https://join.onetimeonetime.com/agent-review-artifacts/account-bot-scope-template.json",
+      "status": 200
+    }
+  ],
+  "hub_prompt_state": [
+    {
+      "prompt_key": "rabbi-telegram-helper-ticket-smoke",
+      "status": "direct_codex_verified",
+      "workflow_state": "direct_codex_verification",
+      "latest_result_status": "pass",
+      "last_result_ref": "CODIRECT-2026-07-12T20-11-10-591Z-rabbi-telegram-helper-ticket-smoke",
+      "last_result_url": "",
+      "public_url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-telegram-helper-ticket-smoke&requirement_id=REQ-20260708-084&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-telegram-helper-ticket-smoke&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-telegram-helper-ticket-smoke%3Aall-contexts&autosave=1",
+      "terminal_saved_proof": true,
+      "agent_mode_saved_result": false,
+      "direct_codex_verification": true,
+      "direct_verification_note": "Terminal proof substituted by Codex direct verification at operator request; no Agent Review database result was fabricated.",
+      "requirement_id": "REQ-20260708-084",
+      "evidence": [
+        "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json",
+        "ops/live-smokes/2026-07-12T20-03-41-435Z-rabbi-telegram-live-smoke.json",
+        "tests/rabbi-telegram-notifications.test.js",
+        "tests/agent-review-hub.test.js"
+      ]
+    },
+    {
+      "prompt_key": "rabbi-helper-tool-scope-map",
+      "status": "direct_codex_verified",
+      "workflow_state": "direct_codex_verification",
+      "latest_result_status": "pass",
+      "last_result_ref": "CODIRECT-2026-07-12T20-11-10-591Z-rabbi-helper-tool-scope-map",
+      "last_result_url": "",
+      "public_url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-helper-tool-scope-map&requirement_id=REQ-20260708-093&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-helper-tool-scope-map&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-helper-tool-scope-map%3Aall-contexts&autosave=1",
+      "terminal_saved_proof": true,
+      "agent_mode_saved_result": false,
+      "direct_codex_verification": true,
+      "direct_verification_note": "Terminal proof substituted by Codex direct verification at operator request; no Agent Review database result was fabricated.",
+      "requirement_id": "REQ-20260708-093",
+      "evidence": [
+        "ops/helper-tool-scope/rabbi-one-time-tool-scope-map.json",
+        "ops/helper-tool-scope/rabbi-one-time-tool-scope-map.md",
+        "ops/helper-tool-scope/account-bot-scope-template.json",
+        "tests/bna-helper-tools.test.js",
+        "tests/agent-review-hub.test.js"
+      ]
+    }
+  ],
+  "direct_evidence": [
+    "ops/live-smokes/2026-07-12T20-03-41-435Z-rabbi-telegram-live-smoke.json",
+    "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json",
+    "ops/helper-tool-scope/rabbi-one-time-tool-scope-map.json",
+    "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json"
+  ],
+  "remaining_blockers": [],
+  "next_agent_mode_prompts": [],
+  "guardrails": [
+    "This report is Codex direct proof, not a ChatGPT Agent Mode browser transcript.",
+    "No Agent Review database result row is fabricated by this script.",
+    "No Telegram token, chat ID, cookie, password, API key, raw private message body, or class link is printed.",
+    "The Telegram delivery evidence is read from the most recent approved live-smoke report."
+  ],
+  "secret_values_printed": false
+}

@@ -1,0 +1,83 @@
+- complementary "BNA Operations navigation":
+  - text: One Time Mishnah Class Provider workspace for members, classes, Studio, communications, payments, tasks, and setup. Current Workspace
+  - strong: One Time Mishnah Class
+  - text: Provider / Provider Workspace Admin Scoped
+  - button "Overview"
+  - button "Workspace Setup"
+  - navigation:
+    - button "Overview OV"
+    - button "Members MB"
+    - button "Classes & Content CC"
+    - button "Studio ST"
+    - button "Live Class LC"
+    - button "Schedule SC"
+    - button "Community CO"
+    - button "Communications CM"
+    - button "Automations AU"
+    - button "Payments PA"
+    - button "Tasks TS"
+    - button "Reporting RP"
+    - button "Integrations IN"
+    - button "Workspace Setup SU"
+  - button "Back to all modules"
+  - text: Program Sections Overview Choose a section for this workspace.
+  - button "Overview 0"
+  - button "Launch 0"
+  - button "Program 0"
+  - button "Membership 0"
+  - button "Content 0"
+  - button "Schedule 0"
+  - button "Questions 0"
+  - button "Access 0"
+  - button "Settings 0"
+  - button "Platform Support"
+  - button "Help"
+  - link "Logout":
+    - /url: /operations-login.html
+- main:
+  - text: One Time Mishnah Class / Overview / Overview
+  - heading "Overview" [level=1]
+  - 'button "Members: 1. One Time participants and member records scoped to this provider."':
+    - text: Members
+    - strong: "1"
+  - 'button "Classes: 0. One Time classes, source material, and library items."':
+    - text: Classes
+    - strong: "0"
+  - 'button "Studio: 0. Studio projects and content workflow for this workspace."':
+    - text: Studio
+    - strong: "0"
+  - 'button "Setup: 0. Provider setup, connectors, and access items."':
+    - text: Setup
+    - strong: "0"
+  - text: One Time Mishnah Class / Provider Workspace Admin
+  - button "Ask or search within One Time Mishnah Class / Overview / Overview": Ask / Search
+  - text: Tue 7 Jul
+  - button "Open Schedule"
+  - navigation "Overview sections":
+    - text: Overview
+    - strong: Overview
+    - tablist "Overview sections":
+      - tab "Overview 0" [selected]
+      - tab "Launch 0"
+      - tab "Program 0"
+      - tab "Membership 0"
+      - tab "Content 0"
+      - tab "Schedule 0"
+      - tab "Questions 0"
+      - tab "Access 0"
+      - tab "Settings 0"
+  - text: Provider Workspace
+  - heading "One Time Mishnah Class" [level=2]
+  - paragraph: Rabbi Sheller is the current service provider and revenue-share partner for this workspace. Members are participants, not BNA students, and this workspace does not expose BNA accountability data.
+  - button "Launch 0"
+  - button "Program 1"
+  - button "Tiers 0"
+  - button "Content 0"
+  - button "Participants 1"
+  - button "Access 1"
+  - heading "Mishnayos Membership" [level=3]
+  - text: Revenue-share partner Provider Rabbi Sheller Commercial model Revenue-share partner Program Mishnayos Membership Class/session Rabbi Scheller's 7:00 PM Israel class Users Participants / Members Calendar status draft Delivery External app / Vimeo / Replit until inspected Private provider fields such as business terms, credentials, partnership terms, setup history, and performance notes stay admin-only and never appear on public provider profiles.
+  - heading "Command Bot Actions" [level=3]
+  - text: 0 typed actions
+  - paragraph: The bot reads page/workspace context and previews typed actions. Sensitive actions require approval and dedicated handlers before mutation.
+  - text: No typed actions are registered for this page yet.

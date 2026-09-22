@@ -1,0 +1,43 @@
+{
+  "packet_id": "onetime-agent-prompt-series-20260706-911",
+  "schema_version": "bna.chatgpt_dropoff.v1",
+  "created_at": "2026-07-06T00:00:00Z",
+  "source": "chatgpt",
+  "source_thread": "",
+  "operator_raw_id": "RAW-20260706-911",
+  "workspace": "rabbi_sheller_provider",
+  "project": "one_time_mishnah_class",
+  "status": "ready_for_codex_audit",
+  "priority": "normal",
+  "scope_summary": "Provide five Agent Mode audit prompts for the One Time UI audit covering control tower, public funnel, Rabbi operations/backend, portals/classroom, and cross-system synthesis.",
+  "out_of_scope": [
+    "source edits",
+    "deploys",
+    "WhatsApp/email/Telegram sends",
+    "payments or access grants",
+    "DNS changes",
+    "provider-account mutations",
+    "Drive writes",
+    "production-data changes"
+  ],
+  "expected_outputs": [
+    "Repo-visible audit packets created for each prompt with findings and evidence",
+    "Codex pickup of resulting audit packets for analysis"
+  ],
+  "acceptance_criteria": [
+    "Prompts run in the correct order (control tower first, then surface audits, then synthesis)",
+    "Each resulting audit agent creates a dropoff packet with status set to ready_for_codex_audit",
+    "No secrets or prohibited data included in any prompt or report"
+  ],
+  "files_included": [
+    "packet.json",
+    "RAW.md",
+    "CODEX_PROMPT.md",
+    "MANIFEST.json",
+    "status.json",
+    "PROMPTS.md"
+  ],
+  "requires_operator_decision": false,
+  "external_write_required": false,
+  "secrets_included": false
+}

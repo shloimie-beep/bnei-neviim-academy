@@ -1,0 +1,162 @@
+{
+  "generated_at": "2026-06-16T12:52:40.215Z",
+  "captures": [
+    {
+      "name": "desktop-tasks-pending",
+      "file": "C:/Users/User/BNA v2.0/ops/playwright-smokes/2026-06-16-ops-02-local/desktop-tasks-pending.png",
+      "viewport": {
+        "width": 1440,
+        "height": 950
+      },
+      "summary": {
+        "url": "http://127.0.0.1:18123/operations?view=tasks&section=pending&workspace=platform",
+        "h2": [
+          "Decisions, Pending, Tasks",
+          "Task Details",
+          "Report a Problem"
+        ],
+        "hasWorkspaceDirectory": false,
+        "hasServiceProviders": false,
+        "hasProviderLeads": false,
+        "hasBnaEnrollment": false,
+        "hasCalendar": true,
+        "hasRabbiSchedule": false,
+        "hasPendingActions": false,
+        "hasDecisionActions": false,
+        "hasDoneProof": false,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "desktop-tasks-decisions",
+      "file": "C:/Users/User/BNA v2.0/ops/playwright-smokes/2026-06-16-ops-02-local/desktop-tasks-decisions.png",
+      "viewport": {
+        "width": 1440,
+        "height": 950
+      },
+      "summary": {
+        "url": "http://127.0.0.1:18123/operations?view=tasks&section=decisions&workspace=platform",
+        "h2": [
+          "Decisions, Pending, Tasks",
+          "Task Details",
+          "Report a Problem"
+        ],
+        "hasWorkspaceDirectory": false,
+        "hasServiceProviders": false,
+        "hasProviderLeads": false,
+        "hasBnaEnrollment": false,
+        "hasCalendar": true,
+        "hasRabbiSchedule": false,
+        "hasPendingActions": false,
+        "hasDecisionActions": false,
+        "hasDoneProof": false,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "desktop-tasks-done-proof",
+      "file": "C:/Users/User/BNA v2.0/ops/playwright-smokes/2026-06-16-ops-02-local/desktop-tasks-done-proof.png",
+      "viewport": {
+        "width": 1440,
+        "height": 950
+      },
+      "summary": {
+        "url": "http://127.0.0.1:18123/operations?view=tasks&section=done&workspace=platform",
+        "h2": [
+          "Decisions, Pending, Tasks",
+          "Task Details",
+          "Report a Problem"
+        ],
+        "hasWorkspaceDirectory": false,
+        "hasServiceProviders": false,
+        "hasProviderLeads": false,
+        "hasBnaEnrollment": false,
+        "hasCalendar": true,
+        "hasRabbiSchedule": false,
+        "hasPendingActions": false,
+        "hasDecisionActions": false,
+        "hasDoneProof": false,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "desktop-service-providers-leads",
+      "file": "C:/Users/User/BNA v2.0/ops/playwright-smokes/2026-06-16-ops-02-local/desktop-service-providers-leads.png",
+      "viewport": {
+        "width": 1440,
+        "height": 950
+      },
+      "summary": {
+        "url": "http://127.0.0.1:18123/operations?view=service_providers&section=leads&workspace=platform",
+        "h2": [
+          "Service Providers",
+          "Task Details",
+          "Report a Problem"
+        ],
+        "hasWorkspaceDirectory": false,
+        "hasServiceProviders": true,
+        "hasProviderLeads": true,
+        "hasBnaEnrollment": false,
+        "hasCalendar": false,
+        "hasRabbiSchedule": false,
+        "hasPendingActions": false,
+        "hasDecisionActions": false,
+        "hasDoneProof": false,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "desktop-provider-calendar",
+      "file": "C:/Users/User/BNA v2.0/ops/playwright-smokes/2026-06-16-ops-02-local/desktop-provider-calendar.png",
+      "viewport": {
+        "width": 1440,
+        "height": 950
+      },
+      "summary": {
+        "url": "http://127.0.0.1:18123/operations?workspace=rabbi_sheller_provider&view=calendar&section=provider",
+        "h2": [
+          "Calendar",
+          "Task Details",
+          "Report a Problem"
+        ],
+        "hasWorkspaceDirectory": false,
+        "hasServiceProviders": true,
+        "hasProviderLeads": false,
+        "hasBnaEnrollment": false,
+        "hasCalendar": true,
+        "hasRabbiSchedule": true,
+        "hasPendingActions": false,
+        "hasDecisionActions": false,
+        "hasDoneProof": false,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "mobile-provider-calendar",
+      "file": "C:/Users/User/BNA v2.0/ops/playwright-smokes/2026-06-16-ops-02-local/mobile-provider-calendar.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "summary": {
+        "url": "http://127.0.0.1:18123/operations?workspace=rabbi_sheller_provider&view=calendar&section=provider",
+        "h2": [
+          "Calendar",
+          "Task Details",
+          "Report a Problem"
+        ],
+        "hasWorkspaceDirectory": false,
+        "hasServiceProviders": false,
+        "hasProviderLeads": false,
+        "hasBnaEnrollment": false,
+        "hasCalendar": true,
+        "hasRabbiSchedule": true,
+        "hasPendingActions": false,
+        "hasDecisionActions": false,
+        "hasDoneProof": false,
+        "horizontalOverflow": false
+      }
+    }
+  ],
+  "console_errors": []
+}

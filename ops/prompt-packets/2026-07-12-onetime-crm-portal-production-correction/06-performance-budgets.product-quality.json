@@ -1,0 +1,710 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260712-111",
+  "parent_raw_id": "RAW-20260712-004",
+  "source_statement_ids": [
+    "SRC-20260712-004-015"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260712-101",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260712-105",
+      "PKT-20260712-106"
+    ],
+    "blocks_packet_ids": [
+      "PKT-20260712-112"
+    ],
+    "consumes": [
+      "public/operations.html",
+      "public/operations-bootstrap.html",
+      "public/js/operations-shell.js",
+      "public/js/operations-deferred-renderers.js",
+      "public/css/operations-shell.css",
+      "scripts/split-operations-shell.mjs",
+      "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+      "tests/operations-shell-navigation-contract.test.js",
+      "tests/one-time-intake-api-readback.test.js",
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md"
+    ],
+    "produces": [
+      "scripts/split-operations-shell.mjs",
+      "public/operations-bootstrap.html",
+      "public/js/operations-shell.js",
+      "public/js/operations-deferred-renderers.js",
+      "public/css/operations-shell.css",
+      "ops/performance-audits/2026-07-12-onetime-performance-budget-local/report.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.product-quality.json",
+    "terminal_condition": "REQ-20260712-111 is locally implemented or precisely blocked with Operations shell byte budget, CRM/public landing local performance measurements, static cache-policy readback, and no external writes.",
+    "handoff_target": "REQ-20260712-112 final verifier/deploy/live-smoke packet after local performance proof."
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "One Time performance budgets and bundle delivery",
+  "created_at": "2026-07-12T20:20:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "RABBI_PROVIDER_ADMIN",
+    "PUBLIC_MARKETING"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260712-004",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "CRM_PIPELINE",
+      "SECURITY_PRIVACY",
+      "DEPLOY_RELEASE"
+    ],
+    "confidence": "high",
+    "reasons": [
+      "The source names performance budgets, bundle splitting, caching, compression, and provider-session optimization.",
+      "The existing Operations split-shell contract has a failing 1.2 MB startup JS assertion.",
+      "The final deploy verifier depends on local performance proof before release."
+    ],
+    "affected_product_surfaces": [
+      "Operations split shell",
+      "One Time CRM workbench",
+      "One Time public landing",
+      "One Time portal/static assets"
+    ],
+    "likely_external_provider_blockers": [
+      "Production Brotli/gzip and Vary: Accept-Encoding proof requires deployment/live headers and remains under REQ-20260712-112 if no live release occurs in this packet.",
+      "No DNS, provider account, payment/access, email, WhatsApp/WAPI, Telegram, GHL, LeadConnector, or production data mutation is allowed in this packet."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "validate this focused performance packet",
+      "measure current Operations shell byte sizes and local CRM/landing performance",
+      "patch split-shell generation or static delivery only as needed",
+      "regenerate generated shell assets",
+      "run shell contract, cache policy, CRM smoke, landing smoke, and run validators",
+      "record local performance proof and remaining deploy/live header requirements"
+    ],
+    "next_exact_packet": "Implement REQ-20260712-111 only; do not deploy or close REQ-20260712-112 from this packet."
+  },
+  "operator_intent_summary": "Make the One Time Operations and public surfaces measurably lighter and release-ready by meeting local performance budgets, bundle delivery constraints, static cache contracts, and exact evidence requirements before final deploy/live-smoke closeout.",
+  "raw_quotes": [
+    "Meet and record Operations/CRM/public performance budgets, bundle splitting, caching, compression, and provider-session optimization.",
+    "Operations shell, CRM first page/list/detail, public landing, and large-fixture CRM query budgets are measured and met or blocked with exact evidence.",
+    "Operations bundles are split/minified/fingerprinted/compressed/cached as required.",
+    "Authenticated HTML is non-cacheable while fingerprinted assets are long-cacheable.",
+    "Brotli/gzip and Vary: Accept-Encoding are verified on One Time and BNA production domains.",
+    "Vimeo loads only when a video is opened."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260712-101",
+      "decision": "Original source screenshots are unavailable locally, so regenerated audit/smoke evidence is the baseline.",
+      "status": "resolved_by_regeneration_with_direct_source_png_limitation"
+    }
+  ],
+  "out_of_scope": [
+    "No deployment, production release, live SHA verification, or live production header claim; those remain REQ-20260712-112.",
+    "No external email, WhatsApp/WAPI, Telegram, payment/access, DNS/provider-account mutation, production data mutation, GHL, LeadConnector, or external CRM write.",
+    "No broad CRM/inbox/portal/landing redesign.",
+    "No raising the 1.2 MB Operations shell test threshold as a substitute for reducing startup bytes."
+  ],
+  "affected_surfaces": [
+    "Operations split shell",
+    "Operations One Time CRM workbench",
+    "One Time public landing",
+    "One Time portal/static asset delivery"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+    "/one-time",
+    "/member-library"
+  ],
+  "affected_files": [
+    "scripts/split-operations-shell.mjs",
+    "public/operations-bootstrap.html",
+    "public/js/operations-shell.js",
+    "public/js/operations-deferred-renderers.js",
+    "public/css/operations-shell.css",
+    "tests/operations-shell-navigation-contract.test.js",
+    "tests/one-time-intake-api-readback.test.js",
+    "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+    "scripts/smoke-onetime-landing-whatsapp-local.mjs",
+    "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/"
+  ],
+  "current_state": {
+    "inspected": [
+      "public/js/operations-shell.js is 1233058 bytes locally, above the 1200000 byte startup budget asserted by tests/operations-shell-navigation-contract.test.js.",
+      "public/operations-bootstrap.html remains small at 1724 bytes and loads /css/operations-shell.css plus /js/operations-shell.js.",
+      "server.js sets no-store/private cache policies for Operations shell assets and public static cache policies for public assets.",
+      "REQ-20260712-106 and REQ-20260712-107 local CRM smoke already records first-page CRM request/card/rerender metrics.",
+      "REQ-20260712-109 local landing smoke records public landing screenshots, no helper assets, and no write requests."
+    ],
+    "known_gaps": [
+      "Operations split-shell startup JS exceeds the 1.2 MB local contract.",
+      "No REQ-20260712-111-specific local performance report yet consolidates shell bytes, CRM metrics, landing metrics, cache policy, and remaining live compression blockers.",
+      "Production Brotli/gzip/Vary proof cannot be claimed without deploy/live readback."
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/TEST-RESULTS.md"
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "performance budgets",
+      "bundle splitting",
+      "cached/compressed/fingerprinted",
+      "launch-ready",
+      "Vimeo loads only when opened",
+      "CRM",
+      "clean"
+    ],
+    "expanded_phrases": {
+      "performance budgets": "Local proof must include the Operations startup JS byte budget, bootstrap byte budget, CRM first-page API/card/rerender metrics, public landing smoke metrics, and any exact blocker for live-only compression/header checks.",
+      "bundle splitting": "The /operations route must keep a small HTML bootstrap and split non-initial heavy renderers into a deferred chunk without breaking service-provider overview or CRM workbench behavior.",
+      "cached/compressed/fingerprinted": "Local static policy tests must show authenticated/private shells are no-store or private no-cache, while public assets keep cache headers. Production gzip/Brotli/Vary and fingerprint readback remain a deploy/live verifier requirement if not locally available.",
+      "launch-ready": "For this packet, launch-ready means local performance gates pass and remaining live release/header checks are explicitly carried into REQ-20260712-112.",
+      "Vimeo loads only when opened": "Local/static proof must confirm the member library/classroom startup path does not eagerly load a Vimeo iframe before a video is opened, or record the exact blocker.",
+      "CRM": "For this packet, CRM is a verification readback surface only: reuse existing One Time CRM smoke metrics to ensure shell delivery changes did not regress bounded first-page list/detail behavior.",
+      "clean": "For this packet, clean means generated shell output removes redundant leading extraction indentation while preserving behavior; it does not mean redesigning UI or changing unrelated product flows."
+    },
+    "first_party_pattern_interpretation": "Use first-party static/Playwright/Node measurements and existing BNA routes. Do not introduce GHL, LeadConnector, external provider writes, or live sends."
+  },
+  "design_pattern_references": [
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260712-111",
+      "title": "Meet One Time performance budgets and bundle delivery requirements",
+      "status": "ready_for_codex",
+      "expected_result": "Operations shell, CRM first page/list/detail, public landing, and large-fixture CRM query budgets are measured and met or blocked with exact evidence; Operations bundles are split/minified/fingerprinted/compressed/cached as required.",
+      "acceptance_criteria": [
+        "CRM list API for 50 contacts is within budget or exact blocker recorded.",
+        "Initial CRM calls/rows/DOM/long-task budgets are recorded.",
+        "Authenticated HTML is non-cacheable while fingerprinted assets are long-cacheable.",
+        "Brotli/gzip and Vary: Accept-Encoding are verified on One Time and BNA production domains or carried as a REQ-20260712-112 live blocker.",
+        "Vimeo loads only when a video is opened."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "REQ-20260712-105 CRM pagination/API proof is done locally.",
+      "REQ-20260712-106 CRM frontend performance proof is done locally.",
+      "REQ-20260712-109 public landing launcher proof is done locally.",
+      "The known split-shell byte-budget failure has been reproduced and scoped to generated Operations shell delivery.",
+      "No external provider mutation, live deploy, or production send is in scope."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load the split Operations shell with local smoke data.",
+      "expected_visible_title": "One Time Operations",
+      "expected_visible_message": "Small bootstrap loads the shell without oversized initial JS.",
+      "expected_primary_action": "Open One Time overview",
+      "expected_secondary_actions": [
+        "Open CRM",
+        "Open Inbox"
+      ],
+      "forbidden_content": [
+        "GHL runtime",
+        "LeadConnector runtime",
+        "active external send",
+        "oversized startup shell"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Operations navigation and primary content regions remain named.",
+      "accessibility_expectation": "Performance changes do not remove keyboard-visible controls.",
+      "test_smoke_assertion": "Shell contract asserts bootstrap < 10000 bytes and operations-shell.js < 1200000 bytes.",
+      "requirement_id": "REQ-20260712-111"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "1024",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load CRM with a no-result search in the local harness.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Empty result state remains scoped and does not load all records.",
+      "expected_primary_action": "Clear filters",
+      "expected_secondary_actions": [
+        "Refresh CRM"
+      ],
+      "forbidden_content": [
+        "fetch-all contacts",
+        "root rerender on contact selection"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state is announced within the CRM panel.",
+      "accessibility_expectation": "Filter controls remain labeled.",
+      "test_smoke_assertion": "CRM smoke records <=50 rendered cards and debounced request behavior.",
+      "requirement_id": "REQ-20260712-111"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "768",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load CRM with local fixture contacts.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "First page renders a bounded contact list and selected detail.",
+      "expected_primary_action": "Select contact",
+      "expected_secondary_actions": [
+        "Open scoped inbox"
+      ],
+      "forbidden_content": [
+        "more than 50 initial CRM cards",
+        "unbounded source fetch"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Contact cards and detail panes remain semantic buttons/regions.",
+      "accessibility_expectation": "Mobile/tablet layout remains readable after bundle work.",
+      "test_smoke_assertion": "CRM smoke records initial CRM API calls, rendered cards, app-root mutations, and no writes.",
+      "requirement_id": "REQ-20260712-111"
+    },
+    "filtered_empty": {
+      "route": "/one-time",
+      "viewport": "430",
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open public landing at mobile width.",
+      "expected_visible_title": "Give your son a love for Torah you never thought possible.",
+      "expected_visible_message": "Public landing remains light, with one WhatsApp launcher and no helper widget.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": [
+        "WhatsApp launcher"
+      ],
+      "forbidden_content": [
+        "helper widget scripts",
+        "hard-coded wa.me",
+        "write request"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Public CTAs and launcher keep labels.",
+      "accessibility_expectation": "Launcher remains target-sized after performance changes.",
+      "test_smoke_assertion": "Landing smoke passes with no helper assets and no POST/write requests.",
+      "requirement_id": "REQ-20260712-111"
+    },
+    "error": {
+      "route": "/operations",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Deferred chunk fails to load in a negative local check.",
+      "expected_visible_title": "Loading view",
+      "expected_visible_message": "Initial shell remains usable and logs a scoped deferred-renderer error.",
+      "expected_primary_action": "Retry navigation",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "blank page",
+        "lost navigation",
+        "external write"
+      ],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Initial shell remains semantic even if a deferred view fails.",
+      "accessibility_expectation": "Loading card text is readable.",
+      "test_smoke_assertion": "Shell contract confirms deferred chunk path and smoke catches console/page errors.",
+      "requirement_id": "REQ-20260712-111"
+    },
+    "blocked_setup": {
+      "route": "/operations",
+      "viewport": "api",
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Attempt live compression/header proof without a deploy/live URL in this local batch.",
+      "expected_visible_title": "Live proof blocker",
+      "expected_visible_message": "Production gzip/Brotli/Vary evidence is carried to REQ-20260712-112.",
+      "expected_primary_action": "Deploy verifier",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "fake production header claim"
+      ],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Not applicable to API/header proof.",
+      "accessibility_expectation": "Not applicable to API/header proof.",
+      "test_smoke_assertion": "Closeout records exact live proof blocker if not deployed.",
+      "requirement_id": "REQ-20260712-111"
+    },
+    "preview_only": {
+      "route": "/member-library",
+      "viewport": "390",
+      "auth_role": "PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load member library preview/test fixture.",
+      "expected_visible_title": "Member Library",
+      "expected_visible_message": "Vimeo iframe/media loads only after video open action.",
+      "expected_primary_action": "Open video",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "eager Vimeo iframe before video open"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Video cards are buttons or links with names.",
+      "accessibility_expectation": "Lazy media controls remain reachable.",
+      "test_smoke_assertion": "Performance report records Vimeo eager-load status or exact blocker.",
+      "requirement_id": "REQ-20260712-111"
+    },
+    "success_readback": {
+      "route": "/operations-bootstrap.html",
+      "viewport": "api",
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Read generated shell asset sizes and static cache policies locally.",
+      "expected_visible_title": "Performance report",
+      "expected_visible_message": "Bootstrap and shell byte budgets pass; cache policy tests pass.",
+      "expected_primary_action": "Run verifier",
+      "expected_secondary_actions": [
+        "Run shell contract"
+      ],
+      "forbidden_content": [
+        "threshold-only fix",
+        "unmapped live blocker"
+      ],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Not applicable to local file/API readback.",
+      "accessibility_expectation": "Not applicable to local file/API readback.",
+      "test_smoke_assertion": "node --test shell/cache/CRM suites pass and report lists asset bytes.",
+      "requirement_id": "REQ-20260712-111"
+    },
+    "permission_denied": {
+      "route": "/operations",
+      "viewport": "390",
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Anonymous visitor requests private Operations route.",
+      "expected_visible_title": "Unauthorized",
+      "expected_visible_message": "Private shell is not cached as a public asset.",
+      "expected_primary_action": "Login",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "private Operations data in public cache",
+        "parent/student private data"
+      ],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Access denied remains clear.",
+      "accessibility_expectation": "Not a visual implementation target.",
+      "test_smoke_assertion": "Cache policy test keeps Operations shell assets private/no-cache.",
+      "requirement_id": "REQ-20260712-111"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile CRM selected-contact state after bundle changes.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Back flow and selected detail still work on mobile.",
+      "expected_primary_action": "Back to contacts",
+      "expected_secondary_actions": [
+        "Open scoped inbox"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "broken deferred chunk",
+        "write request"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Back button and detail panes keep names.",
+      "accessibility_expectation": "Touch targets remain usable.",
+      "test_smoke_assertion": "CRM smoke captures mobile selected-contact Back flow with no writes.",
+      "requirement_id": "REQ-20260712-111"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 1440,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-111"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 1024,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-111"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 768,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-111"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 430,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-111"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 390,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-111"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260712-111-001",
+        "route": "/operations",
+        "viewport": "1440",
+        "screenshot_before": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "screenshot_after_or_blocker": "ops/performance-audits/2026-07-12-onetime-performance-budget-local/report.md",
+        "defect_codes": [
+          "VQ-RESP-003",
+          "VQ-ACTION-003"
+        ],
+        "severity": "P1",
+        "user_impact": "Oversized startup JS can delay the provider Operations overview and CRM workbench.",
+        "expected_fix": "Keep split-shell startup JS below 1.2 MB while preserving CRM/provider behavior.",
+        "requirement_id": "REQ-20260712-111"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Performance work must not remove accessible labels from Operations navigation, CRM contact cards, selected-contact Back flow, public landing CTAs, or WhatsApp launcher.",
+      "Deferred loading cards must have readable text and not trap focus.",
+      "Mobile CRM controls remain at least 44 px where they were already verified in REQ-20260712-107."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Load Operations shell",
+      "selector_or_action_key": "ACTION-OPERATIONS-SHELL-LOAD",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "GET /operations serves a small bootstrap and private/no-cache shell assets.",
+      "registry_required": false
+    },
+    {
+      "label": "Load deferred Operations view",
+      "selector_or_action_key": "OPERATIONS_DEFERRED_RENDER_CHUNK",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "/js/operations-deferred-renderers.js loads only when a deferred view is requested.",
+      "registry_required": false
+    },
+    {
+      "label": "Live Brotli/gzip production proof",
+      "selector_or_action_key": "REQ-20260712-112-LIVE-COMPRESSION",
+      "action_state": "DISABLED_NOT_IN_SCOPE",
+      "owner": "Codex verifier",
+      "external_write": false,
+      "handler_or_blocker": "Requires scoped commit/push/deploy and live header readback under REQ-20260712-112.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "api_calls": [
+      "GET /api/bna/crm/contacts?limit=50&workspace=rabbi_sheller_provider&project_key=one_time_mishnah_class",
+      "GET /api/bna/crm/contacts/:id/timeline scoped to rabbi_sheller_provider / one_time_mishnah_class",
+      "GET /one-time and static public assets",
+      "Local file-size readback for public/operations-bootstrap.html and public/js/operations-shell.js"
+    ],
+    "limits": [
+      "public/js/operations-shell.js normalized byte size < 1200000",
+      "public/operations-bootstrap.html byte size < 10000",
+      "initial CRM rendered cards <= 50",
+      "contact-selection app-root mutations = 0",
+      "debounced search list requests = 1 in smoke",
+      "no POST/write requests in local performance smokes"
+    ],
+    "caching": [
+      "Operations HTML/private JS remains no-store/private no-cache locally.",
+      "Public static assets keep public cache headers.",
+      "Live long-cache/fingerprint/compression proof is recorded as REQ-20260712-112 if not deployed."
+    ],
+    "abort_debounce": [
+      "CRM list and timeline requests remain abortable.",
+      "CRM search remains debounced."
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Browser performance measurements are evidence only, not authority.",
+      "One Time CRM reads remain scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+      "Private Operations shell and authenticated assets are not cached as public content.",
+      "Public landing evidence must not include private CRM, parent, student, provider, signed-token, or raw contact data."
+    ],
+    "forbidden_content": [
+      "signed view-as token",
+      "secrets",
+      "raw private contact export",
+      "raw private message bodies",
+      "active GHL or LeadConnector runtime",
+      "external sends or writes"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-10-PERFORMANCE",
+      "scope": "Local Operations shell byte budget, CRM/public performance evidence, cache policy readback, and live compression blocker mapping",
+      "instructions": [
+        "Validate this packet before implementation.",
+        "Do not raise the Operations shell byte threshold.",
+        "Reduce generated startup shell bytes through split generation or mechanical bundle output cleanup.",
+        "Regenerate generated split-shell assets from public/operations.html.",
+        "Run shell contract, cache policy, CRM workbench smoke, landing smoke, and execution-run validators.",
+        "Write a local performance budget report with exact passed metrics and live-only blockers."
+      ],
+      "requirements": [
+        "REQ-20260712-111"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "focused_performance_slice",
+    "source_files_to_read": [
+      "tests/operations-shell-navigation-contract.test.js",
+      "scripts/split-operations-shell.mjs",
+      "server.js",
+      "tests/one-time-intake-api-readback.test.js",
+      "scripts/smoke-onetime-operations-crm-workbench-local.mjs"
+    ],
+    "files_allowed_to_edit": [
+      "scripts/split-operations-shell.mjs",
+      "public/operations-bootstrap.html",
+      "public/js/operations-shell.js",
+      "public/js/operations-deferred-renderers.js",
+      "public/css/operations-shell.css",
+      "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.product-quality.json",
+      "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.md",
+      "ops/performance-audits/2026-07-12-onetime-performance-budget-local/",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/*"
+    ],
+    "max_files_to_edit": 12,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Deploy/live header proof, production SHA verification, or broad UI redesign belongs to REQ-20260712-112 or a new packet.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "commands": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.product-quality.json",
+      "node --check scripts/split-operations-shell.mjs",
+      "node scripts/split-operations-shell.mjs",
+      "node --check public/js/operations-shell.js",
+      "node --check public/js/operations-deferred-renderers.js",
+      "node --test tests/operations-shell-navigation-contract.test.js tests/one-time-intake-api-readback.test.js",
+      "node scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+      "node scripts/smoke-onetime-landing-whatsapp-local.mjs",
+      "npm run bna:run:validate",
+      "npm run watchdog:protocol-drift"
+    ],
+    "manual_checks": [
+      "Inspect generated performance budget report.",
+      "Confirm generated shell byte sizes are below the local budget.",
+      "Confirm no external write request occurred in smokes.",
+      "Confirm live compression/header proof is not claimed unless a deploy/live readback ran."
+    ]
+  },
+  "evidence": {
+    "required": [
+      "PQC validation PASS",
+      "Operations shell byte budget PASS",
+      "cache policy/static readback PASS",
+      "CRM workbench smoke PASS",
+      "public landing smoke PASS",
+      "local performance budget report",
+      "execution-run status/evidence update"
+    ],
+    "paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/performance-audits/2026-07-12-onetime-performance-budget-local/report.md",
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/TEST-RESULTS.md"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "DEPLOY_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "public/js/operations-shell.js normalized startup byte size is below 1200000 without raising the test threshold.",
+      "public/operations-bootstrap.html remains below 10000 bytes.",
+      "Operations shell/deferred chunk syntax checks pass.",
+      "Operations shell navigation contract and cache-policy readback tests pass.",
+      "CRM smoke still proves bounded list/detail behavior and no writes.",
+      "Public landing smoke still proves the direct WhatsApp launcher and no writes.",
+      "Local performance report records exact shell bytes, CRM metrics, landing metrics, cache policy, Vimeo lazy-load proof or blocker, and live compression/header blocker if not deployed.",
+      "Production commit/push/deploy/live-smoke remains open under REQ-20260712-112."
+    ],
+    "actual_status": "ready_for_local_implementation"
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "node split generator",
+      "node smoke",
+      "node tests"
+    ],
+    "skipped_actions_policy": "No external sends/writes/deploy in this local performance batch.",
+    "blocker_decisions": [
+      "Live compression/Brotli/Vary proof requires REQ-20260712-112 deploy/live-smoke if no deployed URL is read in this packet."
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/requirements.json"
+    ],
+    "final_status_path": "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/STATUS.md",
+    "next_packet_path": "tasks-pending/2026-07-12-onetime-crm-portal-production-correction.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No protocol drift findings introduced by the performance packet or closeout records."
+  },
+  "next_packet": {
+    "id": "PKT-20260712-112",
+    "condition": "After REQ-20260712-111 is locally done or blocked with exact live-only blockers, continue final verifier/deploy/live-smoke.",
+    "status": "pending"
+  }
+}

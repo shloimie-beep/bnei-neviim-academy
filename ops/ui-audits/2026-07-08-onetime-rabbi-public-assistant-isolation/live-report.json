@@ -1,0 +1,76 @@
+{
+  "ok": true,
+  "checked_at": "2026-07-08T15:44:33.078Z",
+  "base": "https://join.onetimeonetime.com",
+  "deployment_id": "554814f1-6ed1-4319-ad43-dee32f71c00e",
+  "commit": "cff35ec7032c83ae4d58da090c5ea61305e2d196",
+  "results": [
+    {
+      "route": "/",
+      "url": "https://join.onetimeonetime.com/",
+      "status": 200,
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "bodyClass": "bna-universal-assistant-active bna-assistant-surface-one-time-public",
+      "launcherLabel": "Rabbi Scheller Assistant",
+      "launcherText": "Rabbi Scheller Assistant",
+      "ok": true,
+      "badHits": []
+    },
+    {
+      "route": "/one-time",
+      "url": "https://join.onetimeonetime.com/one-time",
+      "status": 200,
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "bodyClass": "bna-universal-assistant-active bna-assistant-surface-one-time-public",
+      "launcherLabel": "Rabbi Scheller Assistant",
+      "launcherText": "Rabbi Scheller Assistant",
+      "ok": true,
+      "badHits": []
+    },
+    {
+      "route": "/rabbi",
+      "url": "https://join.onetimeonetime.com/rabbi",
+      "status": 200,
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "bodyClass": "bna-universal-assistant-active bna-assistant-surface-one-time-public",
+      "launcherLabel": "Rabbi Scheller Assistant",
+      "launcherText": "Rabbi Scheller Assistant",
+      "ok": true,
+      "badHits": []
+    },
+    {
+      "route": "/rabbi.html",
+      "url": "https://join.onetimeonetime.com/rabbi.html",
+      "status": 200,
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "bodyClass": "bna-universal-assistant-active bna-assistant-surface-one-time-public",
+      "launcherLabel": "Rabbi Scheller Assistant",
+      "launcherText": "Rabbi Scheller Assistant",
+      "ok": true,
+      "badHits": []
+    },
+    {
+      "route": "/rabbi-preview",
+      "url": "https://join.onetimeonetime.com/rabbi-preview",
+      "status": 200,
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "bodyClass": "bna-universal-assistant-active bna-assistant-surface-one-time-public",
+      "launcherLabel": "Rabbi Scheller Assistant",
+      "launcherText": "Rabbi Scheller Assistant",
+      "ok": true,
+      "badHits": []
+    },
+    {
+      "route": "/one-time-mishnayos",
+      "url": "https://join.onetimeonetime.com/one-time-mishnayos",
+      "status": 200,
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "bodyClass": "bna-universal-assistant-active bna-assistant-surface-one-time-public",
+      "launcherLabel": "Rabbi Scheller Assistant",
+      "launcherText": "Rabbi Scheller Assistant",
+      "ok": true,
+      "badHits": []
+    }
+  ],
+  "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\ui-audits\\2026-07-08-onetime-rabbi-public-assistant-isolation\\live-rabbi-helper-mobile.png"
+}

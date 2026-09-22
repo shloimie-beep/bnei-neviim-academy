@@ -1,0 +1,474 @@
+{
+  "generated_at": "2026-06-28T11:52:04.752Z",
+  "mode": "repo_safe_research_content_catchup_plan",
+  "no_production_mutation": true,
+  "raw_transcript_bodies_included": false,
+  "summary": {
+    "inspected_jobs": 29,
+    "content_cards_ready": 29,
+    "needs_content_card_repair": 0,
+    "content_idea_candidate_count": 0
+  },
+  "rows": [
+    {
+      "job_id": 21,
+      "generated_title": "Class Recording 2026-06-04 - Job 021 (needs parser review)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 25,
+      "generated_title": "Class Recording 2026-06-08 - Job 025 (needs parser review)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 26,
+      "generated_title": "Class Recording 2026-06-08 - Job 026 (needs parser review)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 30,
+      "generated_title": "Class Recording 2026-06-09 - Job 030 (needs parser review)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 31,
+      "generated_title": "Class Recording 2026-06-09 - Job 031 (needs parser review)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 56,
+      "generated_title": "Class Recording 2026-06-10 - Job 056 (needs parser review)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 57,
+      "generated_title": "Class Recording 2026-06-10 - Job 057 (needs parser review)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 58,
+      "generated_title": "Class Recording 2026-06-11 - Job 058 (needs parser review)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 59,
+      "generated_title": "Class Recording 2026-06-11 - Job 059 (needs parser review)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 64,
+      "generated_title": "Class Recording 2026-06-17 - Job 064 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 65,
+      "generated_title": "Class Recording 2026-06-17 - Job 065 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 66,
+      "generated_title": "Class Recording 2026-06-17 - Job 066 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 67,
+      "generated_title": "Class Recording 2026-06-17 - Job 067 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 68,
+      "generated_title": "Class Recording 2026-06-17 - Job 068 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 69,
+      "generated_title": "Class Recording 2026-06-17 - Job 069 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 70,
+      "generated_title": "Class Recording 2026-06-17 - Job 070 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 71,
+      "generated_title": "Class Recording 2026-06-17 - Job 071 (needs parser review)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 72,
+      "generated_title": "Class Recording 2026-06-18 - Job 072 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 73,
+      "generated_title": "Class Recording 2026-06-18 - Job 073 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 74,
+      "generated_title": "Class Recording 2026-06-18 - Job 074 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 75,
+      "generated_title": "Class Recording 2026-06-18 - Job 075 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 76,
+      "generated_title": "Class Recording 2026-06-19 - Job 076 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 77,
+      "generated_title": "Class Recording 2026-06-20 - Job 077 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 78,
+      "generated_title": "Class Recording 2026-06-21 - Job 078 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 79,
+      "generated_title": "Class Recording 2026-06-22 - Job 079 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 80,
+      "generated_title": "Class Recording 2026-06-23 - Job 080 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 81,
+      "generated_title": "Class Recording 2026-06-24 - Job 081 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 82,
+      "generated_title": "Class Recording 2026-06-25 - Job 082 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    },
+    {
+      "job_id": 83,
+      "generated_title": "Class Recording 2026-06-25 - Job 083 (parsed)",
+      "content_card_ready": true,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "topic_status": "classified",
+      "content_idea_candidate_ids": [],
+      "raw_transcript_body_included": false,
+      "next_action": "Content/research card can stay visible with sanitized digest metadata."
+    }
+  ]
+}

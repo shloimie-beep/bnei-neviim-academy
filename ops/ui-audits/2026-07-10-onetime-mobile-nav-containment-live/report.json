@@ -1,0 +1,322 @@
+{
+  "generated_at": "2026-07-10T07:45:58.409Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "deployment_id": "90990bd3-676f-433f-8a97-dfa6fa4723b7",
+  "commit": "0017b4580f97f2f3274e583ccd585bab6b885072",
+  "scope": "UIGAP-20260710-001 / REQ-20260710-007 live mobile nav containment readback",
+  "results": [
+    {
+      "route": "one-time",
+      "path": "/one-time/",
+      "selector": "header .nav",
+      "width": 390,
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/screenshots/one-time-390.png",
+      "metrics": {
+        "navFound": true,
+        "pageOverflow": 0,
+        "navRect": {
+          "left": 16,
+          "top": 72,
+          "width": 358,
+          "height": 54
+        },
+        "overflowX": "auto",
+        "flexWrap": "nowrap",
+        "scrollWidth": 679,
+        "clientWidth": 358,
+        "scrollable": true,
+        "beforeVisible": true,
+        "beforeWidth": 42,
+        "beforeHeight": 42,
+        "clipping": [],
+        "fixedOverlaps": [],
+        "text": "One Time Watch Program How It Works FAQ Sign Up Now Member Login"
+      }
+    },
+    {
+      "route": "one-time",
+      "path": "/one-time/",
+      "selector": "header .nav",
+      "width": 430,
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/screenshots/one-time-430.png",
+      "metrics": {
+        "navFound": true,
+        "pageOverflow": 0,
+        "navRect": {
+          "left": 16,
+          "top": 72,
+          "width": 398,
+          "height": 54
+        },
+        "overflowX": "auto",
+        "flexWrap": "nowrap",
+        "scrollWidth": 679,
+        "clientWidth": 398,
+        "scrollable": true,
+        "beforeVisible": true,
+        "beforeWidth": 42,
+        "beforeHeight": 42,
+        "clipping": [],
+        "fixedOverlaps": [],
+        "text": "One Time Watch Program How It Works FAQ Sign Up Now Member Login"
+      }
+    },
+    {
+      "route": "rabbi-member",
+      "path": "/rabbi-member?review=one-time",
+      "selector": ".member-topbar",
+      "width": 390,
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/screenshots/rabbi-member-390.png",
+      "metrics": {
+        "navFound": true,
+        "pageOverflow": 0,
+        "navRect": {
+          "left": 0,
+          "top": 0,
+          "width": 390,
+          "height": 67
+        },
+        "overflowX": "auto",
+        "flexWrap": "nowrap",
+        "scrollWidth": 914,
+        "clientWidth": 390,
+        "scrollable": true,
+        "beforeVisible": true,
+        "beforeWidth": 42,
+        "beforeHeight": 42,
+        "clipping": [],
+        "fixedOverlaps": [],
+        "text": "One Time Mishnayos Member preview Home Library Classroom Student preview Helper Support Logout"
+      }
+    },
+    {
+      "route": "rabbi-member",
+      "path": "/rabbi-member?review=one-time",
+      "selector": ".member-topbar",
+      "width": 430,
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/screenshots/rabbi-member-430.png",
+      "metrics": {
+        "navFound": true,
+        "pageOverflow": 0,
+        "navRect": {
+          "left": 0,
+          "top": 0,
+          "width": 430,
+          "height": 67
+        },
+        "overflowX": "auto",
+        "flexWrap": "nowrap",
+        "scrollWidth": 914,
+        "clientWidth": 430,
+        "scrollable": true,
+        "beforeVisible": true,
+        "beforeWidth": 42,
+        "beforeHeight": 42,
+        "clipping": [],
+        "fixedOverlaps": [],
+        "text": "One Time Mishnayos Member preview Home Library Classroom Student preview Helper Support Logout"
+      }
+    },
+    {
+      "route": "member-library",
+      "path": "/member-library?review=one-time",
+      "selector": ".member-nav",
+      "width": 390,
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/screenshots/member-library-390.png",
+      "metrics": {
+        "navFound": true,
+        "pageOverflow": 0,
+        "navRect": {
+          "left": 16,
+          "top": 84,
+          "width": 358,
+          "height": 52
+        },
+        "overflowX": "auto",
+        "flexWrap": "nowrap",
+        "scrollWidth": 524,
+        "clientWidth": 358,
+        "scrollable": true,
+        "beforeVisible": true,
+        "beforeWidth": 42,
+        "beforeHeight": 42,
+        "clipping": [],
+        "fixedOverlaps": [],
+        "text": "Home Library Classroom Helper Support Logout"
+      }
+    },
+    {
+      "route": "member-library",
+      "path": "/member-library?review=one-time",
+      "selector": ".member-nav",
+      "width": 430,
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/screenshots/member-library-430.png",
+      "metrics": {
+        "navFound": true,
+        "pageOverflow": 0,
+        "navRect": {
+          "left": 16,
+          "top": 84,
+          "width": 398,
+          "height": 52
+        },
+        "overflowX": "auto",
+        "flexWrap": "nowrap",
+        "scrollWidth": 524,
+        "clientWidth": 398,
+        "scrollable": true,
+        "beforeVisible": true,
+        "beforeWidth": 42,
+        "beforeHeight": 42,
+        "clipping": [],
+        "fixedOverlaps": [],
+        "text": "Home Library Classroom Helper Support Logout"
+      }
+    },
+    {
+      "route": "one-time-classroom",
+      "path": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "selector": ".top-actions",
+      "width": 390,
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/screenshots/one-time-classroom-390.png",
+      "metrics": {
+        "navFound": true,
+        "pageOverflow": 0,
+        "navRect": {
+          "left": 10,
+          "top": 80,
+          "width": 370,
+          "height": 52
+        },
+        "overflowX": "auto",
+        "flexWrap": "nowrap",
+        "scrollWidth": 576,
+        "clientWidth": 370,
+        "scrollable": true,
+        "beforeVisible": true,
+        "beforeWidth": 42,
+        "beforeHeight": 42,
+        "clipping": [],
+        "fixedOverlaps": [],
+        "text": "Home Library Classroom Helper Support Logout"
+      }
+    },
+    {
+      "route": "one-time-classroom",
+      "path": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "selector": ".top-actions",
+      "width": 430,
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/screenshots/one-time-classroom-430.png",
+      "metrics": {
+        "navFound": true,
+        "pageOverflow": 0,
+        "navRect": {
+          "left": 10,
+          "top": 80,
+          "width": 410,
+          "height": 52
+        },
+        "overflowX": "auto",
+        "flexWrap": "nowrap",
+        "scrollWidth": 576,
+        "clientWidth": 410,
+        "scrollable": true,
+        "beforeVisible": true,
+        "beforeWidth": 42,
+        "beforeHeight": 42,
+        "clipping": [],
+        "fixedOverlaps": [],
+        "text": "Home Library Classroom Helper Support Logout"
+      }
+    },
+    {
+      "route": "provider-review",
+      "path": "/provider.html?review=one-time",
+      "selector": ".portal-topbar-actions",
+      "width": 390,
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/screenshots/provider-review-390.png",
+      "metrics": {
+        "navFound": true,
+        "pageOverflow": 0,
+        "navRect": {
+          "left": 10,
+          "top": 66,
+          "width": 370,
+          "height": 52
+        },
+        "overflowX": "auto",
+        "flexWrap": "nowrap",
+        "scrollWidth": 556,
+        "clientWidth": 370,
+        "scrollable": true,
+        "beforeVisible": true,
+        "beforeWidth": 42,
+        "beforeHeight": 42,
+        "clipping": [],
+        "fixedOverlaps": [],
+        "text": "Provider One Time Parent Student Member Classroom Email Review"
+      }
+    },
+    {
+      "route": "provider-review",
+      "path": "/provider.html?review=one-time",
+      "selector": ".portal-topbar-actions",
+      "width": 430,
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/screenshots/provider-review-430.png",
+      "metrics": {
+        "navFound": true,
+        "pageOverflow": 0,
+        "navRect": {
+          "left": 10,
+          "top": 66,
+          "width": 410,
+          "height": 52
+        },
+        "overflowX": "auto",
+        "flexWrap": "nowrap",
+        "scrollWidth": 556,
+        "clientWidth": 410,
+        "scrollable": true,
+        "beforeVisible": true,
+        "beforeWidth": 42,
+        "beforeHeight": 42,
+        "clipping": [],
+        "fixedOverlaps": [],
+        "text": "Provider One Time Parent Student Member Classroom Email Review"
+      }
+    }
+  ],
+  "passed": 10,
+  "total": 10,
+  "ok": true
+}

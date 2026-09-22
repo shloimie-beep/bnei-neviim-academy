@@ -1,0 +1,68 @@
+[
+  {
+    "stage": "accountability_proposal",
+    "status": "UNKNOWN",
+    "evidence": "No accountability events found.",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "ambiguity_review",
+    "status": "UNKNOWN",
+    "evidence": "No student names to review.",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "canonical_write_status",
+    "status": "UNKNOWN",
+    "evidence": "No structured output to compare.",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "class_session_match",
+    "status": "UNKNOWN",
+    "evidence": "No class-session signal.",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "parser_request",
+    "status": "UNKNOWN",
+    "evidence": "Transcript exists but parser request is not visible.",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "profile_note_proposal",
+    "status": "UNKNOWN",
+    "evidence": "No profile-note candidates found.",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "question_proposal",
+    "status": "UNKNOWN",
+    "evidence": "No parsed student questions found.",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "repo_digest_export",
+    "status": "MISSING",
+    "evidence": "071-*.md",
+    "safe_next_action": "Export privacy-safe digest only; do not run raw transcript exporter by default."
+  },
+  {
+    "stage": "score_progress_proposal",
+    "status": "UNKNOWN",
+    "evidence": "No progress signals found.",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "structured_output",
+    "status": "UNKNOWN",
+    "evidence": "No structured class output was found.",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "student_name_alias_match",
+    "status": "UNKNOWN",
+    "evidence": "No parsed student names found.",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  }
+]

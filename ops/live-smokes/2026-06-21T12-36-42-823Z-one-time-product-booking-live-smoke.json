@@ -1,0 +1,57 @@
+{
+  "started_at": "2026-06-21T12:36:42.823Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "operations login",
+      "ok": true,
+      "duration_ms": 1520,
+      "data": {
+        "cookie": "[redacted]",
+        "role": "super_admin",
+        "scope": {
+          "type": "all",
+          "projectKey": "[redacted]"
+        }
+      }
+    },
+    {
+      "name": "product-system api and internal records",
+      "ok": true,
+      "duration_ms": 4673,
+      "data": {
+        "initial": {
+          "offer_count": 2,
+          "availability_rule_count": 2,
+          "appointment_type_count": 5,
+          "student_join_enabled": false
+        },
+        "created_class_id": 2,
+        "created_appointment_id": 1,
+        "final": {
+          "calendar_events": 2,
+          "appointment_intents": 1,
+          "portal_parent_sections": 11,
+          "portal_student_sections": 9,
+          "portal_provider_sections": 8
+        }
+      }
+    },
+    {
+      "name": "operations schedule ui 1440px",
+      "ok": false,
+      "duration_ms": 62017,
+      "error": "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#oneTimeAppointmentType') to be visible\u001b[22m\n\u001b[2m    62 × locator resolved to hidden <select tabindex=\"-1\" aria-hidden=\"true\" class=\"app-select-native\" id=\"oneTimeAppointmentType\" data-app-select-enhanced=\"true\">…</select>\u001b[22m\n"
+    }
+  ],
+  "summary": {
+    "product_offers_readable": true,
+    "availability_readable": true,
+    "portal_foundations_readable": true,
+    "internal_class_event_created": true,
+    "internal_appointment_intent_created": true,
+    "external_write_performed": false,
+    "zoom_meeting_created": false,
+    "runtime_widths_checked": []
+  }
+}

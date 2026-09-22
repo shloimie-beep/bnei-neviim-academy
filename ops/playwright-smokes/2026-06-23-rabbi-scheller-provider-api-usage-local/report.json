@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "generated_at": "2026-06-24T14:34:58.367Z",
+  "target": "/provider?api_usage_preview=1&section=api_usage",
+  "fixture": "workspace-scoped Rabbi Elie Scheller provider session; no database or production writes",
+  "results": [
+    {
+      "viewport": {
+        "name": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-api-usage-local/mobile-390.png",
+      "checks": {
+        "providerTitle": true,
+        "apiUsageNavVisible": true,
+        "apiUsageNavActive": true,
+        "directDeepLinkActive": true,
+        "refreshPreservesSection": true,
+        "overviewBeforeClick": true,
+        "clickUpdatesUrl": true,
+        "backReturnsOverview": true,
+        "honestEmptyState": true,
+        "noFakeUsage": true,
+        "noHorizontalOverflow": true
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": {
+        "name": "tablet-768",
+        "width": 768,
+        "height": 1024
+      },
+      "screenshot": "ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-api-usage-local/tablet-768.png",
+      "checks": {
+        "providerTitle": true,
+        "apiUsageNavVisible": true,
+        "apiUsageNavActive": true,
+        "directDeepLinkActive": true,
+        "refreshPreservesSection": true,
+        "overviewBeforeClick": true,
+        "clickUpdatesUrl": true,
+        "backReturnsOverview": true,
+        "honestEmptyState": true,
+        "noFakeUsage": true,
+        "noHorizontalOverflow": true
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": {
+        "name": "desktop-1440",
+        "width": 1440,
+        "height": 900
+      },
+      "screenshot": "ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-api-usage-local/desktop-1440.png",
+      "checks": {
+        "providerTitle": true,
+        "apiUsageNavVisible": true,
+        "apiUsageNavActive": true,
+        "directDeepLinkActive": true,
+        "refreshPreservesSection": true,
+        "overviewBeforeClick": true,
+        "clickUpdatesUrl": true,
+        "backReturnsOverview": true,
+        "honestEmptyState": true,
+        "noFakeUsage": true,
+        "noHorizontalOverflow": true
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": []
+    }
+  ],
+  "failed": []
+}

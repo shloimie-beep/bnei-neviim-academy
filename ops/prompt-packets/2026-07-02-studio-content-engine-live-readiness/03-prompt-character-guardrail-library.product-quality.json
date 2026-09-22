@@ -1,0 +1,355 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-966",
+  "parent_raw_id": "RAW-20260702-010",
+  "source_statement_ids": [
+    "SRC-20260702-010-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-960",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-962"
+    ],
+    "blocks_packet_ids": [
+      "PKT-20260702-967"
+    ],
+    "consumes": [
+      "raw-input/RAW-20260702-010-studio-content-engine-live-readiness.md",
+      "tasks-pending/2026-07-02-studio-content-engine-live-readiness.md",
+      "src/lib/bna/service-provider-studio.js",
+      "server.js",
+      "public/operations.html",
+      "railway-migration-2026-06-23-service-provider-studio.sql",
+      "ops/action-registry.json",
+      "tests/service-provider-studio-domain.test.js",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/service-provider-studio-browser-smoke.test.js"
+    ],
+    "produces": [
+      "src/lib/bna/service-provider-studio.js",
+      "public/operations.html",
+      "railway-migration-2026-06-23-service-provider-studio.sql",
+      "ops/action-registry.json",
+      "tests/service-provider-studio-domain.test.js",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/service-provider-studio-browser-smoke.test.js"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/03-prompt-character-guardrail-library.product-quality.json",
+    "terminal_condition": "Studio can save reusable character profiles, Jewish guardrails, and scenario tags to the scoped project, and prompt compilation includes a dedicated guardrails layer.",
+    "handoff_target": "tasks-pending/2026-07-02-studio-content-engine-live-readiness.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Studio character and guardrail library implementation packet",
+  "created_at": "2026-07-02T21:45:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "RABBI_PROVIDER_ADMIN"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-010",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY",
+      "DECISION_REQUIRED"
+    ],
+    "confidence": 0.93,
+    "reasons": [
+      "The operator wants stored reusable characters, Jewish guardrails, and repeatable Mishnah scenario prompts.",
+      "The existing Studio project model already has character_bible and guardrails fields but the UI does not expose a usable editor."
+    ],
+    "affected_workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+    "affected_view_classes": [
+      "SHLOIMIE_PLATFORM_SUPPORT",
+      "RABBI_PROVIDER_ADMIN"
+    ],
+    "affected_product_surfaces": [
+      "Operations Studio prompt library"
+    ],
+    "likely_external_provider_blockers": [
+      "AI-video vendor details are still a separate decision packet.",
+      "No external render, upload, send, publish, payment, access grant, GHL runtime, or external CRM write is approved."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "03-prompt-character-guardrail-library",
+      "04-source-to-slideshow-output-pipeline",
+      "05-ai-video-vendor-provider-setup"
+    ],
+    "next_exact_packet": "After local verification, implement source-to-output artifacts or block on vendor/export target decisions."
+  },
+  "operator_intent_summary": "Let One Time Studio store reusable character profiles, Jewish guardrails, and scenario tags so prompt compilation can consistently reuse them across Mishnah slideshow/video drafts.",
+  "raw_source": "storing the prompts that he uses for like the characters ... all the Jewish guardrails ... specific characters for specific scenarios in the mishna",
+  "raw_quotes": [
+    "storing the prompts that he uses for like the characters",
+    "all the Jewish guardrails",
+    "specific characters for specific scenarios in the mishna",
+    "same types of characters for all of the slideshows"
+  ],
+  "operator_quotes": [
+    "all the Jewish guardrails",
+    "specific characters for specific scenarios in the mishna"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-961",
+      "decision": "AI-video vendor adapter scope remains blocked until vendor contract, API, cost, rights, and approval rules are captured.",
+      "status": "needs_operator_decision"
+    }
+  ],
+  "out_of_scope": [
+    "No AI-video vendor call.",
+    "No real media generation, upload, publish, send, schedule, payment, access grant, Drive write, Vimeo write, WhatsApp action, Telegram action, DNS change, GHL runtime, LeadConnector reference, external CRM write, hard delete, secret exposure, or raw private evidence.",
+    "No claim that the first approved final character/guardrail copy is complete; this packet builds storage/editor/compiler support."
+  ],
+  "affected_surfaces": [
+    "Operations Studio prompt library",
+    "Studio prompt compiler"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=prompts",
+    "/api/bna/studio/projects/:id",
+    "/api/bna/studio/projects/:id/prompt-compile"
+  ],
+  "affected_files": [
+    "src/lib/bna/service-provider-studio.js",
+    "public/operations.html",
+    "railway-migration-2026-06-23-service-provider-studio.sql",
+    "ops/action-registry.json",
+    "tests/service-provider-studio-domain.test.js",
+    "tests/service-provider-studio-operations-ui.test.js",
+    "tests/service-provider-studio-browser-smoke.test.js"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "bna_studio_projects.character_bible",
+      "bna_studio_projects.guardrails",
+      "PATCH /api/bna/studio/projects/:id",
+      "compileStudioPrompt",
+      "renderStudioPromptPanel"
+    ],
+    "known_blockers": [
+      "The first approved real character copy and guardrail copy are still operator/content decisions.",
+      "Deploy/live smoke is blocked until this local slice is merged and released."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "million-dollar",
+      "make it work",
+      "working",
+      "live",
+      "clean",
+      "pipeline"
+    ],
+    "expanded_phrases": {
+      "million-dollar": "The Studio library must look like a real operator workflow: visible saved characters, guardrails, scenario tags, save readback, and compiler use.",
+      "make it work": "Saving library entries must update the scoped Studio project and reloading/compiling must reuse those entries.",
+      "working": "Save and compile actions must show readable success states and no raw debug payload as the default UI.",
+      "live": "Terminal done still requires deployment and authenticated live smoke.",
+      "clean": "Library fields should be structured and scannable, with concise examples and stable chips.",
+      "pipeline": "This packet supplies reusable prompt inputs that the later source-to-output pipeline can consume."
+    },
+    "first_party_pattern_interpretation": "Studio remains first-party BNA Operations; external vendors are later adapters only."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/UI-STATE-MATRIX.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-966",
+      "statement": "Add reusable Studio prompt, character, and Jewish guardrail library support for One Time Mishnah slideshows.",
+      "expected_result": "A scoped Studio project can save character profiles, Jewish guardrails, and scenario tags, then compile prompts that include those reusable entries.",
+      "acceptance_criteria": [
+        "Prompts section has a reusable library editor for characters, guardrails, and scenario tags.",
+        "Save action uses the existing scoped Studio project PATCH route.",
+        "Project detail reload shows saved characters, guardrails, and tags.",
+        "Prompt compiler emits a dedicated Jewish guardrails layer.",
+        "Focused tests verify persisted UI readback and compiler guardrail layer.",
+        "No external provider write is introduced."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "REQ-20260702-965 local readback implementation is verified.",
+      "Existing schema fields for character_bible and guardrails are confirmed.",
+      "PATCH route supports scoped project updates.",
+      "External AI-video vendor work remains out of scope."
+    ]
+  },
+  "state_matrix": {
+    "loading": {"route": "/operations?view=studio&section=prompts", "viewport": "1440", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open Studio Prompts while project detail loads.", "expected_visible_title": "Universal Service Provider Studio", "expected_visible_message": "Project detail is loading.", "expected_primary_action": "None until loaded.", "expected_secondary_actions": [], "forbidden_content": ["stack trace", "raw JSON"], "screenshot_required": true, "aria_semantic_expectation": "Loading message is visible text.", "accessibility_expectation": "No trapped focus.", "test_smoke_assertion": "Studio route renders.", "requirement_id": "REQ-20260702-966"},
+    "empty": {"route": "/operations?view=studio&section=prompts", "viewport": "1440", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open library before saved entries.", "expected_visible_title": "Reusable Studio Library", "expected_visible_message": "No character profiles or guardrails are saved yet.", "expected_primary_action": "Save Studio Library", "expected_secondary_actions": ["Compile Prompt"], "forbidden_content": ["fake approved character copy"], "screenshot_required": true, "aria_semantic_expectation": "Editor labels are associated with fields.", "accessibility_expectation": "Textareas have labels.", "test_smoke_assertion": "Empty library editor is visible.", "requirement_id": "REQ-20260702-966"},
+    "populated": {"route": "/operations?view=studio&section=prompts", "viewport": "1440", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Save sample character and guardrail entries.", "expected_visible_title": "Reusable Studio Library", "expected_visible_message": "Saved characters, guardrails, and scenario tags are visible.", "expected_primary_action": "Save Studio Library", "expected_secondary_actions": ["Compile Prompt"], "forbidden_content": ["external vendor controls"], "screenshot_required": true, "aria_semantic_expectation": "Saved entry chips are text.", "accessibility_expectation": "Mobile reflow keeps text readable.", "test_smoke_assertion": "Browser smoke sees saved Rabbi character and guardrail.", "requirement_id": "REQ-20260702-966"},
+    "filtered_empty": {"route": "/operations?view=studio&section=prompts", "viewport": "1024", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open project with no matching scenario tags.", "expected_visible_title": "Scenario Tags", "expected_visible_message": "No scenario tags saved.", "expected_primary_action": "Save Studio Library", "expected_secondary_actions": [], "forbidden_content": ["silent empty list"], "screenshot_required": true, "aria_semantic_expectation": "Empty tag state is readable.", "accessibility_expectation": "No color-only status.", "test_smoke_assertion": "Empty scenario tag message is visible.", "requirement_id": "REQ-20260702-966"},
+    "error": {"route": "/operations?view=studio&section=prompts", "viewport": "1024", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Simulate library save API error.", "expected_visible_title": "Reusable Studio Library", "expected_visible_message": "Studio library could not be saved.", "expected_primary_action": "Save Studio Library", "expected_secondary_actions": ["Retry"], "forbidden_content": ["stack trace", "secret"], "screenshot_required": true, "aria_semantic_expectation": "Error text is visible.", "accessibility_expectation": "Error is not color-only.", "test_smoke_assertion": "Error message is plain text.", "requirement_id": "REQ-20260702-966"},
+    "blocked_setup": {"route": "/operations?view=studio&section=prompts", "viewport": "768", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Ask for real vendor output.", "expected_visible_title": "Reusable Studio Library", "expected_visible_message": "Vendor output setup is a separate decision.", "expected_primary_action": "Save Studio Library", "expected_secondary_actions": ["Compile Prompt"], "forbidden_content": ["real vendor call"], "screenshot_required": true, "aria_semantic_expectation": "Blocked provider status is text.", "accessibility_expectation": "No disabled action without reason.", "test_smoke_assertion": "No vendor call appears.", "requirement_id": "REQ-20260702-966"},
+    "preview_only": {"route": "/operations?view=studio&section=prompts", "viewport": "768", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Compile prompt after saving library.", "expected_visible_title": "Prompt Review", "expected_visible_message": "Jewish guardrails layer is included.", "expected_primary_action": "Compile Prompt", "expected_secondary_actions": ["Studio Diagnostics"], "forbidden_content": ["publish", "send", "upload"], "screenshot_required": true, "aria_semantic_expectation": "Layer review cards have headings.", "accessibility_expectation": "Diagnostics summary has a clear name.", "test_smoke_assertion": "Body includes Jewish Guardrails layer.", "requirement_id": "REQ-20260702-966"},
+    "success_readback": {"route": "/operations?view=studio&section=prompts", "viewport": "430", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Save library successfully.", "expected_visible_title": "Reusable Studio Library", "expected_visible_message": "Studio library saved.", "expected_primary_action": "Save Studio Library", "expected_secondary_actions": ["Compile Prompt"], "forbidden_content": ["raw update payload"], "screenshot_required": true, "aria_semantic_expectation": "Success readback is text.", "accessibility_expectation": "Form controls fit mobile.", "test_smoke_assertion": "Save notice and saved chips are visible.", "requirement_id": "REQ-20260702-966"},
+    "permission_denied": {"route": "/operations?view=studio&section=prompts", "viewport": "430", "auth_role": "anonymous", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open Studio while logged out.", "expected_visible_title": "Operations", "expected_visible_message": "Unauthorized or login required.", "expected_primary_action": "Sign in", "expected_secondary_actions": [], "forbidden_content": ["private Studio library"], "screenshot_required": true, "aria_semantic_expectation": "Access denial is text.", "accessibility_expectation": "No private data leaks.", "test_smoke_assertion": "Logged-out API remains 401.", "requirement_id": "REQ-20260702-966"},
+    "mobile_drawer_or_detail_state": {"route": "/operations?view=studio&section=prompts", "viewport": "390", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open saved library on mobile.", "expected_visible_title": "Reusable Studio Library", "expected_visible_message": "Characters and guardrails reflow without overlap.", "expected_primary_action": "Save Studio Library", "expected_secondary_actions": ["Compile Prompt"], "forbidden_content": ["horizontal overflow"], "screenshot_required": true, "aria_semantic_expectation": "Field labels remain visible.", "accessibility_expectation": "Touch targets are usable.", "test_smoke_assertion": "390px screenshot has no overlap.", "requirement_id": "REQ-20260702-966"}
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {"route": "/operations?view=studio&section=prompts", "viewport": 1440, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260702-966"},
+      {"route": "/operations?view=studio&section=prompts", "viewport": 1024, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260702-966"},
+      {"route": "/operations?view=studio&section=prompts", "viewport": 768, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260702-966"},
+      {"route": "/operations?view=studio&section=prompts", "viewport": 430, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260702-966"},
+      {"route": "/operations?view=studio&section=prompts", "viewport": 390, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260702-966"}
+    ],
+    "findings": [
+      {"finding_id": "VQF-20260702-966", "route": "/operations?view=studio&section=prompts", "viewport": "1440", "screenshot_before": "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-prompt-review.png", "screenshot_after_or_blocker": "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-prompt-review.png", "defect_codes": ["VQ-IA-002", "VQ-ACTION-003"], "severity": "P1", "user_impact": "Characters and guardrails cannot be managed as reusable Studio assets.", "expected_fix": "Add saveable library editor and compiler guardrail layer.", "requirement_id": "REQ-20260702-966"}
+    ]
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.2 A/AA plus BNA mobile touch and reflow requirements.",
+    "required_checks": [
+      "textareas have labels",
+      "save action has registry row",
+      "saved chips are not color-only",
+      "mobile library editor has no overlap"
+    ]
+  },
+  "action_states": [
+    {"label": "Save Studio Library", "selector_or_action_key": "saveStudioLibraryFromForm", "action_state": "WORKS_NOW", "owner": "Codex", "external_write": false, "handler_or_blocker": "PATCH /api/bna/studio/projects/:id updates scoped project character_bible, guardrails, and scenario tags.", "registry_required": true},
+    {"label": "Compile Prompt", "selector_or_action_key": "compileStudioPrompt", "action_state": "WORKS_NOW", "owner": "Codex", "external_write": false, "handler_or_blocker": "Existing prompt compile route includes saved library fields.", "registry_required": true}
+  ],
+  "data_requirements": [
+    "character_bible array with key, name, role, description, scenario_tags",
+    "guardrails array of approved reusable rules",
+    "metadata.studio_scenario_tags array",
+    "prompt layer type jewish_guardrails"
+  ],
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Library updates are scoped to the selected Studio project.",
+      "No unrelated BNA/provider/family/student records are read or written."
+    ],
+    "forbidden_content": [
+      "secrets",
+      "raw private student/contact/source records",
+      "external provider credentials",
+      "GHL runtime",
+      "LeadConnector references"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-REQ-20260702-966-LIBRARY",
+      "scope": "Studio project library editor and compiler guardrail layer only",
+      "instructions": [
+        "Add a reusable library editor to the Studio Prompts panel.",
+        "Persist character_bible, guardrails, and metadata scenario tags through the existing scoped PATCH route.",
+        "Add a first-class Jewish guardrails prompt layer.",
+        "Update focused tests and registry."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "src/lib/bna/service-provider-studio.js",
+      "server.js",
+      "public/operations.html",
+      "railway-migration-2026-06-23-service-provider-studio.sql",
+      "tests/service-provider-studio-domain.test.js",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/service-provider-studio-browser-smoke.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "src/lib/bna/service-provider-studio.js",
+      "public/operations.html",
+      "railway-migration-2026-06-23-service-provider-studio.sql",
+      "ops/action-registry.json",
+      "tests/service-provider-studio-domain.test.js",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/service-provider-studio-browser-smoke.test.js"
+    ],
+    "max_files_to_edit": 7,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if work expands into output artifacts, vendor adapters, or deploy.",
+    "split_if_exceeds": true,
+    "context_risk_level": "MEDIUM"
+  },
+  "tests": [
+    {"command_or_check": "npm run pqc:validate ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/03-prompt-character-guardrail-library.product-quality.json", "expected_result": "Passes."},
+    {"command_or_check": "node --test tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js tests/service-provider-studio-browser-smoke.test.js", "expected_result": "Passes focused Studio tests."},
+    {"command_or_check": "npm run studio:smoke", "expected_result": "Passes with saved library readback."},
+    {"command_or_check": "npm run watchdog:actions", "expected_result": "Finding count remains 0."}
+  ],
+  "evidence": {
+    "expected_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-prompt-review.png",
+      "tasks-pending/2026-07-02-studio-content-engine-live-readiness.md"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "PQC packet validates.",
+      "Studio Prompts panel can save library entries locally.",
+      "Prompt compiler includes Jewish guardrails layer.",
+      "Focused Studio tests and smoke pass.",
+      "Action registry covers Save Studio Library.",
+      "Register, ledger, and changelog record local verification and remaining deploy/live-smoke blocker."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260702-010-studio-content-engine-live-readiness.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/03-prompt-character-guardrail-library.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": [
+      "edit Studio compiler",
+      "edit Operations Studio UI",
+      "edit Studio migration constraint",
+      "edit action registry",
+      "run focused Studio tests"
+    ],
+    "skipped_actions_policy": "Skip vendor setup, external provider calls, deploy, live production writes, publish/send/upload, GHL runtime, and output pipeline changes.",
+    "blocker_decisions": [
+      "DEC-20260702-961"
+    ],
+    "evidence_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-prompt-review.png"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-studio-content-engine-live-readiness.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/04-source-to-slideshow-output-pipeline.product-quality.json"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No enforceable product-quality drift finding for this implementation packet."
+  },
+  "next_packet": {
+    "type": "IMPLEMENTATION_PACKET",
+    "description": "Source-to-reviewable slideshow/prompt output pipeline with no external publish.",
+    "path": "ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/04-source-to-slideshow-output-pipeline.product-quality.json"
+  }
+}

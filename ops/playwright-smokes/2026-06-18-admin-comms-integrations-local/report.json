@@ -1,0 +1,82 @@
+{
+  "result": "passed",
+  "baseUrl": "http://127.0.0.1:8094",
+  "assertions": [
+    {
+      "ok": true,
+      "message": "BNA Admin > Users requests people with project_key=bna.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "BNA Communications requests contact communications with project_key=bna.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "BNA Communications Integrations requests social drafts with project_key=bna.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "BNA Communications Integrations requests email drafts with project_key=bna.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "BNA Communications Integrations requests DNS tasks with project_key=bna.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "BNA Automations requests automations with project_key=bna.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "BNA Integrations readiness deep link does not fetch global integration status.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "BNA Integrations readiness deep link does not render global Integration Readiness.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "Platform Integrations readiness fetches global integration status explicitly.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "Platform Integrations readiness renders global Integration Readiness.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "One Time provider Automations requests automations with project_key=one_time_mishnah_class.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "No body/document horizontal overflow on final desktop viewport.",
+      "detail": {
+        "body": false,
+        "doc": false,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      }
+    }
+  ],
+  "screenshots": [
+    "ops/playwright-smokes/2026-06-18-admin-comms-integrations-local/bna-admin-users-mobile.png",
+    "ops/playwright-smokes/2026-06-18-admin-comms-integrations-local/bna-communications-mobile.png",
+    "ops/playwright-smokes/2026-06-18-admin-comms-integrations-local/bna-integrations-communications-mobile.png",
+    "ops/playwright-smokes/2026-06-18-admin-comms-integrations-local/bna-automations-mobile.png",
+    "ops/playwright-smokes/2026-06-18-admin-comms-integrations-local/bna-integrations-readiness-hidden-mobile.png",
+    "ops/playwright-smokes/2026-06-18-admin-comms-integrations-local/platform-integrations-readiness-desktop.png",
+    "ops/playwright-smokes/2026-06-18-admin-comms-integrations-local/onetime-automations-desktop.png"
+  ],
+  "request_count": 4,
+  "checked_at": "2026-06-18T08:05:10.970Z"
+}

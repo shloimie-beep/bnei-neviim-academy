@@ -1,0 +1,206 @@
+[
+  {
+    "page": "/parent.html",
+    "viewport": "phone-390",
+    "screenshot": "phone-390-parent-html.png",
+    "metrics": {
+      "panelOpen": true,
+      "panelButtons": 2,
+      "hasAgentBox": false,
+      "hasHistoryToggle": false,
+      "hasModeButton": false,
+      "hasThread": true,
+      "hasInput": true,
+      "hasSend": true,
+      "horizontalOverflow": false,
+      "panelWithinViewport": true
+    }
+  },
+  {
+    "page": "/student.html",
+    "viewport": "phone-390",
+    "screenshot": "phone-390-student-html.png",
+    "metrics": {
+      "panelOpen": true,
+      "panelButtons": 2,
+      "hasAgentBox": false,
+      "hasHistoryToggle": false,
+      "hasModeButton": false,
+      "hasThread": true,
+      "hasInput": true,
+      "hasSend": true,
+      "horizontalOverflow": false,
+      "panelWithinViewport": true
+    }
+  },
+  {
+    "page": "/provider.html",
+    "viewport": "phone-390",
+    "screenshot": "phone-390-provider-html.png",
+    "metrics": {
+      "panelOpen": true,
+      "panelButtons": 2,
+      "hasAgentBox": false,
+      "hasHistoryToggle": false,
+      "hasModeButton": false,
+      "hasThread": true,
+      "hasInput": true,
+      "hasSend": true,
+      "horizontalOverflow": false,
+      "panelWithinViewport": true
+    }
+  },
+  {
+    "page": "/operations.html",
+    "viewport": "phone-390",
+    "screenshot": "phone-390-operations-html.png",
+    "metrics": {
+      "panelOpen": true,
+      "panelButtons": 2,
+      "hasAgentBox": false,
+      "hasHistoryToggle": false,
+      "hasModeButton": false,
+      "hasThread": true,
+      "hasInput": true,
+      "hasSend": true,
+      "horizontalOverflow": false,
+      "panelWithinViewport": true
+    }
+  },
+  {
+    "page": "/parent.html",
+    "viewport": "tablet-768",
+    "screenshot": "tablet-768-parent-html.png",
+    "metrics": {
+      "panelOpen": true,
+      "panelButtons": 2,
+      "hasAgentBox": false,
+      "hasHistoryToggle": false,
+      "hasModeButton": false,
+      "hasThread": true,
+      "hasInput": true,
+      "hasSend": true,
+      "horizontalOverflow": false,
+      "panelWithinViewport": true
+    }
+  },
+  {
+    "page": "/student.html",
+    "viewport": "tablet-768",
+    "screenshot": "tablet-768-student-html.png",
+    "metrics": {
+      "panelOpen": true,
+      "panelButtons": 2,
+      "hasAgentBox": false,
+      "hasHistoryToggle": false,
+      "hasModeButton": false,
+      "hasThread": true,
+      "hasInput": true,
+      "hasSend": true,
+      "horizontalOverflow": false,
+      "panelWithinViewport": true
+    }
+  },
+  {
+    "page": "/provider.html",
+    "viewport": "tablet-768",
+    "screenshot": "tablet-768-provider-html.png",
+    "metrics": {
+      "panelOpen": true,
+      "panelButtons": 2,
+      "hasAgentBox": false,
+      "hasHistoryToggle": false,
+      "hasModeButton": false,
+      "hasThread": true,
+      "hasInput": true,
+      "hasSend": true,
+      "horizontalOverflow": false,
+      "panelWithinViewport": true
+    }
+  },
+  {
+    "page": "/operations.html",
+    "viewport": "tablet-768",
+    "screenshot": "tablet-768-operations-html.png",
+    "metrics": {
+      "panelOpen": true,
+      "panelButtons": 2,
+      "hasAgentBox": false,
+      "hasHistoryToggle": false,
+      "hasModeButton": false,
+      "hasThread": true,
+      "hasInput": true,
+      "hasSend": true,
+      "horizontalOverflow": false,
+      "panelWithinViewport": true
+    }
+  },
+  {
+    "page": "/parent.html",
+    "viewport": "tablet-1024",
+    "screenshot": "tablet-1024-parent-html.png",
+    "metrics": {
+      "panelOpen": true,
+      "panelButtons": 2,
+      "hasAgentBox": false,
+      "hasHistoryToggle": false,
+      "hasModeButton": false,
+      "hasThread": true,
+      "hasInput": true,
+      "hasSend": true,
+      "horizontalOverflow": false,
+      "panelWithinViewport": true
+    }
+  },
+  {
+    "page": "/student.html",
+    "viewport": "tablet-1024",
+    "screenshot": "tablet-1024-student-html.png",
+    "metrics": {
+      "panelOpen": true,
+      "panelButtons": 2,
+      "hasAgentBox": false,
+      "hasHistoryToggle": false,
+      "hasModeButton": false,
+      "hasThread": true,
+      "hasInput": true,
+      "hasSend": true,
+      "horizontalOverflow": false,
+      "panelWithinViewport": true
+    }
+  },
+  {
+    "page": "/provider.html",
+    "viewport": "tablet-1024",
+    "screenshot": "tablet-1024-provider-html.png",
+    "metrics": {
+      "panelOpen": true,
+      "panelButtons": 2,
+      "hasAgentBox": false,
+      "hasHistoryToggle": false,
+      "hasModeButton": false,
+      "hasThread": true,
+      "hasInput": true,
+      "hasSend": true,
+      "horizontalOverflow": false,
+      "panelWithinViewport": true
+    }
+  },
+  {
+    "page": "/operations.html",
+    "viewport": "tablet-1024",
+    "screenshot": "tablet-1024-operations-html.png",
+    "metrics": {
+      "panelOpen": true,
+      "panelButtons": 2,
+      "hasAgentBox": false,
+      "hasHistoryToggle": false,
+      "hasModeButton": false,
+      "hasThread": true,
+      "hasInput": true,
+      "hasSend": true,
+      "horizontalOverflow": false,
+      "panelWithinViewport": true
+    }
+  }
+]

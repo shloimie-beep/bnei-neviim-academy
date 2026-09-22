@@ -1,0 +1,396 @@
+﻿## master...origin/master [ahead 2]
+ M .env.example
+ M .gitignore
+ M .mcp.json
+ M AGENTS.md
+ M Dockerfile
+ M KIMI-BOOTSTRAP.md
+ M MEMORY.md
+ M PROJECT-NOTES.md
+ M SUPABASE_SETUP.md
+ M SYSTEM-STATE.md
+ M TASKS.md
+ M agents/rabbi-elie-scheller/AGENTS.md
+ M agents/rabbi-elie-scheller/MEMORY.md
+ M agents/rabbi-elie-scheller/SETUP.md
+ M brand-kit/01-core-beliefs.md
+ M brand-kit/04-student-growth-principles.md
+ M brand-kit/README.md
+ M content-memory/README.md
+ M content-memory/drive-mapping.md
+ M content-memory/transcripts/002-video-from-drive-20260527-140157-mp4.md
+ M content-memory/transcripts/004-class-recording-weber-torah-m4a.md
+ M content-memory/transcripts/005-outdoor-torah-learning-and-forest-day-schedule-update.md
+ M content-memory/transcripts/006-outdoor-torah-learning-and-forest-day-update.md
+ M content-memory/transcripts/007-all-day-mishnayas-learning-and-micro-schools.md
+ M content-memory/transcripts/008-gaava-focus-and-the-jewish-calendar.md
+ M content-memory/transcripts/018-setting-personal-learning-and-fitness-goals-discussion.md
+ M content-memory/transcripts/019-setting-personal-learning-and-fitness-goals.md
+ M content-memory/transcripts/020-torah-learning-goals-and-camping-trip-incentive.md
+ M content-memory/transcripts/021-bnei-neviim-torah-learning-and-accountability-update.md
+ M content-memory/transcripts/index.md
+R  ARCHITECTURE.md -> docs/archive/legacy-family-accountability/ARCHITECTURE.md
+R  CHANGELOG.md -> docs/archive/legacy-family-accountability/CHANGELOG.md
+R  CLAUDE_CODE_PROMPT.md -> docs/archive/legacy-family-accountability/CLAUDE_CODE_PROMPT.md
+R  DESIGN.md -> docs/archive/legacy-family-accountability/DESIGN.md
+R  README-bundle.md -> docs/archive/legacy-family-accountability/README-bundle.md
+R  README.md -> docs/archive/legacy-family-accountability/README-family-accountability.md
+R  SETUP.md -> docs/archive/legacy-family-accountability/SETUP.md
+R  SPEC.md -> docs/archive/legacy-family-accountability/SPEC.md
+R  WISHLIST.md -> docs/archive/legacy-family-accountability/WISHLIST.md
+R  launch.html -> docs/archive/legacy-family-accountability/launch.html
+R  onboarding/index.html -> docs/archive/legacy-family-accountability/onboarding-index.html
+R  supabase-migration-002.sql -> docs/archive/legacy-family-accountability/supabase-migration-002.sql
+R  supabase-schema.sql -> docs/archive/legacy-family-accountability/supabase-schema.sql
+R  RUN_IN_SUPABASE.sql -> docs/archive/legacy-supabase-setup/RUN_IN_SUPABASE.sql
+R  supabase-migration-003-bna-tasks.sql -> docs/archive/legacy-supabase-setup/supabase-migration-003-bna-tasks.sql
+R  supabase-migration-004-cli-bridge.sql -> docs/archive/legacy-supabase-setup/supabase-migration-004-cli-bridge.sql
+ M lighthouse-report.html
+ M migrate-railway.sql
+ D next.config.mjs
+ M ops/agent-changelog.md
+ M ops/agent-task-ledger.jsonl
+ M package.json
+ D postcss.config.mjs
+ M public/data/learning-moments.json
+ M public/faq.html
+ M public/index.html
+ M public/js/bna-content.js
+ M public/js/signup-documents.js
+ M public/manifest.json
+ M public/operations-login.html
+ M public/operations.html
+ M public/signup-he.html
+ M public/signup-thank-you.html
+ M public/signup.html
+ M public/student.html
+ M public/test-login.html
+ M railway-migration-2026-06-05-one-time-projects.sql
+ M railway.json
+ M screenshots/desktop-1440.png
+ M screenshots/mobile-360.png
+ M screenshots/mobile-390.png
+ M screenshots/mobile-430.png
+ M screenshots/tablet-768.png
+ M scripts/agent-fleet-supervisor.mjs
+ D scripts/apply-schema.mjs
+ M scripts/ghl-ops.mjs
+ D scripts/launch.mjs
+ M scripts/railway-redeploy.ps1
+ D scripts/send-onboarding.mjs
+ D scripts/set-webhooks.mjs
+ M scripts/smoke-live-app.mjs
+ M scripts/smoke-openai-sidekick.mjs
+ M scripts/sync-signups-to-ghl.mjs
+ M scripts/telegram-kimi-bridge.mjs
+ M server.js
+ D src/app/api/ad-hoc-tasks/route.ts
+ D src/app/api/auth/kid-login/route.ts
+ D src/app/api/auth/kid-logout/route.ts
+ D src/app/api/auth/parent-callback/route.ts
+ D src/app/api/auth/parent-request/route.ts
+ D src/app/api/bna/migrate-db/route.ts
+ D src/app/api/bna/migrate/route.ts
+ D src/app/api/bna/payments/route.ts
+ D src/app/api/bna/signups/route.ts
+ D src/app/api/bna/tasks/[id]/route.ts
+ D src/app/api/bna/tasks/route.ts
+ D src/app/api/bna/telegram/route.ts
+ D src/app/api/checkins/approve/route.ts
+ D src/app/api/checkins/route.ts
+ D src/app/api/consequences/[id]/approve/route.ts
+ D src/app/api/consequences/[id]/override/route.ts
+ D src/app/api/consequences/route.ts
+ D src/app/api/cron/daily-summary/resend/route.ts
+ D src/app/api/cron/daily-summary/route.ts
+ D src/app/api/cron/reminders/route.ts
+ D src/app/api/goals/route.ts
+ D src/app/api/meetings/route.ts
+ D src/app/api/onboarding/complete/route.ts
+ D src/app/api/parent-notes/[id]/route.ts
+ D src/app/api/parent-notes/route.ts
+ D src/app/api/proof-upload/route.ts
+ D src/app/api/qr/[kid]/route.ts
+ D src/app/api/telegram/webhook/[parent]/route.ts
+ D src/app/api/users/freeze/route.ts
+ D src/app/api/users/pin-hash/route.ts
+ D src/app/globals.css
+ D src/app/kid/[name]/KidGoalList.tsx
+ D src/app/kid/[name]/page.tsx
+ D src/app/kid/[name]/pin/PinForm.tsx
+ D src/app/kid/[name]/pin/page.tsx
+ D src/app/layout.tsx
+ D src/app/operations/components/SummaryCards.tsx
+ D src/app/operations/components/TaskApp.tsx
+ D src/app/operations/components/TaskCard.tsx
+ D src/app/operations/components/TaskFilters.tsx
+ D src/app/operations/components/TaskFormModal.tsx
+ D src/app/operations/page.tsx
+ D src/app/page.tsx
+ D src/app/parent/[kid]/NewMeetingModal.tsx
+ D src/app/parent/[kid]/page.tsx
+ D src/app/parent/login/LoginForm.tsx
+ D src/app/parent/login/page.tsx
+ D src/app/parent/onboarding/OnboardingWizard.tsx
+ D src/app/parent/onboarding/page.tsx
+ D src/app/parent/page.tsx
+ D src/components/install/InstallPrompt.tsx
+ D src/components/kid/KidNotesDisplay.tsx
+ D src/components/locale/LocaleToggle.tsx
+ D src/components/parent/AdHocTaskButton.tsx
+ D src/components/parent/ApproveAllButton.tsx
+ D src/components/parent/ConsequenceList.tsx
+ D src/components/parent/FreezeToggle.tsx
+ D src/components/parent/Header.tsx
+ D src/components/parent/NotesWall.tsx
+ D src/components/parent/PendingCheckinRow.tsx
+ D src/components/ui/Button.tsx
+ D src/components/ui/Card.tsx
+ D src/components/ui/Confetti.tsx
+ D src/components/ui/Sheet.tsx
+ D src/components/ui/Skeleton.tsx
+ D src/components/ui/StreakBadge.tsx
+ D src/lib/ai/chat.ts
+ D src/lib/ai/client.ts
+ D src/lib/ai/family-context.ts
+ D src/lib/ai/system-prompt.ts
+ D src/lib/auth/kid-session.ts
+ D src/lib/auth/parent-session.ts
+ D src/lib/bna/cli-bridge.ts
+ M src/lib/bna/goal-board.js
+ D src/lib/bna/task-pipeline.ts
+ D src/lib/bna/telegram-bot.ts
+ M src/lib/bna/telegram-content-intent.js
+ D src/lib/email/client.ts
+ D src/lib/email/render.ts
+ D src/lib/email/templates/DailySummary.tsx
+ D src/lib/fonts.ts
+ M src/lib/ghl/bna.ts
+ D src/lib/i18n.ts
+ D src/lib/onboarding.ts
+ D src/lib/supabase/admin.ts
+ D src/lib/supabase/browser.ts
+ D src/lib/supabase/server.ts
+ D src/lib/supabase/types.ts
+ D src/lib/tasks/store.ts
+ D src/lib/tasks/types.ts
+ D src/lib/telegram/auth.ts
+ D src/lib/telegram/client.ts
+ D src/lib/telegram/handlers.ts
+ D src/lib/telegram/messages.ts
+ D src/lib/telegram/notify.ts
+ D src/middleware.ts
+ M src/remotion/README.md
+ M src/remotion/Root.tsx
+ D tailwind.config.ts
+ M tasks-pending/2026-06-05-student-goal-board-classroom-consequences.md
+ M tasks-pending/2026-06-05-telegram-ai-mode-and-one-time-rabbi-setup.md
+ M tests/goal-board.test.js
+ M tests/telegram-content-intent.test.js
+?? .tmp-lighthouse/
+?? README.md
+?? brand-kit/08-current-learning-model.md
+?? brand-kit/09-visual-design-tokens.md
+?? content-memory/prompt-patches/
+?? content-memory/public-bibliographies/
+?? content-memory/source-sheets/
+?? content-memory/transcripts/022-bnei-neviim-overview-and-insights.md
+?? content-memory/transcripts/023-handling-ui-updates-after-killing-a-process.md
+?? content-memory/transcripts/024-complete-google-business-profile-task.md
+?? content-memory/transcripts/025-joshua-s-conquest-and-moses-and-aaron-s-death.md
+?? content-memory/transcripts/026-serving-hashem-joy-and-worldly-pleasure-debate.md
+?? content-memory/transcripts/027-extracting-questions-from-all-transcripts.md
+?? content-memory/transcripts/028-setting-up-automated-facebook-post-for-autonomy-questions.md
+?? content-memory/transcripts/029-autonomy-questions-facebook-video-post.md
+?? content-memory/transcripts/030-dangerous-black-balloons-threatening-israel.md
+?? content-memory/transcripts/031-adam-naming-animals-and-eve-explained-by-rashi.md
+?? content-memory/transcripts/032-youtube-4-september-2025.md
+?? content-memory/transcripts/033-youtube-2-september-2025.md
+?? content-memory/transcripts/034-youtube-why-your-kids-are-addicted-to-junk-food.md
+?? content-memory/transcripts/035-youtube-the-mystery-of-going-off-the-derech.md
+?? content-memory/transcripts/036-youtube-helping-our-kids-own-their-spirituality.md
+?? content-memory/transcripts/037-youtube-a-i-ko-college.md
+?? content-memory/transcripts/038-youtube-how-to-turn-spaced-out-moments-into-holy-lessons.md
+?? content-memory/transcripts/039-youtube-does-your-son-connect-to-his-rebbe.md
+?? content-memory/transcripts/040-youtube-seeing-the-big-picture-how-mixed-age-learning-helps-kids-visualize-the-e.md
+?? content-memory/transcripts/041-youtube-i-m-a-baal-teshuva-but-my-kid-is-in-the-regular-charedi-system.md
+?? content-memory/transcripts/042-youtube-why-kids-bicker-and-fight-what-schools-aren-t-teaching.md
+?? content-memory/transcripts/043-youtube-partnering-for-a-new-era-in-jewish-education-a-vision-for-our-future.md
+?? content-memory/transcripts/044-youtube-why-davening-is-a-privilege-not-a-graded-class-understanding-its-true-pu.md
+?? content-memory/transcripts/045-youtube-the-hidden-struggles-in-israel-s-education-system-why-we-need-micro-scho.md
+?? content-memory/transcripts/046-youtube-the-looming-crisis-in-our-educational-system.md
+?? content-memory/transcripts/047-youtube-revolutionizing-jewish-education-the-urgent-need-for-ai-driven-micro-sch.md
+?? content-memory/transcripts/048-youtube-inspiring-lifelong-love-for-torah-without-bribes-a-better-way-to-engage-.md
+?? content-memory/transcripts/049-youtube-harnessing-ai-for-real-world-learning-the-future-of-the-secular-curricul.md
+?? content-memory/transcripts/050-youtube-transforming-jewish-education-help-us-with-your-outsourced-english-conte.md
+?? content-memory/transcripts/051-youtube-the-importance-of-transparency-in-your-son-s-torah-education.md
+?? content-memory/transcripts/052-youtube-the-importance-of-rules-and-responsibility-in-a-dynamic-learning-environ.md
+?? content-memory/transcripts/053-youtube-responsability-is-not-a-skill-you-can-teach.md
+?? content-memory/transcripts/054-youtube-the-school-just-told-me-my-kid-needs-drugs.md
+?? content-memory/youtube-playlist-transcripts-2024.md
+?? docs/archive/dormant-next-supabase-app/
+?? docs/archive/legacy-family-accountability/README.md
+?? docs/archive/legacy-family-accountability/scripts/
+?? docs/archive/legacy-supabase-setup/README.md
+?? docs/archive/legacy-supabase-setup/SUPABASE_SETUP.md
+?? docs/imports/
+?? memory/2026-06-08.md
+?? memory/2026-06-09.md
+?? memory/2026-06-10.md
+?? memory/2026-06-11.md
+?? memory/2026-06-12.md
+?? memory/2026-06-13.md
+?? ops/action-registry/
+?? ops/content-drafts/
+?? ops/drive-audits/2026-06-08T07-22-32-454Z-google-drive-audit.json
+?? ops/drive-audits/2026-06-08T07-22-32-454Z-google-drive-audit.md
+?? ops/drive-audits/2026-06-09T19-59-21-999Z-google-drive-audit.json
+?? ops/drive-audits/2026-06-09T19-59-21-999Z-google-drive-audit.md
+?? ops/drive-audits/2026-06-09T20-06-24-683Z-google-drive-audit.json
+?? ops/drive-audits/2026-06-09T20-06-24-683Z-google-drive-audit.md
+?? ops/drive-audits/2026-06-09T20-11-58-409Z-google-drive-audit.json
+?? ops/drive-audits/2026-06-09T20-11-58-409Z-google-drive-audit.md
+?? ops/marketing/
+?? ops/one-time-mishnah-class/
+?? ops/playwright-smokes/
+?? ops/preflight/
+?? ops/pro-codex/
+?? ops/provider-intake/
+?? ops/qa-runs/
+?? ops/release/
+?? ops/system-audits/2026-06-08-full-system-audit.md
+?? ops/system-audits/2026-06-08-watchdog-system-audit.md
+?? ops/system-audits/2026-06-10T11-06-28-834Z-task-queue-reconciler.md
+?? ops/system-audits/2026-06-10T11-07-07-814Z-task-queue-reconciler.md
+?? ops/system-audits/2026-06-10T11-30-40-645Z-task-queue-reconciler.md
+?? ops/system-audits/2026-06-10T11-32-04-623Z-task-queue-reconciler.md
+?? ops/system-audits/2026-06-10T11-33-42-377Z-task-queue-reconciler.md
+?? ops/system-audits/2026-06-10T11-36-10-823Z-task-queue-reconciler.md
+?? ops/system-audits/2026-06-10T11-43-53-396Z-task-queue-reconciler.md
+?? ops/system-audits/2026-06-10T12-08-40-009Z-task-queue-reconciler.md
+?? ops/system-audits/2026-06-10T12-09-34-611Z-task-queue-reconciler.md
+?? ops/system-audits/2026-06-11-active-task-audit.md
+?? ops/system-audits/2026-06-11-task-226-google-workspace-sender-name.md
+?? ops/system-audits/2026-06-11T06-45-07-100Z-task-queue-reconciler.md
+?? ops/system-audits/2026-06-11T06-51-36-438Z-task-queue-reconciler.md
+?? ops/system-audits/2026-06-12-deep-system-debug-audit.md
+?? ops/system-audits/2026-06-12-deep-system-debug-telegram-summary.md
+?? ops/system-audits/2026-06-12T12-49-22-635Z-task-queue-reconciler.md
+?? ops/ui-audits/
+?? ops/ux-audit-runs/
+?? public/css/bna-app-shell.css
+?? public/css/bna-site-nav.css
+?? public/documents/parent-handbook.html
+?? public/documents/registration-document.html
+?? public/images/hillel.jpg
+?? public/images/huddle.jpg
+?? public/images/meir-bunny.jpg
+?? public/images/reuvane-jump-ball.jpg
+?? public/js/app-select.js
+?? public/js/bna-bot-widget.js
+?? public/js/bna-site-nav.js
+?? public/js/parent-handbook-page.js
+?? public/js/registration-document-page.js
+?? public/operations-manifest.json
+?? public/parent.html
+?? public/provider-participant.html
+?? public/provider.html
+?? public/providers-join.html
+?? public/service-providers.html
+?? scripts/build-laptop-install-package.ps1
+?? scripts/build-ux-click-map-package.mjs
+?? scripts/correct-audio-parse-2026-06-08.mjs
+?? scripts/full-ui-audit.mjs
+?? scripts/ghl-mcp-stdio.mjs
+?? scripts/ingest-drive-playlist-transcripts.mjs
+?? scripts/rabbi-video-prompt-library.mjs
+?? scripts/railway-start.mjs
+?? scripts/repair-bna-contact-roles.mjs
+?? scripts/setup-one-time-partnership-drive.mjs
+?? scripts/smoke-email.mjs
+?? scripts/start-watchdog.ps1
+?? scripts/sync-drive-content-library.mjs
+?? scripts/sync-whapi-history.mjs
+?? scripts/task-queue-reconciler.mjs
+?? scripts/update-content-prompts-professional-tone.mjs
+?? scripts/upload-ux-audit-to-drive.mjs
+?? scripts/video-clip-factory.mjs
+?? src/lib/actions/
+?? src/lib/bna/ai-context.js
+?? src/lib/bna/google-integrations.js
+?? src/lib/bna/shabbos-guard.js
+?? src/lib/bna/student-match.js
+?? src/lib/bna/telegram-accountability-parser.js
+?? src/lib/bna/telegram-action-router.js
+?? src/lib/bna/telegram-agent-intent.js
+?? src/lib/bna/telegram-contact-lead-capture.js
+?? src/lib/bna/telegram-direct-reply-guard.js
+?? src/lib/bna/telegram-planning-intent.js
+?? src/lib/ghl/README.md
+?? src/remotion/OrganicClipFactory.tsx
+?? tasks-pending/2026-06-09-google-classroom-worksheet-assignments.md
+?? tasks-pending/2026-06-09-one-time-ghl-agent-loop.md
+?? tasks-pending/2026-06-09-one-time-partnership-drive-map.md
+?? tasks-pending/2026-06-09-organic-clip-factory.md
+?? tasks-pending/2026-06-09-parent-student-dashboard-registration-followup.md
+?? tasks-pending/2026-06-09-set-your-son-free-intro-video.md
+?? tasks-pending/2026-06-09-telegram-ingestion-miss-audit.md
+?? tasks-pending/2026-06-09-warm-leads-and-task-filters.md
+?? tasks-pending/2026-06-10-one-time-external-user-portal-and-ticketing.md
+?? tasks-pending/2026-06-10-one-time-rabbi-meeting-build-brief.md
+?? tasks-pending/2026-06-10-provider-commercial-model-entitlements.md
+?? tasks-pending/2026-06-10-service-provider-directory-and-login.md
+?? tasks-pending/2026-06-10-telegram-goal-board-api-audit.md
+?? tasks-pending/2026-06-10-transcript-wide-source-sheet-production.md
+?? tasks-pending/2026-06-11-action-registry-telegram-ui-bot.md
+?? tasks-pending/2026-06-11-content-library-v2-build-brief.md
+?? tasks-pending/2026-06-11-openai-smoke-release-followup.md
+?? tasks-pending/2026-06-11-production-ui-qa-fix-loop.md
+?? tasks-pending/2026-06-11-provider-onboarding-integrations.md
+?? tasks-pending/2026-06-12-inner-dialogue-community-bot-master.md
+?? tasks-pending/2026-06-12-rabbi-scheller-drive-social-login-guard.md
+?? tasks-pending/2026-06-12-registration-provider-security-rabbi-video.md
+?? tasks-pending/2026-06-12-scheller-drive-social-login-brief.md
+?? tasks-pending/2026-06-12-whapi-log-sync-verification.md
+?? tasks-pending/2026-06-13-universal-helper-tagging-settings-hebrew.md
+?? tests/action-registry-telegram-ui-bot.test.js
+?? tests/app-select-dropdown.test.js
+?? tests/app-wide-brand-shell.test.js
+?? tests/bna-brand-shell.test.js
+?? tests/community-weekly-updates-contract.test.js
+?? tests/contact-role-repair.test.js
+?? tests/google-assignment-system.test.js
+?? tests/learning-moments-feed.test.js
+?? tests/next-year-login-readiness.test.js
+?? tests/one-time-external-user-portal.test.js
+?? tests/one-time-meeting-drops.test.js
+?? tests/operations-content-library-taxonomy.test.js
+?? tests/operations-content-prompt-feedback.test.js
+?? tests/operations-content-research-section.test.js
+?? tests/operations-filter-dropdown.test.js
+?? tests/operations-people-filter.test.js
+?? tests/operations-pwa-login.test.js
+?? tests/operations-saas-crm-redesign.test.js
+?? tests/operations-student-navigation.test.js
+?? tests/operations-task-comments-and-dictation.test.js
+?? tests/parent-student-polish-contract.test.js
+?? tests/parent-student-portal-contract.test.js
+?? tests/public-content-contamination-guard.test.js
+?? tests/rabbi-telegram-worker-runtime.test.js
+?? tests/rabbi-video-prompt-library.test.js
+?? tests/service-provider-directory.test.js
+?? tests/signup-permissions-mobile-homepage.test.js
+?? tests/student-bot-settings.test.js
+?? tests/student-match.test.js
+?? tests/task-queue-reconciler.test.js
+?? tests/telegram-contact-lead-capture.test.js
+?? tests/telegram-goal-board-api-coverage.test.js
+?? tests/telegram-media-routing.test.js
+?? tests/telegram-planning-intent.test.js
+?? tests/telegram-ramble-routing-regression.test.js
+?? tests/telegram-task-quick-actions.test.js
+?? tests/torah-research-routing.test.js
+?? tests/universal-assistant-contract.test.js
+?? tests/watchdog-soft-repair.test.js
+?? tests/whapi-log-sync-contract.test.js
+?? tmp/

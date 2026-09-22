@@ -1,0 +1,842 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260712-107",
+  "parent_raw_id": "RAW-20260712-004",
+  "source_statement_ids": [
+    "SRC-20260712-004-007",
+    "SRC-20260712-004-008"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260712-101",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260712-102",
+      "PKT-20260712-105",
+      "PKT-20260712-106"
+    ],
+    "blocks_packet_ids": [
+      "PKT-20260712-111",
+      "PKT-20260712-112"
+    ],
+    "consumes": [
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/report.md",
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "public/operations.html",
+      "public/js/operations-shell.js",
+      "public/css/one-time-operations.css",
+      "ops/action-registry/actions.json"
+    ],
+    "produces": [
+      "public/operations.html",
+      "public/js/operations-shell.js",
+      "public/css/one-time-operations.css",
+      "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "ops/action-registry/actions.json"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.product-quality.json",
+    "terminal_condition": "REQ-20260712-107 is locally implemented with three-pane CRM/inbox UI, mobile list-to-detail/back flow, scoped inbox selector, no-send/read-only action states, registry coverage, and local screenshot smoke evidence.",
+    "handoff_target": "REQ-20260712-108 portal UI packet or REQ-20260712-111 performance budget packet after local proof."
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "One Time first-party CRM and scoped inbox UI",
+  "created_at": "2026-07-12T18:35:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "EMAIL_PROVIDER_SETUP"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260712-004",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "CRM_PIPELINE",
+      "COMMUNICATIONS_EMAIL",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": "high",
+    "reasons": [
+      "The source explicitly requests a professional first-party CRM and scoped One Time Inbox.",
+      "The current audit and REQ-106 smoke prove the API-backed workbench is present but still needs a CRM/inbox experience layer.",
+      "The work is app-visible and requires screenshots, state matrix, registry coverage, and no-send/read-only gates."
+    ],
+    "affected_product_surfaces": [
+      "Operations Contacts > CRM Contacts",
+      "Operations Communications > Email"
+    ],
+    "likely_external_provider_blockers": [
+      "Live email/WhatsApp sends remain outside this packet and require exact approval plus REQ-20260712-112 release proof."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "validate this focused packet",
+      "patch three-pane CRM/inbox layout and safe action states",
+      "extend local CRM smoke for desktop/mobile state proof",
+      "update registry and execution-run evidence"
+    ],
+    "next_exact_packet": "Implement REQ-20260712-107 only; do not modify portal IA, landing WhatsApp, bundle delivery, deploy, or external sends."
+  },
+  "operator_intent_summary": "Make One Time CRM and Inbox feel like a first-party operator workspace: contact list, conversation/activity, profile, notes/tasks/safe-send affordances, mobile selected-contact flow, scoped inbox context, and read-only view-as parity.",
+  "raw_quotes": [
+    "Build a professional first-party One Time CRM with desktop three-pane list/conversation/profile, mobile list-to-detail flow, tabs, notes, tasks, profile fields, valid Rabbi updates, and read-only view-as disabled writes.",
+    "Create a scoped One Time Inbox with thread list, active conversation, contact context, filters, One Time-only workspace behavior, selected-contact retention, replies updating timeline, internal-note separation, and provider/channel audit metadata."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260712-101",
+      "decision": "Original source screenshots are unavailable locally, so regenerated audit and smoke screenshots are the implementation baseline.",
+      "status": "blocked_for_direct_source_png_comparison_only"
+    }
+  ],
+  "out_of_scope": [
+    "No live email, WhatsApp, payment, access grant, DNS, provider-account, production-data, GHL, LeadConnector, or external CRM writes.",
+    "No portal IA, landing WhatsApp launcher, bundle split/minification, or deployment work.",
+    "No broad CRM backend changes beyond UI consumption of existing scoped list/detail endpoints.",
+    "No claim of production Done before commit/push/deploy/live smoke in REQ-20260712-112."
+  ],
+  "affected_surfaces": [
+    "Operations One Time CRM workbench",
+    "Operations One Time scoped email inbox",
+    "Operations split shell /operations route",
+    "Operations monolith operations.html fallback"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+    "/operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "public/js/operations-shell.js",
+    "public/css/one-time-operations.css",
+    "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+    "ops/action-registry/actions.json",
+    "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/"
+  ],
+  "current_state": {
+    "inspected": [
+      "REQ-106 added scoped API-backed CRM loading, list cap, abort/debounce, split shell parity, and local smoke coverage.",
+      "The CRM detail currently combines profile fields and timeline in one right column instead of desktop list/conversation/profile panes.",
+      "The email workspace has BNA/Rabbi scope switching and Resend readiness gates, but the UI does not yet read as a scoped One Time inbox tied to the selected CRM context.",
+      "One Time CSS already contains route-specific email rules that can be extended without inventing a new visual system."
+    ],
+    "known_gaps": [
+      "Desktop CRM is not yet a three-pane operator layout.",
+      "Mobile selection is stacked but not an explicit list-to-detail/back flow.",
+      "CRM safe reply/note/task controls are not represented as first-class action states.",
+      "Inbox does not surface selected contact retention or One Time scope as strongly as the CRM acceptance criteria require."
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/report.md",
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md"
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "professional",
+      "first-party CRM",
+      "scoped inbox",
+      "valid updates",
+      "read-only view-as"
+    ],
+    "expanded_phrases": {
+      "CRM": "For this packet, CRM means the first-party One Time Operations contact workspace: scoped list, selected activity/conversation, profile, notes/tasks affordances, and safe inbox context only.",
+      "professional": "Dense, scan-friendly operator layout with stable panes, readable labels, bounded actions, and no decorative marketing composition.",
+      "first-party CRM": "Local BNA CRM records scoped to rabbi_sheller_provider / one_time_mishnah_class, not GHL or LeadConnector.",
+      "scoped inbox": "Email workspace defaults to the Rabbi/One Time scope, shows provider/project metadata, and prevents BNA school-only records from mixing into One Time work.",
+      "valid updates": "Visible notes/tasks/reply affordances must be either connected to existing approved local write paths or explicitly disabled with the blocker; live sends are not valid in this packet.",
+      "read-only view-as": "Signed/project-scoped preview sessions see the same layout with mutation/send controls disabled and labeled read-only preview."
+    },
+    "first_party_pattern_interpretation": "Use existing Operations cards, focus panels, status chips, and One Time CSS. Do not add a new CRM runtime, marketing hero, or external-provider workflow."
+  },
+  "design_pattern_references": [
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260712-107",
+      "title": "Build scoped first-party One Time CRM and Inbox experience",
+      "status": "ready_for_codex",
+      "acceptance_criteria": [
+        "Desktop uses left contact list, center activity/conversation, right profile.",
+        "Mobile uses contact list to full-screen selected contact to back flow.",
+        "Inbox stays scoped to One Time and retains selected contact context.",
+        "View-as displays same UI with mutation/send controls disabled and labeled read-only preview.",
+        "Action registry and screenshots cover visible controls."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "REQ-20260712-102 current-state audit is Done with regenerated evidence.",
+      "REQ-20260712-105 scoped CRM API is Done locally.",
+      "REQ-20260712-106 scoped CRM loader/performance behavior is Done locally.",
+      "This packet is limited to CRM/inbox UI, CSS, smoke, and registry evidence.",
+      "No external sends/writes are in scope."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load CRM contacts while the scoped panel is waiting for the list API.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Loading CRM contacts within the scoped panel.",
+      "expected_primary_action": "Wait for list",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search"
+      ],
+      "forbidden_content": [
+        "BNA school-only private data",
+        "active external sends",
+        "GHL runtime"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM panel remains labeled while loading.",
+      "accessibility_expectation": "Loading state is text-visible and not color-only.",
+      "test_smoke_assertion": "Smoke must reach populated state without shell replacement.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "1024",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "CRM list returns no records for current scope.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "No CRM contacts match this workspace/filter.",
+      "expected_primary_action": "Change filters",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search"
+      ],
+      "forbidden_content": [
+        "cross-workspace records",
+        "external CRM write controls"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state is announced in the CRM panel.",
+      "accessibility_expectation": "Empty text is readable at desktop and tablet widths.",
+      "test_smoke_assertion": "Smoke may skip direct empty screenshot if populated proof passes and blocker is recorded.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load synthetic One Time CRM records.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Left contact list, center activity/conversation, and right profile are visible.",
+      "expected_primary_action": "Select contact",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search",
+        "Create reply draft disabled",
+        "Add internal note disabled",
+        "Create task disabled"
+      ],
+      "forbidden_content": [
+        "BNA school-only private data",
+        "active external sends",
+        "GHL runtime"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Three panes have accessible region labels and contact buttons maintain aria-expanded.",
+      "accessibility_expectation": "Buttons are keyboard reachable or disabled with visible reason.",
+      "test_smoke_assertion": "Smoke asserts three visible panes and no horizontal overflow.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "768",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Debounced search/filter has no matches.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "No CRM contacts match this workspace/filter.",
+      "expected_primary_action": "Change search",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search"
+      ],
+      "forbidden_content": [
+        "cross-workspace data",
+        "unscoped search results"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Search input remains labeled.",
+      "accessibility_expectation": "Filter controls remain usable at tablet width.",
+      "test_smoke_assertion": "Smoke asserts debounced search request count.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "430",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "CRM list or timeline API returns an error.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Scoped error banner appears without replacing the app shell.",
+      "expected_primary_action": "Retry refresh",
+      "expected_secondary_actions": [
+        "Back to contacts",
+        "Search"
+      ],
+      "forbidden_content": [
+        "full app crash",
+        "raw private exception dump"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error text is visible in the CRM panel.",
+      "accessibility_expectation": "Error is not color-only.",
+      "test_smoke_assertion": "Smoke records no console/page errors in happy path; error path remains documented.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "430",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Selected contact shows reply/note/task/send affordances.",
+      "expected_visible_title": "Safe next actions",
+      "expected_visible_message": "Reply, note, and task controls are disabled or preview-only with a visible reason.",
+      "expected_primary_action": "Review blocker",
+      "expected_secondary_actions": [
+        "Refresh timeline",
+        "Back to contacts"
+      ],
+      "forbidden_content": [
+        "enabled live send",
+        "payment/access grant",
+        "external CRM write"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Disabled buttons include explanatory title text.",
+      "accessibility_expectation": "Disabled state is text-labeled.",
+      "test_smoke_assertion": "Smoke asserts disabled safe-send/note/task controls and no external writes.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use project-scoped/signed preview auth context.",
+      "expected_visible_title": "Read-only preview",
+      "expected_visible_message": "Mutation/send controls are disabled and labeled read-only preview or no-send locked.",
+      "expected_primary_action": "Review contact",
+      "expected_secondary_actions": [
+        "Refresh timeline",
+        "Disabled reply",
+        "Disabled note",
+        "Disabled task"
+      ],
+      "forbidden_content": [
+        "enabled email send",
+        "enabled WhatsApp send",
+        "enabled payment/access grant"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview/read-only label is visible near the controls.",
+      "accessibility_expectation": "State is not color-only.",
+      "test_smoke_assertion": "Smoke asserts read-only/no-send text and disabled mutation controls.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "1024",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Select a contact and load timeline.",
+      "expected_visible_title": "Contact activity",
+      "expected_visible_message": "Selected contact timeline and profile readback are visible.",
+      "expected_primary_action": "Refresh timeline",
+      "expected_secondary_actions": [
+        "Back to contacts",
+        "Review profile"
+      ],
+      "forbidden_content": [
+        "root rerender",
+        "unscoped timeline"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Activity and profile panes are labeled.",
+      "accessibility_expectation": "Timeline cards are readable and ordered.",
+      "test_smoke_assertion": "Smoke asserts selected activity/profile and timeline text.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Wrong auth/scope attempts to read CRM/inbox data.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Access is denied or returns no cross-workspace data.",
+      "expected_primary_action": "Return to allowed workspace",
+      "expected_secondary_actions": [
+        "Refresh"
+      ],
+      "forbidden_content": [
+        "BNA school-only records",
+        "other-provider records"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Denied/empty state is visible.",
+      "accessibility_expectation": "Denied state is readable.",
+      "test_smoke_assertion": "Scope-negative tests remain covered by existing tenant/view-as tests.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Select a contact on mobile.",
+      "expected_visible_title": "Contact activity",
+      "expected_visible_message": "Selected contact detail appears with a Back to contacts control.",
+      "expected_primary_action": "Back to contacts",
+      "expected_secondary_actions": [
+        "Refresh timeline",
+        "Review profile",
+        "Disabled safe-send controls"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "active live send control",
+        "cross-workspace data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Back control is a real button and selected panes remain labeled.",
+      "accessibility_expectation": "Touch targets are at least 44px where practical.",
+      "test_smoke_assertion": "Smoke asserts list hidden after select, back restores cards, and selected panes render.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "crm_populated_desktop": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load CRM contacts with synthetic One Time records.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Left contact list, center activity/conversation, and right profile are visible.",
+      "expected_primary_action": "Select contact",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search",
+        "Back to contacts",
+        "Create reply draft disabled",
+        "Add internal note disabled",
+        "Create task disabled"
+      ],
+      "forbidden_content": [
+        "BNA school-only private data",
+        "active external sends",
+        "GHL runtime"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Three panes have accessible region labels and contact buttons maintain aria-expanded.",
+      "accessibility_expectation": "Buttons are keyboard reachable or disabled with visible reason.",
+      "test_smoke_assertion": "Smoke asserts three visible panes and no horizontal overflow.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "crm_mobile_selected": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Select a contact on mobile.",
+      "expected_visible_title": "Contact activity",
+      "expected_visible_message": "Selected contact detail appears with a Back to contacts control.",
+      "expected_primary_action": "Back to contacts",
+      "expected_secondary_actions": [
+        "Refresh timeline",
+        "Review profile",
+        "Disabled safe-send controls"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "active live send control",
+        "cross-workspace data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Back control is a real button and selected panes remain labeled.",
+      "accessibility_expectation": "Touch targets are at least 44px where practical.",
+      "test_smoke_assertion": "Smoke asserts list hidden after select, back restores cards, and selected panes render.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "crm_read_only_preview": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "430",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use the project-scoped/signed preview auth context returned by /api/bna/auth/me.",
+      "expected_visible_title": "Read-only preview",
+      "expected_visible_message": "Mutation/send controls are disabled and labeled read-only preview or no-send locked.",
+      "expected_primary_action": "Review contact",
+      "expected_secondary_actions": [
+        "Refresh timeline",
+        "Disabled reply",
+        "Disabled note",
+        "Disabled task"
+      ],
+      "forbidden_content": [
+        "enabled email send",
+        "enabled WhatsApp send",
+        "enabled payment/access grant"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Disabled buttons include explanatory title text.",
+      "accessibility_expectation": "State is not color-only.",
+      "test_smoke_assertion": "Smoke asserts read-only/no-send text and disabled mutation controls.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "inbox_scoped": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "viewport": "1024",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Communications > Email with inbox=rabbi.",
+      "expected_visible_title": "One Time Inbox",
+      "expected_visible_message": "Inbox selector, provider/project metadata, readiness gates, draft list, and selected contact context are visible.",
+      "expected_primary_action": "Create draft preview",
+      "expected_secondary_actions": [
+        "Switch BNA inbox",
+        "Switch Rabbi inbox",
+        "View One Time as Rabbi",
+        "Send locked"
+      ],
+      "forbidden_content": [
+        "BNA inbox as default when Rabbi scope is requested",
+        "unlabeled live send",
+        "private raw bodies in evidence"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Inbox scope controls are buttons with visible current state.",
+      "accessibility_expectation": "Email tabs remain horizontally scrollable on small screens.",
+      "test_smoke_assertion": "CRM smoke or email smoke records scope labels and send-locked state.",
+      "requirement_id": "REQ-20260712-107"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 1440,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-107"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 768,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-107"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 430,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-107"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 390,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-107"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+        "viewport": 1024,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-107"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260712-107-001",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": "390",
+        "screenshot_before": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-390-crm-workbench.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "defect_codes": [
+          "VQ-RESP-005",
+          "VQ-IA-002"
+        ],
+        "severity": "P1",
+        "user_impact": "Mobile users need a clear selected-contact mode instead of scrolling through list/detail/profile as one long page.",
+        "expected_fix": "Hide the list after mobile selection, show selected activity/profile panes, and provide Back to contacts.",
+        "requirement_id": "REQ-20260712-107"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "CRM panes use aria-labels.",
+      "Back to contacts is a real button.",
+      "Disabled send/note/task controls include visible status and title text.",
+      "Email inbox scope controls show selected state without color-only reliance.",
+      "No text overlaps or horizontal overflow at 390, 430, 768, 1024, and 1440 widths."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Refresh CRM contacts",
+      "selector_or_action_key": "ACTION-CRM-CONTACTS-FILTER",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "loadFirstPartyCrmContacts scoped list refresh.",
+      "registry_required": true
+    },
+    {
+      "label": "Open CRM contact detail",
+      "selector_or_action_key": "ACTION-CRM-CONTACT-CARD-EXPAND",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "openFirstPartyCrmContact scoped timeline/detail refresh.",
+      "registry_required": true
+    },
+    {
+      "label": "Back to CRM contact list",
+      "selector_or_action_key": "ACTION-CRM-CONTACT-BACK",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "clearFirstPartyCrmSelection restores mobile list state.",
+      "registry_required": true
+    },
+    {
+      "label": "Open scoped One Time inbox",
+      "selector_or_action_key": "ACTION-CRM-OPEN-SCOPED-INBOX",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "openFirstPartyCrmInboxContext navigates to Communications > Email with inbox=rabbi while retaining selected CRM context.",
+      "registry_required": true
+    },
+    {
+      "label": "Create CRM reply draft",
+      "selector_or_action_key": "ACTION-CRM-REPLY-DRAFT-BLOCKED",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Disabled until exact recipient/copy/sender/send approval packet exists.",
+      "registry_required": true
+    },
+    {
+      "label": "Add CRM internal note",
+      "selector_or_action_key": "ACTION-CRM-INTERNAL-NOTE-BLOCKED",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Preview-only note affordance until a scoped local write endpoint and audit row are approved.",
+      "registry_required": true
+    },
+    {
+      "label": "Create CRM task",
+      "selector_or_action_key": "ACTION-CRM-TASK-BLOCKED",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Preview-only task affordance until mapped to the task ledger with scoped ownership.",
+      "registry_required": true
+    },
+    {
+      "label": "Open Rabbi inbox",
+      "selector_or_action_key": "ACTION-OPERATIONS-EMAIL-INBOX-RABBI",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "setEmailInboxScope('rabbi') loads One Time scoped filters.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "api_calls": [
+      "GET /api/bna/crm/contacts?limit=50&workspace=rabbi_sheller_provider&project_key=one_time_mishnah_class",
+      "GET /api/bna/crm/contacts/:id/timeline scoped to same workspace/project",
+      "GET /api/bna/communications?workspace=rabbi_sheller_provider&project_key=one_time_mishnah_class",
+      "GET /api/bna/communications/email/drafts?workspace=rabbi_sheller_provider&project_key=one_time_mishnah_class"
+    ],
+    "limits": [
+      "CRM list render cap remains 50.",
+      "Inbox drafts shown in operator workspace remain capped to existing local UI limit."
+    ],
+    "caching": [
+      "Reuse REQ-106 session query cache for CRM list filters."
+    ],
+    "abort_debounce": [
+      "Reuse REQ-106 AbortController and debounced search behavior."
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "One Time CRM and inbox data must use rabbi_sheller_provider / one_time_mishnah_class filters.",
+      "Read-only/project-scoped view-as cannot enable writes.",
+      "Email, WhatsApp, payment, access, DNS, provider account, or production mutations are forbidden in this packet.",
+      "Screenshots and DOM text are evidence only and cannot approve a send."
+    ],
+    "forbidden_content": [
+      "signed view-as token",
+      "secrets",
+      "raw private contact export",
+      "raw private message bodies",
+      "GHL or LeadConnector runtime"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-06-CRM-INBOX",
+      "scope": "Operations One Time CRM/inbox UI only",
+      "instructions": [
+        "Split CRM detail into desktop list/activity/profile panes using existing components.",
+        "Add mobile selected-contact/back behavior without changing the API contract.",
+        "Add disabled safe-send/note/task controls and read-only preview label.",
+        "Make the One Time email workspace read as a scoped inbox with selected-contact context and send gates.",
+        "Update action registry rows for new visible controls.",
+        "Extend local smoke to assert three panes, mobile back flow, disabled mutation controls, and no external writes."
+      ],
+      "requirements": [
+        "REQ-20260712-107"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "focused",
+    "source_files_to_read": [
+      "public/operations.html",
+      "public/js/operations-shell.js",
+      "public/css/one-time-operations.css",
+      "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+      "ops/action-registry/actions.json"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "public/js/operations-shell.js",
+      "public/css/one-time-operations.css",
+      "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+      "ops/action-registry/actions.json",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/*"
+    ],
+    "max_files_to_edit": 8,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Portal IA, landing WhatsApp, performance bundle delivery, and deploy are separate requirements.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "commands": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.product-quality.json",
+      "node --check public/js/operations-shell.js",
+      "node --check scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+      "node scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+      "node --test tests/service-provider-scope-routes.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js",
+      "npm run bna:run:validate",
+      "npm run watchdog:protocol-drift"
+    ],
+    "manual_checks": [
+      "Inspect generated CRM desktop/mobile screenshots.",
+      "Confirm no external writes occurred.",
+      "Confirm any failing bundle-size assertion is tracked under REQ-20260712-111, not silently ignored."
+    ]
+  },
+  "evidence": {
+    "required": [
+      "PQC validation PASS",
+      "local CRM workbench smoke with three-pane and mobile back-flow assertions",
+      "action registry rows for new controls",
+      "execution-run status/evidence update"
+    ],
+    "paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "ops/action-registry/actions.json",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/STATUS.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/TEST-RESULTS.md"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "DEPLOY_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "Desktop CRM displays contact list, activity/conversation, and profile panes.",
+      "Mobile CRM selection hides the list, shows selected-contact panes, and Back to contacts restores the list.",
+      "CRM safe-send, note, and task controls are disabled or locally wired with visible reasons; no external send/write is performed.",
+      "One Time Inbox shows Rabbi scope, selected-contact context, provider/channel metadata, and send gates.",
+      "Action registry covers all new visible controls.",
+      "Local smoke screenshots and assertions pass for split shell and monolith fallback.",
+      "Production deploy/live-smoke remains open under REQ-20260712-112."
+    ],
+    "actual_status": "ready_for_local_implementation"
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "node smoke",
+      "node tests"
+    ],
+    "skipped_actions_policy": "No external sends/writes/deploy in this local batch.",
+    "blocker_decisions": [
+      "DEC-20260712-101 direct source screenshots missing but regenerated audit evidence is usable."
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/requirements.json"
+    ],
+    "final_status_path": "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/STATUS.md",
+    "next_packet_path": "tasks-pending/2026-07-12-onetime-crm-portal-production-correction.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No protocol drift findings introduced by the CRM/inbox UI packet or closeout records."
+  },
+  "next_packet": {
+    "id": "PKT-20260712-108-or-PKT-20260712-111",
+    "condition": "Continue portal IA packet if CRM/inbox is locally done, or pull forward performance budget if shell-size work blocks broader UI proof.",
+    "status": "pending"
+  }
+}

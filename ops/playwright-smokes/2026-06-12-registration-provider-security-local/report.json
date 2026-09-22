@@ -1,0 +1,108 @@
+[
+  {
+    "route": "/",
+    "title": "Bnei Nevi'im Academy | Torah Learning for Boys",
+    "hasFooter": true,
+    "contactNoWrap": "nowrap",
+    "horizontalScroll": false,
+    "hasSignup": true
+  },
+  {
+    "route": "/signup.html",
+    "title": "Sign Up | Bnei Nevi'im Academy",
+    "dir": "ltr",
+    "languageTabs": [
+      "English",
+      "עברית"
+    ],
+    "backHome": true,
+    "docCount": 4,
+    "docTitles": [
+      "Handbook",
+      "Tuition",
+      "Waiver",
+      "Student Handbook"
+    ],
+    "hasFooter": true,
+    "horizontalScroll": false
+  },
+  {
+    "route": "/signup-he.html",
+    "title": "הרשמה | Bnei Nevi'im Academy",
+    "htmlLang": "he",
+    "dir": "rtl",
+    "languageTabs": [
+      "English",
+      "עברית"
+    ],
+    "backHome": true,
+    "docCount": 4,
+    "docTitles": [
+      "מדריך הורים",
+      "הסכם שכר לימוד",
+      "אישור בטיחות, הצהרה וויתור",
+      "מדריך תלמידים / קוד התנהגות"
+    ],
+    "hasFooter": true,
+    "horizontalScroll": false
+  },
+  {
+    "route": "/providers/join",
+    "title": "Join the BNA Provider Index",
+    "hasFooter": true,
+    "hasAiMax": true,
+    "noCheckout": true,
+    "requiredFields": 12,
+    "horizontalScroll": false
+  },
+  {
+    "route": "/service-providers",
+    "title": "BNA Service Provider Index",
+    "hasFooter": true,
+    "hasBecomeProvider": true,
+    "horizontalScroll": false
+  },
+  {
+    "route": "/student.html",
+    "title": "BNA Student Goal Board",
+    "loginVisible": true,
+    "portalHidden": true,
+    "storedCode": "",
+    "horizontalScroll": false
+  },
+  {
+    "route": "/student.html?code=bad-local-storage-code",
+    "invalidResponse": {
+      "status": 401,
+      "body": {
+        "error": "Invalid or expired student access code"
+      }
+    },
+    "invalidPage": {
+      "loginVisible": true,
+      "portalHidden": true,
+      "storedAfterFailure": "",
+      "message": ""
+    }
+  },
+  {
+    "route": "/api/student-portal-without-code",
+    "missingResponse": {
+      "status": 401,
+      "body": {
+        "error": "A valid student access code is required"
+      }
+    }
+  },
+  {
+    "route": "/api/student-portal?code=[valid-code-redacted]",
+    "validCodeCheck": {
+      "skipped": false,
+      "status": 200,
+      "expectedStudentMatched": true,
+      "otherStudentGoalLeakCount": 0,
+      "hasAdminAnalysisText": false,
+      "hasPrivateMeetingEvent": false
+    }
+  }
+]

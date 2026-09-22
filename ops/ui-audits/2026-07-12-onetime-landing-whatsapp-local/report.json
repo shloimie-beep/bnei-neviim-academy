@@ -1,0 +1,146 @@
+{
+  "generated_at": "2026-07-13T13:28:40.330Z",
+  "base_url": "http://127.0.0.1:57983",
+  "requirement_id": "REQ-20260712-109",
+  "fake_whatsapp_number_used": true,
+  "full_number_returned_by_readiness": false,
+  "write_requests": [],
+  "telemetry_requests": [
+    {
+      "method": "POST",
+      "path": "/api/performance/rum"
+    },
+    {
+      "method": "POST",
+      "path": "/api/performance/rum"
+    },
+    {
+      "method": "POST",
+      "path": "/api/performance/rum"
+    },
+    {
+      "method": "POST",
+      "path": "/api/performance/rum"
+    },
+    {
+      "method": "POST",
+      "path": "/api/performance/rum"
+    }
+  ],
+  "helper_script_requests": [],
+  "screenshots": [
+    "landing-whatsapp-1440.png",
+    "landing-whatsapp-1024.png",
+    "landing-whatsapp-768.png",
+    "landing-whatsapp-430.png",
+    "landing-whatsapp-390.png"
+  ],
+  "results": [
+    {
+      "id": "landing-whatsapp-1440",
+      "width": 1440,
+      "height": 960,
+      "path": "/one-time",
+      "screenshot": "landing-whatsapp-1440.png",
+      "hero_cta_box": {
+        "x": 130,
+        "y": 753.2059936523438,
+        "width": 129.8125,
+        "height": 48
+      },
+      "whatsapp_launcher_box": {
+        "x": 1358,
+        "y": 878,
+        "width": 64,
+        "height": 64
+      },
+      "console_errors": [],
+      "http_errors": []
+    },
+    {
+      "id": "landing-whatsapp-1024",
+      "width": 1024,
+      "height": 900,
+      "path": "/one-time",
+      "screenshot": "landing-whatsapp-1024.png",
+      "hero_cta_box": {
+        "x": 18,
+        "y": 625.8441772460938,
+        "width": 129.8125,
+        "height": 48
+      },
+      "whatsapp_launcher_box": {
+        "x": 942,
+        "y": 818,
+        "width": 64,
+        "height": 64
+      },
+      "console_errors": [],
+      "http_errors": []
+    },
+    {
+      "id": "landing-whatsapp-768",
+      "width": 768,
+      "height": 1024,
+      "path": "/one-time",
+      "screenshot": "landing-whatsapp-768.png",
+      "hero_cta_box": {
+        "x": 18,
+        "y": 663.1175537109375,
+        "width": 129.8125,
+        "height": 48
+      },
+      "whatsapp_launcher_box": {
+        "x": 686,
+        "y": 942,
+        "width": 64,
+        "height": 64
+      },
+      "console_errors": [],
+      "http_errors": []
+    },
+    {
+      "id": "landing-whatsapp-430",
+      "width": 430,
+      "height": 860,
+      "path": "/one-time",
+      "openMenu": true,
+      "screenshot": "landing-whatsapp-430.png",
+      "hero_cta_box": {
+        "x": 14,
+        "y": 603.1544189453125,
+        "width": 129.8125,
+        "height": 48
+      },
+      "whatsapp_launcher_box": {
+        "x": 348,
+        "y": 778,
+        "width": 64,
+        "height": 64
+      },
+      "console_errors": [],
+      "http_errors": []
+    },
+    {
+      "id": "landing-whatsapp-390",
+      "width": 390,
+      "height": 844,
+      "path": "/one-time",
+      "screenshot": "landing-whatsapp-390.png",
+      "hero_cta_box": {
+        "x": 14,
+        "y": 585.1138916015625,
+        "width": 129.8125,
+        "height": 48
+      },
+      "whatsapp_launcher_box": {
+        "x": 318,
+        "y": 772,
+        "width": 58,
+        "height": 58
+      },
+      "console_errors": [],
+      "http_errors": []
+    }
+  ]
+}

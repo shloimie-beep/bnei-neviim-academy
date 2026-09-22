@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-07-11T21:18:46.759Z",
+  "base_url": "http://127.0.0.1:49906",
+  "screenshots": [
+    "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-1440.png",
+    "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-signup-success-1440.png",
+    "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-school-success-1440.png",
+    "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-390.png",
+    "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-robot-launcher-390.png",
+    "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-family-390.png"
+  ],
+  "assertions": [
+    {
+      "name": "landing_cta_labels",
+      "ok": true,
+      "count": 5
+    },
+    {
+      "name": "landing_forbidden_text_absent",
+      "ok": true
+    },
+    {
+      "name": "signup_to_onboarding_handoff",
+      "ok": true,
+      "url": "http://127.0.0.1:49906/one-time-onboarding?audience=family&source=one_time_public_landing&lead_hint=captured&product_lead_id=7101&crm_lead_id=8101"
+    },
+    {
+      "name": "onboarding_school_success",
+      "ok": true
+    },
+    {
+      "name": "robot_scheller_contained_asset",
+      "ok": true,
+      "backgroundImage": "linear-gradient(150deg, rgba(37, 211, 102, 0.22), rgba(8, 9, 16, 0.18)), url(\"http://127.0.0.1:49906/assets/one-time/robot/robot-scheller-whatsapp.png\")",
+      "backgroundSize": "auto, contain"
+    },
+    {
+      "name": "onboarding_forbidden_text_absent",
+      "ok": true
+    }
+  ]
+}

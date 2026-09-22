@@ -1,0 +1,93 @@
+{
+  "lane": "vimeo-media",
+  "branch": "codex/closeout-vimeo-media-20260624",
+  "status": "complete_with_external_test_blockers",
+  "goal_status": "all_lane_requirements_done_without_real_provider_write",
+  "base_branch": "codex/clean-slate-integration-20260624",
+  "base_sha": "199e010310245ebbd81d972ea79c93651b97f8b1",
+  "control_integration_app_base_sha": "161f8623c50d7ef226066d101bfa58c28aff2346",
+  "implementation_commit": "43adf4a9ce3ccc944e1df672101ec6e299af12a3",
+  "clean_slate_merge_commit": "495e711703a56886849fe86876621129725a7bf8",
+  "updated_at": "2026-06-24T17:43:00+03:00",
+  "result_summary": "Vimeo/media readiness is complete through local contracts and safe preview smoke. The lane implements an exact Vimeo readiness state model, redacted token/capability checks, private-by-default TUS upload construction, mock upload/progress/retry/duplicate/metadata/folder behavior, manual URL attachment readiness, playback/member entitlement checks, class-session/transcript linkage, and a private synthetic smoke command. No real Vimeo upload, publish/unpublish/delete, member visibility change, notification, production mutation, or deployment was performed.",
+  "requirements_closed": [
+    "Vimeo exact readiness state model",
+    "Token capability and permission checks with redacted output",
+    "Private/unlisted upload request defaults and no-public-publish guard",
+    "Mockable upload flow with progress, retry, duplicate protection, metadata update, and folder attach",
+    "Manual Vimeo URL attachment and approval-gated library state",
+    "Playback/thumbnail/deleted/unavailable normalization",
+    "Workspace/provider ownership and member entitlement checks",
+    "Class-session and transcript linkage payload plus redacted audit event",
+    "Private synthetic smoke command with safe preview-only skip when not configured",
+    "Vimeo setup/readiness docs and media pipeline matrix"
+  ],
+  "files_changed": [
+    "MEDIA-PIPELINE-MATRIX.md",
+    "VIMEO-OBJECTS-REDACTED.json",
+    "VIMEO-PRIVATE-TEST.md",
+    "VIMEO-READINESS.md",
+    "scripts/vimeo-private-smoke.mjs",
+    "src/lib/integrations/video-hosting.js",
+    "src/lib/integrations/vimeo.js",
+    "tests/provider-integrations-secret-storage.test.js",
+    "tests/vimeo-media-integration-readiness.test.js",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/vimeo-media/RESULT.json",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/vimeo-media/HANDOFF.md",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/vimeo-media/TESTS.md",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/vimeo-media/FILES.txt",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/vimeo-media/BLOCKERS.md"
+  ],
+  "verification": [
+    "node --test tests/vimeo-media-integration-readiness.test.js PASS",
+    "node --test tests/provider-integrations-secret-storage.test.js PASS",
+    "node --test tests/one-time-media-local-pipeline.test.js PASS",
+    "node --test tests/one-time-recording-vimeo-pipeline.test.js PASS",
+    "node scripts/vimeo-private-smoke.mjs --json PASS status=preview_only external_write_performed=false",
+    "git diff --check PASS",
+    "npm run secrets:audit PASS"
+  ],
+  "private_smoke": {
+    "command": "node scripts/vimeo-private-smoke.mjs --json",
+    "status": "preview_only",
+    "external_write_performed": false,
+    "public_publish_performed": false,
+    "reason": "BNA_VIMEO_PRIVATE_SMOKE=1 and approved token/account/project/synthetic asset were not configured in this environment.",
+    "evidence": "VIMEO-PRIVATE-TEST.md and VIMEO-OBJECTS-REDACTED.json"
+  },
+  "shared_patch": {
+    "requested": false,
+    "path": null,
+    "summary": "No shared route/UI patch was applied or requested by this lane. Route/UI integration remains final-integrator work if needed."
+  },
+  "external_reads": [],
+  "external_writes": [],
+  "blockers": [
+    {
+      "id": "LANE-BLOCKER-VIMEO-001",
+      "status": "needs_approved_private_test_configuration",
+      "summary": "A real private synthetic Vimeo upload requires approved Vimeo test account/token/folder and a generated non-sensitive synthetic asset.",
+      "owner": "Shloimie / final integrator",
+      "next_action": "Configure VIMEO_ACCESS_TOKEN, BNA_VIMEO_TEST_ACCOUNT_CONFIRMED=true, expected account, test project/folder, BNA_VIMEO_SYNTHETIC_TEST_FILE, and BNA_VIMEO_PRIVATE_SMOKE=1 only after account ownership and target are confirmed."
+    },
+    {
+      "id": "LANE-BLOCKER-VIMEO-002",
+      "status": "real_media_actions_not_approved",
+      "summary": "Real provider media fetch, upload, publish/unpublish/delete, member visibility changes, watch-progress writes, and notifications are not approved in this lane.",
+      "owner": "final integrator / Shloimie",
+      "next_action": "Keep manual URL attachment and private synthetic testing as the only approved paths until final release gates approve exact targets."
+    },
+    {
+      "id": "LANE-BLOCKER-VIMEO-003",
+      "status": "live_playback_requires_deployed_release",
+      "summary": "Live member playback and member-library visibility require a deployed release candidate plus entitlement-scoped live smoke.",
+      "owner": "final integrator",
+      "next_action": "After merge/deploy, smoke member playback only for approved test entitlement and keep public publication disabled."
+    }
+  ],
+  "safe_to_merge": true,
+  "deployment_performed": false,
+  "production_mutation_performed": false,
+  "external_write_performed": false,
+  "secrets_exposed": false
+}

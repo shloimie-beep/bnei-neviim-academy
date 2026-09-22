@@ -1,0 +1,83 @@
+{
+  "result": "passed",
+  "results": [
+    {
+      "name": "mobile-390",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "task": {
+        "bodyScrollWidth": 390,
+        "bodyClientWidth": 390,
+        "htmlScrollWidth": 390,
+        "htmlClientWidth": 390,
+        "statusLabels": [
+          "Decisions",
+          "Tasks",
+          "Codex Queue",
+          "Blocked",
+          "Calendar",
+          "Done / Activity"
+        ],
+        "moduleIds": [
+          "decisions",
+          "tasks",
+          "calendar",
+          "students",
+          "content",
+          "community",
+          "accounting",
+          "automations",
+          "admin",
+          "integrations"
+        ],
+        "bodyText": "All Operations\nSuper Admin / Operations / Tasks\nAsk\n18 Jun\nDE\nDecisions\nOP\nTasks\nCA\nCalendar\nST\nStudents\nCT\nContent\nCO\nCommunity\nAC\nAccounting\nAU\nAutomations\nWS\nUsers\nIN\nIntegrations\nWORKSPACE WORK\nDecisions, Tasks, Calendar\n\nHuman blockers stay in Blocked. Machine work has a Codex Queue. Owner, urgency, workspace, and dates are filters.\n\nWORKSPACE STATUS\nTasks\n\n0 visible items. Blocked is only for human or outside-service blockers; Codex Queue is separate.\n\nDecisions\n0\nTasks\n0\nCodex Queue\n0\nBlocked\n0\nCalendar\n0\nDone / Activity\n0\nFilter\nURGENCY\nAll (0)\nDATE\nAll\nToday\nThis week\nUpcoming\nNo date\nWORKSPACE\nAll (0)\nOWNER\nAll owners (0)\nTYPE\nAll (0)\nShowing 0 of 0 tasks.\nTasks\n0 items\nNo actionable tasks match these filters.\nSHLOIMIE's BNA Helper\nSuper Admin / Operations\nx\nAdmin / Platform\nScoped to this workspace and current page context.\n0 TOOLS\nSTANDARD\nTeach helper\nReady for scoped Operations actions. Confirmation is required before email sends, social scheduling, or other sensitive changes.\nSend",
+        "ownerLabelCount": 1,
+        "intakeNavCount": 0,
+        "queuePanelCount": 0,
+        "minStatusHeight": 37
+      },
+      "screenshot": "ops/playwright-smokes/2026-06-18-operations-task-calendar-intake-local/mobile-390.png"
+    },
+    {
+      "name": "desktop-1440",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "task": {
+        "bodyScrollWidth": 1440,
+        "bodyClientWidth": 1440,
+        "htmlScrollWidth": 1440,
+        "htmlClientWidth": 1440,
+        "statusLabels": [
+          "Decisions",
+          "Tasks",
+          "Codex Queue",
+          "Blocked",
+          "Calendar",
+          "Done / Activity"
+        ],
+        "moduleIds": [
+          "decisions",
+          "tasks",
+          "calendar",
+          "students",
+          "content",
+          "community",
+          "accounting",
+          "automations",
+          "admin",
+          "integrations"
+        ],
+        "bodyText": "All Operations\nCRM, school operations, providers, portals, usage, and automation in one workspace.\nWORKSPACE DIRECTORY\nAll Operations\nSuper Admin / Super Admin\nSwitch\nBack to all modules\nTASKS SECTIONS\nOperations\nChoose a section for this workspace.\nDecisions\n0\nTasks\n0\nCodex Queue\n0\nBlocked\n0\nCalendar\n0\nDone / Activity\n0\nSettings\nHelp\nLogout\nALL OPERATIONS / OPERATIONS / TASKS\nTasks\nNeed decision\n0\nCodex Queue\n0\nStudent accountability\n0\nAlerts\n0\nAll Operations / Super Admin\nAsk / Search\nThu 18 Jun\nDecisions\nDE\nDecisions\nOP\nTasks\nCA\nCalendar\nST\nStudents\nCT\nContent\nCO\nCommunity\nAC\nAccounting\nAU\nAutomations\nWS\nUsers\nIN\nIntegrations\nWORKSPACE WORK\nDecisions, Tasks, Calendar\n\nHuman blockers stay in Blocked. Machine work has a Codex Queue. Owner, urgency, workspace, and dates are filters.\n\nWORKSPACE STATUS\nTasks\n\n0 visible items. Blocked is only for human or outside-service blockers; Codex Queue is separate.\n\nDecisions\n0\nTasks\n0\nCodex Queue\n0\nBlocked\n0\nCalendar\n0\nDone / Activity\n0\nURGENCY\nAll (0)\nDATE\nAll\nToday\nThis week\nUpcoming\nNo date\nWORKSPACE\nAll (0)\nOWNER\nAll owners (0)\nTYPE\nAll (0)\nShowing 0 of 0 tasks.\nTasks\n0 items\nNo actionable tasks match these filters.\nSHLOIMIE's BNA Helper\nSuper Admin / Operations\nx\nAdmin / Platform\nScoped to this workspace and current page context.\n0 TOOLS\nSTANDARD\nTeach helper\nReady for scoped Operations actions. Confirmation is required before email sends, social scheduling, or other sensitive changes.\nSend",
+        "ownerLabelCount": 1,
+        "intakeNavCount": 0,
+        "queuePanelCount": 0,
+        "minStatusHeight": 37
+      },
+      "screenshot": "ops/playwright-smokes/2026-06-18-operations-task-calendar-intake-local/desktop-1440.png"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "workstream_id": "UI-01",
+    "aliases": [],
+    "title": "UI/header/footer/mobile standardization",
+    "status": "requeued_for_followup",
+    "proof_path": "ops/proofs/2026-06-16-ramble-router-parallel-closeout/UI-01/",
+    "notes": "Started in this cycle. Existing handoff remains active for screenshot-driven UI/header/footer/mobile closeout."
+  },
+  {
+    "workstream_id": "OPS-02",
+    "aliases": ["WS03", "WS04"],
+    "title": "Operations workflows, lanes, calendar, and task routing",
+    "status": "requeued_for_followup",
+    "proof_path": "ops/proofs/2026-06-16-ramble-router-parallel-closeout/OPS-02/",
+    "notes": "Mapped to existing Operations queue, dedupe, and workflow workstreams. Remaining queue cleanup/custom calendar/Rabbi 7pm proof needs a focused follow-up."
+  },
+  {
+    "workstream_id": "HELPER-03",
+    "aliases": ["WS05"],
+    "title": "BNA Helper scoped tool registry and duplicate helper cleanup",
+    "status": "blocked_needs_human_decision",
+    "proof_path": "ops/proofs/2026-06-16-ramble-router-parallel-closeout/HELPER-03/",
+    "notes": "Local helper tool registry is implemented in WS05; final live/deploy closeout needs an approved deploy window or isolated release decision and follow-up smoke."
+  },
+  {
+    "workstream_id": "RABBI-04",
+    "aliases": ["WS10", "one_time_mishnah_class"],
+    "title": "Rabbi / One Time product and 7pm class model",
+    "status": "blocked_needs_human_decision",
+    "proof_path": "ops/proofs/2026-06-16-ramble-router-parallel-closeout/RABBI-04/",
+    "notes": "Core One Time project/classroom/member foundations have prior live proof. Pricing, provider of record, account ownership, Rabbi bot chat ID, final assets, and 7pm launch decisions remain human/external blockers."
+  },
+  {
+    "workstream_id": "INT-05",
+    "aliases": ["INTEGRATIONS-05", "WS06"],
+    "title": "Safe integration readiness for Buffer, Resend, Stripe, Zoom, Vimeo, Telegram",
+    "status": "blocked_needs_credentials",
+    "proof_path": "ops/proofs/2026-06-16-ramble-router-parallel-closeout/INT-05/",
+    "notes": "Actual started ID in repo is INT-05. Live activation remains blocked by credentials, DNS/account details, channel IDs, and explicit approval gates."
+  },
+  {
+    "workstream_id": "COMMUNITY-06",
+    "aliases": ["LEARNING-06", "WS11"],
+    "title": "Course, community, gamification, and parent progress architecture",
+    "status": "completed_deployed_verified",
+    "proof_path": "ops/proofs/2026-06-16-ramble-router-parallel-closeout/COMMUNITY-06/",
+    "notes": "Covered by the deployed WS11 community/gamification/parent-progress foundation and 2026-06-16 live parent-progress privacy smoke."
+  },
+  {
+    "workstream_id": "MASTER-07",
+    "aliases": [],
+    "title": "Parallel workstream orchestrator closeout",
+    "status": "completed_verified",
+    "proof_path": "ops/proofs/2026-06-16-ramble-router-parallel-closeout/MASTER-07/",
+    "notes": "Created registry, ownership/conflict maps, source-of-truth audit, status handoffs, and final closeout records. Deployment not required for documentation/proof coordination."
+  }
+]

@@ -1,0 +1,23 @@
+- banner:
+  - strong: Bnei Neviim Academy
+  - text: Provider portal
+  - link "Public site":
+    - /url: /
+  - link "Directory":
+    - /url: /service-providers
+  - link "Provider home":
+    - /url: /provider
+  - link "Assistant/help":
+    - /url: "#bnaBotPanel"
+  - link "Join":
+    - /url: /providers/join?onboard=provider
+  - text: Scoped Provider Workspace
+- main:
+  - heading "Provider portal" [level=1]
+  - paragraph: Approved BNA network providers can manage their own profile and services.
+  - text: Username
+  - textbox "Username"
+  - text: Password
+  - textbox "Password"
+  - button "Sign In"
+- button "BNA Helper"

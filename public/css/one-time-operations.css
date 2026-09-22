@@ -1,0 +1,1762 @@
+body.one-time-operations-active,
+[data-one-time-rabbi-dashboard],
+[data-one-time-rabbi-module] {
+  --ot-ops-background: #080910;
+  --ot-ops-panel: #101010;
+  --ot-ops-card: #101010;
+  --ot-ops-card-strong: #1d1a12;
+  --ot-ops-border: rgba(174, 185, 198, 0.24);
+  --ot-ops-border-strong: rgba(237, 229, 24, 0.36);
+  --ot-ops-text: #ffffff;
+  --ot-ops-muted-text: #aeb9c6;
+  --ot-ops-accent: #ede518;
+  --ot-ops-accent-deep: #c9a227;
+  --ot-ops-warning-gated: #ede518;
+  --ot-ops-warning-soft: rgba(237, 229, 24, 0.14);
+  --ot-ops-success-ready: #c9a227;
+  --ot-ops-success-soft: rgba(237, 229, 24, 0.18);
+  --ot-ops-preview-no-write: #faf9f4;
+  --ot-ops-preview-soft: rgba(250, 249, 244, 0.12);
+  --ot-ops-logo: url("/images/one-time/brand/onetimelogo.webp");
+  --ot-ops-hero-portrait: url("/images/one-time/brand/onetime-hero-vertical.webp");
+  --ot-ops-radius: 8px;
+  --ot-ops-shadow: 0 20px 56px rgba(8, 9, 16, 0.24);
+  color: var(--ot-ops-text);
+}
+
+body.one-time-operations-active .ops-main,
+[data-one-time-rabbi-dashboard],
+[data-one-time-rabbi-module] {
+  background:
+    linear-gradient(180deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.95) 42%, rgba(16, 38, 52, 0.92)),
+    var(--ot-ops-background);
+}
+
+body.one-time-operations-active .one-time-ops-dashboard-hero,
+body.one-time-operations-active [data-one-time-rabbi-dashboard],
+[data-one-time-rabbi-dashboard].one-time-ops-dashboard-hero,
+[data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero {
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 240px);
+  gap: 18px;
+  align-items: center;
+  border: 1px solid var(--ot-ops-border-strong);
+  border-radius: var(--ot-ops-radius);
+  background:
+    linear-gradient(90deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.9) 54%, rgba(16, 38, 52, 0.68)),
+    var(--ot-ops-hero-portrait) right center / auto 122% no-repeat,
+    var(--ot-ops-background);
+  box-shadow: var(--ot-ops-shadow);
+  padding: clamp(18px, 3vw, 28px);
+  min-width: 0;
+}
+
+body.one-time-operations-active .one-time-ops-dashboard-hero h1,
+body.one-time-operations-active .one-time-ops-dashboard-hero h2,
+[data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero h1,
+[data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero h2 {
+  color: var(--ot-ops-text);
+  letter-spacing: 0;
+}
+
+body.one-time-operations-active .one-time-ops-dashboard-hero p,
+body.one-time-operations-active .one-time-ops-dashboard-hero .small,
+[data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero p,
+[data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero .small {
+  color: var(--ot-ops-muted-text);
+}
+
+body.one-time-operations-active .one-time-ops-logo,
+[data-one-time-rabbi-dashboard] .one-time-ops-logo {
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgba(237, 229, 24, 0.48);
+  border-radius: var(--ot-ops-radius);
+  background: var(--ot-ops-warning-gated) var(--ot-ops-logo) center / contain no-repeat;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-content-section="one_time_library"] > .page-heading {
+  border: 1px solid var(--ot-ops-border-strong);
+  border-radius: var(--ot-ops-radius);
+  background:
+    linear-gradient(135deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.92)),
+    radial-gradient(circle at 92% 0%, rgba(237, 229, 24, 0.12), transparent 34%);
+  box-shadow: var(--ot-ops-shadow);
+  margin-bottom: 12px;
+  padding: clamp(16px, 2.4vw, 22px);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-content-section="one_time_library"] > .page-heading .page-kicker {
+  color: var(--ot-ops-warning-gated);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-content-section="one_time_library"] > .page-heading h2 {
+  color: var(--ot-ops-text);
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-content-section="one_time_library"] > .page-heading p {
+  color: #faf9f4;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-content-section="one_time_library"] > .filter-details {
+  border-color: rgba(237, 229, 24, 0.24);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(16, 38, 52, 0.92);
+  margin-bottom: 12px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-content-section="one_time_library"] > .filter-details > summary {
+  color: var(--ot-ops-text);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-content-section="one_time_library"] > .filter-details > summary::after {
+  content: "Open filters";
+  float: right;
+  color: var(--ot-ops-warning-gated);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-content-section="one_time_library"] > .filter-details[open] > summary::after {
+  content: "Hide filters";
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-content-section="one_time_library"] > .filter-details .content-toolbar {
+  border-color: rgba(174, 185, 198, 0.24);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(8, 19, 35, 0.9);
+  margin: 0;
+}
+
+body.one-time-operations-active .one-time-ops-package-status,
+body.one-time-operations-active .one-time-approval-packet,
+[data-one-time-rabbi-module] .one-time-ops-package-status,
+[data-one-time-rabbi-module] .one-time-approval-packet {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  border: 1px solid var(--ot-ops-border);
+  border-radius: var(--ot-ops-radius);
+  background: linear-gradient(180deg, rgba(16, 38, 52, 0.94), rgba(8, 19, 35, 0.94));
+  box-shadow: 0 14px 34px rgba(8, 9, 16, 0.18);
+  padding: 14px;
+}
+
+body.one-time-operations-active .one-time-ops-module-grid,
+body.one-time-operations-active .one-time-lane-grid,
+body.one-time-operations-active .one-time-output-grid,
+[data-one-time-rabbi-module] .one-time-ops-module-grid,
+[data-one-time-rabbi-module] .one-time-lane-grid,
+[data-one-time-rabbi-module] .one-time-output-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+
+body.one-time-operations-active .one-time-ops-content-card,
+body.one-time-operations-active .one-time-report-card,
+body.one-time-operations-active .one-time-lane-card,
+body.one-time-operations-active .one-time-output-state,
+[data-one-time-rabbi-module] .one-time-ops-content-card,
+[data-one-time-rabbi-module] .one-time-report-card,
+[data-one-time-rabbi-module] .one-time-lane-card,
+[data-one-time-rabbi-module] .one-time-output-state {
+  min-width: 0;
+  border: 1px solid var(--ot-ops-border);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(250, 249, 244, 0.08);
+  color: var(--ot-ops-text);
+  padding: 12px;
+}
+
+body.one-time-operations-active .one-time-ops-content-card strong,
+body.one-time-operations-active .one-time-report-card strong,
+body.one-time-operations-active .one-time-lane-card strong,
+body.one-time-operations-active .one-time-output-state strong,
+[data-one-time-rabbi-module] .one-time-ops-content-card strong,
+[data-one-time-rabbi-module] .one-time-report-card strong,
+[data-one-time-rabbi-module] .one-time-lane-card strong,
+[data-one-time-rabbi-module] .one-time-output-state strong {
+  color: var(--ot-ops-text);
+  overflow-wrap: anywhere;
+}
+
+body.one-time-operations-active .one-time-ops-content-card span,
+body.one-time-operations-active .one-time-report-card span,
+body.one-time-operations-active .one-time-lane-card span,
+body.one-time-operations-active .one-time-output-state span,
+body.one-time-operations-active .one-time-ops-muted,
+[data-one-time-rabbi-module] .one-time-ops-content-card span,
+[data-one-time-rabbi-module] .one-time-report-card span,
+[data-one-time-rabbi-module] .one-time-lane-card span,
+[data-one-time-rabbi-module] .one-time-output-state span,
+[data-one-time-rabbi-module] .one-time-ops-muted {
+  color: var(--ot-ops-muted-text);
+}
+
+body.one-time-operations-active .one-time-output-state.needs_approval,
+body.one-time-operations-active .one-time-ops-chip[data-state="gated"],
+[data-one-time-rabbi-module] .one-time-output-state.needs_approval,
+[data-one-time-rabbi-module] .one-time-ops-chip[data-state="gated"] {
+  border-color: rgba(237, 229, 24, 0.5);
+  background: var(--ot-ops-warning-soft);
+  color: var(--ot-ops-warning-gated);
+}
+
+body.one-time-operations-active .one-time-output-state.approved,
+body.one-time-operations-active .one-time-ops-chip[data-state="ready"],
+[data-one-time-rabbi-module] .one-time-output-state.approved,
+[data-one-time-rabbi-module] .one-time-ops-chip[data-state="ready"] {
+  border-color: rgba(237, 229, 24, 0.46);
+  background: var(--ot-ops-success-soft);
+  color: #ffffff;
+}
+
+body.one-time-operations-active .one-time-ops-chip[data-state="preview"],
+body.one-time-operations-active [data-one-time-drive-brief-preview] .example-chip,
+[data-one-time-rabbi-module] .one-time-ops-chip[data-state="preview"],
+[data-one-time-rabbi-module] [data-one-time-drive-brief-preview] .example-chip {
+  border-color: rgba(250, 249, 244, 0.34);
+  background: var(--ot-ops-preview-soft);
+  color: var(--ot-ops-preview-no-write);
+}
+
+body.one-time-operations-active .one-time-ops-setup-blockers,
+body.one-time-operations-active .one-time-blocker-list,
+[data-one-time-rabbi-module] .one-time-ops-setup-blockers,
+[data-one-time-rabbi-module] .one-time-blocker-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+body.one-time-operations-active .one-time-blocker-chip,
+body.one-time-operations-active .one-time-ops-chip[data-state="blocked"],
+[data-one-time-rabbi-module] .one-time-blocker-chip,
+[data-one-time-rabbi-module] .one-time-ops-chip[data-state="blocked"] {
+  border: 1px solid rgba(237, 229, 24, 0.46);
+  border-radius: 999px;
+  background: rgba(237, 229, 24, 0.12);
+  color: var(--ot-ops-warning-gated);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
+  padding: 6px 9px;
+  overflow-wrap: anywhere;
+}
+
+body.one-time-operations-active .one-time-ops-chip,
+[data-one-time-rabbi-module] .one-time-ops-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 30px;
+  border: 1px solid var(--ot-ops-border);
+  border-radius: 999px;
+  background: rgba(237, 229, 24, 0.12);
+  color: var(--ot-ops-text);
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1.15;
+  padding: 6px 10px;
+  text-align: center;
+  white-space: normal;
+}
+
+body.one-time-operations-active .one-time-ops-mobile-button-row,
+[data-one-time-rabbi-module] .one-time-ops-mobile-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+body.one-time-operations-active .one-time-ops-mobile-button-row .task-action,
+body.one-time-operations-active .one-time-ops-mobile-button-row button,
+body.one-time-operations-active .one-time-ops-mobile-button-row a,
+[data-one-time-rabbi-module] .one-time-ops-mobile-button-row .task-action,
+[data-one-time-rabbi-module] .one-time-ops-mobile-button-row button,
+[data-one-time-rabbi-module] .one-time-ops-mobile-button-row a {
+  min-height: 44px;
+  border-radius: var(--ot-ops-radius);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route][data-one-time-rabbi-dashboard] {
+  display: block;
+  border: 1px solid var(--ot-ops-border-strong);
+  border-radius: var(--ot-ops-radius);
+  background:
+    linear-gradient(180deg, rgba(8, 9, 16, 0.96), rgba(8, 19, 35, 0.92)),
+    var(--ot-ops-background);
+  box-shadow: var(--ot-ops-shadow);
+  padding: clamp(12px, 1.4vw, 18px);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-heading {
+  margin-bottom: 12px;
+  border: 1px solid rgba(237, 229, 24, 0.22);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(8, 19, 35, 0.82);
+  padding: 14px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-heading .page-kicker {
+  color: var(--ot-ops-warning-gated);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-heading h2 {
+  color: var(--ot-ops-text) !important;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-heading p {
+  color: var(--ot-ops-muted-text) !important;
+  max-width: 74ch;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-status-toolbar {
+  margin-bottom: 12px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-status-toolbar .filter-details {
+  margin-top: 10px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > [data-one-time-task-lane="board"] {
+  margin: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route][data-one-time-rabbi-dashboard] {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  gap: 14px;
+  overflow: visible;
+  border: 1px solid var(--ot-ops-border-strong);
+  border-radius: var(--ot-ops-radius);
+  background:
+    linear-gradient(180deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.95)),
+    var(--ot-ops-background);
+  box-shadow: var(--ot-ops-shadow);
+  padding: clamp(12px, 1.4vw, 18px);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] > .task-heading {
+  align-items: center;
+  margin-bottom: 0;
+  border: 1px solid rgba(237, 229, 24, 0.22);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(8, 19, 35, 0.86);
+  padding: 14px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] > .task-heading .page-kicker {
+  color: var(--ot-ops-warning-gated);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] > .task-heading h2 {
+  color: var(--ot-ops-text) !important;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] > .task-heading p {
+  color: var(--ot-ops-muted-text) !important;
+  max-width: 72ch;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] > .task-heading .task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] > .automation-toolbar {
+  border-color: rgba(174, 185, 198, 0.26);
+  background: linear-gradient(180deg, rgba(16, 38, 52, 0.96), rgba(8, 19, 35, 0.96));
+  box-shadow: 0 14px 34px rgba(8, 9, 16, 0.18);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .local-toolbar-title,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-title,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-cell strong {
+  color: var(--ot-ops-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .local-toolbar-copy,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-summary,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-cell small {
+  color: var(--ot-ops-muted-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-filter-row {
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-filter-row label {
+  color: #c8d3df;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-filter-row select,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-filter-row input {
+  border-color: rgba(174, 185, 198, 0.32);
+  background: rgba(250, 249, 244, 0.96);
+  color: #101010;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-filter-actions {
+  align-self: end;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] > .automation-list {
+  border: 1px solid rgba(174, 185, 198, 0.18);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(8, 19, 35, 0.7);
+  padding: 12px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-row-head {
+  color: #f6e8a8;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-row {
+  border-color: rgba(174, 185, 198, 0.26);
+  background: rgba(16, 38, 52, 0.92);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .task-empty {
+  border-color: rgba(237, 229, 24, 0.34);
+  background: rgba(250, 249, 244, 0.08);
+  color: var(--ot-ops-text);
+  border-radius: var(--ot-ops-radius);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="contacts"] .ops-filter-track {
+  flex-wrap: wrap;
+  overflow-x: visible;
+  padding-bottom: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="contacts"] .ops-filter-tab {
+  flex: 1 1 138px;
+  min-width: min(100%, 138px);
+  white-space: normal;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-track {
+  flex-wrap: wrap;
+  overflow-x: visible;
+  padding-bottom: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-tab {
+  flex: 1 1 150px;
+  min-width: min(100%, 150px);
+  white-space: normal;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-track {
+  flex-wrap: wrap;
+  overflow-x: visible;
+  padding-bottom: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-tab {
+  flex: 1 1 142px;
+  min-width: min(100%, 142px);
+  white-space: normal;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="settings"] .ops-filter-track {
+  flex-wrap: wrap;
+  overflow-x: visible;
+  padding-bottom: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="settings"] .ops-filter-tab {
+  flex: 1 1 148px;
+  min-width: min(100%, 148px);
+  white-space: normal;
+}
+
+@media (min-width: 721px) {
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-topbar {
+    min-height: 76px;
+    gap: 10px;
+    padding: 8px clamp(12px, 1.4vw, 18px);
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-mark {
+    width: 60px;
+    height: 60px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-lockup {
+    flex: 1 1 auto;
+    gap: 10px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-lockup span {
+    font-size: 10.5px;
+    line-height: 1.15;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-route-title {
+    font-size: 14px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-actions > .ops-brand-chip:first-child {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-topbar-center {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: clip;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-actions {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-chip,
+  body.bna-ops-shell-page.one-time-operations-active button.ops-brand-chip {
+    min-height: 44px;
+    padding: 6px 10px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-filter-rail {
+    top: 76px;
+    padding: 6px clamp(12px, 1.4vw, 18px);
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-filter-rail-inner {
+    gap: 0;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-filter-rail-meta {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-track,
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-track {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    padding-bottom: 3px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-tab,
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-tab {
+    flex: 0 0 clamp(108px, 10.5vw, 136px);
+    min-width: 108px;
+    min-height: 44px;
+    padding: 6px 8px;
+    scroll-snap-align: start;
+    white-space: normal;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-tab span:first-child,
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-tab span:first-child {
+    min-width: 0;
+    line-height: 1.1;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-count,
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-count {
+    min-width: 20px;
+    padding: 2px 5px;
+  }
+}
+
+body.bna-ops-shell-page.one-time-operations-active .ops-filter-tab.active,
+body.bna-ops-shell-page.one-time-operations-active .ops-filter-tab[aria-current="page"],
+body.bna-ops-shell-page.one-time-operations-active .ops-filter-tab[aria-selected="true"] {
+  border-color: rgba(237, 229, 24, 0.82) !important;
+  background: var(--ot-ops-warning-gated) !important;
+  color: #101010 !important;
+  box-shadow: none !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active .ops-filter-tab.active .ops-filter-count,
+body.bna-ops-shell-page.one-time-operations-active .ops-filter-tab[aria-current="page"] .ops-filter-count,
+body.bna-ops-shell-page.one-time-operations-active .ops-filter-tab[aria-selected="true"] .ops-filter-count {
+  background: rgba(16, 16, 16, 0.14) !important;
+  color: #101010 !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active .ops-mobile-mark {
+  width: 56px;
+  height: 56px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active select,
+body.bna-ops-shell-page.one-time-operations-active .app-select__button {
+  min-height: 44px !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active .app-select__option {
+  min-height: 44px !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active .app-select__button {
+  border-color: rgba(237, 229, 24, 0.34) !important;
+  background: rgba(250, 249, 244, 0.96) !important;
+  color: #101010 !important;
+  font-weight: 800 !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active .one-time-perspective-actions .task-action,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] input,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] select,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] textarea {
+  min-height: 44px !important;
+}
+
+@media (max-width: 520px) {
+  body.bna-ops-shell-page.one-time-operations-active .ops-mobile-mark {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+@media (min-width: 1280px) {
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-track,
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-track {
+    overflow-x: hidden;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-tab,
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+  }
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"][data-one-time-rabbi-dashboard] {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  gap: 14px;
+  overflow: visible;
+  border: 1px solid var(--ot-ops-border-strong);
+  border-radius: var(--ot-ops-radius);
+  background:
+    linear-gradient(180deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.95)),
+    var(--ot-ops-background);
+  box-shadow: var(--ot-ops-shadow);
+  padding: clamp(12px, 1.4vw, 18px);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] > .page-heading {
+  margin-bottom: 0;
+  border: 1px solid rgba(237, 229, 24, 0.22);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(8, 19, 35, 0.86);
+  padding: 14px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] > .page-heading .page-kicker {
+  color: var(--ot-ops-warning-gated);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] > .page-heading h2 {
+  color: var(--ot-ops-text) !important;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] > .page-heading p {
+  color: var(--ot-ops-text) !important;
+  max-width: 82ch;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] > .focus-panel {
+  border-color: rgba(174, 185, 198, 0.24) !important;
+  background: linear-gradient(180deg, rgba(16, 38, 52, 0.95), rgba(8, 19, 35, 0.95)) !important;
+  color: var(--ot-ops-text) !important;
+  box-shadow: 0 14px 34px rgba(8, 9, 16, 0.18) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .task-section-header h3 {
+  color: var(--ot-ops-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .task-section-header span,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .settings-disabled-note,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .contact-detail-note {
+  color: var(--ot-ops-muted-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .task-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .metric-button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  justify-content: stretch;
+  gap: 6px 10px;
+  width: 100%;
+  min-width: 0;
+  min-height: 54px;
+  border-color: rgba(174, 185, 198, 0.26) !important;
+  border-radius: var(--ot-ops-radius);
+  background: #101010 !important;
+  color: var(--ot-ops-text) !important;
+  box-shadow: none;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .metric-button:hover {
+  border-color: rgba(237, 229, 24, 0.42) !important;
+  background: #1d1a12 !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .metric-label {
+  color: #c8d3df !important;
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: 1.2;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .metric-value {
+  color: var(--ot-ops-warning-gated) !important;
+  font-size: 18px;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .contact-detail-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .contact-detail-item {
+  border-color: rgba(174, 185, 198, 0.24) !important;
+  border-radius: var(--ot-ops-radius);
+  background: #101010 !important;
+  color: var(--ot-ops-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .contact-detail-label {
+  color: #f6e8a8 !important;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .contact-detail-value {
+  color: var(--ot-ops-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .command-bot-panel {
+  min-height: auto;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .command-bot-panel .action-registry-grid {
+  display: grid;
+  min-height: auto;
+  gap: 10px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .action-registry-card {
+  border-color: rgba(174, 185, 198, 0.24) !important;
+  background: #101010 !important;
+  color: var(--ot-ops-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .action-registry-card strong {
+  color: var(--ot-ops-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .action-registry-card span {
+  color: var(--ot-ops-muted-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .empty-state {
+  min-height: 108px !important;
+  border: 1px solid rgba(237, 229, 24, 0.28) !important;
+  border-radius: var(--ot-ops-radius);
+  background: #1d1a12 !important;
+  color: var(--ot-ops-text) !important;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  text-align: center;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .dialogue-timeline.compact {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .timeline-item.compact {
+  border-color: rgba(174, 185, 198, 0.24) !important;
+  background: #101010 !important;
+  color: var(--ot-ops-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .timeline-item.compact strong {
+  color: var(--ot-ops-text) !important;
+  overflow-wrap: anywhere;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .timeline-item.compact p {
+  color: var(--ot-ops-muted-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"][data-one-time-rabbi-dashboard] {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  gap: 14px;
+  overflow: visible;
+  border: 1px solid var(--ot-ops-border-strong);
+  border-radius: var(--ot-ops-radius);
+  background:
+    linear-gradient(180deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.95)),
+    var(--ot-ops-background);
+  box-shadow: var(--ot-ops-shadow);
+  padding: clamp(12px, 1.4vw, 18px);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] > .page-heading {
+  margin-bottom: 0;
+  border: 1px solid rgba(237, 229, 24, 0.22);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(8, 19, 35, 0.86);
+  padding: 14px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] > .page-heading .page-kicker,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .local-toolbar-kicker {
+  color: var(--ot-ops-warning-gated) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] > .page-heading h2,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .local-toolbar-title,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .task-section-header h3 {
+  color: var(--ot-ops-text) !important;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] > .page-heading p,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .local-toolbar-copy,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .settings-disabled-note {
+  color: var(--ot-ops-muted-text) !important;
+  max-width: 82ch;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] > .settings-toolbar,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] > .settings-panel {
+  margin: 0;
+  border-color: rgba(174, 185, 198, 0.24) !important;
+  border-radius: var(--ot-ops-radius);
+  background:
+    linear-gradient(180deg, rgba(16, 38, 52, 0.95), rgba(8, 19, 35, 0.95)),
+    #1d1a12 !important;
+  background-color: #1d1a12 !important;
+  color: var(--ot-ops-text) !important;
+  box-shadow: 0 14px 34px rgba(8, 9, 16, 0.18) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .local-toolbar-header {
+  align-items: start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-chip {
+  min-height: 34px;
+  border: 1px solid rgba(174, 185, 198, 0.3) !important;
+  border-radius: var(--ot-ops-radius);
+  background: #101010 !important;
+  color: var(--ot-ops-text) !important;
+  box-shadow: none;
+  font-weight: 850;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-chip:hover,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-chip:focus-visible {
+  border-color: rgba(237, 229, 24, 0.48) !important;
+  background: #1d1a12 !important;
+  color: var(--ot-ops-warning-gated) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-chip.active {
+  border-color: rgba(237, 229, 24, 0.72) !important;
+  background: var(--ot-ops-warning-gated) !important;
+  color: #101010 !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-chip-count,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .ops-filter-count {
+  border-color: rgba(237, 229, 24, 0.34) !important;
+  background: rgba(250, 249, 244, 0.1) !important;
+  color: var(--ot-ops-warning-gated) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-chip.active .status-chip-count {
+  border-color: rgba(16, 16, 16, 0.32) !important;
+  background: rgba(16, 16, 16, 0.12) !important;
+  color: #101010 !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .settings-control-grid {
+  display: grid;
+  gap: 10px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .settings-control-row {
+  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(130px, auto);
+  gap: 12px;
+  min-width: 0;
+  border-color: rgba(174, 185, 198, 0.24) !important;
+  border-radius: var(--ot-ops-radius);
+  background: #101010 !important;
+  color: var(--ot-ops-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .settings-control-row strong {
+  color: var(--ot-ops-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .settings-control-row p {
+  color: var(--ot-ops-muted-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .settings-control-side {
+  align-items: flex-end;
+  color: var(--ot-ops-muted-text) !important;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .settings-control-side > span:not(.status-pill) {
+  color: var(--ot-ops-text) !important;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-pill {
+  border-color: rgba(237, 229, 24, 0.32) !important;
+  background: rgba(16, 16, 16, 0.78) !important;
+  color: #f6e8a8 !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route][data-one-time-rabbi-dashboard] {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  gap: 14px;
+  overflow: visible;
+  border: 1px solid var(--ot-ops-border-strong);
+  border-radius: var(--ot-ops-radius);
+  background:
+    linear-gradient(180deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.95)),
+    var(--ot-ops-background);
+  box-shadow: var(--ot-ops-shadow);
+  padding: clamp(12px, 1.4vw, 18px);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] > .saas-page-heading {
+  margin-bottom: 0;
+  border: 1px solid rgba(237, 229, 24, 0.22);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(8, 19, 35, 0.86);
+  padding: 14px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] > .saas-page-heading .page-kicker {
+  color: var(--ot-ops-warning-gated);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] > .saas-page-heading h2 {
+  color: var(--ot-ops-text) !important;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] > .saas-page-heading p {
+  color: var(--ot-ops-text) !important;
+  max-width: 82ch;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] > .focus-panel {
+  border-color: rgba(174, 185, 198, 0.24) !important;
+  background: linear-gradient(180deg, rgba(16, 38, 52, 0.95), rgba(8, 19, 35, 0.95)) !important;
+  color: var(--ot-ops-text) !important;
+  box-shadow: 0 14px 34px rgba(8, 9, 16, 0.18) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .task-section-header h3 {
+  color: var(--ot-ops-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .task-section-header span,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .settings-disabled-note {
+  color: var(--ot-ops-muted-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table {
+  overflow-x: auto;
+  border: 1px solid rgba(174, 185, 198, 0.2) !important;
+  border-radius: var(--ot-ops-radius);
+  background: rgba(8, 19, 35, 0.84) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table table {
+  min-width: 560px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table th {
+  color: #f6e8a8 !important;
+  font-size: 11px;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table td {
+  color: var(--ot-ops-text) !important;
+  border-top: 1px solid rgba(174, 185, 198, 0.14);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .command-bot-panel {
+  min-height: auto;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .command-bot-panel .action-registry-grid {
+  display: grid;
+  min-height: auto;
+  gap: 10px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .command-bot-panel .empty-state {
+  min-height: 88px;
+  border-color: rgba(237, 229, 24, 0.28) !important;
+  background: rgba(250, 249, 244, 0.08) !important;
+  color: var(--ot-ops-text) !important;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"][data-one-time-rabbi-dashboard] {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  gap: 14px;
+  overflow: visible;
+  border: 1px solid var(--ot-ops-border-strong);
+  border-radius: var(--ot-ops-radius);
+  background:
+    linear-gradient(180deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.95)),
+    var(--ot-ops-background);
+  box-shadow: var(--ot-ops-shadow);
+  padding: clamp(12px, 1.4vw, 18px);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] > .page-heading {
+  margin-bottom: 0;
+  border: 1px solid rgba(237, 229, 24, 0.22);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(8, 19, 35, 0.86);
+  padding: 14px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] > .page-heading .page-kicker {
+  color: var(--ot-ops-warning-gated);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] > .page-heading h2 {
+  color: var(--ot-ops-text) !important;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] > .page-heading p {
+  color: var(--ot-ops-text) !important;
+  max-width: 82ch;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] > .focus-panel {
+  border-color: rgba(174, 185, 198, 0.24) !important;
+  background: linear-gradient(180deg, rgba(16, 38, 52, 0.95), rgba(8, 19, 35, 0.95)) !important;
+  color: var(--ot-ops-text) !important;
+  box-shadow: 0 14px 34px rgba(8, 9, 16, 0.18) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .task-section-header h3 {
+  color: var(--ot-ops-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .task-section-header span,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .settings-disabled-note {
+  color: var(--ot-ops-muted-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table {
+  overflow-x: auto;
+  border: 1px solid rgba(174, 185, 198, 0.2) !important;
+  border-radius: var(--ot-ops-radius);
+  background: rgba(8, 19, 35, 0.84) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table table {
+  min-width: 560px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table th {
+  color: #f6e8a8 !important;
+  font-size: 11px;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table td {
+  color: var(--ot-ops-text) !important;
+  border-top: 1px solid rgba(174, 185, 198, 0.14);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .command-bot-panel {
+  min-height: auto;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .command-bot-panel .action-registry-grid {
+  display: grid;
+  min-height: auto;
+  gap: 10px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .command-bot-panel .empty-state {
+  min-height: 88px;
+  border-color: rgba(237, 229, 24, 0.28) !important;
+  background: rgba(250, 249, 244, 0.08) !important;
+  color: var(--ot-ops-text) !important;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="providers"][data-one-time-rabbi-dashboard] {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  gap: 14px;
+  overflow: visible;
+  border: 1px solid var(--ot-ops-border-strong);
+  border-radius: var(--ot-ops-radius);
+  background:
+    linear-gradient(180deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.95)),
+    var(--ot-ops-background);
+  box-shadow: var(--ot-ops-shadow);
+  padding: clamp(12px, 1.4vw, 18px);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="providers"] > .saas-page-heading {
+  margin-bottom: 0;
+  border: 1px solid rgba(237, 229, 24, 0.22);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(8, 19, 35, 0.86);
+  padding: 14px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="providers"] > .saas-page-heading .page-kicker {
+  color: var(--ot-ops-warning-gated);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="providers"] > .saas-page-heading h2 {
+  color: var(--ot-ops-text) !important;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="providers"] > .saas-page-heading p {
+  color: var(--ot-ops-text) !important;
+  max-width: 82ch;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="providers"] > .focus-panel {
+  border-color: rgba(174, 185, 198, 0.24) !important;
+  background: linear-gradient(180deg, rgba(16, 38, 52, 0.95), rgba(8, 19, 35, 0.95)) !important;
+  color: var(--ot-ops-text) !important;
+  box-shadow: 0 14px 34px rgba(8, 9, 16, 0.18) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="providers"] .task-section-header h3 {
+  color: var(--ot-ops-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="providers"] .task-section-header span {
+  color: var(--ot-ops-muted-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="providers"] .empty-state {
+  min-height: 108px !important;
+  border: 1px solid rgba(237, 229, 24, 0.28) !important;
+  border-radius: var(--ot-ops-radius);
+  background: #1d1a12 !important;
+  color: var(--ot-ops-text) !important;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  text-align: center;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"][data-one-time-rabbi-dashboard] {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  gap: 14px;
+  overflow: visible;
+  border: 1px solid var(--ot-ops-border-strong);
+  border-radius: var(--ot-ops-radius);
+  background:
+    linear-gradient(180deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.95)),
+    var(--ot-ops-background);
+  box-shadow: var(--ot-ops-shadow);
+  padding: clamp(12px, 1.4vw, 18px);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] > .saas-page-heading {
+  margin-bottom: 0;
+  border: 1px solid rgba(237, 229, 24, 0.22);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(8, 19, 35, 0.86);
+  padding: 14px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] > .saas-page-heading .page-kicker {
+  color: var(--ot-ops-warning-gated);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] > .saas-page-heading h2,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] h3,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .email-draft-card h3,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .settings-control-row strong {
+  color: var(--ot-ops-text) !important;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] > .saas-page-heading p,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] .settings-disabled-note,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .settings-control-row p {
+  color: var(--ot-ops-muted-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace],
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .email-draft-card,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .content-card,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .empty-state {
+  min-width: 0;
+  border-color: rgba(174, 185, 198, 0.24) !important;
+  border-radius: var(--ot-ops-radius);
+  background: linear-gradient(180deg, rgba(16, 38, 52, 0.95), rgba(8, 19, 35, 0.95)) !important;
+  color: var(--ot-ops-text) !important;
+  box-shadow: 0 14px 34px rgba(8, 9, 16, 0.18) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  overflow: hidden;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-inbox-selector],
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] > .task-section-header {
+  align-items: start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] > .task-section-header > *,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-inbox-selector] > * {
+  min-width: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] > .task-section-header p,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] > .task-section-header span {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .one-time-email-workspace-intro {
+  display: block !important;
+  max-width: 78ch !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  overflow-wrap: anywhere !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-inbox-selector] .task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-inbox-selector] .task-action {
+  min-width: 0;
+  min-height: 44px;
+  white-space: normal;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-readiness-gates] {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-workspace-view-rail] .ops-filter-track {
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px !important;
+  scroll-snap-type: x proximity;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-workspace-view-rail] .ops-filter-tab {
+  flex: 0 0 auto !important;
+  min-width: 142px !important;
+  min-height: 44px;
+  scroll-snap-align: start;
+  white-space: nowrap;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .email-operator-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.82fr) minmax(0, 1.18fr);
+  gap: 12px;
+  min-width: 0;
+  align-items: start;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .contact-list,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-list-view] {
+  min-width: 0;
+  overflow: hidden;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .task-form-grid,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .email-draft-meta {
+  grid-template-columns: 1fr;
+  min-width: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] input,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] select,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] textarea {
+  width: 100%;
+  min-width: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .settings-control-row,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .email-draft-meta span,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .status-pill {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 920px) {
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-status-toolbar {
+    grid-template-columns: minmax(240px, 0.78fr) minmax(0, 1.22fr);
+    align-items: start;
+    gap: 10px 12px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-status-toolbar .local-toolbar-header {
+    grid-column: 1;
+    min-width: 0;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-status-toolbar > .status-chip-row {
+    grid-column: 2;
+    align-self: start;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-status-toolbar .toolbar-filter-details {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-status-toolbar .toolbar-filter-details .filter-details-body {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    padding: 0 10px 10px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-status-toolbar .toolbar-filter-details .filter-row {
+    display: grid;
+    align-content: start;
+    gap: 5px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-status-toolbar .toolbar-filter-details .filter-result-note {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 1080px) {
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .email-operator-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-inbox-selector],
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] > .task-section-header {
+    grid-template-columns: 1fr;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-inbox-selector] .task-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  body.bna-ops-shell-page.one-time-operations-active .mobile-app-header .menu-button,
+  body.bna-ops-shell-page.one-time-operations-active .mobile-app-header button,
+  body.bna-ops-shell-page.one-time-operations-active .mobile-app-header a,
+  body.bna-ops-shell-page.one-time-operations-active .mobile-app-header .page-status-pill {
+    min-height: 44px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail] .ops-filter-track {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px !important;
+    scroll-snap-type: x proximity;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail] .ops-filter-tab {
+    flex: 0 0 auto !important;
+    min-width: 136px !important;
+    min-height: 44px;
+    scroll-snap-align: start;
+    white-space: nowrap;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] > .task-heading,
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .local-toolbar-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] > .task-heading .task-actions,
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-filter-actions {
+    justify-content: flex-start;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-filter-actions .task-action {
+    flex: 1 1 120px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] > .automation-list {
+    padding: 10px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="contacts"] .ops-filter-tab {
+    flex-basis: calc(50% - 6px);
+    min-width: min(100%, 128px);
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-tab {
+    flex-basis: calc(50% - 6px);
+    min-width: min(100%, 132px);
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-tab {
+    flex-basis: calc(50% - 6px);
+    min-width: min(100%, 132px);
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="settings"] .ops-filter-tab {
+    flex-basis: calc(50% - 6px);
+    min-width: min(100%, 132px);
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .local-toolbar-header,
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .settings-control-row {
+    grid-template-columns: 1fr;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .settings-control-side {
+    align-items: flex-start;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .settings-control-side > span:not(.status-pill) {
+    text-align: left;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table table {
+    min-width: 0;
+    table-layout: auto;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table thead {
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table tbody,
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table tr,
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table td {
+    display: block;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table tr {
+    display: grid;
+    gap: 8px;
+    border: 1px solid rgba(174, 185, 198, 0.18);
+    border-radius: var(--ot-ops-radius);
+    background: rgba(8, 19, 35, 0.7);
+    padding: 10px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table th,
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table td {
+    overflow-wrap: anywhere;
+    padding: 0;
+    white-space: normal;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table td {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.25;
+    border-top: 0;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table td::before {
+    color: #f6e8a8;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table td:nth-child(1)::before {
+    content: "Name";
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table td:nth-child(2)::before {
+    content: "Status";
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table td:nth-child(3)::before {
+    content: "Scope";
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table td:nth-child(4)::before {
+    content: "Next";
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table table {
+    min-width: 0;
+    table-layout: auto;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table thead {
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table tbody,
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table tr,
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table td {
+    display: block;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table tr {
+    display: grid;
+    gap: 8px;
+    border: 1px solid rgba(174, 185, 198, 0.18);
+    border-radius: var(--ot-ops-radius);
+    background: rgba(8, 19, 35, 0.7);
+    padding: 10px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table th,
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table td {
+    overflow-wrap: anywhere;
+    padding: 0;
+    white-space: normal;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table td {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.25;
+    border-top: 0;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table td::before {
+    color: #f6e8a8;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table td:nth-child(1)::before {
+    content: "Participant";
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table td:nth-child(2)::before {
+    content: "Status";
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table td:nth-child(3)::before {
+    content: "Access";
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table td:nth-child(4)::before {
+    content: "Next";
+  }
+}
+
+body.bna-ops-shell-page.one-time-operations-active .rabbi-dialogue-column[data-one-time-task-lane] {
+  background:
+    linear-gradient(180deg, rgba(16, 38, 52, 0.96), rgba(8, 19, 35, 0.96)),
+    var(--ot-ops-card);
+  border-color: rgba(174, 185, 198, 0.26);
+  color: var(--ot-ops-text);
+}
+
+body.bna-ops-shell-page.one-time-operations-active .rabbi-dialogue-column[data-one-time-task-lane] .task-section-header h3 {
+  color: var(--ot-ops-text) !important;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active .rabbi-dialogue-column[data-one-time-task-lane] .task-section-header div span {
+  color: var(--ot-ops-muted-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active .rabbi-dialogue-column[data-one-time-task-lane] .task-section-header > span {
+  background: rgba(237, 229, 24, 0.14);
+  border: 1px solid rgba(237, 229, 24, 0.34);
+  color: var(--ot-ops-warning-gated) !important;
+}
+
+@media (max-width: 640px) {
+  body.one-time-operations-active .one-time-ops-dashboard-hero,
+  body.one-time-operations-active [data-one-time-rabbi-dashboard],
+  [data-one-time-rabbi-dashboard].one-time-ops-dashboard-hero,
+  [data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero {
+    grid-template-columns: 1fr;
+    background:
+      linear-gradient(180deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.9)),
+      var(--ot-ops-hero-portrait) right bottom / auto 96% no-repeat,
+      var(--ot-ops-background);
+    padding: 16px;
+  }
+
+  body.one-time-operations-active .one-time-ops-module-grid,
+  body.one-time-operations-active .one-time-lane-grid,
+  body.one-time-operations-active .one-time-output-grid,
+  [data-one-time-rabbi-module] .one-time-ops-module-grid,
+  [data-one-time-rabbi-module] .one-time-lane-grid,
+  [data-one-time-rabbi-module] .one-time-output-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.one-time-operations-active .one-time-ops-mobile-button-row .task-action,
+  body.one-time-operations-active .one-time-ops-mobile-button-row button,
+  body.one-time-operations-active .one-time-ops-mobile-button-row a,
+  [data-one-time-rabbi-module] .one-time-ops-mobile-button-row .task-action,
+  [data-one-time-rabbi-module] .one-time-ops-mobile-button-row button,
+  [data-one-time-rabbi-module] .one-time-ops-mobile-button-row a {
+    flex: 1 1 160px;
+    min-width: min(100%, 160px);
+  }
+}
+
+@media (max-width: 390px) {
+  body.one-time-operations-active .one-time-ops-package-status,
+  body.one-time-operations-active .one-time-approval-packet,
+  body.one-time-operations-active .one-time-ops-content-card,
+  body.one-time-operations-active .one-time-report-card,
+  body.one-time-operations-active .one-time-lane-card,
+  body.one-time-operations-active .one-time-output-state,
+  [data-one-time-rabbi-module] .one-time-ops-package-status,
+  [data-one-time-rabbi-module] .one-time-approval-packet,
+  [data-one-time-rabbi-module] .one-time-ops-content-card,
+  [data-one-time-rabbi-module] .one-time-report-card,
+  [data-one-time-rabbi-module] .one-time-lane-card,
+  [data-one-time-rabbi-module] .one-time-output-state {
+    padding: 11px;
+  }
+
+  body.one-time-operations-active .one-time-ops-chip,
+  body.one-time-operations-active .one-time-blocker-chip,
+  [data-one-time-rabbi-module] .one-time-ops-chip,
+  [data-one-time-rabbi-module] .one-time-blocker-chip {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

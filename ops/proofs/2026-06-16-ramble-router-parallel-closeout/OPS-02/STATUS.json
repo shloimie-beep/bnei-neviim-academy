@@ -1,0 +1,9 @@
+{
+  "workstream_id": "OPS-02",
+  "cycle_id": "2026-06-16-ramble-router-parallel-chatgpt-to-codex",
+  "status": "requeued_for_followup",
+  "title": "Operations workflows, lanes, calendar, and task routing",
+  "proof_path": "ops/proofs/2026-06-16-ramble-router-parallel-closeout/OPS-02/",
+  "needed_from_shloimie": "Confirm exact custom calendar visibility, Rabbi 7pm model, and queue cleanup decisions.",
+  "notes": "Mapped to existing Operations queue/workflow work. Focused OPS-02 implementation/proof remains open."
+}

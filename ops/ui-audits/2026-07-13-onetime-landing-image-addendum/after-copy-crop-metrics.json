@@ -1,0 +1,165 @@
+{
+  "ok": true,
+  "baseUrl": "http://127.0.0.1:56105",
+  "results": [
+    {
+      "viewport": "1440",
+      "metrics": {
+        "viewport": "1440x1200",
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalOverflow": false,
+        "forbidden": [],
+        "featureTitles": [
+          "Live daily Mishnayos class",
+          "Class link for each session",
+          "Review support",
+          "Family and school signup",
+          "Review sheets",
+          "Daily reminders",
+          "Questions with Rabbi Scheller",
+          "Safe class communication"
+        ],
+        "benefitTitles": [
+          "Clarity",
+          "Accomplishment",
+          "Excitement for learning Torah"
+        ],
+        "imageData": [
+          {
+            "src": "/assets/one-time/outcomes/clarity-class.webp",
+            "complete": true,
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "objectPosition": "50% 25%",
+            "transform": "none"
+          },
+          {
+            "src": "/assets/one-time/outcomes/accomplishment-lakewood-class.webp",
+            "complete": true,
+            "naturalWidth": 1024,
+            "naturalHeight": 768,
+            "objectPosition": "50% 48%",
+            "transform": "none"
+          },
+          {
+            "src": "/assets/one-time/outcomes/excitement-learning-torah.webp",
+            "complete": true,
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "objectPosition": "50% 50%",
+            "transform": "matrix(1.1, 0, 0, 1.1, 0, 0)"
+          }
+        ]
+      },
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": "430",
+      "metrics": {
+        "viewport": "430x980",
+        "scrollWidth": 430,
+        "clientWidth": 430,
+        "horizontalOverflow": false,
+        "forbidden": [],
+        "featureTitles": [
+          "Live daily Mishnayos class",
+          "Class link for each session",
+          "Review support",
+          "Family and school signup",
+          "Review sheets",
+          "Daily reminders",
+          "Questions with Rabbi Scheller",
+          "Safe class communication"
+        ],
+        "benefitTitles": [
+          "Clarity",
+          "Accomplishment",
+          "Excitement for learning Torah"
+        ],
+        "imageData": [
+          {
+            "src": "/assets/one-time/outcomes/clarity-class.webp",
+            "complete": true,
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "objectPosition": "50% 25%",
+            "transform": "none"
+          },
+          {
+            "src": "/assets/one-time/outcomes/accomplishment-lakewood-class.webp",
+            "complete": true,
+            "naturalWidth": 1024,
+            "naturalHeight": 768,
+            "objectPosition": "50% 48%",
+            "transform": "none"
+          },
+          {
+            "src": "/assets/one-time/outcomes/excitement-learning-torah.webp",
+            "complete": true,
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "objectPosition": "50% 50%",
+            "transform": "matrix(1.1, 0, 0, 1.1, 0, 0)"
+          }
+        ]
+      },
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": "390",
+      "metrics": {
+        "viewport": "390x920",
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "horizontalOverflow": false,
+        "forbidden": [],
+        "featureTitles": [
+          "Live daily Mishnayos class",
+          "Class link for each session",
+          "Review support",
+          "Family and school signup",
+          "Review sheets",
+          "Daily reminders",
+          "Questions with Rabbi Scheller",
+          "Safe class communication"
+        ],
+        "benefitTitles": [
+          "Clarity",
+          "Accomplishment",
+          "Excitement for learning Torah"
+        ],
+        "imageData": [
+          {
+            "src": "/assets/one-time/outcomes/clarity-class.webp",
+            "complete": true,
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "objectPosition": "50% 25%",
+            "transform": "none"
+          },
+          {
+            "src": "/assets/one-time/outcomes/accomplishment-lakewood-class.webp",
+            "complete": true,
+            "naturalWidth": 1024,
+            "naturalHeight": 768,
+            "objectPosition": "50% 48%",
+            "transform": "none"
+          },
+          {
+            "src": "/assets/one-time/outcomes/excitement-learning-torah.webp",
+            "complete": true,
+            "naturalWidth": 945,
+            "naturalHeight": 2048,
+            "objectPosition": "50% 50%",
+            "transform": "matrix(1.1, 0, 0, 1.1, 0, 0)"
+          }
+        ]
+      },
+      "consoleErrors": [],
+      "failedRequests": []
+    }
+  ]
+}

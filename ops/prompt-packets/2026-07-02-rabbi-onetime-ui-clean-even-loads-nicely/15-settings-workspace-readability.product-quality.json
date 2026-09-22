@@ -1,0 +1,696 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-817",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-004",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802",
+      "PKT-20260702-805",
+      "PKT-20260702-806",
+      "PKT-20260702-807",
+      "PKT-20260702-808",
+      "PKT-20260702-809",
+      "PKT-20260702-810",
+      "PKT-20260702-811",
+      "PKT-20260702-812",
+      "PKT-20260702-813",
+      "PKT-20260702-814",
+      "PKT-20260702-815",
+      "PKT-20260702-816"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/screenshots/operations-settings-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/screenshots/operations-settings-390-mobile.png",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "produces": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/report.md",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/15-settings-workspace-readability.product-quality.json",
+    "terminal_condition": "The One Time Workspace Settings route renders as a contained readable dark settings surface on desktop and mobile without changing Save Settings, Test Connection setup, Reset setup, settings navigation, persistence, role access, connector, or external-provider behavior.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Workspace Settings Readability Cleanup",
+  "created_at": "2026-07-03T01:30:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.9,
+    "reasons": [
+      "Latest screenshots show the Workspace Settings route still inherits the portrait dashboard treatment.",
+      "The settings category toolbar and settings rows render as bright generic cards inside the dark One Time shell.",
+      "The fix is visual and can be scoped to a settings route marker plus One Time Operations CSS."
+    ],
+    "affected_product_surfaces": [
+      "One Time Operations Workspace Settings route"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "Real connector tests, reset actions, sends, account changes, persistence changes, and external writes are out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state",
+      "06-task-dialogue-lane-contrast",
+      "07-task-route-layout-density",
+      "08-provider-review-load-error",
+      "09-student-review-mobile-readability",
+      "10-automation-center-readability",
+      "11-participants-members-readability",
+      "12-program-payment-access-readability",
+      "13-communications-provider-messages-readability",
+      "14-program-overview-readability",
+      "15-settings-workspace-readability"
+    ],
+    "next_exact_packet": "After this Workspace Settings readability cleanup, continue manual screenshot-reviewed packets for IA/nav/filter alignment, CRM contact detail polish, or remaining portal defects."
+  },
+  "operator_intent_summary": "Make the One Time Workspace Settings route feel even and loaded by replacing the bright generic settings card treatment with contained readable One Time admin panels.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "even",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No Save Settings behavior, Test Connection setup prompt, Reset setup prompt, settings leaf navigation, persistence endpoint, workspace settings API, role access, connector, account, billing, payment, access, bot, helper, or route behavior change.",
+    "No external send, publish, upload, payment charge, access grant, connector test, Drive, Vimeo, Zoom, DNS, account mutation, external CRM write, raw private evidence, or secret exposure.",
+    "No GHL runtime or LeadConnector reference."
+  ],
+  "affected_surfaces": [
+    "One Time Operations Workspace Settings route"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "public/css/one-time-operations.css",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/operations.html renderSettings",
+      "public/operations.html renderSettingsToolbar",
+      "public/operations.html renderSettingsContent",
+      "public/operations.html renderSettingsControlRow",
+      "public/css/one-time-operations.css One Time route overrides",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/screenshots/operations-settings-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/screenshots/operations-settings-390-mobile.png"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "The Workspace Settings route has no scoped One Time settings marker.",
+      "The route inherits a two-column portrait dashboard layout that pushes the settings toolbar into a right rail on desktop.",
+      "The settings toolbar, leaf tabs, settings panel, and settings rows render as bright generic cards over the dark One Time shell."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "even",
+      "loads nicely"
+    ],
+    "expanded_phrases": {
+      "clean": "The Workspace Settings route should render as a cohesive One Time admin settings page with readable dark panels and no bright generic-card islands.",
+      "even": "The route heading, category toolbar, leaf tabs, settings row cards, status pills, and action chips should share One Time spacing, contrast, borders, and containment.",
+      "loads nicely": "After Operations data loads, the Workspace Settings screen should immediately show a readable route title, contained settings navigation, and settings rows with no portrait-overlay layout jump or horizontal overflow."
+    },
+    "first_party_pattern_interpretation": "The route remains a first-party BNA Operations settings view scoped to rabbi_sheller_provider / one_time_mishnah_class."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-817",
+      "statement": "Fix the One Time Workspace Settings readability so the category toolbar, settings rows, and route panel use contained readable One Time styling.",
+      "expected_result": "Desktop and mobile Workspace Settings screenshots show one cohesive dark route surface with readable category controls, active leaf tabs, settings rows, status pills, and action chips, with no horizontal overflow.",
+      "acceptance_criteria": [
+        "The Settings renderer adds a scoped One Time settings route marker without changing behavior.",
+        "The Workspace Settings route no longer uses the two-column portrait dashboard layout.",
+        "The settings category toolbar, Save/Test/Reset setup buttons, Overview/Workspace/Branding leaf tabs, settings panel, and settings rows are readable in the One Time dark theme.",
+        "Status pills and settings row values stay visible and contained on desktop and mobile.",
+        "Save Settings, Test Connection setup, Reset setup, settings navigation, persistence, role access, connector, route access, and external-provider guardrails are unchanged."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and broad UI cleanup register exist for RAW-20260702-008.",
+      "Current screenshot evidence shows the Workspace Settings bright-card and portrait-layout readability defects.",
+      "The likely fix is scoped to settings route marker markup and One Time Operations CSS overrides.",
+      "No connector test, reset action, persistence behavior, credential, account, privacy, legal, or financial decision is required for local visual implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the Workspace Settings route before Operations data finishes loading.",
+      "expected_visible_title": "Workspace Settings",
+      "expected_visible_message": "Loading BNA Operations",
+      "expected_primary_action": "Save Settings",
+      "expected_secondary_actions": [
+        "Ask",
+        "Menu"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "raw private settings payload"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The Operations shell keeps one visible h1 and a readable route heading.",
+      "accessibility_expectation": "Loading and loaded states are readable.",
+      "test_smoke_assertion": "Audit waits for loading shell to clear before screenshot capture.",
+      "requirement_id": "REQ-20260702-817"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load Workspace Settings with only the base workspace rows available.",
+      "expected_visible_title": "Workspace Settings",
+      "expected_visible_message": "Current workspace",
+      "expected_primary_action": "Save",
+      "expected_secondary_actions": [
+        "Test Connection setup",
+        "Reset setup"
+      ],
+      "forbidden_content": [
+        "bright generic settings cards"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Settings rows remain grouped inside the settings panel.",
+      "accessibility_expectation": "Settings row labels, values, and statuses remain readable.",
+      "test_smoke_assertion": "Workspace Settings panel bounds fit within the route content.",
+      "requirement_id": "REQ-20260702-817"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+      "viewport": 1024,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load Workspace Settings with workspace identity and workspace type rows.",
+      "expected_visible_title": "Workspace Settings",
+      "expected_visible_message": "One Time Mishnah Class",
+      "expected_primary_action": "Save Settings",
+      "expected_secondary_actions": [
+        "Overview",
+        "Branding"
+      ],
+      "forbidden_content": [
+        "right-rail settings toolbar",
+        "low-contrast settings rows"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Settings category controls remain before the settings rows.",
+      "accessibility_expectation": "Row labels and values meet readable contrast.",
+      "test_smoke_assertion": "No console/page errors on the Workspace Settings route.",
+      "requirement_id": "REQ-20260702-817"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile Workspace Settings with the Workspace leaf active.",
+      "expected_visible_title": "Workspace Settings",
+      "expected_visible_message": "Workspace Settings 2",
+      "expected_primary_action": "Workspace Settings",
+      "expected_secondary_actions": [
+        "Overview",
+        "Branding"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "partially cut settings tab labels"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Leaf tab buttons retain labels and active state.",
+      "accessibility_expectation": "Leaf tabs wrap within mobile width.",
+      "test_smoke_assertion": "Mobile screenshot has no horizontal overflow.",
+      "requirement_id": "REQ-20260702-817"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Operations settings data fails or returns default workspace data.",
+      "expected_visible_title": "Workspace Settings",
+      "expected_visible_message": "Workspace settings",
+      "expected_primary_action": "Save Settings",
+      "expected_secondary_actions": [
+        "Ask"
+      ],
+      "forbidden_content": [
+        "raw private error payload",
+        "unreadable fallback panel"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Fallback settings text remains visible in the route flow.",
+      "accessibility_expectation": "Fallback/error-adjacent content remains readable.",
+      "test_smoke_assertion": "Console/network errors are recorded in audit but page layout remains readable.",
+      "requirement_id": "REQ-20260702-817"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Render Workspace Settings while Test Connection and Reset setup remain planning/helper prompts.",
+      "expected_visible_title": "Workspace Settings",
+      "expected_visible_message": "Disabled controls stay visible",
+      "expected_primary_action": "Save Settings",
+      "expected_secondary_actions": [
+        "Test Connection setup",
+        "Reset setup"
+      ],
+      "forbidden_content": [
+        "newly enabled real connector test or reset action"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Guardrail copy remains visible where rendered.",
+      "accessibility_expectation": "Setup/blocked controls remain readable.",
+      "test_smoke_assertion": "No connector, account, reset, send, or external mutation is triggered.",
+      "requirement_id": "REQ-20260702-817"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Route renders local workspace settings readback without executing external setup actions.",
+      "expected_visible_title": "Workspace Settings",
+      "expected_visible_message": "Persisted",
+      "expected_primary_action": "Save Settings",
+      "expected_secondary_actions": [
+        "Workspace Settings",
+        "Branding"
+      ],
+      "forbidden_content": [
+        "external write confirmation",
+        "connector test confirmation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Readback/status rows remain sectioned.",
+      "accessibility_expectation": "Preview/status panels remain readable.",
+      "test_smoke_assertion": "No connector, reset, route access, or external mutation is triggered.",
+      "requirement_id": "REQ-20260702-817"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Workspace Settings and workspace rows load successfully.",
+      "expected_visible_title": "Workspace Settings",
+      "expected_visible_message": "Current workspace",
+      "expected_primary_action": "Save Settings",
+      "expected_secondary_actions": [
+        "Overview",
+        "Branding"
+      ],
+      "forbidden_content": [
+        "portrait right-rail layout",
+        "bright settings row cards"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Toolbar tabs and settings rows keep semantic structure.",
+      "accessibility_expectation": "Actions, row labels, row values, and status pills are readable.",
+      "test_smoke_assertion": "Full route audit reports findings_count=0.",
+      "requirement_id": "REQ-20260702-817"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+      "viewport": 390,
+      "auth_role": "logged_out_or_wrong_scope",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Operations without an authorized session.",
+      "expected_visible_title": "BNA Operations",
+      "expected_visible_message": "Sign in",
+      "expected_primary_action": "Sign in",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "private workspace settings metadata"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Login controls retain labels.",
+      "accessibility_expectation": "Route-specific CSS does not expose or distort the login state.",
+      "test_smoke_assertion": "Private route access remains unchanged.",
+      "requirement_id": "REQ-20260702-817"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile menu/helper while on the Workspace Settings route.",
+      "expected_visible_title": "Workspace Settings",
+      "expected_visible_message": "Provider Workspace Admin",
+      "expected_primary_action": "Menu",
+      "expected_secondary_actions": [
+        "Ask",
+        "Save Settings"
+      ],
+      "forbidden_content": [
+        "route content hidden behind closed helper",
+        "horizontal overflow"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile controls preserve aria states.",
+      "accessibility_expectation": "Route content stays readable before and after mobile chrome controls.",
+      "test_smoke_assertion": "Full mobile audit screenshot is non-overlapping.",
+      "requirement_id": "REQ-20260702-817"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+        "viewport": 1440,
+        "state": "success_readback",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+        "viewport": 1024,
+        "state": "populated",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+        "viewport": 768,
+        "state": "filtered_empty",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+        "viewport": 430,
+        "state": "mobile_drawer_or_detail_state",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+        "viewport": 390,
+        "state": "mobile_drawer_or_detail_state",
+        "required": true
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260702-817-001",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/screenshots/operations-settings-390-mobile.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/screenshots/operations-settings-390-mobile.png",
+        "defect_codes": [
+          "VQ-LAYOUT-001",
+          "VQ-CONTRAST-001",
+          "VQ-TEXT-001"
+        ],
+        "severity": "P1",
+        "user_impact": "The Workspace Settings screen looks unfinished because its category toolbar and settings rows render as bright generic panels over a dark One Time portrait shell.",
+        "expected_fix": "Add a scoped settings route marker and One Time settings CSS for a single-column dark route surface, readable toolbar/leaf tabs, and dark settings rows.",
+        "requirement_id": "REQ-20260702-817"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Settings category and leaf-tab labels remain visible and readable.",
+      "Settings row labels, values, notes, and status pills meet readable contrast.",
+      "Save/Test/Reset setup controls remain visible and no real setup action appears newly enabled."
+    ],
+    "test_expectations": [
+      "Audit has missing_h1=0.",
+      "Audit has visible unlabeled controls=0.",
+      "Workspace Settings screenshot/probe reports no horizontal overflow or clipped settings text."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Save Settings",
+      "selector_or_action_key": "saveVisibleSettings()",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations Settings",
+      "external_write": false,
+      "handler_or_blocker": "Existing workspace settings save-marker behavior; unchanged by this visual packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Test Connection setup",
+      "selector_or_action_key": "openBnaHelperWithPrompt('Create a scoped settings Test Connection plan...')",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time Operations Settings",
+      "external_write": false,
+      "handler_or_blocker": "Existing helper prompt planning behavior; no connector test is executed by this packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Reset setup",
+      "selector_or_action_key": "openBnaHelperWithPrompt('Create a scoped settings reset plan...')",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time Operations Settings",
+      "external_write": false,
+      "handler_or_blocker": "Existing helper prompt planning behavior; no reset is executed by this packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Settings leaf tabs",
+      "selector_or_action_key": "setSettingsLeaf()",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations Settings",
+      "external_write": false,
+      "handler_or_blocker": "Existing settings leaf navigation; unchanged by this packet.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "read_paths": [
+      "Existing Operations workspace/settings loaders"
+    ],
+    "write_paths": [],
+    "fixtures_or_seed": [
+      "Existing local One Time review/audit fixtures"
+    ],
+    "data_privacy_notes": [
+      "Use redacted local audit screenshots only.",
+      "Do not commit raw private workspace settings, user, provider, connector, secret, or account data."
+    ],
+    "unchanged_contracts": [
+      "settingsSection routing",
+      "settingsActiveCategory/settingsCategoryChildren mapping",
+      "renderSettingsToolbar action handlers",
+      "renderSettingsControlRow markup contract",
+      "saveVisibleSettings workspace settings API behavior",
+      "route access and workspace scoping"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "privacy_scope": "Private Operations settings view scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+    "forbidden_data": [
+      "Raw private workspace settings/user/provider/connector/payment/access/contact/message data",
+      "Secrets, API keys, tokens, session cookies, or account identifiers",
+      "External send/publish/upload/access-grant/payment/connector proof"
+    ],
+    "required_checks": [
+      "No connector test, reset, send, payment, access grant, account, route access, or external-provider mutation.",
+      "No save endpoint contract change.",
+      "No new GHL/LeadConnector runtime.",
+      "No external CRM writes."
+    ],
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-REQ-20260702-817-A",
+      "scope": "Add scoped One Time Workspace Settings route marker and CSS overrides for route layout, settings toolbar, leaf tabs, settings panel, settings rows, status pills, and action chips.",
+      "files_allowed": [
+        "public/operations.html",
+        "public/css/one-time-operations.css"
+      ],
+      "verification": [
+        "PQC validation",
+        "local One Time smoke test",
+        "focused Workspace Settings computed-style probe",
+        "full Rabbi / One Time current-state audit",
+        "watchdog:actions",
+        "watchdog:protocol-drift"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 5,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "This packet only covers Workspace Settings route presentation. Real connector tests, reset workflows, persistence changes, role policy changes, and other settings categories must split into later packets.",
+    "split_if_exceeds": true,
+    "context_risk_level": "low"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/15-settings-workspace-readability.product-quality.json",
+      "expected_result": "Product Quality packet passes validation."
+    },
+    {
+      "command": "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "expected_result": "One Time review routes still pass without console/page errors or external writes."
+    },
+    {
+      "command": "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:8095 --out=ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability",
+      "expected_result": "Full local visual audit captures 75 screenshots with no automated findings."
+    },
+    {
+      "command": "npm run watchdog:actions",
+      "expected_result": "Action registry watchdog remains finding_count 0."
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "expected_result": "Protocol drift watchdog remains findings 0."
+    }
+  ],
+  "evidence": {
+    "before": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/screenshots/operations-settings-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/screenshots/operations-settings-390-mobile.png"
+    ],
+    "after_required": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/screenshots/operations-settings-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/screenshots/operations-settings-390-mobile.png"
+    ],
+    "record_updates": [
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Scoped Workspace Settings route marker and CSS are implemented.",
+      "Local screenshots show dark/readable settings toolbar, leaf tabs, settings rows, status pills, and action chips on desktop/mobile.",
+      "Save Settings, Test Connection setup, Reset setup, settings navigation, persistence, role access, connector, route access, and external-provider behavior are unchanged.",
+      "Watchdogs pass and records are updated."
+    ],
+    "terminal_status": "local_verified_deploy_live_smoke_blocked_until_DEC-20260702-801"
+  },
+  "trace": {
+    "raw_id": "RAW-20260702-008",
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/15-settings-workspace-readability.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "npm run pqc:validate",
+      "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "focused Playwright computed-style probe",
+      "node scripts/audit-rabbi-onetime-current-state.mjs",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "skipped_actions_policy": "No external provider, connector test, reset, payment, checkout, access grant, message send, email, WhatsApp, Telegram, campaign, template, contact mutation, upload, DNS, account, bot mutation, or production deploy action in this local packet.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/screenshots/operations-settings-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/screenshots/operations-settings-390-mobile.png"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "requirement_ids": [
+      "REQ-20260702-817"
+    ],
+    "decision_ids": [
+      "DEC-20260702-801"
+    ],
+    "ledger_event": "rabbi_onetime_settings_workspace_readability_verified_local"
+  },
+  "drift_watchdog": {
+    "command": "npm run watchdog:protocol-drift",
+    "required": true,
+    "expected_result": "findings=0",
+    "record_report": true,
+    "blocker_policy": "If unrelated historical drift appears, record it separately and do not mark this packet terminally done without explaining scope."
+  },
+  "next_packet": {
+    "recommended": "Continue manual screenshot-reviewed cleanup for IA/nav/filter alignment, CRM contact detail polish, or remaining One Time portal defects.",
+    "path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "app_visible": true
+}

@@ -1,0 +1,55 @@
+{
+  "lane": "stripe-sandbox",
+  "branch": "codex/closeout-stripe-sandbox-20260624",
+  "status": "completed_with_external_setup_blocker",
+  "base_sha": "161f8623c50d7ef226066d101bfa58c28aff2346",
+  "result_summary": "Credential-free full Stripe billing lifecycle is implemented and tested. Sandbox smoke ran and recorded live_key_blocked because a live key is configured, no test-mode key is available, webhook secret is missing, and account owner is unknown. No Stripe API write, real customer data, or real funds were used.",
+  "requirements_closed": [
+    "mode validation",
+    "secret isolation",
+    "checkout request",
+    "webhook signature",
+    "idempotency",
+    "success",
+    "failure",
+    "retry",
+    "renewal",
+    "cancellation",
+    "trial expiration",
+    "entitlement",
+    "invoice/receipt",
+    "revenue scope",
+    "tenant isolation",
+    "disabled live mode",
+    "no-charge preview",
+    "sandbox smoke recorded",
+    "operator setup walkthrough"
+  ],
+  "files_changed": [
+    "src/lib/billing/stripe-billing-lifecycle.js",
+    "src/lib/integrations/stripe.js",
+    "scripts/smoke-stripe-sandbox-billing.mjs",
+    "tests/stripe-billing-lifecycle.test.js",
+    "migrations/parallel-20260624-stripe-billing-lifecycle.sql",
+    "docs/integrations/STRIPE.md",
+    "package.json",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/"
+  ],
+  "verification": [
+    "node --check src/lib/billing/stripe-billing-lifecycle.js PASS",
+    "node --check src/lib/integrations/stripe.js PASS",
+    "node --check scripts/smoke-stripe-sandbox-billing.mjs PASS",
+    "node --test tests/stripe-billing-lifecycle.test.js PASS 7/7",
+    "focused Stripe/Rabbi regression suite PASS 21/21",
+    "npm run stripe:sandbox-smoke PASS status=live_key_blocked external_write_performed=false",
+    "git diff --check PASS",
+    "npm run secrets:audit PASS 4351 tracked paths checked, 0 tracked secret-risk files found"
+  ],
+  "blockers": [
+    "Test-mode Stripe secret key is missing; configured key is live and was blocked.",
+    "STRIPE_WEBHOOK_SECRET or RABBI_STRIPE_WEBHOOK_SECRET is missing.",
+    "STRIPE_ACCOUNT_OWNER is unknown.",
+    "Live billing and final billing policy remain external Decisions."
+  ],
+  "safe_to_merge": true
+}

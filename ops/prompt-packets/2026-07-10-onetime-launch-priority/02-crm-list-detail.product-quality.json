@@ -1,0 +1,618 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260710-020",
+  "parent_raw_id": "RAW-20260710-002",
+  "source_statement_ids": [
+    "SRC-20260710-002-008",
+    "SRC-20260710-002-009",
+    "SRC-20260710-002-010"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260710-014",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260710-014"
+    ],
+    "blocks_packet_ids": [
+      "PKT-20260710-022",
+      "PKT-20260710-025"
+    ],
+    "consumes": [
+      "raw-input/RAW-20260710-002-onetime-launch-priority-landing-crm-assistant.md",
+      "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md",
+      "public/operations.html",
+      "server.js",
+      "src/lib/bna/crm-contact-model.js",
+      "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md"
+    ],
+    "produces": [
+      "public/operations.html",
+      "server.js",
+      "tests/one-time-communications-workspace.test.js",
+      "tests/crm-contact-model.test.js",
+      "scripts/smoke-one-time-interest-crm-e2e-live.mjs",
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-10-onetime-launch-priority/02-crm-list-detail.product-quality.json",
+    "terminal_condition": "REQ-20260710-020 reaches Done only after the CRM workbench is committed, pushed, deployed, live-smoked, and screenshot-reviewed, or has a precise blocker.",
+    "handoff_target": "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "One Time CRM Searchable List Detail Timeline Workbench",
+  "created_at": "2026-07-10T11:31:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260710-002",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "CRM_PIPELINE",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.95,
+    "reasons": [
+      "The source says API counts and marker-only smokes are not completion proof.",
+      "The One Time provider CRM view must be searchable, filterable, sortable, and open into useful contact detail and timeline readback.",
+      "Current source inspection found an API-backed first-party CRM panel plus a separate One Time review table; this packet keeps the implementation surface bounded to the One Time CRM route."
+    ],
+    "affected_product_surfaces": [
+      "One Time provider CRM contact workbench",
+      "First-party CRM contacts API readback",
+      "Contact timeline readback"
+    ],
+    "likely_external_provider_blockers": [
+      "No GHL, LeadConnector, external CRM, email, WhatsApp, Telegram, payment, access, DNS, Zoom, Vimeo, Drive, or provider-account write is approved in this packet.",
+      "Real follow-up sends remain blocked until REQ-20260710-022 has runtime readiness and exact operator approval."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "01-landing-robot-scheller",
+      "02-form-to-visible-crm",
+      "03-crm-list-detail",
+      "04-historical-inbox-reconciliation",
+      "05-transactional-followup",
+      "06-rabbi-backend-launch-readiness"
+    ],
+    "next_exact_packet": "Historical inbox/contact import reconciliation after the CRM workbench route is proven."
+  },
+  "operator_intent_summary": "Turn the One Time CRM route into a real first-party workbench where Rabbi/Shloimie can search/filter/sort scoped contacts, open a useful detail pane, read lifecycle/source/last-activity/contact context, see local timeline interactions, and understand safe next actions without triggering external writes.",
+  "raw_quotes": [
+    "The CRM must become a real first-party workspace with searchable/filterable contacts, clickable contact detail, timeline, lifecycle/source, last activity, email/WhatsApp interactions, class/trial/access context, notes, and next actions.",
+    "API counts and marker-only smokes are not completion proof.",
+    "A submitted lead must be searchable and openable in a useful CRM contact profile/detail view."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260710-002",
+      "decision": "Public WhatsApp runtime activation remains separate from the CRM readback workbench.",
+      "status": "needs_operator_runtime_action"
+    },
+    {
+      "id": "DEC-20260710-003",
+      "decision": "Direct GitHub issue readback is blocked by local gh token scope; use the materialized packet and raw intake for this slice.",
+      "status": "blocked_external"
+    }
+  ],
+  "out_of_scope": [
+    "No live email, WhatsApp, Telegram, SMS, or bulk campaign send.",
+    "No payment, checkout, subscription, access grant, class link mutation, DNS, credential, Drive, Zoom, Vimeo, Buffer, or external provider mutation.",
+    "No GHL/LeadConnector runtime and no external CRM writes.",
+    "No historical 2,600-record import reconciliation in this packet.",
+    "No transactional free-class follow-up implementation beyond showing readiness/blocked next-action context."
+  ],
+  "affected_surfaces": [
+    "Operations One Time Contacts > CRM Contacts",
+    "One Time provider contact detail/readback pane",
+    "First-party CRM search/filter/sort controls",
+    "First-party local timeline readback"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+    "/api/bna/crm/contacts",
+    "/api/bna/crm/contacts/:id/timeline",
+    "/api/bna/parent-leads"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "server.js",
+    "src/lib/bna/crm-contact-model.js",
+    "tests/one-time-communications-workspace.test.js",
+    "tests/crm-contact-model.test.js",
+    "scripts/smoke-one-time-interest-crm-e2e-live.mjs"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/operations.html renderProviderParticipantsPage and renderOneTimeCrmContactsPanel",
+      "public/operations.html renderFirstPartyCrmContactsPanel and openFirstPartyCrmContact",
+      "server.js /api/bna/crm/contacts and /api/bna/crm/contacts/:id/timeline",
+      "src/lib/bna/crm-contact-model.js filtering/sorting/timeline transforms",
+      "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md"
+    ],
+    "observed_findings": [
+      "The API-backed first-party CRM panel already supports search, type/status/source/tag filters, sort, and timeline readback.",
+      "The One Time provider CRM section currently renders a static review table/cards from local lead/member arrays and does not expose a selected detail/timeline workbench state.",
+      "The provider CRM audit reported the shell rendered without overflow or fixture/diagnostic leaks, but the audit status is FAIL and requires renewed visual proof after implementation.",
+      "The form-to-CRM E2E smoke proved a TEST lead can be created, found in parent-leads/CRM contact search, found in timeline, and archived."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "real first-party workspace",
+      "searchable/filterable contacts",
+      "useful CRM contact profile/detail",
+      "timeline",
+      "CRM",
+      "launch-ready"
+    ],
+    "expanded_phrases": {
+      "real first-party workspace": "The route renders an operational workbench with filters, list, selected detail, timeline, states, and safe next actions using first-party BNA data.",
+      "searchable/filterable contacts": "Search, contact type, status, source, tag, and sort controls feed the scoped first-party CRM API and visibly update counts/results.",
+      "useful CRM contact profile/detail": "Selecting a row/card opens identity, lifecycle/source, last activity, contact channels, class/trial/access context, notes, and next actions.",
+      "timeline": "Timeline readback uses local BNA communication/lead records and clearly states read-only/no-send behavior.",
+      "launch-ready": "This route can be shown to the operator/Rabbi without marker-only proof; final Done still requires deploy and live smoke."
+    },
+    "first_party_pattern_interpretation": "All CRM-like behavior is implemented as first-party BNA Operations readback over project-scoped local tables. GHL/LeadConnector/external CRM writes are forbidden."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md",
+    "docs/BROWSER-AGENT-SECURITY.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260710-020",
+      "statement": "Build/finish searchable CRM list/detail/timeline workbench.",
+      "expected_result": "Contact rows support search/filter/sort and open a useful detail pane/route with overview, timeline, class/trial/access, notes, and next actions."
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "RAW-20260710-002 and REQ-20260710-020 are registered.",
+      "REQ-20260710-019 is deployed and live-smoked, proving first-party form-to-CRM data exists.",
+      "Current source inspection identified existing CRM API endpoints and the static One Time provider CRM panel.",
+      "The implementation scope is limited to the One Time CRM route/API readback/test proof.",
+      "External writes, sends, payments, and access changes are explicitly out of scope."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 1440,
+      "auth_role": "provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open CRM Contacts before /api/bna/crm/contacts resolves.",
+      "expected_visible_title": "CRM Contacts",
+      "expected_visible_message": "Loading CRM contacts or a stable workbench shell appears without layout jump.",
+      "expected_primary_action": "Refresh",
+      "expected_secondary_actions": ["Search", "Type filter", "Status filter", "Sort"],
+      "forbidden_content": ["GHL", "LeadConnector", "send now", "charge", "grant access"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The loading region remains inside the contacts section and controls keep accessible names.",
+      "accessibility_expectation": "No horizontal overflow or overlapping helper on desktop.",
+      "test_smoke_assertion": "Local smoke can open the route and wait for either CRM results or a scoped empty state.",
+      "requirement_id": "REQ-20260710-020"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 390,
+      "auth_role": "provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open CRM route when no scoped contacts are returned.",
+      "expected_visible_title": "No One Time CRM contacts loaded yet",
+      "expected_visible_message": "The empty state explains approved sources and no-send guardrails.",
+      "expected_primary_action": "Refresh",
+      "expected_secondary_actions": ["Open Leads", "Review Sources"],
+      "forbidden_content": ["private BNA goals", "raw private message body", "external CRM write"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty cards are grouped under the CRM section heading.",
+      "accessibility_expectation": "Mobile empty-state text wraps without clipping.",
+      "test_smoke_assertion": "Static test keeps data-one-time-crm-empty-state and no-send copy.",
+      "requirement_id": "REQ-20260710-020"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 1440,
+      "auth_role": "provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load CRM route after at least one One Time lead exists.",
+      "expected_visible_title": "One Time CRM Contacts",
+      "expected_visible_message": "List/table/card rows show identity, lifecycle/source, last activity, no-send, dedupe/review, and next action.",
+      "expected_primary_action": "Open Contact",
+      "expected_secondary_actions": ["Add note", "Follow-up", "Refresh"],
+      "forbidden_content": ["BNA Academy school-only record", "platform setup diagnostics", "live send confirmation"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Each row/card is keyboard reachable and exposes selected state.",
+      "accessibility_expectation": "Table/card text wraps and actions do not collide.",
+      "test_smoke_assertion": "E2E smoke finds the TEST contact in CRM search before cleanup.",
+      "requirement_id": "REQ-20260710-020"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 430,
+      "auth_role": "provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Apply a search or filter that returns zero rows.",
+      "expected_visible_title": "No contacts match this CRM filter",
+      "expected_visible_message": "The user can clear/change filters without losing scope.",
+      "expected_primary_action": "Clear Filters",
+      "expected_secondary_actions": ["Refresh"],
+      "forbidden_content": ["empty white screen", "raw SQL error", "wrong workspace result"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filtered count text changes and empty state is announced by visible text.",
+      "accessibility_expectation": "Mobile filter controls fit without clipped labels.",
+      "test_smoke_assertion": "Filter smoke verifies a nonsense query returns a scoped empty state.",
+      "requirement_id": "REQ-20260710-020"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 1024,
+      "auth_role": "provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Force CRM API readback failure or unauthorized API response.",
+      "expected_visible_title": "CRM Contacts",
+      "expected_visible_message": "A concise error banner explains that contacts could not load and offers Refresh.",
+      "expected_primary_action": "Refresh",
+      "expected_secondary_actions": ["Return to Overview"],
+      "forbidden_content": ["stack trace", "token", "database connection string"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error text is visible near the CRM controls.",
+      "accessibility_expectation": "Error banner contrast is readable.",
+      "test_smoke_assertion": "Static source inspection confirms errors render through firstPartyCrmError or equivalent.",
+      "requirement_id": "REQ-20260710-020"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 768,
+      "auth_role": "provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open a send/follow-up affordance before REQ-20260710-022 approval/readiness.",
+      "expected_visible_title": "No-send",
+      "expected_visible_message": "Email/WhatsApp/payment/access follow-up is locked until explicit approval and runtime readiness.",
+      "expected_primary_action": "Review blocked state",
+      "expected_secondary_actions": ["Add note", "Set follow-up"],
+      "forbidden_content": ["Send email", "Send WhatsApp", "charge card", "grant access"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Disabled or blocked actions include a visible reason.",
+      "accessibility_expectation": "Blocked-state copy is concise and not hidden only in hover text.",
+      "test_smoke_assertion": "Tests assert no external write action is exposed as enabled in CRM workbench.",
+      "requirement_id": "REQ-20260710-020"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 1440,
+      "auth_role": "provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open a product-interest/member row that is not editable as a parent lead.",
+      "expected_visible_title": "Preview Only",
+      "expected_visible_message": "The row explains which source panel owns the record and why no external action runs.",
+      "expected_primary_action": "Open Source",
+      "expected_secondary_actions": ["No-send"],
+      "forbidden_content": ["editable external CRM id", "silent write", "send performed"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview-only actions use disabled buttons or links with clear labels.",
+      "accessibility_expectation": "Preview cards are visually distinct from editable lead rows.",
+      "test_smoke_assertion": "Static test finds preview-only/no-send member/product interest copy.",
+      "requirement_id": "REQ-20260710-020"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 1440,
+      "auth_role": "provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit a synthetic TEST/example.invalid lead, search it, open the contact, and read its timeline.",
+      "expected_visible_title": "Contact Timeline",
+      "expected_visible_message": "The timeline shows the public signup capture note and no-send/read-only state.",
+      "expected_primary_action": "Open Contact",
+      "expected_secondary_actions": ["Refresh", "Archive TEST lead after proof"],
+      "forbidden_content": ["Telegram reminder sent", "WhatsApp sent", "email sent", "checkout started"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Selected contact and timeline headings are visible after readback.",
+      "accessibility_expectation": "Timeline items remain readable and do not overflow.",
+      "test_smoke_assertion": "Live E2E smoke verifies CRM lead id, contact search, timeline item, and archive cleanup.",
+      "requirement_id": "REQ-20260710-020"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 1024,
+      "auth_role": "wrong_scope_or_free_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Request CRM contacts without CRM entitlement or with wrong workspace scope.",
+      "expected_visible_title": "CRM Contacts",
+      "expected_visible_message": "Access is denied or upgrade/permission text is shown without leaking contact data.",
+      "expected_primary_action": "Return to allowed view",
+      "expected_secondary_actions": ["Contact Shloimie"],
+      "forbidden_content": ["contact email", "phone", "timeline body", "private BNA data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Permission message is visible and not only a console error.",
+      "accessibility_expectation": "The denied state is readable in desktop/tablet layout.",
+      "test_smoke_assertion": "Entitlement tests keep free provider denied for CRM contacts.",
+      "requirement_id": "REQ-20260710-020"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 390,
+      "auth_role": "provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open a CRM contact card on mobile.",
+      "expected_visible_title": "Contact Detail",
+      "expected_visible_message": "Selected overview/timeline/actions stack below the card without clipped controls.",
+      "expected_primary_action": "Back to list",
+      "expected_secondary_actions": ["Timeline", "Add note", "Follow-up"],
+      "forbidden_content": ["horizontal scroll", "overlapping helper", "cut off action text"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The selected card uses aria-expanded and the detail region has a heading.",
+      "accessibility_expectation": "Touch targets are at least 38px and long emails/phones wrap.",
+      "test_smoke_assertion": "Mobile Playwright smoke opens a card and verifies no horizontal overflow.",
+      "requirement_id": "REQ-20260710-020"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "viewport": 1440,
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "state": "populated list/detail/timeline"
+      },
+      {
+        "viewport": 1024,
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "state": "permission/error-safe tablet"
+      },
+      {
+        "viewport": 768,
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "state": "filter and blocked setup tablet"
+      },
+      {
+        "viewport": 430,
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "state": "filtered-empty mobile"
+      },
+      {
+        "viewport": 390,
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "state": "mobile selected detail"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "UIGAP-20260710-CRM-001",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 1440,
+        "screenshot_before": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/desktop-1440-crm.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1440-crm.png",
+        "defect_codes": [
+          "VQ-CRM-001",
+          "VQ-NAV-003"
+        ],
+        "severity": "P1",
+        "user_impact": "Rabbi/Shloimie cannot treat marker-only CRM cards as proof that the public form creates searchable, openable contact history.",
+        "expected_fix": "Replace or augment the static One Time review table with an API-backed searchable workbench, selected detail, and timeline readback.",
+        "requirement_id": "REQ-20260710-020"
+      }
+    ]
+  },
+  "accessibility": {
+    "required_checks": [
+      "Search/filter/select controls have visible labels or accessible names.",
+      "Selected CRM row/card exposes aria-expanded or equivalent visible selected state.",
+      "Timeline region has a heading and readable contrast.",
+      "Mobile cards and actions remain reachable without horizontal scroll."
+    ],
+    "manual_review_required": true
+  },
+  "action_states": [
+    {
+      "label": "Refresh CRM Contacts",
+      "selector_or_action_key": "ACTION-CRM-CONTACTS-FILTER",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "loadFirstPartyCrmContacts / /api/bna/crm/contacts",
+      "registry_required": true
+    },
+    {
+      "label": "Open CRM Contact",
+      "selector_or_action_key": "ACTION-CRM-CONTACT-CARD-EXPAND",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "openFirstPartyCrmContact / /api/bna/crm/contacts/:id/timeline",
+      "registry_required": true
+    },
+    {
+      "label": "Add Note",
+      "selector_or_action_key": "addLeadCommunication",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "First-party local contact communication note only; no external send.",
+      "registry_required": true
+    },
+    {
+      "label": "Email or WhatsApp Follow-up",
+      "selector_or_action_key": "REQ-20260710-022",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Shloimie / runtime keyholder",
+      "external_write": true,
+      "handler_or_blocker": "Blocked until exact copy, recipient, sender, runtime readiness, and approval gates are satisfied.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "sources": [
+      "bna_parent_leads scoped to project one_time_mishnah_class",
+      "bna_contact_communications local timeline rows",
+      "One Time product lead records used only as first-party context",
+      "One Time member/access context used as read-only status"
+    ],
+    "required_fields": [
+      "display_name or parent_name",
+      "email and/or phone when available",
+      "status/lifecycle",
+      "source/source_detail",
+      "last_contact_at/updated_at",
+      "next_follow_up_at",
+      "tags",
+      "timeline body/source/occurred_at",
+      "no_send and external_write_performed flags"
+    ],
+    "forbidden_data": [
+      "raw private message exports",
+      "secrets/tokens",
+      "unrelated BNA school-only goals/check-ins/admin notes",
+      "full public WhatsApp runtime number"
+    ]
+  },
+  "security_privacy": {
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "public_pages_anonymous_safe": true,
+    "workspace_scope_required": true,
+    "redaction_required_for_screenshots": true,
+    "no_raw_private_contact_exports_committed": true,
+    "browser_content_untrusted": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "B3-CRM-WORKBENCH",
+      "requirements": [
+        "REQ-20260710-020"
+      ],
+      "files_allowed": [
+        "public/operations.html",
+        "server.js",
+        "src/lib/bna/crm-contact-model.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/crm-contact-model.test.js",
+        "scripts/smoke-one-time-interest-crm-e2e-live.mjs"
+      ],
+      "expected_verification": [
+        "PQC validation",
+        "node --check server.js",
+        "focused node tests",
+        "local Playwright CRM workbench screenshot smoke",
+        "live One Time CRM E2E readback after deploy"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/operations.html",
+      "server.js",
+      "src/lib/bna/crm-contact-model.js",
+      "tests/one-time-communications-workspace.test.js",
+      "tests/crm-contact-model.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "server.js",
+      "src/lib/bna/crm-contact-model.js",
+      "tests/one-time-communications-workspace.test.js",
+      "tests/crm-contact-model.test.js",
+      "scripts/smoke-one-time-interest-crm-e2e-live.mjs"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "If historical import reconciliation or transactional send logic is needed, split to REQ-20260710-021 or REQ-20260710-022.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "required_commands": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-10-onetime-launch-priority/02-crm-list-detail.product-quality.json",
+      "node --check server.js",
+      "node --test tests/one-time-communications-workspace.test.js tests/crm-contact-model.test.js",
+      "npm run app:smoke:one-time-interest-crm-e2e",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "visual_smoke_required": true,
+    "live_smoke_required": true
+  },
+  "evidence": {
+    "expected_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "ops/live-smokes/2026-07-10T*-one-time-interest-crm-e2e-live-smoke.md",
+      "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "proof_must_include": [
+      "Selected contact detail screenshot/readback.",
+      "Timeline item readback for a synthetic TEST lead.",
+      "No external send/write flags.",
+      "Cleanup/archive proof for any TEST production row."
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "REQ-20260710-020 status is Done only after source inspection, implementation, tests, local visual screenshots, pushed commit, verified One Time deploy, and live E2E CRM readback.",
+      "CRM route supports search/filter/sort and selectable detail/timeline states in One Time provider workspace.",
+      "Synthetic TEST/example.invalid row is found through the visible CRM path and archived after proof.",
+      "No GHL/LeadConnector/external CRM writes, sends, payments, access grants, DNS, credential, Drive, Zoom, or Vimeo mutations occur.",
+      "Ledger, changelog, packet status, and requirement register record evidence or a precise blocker."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260710-002-onetime-launch-priority-landing-crm-assistant.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-10-onetime-launch-priority/02-crm-list-detail.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "read files",
+      "apply patch",
+      "run tests",
+      "run browser smoke",
+      "deploy after commit",
+      "live smoke"
+    ],
+    "skipped_actions_policy": "Skip external sends, payment/access writes, DNS, credentials, provider mutations, GHL/LeadConnector runtime, and raw private data commits.",
+    "blocker_decisions": [
+      "DEC-20260710-002",
+      "DEC-20260710-003"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "ops/live-smokes/2026-07-10T*-one-time-interest-crm-e2e-live-smoke.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-10-onetime-launch-priority/03-historical-inbox-reconciliation.product-quality.json"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "0 findings or a mapped REQ/TASK/DEC/WATCH blocker before Done."
+  },
+  "next_packet": {
+    "id": "PKT-20260710-021",
+    "title": "One Time Historical Inbox Contact Reconciliation",
+    "status": "pending_after_crm_workbench"
+  },
+  "app_visible": true
+}

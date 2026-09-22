@@ -1,0 +1,138 @@
+{
+  "generated_at": "2026-07-13T10:39:09.057Z",
+  "scope": "stripe_sandbox_billing_lifecycle",
+  "status": "passed",
+  "config_state": "sandbox_ready",
+  "live_mode_disabled": true,
+  "no_real_customer_data": true,
+  "no_real_funds": true,
+  "external_write_performed": true,
+  "configuration": {
+    "provider": "stripe",
+    "state": "sandbox_ready",
+    "effective_mode": "sandbox",
+    "requested_mode": "sandbox",
+    "key_mode": "sandbox",
+    "secret_configured": true,
+    "webhook_secret_configured": true,
+    "publishable_key_configured": false,
+    "account_owner_configured": true,
+    "account_owner": "unknown",
+    "live_billing_enabled": false,
+    "live_approved": false,
+    "sandbox_api_verified": true,
+    "missing": [],
+    "blockers": [],
+    "safe_to_create_checkout_session": true,
+    "safe_to_create_live_charge": false,
+    "secret_fingerprint": "fd9db300a2e9",
+    "webhook_secret_fingerprint": "465bd5c61dda",
+    "secrets_included": false
+  },
+  "account": {
+    "id": "acct_1Nrl2MEEOawBwiex_[redacted_348be885f577]",
+    "livemode": null,
+    "charges_enabled": true,
+    "payouts_enabled": true,
+    "details_submitted": true,
+    "country": "US",
+    "default_currency": "usd"
+  },
+  "objects": {
+    "product": {
+      "id": "prod_UsSAgNkQqqzmNG_[redacted_779c7a7b1b32]",
+      "object": "product",
+      "livemode": false,
+      "created": 1783939149,
+      "active": true
+    },
+    "price": {
+      "id": "price_1TshGUEEOawBwiexvfEp30M4_[redacted_eecc23a86b70]",
+      "object": "price",
+      "livemode": false,
+      "created": 1783939150,
+      "active": true
+    },
+    "customer": {
+      "id": "cus_UsSAJ5S5yK7a39_[redacted_04a5c855690d]",
+      "object": "customer",
+      "livemode": false,
+      "created": 1783939150
+    },
+    "checkout_session": {
+      "id": "cs_test_[redacted_14a49edc59af]",
+      "object": "checkout.session",
+      "livemode": false,
+      "created": 1783939151,
+      "status": "open"
+    }
+  },
+  "lifecycle": {
+    "duplicate_verified": true,
+    "states": {
+      "pricing": true,
+      "trial": true,
+      "checkout": true,
+      "payment_method": true,
+      "successful_payment": true,
+      "failed_payment": true,
+      "retry": true,
+      "renewal": true,
+      "cancellation": true,
+      "entitlement": true,
+      "invoice_receipt": true,
+      "member_billing": true,
+      "provider_revenue": true,
+      "test_live_mode": true
+    },
+    "revenue": {
+      "tenant_id": "one_time_mishnah_class",
+      "provider_id": "rabbi_scheller",
+      "currency": "USD",
+      "gross_collected_cents": 6700,
+      "failed_cents": 6700,
+      "refunded_cents": 0,
+      "pending_cents": 6700,
+      "net_collected_cents": 6700,
+      "invoice_count": 1,
+      "successful_renewal_count": 1,
+      "scope": "tenant_provider",
+      "secrets_included": false
+    },
+    "latest_entitlement": {
+      "member_id": "stripe_sandbox_smoke_member",
+      "tenant_id": "one_time_mishnah_class",
+      "provider_id": "rabbi_scheller",
+      "entitlement_state": "scheduled_cancellation",
+      "access_enabled": true,
+      "scopes": [],
+      "reason": "cancel_at_period_end",
+      "trial_ends_at": "2027-05-29T16:26:40.000Z",
+      "current_period_end": "2027-06-28T16:26:40.000Z",
+      "grace_until": "2026-07-20T10:39:11.864Z",
+      "retry_state": "scheduled"
+    },
+    "audit_event_count": 8
+  },
+  "cleanup": [
+    {
+      "object": "checkout_session",
+      "id": "cs_test_[redacted_14a49edc59af]",
+      "status": "expired"
+    },
+    {
+      "object": "customer",
+      "id": "cus_UsSAJ5S5yK7a39_[redacted_04a5c855690d]",
+      "status": "deleted"
+    },
+    {
+      "object": "product",
+      "id": "prod_UsSAgNkQqqzmNG_[redacted_779c7a7b1b32]",
+      "status": "deactivated"
+    }
+  ],
+  "webhook_signature_verified": true,
+  "notes": [
+    "Created synthetic Stripe test-mode product, price, customer, and checkout session; lifecycle success/failure/cancellation were simulated locally from redacted test object IDs."
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "started_at": "2026-06-21T11:45:19.349Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 1702,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "Operations WhatsApp workspace markers are deployed",
+      "ok": true,
+      "duration_ms": 2467,
+      "details": {
+        "markers": 11
+      }
+    },
+    {
+      "name": "workspace-scoped WAPI phonebook report hides raw payloads",
+      "ok": true,
+      "duration_ms": 2706,
+      "details": {
+        "scope": "workspace",
+        "workspace_key": "rabbi_sheller_provider",
+        "groups": 1
+      }
+    },
+    {
+      "name": "WhatsApp message readback stays no-send and hides raw provider payloads",
+      "ok": true,
+      "duration_ms": 490,
+      "details": {
+        "messages": 0,
+        "raw_payload_hidden": true
+      }
+    },
+    {
+      "name": "WAPI diagnostics are read-only",
+      "ok": true,
+      "duration_ms": 368,
+      "details": {
+        "sync_configured": true,
+        "required_sync_env": []
+      }
+    },
+    {
+      "name": "Operations WhatsApp runtime UX renders at desktop and mobile widths",
+      "ok": false,
+      "duration_ms": 83809,
+      "error": "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-wapi-three-pane-workspace]')\u001b[22m\n"
+    }
+  ],
+  "summary": {
+    "operations_markers_checked": 11,
+    "phonebook_scope": "workspace",
+    "raw_payload_hidden": true,
+    "wapi_sync_configured": true,
+    "external_send_performed": false,
+    "runtime_widths_checked": []
+  }
+}

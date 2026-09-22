@@ -1,0 +1,459 @@
+{
+  "status": "PASS",
+  "generated_at": "2026-07-12T06:58:58.076Z",
+  "target": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+  "scope": "Local browser/API Operations One Time CRM journey smoke using isolated first-party test records; no production database, sends, payments, external accounts, or production writes.",
+  "remaining_blocker": "True local/test Postgres persistence proof was not run because DATABASE_URL/PGHOST is not configured in this session.",
+  "guardrails": {
+    "external_write_performed": false,
+    "test_data_only": true,
+    "raw_private_data_committed": false
+  },
+  "results": [
+    {
+      "viewport": {
+        "id": "desktop-1440",
+        "width": 1440,
+        "height": 960
+      },
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "screenshot": "ops/evidence/one-time-crm-journey/2026-07-12/desktop-1440-crm-workbench.png",
+      "title": "Rabbi Scheller / One Time - Operations",
+      "workbenchCount": 1,
+      "apiWorkbenchCount": 1,
+      "cardCount": 6,
+      "selectedDetailVisible": true,
+      "hasContactTimeline": true,
+      "hasClassTrialAccess": true,
+      "hasEditableIdentityFields": true,
+      "hasSavedUpdatedContact": true,
+      "hasFollowUpTask": true,
+      "hasLocalNote": true,
+      "hasNoSendLock": true,
+      "hasWrongWorkspaceLeak": false,
+      "hasForbiddenExternalTerm": false,
+      "horizontalOverflow": false,
+      "bodyTextLength": 3066,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "badResponses": [],
+      "patchRequests": [
+        {
+          "method": "PATCH",
+          "pathname": "/api/bna/crm/contacts/bna_parent_leads%3A501",
+          "search": "",
+          "workspace": "",
+          "project": ""
+        }
+      ],
+      "contactsReads": [
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?workspace=bna&project=bna",
+          "workspace": "bna",
+          "project": "bna"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        }
+      ],
+      "denial": {
+        "status": 403,
+        "error": "This scoped One Time session cannot access BNA CRM contacts.",
+        "external_write_performed": false
+      },
+      "mailboxUrl": "http://127.0.0.1:65250/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
+      "passed": true
+    },
+    {
+      "viewport": {
+        "id": "desktop-1024",
+        "width": 1024,
+        "height": 900
+      },
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "screenshot": "ops/evidence/one-time-crm-journey/2026-07-12/desktop-1024-crm-workbench.png",
+      "title": "Rabbi Scheller / One Time - Operations",
+      "workbenchCount": 1,
+      "apiWorkbenchCount": 1,
+      "cardCount": 6,
+      "selectedDetailVisible": true,
+      "hasContactTimeline": true,
+      "hasClassTrialAccess": true,
+      "hasEditableIdentityFields": true,
+      "hasSavedUpdatedContact": true,
+      "hasFollowUpTask": true,
+      "hasLocalNote": true,
+      "hasNoSendLock": true,
+      "hasWrongWorkspaceLeak": false,
+      "hasForbiddenExternalTerm": false,
+      "horizontalOverflow": false,
+      "bodyTextLength": 3066,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "badResponses": [],
+      "patchRequests": [
+        {
+          "method": "PATCH",
+          "pathname": "/api/bna/crm/contacts/bna_parent_leads%3A501",
+          "search": "",
+          "workspace": "",
+          "project": ""
+        }
+      ],
+      "contactsReads": [
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?workspace=bna&project=bna",
+          "workspace": "bna",
+          "project": "bna"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        }
+      ],
+      "denial": {
+        "status": 403,
+        "error": "This scoped One Time session cannot access BNA CRM contacts.",
+        "external_write_performed": false
+      },
+      "mailboxUrl": "http://127.0.0.1:65250/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
+      "passed": true
+    },
+    {
+      "viewport": {
+        "id": "tablet-768",
+        "width": 768,
+        "height": 1024
+      },
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "screenshot": "ops/evidence/one-time-crm-journey/2026-07-12/tablet-768-crm-workbench.png",
+      "title": "Rabbi Scheller / One Time - Operations",
+      "workbenchCount": 1,
+      "apiWorkbenchCount": 1,
+      "cardCount": 6,
+      "selectedDetailVisible": true,
+      "hasContactTimeline": true,
+      "hasClassTrialAccess": true,
+      "hasEditableIdentityFields": true,
+      "hasSavedUpdatedContact": true,
+      "hasFollowUpTask": true,
+      "hasLocalNote": true,
+      "hasNoSendLock": true,
+      "hasWrongWorkspaceLeak": false,
+      "hasForbiddenExternalTerm": false,
+      "horizontalOverflow": false,
+      "bodyTextLength": 2477,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "badResponses": [],
+      "patchRequests": [
+        {
+          "method": "PATCH",
+          "pathname": "/api/bna/crm/contacts/bna_parent_leads%3A501",
+          "search": "",
+          "workspace": "",
+          "project": ""
+        }
+      ],
+      "contactsReads": [
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?workspace=bna&project=bna",
+          "workspace": "bna",
+          "project": "bna"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        }
+      ],
+      "denial": {
+        "status": 403,
+        "error": "This scoped One Time session cannot access BNA CRM contacts.",
+        "external_write_performed": false
+      },
+      "mailboxUrl": "http://127.0.0.1:65250/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
+      "passed": true
+    },
+    {
+      "viewport": {
+        "id": "mobile-430",
+        "width": 430,
+        "height": 932
+      },
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "screenshot": "ops/evidence/one-time-crm-journey/2026-07-12/mobile-430-crm-workbench.png",
+      "title": "Rabbi Scheller / One Time - Operations",
+      "workbenchCount": 1,
+      "apiWorkbenchCount": 1,
+      "cardCount": 6,
+      "selectedDetailVisible": true,
+      "hasContactTimeline": true,
+      "hasClassTrialAccess": true,
+      "hasEditableIdentityFields": true,
+      "hasSavedUpdatedContact": true,
+      "hasFollowUpTask": true,
+      "hasLocalNote": true,
+      "hasNoSendLock": true,
+      "hasWrongWorkspaceLeak": false,
+      "hasForbiddenExternalTerm": false,
+      "horizontalOverflow": false,
+      "bodyTextLength": 2477,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "badResponses": [],
+      "patchRequests": [
+        {
+          "method": "PATCH",
+          "pathname": "/api/bna/crm/contacts/bna_parent_leads%3A501",
+          "search": "",
+          "workspace": "",
+          "project": ""
+        }
+      ],
+      "contactsReads": [
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?workspace=bna&project=bna",
+          "workspace": "bna",
+          "project": "bna"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        }
+      ],
+      "denial": {
+        "status": 403,
+        "error": "This scoped One Time session cannot access BNA CRM contacts.",
+        "external_write_performed": false
+      },
+      "mailboxUrl": "http://127.0.0.1:65250/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
+      "passed": true
+    },
+    {
+      "viewport": {
+        "id": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "screenshot": "ops/evidence/one-time-crm-journey/2026-07-12/mobile-390-crm-workbench.png",
+      "title": "Rabbi Scheller / One Time - Operations",
+      "workbenchCount": 1,
+      "apiWorkbenchCount": 1,
+      "cardCount": 6,
+      "selectedDetailVisible": true,
+      "hasContactTimeline": true,
+      "hasClassTrialAccess": true,
+      "hasEditableIdentityFields": true,
+      "hasSavedUpdatedContact": true,
+      "hasFollowUpTask": true,
+      "hasLocalNote": true,
+      "hasNoSendLock": true,
+      "hasWrongWorkspaceLeak": false,
+      "hasForbiddenExternalTerm": false,
+      "horizontalOverflow": false,
+      "bodyTextLength": 2477,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "badResponses": [],
+      "patchRequests": [
+        {
+          "method": "PATCH",
+          "pathname": "/api/bna/crm/contacts/bna_parent_leads%3A501",
+          "search": "",
+          "workspace": "",
+          "project": ""
+        }
+      ],
+      "contactsReads": [
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&search=Sample+One+Time+Parent&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?workspace=bna&project=bna",
+          "workspace": "bna",
+          "project": "bna"
+        },
+        {
+          "method": "GET",
+          "pathname": "/api/bna/crm/contacts",
+          "search": "?contact_type=all&status=all&source=all&tag=all&sort_key=last_contact_desc&workspace=rabbi_sheller_provider&workspace_key=rabbi_sheller_provider&project=one_time_mishnah_class&project_key=one_time_mishnah_class",
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class"
+        }
+      ],
+      "denial": {
+        "status": 403,
+        "error": "This scoped One Time session cannot access BNA CRM contacts.",
+        "external_write_performed": false
+      },
+      "mailboxUrl": "http://127.0.0.1:65250/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
+      "passed": true
+    }
+  ]
+}

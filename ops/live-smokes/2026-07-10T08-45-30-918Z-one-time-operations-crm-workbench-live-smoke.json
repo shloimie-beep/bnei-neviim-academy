@@ -1,0 +1,55 @@
+{
+  "started_at": "2026-07-10T08:45:30.918Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+  "status": "passed",
+  "deployment_id": "73676e6e-b489-4da1-9c95-f366a4aa7c92",
+  "commit": "353a0f33",
+  "steps": [
+    {
+      "name": "operations login uses One Time Railway auth fallback",
+      "ok": true,
+      "duration_ms": 2218,
+      "details": {
+        "source": "railway",
+        "role": "super_admin"
+      }
+    },
+    {
+      "name": "deployed Operations HTML includes CRM workbench detail markers",
+      "ok": true,
+      "duration_ms": 1563,
+      "details": {
+        "markers_checked": 8
+      }
+    },
+    {
+      "name": "scoped CRM contacts API responds without external-write flags",
+      "ok": true,
+      "duration_ms": 281,
+      "details": {
+        "cards_count": 12,
+        "filtered_total": 12,
+        "has_filters": true,
+        "no_send": true
+      }
+    },
+    {
+      "name": "selected CRM timeline API is read-only when a card exists",
+      "ok": true,
+      "duration_ms": 262,
+      "details": {
+        "card_id": "redacted",
+        "timeline_items": 2,
+        "no_send": true
+      }
+    }
+  ],
+  "guardrails": [
+    "Read-only live smoke; no contact data, notes, raw message bodies, screenshots, sends, payments, access grants, or external CRM writes are saved.",
+    "Live API readback records counts and guard flags only.",
+    "Synthetic local screenshots remain the visual proof for private-data-safe layout review."
+  ],
+  "crm_cards_count": 12,
+  "crm_filtered_total": 12
+}

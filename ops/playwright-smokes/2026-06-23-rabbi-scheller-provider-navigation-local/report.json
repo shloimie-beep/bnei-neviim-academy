@@ -1,0 +1,1169 @@
+{
+  "status": "PASS",
+  "generated_at": "2026-06-24T14:35:37.323Z",
+  "target": "/provider?api_usage_preview=1",
+  "fixture": "workspace-scoped Rabbi Elie Scheller provider session; no database or production writes",
+  "expected_sections": [
+    "overview",
+    "profile",
+    "services",
+    "class_setup",
+    "class_media",
+    "media",
+    "comments",
+    "commercial",
+    "entitlements",
+    "google_business",
+    "upgrade",
+    "website_import",
+    "communications",
+    "integrations",
+    "access",
+    "activity",
+    "api_usage",
+    "settings"
+  ],
+  "results": [
+    {
+      "viewport": {
+        "name": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-navigation-local/mobile-390.png",
+      "navIds": [
+        "overview",
+        "profile",
+        "services",
+        "class_setup",
+        "class_media",
+        "media",
+        "comments",
+        "commercial",
+        "entitlements",
+        "google_business",
+        "upgrade",
+        "website_import",
+        "communications",
+        "integrations",
+        "access",
+        "activity",
+        "api_usage",
+        "settings"
+      ],
+      "navLabels": [
+        "Overview",
+        "Profile / Listing",
+        "Services",
+        "Classrooms",
+        "Class Media",
+        "Media",
+        "Comments",
+        "Commercial Model",
+        "Entitlements",
+        "Google Business",
+        "Upgrade",
+        "Website Import",
+        "Communications",
+        "External Apps",
+        "Access Checklist",
+        "Activity",
+        "API Usage",
+        "Settings"
+      ],
+      "navActionIds": [
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION"
+      ],
+      "superAdminNavLabels": [],
+      "clickResults": [
+        {
+          "section": "overview",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "profile",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "services",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "class_setup",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "class_media",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "media",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "comments",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "commercial",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "entitlements",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "google_business",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "upgrade",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "website_import",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "communications",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "integrations",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "access",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "activity",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "api_usage",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "settings",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        }
+      ],
+      "backFromSettings": {
+        "section": "api_usage",
+        "activeTarget": true,
+        "activeNavCount": 1,
+        "visibleSectionCount": 1,
+        "queryStateOk": true,
+        "noHorizontalOverflow": true
+      },
+      "directResults": [
+        {
+          "section": "overview",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "profile",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "services",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "class_setup",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "class_media",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "media",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "comments",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "commercial",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "entitlements",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "google_business",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "upgrade",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "website_import",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "communications",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "integrations",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "access",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "activity",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "api_usage",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "settings",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        }
+      ],
+      "refreshSettings": {
+        "section": "settings",
+        "activeTarget": true,
+        "activeNavCount": 1,
+        "visibleSectionCount": 1,
+        "queryStateOk": true,
+        "noHorizontalOverflow": true
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": {
+        "name": "tablet-768",
+        "width": 768,
+        "height": 1024
+      },
+      "screenshot": "ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-navigation-local/tablet-768.png",
+      "navIds": [
+        "overview",
+        "profile",
+        "services",
+        "class_setup",
+        "class_media",
+        "media",
+        "comments",
+        "commercial",
+        "entitlements",
+        "google_business",
+        "upgrade",
+        "website_import",
+        "communications",
+        "integrations",
+        "access",
+        "activity",
+        "api_usage",
+        "settings"
+      ],
+      "navLabels": [
+        "Overview",
+        "Profile / Listing",
+        "Services",
+        "Classrooms",
+        "Class Media",
+        "Media",
+        "Comments",
+        "Commercial Model",
+        "Entitlements",
+        "Google Business",
+        "Upgrade",
+        "Website Import",
+        "Communications",
+        "External Apps",
+        "Access Checklist",
+        "Activity",
+        "API Usage",
+        "Settings"
+      ],
+      "navActionIds": [
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION"
+      ],
+      "superAdminNavLabels": [],
+      "clickResults": [
+        {
+          "section": "overview",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "profile",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "services",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "class_setup",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "class_media",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "media",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "comments",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "commercial",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "entitlements",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "google_business",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "upgrade",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "website_import",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "communications",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "integrations",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "access",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "activity",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "api_usage",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "settings",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        }
+      ],
+      "backFromSettings": {
+        "section": "api_usage",
+        "activeTarget": true,
+        "activeNavCount": 1,
+        "visibleSectionCount": 1,
+        "queryStateOk": true,
+        "noHorizontalOverflow": true
+      },
+      "directResults": [
+        {
+          "section": "overview",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "profile",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "services",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "class_setup",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "class_media",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "media",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "comments",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "commercial",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "entitlements",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "google_business",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "upgrade",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "website_import",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "communications",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "integrations",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "access",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "activity",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "api_usage",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "settings",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        }
+      ],
+      "refreshSettings": {
+        "section": "settings",
+        "activeTarget": true,
+        "activeNavCount": 1,
+        "visibleSectionCount": 1,
+        "queryStateOk": true,
+        "noHorizontalOverflow": true
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": {
+        "name": "desktop-1440",
+        "width": 1440,
+        "height": 900
+      },
+      "screenshot": "ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-navigation-local/desktop-1440.png",
+      "navIds": [
+        "overview",
+        "profile",
+        "services",
+        "class_setup",
+        "class_media",
+        "media",
+        "comments",
+        "commercial",
+        "entitlements",
+        "google_business",
+        "upgrade",
+        "website_import",
+        "communications",
+        "integrations",
+        "access",
+        "activity",
+        "api_usage",
+        "settings"
+      ],
+      "navLabels": [
+        "Overview",
+        "Profile / Listing",
+        "Services",
+        "Classrooms",
+        "Class Media",
+        "Media",
+        "Comments",
+        "Commercial Model",
+        "Entitlements",
+        "Google Business",
+        "Upgrade",
+        "Website Import",
+        "Communications",
+        "External Apps",
+        "Access Checklist",
+        "Activity",
+        "API Usage",
+        "Settings"
+      ],
+      "navActionIds": [
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION",
+        "ACTION-PROVIDER-SECTION-NAVIGATION"
+      ],
+      "superAdminNavLabels": [],
+      "clickResults": [
+        {
+          "section": "overview",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "profile",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "services",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "class_setup",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "class_media",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "media",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "comments",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "commercial",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "entitlements",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "google_business",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "upgrade",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "website_import",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "communications",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "integrations",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "access",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "activity",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "api_usage",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "settings",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        }
+      ],
+      "backFromSettings": {
+        "section": "api_usage",
+        "activeTarget": true,
+        "activeNavCount": 1,
+        "visibleSectionCount": 1,
+        "queryStateOk": true,
+        "noHorizontalOverflow": true
+      },
+      "directResults": [
+        {
+          "section": "overview",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "profile",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "services",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "class_setup",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "class_media",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "media",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "comments",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "commercial",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "entitlements",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "google_business",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "upgrade",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "website_import",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "communications",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "integrations",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "access",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "activity",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "api_usage",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        },
+        {
+          "section": "settings",
+          "activeTarget": true,
+          "activeNavCount": 1,
+          "visibleSectionCount": 1,
+          "queryStateOk": true,
+          "noHorizontalOverflow": true
+        }
+      ],
+      "refreshSettings": {
+        "section": "settings",
+        "activeTarget": true,
+        "activeNavCount": 1,
+        "visibleSectionCount": 1,
+        "queryStateOk": true,
+        "noHorizontalOverflow": true
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": []
+    }
+  ],
+  "failed": []
+}

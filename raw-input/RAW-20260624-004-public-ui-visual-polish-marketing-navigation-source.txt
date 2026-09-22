@@ -1,0 +1,298 @@
+# CODEX GOAL — Public UI Visual Polish and Connected Marketing Navigation
+
+Create and activate a Goal named:
+
+`BNA PUBLIC UI — COMPLETE VISUAL POLISH AND MARKETING NAVIGATION`
+
+Do not mark this Goal complete until the lane acceptance criteria are satisfied and the branch is pushed.
+
+## Start contract
+
+Read:
+
+`ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.json`
+
+from the control branch created by Prompt 01.
+
+Create a new clean worktree and branch from the exact `integration_base_sha`:
+
+`codex/closeout-public-ui-20260624`
+
+Do not start from `master`, PR #14, or PR #15 independently.
+
+## Lane ownership
+
+This lane owns:
+
+- `public/index.html`
+- public marketing pages
+- public marketing CSS
+- `public/js/bna-site-nav.js`
+- public navigation rendering
+- public visual smoke scripts
+- public visual tests
+- lane evidence under:
+  `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/public-ui/`
+
+This lane must not edit:
+
+- `server.js`
+- portal login pages
+- provider/parent/student/Operations app pages
+- `MEMORY.md`
+- `TASKS.md`
+- canonical ledger/changelog
+- `ops/execution-runs/latest.json`
+- central run files
+
+When a server/shared edit is needed, put the exact unified diff in `SHARED-PATCH.diff`.
+
+## Objective
+
+Make the public website visually coherent, connected, responsive, accessible, and consistent with the owner’s repeated direction.
+
+Known defects include:
+
+- unintended space between the top toolbar/header and hero;
+- unreadable selected horizontal category/tab state;
+- public navigation changes not consistently visible;
+- placeholder/generic content;
+- stale footer content;
+- inconsistent spacing, buttons, and active states;
+- mobile overflow or menu awkwardness;
+- branch/live differences.
+
+## Required route set
+
+At minimum inspect:
+
+- `/`
+- `/service-providers`
+- `/one-time`
+- public registration/apply pages
+- public Blog and FAQ views
+- parent login entry
+- student login entry
+- provider login entry
+- Operations login entry
+- all public pages linked from header/footer
+- canonical redirects and static aliases
+
+## Required viewports
+
+- 390 × 844
+- 768 × 1024
+- 1440 × 900
+
+## Step 1 — Compare integration-base UI and live production
+
+Capture screenshots for both states where possible.
+
+Create an exact visual delta report with:
+
+- route;
+- viewport;
+- selector;
+- integration-base behavior;
+- live behavior;
+- expected behavior;
+- severity;
+- fix;
+- test.
+
+Do not call local behavior “live.”
+
+## Step 2 — Header-to-hero repair
+
+Find the exact cause of any blank strip:
+
+- body margin;
+- header margin/padding;
+- hero margin;
+- margin collapse;
+- hidden banner;
+- sticky offset;
+- image inline baseline;
+- breakpoint rule;
+- stale CSS;
+- wrong deployed bundle.
+
+Acceptance test:
+
+```text
+abs(header.getBoundingClientRect().bottom -
+    hero.getBoundingClientRect().top) <= 1
+```
+
+Run at every required viewport.
+
+Ensure:
+
+- sticky header does not cover hero content;
+- no accidental whitespace;
+- no content jump after fonts/images load;
+- no mobile-only gap.
+
+## Step 3 — Horizontal active tabs and filters
+
+Find every public:
+
+- category tab;
+- subcategory tab;
+- filter chip;
+- active nav item;
+- horizontal scroller.
+
+Acceptance:
+
+- WCAG AA contrast;
+- normal text contrast at least 4.5:1;
+- active state is not conveyed by color alone;
+- `aria-current`, `aria-selected`, or `aria-pressed` is correct;
+- keyboard focus is clearly visible;
+- hover/focus/active/disabled are distinct;
+- selected text is readable at all viewports;
+- horizontal overflow is intentional and usable;
+- tabs do not clip or disappear.
+
+Add computed-style assertions, not screenshot-only tests.
+
+## Step 4 — Public navigation integrity
+
+Ensure the public header and footer expose the intended information architecture.
+
+Audit:
+
+- BNA/School;
+- Families;
+- Service Provider Directory;
+- One Time;
+- Blog;
+- FAQ;
+- registration/apply;
+- portal logins.
+
+Requirements:
+
+- no dead links;
+- no duplicate labels with different destinations;
+- active state is correct;
+- mobile menu contains the same legitimate destinations;
+- portal login links use canonical routes;
+- Operations is not accidentally promoted as a general public destination unless intentionally approved;
+- current page is understandable;
+- footer provides a complete secondary route map.
+
+## Step 5 — Visual cleanup
+
+Audit and repair:
+
+- placeholder copy visible to the public;
+- stale year;
+- broken/missing images;
+- wrong image aspect ratios;
+- fuzzy logo use;
+- inconsistent brand colors;
+- excessive pills;
+- mismatched button radii;
+- weak focus indicators;
+- inconsistent heading hierarchy;
+- excessive section gaps;
+- content touching viewport edges;
+- mobile overflow;
+- clipped menu/dialog content;
+- loading skeleton defects;
+- generic error messages;
+- empty sections.
+
+Follow the established BNA and One Time brand directions. Do not invent a new visual system.
+
+## Step 6 — Accessibility
+
+Verify:
+
+- heading order;
+- landmarks;
+- skip link;
+- alt text;
+- keyboard navigation;
+- focus order;
+- touch targets;
+- reduced-motion behavior;
+- color contrast;
+- accessible labels;
+- no focus trap;
+- no hidden actionable element.
+
+## Step 7 — Automated evidence
+
+Add or update tests for:
+
+- header/hero bounding rectangles;
+- active tab contrast;
+- nav link resolution;
+- no horizontal overflow;
+- mobile menu;
+- focus visibility;
+- public route screenshots;
+- no placeholder markers in production-facing copy.
+
+Store evidence in the lane directory.
+
+## Required tests
+
+Run:
+
+- lane-focused unit tests;
+- public visual browser smoke;
+- public navigation smoke;
+- `npm run watchdog:links`
+- `npm run watchdog:actions` where relevant
+- `npm run watchdog:security`
+- `git diff --check`
+- secret audit for changed files
+- relevant existing public UI tests
+
+Do not run a deployment.
+
+## Handoff files
+
+Write:
+
+- `HANDOFF.md`
+- `RESULT.json`
+- `TESTS.md`
+- `FILES.txt`
+- `BLOCKERS.md`
+- `SCREENSHOTS.md`
+- `SHARED-PATCH.diff` if needed
+
+Commit and push the lane branch.
+
+## Final response
+
+Return:
+
+- branch;
+- base SHA;
+- head SHA;
+- PR URL;
+- routes inspected;
+- defects fixed;
+- screenshots;
+- tests;
+- files changed;
+- shared patch requested;
+- blockers;
+- external reads/writes;
+- status: `PUSHED`, `PARTIAL`, or `BLOCKED`.
+
+## Completion criteria
+
+- hero gap passes measured assertions;
+- active tabs are readable and accessible;
+- public navigation is connected;
+- obvious public placeholders/stale content are fixed;
+- all required viewports pass;
+- evidence is committed;
+- lane branch is pushed.

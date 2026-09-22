@@ -1,0 +1,64 @@
+{
+  "started_at": "2026-06-26T10:01:04.149Z",
+  "app_url": "https://bneineviimacademy.org",
+  "deployment_id": "8394199e-7b61-40b7-8bc5-08b6b0087493",
+  "commit": "460b1b44970c85e3e58f4eb15330bf2ce99cf091",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 599,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "provider portal exposes honest API Usage preview bundle",
+      "ok": true,
+      "duration_ms": 965,
+      "details": {
+        "markers": 6
+      }
+    },
+    {
+      "name": "operations login exposes portal chooser bundle",
+      "ok": true,
+      "duration_ms": 372,
+      "details": {
+        "markers": 5
+      }
+    },
+    {
+      "name": "operations login session",
+      "ok": true,
+      "duration_ms": 2443,
+      "details": {
+        "auth_source": "railway",
+        "role": "super_admin"
+      }
+    },
+    {
+      "name": "operations Rabbi workspace route bundle is deployed",
+      "ok": true,
+      "duration_ms": 1677,
+      "details": {
+        "markers": 4
+      }
+    },
+    {
+      "name": "operations scoped task API accepts Rabbi project filter",
+      "ok": true,
+      "duration_ms": 588,
+      "details": {
+        "task_count_sample": 5
+      }
+    }
+  ],
+  "summary": {
+    "operations_auth_source": "railway",
+    "scoped_task_count_sample": 5,
+    "provider_markers_checked": 6,
+    "operations_markers_checked": 4
+  }
+}

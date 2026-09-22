@@ -1,0 +1,80 @@
+{
+  "checked_at": "2026-07-10T14:55:52.762Z",
+  "scope": {
+    "workspace_key": "rabbi_sheller_provider",
+    "project_key": "one_time_mishnah_class"
+  },
+  "verdict": {
+    "provider_lead_bot_guardrails": "implemented_local_ready_for_review",
+    "full_whatsapp_commercial_automation": "blocked",
+    "external_write_performed": false,
+    "whatsapp_send_performed": false,
+    "crm_mutation_performed_by_readiness_proof": false,
+    "secret_values_printed": false
+  },
+  "implemented_guardrails": [
+    "Robot Scheller provider lead-bot profile is scoped to WhatsApp and one_time_mishnah_class.",
+    "Bot cannot impersonate Rabbi Scheller, charge, grant access, or release class join instructions from model output.",
+    "Class join instructions release only for server-verified active_member access.",
+    "Hosted WAPI webhooks require server-side header secret authentication; query-string secrets are not accepted.",
+    "One Time WAPI webhooks require provider instance and sender-number binding before live auto-reply.",
+    "Auto-reply requires One Time-scoped WAPI credentials, live mode, explicit WhatsApp approval, explicit Telegram approval, and configured class link.",
+    "Outbound reply attempts are claimed before send to avoid duplicate replies.",
+    "Restricted class-link sends store redacted audit bodies and metadata.",
+    "Telegram routing uses explicit approved role aliases only."
+  ],
+  "current_blockers": [
+    "Whapi/WAPI instance id missing",
+    "WhatsApp sender phone metadata missing",
+    "WAPI webhook secret missing",
+    "ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled",
+    "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY",
+    "ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live",
+    "ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM"
+  ],
+  "verification": [
+    {
+      "command": "node --check server.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --check src/lib/bna/provider-lead-bot.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --check scripts/check-onetime-wapi-readiness.mjs",
+      "status": "pass"
+    },
+    {
+      "command": "node --test tests/service-provider-lead-bot.test.js tests/one-time-wapi-scope-contract.test.js tests/rabbi-telegram-notifications.test.js",
+      "status": "pass",
+      "passed": 21,
+      "failed": 0
+    },
+    {
+      "command": "npm run one-time:wapi:readiness -- --json",
+      "status": "expected_blocked",
+      "exit_code": 1
+    }
+  ],
+  "evidence": [
+    "config/service-provider-bots/one-time.json",
+    "config/service-provider-bots/schema.json",
+    "src/lib/bna/provider-lead-bot.js",
+    "server.js",
+    "src/lib/bna/telegram-notifications.js",
+    "scripts/check-onetime-wapi-readiness.mjs",
+    "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md",
+    "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.json"
+  ],
+  "guardrails": [
+    "No email send",
+    "No WhatsApp/WAPI send",
+    "No Telegram send",
+    "No payment/access mutation",
+    "No DNS/credential mutation",
+    "No provider-account mutation",
+    "No production-data mutation",
+    "No GHL/LeadConnector runtime"
+  ]
+}

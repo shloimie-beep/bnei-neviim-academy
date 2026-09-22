@@ -1,0 +1,74 @@
+{
+  "generated_at": "2026-07-12T18:07:23.658Z",
+  "base_url": "http://127.0.0.1:57387",
+  "requirement_id": "REQ-20260712-108",
+  "fixture_email_count": 6,
+  "write_requests": [],
+  "vimeo_lazy_load": {
+    "requests_after_play": 3,
+    "playable_fixture_present": true,
+    "request_hosts": [
+      "player.vimeo.com"
+    ]
+  },
+  "screenshots": [
+    "family-preview-1440.png",
+    "library-preview-1024.png",
+    "classroom-preview-768.png",
+    "parent-setup-430.png",
+    "student-preview-390.png",
+    "family-preview-mobile-menu-390.png"
+  ],
+  "results": [
+    {
+      "id": "family-preview-1440",
+      "width": 1440,
+      "height": 960,
+      "path": "/rabbi-member?review=one-time",
+      "screenshot": "family-preview-1440.png",
+      "playable_media_present": false,
+      "console_errors": [],
+      "http_errors": []
+    },
+    {
+      "id": "library-preview-1024",
+      "width": 1024,
+      "height": 900,
+      "path": "/member-library?review=one-time",
+      "screenshot": "library-preview-1024.png",
+      "playable_media_present": true,
+      "console_errors": [],
+      "http_errors": []
+    },
+    {
+      "id": "classroom-preview-768",
+      "width": 768,
+      "height": 1024,
+      "path": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "screenshot": "classroom-preview-768.png",
+      "playable_media_present": false,
+      "console_errors": [],
+      "http_errors": []
+    },
+    {
+      "id": "parent-setup-430",
+      "width": 430,
+      "height": 860,
+      "path": "/one-time-parent",
+      "screenshot": "parent-setup-430.png",
+      "playable_media_present": false,
+      "console_errors": [],
+      "http_errors": []
+    },
+    {
+      "id": "student-preview-390",
+      "width": 390,
+      "height": 844,
+      "path": "/student.html?review=one-time",
+      "screenshot": "student-preview-390.png",
+      "playable_media_present": false,
+      "console_errors": [],
+      "http_errors": []
+    }
+  ]
+}

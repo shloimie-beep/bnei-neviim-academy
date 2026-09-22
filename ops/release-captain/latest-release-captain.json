@@ -1,0 +1,167 @@
+{
+  "ok": true,
+  "generated_at": "2026-07-07T19:42:20.532Z",
+  "mode": "release_captain_read_only",
+  "production_mutation_performed": false,
+  "external_write_performed": false,
+  "secrets_redacted": true,
+  "state": "ready_for_pr_merge_deploy_gate",
+  "summary": "ready for pr merge deploy gate",
+  "next_actions": [
+    "Open or update the PR, wait for checks, merge when green, deploy through the approved release path, and run live smoke."
+  ],
+  "git": {
+    "branch": "master",
+    "expected_branch": null,
+    "allow_detached": false,
+    "detached_allowed": false,
+    "branch_matches_expected": true,
+    "head": "c5120f736981d1ce747050f1b431420d149e283b",
+    "upstream": "origin/master",
+    "remote_branch": "origin/master",
+    "remote_head": "c5120f736981d1ce747050f1b431420d149e283b",
+    "head_pushed": true,
+    "dirty": {
+      "total": 0,
+      "staged": 0,
+      "modified": 0,
+      "untracked": 0,
+      "sample": []
+    }
+  },
+  "target_gate": {
+    "ok": true,
+    "target": "not_requested",
+    "status": "not_requested",
+    "blockers": [],
+    "warnings": [],
+    "checks": [],
+    "secrets_redacted": true,
+    "production_mutation_performed": false,
+    "external_write_performed": false
+  },
+  "active_run": {
+    "run_dir": "ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation",
+    "run_id": "2026-07-02-background-drive-ui-launch-continuation",
+    "active": true,
+    "expected_branch": null,
+    "pr_number": null,
+    "pr_url": null,
+    "status_counts": {
+      "done": 6,
+      "blocked": 4
+    },
+    "open_requirements": [
+      {
+        "id": "REQ-20260702-102",
+        "status": "blocked",
+        "owner": "Codex",
+        "next_action": "After branch/pointer state is clean, run npm run agent:fleet:status, npm run agent:fleet:readiness, then npm run agent:fleet:restart only if readiness is OK.",
+        "blocker": "Agent fleet supervisor is not running reliably; readiness reports active pointer drift and branch drift."
+      },
+      {
+        "id": "REQ-20260702-103",
+        "status": "blocked",
+        "owner": "Codex",
+        "next_action": "Restore app/API reachability for dry-run reprocess, run dry-run parser repair for content_job 101, then apply private Drive transcript doc sync only after exact approval.",
+        "blocker": "Content job 101 is discovered and transcribed, but no structured parser/class/UI output exists and no private Drive transcript-library doc has been written."
+      },
+      {
+        "id": "REQ-20260702-108",
+        "status": "blocked",
+        "owner": "Codex",
+        "next_action": "Provide or label the remaining exact aliases: One Time Zoom session/join alias, VIMEO_ACCESS_TOKEN, ONE_TIME_DRIVE_DROP_FOLDER_ALIAS, Rabbi Stripe test key and $67/month price/product aliases, Whapi/WAPI instance/phone aliases.",
+        "blocker": "Remaining provider/campaign setup is exact: Zoom session/join alias, Vimeo access token and Drive drop-folder alias, Stripe sandbox key/product price, Whapi/WAPI instance/phone, and campaign copy/list/suppression/approval."
+      },
+      {
+        "id": "REQ-20260702-110",
+        "status": "blocked",
+        "owner": "Codex",
+        "next_action": "Run full validation, commit/push PR #64 updates, mark ready/merge if checks pass, deploy one-time-web, then run DB bootstrap via Railway SSH and live smoke.",
+        "blocker": "DB bootstrap cannot run from local Railway env because the Postgres host is internal-only; deploy one-time-web first and run bootstrap inside the Railway service."
+      }
+    ]
+  },
+  "release_gate_blockers": [],
+  "open_prs": [],
+  "merged_prs": [
+    {
+      "number": 126,
+      "title": "Reconcile cleanup status and raw provenance",
+      "branch": "codex/continue-cleanup-status-reconciliation-20260706",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/126"
+    },
+    {
+      "number": 125,
+      "title": "Record final repo cleanup evidence",
+      "branch": "codex/final-cleanup-evidence-20260706",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/125"
+    },
+    {
+      "number": 124,
+      "title": "[codex] Record local checkout cleanup",
+      "branch": "codex/archive-clean-checkout-closeout-20260706",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/124"
+    },
+    {
+      "number": 123,
+      "title": "[codex] Record One Time Vimeo cleanup status",
+      "branch": "codex/clean-deploy-all-pending-20260706",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/123"
+    },
+    {
+      "number": 122,
+      "title": "[codex] Record One Time content IA live verification",
+      "branch": "codex/onetime-ia-filter-live-closeout-20260706",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/122"
+    },
+    {
+      "number": 121,
+      "title": "[codex] Fix One Time content IA rail",
+      "branch": "codex/onetime-ia-filters-content-20260706",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/121"
+    },
+    {
+      "number": 120,
+      "title": "Fix ChatGPT dropoff collector retry path",
+      "branch": "codex/chatgpt-dropoff-collector-fix-20260706",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/120"
+    },
+    {
+      "number": 119,
+      "title": "[codex] Record One Time dashboard live proof",
+      "branch": "codex/onetime-dashboard-ui-fix-20260706",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/119"
+    }
+  ],
+  "command_health": {
+    "gh_open_prs": "ok",
+    "gh_merged_prs": "ok",
+    "bna_run_status": "ok"
+  },
+  "run_status_text": "> bna-website@1.0.0 bna:run:status\n> node scripts/bna-execution-run.mjs status\n\nExecution run: ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation\nRequirement status counts:\n- blocked: 4\n- done: 6\nWork remains: yes\nValidation passed."
+}

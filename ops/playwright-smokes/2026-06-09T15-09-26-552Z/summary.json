@@ -1,0 +1,75 @@
+{
+  "outDir": "ops\\playwright-smokes\\2026-06-09T15-09-26-552Z",
+  "operationsDesktop": {
+    "position": "fixed",
+    "zIndex": 5000,
+    "rect": {
+      "top": 266,
+      "left": 383,
+      "right": 593,
+      "bottom": 476,
+      "width": 210,
+      "height": 210
+    },
+    "viewport": {
+      "width": 1280,
+      "height": 900
+    },
+    "clipped": false
+  },
+  "operationsMobile": {
+    "position": "fixed",
+    "zIndex": 5000,
+    "rect": {
+      "top": 429,
+      "left": 39,
+      "right": 351,
+      "bottom": 639,
+      "width": 312,
+      "height": 210
+    },
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "clipped": false
+  },
+  "studentPicker": {
+    "hasNativeSelect": false,
+    "optionCount": 5,
+    "position": "fixed",
+    "rect": {
+      "top": 340,
+      "left": 285,
+      "right": 579,
+      "bottom": 621.71875
+    },
+    "clipped": false
+  },
+  "studentPortalDesktop": {
+    "title": "Hillel Baraka",
+    "historyPoints": 5,
+    "nextMeetingText": "Next meeting is not scheduled yet",
+    "dayButtons": 28,
+    "noteFields": 4,
+    "hasMessageBox": true,
+    "goalCards": 4
+  },
+  "studentPortalMobile": {
+    "title": "Hillel Baraka",
+    "historyPoints": 5,
+    "nextMeetingText": "Next meeting is not scheduled yet",
+    "dayButtons": 28,
+    "noteFields": 4,
+    "hasMessageBox": true,
+    "goalCards": 4
+  },
+  "parentPortal": {
+    "hasPasswordInput": false,
+    "studentPanels": 3,
+    "goalCards": 5,
+    "dayCells": 35,
+    "communicationItems": 1,
+    "urlHasToken": false
+  }
+}

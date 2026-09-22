@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-07-07T13:19:58+03:00",
+  "source": "agent_fleet_worker",
+  "task_id": 1136,
+  "agent_job_id": 237,
+  "run_id": "task-1136-2026-07-07T10-17-24-125Z-1e62df",
+  "title": "Repair follow-up after Drive transcription reprocess.",
+  "source_ref": "content_job:73",
+  "status": "done_superseded_not_live_task_closed",
+  "canonical_requirement_id": "REQ-20260618-204",
+  "related_content_jobs": [72, 73, 74],
+  "summary": "Task #1136 is stale. It maps to content_job:73, and the underlying Drive transcription reprocess repair was already completed for jobs #72, #73, and #74 with transcripts, parser counts, and drive_stage='04 Parsed'.",
+  "evidence": [
+    "tasks-pending/2026-06-18-telegram-bot-stuck-google-drive-intake.md",
+    "ops/agent-task-ledger.jsonl",
+    "ops/queue-audits/2026-07-06-agent-fleet-queued-25-implementation-audit.md",
+    "ops/queue-audits/2026-07-07-task-1130-drive-reprocess-closeout.md",
+    "content-memory/transcript-digests/recordings/000073/MANIFEST.json",
+    "content-memory/transcript-digests/recordings/000073/DIGEST.md"
+  ],
+  "verification": [
+    "PASS npm run bna:run:status",
+    "PASS npm run bna:run:next",
+    "PASS queue-audit readback found task #1136 as agent job #237 / content_job:73",
+    "PASS evidence readback found REQ-20260618-204, jobs #72-#74, and drive_stage='04 Parsed' proof",
+    "PASS inspected job #73 manifest/digest; raw transcript body is not included"
+  ],
+  "guardrails": [
+    "No live task status mutation",
+    "No Drive write",
+    "No production DB write",
+    "No parser reprocess rerun",
+    "No external send",
+    "No deploy",
+    "No DNS/payment/access/credential/provider mutation",
+    "No raw transcript/private body/secret committed"
+  ],
+  "supervisor_next_action": "Close task #1136 as superseded by REQ-20260618-204 after supervisor baseline verification."
+}

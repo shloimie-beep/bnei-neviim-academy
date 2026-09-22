@@ -1,0 +1,120 @@
+- complementary "BNA Operations navigation":
+  - text: One Time Mishnah Class Workspace dashboard
+  - group:
+    - text: Workspace Directory
+    - strong: One Time Mishnah Class
+    - text: Service Provider / Provider Workspace Admin Switch
+  - navigation:
+    - button "Dashboard DB"
+    - button "Watchdog WG"
+    - button "Program PG"
+    - button "Agents AG"
+    - button "Members MB"
+    - button "Community CO"
+    - button "Studio ST"
+    - button "Content CT"
+    - button "Live LC"
+    - button "Schedule SC"
+    - button "Communications CM"
+    - button "Tasks TS"
+    - button "Automations AU"
+    - button "Integrations IN"
+    - button "Reporting RP"
+    - button "Settings SE"
+  - button "Settings"
+  - button "Help"
+  - link "Logout":
+    - /url: /operations-login.html
+- main:
+  - text: One Time Mishnah Class / Automations / Center
+  - strong: Center
+  - button "Need decision 0":
+    - text: Need decision
+    - strong: "0"
+  - button "Codex Queue 0":
+    - text: Codex Queue
+    - strong: "0"
+  - button "Student accountability 0":
+    - text: Student accountability
+    - strong: "0"
+  - button "Alerts 0":
+    - text: Alerts
+    - strong: "0"
+  - text: One Time Mishnah Class / Provider Workspace Admin
+  - button "Ask / Search"
+  - text: Wed 1 Jul
+  - button "Refresh"
+  - navigation "Automations filters":
+    - text: Automations
+    - strong: Center
+    - tablist "Automations views":
+      - tab "Center 2" [selected]
+  - text: Operations Registry
+  - heading "Automation Center" [level=2]
+  - paragraph: Compact automation metadata across packages, services, owners, setup blockers, logs, and related tasks.
+  - button "Create automation with helper"
+  - region "Automation filters":
+    - text: Automation Center
+    - strong: 2 visible automations
+    - paragraph: 2 registry items loaded. Run controls stay outside this read/write metadata surface.
+    - text: Package
+    - button "Package": All
+    - text: Service
+    - button "Service": All
+    - text: Workspace
+    - button "Workspace": All
+    - text: Owner
+    - button "Owner": All
+    - text: Status
+    - button "Status": All
+    - text: Channel
+    - button "Channel": All
+    - text: Type
+    - button "Type": All
+    - text: Search
+    - textbox "Search":
+      - /placeholder: Name, owner, trigger
+    - button "Apply"
+    - button "Refresh"
+  - region "Automation registry":
+    - text: Automation / Purpose / Trigger Package Workspace Enabled Edit
+    - article:
+      - text: One Time Private Question Digest
+      - strong: "Purpose:"
+      - text: Builds a private Rabbi-facing review digest for One Time student questions without public answers, notifications, or rewards.
+      - strong: "Trigger:"
+      - text: Operations private question moderation / Dashboard
+      - strong: "Action:"
+      - text: Workflow / Question Moderation
+      - strong: One Time
+      - text: Question Moderation
+      - strong: One Time
+      - text: Project
+      - strong
+      - text: "Status: Active / Workflow"
+      - button "Edit / Details"
+    - article:
+      - text: One Time Member Library Package Review
+      - strong: "Purpose:"
+      - text: Previews One Time class media packages, blockers, and member-library visibility without publishing until approval exists.
+      - strong: "Trigger:"
+      - text: Operations One Time Library review / Dashboard
+      - strong: "Action:"
+      - text: Content / Member Library
+      - strong: One Time
+      - text: Member Library
+      - strong: One Time
+      - text: Project
+      - strong
+      - text: "Status: Guarded / Content"
+      - button "Edit / Details"
+- dialog "Shloimie's BNA Helper":
+  - text: Shloimie's BNA Helper Provider Workspace Admin / Automations
+  - button "Close Shloimie's BNA Helper": x
+  - region "Helper scope":
+    - strong: admin / rabbi_sheller_provider
+    - text: Scoped to this workspace and current page context. 0 tools standard
+    - button "Teach helper"
+  - text: Ready for scoped Operations actions. Confirmation is required before email sends, social scheduling, or other sensitive changes.
+  - textbox "Ask Shloimie's BNA Helper to open a task, mark done, report a problem, draft an email, check the queue, or prepare an action."
+  - button "Send"

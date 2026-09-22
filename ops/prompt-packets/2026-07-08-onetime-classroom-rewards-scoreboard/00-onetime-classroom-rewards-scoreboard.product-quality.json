@@ -1,0 +1,661 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260708-004",
+  "parent_raw_id": "RAW-20260708-004",
+  "source_statement_ids": [
+    "SRC-20260708-003-001"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260708-004-onetime-classroom-rewards-scoreboard.md",
+      "memory-topics/rabbi-scheller-onetime.md",
+      "memory-topics/workspace-scope-isolation.md",
+      "docs/PRODUCT-QUALITY-COMPILER.md",
+      "docs/UI-STATE-MATRIX.md",
+      "docs/VISUAL-QUALITY-HARNESS.md",
+      "docs/BROWSER-AGENT-SECURITY.md",
+      "ops/one-time-mishnah/forum-gamification-moderation-plan.md"
+    ],
+    "produces": [
+      "tasks-pending/2026-07-08-onetime-classroom-rewards-scoreboard.md",
+      "ops/prompt-packets/2026-07-08-onetime-classroom-rewards-scoreboard/00-onetime-classroom-rewards-scoreboard.product-quality.json",
+      "ops/live-smokes/*one-time-classroom-rewards-scoreboard*"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-classroom-rewards-scoreboard/00-onetime-classroom-rewards-scoreboard.product-quality.json",
+    "terminal_condition": "The One Time rewards scoreboard is Done only after approved-only data rules, UI rendering, focused tests, validator, drift watchdog, deploy, and live smoke evidence pass.",
+    "handoff_target": "tasks-pending/2026-07-08-onetime-classroom-rewards-scoreboard.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "in_progress",
+  "title": "One Time Classroom Rewards Scoreboard",
+  "created_at": "2026-07-08T09:34:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL",
+    "RABBI_PROVIDER_ADMIN"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260708-004",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "COMMUNITY_CLASSROOM",
+      "SECURITY_PRIVACY",
+      "DEPLOY_RELEASE"
+    ],
+    "confidence": 0.97,
+    "reasons": [
+      "The operator asked for a visible classroom scoreboard for parents and students.",
+      "The request references rewards, ratings, published questions, and public classroom visibility.",
+      "The feature touches member/student portal UI and child/member privacy boundaries."
+    ],
+    "affected_product_surfaces": [
+      "One Time parent/student classroom",
+      "One Time classroom member-safe API",
+      "One Time moderation and gamification policy"
+    ],
+    "likely_external_provider_blockers": [],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-onetime-classroom-rewards-scoreboard"
+    ],
+    "next_exact_packet": "Verify and deploy the approved-only classroom scoreboard."
+  },
+  "operator_intent_summary": "Add a clear One Time classroom scoreboard where parents/students can see positive reviewed participation such as published questions, answered questions, Rabbi-featured items, and review participation.",
+  "raw_quotes": [
+    "in the classroom section we need to have some sort of like scoreboard",
+    "one of them is like you know the best questions",
+    "this guy got his question answered",
+    "anyone who gets like a question that is published and like made public for everyone so that should be like you know viewable",
+    "there should be like a section for everyone to see like the the scoreboard of you know where everyone's holding"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260708-004",
+      "decision": "A member-visible One Time classroom rewards scoreboard is approved when it counts only positive approved classroom-visible events.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-20260708-005",
+      "decision": "This request does not approve an anonymous public leaderboard, negative points, public shame, prizes, coupons, payment credits, access grants, external notifications, or unreviewed text exposure.",
+      "status": "accepted"
+    }
+  ],
+  "out_of_scope": [
+    "No anonymous public marketing leaderboard.",
+    "No raw private reply bodies, held responses, rejected messages, or unreviewed student text in the scoreboard.",
+    "No negative points, public discipline labels, prize, coupon, discount, payment credit, access grant, or external notification.",
+    "No email, WhatsApp, Telegram, Vimeo, Zoom, Stripe, Drive, DNS, GHL, or LeadConnector write.",
+    "No student-to-student chat or unmoderated forum feed."
+  ],
+  "affected_surfaces": [
+    "One Time classroom route",
+    "One Time member-safe classroom API",
+    "One Time gamification moderation plan",
+    "Shared One Time review fixture"
+  ],
+  "affected_routes": [
+    "/one-time-classroom",
+    "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+    "/api/one-time-classroom"
+  ],
+  "affected_files": [
+    "server.js",
+    "public/one-time-classroom.html",
+    "src/platform/instances/one-time-shared-review-data.js",
+    "ops/one-time-mishnah/forum-gamification-moderation-plan.md",
+    "tests/one-time-classroom-calendar-community-bot.test.js",
+    "tests/one-time-gamification-badge-audit.test.js",
+    "tests/one-time-forum-gamification-plan.test.js"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "server.js classroom participation helpers",
+      "public/one-time-classroom.html member classroom UI",
+      "One Time forum/gamification moderation plan",
+      "existing tests that previously required an empty leaderboard"
+    ],
+    "observed": [
+      "Approved participation events already exist.",
+      "The classroom API previously returned an empty leaderboard array.",
+      "The classroom UI rendered approved participation but not a true scoreboard."
+    ],
+    "known_blockers": []
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "scoreboard",
+      "rewards",
+      "best questions",
+      "question answered",
+      "published",
+      "viewable",
+      "where everyone's holding"
+    ],
+    "expanded_phrases": {
+      "scoreboard": "Member-visible, positive-only ranking of approved classroom participation with no private or negative data exposure.",
+      "rewards": "Display labels and points for approved questions, approved answers, Rabbi-featured items, and assignment/review participation only.",
+      "best questions": "Questions count only after Rabbi/admin approval or publication.",
+      "question answered": "Approved response/answer events count as positive participation.",
+      "published": "Only classroom-visible approved events are eligible for display.",
+      "viewable": "Visible to authenticated/review One Time classroom users, not anonymous public visitors.",
+      "where everyone's holding": "Show current positive point totals and rank without shame, penalties, or private text."
+    },
+    "first_party_pattern_interpretation": "The scoreboard is a first-party BNA One Time classroom feature, not an external forum, CRM, or community runtime."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/rabbi-scheller-onetime.md",
+    "memory-topics/workspace-scope-isolation.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260708-016",
+      "statement": "Add a member-visible One Time classroom rewards scoreboard.",
+      "expected_result": "The classroom shows a compact positive scoreboard section after access is opened.",
+      "acceptance_criteria": [
+        "The section title is Rewards Scoreboard.",
+        "Rows show rank, participant label, points, approved-count summary, and reward labels.",
+        "The empty state explains that approved rewards appear after Rabbi/admin review."
+      ]
+    },
+    {
+      "id": "REQ-20260708-017",
+      "statement": "Score only approved classroom-visible participation events.",
+      "expected_result": "The API calculates points from approved question, approved answer, Rabbi-featured, and assignment/review participation events.",
+      "acceptance_criteria": [
+        "Events must have status approved.",
+        "Events must have visibility classroom.",
+        "The scoring formula is explicit and tested."
+      ]
+    },
+    {
+      "id": "REQ-20260708-018",
+      "statement": "Preserve privacy and no-external-write guardrails.",
+      "expected_result": "The scoreboard excludes private/unreviewed/negative/prize/payment/external behavior.",
+      "acceptance_criteria": [
+        "No raw private replies or unreviewed text appear.",
+        "No negative points or discipline labels appear.",
+        "No external send, charge, access grant, provider write, or reward fulfillment is performed."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "Affected route is limited to One Time classroom.",
+      "Existing current-state code path has been inspected.",
+      "Approved-only data source and scoring formula are explicit.",
+      "Forbidden data and external writes are listed.",
+      "Focused test targets are identified."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/one-time-classroom",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit a valid access code and wait for the classroom API.",
+      "expected_visible_title": "One Time Mishnah Classroom",
+      "expected_visible_message": "Opening classroom...",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": [
+        "Assistant/help"
+      ],
+      "forbidden_content": [
+        "raw JSON",
+        "private replies"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Loading status is text near the access form.",
+      "accessibility_expectation": "Status text is readable and not color-only.",
+      "test_smoke_assertion": "Access form status changes while loading.",
+      "requirement_id": "REQ-20260708-016"
+    },
+    "empty": {
+      "route": "/one-time-classroom",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open classroom with no approved reward rows.",
+      "expected_visible_title": "Rewards Scoreboard",
+      "expected_visible_message": "Approved rewards will appear after Rabbi/admin review.",
+      "expected_primary_action": "Submit For Review",
+      "expected_secondary_actions": [
+        "Open Library"
+      ],
+      "forbidden_content": [
+        "fake winners",
+        "negative points"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state is inside the scoreboard section.",
+      "accessibility_expectation": "Empty text has sufficient contrast.",
+      "test_smoke_assertion": "Empty scoreboard does not invent rows.",
+      "requirement_id": "REQ-20260708-016"
+    },
+    "populated": {
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1440",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open TEST classroom review fixture with seeded scoreboard rows.",
+      "expected_visible_title": "Rewards Scoreboard",
+      "expected_visible_message": "Approved questions, answers, and review participation only.",
+      "expected_primary_action": "Submit For Review",
+      "expected_secondary_actions": [
+        "Open Classroom",
+        "Assistant/help"
+      ],
+      "forbidden_content": [
+        "unreviewed message body",
+        "discipline labels"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Scoreboard rows are structured as list items with rank labels.",
+      "accessibility_expectation": "Rank, name, points, and reward labels are readable at desktop and mobile widths.",
+      "test_smoke_assertion": "Scoreboard rows show public_rank and public_points from approved data.",
+      "requirement_id": "REQ-20260708-017"
+    },
+    "filtered_empty": {
+      "route": "/one-time-classroom",
+      "viewport": "1024",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "No client-side scoreboard filter exists in this packet.",
+      "expected_visible_title": "Rewards Scoreboard",
+      "expected_visible_message": "Approved rewards will appear after Rabbi/admin review.",
+      "expected_primary_action": "Submit For Review",
+      "expected_secondary_actions": [
+        "Open Library"
+      ],
+      "forbidden_content": [
+        "hidden filters",
+        "stale winners"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "No-filter state still has a section heading.",
+      "accessibility_expectation": "No unavailable filter control is displayed.",
+      "test_smoke_assertion": "Scoreboard remains stable without a filter control.",
+      "requirement_id": "REQ-20260708-018"
+    },
+    "error": {
+      "route": "/one-time-classroom",
+      "viewport": "1024",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use an invalid or expired access code.",
+      "expected_visible_title": "Access Code",
+      "expected_visible_message": "Could not open classroom",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": [
+        "Questions/support"
+      ],
+      "forbidden_content": [
+        "stack trace",
+        "access code"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error appears as text in the access panel.",
+      "accessibility_expectation": "Error is readable and actionable.",
+      "test_smoke_assertion": "Invalid code does not show scoreboard data.",
+      "requirement_id": "REQ-20260708-018"
+    },
+    "blocked_setup": {
+      "route": "/one-time-classroom",
+      "viewport": "768",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open classroom before any approved reward events exist.",
+      "expected_visible_title": "Rewards Scoreboard",
+      "expected_visible_message": "Approved rewards will appear after Rabbi/admin review.",
+      "expected_primary_action": "Submit For Review",
+      "expected_secondary_actions": [
+        "Rabbi Threads"
+      ],
+      "forbidden_content": [
+        "setup diagnostics",
+        "super admin configuration"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked-by-no-data state is a normal empty state, not admin diagnostics.",
+      "accessibility_expectation": "The empty state does not block the rest of the classroom.",
+      "test_smoke_assertion": "No setup noise appears in parent/student classroom.",
+      "requirement_id": "REQ-20260708-018"
+    },
+    "preview_only": {
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "768",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the TEST review classroom.",
+      "expected_visible_title": "Rewards Scoreboard",
+      "expected_visible_message": "Review Participant",
+      "expected_primary_action": "Submit For Review",
+      "expected_secondary_actions": [
+        "Open Classroom"
+      ],
+      "forbidden_content": [
+        "database write from preview route",
+        "external send"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview content uses the same layout as live classroom content.",
+      "accessibility_expectation": "Preview labels are readable on tablet.",
+      "test_smoke_assertion": "Review fixture populates a scoreboard row without writes.",
+      "requirement_id": "REQ-20260708-018"
+    },
+    "success_readback": {
+      "route": "/api/one-time-classroom",
+      "viewport": "430",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Read classroom JSON after approved participation exists.",
+      "expected_visible_title": "Rewards Scoreboard",
+      "expected_visible_message": "Published Question",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": [
+        "Open Library"
+      ],
+      "forbidden_content": [
+        "participation_events in member-safe payload",
+        "private moderation notes"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Readback maps into the same UI section.",
+      "accessibility_expectation": "Mobile score rows reflow without horizontal overflow.",
+      "test_smoke_assertion": "API readback includes leaderboard and reward_policy but no raw private events.",
+      "requirement_id": "REQ-20260708-017"
+    },
+    "permission_denied": {
+      "route": "/api/one-time-classroom",
+      "viewport": "430",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Call classroom API without a valid access code.",
+      "expected_visible_title": "Access Code",
+      "expected_visible_message": "A valid access code is required",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": [
+        "Questions/support"
+      ],
+      "forbidden_content": [
+        "other members",
+        "scoreboard rows"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Access denial stays in the access panel.",
+      "accessibility_expectation": "Denied state is keyboard reachable.",
+      "test_smoke_assertion": "Wrong-scope users cannot fetch scoreboard data.",
+      "requirement_id": "REQ-20260708-018"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "390",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the TEST classroom on a narrow viewport.",
+      "expected_visible_title": "Rewards Scoreboard",
+      "expected_visible_message": "points",
+      "expected_primary_action": "Submit For Review",
+      "expected_secondary_actions": [
+        "Assistant/help"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "overlapping score text"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Score row content order remains rank, participant, points.",
+      "accessibility_expectation": "Touch targets and text remain readable at 390px.",
+      "test_smoke_assertion": "Scoreboard rows fit mobile width.",
+      "requirement_id": "REQ-20260708-018"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 1440,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-018"
+      },
+      {
+        "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 1024,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-018"
+      },
+      {
+        "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 768,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-018"
+      },
+      {
+        "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 430,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-018"
+      },
+      {
+        "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 390,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-018"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260708-003",
+        "route": "/one-time-classroom",
+        "viewport": "390",
+        "screenshot_before": "ops/ui-audits/2026-07-08-onetime-classroom-rewards-scoreboard/before-390.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-08-onetime-classroom-rewards-scoreboard/after-390.png",
+        "defect_codes": [
+          "VQ-LAYOUT-001",
+          "VQ-RESP-003"
+        ],
+        "severity": "P2",
+        "user_impact": "Approved reward progress had no clear classroom scoreboard section.",
+        "expected_fix": "Add a compact mobile-safe positive rewards board with empty/populated states.",
+        "requirement_id": "REQ-20260708-018"
+      }
+    ]
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.2 A/AA plus mobile reflow and touch target requirements.",
+    "required_checks": [
+      "score row text contrast",
+      "rank label readable without color",
+      "mobile no horizontal overflow",
+      "keyboard submit path remains intact",
+      "empty state readable"
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Rewards Scoreboard",
+      "selector_or_action_key": "#scoreboardList",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Read-only render from member-safe classroom API payload.",
+      "registry_required": false
+    },
+    {
+      "label": "Submit For Review",
+      "selector_or_action_key": "form.response-form button[type=\"submit\"]",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time classroom",
+      "external_write": false,
+      "handler_or_blocker": "Existing private response submit remains review-gated and not directly public.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": [
+    "participant display label",
+    "public rank",
+    "positive point total",
+    "approved question count",
+    "approved answer count",
+    "Rabbi-featured count",
+    "assignment/review participation count",
+    "reward label list",
+    "reward policy guardrails"
+  ],
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Parent/student classroom sees only member-safe One Time classroom data.",
+      "Scoreboard rows are generated only from approved classroom-visible events.",
+      "Unreviewed private replies remain private."
+    ],
+    "forbidden_content": [
+      "raw private replies",
+      "held responses",
+      "rejected messages",
+      "unreviewed student text",
+      "contact details",
+      "negative points",
+      "discipline labels",
+      "payment or access reward details",
+      "admin-only moderation notes"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260708-003-A",
+      "scope": "One Time classroom reward-scoreboard API and UI",
+      "instructions": [
+        "Compute positive points from approved classroom-visible events only.",
+        "Return leaderboard and reward_policy in the member-safe classroom API.",
+        "Render Rewards Scoreboard in the classroom route with mobile-safe rows.",
+        "Update tests and moderation plan to preserve safety guardrails."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "server.js",
+      "public/one-time-classroom.html",
+      "ops/one-time-mishnah/forum-gamification-moderation-plan.md",
+      "tests/one-time-gamification-badge-audit.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "server.js",
+      "public/one-time-classroom.html",
+      "src/platform/instances/one-time-shared-review-data.js",
+      "ops/one-time-mishnah/forum-gamification-moderation-plan.md"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 2,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if reward ledger, admin moderation panel, notifications, or external sends are added.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    {
+      "command_or_check": "node --check server.js",
+      "expected_result": "Server parses."
+    },
+    {
+      "command_or_check": "node --test tests/one-time-classroom-calendar-community-bot.test.js tests/one-time-gamification-badge-audit.test.js tests/one-time-forum-gamification-plan.test.js",
+      "expected_result": "Focused classroom/gamification tests pass."
+    },
+    {
+      "command_or_check": "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-classroom-rewards-scoreboard/00-onetime-classroom-rewards-scoreboard.product-quality.json",
+      "expected_result": "Product Quality packet validates."
+    },
+    {
+      "command_or_check": "npm run watchdog:protocol-drift",
+      "expected_result": "Protocol drift report has 0 findings or explicit blocker."
+    }
+  ],
+  "evidence": {
+    "expected_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/live-smokes/*one-time-classroom-rewards-scoreboard*",
+      "tasks-pending/2026-07-08-onetime-classroom-rewards-scoreboard.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "Scoreboard API uses approved classroom-visible events only.",
+      "Classroom UI shows populated and empty scoreboard states.",
+      "Private/unreviewed/negative/prize/payment/external-write guardrails are documented and tested.",
+      "Focused tests and Product Quality validator pass.",
+      "Commit is pushed, deployed, and live-smoked before Done."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260708-004-onetime-classroom-rewards-scoreboard.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-08-onetime-classroom-rewards-scoreboard/00-onetime-classroom-rewards-scoreboard.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": [
+      "inspect code",
+      "edit scoped files",
+      "run focused tests",
+      "run validator",
+      "run drift watchdog",
+      "deploy and live smoke"
+    ],
+    "skipped_actions_policy": "Skip external sends, rewards, charges, access grants, CRM writes, public forum behavior, and unreviewed content publication.",
+    "blocker_decisions": [],
+    "evidence_paths": [
+      "tasks-pending/2026-07-08-onetime-classroom-rewards-scoreboard.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-08-onetime-classroom-rewards-scoreboard.md",
+    "next_packet_path": "none"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No protocol drift findings for the scoreboard packet."
+  },
+  "next_packet": {
+    "type": "CLOSEOUT",
+    "description": "Deploy, live-smoke, and close the rewards scoreboard requirement.",
+    "path": "tasks-pending/2026-07-08-onetime-classroom-rewards-scoreboard.md"
+  }
+}

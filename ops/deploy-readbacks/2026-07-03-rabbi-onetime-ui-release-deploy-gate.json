@@ -1,0 +1,61 @@
+{
+  "report_id": "2026-07-03-rabbi-onetime-ui-release-deploy-gate",
+  "raw_id": "RAW-20260702-008",
+  "requirement_ids": [
+    "REQ-20260702-805",
+    "REQ-20260702-823"
+  ],
+  "decision_ids": [
+    "DEC-20260702-801"
+  ],
+  "generated_at": "2026-07-03T03:58:03+03:00",
+  "branch": "codex/rabbi-onetime-ui-cleanup-release-20260703",
+  "head": "9f7119a9",
+  "pr": {
+    "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/87",
+    "number": 87,
+    "state": "OPEN",
+    "is_draft": true,
+    "mergeable": "MERGEABLE",
+    "merge_state_status": "CLEAN",
+    "checks_reported": 0
+  },
+  "release_gate": {
+    "command": "npm run bna:release-gate -- --json --expected-branch codex/rabbi-onetime-ui-cleanup-release-20260703",
+    "status": "passed",
+    "head_pushed": true,
+    "dirty_files": 0
+  },
+  "railway_target": {
+    "default_target_status": "blocked_wrong_project",
+    "verified_target_status": "passed",
+    "project_name": "skillful-motivation",
+    "environment_name": "production",
+    "service_name": "skillful-motivation",
+    "expected_domain": "bneineviimacademy.org",
+    "current_deployment_id": "00a36c08-15ab-4f63-876c-f9897700dbbf",
+    "current_deployment_status": "SUCCESS",
+    "deploy_upload_performed": false
+  },
+  "deploy_gate": {
+    "command": "npm run bna:release-gate -- --deploy --confirm-deploy DEPLOY_BNA_PRODUCTION_CLOSEOUT --expected-branch codex/rabbi-onetime-ui-cleanup-release-20260703 --json",
+    "status": "blocked",
+    "production_mutation_performed": false,
+    "deploy_performed": false,
+    "live_verification_performed": false,
+    "blockers": [
+      "BNA_PRODUCTION_DEPLOY_APPROVED=approved is required before deploy closeout.",
+      "OPENAI_API_KEY is not configured.",
+      "VIMEO_ACCESS_TOKEN is not configured.",
+      "RESEND_FROM is not configured.",
+      "RABBI_STRIPE_SECRET_KEY is not configured.",
+      "RABBI_STRIPE_MODE is not configured.",
+      "TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER is not configured.",
+      "Rabbi Telegram worker deployment state is not verified by local readiness scanning.",
+      "database external readback readiness is blocked.",
+      "railway external readback readiness is blocked.",
+      "drive external readback readiness is blocked."
+    ]
+  },
+  "next_action": "Resolve/approve deploy gate, deploy BNA skillful-motivation production web service, run live smoke for bneineviimacademy.org One Time Library first-viewport contract, and record terminal evidence."
+}

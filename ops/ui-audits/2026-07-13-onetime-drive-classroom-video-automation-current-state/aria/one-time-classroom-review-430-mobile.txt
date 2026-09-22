@@ -1,0 +1,86 @@
+- status:
+  - strong: TEST PREVIEW
+  - text: SAMPLE DATA NO WRITES
+  - link "Exit Preview":
+    - /url: /one-time-classroom
+- banner:
+  - button "Open One Time portal menu": Menu
+- main:
+  - heading "One Time Mishnah Classroom" [level=1]
+  - paragraph: Follow the live shiur path, review class videos by Seder, open worksheets, and respond to Rabbi-reviewed prompts from your member-visible classroom.
+  - text: Internal calendar Approved questions Rewards scoreboard Private replies Rabbi moderation Current One Time access
+  - heading "Review classroom access" [level=2]
+  - paragraph: This is an internal review shell. No student-visible writes are performed.
+  - link "Log in":
+    - /url: /rabbi-member?review=one-time
+  - link "Parent account setup/reset":
+    - /url: /parent.html?review=one-time
+  - text: TEST classroom review opened. No writes will be performed.
+  - heading "Today / Live" [level=2]
+  - text: TEST Student One Time / test_review_member
+  - heading "Pesachim Perek 10 Review Class" [level=3]
+  - paragraph: Manual Vimeo sample reference traced from the legacy One Time site for UI review. This is not an automated upload.
+  - text: "2026-06-18 Vimeo manual/sample reference published_for_review Captions/transcript: pending review"
+  - paragraph:
+    - link "Open Hosted Media":
+      - /url: https://vimeo.com/1178363755/282ea2577c
+      - button "Open Hosted Media"
+  - heading "Class Materials" [level=4]
+  - text: Reviewed slides and worksheets will appear here after approval.
+  - heading "Calendar" [level=2]
+  - article:
+    - strong: TEST Weekly Mishnah Live Class
+    - paragraph: Pesachim Perek 10 Mishnah 1-2
+    - text: 25 Jun, 22:30 TEST review schedule
+  - heading "Six Sedarim" [level=2]
+  - group:
+    - text: Pesachim Foundations 1 video
+    - paragraph: Review-ready module with one lesson, one video, and one worksheet.
+    - article:
+      - strong: Pesachim Perek 10 - Seder Night Review
+      - paragraph: Manual Vimeo sample reference traced from the legacy One Time site for UI review. This is not an automated upload.
+      - text: 2026-06-18 published_for_review
+  - heading "Rewards Scoreboard" [level=2]
+  - text: Approved questions, answers, and review participation only. 1
+  - strong: TEST Student One Time
+  - paragraph: 1 question / 0 answers / 0 featured
+  - text: Published Question Review Participant
+  - strong: 7 points
+  - heading "Class Updates" [level=2]
+  - text: Published comments and approved progress only. Approved class updates will appear here after Rabbi/admin review.
+  - heading "Top Questions" [level=2]
+  - article:
+    - strong: Private question about the Mishnah
+    - paragraph: Can Rabbi explain why this time is used for Shema?
+    - text: TEST Student One Time
+  - heading "Reply Queue" [level=2]
+  - text: Private first
+  - article:
+    - strong: Private first
+    - paragraph: Students respond to Rabbi/admin threads below. Replies stay in review until Rabbi/admin chooses the next step.
+  - article:
+    - strong: No open chat
+    - paragraph: Teacher-led discussion can be featured after review, but students do not publish directly to a public feed.
+  - heading "Rabbi Threads" [level=2]
+  - text: Responses are reviewed before visibility
+  - article:
+    - strong: Welcome to the TEST One Time cohort
+    - text: announcement 1 approved message
+    - strong: Eli Scheller
+    - paragraph: This announcement is safe test content for the review walkthrough.
+    - text: Respond to Rabbi/admin thread
+    - textbox "Respond to Rabbi/admin thread":
+      - /placeholder: Your response is private until reviewed.
+    - button "Submit For Review"
+- contentinfo:
+  - strong: One Time Mishnayos
+  - paragraph: Copyright 2026 One Time Mishnayos. Classroom access stays private and Rabbi-scoped.
+  - navigation "One Time footer navigation":
+    - link "Family Portal":
+      - /url: /rabbi-member?review=one-time
+    - link "Privacy":
+      - /url: /one-time/privacy.html
+    - link "Terms":
+      - /url: /one-time/terms.html
+    - link "Library":
+      - /url: /member-library?review=one-time

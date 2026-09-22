@@ -1,0 +1,167 @@
+{
+  "ok": true,
+  "target": "/operations?workspace=rabbi_sheller_provider&view=content&section=meetings&nav=modules",
+  "initialContract": {
+    "currentWorkspace": "rabbi_sheller_provider",
+    "roleLabel": "Workspace Owner",
+    "navIds": [
+      "service_providers",
+      "contacts",
+      "content",
+      "studio",
+      "live_classes",
+      "calendar",
+      "community",
+      "communications",
+      "automations",
+      "service_providers",
+      "tasks",
+      "api_usage",
+      "integrations",
+      "settings"
+    ],
+    "navKeys": [
+      "overview_package_status",
+      "members_crm",
+      "classes_content",
+      "studio",
+      "live_class_schedule",
+      "program_schedule",
+      "community_questions",
+      "communications",
+      "automations",
+      "payments_access",
+      "tasks_decisions",
+      "reporting_readiness",
+      "connector_setup",
+      "settings_setup"
+    ],
+    "navLabels": [
+      "Overview",
+      "Members",
+      "Classes & Content",
+      "Studio",
+      "Live Class",
+      "Schedule",
+      "Community",
+      "Communications",
+      "Automations",
+      "Payments",
+      "Tasks",
+      "Reporting",
+      "Integrations",
+      "Workspace Setup"
+    ],
+    "navSections": [
+      "overview",
+      "participants",
+      "one_time_library",
+      "overview",
+      "overview",
+      "provider",
+      "overview",
+      "providers",
+      "center",
+      "access",
+      "one_time",
+      "provider",
+      "readiness",
+      "workspace"
+    ],
+    "filterIds": [
+      "one_time_library",
+      "meetings",
+      "research",
+      "bundles"
+    ],
+    "sidebarLabels": [
+      "Overview OV",
+      "Members MB",
+      "Classes & Content CC",
+      "Studio ST",
+      "Live Class LC",
+      "Schedule SC",
+      "Community CO",
+      "Communications CM",
+      "Automations AU",
+      "Payments PA",
+      "Tasks TS",
+      "Reporting RP",
+      "Integrations IN",
+      "Workspace Setup SU"
+    ],
+    "sidebarSectionLabels": [
+      "Library 0",
+      "Meeting Drops 1",
+      "Source Prep 0",
+      "Bundles 0"
+    ],
+    "footerLabels": [
+      "Platform Support",
+      "Help",
+      "Logout"
+    ],
+    "workspaceOptions": [],
+    "workspaceSummary": "Current Workspace One Time Mishnah Class Provider / Workspace Owner Scoped Overview Workspace Setup",
+    "hasStudentsText": false,
+    "hasAccountingText": false,
+    "driveButton": true,
+    "topRailModule": "content",
+    "hasModuleToolbar": false
+  },
+  "paymentNavContract": {
+    "currentView": "service_providers",
+    "section": "access",
+    "railText": "Payments Access Overview 1 Launch 0 Program 0 Membership 0 Content 1 Schedule 0 Questions 0 Access 0 Settings 1"
+  },
+  "contentBridgeContract": {
+    "currentView": "service_providers",
+    "section": "content",
+    "text": "Contentlibrary / meetings / source prep Class media, meeting drops, source preparation, and review bundles live in the dedicated Classes & Content workspace so the Program rail stays compact. Library 1 One Time class packages, video review, transcript checks, and classroom handoff. Meeting Drops 1 Structured Rabbi meeting intake, decisions, and follow-up tasks. Source Prep 0 Sources, class questions, and source-sheet preparation. Bundles 0 Review bundles and internal publishing packages."
+  },
+  "previewRequests": [
+    {
+      "method": "POST",
+      "redacted": true,
+      "body": {
+        "source": {
+          "drive_file_id": "redacted",
+          "title": "2026-06-18-rabbi-elie-scheller.md",
+          "url": "redacted",
+          "created_time": "2026-06-18T17:16:22.555Z",
+          "modified_time": "2026-06-18T17:16:21.504Z",
+          "mime_type": "text/markdown"
+        }
+      }
+    }
+  ],
+  "mobileMetrics": {
+    "width": 390,
+    "scrollWidth": 390,
+    "hasAgentStatus": true,
+    "hasFilterRail": true,
+    "hasModuleToolbar": false
+  },
+  "mobileContentRail": {
+    "ids": [
+      "one_time_library",
+      "meetings",
+      "research",
+      "bundles"
+    ],
+    "overflowX": "auto",
+    "flexWrap": "nowrap",
+    "hasMeta": false,
+    "pageWidth": 390,
+    "pageScrollWidth": 390
+  },
+  "screenshots": [
+    "ops/ui-audits/2026-07-06-onetime-operations-content-ia-filter-rail/local-smoke/desktop.png",
+    "ops/ui-audits/2026-07-06-onetime-operations-content-ia-filter-rail/local-smoke/mobile-agents.png"
+  ],
+  "guardrails": {
+    "productionWrites": false,
+    "secretsInFixture": false,
+    "productionDataMutation": false
+  }
+}

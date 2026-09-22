@@ -1,0 +1,94 @@
+node_modules/
+.next/
+out/
+build/
+dist/
+.deploy-railway/
+.runtime/
+.runtime/auth/
+.tmp-lighthouse/
+tmp/
+
+# env
+.env
+.env.local
+.env*.local
+!.env.example
+keyholder/
+.keyholder/
+.secrets/
+BNA-Keyholder/
+
+# editor
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+*.pid
+npm-debug.log*
+*.secret
+*.secrets
+*api-key*.txt
+*token*.txt
+
+# local media intake
+media-drop/
+media-inbox/
+
+# generated video outputs
+renders/*
+!renders/.gitkeep
+src/remotion/generated/*.json
+!src/remotion/generated/.gitkeep
+public/organic-clip-assets/
+
+# PWA build artifacts
+public/sw.js
+!public/sw.js
+public/sw.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+public/worker-*.js
+public/worker-*.js.map
+public/fallback-*.js
+
+# misc
+*.tsbuildinfo
+next-env.d.ts
+
+# generated operation receipts
+install-packages/
+ops/agent-fleet-runs/
+ops/live-smokes/
+ops/openai-smokes/
+ops/remotion-smokes/
+ops/pending/
+ops/system-audits/*.json
+ops/system-audits/*-watchdog.md
+ops/system-audits/*-watchdog-improvements.md
+screenshots/
+ops/ui-audits/runs/
+ops/ui-audits/latest.json
+
+# generated local agent/audit receipts
+# Curated evidence may still be committed with `git add -f <path>` when a
+# requirement register explicitly cites it.
+ops/chatgpt-ramble-dropoff/comment-pickups/
+ops/chatgpt-ramble-dropoff/pickups/
+ops/queue-audits/
+ops/qa-runs/*-provider-credential-diagnostics.json
+ops/watchdog-audits/2026-*-raw-intake-drift.md
+ops/watchdog-audits/2026-*-watchdog-action-audit.md
+ops/watchdog-audits/2026-*-watchdog-security-routes.md
+ops/ui-audits/*-local*/
+ops/ui-audits/*-closeout/
+ops/ui-audits/*-live-after-deploy/
+ops/helper-audits/test-*/
+ops/navigation-ia/test-*/
+ops/one-time-mishnah/integration-smokes/*T*-*.json
+ops/one-time-mishnah/integration-smokes/*T*-*.md
+ops/release-captain/*T*-release-captain.json
+ops/release-captain/*T*-release-captain.md

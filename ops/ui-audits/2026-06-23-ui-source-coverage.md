@@ -1,0 +1,74 @@
+# UI Source Coverage
+
+Generated: 2026-06-23T10:46:05.623Z
+
+## UI Routes
+
+- /operations: route_rows=3; action_rows=32; screenshots=443
+- /one-time: route_rows=18; action_rows=10; screenshots=10
+- /provider.html: route_rows=0; action_rows=1; screenshots=0
+- /parent.html: route_rows=0; action_rows=0; screenshots=0
+- /student.html: route_rows=0; action_rows=0; screenshots=0
+- /one-time-classroom.html: route_rows=0; action_rows=0; screenshots=0
+- /one-time-email-review.html: route_rows=0; action_rows=0; screenshots=0
+
+## JSON Summary
+
+```json
+{
+  "generated_at": "2026-06-23T10:46:05.623Z",
+  "routes": [
+    {
+      "route": "/operations",
+      "registry_rows": 3,
+      "action_rows": 32,
+      "screenshot_evidence_count": 443
+    },
+    {
+      "route": "/one-time",
+      "registry_rows": 18,
+      "action_rows": 10,
+      "screenshot_evidence_count": 10
+    },
+    {
+      "route": "/provider.html",
+      "registry_rows": 0,
+      "action_rows": 1,
+      "screenshot_evidence_count": 0
+    },
+    {
+      "route": "/parent.html",
+      "registry_rows": 0,
+      "action_rows": 0,
+      "screenshot_evidence_count": 0
+    },
+    {
+      "route": "/student.html",
+      "registry_rows": 0,
+      "action_rows": 0,
+      "screenshot_evidence_count": 0
+    },
+    {
+      "route": "/one-time-classroom.html",
+      "registry_rows": 0,
+      "action_rows": 0,
+      "screenshot_evidence_count": 0
+    },
+    {
+      "route": "/one-time-email-review.html",
+      "registry_rows": 0,
+      "action_rows": 0,
+      "screenshot_evidence_count": 0
+    }
+  ],
+  "totals": {
+    "route_rows": 76,
+    "action_rows": 46,
+    "screenshot_files": 979
+  },
+  "limitations": [
+    "Registry coverage is not live behavior proof.",
+    "Screenshots are stale unless tied to current branch, deployed commit, and route smoke metadata."
+  ]
+}
+```

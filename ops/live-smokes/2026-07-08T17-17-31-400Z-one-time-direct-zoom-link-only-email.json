@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "started_at": "2026-07-08T17:17:31.400Z",
+  "app_url": "https://join.onetimeonetime.com",
+  "raw_id": "RAW-20260708-019",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "recipient": {
+    "email_mask": "s***@g***.com",
+    "fingerprint": "sha256:568337a3e3098ac0"
+  },
+  "zoom_url_redacted": "[redacted zoom url]",
+  "body_guard": {
+    "only_zoom_link": true,
+    "no_portal_login_setup_terms": true
+  },
+  "external_send_performed": true,
+  "draft_id": 7,
+  "provider_message_id_fingerprint": "sha256:fefd0e95b7df9d6d",
+  "provider_mailbox_readback": {
+    "search_subject": "Zoom link for today's Mishnayos class",
+    "matching_thread_count": 4,
+    "total_search_thread_count": 4,
+    "mailbox_inbox_address_present": true
+  },
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "session established from railway"
+    },
+    {
+      "name": "Create Zoom-link-only email draft",
+      "ok": true,
+      "detail": "draft #7"
+    },
+    {
+      "name": "Send Zoom-link-only email",
+      "ok": true,
+      "detail": "provider message sha256:fefd0e95b7df9d6d"
+    },
+    {
+      "name": "Provider mailbox readback",
+      "ok": true,
+      "detail": "4 matching Zoom-link threads visible"
+    }
+  ]
+}

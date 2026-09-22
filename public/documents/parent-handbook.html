@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Handbook | Bnei Neviim Academy</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Serif+Hebrew:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1e3a5f;
+            --secondary-blue: #2c5282;
+            --light-blue: #e8f0f8;
+            --accent-gold: #c9a227;
+            --dark-text: #1a202c;
+            --muted-text: #526071;
+            --border: rgba(30, 58, 95, 0.13);
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            color: var(--dark-text);
+            font-family: Inter, sans-serif;
+            line-height: 1.72;
+            background:
+                radial-gradient(circle at top left, rgba(201, 162, 39, 0.14), transparent 34rem),
+                linear-gradient(180deg, #f8fbff 0%, #ffffff 28rem);
+        }
+
+        .site-header {
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(10px);
+        }
+
+        .site-header-inner {
+            width: min(1120px, calc(100% - 32px));
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            min-width: 0;
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+
+        .brand img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
+
+        .brand-title {
+            display: block;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .brand-subtitle {
+            display: block;
+            color: var(--secondary-blue);
+            font-size: 0.76rem;
+            line-height: 1.2;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 36px;
+            padding: 0.48rem 0.82rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--white);
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 8px 18px rgba(30, 58, 95, 0.07);
+        }
+
+        main {
+            width: min(940px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: clamp(2rem, 5vw, 4rem) 0 4rem;
+        }
+
+        .eyebrow {
+            color: var(--accent-gold);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            margin: 0 0 0.65rem;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--primary-blue);
+            font-family: "Cormorant Garamond", serif;
+            font-size: clamp(2.35rem, 8vw, 4.35rem);
+            font-weight: 700;
+            line-height: 0.95;
+        }
+
+        .intro {
+            max-width: 720px;
+            margin: 1rem 0 0;
+            color: var(--muted-text);
+            font-size: 1.04rem;
+        }
+
+        .document-card {
+            margin-top: clamp(1.5rem, 4vw, 2.5rem);
+            padding: clamp(1.25rem, 4vw, 2.5rem);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: 0 22px 55px rgba(30, 58, 95, 0.10);
+        }
+
+        .document-content {
+            font-size: 1.02rem;
+        }
+
+        .document-content h3 {
+            margin: 0 0 1rem;
+            color: var(--primary-blue);
+            font-family: "Cormorant Garamond", serif;
+            font-size: clamp(1.9rem, 6vw, 3rem);
+            line-height: 1;
+        }
+
+        .document-content h4 {
+            margin: 2rem 0 0.65rem;
+            color: var(--secondary-blue);
+            font-size: 1.14rem;
+            line-height: 1.3;
+        }
+
+        .document-content p,
+        .document-content li {
+            color: #26364b;
+        }
+
+        .document-content ul {
+            padding-inline-start: 1.35rem;
+        }
+
+        .signature-section {
+            margin-top: clamp(1.5rem, 4vw, 2.5rem);
+            padding: clamp(1.2rem, 4vw, 2rem);
+            border: 1px solid rgba(201, 162, 39, 0.35);
+            border-radius: 22px;
+            background: #fffaf0;
+        }
+
+        .signature-section h2 {
+            margin: 0 0 0.6rem;
+            color: var(--primary-blue);
+            font-family: "Cormorant Garamond", serif;
+            font-size: clamp(1.7rem, 5vw, 2.4rem);
+            line-height: 1;
+        }
+
+        .signature-note {
+            margin: 0 0 1rem;
+            color: var(--muted-text);
+        }
+
+        .signature-check {
+            display: flex;
+            gap: 0.7rem;
+            align-items: flex-start;
+            color: #21324a;
+            font-weight: 700;
+        }
+
+        .signature-check input {
+            width: 18px;
+            height: 18px;
+            margin-top: 0.25rem;
+            accent-color: var(--primary-blue);
+            flex: 0 0 auto;
+        }
+
+        .sign-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .sign-button {
+            min-height: 42px;
+            padding: 0.65rem 1rem;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary-blue);
+            color: white;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 0.95rem;
+            box-shadow: 0 10px 22px rgba(30, 58, 95, 0.18);
+        }
+
+        .sign-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            box-shadow: none;
+        }
+
+        .status {
+            color: #166534;
+            font-weight: 800;
+        }
+
+        .status.error {
+            color: #9a3412;
+        }
+
+        [dir="rtl"] body {
+            font-family: "Noto Serif Hebrew", Inter, sans-serif;
+        }
+
+        [dir="rtl"] .brand-title,
+        [dir="rtl"] h1,
+        [dir="rtl"] .document-content h3,
+        [dir="rtl"] .signature-section h2 {
+            font-family: "Noto Serif Hebrew", "Cormorant Garamond", serif;
+        }
+
+        @media (max-width: 640px) {
+            .site-header {
+                min-height: 58px;
+            }
+
+            .site-header-inner {
+                width: min(100% - 20px, 1120px);
+            }
+
+            .brand img {
+                width: 36px;
+                height: 36px;
+            }
+
+            .brand-title {
+                font-size: 1.04rem;
+            }
+
+            .brand-subtitle {
+                display: none;
+            }
+
+            .back-link {
+                min-height: 34px;
+                padding: 0.42rem 0.65rem;
+                font-size: 0.82rem;
+            }
+
+            main {
+                width: min(100% - 20px, 940px);
+                padding-top: 1.45rem;
+            }
+
+            .document-card {
+                border-radius: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a class="brand" href="/">
+                <img src="/images/bna-logo-nobg.png" alt="Bnei Neviim Academy">
+                <span>
+                    <span class="brand-title">Bnei Neviim Academy</span>
+                    <span class="brand-subtitle">Registration document</span>
+                </span>
+            </a>
+            <a class="back-link" id="backLink" href="/signup.html">Back to registration</a>
+        </div>
+    </header>
+
+    <main>
+        <p class="eyebrow" id="eyebrow">Required Document</p>
+        <h1 id="pageTitle">Parent Handbook</h1>
+        <p class="intro" id="pageIntro">Read the Parent Handbook as a normal webpage. The signature section appears after the full document.</p>
+
+        <article class="document-card">
+            <div class="document-content" id="documentContent">Loading Parent Handbook...</div>
+        </article>
+
+        <section class="signature-section" id="signatureSection">
+            <h2 id="signatureTitle">Electronic signature</h2>
+            <p class="signature-note" id="signatureNote">Clicking the signature button records your Parent Handbook signature for the signup form.</p>
+            <label class="signature-check" for="signatureCheck">
+                <input type="checkbox" id="signatureCheck">
+                <span id="signatureCheckText">I have read and agree to the Parent Handbook.</span>
+            </label>
+            <div class="sign-row">
+                <button class="sign-button" id="signButton" type="button" disabled>Sign Parent Handbook</button>
+                <span class="status" id="signatureStatus"></span>
+            </div>
+        </section>
+    </main>
+
+    <script src="/js/parent-handbook-page.js"></script>
+</body>
+</html>

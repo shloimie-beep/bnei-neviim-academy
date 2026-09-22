@@ -1,0 +1,34 @@
+- banner:
+  - strong: Bnei Neviim Academy
+  - text: Student workspace
+  - link "Public site":
+    - /url: /
+  - link "Families":
+    - /url: /parents
+  - link "Student home":
+    - /url: /student
+  - link "Assistant/help":
+    - /url: "#bnaBotPanel"
+  - link "Parent login":
+    - /url: /parent/login
+  - text: Daily accountability
+- main:
+  - paragraph: Bnei Neviim Academy
+  - heading "Student Goal Board" [level=1]
+  - paragraph: Open your private link, review your Torah progress, and work through your goals honestly.
+  - button "EN"
+  - button "HE"
+  - paragraph: Private Access
+  - heading "Student login" [level=2]
+  - paragraph: Sign in with the username and password your parent set for you.
+  - text: Username
+  - textbox "Username"
+  - text: Password
+  - textbox "Password"
+  - button "Sign in"
+  - paragraph: During rollout, your private access-code link still works.
+  - text: Access code
+  - textbox "Access code":
+    - /placeholder: Paste code here
+  - button "Open My Board"
+- button "BNA Helper"

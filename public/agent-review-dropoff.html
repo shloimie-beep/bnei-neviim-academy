@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BNA Agent Review Drop-Off</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #667084;
+      --line: #d9dfeb;
+      --blue: #1768b8;
+      --green: #1f7a4d;
+      --amber: #9f6400;
+      --red: #aa2c2c;
+      --shadow: 0 18px 42px rgba(35, 45, 70, 0.11);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+    header {
+      padding: 22px clamp(16px, 4vw, 42px);
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+    header p { margin: 6px 0 0; color: var(--muted); max-width: 980px; }
+    main {
+      width: min(1080px, calc(100% - 28px));
+      margin: 22px auto 42px;
+      display: grid;
+      gap: 16px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .meta div {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      min-width: 0;
+      background: #fbfcff;
+    }
+    .meta span { color: var(--muted); display: block; font-size: 0.78rem; }
+    .meta strong { display: block; margin-top: 4px; overflow-wrap: anywhere; }
+    .form-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    label { display: grid; gap: 5px; color: var(--muted); font-size: 0.82rem; font-weight: 650; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+    }
+    textarea { min-height: 220px; resize: vertical; }
+    .wide { grid-column: 1 / -1; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    button, .button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 11px;
+      min-height: 38px;
+      border-radius: 8px;
+      font-weight: 650;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-size: 0.9rem;
+    }
+    .primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .danger { background: #fff2f2; border-color: #e4b8b8; color: var(--red); }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--muted);
+      background: #f4f7fb;
+    }
+    .pill.ok { color: var(--green); border-color: #b8dcc9; background: #eef8f2; }
+    .pill.warn { color: var(--amber); border-color: #ecd49f; background: #fff8e9; }
+    .pill.bad { color: var(--red); border-color: #e9b8b8; background: #fff0f0; }
+    pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+      padding: 12px;
+      margin: 0;
+    }
+    .status { color: var(--muted); overflow-wrap: anywhere; }
+    @media (max-width: 820px) {
+      .meta, .form-grid { grid-template-columns: 1fr; }
+      button, .button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Agent Review Drop-Off</h1>
+    <p>Use this page as the self-save target for Agent Mode. The paste box is the emergency fallback after the normal hub save path and exact drop-off URL fail.</p>
+  </header>
+  <main>
+    <section class="panel">
+      <div class="actions" style="justify-content:space-between">
+        <span class="pill" id="authPill">Loading</span>
+        <a class="button" id="returnLink" href="/operations/agent-review" data-action-id="ACTION-AGENT-REVIEW-RETURN-HUB">Return to hub</a>
+      </div>
+      <div class="meta" id="metaGrid"></div>
+      <p class="status" id="loadStatus"></p>
+    </section>
+    <section class="panel">
+      <form id="dropoffForm">
+        <div class="form-grid">
+          <label>Prompt key<input name="prompt_key" id="promptKey" readonly></label>
+          <label>Context<select name="context_key" id="contextKey"></select></label>
+          <label>Requirement<input name="requirement_id" id="requirementId"></label>
+          <label>Task / Decision ID<input name="task_id" id="taskId" readonly></label>
+          <label>Status<select name="status" id="status"><option value="pass">PASS</option><option value="fail">FAIL</option><option value="blocked">BLOCKED</option></select></label>
+          <label>Severity<select name="severity" id="severity"><option value="none">none</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option><option value="critical">critical</option></select></label>
+          <label>Current route<input name="current_route" id="currentRoute" placeholder="/operations?view=..."></label>
+          <label>Last route<input name="last_completed_route" id="lastCompletedRoute" placeholder="/student?review=agent"></label>
+          <label>Last role/context<input name="last_completed_role_context" id="lastCompletedRoleContext" placeholder="owner_task_decision / Operations task card"></label>
+          <label>Idempotency key<input name="idempotency_key" id="idempotencyKey"></label>
+          <label class="wide">Blocker<input name="blocker" id="blocker" placeholder="Required when status is BLOCKED"></label>
+          <label class="wide">Blocked route or step<input name="blocked_route_or_step" id="blockedRouteOrStep" placeholder="/operations... or workspace switcher / helper / save path"></label>
+          <label class="wide">Attempted action<input name="attempted_action" id="attemptedAction" placeholder="What the agent tried to do before blocking"></label>
+          <label class="wide">Observed failure<input name="observed_failure" id="observedFailure" placeholder="Exact UI/API/navigation/helper failure"></label>
+          <label class="wide">Partial routes visited<textarea name="partial_routes_visited" id="partialRoutesVisited" placeholder="One route per line. These are acceptable for BLOCKED even if the full route matrix is incomplete."></textarea></label>
+          <label class="wide">Partial helper responses<textarea name="partial_helper_responses" id="partialHelperResponses" placeholder="Short redacted summaries only, one per line."></textarea></label>
+          <label class="wide">Evidence notes<textarea name="evidence_notes" id="evidenceNotes" placeholder="Redacted screenshots/DOM notes, readback IDs, exact blocker notes."></textarea></label>
+          <label class="wide">Suggested correction<input name="suggested_correction" id="suggestedCorrection" placeholder="Correction or rerun note when FAIL/BLOCKED"></label>
+          <label class="wide">Emergency paste JSON and save<textarea name="report_text" id="reportText" placeholder="Paste the Agent Mode JSON only if the normal self-save path failed. JSON is parsed when possible; plain text is saved as a redacted summary."></textarea></label>
+        </div>
+        <div class="actions" style="margin-top:10px">
+          <button class="primary" type="submit" data-action-id="ACTION-AGENT-REVIEW-SUBMIT-RESULT">Emergency paste JSON and save</button>
+          <button type="button" onclick="markBlocked()" data-action-id="ACTION-AGENT-REVIEW-MARK-BLOCKED">Mark blocked</button>
+          <span class="status" id="saveStatus"></span>
+        </div>
+      </form>
+    </section>
+    <section class="panel" id="readbackPanel" hidden>
+      <div class="actions">
+        <span class="pill ok" id="resultRef">Saved</span>
+        <a class="button" id="readbackLink" href="#" target="_blank" rel="noopener" data-action-id="ACTION-AGENT-REVIEW-VIEW-RESULT">Open readback</a>
+        <a class="button" id="repairLink" href="#" data-action-id="ACTION-AGENT-REVIEW-RERUN-PROMPT" hidden>Open repair</a>
+      </div>
+      <div class="meta" id="readbackMeta"></div>
+      <pre id="rerunPrompt"></pre>
+    </section>
+  </main>
+  <script src="/js/app-select.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const state = { prompt: null, context: null, session: null };
+    const autoSaveRequested = ['1', 'true', 'yes'].includes(String(params.get('autosave') || '').toLowerCase());
+    let autoSaveTimer = null;
+    const draftSecretPattern = /(api[_-]?key|authorization|cookie|password|refresh[_-]?token|access[_-]?token)\s*[:=]/i;
+    const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+    const api = async (path, options = {}) => {
+      const response = await fetch(path, {
+        ...options,
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        if (data.redirect_to) document.getElementById('loadStatus').innerHTML = `${esc(data.error)} <a href="${esc(data.redirect_to)}">Log in and return</a>`;
+        throw new Error(data.error || `Request failed: ${response.status}`);
+      }
+      return data;
+    };
+    function parseReport(text) {
+      const raw = String(text || '').trim();
+      if (!raw) return {};
+      try {
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : { report_text: raw };
+      } catch {
+        const match = raw.match(/\{[\s\S]*\}/);
+        if (match) {
+          try {
+            const parsed = JSON.parse(match[0]);
+            return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : { report_text: raw };
+          } catch {}
+        }
+      }
+      return { report_text: raw, summary: raw.slice(0, 4000) };
+    }
+    function renderMeta(data) {
+      state.prompt = data.prompt;
+      state.context = data.context;
+      state.session = data.session;
+      document.getElementById('authPill').textContent = data.session_authenticated ? 'Scoped session' : 'Owner session';
+      document.getElementById('authPill').className = `pill ${data.session_authenticated ? 'warn' : 'ok'}`;
+      document.getElementById('returnLink').href = state.prompt?.return_url || '/operations/agent-review';
+      document.getElementById('metaGrid').innerHTML = [
+        ['Run', data.agent_review_run_id],
+        ['Prompt', state.prompt?.key || params.get('prompt_key') || 'unknown'],
+        ['Task/Decision', data.task?.id ? `#${data.task.id} ${data.task.item_type || ''}` : 'none'],
+        ['Role', state.context?.role || state.session?.role || 'owner'],
+        ['Workspace', state.context?.workspace_key || state.session?.workspace_key || 'bna'],
+        ['Requirement', state.prompt?.requirement_id || params.get('requirement_id') || 'unknown'],
+        ['Trace', data.newest_recording_trace?.status || 'UNKNOWN'],
+        ['Return', state.prompt?.return_url || params.get('return_url') || '/operations/agent-review'],
+        ['Drop-off', window.location.pathname],
+      ].map(([label, value]) => `<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('');
+      document.getElementById('promptKey').value = state.prompt?.key || params.get('prompt_key') || '';
+      document.getElementById('requirementId').value = state.prompt?.requirement_id || params.get('requirement_id') || '';
+      document.getElementById('taskId').value = data.task?.id || params.get('task_id') || '';
+      document.getElementById('idempotencyKey').value = params.get('idempotency_key') || state.prompt?.idempotency_key || '';
+      document.getElementById('lastCompletedRoleContext').value = state.context?.key || state.prompt?.copy_metadata?.context_key || '';
+      const contexts = state.prompt?.context_keys || (state.context?.key ? [state.context.key] : []);
+      document.getElementById('contextKey').innerHTML = contexts.map((key) => `<option value="${esc(key)}">${esc(key)}</option>`).join('');
+      if (state.context?.key) document.getElementById('contextKey').value = state.context.key;
+      loadDraft();
+      document.getElementById('loadStatus').textContent = autoSaveRequested
+        ? `${data.takeover_hint || ''} Local draft autosave is enabled. Partial notes stay in this browser only; click save or Mark blocked to create the AGR readback. Ctrl+Enter also saves.`
+        : `${data.takeover_hint || ''} Paste the full report, then click save or press Ctrl+Enter.`;
+    }
+    async function boot() {
+      try {
+        const qs = new URLSearchParams(window.location.search);
+        const data = await api(`/api/bna/agent-review/dropoff-context?${qs.toString()}`);
+        renderMeta(data);
+      } catch (error) {
+        document.getElementById('authPill').textContent = 'Blocked';
+        document.getElementById('authPill').className = 'pill bad';
+        if (!document.getElementById('loadStatus').textContent) document.getElementById('loadStatus').textContent = error.message || 'Could not load drop-off context.';
+      }
+    }
+    function payloadFromForm() {
+      const form = new FormData(document.getElementById('dropoffForm'));
+      const payload = Object.fromEntries(form.entries());
+      Object.assign(payload, parseReport(payload.report_text));
+      if (!payload.routes_visited && payload.partial_routes_visited) payload.routes_visited = String(payload.partial_routes_visited).split(/\n+/).filter(Boolean);
+      if (!payload.helper_responses && payload.partial_helper_responses) payload.helper_responses = String(payload.partial_helper_responses).split(/\n+/).filter(Boolean);
+      if (!payload.evidence && payload.evidence_notes) payload.evidence = String(payload.evidence_notes).split(/\n+/).filter(Boolean);
+      payload.agent_review_run_id = params.get('agent_review_run_id') || state.prompt?.copy_metadata?.agent_review_run_id || '';
+      payload.task_id = payload.task_id || params.get('task_id') || state.prompt?.copy_metadata?.task_id || '';
+      payload.return_url = params.get('return_url') || state.prompt?.return_url || '/operations/agent-review';
+      payload.dropoff_url = window.location.pathname + window.location.search;
+      return payload;
+    }
+    function draftStorageKey() {
+      return [
+        'bna-agent-review-dropoff-draft',
+        params.get('agent_review_run_id') || state.prompt?.copy_metadata?.agent_review_run_id || '',
+        document.getElementById('promptKey').value || params.get('prompt_key') || '',
+        document.getElementById('idempotencyKey').value || params.get('idempotency_key') || '',
+      ].join(':');
+    }
+    function draftPayloadFromForm() {
+      const payload = payloadFromForm();
+      delete payload.session;
+      delete payload.token;
+      return payload;
+    }
+    function saveDraftLocally() {
+      if (!autoSaveRequested) return;
+      const payload = draftPayloadFromForm();
+      const serialized = JSON.stringify(payload);
+      if (draftSecretPattern.test(serialized)) {
+        document.getElementById('saveStatus').textContent = 'Draft not autosaved because it looks like it may contain a secret. Redact it before saving.';
+        return;
+      }
+      localStorage.setItem(draftStorageKey(), JSON.stringify({ saved_at: new Date().toISOString(), payload }));
+      document.getElementById('saveStatus').textContent = 'Draft saved locally in this browser.';
+    }
+    function loadDraft() {
+      if (!autoSaveRequested) return;
+      try {
+        const raw = localStorage.getItem(draftStorageKey());
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        const payload = parsed?.payload && typeof parsed.payload === 'object' ? parsed.payload : {};
+        for (const [key, value] of Object.entries(payload)) {
+          const field = document.querySelector(`[name="${CSS.escape(key)}"]`);
+          if (!field || field.readOnly) continue;
+          field.value = Array.isArray(value) ? value.join('\n') : value;
+        }
+        document.getElementById('saveStatus').textContent = `Restored local draft from ${parsed.saved_at || 'this browser'}.`;
+      } catch {}
+    }
+    async function savePayload(payload) {
+      const data = await api('/api/bna/agent-review/results', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      const savedRef = data.result_ref || data.result?.result_ref || 'unknown';
+      const readbackUrl = data.readback_url || data.operations_url || (savedRef !== 'unknown' ? `/api/bna/agent-review/results/${encodeURIComponent(savedRef)}` : '#');
+      data.result_ref = savedRef;
+      data.readback_url = readbackUrl;
+      document.getElementById('readbackPanel').hidden = false;
+      document.getElementById('resultRef').textContent = `Saved ${savedRef}`;
+      document.getElementById('readbackLink').href = readbackUrl;
+      document.getElementById('readbackMeta').innerHTML = [
+        ['AGR ID', savedRef],
+        ['Status', data.result?.status || payload.status || 'unknown'],
+        ['Prompt key', data.result?.prompt_key || payload.prompt_key || 'unknown'],
+        ['Idempotency key', data.result?.idempotency_key || payload.idempotency_key || 'unknown'],
+        ['Readback URL', readbackUrl],
+        ['Timestamp', data.result?.updated_at || data.result?.created_at || new Date().toISOString()],
+      ].map(([label, value]) => `<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('');
+      if (data.repair_url || data.task_url) {
+        document.getElementById('repairLink').hidden = false;
+        document.getElementById('repairLink').href = data.repair_url || data.task_url;
+      }
+      document.getElementById('rerunPrompt').textContent = data.rerun_prompt || 'No rerun prompt required for PASS.';
+      try { localStorage.removeItem(draftStorageKey()); } catch {}
+      return data;
+    }
+    function scheduleAutosave() {
+      if (!autoSaveRequested) return;
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(saveDraftLocally, 600);
+    }
+    async function markBlocked() {
+      document.getElementById('status').value = 'blocked';
+      if (!document.getElementById('blocker').value.trim()) document.getElementById('blocker').value = 'Scoped context could not be opened safely; owner rerun required.';
+      if (!document.getElementById('blockedRouteOrStep').value.trim()) document.getElementById('blockedRouteOrStep').value = document.getElementById('currentRoute').value || 'drop-off or review context';
+      if (!document.getElementById('attemptedAction').value.trim()) document.getElementById('attemptedAction').value = 'Continue Agent Mode audit and save structured result.';
+      if (!document.getElementById('observedFailure').value.trim()) document.getElementById('observedFailure').value = document.getElementById('blocker').value;
+      document.getElementById('saveStatus').textContent = 'Saving blocked result...';
+      try {
+        const data = await savePayload(payloadFromForm());
+        document.getElementById('saveStatus').innerHTML = `Saved ${esc(data.result_ref)}.`;
+      } catch (error) {
+        document.getElementById('saveStatus').textContent = error.message || 'Could not save blocked result.';
+      }
+    }
+    document.getElementById('dropoffForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      document.getElementById('saveStatus').textContent = 'Saving...';
+      try {
+        const data = await savePayload(payloadFromForm());
+        document.getElementById('saveStatus').innerHTML = `Saved ${esc(data.result_ref)}.`;
+      } catch (error) {
+        document.getElementById('saveStatus').textContent = error.message || 'Could not save result.';
+      }
+    });
+    document.getElementById('dropoffForm').addEventListener('input', scheduleAutosave);
+    document.getElementById('dropoffForm').addEventListener('change', scheduleAutosave);
+    document.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        document.getElementById('dropoffForm').requestSubmit();
+      }
+    });
+    boot();
+  </script>
+</body>
+</html>

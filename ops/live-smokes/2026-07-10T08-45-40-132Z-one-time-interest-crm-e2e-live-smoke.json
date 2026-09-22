@@ -1,0 +1,75 @@
+{
+  "started_at": "2026-07-10T08:45:40.132Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "status": "passed",
+  "test_email": "test-onetime-crm-e2e-2026-07-10t08-45-40-132z@example.invalid",
+  "steps": [
+    {
+      "name": "operations login uses One Time Railway auth fallback",
+      "ok": true,
+      "duration_ms": 1939,
+      "details": {
+        "source": "railway",
+        "role": "super_admin"
+      }
+    },
+    {
+      "name": "public interest submit writes scoped TEST CRM lead without Telegram reminder",
+      "ok": true,
+      "duration_ms": 438,
+      "details": {
+        "product_lead_id": 3,
+        "crm_lead_id": 9,
+        "telegram_reminder_skip_reason": "synthetic_test_lead_no_external_reminder"
+      }
+    },
+    {
+      "name": "admin parent-lead search finds the TEST CRM lead",
+      "ok": true,
+      "duration_ms": 238,
+      "details": {
+        "id": 9,
+        "project_key": "one_time_mishnah_class",
+        "status": "follow_up",
+        "tags": [
+          "one-time",
+          "one-time-public-signup",
+          "free-class-interest",
+          "free-zoom-follow-up"
+        ]
+      }
+    },
+    {
+      "name": "CRM contact search finds the TEST lead card",
+      "ok": true,
+      "duration_ms": 251,
+      "details": {
+        "id": "bna_parent_leads:9",
+        "display_name": "TEST OneTime CRM E2E 2026-07-10T08-45-40-132Z",
+        "status": "follow_up",
+        "project_key": "one_time_mishnah_class"
+      }
+    },
+    {
+      "name": "CRM timeline shows the captured signup internal note",
+      "ok": true,
+      "duration_ms": 230,
+      "details": {
+        "timeline_items": 1,
+        "matched_type": "internal_note"
+      }
+    },
+    {
+      "name": "archive TEST CRM lead after readback",
+      "ok": true,
+      "duration_ms": 240
+    }
+  ],
+  "guardrails": [
+    "Synthetic TEST/example.invalid lead only.",
+    "Telegram reminder must be skipped by the public interest route.",
+    "No email, WhatsApp/WAPI, checkout, access grant, Zoom, Vimeo, Drive, DNS, or external CRM write is performed.",
+    "CRM lead is archived after visible CRM/timeline readback.",
+    "Append-only product lead row may remain as TEST proof; no raw private data is submitted."
+  ]
+}

@@ -1,0 +1,694 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-822",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-004",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-805",
+      "PKT-20260702-813",
+      "PKT-20260702-821"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "public/operations.html",
+      "tests/operations-contacts-intake-cleanup.test.js",
+      "tests/one-time-communications-workspace.test.js",
+      "scripts/audit-rabbi-onetime-current-state.mjs",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-ia-nav-filter-alignment/screenshots/operations-participants-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-ia-nav-filter-alignment/screenshots/operations-participants-390-mobile.png"
+    ],
+    "produces": [
+      "public/operations.html",
+      "scripts/audit-rabbi-onetime-current-state.mjs",
+      "tests/operations-contacts-intake-cleanup.test.js",
+      "tests/one-time-communications-workspace.test.js",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-crm-contact-detail-polish/report.md",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/20-operations-crm-contact-detail-polish.product-quality.json",
+    "terminal_condition": "The One Time CRM contacts section has a readable preview/empty state, mobile-safe contact review cards, and screenshot coverage without adding external CRM writes.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "verified",
+  "title": "Operations CRM Contact Detail Polish",
+  "created_at": "2026-07-03T03:05:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "CRM_PIPELINE",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.89,
+    "reasons": [
+      "The remaining register gap calls out CRM/contact-detail polish after the IA/nav cleanup.",
+      "The latest participants screenshots show the member roster is readable, but the CRM Contacts section still needs explicit screenshot coverage and stronger empty/detail states.",
+      "The fix can be scoped to first-party One Time CRM review UI and audit/test coverage, with no GHL, LeadConnector, external CRM, send, payment, or access mutation."
+    ],
+    "affected_product_surfaces": [
+      "One Time Operations CRM Contacts",
+      "One Time CRM empty/detail state",
+      "Rabbi Operations screenshot audit harness"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state",
+      "06-task-dialogue-lane-contrast",
+      "07-task-route-layout-density",
+      "08-provider-review-load-error",
+      "09-student-review-mobile-readability",
+      "10-automation-center-readability",
+      "11-participants-members-readability",
+      "12-program-payment-access-readability",
+      "13-communications-provider-messages-readability",
+      "14-program-overview-readability",
+      "15-settings-workspace-readability",
+      "16-member-login-brand-helper-readability",
+      "17-classroom-review-brand-layout",
+      "18-email-review-brand-layout",
+      "19-operations-ia-nav-filter-alignment",
+      "20-operations-crm-contact-detail-polish"
+    ],
+    "next_exact_packet": "After this CRM/contact-detail polish, continue only if manual screenshot review finds more defects, or move to deploy/live-smoke once DEC-20260702-801 is resolved."
+  },
+  "operator_intent_summary": "Make the One Time CRM/contact section feel clean and useful even when the local workspace has no loaded contacts, and make populated CRM rows mobile-safe without changing no-send or external-write policy.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "fix everything",
+    "even",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No backend authorization, allowed-view policy, database query, route registry, action registry, payment, email, access grant, account, DNS, send, publish, upload, or external-provider mutation.",
+    "No GHL runtime, LeadConnector runtime, external CRM client, or external CRM write.",
+    "No removal of diagnostic support routes used by Shloimie/Codex; this packet only demotes them from the primary Rabbi sidebar."
+  ],
+  "affected_surfaces": [
+    "One Time CRM Contacts",
+    "One Time CRM empty state",
+    "One Time CRM contact review rows",
+    "Rabbi / One Time audit coverage"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "scripts/audit-rabbi-onetime-current-state.mjs",
+    "tests/operations-contacts-intake-cleanup.test.js",
+    "tests/one-time-communications-workspace.test.js",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/operations.html workspaceNavViewIds, workspaceNavItems, renderSidebar, renderSidebarModuleList, currentNavItem, switchView, setCurrentSection",
+      "src/platform/instances/one-time-rabbi-dashboard-ia.js module and support demotion definitions",
+      "tests/one-time-operations-ui-smoke.test.js provider nav expectations",
+      "latest Operations screenshots under ops/ui-audits/2026-07-02-rabbi-onetime-email-review-brand-layout/screenshots"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "CRM Contacts has no dedicated screenshot capture in the main Rabbi / One Time audit route set.",
+      "When no CRM rows are loaded, the empty state is a single plain sentence rather than a scannable no-send/import/setup status surface.",
+      "When CRM rows are loaded, the review pattern is an eight-column table that needs a mobile-friendly contact-card representation for names, contact detail, no-send, dedupe, source, communications, next action, and direct actions."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "even",
+      "loads nicely",
+      "CRM",
+      "community section"
+    ],
+    "expanded_phrases": {
+      "clean": "The sidebar should read as a Rabbi-facing work console, not a raw internal platform index.",
+      "even": "Primary modules should use consistent short labels, markers, section targets, and active states across desktop and mobile.",
+      "loads nicely": "The first rendered Operations viewport should expose the relevant One Time modules without a long platform-module wall or layout jump.",
+      "CRM": "Interpret CRM as first-party BNA/One Time contact review UX only: list/detail review, no-send state, dedupe state, source provenance, communication readback, and guarded direct actions. Do not add GHL, LeadConnector, external CRM APIs, or external CRM writes.",
+      "community section": "Community/class work remains first-party One Time classroom/community data and may be grouped under Rabbi modules without cross-workspace record bleed."
+    },
+    "first_party_pattern_interpretation": "Use the existing Rabbi IA and first-party BNA Operations routes. Support modules remain routable for diagnostics but are demoted from the Rabbi-facing primary sidebar."
+  },
+  "design_pattern_references": [
+    "src/platform/instances/one-time-rabbi-dashboard-ia.js",
+    "tests/one-time-rabbi-dashboard-ia.test.js",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-822",
+      "statement": "Polish the One Time CRM Contacts route so empty and populated contact-review states are readable, mobile-safe, and clearly no-send/no-external-write.",
+      "expected_result": "The CRM Contacts section shows a structured no-contact setup/preview state when rows are absent, shows mobile-safe contact review cards when rows exist, and the audit captures the CRM route on desktop/tablet/mobile.",
+      "acceptance_criteria": [
+        "The audit route list includes contacts crm_contacts and captures desktop, tablet, and mobile screenshots.",
+        "The empty CRM state renders a structured first-party CRM status surface with source, no-send, dedupe, and next-step information.",
+        "Populated CRM rows have a card representation with contact, status, no-send, dedupe, source, communications, next action, and existing direct actions.",
+        "No GHL, LeadConnector, external CRM write, send, payment, checkout, access grant, DNS, or provider account mutation is introduced.",
+        "Focused CRM static tests and the full local audit pass."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "RAW-20260702-008 and the broad UI cleanup register exist.",
+      "REQ-20260702-821 locally verified the main One Time IA/nav alignment.",
+      "Latest participant screenshots show member roster readability but no dedicated CRM Contacts capture.",
+      "Existing tests already assert first-party CRM scoping/no-send/dedupe behavior.",
+      "Implementation can stay in Operations UI, audit route list, and focused static tests only."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "Open Members",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "GHL",
+        "LeadConnector",
+        "external CRM write",
+        "raw private school-only data"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "CRM Contacts route renders without console errors, horizontal overflow, external-write controls, or raw private data.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+      "viewport": 1440,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Open the Operations route before asynchronous workspace/module data finishes rendering.",
+      "expected_visible_title": "CRM Contacts",
+      "expected_visible_message": "One Time CRM Contacts",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-822",
+      "expected_primary_sidebar_label": "Members"
+    },
+    "empty": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "Open Members",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "GHL",
+        "LeadConnector",
+        "external CRM write",
+        "raw private school-only data"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "CRM Contacts route renders without console errors, horizontal overflow, external-write controls, or raw private data.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+      "viewport": 390,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Use the local seeded/fixture state when no extra provider members are loaded.",
+      "expected_visible_title": "CRM Contacts",
+      "expected_visible_message": "One Time CRM Contacts",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-822",
+      "expected_primary_sidebar_label": "Members"
+    },
+    "populated": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "Open Members",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "GHL",
+        "LeadConnector",
+        "external CRM write",
+        "raw private school-only data"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "CRM Contacts route renders without console errors, horizontal overflow, external-write controls, or raw private data.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+      "viewport": 1440,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Open the One Time Operations overview after local fixture data has loaded.",
+      "expected_visible_title": "CRM Contacts",
+      "expected_visible_message": "One Time CRM Contacts",
+      "expected_primary_sidebar_label": "Members",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-822"
+    },
+    "filtered_empty": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "Open Members",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "GHL",
+        "LeadConnector",
+        "external CRM write",
+        "raw private school-only data"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "CRM Contacts route renders without console errors, horizontal overflow, external-write controls, or raw private data.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+      "viewport": 768,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Open a scoped task filter with no matching fixture rows.",
+      "expected_visible_title": "CRM Contacts",
+      "expected_visible_message": "One Time CRM Contacts",
+      "expected_primary_sidebar_label": "Members",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-822"
+    },
+    "error": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "Open Members",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "GHL",
+        "LeadConnector",
+        "external CRM write",
+        "raw private school-only data"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "CRM Contacts route renders without console errors, horizontal overflow, external-write controls, or raw private data.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+      "viewport": 1024,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Simulate a local data-fetch failure during focused probe if needed.",
+      "expected_visible_title": "CRM Contacts",
+      "expected_visible_message": "One Time CRM Contacts",
+      "expected_primary_sidebar_label": "Members",
+      "screenshot_required": false,
+      "requirement_id": "REQ-20260702-822"
+    },
+    "blocked_setup": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "Open Members",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "GHL",
+        "LeadConnector",
+        "external CRM write",
+        "raw private school-only data"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "CRM Contacts route renders without console errors, horizontal overflow, external-write controls, or raw private data.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+      "viewport": 1440,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Open the Program Payment / Access section while provider payment/access setup remains preview-only.",
+      "expected_visible_title": "CRM Contacts",
+      "expected_visible_message": "One Time CRM Contacts",
+      "expected_primary_sidebar_label": "Members",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-822"
+    },
+    "preview_only": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "Open Members",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "GHL",
+        "LeadConnector",
+        "external CRM write",
+        "raw private school-only data"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "CRM Contacts route renders without console errors, horizontal overflow, external-write controls, or raw private data.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+      "viewport": 1440,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Open the section-aware Payments sidebar item.",
+      "expected_visible_title": "CRM Contacts",
+      "expected_primary_sidebar_label": "Members",
+      "expected_visible_message": "One Time CRM Contacts",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-822"
+    },
+    "success_readback": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "Open Members",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "GHL",
+        "LeadConnector",
+        "external CRM write",
+        "raw private school-only data"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "CRM Contacts route renders without console errors, horizontal overflow, external-write controls, or raw private data.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+      "viewport": 1440,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Use the demoted Platform Support footer control or direct switchView('agents').",
+      "expected_visible_title": "CRM Contacts",
+      "expected_visible_message": "One Time CRM Contacts",
+      "expected_primary_sidebar_label": "Members",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-822"
+    },
+    "permission_denied": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "Open Members",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "GHL",
+        "LeadConnector",
+        "external CRM write",
+        "raw private school-only data"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "CRM Contacts route renders without console errors, horizontal overflow, external-write controls, or raw private data.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+      "viewport": 1024,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Attempt to open a school-only view from the provider workspace.",
+      "expected_visible_title": "CRM Contacts",
+      "expected_visible_message": "One Time CRM Contacts",
+      "screenshot_required": false,
+      "requirement_id": "REQ-20260702-822",
+      "expected_primary_sidebar_label": "Members"
+    },
+    "mobile_drawer_or_detail_state": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "Open Members",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "GHL",
+        "LeadConnector",
+        "external CRM write",
+        "raw private school-only data"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "CRM Contacts route renders without console errors, horizontal overflow, external-write controls, or raw private data.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+      "viewport": 390,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Open the mobile Operations shell and then open Platform Support.",
+      "expected_visible_title": "CRM Contacts",
+      "expected_visible_message": "One Time CRM Contacts",
+      "expected_primary_sidebar_label": "Members",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-822"
+    }
+  },
+  "visual_quality": {
+    "layout": "CRM contacts route has a structured empty/setup state and mobile-safe contact review cards rather than a single plain empty sentence or an unreadable wide table.",
+    "brand": "Keep existing One Time Operations black/yellow route treatment; do not introduce BNA cream/navy as the dominant One Time shell.",
+    "responsive": "Desktop and mobile navigation labels fit within their controls with no horizontal overflow.",
+    "screenshot_requirements": [
+      {
+        "viewport": 1440,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+        "required": true
+      },
+      {
+        "viewport": 1024,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+        "required": true
+      },
+      {
+        "viewport": 768,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+        "required": true
+      },
+      {
+        "viewport": 430,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+        "required": true
+      },
+      {
+        "viewport": 390,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=contacts&section=crm_contacts",
+        "required": true
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Sidebar buttons retain accessible text labels.",
+      "Platform Support is a real button with readable text.",
+      "Active state must remain perceivable for duplicate service-provider section targets."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Add note",
+      "selector_or_action_key": "addLeadCommunication(${leadId}) existing CRM row action",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time CRM Contacts",
+      "external_write": false,
+      "handler_or_blocker": "Existing first-party note action only when an editable parent-lead id exists.",
+      "registry_required": false
+    },
+    {
+      "label": "Follow-up",
+      "selector_or_action_key": "setLeadNextFollowUp(${leadId}) existing CRM row action",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time CRM Contacts",
+      "external_write": false,
+      "handler_or_blocker": "Existing first-party follow-up action only when an editable parent-lead id exists.",
+      "registry_required": false
+    },
+    {
+      "label": "No-send",
+      "selector_or_action_key": "disabled no-send/external-write guard",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time CRM Contacts",
+      "external_write": false,
+      "handler_or_blocker": "External sends and CRM writes require separate operator approval.",
+      "registry_required": false
+    },
+    {
+      "label": "External CRM write",
+      "selector_or_action_key": "GHL/LeadConnector/external CRM write",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Shloimie/keyholder decision if ever requested",
+      "external_write": false,
+      "handler_or_blocker": "Explicitly out of scope and forbidden by repo policy.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "allowed_to_change": [
+      "client-side navigation label/marker/section metadata",
+      "client-side smoke assertions"
+    ],
+    "must_not_change": [
+      "server authorization",
+      "workspace data filters",
+      "database schema",
+      "external provider configuration",
+      "route registry access policies"
+    ]
+  },
+  "security_privacy": {
+    "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class only",
+    "private_data_policy": "No raw private student, parent, member, provider, email body, credential, token, or secret evidence may be added.",
+    "no_ghl_runtime": true,
+    "external_writes": "forbidden",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-20260702-822-A",
+      "title": "CRM empty/detail polish and audit coverage",
+      "requirements": [
+        "REQ-20260702-822"
+      ],
+      "files_allowed": [
+        "public/operations.html",
+        "scripts/audit-rabbi-onetime-current-state.mjs",
+        "tests/operations-contacts-intake-cleanup.test.js",
+        "tests/one-time-communications-workspace.test.js"
+      ],
+      "verification": [
+        "PQC validation",
+        "inline Operations script parse",
+        "focused CRM static tests",
+        "full Rabbi / One Time UI audit",
+        "watchdog:actions",
+        "watchdog:protocol-drift"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/operations.html",
+      "scripts/audit-rabbi-onetime-current-state.mjs",
+      "tests/operations-contacts-intake-cleanup.test.js",
+      "tests/one-time-communications-workspace.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "scripts/audit-rabbi-onetime-current-state.mjs",
+      "tests/operations-contacts-intake-cleanup.test.js",
+      "tests/one-time-communications-workspace.test.js"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "If implementation requires backend auth/data changes or broader CRM/contact-detail redesign, split into the next packet.",
+    "split_if_exceeds": "More than one shell and one test file, any external-provider behavior, or any server/database change.",
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "required": [
+      "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/20-operations-crm-contact-detail-polish.product-quality.json",
+      "inline Operations script parse",
+      "node --test tests/operations-contacts-intake-cleanup.test.js tests/one-time-communications-workspace.test.js",
+      "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:<port> --out=ops/ui-audits/2026-07-02-rabbi-onetime-crm-contact-detail-polish",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ]
+  },
+  "evidence": {
+    "required_artifacts": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-crm-contact-detail-polish/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-crm-contact-detail-polish/screenshots/operations-crm-contacts-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-crm-contact-detail-polish/screenshots/operations-crm-contacts-390-mobile.png"
+    ],
+    "manual_review_required": true
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "status": "locally_verified_deploy_live_smoke_blocked",
+    "criteria": [
+      "Packet validates.",
+      "Live Operations sidebar uses Rabbi-facing labels with Platform Support demotion.",
+      "Support routes remain directly accessible and scoped.",
+      "Focused and full local audits pass.",
+      "Ledger and changelog record local verification.",
+      "Production deploy/live smoke is complete, or the register keeps deploy/live smoke explicitly blocked by DEC-20260702-801."
+    ]
+  },
+  "trace": {
+    "raw_id": "RAW-20260702-008",
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/20-operations-crm-contact-detail-polish.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "read current IA and Operations shell",
+      "patch presentation-only nav metadata and tests",
+      "run local browser probes and screenshot audit",
+      "record local evidence"
+    ],
+    "skipped_actions_policy": "Skip deploy/live smoke until DEC-20260702-801 is resolved; skip all external writes.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-crm-contact-detail-polish/report.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "requirement_ids": [
+      "REQ-20260702-822"
+    ],
+    "decision_ids": [
+      "DEC-20260702-801"
+    ],
+    "register": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No new protocol drift findings from this packet."
+  },
+  "next_packet": {
+    "recommended": "Deploy/live-smoke or manual screenshot defect follow-up",
+    "blockers": [
+      "Production deploy/live-smoke target remains open for terminal Done."
+    ]
+  }
+}

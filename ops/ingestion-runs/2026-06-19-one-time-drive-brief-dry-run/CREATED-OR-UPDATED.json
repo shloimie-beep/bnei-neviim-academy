@@ -1,0 +1,17 @@
+{
+  "ingestion_run_id": "2026-06-19-one-time-drive-brief-dry-run",
+  "dry_run": true,
+  "production_mutation_performed": false,
+  "created": [],
+  "updated": [],
+  "would_create_or_update_counts": {
+    "decisions": 17,
+    "tasks": 17,
+    "calendar_events": 17,
+    "content_items": 2,
+    "community_records": 1,
+    "integration_items": 9,
+    "notes": 1
+  },
+  "duplicate_policy": "match by source_key plus each record_key; update same record, do not create duplicate visible cards"
+}

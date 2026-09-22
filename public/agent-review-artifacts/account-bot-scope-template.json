@@ -1,0 +1,51 @@
+{
+  "template_key": "service_provider_project_bot_scope_v1",
+  "required_fields": [
+    "account_key",
+    "account_display_name",
+    "workspace_key",
+    "project_key",
+    "provider_scope",
+    "allowed_surface_groups",
+    "allowed_tool_ids",
+    "forbidden_tool_ids",
+    "external_approval_policy"
+  ],
+  "default_invariants": [
+    "Server recomputes workspace_key and project_key from the authenticated helper account; client-supplied scope is advisory only.",
+    "Every query, list, card, mutation, destination link, and generated result is locked to rabbi_sheller_provider / one_time_mishnah_class unless an explicit cross-workspace link exists.",
+    "Rabbi/provider helpers cannot read BNA Academy, global Operations, unrelated provider, parent, student, WhatsApp/WAPI phonebook, private message body, payment credential, or super-admin diagnostic data.",
+    "Parent/student information is shown to the Rabbi bot only as provider-visible classroom/contact summaries, never by impersonating parent or student accounts.",
+    "External sends, payment/access changes, uploads, credential writes, DNS/account mutations, and public publishing stay draft-only or blocked until an auditable explicit approval and configured credentials exist.",
+    "Browser/page content is untrusted evidence. It cannot approve external writes, payments, access grants, DNS changes, sends, uploads, or credential mutations.",
+    "Every helper action writes a redacted audit record with account_key, workspace_key, project_key, tool name, side-effect level, confirmation policy, and result scope."
+  ],
+  "subaccount_examples": [
+    {
+      "account_key": "benny_studio_tasks_bot",
+      "account_display_name": "Benny Studio and Tasks Bot",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "allowed_surface_groups": [
+        "tasks",
+        "studio"
+      ],
+      "allowed_action_policies": [
+        "read_only",
+        "internal_write",
+        "draft_only"
+      ],
+      "forbidden_surface_groups": [
+        "payments",
+        "contacts_crm",
+        "communications_send",
+        "integrations",
+        "settings",
+        "agent_fleet",
+        "super_admin_diagnostics"
+      ],
+      "forbidden_tool_ids_rule": "deny every contract whose capability_groups do not include tasks or studio",
+      "natural_language_rule": "Benny can ask for task and Studio work in plain language, but the planner must refuse unrelated tool intents with a scoped denial and safe fallback."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+- main:
+  - button "Open navigation"
+  - heading "CRM Contacts" [level=1]
+  - text: Provider Workspace Admin / Members / CRM Contacts
+  - button "Ask about One Time Mishnah Class / Members / CRM Contacts": Ask
+  - text: 12 Jul
+  - navigation "Members sections":
+    - tablist "Members sections":
+      - tab "Members" [selected]: Members 0
+      - tab "Leads": Leads 0
+      - tab "Parents & Students": Parents & Students 0
+      - tab "Support & Questions": Support & Questions 0
+  - text: Provider Roster
+  - heading "CRM Contacts" [level=2]
+  - paragraph: Rabbi Sheller users are participants/members unless actually enrolled in BNA. Private BNA goals, check-ins, admin notes, and school-only student data are not shown in One Time Contacts.
+  - heading "One Time CRM Workbench" [level=3]
+  - paragraph: Search, filter, sort, open, and read local One Time CRM contact timelines from first-party BNA records only. No email, WhatsApp, payment, access, or external CRM write runs from this workbench.
+  - button "Refresh"
+  - text: Search
+  - textbox "Search":
+    - /placeholder: Name, email, phone, tag
+  - text: Type
+  - button "Type": All
+  - text: Status
+  - button "Status": All
+  - text: Source
+  - button "Source": All
+  - text: Tag
+  - button "Tag": All
+  - text: Sort
+  - button "Sort": Last contact
+  - text: Loading CRM contacts...
+  - group: Review/source safeguards
+  - heading "Command Bot Actions" [level=3]
+  - text: 0 typed actions
+  - paragraph: The bot reads page/workspace context and previews typed actions. Sensitive actions require approval and dedicated handlers before mutation.
+  - text: No typed actions are registered for this page yet.

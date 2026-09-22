@@ -1,0 +1,122 @@
+{
+  "schema_version": "pqc.v1",
+  "packet_id": "PKT-20260630-602",
+  "parent_raw_id": "RAW-20260630-013",
+  "source_statement_ids": ["SRC-CASE-002"],
+  "stage": "STAGE_2_CODEX_PROMPT_GENERATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "title": "One Time class community packet",
+  "created_at": "2026-06-30T00:00:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": ["RABBI_PROVIDER_ADMIN", "MEMBER_PARENT_PORTAL", "STUDENT_PORTAL"],
+  "operator_intent_summary": "Compile the community section request into class/community requirements with private student replies and Rabbi moderation.",
+  "raw_source": "Clean up the community section.",
+  "operator_quotes": ["Clean up the community section."],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260630-NO-GHL-FIRST-PARTY-CRM",
+      "decision": "One Time community remains first-party BNA, not GHL.",
+      "status": "decided"
+    }
+  ],
+  "out_of_scope": [
+    "No public student-to-student chat unless a future packet explicitly approves it.",
+    "No email sends, Stripe payments, external provider writes, or GHL runtime.",
+    "No member portal implementation until a child Codex implementation packet passes readiness."
+  ],
+  "affected_routes": ["/operations?workspace=rabbi_sheller_provider&view=community", "/one-time-classroom", "/member-library"],
+  "affected_files": ["public/operations.html", "public/student.html", "public/parent.html", "ops/action-registry.json", "ops/route-registry.json"],
+  "current_state": {
+    "inspection_targets": ["One Time community route", "classroom portal route", "student portal route", "parent portal route"],
+    "known_blockers": ["Portal visibility must be split by view class before implementation."]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": ["clean", "community section"],
+    "expanded_phrases": {
+      "clean": "Aligned layout, readable typography, consistent spacing, simple IA, no support clutter, obvious next actions, consistent states, mobile usable, and screenshot proof.",
+      "community section": "One Time class/community view with announcements, classes, resources, private student replies/questions to Rabbi, Rabbi moderation, Rabbi-selected public Q&A, and portal/admin separation."
+    },
+    "first_party_pattern_interpretation": "Community is a first-party BNA class/community learning surface, not an external community runtime."
+  },
+  "requirements": [
+    {
+      "id": "REQ-20260630-612",
+      "statement": "Define One Time community as class posts, announcements, resources, private student replies, Rabbi moderation, and approved public Q&A.",
+      "expected_result": "A scoped packet separates Rabbi admin, student portal, and parent/member portal views with screenshot and state requirements.",
+      "acceptance_criteria": [
+        "Private student replies stay private until Rabbi approves public display.",
+        "Rabbi/admin tools are absent from student and parent/member portal states."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": ["Routes and view classes are split.", "Private/public states are listed.", "Screenshots are required before implementation."]
+  },
+  "state_matrix": {
+    "loading": {"route": "/operations?workspace=rabbi_sheller_provider&view=community", "viewport": "1440", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Load community data.", "expected_visible_title": "Community", "expected_visible_message": "Loading class posts.", "expected_primary_action": "None until loaded.", "expected_secondary_actions": ["Retry"], "forbidden_content": ["raw JSON"], "screenshot_required": true, "aria_semantic_expectation": "Loading status in main region.", "accessibility_expectation": "Status is announced.", "test_smoke_assertion": "Loading renders before data.", "requirement_id": "REQ-20260630-612"},
+    "empty": {"route": "/operations?workspace=rabbi_sheller_provider&view=community", "viewport": "1440", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "No class posts.", "expected_visible_title": "Community", "expected_visible_message": "No class discussion has been started yet.", "expected_primary_action": "Draft Rabbi announcement.", "expected_secondary_actions": ["Add class resource"], "forbidden_content": ["fake posts"], "screenshot_required": true, "aria_semantic_expectation": "Empty state has a heading.", "accessibility_expectation": "Primary action has visible label.", "test_smoke_assertion": "Empty state explains Rabbi starts posts and students reply privately.", "requirement_id": "REQ-20260630-612"},
+    "populated": {"route": "/operations?workspace=rabbi_sheller_provider&view=community", "viewport": "1440", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Class posts exist.", "expected_visible_title": "Community", "expected_visible_message": "Class announcements, resources, private replies, and approved Q&A are organized by class.", "expected_primary_action": "Review private replies.", "expected_secondary_actions": ["Post announcement", "Approve Q&A"], "forbidden_content": ["student-to-student posting controls"], "screenshot_required": true, "aria_semantic_expectation": "Posts and replies use list/section semantics.", "accessibility_expectation": "Moderation actions are keyboard reachable.", "test_smoke_assertion": "Private replies are visible only to Rabbi/admin.", "requirement_id": "REQ-20260630-612"},
+    "filtered_empty": {"route": "/operations?workspace=rabbi_sheller_provider&view=community", "viewport": "1024", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Filter by class/status with no matches.", "expected_visible_title": "Community", "expected_visible_message": "No posts match these filters.", "expected_primary_action": "Clear filters.", "expected_secondary_actions": ["Change class"], "forbidden_content": ["filters as global navigation"], "screenshot_required": true, "aria_semantic_expectation": "Filtered-empty result is announced.", "accessibility_expectation": "Clear filters has focus state.", "test_smoke_assertion": "Clear filters restores class context.", "requirement_id": "REQ-20260630-612"},
+    "error": {"route": "/operations?workspace=rabbi_sheller_provider&view=community", "viewport": "1024", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Community API fails.", "expected_visible_title": "Community", "expected_visible_message": "Community data could not load.", "expected_primary_action": "Retry.", "expected_secondary_actions": ["Open support drawer"], "forbidden_content": ["stack trace"], "screenshot_required": true, "aria_semantic_expectation": "Error status is tied to region.", "accessibility_expectation": "Error text is not color-only.", "test_smoke_assertion": "Error renders actionable retry.", "requirement_id": "REQ-20260630-612"},
+    "blocked_setup": {"route": "/operations?workspace=rabbi_sheller_provider&view=community", "viewport": "768", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open blocked portal publication.", "expected_visible_title": "Publication blocked", "expected_visible_message": "Portal publication needs an approved implementation packet.", "expected_primary_action": "Open blocker details.", "expected_secondary_actions": ["Keep draft"], "forbidden_content": ["external community setup noise"], "screenshot_required": true, "aria_semantic_expectation": "Blocked status names owner and next action.", "accessibility_expectation": "Blocked status is readable.", "test_smoke_assertion": "Blocked publication does not write externally.", "requirement_id": "REQ-20260630-612"},
+    "preview_only": {"route": "/operations?workspace=rabbi_sheller_provider&view=community", "viewport": "768", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Preview post visibility.", "expected_visible_title": "Preview only", "expected_visible_message": "No public post was published.", "expected_primary_action": "Review preview.", "expected_secondary_actions": ["Edit draft"], "forbidden_content": ["silent publish"], "screenshot_required": true, "aria_semantic_expectation": "Preview status is explicit.", "accessibility_expectation": "Preview status has text label.", "test_smoke_assertion": "Preview returns no-publication readback.", "requirement_id": "REQ-20260630-612"},
+    "success_readback": {"route": "/operations?workspace=rabbi_sheller_provider&view=community", "viewport": "430", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Complete local draft save.", "expected_visible_title": "Community", "expected_visible_message": "Draft saved with visible status.", "expected_primary_action": "Open draft.", "expected_secondary_actions": ["View audit"], "forbidden_content": ["raw private reply bodies in evidence"], "screenshot_required": true, "aria_semantic_expectation": "Success status is announced.", "accessibility_expectation": "Readback appears after action.", "test_smoke_assertion": "Success readback names saved draft status.", "requirement_id": "REQ-20260630-612"},
+    "permission_denied": {"route": "/operations?workspace=rabbi_sheller_provider&view=community", "viewport": "430", "auth_role": "STUDENT_PORTAL", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Student attempts admin moderation route.", "expected_visible_title": "Access denied", "expected_visible_message": "Moderation controls are not available in the student portal.", "expected_primary_action": "Return to class.", "expected_secondary_actions": ["Sign out"], "forbidden_content": ["admin moderation controls", "other students' private replies"], "screenshot_required": true, "aria_semantic_expectation": "Access denial uses a heading.", "accessibility_expectation": "Focus moves to the denial message.", "test_smoke_assertion": "Student portal cannot see Rabbi moderation controls.", "requirement_id": "REQ-20260630-612"},
+    "mobile_drawer_or_detail_state": {"route": "/one-time-classroom", "viewport": "390", "auth_role": "STUDENT_PORTAL", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Student opens a class post on mobile.", "expected_visible_title": "Class post", "expected_visible_message": "Post detail shows Rabbi prompt and private reply path.", "expected_primary_action": "Reply privately to Rabbi.", "expected_secondary_actions": ["Back to class"], "forbidden_content": ["public student chat box"], "screenshot_required": true, "aria_semantic_expectation": "Detail view has heading and back action.", "accessibility_expectation": "Mobile close/back path is visible and reachable.", "test_smoke_assertion": "Mobile detail opens/closes without overflow.", "requirement_id": "REQ-20260630-612"}
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {"route": "/operations?workspace=rabbi_sheller_provider&view=community", "viewport": 1440, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-612"},
+      {"route": "/operations?workspace=rabbi_sheller_provider&view=community", "viewport": 1024, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-612"},
+      {"route": "/operations?workspace=rabbi_sheller_provider&view=community", "viewport": 768, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-612"},
+      {"route": "/one-time-classroom", "viewport": 430, "auth_role": "STUDENT_PORTAL", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-612"},
+      {"route": "/one-time-classroom", "viewport": 390, "auth_role": "STUDENT_PORTAL", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-612"}
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260630-602",
+        "route": "/operations?workspace=rabbi_sheller_provider&view=community",
+        "viewport": "390",
+        "screenshot_before": "ops/ui-audits/example/before-community-390.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/example/after-community-390.png",
+        "defect_codes": ["VQ-COMMUNITY-002", "VQ-COMMUNITY-005", "VQ-RESP-003"],
+        "severity": "P1",
+        "user_impact": "Private/public response state and admin/portal separation are unclear.",
+        "expected_fix": "Separate Rabbi moderation, student private reply, approved public Q&A, and parent/member portal states.",
+        "requirement_id": "REQ-20260630-612"
+      }
+    ]
+  },
+  "accessibility": {"baseline": "WCAG 2.2 A/AA plus mobile touch and reflow requirements.", "required_checks": ["contrast", "focus visible", "keyboard path", "labels", "target size", "modal/drawer close path"]},
+  "action_states": [
+    {"label": "Reply privately to Rabbi", "selector_or_action_key": "ACTION-ONETIME-COMMUNITY-PRIVATE-REPLY", "action_state": "PREVIEW_ONLY", "owner": "Future implementation packet", "external_write": false, "handler_or_blocker": "Preview-only until portal implementation packet passes readiness.", "registry_required": true},
+    {"label": "Approve public Q&A", "selector_or_action_key": "ACTION-ONETIME-COMMUNITY-APPROVE-QA", "action_state": "NEEDS_RABBI_DECISION", "owner": "Rabbi", "external_write": false, "handler_or_blocker": "Requires Rabbi selection before a response becomes public.", "registry_required": true}
+  ],
+  "data_requirements": ["class title", "announcement status", "resource title", "reply privacy state", "moderation status", "approved public Q&A status"],
+  "security_privacy": {"browser_content_untrusted": true, "no_ghl_runtime": true, "scope_rules": ["Student portal never exposes other students' private replies.", "Parent/member views show only approved content."], "forbidden_content": ["admin-only moderation in portal views", "raw private reply bodies in tracked evidence", "external community runtime"]},
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {"batch_id": "BATCH-COMMUNITY-SPEC", "scope": "One Time class/community packet generation", "instructions": ["Generate exact class/community, portal separation, action state, state matrix, screenshot, and privacy requirements."]}
+  ],
+  "tests": [
+    {"command_or_check": "npm run pqc:validate", "expected_result": "Community packet passes Product Quality Compiler validation."}
+  ],
+  "evidence": {"expected_paths": ["ops/product-quality-compiler/validation/latest-product-quality-validation.md"]},
+  "app_visible": true,
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {"required": true, "criteria": ["All view-class states are verified.", "Portal/admin separation screenshots exist.", "No uncontrolled public student-to-student chat is introduced.", "Deploy/live-smoke proof exists before app-visible Done."]},
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260630-013-product-quality-compiler-validator-drift-watchdog.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-06-30-rabbi-community/04-community-packet.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": ["read repo", "capture screenshots", "run validator"],
+    "skipped_actions_policy": "No external provider writes or portal publication without future approved packet.",
+    "blocker_decisions": ["DEC-20260630-NO-GHL-FIRST-PARTY-CRM"],
+    "evidence_paths": ["ops/ui-audits/example/community-report.md"],
+    "final_status_path": "tasks-pending/2026-06-30-product-quality-compiler-validator-drift-watchdog.md",
+    "next_packet_path": "ops/prompt-packets/2026-06-30-rabbi-community/05-verifier-closeout-packet.md"
+  },
+  "next_packet": {"type": "VERIFIER_PACKET", "description": "Verify community state separation and screenshot evidence.", "path": "ops/prompt-packets/2026-06-30-rabbi-community/05-verifier-closeout-packet.md"}
+}

@@ -1,0 +1,760 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260709-128",
+  "parent_raw_id": "RAW-20260709-011",
+  "source_statement_ids": [
+    "SRC-20260709-011-001",
+    "SRC-20260709-011-002",
+    "SRC-20260709-011-003",
+    "ISSUE-128"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [
+      "PKT-20260709-129",
+      "PKT-20260709-130",
+      "PKT-20260709-131",
+      "PKT-20260709-132"
+    ],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260709-011-onetime-parallel-frontend-audit.md",
+      "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md",
+      "ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md",
+      "config/service-provider-sites/one-time.json",
+      "memory-topics/one-time-rabbi-sheller.md",
+      "memory-topics/workspace-scope-isolation.md"
+    ],
+    "produces": [
+      "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/00-control-tower.product-quality.json",
+      "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit",
+      "public/agent-review-prompts/index.json",
+      "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/00-control-tower.product-quality.json",
+    "terminal_condition": "Control tower splits issue #128 into audit-first packets, blocks app-visible implementation while collisions exist, and hands off exact next packets.",
+    "handoff_target": "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md"
+  },
+  "stage": "STAGE_1_SPEC_COMPILER",
+  "packet_role": "CONTROL_TOWER",
+  "status": "generated",
+  "title": "One Time Frontend Control Tower Packet",
+  "created_at": "2026-07-09T13:15:00+03:00",
+  "workspace_key": "platform",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "PUBLIC_MARKETING",
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL",
+    "INTERNAL_AGENT_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260709-011",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "SUPER_RAMBLE",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "CRM_PIPELINE",
+      "COMMUNITY_CLASSROOM",
+      "SECURITY_PRIVACY",
+      "VERIFIER_CLOSEOUT",
+      "DECISION_REQUIRED"
+    ],
+    "confidence": 0.95,
+    "reasons": [
+      "GitHub issue #128 and the operator request ask for One Time full front-end product-quality work in parallel-safe audit mode first.",
+      "The work crosses public marketing, member/classroom, provider Operations, CRM/pipeline copy, helper, brand assets, and mobile routes, so it must be split.",
+      "The control tower shows a dirty worktree and active overlapping app-visible lane, so implementation must wait while audit/prompt/report work proceeds."
+    ],
+    "affected_product_surfaces": [
+      "One Time public landing",
+      "One Time member/library/classroom",
+      "Rabbi provider Operations",
+      "Agent Mode prompt pack"
+    ],
+    "likely_external_provider_blockers": [
+      "External sends, payments, checkout, access grants, DNS/Railway, Drive/Vimeo/Zoom, credentials, GHL, and LeadConnector are explicitly out of scope.",
+      "Operations screenshots require auth and redaction; missing auth blocks only the Operations audit slice."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-control-tower",
+      "01-current-state-visual-audit",
+      "02-static-chrome-implementation",
+      "03-public-landing-reframe",
+      "04-provider-operations-layout-parity-audit",
+      "Agent Mode prompt pack",
+      "final visual regression"
+    ],
+    "next_exact_packet": {
+      "id": "PKT-20260709-129",
+      "title": "Current State Visual Audit",
+      "status": "ready_for_codex",
+      "reason": "Audit must precede any implementation."
+    }
+  },
+  "operator_intent_summary": "Make the One Time frontend feel like a high-trust, black/yellow, Rabbi Scheller product across public, member, classroom, and provider Operations surfaces, while preserving workspace scope and avoiding external/private mutations.",
+  "raw_quotes": [
+    "Goal mode, but PARALLEL-SAFE AUDIT MODE FIRST.",
+    "Pick up GitHub issue #128 for the One Time frontend million-dollar app audit, static chrome, landing reframe, and Agent Mode prompt generation.",
+    "Do not implement shared app code if another lane is dirty or active in overlapping files."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260709-009",
+      "decision": "Static chrome implementation is blocked by active dirty deploy lane until collision clears.",
+      "status": "active_blocker"
+    },
+    {
+      "id": "DEC-20260709-010",
+      "decision": "Countdown must be Israel-time and config/API-backed, not hardcoded in UI.",
+      "status": "accepted_for_packet"
+    },
+    {
+      "id": "DEC-20260709-011",
+      "decision": "Drive mirror is optional; repo evidence is sufficient when Drive is unavailable.",
+      "status": "accepted_for_packet"
+    }
+  ],
+  "out_of_scope": [
+    "No email send, WhatsApp/WAPI send, Telegram send, Stripe checkout, charge, refund, access grant, password reset, DNS, Railway, Drive, Vimeo, Zoom, Resend, GHL, LeadConnector, credential, provider-account, or production-data mutation.",
+    "No screenshots, snapshots, logs, or reports containing raw private message bodies, student-sensitive details, secrets, passwords, API keys, payment card data, or unrelated provider/family records may be committed.",
+    "No app-visible implementation while the control tower shows an active dirty deploy lane in overlapping files.",
+    "No broad rewrite of BNA, Super Admin, parent, student, or provider shells beyond the packet scope."
+  ],
+  "affected_surfaces": [
+    "One Time public landing",
+    "One Time member/library/classroom",
+    "Rabbi provider Operations",
+    "Agent Mode prompt pack"
+  ],
+  "affected_routes": [
+    "/one-time",
+    "/one-time/mishnayos",
+    "/rabbi-member",
+    "/member-library",
+    "/one-time-classroom",
+    "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+    "/provider.html?review=one-time",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi"
+  ],
+  "affected_files": [
+    "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/00-control-tower.product-quality.json",
+    "scripts/audit-onetime-parallel-frontend.mjs",
+    "src/lib/bna/agent-review-hub.js",
+    "tests/agent-review-hub.test.js",
+    "public/agent-review-prompts/*.md",
+    "public/agent-review-prompts/index.json",
+    "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md",
+    "ops/agent-task-ledger.jsonl",
+    "ops/agent-changelog.md"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "Control tower reports branch master with dirty worktree and overlapping active app-visible lanes.",
+      "GitHub issue #128 is open and contains owner decisions for countdown, $67 copy, first-party CRM/tracking, and scoped Rabbi Operations layout.",
+      "Existing One Time brand memory requires black/yellow and workspace isolation from BNA cream/navy/teal surfaces.",
+      "The new audit harness and Agent Mode prompts are safe audit/report artifacts and do not mutate external providers."
+    ],
+    "known_blockers": [
+      "Active dirty deploy lane blocks static shared app implementation and commit/push/deploy closeout for this batch.",
+      "Authenticated Operations checks may be skipped or redacted when no safe session exists."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "nice",
+      "ugly",
+      "sloppy",
+      "million-dollar",
+      "professional",
+      "GHL-like",
+      "like GHL",
+      "finish everything",
+      "make it work",
+      "community section",
+      "CRM",
+      "pipeline",
+      "launch-ready",
+      "configured",
+      "working"
+    ],
+    "expanded_phrases": {
+      "clean": "Evidence-defined layout quality: no overlap, no clipped text, stable spacing, obvious hierarchy, and screenshot/readback proof by route and viewport.",
+      "nice": "A route is acceptable only when it meets the same measurable visual, accessibility, and scope checks as the rest of the One Time surface.",
+      "ugly": "Any inconsistent brand, broken layout, irrelevant data, or visibly untrusted placeholder becomes a coded visual finding with owner and next action.",
+      "sloppy": "Sloppy means measurable defects: overflow, duplicate or misaligned controls, noisy setup/debug content, fake proof assets, wrong role data, or unsafe action copy.",
+      "million-dollar": "A high-trust One Time product experience: black/yellow brand consistency, compact static chrome, clear first viewport, safe conversion flows, scoped role views, responsive controls, accessibility checks, screenshots, tests, and deploy/live-smoke gates for app-visible changes.",
+      "professional": "Professional means role-appropriate information architecture, restrained but branded styling, aligned controls, predictable action states, and no private/admin/BNA bleed.",
+      "GHL-like": "Use first-party BNA Operations patterns for CRM/pipeline concepts without GHL, LeadConnector, external CRM runtime, or provider mutation.",
+      "like GHL": "Map CRM/pipeline expectations to first-party Operations views and registries only.",
+      "finish everything": "Split the broad issue into packet-sized audited lanes with terminal statuses rather than a single broad implementation pass.",
+      "make it work": "Define exact routes, action states, data reads, safe blockers, and verification commands before code changes.",
+      "community section": "Classroom/community language is moderation-first and private-safe, never open student-to-student posting unless explicitly designed and authorized.",
+      "CRM": "First-party One Time contact tracking and campaign status only; no GHL/LeadConnector runtime and no external CRM write.",
+      "pipeline": "Pipeline means first-party status columns and task/action readbacks in scoped Operations, with safe preview states and no external mutation.",
+      "launch-ready": "Launch-ready requires route registry/action registry coverage, screenshots, accessibility checks, no scope bleed, commit/push/deploy, and live smoke where app-visible.",
+      "configured": "Configured means backed by explicit repo config/API readback and evidence, not a visual placeholder or unchecked claim.",
+      "working": "Working means the user path has a successful readback or a precise blocker with owner and next action."
+    },
+    "first_party_pattern_interpretation": "One Time CRM/pipeline and provider dashboard expectations map to first-party BNA Operations data and UI patterns only. GHL and LeadConnector are forbidden runtime dependencies."
+  },
+  "design_pattern_references": [
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/PRODUCT-QUALITY-OPERATING-SYSTEM.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/DESIGN-REFERENCE-CAPTURE.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260709-063",
+      "statement": "One Time Frontend Control Tower Packet",
+      "expected_result": "Validated packet, current-state evidence, safe Agent Mode instructions, and a terminal blocker or verification path for the scoped One Time surface.",
+      "acceptance_criteria": [
+        "Routes, viewports, screenshots, redaction, and PASS/FAIL/BLOCKED reporting are explicit.",
+        "The packet forbids external sends, payments, access grants, credentials, provider mutations, private-data commits, GHL, and LeadConnector.",
+        "Implementation is blocked unless the control tower and dirty worktree prove the lane is collision-free.",
+        "App-visible Done requires commit, push, deploy, and live smoke/readback evidence."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw intake and requirement register exist.",
+      "Control tower and dirty branch status were checked.",
+      "Affected route and viewport matrix is explicit.",
+      "State matrix includes required loading/empty/populated/error/permission/mobile states.",
+      "Browser/page evidence is treated as untrusted and external writes are excluded."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/one-time",
+      "viewport": 1440,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the public landing and watch initial render before data settles.",
+      "expected_visible_title": "OneTimeOneTime Mishnah",
+      "expected_visible_message": "Campaign hero and countdown render without layout shift.",
+      "expected_primary_action": "Start Free CTA",
+      "expected_secondary_actions": [
+        "Member Login",
+        "Ask a question"
+      ],
+      "forbidden_content": [
+        "BNA Academy brand bleed",
+        "Super Admin data",
+        "GHL or LeadConnector runtime",
+        "unsafe external-send promise",
+        "payment or access mutation promise"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Named landmark/navigation/form controls remain understandable in the tested state.",
+      "accessibility_expectation": "Readable text, visible focus path, no overlap, and 44px mobile tap targets for interactive controls.",
+      "test_smoke_assertion": "Audit or Agent Mode prompt records this state with route, viewport, evidence, status, and blocker when present.",
+      "requirement_id": "REQ-20260709-063"
+    },
+    "empty": {
+      "route": "/one-time/mishnayos",
+      "viewport": 1024,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the secondary public or member route with no interaction.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Safe empty/preview state stays branded and useful.",
+      "expected_primary_action": "Primary route CTA",
+      "expected_secondary_actions": [
+        "Support",
+        "Member Login"
+      ],
+      "forbidden_content": [
+        "BNA Academy brand bleed",
+        "Super Admin data",
+        "GHL or LeadConnector runtime",
+        "unsafe external-send promise",
+        "payment or access mutation promise"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Named landmark/navigation/form controls remain understandable in the tested state.",
+      "accessibility_expectation": "Readable text, visible focus path, no overlap, and 44px mobile tap targets for interactive controls.",
+      "test_smoke_assertion": "Audit or Agent Mode prompt records this state with route, viewport, evidence, status, and blocker when present.",
+      "requirement_id": "REQ-20260709-063"
+    },
+    "populated": {
+      "route": "/one-time",
+      "viewport": 768,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the route after data/assets load.",
+      "expected_visible_title": "OneTimeOneTime Mishnah",
+      "expected_visible_message": "Hero, proof, and action areas are visible.",
+      "expected_primary_action": "Start Free CTA",
+      "expected_secondary_actions": [
+        "Learn More",
+        "Member Login"
+      ],
+      "forbidden_content": [
+        "BNA Academy brand bleed",
+        "Super Admin data",
+        "GHL or LeadConnector runtime",
+        "unsafe external-send promise",
+        "payment or access mutation promise"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Named landmark/navigation/form controls remain understandable in the tested state.",
+      "accessibility_expectation": "Readable text, visible focus path, no overlap, and 44px mobile tap targets for interactive controls.",
+      "test_smoke_assertion": "Audit or Agent Mode prompt records this state with route, viewport, evidence, status, and blocker when present.",
+      "requirement_id": "REQ-20260709-063"
+    },
+    "filtered_empty": {
+      "route": "/member-library",
+      "viewport": 430,
+      "auth_role": "member_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open library/member route at mobile size and inspect filter state.",
+      "expected_visible_title": "Member Library",
+      "expected_visible_message": "Filters remain readable even when no item matches.",
+      "expected_primary_action": "Library filter",
+      "expected_secondary_actions": [
+        "Back to classes",
+        "Support"
+      ],
+      "forbidden_content": [
+        "BNA Academy brand bleed",
+        "Super Admin data",
+        "GHL or LeadConnector runtime",
+        "unsafe external-send promise",
+        "payment or access mutation promise"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Named landmark/navigation/form controls remain understandable in the tested state.",
+      "accessibility_expectation": "Readable text, visible focus path, no overlap, and 44px mobile tap targets for interactive controls.",
+      "test_smoke_assertion": "Audit or Agent Mode prompt records this state with route, viewport, evidence, status, and blocker when present.",
+      "requirement_id": "REQ-20260709-063"
+    },
+    "error": {
+      "route": "/one-time-classroom",
+      "viewport": 390,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open classroom route without a live member session.",
+      "expected_visible_title": "One Time Classroom",
+      "expected_visible_message": "A safe access or preview message appears without private data.",
+      "expected_primary_action": "Member access action",
+      "expected_secondary_actions": [
+        "Support",
+        "Back"
+      ],
+      "forbidden_content": [
+        "BNA Academy brand bleed",
+        "Super Admin data",
+        "GHL or LeadConnector runtime",
+        "unsafe external-send promise",
+        "payment or access mutation promise"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Named landmark/navigation/form controls remain understandable in the tested state.",
+      "accessibility_expectation": "Readable text, visible focus path, no overlap, and 44px mobile tap targets for interactive controls.",
+      "test_smoke_assertion": "Audit or Agent Mode prompt records this state with route, viewport, evidence, status, and blocker when present.",
+      "requirement_id": "REQ-20260709-063"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 1440,
+      "auth_role": "operations_super_admin_or_missing_session",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open scoped Operations route; if not authenticated, record auth blocker.",
+      "expected_visible_title": "One Time Mishnah Class",
+      "expected_visible_message": "Operations is either scoped and redacted or explicitly skipped.",
+      "expected_primary_action": "Scoped Operations navigation",
+      "expected_secondary_actions": [
+        "Provider overview",
+        "Communications"
+      ],
+      "forbidden_content": [
+        "BNA Academy brand bleed",
+        "Super Admin data",
+        "GHL or LeadConnector runtime",
+        "unsafe external-send promise",
+        "payment or access mutation promise"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Named landmark/navigation/form controls remain understandable in the tested state.",
+      "accessibility_expectation": "Readable text, visible focus path, no overlap, and 44px mobile tap targets for interactive controls.",
+      "test_smoke_assertion": "Audit or Agent Mode prompt records this state with route, viewport, evidence, status, and blocker when present.",
+      "requirement_id": "REQ-20260709-063"
+    },
+    "preview_only": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 768,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open provider review route only; do not mutate provider setup.",
+      "expected_visible_title": "One Time Provider Review",
+      "expected_visible_message": "Scoped review content appears without real provider writes.",
+      "expected_primary_action": "Review navigation",
+      "expected_secondary_actions": [
+        "CRM preview",
+        "Content preview"
+      ],
+      "forbidden_content": [
+        "BNA Academy brand bleed",
+        "Super Admin data",
+        "GHL or LeadConnector runtime",
+        "unsafe external-send promise",
+        "payment or access mutation promise"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Named landmark/navigation/form controls remain understandable in the tested state.",
+      "accessibility_expectation": "Readable text, visible focus path, no overlap, and 44px mobile tap targets for interactive controls.",
+      "test_smoke_assertion": "Audit or Agent Mode prompt records this state with route, viewport, evidence, status, and blocker when present.",
+      "requirement_id": "REQ-20260709-063"
+    },
+    "success_readback": {
+      "route": "/one-time",
+      "viewport": 1024,
+      "auth_role": "codex_audit",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Run the audit script and inspect report.json/report.md.",
+      "expected_visible_title": "Audit report",
+      "expected_visible_message": "Screenshots, metrics, and findings are written.",
+      "expected_primary_action": "Read report.md",
+      "expected_secondary_actions": [
+        "Read manifest.json",
+        "Read report.json"
+      ],
+      "forbidden_content": [
+        "BNA Academy brand bleed",
+        "Super Admin data",
+        "GHL or LeadConnector runtime",
+        "unsafe external-send promise",
+        "payment or access mutation promise"
+      ],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Named landmark/navigation/form controls remain understandable in the tested state.",
+      "accessibility_expectation": "Readable text, visible focus path, no overlap, and 44px mobile tap targets for interactive controls.",
+      "test_smoke_assertion": "Audit or Agent Mode prompt records this state with route, viewport, evidence, status, and blocker when present.",
+      "requirement_id": "REQ-20260709-063"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "missing_operations_session",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Run without Operations credentials or with blocked auth.",
+      "expected_visible_title": "Operations auth skipped",
+      "expected_visible_message": "Skip reason is recorded and public routes continue.",
+      "expected_primary_action": "Record blocker",
+      "expected_secondary_actions": [
+        "Continue public audit"
+      ],
+      "forbidden_content": [
+        "BNA Academy brand bleed",
+        "Super Admin data",
+        "GHL or LeadConnector runtime",
+        "unsafe external-send promise",
+        "payment or access mutation promise"
+      ],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Named landmark/navigation/form controls remain understandable in the tested state.",
+      "accessibility_expectation": "Readable text, visible focus path, no overlap, and 44px mobile tap targets for interactive controls.",
+      "test_smoke_assertion": "Audit or Agent Mode prompt records this state with route, viewport, evidence, status, and blocker when present.",
+      "requirement_id": "REQ-20260709-063"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time",
+      "viewport": 430,
+      "auth_role": "anonymous_public",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile nav/helper state only where safe.",
+      "expected_visible_title": "One Time mobile view",
+      "expected_visible_message": "Navigation/helper state does not cover CTA or form.",
+      "expected_primary_action": "Mobile navigation",
+      "expected_secondary_actions": [
+        "Close/back",
+        "Support"
+      ],
+      "forbidden_content": [
+        "BNA Academy brand bleed",
+        "Super Admin data",
+        "GHL or LeadConnector runtime",
+        "unsafe external-send promise",
+        "payment or access mutation promise"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Named landmark/navigation/form controls remain understandable in the tested state.",
+      "accessibility_expectation": "Readable text, visible focus path, no overlap, and 44px mobile tap targets for interactive controls.",
+      "test_smoke_assertion": "Audit or Agent Mode prompt records this state with route, viewport, evidence, status, and blocker when present.",
+      "requirement_id": "REQ-20260709-063"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/one-time",
+        "viewport": 1440,
+        "state": "desktop/tablet full page plus first viewport and chrome crops"
+      },
+      {
+        "route": "/one-time/mishnayos",
+        "viewport": 1024,
+        "state": "desktop/tablet full page plus first viewport and chrome crops"
+      },
+      {
+        "route": "/rabbi-member",
+        "viewport": 768,
+        "state": "desktop/tablet full page plus first viewport and chrome crops"
+      },
+      {
+        "route": "/one-time",
+        "viewport": 430,
+        "state": "mobile first viewport plus header/footer/helper crops"
+      },
+      {
+        "route": "/one-time",
+        "viewport": 390,
+        "state": "mobile first viewport plus header/footer/helper crops"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260709-063-001",
+        "route": "/one-time",
+        "viewport": 430,
+        "screenshot_before": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/pending-before-audit.png",
+        "screenshot_after_or_blocker": "Current-state visual audit must run before implementation; static implementation remains blocked by active deploy lane until collision clears.",
+        "defect_codes": [
+          "VQ-LAYOUT-007"
+        ],
+        "severity": "P1",
+        "user_impact": "Broad One Time frontend quality cannot be called done without screenshot evidence by route and viewport.",
+        "expected_fix": "Run the audit, classify findings, split any implementation into narrow packets, and verify with screenshots/live smoke where app-visible.",
+        "requirement_id": "REQ-20260709-063"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "390px and 430px mobile layouts must have no horizontal page overflow.",
+      "Interactive controls must be readable and at least 44px on mobile.",
+      "Navigation, forms, helper, and classroom controls need accessible names and non-overlapping focus paths.",
+      "Operations evidence must be redacted when private data could appear."
+    ],
+    "blocked_items": [
+      "Authenticated Operations visual proof is blocked if no safe session or redaction path is available."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Run One Time parallel frontend audit",
+      "selector_or_action_key": "node scripts/audit-onetime-parallel-frontend.mjs",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Read-only Playwright screenshot and metrics audit.",
+      "registry_required": false
+    },
+    {
+      "label": "Agent Review drop-off save",
+      "selector_or_action_key": "/operations/agent-review",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Agent Mode verifier",
+      "external_write": false,
+      "handler_or_blocker": "Save redacted PASS/FAIL/BLOCKED report only when authenticated and safe.",
+      "registry_required": true
+    },
+    {
+      "label": "External provider mutation",
+      "selector_or_action_key": "email_whatsapp_stripe_dns_drive_vimeo_zoom_access_ghl_leadconnector",
+      "action_state": "DISABLED_NOT_IN_SCOPE",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Explicitly forbidden by issue #128 and packet scope.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "visible_fields": [
+      "route",
+      "viewport",
+      "status",
+      "screenshot path",
+      "defect code",
+      "workspace/project scope",
+      "action state",
+      "blocker owner",
+      "next action"
+    ],
+    "storage": [
+      "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit",
+      "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome",
+      "public/agent-review-prompts/index.json",
+      "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md"
+    ],
+    "forbidden_data": [
+      "raw private messages",
+      "student-sensitive details",
+      "secrets",
+      "passwords",
+      "API keys",
+      "payment card data",
+      "unrelated provider/family/student records"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "privacy_boundary": "Evidence may guide findings but never authorize external sends, payments, access grants, provider mutations, credential changes, or private-data commits.",
+    "forbidden_actions": [
+      "external send",
+      "payment or charge",
+      "access grant",
+      "password reset",
+      "DNS or provider mutation",
+      "credential display or mutation",
+      "raw private data commit"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-20260709-063-1",
+      "scope": "One Time public landing",
+      "requirements": [
+        "REQ-20260709-063"
+      ],
+      "instructions": [
+        "Run or consume the current-state visual audit before app code edits.",
+        "If implementation is safe, touch only the named routes/files and keep unrelated dirty work untouched.",
+        "Record screenshot/readback evidence and classify every remaining item as Done, Already satisfied, Blocked, Needs operator decision, Failed, or Archived.",
+        "For app-visible code, require push/deploy/live smoke before Done."
+      ],
+      "out_of_scope": [
+        "No email send, WhatsApp/WAPI send, Telegram send, Stripe checkout, charge, refund, access grant, password reset, DNS, Railway, Drive, Vimeo, Zoom, Resend, GHL, LeadConnector, credential, provider-account, or production-data mutation.",
+        "No screenshots, snapshots, logs, or reports containing raw private message bodies, student-sensitive details, secrets, passwords, API keys, payment card data, or unrelated provider/family records may be committed.",
+        "No app-visible implementation while the control tower shows an active dirty deploy lane in overlapping files.",
+        "No broad rewrite of BNA, Super Admin, parent, student, or provider shells beyond the packet scope."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "large",
+    "source_files_to_read": [
+      "BNA-START-HERE.md",
+      "AGENTS.md",
+      "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md",
+      "config/service-provider-sites/one-time.json",
+      "src/lib/bna/agent-review-hub.js",
+      "public/one-time/index.html",
+      "public/rabbi-member.html",
+      "public/one-time-classroom.html",
+      "public/provider.html"
+    ],
+    "files_allowed_to_edit": [
+      "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/00-control-tower.product-quality.json",
+      "scripts/audit-onetime-parallel-frontend.mjs",
+      "src/lib/bna/agent-review-hub.js",
+      "tests/agent-review-hub.test.js",
+      "public/agent-review-prompts/*.md"
+    ],
+    "max_files_to_edit": 8,
+    "max_routes_to_touch": 9,
+    "max_major_surfaces": 4,
+    "split_threshold_reason": "Issue #128 spans too many routes and surfaces for one implementation pass, so audit/report/prompt work is separated from static chrome and landing/provider packets.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "required": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/00-control-tower.product-quality.json",
+      "node --check scripts/audit-onetime-parallel-frontend.mjs",
+      "node scripts/audit-onetime-parallel-frontend.mjs --base-url https://join.onetimeonetime.com --out-dir ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit",
+      "npm run agent-review:prompts",
+      "node --test tests/agent-review-hub.test.js"
+    ],
+    "live_smoke_required": false,
+    "manual_browser_check": [
+      "Review screenshots/report.md before any UI implementation claim.",
+      "Record Operations auth/redaction blockers instead of forcing private data into evidence."
+    ]
+  },
+  "evidence": {
+    "required_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/report.md",
+      "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/manifest.json",
+      "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "screenshot_evidence_required": true,
+    "deploy_evidence_required": false
+  },
+  "deployment_gate": "LOCAL_ONLY_ALLOWED",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Current-state audit evidence exists or a precise blocker is recorded.",
+      "Agent Mode prompt/drop-off contract exists when prompt generation is in scope.",
+      "No external write or private-data mutation is performed.",
+      "No app-visible change is claimed Done from this packet alone."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260709-011-onetime-parallel-frontend-audit.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/00-control-tower.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "Read control tower and GitHub issue #128",
+      "Validate packet",
+      "Run audit/prompt/test commands where safe",
+      "Record evidence and blockers"
+    ],
+    "skipped_actions_policy": "Skip only authenticated/private/external-provider actions and record owner, reason, consequence, and next action.",
+    "blocker_decisions": [
+      "DEC-20260709-009",
+      "DEC-20260709-010",
+      "DEC-20260709-011"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/report.md",
+      "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/manifest.json",
+      "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md#final-audit",
+    "next_packet_path": "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "Run when it will not overwrite another active lane; otherwise record the collision blocker from the control tower."
+  },
+  "next_packet": {
+    "id": "PKT-20260709-129",
+    "title": "Current State Visual Audit",
+    "status": "ready_for_codex",
+    "reason": "Audit must precede any implementation."
+  },
+  "app_visible": false
+}

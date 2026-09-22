@@ -1,0 +1,41 @@
+{
+  "started_at": "2026-06-16T07:08:13.382Z",
+  "app_url": "http://127.0.0.1:8097",
+  "success": true,
+  "no_real_login": true,
+  "fixture_only": true,
+  "checks": [
+    {
+      "name": "student login shell has username/password form",
+      "ok": true
+    },
+    {
+      "name": "student login shell keeps access-code fallback",
+      "ok": true
+    },
+    {
+      "name": "parent login shell is visible",
+      "ok": true
+    },
+    {
+      "name": "fixture parent account panel renders student login form",
+      "ok": true
+    },
+    {
+      "name": "fixture parent account panel keeps access-code fallback buttons",
+      "ok": true
+    },
+    {
+      "name": "fixture parent account panel states saved passwords are never displayed",
+      "ok": true
+    }
+  ],
+  "screenshots": [
+    "student-login-shell.png",
+    "parent-login-shell.png",
+    "student-login-shell-desktop.png",
+    "student-login-shell-mobile.png",
+    "parent-login-shell-desktop.png",
+    "parent-account-student-login-settings-fixture.png"
+  ]
+}

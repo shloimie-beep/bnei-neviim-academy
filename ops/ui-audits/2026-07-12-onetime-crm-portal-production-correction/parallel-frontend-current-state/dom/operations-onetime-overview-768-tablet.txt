@@ -1,0 +1,67 @@
+Overview
+Provider Workspace Admin / Overview / Overview
+Ask
+12 Jul
+Package Status
+0
+Launch Readiness
+0
+Role Links
+0
+Owner Actions
+0
+PROVIDER WORKSPACE
+One Time Mishnah Class
+
+Rabbi Sheller is the current service provider and revenue-share partner for this workspace. Members are participants, not BNA students, and this workspace does not expose BNA accountability data.
+
+Program Overview
+Provider Workspace
+LAUNCH
+2
+PROGRAM
+1
+TIERS
+3
+CONTENT
+0
+PARTICIPANTS
+1
+ACCESS
+1
+Safe Role Preview
+Rabbi / student / member
+
+Open the One Time app perspectives from here. Rabbi opens through a signed provider session; student and member previews use scoped sample data without changing records.
+
+View One Time as Rabbi
+Student Preview
+Member Preview
+Scoped
+Message approval
+Billing approval
+Access approval
+No access grant
+Mishnayos Membership
+Revenue-share partner
+PROVIDER
+[redacted private value]
+COMMERCIAL MODEL
+[redacted private value]
+PROGRAM
+[redacted private value]
+CLASS/SESSION
+[redacted private value]
+USERS
+[redacted private value]
+CALENDAR STATUS
+[redacted private value]
+DELIVERY
+[redacted private value]
+Private provider fields such as business terms, credentials, partnership terms, setup history, and performance notes stay admin-only and never appear on public provider profiles.
+Command Bot Actions
+0 typed actions
+
+The bot reads page/workspace context and previews typed actions. Sensitive actions require approval and dedicated handlers before mutation.
+
+No typed actions are registered for this page yet.

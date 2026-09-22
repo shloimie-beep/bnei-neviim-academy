@@ -1,0 +1,89 @@
+{
+  "run_id": "PARALLEL-20260619-001",
+  "linked_execution_run": "ops/execution-runs/2026-06-19-parallel-platform-finish/",
+  "prior_execution_run": "ops/execution-runs/2026-06-18-bna-platform-completion/",
+  "checkpoint": {
+    "branch": "checkpoint/20260619-platform-completion",
+    "commit": "b2fd5039990ee1cb370a49d4475a7763fb8548b7",
+    "tag": "checkpoint-parallel-20260619-001",
+    "created_at": "2026-06-19T15:40:21+03:00"
+  },
+  "main_checkout": "C:\\Users\\User\\BNA v2.0",
+  "runtime_state_dir": "C:\\Users\\User\\BNA-parallel-state\\PARALLEL-20260619-001",
+  "workers": [
+    {
+      "id": "W1",
+      "name": "Core platform backend and data",
+      "branch": "parallel/20260619-core",
+      "worktree_path": "C:\\Users\\User\\BNA-worktrees\\20260619-core",
+      "scope": "tenancy, workspace, RBAC, domain models, APIs/services/migrations, negative isolation tests",
+      "status_file": "C:\\Users\\User\\BNA-parallel-state\\PARALLEL-20260619-001\\W1.json",
+      "integration_note": "ops/parallel-runs/PARALLEL-20260619-001/workers/W1/INTEGRATION.md"
+    },
+    {
+      "id": "W2",
+      "name": "SaaS UI and product experience",
+      "branch": "parallel/20260619-ui",
+      "worktree_path": "C:\\Users\\User\\BNA-worktrees\\20260619-ui",
+      "scope": "responsive shell, information architecture, role/module-aware screens, mobile/accessibility/browser tests",
+      "status_file": "C:\\Users\\User\\BNA-parallel-state\\PARALLEL-20260619-001\\W2.json",
+      "integration_note": "ops/parallel-runs/PARALLEL-20260619-001/workers/W2/INTEGRATION.md"
+    },
+    {
+      "id": "W3",
+      "name": "Ramble queue, parser, agent loop, content prompt",
+      "branch": "parallel/20260619-ingestion",
+      "worktree_path": "C:\\Users\\User\\BNA-worktrees\\20260619-ingestion",
+      "scope": "Drive/local intake, prompt queue, deduplicating parser, Decisions/task routing, agent-run verification loop, WhatsApp prompt flow",
+      "status_file": "C:\\Users\\User\\BNA-parallel-state\\PARALLEL-20260619-001\\W3.json",
+      "integration_note": "ops/parallel-runs/PARALLEL-20260619-001/workers/W3/INTEGRATION.md"
+    },
+    {
+      "id": "W4",
+      "name": "One Time partner instance and integrations",
+      "branch": "parallel/20260619-onetime",
+      "worktree_path": "C:\\Users\\User\\BNA-worktrees\\20260619-onetime",
+      "scope": "One Time split-ready configuration, duplicate-repo audit, Vimeo/Zoom/Resend adapters, docs, mocks",
+      "status_file": "C:\\Users\\User\\BNA-parallel-state\\PARALLEL-20260619-001\\W4.json",
+      "integration_note": "ops/parallel-runs/PARALLEL-20260619-001/workers/W4/INTEGRATION.md"
+    }
+  ],
+  "shared_file_deny_list": [
+    "server.js",
+    "public/operations.html",
+    "package.json",
+    "package-lock.json",
+    ".env.example",
+    "TASKS.md",
+    "MEMORY.md",
+    "SYSTEM-STATE.md",
+    "ops/agent-task-ledger.jsonl",
+    "ops/agent-changelog.md",
+    "ops/execution-runs/latest.json",
+    "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+    "scripts/google-drive-setup.mjs",
+    "scripts/telegram-kimi-bridge.mjs",
+    "scripts/agent-fleet-supervisor.mjs",
+    "scripts/bna-execution-run.mjs"
+  ],
+  "merge_order": [
+    "W1",
+    "W3",
+    "W4",
+    "W2",
+    "Prompt 05 final shared-file integration"
+  ],
+  "external_gates": [
+    "DNS",
+    "Railway",
+    "production deployment",
+    "production DB migration",
+    "live OAuth/account authorization",
+    "real Vimeo upload",
+    "live Zoom mutation",
+    "live Resend sending",
+    "unapproved credential entry"
+  ],
+  "created_at": "2026-06-19T15:40:21+03:00",
+  "updated_at": "2026-06-19T15:40:21+03:00"
+}

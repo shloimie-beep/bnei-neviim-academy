@@ -1,0 +1,648 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-809",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-004",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802",
+      "PKT-20260702-805",
+      "PKT-20260702-806",
+      "PKT-20260702-807",
+      "PKT-20260702-808"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-dialogue-contrast/report.json",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-dialogue-contrast/screenshots/operations-tasks-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-dialogue-contrast/screenshots/operations-tasks-1024-desktop-tablet.png",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "produces": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "scripts/audit-rabbi-onetime-current-state.mjs",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/report.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/07-task-route-layout-density.product-quality.json",
+    "terminal_condition": "The Rabbi / One Time Tasks route renders as an operational board: compact page heading, accessible status/filter controls, and dialogue lanes visible high enough on desktop/tablet/mobile screenshots without task workflow behavior changes.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Task Route Layout Density Cleanup",
+  "created_at": "2026-07-02T22:24:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.9,
+    "reasons": [
+      "Fresh desktop/tablet screenshots show the One Time Tasks route using a tall portrait-style hero container that pushes the actual dialogue board below the first screen.",
+      "Operations task work should prioritize scanning and repeated action over immersive marketing treatment.",
+      "The fix can be scoped to the One Time Tasks route container and CSS without changing task data, filters, APIs, or actions."
+    ],
+    "affected_product_surfaces": [
+      "Operations Tasks / Rabbi One Time Dialogue Board"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "Task mutation, agent execution, helper send, email, WhatsApp, Stripe/payment, access grants, Drive, Vimeo, Zoom, DNS, and account mutations are out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state",
+      "06-task-dialogue-lane-contrast",
+      "07-task-route-layout-density"
+    ],
+    "next_exact_packet": "After this Tasks route density cleanup, choose the next packet from manual screenshot review or deploy/live-smoke blocker closeout."
+  },
+  "operator_intent_summary": "Make the Rabbi / One Time Tasks view load in a cleaner, more even way by replacing the oversized scenic task area with a compact operational layout.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "even",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No task bucket, task filter, task detail drawer, task mutation, agent job, helper plan, or task API behavior change.",
+    "No email, WhatsApp, Telegram, Stripe/payment, access grant, Drive, Vimeo, Zoom, DNS, account mutation, publish, unpublish, send, or delete.",
+    "No GHL runtime, LeadConnector reference, external CRM write, raw private evidence, or secret exposure.",
+    "No broader task IA rewrite, CRM/contact-detail packet, or portal packet."
+  ],
+  "affected_surfaces": [
+    "Operations Tasks / Rabbi One Time Dialogue Board"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "public/css/one-time-operations.css",
+    "scripts/audit-rabbi-onetime-current-state.mjs",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "renderTasks",
+      "CSS [data-one-time-rabbi-dashboard]",
+      "CSS .task-heading",
+      "CSS .focus-panel",
+      "operations-tasks-1440-desktop screenshot",
+      "operations-tasks-1024-desktop-tablet screenshot"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "The Tasks route first screen is dominated by a tall One Time portrait background panel.",
+      "The Rabbi / One Time Dialogue board begins below the first screen on desktop/tablet, forcing scrolling before the operator can scan decisions/tasks.",
+      "The right filter panel is visually detached from the dialogue board because the hero area takes the primary canvas."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "even",
+      "loads nicely"
+    ],
+    "expanded_phrases": {
+      "clean": "The Tasks route should prioritize readable operational controls and task lanes over decorative hero space.",
+      "even": "The task heading, filters, and dialogue lanes should align in a compact grid across desktop, tablet, and mobile.",
+      "loads nicely": "The first rendered Tasks screen should expose the work board promptly without requiring a long scroll past a scenic background."
+    },
+    "first_party_pattern_interpretation": "The task board remains a first-party BNA Operations workflow scoped to rabbi_sheller_provider / one_time_mishnah_class."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-809",
+      "statement": "Make the Rabbi / One Time Tasks route render as a compact operational board instead of an oversized portrait hero.",
+      "expected_result": "The task heading, filter/status controls, and Rabbi / One Time Dialogue board are visible high enough in desktop/tablet/mobile screenshots, while task filtering and task actions remain unchanged.",
+      "acceptance_criteria": [
+        "One Time Tasks route gets a scoped route marker for CSS targeting.",
+        "The route-specific One Time dashboard background is compact on the Tasks route and does not use the tall portrait hero treatment.",
+        "The dialogue board appears in the first screen on 1440px and 1024px screenshots and remains readable on 390px/430px mobile screenshots.",
+        "Task status toolbar, Add Task, Create Decision, Clear filters, and filter controls remain present and unchanged in behavior.",
+        "No task workflow, task API, helper action, external write, or action registry behavior changes."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and register exist for RAW-20260702-008.",
+      "Current task route screenshot evidence exists in ops/ui-audits/2026-07-02-rabbi-onetime-task-dialogue-contrast/.",
+      "The defect is visible in one route and maps to scoped route/container CSS.",
+      "No task workflow or external provider decision is required for local implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load the One Time Tasks route before task data fully resolves.",
+      "expected_visible_title": "One Time Tasks",
+      "expected_visible_message": "Task Dialogue Board",
+      "expected_primary_action": "Add Task",
+      "expected_secondary_actions": [
+        "Create Decision",
+        "Clear filters"
+      ],
+      "forbidden_content": [
+        "Oversized portrait panel before the task board"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Task route keeps one route-level h1.",
+      "accessibility_expectation": "The compact layout keeps headings and controls readable.",
+      "test_smoke_assertion": "Audit captures Tasks route without h1 or label findings.",
+      "requirement_id": "REQ-20260702-809"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Apply current filters that produce empty dialogue lanes.",
+      "expected_visible_title": "One Time Tasks",
+      "expected_visible_message": "No decisions match these filters.",
+      "expected_primary_action": "Add Task",
+      "expected_secondary_actions": [
+        "Create Decision"
+      ],
+      "forbidden_content": [
+        "Dialogue board buried below a tall scenic panel"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Lane sections retain aria labels.",
+      "accessibility_expectation": "Lane headings and empty state text are readable.",
+      "test_smoke_assertion": "Mobile task screenshot shows readable empty lanes without the closed helper sheet.",
+      "requirement_id": "REQ-20260702-809"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class",
+      "viewport": 1440,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load task board with any available One Time tasks.",
+      "expected_visible_title": "One Time Tasks",
+      "expected_visible_message": "Rabbi / One Time Dialogue",
+      "expected_primary_action": "Add Task",
+      "expected_secondary_actions": [
+        "Create Decision",
+        "Filter tabs"
+      ],
+      "forbidden_content": [
+        "Task action behavior change"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Task cards and lanes retain labels.",
+      "accessibility_expectation": "The work board is visible and scan-friendly on desktop.",
+      "test_smoke_assertion": "Desktop task screenshot shows the dialogue board in the first screen.",
+      "requirement_id": "REQ-20260702-809"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class",
+      "viewport": 430,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use filter state with 0 visible items.",
+      "expected_visible_title": "One Time Tasks",
+      "expected_visible_message": "Showing 0 of 0 tasks.",
+      "expected_primary_action": "Clear filters",
+      "expected_secondary_actions": [
+        "Add Task"
+      ],
+      "forbidden_content": [
+        "Long empty decorative area before task lanes"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filter controls remain labelled.",
+      "accessibility_expectation": "Filters and lane notes are readable.",
+      "test_smoke_assertion": "430px task screenshot shows compact filter and lane layout.",
+      "requirement_id": "REQ-20260702-809"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Simulate or inspect task data error state.",
+      "expected_visible_title": "One Time Tasks",
+      "expected_visible_message": "Some dashboard data could not load.",
+      "expected_primary_action": "Add Task",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "Raw stack trace",
+        "Secret values"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Route h1 remains present.",
+      "accessibility_expectation": "Error and lane text stay readable.",
+      "test_smoke_assertion": "CSS-only change creates no console/network error.",
+      "requirement_id": "REQ-20260702-809"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "View blocked/access dialogue lane.",
+      "expected_visible_title": "One Time Tasks",
+      "expected_visible_message": "Blocked/access",
+      "expected_primary_action": "Add Task",
+      "expected_secondary_actions": [
+        "Create Decision"
+      ],
+      "forbidden_content": [
+        "Blocked lane pushed below a decorative spacer"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked lane keeps aria label.",
+      "accessibility_expectation": "Blocked lane heading and note are readable.",
+      "test_smoke_assertion": "Blocked lane text is visible in screenshot.",
+      "requirement_id": "REQ-20260702-809"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "View board without submitting a task action.",
+      "expected_visible_title": "One Time Tasks",
+      "expected_visible_message": "Bot-created cards are labeled.",
+      "expected_primary_action": "Add Task",
+      "expected_secondary_actions": [
+        "Create Decision"
+      ],
+      "forbidden_content": [
+        "Mutation confirmation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Action buttons remain named.",
+      "accessibility_expectation": "Preview board lane text readable.",
+      "test_smoke_assertion": "No task mutation occurs.",
+      "requirement_id": "REQ-20260702-809"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class",
+      "viewport": 1024,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load task data readback.",
+      "expected_visible_title": "One Time Tasks",
+      "expected_visible_message": "Rabbi / One Time Dialogue",
+      "expected_primary_action": "Add Task",
+      "expected_secondary_actions": [
+        "Filter tabs"
+      ],
+      "forbidden_content": [
+        "Work board below the first screen"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Lane counts remain visible text.",
+      "accessibility_expectation": "Counts and labels are readable.",
+      "test_smoke_assertion": "1024px screenshot shows the dialogue board in the first screen.",
+      "requirement_id": "REQ-20260702-809"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class",
+      "viewport": 390,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open route without Operations session.",
+      "expected_visible_title": "Operations Login or Access Denied",
+      "expected_visible_message": "Private One Time data is not shown.",
+      "expected_primary_action": "Log in",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "Task private data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Login/access denied heading is present.",
+      "accessibility_expectation": "CSS-only task layout change does not expose private task content.",
+      "test_smoke_assertion": "Auth behavior unchanged.",
+      "requirement_id": "REQ-20260702-809"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile One Time Tasks route.",
+      "expected_visible_title": "One Time Tasks",
+      "expected_visible_message": "Rabbi / One Time Dialogue",
+      "expected_primary_action": "Ask",
+      "expected_secondary_actions": [
+        "Open navigation"
+      ],
+      "forbidden_content": [
+        "Tall portrait spacer before task controls"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile route heading remains route-specific.",
+      "accessibility_expectation": "Lane headings readable on mobile.",
+      "test_smoke_assertion": "390px screenshot shows compact task layout and readable dialogue lanes.",
+      "requirement_id": "REQ-20260702-809"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "viewport": 1440,
+        "routes": [
+          "operations-tasks"
+        ]
+      },
+      {
+        "viewport": 1024,
+        "routes": [
+          "operations-tasks"
+        ]
+      },
+      {
+        "viewport": 768,
+        "routes": [
+          "operations-tasks"
+        ]
+      },
+      {
+        "viewport": 430,
+        "routes": [
+          "operations-tasks"
+        ]
+      },
+      {
+        "viewport": 390,
+        "routes": [
+          "operations-tasks"
+        ]
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-011",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class",
+        "viewport": "1440-desktop",
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-task-dialogue-contrast/screenshots/operations-tasks-1440-desktop.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/screenshots/operations-tasks-1440-desktop.png",
+        "defect_codes": [
+          "VQ-LAYOUT-001",
+          "VQ-DENSITY-001"
+        ],
+        "severity": "P2",
+        "user_impact": "The operator must scroll past a large decorative task area before seeing the dialogue board on desktop.",
+        "expected_fix": "Use a compact route-specific Tasks canvas so the board appears in the first screen.",
+        "requirement_id": "REQ-20260702-809"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Route-level h1 remains present.",
+      "Task action and filter controls remain named.",
+      "The compact layout must not cause heading, filter, or lane text overlap across desktop/tablet/mobile."
+    ],
+    "minimum_checks": [
+      "Full audit has missing_h1=0 for Operations captures.",
+      "Full audit has visible unlabeled controls=0.",
+      "Manual screenshot spot-check confirms the dialogue board appears high enough on desktop/tablet."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Add Task",
+      "selector_or_action_key": "task create action",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing task creation action, unchanged by this packet.",
+      "registry_required": true
+    },
+    {
+      "label": "Create Decision",
+      "selector_or_action_key": "decision create action",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing decision action, unchanged by this packet.",
+      "registry_required": true
+    },
+    {
+      "label": "Task filters",
+      "selector_or_action_key": "task filter tabs/selects",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing filter state, unchanged by this packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Ask",
+      "selector_or_action_key": "operations helper ask control",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing helper open action, unchanged by this packet.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "reads": [
+      "Existing local Operations task data used by the audit harness."
+    ],
+    "writes": [
+      "No task, database, or external provider writes."
+    ],
+    "fixtures": [
+      "Existing One Time task route state."
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "no_raw_private_evidence": true,
+    "no_secret_exposure": true,
+    "privacy_scope": "Task screenshots are redacted by the audit harness; no raw private task/contact/student/parent data should be committed."
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260702-809-A",
+      "scope": "Route-specific layout-density cleanup for the Rabbi / One Time Tasks board.",
+      "instructions": [
+        "Add a scoped route marker to the One Time Tasks container.",
+        "Override the One Time portrait dashboard treatment only for the Tasks route so the canvas is compact and work-board oriented.",
+        "Keep task filters, task actions, task APIs, helper behavior, route access, and task data unchanged.",
+        "Verify desktop/tablet/mobile Tasks screenshots after implementation."
+      ],
+      "allowed_files": [
+        "public/operations.html",
+        "public/css/one-time-operations.css",
+        "scripts/audit-rabbi-onetime-current-state.mjs",
+        "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+        "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "compact child packet under one Tasks route component",
+    "source_files_to_read": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-dialogue-contrast/report.json",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "scripts/audit-rabbi-onetime-current-state.mjs",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 7,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if work expands beyond Tasks route layout density into task data model, filters, drawer behavior, contacts, portals, or actions.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/07-task-route-layout-density.product-quality.json",
+      "expected": "passes"
+    },
+    {
+      "command": "inline parse of public/operations.html script blocks",
+      "expected": "passes"
+    },
+    {
+      "command": "node --check scripts/audit-rabbi-onetime-current-state.mjs",
+      "expected": "passes"
+    },
+    {
+      "command": "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:8095 --out=ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density",
+      "expected": "captures screenshots with no automated findings"
+    },
+    {
+      "command": "npm run watchdog:actions",
+      "expected": "0 findings"
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "expected": "0 findings"
+    }
+  ],
+  "evidence": {
+    "before": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-dialogue-contrast/screenshots/operations-tasks-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-dialogue-contrast/screenshots/operations-tasks-1024-desktop-tablet.png"
+    ],
+    "after_required": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/screenshots/operations-tasks-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/screenshots/operations-tasks-1024-desktop-tablet.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/screenshots/operations-tasks-390-mobile.png"
+    ],
+    "recording_required": [
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "Packet validates before implementation.",
+      "Tasks route has scoped layout-density marker and CSS.",
+      "After-audit report and screenshots are captured.",
+      "Desktop/tablet screenshot spot-check confirms the dialogue board appears in the first screen.",
+      "Mobile screenshot spot-check confirms no text/control overlap and no closed helper sheet regression.",
+      "Action and protocol watchdogs pass.",
+      "Register, raw intake, ledger, and changelog record evidence and live-smoke blocker.",
+      "App-visible terminal Done remains blocked until deploy/live-smoke proof exists."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/07-task-route-layout-density.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch render marker and CSS edits",
+      "local Playwright audit screenshots",
+      "watchdog checks"
+    ],
+    "skipped_actions_policy": "Skip deploy/live smoke unless the explicit target is available; skip all external writes and task mutations.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md#remaining-next-packet"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "0 enforceable product-quality drift findings"
+  },
+  "next_packet": {
+    "recommendation": "After local verification, either run deploy/live-smoke if DEC-20260702-801 is resolved or select the next screenshot-reviewed child packet.",
+    "blocked_by": [
+      "DEC-20260702-801 for terminal production proof"
+    ]
+  },
+  "app_visible": true
+}

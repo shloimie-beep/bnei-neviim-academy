@@ -1,0 +1,59 @@
+{
+  "generated_at": "2026-07-07T16:10:05.892Z",
+  "base": "https://bneineviimacademy.org",
+  "deployment_id": "7f3bbe54-e9ef-4ff2-8d20-3895a113a5e5",
+  "commit": "7ef3aebf",
+  "status": "PASS",
+  "failures": [],
+  "screenshots": [
+    "one-time-desktop-landing.png",
+    "one-time-desktop-helper-open.png",
+    "one-time-mobile-landing.png",
+    "one-time-mobile-helper-open.png",
+    "one-time-select-open.png"
+  ],
+  "results": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000,
+        "name": "desktop"
+      },
+      "status": 200,
+      "finalUrl": "https://bneineviimacademy.org/one-time/",
+      "surface": "one_time_public",
+      "htmlSurface": "one-time",
+      "languageChromeCount": 0,
+      "overflow": 0,
+      "launcherText": "One Time Helper",
+      "pageHasBnaBrandText": false,
+      "panelHasOneTimeTitle": true,
+      "panelHasBnaBrandText": false,
+      "panelHasLanguageToggleText": false
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "name": "mobile"
+      },
+      "status": 200,
+      "finalUrl": "https://bneineviimacademy.org/one-time/",
+      "surface": "one_time_public",
+      "htmlSurface": "one-time",
+      "languageChromeCount": 0,
+      "overflow": 0,
+      "launcherText": "One Time Helper",
+      "pageHasBnaBrandText": false,
+      "panelHasOneTimeTitle": true,
+      "panelHasBnaBrandText": false,
+      "panelHasLanguageToggleText": false
+    },
+    {
+      "status": 200,
+      "selectMenuBg": "rgb(8, 9, 16)",
+      "selectButtonBg": "rgba(0, 0, 0, 0.38)",
+      "selectButtonColor": "rgb(255, 255, 255)"
+    }
+  ]
+}

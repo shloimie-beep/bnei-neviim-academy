@@ -1,0 +1,75 @@
+{
+  "checked_at": "2026-06-19T13:51:05.149Z",
+  "base_url": "http://127.0.0.1:3061",
+  "route": "/operations.html?workspace=rabbi_sheller_provider&view=platform_suite",
+  "mode": "canonical_operations_static_with_playwright_api_mocks",
+  "authenticated_server_gate": "not_run_missing_shell_ops_credentials",
+  "viewports": [
+    {
+      "viewport": "360x800",
+      "url": "http://127.0.0.1:3061/operations?workspace=rabbi_sheller_provider&view=platform_suite&section=overview",
+      "root_box": {
+        "x": 10,
+        "y": 137,
+        "width": 340,
+        "height": 3152.59375
+      },
+      "text_length": 939,
+      "screenshot": "operations-platform-suite-mock-360x800.png",
+      "api_mode": "playwright_mocks",
+      "secret_pattern_found": false
+    },
+    {
+      "viewport": "390x844",
+      "url": "http://127.0.0.1:3061/operations?workspace=rabbi_sheller_provider&view=platform_suite&section=overview",
+      "root_box": {
+        "x": 10,
+        "y": 137,
+        "width": 370,
+        "height": 3121.796875
+      },
+      "text_length": 939,
+      "screenshot": "operations-platform-suite-mock-390x844.png",
+      "api_mode": "playwright_mocks",
+      "secret_pattern_found": false
+    },
+    {
+      "viewport": "768x1024",
+      "url": "http://127.0.0.1:3061/operations?workspace=rabbi_sheller_provider&view=platform_suite&section=overview",
+      "root_box": {
+        "x": 10,
+        "y": 137,
+        "width": 748,
+        "height": 1777.796875
+      },
+      "text_length": 939,
+      "screenshot": "operations-platform-suite-mock-768x1024.png",
+      "api_mode": "playwright_mocks",
+      "secret_pattern_found": false
+    },
+    {
+      "viewport": "1440x900",
+      "url": "http://127.0.0.1:3061/operations?workspace=rabbi_sheller_provider&view=platform_suite&section=overview",
+      "root_box": {
+        "x": 260,
+        "y": 283,
+        "width": 1156,
+        "height": 1093
+      },
+      "text_length": 939,
+      "screenshot": "operations-platform-suite-mock-1440x900.png",
+      "api_mode": "playwright_mocks",
+      "secret_pattern_found": false
+    }
+  ],
+  "readiness_mock": {
+    "providers": [
+      "vimeo",
+      "zoom",
+      "resend"
+    ],
+    "preview_only": true,
+    "external_write_performed": false,
+    "secret_values_included": false
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "mode": "dry_run",
+  "generated_at": "2026-07-02T12:55:55.278Z",
+  "mutation_performed": false,
+  "external_writes_performed": false,
+  "cleanup_marker": "one_time_ui_review_20260702",
+  "database_url_env": "DATABASE_URL",
+  "cleanup_sql_path": "ops/one-time-mishnah/mock-data/2026-07-02-ui-review/cleanup-ui-review-data.sql",
+  "blockers": []
+}

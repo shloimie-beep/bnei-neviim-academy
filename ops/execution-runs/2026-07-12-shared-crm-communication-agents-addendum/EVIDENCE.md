@@ -1,0 +1,881 @@
+# Evidence
+
+## 2026-07-13 One Time-First Addendum Evidence
+
+- `raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md` - raw addendum captured from the attachment.
+- `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/source-statement-matrix-RAW-20260713-003.json` - mapped source statements for the addendum.
+- `tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md` - dated requirement register and next packet handoff.
+- `ops/prompt-packets/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum/manifest.json` - packet DAG manifest.
+- `requirements.json` - added `REQ-20260713-905` through `REQ-20260713-911` and decisions `DEC-20260713-003` through `DEC-20260713-005`.
+- No external send, Railway mutation, deployment, public auto-reply activation, or app code change was performed in the control-correction step.
+- `src/lib/bna/one-time-owner-test-readiness.js` and `scripts/check-onetime-owner-test-readiness.mjs` - owner-test preflight/report layer that resolves owner aliases only by source/fingerprint/length and sends nothing by default.
+- `ops/watchdog-audits/2026-07-13T05-10-06-583Z-onetime-owner-test-readiness.md` / `.json` - no-send owner-test readiness report: Resend send-ready, One Time WAPI provider setup-ready, owner-test email and WhatsApp aliases missing, external_send_performed=false.
+- `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md` / `.json` - no-send WAPI readiness report: One Time scoped token, instance, sender phone metadata, webhook secret, class link, live provider bot mode, auto-reply approval, and provider setup are ready; Telegram notification approval is still false.
+- `node scripts/smoke-email.mjs --adapter resend-client --identity one_time ...` - no-send Resend readiness check passed with `external_send_performed=false`.
+- `scripts/audit-onetime-architecture-performance-baseline.mjs` and package script `one-time:architecture-performance-baseline` - read-only live route/profile/cache baseline runner with redaction and no-write guardrails.
+- `docs/architecture/one-time-app-shell-adr-2026-07-13.md` - ADR choosing a dedicated same-repo One Time app shell with shared backend/API/contact/outbox/agent/ticket contracts and a deferred full app split.
+- `ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md` / `.json` - live baseline for `REQ-20260713-907`: 160 measured samples, 0 skipped, 32 attention samples (`large_transfer=16`, `heavy_dom=16`), live deploy SHA `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`, no sends, no provider mutations, and no production writes.
+- `REQ-20260713-908` first dedicated-shell routing slice - normal One Time provider login and `/provider.html?admin_provider=one-time` now keep the user in the dedicated provider shell; the old scoped Operations shell is reachable only through explicit `ops_fallback=1`.
+- `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md` / `.json` - BNA and One Time Railway deploy/live proof for `REQ-20260713-908`: commit `c0b8ab8139c6166d89527a949ce4dd70bf67df3a`, BNA deployment `33571043-54ce-4631-99c1-b54209edebc7`, One Time deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754`, exact deploy-info SHA match, dedicated provider route without Operations CSS/JS, explicit fallback redirect to scoped Operations CRM, no writes.
+- `REQ-20260713-908` CRM route-module slice - `public/js/one-time-provider-crm-route.js` owns the CRM renderer, default provider overview shows a route placeholder without loading CRM, the direct CRM route loads only the CRM route module, mailbox/communications modules are not eagerly loaded on CRM, and `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` passed the route-module budget audit.
+- `ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md` / `.json` - One Time Railway deploy/live proof for the CRM route-module slice: commit `a9447271e29ed0f30401b05f760f4d314f91c9a9`, One Time deployment `fac38cc0-23c4-4158-8556-4c11e6c95215`, exact deploy-info SHA match, default overview loaded no route modules, direct CRM route loaded only `/js/one-time-provider-crm-route.js`, mailbox loaded only `/js/one-time-provider-mailbox-route.js`, Operations assets were absent, 390px CRM route had no horizontal overflow, and no sends or production mutations occurred.
+- `REQ-20260713-908` mailbox/messages route-module slice - `public/js/one-time-provider-mailbox-route.js` owns review plus signed mailbox render/load/thread helpers; `public/js/one-time-provider-communications-route.js` owns One Time review messages; local budget smoke confirms overview loads no modules and CRM/mailbox/communications each load only their own module.
+- `ops/live-smokes/2026-07-13T06-59-53-991Z-onetime-provider-route-module-live-smoke.md` / `.json` - One Time Railway deploy/live proof for the mailbox/messages route-module slice: commit `72650231e9d6eba9a367a59251cb58202f8910b1`, One Time deployment `df3a27b2-a930-430d-b29d-0d8390b62a17`, exact deploy-info SHA match, default overview loaded no route modules, CRM loaded only `/js/one-time-provider-crm-route.js`, mailbox loaded only `/js/one-time-provider-mailbox-route.js`, communications loaded only `/js/one-time-provider-communications-route.js`, Operations assets were absent, 390px CRM route had no horizontal overflow, and no sends or production mutations occurred.
+- `ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md` / `.json` - current-state audit for `REQ-20260713-909`; split shell and monolith evidence exists at 1440/1024/768/430/390, shared-crm-v1 contract and 40px mobile Back control are present, mobile back flow restores the list, and no wrong-workspace leak, failed request, console error, send, or production mutation occurred.
+- `ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json` - validated Product Quality packet for `REQ-20260713-909`; `npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json` passed before UI code edits.
+- `ACTION-ONETIME-PROVIDER-OPERATIONS-FALLBACK` - registered fallback navigation action for the dedicated shell.
+- `ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md` / `.json` plus refreshed desktop/tablet/mobile screenshots - local signed One Time provider CRM smoke passed after adding the explicit fallback links.
+- `tasks-pending/2026-07-12-shared-crm-communication-agents-addendum.md` and `tasks-pending/2026-07-13-onetime-first-owner-tests-performance-mobile-crm-addendum.md` - Product Quality gate markers added for Ramble Router, role/view class, out-of-scope, state matrix, Definition of Ready, Definition of Done, VQ defect codes, browser security, context budget, trace, action state/registry, route registry, support drawer/role-gate, and 390/430 mobile screenshot requirements.
+- `ops/watchdog-audits/2026-07-13-product-quality-drift.md` / `.json` - protocol drift watchdog passed with 0 findings after the Product Quality gate update and is mapped to `REQ-20260713-907`, `REQ-20260713-908`, and `REQ-20260713-909`.
+- `ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md` / `.json` - current-state visual audit for `REQ-20260713-909`; covers split shell and monolith CRM routes at 1440/1024/768/430/390, reports no horizontal overflow, no wrong-workspace leak, no failed requests, no console errors, and confirms the shared CRM/back-control baseline before implementation.
+- `ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json` and `.md` - validated Product Quality packet for the mobile CRM list/detail/subview/action-state IA implementation.
+- `ops/product-quality-compiler/validation/latest-product-quality-validation.md` / `.json` - PQC validation passed for the `REQ-20260713-909` packet.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` / `.json` - local implementation proof for `REQ-20260713-909`; split shell and monolith pass at 1440/1024/768/430/390 with focused contact header, section rail, contextual action overflow, lazy section data, mobile Back restoration, scoped inbox context, no horizontal overflow, no console/page/request failures, and no writes.
+- `ops/action-registry/one-time-action-coverage.md` / `.json` and `ops/action-registry/universal-action-parity.md` / `.json` - regenerated after registering `ACTION-CRM-ACTION-OVERFLOW`; both reports are ok.
+- `ops/audit-governance/latest.md` / `.json` - audit governance rerun mapped the current addendum artifacts; the remaining `NEEDS TASK MAPPING` result is older repo-wide audit backlog outside this scoped packet.
+- `REQ-20260713-911` performance instrumentation/gate slice - `server.js` now emits request IDs, trace IDs, deploy/target headers, response-size headers, and `Server-Timing` spans for app/handler/database/pool timing; pool/client query paths record db and pool-wait timing.
+- `public/js/one-time-performance-rum.js` - privacy-safe One Time RUM client loaded by public, provider, Operations source, and Operations bootstrap entrypoints; route paths are redacted and cookies/localStorage/DOM text are not captured.
+- `scripts/audit-onetime-performance-regression-gates.mjs` - local and live performance gate covering instrumentation markers, budgets, production headers, health DB timing, RUM dry-run contract, and scoped One Time CRM readback.
+- `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md` / `.json` - production gate proof for `REQ-20260713-911`; expected and observed One Time SHA `2c72bc0bf060d33567544e97d07c77317e54e971`, live `Server-Timing`, trace/deploy/target/response-byte headers, health DB/pool spans, RUM dry-run `external_write_performed=false`, and scoped CRM readback passed.
+- BNA and One Time live deploy-info readbacks - both returned `commit_sha=2c72bc0bf060d33567544e97d07c77317e54e971`; One Time Railway deployment `e0674590-9e8c-4f01-aaf1-00c1cf27ef41` and BNA Railway deployment `9b3c68bc-fbce-48d2-8636-c2583e25aa57` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-13T08-16-56-138Z-operations-workspace-taxonomy-live-smoke.md` - BNA Operations workspace taxonomy smoke passed after the performance-gate deploy.
+- `ops/live-smokes/2026-07-13T08-19-54-835Z-one-time-operations-crm-workbench-live-smoke.md` - One Time CRM workbench live smoke passed after the fresh One Time deploy.
+- `ops/live-smokes/2026-07-13T08-19-55-092Z-onetime-provider-route-module-live-smoke.md` - One Time provider route-module live smoke passed after the fresh One Time deploy.
+- `src/lib/bna/crm/communication-agent-response-runtime.js`, `server.js`, and `tests/communication-agent-response-runtime.test.js` - `REQ-20260712-311` OpenAI communication-agent response runtime. The runtime redacts scoped history, calls OpenAI Responses with published One Time agent/knowledge context, parses JSON replies/actions, blocks stale offer claims/raw links/task/access/payment actions, falls back safely on model failure, and returns versioned policy/delivery metadata without raw API keys. The WAPI webhook calls the runtime after canonical inbound persistence and before auto-reply decisions.
+- `302567b2147c2cf0c40eb839a333c785808af1ab` - deployed `REQ-20260712-311` wiring SHA on One Time. One Time deployment `d967bd8d-fde8-46a1-b454-a45d7be8899a` reached `SUCCESS`; One Time deploy-info returned the exact SHA; One Time landing smoke passed at `ops/live-smokes/2026-07-13T15-06-56-542Z-rabbi-onetime-landing-smoke.md`; One Time provider route-module smoke passed at `ops/live-smokes/2026-07-13T15-07-49-760Z-onetime-provider-route-module-live-smoke.md`; One Time interest dry-run smoke passed at `ops/live-smokes/2026-07-13T15-07-49-415Z-one-time-interest-dry-run-live-smoke.md`. BNA deployment `45bc84e7-14e4-49c4-98dc-847c9c0c0157` reached `SUCCESS` at `cf487abe11d1d247700885d8cc80d7e7837c0a4f`, which contains the wiring SHA; BNA taxonomy smoke passed at `ops/live-smokes/2026-07-13T15-15-36-114Z-operations-workspace-taxonomy-live-smoke.md`.
+- `ops/watchdog-audits/2026-07-13T14-51-56-101Z-onetime-owner-test-readiness.md` / `.json` - latest no-send owner-test readiness rerun: Resend send-ready, One Time WAPI provider setup-ready with one-time scoped credentials, owner-test email/WhatsApp aliases missing, and `external_send_performed=false`.
+- `public/js/one-time-provider-agents-route.js`, `public/provider.html`, `tests/one-time-provider-review-navigation.test.js`, and `ops/action-registry.json` - `REQ-20260712-312` Communication Agents UI. The One Time provider shell now has a dedicated lazy Agents route separate from Build/QA agent runs, with Communication Agents, Knowledge, Channels, Test, and Activity index tabs plus a dedicated Rabbi Scheller's Digital Assistant workspace.
+- `f799b5818fe408c53f1888213bd74732883f13d0` - deployed `REQ-20260712-312` Communication Agents UI SHA. One Time deployment `aef4fa28-75ea-4759-b45d-9d29409aec85` and BNA deployment `6ce036ae-4a54-4d5b-a15d-927ddc1885e8` reached `SUCCESS`; both deploy-info endpoints returned the exact SHA. One Time separate-instance smoke passed, and `ops/live-smokes/2026-07-13T15-47-15-724Z-onetime-provider-route-module-live-smoke.md` proved the Agents route loads only `/js/one-time-provider-agents-route.js`, Operations assets are absent, and failed/bad/console counts are zero.
+
+- `ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md` - direct Codex proof replacing two operator Agent Mode prompt runs.
+- `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md` - Rabbi Telegram no-send readiness.
+- `ops/live-smokes/2026-07-12T20-03-41-435Z-rabbi-telegram-live-smoke.md` - approved live Rabbi Telegram send evidence; ignored by default and must be force-added if preserved in Git.
+- `ops/production-readiness/latest-production-readiness-snapshot.md` - latest readiness snapshot.
+- `ops/production-readiness/latest-production-unblocker.md` - current external setup blocker packet.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=966ded41b517433533f24370949426cfd1200213`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=966ded41b517433533f24370949426cfd1200213`.
+- One Time signup no-write browser proof - Playwright clicked `Family` and `School` on `https://join.onetimeonetime.com/one-time/signup`, intercepted `/api/one-time/interest`, and verified `metadata.signup_as`, `audience_type`, `family_school_classification`, and `source_landing_page` without production writes.
+- One Time signup API dry-run proof - direct live `POST /api/one-time/interest?dry_run=true` normalized both `Family` and `School` to the expected `signup_as` values without creating records.
+- `ops/live-smokes/2026-07-12T20-48-11-384Z-crm-identity-isolation-live-smoke.md` - live database transaction-rollback proof for `REQ-20260712-305`; same synthetic email and phone coexist across BNA and One Time workspaces, workspace-filtered lookups return one row each, same-workspace duplicate is blocked, and rollback leaves zero synthetic contacts/identities.
+- `tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json` - bounded Product Quality Compiler packet for the shared CRM workbench slice.
+- `src/lib/bna/crm/contact-service.js` - canonical CRM contact service wrapper for contacts list/timeline DTO envelopes used by Operations routes.
+- `public/js/crm/` and `public/css/crm-core.css` - shared browser CRM modules and core styling loaded by the Operations shell.
+- `tests/crm-contact-service.test.js` and `tests/shared-crm-workbench-contract.test.js` - local contract proof for the canonical contact service and shared browser CRM module wiring.
+- `ops/watchdog-audits/2026-07-12-product-quality-drift.md` - protocol drift watchdog report with zero findings for the shared CRM slice.
+- BNA and One Time live deploy-info readbacks - both returned `commit_sha=bf0ec619b5ed10b2c057d5cf4f1553362d6614f4`.
+- BNA post-deploy doctor - Railway deployment `b7363013-f56e-4a27-80bc-0c4d3f5ab2c4` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `3132ec38-3b28-4583-a2b9-0aab261ef112` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped CRM cards, external-write flags false, and selected timeline read-only.
+- `public/operations.html` / `public/js/operations-shell.js` - CRM contact selection and filters now write URL state with `crm_contact`, `crm_search`, `crm_type`, `crm_status`, `crm_source`, `crm_tag`, `crm_sort`, and `crm_scroll`.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local Playwright CRM workbench proof after URL-state wiring.
+- `ops/live-smokes/2026-07-12T21-39-03-428Z-one-time-operations-crm-workbench-live-smoke.md` - deployed URL-state slice live smoke at `f818822bb3969dca5d27f7c5a70d4dbf0baa8744`, with 12 scoped cards and read-only selected timeline.
+- `public/operations.html` / `server.js` - local CRM update form saves first-party fields/notes and disables automatic task creation unless `create_follow_up_task` is explicitly true.
+- `ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md` - deployed local update/no-auto-task slice live smoke at `224bc077919c624f115c264d35e35092ed4144da`, with 12 scoped cards and read-only selected timeline.
+- `public/operations.html` / `public/js/crm/crm-actions.js` - the CRM contact workspace now exposes an explicit active `ACTION-CRM-CREATE-TASK` button that calls the scoped first-party PATCH route with `create_follow_up_task=true`, no-send flags, and read-only preview disabled state.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local Operations CRM workbench smoke passed after the explicit task action slice; all 1440/1024/768/430/390 split-shell and monolith checks show `Task action=true`.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=ded53274e31f91abff7944c094bdcdfaa9c55c5e`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=ded53274e31f91abff7944c094bdcdfaa9c55c5e`.
+- BNA post-deploy doctor - Railway deployment `ab35f8b9-9670-486b-9b4a-94719e01098d` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `988210a8-3fbf-41f5-aa52-f7f54b69bdc8` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T22-30-27-405Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the explicit Create task action slice with 12 scoped cards and read-only selected timeline.
+- `public/operations.html` / `public/js/crm/contact-workspace.js` - CRM contact workspace tabs are enabled for Overview, Activity, Conversations, Tasks, and Access with customer-facing panels instead of disabled placeholders.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local Operations CRM workbench smoke passed after the enabled-tabs slice and clicks all workspace tabs across split shell and monolith viewport coverage.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=1c4880418954d984c08683ba0955a32549eb33aa`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=1c4880418954d984c08683ba0955a32549eb33aa`.
+- BNA post-deploy doctor - Railway deployment `d580fdf6-535a-42e4-bfab-aff27fc0ce7b` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `e66f0964-6752-4c20-8eac-adec647b58dd` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T22-41-20-271Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the enabled workspace tabs slice with 12 scoped cards and read-only selected timeline.
+- `public/js/crm/contact-workspace.js` - shared CRM module owns the `shared-crm-v1` workbench contract: component order `contacts-index > contact-workspace > contact-inspector`, pane count `3`, tablet breakpoint `900`, mobile breakpoint `700`, and mobile back-control target `40`.
+- `public/operations.html` / `public/js/operations-shell.js` / `public/css/operations-shell.css` - Operations emits shared CRM contract data attributes and applies an explicit 40px mobile Back to contacts target without changing workspace-specific records or themes.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local CRM workbench smoke passed after asserting shared CRM contract attributes and 40px mobile selected-contact back control across split shell and monolith.
+- `ops/watchdog-audits/2026-07-12T23-18-watchdog-action-audit.md` - action watchdog passed with `finding_count=0` after the shared CRM contract/geometry slice.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd`.
+- BNA post-deploy doctor - Railway deployment `d5771dd9-f35a-4610-b382-e15afe4a885e` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `279b82a0-a726-4493-a4f6-23ed409b487d` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T23-25-19-779Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the shared CRM contract/geometry slice with 12 scoped cards and read-only selected timeline.
+- Live deployed Operations HTML readback on `https://join.onetimeonetime.com/operations.html` confirmed `data-crm-contract-version`, `shared-crm-v1`, `data-crm-component-order`, `data-crm-back-control-height`, and the 40px back-control CSS marker are present.
+- `public/js/crm/contact-workspace.js` - shared CRM tab registry now exposes enabled `Identity` and `Family` tabs.
+- `public/operations.html` / `public/js/operations-shell.js` - contact workspace renders `data-crm-tab-panel="identity"` and `data-crm-tab-panel="family"` with customer-facing identity, communication preference, consent/suppression, family/school, membership, class activity, follow-up, and notes fields.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local CRM workbench smoke passed after clicking Identity and Family tabs across split shell and monolith.
+- `ops/watchdog-audits/2026-07-12T23-29-watchdog-action-audit.md` - action watchdog passed with `finding_count=0` after the Identity/Family workspace slice.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=d1c0d3a596ad420876941445faad9f1e60c7ce48`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=d1c0d3a596ad420876941445faad9f1e60c7ce48`.
+- BNA post-deploy doctor - Railway deployment `32cd90dd-38cf-4398-93db-6af86939deeb` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `00290796-3917-4269-b573-981cf0ff7206` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T23-34-34-660Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the Identity/Family workspace slice with 12 scoped cards and read-only selected timeline.
+- Live deployed Operations HTML readback on `https://join.onetimeonetime.com/operations.html` confirmed `data-crm-tab-panel="identity"`, `data-crm-tab-panel="family"`, `Communication Preference`, `Consent / Suppression`, and `Family / School`.
+- `server.js` - POST `/api/bna/crm/contacts` creates or updates a workspace-scoped `bna_contacts` record, upserts workspace-scoped email/phone/WhatsApp identities, writes a local CRM pipeline event, returns a stable `bna_contacts:<id>` key, and returns no-send/no-checkout/no-access/no-import/external-write flags.
+- `public/operations.html` / `public/js/operations-shell.js` - Operations CRM index exposes `ACTION-CRM-ADD-CONTACT`, a compact Add Contact form, read-only preview disabled state, and opens the saved contact workspace after local save.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local CRM workbench smoke passed after opening and closing the Add Contact form without submitting a write; report covers split shell and monolith at 1440, 1024, 768, 430, and 390.
+- `ops/watchdog-audits/2026-07-12T22-54-watchdog-action-audit.md` - action watchdog passed with `finding_count=0` after registering `ACTION-CRM-ADD-CONTACT`.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=de48d8aef8b4764b5144a89edef9e269c102c25f`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=de48d8aef8b4764b5144a89edef9e269c102c25f`.
+- BNA post-deploy doctor - Railway deployment `e3f91da7-ed02-4554-8b05-7ea11606cf2e` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `4cd41025-343f-488a-bf07-4f6550fa2a0d` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T23-00-18-923Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the Add Contact slice with 12 scoped cards and read-only selected timeline.
+- `public/operations.html` / `public/js/operations-shell.js` - Operations CRM workspace exposes `ACTION-CRM-ARCHIVE-CONTACT`, a read-only preview disabled state, explicit confirmation copy, and a no-send/no-task archive PATCH path that clears selection and reloads the active contact list.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local CRM workbench smoke passed after verifying explicit Create task and Archive contact actions are visible without clicking the archive/write action.
+- `ops/watchdog-audits/2026-07-12T23-08-watchdog-action-audit.md` - action watchdog passed with `finding_count=0` after registering `ACTION-CRM-ARCHIVE-CONTACT`.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=3293d3528ace28938d5f13d8b65b485448c9ebc9`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=3293d3528ace28938d5f13d8b65b485448c9ebc9`.
+- BNA post-deploy doctor - Railway deployment `d454d665-4e81-43d7-868e-8c02888c0080` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `e4883410-13ce-4ad8-8d59-db5fc50effd4` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T23-12-32-836Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the Archive Contact slice with 12 scoped cards and read-only selected timeline.
+- Live deployed Operations HTML readback on `https://join.onetimeonetime.com/operations.html` confirmed `ACTION-CRM-ARCHIVE-CONTACT` and `archiveFirstPartyCrmContact` are present.
+- `public/operations.html` / `public/js/operations-shell.js` - Operations CRM Tasks tab now exposes a linked follow-up task panel with `ACTION-CRM-COMPLETE-TASK` and `ACTION-CRM-REOPEN-TASK`.
+- The Complete/Reopen task actions call the scoped first-party `PATCH /api/bna/tasks/:id` route through `api.updateTask`, with no message, payment, access grant, import, or external CRM write.
+- `ops/action-registry.json` - registers `ACTION-CRM-COMPLETE-TASK` and `ACTION-CRM-REOPEN-TASK`.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local CRM workbench smoke passed after verifying linked task controls on the Tasks tab across split shell and monolith.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=ec1e893848f12242a30fd1fc59c236442997f30e`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=ec1e893848f12242a30fd1fc59c236442997f30e`.
+- BNA post-deploy doctor - Railway deployment `3b43615c-3fde-4fad-bb1c-326baed500aa` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `8f022587-8b8e-474e-8c59-886b68e18faa` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T23-51-23-358Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the Complete/Reopen task slice with 12 scoped cards and read-only selected timeline.
+- Read-only deployed JS/CSS marker checks confirmed `ACTION-CRM-COMPLETE-TASK`, `ACTION-CRM-REOPEN-TASK`, `updateFirstPartyCrmLinkedTask`, `.crm-linked-task-card`, and `.crm-linked-task-meta` on `https://join.onetimeonetime.com`.
+- `public/operations.html` / `public/js/operations-shell.js` - Operations CRM Access and Family tabs now expose `ACTION-CRM-LINK-MEMBER` as an explicit first-party Link member action that creates a disabled member shell only.
+- `server.js` - the `/api/bna/members` payload path is used with `access_status=paused`, `access_enabled=false`, no access code, and metadata marking `access_not_granted`, `portal_link_created=false`, and `external_write_performed=false`.
+- `server.js` - direct `bna_contacts` aggregate email fallback rollups for communications, support, tasks, and membership now require the row's workspace-mapped `bna_projects` record before matching by email, preventing same-email member/task/message bleed across BNA and One Time.
+- `ops/action-registry.json` - registers `ACTION-CRM-LINK-MEMBER` as active first-party local write with no portal link, access code, library/class access, send, payment, import, or external CRM write.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local CRM workbench smoke passed after verifying the Link member panel/action is visible on the Access tab without clicking the write action.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`.
+- BNA post-deploy doctor - Railway deployment `91234f89-084d-4dc0-bc8b-4de7fbd33325` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `dc45500e-960c-4adf-8e78-dcb92a2a725c` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-13T00-11-08-626Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the Link member slice with 12 scoped cards and read-only selected timeline.
+- Read-only deployed JS/HTML marker checks confirmed `ACTION-CRM-LINK-MEMBER`, `linkFirstPartyCrmMember`, `data-crm-member-link-state`, `access_status: 'paused'`, and `access_enabled: false` on `https://join.onetimeonetime.com`.
+- `raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md` - operator correction requiring the WhatsApp bot knowledge to state no portal/member/library access is being granted yet plus One Time landing header/button/mobile CTA polish.
+- `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md` - scoped local-verified handoff for bot knowledge and landing polish.
+- `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json` - focused Product Quality Compiler packet for the One Time header/CTA/spacing/mobile correction and bot access-fact guardrail.
+- `config/service-provider-bots/one-time.json` / `src/lib/bna/provider-lead-bot.js` - existing WhatsApp provider-bot profile/runtime now treats trial/pricing/access facts as unpublished unless explicitly published, and does not claim portal, library, parent-login, student-login, or member access is being granted yet.
+- `public/one-time/index.html` - public landing header now follows the member-section black/yellow lockup pattern, yellow CTA shadows are softened, section spacing is tightened, and mobile hero CTA is moved above the bottom browser/launcher zone.
+- `ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md` - local responsive landing smoke with screenshots at 1440, 1024, 768, 430, and 390; report records hero CTA and WhatsApp launcher bounding boxes with no overlap and no write requests.
+- `ops/product-quality-compiler/validation/latest-product-quality-validation.md` - focused PQC validation passed for `PKT-20260713-001`.
+- `ops/watchdog-audits/2026-07-12T22-12-watchdog-action-audit.md` - action watchdog passed with `finding_count=0` after adding public section navigation coverage.
+- `ops/watchdog-audits/2026-07-12-product-quality-drift.md` - protocol drift watchdog passed with `Findings: 0`.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=301b408b36fa982d4562d06f30de56758cd0e168`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=301b408b36fa982d4562d06f30de56758cd0e168`.
+- BNA post-deploy doctor - Railway deployment `640fc22a-5172-4729-ab92-7882426a13e0` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `2c2c7631-a004-4019-bf3f-328cd61cd905` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T22-17-11-356Z-rabbi-onetime-landing-smoke.md` - live One Time public landing/signup/WhatsApp readiness smoke passed on `https://join.onetimeonetime.com` with no external send, payment, access grant, DNS write, or connector write.
+- `config/service-provider-bots/one-time.json` version `2026-07-13-v2` - explicit operator correction says "We are not giving portal access yet"; bot knowledge continues to keep portal/member/library/parent-login/student-login access unpublished.
+- `public/one-time/signup.html` - signup header now uses the member-style One Time Mishnayos lockup and softened yellow submit-button shadow while preserving Family/School signup selection.
+- BNA live deploy-info readback v2 - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=3712308731910a6e77fb9a18ce18b57ae35f22dd`.
+- One Time live deploy-info readback v2 - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=3712308731910a6e77fb9a18ce18b57ae35f22dd`.
+- BNA post-deploy doctor v2 - Railway deployment `77191e2f-0aaf-4fde-ae2c-cf69ce299af8` reached `SUCCESS`.
+- One Time post-deploy doctor v2 - Railway deployment `38d75556-5a94-42d3-b8b3-65a5a3290fe7` reached `SUCCESS`.
+- Live marker checks v2 - deployed One Time pages include `--yellow: #ede518`, `box-shadow: none`, `margin-top: -10px`, no old black CTA inset shadow, `/images/one-time/brand/onetimelogo.webp`, and `One Time Mishnayos<small>Sign up</small>`.
+- `ops/live-smokes/2026-07-13T00-26-05-640Z-rabbi-onetime-landing-smoke.md` - live One Time public landing/signup/WhatsApp readiness smoke passed on `https://join.onetimeonetime.com` after the v2 deployment.
+- `raw-input/RAW-20260713-002-onetime-signup-bots-ticket-approval.md` - operator P0 packet requiring the One Time signup-form repair to deploy before the WhatsApp/Telegram/ticket waves.
+- `tasks-pending/2026-07-13-onetime-signup-bots-ticket-approval.md` - Wave 1 requirement register and local proof trail.
+- `ops/live-smokes/2026-07-13T00-36-03-104Z-one-time-signup-production-diagnostic.md` - ignored local production diagnostic reproduced the live signup failure on deployed SHA `3712308731910a6e77fb9a18ce18b57ae35f22dd`; `Family + No reminders + no phone + no consent` produced zero POSTs and focused the acknowledgement checkbox with a consent-required error.
+- `public/one-time/signup.html` - canonical public signup form now uses real `audience_type` radio inputs, no preselected reminder option, conditional phone/reminder consent validation, inline accessible field errors, one submit request, and success copy that avoids portal/payment/internal language.
+- `src/lib/bna/one-time-signup-workflow.js` - canonical server-side signup validation exported for contact name, email, audience type, location/timezone, reminder preference, conditional phone, and conditional reminder consent.
+- `server.js` - direct One Time signup now returns the validation response contract, upserts/links the canonical One Time CRM contact, stores the signup interest/legacy lead context, writes a signup communication event, creates zero automatic CRM tasks, and returns `contact_key`, `signup_key`, `confirmation_queued`, `reminder_preference`, `next_path`, and `duplicate_submission`.
+- `tests/one-time-signup-form-matrix.test.js` - browser-level matrix for success combinations, specific errors, conditional switching, mobile widths, double-submit protection, server validation failure, and keyboard completion.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=881f892523eb9a20137377882e2452e45cd581ca`.
+- One Time Railway doctor - deployment `35633776-51a0-4185-9bd0-61d73c187d45` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-13T00-56-04-223Z-one-time-signup-production-diagnostic.md` - ignored local no-write/intercept production browser proof after deployment; Family + No reminders + no phone + no consent reached the approved success panel with one intercepted POST attempt and no visible field errors.
+- Production direct-signup API dry-run proof - `POST https://join.onetimeonetime.com/api/one-time/interest?dry_run=1` with canonical direct-signup keys returned `direct_signup_workflow=true`, workspace `rabbi_sheller_provider`, project `one_time_mishnah_class`, confirmation email and Rabbi Telegram outbox previews, and no database write/send/checkout/access grant.
+- Production CRM API cleanup proof - synthetic attempted live-write records `bna_contacts:37` and `bna_parent_leads:22` were found in project `one_time_mishnah_class` and archived through `PATCH /api/bna/crm/contacts/:id` with `no_send=true` and `external_write_performed=false`.
+- `ops/live-smokes/2026-07-13T09-15-12-884Z-one-time-signup-form-matrix-live.md` - production regression proof before the keyboard-card patch; Enter on the Family/School and reminder cards left radios unchecked, produced audience/reminder errors, and attempted zero POSTs.
+- `public/one-time/signup.html` - Family/School and reminder cards are now focusable and route Enter/Space through `activateRadioCard`, checking the underlying radio input and dispatching the same `change` path used by pointer/touch selection.
+- One Time latest deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
+- One Time latest Railway doctor - deployment `2645a6c7-3b51-4ae6-915f-5a267dacde22` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-13T09-32-18-347Z-one-time-signup-form-matrix-live.md` - latest production form matrix passed every required success, field-error, switch, double-click, mobile-width, and keyboard-only case with `failed=[]`.
+- `ops/live-smokes/2026-07-13T09-32-18-048Z-one-time-interest-dry-run-live-smoke.md` - latest direct signup dry-run passed without production writes or sends.
+- `config/service-provider-bots/one-time.json` - One Time public WhatsApp profile is now `one_time_parent_information_agent` version `2026-07-13-v3`, display name `Rabbi Scheller's Digital Assistant`, with approved public facts for program, Rabbi, daily 7:00 p.m. Israel time schedule, local RBS Alef address, canonical `/one-time/signup`, audience, and deterministic class-link behavior.
+- `src/lib/bna/provider-lead-bot.js` - public bot intent/reply runtime now answers the approved schedule/address facts, avoids stale trial/member language, supports `class_info_requested` and `class_info_consented` release states, emits `ACTION-ONETIME-GET-CURRENT-CLASS-LINK`, and keeps restricted class-link URLs out of prompt/audit metadata.
+- `server.js` - One Time WAPI auto-reply guard now validates released class links through `providerLeadBotClassLinkAllowed`, records class-info request/consent metadata, redacts persisted audit body, updates public WhatsApp readiness identity, and falls back to `/one-time/signup`.
+- `config/service-provider-sites/one-time.json` - site lead-bot metadata points to `one_time_parent_information_agent` and the new public assistant display name.
+- `ops/action-registry.json` - registers `ACTION-ONETIME-GET-CURRENT-CLASS-LINK` as the server-authorized WhatsApp class-link action with raw-link redaction requirements.
+- `tests/service-provider-lead-bot.test.js` - covers public facts, no stale portal/trial/pricing claims, consent/request class-link policy, redacted audit body, and server guard wiring.
+- WAPI readiness no-send proof - `node scripts/check-onetime-wapi-readiness.mjs` reports outbound configured, One Time scoped credentials, provider setup ready, class link configured, and auto-reply gated by missing Telegram notification approval; no WhatsApp send, CRM mutation, external write, or secret print occurred.
+- One Time Railway deployment `eac01ac4-5589-4c24-b21f-5aea52aeb8d6` - public WhatsApp agent profile/policy code commit `9fb436760872bab77019b3769652c8b517025c8d` deployed and reached `SUCCESS`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=9fb436760872bab77019b3769652c8b517025c8d`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 9fb436760872bab77019b3769652c8b517025c8d` passed.
+- One Time public WhatsApp readiness readback - `https://join.onetimeonetime.com/api/one-time/public-whatsapp` returned the new public assistant identity, scoped workspace/project, class link configured, full number hidden, no WhatsApp send, and no external write.
+- `src/lib/bna/telegram-notifications.js` - Super Admin ticket alerts now include affected section, requested result, Open in Operations link, and inline approval keyboard actions; Rabbi ticket status notifications are scoped and redacted.
+- `scripts/telegram-kimi-bridge.mjs` - Rabbi Telegram ticket capture now creates approval-gated tickets with zero initial tasks/jobs, and Super Admin Telegram callbacks call the shared support-ticket approval endpoint.
+- `server.js` - support tickets support the approval lifecycle statuses, Rabbi Telegram tickets skip automatic task creation, `POST /api/bna/support-tickets/:id/approval-action` requires platform Super Admin, and approval/ask/keep/reject actions are idempotent.
+- `ops/action-registry.json` - registers `ACTION-ONETIME-RABBI-TELEGRAM-TICKET-CREATE`, `ACTION-ONETIME-RABBI-TICKET-APPROVE-CODEX`, `ACTION-ONETIME-RABBI-TICKET-ASK-RABBI`, `ACTION-ONETIME-RABBI-TICKET-KEEP`, and `ACTION-ONETIME-RABBI-TICKET-REJECT`.
+- `tests/rabbi-telegram-notifications.test.js` and `tests/rabbi-telegram-ticket-approval.test.js` - cover the redacted alerts, approval keyboard, Rabbi status notifications, lifecycle statuses, zero initial Codex jobs, Super Admin-only approval endpoint, idempotency, callbacks, and action registry rows.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- BNA post-deploy doctor - Railway deployment `6ddd918b-3c4a-453d-8a07-8b6a53407607` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `16a16da1-4ca7-491c-87f8-d1f9637de5f7` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8f6441523a5cd3547ecd4ba633dab90c8951ffd9` passed.
+- Live approval route guard - unauthenticated `POST /api/bna/support-tickets/1/approval-action` returned `401 Unauthorized` on both BNA and One Time with no ticket/job creation.
+- `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md` - post-deploy no-send readiness audit reports Super Admin and Rabbi Telegram targets configured/ready, with alert send flags disabled in this environment.
+- `public/operations.html` / `public/js/operations-shell.js` - CRM Family tab now exposes `ACTION-CRM-LINK-FAMILY` and `ACTION-CRM-LINK-STUDENT` alongside Link member.
+- `server.js` - CRM PATCH route persists relationship metadata for first-party contacts and parent leads, and CRM contact rows read same-project paused student shells by parent email for contact workspace readback.
+- `ops/action-registry.json` - registers `ACTION-CRM-LINK-FAMILY` and `ACTION-CRM-LINK-STUDENT` as first-party local writes with no portal login, access grant, student access code, send, payment, import, or external CRM write.
+- `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local One Time CRM workbench smoke passed after the Family/Student link slice.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=003e3e7fe23684a40131e53be280787811bcc8a4`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=003e3e7fe23684a40131e53be280787811bcc8a4`.
+- BNA post-deploy doctor - Railway deployment `f8ff55d2-ebe1-4f1e-8250-7a4d34e873a6` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `7e9d6c53-e77f-493a-82ea-573e6b1fcb29` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 003e3e7fe23684a40131e53be280787811bcc8a4` passed.
+- Deployed JS marker checks confirmed `ACTION-CRM-LINK-FAMILY`, `ACTION-CRM-LINK-STUDENT`, `linkFirstPartyCrmFamily`, `linkFirstPartyCrmStudent`, `student_access_not_granted`, and `relationship:family`.
+- `public/operations.html` / `public/js/operations-shell.js` - Operations CRM local update form now exposes explicit `ACTION-CRM-SET-FOLLOW-UP`, `ACTION-CRM-CHANGE-FOLLOW-UP`, and `ACTION-CRM-CLEAR-FOLLOW-UP` buttons.
+- `server.js` - scoped CRM PATCH route accepts an explicit empty `next_follow_up_at` / `next_follow_up_date` field and persists it as `null`, with `crm_action_id` recorded in local CRM event metadata and `create_follow_up_task=false`.
+- `ops/action-registry.json` - registers the three follow-up actions as active first-party local writes with no send, payment, access grant, import, historical sync, automatic task creation, or external CRM write.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=eee9a431dd426d8627652b972c3d3336eaf18362`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=eee9a431dd426d8627652b972c3d3336eaf18362`.
+- BNA post-deploy doctor - Railway deployment `01b5cbf9-a187-4c5e-8e4e-a5e8985d3445` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `2eeead32-2f44-49b9-9a70-1528c3ad5945` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha eee9a431dd426d8627652b972c3d3336eaf18362` passed.
+- `ops/live-smokes/2026-07-13T02-23-19-932Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the follow-up actions slice with 12 scoped cards and read-only selected timeline.
+- Deployed JS marker checks confirmed `ACTION-CRM-SET-FOLLOW-UP`, `ACTION-CRM-CHANGE-FOLLOW-UP`, `ACTION-CRM-CLEAR-FOLLOW-UP`, clear summary copy, and the `crm_action_id` payload marker.
+- `public/operations.html` / `public/js/operations-shell.js` - Operations CRM local update form now exposes explicit `ACTION-CRM-ADD-NOTE`, `ACTION-CRM-ADD-TAG`, `ACTION-CRM-REMOVE-TAG`, `ACTION-CRM-ASSIGN-OWNER`, and `ACTION-CRM-CHANGE-LIFECYCLE` controls.
+- `server.js` - scoped CRM PATCH route now treats a present `tags` field as authoritative, so removing the final tag persists an empty tag list instead of being ignored.
+- `ops/action-registry.json` - registers the note/tag/owner/lifecycle actions as active first-party local writes with no send, payment, access grant, import, historical sync, automatic task creation, or external CRM write.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=15796035598280b3ae14d748e3673d6a186af5cd`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=15796035598280b3ae14d748e3673d6a186af5cd`.
+- BNA post-deploy doctor - Railway deployment `7e32345a-71c3-4296-a899-f10710339020` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `8dc13638-9225-4c0f-99ca-bdc2bb5daab1` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 15796035598280b3ae14d748e3673d6a186af5cd` passed.
+- `ops/live-smokes/2026-07-13T02-32-29-354Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the note/tag/owner/lifecycle actions slice with 12 scoped cards and read-only selected timeline.
+- Deployed JS marker checks confirmed `ACTION-CRM-ADD-NOTE`, `ACTION-CRM-ADD-TAG`, `ACTION-CRM-REMOVE-TAG`, `ACTION-CRM-ASSIGN-OWNER`, `ACTION-CRM-CHANGE-LIFECYCLE`, tag remove validation copy, and `create_follow_up_task: false`.
+- `src/lib/bna/crm/contact-service.js` - canonical contact service now returns separate paginated `conversations` and `tasks` DTO envelopes for a selected contact, with `no_send=true`, `external_write_performed=false`, and normalized task metadata from `source_context`.
+- `server.js` - added read-only protected `GET /api/bna/crm/contacts/:id/conversations` and `GET /api/bna/crm/contacts/:id/tasks`; both derive workspace/project server-side, require the existing contact timeline entitlement, and reuse server-side CRM timeline loaders instead of browser-side dataset unions.
+- `public/js/crm/crm-api.js` - shared CRM browser API exposes canonical path helpers for selected-contact conversations and tasks.
+- `ops/route-registry.json` - registers the two new private CRM DTO routes with workspace scope, no-send/no-external-write expectations, and no mutation/task-creation side effects.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=1a8bca34048a8b0213b0a608cae5320727f6747b`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=1a8bca34048a8b0213b0a608cae5320727f6747b`.
+- BNA post-deploy doctor - Railway deployment `aa2a2f07-7900-4eed-beb8-7fc47e20cfcd` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `11a938f8-387c-43e6-bfa9-5e91d10645fc` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1a8bca34048a8b0213b0a608cae5320727f6747b` passed.
+- `ops/live-smokes/2026-07-13T02-43-26-025Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards and selected timeline read-only.
+- Read-only live endpoint smoke through Operations auth returned scoped One Time CRM cards plus `/conversations` and `/tasks` DTOs with `aggregate_service=bna_crm_contact_service_v1`, page limits `[5,5]`, `no_send=true`, and `external_write_performed=false`.
+- `src/lib/bna/crm/contact-service.js` - selected-contact conversation DTOs now include safe channel/thread navigation metadata (`open_action`, `thread_key`, external message id, from/to address, provider/status) while retaining `no_send=true` and `external_write_performed=false`.
+- `server.js` - canonical CRM timeline loaders now include bna_communications thread/message metadata in the server-owned conversation DTO path, with workspace/project filtering still applied before DTO mapping.
+- `public/operations.html` / `public/js/operations-shell.js` - contact conversation cards expose literal registered `ACTION-CRM-OPEN-SCOPED-INBOX` and `ACTION-CRM-OPEN-WHATSAPP-THREAD` buttons; the WhatsApp shortcut now opens the scoped Operations WhatsApp pane instead of a `wa.me` external chat link.
+- `ops/action-registry.json` - `ACTION-CRM-OPEN-WHATSAPP-THREAD` now describes scoped internal WhatsApp conversation navigation with no prefill/send.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=83427a7a7d7d1c255d83f1e13da24b18265e55fd`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=83427a7a7d7d1c255d83f1e13da24b18265e55fd`.
+- BNA post-deploy doctor - Railway deployment `8744a95d-c510-412a-9f57-f72f69f72ce2` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `16db8dd7-50d7-4ec1-ad79-e951956c07c3` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 83427a7a7d7d1c255d83f1e13da24b18265e55fd` passed.
+- `ops/live-smokes/2026-07-13T03-12-16-557Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards.
+- Deployed JS marker checks on both BNA and One Time confirmed `openFirstPartyCrmConversationThread`, `data-crm-conversation-action="whatsapp"`, `data-crm-conversation-action="email"`, `No WhatsApp message was sent.`, and `Open WhatsApp thread`.
+- Read-only live endpoint smoke through Operations auth returned 12 scoped One Time CRM cards and 6 selected-contact conversations with `open_actions=["whatsapp"]`, `no_send=true`, and `external_write_performed=false`.
+- `public/operations.html` / `public/js/operations-shell.js` - selected CRM contact workspace now fetches timeline, conversations, and tasks through the canonical contact DTO endpoints in parallel, stores separate detail payloads, and renders the Conversations and Tasks tabs from server-owned DTOs instead of mailbox/card fallbacks.
+- `tests/shared-crm-workbench-contract.test.js` / `tests/service-provider-scope-routes.test.js` - contract tests now pin `getCrmContactConversations`, `getCrmContactTasks`, DTO payload state, `Promise.allSettled` readback, and `data-crm-dto-source` tab markers.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=132fdbdb454f51f7c9d073237e8c21b1e5fba070`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=132fdbdb454f51f7c9d073237e8c21b1e5fba070`.
+- BNA post-deploy doctor - Railway deployment `d717976a-69b1-4e9d-9758-9c774b3d468d` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `a698d7a2-6531-40b2-a7e9-1b7868650f0a` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 132fdbdb454f51f7c9d073237e8c21b1e5fba070` passed.
+- `ops/live-smokes/2026-07-13T02-57-50-282Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards and selected timeline read-only after the UI DTO-consumption slice.
+- Deployed JS marker check confirmed `getCrmContactConversations`, `getCrmContactTasks`, `data-crm-dto-source="contact-conversations"`, `data-crm-dto-source="contact-tasks"`, and `Promise.allSettled`.
+- Read-only live endpoint smoke through Operations auth returned scoped One Time CRM cards plus `/conversations` and `/tasks` DTOs with `aggregate_service=bna_crm_contact_service_v1`, page limits `[5,5]`, `no_send=true`, and `external_write_performed=false`.
+- `public/operations.html` / `public/js/operations-shell.js` - contact Tasks tab DTO rows now expose explicit Complete/Reopen controls with literal registered `ACTION-CRM-COMPLETE-TASK` and `ACTION-CRM-REOPEN-TASK` markers, using the same scoped `api.updateTask` handler as linked follow-up task actions.
+- `tests/shared-crm-workbench-contract.test.js` - contract test now pins `renderFirstPartyCrmTaskDtoActions`, `updateFirstPartyCrmTaskDto`, DTO task action markers, and the explicit Complete/Reopen audit notes.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=09d239dd095e59299f06c5b3cd38893cd5696fb8`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=09d239dd095e59299f06c5b3cd38893cd5696fb8`.
+- BNA post-deploy doctor - Railway deployment `91aab958-0b12-442b-bf15-545517abc9b9` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `36827b53-3ffb-420e-ac37-2ef329db94ec` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 09d239dd095e59299f06c5b3cd38893cd5696fb8` passed.
+- `ops/live-smokes/2026-07-13T03-23-44-897Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards and read-only selected timeline.
+- Deployed JS marker checks on both BNA and One Time confirmed `updateFirstPartyCrmTaskDto`, `data-crm-task-dto-actions`, `Completed from CRM contact workspace Tasks tab.`, and `Reopened by an explicit Reopen task click in the CRM contact workspace Tasks tab.`.
+- `server.js` - canonical CRM list/timeline SQL now folds matching workspace/project support tickets into contact activity counts and selected-contact Activity timeline rows by requester email, while excluding support-ticket rows from Conversations and Tasks DTOs.
+- `src/lib/bna/crm/contact-service.js` - shared fallback DTO split now keeps support-ticket timeline rows out of Conversations and Tasks.
+- `src/lib/bna/crm-contact-model.js` - support ticket source labels resolve as customer-facing `Support ticket` instead of raw table names.
+- `tests/crm-contact-service.test.js` / `tests/service-provider-scope-routes.test.js` - tests pin support-ticket timeline inclusion, Conversation/Task exclusion, scoped server wiring, and no-send/external-write metadata.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=e830ca924a2fd4853fc523a4bad6e55c454bf420`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=e830ca924a2fd4853fc523a4bad6e55c454bf420`.
+- BNA post-deploy doctor - Railway deployment `2db01b8e-2241-413e-8df1-21a2926e892b` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `2357d677-5991-40e4-8c05-621b201d0ad6` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e830ca924a2fd4853fc523a4bad6e55c454bf420` passed.
+- `ops/live-smokes/2026-07-13T03-36-02-229Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards and read-only selected timeline after the support-ticket aggregate slice.
+- Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `support_summary_cards=0`, sampled selected-contact `support_timeline_items=0`, `support_conversation_items=0`, `no_send=true`, and `external_write_performed=false`; no raw contact data or message bodies were saved.
+- `server.js` - canonical CRM list SQL now joins matching One Time `bna_product_leads` by product lead ID, workspace-scoped email, or workspace-scoped phone and returns a `signup_context` object on canonical contact/lead rows without creating tasks or performing external writes.
+- `src/lib/bna/crm-contact-model.js` - contact DTOs now expose `signup_context`, preserve linked product/legacy lead IDs, and dedupe same-human legacy lead rows under canonical `bna_contacts` cards by workspace/project email or phone.
+- `public/operations.html` / `public/js/operations-shell.js` - contact workspace class/access summary now displays signup status, audience, reminder preference, city, and timezone when present and no longer shows internal “not loaded” copy.
+- `tests/crm-contact-model.test.js` / `tests/service-provider-scope-routes.test.js` - tests pin signup context mapping, canonical duplicate collapse, server aggregate wiring, and Operations signup-context markers.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=feaece026a62daaf1ff85bdb53ac25ffb246ab89`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=feaece026a62daaf1ff85bdb53ac25ffb246ab89`.
+- BNA post-deploy doctor - Railway deployment `aff0823d-e323-439a-8837-150273689bc4` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `b119d430-216a-43c9-b59a-37b2b8dcfdb1` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha feaece026a62daaf1ff85bdb53ac25ffb246ab89` passed.
+- `ops/live-smokes/2026-07-13T03-52-25-026Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the signup-context aggregate slice.
+- Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `signup_context_cards=5`, `linked_lead_cards=5`, `duplicate_email_or_phone_count=0`, `no_send=true`, and `external_write_performed=false`; no raw contact data or message bodies were saved.
+- `server.js` - selected-contact timeline SQL now adds scoped `student_link` rows from `bna_students` and `membership_access` rows from `bna_members` for both canonical `bna_contacts` and legacy `bna_parent_leads` references.
+- `src/lib/bna/crm/contact-service.js` - fallback conversation DTO filtering now excludes student/member/signup aggregate rows in addition to task and support-ticket rows.
+- `tests/crm-contact-service.test.js` / `tests/service-provider-scope-routes.test.js` - tests pin Activity inclusion and Conversations/Tasks exclusion for student/member aggregate rows.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=381023aad5fdaf1b23ef4c7ab0c12327ee2d369b`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=381023aad5fdaf1b23ef4c7ab0c12327ee2d369b`.
+- BNA post-deploy doctor - Railway deployment `5b39768d-21ad-4d76-b414-d685447d3542` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `965166eb-7cbb-4935-aa43-9ca497978b4e` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 381023aad5fdaf1b23ef4c7ab0c12327ee2d369b` passed.
+- `ops/live-smokes/2026-07-13T04-03-00-662Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the student/member aggregate slice.
+- Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `total_student_activity_rows=0`, `total_membership_activity_rows=0`, `list_no_send=true`, and `list_external_write_performed=false`; current live sample had no student/member rows, so row behavior is proven by local smoke and tests.
+- `server.js` - selected-contact timeline SQL now adds scoped `class_attendance` rows from `bna_live_class_attendance` through `bna_members` and `bna_live_class_sessions` for both canonical `bna_contacts` and legacy `bna_parent_leads` references, without exposing raw class links.
+- `src/lib/bna/crm/contact-service.js` - fallback conversation DTO filtering now excludes attendance aggregate rows in addition to student/member/signup/task/support rows.
+- `public/operations.html` / `public/js/operations-shell.js` - contact timeline rows now use customer-facing labels for aggregate timeline types, including `Class attendance`, instead of showing raw type strings.
+- `tests/crm-contact-service.test.js` / `tests/service-provider-scope-routes.test.js` - tests pin Activity inclusion and Conversations/Tasks exclusion for class-attendance aggregate rows.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=593398dd6f3f927e321c24fad4bd2d01e13dcd51`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=593398dd6f3f927e321c24fad4bd2d01e13dcd51`.
+- BNA post-deploy doctor - Railway deployment `8886d1ce-677e-406e-a34f-49313e9fde86` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `1bef031c-3522-440f-8e62-ac33972515cb` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 593398dd6f3f927e321c24fad4bd2d01e13dcd51` passed.
+- `ops/live-smokes/2026-07-13T04-13-58-713Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the class-attendance aggregate slice.
+- Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, 20 sampled timeline rows, `class_attendance_timeline_rows=0`, `class_attendance_conversation_rows=0`, `no_send=true`, and `external_write_performed=false`; current live sample had no class-attendance rows.
+- `src/lib/bna/crm-contact-model.js` - canonical contact DTOs now expose `communication_preference`, `consent_status`, `suppression_status`, and structured `communication_preferences` derived from row metadata and matched signup context.
+- `server.js` - signup/product lead context now carries consent timestamp, consent policy version, email suppression state, WhatsApp suppression state, and suppression flags into canonical CRM contact rows for both `bna_contacts` and `bna_parent_leads`.
+- `tests/crm-contact-model.test.js` / `tests/service-provider-scope-routes.test.js` - tests pin consent/suppression mapping and server aggregate wiring without exposing raw internals.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=0e33764d66519d8f45d86e57b320a1988a604058`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=0e33764d66519d8f45d86e57b320a1988a604058`.
+- BNA post-deploy doctor - Railway deployment `1cf2ff91-2ead-4124-851d-a71b17742b56` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `57c2454e-60e2-40e9-9214-b7f5572df6c6` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 0e33764d66519d8f45d86e57b320a1988a604058` passed.
+- `ops/live-smokes/2026-07-13T04-26-18-047Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the communication consent/suppression DTO slice.
+- Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `communication_preferences_cards=12`, preference counts `{whatsapp:2,email:3,not_set:7}`, consent counts `{not_recorded:12}`, suppression counts `{none_recorded:12}`, `no_send=true`, and `external_write_performed=false`.
+
+## CRM Suppression / Opt-Out Activity Timeline Context - 2026-07-13
+
+- `server.js` - `operationsCrmTimelineRows` now emits read-only `communication_suppression` Activity rows for workspace-scoped `bna_contacts` and `bna_parent_leads` when contact status or metadata records suppressed, unsubscribed, invalid, bounced, stopped, wrong-number, do-not-contact, or opt-out state.
+- `server.js` / `src/lib/bna/crm/contact-service.js` - Conversations and Tasks DTO filtering explicitly excludes `communication_suppression` rows and `suppression` channels so suppression history cannot appear as a fake thread or task.
+- `tests/crm-contact-service.test.js` / `tests/service-provider-scope-routes.test.js` - tests pin timeline inclusion, no-send behavior, and conversation/task exclusion for suppression rows.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
+- BNA post-deploy doctor - Railway deployment `476ad2fb-8178-44b2-af2d-20d2eb7f15cd` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `9fd12f58-f9ca-4eb3-b581-e0b9f7aca3f9` reached `SUCCESS`.
+- One Time separate-instance smoke - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1` passed.
+- `ops/live-smokes/2026-07-13T04-40-38-338Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped cards after the suppression/opt-out Activity timeline slice.
+- Read-only live DTO readback through Operations auth returned 12 scoped One Time CRM cards, `suppression_timeline_rows=0`, `suppression_conversation_rows=0`, `suppression_task_rows=0`, `no_send=true`, and `external_write_performed=false`. The current live sample has no suppressed contacts; local smoke and DTO tests cover row behavior when records exist.
+
+## CRM Email Thread DTO Fallback - 2026-07-13
+
+- `server.js` - selected-contact timeline/conversation DTO loading now includes scoped `bna_communications` email rows for canonical `bna_contacts` records by direct `contact_id` or workspace/project-scoped primary-email match, and annotates source context with `canonical_email_match`, `no_send=true`, and `external_write_performed=false`.
+- `server.js` - legacy `bna_parent_leads` selected-contact timelines now include same-project email rows matched by `parent_email`, so a lead opened from the CRM card can show its email conversation without browser-side dataset unioning.
+- `tests/shared-crm-workbench-contract.test.js` - pins the server-side email-thread DTO path and proves the selected-contact workspace loader calls the canonical Conversations endpoint instead of merging `bna_communications` in browser code.
+- `scripts/smoke-onetime-crm-email-thread-dto-live.mjs` / `package.json` - added a redacted read-only production smoke for scoped mailbox candidates and selected-contact email conversation DTOs.
+- Commit `6a2bf93d4` introduced the DTO fallback and live smoke script; runtime SHA `298751d8d940c02ce4c8a9c70c5b36862ea67766` is deployed after the follow-up smoke/RUM proof stabilization commit.
+- One Time Railway deployment `4002d6ca-6a1c-483b-bd56-65906d60020e` reached `SUCCESS`; live deploy-info returned `commit_sha=298751d8d940c02ce4c8a9c70c5b36862ea67766` and `target_app=one-time`.
+- BNA Railway deployment `fccc5a3d-2f96-4c7f-a8ab-5fae904b1bf7` reached `SUCCESS`; live deploy-info returned `commit_sha=298751d8d940c02ce4c8a9c70c5b36862ea67766` and `target_app=bna`.
+- Verification passed: `node --check server.js`, `node --check scripts/smoke-onetime-crm-email-thread-dto-live.mjs`, focused CRM/service-provider contract tests `22/22`, `npm run operations:check-generated`, `npm run watchdog:actions`, `npm run secrets:audit`, `npm run one-time:performance-regression-gates`, and pre-commit `git diff --cached --check`.
+- Live proof passed: `ops/live-smokes/2026-07-13T08-38-11-769Z-one-time-crm-email-thread-dto-live-smoke.md` found 8 scoped mailbox candidates and `selected_contact_email_thread_match=true` with no raw IDs, names, addresses, subjects, bodies, or message IDs saved.
+- Additional live smokes passed after deploy: `ops/live-smokes/2026-07-13T08-37-27-323Z-one-time-operations-crm-workbench-live-smoke.md`, `ops/live-smokes/2026-07-13T08-37-27-486Z-operations-workspace-taxonomy-live-smoke.md`, and `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw message logging, or production data mutation was performed by this email-thread DTO closeout.
+
+## One Time-First Control Correction - 2026-07-13
+
+- `raw-input/RAW-20260713-003-onetime-first-owner-tests-performance-mobile-crm-addendum.md` - registered the One Time-first addendum with raw provenance.
+- `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/requirements.json` - added source `RAW-20260713-003`, marked `REQ-20260712-302` superseded in part for simultaneous BNA/One Time frontend parity, and added `REQ-20260713-905` through `REQ-20260713-911`.
+- `memory/2026-07-13.md`, `memory-topics/rabbi-scheller-onetime.md`, and `memory-topics/one-time-rabbi-sheller.md` - recorded the durable One Time-first correction and owner-only test-send policy.
+- `npm run bna:run:validate` passed after the control correction; requirement counts are now 12 not started, 5 in progress, and 3 done.
+
+## Mobile CRM Information Architecture - 2026-07-13
+
+- `public/operations.html`, `public/js/operations-shell.js`, and `public/css/operations-shell.css` - selected-contact CRM workspace now has list/detail/subview/action-overflow IA, focused header with class/access context, horizontal section rail, contextual More actions overflow, lazy Activity/Conversations/Tasks loading, and mobile one-pane profile hiding.
+- `scripts/smoke-onetime-operations-crm-workbench-local.mjs` and `tests/shared-crm-workbench-contract.test.js` - pinned mobile state markers, lazy subview requests, action overflow, class/access header visibility, and profile responsive state.
+- `ops/action-registry.json`, `ops/action-registry/one-time-action-coverage.md`, and `ops/action-registry/universal-action-parity.md` - registered `ACTION-CRM-ACTION-OVERFLOW` and refreshed action coverage/parity.
+- Local proof: `npm run operations:check-generated`, focused shared CRM/action-registry tests, `npm run watchdog:actions`, `npm run watchdog:protocol-drift`, `npm run secrets:audit`, `npm run bna:run:validate`, and `npm run one-time:smoke:operations-crm-workbench-local` passed.
+- Local visual proof: `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` covers split shell and monolith at 1440, 1024, 768, 430, and 390 with no horizontal overflow, no console/page/request failures, no writes, mobile Back restoration, and lazy conversations/tasks requests.
+- Commit `e971aa1e69eae63be8682b699b78d4b7733fefb8` pushed to `origin/master`.
+- One Time Railway deployment `9baac6d8-a249-49f7-a228-a77efcf87d5f` reached `SUCCESS`; live deploy-info returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- BNA Railway deployment `1e95c912-8985-42a2-b4d7-294f26dd0939` reached `SUCCESS`; live deploy-info returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- One Time exact-SHA separate-instance smoke passed against `https://join.onetimeonetime.com`.
+- One Time Operations CRM live smoke passed: `ops/live-smokes/2026-07-13T07-45-19-025Z-one-time-operations-crm-workbench-live-smoke.md`.
+- One Time provider route-module live smoke passed: `ops/live-smokes/2026-07-13T07-45-30-679Z-onetime-provider-route-module-live-smoke.md`.
+- BNA exact-SHA deploy-info readback passed with `target_app=bna`.
+- Operations workspace taxonomy live smoke passed: `ops/live-smokes/2026-07-13T07-48-07-488Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, or production data mutation was performed by this mobile CRM IA closeout.
+
+## CRM Legacy Contact-Note DTO Fallback - 2026-07-13
+
+- `server.js` - selected canonical `bna_contacts` timelines/conversations now include same-project `bna_contact_communications` rows matched by explicit canonical contact metadata, legacy lead canonical keys, `parent_lead_id`, or same-project lead email.
+- `server.js` - legacy contact-note DTO source context is redacted to provenance/guardrail fields and does not merge arbitrary `cc.metadata` into the browser payload.
+- `tests/shared-crm-workbench-contract.test.js` - pins the server-side legacy contact-note DTO path and keeps browser-side independent dataset unions out of the selected-contact workspace loader.
+- `tests/crm-contact-service.test.js` - pins that contact-note DTO rows can appear in selected-contact conversations while preserving `no_send=true` and `external_write_performed=false`.
+- `scripts/smoke-onetime-crm-contact-notes-dto-live.mjs` / `package.json` - adds a registered, redacted, read-only production smoke for canonical selected-contact contact-note DTO behavior.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=e0dd3d48543740efb32b35f64ad27cf0cc6e676b` and `target_app=bna`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=e0dd3d48543740efb32b35f64ad27cf0cc6e676b` and `target_app=one-time`.
+- BNA Railway deployment `b35f96f7-f610-410a-b206-86b6900c07f0` reached `SUCCESS`.
+- One Time Railway deployment `99ea47d8-a5a1-4403-b435-a732b7df21d1` reached `SUCCESS`.
+- One Time separate-instance exact-SHA smoke and One Time provider route-module smoke passed; route-module report: `ops/live-smokes/2026-07-13T08-59-55-777Z-onetime-provider-route-module-live-smoke.md`.
+- One Time CRM workbench live smoke passed: `ops/live-smokes/2026-07-13T09-00-20-966Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Email-thread DTO live smoke passed: `ops/live-smokes/2026-07-13T09-00-20-963Z-one-time-crm-email-thread-dto-live-smoke.md`.
+- Operations workspace taxonomy live smoke passed: `ops/live-smokes/2026-07-13T09-00-42-212Z-operations-workspace-taxonomy-live-smoke.md`.
+- Targeted legacy contact-note DTO live probe: `ops/live-smokes/2026-07-13T09-00-20-964Z-one-time-crm-contact-notes-dto-live-smoke.md`; production returned 7 canonical contacts but no positive canonical contact-note sample, so it recorded `skipped_no_live_contact_notes` and created no synthetic data.
+- One Time exact-SHA performance gate passed: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw note/message logging, or production data mutation.
+
+## CRM Delivery Outbox Activity DTO - 2026-07-13
+
+- `server.js` - selected-contact Activity timelines now include read-only `assistant_delivery_outbox` status rows for One Time outbox records joined through the existing delivery-outbox lead join expression and channel allowlist.
+- `src/lib/bna/crm/contact-service.js` - `delivery_outbox` aggregate rows are excluded from selected-contact Conversations and Tasks.
+- `scripts/smoke-onetime-crm-delivery-outbox-dto-live.mjs` / `package.json` - added a redacted read-only production smoke for selected-contact delivery outbox DTO behavior.
+- `tests/crm-contact-service.test.js`, `tests/shared-crm-workbench-contract.test.js`, `tests/service-provider-scope-routes.test.js`, and `tests/rabbi-scheller-tenant-isolation-contract.test.js` - pin timeline inclusion, conversation/task exclusion, redacted source context, and workspace/project scoping.
+- App-code commit: `fc36995bf85e31b988e1d7e1d756bf4e51e00ca4`.
+- Deployed head: `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
+- BNA Railway deployment `b49f07c2-86e5-44d3-8092-e4ed1bdaed2e` reached `SUCCESS`; BNA deploy-info returned `commit_sha=ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
+- One Time Railway deployment `2645a6c7-3b51-4ae6-915f-5a267dacde22` reached `SUCCESS`; One Time deploy-info returned `commit_sha=ee9391d2bd4a1ff3ef41fc99296089254373a4d6` and `target_app=one-time`.
+- Live One Time CRM workbench smoke passed: `ops/live-smokes/2026-07-13T09-33-33-379Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Live One Time provider route-module smoke passed: `ops/live-smokes/2026-07-13T09-33-33-717Z-onetime-provider-route-module-live-smoke.md`.
+- Live targeted delivery-outbox DTO smoke passed with `skipped_no_live_delivery_outbox`: `ops/live-smokes/2026-07-13T09-32-18-053Z-one-time-crm-delivery-outbox-dto-live-smoke.md`. It found 7 canonical contacts, no live outbox rows, and created no synthetic data.
+- BNA workspace taxonomy regression smoke passed: `ops/live-smokes/2026-07-13T09-28-14-579Z-operations-workspace-taxonomy-live-smoke.md`.
+- One Time performance gate passed at the deployed SHA: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw recipient/body logging, or production data mutation.
+
+## CRM Delivery Dead-Letter Activity DTO - 2026-07-13
+
+- `server.js` - selected-contact Activity timelines now include redacted `assistant_dead_letters` rows for One Time delivery failures joined through the existing `assistant_delivery_outbox` lead mapping for canonical `bna_contacts` and legacy `bna_parent_leads`.
+- `server.js` / `src/lib/bna/crm/contact-service.js` - selected-contact Conversations and Tasks exclude `delivery_outbox` and `delivery_dead_letter` operational rows.
+- `public/operations.html` - Activity labels now render delivery operational rows as `Delivery status` and `Delivery needs review`.
+- `scripts/smoke-onetime-crm-dead-letter-dto-live.mjs` / `package.json` - added a redacted read-only production smoke for selected-contact dead-letter DTO behavior.
+- Tests pin timeline inclusion, conversation/task exclusion, redacted source context, and workspace/project scoping in `tests/crm-contact-service.test.js`, `tests/shared-crm-workbench-contract.test.js`, and `tests/service-provider-scope-routes.test.js`.
+- Commit `01d5a054ad99ba0a41196b18fc5b8098972e1d5a` implemented and pushed the slice.
+- BNA Railway deployment `86b1d98c-d4d3-4c52-8f0f-784ebee3deef` reached `SUCCESS`; One Time Railway deployment `7c81033a-ffc4-46e2-b2f5-f8ff0da1cf91` reached `SUCCESS`.
+- BNA live `/api/deploy-info` returned `commit_sha=01d5a054ad99ba0a41196b18fc5b8098972e1d5a`, `target_app=bna`.
+- One Time live `/api/deploy-info` returned `commit_sha=01d5a054ad99ba0a41196b18fc5b8098972e1d5a`, `target_app=one-time`.
+- Live One Time CRM workbench smoke passed: `ops/live-smokes/2026-07-13T09-51-50-245Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Live One Time provider route-module smoke passed: `ops/live-smokes/2026-07-13T09-51-50-534Z-onetime-provider-route-module-live-smoke.md`.
+- Live targeted delivery dead-letter DTO smoke passed with `skipped_no_live_dead_letters`: `ops/live-smokes/2026-07-13T09-51-50-226Z-one-time-crm-dead-letter-dto-live-smoke.md`. It found 7 canonical contacts, no live dead-letter rows, and created no synthetic data.
+- Delivery-outbox DTO regression smoke passed with `skipped_no_live_delivery_outbox`: `ops/live-smokes/2026-07-13T09-52-15-195Z-one-time-crm-delivery-outbox-dto-live-smoke.md`.
+- BNA workspace taxonomy regression smoke passed: `ops/live-smokes/2026-07-13T09-52-15-192Z-operations-workspace-taxonomy-live-smoke.md`.
+- One Time performance gate passed at the deployed SHA: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw recipient/body/reason/payload logging, or production data mutation.
+
+## CRM Direct Signup Record Activity DTO - 2026-07-13
+
+- `server.js` - selected-contact Activity timelines now include direct `signups` rows as redacted `signup_record` DTOs when scoped One Time signup rows exist for canonical contacts or legacy One Time lead references.
+- `src/lib/bna/crm/contact-service.js` / `server.js` - selected-contact Conversations and Tasks exclude `signup_record` aggregate rows.
+- `scripts/smoke-onetime-crm-signup-record-dto-live.mjs` / `package.json` - added a redacted read-only production smoke for selected-contact signup-record DTO behavior.
+- Tests pin timeline inclusion, conversation exclusion, redacted source context, and workspace/project scoping in `tests/crm-contact-service.test.js`, `tests/shared-crm-workbench-contract.test.js`, and `tests/service-provider-scope-routes.test.js`.
+- Runtime app-code commit `dab78d4e0b05b6e59affe08864e7207d2235652f` implemented the signup-record DTO slice.
+- Final One Time deployed/proof commit `1318c67da0d79e7a158aa0b13d3085906ffcdf15` added the live smoke harness and is pushed to `origin/master`; current BNA proof-refresh readback is `d12e31694f2a0475936c945f1d7ec0d0c2c35664`.
+- BNA Railway doctor reports current deployment `896c0a2f-ed48-4d44-ae6d-b415c669bd8d` reached `SUCCESS`; One Time Railway deployment `af6b2ea0-721e-42de-b487-fe9ef7ea27c8` reached `SUCCESS`.
+- BNA live `/api/deploy-info` currently returned `commit_sha=d12e31694f2a0475936c945f1d7ec0d0c2c35664`; target metadata is blank in the runtime payload.
+- One Time live `/api/deploy-info` returned `commit_sha=1318c67da0d79e7a158aa0b13d3085906ffcdf15`, `target_app=one-time`.
+- Live One Time CRM workbench smoke passed: `ops/live-smokes/2026-07-13T10-52-38-292Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Live One Time provider route-module smoke passed: `ops/live-smokes/2026-07-13T10-52-38-477Z-onetime-provider-route-module-live-smoke.md`.
+- Live targeted signup-record DTO smoke passed with `skipped_no_live_signup_records`: `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-signup-record-dto-live-smoke.md`. It inspected 12 scoped cards, found no live direct signup rows in the sampled timelines, and created no synthetic data.
+- WhatsApp DTO regression smoke passed with `selected_contact_whatsapp_thread_match=true`: `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-whatsapp-thread-dto-live-smoke.md`.
+- Signup-context DTO regression smoke passed with `signup_context_match=true`: `ops/live-smokes/2026-07-13T10-53-15-856Z-one-time-crm-signup-context-dto-live-smoke.md`.
+- Operations workspace taxonomy smoke passed: original report `ops/live-smokes/2026-07-13T10-52-56-884Z-operations-workspace-taxonomy-live-smoke.md`; current BNA proof-refresh head recheck report `ops/live-smokes/2026-07-13T11-00-32-825Z-operations-workspace-taxonomy-live-smoke.md`.
+- One Time performance gate passed at the deployed SHA: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw signup private data logging, or production data mutation.
+
+## CRM Website Assistant Thread Activity DTO - 2026-07-13
+
+- `server.js` - selected-contact Activity timelines now include scoped public `bna_assistant_threads` rows as redacted `assistant_thread` DTOs for canonical `bna_contacts` and legacy `bna_parent_leads`.
+- `server.js` / `src/lib/bna/crm/contact-service.js` - selected-contact Conversations and Tasks exclude `assistant_thread` operational rows.
+- `public/operations.html` / `public/js/operations-shell.js` - Activity labels render assistant-thread rows as `Website assistant`.
+- `scripts/smoke-onetime-crm-assistant-thread-dto-live.mjs` / `package.json` - added a redacted read-only production smoke for selected-contact assistant-thread DTO behavior.
+- Tests pin timeline inclusion, conversation exclusion, redacted source context, and workspace/project scoping in `tests/crm-contact-service.test.js`, `tests/shared-crm-workbench-contract.test.js`, and `tests/service-provider-scope-routes.test.js`.
+- Commit `8ea2cd06e1920eecfd1ae97b937c22d701c00099` implemented, pushed, deployed, and proved the slice.
+- BNA Railway deployment `55f38854-f00a-4432-bfdf-0dfcf6c400fc` reached `SUCCESS`; One Time Railway deployment `c2b6b88a-036a-4a33-93d9-3bd2f9de7719` reached `SUCCESS`.
+- BNA live `/api/deploy-info` returned `commit_sha=8ea2cd06e1920eecfd1ae97b937c22d701c00099`, `target_app=bna`.
+- One Time live `/api/deploy-info` returned `commit_sha=8ea2cd06e1920eecfd1ae97b937c22d701c00099`, `target_app=one-time`.
+- Live One Time CRM workbench smoke passed: `ops/live-smokes/2026-07-13T11-11-46-046Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Live One Time provider route-module smoke passed: `ops/live-smokes/2026-07-13T11-11-46-347Z-onetime-provider-route-module-live-smoke.md`.
+- Live targeted assistant-thread DTO smoke passed with `assistant_thread_match=true`: `ops/live-smokes/2026-07-13T11-11-46-025Z-one-time-crm-assistant-thread-dto-live-smoke.md`. It inspected one live scoped assistant-thread candidate, returned one Activity row, returned zero selected-contact Conversation rows for `assistant_thread`, and created no synthetic data.
+- Signup-record DTO regression smoke passed with `skipped_no_live_signup_records`: `ops/live-smokes/2026-07-13T11-12-08-074Z-one-time-crm-signup-record-dto-live-smoke.md`.
+- WhatsApp DTO regression smoke passed with `selected_contact_whatsapp_thread_match=true`: `ops/live-smokes/2026-07-13T11-12-07-959Z-one-time-crm-whatsapp-thread-dto-live-smoke.md`.
+- Signup-context DTO regression smoke passed with `signup_context_match=true`: `ops/live-smokes/2026-07-13T11-12-08-074Z-one-time-crm-signup-context-dto-live-smoke.md`.
+- Operations workspace taxonomy smoke passed: `ops/live-smokes/2026-07-13T11-12-08-098Z-operations-workspace-taxonomy-live-smoke.md`.
+- One Time performance gate passed at the deployed SHA: `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw assistant body/contact logging, or production data mutation.
+
+## Shared CRM Current-Phase Closeout - 2026-07-13
+
+- `requirements.json` marks `REQ-20260712-302` Done for the current One Time-first acceptance scope.
+- `tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json` validates the bounded shared CRM slice.
+- `ops/product-quality-compiler/validation/latest-product-quality-validation.md` records the latest PQC validation readback.
+- `ops/watchdog-audits/2026-07-13-product-quality-drift.md` records protocol drift finding_count 0 after hardening `RAW-20260713-004` packet guardrails.
+- `raw-input/RAW-20260713-004-onetime-drive-classroom-video-automation.md`, `tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md`, and `ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/` register the next One Time Drive/Classroom automation lane separately from `REQ-20260712-302`.
+- Current shared CRM runtime proof remains deployed at `8ea2cd06e1920eecfd1ae97b937c22d701c00099` with BNA and One Time Railway deployments successful and live smokes recorded in the assistant-thread DTO section above.
+
+## Canonical CRM Contact Aggregate Service - 2026-07-13
+
+- `REQ-20260712-306` acceptance criterion is satisfied: one server contact service returns list, selected aggregate/timeline, conversations, and tasks DTOs by stable `contact_key` without browser-side union of independent datasets.
+- `src/lib/bna/crm/contact-service.js` owns the DTO envelopes and selected-contact row normalization.
+- `server.js` wires `operationsCrmContactService = createContactService(...)` with `listContactRows`, `timelineRows`, `conversationRows`, `taskRows`, and `parseContactRef`; protected routes derive workspace/project scope server-side before querying.
+- `tests/shared-crm-workbench-contract.test.js` pins the server-owned selected-contact routes and asserts `loadFirstPartyCrmSubviewData` does not use browser union helpers or raw `bna_communications`/`bna_contact_communications` merging.
+- `tests/crm-contact-service.test.js` covers the canonical list DTO, timeline DTO, separate conversations and tasks DTO envelopes, support-ticket/task classification, and Activity-only exclusions for signup, assistant, lifecycle, class attendance, suppression, delivery, and membership rows.
+- Deployed proof at `8ea2cd06e1920eecfd1ae97b937c22d701c00099` includes One Time CRM workbench readback, targeted assistant-thread, WhatsApp, signup-context, and signup-record DTO smokes, BNA taxonomy smoke, and One Time performance regression gate.
+
+## Dedicated CRM Actions - 2026-07-13
+
+- `REQ-20260712-303` is closed by deployed action-slice evidence already recorded in this run: Add Contact `de48d8ae`, Archive Contact `3293d352`, Complete/Reopen linked tasks `ec1e8938`, Link member `8ea9b798`, Link family/student `003e3e7f`, Follow-up set/change/clear `eee9a431`, Note/Tag/Owner/Lifecycle `15796035`, and task DTO state actions `09d239dd`.
+- `public/operations.html`, `public/js/operations-shell.js`, `ops/action-registry.json`, and `tests/shared-crm-workbench-contract.test.js` contain the full first-party CRM action matrix.
+- Production read-only marker proof on `https://join.onetimeonetime.com/operations.html` at One Time deploy-info SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099` found all 18 expected action IDs and reported `missing: []`.
+- Local workbench proof remains `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- Latest action watchdog proof: `npm run watchdog:actions` returned finding_count `0` during closeout.
+
+## CRM Internal-Copy Cleanup - 2026-07-13
+
+- `REQ-20260712-304` is closed by runtime commit `a8df4c9b9cc091028105a16430aae6927cd0b429`.
+- Runtime files changed: `public/operations.html`, `public/js/operations-shell.js`, `scripts/smoke-onetime-operations-crm-workbench-local.mjs`, `scripts/smoke-onetime-operations-crm-workbench-live.mjs`, `tests/shared-crm-workbench-contract.test.js`, `tests/one-time-communications-workspace.test.js`, and `tests/operations-contacts-intake-cleanup.test.js`.
+- Customer-facing copy replaced internal no-send/external-write wording for Add Contact, CRM update, selected-contact empty state, timeline, task state changes, create/complete/reopen task notices, scoped email/WhatsApp thread-open notices, member/family/student link panels, archive confirmation, legacy source-review labels, and email-contact tags.
+- Safety metadata remains asserted in source-context payloads and tests: `no_send=true`, `external_write_performed=false`, paused/member/student access states, and registered CRM action IDs.
+- Local evidence: `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- One Time deployment evidence: deployment `6059d148-7708-43ae-9665-abdaa544a5d6`, deploy-info exact SHA `a8df4c9b9cc091028105a16430aae6927cd0b429`, live CRM smoke `ops/live-smokes/2026-07-13T12-00-42-976Z-one-time-operations-crm-workbench-live-smoke.md`.
+- BNA shared-runtime safety evidence: deployment `16f00bed-0cb2-49df-b725-8ea8ee672415`, deploy-info exact SHA `a8df4c9b9cc091028105a16430aae6927cd0b429`, taxonomy smoke `ops/live-smokes/2026-07-13T12-01-50-016Z-operations-workspace-taxonomy-live-smoke.md`.
+- Validation evidence: focused CRM/contact suite `47/47`, `npm run operations:check-generated`, `npm run watchdog:actions`, `npm run bna:run:validate`, `git diff --check`, and `npm run secrets:audit` passed.
+
+## Canonical Inbound Communication Pipeline Runtime Slice - 2026-07-13
+
+- `REQ-20260712-307` is In progress, not terminal Done. The deployed slice creates the shared service and connects the currently live Resend and WAPI inbound paths; website assistant input, private Rabbi Telegram input, communication-agent loading, and delivery-outbox execution still need to use the same service.
+- Runtime app-code commit `a692c6e002a09557b81c350c5c0187222d87b7de` added `src/lib/bna/crm/ingest-inbound-communication.js`.
+- The service resolves explicit workspace/project binding, normalizes sender identity, resolves or creates a workspace-scoped `bna_contacts` row, upserts workspace-scoped contact identities, persists an inbound `bna_communications` row idempotently, marks unread/timeline metadata, returns a redacted receipt, and does not create ordinary CRM tasks.
+- `src/lib/integrations/resend-inbound-crm.js` now calls the canonical service after provider authentication/normalization instead of independently creating a sender contact and communication row.
+- `server.js` now mirrors valid One Time WAPI inbound messages and history-imported messages into the canonical service while preserving the legacy `bna_contact_communications` path needed by existing bot/ticket flows during migration.
+- Current production head `f8df93a4ca86ecd607d5c3b63d113f77be4327c2` contains commit `a692c6e0` and is deployed to both apps.
+- One Time Railway doctor passed for deployment `641ad29c-d8d6-4053-b4d3-c7412fa6b7d7`; live `/api/deploy-info` returned `commit_sha=f8df93a4ca86ecd607d5c3b63d113f77be4327c2`, `target_app=one-time`.
+- BNA Railway doctor passed for deployment `68858c05-474e-4419-91c7-d934e7796305`; live `/api/deploy-info` returned `commit_sha=f8df93a4ca86ecd607d5c3b63d113f77be4327c2`.
+- One Time current-head CRM workbench smoke passed: `ops/live-smokes/2026-07-13T12-25-01-672Z-one-time-operations-crm-workbench-live-smoke.md`.
+- BNA current-head workspace taxonomy smoke passed: `ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md`.
+- Local verification before the runtime commit passed: syntax checks for the new service, Resend adapter, and `server.js`; focused inbound/shared CRM suite `49/49`; generated Operations shell check; run validator; diff check; and secrets audit. Current focused pipeline verification also passed `tests/inbound-communication-pipeline.test.js` `4/4`, the inbound/Resend service suite `11/11`, and the broader inbound/communication contract suite `26/26`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send, public auto-reply enablement, provider credential mutation, payment/access mutation, raw contact/message logging, or destructive production mutation was performed by this slice proof.
+
+## Canonical Inbound Website Assistant And Rabbi Telegram Slice - 2026-07-13
+
+- `REQ-20260712-307` remains In progress, not terminal Done. Website
+  assistant input and private Rabbi Telegram support-ticket input are now
+  covered by the canonical inbound path; communication-agent
+  version/knowledge loading and delivery-outbox execution remain open.
+- Runtime commit `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8` adds
+  `mirrorRabbiTelegramSupportTicketToInboundCommunication` in `server.js`.
+- The mirror runs only for the existing Rabbi Telegram approval-ticket context:
+  `workspace_key=rabbi_sheller_provider`,
+  `project_key=one_time_mishnah_class`, `bridge_profile=rabbi-elie-scheller`,
+  and `relationship_scope=one_time_external_admin_project_ticket`.
+- Mirrored Rabbi Telegram support tickets create canonical inbound
+  `bna_communications` rows with
+  `communication_type=rabbi_telegram_support_ticket`, `channel=telegram`,
+  `provider=telegram`, `ticket_id`, hashed Telegram chat and message
+  identifiers, no contact identity creation, no task creation, no outbox send,
+  no external write, and a redacted receipt on support-ticket
+  `source_context.canonical_inbound_communication`.
+- Existing website assistant user-message mirroring through
+  `mirrorAssistantUserMessageToInboundCommunication` remains covered by
+  `tests/inbound-communication-pipeline.test.js`.
+- One Time Railway deployment `ca335eed-37f9-4c47-acf3-cb310d1c80da` reached
+  `SUCCESS`; One Time `/api/deploy-info` returned exact SHA
+  `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`, `target_app=one-time`.
+- BNA Railway deployment `cb2ee7e7-abee-4cbf-95ec-a12711a25442` reached
+  `SUCCESS`; BNA `/api/deploy-info` returned exact SHA
+  `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`, `target_app=bna`.
+- Live smoke evidence: One Time CRM workbench
+  `ops/live-smokes/2026-07-13T12-45-53-175Z-one-time-operations-crm-workbench-live-smoke.md`,
+  One Time provider route-module
+  `ops/live-smokes/2026-07-13T12-46-12-200Z-onetime-provider-route-module-live-smoke.md`,
+  and BNA workspace taxonomy
+  `ops/live-smokes/2026-07-13T12-46-11-923Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send,
+  public auto-reply enablement, payment/access mutation, provider credential
+  mutation, raw Telegram chat/message value logging, raw contact/message
+  logging, or destructive production mutation was performed by this slice proof.
+
+## Communication-Agent Metadata And Delivery-Outbox Convergence - Local Proof
+
+- `src/lib/bna/crm/communication-agent-runtime.js` loads the existing published
+  One Time provider lead-bot profile as the assigned communication agent for
+  One Time email and WhatsApp channels.
+- `src/lib/bna/crm/ingest-inbound-communication.js` now stamps redacted agent
+  key, version, knowledge snapshot, binding key, reply mode, and no-secret /
+  no-raw-class-link flags on canonical inbound rows and receipts.
+- `src/lib/bna/one-time-delivery-outbox.js` adds
+  `whatsapp:one_time_agent_reply`; class-link replies store
+  `{{CURRENT_CLASS_LINK}}` and substitute the approved link only during final
+  provider delivery.
+- `server.js` queues live-ready public WhatsApp lead-agent replies into
+  `assistant_delivery_outbox` after the existing claim/dedupe step instead of
+  invoking WAPI directly from `maybeSendOneTimeWapiAutoReply`.
+- Local tests passed: focused agent/inbound/outbox suite `30/30`, adjacent
+  inbound/outbox suite `16/16`, runtime syntax checks, and run validation.
+- Deployment/live smoke pending for this slice. Owner-only live sends remain
+  blocked by `REQ-20260713-906` secure owner-test aliases.
+
+## Canonical Inbound Communication Pipeline Closeout
+
+- `REQ-20260712-307` is Done for the canonical inbound communication pipeline
+  scope.
+- Commit `40ffdc1aca34a02774275ba7b2902e46c709e9ce` pushed the
+  communication-agent metadata/outbox runtime slice. It is included in
+  deployed integrated production head
+  `43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- One Time deployment evidence: Railway deployment
+  `9cc413fb-da9b-42f4-a2b1-ce5b6744d2cb`, live deploy-info exact SHA
+  `43f7c33733880745d8f1191c86fe8e196ef68baa`, `target_app=one-time`.
+- BNA shared-runtime regression evidence: Railway deployment
+  `c4f33394-0881-425b-a2de-c862e44dd09e`, live deploy-info exact SHA
+  `43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- One Time live smoke evidence: separate-instance route smoke passed; CRM
+  workbench smoke `ops/live-smokes/2026-07-13T13-24-30-029Z-one-time-operations-crm-workbench-live-smoke.md`;
+  provider route-module smoke `ops/live-smokes/2026-07-13T13-24-38-990Z-onetime-provider-route-module-live-smoke.md`.
+- BNA live smoke evidence: workspace taxonomy smoke
+  `ops/live-smokes/2026-07-13T13-24-53-876Z-operations-workspace-taxonomy-live-smoke.md`.
+- Scope proof: Resend, WAPI/history, website assistant input, and private Rabbi
+  Telegram ticket intake call the canonical inbound path; One Time email and
+  WhatsApp stamp channel-assigned agent/version/knowledge metadata; WhatsApp
+  public lead-agent replies use the delivery outbox instead of direct webhook
+  WAPI sends.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram
+  send, public auto-reply enablement, provider mutation, credential mutation,
+  payment/access mutation, raw private payload logging, or destructive
+  production mutation was performed.
+
+## Communication-Agent Model Closeout
+
+- Requirement: `REQ-20260712-309`.
+- Runtime commits: `98e449a5777158a1125ddfbcbd7925dd489d8f18` and deployed
+  head `1e6a977818f1393fd3721d796d9c025e0ac95eb9`.
+- Model evidence: `server.js` creates dedicated communication-agent tables,
+  not `bna_agent_profiles`, with explicit version, prompt/instruction/policy,
+  knowledge, binding, health, and event fields.
+- Runtime metadata evidence: `src/lib/bna/crm/communication-agent-runtime.js`
+  stamps inbound One Time email/WhatsApp metadata with
+  `model_family=communication_agent`, `control_plane_table=bna_communication_agents`,
+  `build_qa_agent_profile_table=null`, and
+  `provider_secret_storage=external_provider_connectors_only`.
+- Test evidence: clean-worktree syntax checks, focused suite `37/37`, secrets
+  audit over 9522 tracked paths, and `npm run bna:run:validate`.
+- Deployment evidence: One Time deployment
+  `7a02b4b9-c2cc-48ef-8376-e7755266836d` reached `SUCCESS`; One Time and BNA
+  deploy-info returned exact SHA `1e6a977818f1393fd3721d796d9c025e0ac95eb9`.
+- Live smoke evidence: `ops/live-smokes/2026-07-13T14-04-45-139Z-one-time-operations-crm-workbench-live-smoke.md`,
+  `ops/live-smokes/2026-07-13T14-04-45-800Z-onetime-provider-route-module-live-smoke.md`,
+  and `ops/live-smokes/2026-07-13T14-04-45-310Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no external send, no public auto-reply enablement, no credential/
+  payment/access mutation, no destructive CRM write, no provider mutation, and
+  no raw private payload logging.
+
+## One Time WAPI Zero-Task Contact Capture Closeout
+
+- `REQ-20260712-308` is Done for code/deployment proof.
+- Runtime commit `7ec31290c08ede0957dbd60b2c3253979253feba` prevents ordinary
+  One Time WAPI inbound messages from creating generic CRM tasks while
+  preserving scoped contact creation/reuse, phone/WhatsApp identities,
+  canonical communication/thread/unread metadata, and no-send notifications.
+- Support-ticket behavior is separate from ordinary tasks: provider-bot support
+  tickets dedupe by workspace/project/contact/thread/action class and store
+  only a hashed thread key.
+- One Time deployment evidence: Railway deployment
+  `75d521fa-6826-49f5-875a-5f6f03f3dc44`, live deploy-info exact SHA
+  `7ec31290c08ede0957dbd60b2c3253979253feba`, `target_app=one-time`.
+- BNA shared-runtime regression evidence: live deploy-info exact SHA
+  `7ec31290c08ede0957dbd60b2c3253979253feba`, `target_app=bna`; BNA taxonomy
+  smoke passed. Railway doctor access passed, but the active Railway deployment
+  status still reported `BUILDING` during closeout.
+- One Time live smoke evidence: separate-instance route smoke passed; CRM
+  workbench smoke `ops/live-smokes/2026-07-13T13-45-08-361Z-one-time-operations-crm-workbench-live-smoke.md`;
+  provider route-module smoke `ops/live-smokes/2026-07-13T13-44-50-006Z-onetime-provider-route-module-live-smoke.md`.
+- BNA live smoke evidence: workspace taxonomy smoke
+  `ops/live-smokes/2026-07-13T13-44-53-216Z-operations-workspace-taxonomy-live-smoke.md`.
+- Owner-only real WAPI send/inbound proof remains blocked by
+  `REQ-20260713-906` secure aliases.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram
+  send, public auto-reply enablement, provider mutation, credential mutation,
+  payment/access mutation, raw private payload logging, or destructive
+  production mutation was performed.
+
+## One Time Shared WhatsApp/Email Agent Closeout
+
+- Requirement: `REQ-20260712-310`.
+- Runtime commit / deployed head:
+  `6d659d76570d1089c768d9f404a6be985cb57863`.
+- Profile evidence: `config/service-provider-bots/one-time.json` no longer
+  scopes the agent to `channel=whatsapp`; it declares
+  `scope.channels=[whatsapp,email]`, the public
+  `one_time_parent_information_agent`, and two channel bindings.
+- Binding evidence: `one_time_wapi` uses channel `whatsapp`, provider `wapi`,
+  reply mode `capture_only`, outbox channel
+  `whatsapp:one_time_agent_reply`, contact/conversation capture on, and
+  automatic tasks off. `one_time_inbound_email` uses channel `email`, provider
+  `resend`, reply mode `draft`, no live outbox channel, contact/conversation
+  capture on, and automatic tasks off.
+- Knowledge evidence: both bindings use profile version `2026-07-13-v3` and
+  `knowledge_snapshot_ref=one-time-public-knowledge-2026-07-13-v3`; tests prove
+  the runtime returns the same `knowledge_snapshot_version`/hash for email and
+  WhatsApp while applying different channel formatting policies.
+- Schema/validation evidence: `config/service-provider-bots/schema.json` and
+  `src/lib/bna/provider-lead-bot.js` reject a WhatsApp-only scope, require
+  active email and WhatsApp bindings, require matching profile versions and
+  knowledge snapshot references, and require `create_task_on_inbound=false`.
+- Runtime evidence: `src/lib/bna/crm/communication-agent-runtime.js` resolves
+  channel bindings from the published profile and records
+  `channel_binding_source=profile_channel_bindings`, `channel_id`,
+  channel-specific formatting, and `shared_knowledge_snapshot=true`.
+- Test evidence: clean-release-worktree `node --test
+  tests/communication-agent-model.test.js tests/service-provider-lead-bot.test.js
+  tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js
+  tests/one-time-delivery-outbox.test.js tests/one-time-wapi-scope-contract.test.js
+  tests/one-time-owner-test-readiness.test.js` passed `41/41`; syntax checks
+  and `npm run secrets:audit` over 9530 tracked paths passed.
+- Deployment evidence: One Time Railway deployment
+  `4d41a9d8-f34b-4238-afd5-2fd594443ac7` reached `SUCCESS`; One Time
+  `/api/deploy-info` returned exact SHA
+  `6d659d76570d1089c768d9f404a6be985cb57863`, `target_app=one-time`.
+- Live smoke evidence: One Time separate-instance route smoke passed; provider
+  route-module smoke
+  `ops/live-smokes/2026-07-13T14-31-22-196Z-onetime-provider-route-module-live-smoke.md`.
+- BNA regression evidence: BNA `/api/deploy-info` returned exact SHA
+  `6d659d76570d1089c768d9f404a6be985cb57863`; workspace taxonomy smoke passed
+  with report
+  `ops/live-smokes/2026-07-13T14-31-48-215Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email, WhatsApp/WAPI provider send, Telegram send,
+  public auto-reply enablement, credential mutation, payment/access mutation,
+  raw private payload logging, or destructive production mutation was performed.
+
+## One Time Communication Agents Operations Console/API Closeout
+
+- Requirement: `REQ-20260712-312`.
+- Runtime commit / deployed head:
+  `dab8c6d8ce23e0a2cda4d619d302ed32c6bac415`.
+- Console evidence: One Time Operations now exposes a scoped
+  `view=agents` Communication Agents console with Knowledge, Channels, Test,
+  and Activity tabs for the One Time public communication agent. Super Admin
+  Build/QA agent runs remain separate from the One Time owner-facing console.
+- API evidence: `/api/bna/communication-agents` returns only scoped
+  `rabbi_sheller_provider` / `one_time_mishnah_class` readback data, including
+  `model_family=communication_agent`, control plane
+  `bna_communication_agents`, and WhatsApp WAPI plus Resend email channels.
+- Test-panel evidence: the live readback proved `no_send=true`,
+  `model_call_performed=false`, `send_performed=false`, and
+  `external_write_performed=false`.
+- Landing evidence: the same deployed head preserved the One Time landing page,
+  signup form, WhatsApp lead launcher, and black/white One Time favicon fallback.
+- Deployment evidence: One Time Railway deployment
+  `a1f5928b-7668-4e19-b337-938859ce3c71` reached `SUCCESS`; live
+  `/api/deploy-info` returned exact SHA
+  `dab8c6d8ce23e0a2cda4d619d302ed32c6bac415`, `target_app=one-time`.
+- Live smoke evidence: `ops/live-smokes/2026-07-13T16-05-25-906Z-rabbi-onetime-landing-smoke.md`,
+  `ops/live-smokes/2026-07-13T16-05-26-231Z-onetime-provider-route-module-live-smoke.md`,
+  and `ops/live-smokes/2026-07-13T16-06-41-853Z-one-time-communication-agents-live-smoke.md`.
+- Guardrails: no owner-test email, WhatsApp/WAPI provider send, Telegram send,
+  public auto-reply enablement, CRM production write, provider mutation,
+  credential mutation, payment/access mutation, raw private payload logging, or
+  destructive production mutation was performed.
+## One Time WAPI / Rabbi Telegram Safe Activation Gate
+
+- Requirement: `REQ-20260712-313`; owner-send dependency:
+  `REQ-20260713-906`.
+- Runtime safety evidence: `server.js` now makes
+  `oneTimeWapiAutoReplyReadiness(...).ready` depend on
+  `oneTimeProviderLeadBotTelegramApproved()`, and includes the explicit blocker
+  `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
+- Readiness redaction evidence:
+  `scripts/check-onetime-external-setup-readiness.mjs` and
+  `scripts/check-onetime-wapi-readiness.mjs` treat Railway-redacted secret keys
+  as present without returning raw secret values.
+- WAPI report: `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md` /
+  `.json` reports `provider_setup.ready=true`,
+  `credential_scope=one_time_scoped`, `auto_reply.ready=false`, and
+  `whatsapp_send_performed=false`.
+- Owner-test report:
+  `ops/watchdog-audits/2026-07-13T16-06-26-630Z-onetime-owner-test-readiness.md`
+  / `.json` reports Resend and WAPI preflight ready but secure owner-test
+  email/WhatsApp aliases missing; `external_send_performed=false`.
+- Rabbi Telegram report:
+  `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md` /
+  `.json` reports the scoped Rabbi profile ready via ignored runtime config,
+  with no token/chat ID printed and no Telegram send.
+- Direct proof report:
+  `ops/live-smokes/2026-07-13T16-08-00-665Z-rabbi-agent-review-direct-proof.md`.
+- Test evidence: focused WAPI/external setup/owner-readiness/provider-bot suite
+  passed 29/29; Rabbi Telegram notification suite passed 15/15.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram
+  send, public auto-reply enablement, CRM production write, payment/access
+  mutation, raw destination/chat/token logging, or destructive production
+  mutation was performed by this proof.
+
+## One Time WAPI Safe Activation Gate Deploy Evidence
+
+- Requirement: `REQ-20260712-313`; deployed One Time SHA:
+  `80b75432672d282855b350a2f7c5adc160e63623`.
+- Railway evidence: deployment
+  `74f45880-7a11-4b06-9632-d858843cb4fb` reached `SUCCESS` on
+  `one-time-production / production / one-time-web`.
+- Live deploy-info evidence: `https://join.onetimeonetime.com/api/deploy-info`
+  returned exact SHA `80b75432672d282855b350a2f7c5adc160e63623` and
+  `target_app=one-time`.
+- Live smoke evidence: One Time separate-instance route matrix passed; provider
+  route-module smoke
+  `ops/live-smokes/2026-07-13T16-18-12-320Z-onetime-provider-route-module-live-smoke.md`;
+  landing/signup/WhatsApp launcher smoke
+  `ops/live-smokes/2026-07-13T16-18-59-085Z-rabbi-onetime-landing-smoke.md`.
+- Post-deploy WAPI readiness evidence:
+  `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md` /
+  `.json` reports `provider_setup.ready=true`,
+  `credential_scope=one_time_scoped`, `auto_reply.ready=false`, and
+  `whatsapp_send_performed=false`.
+- Post-deploy owner-test readiness evidence:
+  `ops/watchdog-audits/2026-07-13T16-18-40-701Z-onetime-owner-test-readiness.md`
+  / `.json` reports Resend/WAPI preflight ready, missing owner aliases, and no
+  send.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram
+  send, public auto-reply enablement, CRM production write, payment/access
+  mutation, raw destination/chat/token logging, or destructive production
+  mutation was performed by this deployed proof.
+
+## Final Release Matrix Evidence
+
+- Requirement: `REQ-20260712-314`.
+- Current final report:
+  `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/FINAL-REPORT.md`.
+- Current One Time live SHA:
+  `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`.
+- Current One Time Railway deployment:
+  `fe180cfc-322c-46cc-acde-4e1314e42291`.
+- Runtime activation-gate deployment:
+  `80b75432672d282855b350a2f7c5adc160e63623` /
+  `74f45880-7a11-4b06-9632-d858843cb4fb`.
+- Performance evidence:
+  `ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md`
+  and
+  `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- CRM/mobile evidence:
+  `ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md`
+  and `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/`.
+- Integration readiness evidence:
+  `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`,
+  `ops/watchdog-audits/2026-07-13T16-18-40-701Z-onetime-owner-test-readiness.md`,
+  and `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md`.
+- Live smoke evidence:
+  `ops/live-smokes/2026-07-13T16-18-12-320Z-onetime-provider-route-module-live-smoke.md`
+  and `ops/live-smokes/2026-07-13T16-18-59-085Z-rabbi-onetime-landing-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram
+  send, public auto-reply enablement, CRM production write, payment/access
+  mutation, raw destination/chat/token logging, or destructive production
+  mutation was performed by this final-report proof.
+
+## Safe One Time Activation Proof - Partial Closeout
+
+- Requirement: `REQ-20260712-313`.
+- Runtime/deployed head used for live readbacks:
+  `4c38c4674c2877a701f99de788c9e086a74d0de6`.
+- Readiness evidence: `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`
+  now reports outbound configured, credential scope `one_time_scoped`,
+  provider setup ready, auto-reply fail-closed behind
+  `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM`, class link configured, webhook
+  secret present, and no send/write/mutation performed.
+- Owner-test readiness evidence:
+  `ops/watchdog-audits/2026-07-13T16-18-40-701Z-onetime-owner-test-readiness.md`
+  reports Resend send allowed and WAPI setup ready, while owner email/WhatsApp
+  test aliases remain missing.
+- Safe integration evidence:
+  `ops/one-time-mishnah/integration-smokes/2026-07-13T16-15-59-598Z-resend-vimeo-stripe-safe-smoke.md`
+  passed with no Resend send, Vimeo upload/write, Stripe checkout creation, or
+  charge.
+- Live read-only CRM evidence:
+  `ops/live-smokes/2026-07-13T16-18-40-554Z-one-time-crm-whatsapp-thread-dto-live-smoke.md`,
+  `ops/live-smokes/2026-07-13T16-18-40-557Z-one-time-crm-email-thread-dto-live-smoke.md`,
+  and `ops/live-smokes/2026-07-13T16-18-39-947Z-one-time-crm-delivery-outbox-dto-live-smoke.md`.
+- Code/test evidence: `scripts/check-onetime-wapi-readiness.mjs` now counts
+  redacted One Time Railway token presence as production readiness evidence
+  without printing or using the token; `tests/one-time-wapi-scope-contract.test.js`
+  covers that exact Railway-readback case.
+- Blocker owner: Shloimie / One Time owner secret approver.
+- Remaining blocker: full Telegram notification activation requires
+  `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
+  Owner-only sends remain separately blocked by `REQ-20260713-906` secure
+  owner-test aliases.
+- Guardrails: no email send, WhatsApp/WAPI send, Telegram send, public
+  auto-reply mutation, CRM production write, provider mutation, credential
+  mutation, payment/access mutation, raw private payload logging, or destructive
+  production mutation was performed.

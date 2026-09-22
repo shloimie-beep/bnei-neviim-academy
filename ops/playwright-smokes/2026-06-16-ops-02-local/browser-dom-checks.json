@@ -1,0 +1,144 @@
+[
+  {
+    "name": "desktop-tasks-pending",
+    "url": "http://127.0.0.1:18123/operations?view=tasks&section=pending",
+    "viewport": {
+      "width": 1440,
+      "height": 950
+    },
+    "summary": {
+      "h2": [
+        "Decisions, Pending, Tasks",
+        "Task Details",
+        "Report a Problem"
+      ],
+      "hasBnaEnrollment": false,
+      "hasCalendar": true,
+      "hasDecisionActions": false,
+      "hasDoneProof": false,
+      "hasPendingActions": false,
+      "hasProviderLeads": false,
+      "hasRabbiSchedule": false,
+      "hasServiceProviders": false,
+      "hasWorkspaceDirectory": false,
+      "horizontalOverflow": false
+    }
+  },
+  {
+    "name": "desktop-tasks-decisions",
+    "url": "http://127.0.0.1:18123/operations?view=tasks&section=decisions",
+    "viewport": {
+      "width": 1440,
+      "height": 950
+    },
+    "summary": {
+      "h2": [
+        "Decisions, Pending, Tasks",
+        "Task Details",
+        "Report a Problem"
+      ],
+      "hasBnaEnrollment": false,
+      "hasCalendar": true,
+      "hasDecisionActions": false,
+      "hasDoneProof": false,
+      "hasPendingActions": false,
+      "hasProviderLeads": false,
+      "hasRabbiSchedule": false,
+      "hasServiceProviders": false,
+      "hasWorkspaceDirectory": false,
+      "horizontalOverflow": false
+    }
+  },
+  {
+    "name": "desktop-tasks-done-proof",
+    "url": "http://127.0.0.1:18123/operations?view=tasks&section=done",
+    "viewport": {
+      "width": 1440,
+      "height": 950
+    },
+    "summary": {
+      "h2": [],
+      "hasBnaEnrollment": false,
+      "hasCalendar": false,
+      "hasDecisionActions": false,
+      "hasDoneProof": false,
+      "hasPendingActions": false,
+      "hasProviderLeads": false,
+      "hasRabbiSchedule": false,
+      "hasServiceProviders": false,
+      "hasWorkspaceDirectory": false,
+      "horizontalOverflow": false
+    }
+  },
+  {
+    "name": "desktop-service-providers-leads",
+    "url": "http://127.0.0.1:18123/operations?view=service_providers&section=leads",
+    "viewport": {
+      "width": 1440,
+      "height": 950
+    },
+    "summary": {
+      "h2": [
+        "Service Providers",
+        "Task Details",
+        "Report a Problem"
+      ],
+      "hasBnaEnrollment": false,
+      "hasCalendar": false,
+      "hasDecisionActions": false,
+      "hasDoneProof": false,
+      "hasPendingActions": false,
+      "hasProviderLeads": true,
+      "hasRabbiSchedule": false,
+      "hasServiceProviders": true,
+      "hasWorkspaceDirectory": false,
+      "horizontalOverflow": false
+    }
+  },
+  {
+    "name": "desktop-provider-calendar",
+    "url": "http://127.0.0.1:18123/operations?workspace=rabbi_sheller_provider&view=calendar&section=provider",
+    "viewport": {
+      "width": 1440,
+      "height": 950
+    },
+    "summary": {
+      "h2": [],
+      "hasBnaEnrollment": false,
+      "hasCalendar": false,
+      "hasDecisionActions": false,
+      "hasDoneProof": false,
+      "hasPendingActions": false,
+      "hasProviderLeads": false,
+      "hasRabbiSchedule": false,
+      "hasServiceProviders": false,
+      "hasWorkspaceDirectory": false,
+      "horizontalOverflow": false
+    }
+  },
+  {
+    "name": "mobile-provider-calendar",
+    "url": "http://127.0.0.1:18123/operations?workspace=rabbi_sheller_provider&view=calendar&section=provider",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "summary": {
+      "h2": [
+        "Calendar",
+        "Task Details",
+        "Report a Problem"
+      ],
+      "hasBnaEnrollment": false,
+      "hasCalendar": true,
+      "hasDecisionActions": false,
+      "hasDoneProof": false,
+      "hasPendingActions": false,
+      "hasProviderLeads": false,
+      "hasRabbiSchedule": true,
+      "hasServiceProviders": false,
+      "hasWorkspaceDirectory": false,
+      "horizontalOverflow": false
+    }
+  }
+]

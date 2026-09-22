@@ -1,0 +1,90 @@
+{
+  "started_at": "2026-06-26T11:12:12.747Z",
+  "app_url": "https://bneineviimacademy.org",
+  "deployment_id": "112ef3b5-0ce7-45e3-9c55-368f783ccd1d",
+  "commit": "5bea5891853d7e22eff2ce8f72aeac33a151ec1f",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 587,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "operations login session",
+      "ok": true,
+      "duration_ms": 1889,
+      "details": {
+        "auth_source": "railway",
+        "role": "super_admin"
+      }
+    },
+    {
+      "name": "account scope summary returns Rabbi service-provider Plus scope",
+      "ok": true,
+      "duration_ms": 234,
+      "details": {
+        "tenant_type": "service_provider",
+        "entitlements": 32,
+        "codex_cli_disabled": true
+      }
+    },
+    {
+      "name": "first-party CRM contacts endpoint is scoped and no-send",
+      "ok": true,
+      "duration_ms": 698,
+      "details": {
+        "contact_sample_count": 0,
+        "no_send": true,
+        "external_write_performed": false
+      }
+    },
+    {
+      "name": "assistant scope plan blocks Codex CLI live",
+      "ok": true,
+      "duration_ms": 240,
+      "details": {
+        "allowed": false,
+        "reason": "unsupported_or_out_of_scope",
+        "no_codex_cli_routing": true
+      }
+    },
+    {
+      "name": "provider portal scope APIs reject anonymous access",
+      "ok": true,
+      "duration_ms": 665,
+      "details": {
+        "statuses": [
+          {
+            "route": "/api/provider-portal/scope-session",
+            "status": 401
+          },
+          {
+            "route": "/api/provider-portal/inquiries",
+            "status": 401
+          },
+          {
+            "route": "/api/provider-portal/calendar-events",
+            "status": 401
+          }
+        ]
+      }
+    },
+    {
+      "name": "provider portal bundle contains scope package surfaces",
+      "ok": true,
+      "duration_ms": 663,
+      "details": {
+        "markers_checked": 8
+      }
+    }
+  ],
+  "summary": {
+    "auth_source": "railway",
+    "scope_plan": "super_admin",
+    "crm_contact_sample_count": 0
+  }
+}

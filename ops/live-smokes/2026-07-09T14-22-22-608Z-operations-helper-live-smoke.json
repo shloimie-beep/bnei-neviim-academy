@@ -1,0 +1,127 @@
+{
+  "started_at": "2026-07-09T14:22:22.608Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 602,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "helper context exposes branded name and required tools",
+      "ok": true,
+      "duration_ms": 962,
+      "details": {
+        "helperName": "SHLOIMIE's BNA Helper",
+        "allowedTools": [
+          "open_operations_view",
+          "create_support_ticket",
+          "update_task",
+          "mark_task_done"
+        ]
+      }
+    },
+    {
+      "name": "helper plans task navigation without executing",
+      "ok": true,
+      "duration_ms": 253,
+      "details": {
+        "tool": "open_operations_view",
+        "args_preview": {
+          "view": "tasks",
+          "section": "tasks",
+          "task_id": 123
+        }
+      }
+    },
+    {
+      "name": "helper plans lane navigation without executing",
+      "ok": true,
+      "duration_ms": 530,
+      "details": {
+        "decisions": {
+          "view": "tasks",
+          "section": "decisions"
+        },
+        "calendar": {
+          "view": "tasks",
+          "section": "schedule",
+          "calendar_mode": "week"
+        }
+      }
+    },
+    {
+      "name": "helper preserves current settings calendar classroom deep link",
+      "ok": true,
+      "duration_ms": 510,
+      "details": {
+        "current_page": {
+          "view": "settings",
+          "section": "calendar_classroom",
+          "workspace_key": "bna"
+        },
+        "explicit_settings": {
+          "view": "settings",
+          "section": "calendar_classroom",
+          "workspace_key": "bna"
+        }
+      }
+    },
+    {
+      "name": "helper plans task edit and completion without executing",
+      "ok": true,
+      "duration_ms": 503,
+      "details": {
+        "edit": {
+          "task_id": 44,
+          "title": "Fix the parent reset copy"
+        },
+        "done": {
+          "task_id": 321,
+          "verification_notes": "Marked done by BNA Helper."
+        }
+      }
+    },
+    {
+      "name": "helper plans support ticket without executing",
+      "ok": true,
+      "duration_ms": 261,
+      "details": {
+        "tool": "create_support_ticket",
+        "args_preview": {
+          "title": "the task page button looks wrong",
+          "description": "report problem the task page button looks wrong",
+          "severity": "normal",
+          "category": "link",
+          "project_key": "bna"
+        }
+      }
+    }
+  ],
+  "helper_summary": {
+    "helper_name": "SHLOIMIE's BNA Helper",
+    "allowed_tools_checked": [
+      "open_operations_view",
+      "create_support_ticket",
+      "update_task",
+      "mark_task_done"
+    ],
+    "plans_checked": [
+      "go back to task 123",
+      "decisions",
+      "open the calendar schedule week",
+      "open a link to this page",
+      "open settings calendar classroom",
+      "edit task 44 title to Fix the parent reset copy",
+      "mark this done",
+      "report problem the task page button looks wrong"
+    ],
+    "actions_executed": 0
+  },
+  "finished_at": "2026-07-09T14:22:26.232Z",
+  "success": true
+}

@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-10T07:06:48.664Z",
+  "raw_id": "RAW-20260710-001",
+  "status": "AUDIT_COMPILER_DONE_UNDERLYING_UI_OPEN",
+  "source_prompt_path": "C:/Users/User/Downloads/BNA_ONETIME_FULL_RAMBLE_TO_TERMINAL_UI_GAP_AUDIT_CODEX_PROMPT_2026-07-10.md",
+  "source_prompt_sha256": "F61BD03F0623AA4372A0DBB3C3FD96B85116851C4D20E3506614EB1B99DC6502",
+  "counts": {
+    "source_statements": 20,
+    "done_deployed_source_verified": 2,
+    "machine_pass_manual_review_required": 4,
+    "open_or_blocked": 12,
+    "gap_count": 7
+  },
+  "evidence": {
+    "commit": "877df0e50cae944f2897abeec620cb63ffd05ab2",
+    "source_coverage": "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+    "audit_governance": "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+    "provider_parity_live": "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+    "provider_parity_screenshots": "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/screenshots/",
+    "static_chrome_live": "ops/ui-audits/2026-07-10-onetime-static-chrome-live-readback/report.md",
+    "parent_student_live": "ops/ui-audits/2026-07-09-parent-student-login-ui-polish-live-after-deploy/report.md",
+    "lag_before": "ops/performance-audits/2026-07-09-onetime-live-lag-audit/report.md",
+    "lag_after": "ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/report.md",
+    "agent_acceptance": "ops/one-time-mishnah/agent-mode-acceptance.md",
+    "existing_register": "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md"
+  },
+  "gap_ids": [
+    "UIGAP-20260710-001",
+    "UIGAP-20260710-002",
+    "UIGAP-20260710-003",
+    "UIGAP-20260710-004",
+    "UIGAP-20260710-005",
+    "UIGAP-20260710-006",
+    "UIGAP-20260710-007"
+  ],
+  "windows": [
+    {
+      "id": "WINDOW-01",
+      "file": "WINDOW-01-mobile-nav-containment.md",
+      "title": "Fix mobile nav containment across One Time surfaces",
+      "gap_ids": [
+        "UIGAP-20260710-001"
+      ],
+      "expected_packet_id": "chatgpt-onetime-mobile-nav-containment-20260710"
+    },
+    {
+      "id": "WINDOW-02",
+      "file": "WINDOW-02-provider-text-fit.md",
+      "title": "Fix provider workspace long-text/card containment",
+      "gap_ids": [
+        "UIGAP-20260710-003"
+      ],
+      "expected_packet_id": "chatgpt-onetime-provider-text-fit-20260710"
+    },
+    {
+      "id": "WINDOW-03",
+      "file": "WINDOW-03-brand-copy-normalization.md",
+      "title": "Normalize visible One Time brand display copy",
+      "gap_ids": [
+        "UIGAP-20260710-002"
+      ],
+      "expected_packet_id": "chatgpt-onetime-brand-copy-normalization-20260710"
+    },
+    {
+      "id": "WINDOW-04",
+      "file": "WINDOW-04-source-evidence-guardrail.md",
+      "title": "Repair source-to-screenshot evidence guardrails",
+      "gap_ids": [
+        "UIGAP-20260710-004"
+      ],
+      "expected_packet_id": "chatgpt-onetime-source-evidence-guardrail-20260710"
+    },
+    {
+      "id": "WINDOW-05",
+      "file": "WINDOW-05-stale-audit-mapping.md",
+      "title": "Reconcile stale One Time UI audit mappings",
+      "gap_ids": [
+        "UIGAP-20260710-005"
+      ],
+      "expected_packet_id": "chatgpt-onetime-stale-audit-mapping-20260710"
+    },
+    {
+      "id": "WINDOW-06",
+      "file": "WINDOW-06-manual-review-closeout.md",
+      "title": "Create safe manual review closeout for redacted Operations screens",
+      "gap_ids": [
+        "UIGAP-20260710-006"
+      ],
+      "expected_packet_id": "chatgpt-onetime-manual-review-closeout-20260710"
+    }
+  ],
+  "scorecard": {
+    "status": "MANUAL_REVIEW_FOUND_GAPS",
+    "score_out_of_100": 78,
+    "reason": "Lag is source-verified fixed and the latest deployed visual audit has 0 automated findings. Manual review still found mobile nav clipping, brand/copy inconsistency, provider text-fit issues, and evidence-governance gaps.",
+    "categories": [
+      {
+        "name": "Performance",
+        "score": 95,
+        "evidence": "ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/report.md",
+        "note": "0/18 live samples needing attention after deployed fixes."
+      },
+      {
+        "name": "Public first impression",
+        "score": 82,
+        "evidence": "SS-20260710-001",
+        "note": "Strong hero; mobile nav/copy issues remain."
+      },
+      {
+        "name": "Mobile fit",
+        "score": 68,
+        "evidence": "SS-20260710-002..006",
+        "note": "Several nav labels clip at 390px."
+      },
+      {
+        "name": "Provider/Rabbi workspace",
+        "score": 76,
+        "evidence": "SS-20260710-005..006",
+        "note": "Coherent workspace; text fit and copy polish remain."
+      },
+      {
+        "name": "Operations parity",
+        "score": 80,
+        "evidence": "SS-20260710-007",
+        "note": "Layout passes; content-level review is redaction-limited."
+      },
+      {
+        "name": "Proof governance",
+        "score": 55,
+        "evidence": "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "note": "Screenshots exist but source coverage reports zero."
+      }
+    ]
+  }
+}

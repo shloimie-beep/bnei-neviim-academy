@@ -1,0 +1,94 @@
+{
+  "started_at": "2026-06-21T12:56:08.966Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "operations login",
+      "ok": true,
+      "duration_ms": 590,
+      "data": {
+        "cookie": "[redacted]",
+        "role": "super_admin",
+        "scope": {
+          "type": "all",
+          "projectKey": "[redacted]"
+        }
+      }
+    },
+    {
+      "name": "zoom readiness and previews",
+      "ok": true,
+      "duration_ms": 1307,
+      "data": {
+        "status": {
+          "configured": true,
+          "status": "configured_but_insufficient_scope",
+          "token_cache_supported": "[redacted]",
+          "workflow_foundation_present": true,
+          "webhook_processing_present": true
+        },
+        "preview": {
+          "registrants_staged": 1,
+          "join_url_exposed": false,
+          "attendance_write_enabled": false
+        },
+        "blocked_meeting_create": true
+      }
+    },
+    {
+      "name": "operations live classes ui 1440px",
+      "ok": true,
+      "duration_ms": 4287,
+      "data": {
+        "width": 1440,
+        "state": {
+          "has_panel": true,
+          "mentions_token_cache": "[redacted]",
+          "mentions_meeting_builder": true,
+          "mentions_webhook_security": true,
+          "mentions_dashboard_clicks": true,
+          "mentions_recording_readers": true,
+          "mentions_no_writes": true,
+          "page_overflow": false,
+          "client_width": 1440,
+          "scroll_width": 1440
+        },
+        "console_errors": []
+      }
+    },
+    {
+      "name": "operations live classes ui 390px",
+      "ok": true,
+      "duration_ms": 4746,
+      "data": {
+        "width": 390,
+        "state": {
+          "has_panel": true,
+          "mentions_token_cache": "[redacted]",
+          "mentions_meeting_builder": true,
+          "mentions_webhook_security": true,
+          "mentions_dashboard_clicks": true,
+          "mentions_recording_readers": true,
+          "mentions_no_writes": true,
+          "page_overflow": false,
+          "client_width": 390,
+          "scroll_width": 390
+        },
+        "console_errors": []
+      }
+    }
+  ],
+  "summary": {
+    "zoom_status_readable": true,
+    "token_cache_reported": "[redacted]",
+    "workflow_foundation_reported": true,
+    "webhook_processing_reported": true,
+    "meeting_create_blocked": true,
+    "external_write_performed": false,
+    "zoom_meeting_created": false,
+    "runtime_widths_checked": [
+      1440,
+      390
+    ]
+  }
+}

@@ -1,0 +1,655 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260712-104",
+  "parent_raw_id": "RAW-20260712-004",
+  "source_statement_ids": [
+    "RAW-20260712-004:S1",
+    "RAW-20260712-004:S2",
+    "RAW-20260712-004:S3",
+    "RAW-20260712-004:S4",
+    "RAW-20260712-004:S5",
+    "RAW-20260712-004:S6",
+    "RAW-20260712-004:S7",
+    "RAW-20260712-004:S8",
+    "RAW-20260712-004:S9",
+    "RAW-20260712-004:S10",
+    "RAW-20260712-004:S11",
+    "RAW-20260712-004:S12"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [
+      "PKT-20260712-104-CONTROL",
+      "PKT-20260712-104-AUDIT",
+      "PKT-20260712-104-VERIFY"
+    ],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260712-004-onetime-landing-visual-revision.md",
+      "memory-topics/one-time-rabbi-sheller.md",
+      "docs/PRODUCT-QUALITY-COMPILER.md",
+      "docs/RAMBLE-ROUTER.md",
+      "docs/PRODUCT-QUALITY-OPERATING-SYSTEM.md",
+      "public/one-time/index.html",
+      "public/one-time/signup.html",
+      "public/js/bna-bot-widget.js"
+    ],
+    "produces": [
+      "tasks-pending/2026-07-12-onetime-landing-visual-revision.md",
+      "ops/prompt-packets/2026-07-12-onetime-landing-visual-revision/00-control-tower.md",
+      "ops/prompt-packets/2026-07-12-onetime-landing-visual-revision/01-current-state-visual-audit.md",
+      "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/REPORT.md"
+    ],
+    "validation_command": "npm run pqc:validate",
+    "terminal_condition": "REQ-20260712-101 through REQ-20260712-107 have terminal status, with visual approval required before merge or deploy.",
+    "handoff_target": "tasks-pending/2026-07-12-onetime-landing-visual-revision.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "in_progress",
+  "title": "One Time landing visual revision implementation packet",
+  "created_at": "2026-07-12T15:30:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "PUBLIC_MARKETING"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260712-004",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY",
+      "VERIFIER_CLOSEOUT",
+      "DECISION_REQUIRED"
+    ],
+    "confidence": 0.97,
+    "reasons": [
+      "The operator requested exact public landing copy, order, carousel, ticker, visual treatment, signup field behavior, and screenshot proof.",
+      "The request explicitly blocks merge and deploy until desktop and mobile screenshots are approved.",
+      "The executable scope is one public acquisition surface with two public routes and one public assistant widget."
+    ],
+    "affected_product_surfaces": [
+      "One Time public landing and direct signup"
+    ],
+    "likely_external_provider_blockers": [
+      "operator screenshot approval before merge or deploy",
+      "missing reference screenshot path",
+      "final classroom and teaching-location imagery not yet supplied"
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-control-tower",
+      "01-current-state-visual-audit",
+      "implementation",
+      "verification-and-screenshot-approval"
+    ],
+    "next_exact_packet": "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/REPORT.md"
+  },
+  "operator_intent_summary": "Implement a focused One Time public landing visual and copy revision with exact hero copy, revised section order, enhanced section visuals, dynamic Rosh Hashanah ticker, contained Robot Scheller image, and direct signup city/timezone correction. Present screenshots before merge or deploy.",
+  "raw_quotes": [
+    "Start from a clean branch/worktree based on current origin/master.",
+    "Do not merge or deploy this visual revision until desktop and mobile screenshots are presented for approval.",
+    "Give your son a love for learning Torah.",
+    "Permit any city; store entered city exactly.",
+    "Calculate [N] dynamically in JavaScript."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260712-101",
+      "decision": "Merge and deploy require operator screenshot approval.",
+      "status": "needs_operator_decision"
+    },
+    {
+      "id": "DEC-20260712-102",
+      "decision": "Prompt reference screenshot path is unavailable locally.",
+      "status": "blocked_external_artifact"
+    }
+  ],
+  "out_of_scope": [
+    "No merge or deploy before operator screenshot approval.",
+    "No external sends, payment, access grant, DNS/account mutation, WAPI dispatch, Telegram dispatch, or production-data mutation.",
+    "No authentication, portal-access, reminder-dispatch, or signup endpoint change except the requested city/timezone normalization.",
+    "No fabricated final classroom photographs; placeholder image panels must remain labeled as pending."
+  ],
+  "affected_surfaces": [
+    "One Time public acquisition flow"
+  ],
+  "affected_routes": [
+    "/one-time",
+    "/one-time/signup",
+    "public assistant widget on /one-time"
+  ],
+  "affected_files": [
+    "public/one-time/index.html",
+    "public/one-time/signup.html",
+    "public/js/bna-bot-widget.js",
+    "src/lib/bna/one-time-signup-workflow.js",
+    "ops/action-registry.json",
+    "config/service-provider-sites/one-time.json"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/one-time/index.html",
+      "public/one-time/signup.html",
+      "public/js/bna-bot-widget.js",
+      "src/lib/bna/one-time-signup-workflow.js"
+    ],
+    "known_current_defects": [
+      "Old hero used a longer heading, paragraph, and proof boxes.",
+      "Feature and benefit sections used older labels and plain card treatment.",
+      "Static Rosh Hashanah section did not calculate days.",
+      "Signup required choosing a city from a fixed list.",
+      "Robot Scheller avatar used background-image styling."
+    ],
+    "before_screenshot_paths": [
+      "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/before-landing-1440.png",
+      "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/before-landing-390.png",
+      "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/before-signup-1440.png",
+      "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/before-signup-390.png"
+    ],
+    "missing_reference_blocker": "Prompt screenshot path /workspace/scratch/ffef2e71fe52/upload/8d1a83ad-4652-409b-869d-269e98173323.png is not present on this machine."
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "modern",
+      "premium",
+      "clean",
+      "professional",
+      "working",
+      "configured",
+      "CRM"
+    ],
+    "expanded_phrases": {
+      "modern": "Use responsive public-page layout, keyboard-safe controls, reduced-motion support, and restrained movement.",
+      "premium": "Use the One Time black/yellow/ice-blue palette with layered surfaces, chrome accents, readable type, and purposeful icons.",
+      "clean": "For this packet, clean means the git worktree/branch starts from current origin/master without unrelated local edits.",
+      "professional": "Verify exact copy, section order, accessible states, responsive screenshots, and registry coverage before handback.",
+      "working": "Visible actions must route, submit, toggle, or pause with testable behavior and no fake success state.",
+      "configured": "Use existing repo assets and route/action registries; missing external assets are blockers or labeled placeholders.",
+      "CRM": "Keep lead creation in first-party BNA/One Time data paths only; no external CRM runtime or provider write is part of this packet."
+    }
+  },
+  "design_pattern_references": [
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/DESIGN-REFERENCE-CAPTURE.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260712-101",
+      "statement": "Use a clean current branch/worktree and preserve the unrelated stale branch lane.",
+      "expected_result": "Implementation happens in a separate current worktree with no merge or deploy.",
+      "acceptance_criteria": [
+        "Branch starts from current origin/master.",
+        "Stale commit lane is not used.",
+        "Merge and deploy remain blocked pending approval."
+      ]
+    },
+    {
+      "id": "REQ-20260712-102",
+      "statement": "Revise the One Time public landing route with the exact section order, exact hero copy, revised feature labels, benefit copy, flow, audience cards, and signup links.",
+      "expected_result": "The public landing matches the requested content structure and all signup links target /one-time/signup.",
+      "acceptance_criteria": [
+        "Old hero paragraph and proof boxes are absent.",
+        "What You Receive, What He'll Gain, How It Works, and Who It's For use requested labels and copy.",
+        "All public signup CTAs link to /one-time/signup."
+      ]
+    },
+    {
+      "id": "REQ-20260712-103",
+      "statement": "Add the bottom Rabbi section, teaching-location carousel, and separate press-logo marquee.",
+      "expected_result": "Rabbi copy, photo, carousel controls, pagination, pause/focus/swipe behavior, and press marquee are present.",
+      "acceptance_criteria": [
+        "Rabbi section uses the requested eyebrow, heading, paragraph, and book photo.",
+        "Carousel has placeholder slides for requested locations.",
+        "Press logos remain a separate transparent marquee."
+      ]
+    },
+    {
+      "id": "REQ-20260712-104",
+      "statement": "Replace the static Rosh Hashanah section with a dynamic non-fixed ticker above the footer.",
+      "expected_result": "Ticker calculates days to the Jerusalem calendar date 2026-09-11 and links Sign Up Now to /one-time/signup.",
+      "acceptance_criteria": [
+        "Visible day count is calculated in JavaScript.",
+        "Ticker pauses on hover/focus and has a reduced-motion static state.",
+        "Ticker is not fixed and does not cover the bot."
+      ]
+    },
+    {
+      "id": "REQ-20260712-105",
+      "statement": "Render Robot Scheller from the approved PNG as a contained image in closed and open states.",
+      "expected_result": "Robot is fully visible in launcher and panel header while current-class helper copy still works.",
+      "acceptance_criteria": [
+        "Launcher uses an img with object-fit contain.",
+        "Panel header robot does not cover title, close, text, or actions.",
+        "Current class information prompt still returns class context."
+      ]
+    },
+    {
+      "id": "REQ-20260712-106",
+      "statement": "Change signup city capture to free text plus detected or fallback IANA timezone.",
+      "expected_result": "Any city can be submitted, stored exactly, and paired with an IANA timezone for local class-time display.",
+      "acceptance_criteria": [
+        "No hardcoded city datalist or matching-city validation remains.",
+        "browser_timezone and timezone are stored.",
+        "Manual timezone field appears when detection fails.",
+        "Phone remains required only for WhatsApp or both."
+      ]
+    },
+    {
+      "id": "REQ-20260712-107",
+      "statement": "Produce local verification, screenshots, and closeout matrix without merge or deploy.",
+      "expected_result": "Evidence is ready for operator visual approval and deployment remains blocked.",
+      "acceptance_criteria": [
+        "Screenshots cover 1440, 1024, 768, 430, and 390.",
+        "Robot, countdown, reduced motion, signup payload, and no-overflow checks are recorded.",
+        "Final handback states no merge/deploy occurred."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "criteria": [
+      "Raw intake preserved at raw-input/RAW-20260712-004-onetime-landing-visual-revision.md.",
+      "Control tower and current-state visual audit exist.",
+      "Relevant memory topic and product-quality docs were read.",
+      "Missing reference screenshot blocker is recorded.",
+      "Implementation scope is limited to the public acquisition surface."
+    ],
+    "status": "met"
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/one-time",
+      "viewport": 390,
+      "auth_role": "anonymous public visitor",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load the public route before images/scripts finish.",
+      "expected_visible_title": "Give your son a love for learning Torah.",
+      "expected_visible_message": "Header and hero remain readable while assets load.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": ["Member Login", "mobile menu"],
+      "forbidden_content": ["student private data", "checkout", "payment"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Single h1 and skip link are present.",
+      "accessibility_expectation": "Focus is visible and no animation is required for comprehension.",
+      "test_smoke_assertion": "Landing route renders and has no horizontal overflow.",
+      "requirement_id": "REQ-20260712-102"
+    },
+    "empty": {
+      "route": "/one-time/signup",
+      "viewport": 430,
+      "auth_role": "anonymous public visitor",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open signup page before filling the form.",
+      "expected_visible_title": "Sign Up Now",
+      "expected_visible_message": "Required fields are visible with no reminder preselected.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": ["Back to Home", "footer links"],
+      "forbidden_content": ["student name", "checkout", "portal setup"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labels are associated with inputs.",
+      "accessibility_expectation": "Phone required marker is hidden until WhatsApp is selected.",
+      "test_smoke_assertion": "No reminder option is checked on initial render.",
+      "requirement_id": "REQ-20260712-106"
+    },
+    "populated": {
+      "route": "/one-time",
+      "viewport": 1440,
+      "auth_role": "anonymous public visitor",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load landing route after scripts complete.",
+      "expected_visible_title": "What You Receive",
+      "expected_visible_message": "Requested feature tiles, benefits, flow, audience cards, Rabbi section, ticker, and footer are visible down the page.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": ["carousel next", "carousel previous", "carousel pause"],
+      "forbidden_content": ["old proof boxes", "static Rosh Hashanah promo", "student fields"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Sections have semantic headings and carousel has accessible labels.",
+      "accessibility_expectation": "Controls are keyboard reachable.",
+      "test_smoke_assertion": "Static focused landing test passes.",
+      "requirement_id": "REQ-20260712-102"
+    },
+    "filtered_empty": {
+      "route": "/one-time/signup",
+      "viewport": 390,
+      "auth_role": "anonymous public visitor",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit with missing required fields.",
+      "expected_visible_title": "Sign Up Now",
+      "expected_visible_message": "Please fix the highlighted fields.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": ["field focus"],
+      "forbidden_content": ["success without required fields", "student fields"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Invalid fields set aria-invalid.",
+      "accessibility_expectation": "First invalid field receives focus.",
+      "test_smoke_assertion": "WhatsApp selection without phone does not submit.",
+      "requirement_id": "REQ-20260712-106"
+    },
+    "error": {
+      "route": "/one-time/signup",
+      "viewport": 430,
+      "auth_role": "anonymous public visitor",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Simulate API failure after valid form submission.",
+      "expected_visible_title": "Sign Up Now",
+      "expected_visible_message": "Could not save the signup.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": ["Back to Home"],
+      "forbidden_content": ["checkout", "access grant"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Status is announced through role=status.",
+      "accessibility_expectation": "Submit button is restored after failure.",
+      "test_smoke_assertion": "Form catches fetch errors and shows status.",
+      "requirement_id": "REQ-20260712-106"
+    },
+    "blocked_setup": {
+      "route": "/one-time",
+      "viewport": 1440,
+      "auth_role": "Codex reviewer",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Review this branch before operator screenshot approval.",
+      "expected_visible_title": "Requirement matrix",
+      "expected_visible_message": "Merge/deploy blocked pending screenshot approval.",
+      "expected_primary_action": "Review screenshots",
+      "expected_secondary_actions": ["request revisions", "approve follow-up lane"],
+      "forbidden_content": ["deployed", "merged"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "n/a",
+      "accessibility_expectation": "n/a",
+      "test_smoke_assertion": "Final report states no deploy.",
+      "requirement_id": "REQ-20260712-107"
+    },
+    "preview_only": {
+      "route": "/one-time",
+      "viewport": 1024,
+      "auth_role": "anonymous public visitor",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "View carousel placeholder slides.",
+      "expected_visible_title": "Teaching Torah Across the Jewish World",
+      "expected_visible_message": "Teaching image pending.",
+      "expected_primary_action": "Next slide",
+      "expected_secondary_actions": ["Previous slide", "Pause carousel"],
+      "forbidden_content": ["fake final teaching photo", "private data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Carousel role description and labels are present.",
+      "accessibility_expectation": "Hover and focus pause auto-advance.",
+      "test_smoke_assertion": "Carousel controls exist and are registered.",
+      "requirement_id": "REQ-20260712-103"
+    },
+    "success_readback": {
+      "route": "/one-time/signup",
+      "viewport": 430,
+      "auth_role": "anonymous public visitor",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit valid form with custom city and detected timezone against local test server.",
+      "expected_visible_title": "You're signed up.",
+      "expected_visible_message": "Check your email for the class link and class time in your city.",
+      "expected_primary_action": "n/a",
+      "expected_secondary_actions": ["Back to Home", "footer links"],
+      "forbidden_content": ["portal setup", "checkout", "student name"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Success panel receives focus.",
+      "accessibility_expectation": "Status region announces signup received.",
+      "test_smoke_assertion": "Payload stores custom city and IANA timezone.",
+      "requirement_id": "REQ-20260712-106"
+    },
+    "permission_denied": {
+      "route": "/one-time",
+      "viewport": 768,
+      "auth_role": "anonymous public visitor",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Click member login while logged out.",
+      "expected_visible_title": "Member Login",
+      "expected_visible_message": "Private content requires member access.",
+      "expected_primary_action": "Member Login",
+      "expected_secondary_actions": ["Back to public page"],
+      "forbidden_content": ["member library data", "student records"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Link is a same-origin login entry.",
+      "accessibility_expectation": "No private data is exposed.",
+      "test_smoke_assertion": "Member link remains registered as public entry.",
+      "requirement_id": "REQ-20260712-102"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time",
+      "viewport": 390,
+      "auth_role": "anonymous public visitor",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile nav and Robot Scheller panel.",
+      "expected_visible_title": "Robot Scheller",
+      "expected_visible_message": "Rabbi Scheller's digital assistant",
+      "expected_primary_action": "Close",
+      "expected_secondary_actions": ["Current class information", "mobile menu links"],
+      "forbidden_content": ["cropped robot", "private account data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Panel has aria-hidden/inert state and launcher aria-expanded.",
+      "accessibility_expectation": "Robot image is contained and does not cover title or close button.",
+      "test_smoke_assertion": "Robot open/closed screenshots pass crop checks.",
+      "requirement_id": "REQ-20260712-105"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "/one-time", "viewport": 1440, "state": "populated" },
+      { "route": "/one-time", "viewport": 1024, "state": "populated" },
+      { "route": "/one-time", "viewport": 768, "state": "populated" },
+      { "route": "/one-time", "viewport": 430, "state": "populated" },
+      { "route": "/one-time", "viewport": 390, "state": "populated" },
+      { "route": "/one-time/signup", "viewport": 1440, "state": "empty" },
+      { "route": "/one-time/signup", "viewport": 430, "state": "success_readback" }
+    ],
+    "findings": [
+      {
+        "finding_id": "WATCH-20260712-101",
+        "route": "/one-time",
+        "viewport": 1440,
+        "screenshot_before": "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/before-landing-1440.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/after-landing-1440.png",
+        "defect_codes": ["VQ-HIERARCHY-001", "VQ-CONTENT-001"],
+        "severity": "P0",
+        "user_impact": "Old page did not match exact hero/section request.",
+        "expected_fix": "Apply exact copy, section order, and revised visual treatment.",
+        "requirement_id": "REQ-20260712-102"
+      },
+      {
+        "finding_id": "WATCH-20260712-102",
+        "route": "/one-time/signup",
+        "viewport": 430,
+        "screenshot_before": "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/before-signup-430.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/after-signup-430.png",
+        "defect_codes": ["VQ-FORM-001"],
+        "severity": "P0",
+        "user_impact": "City list blocked arbitrary cities and timezone storage.",
+        "expected_fix": "Use free-text city and detected/fallback IANA timezone.",
+        "requirement_id": "REQ-20260712-106"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Semantic section headings and one h1.",
+      "Keyboard reachable nav, carousel controls, ticker link, signup fields, and bot controls.",
+      "Visible focus states.",
+      "Reduced-motion support for carousel/ticker/button sweep.",
+      "Status and validation messages announced accessibly."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Sign Up Now",
+      "selector_or_action_key": "ACTION-ONETIME-JOIN-SHIR-CTA",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Same-origin navigation to /one-time/signup",
+      "registry_required": true
+    },
+    {
+      "label": "Submit direct signup",
+      "selector_or_action_key": "ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "POST /api/one-time/interest first-party endpoint",
+      "registry_required": true
+    },
+    {
+      "label": "Teaching carousel controls",
+      "selector_or_action_key": "ACTION-ONETIME-TEACHING-CAROUSEL-PREV/NEXT/PAUSE",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Client-side carousel state only",
+      "registry_required": true
+    },
+    {
+      "label": "Merge/deploy",
+      "selector_or_action_key": "DEC-20260712-101",
+      "action_state": "NEEDS_SHLOIMIE_SETUP",
+      "owner": "Shloimie",
+      "external_write": false,
+      "handler_or_blocker": "Visual screenshot approval required before a deploy lane",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "signup_city": "Store city_label and city_name exactly as entered.",
+    "timezone": "Store browser_timezone and timezone as a valid IANA zone; reveal manual fallback if browser detection fails.",
+    "no_private_data": "No raw private exports or student-sensitive details in committed evidence."
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "privacy_invariants": [
+      "Public pages are anonymous-safe.",
+      "Public assistant must not expose private account data.",
+      "Signup change must not grant access, start checkout, or mutate external providers."
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "B0",
+      "scope": "Repo safety and intake artifacts",
+      "requirements": ["REQ-20260712-101"],
+      "instructions": ["Create clean branch/worktree.", "Record raw intake and register."]
+    },
+    {
+      "id": "B1",
+      "scope": "Landing route visual and copy update",
+      "requirements": ["REQ-20260712-102", "REQ-20260712-103", "REQ-20260712-104"],
+      "instructions": ["Update landing markup/CSS/JS.", "Update action registry and static contracts."]
+    },
+    {
+      "id": "B2",
+      "scope": "Robot and signup city timezone update",
+      "requirements": ["REQ-20260712-105", "REQ-20260712-106"],
+      "instructions": ["Render contained robot image.", "Allow arbitrary city text and valid IANA timezone."]
+    },
+    {
+      "id": "B3",
+      "scope": "Verification and approval handback",
+      "requirements": ["REQ-20260712-107"],
+      "instructions": ["Run tests/watchdogs.", "Capture required screenshots.", "Do not merge or deploy."]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/one-time/index.html",
+      "public/one-time/signup.html",
+      "public/js/bna-bot-widget.js",
+      "src/lib/bna/one-time-signup-workflow.js",
+      "tests/one-time-focused-landing.test.js",
+      "tests/one-time-direct-signup-page.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/one-time/index.html",
+      "public/one-time/signup.html",
+      "public/js/bna-bot-widget.js",
+      "src/lib/bna/one-time-signup-workflow.js",
+      "tests and protocol artifacts"
+    ],
+    "max_files_to_edit": 12,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "More routes, provider setup, or external sends would require a separate packet.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    {
+      "command": "node --test tests/one-time-focused-landing.test.js tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js tests/one-time-delivery-outbox.test.js tests/one-time-product-system.test.js tests/one-time-shared-review-branding.test.js tests/rabbi-checkout-access.test.js tests/release-captain.test.js",
+      "expected_result": "Focused regression batch passes."
+    },
+    {
+      "command": "npm run pqc:validate",
+      "expected_result": "Product-quality packets validate."
+    },
+    {
+      "command": "npm run watchdog:actions",
+      "expected_result": "Visible action registry coverage passes or reports only scoped blockers."
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "expected_result": "Protocol drift report recorded before closeout."
+    }
+  ],
+  "evidence": {
+    "before_screenshots": "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/before-*.png",
+    "after_screenshots": "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/after-*.png",
+    "metrics": "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/after-metrics.json",
+    "report": "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/REPORT.md"
+  },
+  "deployment_gate": "BLOCKED_WITH_REASON",
+  "definition_of_done": {
+    "criteria": [
+      "All local implementation requirements have evidence.",
+      "Focused tests and required watchdogs are run or blockers are recorded.",
+      "Screenshots at 1440, 1024, 768, 430, and 390 are presented.",
+      "No merge or deploy occurs before operator visual approval.",
+      "Ledger and changelog closeout are appended."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260712-004-onetime-landing-visual-revision.md",
+    "compiled_packet_path": "tasks-pending/2026-07-12-onetime-landing-visual-revision.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "local file edits",
+      "local server",
+      "Playwright screenshots",
+      "test/watchdog commands"
+    ],
+    "skipped_actions_policy": "Skip merge/deploy/live external smoke until screenshots are approved.",
+    "blocker_decisions": [
+      "DEC-20260712-101",
+      "DEC-20260712-102"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-12-onetime-landing-visual-revision/"
+    ],
+    "final_status_path": "tasks-pending/2026-07-12-onetime-landing-visual-revision.md",
+    "next_packet_path": "operator screenshot approval or revision follow-up"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No unrecorded protocol drift for the visual approval branch, or scoped blockers are recorded."
+  },
+  "next_packet": "Operator screenshot approval or focused revision follow-up; do not merge or deploy inside this packet."
+}
