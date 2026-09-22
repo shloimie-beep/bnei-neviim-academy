@@ -1,0 +1,31 @@
+{
+  "generated_at": "2026-07-02T10:35:00+03:00",
+  "source_raw_id": "RAW-20260702-003",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "status": "blocked_no_send",
+  "external_write_performed": false,
+  "whatsapp_send_performed": false,
+  "broadcast_performed": false,
+  "secret_values_printed": false,
+  "blockers": [
+    "missing_whapi_wapi_token_alias",
+    "missing_whapi_wapi_instance_id",
+    "missing_whapi_wapi_phone_number",
+    "missing_rabbi_safe_recipient_phone"
+  ],
+  "draft_message": "Hi Rabbi, this is Shloimie. I am setting up the One Time launch system. Can you please confirm the WhatsApp number you want connected for One Time member/admin communication, and whether this number can be used for a small test message before launch? No broadcast or campaign will be sent from this setup check.",
+  "send_allowed_when": [
+    "rabbi_safe_recipient_phone_available",
+    "whapi_wapi_sender_configured",
+    "provider_instance_available",
+    "exact_packet_confirms_one_setup_message_only"
+  ],
+  "forbidden": [
+    "broadcast",
+    "send_to_imported_leads",
+    "GHL_or_LeadConnector_runtime",
+    "secret_exposure",
+    "cross_workspace_contact_merge"
+  ]
+}

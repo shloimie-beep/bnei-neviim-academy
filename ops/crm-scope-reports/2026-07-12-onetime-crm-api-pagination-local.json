@@ -1,0 +1,37 @@
+{
+  "report_id": "CRM-API-20260712-ONETIME-PAGINATION-LOCAL",
+  "created_at": "2026-07-12T17:42:00+03:00",
+  "run_id": "2026-07-12-onetime-crm-portal-production-correction",
+  "requirement_id": "REQ-20260712-105",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "privacy": {
+    "redacted": true,
+    "production_contact_rows_returned": false,
+    "message_bodies_returned": false,
+    "emails_returned": false,
+    "phones_returned": false,
+    "external_crm_write_performed": false
+  },
+  "api_contract": {
+    "route": "/api/bna/crm/contacts",
+    "default_limit": 50,
+    "max_limit": 100,
+    "cursor_field": "next_cursor",
+    "has_more_field": "has_more",
+    "selected_contact_timeline_route": "/api/bna/crm/contacts/:id/timeline"
+  },
+  "local_fixture": {
+    "contacts": 10000,
+    "requested_limit": 50,
+    "returned_count": 50,
+    "bulk_rows_returned": false
+  },
+  "release_evidence_required": [
+    "database_explain_readback",
+    "live_first_page_smoke",
+    "live_next_cursor_smoke",
+    "live_selected_contact_timeline_smoke",
+    "scoped_commit_push_deploy"
+  ]
+}

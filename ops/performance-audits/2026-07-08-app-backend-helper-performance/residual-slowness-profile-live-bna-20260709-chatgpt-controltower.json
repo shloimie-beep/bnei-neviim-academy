@@ -1,0 +1,547 @@
+{
+  "base_url": "https://bneineviimacademy.org",
+  "path": "/operations?view=tasks",
+  "out_suffix": "live-bna-20260709-chatgpt-controltower",
+  "captured_at": "2026-07-09T05:51:23.902Z",
+  "credentials_source": "OPS",
+  "login": {
+    "ok": true,
+    "status": 200,
+    "duration_ms": 628,
+    "response_bytes": 458,
+    "cookie": "present",
+    "blocker": ""
+  },
+  "marks": {
+    "dom_content_loaded_ms": 2590,
+    "shell_visible_ms": 2720,
+    "overview_visible_ms": null,
+    "capture_complete_ms": 38738,
+    "page_marks": [
+      {
+        "name": "domcontentloaded",
+        "time_ms": 2587,
+        "detail": {}
+      },
+      {
+        "name": "load",
+        "time_ms": 2588,
+        "detail": {}
+      },
+      {
+        "name": "capture_complete",
+        "time_ms": 38736,
+        "detail": {}
+      }
+    ]
+  },
+  "navigation": {
+    "dom_content_loaded_ms": 2588,
+    "load_event_ms": 2588,
+    "duration_ms": 2588,
+    "transfer_size": 2316339,
+    "encoded_body_size": 2316039
+  },
+  "fetches": [
+    {
+      "url": "/api/bna/auth/me",
+      "method": "GET",
+      "start_ms": 2406,
+      "end_ms": 2664,
+      "duration_ms": 259,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-directory?workspace=platform",
+      "method": "GET",
+      "start_ms": 2684,
+      "end_ms": 2924,
+      "duration_ms": 241,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-settings/platform/branding",
+      "method": "GET",
+      "start_ms": 2684,
+      "end_ms": 2995,
+      "duration_ms": 311,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/pipeline-cards",
+      "method": "GET",
+      "start_ms": 2684,
+      "end_ms": 2967,
+      "duration_ms": 283,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/tasks",
+      "method": "GET",
+      "start_ms": 2684,
+      "end_ms": 3315,
+      "duration_ms": 631,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/agent-fleet/status",
+      "method": "GET",
+      "start_ms": 2684,
+      "end_ms": 3373,
+      "duration_ms": 689,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/ops/queue-health",
+      "method": "GET",
+      "start_ms": 2684,
+      "end_ms": 3239,
+      "duration_ms": 555,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/agent-profiles",
+      "method": "GET",
+      "start_ms": 5801,
+      "end_ms": 6040,
+      "duration_ms": 239,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/agent-runs?limit=150",
+      "method": "GET",
+      "start_ms": 5801,
+      "end_ms": 6041,
+      "duration_ms": 240,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/auth/me",
+      "method": "GET",
+      "start_ms": 32424,
+      "end_ms": 32668,
+      "duration_ms": 244,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-directory?workspace=platform",
+      "method": "GET",
+      "start_ms": 32668,
+      "end_ms": 32915,
+      "duration_ms": 247,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-settings/platform/branding",
+      "method": "GET",
+      "start_ms": 32668,
+      "end_ms": 32905,
+      "duration_ms": 237,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/pipeline-cards",
+      "method": "GET",
+      "start_ms": 32668,
+      "end_ms": 32905,
+      "duration_ms": 237,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/tasks",
+      "method": "GET",
+      "start_ms": 32669,
+      "end_ms": 33267,
+      "duration_ms": 599,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/agent-fleet/status",
+      "method": "GET",
+      "start_ms": 32669,
+      "end_ms": 33169,
+      "duration_ms": 501,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/ops/queue-health",
+      "method": "GET",
+      "start_ms": 32669,
+      "end_ms": 33157,
+      "duration_ms": 488,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/agent-profiles",
+      "method": "GET",
+      "start_ms": 35316,
+      "end_ms": 35553,
+      "duration_ms": 237,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/agent-runs?limit=150",
+      "method": "GET",
+      "start_ms": 35317,
+      "end_ms": 35553,
+      "duration_ms": 237,
+      "status": 200,
+      "ok": true
+    }
+  ],
+  "fetch_summary": {
+    "count": 18,
+    "before_overview_count": 18,
+    "after_overview_count": 0,
+    "median_ms": 247,
+    "p95_ms": 689,
+    "max_ms": 689,
+    "top_slowest": [
+      {
+        "method": "GET",
+        "path": "/api/bna/agent-fleet/status",
+        "start_ms": 2684,
+        "duration_ms": 689,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/tasks",
+        "start_ms": 2684,
+        "duration_ms": 631,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/tasks",
+        "start_ms": 32669,
+        "duration_ms": 599,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/ops/queue-health",
+        "start_ms": 2684,
+        "duration_ms": 555,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/agent-fleet/status",
+        "start_ms": 32669,
+        "duration_ms": 501,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/ops/queue-health",
+        "start_ms": 32669,
+        "duration_ms": 488,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/workspace-settings/platform/branding",
+        "start_ms": 2684,
+        "duration_ms": 311,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/pipeline-cards",
+        "start_ms": 2684,
+        "duration_ms": 283,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/auth/me",
+        "start_ms": 2406,
+        "duration_ms": 259,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/workspace-directory?workspace=platform",
+        "start_ms": 32668,
+        "duration_ms": 247,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/auth/me",
+        "start_ms": 32424,
+        "duration_ms": 244,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/workspace-directory?workspace=platform",
+        "start_ms": 2684,
+        "duration_ms": 241,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/agent-runs?limit=150",
+        "start_ms": 5801,
+        "duration_ms": 240,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/agent-profiles",
+        "start_ms": 5801,
+        "duration_ms": 239,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/workspace-settings/platform/branding",
+        "start_ms": 32668,
+        "duration_ms": 237,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/pipeline-cards",
+        "start_ms": 32668,
+        "duration_ms": 237,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/agent-profiles",
+        "start_ms": 35316,
+        "duration_ms": 237,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/agent-runs?limit=150",
+        "start_ms": 35317,
+        "duration_ms": 237,
+        "status": 200,
+        "after_overview": null
+      }
+    ],
+    "by_family": [
+      {
+        "path": "/api/bna/tasks",
+        "count": 2,
+        "total_ms": 1230,
+        "max_ms": 631,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 615
+      },
+      {
+        "path": "/api/bna/agent-fleet/status",
+        "count": 2,
+        "total_ms": 1190,
+        "max_ms": 689,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 595
+      },
+      {
+        "path": "/api/bna/ops/queue-health",
+        "count": 2,
+        "total_ms": 1043,
+        "max_ms": 555,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 522
+      },
+      {
+        "path": "/api/bna/workspace-settings/platform/branding",
+        "count": 2,
+        "total_ms": 548,
+        "max_ms": 311,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 274
+      },
+      {
+        "path": "/api/bna/pipeline-cards",
+        "count": 2,
+        "total_ms": 520,
+        "max_ms": 283,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 260
+      },
+      {
+        "path": "/api/bna/auth/me",
+        "count": 2,
+        "total_ms": 503,
+        "max_ms": 259,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 252
+      },
+      {
+        "path": "/api/bna/workspace-directory",
+        "count": 2,
+        "total_ms": 488,
+        "max_ms": 247,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 244
+      },
+      {
+        "path": "/api/bna/agent-runs",
+        "count": 2,
+        "total_ms": 477,
+        "max_ms": 240,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 239
+      },
+      {
+        "path": "/api/bna/agent-profiles",
+        "count": 2,
+        "total_ms": 476,
+        "max_ms": 239,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 238
+      }
+    ]
+  },
+  "long_tasks": {
+    "count": 4,
+    "total_ms": 577,
+    "max_ms": 234,
+    "top": [
+      {
+        "name": "self",
+        "start_ms": 6119,
+        "duration_ms": 234
+      },
+      {
+        "name": "self",
+        "start_ms": 35649,
+        "duration_ms": 171
+      },
+      {
+        "name": "self",
+        "start_ms": 35553,
+        "duration_ms": 95
+      },
+      {
+        "name": "self",
+        "start_ms": 6041,
+        "duration_ms": 77
+      }
+    ]
+  },
+  "resources": {
+    "count": 26,
+    "transfer_size": 15762372,
+    "encoded_body_size": 15754572,
+    "scripts": [
+      {
+        "path": "/js/platform-ui/platform-ui-fixtures.js",
+        "transfer_size": 18103,
+        "encoded_body_size": 17803,
+        "duration_ms": 1126
+      },
+      {
+        "path": "/js/platform-ui/platform-ui.js",
+        "transfer_size": 45158,
+        "encoded_body_size": 44858,
+        "duration_ms": 1157
+      },
+      {
+        "path": "/js/app-select.js",
+        "transfer_size": 19763,
+        "encoded_body_size": 19463,
+        "duration_ms": 246
+      }
+    ],
+    "styles": [
+      {
+        "path": "/css2",
+        "transfer_size": 1042,
+        "encoded_body_size": 742,
+        "duration_ms": 253
+      },
+      {
+        "path": "/css/bna-app-shell.css",
+        "transfer_size": 34325,
+        "encoded_body_size": 34025,
+        "duration_ms": 1126
+      },
+      {
+        "path": "/css/platform-ui/platform-ui.css",
+        "transfer_size": 16280,
+        "encoded_body_size": 15980,
+        "duration_ms": 1120
+      },
+      {
+        "path": "/css/one-time-operations.css",
+        "transfer_size": 65533,
+        "encoded_body_size": 65233,
+        "duration_ms": 1158
+      }
+    ]
+  },
+  "dom": {
+    "dom_nodes": 12593,
+    "button_count": 1481,
+    "link_count": 7,
+    "script_count": 5,
+    "stylesheet_count": 6,
+    "body_text_length": 161963,
+    "body_text_preview": "All Operations Workspace dashboard WORKSPACE DIRECTORY All Operations Super Admin / Super Admin Switch Platform Dashboard PD Watchdog WG Workspaces WS Operations OP Agents AG Platform Suite PS Students ST Parents / Contacts PC Community CO Studio ST Content CT Live Classes LC Calendar CA Providers PR Communications CM Pipelines PL Accounting AC Automations AU Integrations IN API / Bots API Settings SE Settings Help Logout ALL OPERATIONS / OPERATIONS / ALL TASKS All Tasks Need decision 56 Codex Queue 30 Student accountability 0 Alerts 0 All Operations / Super Admin Ask / Search Thu 9 Jul Decisions Operations All Tasks My Tasks 492 One Time Tasks 34 All Tasks 430 Codex Queue 0 Blocked 14 Due S",
+    "error_banners": [],
+    "one_time_route": "",
+    "title": "BNA Operations"
+  },
+  "console_errors": [],
+  "failed_requests": []
+}

@@ -1,0 +1,329 @@
+{
+  "generated_at": "2026-06-17T10:43:07.829Z",
+  "results": [
+    {
+      "communications": {
+        "cards": 0,
+        "detailPills": 0,
+        "empty": true,
+        "laneText": "Overview\n0 records\nNo messages match this lane.",
+        "titles": 0
+      },
+      "email": {
+        "hasEventLanguage": true,
+        "hasSubjectLanguage": true,
+        "sectionVisible": true
+      },
+      "heading": "Communications",
+      "importPreview": {
+        "blocked": true,
+        "exists": true,
+        "noSend": true,
+        "previewCards": 2,
+        "statusStrip": true,
+        "text": "Contact Imports\n2 preview\nUpload\n\nPreview-only import source.\n\nCSV / vCard / email export\nMapping\n\nField mapping is inferred before commit.\n\nPreview\nname, email, phone, organization, student, notes\nDedupe\n\nMatches local contacts and parent leads by email or phone.\n\nLocal\n0 possible duplicates\nCommit\n\nNo contact, tag, email, WhatsApp, or external record is written here.\n\nNo-send\nBlocked until approved\nPreview Import\nClear\n2 rows\n0 need mapping\ncommunity group: 1\nprovider: 1\nLeah Cohen\ncommunity_group / new_candidate / community\n\nleah.cohen@example.com / +972501234567 / BNA Parent Group / Avi Cohen\n\ncontact import previewcommunity grouphas emailhas phonehas organization\nProvider Rabbi\nprovider / new_candidate / service_provider\n\nprovider@example.com / +12125551212 / Provider Network\n\ncontact import previewproviderhas emailhas phonehas organization"
+      },
+      "label": "desktop",
+      "overflowX": false,
+      "screening": {
+        "exists": true,
+        "nonClinicalNote": true,
+        "text": "Screening Pipeline\n0 screened\nPARENT LEAD\n0\n \nPARENT ACCOUNTABILITY\n0\n \nSTUDENT ISSUE\n0\n \nPROVIDER\n0\n \nPAYMENT\n0\n \nCONTENT\n0\n \nSUPPORT\n0\n \nURGENT NEEDS ATTENTION\n0\n \nGENERAL\n0\n\nParent behavior notes use non-clinical coaching/self-regulation categories only. No diagnosis labels are created."
+      },
+      "section": "overview",
+      "title": "BNA Operations",
+      "topNews": {
+        "cards": 0,
+        "exists": true,
+        "text": "Top News\n0 events\nNo high-priority communication events are loaded."
+      },
+      "url": "http://localhost:8080/operations?view=communications&section=overview&workspace=platform",
+      "viewport": {
+        "clientWidth": 1265,
+        "height": 720,
+        "scrollWidth": 1265,
+        "width": 1280
+      },
+      "wapi": {
+        "blockedOrConfigured": false,
+        "botScreening": false,
+        "livePull": false,
+        "members": false,
+        "noSend": true,
+        "phonebookWorkspace": false,
+        "pipelineStage": false,
+        "text": ""
+      }
+    },
+    {
+      "communications": {
+        "cards": 0,
+        "detailPills": 0,
+        "empty": true,
+        "laneText": "Overview\n0 records\nNo messages match this lane.",
+        "titles": 0
+      },
+      "email": {
+        "hasEventLanguage": true,
+        "hasSubjectLanguage": true,
+        "sectionVisible": true
+      },
+      "heading": "Communications",
+      "importPreview": {
+        "blocked": true,
+        "exists": true,
+        "noSend": true,
+        "previewCards": 2,
+        "statusStrip": true,
+        "text": "Contact Imports\n2 preview\nUpload\n\nPreview-only import source.\n\nCSV / vCard / email export\nMapping\n\nField mapping is inferred before commit.\n\nPreview\nname, email, phone, organization, student, notes\nDedupe\n\nMatches local contacts and parent leads by email or phone.\n\nLocal\n0 possible duplicates\nCommit\n\nNo contact, tag, email, WhatsApp, or external record is written here.\n\nNo-send\nBlocked until approved\nPreview Import\nClear\n2 rows\n0 need mapping\ncommunity group: 1\nprovider: 1\nLeah Cohen\ncommunity_group / new_candidate / community\n\nleah.cohen@example.com / +972501234567 / BNA Parent Group / Avi Cohen\n\ncontact import previewcommunity grouphas emailhas phonehas organization\nProvider Rabbi\nprovider / new_candidate / service_provider\n\nprovider@example.com / +12125551212 / Provider Network\n\ncontact import previewproviderhas emailhas phonehas organization"
+      },
+      "label": "mobile",
+      "overflowX": false,
+      "screening": {
+        "exists": true,
+        "nonClinicalNote": true,
+        "text": "Screening Pipeline\n0 screened\nPARENT LEAD\n0\n \nPARENT ACCOUNTABILITY\n0\n \nSTUDENT ISSUE\n0\n \nPROVIDER\n0\n \nPAYMENT\n0\n \nCONTENT\n0\n \nSUPPORT\n0\n \nURGENT NEEDS ATTENTION\n0\n \nGENERAL\n0\n\nParent behavior notes use non-clinical coaching/self-regulation categories only. No diagnosis labels are created."
+      },
+      "section": "overview",
+      "title": "BNA Operations",
+      "topNews": {
+        "cards": 0,
+        "exists": true,
+        "text": "Top News\n0 events\nNo high-priority communication events are loaded."
+      },
+      "url": "http://localhost:8080/operations?view=communications&section=overview&workspace=platform",
+      "viewport": {
+        "clientWidth": 375,
+        "height": 844,
+        "scrollWidth": 375,
+        "width": 390
+      },
+      "wapi": {
+        "blockedOrConfigured": false,
+        "botScreening": false,
+        "livePull": false,
+        "members": false,
+        "noSend": true,
+        "phonebookWorkspace": false,
+        "pipelineStage": false,
+        "text": ""
+      }
+    },
+    {
+      "communications": {
+        "cards": 0,
+        "detailPills": 0,
+        "empty": true,
+        "laneText": "Email\n0 records\nNo messages match this lane.",
+        "titles": 0
+      },
+      "email": {
+        "hasEventLanguage": true,
+        "hasSubjectLanguage": true,
+        "sectionVisible": true
+      },
+      "heading": "Communications",
+      "importPreview": {
+        "blocked": false,
+        "exists": false,
+        "noSend": false,
+        "previewCards": 0,
+        "statusStrip": false,
+        "text": ""
+      },
+      "label": "desktop",
+      "overflowX": false,
+      "screening": {
+        "exists": false,
+        "nonClinicalNote": false,
+        "text": ""
+      },
+      "section": "email",
+      "title": "BNA Operations",
+      "topNews": {
+        "cards": 0,
+        "exists": false,
+        "text": ""
+      },
+      "url": "http://localhost:8080/operations?view=communications&section=email&workspace=platform",
+      "viewport": {
+        "clientWidth": 1280,
+        "height": 720,
+        "scrollWidth": 1280,
+        "width": 1280
+      },
+      "wapi": {
+        "blockedOrConfigured": false,
+        "botScreening": false,
+        "livePull": false,
+        "members": false,
+        "noSend": false,
+        "phonebookWorkspace": false,
+        "pipelineStage": false,
+        "text": ""
+      }
+    },
+    {
+      "communications": {
+        "cards": 0,
+        "detailPills": 0,
+        "empty": true,
+        "laneText": "Email\n0 records\nNo messages match this lane.",
+        "titles": 0
+      },
+      "email": {
+        "hasEventLanguage": true,
+        "hasSubjectLanguage": true,
+        "sectionVisible": true
+      },
+      "heading": "Communications",
+      "importPreview": {
+        "blocked": false,
+        "exists": false,
+        "noSend": false,
+        "previewCards": 0,
+        "statusStrip": false,
+        "text": ""
+      },
+      "label": "mobile",
+      "overflowX": false,
+      "screening": {
+        "exists": false,
+        "nonClinicalNote": false,
+        "text": ""
+      },
+      "section": "email",
+      "title": "BNA Operations",
+      "topNews": {
+        "cards": 0,
+        "exists": false,
+        "text": ""
+      },
+      "url": "http://localhost:8080/operations?view=communications&section=email&workspace=platform",
+      "viewport": {
+        "clientWidth": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "width": 390
+      },
+      "wapi": {
+        "blockedOrConfigured": false,
+        "botScreening": false,
+        "livePull": false,
+        "members": false,
+        "noSend": false,
+        "phonebookWorkspace": false,
+        "pipelineStage": false,
+        "text": ""
+      }
+    },
+    {
+      "communications": {
+        "cards": 0,
+        "detailPills": 0,
+        "empty": false,
+        "laneText": "Phonebook Workspace\nRead-only\nBuild the phonebook report to open the contact list, conversation, and details workspace.",
+        "titles": 0
+      },
+      "email": {
+        "hasEventLanguage": true,
+        "hasSubjectLanguage": true,
+        "sectionVisible": true
+      },
+      "heading": "Communications",
+      "importPreview": {
+        "blocked": false,
+        "exists": false,
+        "noSend": false,
+        "previewCards": 0,
+        "statusStrip": false,
+        "text": ""
+      },
+      "label": "desktop",
+      "overflowX": false,
+      "screening": {
+        "exists": false,
+        "nonClinicalNote": false,
+        "text": ""
+      },
+      "section": "whatsapp",
+      "title": "BNA Operations",
+      "topNews": {
+        "cards": 0,
+        "exists": false,
+        "text": ""
+      },
+      "url": "http://localhost:8080/operations?view=communications&section=whatsapp&workspace=platform",
+      "viewport": {
+        "clientWidth": 1265,
+        "height": 720,
+        "scrollWidth": 1265,
+        "width": 1280
+      },
+      "wapi": {
+        "blockedOrConfigured": true,
+        "botScreening": false,
+        "livePull": true,
+        "members": false,
+        "noSend": true,
+        "phonebookWorkspace": true,
+        "pipelineStage": false,
+        "text": "Live WAPI pull\n\nWAPI/Whapi token is configured for admin-triggered pull. Sends still require explicit confirmation.\n\nConfigured\nLive pull configured\nLatest imported WhatsApp\n\nWhapi history imports are stored as contact communications and matched by parent/lead/student phone where possible.\n\nReady\nNo imported Whapi log yet\nSync latest 100\n\nUse this after connecting WHAPI_API_TOKEN or WAPI_API"
+      }
+    },
+    {
+      "communications": {
+        "cards": 0,
+        "detailPills": 0,
+        "empty": false,
+        "laneText": "Phonebook Workspace\nRead-only\nBuild the phonebook report to open the contact list, conversation, and details workspace.",
+        "titles": 0
+      },
+      "email": {
+        "hasEventLanguage": true,
+        "hasSubjectLanguage": true,
+        "sectionVisible": true
+      },
+      "heading": "Communications",
+      "importPreview": {
+        "blocked": false,
+        "exists": false,
+        "noSend": false,
+        "previewCards": 0,
+        "statusStrip": false,
+        "text": ""
+      },
+      "label": "mobile",
+      "overflowX": false,
+      "screening": {
+        "exists": false,
+        "nonClinicalNote": false,
+        "text": ""
+      },
+      "section": "whatsapp",
+      "title": "BNA Operations",
+      "topNews": {
+        "cards": 0,
+        "exists": false,
+        "text": ""
+      },
+      "url": "http://localhost:8080/operations?view=communications&section=whatsapp&workspace=platform",
+      "viewport": {
+        "clientWidth": 375,
+        "height": 844,
+        "scrollWidth": 375,
+        "width": 390
+      },
+      "wapi": {
+        "blockedOrConfigured": true,
+        "botScreening": false,
+        "livePull": true,
+        "members": false,
+        "noSend": true,
+        "phonebookWorkspace": true,
+        "pipelineStage": false,
+        "text": "Live WAPI pull\n\nWAPI/Whapi token is configured for admin-triggered pull. Sends still require explicit confirmation.\n\nConfigured\nLive pull configured\nLatest imported WhatsApp\n\nWhapi history imports are stored as contact communications and matched by parent/lead/student phone where possible.\n\nReady\nNo imported Whapi log yet\nSync latest 100\n\nUse this after connecting WHAPI_API_TOKEN or WAPI_API"
+      }
+    }
+  ]
+}

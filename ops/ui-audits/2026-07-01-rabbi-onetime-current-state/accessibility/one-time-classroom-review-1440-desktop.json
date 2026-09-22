@@ -1,0 +1,12 @@
+{
+  "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+  "viewport": "1440-desktop",
+  "checks": {
+    "horizontal_overflow": false,
+    "unlabeled_button_count": 0,
+    "inputs_without_labels": 0,
+    "has_h1": true,
+    "browser_content_untrusted": true
+  },
+  "note": "Automated heuristics supplement, not replace, visual inspection and axe/manual accessibility review."
+}

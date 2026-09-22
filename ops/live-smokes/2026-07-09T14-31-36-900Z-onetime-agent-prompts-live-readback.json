@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-07-09T14:31:36.900Z",
+  "base": "https://join.onetimeonetime.com",
+  "ok": true,
+  "commit": "84b73e2e",
+  "deployment": {
+    "railway_project": "one-time-production",
+    "railway_service": "one-time-web",
+    "railway_environment": "production",
+    "deployment_id": "b54e6e9d-3447-454d-88a9-4a6d0a67dbb5",
+    "status": "SUCCESS"
+  },
+  "results": [
+    {
+      "path": "/agent-review-prompts/index.json",
+      "status": 200,
+      "bytes": 135878,
+      "required_markers": [
+        "one-time-public-landing-million-dollar-audit",
+        "one-time-final-visual-regression-pass"
+      ],
+      "missing": []
+    },
+    {
+      "path": "/agent-review-prompts/one-time-public-landing-million-dollar-audit.md",
+      "status": 200,
+      "bytes": 13497,
+      "required_markers": [
+        "One Time Public Landing Million-Dollar Audit",
+        "Forbidden external actions"
+      ],
+      "missing": []
+    },
+    {
+      "path": "/agent-review-prompts/one-time-static-chrome-consistency-audit.md",
+      "status": 200,
+      "bytes": 13123,
+      "required_markers": [
+        "One Time Static Chrome Consistency Audit",
+        "Blocked by active deploy lane"
+      ],
+      "missing": []
+    },
+    {
+      "path": "/agent-review-prompts/one-time-final-visual-regression-pass.md",
+      "status": 200,
+      "bytes": 13203,
+      "required_markers": [
+        "One Time Final Visual Regression Pass",
+        "implementation not yet applied"
+      ],
+      "missing": []
+    }
+  ],
+  "guardrails": {
+    "external_write_performed": false,
+    "provider_mutation_performed": false,
+    "email_send_performed": false,
+    "whatsapp_send_performed": false,
+    "telegram_send_performed": false,
+    "payment_or_access_mutation_performed": false,
+    "credential_or_dns_mutation_performed": false
+  }
+}

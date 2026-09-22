@@ -1,0 +1,601 @@
+{
+  "base_url": "https://bneineviimacademy.org",
+  "path": "/operations?workspace=platform&view=dashboard&section=overview",
+  "out_suffix": "live-bna-platform-after-dashboard-light-pass",
+  "captured_at": "2026-07-09T12:37:54.425Z",
+  "credentials_source": "OPS",
+  "login": {
+    "ok": true,
+    "status": 200,
+    "duration_ms": 671,
+    "response_bytes": 458,
+    "cookie": "present",
+    "blocker": ""
+  },
+  "marks": {
+    "dom_content_loaded_ms": 7237,
+    "shell_visible_ms": 8574,
+    "overview_visible_ms": null,
+    "capture_complete_ms": 44584,
+    "page_marks": [
+      {
+        "name": "domcontentloaded",
+        "time_ms": 7235,
+        "detail": {}
+      },
+      {
+        "name": "load",
+        "time_ms": 7236,
+        "detail": {}
+      },
+      {
+        "name": "capture_complete",
+        "time_ms": 44582,
+        "detail": {}
+      }
+    ]
+  },
+  "navigation": {
+    "dom_content_loaded_ms": 7235,
+    "load_event_ms": 7236,
+    "duration_ms": 7236,
+    "transfer_size": 2024,
+    "encoded_body_size": 1724
+  },
+  "fetches": [
+    {
+      "url": "/api/bna/auth/me",
+      "method": "GET",
+      "start_ms": 7226,
+      "end_ms": 8206,
+      "duration_ms": 980,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-directory?workspace=platform",
+      "method": "GET",
+      "start_ms": 8224,
+      "end_ms": 9520,
+      "duration_ms": 1296,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-settings/platform/branding",
+      "method": "GET",
+      "start_ms": 8224,
+      "end_ms": 9823,
+      "duration_ms": 1599,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/tasks",
+      "method": "GET",
+      "start_ms": 8224,
+      "end_ms": 9520,
+      "duration_ms": 1296,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/agent-fleet/status",
+      "method": "GET",
+      "start_ms": 8224,
+      "end_ms": 9541,
+      "duration_ms": 1316,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/ops/queue-health",
+      "method": "GET",
+      "start_ms": 8224,
+      "end_ms": 9335,
+      "duration_ms": 1110,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/support-tickets",
+      "method": "GET",
+      "start_ms": 8225,
+      "end_ms": 44083,
+      "duration_ms": 35859,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/signups?",
+      "method": "GET",
+      "start_ms": 8225,
+      "end_ms": 9034,
+      "duration_ms": 809,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/contact-communications?",
+      "method": "GET",
+      "start_ms": 8225,
+      "end_ms": 9341,
+      "duration_ms": 1117,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/payments?",
+      "method": "GET",
+      "start_ms": 8225,
+      "end_ms": 9002,
+      "duration_ms": 777,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/payment-intake?",
+      "method": "GET",
+      "start_ms": 8225,
+      "end_ms": 9064,
+      "duration_ms": 839,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/payment-reminders/due",
+      "method": "GET",
+      "start_ms": 8225,
+      "end_ms": 9025,
+      "duration_ms": 800,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/content-jobs?",
+      "method": "GET",
+      "start_ms": 8225,
+      "end_ms": 9679,
+      "duration_ms": 1454,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/students",
+      "method": "GET",
+      "start_ms": 8225,
+      "end_ms": 11217,
+      "duration_ms": 2992,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/devices",
+      "method": "GET",
+      "start_ms": 8225,
+      "end_ms": 9366,
+      "duration_ms": 1141,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/accountability?",
+      "method": "GET",
+      "start_ms": 8225,
+      "end_ms": 9111,
+      "duration_ms": 885,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/notifications?status=all&limit=100",
+      "method": "GET",
+      "start_ms": 8225,
+      "end_ms": 9088,
+      "duration_ms": 862,
+      "status": 200,
+      "ok": true
+    }
+  ],
+  "fetch_summary": {
+    "count": 17,
+    "before_overview_count": 17,
+    "after_overview_count": 0,
+    "median_ms": 1117,
+    "p95_ms": 35859,
+    "max_ms": 35859,
+    "top_slowest": [
+      {
+        "method": "GET",
+        "path": "/api/bna/support-tickets",
+        "start_ms": 8225,
+        "duration_ms": 35859,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/students",
+        "start_ms": 8225,
+        "duration_ms": 2992,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/workspace-settings/platform/branding",
+        "start_ms": 8224,
+        "duration_ms": 1599,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/content-jobs",
+        "start_ms": 8225,
+        "duration_ms": 1454,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/agent-fleet/status",
+        "start_ms": 8224,
+        "duration_ms": 1316,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/workspace-directory?workspace=platform",
+        "start_ms": 8224,
+        "duration_ms": 1296,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/tasks",
+        "start_ms": 8224,
+        "duration_ms": 1296,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/devices",
+        "start_ms": 8225,
+        "duration_ms": 1141,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/contact-communications",
+        "start_ms": 8225,
+        "duration_ms": 1117,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/ops/queue-health",
+        "start_ms": 8224,
+        "duration_ms": 1110,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/auth/me",
+        "start_ms": 7226,
+        "duration_ms": 980,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/accountability",
+        "start_ms": 8225,
+        "duration_ms": 885,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/notifications?status=all&limit=100",
+        "start_ms": 8225,
+        "duration_ms": 862,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/payment-intake",
+        "start_ms": 8225,
+        "duration_ms": 839,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/signups",
+        "start_ms": 8225,
+        "duration_ms": 809,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/payment-reminders/due",
+        "start_ms": 8225,
+        "duration_ms": 800,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/payments",
+        "start_ms": 8225,
+        "duration_ms": 777,
+        "status": 200,
+        "after_overview": null
+      }
+    ],
+    "by_family": [
+      {
+        "path": "/api/bna/support-tickets",
+        "count": 1,
+        "total_ms": 35859,
+        "max_ms": 35859,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 35859
+      },
+      {
+        "path": "/api/bna/students",
+        "count": 1,
+        "total_ms": 2992,
+        "max_ms": 2992,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 2992
+      },
+      {
+        "path": "/api/bna/workspace-settings/platform/branding",
+        "count": 1,
+        "total_ms": 1599,
+        "max_ms": 1599,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1599
+      },
+      {
+        "path": "/api/bna/content-jobs",
+        "count": 1,
+        "total_ms": 1454,
+        "max_ms": 1454,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1454
+      },
+      {
+        "path": "/api/bna/agent-fleet/status",
+        "count": 1,
+        "total_ms": 1316,
+        "max_ms": 1316,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1316
+      },
+      {
+        "path": "/api/bna/workspace-directory",
+        "count": 1,
+        "total_ms": 1296,
+        "max_ms": 1296,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1296
+      },
+      {
+        "path": "/api/bna/tasks",
+        "count": 1,
+        "total_ms": 1296,
+        "max_ms": 1296,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1296
+      },
+      {
+        "path": "/api/bna/devices",
+        "count": 1,
+        "total_ms": 1141,
+        "max_ms": 1141,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1141
+      },
+      {
+        "path": "/api/bna/contact-communications",
+        "count": 1,
+        "total_ms": 1117,
+        "max_ms": 1117,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1117
+      },
+      {
+        "path": "/api/bna/ops/queue-health",
+        "count": 1,
+        "total_ms": 1110,
+        "max_ms": 1110,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1110
+      },
+      {
+        "path": "/api/bna/auth/me",
+        "count": 1,
+        "total_ms": 980,
+        "max_ms": 980,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 980
+      },
+      {
+        "path": "/api/bna/accountability",
+        "count": 1,
+        "total_ms": 885,
+        "max_ms": 885,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 885
+      },
+      {
+        "path": "/api/bna/notifications",
+        "count": 1,
+        "total_ms": 862,
+        "max_ms": 862,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 862
+      },
+      {
+        "path": "/api/bna/payment-intake",
+        "count": 1,
+        "total_ms": 839,
+        "max_ms": 839,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 839
+      },
+      {
+        "path": "/api/bna/signups",
+        "count": 1,
+        "total_ms": 809,
+        "max_ms": 809,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 809
+      },
+      {
+        "path": "/api/bna/payment-reminders/due",
+        "count": 1,
+        "total_ms": 800,
+        "max_ms": 800,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 800
+      },
+      {
+        "path": "/api/bna/payments",
+        "count": 1,
+        "total_ms": 777,
+        "max_ms": 777,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 777
+      }
+    ]
+  },
+  "long_tasks": {
+    "count": 0,
+    "total_ms": 0,
+    "max_ms": 0,
+    "top": []
+  },
+  "resources": {
+    "count": 27,
+    "transfer_size": 18857364,
+    "encoded_body_size": 18849264,
+    "scripts": [
+      {
+        "path": "/js/platform-ui/platform-ui-fixtures.js",
+        "transfer_size": 18400,
+        "encoded_body_size": 18100,
+        "duration_ms": 1298
+      },
+      {
+        "path": "/js/app-select.js",
+        "transfer_size": 19763,
+        "encoded_body_size": 19463,
+        "duration_ms": 1297
+      },
+      {
+        "path": "/js/platform-ui/platform-ui.js",
+        "transfer_size": 46137,
+        "encoded_body_size": 45837,
+        "duration_ms": 1551
+      },
+      {
+        "path": "/js/operations-shell.js",
+        "transfer_size": 1210646,
+        "encoded_body_size": 1210346,
+        "duration_ms": 6037
+      }
+    ],
+    "styles": [
+      {
+        "path": "/css2",
+        "transfer_size": 1042,
+        "encoded_body_size": 742,
+        "duration_ms": 315
+      },
+      {
+        "path": "/css/operations-shell.css",
+        "transfer_size": 227138,
+        "encoded_body_size": 226838,
+        "duration_ms": 3135
+      },
+      {
+        "path": "/css/platform-ui/platform-ui.css",
+        "transfer_size": 17186,
+        "encoded_body_size": 16886,
+        "duration_ms": 1297
+      },
+      {
+        "path": "/css/bna-app-shell.css",
+        "transfer_size": 35186,
+        "encoded_body_size": 34886,
+        "duration_ms": 1298
+      },
+      {
+        "path": "/css/one-time-operations.css",
+        "transfer_size": 66816,
+        "encoded_body_size": 66516,
+        "duration_ms": 1588
+      }
+    ]
+  },
+  "dom": {
+    "dom_nodes": 863,
+    "button_count": 166,
+    "link_count": 7,
+    "script_count": 5,
+    "stylesheet_count": 6,
+    "body_text_length": 8699,
+    "body_text_preview": "All Operations Workspace dashboard WORKSPACE DIRECTORY All Operations Super Admin / Super Admin Switch Platform Dashboard PD Watchdog WG Workspaces WS Operations OP Agents AG Platform Suite PS Students ST Parents / Contacts PC Community CO Studio ST Content CT Live Classes LC Calendar CA Providers PR Communications CM Pipelines PL Accounting AC Automations AU Integrations IN API / Bots API Settings SE Settings Help Logout ALL OPERATIONS / PLATFORM DASHBOARD / OVERVIEW Overview Need decision 56 Codex Queue 30 Student accountability 10 Alerts 100 All Operations / Super Admin Ask / Search Thu 9 Jul Open Tasks Platform Dashboard Overview Overview 243 Activity 99 Alerts 170 Today 9 Recent Updates",
+    "error_banners": [],
+    "one_time_route": "",
+    "title": "BNA Operations"
+  },
+  "console_errors": [],
+  "failed_requests": []
+}

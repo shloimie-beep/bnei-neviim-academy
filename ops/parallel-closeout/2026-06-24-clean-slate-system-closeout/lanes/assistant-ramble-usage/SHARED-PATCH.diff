@@ -1,0 +1,92 @@
+diff --git a/server.js b/server.js
+index 00000000..00000000 100644
+--- a/server.js
++++ b/server.js
+@@ -115,6 +115,9 @@ const {
+ const {
+   buildBufferAssets,
+ } = require('./src/lib/bna/buffer-media-assets');
++const {
++  createProviderApiUsageRecorder,
++} = require('./src/lib/bna/provider-api-usage');
+ const {
+   buildTelegramRuntimeReadiness,
+ } = require('./src/lib/bna/telegram-runtime-status');
+@@ -68753,6 +68756,7 @@ app.get('/api/bna/assistant/actions/:id', async (req, res) => {
+ });
+ 
+ app.post('/api/bna/assistant/chat', async (req, res) => {
++  const startedAtMs = Date.now();
+   const body = req.body || {};
+   const messageText = limitText(body.message || body.body || body.text || '', 8000);
+   if (!messageText) return res.status(400).json({ error: 'message is required' });
+@@ -68776,6 +68780,35 @@ app.post('/api/bna/assistant/chat', async (req, res) => {
+       db: client,
+     });
+     const reply = await buildAssistantReply({ actor, message: messageText, thread, project, body, db: client });
++    const usageRecorder = createProviderApiUsageRecorder({
++      db: client,
++      environment: process.env.NODE_ENV || 'production',
++    });
++    const usageRecord = reply.provider
++      ? await usageRecorder.record({
++          workspace_key: body.workspace_key || body.workspaceKey || project.project_key || 'bna',
++          user_id: actor.id || actor.anonymousId || null,
++          user_label: actor.email || actor.name || actor.type || null,
++          provider_key: body.workspace_key || body.workspaceKey || project.project_key || 'bna',
++          model_provider_key: reply.provider,
++          model: reply.model || null,
++          feature_key: 'bna_assistant_chat',
++          bot_identifier: 'bna_assistant',
++          request_count: 1,
++          input_tokens: 0,
++          output_tokens: 0,
++          cached_tokens: 0,
++          estimated_cost_usd: null,
++          actual_cost_usd: null,
++          latency_ms: Date.now() - startedAtMs,
++          success: true,
++          request_correlation_id: body.request_correlation_id || body.requestCorrelationId || `assistant-chat-${thread.id}`,
++          metadata: {
++            route: '/api/bna/assistant/chat',
++            surface: body.surface || body.page || null,
++            thread_id: thread.id || null,
++            no_prompt_body: true,
++          },
++        })
++      : { recorded: false, reason: 'assistant_reply_not_hosted_ai' };
+     const assistantMessage = await insertAssistantMessage({
+       threadId: thread.id,
+       authorType: 'assistant',
+@@ -68793,6 +68826,7 @@ app.post('/api/bna/assistant/chat', async (req, res) => {
+       actor: { type: actor.type, role: actor.role, can_use_codex: Boolean(actor.canUseCodex) },
+       thread: assistantThreadView(refreshedThread),
+       messages: [assistantMessageView(userMessage), assistantMessageView(assistantMessage)],
++      usage_recorded: Boolean(usageRecord.recorded),
+       anonymous_id: actor.anonymousId || null,
+     });
+   } catch (err) {
+diff --git a/src/platform/assistant/control-plane.js b/src/platform/assistant/control-plane.js
+index 7df83572..b9e6a574 100644
+--- a/src/platform/assistant/control-plane.js
++++ b/src/platform/assistant/control-plane.js
+@@ -21,6 +21,7 @@ const SHARED_CONTROL_PLANE_LAYERS = Object.freeze([
+   'preview_system',
+   'approval_system',
+   'audit_event',
++  'api_usage_recorder',
+   'draft_template_versioning',
+   'reminders_notifications',
+   'ticketing',
+diff --git a/tests/universal-control-plane-scope-policy.test.js b/tests/universal-control-plane-scope-policy.test.js
+index a8d781a4..aa5df46d 100644
+--- a/tests/universal-control-plane-scope-policy.test.js
++++ b/tests/universal-control-plane-scope-policy.test.js
+@@ -333,6 +333,7 @@ test('shared control-plane contract covers required layers without duplicate sys
+     'preview_system',
+     'approval_system',
+     'audit_event',
++    'api_usage_recorder',
+     'draft_template_versioning',
+     'reminders_notifications',
+     'ticketing',

@@ -1,0 +1,20 @@
+{
+  "decision_id": "DEC-RESEND-SENDER-DOMAIN-IDENTITY",
+  "requirement_id": "REQ-20260621-504",
+  "title": "Choose One Time email sender domain, from identity, and reply-to",
+  "status": "needs_operator_decision",
+  "owner": "Shloimie / Rabbi Ellie Scheller",
+  "exact_action_required": "Provide sender domain, from email, sender display name, reply-to email, DNS authority, Resend account owner/path or alternate provider, and one approved test recipient.",
+  "guardrails": [
+    "Do not invent a sender domain.",
+    "No live email send until sender/domain readiness passes and the exact SEND_RESEND_EMAIL confirmation phrase is supplied.",
+    "No Resend API key, webhook signing secret, DNS secret, secret screenshot, or raw private email body may be committed.",
+    "DNS tasks may store complete non-secret DNS record values copied from the provider dashboard; truncated screenshot values remain blocked."
+  ],
+  "evidence": [
+    "docs/integrations/RESEND.md",
+    "ops/one-time-mishnah/master-backlog-reconciliation.md",
+    "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/PARSE.json"
+  ],
+  "updated_at": "2026-06-21T15:00:00+03:00"
+}

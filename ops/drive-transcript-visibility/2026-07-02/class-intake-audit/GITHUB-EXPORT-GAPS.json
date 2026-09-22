@@ -1,0 +1,65 @@
+[
+  {
+    "job_ref": "content_job:101",
+    "job_id": 101,
+    "class_date": "2026-07-02",
+    "transcript_chars": 39920,
+    "exported_to_github": false,
+    "expected_file_hint": "101-*.md",
+    "status": "missing_export"
+  },
+  {
+    "job_ref": "content_job:100",
+    "job_id": 100,
+    "class_date": "2026-07-02",
+    "transcript_chars": 39206,
+    "exported_to_github": false,
+    "expected_file_hint": "100-*.md",
+    "status": "missing_export"
+  },
+  {
+    "job_ref": "content_job:91",
+    "job_id": 91,
+    "class_date": "2026-06-30",
+    "transcript_chars": 0,
+    "exported_to_github": false,
+    "expected_file_hint": "091-*.md",
+    "status": "ok_or_no_transcript"
+  },
+  {
+    "job_ref": "content_job:85",
+    "job_id": 85,
+    "class_date": "2026-06-29",
+    "transcript_chars": 58847,
+    "exported_to_github": false,
+    "expected_file_hint": "085-*.md",
+    "status": "missing_export"
+  },
+  {
+    "job_ref": "content_job:84",
+    "job_id": 84,
+    "class_date": "2026-06-28",
+    "transcript_chars": 49429,
+    "exported_to_github": false,
+    "expected_file_hint": "084-*.md",
+    "status": "missing_export"
+  },
+  {
+    "job_ref": "content_job:83",
+    "job_id": 83,
+    "class_date": "2026-06-25",
+    "transcript_chars": 9025,
+    "exported_to_github": false,
+    "expected_file_hint": "083-*.md",
+    "status": "missing_export"
+  },
+  {
+    "job_ref": "content_job:82",
+    "job_id": 82,
+    "class_date": "2026-06-25",
+    "transcript_chars": 5309,
+    "exported_to_github": false,
+    "expected_file_hint": "082-*.md",
+    "status": "missing_export"
+  }
+]

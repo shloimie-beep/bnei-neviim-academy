@@ -1,0 +1,39 @@
+{
+  "started_at": "2026-06-21T17:34:21.270Z",
+  "app_url": "https://bneineviimacademy.org",
+  "job_id": 78,
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "cookie bna_ops_session"
+    },
+    {
+      "name": "Content job source readback",
+      "ok": true,
+      "detail": "Drive Class Sunday balak (blocked, 02 Ingesting)"
+    },
+    {
+      "name": "Blocked-before-parse state is explicit",
+      "ok": true,
+      "detail": "sanitized credential blocker present; no transcript body stored"
+    },
+    {
+      "name": "No parse run was created for blocked job",
+      "ok": true,
+      "detail": "no parse run; blocker occurred before transcription completed"
+    }
+  ],
+  "result": "blocked_verified",
+  "job_title": "Drive Class Sunday balak",
+  "source_type": "google_drive",
+  "workspace_key": "",
+  "project_key": "bna",
+  "drive_stage": "02 Ingesting",
+  "status": "blocked",
+  "drive_file_id": "1Fq_4BCquWGwsNzHvbCuf8ew5HQxn01gH",
+  "created_at": "2026-06-21T10:04:38.843Z",
+  "transcript_chars": 0,
+  "blocker": "OpenAI transcription credential rejected with 401 invalid_credential before transcript or parse run could be created.",
+  "parse_run_id": null
+}

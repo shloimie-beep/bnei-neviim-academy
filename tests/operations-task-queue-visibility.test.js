@@ -1,0 +1,96 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const test = require('node:test');
+
+const server = fs.readFileSync('server.js', 'utf8');
+const operations = fs.readFileSync('public/operations.html', 'utf8');
+
+function serverSlice(startNeedle, endNeedle) {
+  const start = server.indexOf(startNeedle);
+  assert.notEqual(start, -1, `${startNeedle} should exist`);
+  const end = server.indexOf(endNeedle, start);
+  assert.notEqual(end, -1, `${endNeedle} should exist after ${startNeedle}`);
+  return server.slice(start, end);
+}
+
+test('Operations task lanes keep internal handoff briefs out of operator-facing views', () => {
+  assert.doesNotMatch(operations, /Planned Briefs|Pending Briefs|Implementation Briefs/);
+  assert.doesNotMatch(operations, /pending-briefs/);
+  assert.match(operations, /Bots \/ Agents/);
+  for (const label of [
+    'Active Now',
+    'Needs Your Decision',
+    'Waiting Externally',
+    'Recently Completed',
+    'Full History / Search',
+    'My Tasks',
+    'One Time Tasks',
+    'Bots / Agents',
+    'Pending',
+    'Due Soon',
+    'Schedule',
+    'Done',
+    'Needs My Decision',
+    'Needs Rabbi Scheller',
+    'Needs External Owner',
+    'Decided',
+    'Superseded',
+    'Archived Decisions'
+  ]) {
+    assert.match(operations, new RegExp(label.replace(/[ /]/g, '[ /]')));
+  }
+  assert.match(operations, /Blocked means access or outside input, not Codex queue work/);
+  assert.match(operations, /It is not the human Pending lane/);
+  assert.match(operations, /if \(taskKind === 'pending_access'\) return 'pending';/);
+  assert.match(operations, /taskKind === 'agent_job' \|\| taskIsMachine\(task\)\) return 'codex_queue';/);
+  assert.match(operations, /const codexQueueTasks = buckets\.codex_queue\.slice\(\)\.sort\(sortTasks\)/);
+  assert.match(operations, /OWNER_TASK_DEFAULT_VIEWS\.map/);
+});
+
+test('tasks API exposes server-side filters for default Task and Decision views', () => {
+  const route = serverSlice(
+    "app.get('/api/bna/tasks'",
+    "app.post('/api/bna/tasks'"
+  );
+
+  assert.match(route, /task_view/);
+  assert.match(route, /decision_view/);
+  assert.match(route, /my_tasks/);
+  assert.match(route, /one_time_tasks/);
+  assert.match(route, /codex_agent_work/);
+  assert.match(route, /status_bucket = 'codex_queue'/);
+  assert.match(route, /due_soon/);
+  assert.match(route, /completed_activity/);
+  assert.match(route, /needs_my_decision/);
+  assert.match(route, /needs_rabbi_scheller/);
+  assert.match(route, /needs_external_owner/);
+  assert.match(route, /duplicate_of_task_id IS NOT NULL OR canonical_task_id IS NOT NULL/);
+  assert.match(route, /decision_outcome/);
+  assert.match(route, /taskActorAliasesForRequest\(req\)/);
+  assert.match(route, /taskActorOwnerMatchSql/);
+  assert.doesNotMatch(route, /\(shloimie\|operator\|manager\)/);
+});
+
+test('My Tasks authority comes from the authenticated actor and canonical person', () => {
+  const identityResolver = serverSlice(
+    'async function getCanonicalPersonForOpsIdentity',
+    'async function buildWorkspaceDirectoryForIdentity'
+  );
+
+  assert.match(identityResolver, /JOIN bna_logins l ON l\.person_id = p\.id/);
+  assert.match(identityResolver, /taskActorAliases/);
+  assert.match(identityResolver, /identity\?\.username/);
+  assert.match(identityResolver, /person\?\.preferred_name/);
+  assert.doesNotMatch(identityResolver, /lower\(preferred_name\) = 'shloimie'/);
+
+  assert.match(operations, /opsMe\?\.person\?\.preferred_name/);
+  assert.match(operations, /opsMe\?\.person\?\.full_name/);
+  assert.doesNotMatch(operations, /tokens\.push\('shloimie'/);
+});
+
+test('Operations deep links load an exact task even when the bounded queue omits it', () => {
+  assert.match(operations, /selectedTaskId && !tasks\.some\(task => Number\(task\.id\) === Number\(selectedTaskId\)\)/);
+  assert.match(operations, /const selectedTaskRes = await api\.getTaskDetail\(Number\(selectedTaskId\)\)/);
+  assert.match(operations, /if \(selectedTaskRes\?\.task\) tasks = \[selectedTaskRes\.task, \.\.\.tasks\]/);
+  assert.match(operations, /Deep-linked task could not be loaded/);
+});

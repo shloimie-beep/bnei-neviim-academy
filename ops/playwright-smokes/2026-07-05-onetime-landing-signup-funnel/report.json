@@ -1,0 +1,41 @@
+{
+  "started_at": "2026-07-05T11:45:05.807Z",
+  "base_url": "http://127.0.0.1:53234",
+  "ok": true,
+  "checks": [
+    {
+      "name": "desktop landing",
+      "ok": true,
+      "overflow": 0,
+      "text_length": 3470
+    },
+    {
+      "name": "tablet landing",
+      "ok": true,
+      "overflow": 0,
+      "text_length": 3470
+    },
+    {
+      "name": "mobile landing",
+      "ok": true,
+      "overflow": 0,
+      "text_length": 3445
+    },
+    {
+      "name": "interest form preview submit",
+      "ok": true,
+      "external_write_performed": false
+    }
+  ],
+  "screenshots": [
+    "ops/playwright-smokes/2026-07-05-onetime-landing-signup-funnel/desktop-landing.png",
+    "ops/playwright-smokes/2026-07-05-onetime-landing-signup-funnel/tablet-landing.png",
+    "ops/playwright-smokes/2026-07-05-onetime-landing-signup-funnel/mobile-landing.png"
+  ],
+  "guardrails": {
+    "external_writes": false,
+    "checkout": false,
+    "access_grant": false,
+    "send": false
+  }
+}

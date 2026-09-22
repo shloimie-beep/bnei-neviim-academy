@@ -1,0 +1,218 @@
+{
+  "status": "PASS",
+  "generated_at": "2026-07-10T08:15:37.282Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "deployment_id": "f338b59b-a545-40ab-b952-13b4111ecd2a",
+  "commit": "f3368cfe",
+  "source_requirement": "UIGAP-20260710-003 / REQ-20260710-009 provider long-text containment",
+  "external_writes_performed": false,
+  "results": [
+    {
+      "viewport": {
+        "id": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "passed": true,
+      "overviewOverflow": false,
+      "crmOverflow": false,
+      "mailboxOverflow": false,
+      "overviewValue": {
+        "text": "info@onetimeonetime.com",
+        "title": "info@onetimeonetime.com",
+        "ariaLabel": "info@onetimeonetime.com",
+        "className": "one-time-fit-value",
+        "whiteSpace": "nowrap",
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+        "rectWidth": 304,
+        "scrollWidth": 335,
+        "clientWidth": 304,
+        "rectCount": 1,
+        "containedInParent": true
+      },
+      "crmMetaPill": {
+        "text": "info@onetimeonetime.com",
+        "title": "info@onetimeonetime.com",
+        "ariaLabel": "info@onetimeonetime.com",
+        "className": "status-pill one-time-fit-pill",
+        "whiteSpace": "nowrap",
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+        "rectWidth": 168,
+        "scrollWidth": 166,
+        "clientWidth": 166,
+        "rectCount": 1,
+        "containedInParent": true
+      },
+      "crmHeaderCopy": {
+        "text": "Emails to info@onetimeonetime.com, parent/student records, notes, support tickets, and private Rabbi questions are connected here inside the Rabbi Sheller workspace.",
+        "className": "small one-time-fit-copy",
+        "overflowWrap": "break-word",
+        "wordBreak": "normal",
+        "containedInParent": true,
+        "width": 300
+      },
+      "mailboxPill": {
+        "text": "info@onetimeonetime.com",
+        "title": "info@onetimeonetime.com",
+        "ariaLabel": "info@onetimeonetime.com",
+        "className": "status-pill one-time-fit-pill",
+        "whiteSpace": "nowrap",
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+        "rectWidth": 168,
+        "scrollWidth": 166,
+        "clientWidth": 166,
+        "rectCount": 1,
+        "containedInParent": true
+      },
+      "screenshots": {
+        "overview": "ops/ui-audits/2026-07-10-onetime-provider-text-fit-live/mobile-390-overview.png",
+        "crm": "ops/ui-audits/2026-07-10-onetime-provider-text-fit-live/mobile-390-crm.png",
+        "mailbox": "ops/ui-audits/2026-07-10-onetime-provider-text-fit-live/mobile-390-mailbox.png"
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "badResponses": []
+    },
+    {
+      "viewport": {
+        "id": "mobile-430",
+        "width": 430,
+        "height": 932
+      },
+      "passed": true,
+      "overviewOverflow": false,
+      "crmOverflow": false,
+      "mailboxOverflow": false,
+      "overviewValue": {
+        "text": "info@onetimeonetime.com",
+        "title": "info@onetimeonetime.com",
+        "ariaLabel": "info@onetimeonetime.com",
+        "className": "one-time-fit-value",
+        "whiteSpace": "nowrap",
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+        "rectWidth": 151,
+        "scrollWidth": 335,
+        "clientWidth": 151,
+        "rectCount": 1,
+        "containedInParent": true
+      },
+      "crmMetaPill": {
+        "text": "info@onetimeonetime.com",
+        "title": "info@onetimeonetime.com",
+        "ariaLabel": "info@onetimeonetime.com",
+        "className": "status-pill one-time-fit-pill",
+        "whiteSpace": "nowrap",
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+        "rectWidth": 168,
+        "scrollWidth": 166,
+        "clientWidth": 166,
+        "rectCount": 1,
+        "containedInParent": true
+      },
+      "crmHeaderCopy": {
+        "text": "Emails to info@onetimeonetime.com, parent/student records, notes, support tickets, and private Rabbi questions are connected here inside the Rabbi Sheller workspace.",
+        "className": "small one-time-fit-copy",
+        "overflowWrap": "break-word",
+        "wordBreak": "normal",
+        "containedInParent": true,
+        "width": 340
+      },
+      "mailboxPill": {
+        "text": "info@onetimeonetime.com",
+        "title": "info@onetimeonetime.com",
+        "ariaLabel": "info@onetimeonetime.com",
+        "className": "status-pill one-time-fit-pill",
+        "whiteSpace": "nowrap",
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+        "rectWidth": 168,
+        "scrollWidth": 166,
+        "clientWidth": 166,
+        "rectCount": 1,
+        "containedInParent": true
+      },
+      "screenshots": {
+        "overview": "ops/ui-audits/2026-07-10-onetime-provider-text-fit-live/mobile-430-overview.png",
+        "crm": "ops/ui-audits/2026-07-10-onetime-provider-text-fit-live/mobile-430-crm.png",
+        "mailbox": "ops/ui-audits/2026-07-10-onetime-provider-text-fit-live/mobile-430-mailbox.png"
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "badResponses": []
+    },
+    {
+      "viewport": {
+        "id": "desktop-1440",
+        "width": 1440,
+        "height": 960
+      },
+      "passed": true,
+      "overviewOverflow": false,
+      "crmOverflow": false,
+      "mailboxOverflow": false,
+      "overviewValue": {
+        "text": "info@onetimeonetime.com",
+        "title": "info@onetimeonetime.com",
+        "ariaLabel": "info@onetimeonetime.com",
+        "className": "one-time-fit-value",
+        "whiteSpace": "nowrap",
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+        "rectWidth": 154,
+        "scrollWidth": 335,
+        "clientWidth": 154,
+        "rectCount": 1,
+        "containedInParent": true
+      },
+      "crmMetaPill": {
+        "text": "info@onetimeonetime.com",
+        "title": "info@onetimeonetime.com",
+        "ariaLabel": "info@onetimeonetime.com",
+        "className": "status-pill one-time-fit-pill",
+        "whiteSpace": "nowrap",
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+        "rectWidth": 168,
+        "scrollWidth": 166,
+        "clientWidth": 166,
+        "rectCount": 1,
+        "containedInParent": true
+      },
+      "crmHeaderCopy": {
+        "text": "Emails to info@onetimeonetime.com, parent/student records, notes, support tickets, and private Rabbi questions are connected here inside the Rabbi Sheller workspace.",
+        "className": "small one-time-fit-copy",
+        "overflowWrap": "break-word",
+        "wordBreak": "normal",
+        "containedInParent": true,
+        "width": 738
+      },
+      "mailboxPill": {
+        "text": "info@onetimeonetime.com",
+        "title": "info@onetimeonetime.com",
+        "ariaLabel": "info@onetimeonetime.com",
+        "className": "status-pill one-time-fit-pill",
+        "whiteSpace": "nowrap",
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+        "rectWidth": 168,
+        "scrollWidth": 166,
+        "clientWidth": 166,
+        "rectCount": 1,
+        "containedInParent": true
+      },
+      "screenshots": {
+        "overview": "ops/ui-audits/2026-07-10-onetime-provider-text-fit-live/desktop-1440-overview.png",
+        "crm": "ops/ui-audits/2026-07-10-onetime-provider-text-fit-live/desktop-1440-crm.png",
+        "mailbox": "ops/ui-audits/2026-07-10-onetime-provider-text-fit-live/desktop-1440-mailbox.png"
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "badResponses": []
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "started_at": "2026-06-14T19:56:37.662Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "operations login session",
+      "ok": true,
+      "duration_ms": 847,
+      "details": {
+        "role": "super_admin",
+        "scope": "all"
+      }
+    },
+    {
+      "name": "deployed Operations HTML includes Google audit helpers",
+      "ok": true,
+      "duration_ms": 1788,
+      "details": {
+        "html_bytes": 1165794
+      }
+    },
+    {
+      "name": "platform audit log API readable before preview",
+      "ok": true,
+      "duration_ms": 544,
+      "details": {
+        "rows": 17
+      }
+    },
+    {
+      "name": "Google Workspace settings renders audit panel",
+      "ok": true,
+      "duration_ms": 3804,
+      "details": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "auditBackground": "rgb(255, 255, 255)",
+        "auditColor": "rgb(19, 34, 56)",
+        "objectObjectCount": 0,
+        "hasEvidenceText": true
+      }
+    },
+    {
+      "name": "Drive dry-run preview logs a clean Google audit row",
+      "ok": true,
+      "duration_ms": 1679,
+      "details": {
+        "visible_rows": 11,
+        "first_row": "14 Jun, 22:55\tgoogle drive find file preview\tpreviewed\tSHLOIMIE\tfind or list files / Google Drive OAuth or owner pipeline is not connected for this workspace. / not required / Google Drive OAuth or owner pipeline is not connected for this work..."
+      }
+    },
+    {
+      "name": "platform audit log API records preview action",
+      "ok": true,
+      "duration_ms": 995,
+      "details": {
+        "rows": 18,
+        "newest_preview_status": "previewed"
+      }
+    },
+    {
+      "name": "browser console stayed clean",
+      "ok": true,
+      "duration_ms": 0,
+      "details": {
+        "console_messages": 0
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "label": "Desktop Google Workspace audit panel",
+      "path": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-14-google-action-audit-live\\desktop.png"
+    }
+  ]
+}

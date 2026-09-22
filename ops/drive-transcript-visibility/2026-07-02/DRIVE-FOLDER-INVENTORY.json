@@ -1,0 +1,75 @@
+{
+  "status": "read_only_partial",
+  "generated_at": "2026-07-02T16:10:00Z",
+  "no_production_mutation": true,
+  "sources": [
+    "Google Drive connector read-only search/listing",
+    "npm run drive:trace-newest-recording",
+    "npm run content:drive-intake-audit -- --start-date 2026-06-25 --end-date 2026-07-02 --out-dir ops/drive-transcript-visibility/2026-07-02/class-intake-audit --job-id 101",
+    "npm run content:sync-drive-library -- --dry-run --no-ai"
+  ],
+  "drive_readback": {
+    "configured_drive_folders": 21,
+    "files_seen": 385,
+    "likely_recording_files_seen": 332
+  },
+  "folder_summary": [
+    {
+      "folder": "BNA V2",
+      "status": "found",
+      "notes": "Root includes Upload Here, Processing, Processed Recordings, Content Library, Website Images, Approved Assets, and archive folders."
+    },
+    {
+      "folder": "00 Upload Here - Raw Media Intake",
+      "status": "found_empty_in_connector_listing",
+      "file_count_observed": 0
+    },
+    {
+      "folder": "10 Processing - Temporary / 02 Ingesting",
+      "status": "has_stuck_media",
+      "file_count_observed_in_scope": 1,
+      "stuck_job_refs": [
+        "content_job:91"
+      ]
+    },
+    {
+      "folder": "20 Processed Recordings - Source Media / 03 Transcribed",
+      "status": "has_processed_media",
+      "file_count_observed_in_scope": 6,
+      "matched_job_refs": [
+        "content_job:101",
+        "content_job:100",
+        "content_job:85",
+        "content_job:84",
+        "content_job:83",
+        "content_job:82"
+      ]
+    },
+    {
+      "folder": "40 Content Library - Marketing / 01 Transcript Library",
+      "status": "found",
+      "docs_observed": 47,
+      "job_101_search_result": "missing",
+      "source_filename_search_result": "missing"
+    }
+  ],
+  "scoped_week": {
+    "range_start": "2026-06-25",
+    "range_end": "2026-07-02",
+    "drive_recordings_in_range": 7,
+    "content_jobs_in_range": 7,
+    "drive_orphans_in_range": 0,
+    "files_stuck_in_ingesting": 1,
+    "content_jobs_with_transcript_but_no_drive_doc_plan": 6,
+    "content_jobs_missing_transcript": 1,
+    "content_jobs_missing_confirmed_structured_output": 2,
+    "jobs_missing_repo_safe_digest_export": 6
+  },
+  "lane_rules_confirmed": {
+    "audio_video": "transcription_candidate",
+    "text_doc_transcript": "transcript_import_candidate",
+    "slides_pdf_source_sheets": "source_material_candidate",
+    "images": "asset_lane",
+    "unknown": "needs_operator_decision"
+  }
+}

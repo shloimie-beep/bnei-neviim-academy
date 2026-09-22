@@ -1,0 +1,559 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260708-006",
+  "parent_raw_id": "RAW-20260708-006",
+  "source_statement_ids": [
+    "SRC-20260708-006-001",
+    "SRC-20260708-006-002"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260708-005",
+    "child_packet_ids": [
+      "PKT-20260708-007"
+    ],
+    "depends_on_packet_ids": [
+      "PKT-20260708-005"
+    ],
+    "blocks_packet_ids": [
+      "PKT-20260708-007"
+    ],
+    "consumes": [
+      "raw-input/RAW-20260708-006-onetime-performance-media-classroom-workflow.md",
+      "public/member-library.html",
+      "public/one-time-classroom.html",
+      "server.js"
+    ],
+    "produces": [
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-performance-audit.md",
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-performance-audit.json",
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/*.png"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/01-current-state-performance-visual-audit.product-quality.json",
+    "terminal_condition": "Current-state audit is complete when timing, screenshot, DOM/media count, and first-fix recommendation evidence exists.",
+    "handoff_target": "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md"
+  },
+  "stage": "STAGE_1_SPEC_COMPILER",
+  "packet_role": "VISUAL_AUDITOR",
+  "status": "in_progress",
+  "title": "One Time Member Library And Classroom Performance Current-State Audit",
+  "created_at": "2026-07-08T10:13:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260708-006",
+    "classification": [
+      "BUG_REPORT",
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.96,
+    "reasons": [
+      "Operator directly reported app-wide lag and slow button clicks.",
+      "One Time member library embeds media and rerenders filters/progress, making it the first likely surface to inspect.",
+      "UI implementation is forbidden until current-state evidence exists."
+    ],
+    "affected_product_surfaces": [
+      "One Time member library",
+      "One Time classroom"
+    ],
+    "likely_external_provider_blockers": [],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "01-current-state-performance-visual-audit",
+      "02-member-library-performance-filters"
+    ],
+    "next_exact_packet": "Use the audit findings to create the member-library performance/filter implementation packet."
+  },
+  "operator_intent_summary": "Find why the One Time app feels slow and capture evidence before implementing the first member-library/classroom performance fix.",
+  "raw_quotes": [
+    "the entire app is extremely laggy",
+    "the buttons like click and it just lags",
+    "make sure there's proper filters"
+  ],
+  "decisions_captured": [],
+  "out_of_scope": [
+    "No code changes in this audit packet.",
+    "No external Drive, Vimeo, send, payment, access, or publish writes.",
+    "No broad Operations performance refactor until One Time routes are measured."
+  ],
+  "affected_surfaces": [
+    "One Time member library",
+    "One Time classroom"
+  ],
+  "affected_routes": [
+    "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+    "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS",
+    "/api/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+    "/api/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS"
+  ],
+  "affected_files": [
+    "public/member-library.html",
+    "public/one-time-classroom.html",
+    "server.js"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "live route load timings",
+      "button/filter click latency",
+      "iframe/video count",
+      "DOM node count",
+      "console errors",
+      "mobile screenshots"
+    ],
+    "observed": [
+      "Audit not yet run in this packet.",
+      "Static inspection shows member library renders media cards with Vimeo iframes and re-renders filter rail/grid on several interactions."
+    ],
+    "known_blockers": []
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "laggy",
+      "buttons click and it lags",
+      "proper filters"
+    ],
+    "expanded_phrases": {
+      "laggy": "Measure load/click/render latency and identify media/player/DOM/network bottlenecks.",
+      "buttons click and it lags": "Record elapsed time from click to visible UI state change for filters and progress buttons.",
+      "proper filters": "Audit filter clarity, counts, mobile reflow, and whether filtering causes avoidable heavy player reinitialization."
+    },
+    "first_party_pattern_interpretation": "Use browser automation and repo smokes as evidence before editing UI."
+  },
+  "design_pattern_references": [
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260708-030",
+      "statement": "Capture current One Time member-library/classroom performance and visual evidence.",
+      "expected_result": "Audit report names timings, media/DOM counts, screenshots, console errors, and first-fix recommendation.",
+      "acceptance_criteria": [
+        "Desktop and mobile screenshots exist.",
+        "Load timings exist for member library and classroom.",
+        "Click latency exists for at least filter/search/progress/classroom-submit interactions where available.",
+        "Report names a first implementation packet."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "Routes and TEST access path are defined.",
+      "Audit has no external writes.",
+      "Screenshots and metrics output paths are defined.",
+      "First implementation packet will be created from measured findings."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Navigate to member library and wait for network idle.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "Loading or member library",
+      "expected_primary_action": "Open Library",
+      "expected_secondary_actions": ["Open Classroom"],
+      "forbidden_content": ["stack trace"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Loading/member status remains visible.",
+      "accessibility_expectation": "Primary controls remain readable.",
+      "test_smoke_assertion": "navigation_ms and api_ms are recorded.",
+      "requirement_id": "REQ-20260708-030"
+    },
+    "empty": {
+      "route": "/member-library",
+      "viewport": "390",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Audit invalid/empty state with no code.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "Access code required",
+      "expected_primary_action": "Open Library",
+      "expected_secondary_actions": ["Support"],
+      "forbidden_content": ["member cards"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Access state is understandable.",
+      "accessibility_expectation": "Input/button fit mobile width.",
+      "test_smoke_assertion": "access-state screenshot exists.",
+      "requirement_id": "REQ-20260708-030"
+    },
+    "populated": {
+      "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open valid TEST member library.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "Library filters",
+      "expected_primary_action": "Open Media",
+      "expected_secondary_actions": ["Recently Added", "Continue Watching"],
+      "forbidden_content": ["private admin notes"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Cards and filter buttons are labeled.",
+      "accessibility_expectation": "No overlapping toolbar text.",
+      "test_smoke_assertion": "dom_nodes, iframe_count, card_count recorded.",
+      "requirement_id": "REQ-20260708-030"
+    },
+    "filtered_empty": {
+      "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "390",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Enter unmatched search term.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "No published library items match this view.",
+      "expected_primary_action": "Search",
+      "expected_secondary_actions": ["All"],
+      "forbidden_content": ["stale cards"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty search result is readable.",
+      "accessibility_expectation": "Search input remains reachable.",
+      "test_smoke_assertion": "search_latency_ms is recorded.",
+      "requirement_id": "REQ-20260708-030"
+    },
+    "error": {
+      "route": "/member-library?code=INVALID",
+      "viewport": "390",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use invalid access code.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "Could not open library",
+      "expected_primary_action": "Open Library",
+      "expected_secondary_actions": ["Questions/support"],
+      "forbidden_content": ["member payload"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error appears near access form.",
+      "accessibility_expectation": "Error is readable.",
+      "test_smoke_assertion": "invalid access does not expose content.",
+      "requirement_id": "REQ-20260708-030"
+    },
+    "blocked_setup": {
+      "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1440",
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Inspect media automation status only.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "Classroom",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": ["Assistant/help"],
+      "forbidden_content": ["real Vimeo upload"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "No external-write control runs from audit.",
+      "accessibility_expectation": "n/a",
+      "test_smoke_assertion": "external_write_performed=false.",
+      "requirement_id": "REQ-20260708-030"
+    },
+    "preview_only": {
+      "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1440",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open TEST classroom.",
+      "expected_visible_title": "One Time Mishnah Classroom",
+      "expected_visible_message": "Rewards Scoreboard",
+      "expected_primary_action": "Submit For Review",
+      "expected_secondary_actions": ["Open Library"],
+      "forbidden_content": ["unreviewed public comment"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Sections have clear headings.",
+      "accessibility_expectation": "Desktop layout does not overlap.",
+      "test_smoke_assertion": "classroom_load_ms and click timing are recorded.",
+      "requirement_id": "REQ-20260708-030"
+    },
+    "success_readback": {
+      "route": "/api/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Fetch API directly.",
+      "expected_visible_title": "API readback",
+      "expected_visible_message": "items",
+      "expected_primary_action": "Read API",
+      "expected_secondary_actions": ["Read classroom API"],
+      "forbidden_content": ["private notes"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Payload maps into accessible UI.",
+      "accessibility_expectation": "n/a",
+      "test_smoke_assertion": "payload size and item count recorded.",
+      "requirement_id": "REQ-20260708-030"
+    },
+    "permission_denied": {
+      "route": "/api/member-library",
+      "viewport": "390",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Fetch without access code.",
+      "expected_visible_title": "API denied",
+      "expected_visible_message": "A valid access code is required",
+      "expected_primary_action": "Read API",
+      "expected_secondary_actions": ["Support fallback"],
+      "forbidden_content": ["items"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Denied response is explicit.",
+      "accessibility_expectation": "n/a",
+      "test_smoke_assertion": "HTTP denial is recorded.",
+      "requirement_id": "REQ-20260708-030"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "390",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open TEST classroom on mobile.",
+      "expected_visible_title": "One Time Mishnah Classroom",
+      "expected_visible_message": "Rewards Scoreboard",
+      "expected_primary_action": "Submit For Review",
+      "expected_secondary_actions": ["Open Library"],
+      "forbidden_content": ["horizontal overflow", "overlap"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile sections remain ordered.",
+      "accessibility_expectation": "Buttons and text fit 390px width.",
+      "test_smoke_assertion": "mobile screenshot and overflow metric recorded.",
+      "requirement_id": "REQ-20260708-030"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 1440,
+        "auth_role": "MEMBER_PARENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-030"
+      },
+      {
+        "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 1024,
+        "auth_role": "MEMBER_PARENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-030"
+      },
+      {
+        "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 768,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-030"
+      },
+      {
+        "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 430,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-030"
+      },
+      {
+        "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 390,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-030"
+      },
+      {
+        "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 1440,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-030"
+      },
+      {
+        "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 390,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-030"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260708-006-002",
+        "route": "/member-library",
+        "viewport": "1440",
+        "screenshot_before": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-desktop-before.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-performance-audit.md",
+        "defect_codes": [
+          "VQ-PERF-001"
+        ],
+        "severity": "P0",
+        "user_impact": "Button click and filter interactions may feel laggy due to full grid/media rerenders.",
+        "expected_fix": "Audit before changing implementation; likely lazy media/player initialization or more granular render updates.",
+        "requirement_id": "REQ-20260708-030"
+      }
+    ]
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.2 A/AA plus responsive no-overlap and touch-target checks.",
+    "required_checks": [
+      "keyboard reachability",
+      "mobile no overflow",
+      "readable status/error text",
+      "filter button labels",
+      "no inaccessible hidden busy state"
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Recently Added filter",
+      "selector_or_action_key": "button:has-text('Recently Added')",
+      "action_state": "TEST_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Measure click latency and whether render reinitializes heavy media.",
+      "registry_required": false
+    },
+    {
+      "label": "Mark Complete",
+      "selector_or_action_key": "button:has-text('Mark Complete')",
+      "action_state": "TEST_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Measure click latency and preserve progress tracking policy.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": [
+    "navigation timing",
+    "api timing",
+    "click latency",
+    "console errors",
+    "DOM node count",
+    "iframe/video count",
+    "library item count",
+    "screenshot paths"
+  ],
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Use TEST access only.",
+      "No real user data screenshots with secrets.",
+      "No external writes."
+    ],
+    "forbidden_content": [
+      "raw access tokens",
+      "parent/student private details beyond TEST fixture",
+      "secrets",
+      "external writes"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260708-006-AUDIT",
+      "scope": "Measure current One Time library/classroom lag and visual state.",
+      "instructions": [
+        "Use Playwright against local or live TEST routes.",
+        "Capture desktop/mobile screenshots.",
+        "Measure filter/search/progress/classroom interactions.",
+        "Record first implementation recommendation."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/member-library.html",
+      "public/one-time-classroom.html",
+      "server.js"
+    ],
+    "files_allowed_to_edit": [
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/*",
+      "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md"
+    ],
+    "max_files_to_edit": 2,
+    "max_routes_to_touch": 2,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Audit only; implementation must split if it touches auth, Vimeo automation, slides/worksheets, and comments together.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    {
+      "command_or_check": "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/01-current-state-performance-visual-audit.product-quality.json",
+      "expected_result": "Audit packet validates."
+    },
+    {
+      "command_or_check": "Playwright audit script",
+      "expected_result": "Performance report and screenshots are saved."
+    }
+  ],
+  "evidence": {
+    "expected_paths": [
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-performance-audit.md",
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-performance-audit.json",
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-desktop-before.png",
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-mobile-before.png",
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-desktop-before.png",
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-mobile-before.png"
+    ]
+  },
+  "app_visible": false,
+  "deployment_gate": "NOT_REQUIRED_DOC_ONLY",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "PQC audit packet validates.",
+      "Playwright performance/current-state report exists.",
+      "Screenshots exist for desktop/mobile library and classroom.",
+      "Report recommends the next implementation packet."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260708-006-onetime-performance-media-classroom-workflow.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/01-current-state-performance-visual-audit.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": [
+      "run validator",
+      "run browser performance audit",
+      "record report",
+      "update task register"
+    ],
+    "skipped_actions_policy": "Skip code implementation and external writes in this packet.",
+    "blocker_decisions": [],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/"
+    ],
+    "final_status_path": "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/02-member-library-performance-filters.product-quality.json"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No unhandled drift findings after audit registration."
+  },
+  "next_packet": {
+    "type": "IMPLEMENTATION_PACKET",
+    "description": "Member library performance and filter fix based on measured current-state findings.",
+    "path": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/02-member-library-performance-filters.product-quality.json"
+  }
+}

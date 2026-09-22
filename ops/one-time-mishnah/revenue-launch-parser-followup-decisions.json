@@ -1,0 +1,67 @@
+{
+  "decision_packet_id": "DEC-PACKET-20260621-901",
+  "source_id": "RAW-20260621-002",
+  "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+  "updated_at": "2026-06-21T16:05:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "product_scope": {
+    "contexts": ["bna", "one_time_rabbi_ellie_scheller"],
+    "not_building": [
+      "standalone_saas",
+      "generic_reseller_onboarding",
+      "tenant_billing",
+      "white_label_self_service",
+      "universal_saas_admin"
+    ],
+    "first_party_crm": true,
+    "ghl_active_runtime": false
+  },
+  "priority_order": [
+    "privacy_and_authentication",
+    "reliable_intake_parsing",
+    "crm_and_leads",
+    "email_campaigns",
+    "payment_trial_access",
+    "class_links_and_reminders",
+    "community_questions",
+    "authenticated_support_tickets",
+    "realistic_beta_testing",
+    "vimeo_zoom_automation",
+    "advanced_gamification_and_study_bot"
+  ],
+  "warm_lead_launch_promotion": {
+    "audience": "approved_warm_one_time_leads",
+    "trial_days": 30,
+    "payment_method_required": true,
+    "renewal_amount_usd": 67,
+    "renewal_interval": "month",
+    "renewal_confirmation_required": true,
+    "pre_renewal_reminder_required": true,
+    "one_intro_trial_per_identity": true,
+    "existing_paying_subscribers_excluded_until_review": true,
+    "live_charge_enabled": false,
+    "bulk_send_enabled": false
+  },
+  "referral_promotion": {
+    "reward": "one_month_base_plan_credit",
+    "activates_after": "first_successful_paid_billing_cycle_after_trial",
+    "prevent_self_referral": true,
+    "prevent_duplicate_credit": true,
+    "prevent_multiple_credits_for_one_referred_customer": true,
+    "block_after_failed_or_refunded_payment": true,
+    "real_invoice_credit_enabled": false
+  },
+  "operator_decisions": [
+    {
+      "id": "DEC-20260621-901",
+      "requirement_id": "REQ-20260621-906",
+      "title": "Approve final customer-facing trial renewal, cancellation, refund, and policy wording",
+      "status": "needs_operator_decision",
+      "owner": "Shloimie / Rabbi Ellie Scheller",
+      "blocks": ["final_public_legal_copy", "live_billing_launch"],
+      "does_not_block": ["test_mode_trial_referral_policy_storage"],
+      "next_action": "Approve polished customer-facing wording after review."
+    }
+  ]
+}

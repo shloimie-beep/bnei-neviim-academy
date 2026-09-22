@@ -1,0 +1,87 @@
+{
+  "success": true,
+  "checked_at": "2026-07-13T16:18:40.701Z",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "mode": "owner_test_readiness_no_send",
+  "owner_aliases": {
+    "email": {
+      "configured": false,
+      "valid": false,
+      "source": "not configured",
+      "env_name": null,
+      "fingerprint": null,
+      "normalized_length": 0,
+      "raw_value_returned": false
+    },
+    "whatsapp": {
+      "configured": false,
+      "valid": false,
+      "source": "not configured",
+      "env_name": null,
+      "fingerprint": null,
+      "normalized_length": 0,
+      "raw_value_returned": false
+    },
+    "railway": {
+      "attempted": true,
+      "ok": true,
+      "source": "railway_token_or_env",
+      "key_count": 79,
+      "owner_test_email_present": false,
+      "owner_test_whatsapp_present": false,
+      "owner_test_alias_values_returned": false
+    }
+  },
+  "resend": {
+    "configured": true,
+    "connected": true,
+    "send_allowed": true,
+    "domain_verified": true,
+    "domain_status": "verified",
+    "account_owner": "shloimie",
+    "provider_account_configured": false,
+    "from_configured": true,
+    "reply_to_configured": true,
+    "blocker": null
+  },
+  "wapi": {
+    "checked": true,
+    "provider_setup_ready": true,
+    "outbound_configured": true,
+    "credential_scope": "one_time_scoped",
+    "one_time_token_present": true,
+    "instance_id_present": true,
+    "phone_metadata_present": true,
+    "webhook_secret_present": true,
+    "auto_reply_ready": false,
+    "telegram_notifications_ready": false,
+    "blockers": [],
+    "auto_reply_blockers": [
+      "ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM"
+    ],
+    "error": null
+  },
+  "readiness": {
+    "email_preflight_ready": false,
+    "whatsapp_preflight_ready": false,
+    "owner_send_confirmed": false,
+    "send_confirmation_phrase": "APPROVE_ONE_TIME_OWNER_TEST_SENDS",
+    "max_owner_test_emails": 3,
+    "max_owner_test_whatsapp_messages": 5,
+    "public_auto_reply_enabled_by_this_check": false,
+    "external_send_performed": false,
+    "whatsapp_send_performed": false,
+    "email_send_performed": false
+  },
+  "blockers": [
+    "owner_test_email_alias_missing",
+    "owner_test_whatsapp_alias_missing"
+  ],
+  "guardrails": [
+    "No email or WhatsApp message is sent by this readiness check.",
+    "Owner destinations are resolved only by configured aliases and are reported only by source, validity, length, and fingerprint.",
+    "Public WhatsApp auto-reply is not enabled by owner-test readiness.",
+    "Live owner sends require the explicit owner-test confirmation phrase and a separate guarded send step."
+  ]
+}

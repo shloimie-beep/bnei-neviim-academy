@@ -1,0 +1,211 @@
+{
+  "run_id": "2026-06-24-issue-18-class-intake-readonly",
+  "title": "Issue #18 - Read-only class intake reconciliation",
+  "updated_at": "2026-06-24T22:40:00+03:00",
+  "git_refs": {
+    "base_branch": "master",
+    "working_branch": "codex/issue-18-class-intake-readonly-20260624",
+    "origin_master_sha_at_start": "50087ae5d8e120830ae8e1f8dcaab71f61389d7c",
+    "local_head_at_start": "50087ae5d8e120830ae8e1f8dcaab71f61389d7c",
+    "issue_number": 18,
+    "parent_issue_number": 7,
+    "next_issue_number": 20
+  },
+  "sources": [
+    {
+      "source_id": "RAW-20260624-008",
+      "source_path": "raw-input/RAW-20260624-008-codex-kickoff-issue-18-then-20.md",
+      "captured_at": "2026-06-24T22:02:52+03:00",
+      "content_fingerprint": "sha256:1cfc2561d4c3fadd29831a2808c29bc8f4216b4f186f933488397be686bb28ee",
+      "privacy_classification": "internal_goal_kickoff",
+      "workspace": "bna_platform",
+      "project": "class_drive_intake",
+      "source_type": "codex_goal_packet"
+    },
+    {
+      "source_id": "GITHUB-ISSUE-18",
+      "connector_id": "github:shloimie-beep/bnei-neviim-academy/issues/18",
+      "captured_at": "2026-06-24T22:02:52+03:00",
+      "content_fingerprint": "github-issue-18-updated-2026-06-24T18:29:43Z",
+      "privacy_classification": "internal_github_issue",
+      "workspace": "bna_platform",
+      "project": "class_drive_intake",
+      "source_type": "github_issue"
+    },
+    {
+      "source_id": "GITHUB-ISSUE-18-COMMENT-4792443118",
+      "connector_id": "github:shloimie-beep/bnei-neviim-academy/issues/18#issuecomment-4792443118",
+      "captured_at": "2026-06-24T22:02:52+03:00",
+      "content_fingerprint": "github-issue-comment-4792443118",
+      "privacy_classification": "internal_github_issue_comment",
+      "workspace": "bna_platform",
+      "project": "class_drive_intake",
+      "source_type": "github_issue_comment"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "RAW-20260624-008-S001",
+      "source_id": "RAW-20260624-008",
+      "source_statement": "Execute Issue #18 first, then automatically continue Issue #20.",
+      "requirement_id": "REQ-20260624-028",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "GITHUB-ISSUE-18-S001",
+      "source_id": "GITHUB-ISSUE-18",
+      "source_statement": "Resolve REQ-20260624-028 by creating a new narrowly scoped execution run from current master without reopening the terminal final-release run.",
+      "requirement_id": "REQ-20260624-028",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "GITHUB-ISSUE-18-S002",
+      "source_id": "GITHUB-ISSUE-18",
+      "source_statement": "Perform read-only production reconciliation for all relevant uploaded class jobs, including jobs 64-74 if they exist, without transcript bodies, private student details, secrets, or raw credentials in reports.",
+      "requirement_id": "REQ-20260624-028",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "GITHUB-ISSUE-18-S003",
+      "source_id": "GITHUB-ISSUE-18",
+      "source_statement": "Trace each candidate through source discovery, intake job creation, file read, transcription, parsing, structured output, student matching, class-session linkage, persistence, read models, deduplication, and retry/backfill eligibility.",
+      "requirement_id": "REQ-20260624-028",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "GITHUB-ISSUE-18-S004",
+      "source_id": "GITHUB-ISSUE-18",
+      "source_statement": "Produce a deterministic no-write dry-run row-level plan with target model, operation, source identifier, changed fields, before/after summary, confidence, idempotency key, and rollback method.",
+      "requirement_id": "REQ-20260624-028",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "GITHUB-ISSUE-18-S005",
+      "source_id": "GITHUB-ISSUE-18",
+      "source_statement": "Set safe_to_apply=true only if all listed ambiguity, scoping, row plan, idempotency, duplicate, rollback, UI read-model, focused/full test, secret audit, and discrepancy gates pass.",
+      "requirement_id": "REQ-20260624-028",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "GITHUB-ISSUE-18-S006",
+      "source_id": "GITHUB-ISSUE-18",
+      "source_statement": "Do not apply production writes in this issue; do not execute APPLY_GUARDED_CLASS_BACKFILL or mutate production records.",
+      "requirement_id": "REQ-20260624-028",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "GITHUB-ISSUE-18-S007",
+      "source_id": "GITHUB-ISSUE-18",
+      "source_statement": "Add or run tests proving parsing, persistence mapping, ambiguity exclusion, duplicate idempotency, repeat dry runs, workspace scoping, UI read-model agreement, failure visibility, no-write mode, and secret/transcript exclusion.",
+      "requirement_id": "REQ-20260624-028",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "GITHUB-ISSUE-18-C4792443118-S001",
+      "source_id": "GITHUB-ISSUE-18-COMMENT-4792443118",
+      "source_statement": "Complete Issue #18 first under existing no-write guardrails, post terminal evidence, close or park its run correctly, then let the control tower create the Issue #20 parent run.",
+      "requirement_id": "REQ-20260624-028",
+      "classification": "mapped"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260624-028",
+      "title": "Read-only class intake reconciliation and safe backfill evidence",
+      "expected_result": "Issue #18 reaches a terminal read-only verdict with per-job reconciliation, deterministic dry-run evidence, safe_to_apply gate result, tests, push/PR evidence, and no production write.",
+      "source_id": "GITHUB-ISSUE-18",
+      "source_statement_ids": [
+        "RAW-20260624-008-S001",
+        "GITHUB-ISSUE-18-S001",
+        "GITHUB-ISSUE-18-S002",
+        "GITHUB-ISSUE-18-S003",
+        "GITHUB-ISSUE-18-S004",
+        "GITHUB-ISSUE-18-S005",
+        "GITHUB-ISSUE-18-S006",
+        "GITHUB-ISSUE-18-S007",
+        "GITHUB-ISSUE-18-C4792443118-S001"
+      ],
+      "source_path": "raw-input/RAW-20260624-008-codex-kickoff-issue-18-then-20.md",
+      "workspace_key": "bna_platform",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "category": "reconciliation",
+      "priority": "P0",
+      "batch_id": "A",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "terminal_read_only_verdict_not_safe_to_apply_pr_and_issue_comment_posted",
+      "can_continue_without_operator": true,
+      "next_action": "Continue the sequenced Issue #20 parent run.",
+      "acceptance_criteria": [
+        "All relevant uploaded class jobs are reconciled with sanitized per-job evidence.",
+        "The full pipeline is traced or explicitly blocked at each stage.",
+        "A repeatable no-write dry-run row-level plan is produced.",
+        "safe_to_apply is true only if all gates pass; otherwise precise blockers are listed per excluded job.",
+        "No production writes, Drive moves, sends, uploads, charges, DNS changes, or credential changes occur.",
+        "The terminal verdict is posted to GitHub issue #18 before Issue #20 starts."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-issue-18-class-intake-readonly/SOURCE.md",
+        "tasks-pending/2026-06-24-issue-18-class-intake-readonly.md",
+        "raw-input/RAW-20260624-008-codex-kickoff-issue-18-then-20.md",
+        "ops/class-drive-intake/2026-06-24-issue-18/PIPELINE-CENSUS.md",
+        "ops/class-drive-intake/2026-06-24-issue-18/BACKFILL-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-24-issue-18/BACKFILL-RECOMMENDATION.json",
+        "ops/class-drive-intake/2026-06-24-issue-18/AUTH-READINESS.md",
+        "ops/class-drive-intake/2026-06-24-issue-18/SOURCE-COVERAGE.md",
+        "ops/class-drive-intake/2026-06-24-issue-18/VERIFICATION.md",
+        "ops/class-drive-intake/2026-06-24-issue-18/TERMINAL-VERDICT.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/21",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/18#issuecomment-4792923047"
+      ],
+      "verification": [
+        "node --test tests/class-drive-intake-reconcile.test.js tests/class-drive-intake-shared-patch.test.js passed: 17 tests.",
+        "npm run bna:run:validate passed.",
+        "npm run bna:run:source-coverage passed: 9 mapped, 0 unmapped executable statements.",
+        "npm run bna:run:stale-evidence passed: stale evidence detection none.",
+        "npm run secrets:audit passed: 4636 tracked paths checked, 0 tracked secret-risk files found.",
+        "git diff --check passed with line-ending normalization warnings only.",
+        "Privacy scans passed: no known student/family-name matches, no raw transcript/parse/question/student-name/original-filename fields, and 0 non-redacted pipeline titles, candidate titles, or Drive readback names."
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-06-24-issue-18-class-intake-readonly/requirements.json",
+        "tasks-pending/2026-06-24-issue-18-class-intake-readonly.md",
+        "scripts/class-drive-intake-reconcile.cjs",
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "tests/class-drive-intake-reconcile.test.js",
+        "ops/class-drive-intake/2026-06-24-issue-18/"
+      ],
+      "deployment_required": false,
+      "implementation_commit": "8dd41084",
+      "pushed_commit": "8dd41084",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/21",
+      "updated_at": "2026-06-24T22:40:00+03:00"
+    }
+  ],
+  "tasks": [
+    {
+      "canonical_task_key": "bna_platform|class_drive_intake|GITHUB-ISSUE-18|REQ-20260624-028|read_only_reconciliation",
+      "title": "Issue #18 read-only class intake reconciliation",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-028",
+      "status": "done",
+      "source_path": "raw-input/RAW-20260624-008-codex-kickoff-issue-18-then-20.md"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-20260624-018",
+      "title": "Production class backfill apply approval",
+      "owner": "Shloimie",
+      "status": "blocked_until_safe_to_apply_evidence",
+      "blocks": [
+        "future_apply_only"
+      ],
+      "external_link": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/18",
+      "requested_action": "Do not approve apply in this run. Review a future Operations Decision only if Issue #18 reaches READY FOR OWNER APPROVAL."
+    }
+  ]
+}

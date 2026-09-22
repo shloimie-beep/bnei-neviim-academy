@@ -1,0 +1,37 @@
+- main:
+  - button "Open navigation"
+  - strong: One Time Mishnah Class
+  - text: Provider Workspace Admin / Communications / Provider Messages
+  - button "Ask"
+  - text: 1 Jul
+  - navigation "Communications filters":
+    - text: Communications
+    - strong: Provider Messages
+    - tablist "Communications views":
+      - tab "Overview 0"
+      - tab "Parent Messages 0"
+      - tab "Student Messages 0"
+      - tab "Provider Messages 0" [selected]
+      - tab "Internal Dialogue 0"
+      - tab "WhatsApp 0"
+      - tab "Email 0"
+      - tab "Bot Conversations 0"
+      - tab "Announcements 0"
+      - tab "Templates 0"
+      - tab "Support Threads 0"
+      - tab "Settings 0"
+  - text: Messages
+  - heading "Communications" [level=2]
+  - paragraph: Parent, student, provider, internal, WhatsApp, email, and bot conversations are separated by permission-aware lanes.
+  - heading "Provider Messages" [level=3]
+  - text: 0 records No messages match this lane.
+- dialog "Shloimie's BNA Helper":
+  - text: Shloimie's BNA Helper Provider Workspace Admin / Communications
+  - button "Close Shloimie's BNA Helper": x
+  - region "Helper scope":
+    - strong: admin / rabbi_sheller_provider
+    - text: Scoped to this workspace and current page context. 0 tools standard
+    - button "Teach helper"
+  - text: Ready for scoped Operations actions. Confirmation is required before email sends, social scheduling, or other sensitive changes.
+  - textbox "Ask Shloimie's BNA Helper to open a task, mark done, report a problem, draft an email, check the queue, or prepare an action."
+  - button "Send"

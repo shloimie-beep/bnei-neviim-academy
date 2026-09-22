@@ -1,0 +1,67 @@
+{
+  "ok": true,
+  "generated_at": "2026-07-12T20:48:11.384Z",
+  "mode": "transaction_rollback_live_database_proof",
+  "smoke_id": "crm-identity-isolation-20260712204811-f39a26cc",
+  "workspace_keys": [
+    "bna",
+    "rabbi_sheller_provider"
+  ],
+  "persistent_write_performed": false,
+  "external_send_performed": false,
+  "provider_mutation_performed": false,
+  "payment_or_access_mutation_performed": false,
+  "dns_or_credential_mutation_performed": false,
+  "secret_values_printed": false,
+  "synthetic_identity": {
+    "email_domain": "example.invalid",
+    "email_hash": "6c7985e5fe0ee03ae2c58197697f43c60c11d03cd33c8912b845eee30e69f861",
+    "phone_digits_hash": "5beb14721c3627600590502395e627180d69a72f90f4f4c96c798f901ec43eba"
+  },
+  "workspaces": {
+    "a": {
+      "id": 2,
+      "workspace_key": "bna",
+      "workspace_type": "school",
+      "display_name": "BNA School Workspace"
+    },
+    "b": {
+      "id": 3,
+      "workspace_key": "rabbi_sheller_provider",
+      "workspace_type": "service_provider",
+      "display_name": "One Time Mishnah Class"
+    }
+  },
+  "index_state": {
+    "has_workspace_unique_index": true,
+    "has_workspace_lookup_index": true,
+    "has_legacy_global_unique_constraint": false,
+    "indexes": [
+      "bna_contact_identities_pkey",
+      "idx_bna_contact_identities_contact",
+      "idx_bna_contact_identities_workspace_lookup",
+      "idx_bna_contact_identities_workspace_unique"
+    ]
+  },
+  "proof": {
+    "same_email_coexists": true,
+    "same_phone_coexists": true,
+    "workspace_filtered_email_counts": {
+      "a": 1,
+      "b": 1
+    },
+    "workspace_filtered_phone_counts": {
+      "a": 1,
+      "b": 1
+    },
+    "cross_workspace_contact_id_query_leak_count": 0,
+    "same_workspace_duplicate_blocked": true,
+    "duplicate_error_code": "23505",
+    "contact_ids_redacted": true
+  },
+  "rollback": {
+    "completed": true,
+    "post_rollback_contact_count": 0,
+    "post_rollback_identity_count": 0
+  }
+}

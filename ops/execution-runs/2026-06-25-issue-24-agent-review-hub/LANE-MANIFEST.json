@@ -1,0 +1,119 @@
+{
+  "run_id": "2026-06-25-issue-24-agent-review-hub",
+  "parent_branch": "codex/issue-24-agent-review-hub-20260625",
+  "parent_run_path": "ops/execution-runs/2026-06-25-issue-24-agent-review-hub",
+  "updated_at": "2026-06-25T17:45:00+03:00",
+  "single_active_run_owner": true,
+  "lanes": [
+    {
+      "lane_id": "drive-trace",
+      "requirement_ids": ["REQ-20260625-025"],
+      "status": "queued",
+      "owned_paths": [
+        "scripts/",
+        "ops/drive-audits/",
+        "ops/class-drive-intake/",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/"
+      ],
+      "prohibited_actions": [
+        "APPLY_GUARDED_CLASS_BACKFILL",
+        "production_write",
+        "drive_move_or_write",
+        "paid_retranscription",
+        "worker_retry"
+      ],
+      "evidence": []
+    },
+    {
+      "lane_id": "review-hub-auth",
+      "requirement_ids": ["REQ-20260625-026"],
+      "status": "queued",
+      "owned_paths": [
+        "server.js",
+        "public/operations.html",
+        "public/css/",
+        "public/js/",
+        "ops/route-registry.json",
+        "ops/action-registry.json",
+        "tests/"
+      ],
+      "prohibited_actions": [
+        "anonymous_all_access_link",
+        "reusable_url_secret",
+        "cross_workspace_takeover"
+      ],
+      "evidence": []
+    },
+    {
+      "lane_id": "helper-action-audit",
+      "requirement_ids": ["REQ-20260625-027"],
+      "status": "queued",
+      "owned_paths": [
+        "src/lib/bna/helper/",
+        "src/lib/actions/",
+        "scripts/",
+        "tests/",
+        "ops/action-registry.json",
+        "ops/route-registry.json"
+      ],
+      "prohibited_actions": [
+        "model_invented_internal_url",
+        "claim_write_without_audit"
+      ],
+      "evidence": []
+    },
+    {
+      "lane_id": "agent-mode-pack",
+      "requirement_ids": ["REQ-20260625-028"],
+      "status": "queued",
+      "owned_paths": [
+        "docs/",
+        "public/",
+        "src/lib/bna/agent-result-packet.js",
+        "src/lib/actions/",
+        "server.js",
+        "tests/"
+      ],
+      "prohibited_actions": [
+        "fragile_browser_click_as_durable_save",
+        "unscoped_result_write"
+      ],
+      "evidence": []
+    },
+    {
+      "lane_id": "navigation-ia",
+      "requirement_ids": ["REQ-20260625-029"],
+      "status": "queued",
+      "owned_paths": [
+        "public/",
+        "scripts/",
+        "tests/",
+        "ops/route-registry.json",
+        "ops/action-registry.json"
+      ],
+      "prohibited_actions": [
+        "remove_legitimate_subcategory",
+        "same_level_duplicate_target"
+      ],
+      "evidence": []
+    },
+    {
+      "lane_id": "integration-release",
+      "requirement_ids": ["REQ-20260625-030"],
+      "status": "queued",
+      "owned_paths": [
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/",
+        "tasks-pending/2026-06-25-issue-24-agent-review-hub.md",
+        "TASKS.md",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "prohibited_actions": [
+        "deploy_before_release_gates",
+        "duplicate_visible_task",
+        "mark_parent_complete_before_terminal_requirements"
+      ],
+      "evidence": []
+    }
+  ]
+}

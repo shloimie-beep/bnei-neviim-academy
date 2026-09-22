@@ -1,0 +1,306 @@
+{
+  "generated_at": "2026-06-24T15:25:38.949Z",
+  "release_candidate_sha": "03454ea4a9152946d21452141ed427277705fab1",
+  "guardrails": {
+    "external_credentials": false,
+    "production_state_readback": false,
+    "production_database_mutation": false,
+    "deploy": false,
+    "external_send_publish_upload_charge_dns": false
+  },
+  "sections": [
+    {
+      "requirement_id": "REQ-20260624-021",
+      "label": "Class Drive intake, transcription, parsing, and read-model readiness",
+      "status": "credential_free_ready_with_external_blockers",
+      "source_contract": {
+        "ok": true,
+        "checks": [
+          {
+            "id": "content_media_workflow_exists",
+            "ok": true,
+            "evidence": "ops/one-time-mishnah/content-media-intake-workflow.md"
+          },
+          {
+            "id": "provider_class_media_dry_run_route_exists",
+            "ok": true,
+            "evidence": "/api/provider-portal/one-time/class-media"
+          },
+          {
+            "id": "mixed_recording_parse_route_exists",
+            "ok": true,
+            "evidence": "/api/bna/content-jobs/:id/parse-mixed-recording"
+          },
+          {
+            "id": "one_time_drive_preview_route_exists",
+            "ok": true,
+            "evidence": "/api/bna/one-time-drive-brief/preview"
+          },
+          {
+            "id": "class_session_readback_route_exists",
+            "ok": true,
+            "evidence": "/api/bna/class-sessions"
+          }
+        ]
+      },
+      "behavior": {
+        "ok": true,
+        "checks": [
+          {
+            "id": "recording_routes_to_class_course_media",
+            "ok": true,
+            "evidence": "class_course_ingestion_review"
+          },
+          {
+            "id": "recording_ready_for_parse_without_external_write",
+            "ok": true,
+            "evidence": "ready_for_parse"
+          },
+          {
+            "id": "worksheet_routes_to_resource_review",
+            "ok": true,
+            "evidence": "worksheet_or_resource_review"
+          },
+          {
+            "id": "class_parser_extracts_notes_questions_research",
+            "ok": true,
+            "evidence": "notes=4; questions=1; research=4"
+          },
+          {
+            "id": "drive_brief_preview_is_scoped_no_write",
+            "ok": true,
+            "evidence": "rabbi_sheller_provider"
+          }
+        ]
+      },
+      "samples": {
+        "recording_outcome": {
+          "outcome_key": "outcome_ae9762ae58802ffe",
+          "status": "planned",
+          "idempotency_key": "1f9f7fa66461287507ceb8e59f2cc2b00fc03e46c10088d10dd507a6d1c5241a",
+          "external_write_performed": false,
+          "kind": "class_course_media",
+          "target": "class_course_ingestion_review"
+        },
+        "worksheet_outcome": {
+          "outcome_key": "outcome_1ecc9247792c37ec",
+          "status": "planned",
+          "idempotency_key": "e708bc461e25982fc98f47b3673c3f4eb73bbc42cc9a2bf8a98350186cc9ea73",
+          "external_write_performed": false,
+          "kind": "worksheet_resource",
+          "target": "worksheet_or_resource_review"
+        },
+        "parser_counts": {
+          "class_session_notes": 4,
+          "student_questions": 1,
+          "research_items": 4,
+          "workspace_routing": 1
+        },
+        "drive_brief_counts": {
+          "decisions": 17,
+          "tasks": 17,
+          "calendar_events": 17,
+          "content_items": 2,
+          "community_records": 1,
+          "integration_items": 9,
+          "notes": 1
+        }
+      },
+      "blockers": [
+        "Read-only production class/job range and source folder approval are required before inspecting real uploaded classes such as jobs 64-74.",
+        "Google Drive auth selection and folder permissions are required before real Drive file readback.",
+        "OpenAI/transcription credentials and explicit media-processing approval are required before transcribing real class media.",
+        "Ambiguous student/person matching must stay human-review gated before official records or linked profiles change."
+      ]
+    },
+    {
+      "requirement_id": "REQ-20260624-022",
+      "label": "Stripe sandbox readiness",
+      "status": "credential_free_ready_with_external_blockers",
+      "source_contract": {
+        "ok": true,
+        "checks": [
+          {
+            "id": "stripe_status_route_exists",
+            "ok": true,
+            "evidence": "/api/bna/integrations/stripe/status"
+          },
+          {
+            "id": "stripe_checkout_preview_route_exists",
+            "ok": true,
+            "evidence": "/api/bna/integrations/stripe/checkout-preview"
+          },
+          {
+            "id": "stripe_checkout_create_is_approval_gated",
+            "ok": true,
+            "evidence": "approval-gated checkout create route with preview-only failure audit"
+          },
+          {
+            "id": "safe_smoke_blocks_live_key",
+            "ok": true,
+            "evidence": "safe smoke live-key blocker"
+          },
+          {
+            "id": "safe_smoke_does_not_create_stripe_objects",
+            "ok": true,
+            "evidence": "no create calls in safe smoke"
+          }
+        ]
+      },
+      "behavior": {
+        "ok": true,
+        "checks": [
+          {
+            "id": "readiness_reports_not_configured",
+            "ok": true,
+            "evidence": "not_configured"
+          },
+          {
+            "id": "checkout_preview_is_no_write",
+            "ok": true,
+            "evidence": "preview_only"
+          },
+          {
+            "id": "local_beta_disables_live_billing",
+            "ok": true,
+            "evidence": "live_charge=false; checkout_session=false"
+          },
+          {
+            "id": "local_beta_has_test_policy_shape",
+            "ok": true,
+            "evidence": "30 days; 6700 cents"
+          }
+        ]
+      },
+      "samples": {
+        "readiness_status": "not_configured",
+        "readiness_blockers": [
+          "Stripe secret key is not configured server-side.",
+          "Stripe account ownership must be documented before checkout or live billing."
+        ],
+        "checkout_preview": {
+          "preview_only": true,
+          "external_write_performed": false,
+          "checkout": {
+            "title": "One Time Membership",
+            "currency": "usd",
+            "amount": 6700,
+            "success_url_configured": true,
+            "cancel_url_configured": true
+          }
+        },
+        "local_beta_actions": {
+          "checkout_preview_enabled": true,
+          "checkout_session_creation_enabled": false,
+          "subscription_creation_enabled": false,
+          "payment_method_collection_live_enabled": false,
+          "invoice_credit_enabled": false,
+          "live_charge_enabled": false,
+          "external_write_performed": false
+        }
+      },
+      "blockers": [
+        "Stripe sandbox secret key and webhook secret must be stored in the approved secret path before real sandbox API/readback tests.",
+        "Account owner, price/trial/cancel/refund/tax/grace/revenue policies must be decided before live billing launch.",
+        "Live payment links, checkout session creation, charges, refunds, subscriptions, and invoice credits require explicit approval and rollback evidence."
+      ]
+    },
+    {
+      "requirement_id": "REQ-20260624-023",
+      "label": "Vimeo/video-hosting readiness",
+      "status": "credential_free_ready_with_external_blockers",
+      "source_contract": {
+        "ok": true,
+        "checks": [
+          {
+            "id": "video_hosting_status_route_exists",
+            "ok": true,
+            "evidence": "/api/bna/integrations/video-hosting/status"
+          },
+          {
+            "id": "vimeo_status_route_exists",
+            "ok": true,
+            "evidence": "/api/bna/integrations/vimeo/status"
+          },
+          {
+            "id": "recording_pipeline_preview_route_exists",
+            "ok": true,
+            "evidence": "/api/bna/video-library/recording-pipeline-preview"
+          },
+          {
+            "id": "vimeo_upload_route_is_blocked",
+            "ok": true,
+            "evidence": "upload blocker"
+          },
+          {
+            "id": "safe_smoke_does_not_call_vimeo_api",
+            "ok": true,
+            "evidence": "no Vimeo API request in safe smoke"
+          }
+        ]
+      },
+      "behavior": {
+        "ok": true,
+        "checks": [
+          {
+            "id": "readiness_reports_manual_ready",
+            "ok": true,
+            "evidence": "manual_ready"
+          },
+          {
+            "id": "recording_pipeline_is_preview_only",
+            "ok": true,
+            "evidence": "manual_vimeo_ready"
+          },
+          {
+            "id": "recording_pipeline_keeps_api_upload_disabled",
+            "ok": true,
+            "evidence": "api/provider publish disabled"
+          },
+          {
+            "id": "manual_vimeo_url_attach_parses_embed",
+            "ok": true,
+            "evidence": "manual_ready"
+          },
+          {
+            "id": "upload_intent_is_manual_without_token",
+            "ok": true,
+            "evidence": "manual_ready"
+          }
+        ]
+      },
+      "samples": {
+        "readiness_status": "manual_ready",
+        "readiness_blockers": [
+          "Vimeo access token is not configured server-side.",
+          "Confirm the current Vimeo plan/account supports API uploads and intended embed controls.",
+          "Video-host account owner/admin must be documented before upload or publish actions."
+        ],
+        "recording_pipeline": {
+          "status": "manual_vimeo_ready",
+          "manual_vimeo_ready": true,
+          "api_upload_enabled": false,
+          "provider_publish_enabled": false,
+          "notification_send_enabled": false
+        },
+        "attach_status": "manual_ready",
+        "upload_intent_status": "manual_ready"
+      },
+      "blockers": [
+        "Vimeo primary account owner, user token, app credentials, plan/quota, folder, privacy default, allowed embed domains, and callback URL need approved readback before API upload.",
+        "Real Vimeo upload, provider publish/unpublish/delete, and playback verification require explicit operator approval and a synthetic non-sensitive asset.",
+        "Manual Vimeo URL attachment remains the credential-free path; member-library publish remains first-party approval gated."
+      ]
+    }
+  ],
+  "summary": {
+    "ok": true,
+    "secret_leak_detected": false,
+    "external_write_performed": false,
+    "paths": {
+      "markdown": "ops/qa-runs/2026-06-24-owner-review-external-readiness/report.md",
+      "json": "ops/qa-runs/2026-06-24-owner-review-external-readiness/report.json",
+      "owner_review_doc": "docs/owner-review/EXTERNAL-READINESS-AUDIT.md"
+    }
+  }
+}

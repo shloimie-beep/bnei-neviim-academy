@@ -1,0 +1,14 @@
+{
+  "black": "#080910",
+  "charcoal": "#10131a",
+  "navy": "#081323",
+  "navy_2": "#102634",
+  "teal": "#08779c",
+  "cyan": "#0b9fc9",
+  "yellow": "#ede518",
+  "cream": "#faf9f4",
+  "white": "#ffffff",
+  "muted": "#aeb9c6",
+  "line_dark": "rgba(255,255,255,0.14)",
+  "line_light": "rgba(8,9,16,0.12)"
+}

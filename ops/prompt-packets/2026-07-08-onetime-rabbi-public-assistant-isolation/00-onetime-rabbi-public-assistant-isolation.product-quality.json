@@ -1,0 +1,596 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260708-053",
+  "parent_raw_id": "RAW-20260708-014",
+  "source_statement_ids": [
+    "SRC-20260708-014-001",
+    "SRC-20260708-014-002",
+    "SRC-20260708-014-003"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260708-052"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260708-014-onetime-rabbi-public-assistant-isolation.md",
+      "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+      "server.js",
+      "public/js/bna-bot-widget.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json"
+    ],
+    "produces": [
+      "server.js",
+      "public/js/bna-bot-widget.js",
+      "tests/one-time-brand-helper-isolation.test.js",
+      "tests/rabbi-checkout-access.test.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+      "ops/prompt-packets/2026-07-08-onetime-rabbi-public-assistant-isolation/00-onetime-rabbi-public-assistant-isolation.product-quality.json"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-rabbi-public-assistant-isolation/00-onetime-rabbi-public-assistant-isolation.product-quality.json",
+    "terminal_condition": "The OneTime public landing aliases, especially /rabbi, render the focused OneTime public funnel without BNA preview chrome, and the public helper presents as Rabbi Scheller's digital assistant while keeping lead capture, helper memory, transcript knowledge, and WhatsApp readiness scoped to OneTime/Rabbi.",
+    "handoff_target": "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "in_progress",
+  "title": "OneTime Rabbi Public Assistant Isolation",
+  "created_at": "2026-07-08T18:35:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "PUBLIC_MARKETING"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260708-014",
+    "classification": [
+      "BUG_REPORT",
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "CRM_PIPELINE",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.95,
+    "reasons": [
+      "The live /rabbi alias was observed serving the older BNA provider-preview page while / and /one-time served the focused OneTime landing.",
+      "The operator explicitly corrected the public helper identity from generic One Time/BNA helper to Rabbi Scheller's digital assistant.",
+      "The request mentions WhatsApp lead capture and transcript knowledge, but external sends and knowledge promotion must remain guarded by existing OneTime WAPI and transcript decisions."
+    ],
+    "affected_product_surfaces": [
+      "OneTime public landing and public helper bubble"
+    ],
+    "likely_external_provider_blockers": [
+      "Real WhatsApp send/connect remains blocked until OneTime/Rabbi WAPI credentials, class-link env, and final approval are present.",
+      "Transcript-derived helper knowledge remains blocked until approved transcript promotion policy and source review are complete."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-onetime-rabbi-public-assistant-isolation"
+    ],
+    "next_exact_packet": "After this route/helper patch deploys, run live browser readback for /, /one-time, and /rabbi plus the OneTime helper open state; then leave WAPI and transcript promotion blocked until their existing decisions are resolved."
+  },
+  "operator_intent_summary": "The public Rabbi Scheller / OneTime experience must not look like BNA. The main public aliases must show the OneTimeOneTime Mishnayos landing, and the floating helper must introduce itself as Rabbi Scheller's digital assistant, help with schedule/program/speaking to the Rabbi, capture leads safely, and keep all knowledge and actions inside the Rabbi Sheller provider workspace.",
+  "raw_quotes": [
+    "right now in the main landing page it's BNA",
+    "we can't have any BNA anywhere on the rabbi sheller thing",
+    "the bar is still programmed to BNA",
+    "that's the rabbi sheller digital assistant",
+    "the landing page it's going to be a little WhatsApp bubble that pops up",
+    "knowledge base is based on the transcript of the video"
+  ],
+  "decisions_captured": [
+    "DEC-20260708-010",
+    "DEC-20260708-011",
+    "DEC-20260708-012",
+    "DEC-20260708-013"
+  ],
+  "out_of_scope": [
+    "No real WhatsApp send.",
+    "No WAPI credential storage or external account mutation.",
+    "No Drive, Vimeo, transcript, or bot-knowledge promotion write.",
+    "No parent invite resend.",
+    "No payment, access grant, DNS, Zoom, or email send.",
+    "No broad redesign of parent, student, member, or provider portals."
+  ],
+  "affected_surfaces": [
+    "OneTime public landing aliases",
+    "OneTime public helper bubble",
+    "Assistant public lead capture response",
+    "Route and action registries for the public helper"
+  ],
+  "affected_routes": [
+    "/",
+    "/one-time",
+    "/rabbi",
+    "/rabbi-preview",
+    "/one-time-mishnayos",
+    "/api/bna/assistant/chat"
+  ],
+  "affected_files": [
+    "server.js",
+    "public/js/bna-bot-widget.js",
+    "tests/one-time-brand-helper-isolation.test.js",
+    "tests/rabbi-checkout-access.test.js",
+    "ops/action-registry.json",
+    "ops/route-registry.json"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "Live readback for https://join.onetimeonetime.com/",
+      "Live readback for https://join.onetimeonetime.com/one-time",
+      "Live readback for https://join.onetimeonetime.com/rabbi",
+      "server.js public landing alias routes",
+      "public/js/bna-bot-widget.js one_time_public surface copy",
+      "server.js one_time_public assistant system prompt and action reply"
+    ],
+    "observed": [
+      "Live / and /one-time served the focused OneTime public landing with no BNA nav marker.",
+      "Live /rabbi served the older public/rabbi.html preview with BNA wording such as BNA provider system and preview mode.",
+      "The helper widget already normalizes /rabbi and /one-time to one_time_public, but visible copy says One Time Helper instead of Rabbi Scheller's digital assistant.",
+      "The generic BNA helper knowledge bundle is still loaded on OneTime pages and must not be the source for one_time_public helper choices or nudges."
+    ],
+    "known_blockers": [
+      "Real WhatsApp/WAPI send remains blocked by missing OneTime WAPI credential setup and class-link env.",
+      "Transcript/Vimeo knowledge promotion remains blocked by the existing approved transcript policy decision."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "BNA",
+      "bar is still programmed to BNA",
+      "bot scoped",
+      "WhatsApp bubble",
+      "CRM",
+      "knowledge base",
+      "transcript"
+    ],
+    "expanded_phrases": {
+      "BNA": "For OneTime public surfaces, no visible BNA/BNA Academy brand, preview language, generic BNA homepage bar, BNA helper identity, or BNA public-program choices may appear.",
+      "bar is still programmed to BNA": "The /rabbi public alias must use the same focused OneTime landing route as /one-time instead of public/rabbi.html preview chrome.",
+      "bot scoped": "The assistant request surface must normalize to one_time_public, project_key one_time_mishnah_class, workspace_key rabbi_sheller_provider, and public OneTime-safe data only.",
+      "WhatsApp bubble": "The visible helper bubble may capture schedule/program/speak-to-Rabbi lead intent into first-party CRM, but no external WhatsApp send is allowed without the existing WAPI gates.",
+      "CRM": "Lead capture means first-party assistant/contact/ticket logging under OneTime scope, not GHL/LeadConnector or a generic BNA contact path.",
+      "knowledge base": "OneTime helper context must be limited to approved OneTime public content and later approved transcript summaries, never generic BNA school knowledge.",
+      "transcript": "Raw class transcripts stay private until a separate approved promotion policy produces reviewed summaries or class-session knowledge rows."
+    },
+    "first_party_pattern_interpretation": "Use existing first-party assistant threads, lead/ticket capture, route registry, action registry, and OneTime WAPI readiness gates. Do not introduce GHL/LeadConnector or direct WhatsApp sends in this packet."
+  },
+  "design_pattern_references": [
+    "memory-topics/one-time-rabbi-sheller.md",
+    "memory-topics/workspace-scope-isolation.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/prompt-packets/2026-07-07-onetime-brand-helper-toolbar-isolation/00-onetime-brand-helper-toolbar-isolation.product-quality.json"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260708-070",
+      "statement": "Rabbi / OneTime public aliases must render the focused OneTime public funnel and the public helper must present as Rabbi Scheller's digital assistant.",
+      "expected_result": "Opening /, /one-time, and /rabbi on the OneTime single-tenant domain shows OneTimeOneTime Mishnayos public copy with no BNA preview wording; opening the helper shows Rabbi Scheller Assistant copy, schedule/program/speak-to-Rabbi actions, and one_time_public scope.",
+      "acceptance_criteria": [
+        "/rabbi no longer serves public/rabbi.html preview content on the OneTime service.",
+        "The OneTime public helper visible launcher/title says Rabbi Scheller Assistant or Rabbi Scheller digital assistant.",
+        "OneTime public helper choices do not include Learn about BNA, How BNA works, BNA model path, service-provider ecosystem path, or generic BNA signup choices.",
+        "Assistant server prompt for one_time_public names Rabbi Scheller digital assistant and forbids BNA Academy, private portal, admin, and external-send claims.",
+        "Lead capture remains first-party and no WhatsApp/WAPI external send is performed in this packet."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "Raw input captured as RAW-20260708-014.",
+      "Live current-state readback identified /rabbi as the BNA preview leak while / and /one-time were clean.",
+      "Memory confirms OneTime/Rabbi uses black/yellow branding and must remain scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+      "External sends and transcript knowledge promotion are explicitly out of scope and blocked by existing decisions."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/rabbi",
+      "viewport": 1440,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /rabbi before scripts finish.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "OneTimeOneTime landing shell loads without BNA preview banner.",
+      "expected_primary_action": "Start 30 Days Free",
+      "expected_secondary_actions": ["Member Login"],
+      "forbidden_content": ["BNA provider system", "Preview mode only", "BNA homepage"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Public page has one main landmark and no BNA site nav.",
+      "accessibility_expectation": "Top navigation does not overlap at desktop width.",
+      "test_smoke_assertion": "Static and live readback for /rabbi does not include old preview BNA phrases.",
+      "requirement_id": "REQ-20260708-070"
+    },
+    "empty": {
+      "route": "/rabbi",
+      "viewport": 390,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /rabbi on mobile with no helper thread history.",
+      "expected_visible_title": "OneTimeOneTime",
+      "expected_visible_message": "Rabbi Scheller Assistant opens with public-safe first message.",
+      "expected_primary_action": "Open Rabbi Scheller Assistant",
+      "expected_secondary_actions": ["Ask about schedule", "Speak to Rabbi Scheller"],
+      "forbidden_content": ["One Time Helper", "BNA Helper", "Learn about BNA"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Helper launcher has an accessible Rabbi Scheller label.",
+      "accessibility_expectation": "Launcher fits 390px and does not cover the primary CTA.",
+      "test_smoke_assertion": "Widget source contains Rabbi Scheller Assistant for one_time_public.",
+      "requirement_id": "REQ-20260708-070"
+    },
+    "populated": {
+      "route": "/one-time",
+      "viewport": 1440,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open helper and use initial action buttons.",
+      "expected_visible_title": "Rabbi Scheller Assistant",
+      "expected_visible_message": "I can help with the schedule, program, 30-day trial, class access, or getting a message to Rabbi Scheller.",
+      "expected_primary_action": "Ask about schedule",
+      "expected_secondary_actions": ["Tell me about the program", "Speak to Rabbi Scheller"],
+      "forbidden_content": ["BNA Academy", "BNA school goals", "student transcripts", "admin data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Helper panel label matches visible assistant identity.",
+      "accessibility_expectation": "Action buttons wrap and remain readable.",
+      "test_smoke_assertion": "Focused helper contract test matches Rabbi Scheller digital assistant copy.",
+      "requirement_id": "REQ-20260708-070"
+    },
+    "filtered_empty": {
+      "route": "/one-time",
+      "viewport": 1024,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Ask for BNA enrollment/accountability on the OneTime public helper.",
+      "expected_visible_title": "Rabbi Scheller Assistant",
+      "expected_visible_message": "This helper is for the OneTime Mishnayos class and can route a question for follow-up.",
+      "expected_primary_action": "Ask about the program",
+      "expected_secondary_actions": ["Speak to Rabbi Scheller"],
+      "forbidden_content": ["BNA enrollment instructions", "BNA accountability program claims"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Helper answer remains in assistant message region.",
+      "accessibility_expectation": "Message text wraps without horizontal overflow.",
+      "test_smoke_assertion": "Server one_time_public system prompt forbids BNA Academy enrollment/accountability discussion.",
+      "requirement_id": "REQ-20260708-070"
+    },
+    "error": {
+      "route": "/api/bna/assistant/chat",
+      "viewport": 768,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Send one_time_public helper message while hosted assistant is unavailable.",
+      "expected_visible_title": "Rabbi Scheller Assistant",
+      "expected_visible_message": "Assistant unavailable or safe fallback without BNA generic contact choices.",
+      "expected_primary_action": "Try again",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["Contact Shloimie about BNA", "How BNA works"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error is announced in the helper thread.",
+      "accessibility_expectation": "Input re-enables after failure.",
+      "test_smoke_assertion": "Fallback publicHelperData for one_time_public is OneTime-specific.",
+      "requirement_id": "REQ-20260708-070"
+    },
+    "blocked_setup": {
+      "route": "/one-time",
+      "viewport": 430,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Visitor asks the helper to WhatsApp the class link before WAPI is configured.",
+      "expected_visible_title": "Rabbi Scheller Assistant",
+      "expected_visible_message": "The assistant captures the request for follow-up and does not claim WhatsApp was sent.",
+      "expected_primary_action": "Leave message for follow-up",
+      "expected_secondary_actions": ["Ask about schedule"],
+      "forbidden_content": ["WhatsApp sent", "message sent from Happy", "WAPI connected"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked setup state is explained in assistant text.",
+      "accessibility_expectation": "Blocked message is concise and readable on mobile.",
+      "test_smoke_assertion": "Action/server copy says no WhatsApp send without WAPI readiness.",
+      "requirement_id": "REQ-20260708-070"
+    },
+    "preview_only": {
+      "route": "/rabbi-preview",
+      "viewport": 1440,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the legacy preview alias.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "Alias resolves to the focused OneTime public funnel.",
+      "expected_primary_action": "Start 30 Days Free",
+      "expected_secondary_actions": ["Member Login"],
+      "forbidden_content": ["Preview mode only. The BNA homepage is not replaced.", "BNA wired"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Alias has the same public landing landmarks as /one-time.",
+      "accessibility_expectation": "No stale preview banner is focusable.",
+      "test_smoke_assertion": "Express route sends one-time/index.html for /rabbi-preview.",
+      "requirement_id": "REQ-20260708-070"
+    },
+    "success_readback": {
+      "route": "/rabbi",
+      "viewport": 1024,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open live /rabbi after deploy.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "expected_visible_message": "No BNA strings or BNA nav markers in static/live readback.",
+      "expected_primary_action": "Start 30 Days Free",
+      "expected_secondary_actions": ["Rabbi Scheller Assistant"],
+      "forbidden_content": ["BNA", "Bnei", "Academy", "bna-site-nav"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Helper launcher accessible name is Rabbi Scheller Assistant.",
+      "accessibility_expectation": "No horizontal overflow at 1024px.",
+      "test_smoke_assertion": "Live readback for /rabbi has no BNA/Academy and helper copy is Rabbi scoped.",
+      "requirement_id": "REQ-20260708-070"
+    },
+    "permission_denied": {
+      "route": "/api/bna/assistant/chat",
+      "viewport": 390,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Ask for private parent, student, transcript, billing, or admin records.",
+      "expected_visible_title": "Rabbi Scheller Assistant",
+      "expected_visible_message": "The assistant refuses private data and routes to the right scoped login or follow-up path.",
+      "expected_primary_action": "Ask a public question",
+      "expected_secondary_actions": ["Member login"],
+      "forbidden_content": ["private student data", "billing record", "raw transcript", "admin diagnostics"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Refusal appears as assistant text, not a browser alert.",
+      "accessibility_expectation": "Refusal and next steps fit mobile.",
+      "test_smoke_assertion": "Server one_time_public source boundary forbids private parent/student/provider/admin data.",
+      "requirement_id": "REQ-20260708-070"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time",
+      "viewport": 390,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open helper and tap initial actions on mobile.",
+      "expected_visible_title": "Rabbi Scheller Assistant",
+      "expected_visible_message": "Schedule/program/speak-to-Rabbi actions stack cleanly.",
+      "expected_primary_action": "Ask about schedule",
+      "expected_secondary_actions": ["Tell me about the program", "Speak to Rabbi Scheller"],
+      "forbidden_content": ["overlap", "horizontal overflow", "BNA Helper"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Buttons are real button elements with text labels.",
+      "accessibility_expectation": "documentElement.scrollWidth <= window.innerWidth + 2.",
+      "test_smoke_assertion": "Mobile helper actions use concise labels and wrap.",
+      "requirement_id": "REQ-20260708-070"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "/rabbi", "viewport": 1440, "required": true },
+      { "route": "/one-time", "viewport": 1024, "required": true },
+      { "route": "/rabbi", "viewport": 768, "required": true },
+      { "route": "/one-time", "viewport": 430, "required": true },
+      { "route": "/one-time", "viewport": 390, "required": true }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-BRAND-070",
+        "route": "/rabbi",
+        "viewport": 1440,
+        "screenshot_before": "live readback observed old public/rabbi.html preview with BNA wording",
+        "screenshot_after_or_blocker": "required after deployment",
+        "defect_codes": ["VQ-BRAND-070"],
+        "severity": "P1",
+        "user_impact": "A public Rabbi Scheller landing alias appears to be a BNA provider preview instead of a OneTimeOneTime class page.",
+        "expected_fix": "Route Rabbi public aliases to the focused OneTime public landing and update helper identity to Rabbi Scheller.",
+        "requirement_id": "REQ-20260708-070"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Helper launcher accessible name is Rabbi Scheller Assistant.",
+      "Initial helper action buttons are short enough to wrap on 390px mobile.",
+      "OneTime public landing aliases keep one main landmark and no stale preview banner focus targets.",
+      "No horizontal overflow is introduced."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Rabbi Scheller Assistant",
+      "selector_or_action_key": "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "window.BNAAssistant.open on one_time_public surface",
+      "registry_required": true
+    },
+    {
+      "label": "Ask about schedule",
+      "selector_or_action_key": "one_time_public initial helper prefill schedule",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "prefill helper prompt",
+      "registry_required": false
+    },
+    {
+      "label": "Speak to Rabbi Scheller",
+      "selector_or_action_key": "one_time_public lead prefill",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "assistant public lead capture through first-party assistant API",
+      "registry_required": false
+    },
+    {
+      "label": "WhatsApp class link send",
+      "selector_or_action_key": "ONE_TIME_WAPI_AUTO_REPLY_ENABLED",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Shloimie / Codex",
+      "external_write": true,
+      "handler_or_blocker": "blocked by DEC-20260708-010 and DEC-20260708-011; no send in this packet",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "reads": [
+      "Static public landing files",
+      "Assistant surface normalization code",
+      "Existing first-party assistant lead capture route"
+    ],
+    "writes": [
+      "Code/tests/registries only",
+      "No production data write except future normal first-party assistant lead capture when a visitor uses the deployed helper"
+    ],
+    "forbidden_data": [
+      "Raw class transcript bodies",
+      "Private student records",
+      "Parent billing",
+      "WAPI tokens",
+      "Zoom passwords",
+      "BNA Academy content inside OneTime public helper"
+    ]
+  },
+  "security_privacy": {
+    "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class",
+    "public_private_boundary": "Public helper can answer public OneTime class questions and create scoped follow-up records; it cannot expose private portal, transcript, admin, payment, access, or provider data.",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "no_external_sends": true,
+    "secret_policy": "No WhatsApp/WAPI/Zoom/Vimeo/Drive/OpenAI secrets may be committed."
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "SETUP_ONLY_NO_WRITE",
+  "implementation_batches": [
+    {
+      "batch_id": "B1",
+      "scope": "Route public Rabbi aliases to the focused OneTime landing.",
+      "instructions": [
+        "Change the /rabbi, /rabbi-preview, and /one-time-mishnayos handler to serve sendOneTimePublicLanding.",
+        "Update route tests so public Rabbi aliases are no longer expected to serve public/rabbi.html."
+      ],
+      "requirements": ["REQ-20260708-070"]
+    },
+    {
+      "batch_id": "B2",
+      "scope": "Make one_time_public helper copy and fallback data Rabbi Scheller-scoped.",
+      "instructions": [
+        "Change public visible helper title/copy/actions from One Time Helper to Rabbi Scheller Assistant/digital assistant.",
+        "Ensure one_time_public publicHelperData returns OneTime-specific paths and never generic BNA choices.",
+        "Update the server one_time_public system prompt and public action reply to avoid BNA and external-send claims."
+      ],
+      "requirements": ["REQ-20260708-070"]
+    },
+    {
+      "batch_id": "B3",
+      "scope": "Update contracts, registries, and evidence.",
+      "instructions": [
+        "Update focused tests and action/route registry rows.",
+        "Run PQC, focused tests, protocol drift, and live/static readbacks.",
+        "Record proof and leave WhatsApp/transcript blockers explicit."
+      ],
+      "requirements": ["REQ-20260708-070"]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "server.js",
+      "public/js/bna-bot-widget.js",
+      "tests/one-time-brand-helper-isolation.test.js",
+      "tests/rabbi-checkout-access.test.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json"
+    ],
+    "files_allowed_to_edit": [
+      "server.js",
+      "public/js/bna-bot-widget.js",
+      "tests/one-time-brand-helper-isolation.test.js",
+      "tests/rabbi-checkout-access.test.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 9,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if implementation expands beyond public landing/helper routing into parent/student/member/provider portal redesign or real WAPI/transcript workflows.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-rabbi-public-assistant-isolation/00-onetime-rabbi-public-assistant-isolation.product-quality.json",
+    "node --check server.js",
+    "node --test tests/one-time-brand-helper-isolation.test.js tests/rabbi-checkout-access.test.js",
+    "npm run watchdog:protocol-drift",
+    "npm run watchdog:actions",
+    "live readback for https://join.onetimeonetime.com/, /one-time, and /rabbi after deploy"
+  ],
+  "evidence": {
+    "required": [
+      "PQC validation report",
+      "Focused test output",
+      "Live/static readback showing /rabbi no longer contains BNA preview wording",
+      "Action and route registry updates",
+      "Ledger/changelog closeout"
+    ],
+    "current_before_evidence": [
+      "Live readback: / and /one-time clean; /rabbi includes BNA preview wording."
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "REQ-20260708-070 is marked deployed/live-smoked in the register.",
+      "/, /one-time, and /rabbi live readbacks show OneTime public funnel and no BNA preview wording.",
+      "OneTime public helper visible copy says Rabbi Scheller Assistant/digital assistant and uses one_time_public scope.",
+      "Focused tests, PQC validation, action watchdog, protocol drift, commit, push, deploy, and live smoke pass.",
+      "WhatsApp send and transcript knowledge promotion remain blocked until their separate decisions are resolved."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260708-014-onetime-rabbi-public-assistant-isolation.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-08-onetime-rabbi-public-assistant-isolation/00-onetime-rabbi-public-assistant-isolation.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "static file inspection",
+      "focused tests",
+      "live readbacks",
+      "deploy smoke after push"
+    ],
+    "skipped_actions_policy": "No external WhatsApp/WAPI, email, Vimeo, Drive, Zoom, payment, DNS, or access grant actions in this packet.",
+    "blocker_decisions": [
+      "DEC-20260708-010",
+      "DEC-20260708-011",
+      "DEC-20260708-012",
+      "DEC-20260708-013"
+    ],
+    "evidence_paths": [
+      "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "final_status_path": "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+    "next_packet_path": "tasks-pending/2026-07-08-onetime-vimeo-folder-v1-studio-workflow.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No protocol drift findings for this public landing/helper isolation packet."
+  },
+  "next_packet": {
+    "id": null,
+    "reason": "Transcript knowledge promotion and real WhatsApp sends remain separate blocked packets after this public route/helper isolation patch."
+  }
+}

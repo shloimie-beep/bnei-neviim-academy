@@ -1,0 +1,118 @@
+- complementary "BNA Operations navigation":
+  - text: One Time Mishnah Class Provider workspace for members, classes, Studio, communications, payments, tasks, and setup. Current Workspace
+  - strong: One Time Mishnah Class
+  - text: Provider / Provider Workspace Admin Scoped
+  - button "Overview"
+  - button "Workspace Setup"
+  - navigation:
+    - button "Overview O"
+    - button "Members M"
+    - button "Content C"
+    - button "Live L"
+    - button "Schedule S"
+    - button "Community C"
+    - button "Comms C"
+    - button "Auto A"
+    - button "Payments P"
+    - button "Tasks T"
+    - button "Reports R"
+    - button "Connectors C"
+    - button "Setup S"
+  - button "Back to all modules"
+  - text: Communications Sections Comms Choose a section for this workspace.
+  - button "Announcements 0"
+  - button "Email Previews 0"
+  - button "Support Replies 0"
+  - button "No-send Log 0"
+  - button "Platform Support"
+  - button "Help"
+  - link "Logout":
+    - /url: /operations-login.html
+- main:
+  - text: One Time Mishnah Class / Comms / Email
+  - heading "Email" [level=1]
+  - 'button "CRM: 1. One Time participants, leads, and CRM records scoped to this provider."':
+    - text: CRM
+    - strong: "1"
+  - 'button "Classes: 0. One Time classes, source material, and library items."':
+    - text: Classes
+    - strong: "0"
+  - 'button "Setup: 0. Provider setup, connectors, and access items."':
+    - text: Setup
+    - strong: "0"
+  - text: One Time Mishnah Class / Provider Workspace Admin
+  - button "Ask or search within One Time Mishnah Class / Comms / Email": Ask / Search
+  - text: Sun 12 Jul
+  - button "New Message"
+  - navigation "Comms sections":
+    - text: Comms
+    - strong: Email Previews
+    - tablist "Comms sections":
+      - tab "Announcements": Announce 0
+      - tab "Email Previews" [selected]: Email Previews 0
+      - tab "Support Replies": Support Replies 0
+      - tab "No-send Log": No-send Log 0
+  - text: Messages
+  - heading "Communications" [level=2]
+  - paragraph: Parent, student, provider, internal, WhatsApp, email, and bot conversations are separated by permission-aware lanes.
+  - heading "Email Workspace" [level=3]
+  - paragraph: Drafts, logged emails, sender readiness, DNS tasks, and approval gates stay first-party. No email is sent from this lane without the exact SEND_RESEND_EMAIL phrase.
+  - text: Locked until sender/domain readiness
+  - 'heading "Now Viewing: Rabbi / One Time Inbox" [level=3]'
+  - paragraph: info@onetimeonetime.com / rabbi_sheller_provider / one_time_mishnah_class
+  - button "BNA / Shloimie (0)"
+  - button "Rabbi / One Time (0)"
+  - button "View One Time as Rabbi"
+  - strong: Provider account
+  - paragraph: Resend API readiness is checked separately from sender and domain readiness.
+  - text: Blocked Missing
+  - strong: Sender identity
+  - paragraph: From identity must be explicitly configured for this workspace before send.
+  - text: Blocked Not finalized
+  - strong: Domain readiness
+  - paragraph: Verified domain or explicit fallback approval is required before send.
+  - text: Blocked No domain
+  - strong: Recipients
+  - paragraph: Recipient validation uses workspace/project filters to prevent accidental cross-workspace sends.
+  - text: Scoped one_time_mishnah_class
+  - strong: Send confirmation
+  - paragraph: The send endpoint rejects requests without the exact approval phrase.
+  - text: Required SEND_RESEND_EMAIL
+  - navigation "Email workspace views":
+    - tablist "Email operations views":
+      - tab "Inbox/imported 0":
+        - text: Inbox/imported
+        - strong: "0"
+      - tab "Drafts 0" [selected]:
+        - text: Drafts
+        - strong: "0"
+      - tab "Approved 0":
+        - text: Approved
+        - strong: "0"
+      - tab "Sent/logged 0":
+        - text: Sent/logged
+        - strong: "0"
+      - tab "Failed 0":
+        - text: Failed
+        - strong: "0"
+      - tab "Templates 4":
+        - text: Templates
+        - strong: "4"
+      - tab "Domain readiness 0":
+        - text: Domain readiness
+        - strong: "0"
+      - tab "DNS setup 0":
+        - text: DNS setup
+        - strong: "0"
+  - heading "Draft Editor" [level=3]
+  - text: Preview only
+  - textbox "From identity"
+  - textbox "Reply-to"
+  - textbox "Recipient email"
+  - textbox "Subject"
+  - button "template key": Manual template
+  - textbox "Related record or contact ID"
+  - textbox "Text body preview"
+  - textbox "HTML body preview"
+  - button "Create draft"
+  - text: Draft creation stores a local review item and readiness blocker only. It does not send email. No emails match this view.

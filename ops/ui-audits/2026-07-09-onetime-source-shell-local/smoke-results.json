@@ -1,0 +1,54 @@
+[
+  {
+    "name": "student-desktop",
+    "url": "http://127.0.0.1:8123/student/login",
+    "finalUrl": "http://127.0.0.1:8123/student.html?one_time_login=1",
+    "width": 1366,
+    "height": 900,
+    "bodyClass": "bna-shell bna-portal-page bna-student-page one-time-student-login-active lang-en one-time-review-active bna-universal-assistant-active bna-assistant-surface-one-time-student one-time-single-tenant",
+    "helperTitle": "One Time Student Helper",
+    "hasOneTime": true,
+    "hasBnaAcademyBleed": false,
+    "hasStudentAccessFallback": false,
+    "providerHelperScoped": true
+  },
+  {
+    "name": "student-mobile",
+    "url": "http://127.0.0.1:8123/student/login",
+    "finalUrl": "http://127.0.0.1:8123/student.html?one_time_login=1",
+    "width": 390,
+    "height": 844,
+    "bodyClass": "bna-shell bna-portal-page bna-student-page one-time-student-login-active lang-en one-time-review-active bna-universal-assistant-active bna-assistant-surface-one-time-student one-time-single-tenant",
+    "helperTitle": "One Time Student Helper",
+    "hasOneTime": true,
+    "hasBnaAcademyBleed": false,
+    "hasStudentAccessFallback": false,
+    "providerHelperScoped": true
+  },
+  {
+    "name": "provider-desktop",
+    "url": "http://127.0.0.1:8123/provider.html?review=one-time&section=crm",
+    "finalUrl": "http://127.0.0.1:8123/provider.html?review=one-time&section=crm",
+    "width": 1440,
+    "height": 960,
+    "bodyClass": "bna-shell bna-portal-page bna-provider-page one-time-review-active bna-universal-assistant-active bna-assistant-surface-one-time-provider",
+    "helperTitle": "Rabbi Scheller Admin Helper",
+    "hasOneTime": true,
+    "hasBnaAcademyBleed": false,
+    "hasStudentAccessFallback": false,
+    "providerHelperScoped": true
+  },
+  {
+    "name": "provider-mobile",
+    "url": "http://127.0.0.1:8123/provider.html?review=one-time&section=crm",
+    "finalUrl": "http://127.0.0.1:8123/provider.html?review=one-time&section=crm",
+    "width": 390,
+    "height": 844,
+    "bodyClass": "bna-shell bna-portal-page bna-provider-page one-time-review-active bna-universal-assistant-active bna-assistant-surface-one-time-provider",
+    "helperTitle": "Rabbi Scheller Admin Helper",
+    "hasOneTime": true,
+    "hasBnaAcademyBleed": false,
+    "hasStudentAccessFallback": false,
+    "providerHelperScoped": true
+  }
+]

@@ -1,0 +1,101 @@
+{
+  "job_id": 26,
+  "categories": [
+    {
+      "lane": "class_notes",
+      "section_count": 2
+    },
+    {
+      "lane": "class_session",
+      "section_count": 2
+    },
+    {
+      "lane": "drive_workflow_issue",
+      "section_count": 1
+    },
+    {
+      "lane": "parser_error",
+      "section_count": 1
+    },
+    {
+      "lane": "profile_note",
+      "section_count": 1
+    },
+    {
+      "lane": "student_question",
+      "section_count": 1
+    },
+    {
+      "lane": "task",
+      "section_count": 1
+    }
+  ],
+  "sections": [
+    {
+      "section_id": "job-26-source",
+      "title": "Source discovery and transcript status",
+      "lanes": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue"
+      ],
+      "privacy": "repo_safe_digest",
+      "confidence": 0.74,
+      "evidence_terms": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue"
+      ],
+      "summary_hash": "805fdb10028bfaaa",
+      "raw_text_included": false
+    },
+    {
+      "section_id": "job-26-parser",
+      "title": "Parser and class routing status",
+      "lanes": [
+        "class_notes",
+        "class_session",
+        "parser_error",
+        "profile_note"
+      ],
+      "privacy": "repo_safe_digest",
+      "confidence": 0.74,
+      "evidence_terms": [
+        "class_notes",
+        "class_session",
+        "parser_error",
+        "profile_note"
+      ],
+      "summary_hash": "24ba22b3e79a9ac8",
+      "raw_text_included": false
+    },
+    {
+      "section_id": "job-26-questions",
+      "title": "Student question candidates",
+      "lanes": [
+        "student_question"
+      ],
+      "privacy": "repo_safe_digest",
+      "confidence": 0.74,
+      "evidence_terms": [
+        "student_question"
+      ],
+      "summary_hash": "02a88a4ac279b110",
+      "raw_text_included": false
+    },
+    {
+      "section_id": "job-26-repairs",
+      "title": "Dry-run repair candidates",
+      "lanes": [
+        "task"
+      ],
+      "privacy": "repo_safe_digest",
+      "confidence": 0.74,
+      "evidence_terms": [
+        "task"
+      ],
+      "summary_hash": "e092e94085cfcd99",
+      "raw_text_included": false
+    }
+  ]
+}

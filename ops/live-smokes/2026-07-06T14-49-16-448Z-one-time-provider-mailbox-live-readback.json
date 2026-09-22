@@ -1,0 +1,88 @@
+{
+  "checked_at": "2026-07-06T14:49:16.448Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "workspace": "rabbi_sheller_provider",
+  "project": "one_time_mishnah_class",
+  "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/117",
+  "merge_commit": "61d1da3e3ea683358685350dd2f9af79ba39f478",
+  "deployment": {
+    "service": "one-time-web",
+    "environment": "production",
+    "deployment_id": "733aee09-bd85-4b97-9256-0d7ba5837a08",
+    "status": "SUCCESS"
+  },
+  "safe_public_probes": {
+    "provider_page": {
+      "status": 200,
+      "has_mailbox_data_attr": true,
+      "has_mailbox_endpoint": true,
+      "has_public_sender": true
+    },
+    "mailbox_anonymous": {
+      "status": 401,
+      "body": "{\"error\":\"Provider session is required\"}"
+    },
+    "resend_inbound_invalid_signature": {
+      "status": 401,
+      "body": "{\"success\":false,\"error\":\"Unauthorized Resend webhook\"}"
+    }
+  },
+  "provider_login_unlock": {
+    "provider_id": 1,
+    "provider_name": "Rabbi Elie Scheller",
+    "login_username": "one_time_admin",
+    "credential_keyholder_file": "C:/Users/User/BNA v2.0/.secrets/one-time-provider-mailbox-login-20260706.txt",
+    "provider_record_patch_status": 200,
+    "provider_login_status": 200,
+    "provider_login_success": true,
+    "has_provider_session_cookie": true,
+    "setup_email_sent": false,
+    "password_printed": false
+  },
+  "authenticated_mailbox_readback": {
+    "list_status": 200,
+    "list_success": true,
+    "thread_count": 4,
+    "first_thread_key_hash": "fbd64b00db54",
+    "first_thread_subject_present": true,
+    "first_thread_message_count_from_list": 1,
+    "detail_status": 200,
+    "detail_success": true,
+    "detail_message_count": 1,
+    "inbox_address": "info@onetimeonetime.com",
+    "scope": {
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class"
+    },
+    "readiness": {
+      "provider": "resend",
+      "from_email_present": true,
+      "reply_to_present": true,
+      "mailing_address_configured": true
+    }
+  },
+  "one_time_instance_smoke": {
+    "ok": true,
+    "checks": [
+      { "path": "/api/health", "status": 200, "ok": true },
+      { "path": "/api/one-time/instance-config", "status": 200, "ok": true },
+      { "path": "/", "status": 200, "ok": true },
+      { "path": "/one-time", "status": 200, "ok": true },
+      { "path": "/one-time/", "status": 200, "ok": true },
+      { "path": "/operations-login.html", "status": 200, "ok": true },
+      { "path": "/parent.html", "status": 200, "ok": true },
+      { "path": "/student.html", "status": 200, "ok": true },
+      { "path": "/provider.html", "status": 200, "ok": true },
+      { "path": "/one-time-classroom.html", "status": 200, "ok": true }
+    ]
+  },
+  "guardrails": [
+    "No physical mailing address value committed or printed.",
+    "No external email was sent.",
+    "No bulk campaign endpoint or broadcast send was added.",
+    "No fake inbound email was inserted during live smoke.",
+    "Invalid Resend webhook signature was rejected with 401 before processing.",
+    "Provider credential value was generated and stored only in the local keyholder file.",
+    "Live thread evidence records counts and hashes only, not message bodies."
+  ]
+}

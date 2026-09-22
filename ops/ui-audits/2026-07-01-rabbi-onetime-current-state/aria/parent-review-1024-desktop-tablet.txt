@@ -1,0 +1,84 @@
+- banner:
+  - strong: OneTimeOneTime
+  - text: Parent review portal
+  - link "One Time":
+    - /url: /one-time
+  - link "Student":
+    - /url: /student.html?review=one-time
+  - link "Classroom":
+    - /url: /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+  - text: Linked TEST child only
+- main:
+  - paragraph: OneTimeOneTime Mishnah
+  - heading "Parent Review Portal" [level=1]
+  - paragraph: Parent dashboard for Rabbi Scheller's One Time Mishnayos program, using TEST-only family, class, library, payment/trial, and support data.
+  - text: One Time parent review
+  - heading "TEST Parent One Time" [level=1]
+  - paragraph: Parent-facing view for Rabbi Scheller's One Time workspace. TEST-only data is limited to one linked student, class progress, library access, and support context.
+  - text: Preview only
+  - article:
+    - text: Linked student
+    - strong: TEST Student One Time
+  - article:
+    - text: Next class
+    - strong: TEST Weekly Mishnah Live Class
+  - article:
+    - text: Attendance
+    - strong: 39/45 minutes (87%)
+  - article:
+    - text: Access
+    - strong: active_for_review
+  - article:
+    - heading "Class and Zoom" [level=2]
+    - paragraph:
+      - strong: Pesachim Perek 10
+    - paragraph: Mishnah 1-2 / Asia/Jerusalem
+    - text: The portal shows readiness and access rules. No real Zoom meeting was created for this review fixture.
+  - article:
+    - heading "Course progress" [level=2]
+    - paragraph:
+      - strong: TEST One Time Mishnah Course
+    - paragraph: Pesachim Foundations / Pesachim Perek 10 - Seder Night Review
+  - article:
+    - heading "Library and worksheet" [level=2]
+    - paragraph:
+      - strong: Pesachim Perek 10 Review Class
+    - paragraph: Vimeo manual/sample reference
+    - paragraph:
+      - link "Open classroom/library":
+        - /url: https://bneineviimacademy.org/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+    - paragraph:
+      - link "Open worksheet/resource":
+        - /url: /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS#worksheets
+  - article:
+    - heading "Announcement" [level=2]
+    - paragraph:
+      - strong: Welcome to the TEST One Time cohort
+    - paragraph: This announcement is safe test content for the review walkthrough.
+  - article:
+    - heading "Payment / trial" [level=2]
+    - paragraph:
+      - strong: $67 USD/month after trial
+    - paragraph: 30 days free / test_trial_active
+    - text: TEST mode only. No real charge or payment link is created from this review.
+  - article:
+    - heading "Milestones and rewards" [level=2]
+    - paragraph:
+      - strong: First Mishnah Review Completed
+    - paragraph: "First Class: Attended the first TEST One Time class review session."
+    - paragraph: Individual Review Reward / ready_for_rabbi_review
+  - article:
+    - heading "Private question" [level=2]
+    - paragraph:
+      - strong: Private question about the Mishnah
+    - paragraph: Can Rabbi explain why this time is used for Shema?
+    - text: submitted_for_rabbi_review
+  - article:
+    - heading "Support ticket" [level=2]
+    - paragraph:
+      - strong: Worksheet link question
+    - paragraph: TEST parent asked where the worksheet is located.
+    - text: open_for_review Ask support / Rabbi
+    - textbox "Ask support / Rabbi":
+      - /placeholder: Type a review-only parent question
+    - button "Submit preview"

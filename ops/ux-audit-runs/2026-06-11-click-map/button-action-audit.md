@@ -1,0 +1,340 @@
+# Button / Action Audit
+
+Total mapped actions: 42606
+
+## Broken actions
+
+- None found in this bucket.
+
+## No-op / unclear actions
+
+- not_tested ACT-00001: "עברית" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00002: "<" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00003: ">" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00004: "Go to learning moment 1" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00005: "Go to learning moment 2" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00006: "Go to learning moment 3" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00007: "All topics" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00008: "Alternative School" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00009: "ADHD / Learning Differences" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00010: "Jewish Unschooling" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00011: "Homeschooling" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00012: "Torah Learning" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00013: "Self-Governance" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00014: "Parenting" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00015: "Technology" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00016: "Future Vision" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00017: "All questions" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00018: "Program" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00019: "Learning" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00020: "Parents" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00021: "English" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00022: "<" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00023: ">" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00024: "Go to learning moment 1" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00025: "Go to learning moment 2" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00026: "Go to learning moment 3" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00027: "כל הנושאים" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00028: "מסגרת אלטרנטיבית" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00029: "קשב וריכוז" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00030: "חינוך יהודי עצמי" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00031: "טכנולוגיה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00032: "אחריות אישית" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00033: "הורות" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00034: "הכל" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00035: "תוכנית" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00036: "למידה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00037: "הורים" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00038: "מעשי" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00039: "All" on PUBLIC__WEBSITE__WEBSITE__BLOG__LOAD__DESKTOP__003 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00040: "Alternative School" on PUBLIC__WEBSITE__WEBSITE__BLOG__LOAD__DESKTOP__003 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00041: "ADHD / Learning Differences" on PUBLIC__WEBSITE__WEBSITE__BLOG__LOAD__DESKTOP__003 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00042: "Jewish Unschooling" on PUBLIC__WEBSITE__WEBSITE__BLOG__LOAD__DESKTOP__003 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00043: "Homeschooling" on PUBLIC__WEBSITE__WEBSITE__BLOG__LOAD__DESKTOP__003 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00044: "Torah Learning" on PUBLIC__WEBSITE__WEBSITE__BLOG__LOAD__DESKTOP__003 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00045: "Self-Governance" on PUBLIC__WEBSITE__WEBSITE__BLOG__LOAD__DESKTOP__003 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00046: "Parenting" on PUBLIC__WEBSITE__WEBSITE__BLOG__LOAD__DESKTOP__003 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00047: "Technology" on PUBLIC__WEBSITE__WEBSITE__BLOG__LOAD__DESKTOP__003 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00048: "Future Vision" on PUBLIC__WEBSITE__WEBSITE__BLOG__LOAD__DESKTOP__003 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00049: "הכל" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__004 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00050: "מסגרת אלטרנטיבית" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__004 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00051: "קשב וריכוז" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__004 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00052: "חינוך יהודי עצמי" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__004 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00053: "טכנולוגיה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__004 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00054: "אחריות אישית" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__004 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00055: "הורות" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__004 - Capture representative dropdown open states and move large filters into compact filter bars/sheets.
+- not_tested ACT-00056: "Open and Sign" on PUBLIC__WEBSITE__WEBSITE__SIGNUP_ENGLISH__LOAD__DESKTOP__007 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00057: "Open and Sign" on PUBLIC__WEBSITE__WEBSITE__SIGNUP_ENGLISH__LOAD__DESKTOP__007 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00058: "Open and Sign" on PUBLIC__WEBSITE__WEBSITE__SIGNUP_ENGLISH__LOAD__DESKTOP__007 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00059: "Open and Sign" on PUBLIC__WEBSITE__WEBSITE__SIGNUP_ENGLISH__LOAD__DESKTOP__007 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00060: "Open and Sign" on PUBLIC__WEBSITE__WEBSITE__SIGNUP_ENGLISH__LOAD__DESKTOP__007 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00061: "Open and Sign" on PUBLIC__WEBSITE__WEBSITE__SIGNUP_ENGLISH__LOAD__DESKTOP__007 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00063: "פתיחה וחתימה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00064: "פתיחה וחתימה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00065: "פתיחה וחתימה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00066: "פתיחה וחתימה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00067: "פתיחה וחתימה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00068: "פתיחה וחתימה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00069: "שליחת הרשמה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00072: "Sign In" on PUBLIC__OPERATIONS__AUTH__OPERATIONS_LOGIN__LOAD__DESKTOP__011 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00073: "English" on PARENT__BNA__PORTAL__PARENT_PORTAL_LOGIN__LOAD__DESKTOP__012 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00074: "עברית" on PARENT__BNA__PORTAL__PARENT_PORTAL_LOGIN__LOAD__DESKTOP__012 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00075: "Sign in" on PARENT__BNA__PORTAL__PARENT_PORTAL_LOGIN__LOAD__DESKTOP__012 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00077: "EN" on STUDENT__BNA__PORTAL__STUDENT_WORKSPACE_LOGIN__LOAD__DESKTOP__013 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00078: "HE" on STUDENT__BNA__PORTAL__STUDENT_WORKSPACE_LOGIN__LOAD__DESKTOP__013 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00079: "Open My Board" on STUDENT__BNA__PORTAL__STUDENT_WORKSPACE_LOGIN__LOAD__DESKTOP__013 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00080: "Sign In" on PROVIDERADMIN__SHELLER__PORTAL__PROVIDER_PORTAL_LOGIN__LOAD__DESKTOP__014 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00081: "Free provider listing" on PROVIDERADMIN__SHELLER__PROVIDER_ONBOARDING__ONBOARDING__LOAD__DESKTOP__015 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00083: "Back to BNA" on PROVIDERADMIN__SHELLER__PROVIDER_ONBOARDING__ONBOARDING__LOAD__DESKTOP__015 - Add this destination to the route audit or clarify that it leaves the app.
+- not_tested ACT-00085: "Platform / Super Admin Active" on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00086: "BNA School Workspace school" on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+
+## Unsafe actions needing confirmation
+
+- unsafe ACT-00062: "Submit Registration" on PUBLIC__WEBSITE__WEBSITE__SIGNUP_ENGLISH__LOAD__DESKTOP__007 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00076: "Create/reset password" on PARENT__BNA__PORTAL__PARENT_PORTAL_LOGIN__LOAD__DESKTOP__012 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00082: "Submit For Review" on PROVIDERADMIN__SHELLER__PROVIDER_ONBOARDING__ONBOARDING__LOAD__DESKTOP__015 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00114: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00162: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__DASHBOARD__ALERTS__LOAD__DESKTOP__022 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00236: "Create task Preview safe" on SUPERADMIN__PLATFORM__PIPELINES__OVERVIEW__LOAD__DESKTOP__025 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00261: "Create task Preview safe" on SUPERADMIN__PLATFORM__PIPELINES__BNA_ENROLLMENT__LOAD__DESKTOP__026 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00286: "Create task Preview safe" on SUPERADMIN__PLATFORM__PIPELINES__PROVIDER_CLASS__LOAD__DESKTOP__027 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00311: "Create task Preview safe" on SUPERADMIN__PLATFORM__PIPELINES__PROVIDER_ONBOARDING__LOAD__DESKTOP__028 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00336: "Create task Preview safe" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__DESKTOP__029 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00361: "Create task Preview safe" on SUPERADMIN__PLATFORM__PIPELINES__STALE_TASKS__LOAD__DESKTOP__030 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00386: "Create task Preview safe" on SUPERADMIN__PLATFORM__PIPELINES__DECISIONS__LOAD__DESKTOP__031 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00634: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__OVERVIEW__LOAD__DESKTOP__039 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00666: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__LIST__LOAD__DESKTOP__040 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00698: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__GROUP_GOAL__LOAD__DESKTOP__041 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00730: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__GOAL_BOARD__LOAD__DESKTOP__042 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00762: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__ASSIGNMENTS__LOAD__DESKTOP__043 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00794: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__QUESTIONS__LOAD__DESKTOP__044 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00826: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__DOCUMENTS__LOAD__DESKTOP__045 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00858: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__PORTAL_LINKS__LOAD__DESKTOP__046 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00890: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__TABLET_ACCESS__LOAD__DESKTOP__047 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00922: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__PROFILE__LOAD__DESKTOP__048 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00954: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__PARENT_FAMILY__LOAD__DESKTOP__049 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-00986: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__ANALYSIS__LOAD__DESKTOP__050 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01018: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__MEETINGS__LOAD__DESKTOP__051 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01050: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__BOT_SETTINGS__LOAD__DESKTOP__052 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01104: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__STUDENTS__NEXT_YEAR_LOGIN__LOAD__DESKTOP__054 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01136: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTACTS__OVERVIEW__LOAD__DESKTOP__055 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01168: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTACTS__INTERESTED_PARENTS__LOAD__DESKTOP__056 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01200: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTACTS__PARENTS__LOAD__DESKTOP__057 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01232: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTACTS__PEOPLE__LOAD__DESKTOP__058 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01264: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTACTS__CONTACTS__LOAD__DESKTOP__059 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01296: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTACTS__NOTES__LOAD__DESKTOP__060 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01328: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTACTS__STUDENTS__LOAD__DESKTOP__061 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01360: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTACTS__INTAKE__LOAD__DESKTOP__062 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01392: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTACTS__FOLLOW_UP__LOAD__DESKTOP__063 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01424: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTACTS__TAGS__LOAD__DESKTOP__064 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01456: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTENT__LIBRARY__LOAD__DESKTOP__065 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01488: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTENT__MEETINGS__LOAD__DESKTOP__066 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01520: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTENT__RESEARCH__LOAD__DESKTOP__067 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01552: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTENT__SELECTED__LOAD__DESKTOP__068 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01584: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTENT__REPURPOSE__LOAD__DESKTOP__069 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01616: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTENT__NEWSLETTER__LOAD__DESKTOP__070 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01648: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTENT__PROMPTS__LOAD__DESKTOP__071 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01680: "ACCOUNTING 0 Payments or signup matches needing review." on SUPERADMIN__PLATFORM__CONTENT__BUNDLES__LOAD__DESKTOP__072 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01711: "Create calendar event Preview safe" on SUPERADMIN__PLATFORM__CALENDAR__OVERVIEW__LOAD__DESKTOP__073 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01737: "Create calendar event Preview safe" on SUPERADMIN__PLATFORM__CALENDAR__WEEK__LOAD__DESKTOP__074 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01763: "Create calendar event Preview safe" on SUPERADMIN__PLATFORM__CALENDAR__MONTH__LOAD__DESKTOP__075 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01789: "Create calendar event Preview safe" on SUPERADMIN__PLATFORM__CALENDAR__CLASSES__LOAD__DESKTOP__076 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01815: "Create calendar event Preview safe" on SUPERADMIN__PLATFORM__CALENDAR__STUDENTS__LOAD__DESKTOP__077 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01841: "Create calendar event Preview safe" on SUPERADMIN__PLATFORM__CALENDAR__PROVIDER__LOAD__DESKTOP__078 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01867: "Create calendar event Preview safe" on SUPERADMIN__PLATFORM__CALENDAR__GOOGLE_SYNC__LOAD__DESKTOP__079 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01893: "Create calendar event Preview safe" on SUPERADMIN__PLATFORM__CALENDAR__SETTINGS__LOAD__DESKTOP__080 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01918: "Funnel / Marketing Setup 0" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__OVERVIEW__LOAD__DESKTOP__081 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01924: "Add Provider" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__OVERVIEW__LOAD__DESKTOP__081 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01925: "PROVIDERS 15 Approved and review-stage provider records." on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__OVERVIEW__LOAD__DESKTOP__081 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01927: "PARENT INDEX 3 Parent-facing approved-service directory." on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__OVERVIEW__LOAD__DESKTOP__081 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01953: "Funnel / Marketing Setup 0" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__DIRECTORY__LOAD__DESKTOP__082 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01959: "Add Provider" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__DIRECTORY__LOAD__DESKTOP__082 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01984: "Funnel / Marketing Setup 0" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__WORKSPACES__LOAD__DESKTOP__083 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-01990: "Add Provider" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__WORKSPACES__LOAD__DESKTOP__083 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02060: "Funnel / Marketing Setup 0" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__COMMERCIAL__LOAD__DESKTOP__084 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02066: "Add Provider" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__COMMERCIAL__LOAD__DESKTOP__084 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02095: "Funnel / Marketing Setup 0" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__PLANS__LOAD__DESKTOP__085 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02101: "Add Provider" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__PLANS__LOAD__DESKTOP__085 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02126: "Funnel / Marketing Setup 0" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__ONBOARDING__LOAD__DESKTOP__086 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02132: "Add Provider" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__ONBOARDING__LOAD__DESKTOP__086 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02157: "Funnel / Marketing Setup 0" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__ACCESS_CHECKLIST__LOAD__DESKTOP__087 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02163: "Add Provider" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__ACCESS_CHECKLIST__LOAD__DESKTOP__087 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02188: "Funnel / Marketing Setup 0" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__INTEGRATION_AUDIT__LOAD__DESKTOP__088 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02194: "Add Provider" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__INTEGRATION_AUDIT__LOAD__DESKTOP__088 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02219: "Funnel / Marketing Setup 0" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__COMMUNITIES__LOAD__DESKTOP__089 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02225: "Add Provider" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__COMMUNITIES__LOAD__DESKTOP__089 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02251: "Funnel / Marketing Setup 0" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__CONTENT__LOAD__DESKTOP__090 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02257: "Add Provider" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__CONTENT__LOAD__DESKTOP__090 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02258: "DRAFT NEEDS APPROVAL AUDIO ONE TIME Mishnayos Classes Website Strategy Discussion Uploaded 10 Jun, 16:24 3 brief topics website strategy Content organization micro school model Select Approve or revise 04 Parsed Open Drive file Open" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__CONTENT__LOAD__DESKTOP__090 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02283: "Funnel / Marketing Setup 0" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__MARKETING__LOAD__DESKTOP__091 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02289: "Add Provider" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__MARKETING__LOAD__DESKTOP__091 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02315: "Funnel / Marketing Setup 0" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__LEADS__LOAD__DESKTOP__092 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+- unsafe ACT-02321: "Add Provider" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__LEADS__LOAD__DESKTOP__092 - Add confirmation/dry-run/test mode and audit-log/timeline writes where appropriate.
+
+## Disabled / blocked actions
+
+- disabled_correctly ACT-00071: "Sign Parent Handbook" on PUBLIC__WEBSITE__WEBSITE__PARENT_HANDBOOK__LOAD__DESKTOP__010 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-02226: "Configure after backend is ready" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__COMMUNITIES__LOAD__DESKTOP__089 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-02290: "Configure after backend is ready" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__MARKETING__LOAD__DESKTOP__091 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-02322: "Derived" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__LEADS__LOAD__DESKTOP__092 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-02632: "Configure after backend is ready" on SUPERADMIN__PLATFORM__COMMUNICATIONS__BOTS__LOAD__DESKTOP__102 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-02660: "Configure after backend is ready" on SUPERADMIN__PLATFORM__COMMUNICATIONS__TEMPLATES__LOAD__DESKTOP__103 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-02688: "Configure after backend is ready" on SUPERADMIN__PLATFORM__COMMUNICATIONS__SETTINGS__LOAD__DESKTOP__104 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-03112: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__WORKSPACE__LOAD__DESKTOP__119 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-03139: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__PARENT__LOAD__DESKTOP__120 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-03166: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__STUDENT__LOAD__DESKTOP__121 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-03193: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__PROVIDER__LOAD__DESKTOP__122 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-03220: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__BOT__LOAD__DESKTOP__123 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-03273: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__BUDGETS__LOAD__DESKTOP__125 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-03300: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__SETTINGS__LOAD__DESKTOP__126 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-03394: "Configure after backend is ready" on SUPERADMIN__PLATFORM__ADMIN__ROLES__LOAD__DESKTOP__129 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-03445: "Configure after backend is ready" on SUPERADMIN__PLATFORM__ADMIN__INVITATIONS__LOAD__DESKTOP__131 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-03514: "Configure after backend is ready" on SUPERADMIN__PLATFORM__ADMIN__MESSAGES__LOAD__DESKTOP__133 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-03540: "Configure after backend is ready" on SUPERADMIN__PLATFORM__ADMIN__SETTINGS__LOAD__DESKTOP__134 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-06937: "New Bundle from Selected (0)" on BNAADMIN__BNA__CONTENT__NEWSLETTER__LOAD__DESKTOP__212 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-07006: "New Bundle from Selected (0)" on BNAADMIN__BNA__CONTENT__BUNDLES__LOAD__DESKTOP__214 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-07587: "Configure after backend is ready" on BNAADMIN__BNA__SERVICE_PROVIDERS__COMMUNITIES__LOAD__DESKTOP__231 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-07655: "Configure after backend is ready" on BNAADMIN__BNA__SERVICE_PROVIDERS__MARKETING__LOAD__DESKTOP__233 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-08000: "Configure after backend is ready" on BNAADMIN__BNA__COMMUNICATIONS__BOTS__LOAD__DESKTOP__244 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-08030: "Configure after backend is ready" on BNAADMIN__BNA__COMMUNICATIONS__TEMPLATES__LOAD__DESKTOP__245 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-08060: "Configure after backend is ready" on BNAADMIN__BNA__COMMUNICATIONS__SETTINGS__LOAD__DESKTOP__246 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-08551: "Configure after backend is ready" on BNAADMIN__BNA__API_USAGE__WORKSPACE__LOAD__DESKTOP__261 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-08580: "Configure after backend is ready" on BNAADMIN__BNA__API_USAGE__PARENT__LOAD__DESKTOP__262 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-08609: "Configure after backend is ready" on BNAADMIN__BNA__API_USAGE__STUDENT__LOAD__DESKTOP__263 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-08638: "Configure after backend is ready" on BNAADMIN__BNA__API_USAGE__PROVIDER__LOAD__DESKTOP__264 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-08667: "Configure after backend is ready" on BNAADMIN__BNA__API_USAGE__BOT__LOAD__DESKTOP__265 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-08724: "Configure after backend is ready" on BNAADMIN__BNA__API_USAGE__BUDGETS__LOAD__DESKTOP__267 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-08753: "Configure after backend is ready" on BNAADMIN__BNA__API_USAGE__SETTINGS__LOAD__DESKTOP__268 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-11989: "New Bundle from Selected (0)" on PROVIDERADMIN__SHELLER__CONTENT__NEWSLETTER__LOAD__DESKTOP__354 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-12054: "New Bundle from Selected (0)" on PROVIDERADMIN__SHELLER__CONTENT__BUNDLES__LOAD__DESKTOP__356 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-12601: "Configure after backend is ready" on PROVIDERADMIN__SHELLER__SERVICE_PROVIDERS__COMMUNITIES__LOAD__DESKTOP__373 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-12665: "Configure after backend is ready" on PROVIDERADMIN__SHELLER__SERVICE_PROVIDERS__MARKETING__LOAD__DESKTOP__375 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-12697: "Derived" on PROVIDERADMIN__SHELLER__SERVICE_PROVIDERS__LEADS__LOAD__DESKTOP__376 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-12998: "Configure after backend is ready" on PROVIDERADMIN__SHELLER__COMMUNICATIONS__BOTS__LOAD__DESKTOP__386 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-13026: "Configure after backend is ready" on PROVIDERADMIN__SHELLER__COMMUNICATIONS__TEMPLATES__LOAD__DESKTOP__387 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-13054: "Configure after backend is ready" on PROVIDERADMIN__SHELLER__COMMUNICATIONS__SETTINGS__LOAD__DESKTOP__388 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-13478: "Configure after backend is ready" on PROVIDERADMIN__SHELLER__API_USAGE__WORKSPACE__LOAD__DESKTOP__403 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-13505: "Configure after backend is ready" on PROVIDERADMIN__SHELLER__API_USAGE__PARENT__LOAD__DESKTOP__404 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-13532: "Configure after backend is ready" on PROVIDERADMIN__SHELLER__API_USAGE__STUDENT__LOAD__DESKTOP__405 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-13559: "Configure after backend is ready" on PROVIDERADMIN__SHELLER__API_USAGE__PROVIDER__LOAD__DESKTOP__406 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-13586: "Configure after backend is ready" on PROVIDERADMIN__SHELLER__API_USAGE__BOT__LOAD__DESKTOP__407 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-13639: "Configure after backend is ready" on PROVIDERADMIN__SHELLER__API_USAGE__BUDGETS__LOAD__DESKTOP__409 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-13666: "Configure after backend is ready" on PROVIDERADMIN__SHELLER__API_USAGE__SETTINGS__LOAD__DESKTOP__410 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15210: "Sign Parent Handbook" on PUBLIC__WEBSITE__WEBSITE__PARENT_HANDBOOK__LOAD__MOBILE__455 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15265: "Derived" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__MOBILE__474 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15267: "Derived" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__MOBILE__474 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15269: "Derived" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__MOBILE__474 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15271: "Derived" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__MOBILE__474 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15278: "Derived" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__MOBILE__474 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15279: "Derived" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__MOBILE__474 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15280: "Derived" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__MOBILE__474 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15281: "Derived" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__MOBILE__474 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15283: "Derived" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__MOBILE__474 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15285: "Derived" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__MOBILE__474 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15287: "Derived" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__MOBILE__474 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15289: "Derived" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__MOBILE__474 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15291: "Derived" on SUPERADMIN__PLATFORM__PIPELINES__PARTICIPANTS__LOAD__MOBILE__474 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15811: "Configure after backend is ready" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__COMMUNITIES__LOAD__MOBILE__534 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15816: "Configure after backend is ready" on SUPERADMIN__PLATFORM__SERVICE_PROVIDERS__MARKETING__LOAD__MOBILE__536 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15843: "Configure after backend is ready" on SUPERADMIN__PLATFORM__COMMUNICATIONS__BOTS__LOAD__MOBILE__547 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15846: "Configure after backend is ready" on SUPERADMIN__PLATFORM__COMMUNICATIONS__TEMPLATES__LOAD__MOBILE__548 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15849: "Configure after backend is ready" on SUPERADMIN__PLATFORM__COMMUNICATIONS__SETTINGS__LOAD__MOBILE__549 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15951: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__WORKSPACE__LOAD__MOBILE__564 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15954: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__PARENT__LOAD__MOBILE__565 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15957: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__STUDENT__LOAD__MOBILE__566 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15960: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__PROVIDER__LOAD__MOBILE__567 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15963: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__BOT__LOAD__MOBILE__568 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15968: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__BUDGETS__LOAD__MOBILE__570 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15971: "Configure after backend is ready" on SUPERADMIN__PLATFORM__API_USAGE__SETTINGS__LOAD__MOBILE__571 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-15996: "Configure after backend is ready" on SUPERADMIN__PLATFORM__ADMIN__ROLES__LOAD__MOBILE__574 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-16001: "Configure after backend is ready" on SUPERADMIN__PLATFORM__ADMIN__INVITATIONS__LOAD__MOBILE__576 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-16024: "Configure after backend is ready" on SUPERADMIN__PLATFORM__ADMIN__MESSAGES__LOAD__MOBILE__578 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-16027: "Configure after backend is ready" on SUPERADMIN__PLATFORM__ADMIN__SETTINGS__LOAD__MOBILE__579 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-16895: "New Bundle from Selected (0)" on BNAADMIN__BNA__CONTENT__NEWSLETTER__LOAD__MOBILE__658 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-16914: "New Bundle from Selected (0)" on BNAADMIN__BNA__CONTENT__BUNDLES__LOAD__MOBILE__660 - Keep disabled controls paired with small helper text.
+- disabled_correctly ACT-17016: "Configure after backend is ready" on BNAADMIN__BNA__SERVICE_PROVIDERS__COMMUNITIES__LOAD__MOBILE__677 - Keep disabled controls paired with small helper text.
+
+## Actions that should move into dropdowns/drawers
+
+- not_tested ACT-00001: "עברית" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00002: "<" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00003: ">" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00004: "Go to learning moment 1" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00005: "Go to learning moment 2" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00006: "Go to learning moment 3" on PUBLIC__WEBSITE__WEBSITE__PUBLIC_SITE_HOME__LOAD__DESKTOP__001 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00021: "English" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00022: "<" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00023: ">" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00024: "Go to learning moment 1" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00025: "Go to learning moment 2" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00026: "Go to learning moment 3" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__002 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00056: "Open and Sign" on PUBLIC__WEBSITE__WEBSITE__SIGNUP_ENGLISH__LOAD__DESKTOP__007 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00057: "Open and Sign" on PUBLIC__WEBSITE__WEBSITE__SIGNUP_ENGLISH__LOAD__DESKTOP__007 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00058: "Open and Sign" on PUBLIC__WEBSITE__WEBSITE__SIGNUP_ENGLISH__LOAD__DESKTOP__007 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00059: "Open and Sign" on PUBLIC__WEBSITE__WEBSITE__SIGNUP_ENGLISH__LOAD__DESKTOP__007 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00060: "Open and Sign" on PUBLIC__WEBSITE__WEBSITE__SIGNUP_ENGLISH__LOAD__DESKTOP__007 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00061: "Open and Sign" on PUBLIC__WEBSITE__WEBSITE__SIGNUP_ENGLISH__LOAD__DESKTOP__007 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00063: "פתיחה וחתימה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00064: "פתיחה וחתימה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00065: "פתיחה וחתימה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00066: "פתיחה וחתימה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00067: "פתיחה וחתימה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00068: "פתיחה וחתימה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00069: "שליחת הרשמה" on PUBLIC__WEBSITE__WEBSITE__HEBREW_STATE__LOAD__DESKTOP__008 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00072: "Sign In" on PUBLIC__OPERATIONS__AUTH__OPERATIONS_LOGIN__LOAD__DESKTOP__011 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00073: "English" on PARENT__BNA__PORTAL__PARENT_PORTAL_LOGIN__LOAD__DESKTOP__012 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00074: "עברית" on PARENT__BNA__PORTAL__PARENT_PORTAL_LOGIN__LOAD__DESKTOP__012 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00075: "Sign in" on PARENT__BNA__PORTAL__PARENT_PORTAL_LOGIN__LOAD__DESKTOP__012 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00077: "EN" on STUDENT__BNA__PORTAL__STUDENT_WORKSPACE_LOGIN__LOAD__DESKTOP__013 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00078: "HE" on STUDENT__BNA__PORTAL__STUDENT_WORKSPACE_LOGIN__LOAD__DESKTOP__013 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00079: "Open My Board" on STUDENT__BNA__PORTAL__STUDENT_WORKSPACE_LOGIN__LOAD__DESKTOP__013 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00080: "Sign In" on PROVIDERADMIN__SHELLER__PORTAL__PROVIDER_PORTAL_LOGIN__LOAD__DESKTOP__014 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00081: "Free provider listing" on PROVIDERADMIN__SHELLER__PROVIDER_ONBOARDING__ONBOARDING__LOAD__DESKTOP__015 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00085: "Platform / Super Admin Active" on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00086: "BNA School Workspace school" on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00087: "Rabbi Sheller Provider Workspace provider" on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00104: "Help" on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00105: "New Task" on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00106: "Open decisions" on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00107: "Open changelog" on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00108: "Open students" on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00109: "Open device view" on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00110: "Open content" on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00111: "Open accounting" on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00112: "DECISIONS 0 Choices waiting before work continues." on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00113: "STUDENTS 0 Goal, device, or review attention." on SUPERADMIN__PLATFORM__DASHBOARD__OVERVIEW__LOAD__DESKTOP__020 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00117: "Platform / Super Admin Active" on SUPERADMIN__PLATFORM__DASHBOARD__ACTIVITY__LOAD__DESKTOP__021 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00118: "BNA School Workspace school" on SUPERADMIN__PLATFORM__DASHBOARD__ACTIVITY__LOAD__DESKTOP__021 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00119: "Rabbi Sheller Provider Workspace provider" on SUPERADMIN__PLATFORM__DASHBOARD__ACTIVITY__LOAD__DESKTOP__021 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00136: "Help" on SUPERADMIN__PLATFORM__DASHBOARD__ACTIVITY__LOAD__DESKTOP__021 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00137: "New Task" on SUPERADMIN__PLATFORM__DASHBOARD__ACTIVITY__LOAD__DESKTOP__021 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00139: "Platform / Super Admin Active" on SUPERADMIN__PLATFORM__DASHBOARD__ALERTS__LOAD__DESKTOP__022 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00140: "BNA School Workspace school" on SUPERADMIN__PLATFORM__DASHBOARD__ALERTS__LOAD__DESKTOP__022 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00141: "Rabbi Sheller Provider Workspace provider" on SUPERADMIN__PLATFORM__DASHBOARD__ALERTS__LOAD__DESKTOP__022 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00158: "Help" on SUPERADMIN__PLATFORM__DASHBOARD__ALERTS__LOAD__DESKTOP__022 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00159: "New Task" on SUPERADMIN__PLATFORM__DASHBOARD__ALERTS__LOAD__DESKTOP__022 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00160: "DECISIONS 0 Choices waiting before work continues." on SUPERADMIN__PLATFORM__DASHBOARD__ALERTS__LOAD__DESKTOP__022 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00161: "STUDENTS 0 Goal, device, or review attention." on SUPERADMIN__PLATFORM__DASHBOARD__ALERTS__LOAD__DESKTOP__022 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00165: "Platform / Super Admin Active" on SUPERADMIN__PLATFORM__DASHBOARD__TODAY__LOAD__DESKTOP__023 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00166: "BNA School Workspace school" on SUPERADMIN__PLATFORM__DASHBOARD__TODAY__LOAD__DESKTOP__023 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00167: "Rabbi Sheller Provider Workspace provider" on SUPERADMIN__PLATFORM__DASHBOARD__TODAY__LOAD__DESKTOP__023 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00184: "Help" on SUPERADMIN__PLATFORM__DASHBOARD__TODAY__LOAD__DESKTOP__023 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00185: "New Task" on SUPERADMIN__PLATFORM__DASHBOARD__TODAY__LOAD__DESKTOP__023 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00187: "Platform / Super Admin Active" on SUPERADMIN__PLATFORM__DASHBOARD__UPDATES__LOAD__DESKTOP__024 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00188: "BNA School Workspace school" on SUPERADMIN__PLATFORM__DASHBOARD__UPDATES__LOAD__DESKTOP__024 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00189: "Rabbi Sheller Provider Workspace provider" on SUPERADMIN__PLATFORM__DASHBOARD__UPDATES__LOAD__DESKTOP__024 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00206: "Help" on SUPERADMIN__PLATFORM__DASHBOARD__UPDATES__LOAD__DESKTOP__024 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00207: "New Task" on SUPERADMIN__PLATFORM__DASHBOARD__UPDATES__LOAD__DESKTOP__024 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00209: "Platform / Super Admin Active" on SUPERADMIN__PLATFORM__PIPELINES__OVERVIEW__LOAD__DESKTOP__025 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00210: "BNA School Workspace school" on SUPERADMIN__PLATFORM__PIPELINES__OVERVIEW__LOAD__DESKTOP__025 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00211: "Rabbi Sheller Provider Workspace provider" on SUPERADMIN__PLATFORM__PIPELINES__OVERVIEW__LOAD__DESKTOP__025 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00230: "Help" on SUPERADMIN__PLATFORM__PIPELINES__OVERVIEW__LOAD__DESKTOP__025 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00231: "New Pipeline Card" on SUPERADMIN__PLATFORM__PIPELINES__OVERVIEW__LOAD__DESKTOP__025 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00238: "Platform / Super Admin Active" on SUPERADMIN__PLATFORM__PIPELINES__BNA_ENROLLMENT__LOAD__DESKTOP__026 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00239: "BNA School Workspace school" on SUPERADMIN__PLATFORM__PIPELINES__BNA_ENROLLMENT__LOAD__DESKTOP__026 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00240: "Rabbi Sheller Provider Workspace provider" on SUPERADMIN__PLATFORM__PIPELINES__BNA_ENROLLMENT__LOAD__DESKTOP__026 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00259: "Help" on SUPERADMIN__PLATFORM__PIPELINES__BNA_ENROLLMENT__LOAD__DESKTOP__026 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00260: "New Pipeline Card" on SUPERADMIN__PLATFORM__PIPELINES__BNA_ENROLLMENT__LOAD__DESKTOP__026 - Either wire the action, move it into a menu, or disable it with helper text.
+- not_tested ACT-00263: "Platform / Super Admin Active" on SUPERADMIN__PLATFORM__PIPELINES__PROVIDER_CLASS__LOAD__DESKTOP__027 - Either wire the action, move it into a menu, or disable it with helper text.
+

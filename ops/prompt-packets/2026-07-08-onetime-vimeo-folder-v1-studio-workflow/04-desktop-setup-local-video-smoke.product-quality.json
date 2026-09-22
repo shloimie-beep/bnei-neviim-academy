@@ -1,0 +1,609 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260708-014",
+  "parent_raw_id": "RAW-20260708-012",
+  "source_statement_ids": [
+    "SRC-20260708-012-001",
+    "SRC-20260708-012-002",
+    "SRC-20260708-012-004",
+    "SRC-20260708-012-005",
+    "SRC-20260708-012-006",
+    "SRC-20260708-012-007"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260708-012",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260708-012"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260708-012-onetime-vimeo-desktop-setup-test-continuation.md",
+      "tasks-pending/2026-07-08-onetime-vimeo-folder-v1-studio-workflow.md",
+      "src/lib/bna/one-time-vimeo-studio-pipeline.js"
+    ],
+    "produces": [
+      "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-drive-edge-smoke/",
+      "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-promo-smoke/",
+      "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-promo-transcription-smoke/"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/04-desktop-setup-local-video-smoke.product-quality.json",
+    "terminal_condition": "Desktop Drive/local video smokes prove render, trim, sidecar, Vimeo dry-run, and transcription blocker evidence without live publish.",
+    "handoff_target": "tasks-pending/2026-07-08-onetime-vimeo-folder-v1-studio-workflow.md"
+  },
+  "stage": "STAGE_4_INDEPENDENT_VERIFICATION",
+  "packet_role": "VERIFIER_PACKET",
+  "status": "done",
+  "title": "One Time Vimeo Desktop Setup and Local Video Smokes",
+  "created_at": "2026-07-08T18:58:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "INTERNAL_AGENT_SUPPORT",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260708-012",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "PROVIDER_SETUP",
+      "EXTERNAL_WRITE_REQUEST",
+      "SECURITY_PRIVACY",
+      "VERIFIER_CLOSEOUT",
+      "DECISION_REQUIRED"
+    ],
+    "confidence": 0.96,
+    "reasons": [
+      "The operator explicitly asked to set up and use the workflow on this desktop.",
+      "Local media processing can continue without live Vimeo/member writes.",
+      "Transcription can be attempted only on non-private smoke media and must keep transcript bodies out of committed reports."
+    ],
+    "affected_product_surfaces": [
+      "Desktop Google Drive test drop",
+      "One Time Vimeo Studio CLI",
+      "One Time Vimeo dry-run handoff",
+      "Future One Time transcript and latest-class workflow"
+    ],
+    "likely_external_provider_blockers": [
+      "Canonical One Time shared Drive folder is connector-visible but not mounted locally on this desktop.",
+      "OpenAI transcription key currently returns 401.",
+      "Real Vimeo upload needs target account/project, privacy defaults, private smoke, and approval.",
+      "Student portal/latest-class and bot knowledge promotion need transcript/publish approval policy."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": false,
+    "implementation_forbidden_until_dor": false,
+    "recommended_packet_sequence": [
+      "desktop setup",
+      "Drive Desktop edge-trim smoke",
+      "local promo smoke",
+      "transcription readiness/blocker readback"
+    ],
+    "next_exact_packet": "Record desktop no-write readiness and remaining live blockers."
+  },
+  "operator_intent_summary": "Set up the One Time Vimeo folder workflow on this desktop, actually run it against videos, and continue every safe step without waiting for manual ordering.",
+  "raw_quotes": [
+    "keep building the entire thing",
+    "Run all the commands",
+    "set it up on this computer first",
+    "actually test it",
+    "start doing it with some videos"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260708-014",
+      "decision": "Stage only scoped Vimeo-folder work while another agent may be editing unrelated files.",
+      "status": "open"
+    },
+    {
+      "id": "DEC-20260708-012",
+      "decision": "Transcript and bot knowledge promotion still require approval policy.",
+      "status": "needs_operator_decision"
+    },
+    {
+      "id": "DEC-20260708-013",
+      "decision": "Real Vimeo upload/member publish still require private smoke and exact approval.",
+      "status": "needs_operator_decision"
+    }
+  ],
+  "out_of_scope": [
+    "No real Vimeo upload.",
+    "No production database write.",
+    "No member/student portal visibility change.",
+    "No bot knowledge promotion.",
+    "No raw transcript body in committed evidence."
+  ],
+  "affected_surfaces": [
+    "Desktop Google Drive test drop",
+    "Local media-inbox test drop",
+    "One Time Vimeo Studio CLI",
+    "One Time Vimeo dry-run handoff"
+  ],
+  "affected_routes": [
+    "scripts/one-time-vimeo-studio-pipeline.mjs"
+  ],
+  "affected_files": [
+    "src/lib/bna/one-time-vimeo-studio-pipeline.js",
+    "scripts/one-time-vimeo-studio-pipeline.mjs",
+    "tests/one-time-vimeo-studio-pipeline.test.js",
+    "tasks-pending/2026-07-08-onetime-vimeo-folder-v1-studio-workflow.md"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "Google Drive folder 16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2",
+      "G:/My Drive",
+      "C:/Users/User/Downloads",
+      "media-inbox/"
+    ],
+    "observed": [
+      "Canonical One Time shared folder is visible through the Drive connector.",
+      "Canonical shared folder is not mounted locally under G:/My Drive on this desktop.",
+      "A safe Drive Desktop smoke folder can be created under G:/My Drive for this computer.",
+      "A OneTime promo video exists locally and can be copied into ignored media-inbox for smoke testing."
+    ],
+    "known_blockers": [
+      "OpenAI transcription key currently fails with 401.",
+      "Exact laptop shared-folder mount remains a later setup step.",
+      "Real Vimeo upload/member publish remains approval-gated."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "keep building the entire thing",
+      "Run all the commands",
+      "set it up on this computer",
+      "actually test it",
+      "testing the whole workflow"
+    ],
+    "expanded_phrases": {
+      "keep building the entire thing": "Continue the safe local Vimeo Studio workflow batch, not real external upload or portal publication.",
+      "Run all the commands": "Run syntax checks, focused tests, PQC validation, protocol drift watchdog, and local media smokes.",
+      "set it up on this computer": "Use this desktop's Drive Desktop mount and local ignored media-inbox folders for no-write testing.",
+      "actually test it": "Render local outputs, inspect durations, produce sidecars, and run Vimeo dry-run reports.",
+      "testing the whole workflow": "Exercise folder scan, opener render, trim, sidecar, Vimeo dry-run, and transcription readiness while approval-gating live writes."
+    },
+    "user_goal": "A dropped class folder becomes an edited no-write review package on this desktop.",
+    "workflow": [
+      "folder discovery",
+      "sidecar parsing",
+      "opener render",
+      "explicit or edge trim",
+      "processed sidecar",
+      "Vimeo dry-run",
+      "transcription readiness readback"
+    ],
+    "forbidden_content": [
+      "private class content in committed reports",
+      "unapproved uploads",
+      "unapproved portal/bot publication"
+    ]
+  },
+  "design_pattern_references": [
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "docs/PRODUCT-QUALITY-COMPILER.md"
+  ],
+  "requirements": [
+    "REQ-20260708-061",
+    "REQ-20260708-062",
+    "REQ-20260708-063",
+    "REQ-20260708-064"
+  ],
+  "definition_of_ready": {
+    "ready": true,
+    "criteria": [
+      "Raw continuation captured.",
+      "Existing processor inspected.",
+      "Drive folder metadata grounded.",
+      "Safe local video candidates selected."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "scripts/one-time-vimeo-studio-pipeline.mjs",
+      "viewport": "cli",
+      "auth_role": "INTERNAL_AGENT_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Start a Drive/local folder scan.",
+      "expected_visible_title": "One Time Vimeo Studio Pipeline Report",
+      "expected_visible_message": "workflow and folder fields are present",
+      "expected_primary_action": "Scan folder",
+      "expected_secondary_actions": ["Write report"],
+      "forbidden_content": ["secrets", "real upload"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "CLI report is structured JSON/Markdown.",
+      "accessibility_expectation": "Report text is readable without UI styling.",
+      "test_smoke_assertion": "Report includes workflow name and generated timestamp.",
+      "requirement_id": "REQ-20260708-061"
+    },
+    "empty": {
+      "route": "scripts/one-time-vimeo-studio-pipeline.mjs",
+      "viewport": "cli",
+      "auth_role": "INTERNAL_AGENT_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Scan an empty configured folder.",
+      "expected_visible_title": "One Time Vimeo Studio Pipeline Report",
+      "expected_visible_message": "no candidates",
+      "expected_primary_action": "Drop supported video folder",
+      "expected_secondary_actions": ["Confirm Drive mount"],
+      "forbidden_content": ["crash", "implicit publish"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Empty result stays machine-readable.",
+      "accessibility_expectation": "Next action is plain text.",
+      "test_smoke_assertion": "candidate count is zero.",
+      "requirement_id": "REQ-20260708-061"
+    },
+    "populated": {
+      "route": "scripts/one-time-vimeo-studio-pipeline.mjs --render",
+      "viewport": "cli",
+      "auth_role": "INTERNAL_AGENT_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Scan a folder with a supported video and class.json sidecar.",
+      "expected_visible_title": "One Time Vimeo Studio Pipeline Report",
+      "expected_visible_message": "Candidates: 1",
+      "expected_primary_action": "Render local output",
+      "expected_secondary_actions": ["Run Vimeo dry-run"],
+      "forbidden_content": ["BNA Academy scope", "raw private transcript"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Candidate fields are named.",
+      "accessibility_expectation": "Markdown report has headings and bullet readback.",
+      "test_smoke_assertion": "Rendered count and sidecar count are 1.",
+      "requirement_id": "REQ-20260708-062"
+    },
+    "filtered_empty": {
+      "route": "scripts/one-time-vimeo-studio-pipeline.mjs",
+      "viewport": "cli",
+      "auth_role": "INTERNAL_AGENT_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Scan a folder with unsupported files only.",
+      "expected_visible_title": "One Time Vimeo Studio Pipeline Report",
+      "expected_visible_message": "unsupported files ignored",
+      "expected_primary_action": "Add mp4/mov/m4v/webm media",
+      "expected_secondary_actions": ["Review folder contents"],
+      "forbidden_content": ["auto-transcribe unrelated files"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Unsupported state is explicit.",
+      "accessibility_expectation": "No hidden skipped state.",
+      "test_smoke_assertion": "Unsupported files do not become candidates.",
+      "requirement_id": "REQ-20260708-061"
+    },
+    "error": {
+      "route": "scripts/one-time-vimeo-studio-pipeline.mjs --transcribe-openai",
+      "viewport": "cli",
+      "auth_role": "INTERNAL_AGENT_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Attempt transcription with the current invalid local key.",
+      "expected_visible_title": "One Time Vimeo Studio Pipeline Report",
+      "expected_visible_message": "Transcription failed",
+      "expected_primary_action": "Replace/approve transcription key",
+      "expected_secondary_actions": ["Keep transcript unpromoted"],
+      "forbidden_content": ["full API key", "committed transcript body"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Failure is a blocker field.",
+      "accessibility_expectation": "Owner and next action are readable.",
+      "test_smoke_assertion": "Blocker is recorded and credential text is redacted.",
+      "requirement_id": "REQ-20260708-064"
+    },
+    "blocked_setup": {
+      "route": "scripts/one-time-vimeo-folder-library.mjs --upload",
+      "viewport": "cli",
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Request real Vimeo upload before private smoke and approval.",
+      "expected_visible_title": "One Time Vimeo folder workflow",
+      "expected_visible_message": "blocked",
+      "expected_primary_action": "Run private smoke",
+      "expected_secondary_actions": ["Record exact approval"],
+      "forbidden_content": ["uploaded", "member visible"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Blocked owner is named.",
+      "accessibility_expectation": "Next action is explicit.",
+      "test_smoke_assertion": "external_write_performed remains false.",
+      "requirement_id": "REQ-20260708-064"
+    },
+    "preview_only": {
+      "route": "scripts/one-time-vimeo-studio-pipeline.mjs --no-render",
+      "viewport": "cli",
+      "auth_role": "INTERNAL_AGENT_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Run plan-only mode.",
+      "expected_visible_title": "One Time Vimeo Studio Pipeline Report",
+      "expected_visible_message": "render requested false",
+      "expected_primary_action": "Review trim plan",
+      "expected_secondary_actions": ["Render after review"],
+      "forbidden_content": ["processed output claim"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Preview status is explicit.",
+      "accessibility_expectation": "Skipped render is visible.",
+      "test_smoke_assertion": "render_performed is false.",
+      "requirement_id": "REQ-20260708-063"
+    },
+    "success_readback": {
+      "route": "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-setup-readback.md",
+      "viewport": "markdown",
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the desktop setup readback after smokes.",
+      "expected_visible_title": "One Time Vimeo Studio Desktop Setup Readback",
+      "expected_visible_message": "Ready On This Desktop",
+      "expected_primary_action": "Use local test command",
+      "expected_secondary_actions": ["Resolve live blockers"],
+      "forbidden_content": ["raw private media", "unredacted key"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Markdown headings separate smokes and blockers.",
+      "accessibility_expectation": "Commands and paths are copyable text.",
+      "test_smoke_assertion": "Readback names report paths and blockers.",
+      "requirement_id": "REQ-20260708-064"
+    },
+    "permission_denied": {
+      "route": "real Vimeo/portal/bot publish",
+      "viewport": "approval-gate",
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Try to treat local smoke as approval to publish.",
+      "expected_visible_title": "Approval gate",
+      "expected_visible_message": "permission denied until decisions are resolved",
+      "expected_primary_action": "Provide exact approval",
+      "expected_secondary_actions": ["Stay dry-run"],
+      "forbidden_content": ["external write", "bot promotion"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Denied status is unambiguous.",
+      "accessibility_expectation": "Approval blocker is text.",
+      "test_smoke_assertion": "No external write/member visibility flags are true.",
+      "requirement_id": "REQ-20260708-064"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time-classroom",
+      "viewport": 390,
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Future latest-class portal packet after transcript/publish approval.",
+      "expected_visible_title": "One Time Mishnah Classroom",
+      "expected_visible_message": "latest approved class",
+      "expected_primary_action": "Watch class",
+      "expected_secondary_actions": ["Ask scoped bot"],
+      "forbidden_content": ["unapproved transcript", "BNA Academy records"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Future mobile portal detail is readable.",
+      "accessibility_expectation": "No horizontal overflow after app-visible implementation.",
+      "test_smoke_assertion": "Later packet must include mobile screenshot proof.",
+      "requirement_id": "REQ-20260708-059"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-setup-readback.md",
+        "viewport": 1440,
+        "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": false,
+        "requirement_id": "REQ-20260708-064"
+      },
+      {
+        "route": "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-setup-readback.md",
+        "viewport": 1024,
+        "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": false,
+        "requirement_id": "REQ-20260708-064"
+      },
+      {
+        "route": "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-setup-readback.md",
+        "viewport": 768,
+        "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": false,
+        "requirement_id": "REQ-20260708-064"
+      },
+      {
+        "route": "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-setup-readback.md",
+        "viewport": 430,
+        "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": false,
+        "requirement_id": "REQ-20260708-064"
+      },
+      {
+        "route": "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-setup-readback.md",
+        "viewport": 390,
+        "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": false,
+        "requirement_id": "REQ-20260708-064"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260708-014-001",
+        "route": "scripts/one-time-vimeo-studio-pipeline.mjs",
+        "viewport": "cli",
+        "screenshot_before": "n/a-cli-media-workflow",
+        "screenshot_after_or_blocker": "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-setup-readback.md",
+        "defect_codes": ["VQ-WORKFLOW-001"],
+        "severity": "P0",
+        "user_impact": "The desktop workflow needed actual local media smoke evidence rather than only instructions.",
+        "expected_fix": "Run local/Drive smoke videos and record no-write readiness plus blockers.",
+        "requirement_id": "REQ-20260708-064"
+      }
+    ],
+    "reason": "This packet verifies CLI/media artifacts; app UI screenshots are deferred to the portal/latest-class packet."
+  },
+  "accessibility": {
+    "required": false,
+    "reason": "No app UI changes in this packet."
+  },
+  "action_states": [
+    {
+      "label": "Render local edited output",
+      "selector_or_action_key": "one_time_vimeo_studio_render",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "ffmpeg local render with static opener, trim, and sidecar output.",
+      "registry_required": false
+    },
+    {
+      "label": "Run Vimeo dry-run handoff",
+      "selector_or_action_key": "one_time_vimeo_dry_run",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing One Time Vimeo folder-library workflow in dry-run mode.",
+      "registry_required": false
+    },
+    {
+      "label": "Transcribe edited output with OpenAI",
+      "selector_or_action_key": "one_time_vimeo_transcribe_openai",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Shloimie/account owner",
+      "external_write": true,
+      "handler_or_blocker": "Optional only with --transcribe-openai; current key returns 401 and no transcript is promoted.",
+      "registry_required": true
+    },
+    {
+      "label": "Publish latest class or bot knowledge",
+      "selector_or_action_key": "one_time_latest_class_publish",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Shloimie/Rabbi + Codex",
+      "external_write": false,
+      "handler_or_blocker": "Blocked by DEC-20260708-012 and future approved transcript/latest-class packet.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "inputs": [
+      "video file",
+      "class.json sidecar"
+    ],
+    "outputs": [
+      "edited mp4",
+      "edited json sidecar",
+      "redacted report"
+    ],
+    "privacy": "Do not commit raw media or transcript bodies."
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class only",
+    "raw_private_data_policy": "ignored media-inbox and Drive Desktop test media are not committed",
+    "credential_policy": "OpenAI/Vimeo keys are never printed or committed",
+    "scope_rules": [
+      "All reports remain scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+      "No raw private media, full transcript body, or credential is committed.",
+      "Real Vimeo, portal, and bot writes remain approval-gated."
+    ],
+    "forbidden_content": [
+      "raw private class recording",
+      "unredacted API key",
+      "BNA Academy class/media record",
+      "unapproved transcript body"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "id": "batch-desktop-smoke",
+      "requirements": [
+        "REQ-20260708-061",
+        "REQ-20260708-062",
+        "REQ-20260708-063",
+        "REQ-20260708-064"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "small",
+    "source_files_to_read": [
+      "src/lib/bna/one-time-vimeo-studio-pipeline.js",
+      "scripts/one-time-vimeo-studio-pipeline.mjs",
+      "tests/one-time-vimeo-studio-pipeline.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "src/lib/bna/one-time-vimeo-studio-pipeline.js",
+      "scripts/one-time-vimeo-studio-pipeline.mjs",
+      "tests/one-time-vimeo-studio-pipeline.test.js",
+      "tasks-pending/2026-07-08-onetime-vimeo-folder-v1-studio-workflow.md",
+      "ops/one-time-mishnah/vimeo-studio-pipeline/**"
+    ],
+    "max_files_to_edit": 12,
+    "max_routes_to_touch": 0,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if real Vimeo upload, portal publish, or bot knowledge is implemented.",
+    "split_if_exceeds": [
+      "requires production DB write",
+      "requires Vimeo upload",
+      "requires bot/member visibility"
+    ],
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    "node --check src/lib/bna/one-time-vimeo-studio-pipeline.js",
+    "node --check scripts/one-time-vimeo-studio-pipeline.mjs",
+    "node --test tests/one-time-vimeo-studio-pipeline.test.js tests/one-time-vimeo-folder-library-workflow.test.js",
+    "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/04-desktop-setup-local-video-smoke.product-quality.json",
+    "npm run watchdog:protocol-drift"
+  ],
+  "evidence": [
+    "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-drive-edge-smoke/",
+    "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-promo-smoke/",
+    "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-promo-transcription-smoke/"
+  ],
+  "deployment_gate": "LOCAL_ONLY_ALLOWED",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "Desktop setup is recorded.",
+      "Drive Desktop and local video smokes have reports.",
+      "Focused tests pass.",
+      "PQC and watchdog pass.",
+      "Live blockers remain explicit."
+    ]
+  },
+  "trace": {
+    "raw_id": "RAW-20260708-012",
+    "raw_input_path": "raw-input/RAW-20260708-012-onetime-vimeo-desktop-setup-test-continuation.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/04-desktop-setup-local-video-smoke.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": [
+      "inspect Drive connector/local mount",
+      "create local Drive Desktop test folder",
+      "run synthetic edge-trim smoke",
+      "run safe local promo smoke",
+      "run optional transcription blocker smoke",
+      "record final audit"
+    ],
+    "skipped_actions_policy": "Skip real Vimeo upload, production database mutation, member/student visibility, and bot knowledge promotion until explicit approvals exist.",
+    "blocker_decisions": [
+      "DEC-20260708-012",
+      "DEC-20260708-013",
+      "DEC-20260708-014"
+    ],
+    "evidence_paths": [
+      "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-setup-readback.md",
+      "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-drive-edge-smoke/",
+      "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-promo-smoke/",
+      "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-promo-transcription-smoke/"
+    ],
+    "final_status_path": "tasks-pending/2026-07-08-onetime-vimeo-folder-v1-studio-workflow.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/02-transcript-bot-latest-class.product-quality.json"
+  },
+  "drift_watchdog": {
+    "command": "npm run watchdog:protocol-drift",
+    "required": true,
+    "expected_result": "No unhandled protocol drift findings for this desktop no-write Vimeo workflow batch."
+  },
+  "next_packet": {
+    "id": "PKT-20260708-015",
+    "status": "blocked",
+    "reason": "Real Vimeo upload, transcript promotion, portal publish, and bot knowledge require exact approvals."
+  }
+}

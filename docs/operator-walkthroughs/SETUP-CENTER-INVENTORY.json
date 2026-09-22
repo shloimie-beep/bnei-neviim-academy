@@ -1,0 +1,59 @@
+{
+  "id": "owner-setup-center-20260624",
+  "goal": "BNA OWNER SETUP CENTER - EXACT LINKS, STEPS, STATUS, AND VALIDATION",
+  "branch": "codex/closeout-operator-walkthrough-20260624",
+  "base": {
+    "requested": "CONTROL.json integration base",
+    "used": "origin/codex/integration-navigation-owner-review-20260624",
+    "sha": "f9625e8c15e0a63a272582e839bf42b100cd6714",
+    "blocker": "CONTROL.json was not present"
+  },
+  "static_page": "public/integration-setup.html",
+  "catalog_module": "src/lib/integrations/setup-catalog.js",
+  "authenticated_endpoint_proposed": "/api/bna/integration-setup/readiness",
+  "shared_patch": "docs/operator-walkthroughs/SHARED-PATCH.diff",
+  "secret_values_included": false,
+  "status_vocabulary": [
+    "already_configured",
+    "available_with_current_keys",
+    "mock_tested_only",
+    "sandbox_test_only",
+    "preview_only",
+    "missing_credential",
+    "invalid_credential",
+    "missing_account_permission",
+    "missing_target",
+    "owner_approval_required",
+    "ready_for_live",
+    "live"
+  ],
+  "integrations": [
+    { "id": "openai-hosted-ai", "walkthrough": "docs/operator-walkthroughs/integrations/openai-hosted-ai.md" },
+    { "id": "kimi-fallback", "walkthrough": "docs/operator-walkthroughs/integrations/kimi-fallback.md" },
+    { "id": "google-drive", "walkthrough": "docs/operator-walkthroughs/integrations/google-drive.md" },
+    { "id": "google-workspace-addons", "walkthrough": "docs/operator-walkthroughs/integrations/google-workspace-addons.md" },
+    { "id": "railway-database", "walkthrough": "docs/operator-walkthroughs/integrations/railway-database.md" },
+    { "id": "stripe", "walkthrough": "docs/operator-walkthroughs/integrations/stripe.md" },
+    { "id": "vimeo", "walkthrough": "docs/operator-walkthroughs/integrations/vimeo.md" },
+    { "id": "zoom", "walkthrough": "docs/operator-walkthroughs/integrations/zoom.md" },
+    { "id": "resend-email", "walkthrough": "docs/operator-walkthroughs/integrations/resend-email.md" },
+    { "id": "transcription", "walkthrough": "docs/operator-walkthroughs/integrations/transcription.md" },
+    { "id": "telegram-academy-bot", "walkthrough": "docs/operator-walkthroughs/integrations/telegram-academy-bot.md" },
+    { "id": "telegram-rabbi-worker", "walkthrough": "docs/operator-walkthroughs/integrations/telegram-rabbi-worker.md" },
+    { "id": "github-actions", "walkthrough": "docs/operator-walkthroughs/integrations/github-actions.md" },
+    { "id": "buffer-social", "walkthrough": "docs/operator-walkthroughs/integrations/buffer-social.md" },
+    { "id": "whatsapp-wapi", "walkthrough": "docs/operator-walkthroughs/integrations/whatsapp-wapi.md" },
+    { "id": "green-invoice", "walkthrough": "docs/operator-walkthroughs/integrations/green-invoice.md" }
+  ],
+  "tests": [
+    "tests/integration-setup-catalog.test.js",
+    "tests/integration-setup-ui.test.js",
+    "tests/operator-walkthrough-links.test.js"
+  ],
+  "verification": {
+    "focused_tests": "passed: node --test tests/integration-setup-catalog.test.js tests/integration-setup-ui.test.js tests/operator-walkthrough-links.test.js",
+    "git_diff_check": "passed: git diff --cached --check",
+    "secret_audit": "passed: 4316 tracked paths checked, 0 tracked secret-risk files found",
+    "push": "passed: first implementation commit 305998fd pushed to origin/codex/closeout-operator-walkthrough-20260624"
+  }
+}

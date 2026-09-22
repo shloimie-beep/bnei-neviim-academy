@@ -1,0 +1,34 @@
+{
+  "started_at": "2026-06-21T17:34:49.332Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "developer tester creates a scoped ticket without Codex queue",
+      "ok": true,
+      "duration_ms": 699,
+      "details": {
+        "ticket_id": 915,
+        "support_ticket_id": 21,
+        "thread_id": 33,
+        "action_status": "completed"
+      }
+    },
+    {
+      "name": "saved ticket keeps tester context sanitized",
+      "ok": true,
+      "duration_ms": 525,
+      "details": {
+        "ticket_id": 915,
+        "codex_status": "none",
+        "source_actor_type": "developer_tester",
+        "screenshot_ref_type": "redacted_data_url"
+      }
+    }
+  ],
+  "result": {
+    "ticket_id": 915,
+    "support_ticket_id": 21,
+    "thread_id": 33,
+    "codex_status": "none"
+  }
+}

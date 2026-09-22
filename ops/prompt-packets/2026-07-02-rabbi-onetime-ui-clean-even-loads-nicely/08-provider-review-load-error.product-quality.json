@@ -1,0 +1,617 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-810",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802",
+      "PKT-20260702-805",
+      "PKT-20260702-806",
+      "PKT-20260702-807",
+      "PKT-20260702-808",
+      "PKT-20260702-809"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/screenshots/provider-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/screenshots/provider-review-390-mobile.png",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "produces": [
+      "public/provider.html",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/report.md",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/08-provider-review-load-error.product-quality.json",
+    "terminal_condition": "The One Time provider review portal loads without showing the raw driveDropoffLinks JavaScript error and without changing provider authentication, Drive, upload, or external write behavior.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Provider Review Load Error Fix",
+  "created_at": "2026-07-02T23:35:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "BUG_REPORT",
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.94,
+    "reasons": [
+      "Manual screenshot review found the provider review portal showing the raw error text driveDropoffLinks is not defined.",
+      "A raw JavaScript error on first paint violates the operator request that the project should load nicely.",
+      "The defect is scoped to the provider review renderer and can be fixed without auth, API, Drive, upload, or external write changes."
+    ],
+    "affected_product_surfaces": [
+      "One Time provider review portal"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "Drive upload folders, copy/open links, provider auth, email, WhatsApp, Stripe/payment, access grants, Vimeo, Zoom, DNS, and account mutations are out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state",
+      "06-task-dialogue-lane-contrast",
+      "07-task-route-layout-density",
+      "08-provider-review-load-error"
+    ],
+    "next_exact_packet": "After this provider review load-error fix, continue manual screenshot-reviewed packets for student portal hero readability or Operations CRM/participants layout."
+  },
+  "operator_intent_summary": "Make the Rabbi / One Time provider review portal load cleanly without a visible raw JavaScript error.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No provider auth, login, password, session, setup token, or entitlement behavior changes.",
+    "No Drive folder creation, upload, file copy, external link mutation, or provider account change.",
+    "No email, WhatsApp, Telegram, Stripe/payment, access grant, Vimeo, Zoom, DNS, account mutation, publish, send, or delete.",
+    "No GHL runtime, LeadConnector reference, external CRM write, raw private evidence, or secret exposure.",
+    "No broader provider portal IA redesign, participant CRM polish, student portal polish, or Operations automation-center layout change."
+  ],
+  "affected_surfaces": [
+    "One Time provider review portal"
+  ],
+  "affected_routes": [
+    "/provider.html?review=one-time"
+  ],
+  "affected_files": [
+    "public/provider.html",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/provider.html renderOneTimeProviderReview",
+      "public/provider.html renderDriveDropoffLinks",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/screenshots/provider-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/screenshots/provider-review-390-mobile.png"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "The provider review portal displays the raw message driveDropoffLinks is not defined above the sign-in panel.",
+      "The raw error is visible on both desktop and mobile screenshots, making the page look broken even before any login or review interaction."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "loads nicely",
+      "clean"
+    ],
+    "expanded_phrases": {
+      "loads nicely": "The provider review portal should render its intended review shell or login panel without exposing JavaScript variable errors to the user.",
+      "clean": "The route should avoid raw exception text and preserve the provider workspace review UI with scoped One Time branding and readable controls."
+    },
+    "first_party_pattern_interpretation": "The provider review page remains a first-party One Time / BNA review portal scoped to rabbi_sheller_provider and one_time_mishnah_class."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-810",
+      "statement": "Fix the provider review route so it does not show the driveDropoffLinks variable error while rendering One Time review-mode media/dropoff panels.",
+      "expected_result": "The provider review route loads on desktop and mobile without visible raw JavaScript error text or pageerror/console error, while Drive link rendering remains no-write and scoped.",
+      "acceptance_criteria": [
+        "renderOneTimeProviderReview defines a safe driveDropoffLinks array before any media panel template uses renderDriveDropoffLinks.",
+        "The route /provider.html?review=one-time does not display the text driveDropoffLinks is not defined.",
+        "Local browser smoke records no pageerror/console error for the provider review route.",
+        "Full Rabbi / One Time visual audit captures provider-review screenshots without the raw error banner.",
+        "Provider auth, Drive/upload behavior, and external writes are unchanged."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and broad UI cleanup register exist for RAW-20260702-008.",
+      "Screenshot evidence shows the provider review portal raw error on desktop and mobile.",
+      "The missing symbol is localized to public/provider.html review-mode rendering.",
+      "No external-provider or credential decision is required for a local render fix."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "review_mode_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the provider review route before the review API resolves.",
+      "expected_visible_title": "Provider portal",
+      "expected_visible_message": "Approved BNA network providers can manage their own profile and services.",
+      "expected_primary_action": "Sign In",
+      "expected_secondary_actions": [
+        "One Time",
+        "Parent",
+        "Student"
+      ],
+      "forbidden_content": [
+        "driveDropoffLinks is not defined",
+        "raw stack trace"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The route keeps one visible h1 and named form controls.",
+      "accessibility_expectation": "The login/review shell remains readable on mobile without raw error text.",
+      "test_smoke_assertion": "Browser smoke captures no pageerror while loading the route.",
+      "requirement_id": "REQ-20260702-810"
+    },
+    "empty": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "review_mode_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load review data with no submitted class media.",
+      "expected_visible_title": "Eli Scheller Workspace",
+      "expected_visible_message": "No class media has been submitted yet.",
+      "expected_primary_action": "Class Media",
+      "expected_secondary_actions": [
+        "Workspace Menu",
+        "Parent View"
+      ],
+      "forbidden_content": [
+        "driveDropoffLinks is not defined"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Class media section remains reachable from review navigation.",
+      "accessibility_expectation": "Empty media text is readable and not replaced by an exception.",
+      "test_smoke_assertion": "Local route smoke can visit provider review without console errors.",
+      "requirement_id": "REQ-20260702-810"
+    },
+    "populated": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 1440,
+      "auth_role": "review_mode_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load One Time review data with provider workspace modules.",
+      "expected_visible_title": "Eli Scheller Workspace",
+      "expected_visible_message": "Scoped OneTimeOneTime CRM, content, automations, users, settings, payments, and portals.",
+      "expected_primary_action": "Workspace Menu",
+      "expected_secondary_actions": [
+        "One Time",
+        "Parent",
+        "Student",
+        "Classroom"
+      ],
+      "forbidden_content": [
+        "driveDropoffLinks is not defined"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Provider section navigation buttons retain labels.",
+      "accessibility_expectation": "Workspace cards render without exception text in the reading order.",
+      "test_smoke_assertion": "Provider review screenshot has no visible raw error banner.",
+      "requirement_id": "REQ-20260702-810"
+    },
+    "filtered_empty": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 1024,
+      "auth_role": "review_mode_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Review-mode section with no matching class media or dropoff links.",
+      "expected_visible_title": "Content Library, Videos, Worksheets",
+      "expected_visible_message": "No class media has been submitted yet.",
+      "expected_primary_action": "Class Media",
+      "expected_secondary_actions": [
+        "Copy link",
+        "Open upload folder"
+      ],
+      "forbidden_content": [
+        "driveDropoffLinks is not defined"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "No-write Drive link controls remain named when present.",
+      "accessibility_expectation": "Empty and filtered-empty media states do not expose a JavaScript error.",
+      "test_smoke_assertion": "Provider review route can render media section with an empty safe array.",
+      "requirement_id": "REQ-20260702-810"
+    },
+    "error": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "review_mode_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Force review API failure or missing optional drive_dropoff_links payload.",
+      "expected_visible_title": "Provider portal",
+      "expected_visible_message": "Provider portal",
+      "expected_primary_action": "Sign In",
+      "expected_secondary_actions": [
+        "One Time",
+        "Email Review"
+      ],
+      "forbidden_content": [
+        "driveDropoffLinks is not defined",
+        "ReferenceError"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Any error state is deliberate UI copy, not raw exception text.",
+      "accessibility_expectation": "Raw variable names are not shown as user-facing error messages.",
+      "test_smoke_assertion": "Missing drive_dropoff_links is treated as an empty array.",
+      "requirement_id": "REQ-20260702-810"
+    },
+    "blocked_setup": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 768,
+      "auth_role": "review_mode_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open review mode where provider credential handoff or external setup is blocked.",
+      "expected_visible_title": "Eli Scheller Workspace",
+      "expected_visible_message": "handoff pending",
+      "expected_primary_action": "Open",
+      "expected_secondary_actions": [
+        "Parent View",
+        "Student View"
+      ],
+      "forbidden_content": [
+        "driveDropoffLinks is not defined"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked setup text remains visible as intentional status copy.",
+      "accessibility_expectation": "Credential blockers remain readable and separate from render errors.",
+      "test_smoke_assertion": "The blocked setup state does not create external writes.",
+      "requirement_id": "REQ-20260702-810"
+    },
+    "preview_only": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 430,
+      "auth_role": "review_mode_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the review route in TEST review mode.",
+      "expected_visible_title": "Eli Scheller Workspace",
+      "expected_visible_message": "TEST review mode",
+      "expected_primary_action": "Classroom",
+      "expected_secondary_actions": [
+        "Email Review",
+        "Parent"
+      ],
+      "forbidden_content": [
+        "driveDropoffLinks is not defined"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview-only navigation is button/link based with readable labels.",
+      "accessibility_expectation": "Preview-only banner remains visible and not displaced by an exception.",
+      "test_smoke_assertion": "Review mode loads with no pageerror.",
+      "requirement_id": "REQ-20260702-810"
+    },
+    "success_readback": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 1440,
+      "auth_role": "review_mode_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Review API returns provider workspace data successfully.",
+      "expected_visible_title": "Eli Scheller Workspace",
+      "expected_visible_message": "Workspace users",
+      "expected_primary_action": "Workspace Menu",
+      "expected_secondary_actions": [
+        "Users",
+        "Content",
+        "Automations"
+      ],
+      "forbidden_content": [
+        "driveDropoffLinks is not defined"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Successful readback cards retain headings and status pills.",
+      "accessibility_expectation": "Data readback is visible without raw variable errors.",
+      "test_smoke_assertion": "The local final UI smoke passes console/pageerror checks.",
+      "requirement_id": "REQ-20260702-810"
+    },
+    "permission_denied": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "logged_out_or_review_denied",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open provider portal without an authenticated provider session outside review data.",
+      "expected_visible_title": "Provider portal",
+      "expected_visible_message": "Username",
+      "expected_primary_action": "Sign In",
+      "expected_secondary_actions": [
+        "One Time"
+      ],
+      "forbidden_content": [
+        "driveDropoffLinks is not defined"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Sign-in form labels remain associated to controls.",
+      "accessibility_expectation": "Permission-denied/logged-out state is a clean login form, not a raw error.",
+      "test_smoke_assertion": "Logged-out provider route does not show the missing variable error.",
+      "requirement_id": "REQ-20260702-810"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "review_mode_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open review mode on mobile and use Workspace Menu.",
+      "expected_visible_title": "Eli Scheller Workspace",
+      "expected_visible_message": "Workspace Menu",
+      "expected_primary_action": "Workspace Menu",
+      "expected_secondary_actions": [
+        "Close workspace menu",
+        "Class Media"
+      ],
+      "forbidden_content": [
+        "driveDropoffLinks is not defined"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The menu trigger and close backdrop retain accessible names.",
+      "accessibility_expectation": "Mobile menu state is not blocked by a ReferenceError.",
+      "test_smoke_assertion": "Mobile provider-review screenshot captures without raw error text.",
+      "requirement_id": "REQ-20260702-810"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/provider.html?review=one-time",
+        "viewport": 1440,
+        "state": "populated",
+        "required": true
+      },
+      {
+        "route": "/provider.html?review=one-time",
+        "viewport": 1024,
+        "state": "populated",
+        "required": true
+      },
+      {
+        "route": "/provider.html?review=one-time",
+        "viewport": 768,
+        "state": "blocked_setup",
+        "required": true
+      },
+      {
+        "route": "/provider.html?review=one-time",
+        "viewport": 430,
+        "state": "preview_only",
+        "required": true
+      },
+      {
+        "route": "/provider.html?review=one-time",
+        "viewport": 390,
+        "state": "mobile_drawer_or_detail_state",
+        "required": true
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260702-810-001",
+        "route": "/provider.html?review=one-time",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/screenshots/provider-review-390-mobile.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/screenshots/provider-review-390-mobile.png",
+        "defect_codes": [
+          "VQ-LOAD-001",
+          "VQ-ERROR-001"
+        ],
+        "severity": "P1",
+        "user_impact": "The review portal appears broken before the provider can inspect or sign in.",
+        "expected_fix": "Define the review-mode driveDropoffLinks array before it is used by media/dropoff rendering.",
+        "requirement_id": "REQ-20260702-810"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "No raw exception text appears in the accessibility tree.",
+      "The provider review route keeps one visible h1 and named sign-in fields.",
+      "Review-mode section navigation remains reachable after the fix."
+    ],
+    "test_expectations": [
+      "Audit has missing_h1=0.",
+      "Audit has visible unlabeled controls=0.",
+      "Local smoke has no pageerror or console error for the provider review route."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Sign In",
+      "selector_or_action_key": "#loginForm button[type=\"submit\"]",
+      "action_state": "WORKS_NOW",
+      "owner": "Provider portal",
+      "external_write": false,
+      "handler_or_blocker": "Existing provider login handler; unchanged by this packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Provider review navigation",
+      "selector_or_action_key": "[data-provider-nav]",
+      "action_state": "TEST_ONLY",
+      "owner": "One Time review portal",
+      "external_write": false,
+      "handler_or_blocker": "Existing review-mode section navigation; unchanged by this packet.",
+      "registry_required": true
+    },
+    {
+      "label": "Drive upload folder link display",
+      "selector_or_action_key": "renderDriveDropoffLinks",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time review portal",
+      "external_write": false,
+      "handler_or_blocker": "Display/copy existing safe Rabbi-facing links only; no Drive write in this packet.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "inputs": [
+      "data.drive_dropoff_links may be missing or not an array.",
+      "data.provider_portal review payload remains authoritative only as local fixture/API data."
+    ],
+    "outputs": [
+      "Safe local empty array fallback for driveDropoffLinks in renderOneTimeProviderReview."
+    ],
+    "no_schema_change": true,
+    "no_database_write": true
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_private_data_in_screenshots": true,
+    "no_secret_exposure": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class only"
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260702-810-LOCAL-FIX",
+      "scope": "Provider review route load-error fix only.",
+      "instructions": [
+        "Add a safe driveDropoffLinks declaration in renderOneTimeProviderReview before templates call renderDriveDropoffLinks.",
+        "Do not change provider login/auth/session behavior.",
+        "Do not change Drive link filtering, opening, copy behavior, uploads, or external writes."
+      ],
+      "requirement_ids": [
+        "REQ-20260702-810"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "small",
+    "source_files_to_read": [
+      "public/provider.html",
+      "tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "scripts/audit-rabbi-onetime-current-state.mjs"
+    ],
+    "files_allowed_to_edit": [
+      "public/provider.html",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Any broader provider portal IA, student portal, CRM, or Operations layout work must become a later packet.",
+    "split_if_exceeds": true,
+    "context_risk_level": "low"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/08-provider-review-load-error.product-quality.json",
+      "expected_result": "Product Quality packet passes validation."
+    },
+    {
+      "command": "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "expected_result": "Provider review route and sibling review routes pass without console/page errors."
+    },
+    {
+      "command": "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:8095 --out=ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error",
+      "expected_result": "Full local visual audit captures 75 screenshots with no automated findings and no provider-review raw error banner."
+    }
+  ],
+  "evidence": {
+    "before": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/screenshots/provider-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/screenshots/provider-review-390-mobile.png"
+    ],
+    "after_required": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/screenshots/provider-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/screenshots/provider-review-390-mobile.png"
+    ],
+    "blocker_if_missing": "Leave REQ-20260702-810 open or blocked if local screenshot proof cannot be generated."
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Provider review renderer no longer references an out-of-scope driveDropoffLinks variable.",
+      "Local route smoke passes without console/page errors.",
+      "Full local audit screenshots show no raw provider-review error banner.",
+      "Register, ledger, and changelog record local verification and deploy/live-smoke blocker."
+    ],
+    "terminal_status": "local_verified_deploy_live_smoke_blocked_until_DEC-20260702-801"
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/08-provider-review-load-error.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "npm run pqc:validate",
+      "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "node scripts/audit-rabbi-onetime-current-state.mjs"
+    ],
+    "skipped_actions_policy": "No external provider, send, upload, payment, access grant, DNS, account, or production deploy action in this local packet.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/report.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "drift_watchdog": {
+    "command": "npm run watchdog:protocol-drift",
+    "required": true,
+    "expected_result": "0 enforceable product-quality drift findings for this packet.",
+    "blocker_policy": "If unrelated historical drift appears, record it separately and do not mark this packet terminally done without explaining scope."
+  },
+  "next_packet": {
+    "recommended": "Student portal hero/mobile readability or Operations participants CRM layout polish.",
+    "path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "app_visible": true
+}

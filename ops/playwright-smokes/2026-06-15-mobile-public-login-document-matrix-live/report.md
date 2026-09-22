@@ -1,0 +1,187 @@
+# Mobile Public/Login/Document Matrix Live Smoke
+
+- Base URL: `https://bneineviimacademy.org`
+- Viewport: `390x844`
+- Result: PASS
+- Scope: homepage, public helper launcher/panel, signup forms, required registration document pages, parent/student/provider login shells.
+- Guardrail: no form submission, provider signup, parent/student login, assistant send, email, WhatsApp, billing, Google API call, connector write, or external CRM write was executed.
+
+## Routes
+
+- `/` -> `home-390x844.png`
+- `/` -> `home-bot-open-390x844.png`
+- `/signup.html` -> `signup-en-390x844.png`
+- `/signup-he.html` -> `signup-he-390x844.png`
+- `/documents/registration-document?document=parent_handbook&lang=en` -> `doc-parent-handbook-390x844.png`
+- `/documents/registration-document?document=tuition_agreement&lang=en` -> `doc-tuition-390x844.png`
+- `/documents/registration-document?document=safety_acknowledgment_waiver&lang=en` -> `doc-waiver-390x844.png`
+- `/documents/registration-document?document=student_code_of_conduct&lang=en` -> `doc-student-handbook-390x844.png`
+- `/parent/login` -> `parent-login-390x844.png`
+- `/parent/login?onboard=accountability` -> `parent-accountability-onboard-390x844.png`
+- `/student/login` -> `student-login-390x844.png`
+- `/provider/login` -> `provider-login-390x844.png`
+
+## Checks
+
+- PASS home: expected text /Bnei Neviim Academy/i
+- PASS home: did not expose private pattern /password_hash/i
+- PASS home: did not expose private pattern /refresh_token/i
+- PASS home: did not expose private pattern /setup token value/i
+- PASS home: did not expose private pattern /bnaStudentAccessCode/i
+- PASS home: did not expose private pattern /Student linked/i
+- PASS home: did not expose private pattern /Daily checkoff/i
+- PASS home: did not expose private pattern /private notes/i
+- PASS home: did not expose private pattern /Linked Records/i
+- PASS home: stale student access code cleared on non-student surface
+- PASS home: html does not overflow horizontally (390/390)
+- PASS home: body does not overflow horizontally (390/390)
+- PASS home: no page runtime errors
+- PASS home-bot-open: expected text /Bnei Neviim Academy/i
+- PASS home-bot-open: did not expose private pattern /password_hash/i
+- PASS home-bot-open: did not expose private pattern /refresh_token/i
+- PASS home-bot-open: did not expose private pattern /setup token value/i
+- PASS home-bot-open: did not expose private pattern /bnaStudentAccessCode/i
+- PASS home-bot-open: did not expose private pattern /Student linked/i
+- PASS home-bot-open: did not expose private pattern /Daily checkoff/i
+- PASS home-bot-open: did not expose private pattern /private notes/i
+- PASS home-bot-open: did not expose private pattern /Linked Records/i
+- PASS home-bot-open: stale student access code cleared on non-student surface
+- PASS home-bot-open: html does not overflow horizontally (390/390)
+- PASS home-bot-open: body does not overflow horizontally (390/390)
+- PASS home-bot-open: no page runtime errors
+- PASS signup-en: expected text /Required Registration Documents/i
+- PASS signup-en: expected text /Parent 1/i
+- PASS signup-en: did not expose private pattern /password_hash/i
+- PASS signup-en: did not expose private pattern /refresh_token/i
+- PASS signup-en: did not expose private pattern /setup token value/i
+- PASS signup-en: did not expose private pattern /bnaStudentAccessCode/i
+- PASS signup-en: did not expose private pattern /Student linked/i
+- PASS signup-en: did not expose private pattern /Daily checkoff/i
+- PASS signup-en: did not expose private pattern /private notes/i
+- PASS signup-en: did not expose private pattern /Linked Records/i
+- PASS signup-en: stale student access code cleared on non-student surface
+- PASS signup-en: html does not overflow horizontally (390/390)
+- PASS signup-en: body does not overflow horizontally (390/390)
+- PASS signup-en: no page runtime errors
+- PASS signup-he: expected text /Bnei Neviim Academy/i
+- PASS signup-he: did not expose private pattern /password_hash/i
+- PASS signup-he: did not expose private pattern /refresh_token/i
+- PASS signup-he: did not expose private pattern /setup token value/i
+- PASS signup-he: did not expose private pattern /bnaStudentAccessCode/i
+- PASS signup-he: did not expose private pattern /Student linked/i
+- PASS signup-he: did not expose private pattern /Daily checkoff/i
+- PASS signup-he: did not expose private pattern /private notes/i
+- PASS signup-he: did not expose private pattern /Linked Records/i
+- PASS signup-he: rendered at least 4 document cards
+- PASS signup-he: stale student access code cleared on non-student surface
+- PASS signup-he: html does not overflow horizontally (390/390)
+- PASS signup-he: body does not overflow horizontally (390/390)
+- PASS signup-he: no page runtime errors
+- PASS doc-parent-handbook: expected text /Handbook/i
+- PASS doc-parent-handbook: expected text /signature/i
+- PASS doc-parent-handbook: did not expose private pattern /password_hash/i
+- PASS doc-parent-handbook: did not expose private pattern /refresh_token/i
+- PASS doc-parent-handbook: did not expose private pattern /setup token value/i
+- PASS doc-parent-handbook: did not expose private pattern /bnaStudentAccessCode/i
+- PASS doc-parent-handbook: did not expose private pattern /Student linked/i
+- PASS doc-parent-handbook: did not expose private pattern /Daily checkoff/i
+- PASS doc-parent-handbook: did not expose private pattern /private notes/i
+- PASS doc-parent-handbook: did not expose private pattern /Linked Records/i
+- PASS doc-parent-handbook: stale student access code cleared on non-student surface
+- PASS doc-parent-handbook: html does not overflow horizontally (390/390)
+- PASS doc-parent-handbook: body does not overflow horizontally (390/390)
+- PASS doc-parent-handbook: no page runtime errors
+- PASS doc-tuition: expected text /Tuition/i
+- PASS doc-tuition: expected text /signature/i
+- PASS doc-tuition: did not expose private pattern /password_hash/i
+- PASS doc-tuition: did not expose private pattern /refresh_token/i
+- PASS doc-tuition: did not expose private pattern /setup token value/i
+- PASS doc-tuition: did not expose private pattern /bnaStudentAccessCode/i
+- PASS doc-tuition: did not expose private pattern /Student linked/i
+- PASS doc-tuition: did not expose private pattern /Daily checkoff/i
+- PASS doc-tuition: did not expose private pattern /private notes/i
+- PASS doc-tuition: did not expose private pattern /Linked Records/i
+- PASS doc-tuition: stale student access code cleared on non-student surface
+- PASS doc-tuition: html does not overflow horizontally (390/390)
+- PASS doc-tuition: body does not overflow horizontally (390/390)
+- PASS doc-tuition: no page runtime errors
+- PASS doc-waiver: expected text /Waiver|Safety/i
+- PASS doc-waiver: expected text /signature/i
+- PASS doc-waiver: did not expose private pattern /password_hash/i
+- PASS doc-waiver: did not expose private pattern /refresh_token/i
+- PASS doc-waiver: did not expose private pattern /setup token value/i
+- PASS doc-waiver: did not expose private pattern /bnaStudentAccessCode/i
+- PASS doc-waiver: did not expose private pattern /Student linked/i
+- PASS doc-waiver: did not expose private pattern /Daily checkoff/i
+- PASS doc-waiver: did not expose private pattern /private notes/i
+- PASS doc-waiver: did not expose private pattern /Linked Records/i
+- PASS doc-waiver: stale student access code cleared on non-student surface
+- PASS doc-waiver: html does not overflow horizontally (390/390)
+- PASS doc-waiver: body does not overflow horizontally (390/390)
+- PASS doc-waiver: no page runtime errors
+- PASS doc-student-handbook: expected text /Student Handbook|Code of Conduct/i
+- PASS doc-student-handbook: expected text /signature/i
+- PASS doc-student-handbook: did not expose private pattern /password_hash/i
+- PASS doc-student-handbook: did not expose private pattern /refresh_token/i
+- PASS doc-student-handbook: did not expose private pattern /setup token value/i
+- PASS doc-student-handbook: did not expose private pattern /bnaStudentAccessCode/i
+- PASS doc-student-handbook: did not expose private pattern /Student linked/i
+- PASS doc-student-handbook: did not expose private pattern /Daily checkoff/i
+- PASS doc-student-handbook: did not expose private pattern /private notes/i
+- PASS doc-student-handbook: did not expose private pattern /Linked Records/i
+- PASS doc-student-handbook: stale student access code cleared on non-student surface
+- PASS doc-student-handbook: html does not overflow horizontally (390/390)
+- PASS doc-student-handbook: body does not overflow horizontally (390/390)
+- PASS doc-student-handbook: no page runtime errors
+- PASS parent-login: expected text /Parent Login|Parent Portal|Log in/i
+- PASS parent-login: did not expose private pattern /password_hash/i
+- PASS parent-login: did not expose private pattern /refresh_token/i
+- PASS parent-login: did not expose private pattern /setup token value/i
+- PASS parent-login: did not expose private pattern /bnaStudentAccessCode/i
+- PASS parent-login: did not expose private pattern /Student linked/i
+- PASS parent-login: did not expose private pattern /Daily checkoff/i
+- PASS parent-login: did not expose private pattern /private notes/i
+- PASS parent-login: did not expose private pattern /Linked Records/i
+- PASS parent-login: stale student access code cleared on non-student surface
+- PASS parent-login: html does not overflow horizontally (390/390)
+- PASS parent-login: body does not overflow horizontally (390/390)
+- PASS parent-login: no page runtime errors
+- PASS parent-accountability-onboard: expected text /parent|accountability|onboarding/i
+- PASS parent-accountability-onboard: did not expose private pattern /password_hash/i
+- PASS parent-accountability-onboard: did not expose private pattern /refresh_token/i
+- PASS parent-accountability-onboard: did not expose private pattern /setup token value/i
+- PASS parent-accountability-onboard: did not expose private pattern /bnaStudentAccessCode/i
+- PASS parent-accountability-onboard: did not expose private pattern /Student linked/i
+- PASS parent-accountability-onboard: did not expose private pattern /Daily checkoff/i
+- PASS parent-accountability-onboard: did not expose private pattern /private notes/i
+- PASS parent-accountability-onboard: did not expose private pattern /Linked Records/i
+- PASS parent-accountability-onboard: stale student access code cleared on non-student surface
+- PASS parent-accountability-onboard: html does not overflow horizontally (390/390)
+- PASS parent-accountability-onboard: body does not overflow horizontally (390/390)
+- PASS parent-accountability-onboard: no page runtime errors
+- PASS student-login: expected text /Student|Access|Login|code/i
+- PASS student-login: did not expose private pattern /password_hash/i
+- PASS student-login: did not expose private pattern /refresh_token/i
+- PASS student-login: did not expose private pattern /setup token value/i
+- PASS student-login: did not expose private pattern /bnaStudentAccessCode/i
+- PASS student-login: did not expose private pattern /Student linked/i
+- PASS student-login: did not expose private pattern /Daily checkoff/i
+- PASS student-login: did not expose private pattern /private notes/i
+- PASS student-login: did not expose private pattern /Linked Records/i
+- PASS student-login: html does not overflow horizontally (390/390)
+- PASS student-login: body does not overflow horizontally (390/390)
+- PASS student-login: no page runtime errors
+- PASS provider-login: expected text /Provider portal/i
+- PASS provider-login: expected text /Provider workspace|Scoped Provider Workspace/i
+- PASS provider-login: did not expose private pattern /password_hash/i
+- PASS provider-login: did not expose private pattern /refresh_token/i
+- PASS provider-login: did not expose private pattern /setup token value/i
+- PASS provider-login: did not expose private pattern /bnaStudentAccessCode/i
+- PASS provider-login: did not expose private pattern /Student linked/i
+- PASS provider-login: did not expose private pattern /Daily checkoff/i
+- PASS provider-login: did not expose private pattern /private notes/i
+- PASS provider-login: did not expose private pattern /Linked Records/i
+- PASS provider-login: stale student access code cleared on non-student surface
+- PASS provider-login: html does not overflow horizontally (390/390)
+- PASS provider-login: body does not overflow horizontally (390/390)
+- PASS provider-login: no page runtime errors

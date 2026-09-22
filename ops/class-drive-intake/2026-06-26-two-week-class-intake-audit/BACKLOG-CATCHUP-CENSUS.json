@@ -1,0 +1,1851 @@
+{
+  "generated_at": "2026-06-28T11:52:04.752Z",
+  "mode": "repo_safe_no_write_catchup_census",
+  "no_production_mutation": true,
+  "raw_transcript_bodies_included": false,
+  "focus_job_ids": [
+    21,
+    25,
+    26,
+    30,
+    31,
+    56,
+    57,
+    58,
+    59,
+    71
+  ],
+  "class_question_dry_run_summary": {
+    "safe_to_apply_if_separately_approved": true,
+    "no_production_mutation": true,
+    "expected_row_counts": {
+      "bna_accountability_events": 917
+    },
+    "row_level_change_plan_rows": 919,
+    "skip_existing_question_rows": 2,
+    "matched_student_question_inserts": 5,
+    "class_question_broadcast_inserts": 912,
+    "blocking_ambiguities": 0,
+    "class_question_fallback_count": 114,
+    "class_question_fallback_jobs": [
+      25,
+      26,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      58
+    ]
+  },
+  "summary": {
+    "recording_count": 29,
+    "focus_job_count": 10,
+    "repo_safe_digest_count": 29,
+    "private_raw_transcript_available_count": 29,
+    "needs_parse_count": 10,
+    "digest_ready_count": 29,
+    "routing_ready_count": 29,
+    "topic_classified_count": 29,
+    "question_candidate_count": 13,
+    "class_question_broadcast_insert_rows": 48,
+    "matched_personal_question_insert_rows": 5,
+    "question_skip_existing_rows": 2,
+    "task_action_candidate_count": 34,
+    "score_progress_row_level_change_count": 0,
+    "research_content_card_ready_count": 29,
+    "human_review_required_count": 29
+  },
+  "rows": [
+    {
+      "job_id": 21,
+      "focus_job": true,
+      "generated_title": "Class Recording 2026-06-04 - Job 021 (needs parser review)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 8568,
+      "parse_status": {
+        "key": "needs_parse",
+        "label": "Needs parse",
+        "reason": "Private transcript exists, but parser metadata/structured class output is incomplete."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000021-REPAIR-01"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "needs_private_reparse_or_parser_review; score_progress_no_safe_rows; private_review_required",
+      "next_action": "Run an approved dry-run reparse/canonical-write planner against the private transcript source; do not write production rows yet.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 25,
+      "focus_job": true,
+      "generated_title": "Class Recording 2026-06-08 - Job 025 (needs parser review)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 58244,
+      "parse_status": {
+        "key": "needs_parse",
+        "label": "Needs parse",
+        "reason": "Private transcript exists, but parser metadata/structured class output is incomplete."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "question_candidates": {
+        "total": 3,
+        "matrix_rows": 3,
+        "candidate_refs": [
+          "question:6019529478340587",
+          "question:60209685cc7d6f18",
+          "question:e1d44fb96cef6915"
+        ]
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 1,
+        "broadcast_insert_rows": 8,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 2,
+        "insert_rows": 1,
+        "skip_existing_rows": 1
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000025-REPAIR-01"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "needs_private_reparse_or_parser_review; score_progress_no_safe_rows; production_question_apply_not_approved; private_review_required",
+      "next_action": "Run an approved dry-run reparse/canonical-write planner against the private transcript source; do not write production rows yet.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 26,
+      "focus_job": true,
+      "generated_title": "Class Recording 2026-06-08 - Job 026 (needs parser review)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 71944,
+      "parse_status": {
+        "key": "needs_parse",
+        "label": "Needs parse",
+        "reason": "Private transcript exists, but parser metadata/structured class output is incomplete."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "question_candidates": {
+        "total": 5,
+        "matrix_rows": 5,
+        "candidate_refs": [
+          "question:f6c6b9b262d1ded1",
+          "question:21aaf39597e516fe",
+          "question:51aa618b95a7d29d",
+          "question:2158d47f6c0c2923",
+          "question:8f9c41ec6da4ca8c"
+        ]
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 3,
+        "broadcast_insert_rows": 24,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 2,
+        "insert_rows": 1,
+        "skip_existing_rows": 1
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000026-REPAIR-01"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "needs_private_reparse_or_parser_review; score_progress_no_safe_rows; production_question_apply_not_approved; private_review_required",
+      "next_action": "Run an approved dry-run reparse/canonical-write planner against the private transcript source; do not write production rows yet.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 30,
+      "focus_job": true,
+      "generated_title": "Class Recording 2026-06-09 - Job 030 (needs parser review)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 29040,
+      "parse_status": {
+        "key": "needs_parse",
+        "label": "Needs parse",
+        "reason": "Private transcript exists, but parser metadata/structured class output is incomplete."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "question_candidates": {
+        "total": 1,
+        "matrix_rows": 1,
+        "candidate_refs": [
+          "question:5a39d7e6e9c73fd9"
+        ]
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 1,
+        "insert_rows": 1,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000030-REPAIR-01"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "needs_private_reparse_or_parser_review; score_progress_no_safe_rows; production_question_apply_not_approved; private_review_required",
+      "next_action": "Run an approved dry-run reparse/canonical-write planner against the private transcript source; do not write production rows yet.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 31,
+      "focus_job": true,
+      "generated_title": "Class Recording 2026-06-09 - Job 031 (needs parser review)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 52560,
+      "parse_status": {
+        "key": "needs_parse",
+        "label": "Needs parse",
+        "reason": "Private transcript exists, but parser metadata/structured class output is incomplete."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "question_candidates": {
+        "total": 1,
+        "matrix_rows": 1,
+        "candidate_refs": [
+          "question:fa503a5ec9da60db"
+        ]
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 1,
+        "insert_rows": 1,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000031-REPAIR-01"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "needs_private_reparse_or_parser_review; score_progress_no_safe_rows; production_question_apply_not_approved; private_review_required",
+      "next_action": "Run an approved dry-run reparse/canonical-write planner against the private transcript source; do not write production rows yet.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 56,
+      "focus_job": true,
+      "generated_title": "Class Recording 2026-06-10 - Job 056 (needs parser review)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 105867,
+      "parse_status": {
+        "key": "needs_parse",
+        "label": "Needs parse",
+        "reason": "Private transcript exists, but parser metadata/structured class output is incomplete."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 2,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000056-DIGEST",
+          "TASK-CANDIDATE-000056-REPAIR-01"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "needs_private_reparse_or_parser_review; score_progress_no_safe_rows; private_review_required",
+      "next_action": "Run an approved dry-run reparse/canonical-write planner against the private transcript source; do not write production rows yet.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 57,
+      "focus_job": true,
+      "generated_title": "Class Recording 2026-06-10 - Job 057 (needs parser review)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 35521,
+      "parse_status": {
+        "key": "needs_parse",
+        "label": "Needs parse",
+        "reason": "Private transcript exists, but parser metadata/structured class output is incomplete."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 2,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000057-DIGEST",
+          "TASK-CANDIDATE-000057-REPAIR-01"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "needs_private_reparse_or_parser_review; score_progress_no_safe_rows; private_review_required",
+      "next_action": "Run an approved dry-run reparse/canonical-write planner against the private transcript source; do not write production rows yet.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 58,
+      "focus_job": true,
+      "generated_title": "Class Recording 2026-06-11 - Job 058 (needs parser review)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 55809,
+      "parse_status": {
+        "key": "needs_parse",
+        "label": "Needs parse",
+        "reason": "Private transcript exists, but parser metadata/structured class output is incomplete."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "question_candidates": {
+        "total": 3,
+        "matrix_rows": 3,
+        "candidate_refs": [
+          "question:d7297f7b6a534cd7",
+          "question:c516d14ee4e5d49f",
+          "question:1a8cf5034c4c839f"
+        ]
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 2,
+        "broadcast_insert_rows": 16,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 1,
+        "insert_rows": 1,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 2,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000058-DIGEST",
+          "TASK-CANDIDATE-000058-REPAIR-01"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "needs_private_reparse_or_parser_review; score_progress_no_safe_rows; production_question_apply_not_approved; private_review_required",
+      "next_action": "Run an approved dry-run reparse/canonical-write planner against the private transcript source; do not write production rows yet.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 59,
+      "focus_job": true,
+      "generated_title": "Class Recording 2026-06-11 - Job 059 (needs parser review)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 5481,
+      "parse_status": {
+        "key": "needs_parse",
+        "label": "Needs parse",
+        "reason": "Private transcript exists, but parser metadata/structured class output is incomplete."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 2,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000059-DIGEST",
+          "TASK-CANDIDATE-000059-REPAIR-01"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "needs_private_reparse_or_parser_review; score_progress_no_safe_rows; private_review_required",
+      "next_action": "Run an approved dry-run reparse/canonical-write planner against the private transcript source; do not write production rows yet.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 64,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-17 - Job 064 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 63148,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000064-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 65,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-17 - Job 065 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 77245,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000065-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 66,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-17 - Job 066 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 40257,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000066-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 67,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-17 - Job 067 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 55731,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000067-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 68,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-17 - Job 068 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 64715,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000068-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 69,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-17 - Job 069 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 23859,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000069-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 70,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-17 - Job 070 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 24519,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000070-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 71,
+      "focus_job": true,
+      "generated_title": "Class Recording 2026-06-17 - Job 071 (needs parser review)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 751,
+      "parse_status": {
+        "key": "needs_parse",
+        "label": "Needs parse",
+        "reason": "Private transcript exists, but parser metadata/structured class output is incomplete."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 2,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000071-DIGEST",
+          "TASK-CANDIDATE-000071-REPAIR-01"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "needs_private_reparse_or_parser_review; score_progress_no_safe_rows; private_review_required",
+      "next_action": "Run an approved dry-run reparse/canonical-write planner against the private transcript source; do not write production rows yet.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 72,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-18 - Job 072 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 5505,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000072-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 73,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-18 - Job 073 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 32048,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000073-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 74,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-18 - Job 074 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 33459,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000074-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 75,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-18 - Job 075 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 41580,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000075-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 76,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-19 - Job 076 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 5456,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000076-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 77,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-20 - Job 077 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 19941,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000077-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 78,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-21 - Job 078 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 77315,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000078-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 79,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-22 - Job 079 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 70420,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000079-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 80,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-23 - Job 080 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 56556,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000080-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 81,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-24 - Job 081 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 79807,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000081-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 82,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-25 - Job 082 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 5309,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000082-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    },
+    {
+      "job_id": 83,
+      "focus_job": false,
+      "generated_title": "Class Recording 2026-06-25 - Job 083 (parsed)",
+      "has_repo_safe_digest": true,
+      "has_private_raw_transcript": true,
+      "private_raw_transcript_ref": "private_app_or_drive_raw_body",
+      "transcript_chars": 9025,
+      "parse_status": {
+        "key": "parsed",
+        "label": "Parsed",
+        "reason": "Content-card audit reports parsed with parser metadata."
+      },
+      "digest_status": "digest_ready",
+      "routing_status": "routing_ready",
+      "topic_status": "classified",
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "question_candidates": {
+        "total": 0,
+        "matrix_rows": 0,
+        "candidate_refs": []
+      },
+      "class_question_candidates": {
+        "fallback_candidates": 0,
+        "broadcast_insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "matched_personal_question_candidates": {
+        "matrix_rows": 0,
+        "insert_rows": 0,
+        "skip_existing_rows": 0
+      },
+      "task_action_candidates": {
+        "manifest_count": 1,
+        "candidate_ids": [
+          "TASK-CANDIDATE-000083-DIGEST"
+        ],
+        "production_task_write_allowed": false
+      },
+      "research_content_candidates": {
+        "content_card_ready": true,
+        "content_idea_candidate_ids": [],
+        "content_marketing_flag": false
+      },
+      "score_progress_candidate_status": {
+        "status": "no_safe_rows",
+        "row_level_change_count": 0,
+        "reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence."
+      },
+      "needs_human_review": true,
+      "blocked_reason": "score_progress_no_safe_rows; private_review_required",
+      "next_action": "Keep card visible as repo-safe digest evidence; no production write is implied by this report.",
+      "raw_transcript_body_included": false
+    }
+  ],
+  "remaining_blockers": [
+    "10 digest jobs still need private parser/reparse review before downstream score/progress writes.",
+    "Score/progress has 0 safe row-level before-after rows in this no-write package.",
+    "Question rows are planned only; production apply requires exact owner approval plus snapshot/rollback proof."
+  ],
+  "guardrails": {
+    "drive_write_performed": false,
+    "production_db_mutation_performed": false,
+    "class_backfill_performed": false,
+    "raw_transcript_export_performed": false,
+    "ai_call_performed": false,
+    "apply_performed": false
+  }
+}

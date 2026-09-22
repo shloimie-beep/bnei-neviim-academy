@@ -1,0 +1,62 @@
+A	 M	.env.example	Curated release-critical file proven by clean-branch validation.
+A	 M	public/operations-login.html	Curated release-critical file proven by clean-branch validation.
+A	 M	public/operations.html	Curated release-critical file proven by clean-branch validation.
+A	 M	public/student.html	Curated release-critical file proven by clean-branch validation.
+A	 M	scripts/smoke-live-app.mjs	Curated release-critical file proven by clean-branch validation.
+A	 M	scripts/telegram-kimi-bridge.mjs	Curated release-critical file proven by clean-branch validation.
+A	 M	server.js	Curated release-critical file proven by clean-branch validation.
+A	 M	src/lib/bna/telegram-content-intent.js	Curated release-critical file proven by clean-branch validation.
+A	??	ops/action-registry/actions.json	Curated release-critical file proven by clean-branch validation.
+A	??	ops/action-registry/page-action-map.json	Curated release-critical file proven by clean-branch validation.
+A	??	ops/action-registry/ui-button-map.md	Curated release-critical file proven by clean-branch validation.
+B	??	ops/qa-runs/2026-06-11-action-registry-telegram-ui-bot.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/qa-runs/2026-06-11-final-release-readiness.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/qa-runs/2026-06-11-master-execution-selected-work.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/qa-runs/2026-06-11-operations-navigation-polish.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/qa-runs/2026-06-11-operations-restructure-implementation.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/qa-runs/2026-06-11-parent-student-calendar-polish.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/qa-runs/2026-06-11-production-ui-parent-student-provider.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/release/2026-06-11-operations-release-cleanup/changed-files-classification.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/release/2026-06-11-operations-release-cleanup/deployment-blockers.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/release/2026-06-11-operations-release-cleanup/deployment-readiness.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/release/2026-06-11-operations-release-cleanup/generated-artifacts.txt	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/release/2026-06-11-operations-release-cleanup/release-cleanup-report.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/release/2026-06-11-operations-release-cleanup/release-readiness-checklist.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/release/2026-06-11-operations-release-cleanup/relevant-files.txt	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/release/2026-06-11-operations-release-cleanup/screenshot-index.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/release/2026-06-11-operations-release-cleanup/shloimie-visual-corrections.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	ops/release/2026-06-11-operations-release-cleanup/unrelated-dirty-files.txt	Curated release support/test/report file proven by clean-branch validation.
+A	??	public/css/bna-app-shell.css	Curated release-critical file proven by clean-branch validation.
+A	??	public/js/app-select.js	Curated release-critical file proven by clean-branch validation.
+A	??	public/operations-manifest.json	Curated release-critical file proven by clean-branch validation.
+A	??	public/parent.html	Curated release-critical file proven by clean-branch validation.
+A	??	public/provider-participant.html	Curated release-critical file proven by clean-branch validation.
+A	??	public/provider.html	Curated release-critical file proven by clean-branch validation.
+A	??	public/providers-join.html	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/actions/actions/operations.js	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/actions/audit-log.js	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/actions/page-action-map.js	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/actions/permissions.js	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/actions/registry.js	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/actions/runner.js	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/actions/types.js	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/bna/google-integrations.js	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/bna/student-match.js	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/bna/telegram-accountability-parser.js	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/bna/telegram-action-router.js	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/bna/telegram-agent-intent.js	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/bna/telegram-contact-lead-capture.js	Curated release-critical file proven by clean-branch validation.
+A	??	src/lib/bna/telegram-planning-intent.js	Curated release-critical file proven by clean-branch validation.
+B	??	tasks-pending/2026-06-11-action-registry-telegram-ui-bot.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	tasks-pending/2026-06-11-production-ui-qa-fix-loop.md	Curated release support/test/report file proven by clean-branch validation.
+B	??	tests/action-registry-telegram-ui-bot.test.js	Curated release support/test/report file proven by clean-branch validation.
+B	??	tests/app-select-dropdown.test.js	Curated release support/test/report file proven by clean-branch validation.
+B	??	tests/app-wide-brand-shell.test.js	Curated release support/test/report file proven by clean-branch validation.
+B	??	tests/bna-brand-shell.test.js	Curated release support/test/report file proven by clean-branch validation.
+B	??	tests/google-assignment-system.test.js	Curated release support/test/report file proven by clean-branch validation.
+B	??	tests/operations-saas-crm-redesign.test.js	Curated release support/test/report file proven by clean-branch validation.
+B	??	tests/operations-student-navigation.test.js	Curated release support/test/report file proven by clean-branch validation.
+B	??	tests/parent-student-polish-contract.test.js	Curated release support/test/report file proven by clean-branch validation.
+B	??	tests/parent-student-portal-contract.test.js	Curated release support/test/report file proven by clean-branch validation.
+B	??	tests/service-provider-directory.test.js	Curated release support/test/report file proven by clean-branch validation.
+B	??	tests/student-bot-settings.test.js	Curated release support/test/report file proven by clean-branch validation.

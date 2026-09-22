@@ -1,0 +1,301 @@
+{
+  "run_id": "2026-07-02-one-time-clean-integration-launch-setup",
+  "title": "One Time Clean Integration From PR #62",
+  "updated_at": "2026-07-02T15:45:00+03:00",
+  "sources": [
+    {
+      "source_id": "RAW-20260702-005",
+      "source_path": "raw-input/RAW-20260702-005-one-time-clean-integration-from-pr62.md",
+      "captured_at": "2026-07-02T15:10:00+03:00",
+      "content_fingerprint": "pending-after-closeout",
+      "privacy_classification": "internal_goal_mode_packet_no_secrets_no_contact_rows",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_goal_mode_packet"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "RAW-20260702-005-S001",
+      "source_id": "RAW-20260702-005",
+      "source_statement": "Use PR #62 as source material but avoid a risky broad conflict merge.",
+      "requirement_id": "REQ-20260702-901",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-005-S002",
+      "source_id": "RAW-20260702-005",
+      "source_statement": "Run every safe runnable setup/readback/smoke step without asking again.",
+      "requirement_id": "REQ-20260702-904",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-005-S003",
+      "source_id": "RAW-20260702-005",
+      "source_statement": "Separate One Time Railway, database, and join domain remain preferred launch setup.",
+      "requirement_id": "REQ-20260702-903",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-005-S004",
+      "source_id": "RAW-20260702-005",
+      "source_statement": "info@onetimeonetime.com is confirmed as One Time sender/reply-to and sdratler@gmail.com is authorized for safe seed/test email after final live links exist.",
+      "requirement_id": "REQ-20260702-903",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-005-S005",
+      "source_id": "RAW-20260702-005",
+      "source_statement": "Shloimie should see the next exact task at the top of task views.",
+      "requirement_id": "REQ-20260702-903",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-005-S006",
+      "source_id": "RAW-20260702-005",
+      "source_statement": "Do not perform bulk campaign sends, live payments, paid-user cancellations, apex/root DNS mutations, hard deletes, secret exposure, GHL runtime, or WhatsApp broadcasts.",
+      "requirement_id": "REQ-20260702-905",
+      "classification": "guardrail"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-901",
+      "title": "Create clean integration branch from master",
+      "expected_result": "A new branch from current origin/master carries only safe One Time setup/readiness work from PR #62, with no broad conflict merge.",
+      "status": "done",
+      "source_id": "RAW-20260702-005",
+      "source_statement_ids": [
+        "RAW-20260702-005-S001"
+      ],
+      "source_path": "raw-input/RAW-20260702-005-one-time-clean-integration-from-pr62.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "git_integration",
+      "priority": "P0",
+      "batch_id": "B0",
+      "depends_on": [],
+      "implementation_status": "Clean branch codex/one-time-clean-integration-20260702 was created from current origin/master; PR #62 remained source material only.",
+      "can_continue_without_operator": true,
+      "next_action": "None for this requirement.",
+      "acceptance_criteria": [
+        "Branch starts from origin/master.",
+        "PR #62 is not force-merged.",
+        "Broad runtime/UI diff is not imported."
+      ],
+      "evidence": [
+        "tasks-pending/2026-07-02-one-time-clean-integration-from-pr62.md",
+        "ops/execution-runs/2026-07-02-one-time-clean-integration-launch-setup/BASELINE.md"
+      ],
+      "verification": [
+        "PASS: git switch -c codex/one-time-clean-integration-20260702 origin/master",
+        "PASS: git branch --show-current -> codex/one-time-clean-integration-20260702",
+        "PASS: PR #62 was not merged or force-applied."
+      ],
+      "implementation_files": [
+        "tasks-pending/2026-07-02-one-time-clean-integration-from-pr62.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T15:25:00+03:00"
+    },
+    {
+      "id": "REQ-20260702-902",
+      "title": "Add external setup readiness checker",
+      "expected_result": "One Time external setup readiness can be checked with no secret exposure and no provider mutations.",
+      "status": "done",
+      "source_id": "RAW-20260702-005",
+      "source_statement_ids": [
+        "RAW-20260702-005-S002"
+      ],
+      "source_path": "raw-input/RAW-20260702-005-one-time-clean-integration-from-pr62.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "setup_readiness",
+      "priority": "P0",
+      "batch_id": "B1",
+      "depends_on": [
+        "REQ-20260702-901"
+      ],
+      "implementation_status": "Added no-write external setup readiness checker, package scripts, and focused tests.",
+      "can_continue_without_operator": true,
+      "next_action": "None for this requirement.",
+      "acceptance_criteria": [
+        "Command exists: npm run one-time:setup:check.",
+        "Report writes redacted JSON and markdown.",
+        "Missing setup exits blocked without external writes."
+      ],
+      "evidence": [
+        "scripts/check-onetime-external-setup-readiness.mjs",
+        "tests/one-time-external-setup-readiness.test.js",
+        "package.json"
+      ],
+      "verification": [
+        "PASS: node --check scripts/check-onetime-external-setup-readiness.mjs",
+        "PASS: node --test tests/one-time-external-setup-readiness.test.js",
+        "PASS: node --test tests/one-time-external-setup-readiness.test.js tests/one-time-separate-instance-package.test.js tests/railway-target-guard.test.js"
+      ],
+      "implementation_files": [
+        "scripts/check-onetime-external-setup-readiness.mjs",
+        "tests/one-time-external-setup-readiness.test.js",
+        "package.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T15:25:00+03:00"
+    },
+    {
+      "id": "REQ-20260702-903",
+      "title": "Restore One Time setup tasks and closeout packets",
+      "expected_result": "The exact operator setup tasks, join-only DNS instructions, WhatsApp setup-message draft, and post-setup deploy packet exist on the clean branch.",
+      "status": "done",
+      "source_id": "RAW-20260702-005",
+      "source_statement_ids": [
+        "RAW-20260702-005-S003",
+        "RAW-20260702-005-S004",
+        "RAW-20260702-005-S005"
+      ],
+      "source_path": "raw-input/RAW-20260702-005-one-time-clean-integration-from-pr62.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "operator_setup_tasks",
+      "priority": "P0",
+      "batch_id": "B1",
+      "depends_on": [
+        "REQ-20260702-901"
+      ],
+      "implementation_status": "Restored selected launch-unblocker artifacts and post-setup packet from PR #62; corrected active provisioning plan to use join.onetimeonetime.com.",
+      "can_continue_without_operator": true,
+      "next_action": "Use the top visible operator task list to supply the missing external setup values.",
+      "acceptance_criteria": [
+        "Top visible operator task is separate One Time Railway target.",
+        "Sender identity records info@onetimeonetime.com.",
+        "Post-setup deploy packet exists but remains gated."
+      ],
+      "evidence": [
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-godaddy-join-subdomain-instructions.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-rabbi-whatsapp-setup-message.md",
+        "ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/00-railway-db-join-domain-deploy-live-smoke.md",
+        "ops/one-time-mishnah/separate-instance-provisioning-plan.json"
+      ],
+      "verification": [
+        "PASS: JSON validation for launch checklist, top tasks, WhatsApp setup draft, prompt manifest, and provisioning plan.",
+        "PASS: npm run one-time:railway-provision:check -- --write-report now targets join.onetimeonetime.com."
+      ],
+      "implementation_files": [
+        "src/platform/instances/one-time-separate-deployment.js",
+        "scripts/provision-onetime-railway-instance.mjs",
+        "src/platform/instances/one-time-task-view-model.js",
+        "ops/one-time-mishnah/separate-instance-provisioning-plan.json",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.json",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json",
+        "ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/00-railway-db-join-domain-deploy-live-smoke.md",
+        "ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/manifest.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T15:25:00+03:00"
+    },
+    {
+      "id": "REQ-20260702-904",
+      "title": "Run safe readiness checks",
+      "expected_result": "All safe local checks run; external blockers are exact and reusable.",
+      "status": "done",
+      "source_id": "RAW-20260702-005",
+      "source_statement_ids": [
+        "RAW-20260702-005-S002"
+      ],
+      "source_path": "raw-input/RAW-20260702-005-one-time-clean-integration-from-pr62.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "verification",
+      "priority": "P0",
+      "batch_id": "B2",
+      "depends_on": [
+        "REQ-20260702-902",
+        "REQ-20260702-903"
+      ],
+      "implementation_status": "Safe readiness and validation commands ran. Setup readiness remains externally blocked with exact missing fields and no forbidden actions performed.",
+      "can_continue_without_operator": true,
+      "next_action": "Operator supplies the missing external setup values, starting with the separate One Time Railway target.",
+      "acceptance_criteria": [
+        "No secret values printed.",
+        "No external writes performed.",
+        "Readiness report names exact missing fields."
+      ],
+      "evidence": [
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.json",
+        "ops/one-time-mishnah/onetime-railway-provisioning-report.json",
+        "ops/execution-runs/2026-07-02-one-time-clean-integration-launch-setup/TEST-RESULTS.md"
+      ],
+      "verification": [
+        "EXPECTED BLOCKED: npm run one-time:setup:check -- --write-report -> 0/8 setup areas ready, report written.",
+        "EXPECTED BLOCKED: npm run one-time:railway-target:guard -> missing One Time target/env values.",
+        "PASS: npm run one-time:railway-provision:check -- --write-report",
+        "PASS: npm run one-time:db:bootstrap",
+        "PASS: npm run bna:run:status",
+        "PASS: npm run bna:run:validate",
+        "PASS: npm run bna:run:source-coverage",
+        "PASS: npm run bna:run:stale-evidence",
+        "PASS: npm run pqc:all",
+        "PASS: npm run secrets:audit",
+        "PASS: git diff --check",
+        "PASS: JSON validation for changed structured files"
+      ],
+      "implementation_files": [],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T15:25:00+03:00"
+    },
+    {
+      "id": "REQ-20260702-905",
+      "title": "Push clean branch and leave next action",
+      "expected_result": "Clean branch is pushed with a PR or exact blocker, and forbidden external actions remain unperformed.",
+      "status": "done",
+      "source_id": "RAW-20260702-005",
+      "source_statement_ids": [
+        "RAW-20260702-005-S006"
+      ],
+      "source_path": "raw-input/RAW-20260702-005-one-time-clean-integration-from-pr62.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "closeout",
+      "priority": "P0",
+      "batch_id": "B3",
+      "depends_on": [
+        "REQ-20260702-904"
+      ],
+      "implementation_status": "Clean branch committed, pushed, and opened as draft PR #63. Separate One Time deploy remains correctly blocked until external setup readiness passes.",
+      "can_continue_without_operator": true,
+      "next_action": "Operator supplies the external setup values in TASK-20260702-001 and related launch-unblocker tasks; then run the post-setup deploy/live-smoke packet.",
+      "acceptance_criteria": [
+        "Branch pushed.",
+        "PR created or existing PR updated.",
+        "No forbidden external action performed.",
+        "NEXT-SESSION names the exact remaining setup task."
+      ],
+      "evidence": [
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/63",
+        "ops/execution-runs/2026-07-02-one-time-clean-integration-launch-setup/NEXT-SESSION.md"
+      ],
+      "verification": [
+        "PASS: git commit 13e87314b10c18ce9eb76d53365eed1c3cd13d53",
+        "PASS: git push -u origin codex/one-time-clean-integration-20260702",
+        "PASS: gh pr create -> https://github.com/shloimie-beep/bnei-neviim-academy/pull/63",
+        "PASS: gh pr view 63 reports mergeStateStatus CLEAN and isDraft true"
+      ],
+      "implementation_files": [],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T15:45:00+03:00",
+      "implementation_commit": "13e87314b10c18ce9eb76d53365eed1c3cd13d53",
+      "pushed_commit": "13e87314b10c18ce9eb76d53365eed1c3cd13d53",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/63"
+    }
+  ]
+}

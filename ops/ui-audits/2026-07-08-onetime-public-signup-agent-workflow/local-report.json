@@ -1,0 +1,126 @@
+{
+  "routeResults": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "label": "desktop-1440",
+      "title": "Your Child Can Love Learning Mishnayos",
+      "announcementCount": 0,
+      "tickerCount": 0,
+      "signupVisible": true,
+      "visibleInputNames": [
+        "email"
+      ],
+      "oldFields": [],
+      "headerBorder": "rgb(237, 229, 24)",
+      "headerBackground": "rgba(8, 9, 16, 0.96)",
+      "logoBackground": "rgb(255, 255, 255)",
+      "logoFilter": "brightness(0) contrast(1.2)",
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "horizontalOverflow": false,
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/desktop-1440-onetime-signup.png"
+    },
+    {
+      "width": 1024,
+      "height": 900,
+      "label": "tablet-1024",
+      "title": "Your Child Can Love Learning Mishnayos",
+      "announcementCount": 0,
+      "tickerCount": 0,
+      "signupVisible": true,
+      "visibleInputNames": [
+        "email"
+      ],
+      "oldFields": [],
+      "headerBorder": "rgb(237, 229, 24)",
+      "headerBackground": "rgba(8, 9, 16, 0.96)",
+      "logoBackground": "rgb(255, 255, 255)",
+      "logoFilter": "brightness(0) contrast(1.2)",
+      "scrollWidth": 1024,
+      "innerWidth": 1024,
+      "horizontalOverflow": false,
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/tablet-1024-onetime-signup.png"
+    },
+    {
+      "width": 768,
+      "height": 900,
+      "label": "tablet-768",
+      "title": "Your Child Can Love Learning Mishnayos",
+      "announcementCount": 0,
+      "tickerCount": 0,
+      "signupVisible": true,
+      "visibleInputNames": [
+        "email"
+      ],
+      "oldFields": [],
+      "headerBorder": "rgb(237, 229, 24)",
+      "headerBackground": "rgba(8, 9, 16, 0.96)",
+      "logoBackground": "rgb(255, 255, 255)",
+      "logoFilter": "brightness(0) contrast(1.2)",
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "horizontalOverflow": false,
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/tablet-768-onetime-signup.png"
+    },
+    {
+      "width": 430,
+      "height": 900,
+      "label": "mobile-430",
+      "title": "Your Child Can Love Learning Mishnayos",
+      "announcementCount": 0,
+      "tickerCount": 0,
+      "signupVisible": true,
+      "visibleInputNames": [
+        "email"
+      ],
+      "oldFields": [],
+      "headerBorder": "rgb(237, 229, 24)",
+      "headerBackground": "rgba(8, 9, 16, 0.96)",
+      "logoBackground": "rgb(255, 255, 255)",
+      "logoFilter": "brightness(0) contrast(1.2)",
+      "scrollWidth": 430,
+      "innerWidth": 430,
+      "horizontalOverflow": false,
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/mobile-430-onetime-signup.png"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "label": "mobile-390",
+      "title": "Your Child Can Love Learning Mishnayos",
+      "announcementCount": 0,
+      "tickerCount": 0,
+      "signupVisible": true,
+      "visibleInputNames": [
+        "email"
+      ],
+      "oldFields": [],
+      "headerBorder": "rgb(237, 229, 24)",
+      "headerBackground": "rgba(8, 9, 16, 0.96)",
+      "logoBackground": "rgb(255, 255, 255)",
+      "logoFilter": "brightness(0) contrast(1.2)",
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "horizontalOverflow": false,
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/mobile-390-onetime-signup.png"
+    }
+  ],
+  "interestPayload": {
+    "email": "agent-mode+20260708@example.invalid",
+    "consent": "yes",
+    "source_landing_page": "/one-time#start-free"
+  },
+  "agentResult": {
+    "lane": "running",
+    "status": "Prompt copied and moved to Running / Drop-off Needed with idempotency key 2026-06-26-agent-review-dropoff-repair:one-time-public-signup-whatsapp-workflow:all-contexts.",
+    "copiedHasPrompt": true,
+    "lanes": [
+      "ready",
+      "running",
+      "saved"
+    ]
+  },
+  "promptStartCount": 1,
+  "promptResultCount": 1
+}

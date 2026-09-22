@@ -1,0 +1,384 @@
+{
+  "generated_at": "2026-07-02T15:27:14.322Z",
+  "keyholder_dir_visible": true,
+  "keyholder_dir_label": "C:/Users/User/BNA-Keyholder",
+  "secret_values_printed": false,
+  "files_scanned": 30,
+  "provider_candidate_count": 22,
+  "expected_aliases": {
+    "vimeo": [
+      "vimeo-client-id.txt",
+      "vimeo-client-secret.txt",
+      "vimeo-access-token.txt",
+      "vimeo-folder.txt",
+      "drive drop-folder alias"
+    ],
+    "stripe": [
+      "stripe-secret-key.txt",
+      "rabbi-stripe-secret-key.txt",
+      "RABBI_STRIPE_WEBHOOK_SECRET.txt",
+      "stripe product/price alias for $67/month"
+    ],
+    "whapi_wapi": [
+      "WAPI_API_TOKEN.txt or WHAPI_API_TOKEN.txt",
+      "WAPI_API_BASE_URL.txt or WHAPI_API_BASE_URL.txt",
+      "BNA_WHATSAPP_NUMBER.txt",
+      "RABBI_SHLOIMIE_WHATSAPP_NUMBER.txt",
+      "WAPI_WEBHOOK_SECRET.txt"
+    ],
+    "zoom": [
+      "zoom-account-id.txt",
+      "zoom-client-id.txt",
+      "zoom-client-secret.txt",
+      "zoom meeting/join URL alias",
+      "zoom passcode alias"
+    ],
+    "resend": [
+      "resend-api-key.txt",
+      "resend-from-email.txt",
+      "resend-domain.txt",
+      "resend-webhook-secret.txt"
+    ],
+    "drive": [
+      "Google/Drive OAuth or service credentials",
+      "One Time Drive drop-folder alias"
+    ]
+  },
+  "providers": {
+    "vimeo": [
+      {
+        "alias": "incoming/2026-06-19-zoom-vimeo-codes/credential-image.jpeg",
+        "providers": [
+          "vimeo",
+          "zoom"
+        ],
+        "present": true,
+        "length": 40283,
+        "normalized_length": 40283,
+        "fingerprint": "7333265854ce",
+        "last_modified": "2026-06-19T06:04:25.030Z"
+      },
+      {
+        "alias": "incoming/2026-06-19-zoom-vimeo-codes/vimeo.txt",
+        "providers": [
+          "vimeo",
+          "zoom"
+        ],
+        "present": true,
+        "length": 232,
+        "normalized_length": 232,
+        "fingerprint": "d57f6ab0e5c0",
+        "last_modified": "2026-06-19T06:06:20.938Z"
+      },
+      {
+        "alias": "incoming/2026-06-19-zoom-vimeo-codes/zoom code2.txt",
+        "providers": [
+          "vimeo",
+          "zoom"
+        ],
+        "present": true,
+        "length": 56,
+        "normalized_length": 56,
+        "fingerprint": "b2b89f3b1837",
+        "last_modified": "2026-06-19T06:05:43.564Z"
+      },
+      {
+        "alias": "incoming/2026-06-19-zoom-vimeo-codes/zoom-account-id-crop.png",
+        "providers": [
+          "vimeo",
+          "zoom"
+        ],
+        "present": true,
+        "length": 54263,
+        "normalized_length": 54263,
+        "fingerprint": "601e6d8616cc",
+        "last_modified": "2026-06-19T06:15:31.766Z"
+      },
+      {
+        "alias": "incoming/2026-06-19-zoom-vimeo-codes/zoom-client-id-crop.png",
+        "providers": [
+          "vimeo",
+          "zoom"
+        ],
+        "present": true,
+        "length": 53180,
+        "normalized_length": 53180,
+        "fingerprint": "498b725c6144",
+        "last_modified": "2026-06-19T06:15:31.774Z"
+      },
+      {
+        "alias": "incoming/2026-06-19-zoom-vimeo-codes/zoomcd.jpeg",
+        "providers": [
+          "vimeo",
+          "zoom"
+        ],
+        "present": true,
+        "length": 40283,
+        "normalized_length": 40283,
+        "fingerprint": "7333265854ce",
+        "last_modified": "2026-06-19T06:04:25.030Z"
+      },
+      {
+        "alias": "vimeo-client-id.txt",
+        "providers": [
+          "vimeo"
+        ],
+        "present": true,
+        "length": 40,
+        "normalized_length": 40,
+        "fingerprint": "a1ce14a700bb",
+        "last_modified": "2026-06-19T06:18:01.145Z"
+      },
+      {
+        "alias": "vimeo-client-secret.txt",
+        "providers": [
+          "vimeo"
+        ],
+        "present": true,
+        "length": 128,
+        "normalized_length": 128,
+        "fingerprint": "8bbbec6b699d",
+        "last_modified": "2026-06-19T06:18:01.152Z"
+      }
+    ],
+    "stripe": [
+      {
+        "alias": "stripe-secret-key.txt",
+        "providers": [
+          "stripe"
+        ],
+        "present": true,
+        "length": 107,
+        "normalized_length": 107,
+        "fingerprint": "dcdee8231aac",
+        "last_modified": "2026-06-16T14:00:47.914Z"
+      }
+    ],
+    "whapi_wapi": [],
+    "zoom": [
+      {
+        "alias": "incoming/2026-06-19-zoom-vimeo-codes/credential-image.jpeg",
+        "providers": [
+          "vimeo",
+          "zoom"
+        ],
+        "present": true,
+        "length": 40283,
+        "normalized_length": 40283,
+        "fingerprint": "7333265854ce",
+        "last_modified": "2026-06-19T06:04:25.030Z"
+      },
+      {
+        "alias": "incoming/2026-06-19-zoom-vimeo-codes/vimeo.txt",
+        "providers": [
+          "vimeo",
+          "zoom"
+        ],
+        "present": true,
+        "length": 232,
+        "normalized_length": 232,
+        "fingerprint": "d57f6ab0e5c0",
+        "last_modified": "2026-06-19T06:06:20.938Z"
+      },
+      {
+        "alias": "incoming/2026-06-19-zoom-vimeo-codes/zoom code2.txt",
+        "providers": [
+          "vimeo",
+          "zoom"
+        ],
+        "present": true,
+        "length": 56,
+        "normalized_length": 56,
+        "fingerprint": "b2b89f3b1837",
+        "last_modified": "2026-06-19T06:05:43.564Z"
+      },
+      {
+        "alias": "incoming/2026-06-19-zoom-vimeo-codes/zoom-account-id-crop.png",
+        "providers": [
+          "vimeo",
+          "zoom"
+        ],
+        "present": true,
+        "length": 54263,
+        "normalized_length": 54263,
+        "fingerprint": "601e6d8616cc",
+        "last_modified": "2026-06-19T06:15:31.766Z"
+      },
+      {
+        "alias": "incoming/2026-06-19-zoom-vimeo-codes/zoom-client-id-crop.png",
+        "providers": [
+          "vimeo",
+          "zoom"
+        ],
+        "present": true,
+        "length": 53180,
+        "normalized_length": 53180,
+        "fingerprint": "498b725c6144",
+        "last_modified": "2026-06-19T06:15:31.774Z"
+      },
+      {
+        "alias": "incoming/2026-06-19-zoom-vimeo-codes/zoomcd.jpeg",
+        "providers": [
+          "vimeo",
+          "zoom"
+        ],
+        "present": true,
+        "length": 40283,
+        "normalized_length": 40283,
+        "fingerprint": "7333265854ce",
+        "last_modified": "2026-06-19T06:04:25.030Z"
+      },
+      {
+        "alias": "zoom-account-id.txt",
+        "providers": [
+          "zoom"
+        ],
+        "present": true,
+        "length": 22,
+        "normalized_length": 22,
+        "fingerprint": "6b99b0f3b092",
+        "last_modified": "2026-06-19T06:18:01.089Z"
+      },
+      {
+        "alias": "zoom-client-id.txt",
+        "providers": [
+          "zoom"
+        ],
+        "present": true,
+        "length": 22,
+        "normalized_length": 22,
+        "fingerprint": "eca43b944600",
+        "last_modified": "2026-06-19T06:25:14.000Z"
+      },
+      {
+        "alias": "zoom-client-secret.txt",
+        "providers": [
+          "zoom"
+        ],
+        "present": true,
+        "length": 32,
+        "normalized_length": 32,
+        "fingerprint": "8a1762775556",
+        "last_modified": "2026-06-19T06:18:01.137Z"
+      }
+    ],
+    "resend": [
+      {
+        "alias": "archived-source/2026-06-19-resend-one-time/resend-one-time-env-425f2ccf2704f615.source.txt",
+        "providers": [
+          "resend"
+        ],
+        "present": true,
+        "length": 36,
+        "normalized_length": 36,
+        "fingerprint": "425f2ccf2704",
+        "last_modified": "2026-06-19T08:14:38.897Z"
+      },
+      {
+        "alias": "providers/resend/one-time-api-key.txt",
+        "providers": [
+          "resend"
+        ],
+        "present": true,
+        "length": 36,
+        "normalized_length": 36,
+        "fingerprint": "425f2ccf2704",
+        "last_modified": "2026-06-19T08:32:35.802Z"
+      },
+      {
+        "alias": "resend webhook secret.txt",
+        "providers": [
+          "resend"
+        ],
+        "present": true,
+        "length": 38,
+        "normalized_length": 38,
+        "fingerprint": "f45e3a7562a1",
+        "last_modified": "2026-07-01T12:53:03.483Z"
+      },
+      {
+        "alias": "resend-account-owner.txt",
+        "providers": [
+          "resend"
+        ],
+        "present": true,
+        "length": 9,
+        "normalized_length": 8,
+        "fingerprint": "72418b41d0c7",
+        "last_modified": "2026-07-01T13:09:08.389Z"
+      },
+      {
+        "alias": "resend-api-key.txt",
+        "providers": [
+          "resend"
+        ],
+        "present": true,
+        "length": 36,
+        "normalized_length": 36,
+        "fingerprint": "425f2ccf2704",
+        "last_modified": "2026-06-19T08:32:35.802Z"
+      },
+      {
+        "alias": "resend-domain.txt",
+        "providers": [
+          "resend"
+        ],
+        "present": true,
+        "length": 19,
+        "normalized_length": 18,
+        "fingerprint": "b1af740e7c10",
+        "last_modified": "2026-07-01T13:09:08.388Z"
+      },
+      {
+        "alias": "resend-from-email.txt",
+        "providers": [
+          "resend"
+        ],
+        "present": true,
+        "length": 24,
+        "normalized_length": 23,
+        "fingerprint": "a64728a6a2bb",
+        "last_modified": "2026-07-01T13:09:08.386Z"
+      },
+      {
+        "alias": "resend-from-name.txt",
+        "providers": [
+          "resend"
+        ],
+        "present": true,
+        "length": 23,
+        "normalized_length": 22,
+        "fingerprint": "a065ebb39d7d",
+        "last_modified": "2026-07-01T13:09:08.386Z"
+      },
+      {
+        "alias": "resend-reply-to.txt",
+        "providers": [
+          "resend"
+        ],
+        "present": true,
+        "length": 24,
+        "normalized_length": 23,
+        "fingerprint": "a64728a6a2bb",
+        "last_modified": "2026-07-01T13:09:08.387Z"
+      },
+      {
+        "alias": "resend-webhook-secret.txt",
+        "providers": [
+          "resend"
+        ],
+        "present": true,
+        "length": 38,
+        "normalized_length": 38,
+        "fingerprint": "f45e3a7562a1",
+        "last_modified": "2026-07-01T12:53:03.483Z"
+      }
+    ],
+    "drive": []
+  },
+  "notes": [
+    "Only filenames, status, lengths, modified timestamps, and 12-character SHA-256 fingerprints are recorded.",
+    "No secret values are printed or committed.",
+    "Provider diagnostics readback is in ops/qa-runs/2026-07-02T15-26-40-667Z-provider-credential-diagnostics.*"
+  ]
+}

@@ -1,0 +1,676 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260712-109",
+  "parent_raw_id": "RAW-20260712-004",
+  "source_statement_ids": [
+    "SRC-20260712-004-013"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260712-101",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260712-102"
+    ],
+    "blocks_packet_ids": [
+      "PKT-20260712-111",
+      "PKT-20260712-112"
+    ],
+    "consumes": [
+      "public/one-time/index.html",
+      "server.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "tests/one-time-brand-helper-isolation.test.js",
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state/report.md"
+    ],
+    "produces": [
+      "public/one-time/index.html",
+      "ops/action-registry.json",
+      "tests/one-time-brand-helper-isolation.test.js",
+      "scripts/smoke-onetime-landing-whatsapp-local.mjs",
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.product-quality.json",
+    "terminal_condition": "REQ-20260712-109 is locally implemented with the public One Time landing helper scripts removed, a direct accessible WhatsApp launcher using the runtime redirect, registry/test/smoke coverage, and no external send/write.",
+    "handoff_target": "REQ-20260712-111 performance budget packet or REQ-20260712-112 release/live-smoke after local proof."
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "One Time landing WhatsApp launcher",
+  "created_at": "2026-07-12T19:31:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "PUBLIC_MARKETING"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260712-004",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "COMMUNICATIONS_EMAIL",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": "high",
+    "reasons": [
+      "The source explicitly asks to replace the One Time landing helper widget with a standard WhatsApp launcher.",
+      "The existing landing route still loads public helper scripts even though the action registry already has a public WhatsApp redirect action.",
+      "The work is public/app-visible and requires screenshot proof, action registry updates, and no-send guardrails."
+    ],
+    "affected_product_surfaces": [
+      "One Time public landing"
+    ],
+    "likely_external_provider_blockers": [
+      "ONE_TIME_PUBLIC_WHATSAPP_NUMBER must be configured at runtime before the link can open a live WhatsApp chat.",
+      "No WAPI/Whapi send, contact mutation, campaign send, payment/access change, DNS/provider write, or deploy is allowed in this packet."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "validate this focused packet",
+      "inspect served /one-time landing and public WhatsApp API",
+      "remove public helper scripts from /one-time only",
+      "add direct accessible WhatsApp launcher using same-origin redirect",
+      "update root action registry and tests",
+      "prove desktop/mobile landing screenshots and no external writes"
+    ],
+    "next_exact_packet": "Implement REQ-20260712-109 only; do not modify CRM, portals, WAPI send behavior, payment/access, deploy, or untracked feature lanes."
+  },
+  "operator_intent_summary": "Replace the public One Time landing page's Robot Scheller/helper-widget entry with a standard WhatsApp bubble that uses the runtime-configured public WhatsApp number through the existing same-origin redirect and performs no server-side send.",
+  "raw_quotes": [
+    "Replace landing helper widget with standard WhatsApp launcher.",
+    "The One Time landing page preserves the latest deployed design while replacing Robot Scheller/quick-command widget assets with an accessible WhatsApp bubble using runtime-configured public number.",
+    "No landing-only bna-bot-widget.js, bna-helper-knowledge.js, or Robot Scheller PNG load remains.",
+    "Launcher uses WhatsApp green circular bottom-right button with accessible label and focus state.",
+    "wa.me link uses ONE_TIME_PUBLIC_WHATSAPP_NUMBER and no client-side private credential/token."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260712-101",
+      "decision": "Original source screenshots are unavailable locally, so regenerated current-state audit and smoke screenshots are the implementation baseline.",
+      "status": "resolved_by_regeneration_with_direct_source_png_limitation"
+    }
+  ],
+  "out_of_scope": [
+    "No CRM, inbox, portal, classroom, library, parent setup/reset, or student route changes.",
+    "No edits to untracked features/one-time-landing React files unless lane ownership is explicitly claimed later.",
+    "No WhatsApp/WAPI/Whapi send, contact write, campaign send, payment/access grant, checkout, DNS/provider-account mutation, deploy, GHL, LeadConnector, or external CRM write.",
+    "No public phone number is committed or rendered directly in repo evidence.",
+    "No production Done claim before REQ-20260712-112 release/live-smoke proof."
+  ],
+  "affected_surfaces": [
+    "One Time public landing"
+  ],
+  "affected_routes": [
+    "/one-time",
+    "/",
+    "/public",
+    "/rabbi",
+    "/rabbi-preview",
+    "/one-time-mishnayos"
+  ],
+  "affected_files": [
+    "public/one-time/index.html",
+    "ops/action-registry.json",
+    "tests/one-time-brand-helper-isolation.test.js",
+    "scripts/smoke-onetime-landing-whatsapp-local.mjs",
+    "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/"
+  ],
+  "current_state": {
+    "inspected": [
+      "public/one-time/index.html currently loads /js/bna-helper-knowledge.js and /js/bna-bot-widget.js at the end of the served landing page.",
+      "server.js already exposes GET /api/one-time/public-whatsapp and GET /api/one-time/public-whatsapp/redirect using ONE_TIME_PUBLIC_WHATSAPP_NUMBER aliases, without returning the full number and without performing a send.",
+      "ops/action-registry.json has ACTION-ONETIME-PUBLIC-HELPER-OPEN and ACTION-ONETIME-PUBLIC-WHATSAPP rows; the public helper row is now stale for this requirement.",
+      "tests/one-time-brand-helper-isolation.test.js currently expects the old public helper scripts and Robot Scheller helper copy.",
+      "Untracked features/one-time-landing files include RobotSchellerLauncher.tsx, but this packet treats that lane as inspection-only because it is not the served static /one-time route."
+    ],
+    "known_gaps": [
+      "The public landing mounts a helper widget where the requirement expects a standard WhatsApp launcher.",
+      "The WhatsApp action registry still describes Robot Scheller/helper entry as part of the public landing.",
+      "No local screenshot smoke currently proves the direct landing WhatsApp launcher at desktop and mobile widths."
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state/report.md",
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/parallel-frontend-current-state/"
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "standard WhatsApp launcher",
+      "preserves latest deployed design",
+      "accessible",
+      "runtime-configured public number"
+    ],
+    "expanded_phrases": {
+      "standard WhatsApp launcher": "A fixed bottom-right circular WhatsApp-green link with the WhatsApp glyph/WA text, visible label for screen readers, focus state, and href to /api/one-time/public-whatsapp/redirect?intent=free_class.",
+      "preserves latest deployed design": "Do not redesign the landing page sections, hero, forms, copy, or media; only remove the helper script/widget entry and add the launcher.",
+      "accessible": "Launcher has a clear accessible name, focus-visible ring, target size at least 44 px, no overlap with form/dialog controls, and remains reachable on desktop and mobile.",
+      "runtime-configured public number": "The browser only uses same-origin redirect/readiness URLs. The server reads ONE_TIME_PUBLIC_WHATSAPP_NUMBER or aliases at runtime and does not expose the full number in repo evidence.",
+      "configured": "For this packet, configured means the runtime has a public WhatsApp number available to the server through ONE_TIME_PUBLIC_WHATSAPP_NUMBER or documented aliases; local proof may use a fake smoke-only number and must not commit or print the real value.",
+      "no-send": "The launcher opens a user-initiated WhatsApp compose URL only; the server performs no WAPI/Whapi send or CRM mutation."
+    },
+    "first_party_pattern_interpretation": "Use the existing first-party /api/one-time/public-whatsapp readiness and redirect endpoints. Do not add GHL, LeadConnector, external CRM, WAPI send, or client-side secret configuration."
+  },
+  "design_pattern_references": [
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260712-109",
+      "title": "Replace landing helper widget with standard WhatsApp launcher",
+      "status": "ready_for_codex",
+      "expected_result": "The One Time landing page preserves the latest deployed design while replacing Robot Scheller/quick-command widget assets with an accessible WhatsApp bubble using runtime-configured public number.",
+      "acceptance_criteria": [
+        "No landing-only bna-bot-widget.js, bna-helper-knowledge.js, or Robot Scheller PNG load remains.",
+        "Launcher uses WhatsApp green circular bottom-right button with accessible label and focus state.",
+        "wa.me link uses ONE_TIME_PUBLIC_WHATSAPP_NUMBER and no client-side private credential/token.",
+        "Public/mobile smoke passes."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "REQ-20260712-102 current-state visual audit is Done with regenerated public landing evidence.",
+      "This packet is limited to the served /one-time public landing launcher and supporting registry/tests/smoke.",
+      "The public WhatsApp API/redirect already exists and has been inspected.",
+      "No external provider send, deploy, payment/access, or production data mutation is in scope.",
+      "Untracked features/one-time-landing files are recognized as a separate lane and are not touched in this packet."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/one-time",
+      "viewport": "1440",
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load the static landing page before any signup interaction.",
+      "expected_visible_title": "Give your son a love for Torah you never thought possible.",
+      "expected_visible_message": "Primary landing hero and direct WhatsApp launcher are visible without helper widget chrome.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": [
+        "WhatsApp launcher",
+        "Member Login"
+      ],
+      "forbidden_content": [
+        "Robot Scheller helper widget",
+        "BNA helper scripts",
+        "client-side phone number"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "WhatsApp launcher has an accessible name and opens a same-origin redirect URL.",
+      "accessibility_expectation": "Launcher target is at least 44 px and focus-visible.",
+      "test_smoke_assertion": "Smoke loads /one-time and sees launcher without bna-bot-widget script requests.",
+      "requirement_id": "REQ-20260712-109"
+    },
+    "empty": {
+      "route": "/api/one-time/public-whatsapp",
+      "viewport": "api",
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Call readiness with no runtime WhatsApp number configured in local smoke.",
+      "expected_visible_title": "WhatsApp readiness",
+      "expected_visible_message": "configured=false and missing_runtime includes ONE_TIME_PUBLIC_WHATSAPP_NUMBER.",
+      "expected_primary_action": "Fallback to /one-time#start-free",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "full phone number",
+        "send result",
+        "contact mutation"
+      ],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "API only.",
+      "accessibility_expectation": "API only.",
+      "test_smoke_assertion": "Smoke asserts readiness omits full number and no_whatsapp_sent=true.",
+      "requirement_id": "REQ-20260712-109"
+    },
+    "populated": {
+      "route": "/one-time",
+      "viewport": "390",
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load the landing page at mobile width.",
+      "expected_visible_title": "Give your son a love for Torah you never thought possible.",
+      "expected_visible_message": "WhatsApp launcher remains fixed and does not hide the signup CTA or menu.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": [
+        "WhatsApp launcher",
+        "Menu"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "overlapped CTA",
+        "helper widget panel"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Launcher and mobile menu have distinct labels.",
+      "accessibility_expectation": "Launcher does not obscure required controls.",
+      "test_smoke_assertion": "Smoke captures mobile screenshot and asserts launcher bounding box is visible and target-sized.",
+      "requirement_id": "REQ-20260712-109"
+    },
+    "filtered_empty": {
+      "route": "/one-time",
+      "viewport": "430",
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile navigation while launcher is present.",
+      "expected_visible_title": "One Time navigation",
+      "expected_visible_message": "Navigation and launcher coexist without duplicate helper actions.",
+      "expected_primary_action": "Menu",
+      "expected_secondary_actions": [
+        "WhatsApp launcher"
+      ],
+      "forbidden_content": [
+        "duplicate WhatsApp helper button",
+        "Robot Scheller launcher"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Menu and launcher have independent accessible names.",
+      "accessibility_expectation": "Focus order can reach both controls.",
+      "test_smoke_assertion": "Smoke opens mobile menu and sees exactly one WhatsApp launcher.",
+      "requirement_id": "REQ-20260712-109"
+    },
+    "error": {
+      "route": "/api/one-time/public-whatsapp/redirect?intent=free_class",
+      "viewport": "api",
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Call redirect with runtime number absent in local smoke.",
+      "expected_visible_title": "Redirect fallback",
+      "expected_visible_message": "302 fallback to /one-time#start-free.",
+      "expected_primary_action": "Start-free form",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "server-side WhatsApp send",
+        "raw number in response body"
+      ],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "API redirect only.",
+      "accessibility_expectation": "Fallback target remains a public form anchor.",
+      "test_smoke_assertion": "Smoke asserts fallback 302 location when local number is missing.",
+      "requirement_id": "REQ-20260712-109"
+    },
+    "blocked_setup": {
+      "route": "/one-time",
+      "viewport": "1440",
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load landing while runtime number may be missing.",
+      "expected_visible_title": "WhatsApp launcher",
+      "expected_visible_message": "Launcher remains a same-origin redirect; missing runtime number is handled server-side.",
+      "expected_primary_action": "Open WhatsApp",
+      "expected_secondary_actions": [
+        "Sign Up Now"
+      ],
+      "forbidden_content": [
+        "disabled unlabeled button",
+        "hard-coded phone"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Launcher describes that it opens WhatsApp.",
+      "accessibility_expectation": "Focus state is visible even when runtime number is missing.",
+      "test_smoke_assertion": "Smoke asserts href is same-origin redirect, not a hard-coded wa.me number.",
+      "requirement_id": "REQ-20260712-109"
+    },
+    "preview_only": {
+      "route": "/one-time",
+      "viewport": "1024",
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Run local smoke with synthetic server only.",
+      "expected_visible_title": "Local smoke",
+      "expected_visible_message": "No external send/write happens.",
+      "expected_primary_action": "WhatsApp launcher",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "WAPI send",
+        "contact write",
+        "campaign send"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Launcher is a normal link.",
+      "accessibility_expectation": "No modal or helper drawer opens automatically.",
+      "test_smoke_assertion": "Smoke asserts no POST/write requests occurred.",
+      "requirement_id": "REQ-20260712-109"
+    },
+    "success_readback": {
+      "route": "/api/one-time/public-whatsapp/redirect?intent=free_class",
+      "viewport": "api",
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Call redirect with a fake local test number configured inside the smoke server only.",
+      "expected_visible_title": "WhatsApp redirect",
+      "expected_visible_message": "302 to wa.me with encoded free-class copy and no server send.",
+      "expected_primary_action": "Open WhatsApp",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "raw production number",
+        "server-side send"
+      ],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "API redirect only.",
+      "accessibility_expectation": "User-initiated link remains explicit.",
+      "test_smoke_assertion": "Smoke asserts local fake number redirect uses wa.me and no write request.",
+      "requirement_id": "REQ-20260712-109"
+    },
+    "permission_denied": {
+      "route": "/one-time",
+      "viewport": "390",
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Inspect public landing as anonymous visitor.",
+      "expected_visible_title": "One Time public landing",
+      "expected_visible_message": "No private portal, CRM, parent, student, provider, member, or Operations data appears.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": [
+        "WhatsApp launcher"
+      ],
+      "forbidden_content": [
+        "private parent data",
+        "student records",
+        "CRM records",
+        "Operations data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Public controls only.",
+      "accessibility_expectation": "No auth-gated control appears as enabled.",
+      "test_smoke_assertion": "Smoke asserts forbidden private terms are absent.",
+      "requirement_id": "REQ-20260712-109"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time",
+      "viewport": "390",
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile menu with launcher present.",
+      "expected_visible_title": "Mobile landing menu",
+      "expected_visible_message": "Menu and WhatsApp launcher do not collide.",
+      "expected_primary_action": "Menu",
+      "expected_secondary_actions": [
+        "WhatsApp launcher"
+      ],
+      "forbidden_content": [
+        "overlapping controls",
+        "hidden launcher",
+        "duplicate helper action"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Both controls have name/role/value.",
+      "accessibility_expectation": "Escape/menu close still works.",
+      "test_smoke_assertion": "Smoke captures mobile menu open state and verifies launcher remains reachable.",
+      "requirement_id": "REQ-20260712-109"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/one-time",
+        "viewport": 1440,
+        "auth_role": "PUBLIC_MARKETING",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-109"
+      },
+      {
+        "route": "/one-time",
+        "viewport": 1024,
+        "auth_role": "PUBLIC_MARKETING",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-109"
+      },
+      {
+        "route": "/one-time",
+        "viewport": 768,
+        "auth_role": "PUBLIC_MARKETING",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-109"
+      },
+      {
+        "route": "/one-time",
+        "viewport": 390,
+        "auth_role": "PUBLIC_MARKETING",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-109"
+      },
+      {
+        "route": "/one-time",
+        "viewport": 430,
+        "auth_role": "PUBLIC_MARKETING",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-109"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260712-109-001",
+        "route": "/one-time",
+        "viewport": "390",
+        "screenshot_before": "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state/report.md",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md",
+        "defect_codes": [
+          "VQ-ACTION-002",
+          "VQ-IA-007"
+        ],
+        "severity": "P1",
+        "user_impact": "The public landing exposes the old helper-widget concept instead of the requested simple WhatsApp launcher.",
+        "expected_fix": "Remove landing helper scripts and render one direct WhatsApp launcher link.",
+        "requirement_id": "REQ-20260712-109"
+      },
+      {
+        "finding_id": "VQF-20260712-109-002",
+        "route": "/one-time",
+        "viewport": "390",
+        "screenshot_before": "public/one-time/index.html",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md",
+        "defect_codes": [
+          "VQ-ACTION-003",
+          "VQ-RESP-005"
+        ],
+        "severity": "P1",
+        "user_impact": "The new launcher must be a named, target-sized link and not a decorative or ambiguous floating control.",
+        "expected_fix": "Add accessible name, focus state, fixed placement, and touch-safe dimensions.",
+        "requirement_id": "REQ-20260712-109"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "WhatsApp launcher has an accessible name that includes WhatsApp and One Time.",
+      "Launcher is a link, not a fake button, and opens the same-origin redirect URL.",
+      "Launcher has a visible focus style with at least 3 px equivalent contrast.",
+      "Launcher target is at least 44 by 44 px on desktop and mobile.",
+      "Launcher does not overlap the signup modal, mobile nav, or required form controls.",
+      "No hidden helper panel or auto-open nudge steals focus."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Open One Time WhatsApp",
+      "selector_or_action_key": "ACTION-ONETIME-PUBLIC-WHATSAPP",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "GET /api/one-time/public-whatsapp/redirect opens WhatsApp compose when ONE_TIME_PUBLIC_WHATSAPP_NUMBER is configured; otherwise falls back to /one-time#start-free.",
+      "registry_required": true
+    },
+    {
+      "label": "Open Robot Scheller helper",
+      "selector_or_action_key": "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
+      "action_state": "DISABLED_NOT_IN_SCOPE",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Public landing no longer loads bna-helper-knowledge.js or bna-bot-widget.js.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "api_calls": [
+      "GET /api/one-time/public-whatsapp",
+      "GET /api/one-time/public-whatsapp/redirect?intent=free_class"
+    ],
+    "limits": [
+      "Do not embed or commit the public WhatsApp number.",
+      "Readiness must not return the full number.",
+      "Redirect must not perform server-side send or database write."
+    ],
+    "caching": [
+      "Static landing page may remain cacheable according to existing public asset rules; no authenticated data is introduced."
+    ],
+    "abort_debounce": [
+      "Not applicable."
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Public landing remains anonymous-safe and scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+      "Client code uses only same-origin WhatsApp redirect; no private credential or raw number is committed.",
+      "Launcher performs no WAPI/Whapi send, no contact write, and no external CRM mutation."
+    ],
+    "forbidden_content": [
+      "raw public WhatsApp number in repo evidence",
+      "WAPI send result",
+      "private parent/student/provider/member/Operations data",
+      "GHL or LeadConnector runtime",
+      "Robot Scheller public helper widget"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-08-LANDING-WHATSAPP",
+      "scope": "Public landing WhatsApp launcher replacement only",
+      "instructions": [
+        "Remove /js/bna-helper-knowledge.js and /js/bna-bot-widget.js from public/one-time/index.html.",
+        "Add a fixed bottom-right WhatsApp launcher link using /api/one-time/public-whatsapp/redirect?intent=free_class.",
+        "Style it as a WhatsApp-green circular launcher with visible focus and screen-reader label.",
+        "Update ops/action-registry.json so public helper is removed/archived and public WhatsApp is the visible action.",
+        "Update tests/one-time-brand-helper-isolation.test.js expectations for the public landing only; do not remove parent/student/provider helper expectations.",
+        "Add/run local smoke screenshots and API redirect/readiness proof."
+      ],
+      "requirements": [
+        "REQ-20260712-109"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "focused_public_landing_slice",
+    "source_files_to_read": [
+      "public/one-time/index.html",
+      "server.js",
+      "ops/action-registry.json",
+      "tests/one-time-brand-helper-isolation.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/one-time/index.html",
+      "ops/action-registry.json",
+      "tests/one-time-brand-helper-isolation.test.js",
+      "scripts/smoke-onetime-landing-whatsapp-local.mjs",
+      "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.product-quality.json",
+      "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/*"
+    ],
+    "max_files_to_edit": 7,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "This packet changes only the public landing launcher. If work expands into the React feature lane, public copy redesign, campaign setup, WAPI send behavior, or performance delivery, split a follow-up packet.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "commands": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.product-quality.json",
+      "node --check scripts/smoke-onetime-landing-whatsapp-local.mjs",
+      "node scripts/smoke-onetime-landing-whatsapp-local.mjs",
+      "node --test tests/one-time-brand-helper-isolation.test.js tests/one-time-focused-landing.test.js tests/one-time-shared-review-branding.test.js",
+      "npm run bna:run:validate",
+      "npm run watchdog:protocol-drift"
+    ],
+    "manual_checks": [
+      "Inspect generated desktop/mobile screenshots for launcher visibility and no overlap.",
+      "Confirm no bna-helper-knowledge.js or bna-bot-widget.js network requests on /one-time.",
+      "Confirm no POST/write requests occurred."
+    ]
+  },
+  "evidence": {
+    "required": [
+      "PQC validation PASS",
+      "local landing WhatsApp screenshots/report",
+      "action registry root update",
+      "public landing/helper isolation tests",
+      "execution-run status/evidence update"
+    ],
+    "paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/ui-audits/2026-07-12-onetime-landing-whatsapp-local/report.md",
+      "ops/action-registry.json",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/STATUS.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/TEST-RESULTS.md"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "DEPLOY_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "public/one-time/index.html no longer loads /js/bna-helper-knowledge.js or /js/bna-bot-widget.js.",
+      "The served landing page contains exactly one direct WhatsApp launcher action.",
+      "Launcher href is /api/one-time/public-whatsapp/redirect?intent=free_class, not a hard-coded wa.me number.",
+      "Launcher is WhatsApp-green, bottom-right, circular, target-sized, keyboard-focusable, and accessible by name.",
+      "Root action registry marks ACTION-ONETIME-PUBLIC-WHATSAPP as the visible public landing action and archives/removes the public helper action from active landing coverage.",
+      "Local smoke screenshots and assertions pass for desktop/mobile and redirect/readiness no-send behavior.",
+      "Production deploy/live-smoke remains open under REQ-20260712-112."
+    ],
+    "actual_status": "ready_for_local_implementation"
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "node smoke",
+      "node tests"
+    ],
+    "skipped_actions_policy": "No external sends/writes/deploy in this local batch.",
+    "blocker_decisions": [
+      "DEC-20260712-101 direct source screenshots missing but regenerated audit evidence is usable."
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state/report.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/requirements.json"
+    ],
+    "final_status_path": "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/STATUS.md",
+    "next_packet_path": "tasks-pending/2026-07-12-onetime-crm-portal-production-correction.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No protocol drift findings introduced by the landing launcher packet or closeout records."
+  },
+  "next_packet": {
+    "id": "PKT-20260712-111",
+    "condition": "Continue performance budget packet after REQ-20260712-109 is locally done, unless REQ-20260712-112 release/live-smoke is explicitly requested first.",
+    "status": "pending"
+  }
+}

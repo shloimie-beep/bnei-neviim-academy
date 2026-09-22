@@ -1,0 +1,26 @@
+{
+  "started_at": "2026-06-21T17:32:39.053Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "cookie bna_ops_session"
+    },
+    {
+      "name": "Test identity preview API is no-write and TEST-prefixed",
+      "ok": true,
+      "detail": "8 identities, 12 denial cases"
+    },
+    {
+      "name": "Operations ships test identity preview panel",
+      "ok": true,
+      "detail": "Operations panel marker and disabled blockers shipped"
+    }
+  ],
+  "requirement_id": "REQ-20260621-909",
+  "identity_count": 8,
+  "mock_record_count": 5,
+  "negative_authorization_count": 12,
+  "cleanup_ready": true
+}

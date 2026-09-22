@@ -1,0 +1,35 @@
+{
+  "started_at": "2026-06-21T12:54:52.064Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "operations login",
+      "ok": true,
+      "duration_ms": 820,
+      "data": {
+        "cookie": "[redacted]",
+        "role": "super_admin",
+        "scope": {
+          "type": "all",
+          "projectKey": "[redacted]"
+        }
+      }
+    },
+    {
+      "name": "zoom readiness and previews",
+      "ok": false,
+      "duration_ms": 1006,
+      "error": "Zoom status exposed secret-like fields"
+    }
+  ],
+  "summary": {
+    "zoom_status_readable": false,
+    "token_cache_reported": "[redacted]",
+    "workflow_foundation_reported": false,
+    "webhook_processing_reported": false,
+    "meeting_create_blocked": false,
+    "external_write_performed": false,
+    "zoom_meeting_created": false,
+    "runtime_widths_checked": []
+  }
+}

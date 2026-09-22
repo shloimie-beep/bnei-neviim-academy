@@ -1,0 +1,58 @@
+{
+  "app": "http://127.0.0.1:8099",
+  "result": "passed",
+  "steps": [
+    {
+      "name": "local server health",
+      "ok": true,
+      "duration_ms": 2611,
+      "data": {
+        "ready": true
+      }
+    },
+    {
+      "name": "operations login",
+      "ok": true,
+      "duration_ms": 2680,
+      "data": {
+        "url": "http://127.0.0.1:8099/operations?view=settings&section=google_workspace&workspace=platform"
+      }
+    },
+    {
+      "name": "Google approval decision preview is dry-run only",
+      "ok": true,
+      "duration_ms": 2027,
+      "data": {
+        "action_id": "create_decision",
+        "dry_run": true,
+        "executed": false,
+        "decision_created": false,
+        "source": "approval_packet_google_live_adapter"
+      }
+    },
+    {
+      "name": "One Time approval decision preview is dry-run only",
+      "ok": true,
+      "duration_ms": 3984,
+      "data": {
+        "action_id": "create_decision",
+        "dry_run": true,
+        "executed": false,
+        "decision_created": false,
+        "source": "approval_packet_one_time_member_library"
+      }
+    },
+    {
+      "name": "no browser errors and no horizontal overflow",
+      "ok": true,
+      "duration_ms": 1,
+      "data": {
+        "width": 1366,
+        "scrollWidth": 1366,
+        "bodyScrollWidth": 1366
+      }
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": []
+}

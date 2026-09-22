@@ -1,0 +1,628 @@
+{
+  "generated_at": "2026-07-05T18:13:38.039Z",
+  "base_url": "https://bneineviimacademy.org",
+  "pass": true,
+  "failed_count": 0,
+  "results": [
+    {
+      "route": "/",
+      "route_id": "public-home",
+      "viewport": "mobile-390",
+      "final_url": "https://bneineviimacademy.org/",
+      "title": "Bnei Nevi'im Academy | Torah Learning for Boys",
+      "pass": true,
+      "shell_matches": [
+        ".bna-site-nav",
+        "#siteNavMount",
+        "nav",
+        ".nav-brand"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 79,
+      "tiny_targets": [],
+      "app_select_loaded": false,
+      "shared_shell_css_loaded": false,
+      "public_shell_css_loaded": true,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/public-home-mobile-390.png"
+    },
+    {
+      "route": "/signup.html",
+      "route_id": "public-signup",
+      "viewport": "mobile-390",
+      "final_url": "https://bneineviimacademy.org/signup.html",
+      "title": "Sign Up | Bnei Nevi'im Academy",
+      "pass": true,
+      "shell_matches": [
+        ".bna-site-nav",
+        "#siteNavMount",
+        "nav",
+        "[data-bna-site-nav]"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 50,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": false,
+      "public_shell_css_loaded": true,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/public-signup-mobile-390.png"
+    },
+    {
+      "route": "/service-providers",
+      "route_id": "service-providers",
+      "viewport": "mobile-390",
+      "final_url": "https://bneineviimacademy.org/service-providers",
+      "title": "BNA Service Provider Index",
+      "pass": true,
+      "shell_matches": [
+        ".bna-site-nav",
+        "#siteNavMount",
+        "[data-bna-site-nav]"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 28,
+      "tiny_targets": [
+        {
+          "selector": "a",
+          "label": "Rabbeim / Shiurim",
+          "width": 128,
+          "height": 28
+        }
+      ],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": false,
+      "public_shell_css_loaded": true,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/service-providers-mobile-390.png"
+    },
+    {
+      "route": "/operations-login.html?returnTo=%2Foperations",
+      "route_id": "operations-login",
+      "viewport": "mobile-390",
+      "final_url": "https://bneineviimacademy.org/operations-login.html?returnTo=%2Foperations",
+      "title": "Sign In - BNA Operations",
+      "pass": true,
+      "shell_matches": [
+        ".logo",
+        ".bna-login-shell"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 3,
+      "tiny_targets": [],
+      "app_select_loaded": false,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/operations-login-mobile-390.png"
+    },
+    {
+      "route": "/parent",
+      "route_id": "parent-entry",
+      "viewport": "mobile-390",
+      "final_url": "https://bneineviimacademy.org/parent",
+      "title": "BNA Parent Portal",
+      "pass": true,
+      "shell_matches": [
+        ".brand-topbar",
+        ".brand-mark",
+        ".bna-parent-page"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 14,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/parent-entry-mobile-390.png"
+    },
+    {
+      "route": "/student",
+      "route_id": "student-entry",
+      "viewport": "mobile-390",
+      "final_url": "https://bneineviimacademy.org/student",
+      "title": "Student Goal Board",
+      "pass": true,
+      "shell_matches": [
+        ".brand-topbar",
+        ".brand-mark",
+        ".bna-student-page"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 13,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/student-entry-mobile-390.png"
+    },
+    {
+      "route": "/provider",
+      "route_id": "provider-entry",
+      "viewport": "mobile-390",
+      "final_url": "https://bneineviimacademy.org/provider",
+      "title": "BNA Provider Portal",
+      "pass": true,
+      "shell_matches": [
+        ".brand-topbar",
+        ".brand-mark",
+        ".bna-provider-page"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 9,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/provider-entry-mobile-390.png"
+    },
+    {
+      "route": "/",
+      "route_id": "public-home",
+      "viewport": "mobile-430",
+      "final_url": "https://bneineviimacademy.org/",
+      "title": "Bnei Nevi'im Academy | Torah Learning for Boys",
+      "pass": true,
+      "shell_matches": [
+        ".bna-site-nav",
+        "#siteNavMount",
+        "nav",
+        ".nav-brand"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 79,
+      "tiny_targets": [],
+      "app_select_loaded": false,
+      "shared_shell_css_loaded": false,
+      "public_shell_css_loaded": true,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/public-home-mobile-430.png"
+    },
+    {
+      "route": "/signup.html",
+      "route_id": "public-signup",
+      "viewport": "mobile-430",
+      "final_url": "https://bneineviimacademy.org/signup.html",
+      "title": "Sign Up | Bnei Nevi'im Academy",
+      "pass": true,
+      "shell_matches": [
+        ".bna-site-nav",
+        "#siteNavMount",
+        "nav",
+        "[data-bna-site-nav]"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 50,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": false,
+      "public_shell_css_loaded": true,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/public-signup-mobile-430.png"
+    },
+    {
+      "route": "/service-providers",
+      "route_id": "service-providers",
+      "viewport": "mobile-430",
+      "final_url": "https://bneineviimacademy.org/service-providers",
+      "title": "BNA Service Provider Index",
+      "pass": true,
+      "shell_matches": [
+        ".bna-site-nav",
+        "#siteNavMount",
+        "[data-bna-site-nav]"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 28,
+      "tiny_targets": [
+        {
+          "selector": "a",
+          "label": "Rabbeim / Shiurim",
+          "width": 128,
+          "height": 28
+        }
+      ],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": false,
+      "public_shell_css_loaded": true,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/service-providers-mobile-430.png"
+    },
+    {
+      "route": "/operations-login.html?returnTo=%2Foperations",
+      "route_id": "operations-login",
+      "viewport": "mobile-430",
+      "final_url": "https://bneineviimacademy.org/operations-login.html?returnTo=%2Foperations",
+      "title": "Sign In - BNA Operations",
+      "pass": true,
+      "shell_matches": [
+        ".logo",
+        ".bna-login-shell"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 3,
+      "tiny_targets": [],
+      "app_select_loaded": false,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/operations-login-mobile-430.png"
+    },
+    {
+      "route": "/parent",
+      "route_id": "parent-entry",
+      "viewport": "mobile-430",
+      "final_url": "https://bneineviimacademy.org/parent",
+      "title": "BNA Parent Portal",
+      "pass": true,
+      "shell_matches": [
+        ".brand-topbar",
+        ".brand-mark",
+        ".bna-parent-page"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 14,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/parent-entry-mobile-430.png"
+    },
+    {
+      "route": "/student",
+      "route_id": "student-entry",
+      "viewport": "mobile-430",
+      "final_url": "https://bneineviimacademy.org/student",
+      "title": "Student Goal Board",
+      "pass": true,
+      "shell_matches": [
+        ".brand-topbar",
+        ".brand-mark",
+        ".bna-student-page"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 13,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/student-entry-mobile-430.png"
+    },
+    {
+      "route": "/provider",
+      "route_id": "provider-entry",
+      "viewport": "mobile-430",
+      "final_url": "https://bneineviimacademy.org/provider",
+      "title": "BNA Provider Portal",
+      "pass": true,
+      "shell_matches": [
+        ".brand-topbar",
+        ".brand-mark",
+        ".bna-provider-page"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 9,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/provider-entry-mobile-430.png"
+    },
+    {
+      "route": "/",
+      "route_id": "public-home",
+      "viewport": "tablet-768",
+      "final_url": "https://bneineviimacademy.org/",
+      "title": "Bnei Nevi'im Academy | Torah Learning for Boys",
+      "pass": true,
+      "shell_matches": [
+        ".bna-site-nav",
+        "#siteNavMount",
+        "nav",
+        ".nav-brand"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 79,
+      "tiny_targets": [],
+      "app_select_loaded": false,
+      "shared_shell_css_loaded": false,
+      "public_shell_css_loaded": true,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/public-home-tablet-768.png"
+    },
+    {
+      "route": "/signup.html",
+      "route_id": "public-signup",
+      "viewport": "tablet-768",
+      "final_url": "https://bneineviimacademy.org/signup.html",
+      "title": "Sign Up | Bnei Nevi'im Academy",
+      "pass": true,
+      "shell_matches": [
+        ".bna-site-nav",
+        "#siteNavMount",
+        "nav",
+        "[data-bna-site-nav]"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 50,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": false,
+      "public_shell_css_loaded": true,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/public-signup-tablet-768.png"
+    },
+    {
+      "route": "/service-providers",
+      "route_id": "service-providers",
+      "viewport": "tablet-768",
+      "final_url": "https://bneineviimacademy.org/service-providers",
+      "title": "BNA Service Provider Index",
+      "pass": true,
+      "shell_matches": [
+        ".bna-site-nav",
+        "#siteNavMount",
+        "[data-bna-site-nav]"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 28,
+      "tiny_targets": [
+        {
+          "selector": "a",
+          "label": "Rabbeim / Shiurim",
+          "width": 128,
+          "height": 28
+        }
+      ],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": false,
+      "public_shell_css_loaded": true,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/service-providers-tablet-768.png"
+    },
+    {
+      "route": "/operations-login.html?returnTo=%2Foperations",
+      "route_id": "operations-login",
+      "viewport": "tablet-768",
+      "final_url": "https://bneineviimacademy.org/operations-login.html?returnTo=%2Foperations",
+      "title": "Sign In - BNA Operations",
+      "pass": true,
+      "shell_matches": [
+        ".logo",
+        ".bna-login-shell"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 3,
+      "tiny_targets": [],
+      "app_select_loaded": false,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/operations-login-tablet-768.png"
+    },
+    {
+      "route": "/parent",
+      "route_id": "parent-entry",
+      "viewport": "tablet-768",
+      "final_url": "https://bneineviimacademy.org/parent",
+      "title": "BNA Parent Portal",
+      "pass": true,
+      "shell_matches": [
+        ".brand-topbar",
+        ".brand-mark",
+        ".bna-parent-page"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 14,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/parent-entry-tablet-768.png"
+    },
+    {
+      "route": "/student",
+      "route_id": "student-entry",
+      "viewport": "tablet-768",
+      "final_url": "https://bneineviimacademy.org/student",
+      "title": "Student Goal Board",
+      "pass": true,
+      "shell_matches": [
+        ".brand-topbar",
+        ".brand-mark",
+        ".bna-student-page"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 13,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/student-entry-tablet-768.png"
+    },
+    {
+      "route": "/provider",
+      "route_id": "provider-entry",
+      "viewport": "tablet-768",
+      "final_url": "https://bneineviimacademy.org/provider",
+      "title": "BNA Provider Portal",
+      "pass": true,
+      "shell_matches": [
+        ".brand-topbar",
+        ".brand-mark",
+        ".bna-provider-page"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 9,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/provider-entry-tablet-768.png"
+    },
+    {
+      "route": "/",
+      "route_id": "public-home",
+      "viewport": "desktop-1440",
+      "final_url": "https://bneineviimacademy.org/",
+      "title": "Bnei Nevi'im Academy | Torah Learning for Boys",
+      "pass": true,
+      "shell_matches": [
+        ".bna-site-nav",
+        "#siteNavMount",
+        "nav",
+        ".nav-brand"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 103,
+      "tiny_targets": [],
+      "app_select_loaded": false,
+      "shared_shell_css_loaded": false,
+      "public_shell_css_loaded": true,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/public-home-desktop-1440.png"
+    },
+    {
+      "route": "/signup.html",
+      "route_id": "public-signup",
+      "viewport": "desktop-1440",
+      "final_url": "https://bneineviimacademy.org/signup.html",
+      "title": "Sign Up | Bnei Nevi'im Academy",
+      "pass": true,
+      "shell_matches": [
+        ".bna-site-nav",
+        "#siteNavMount",
+        "nav",
+        "[data-bna-site-nav]"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 74,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": false,
+      "public_shell_css_loaded": true,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/public-signup-desktop-1440.png"
+    },
+    {
+      "route": "/service-providers",
+      "route_id": "service-providers",
+      "viewport": "desktop-1440",
+      "final_url": "https://bneineviimacademy.org/service-providers",
+      "title": "BNA Service Provider Index",
+      "pass": true,
+      "shell_matches": [
+        ".bna-site-nav",
+        "#siteNavMount",
+        "[data-bna-site-nav]"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 52,
+      "tiny_targets": [
+        {
+          "selector": "a",
+          "label": "Rabbeim / Shiurim",
+          "width": 128,
+          "height": 28
+        }
+      ],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": false,
+      "public_shell_css_loaded": true,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/service-providers-desktop-1440.png"
+    },
+    {
+      "route": "/operations-login.html?returnTo=%2Foperations",
+      "route_id": "operations-login",
+      "viewport": "desktop-1440",
+      "final_url": "https://bneineviimacademy.org/operations-login.html?returnTo=%2Foperations",
+      "title": "Sign In - BNA Operations",
+      "pass": true,
+      "shell_matches": [
+        ".logo",
+        ".bna-login-shell"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 3,
+      "tiny_targets": [],
+      "app_select_loaded": false,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/operations-login-desktop-1440.png"
+    },
+    {
+      "route": "/parent",
+      "route_id": "parent-entry",
+      "viewport": "desktop-1440",
+      "final_url": "https://bneineviimacademy.org/parent",
+      "title": "BNA Parent Portal",
+      "pass": true,
+      "shell_matches": [
+        ".brand-topbar",
+        ".brand-mark",
+        ".bna-parent-page"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 14,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/parent-entry-desktop-1440.png"
+    },
+    {
+      "route": "/student",
+      "route_id": "student-entry",
+      "viewport": "desktop-1440",
+      "final_url": "https://bneineviimacademy.org/student",
+      "title": "Student Goal Board",
+      "pass": true,
+      "shell_matches": [
+        ".brand-topbar",
+        ".brand-mark",
+        ".bna-student-page"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 13,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/student-entry-desktop-1440.png"
+    },
+    {
+      "route": "/provider",
+      "route_id": "provider-entry",
+      "viewport": "desktop-1440",
+      "final_url": "https://bneineviimacademy.org/provider",
+      "title": "BNA Provider Portal",
+      "pass": true,
+      "shell_matches": [
+        ".brand-topbar",
+        ".brand-mark",
+        ".bna-provider-page"
+      ],
+      "horizontal_overflow_px": 0,
+      "visible_control_count": 9,
+      "tiny_targets": [],
+      "app_select_loaded": true,
+      "shared_shell_css_loaded": true,
+      "public_shell_css_loaded": false,
+      "console_errors": [],
+      "screenshot": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/screenshots/provider-entry-desktop-1440.png"
+    }
+  ]
+}

@@ -1,0 +1,620 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260713-407",
+  "parent_raw_id": "RAW-20260713-004",
+  "source_statement_ids": [
+    "SRC-RAW-20260713-004-009",
+    "SRC-RAW-20260713-004-010"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260713-004-01",
+    "child_packet_ids": [
+      "PKT-20260713-004-07A",
+      "PKT-20260713-004-07B"
+    ],
+    "depends_on_packet_ids": [
+      "PKT-20260713-004-01",
+      "PKT-20260713-004-04",
+      "PKT-20260713-004-05"
+    ],
+    "blocks_packet_ids": [
+      "PKT-20260713-004-07",
+      "PKT-20260713-004-08"
+    ],
+    "consumes": [
+      "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.md",
+      "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.json",
+      "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/01-current-state-visual-audit.md",
+      "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md"
+    ],
+    "produces": [
+      "A later focused Operations content-processing UI implementation packet",
+      "A later focused member/parent/student latest-video implementation packet"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.product-quality.json",
+    "terminal_condition": "The UI build remains blocked until authenticated Operations evidence, member/latest-video evidence, and Vimeo/provider publication blockers are resolved or explicitly carried.",
+    "handoff_target": "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.md"
+  },
+  "stage": "STAGE_1_SPEC_COMPILER",
+  "packet_role": "SPEC_COMPILER",
+  "status": "generated",
+  "title": "One Time content-processing and latest-video UI readiness spec",
+  "created_at": "2026-07-13T15:50:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL",
+    "INTERNAL_AGENT_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260713-004",
+    "classification": [
+      "SUPER_RAMBLE",
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "COMMUNITY_CLASSROOM",
+      "PROVIDER_SETUP",
+      "EXTERNAL_WRITE_REQUEST",
+      "SECURITY_PRIVACY",
+      "DEPLOY_RELEASE",
+      "DECISION_REQUIRED"
+    ],
+    "confidence": 0.91,
+    "reasons": [
+      "The parent workflow asks for Drive-to-classroom visibility across provider review, classroom, parent, student, and member/latest-video surfaces.",
+      "Current-state screenshots now exist for public/provider/parent/student/classroom review surfaces across the required viewports.",
+      "Authenticated Operations and member/latest-video proof is incomplete, so implementation must remain blocked or split."
+    ],
+    "affected_product_surfaces": [
+      "Operations One Time content library and tasks",
+      "Provider review package",
+      "One Time classroom review",
+      "Parent latest-video review",
+      "Student latest-video review",
+      "Member latest-video/library entry"
+    ],
+    "likely_external_provider_blockers": [
+      "Vimeo private upload needs test folder/project, upload-capable user token/scope/plan confirmation, and explicit synthetic smoke approval.",
+      "Member/latest-video proof needs either a non-hanging member route capture or valid member test session."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "Resolve authenticated Operations screenshot blocker or carry it as an explicit UI blocker.",
+      "Resolve member/latest-video screenshot blocker or identify the correct member-library route.",
+      "Split implementation into Operations review-package UI and portal/latest-video UI packets.",
+      "Run focused tests, action/route watchdogs, deploy, and live smoke for any app-visible change."
+    ],
+    "next_exact_packet": "PKT-20260713-004-07A Operations content-processing review UI after blockers"
+  },
+  "operator_intent_summary": "Define the UI readiness contract for One Time content-processing, class review, latest-video, and older-library surfaces without editing UI code until visual evidence, state matrices, provider gates, and publication blockers are explicit.",
+  "raw_quotes": [
+    "Drive drop -> stable-file detection -> exactly-once content job -> conservative edge edit -> private timestamped transcript -> title/description/Torah metadata -> bot-knowledge handoff -> private/unlisted Vimeo upload -> class review package -> approval-gated member publication -> latest parent/student portal video -> older-class library view.",
+    "Produce current-state visual audit and then scoped Rabbi content-processing UI packet with queue/details/review states, action placement, mobile/desktop screenshots, accessibility, action/route registry, tests, deploy/live smoke."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260713-006",
+      "decision": "Vimeo app credentials are valid but a direct upload-capable user token/test target/approval gate is still required before provider upload proof.",
+      "status": "needs_operator_decision"
+    },
+    {
+      "id": "DEC-20260713-920A",
+      "decision": "UI implementation must split into Operations review-package UI and member/parent/student portal latest-video UI packets.",
+      "status": "proposed"
+    }
+  ],
+  "out_of_scope": [
+    "No UI implementation in this spec packet.",
+    "No Vimeo upload, privacy change, folder attach, metadata edit, delete, or public publish.",
+    "No Drive source-file mutation.",
+    "No database publication or member entitlement mutation.",
+    "No email, WhatsApp, Telegram, payment, access grant, DNS, GHL, LeadConnector, credential, or provider-account mutation.",
+    "No raw transcript body, private contact data, secret value, raw provider payload, or private video URL in tracked evidence."
+  ],
+  "affected_surfaces": [
+    "Operations One Time content library",
+    "Operations One Time tasks/decisions",
+    "Provider review package",
+    "One Time classroom review",
+    "Parent latest-video review",
+    "Student latest-video review",
+    "Member latest-video/library entry"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time",
+    "/provider.html?review=one-time",
+    "/parent.html?review=one-time",
+    "/student.html?review=one-time",
+    "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+    "/one-time/member-login"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "public/js/operations-shell.js",
+    "public/one-time-classroom.html",
+    "public/parent.html",
+    "public/student.html",
+    "public/member-library.html",
+    "server.js",
+    "ops/action-registry.json",
+    "ops/route-registry.json"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.json",
+      "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "public/one-time-classroom.html",
+      "public/parent.html",
+      "public/student.html",
+      "public/member-library.html"
+    ],
+    "known_current_defects": [
+      "Authenticated Operations command-center screenshots were not captured because Operations login returned 401 Invalid credentials.",
+      "The member/latest-video screenshot route was excluded because one-time-member-login repeatedly hung the screenshot harness.",
+      "Student review has unlabeled or empty action controls in all five captured viewports.",
+      "Only populated, preview_only, and permission_denied states were directly observed; loading, empty, filtered_empty, error, blocked_setup, success_readback, and mobile detail states need fixtures or smoke paths."
+    ],
+    "before_screenshot_paths": [
+      "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/provider-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/parent-review-430-mobile.png",
+      "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/student-review-390-mobile.png",
+      "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/one-time-classroom-review-1440-desktop.png"
+    ],
+    "after_screenshot_plan": "After implementation, capture the same five viewport set for every touched route and include authenticated Operations plus member/latest-video evidence or exact blockers."
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "finish everything",
+      "make it work",
+      "portal",
+      "mobile",
+      "pipeline",
+      "working"
+    ],
+    "expanded_phrases": {
+      "finish everything": "Every requirement in RAW-20260713-004 must have a terminal status, evidence, and blockers where external setup prevents completion.",
+      "make it work": "The content pipeline UI must show job queue, review details, blocked setup, preview-only, approval, publish, retry, and latest-video readback states without external writes.",
+      "portal": "Parent, student, and member views must show only entitled approved One Time videos and must not expose provider/support/private records.",
+      "mobile": "390px and 430px views must show usable navigation, detail/back behavior, readable actions, and no horizontal overflow.",
+      "pipeline": "The UI must represent Drive intake, media edit, transcript, metadata, Vimeo, review, approval, publication, and portal-readback stages as first-party BNA/One Time states.",
+      "working": "A later implementation must pass route/action registry checks, focused tests, screenshots, deploy, and live smoke before any UI Done claim."
+    },
+    "user_facing_goal": "Rabbi/provider operators can review a prepared class package and families/students can see the latest approved class video without seeing setup internals, private transcripts, or unrelated workspace data.",
+    "information_architecture": [
+      "Operations content library shows queue and review package preparation.",
+      "Provider review shows class package details and approval state.",
+      "Parent/student/classroom pages show latest approved video and older-class library entry only after publication.",
+      "Support-only diagnostics stay behind Operations/support context."
+    ]
+  },
+  "design_pattern_references": [
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260713-920",
+      "statement": "Prepare a scoped UI implementation plan for One Time content-processing and latest-video surfaces from current-state evidence.",
+      "expected_result": "A later Codex packet can implement only one route family at a time with exact states, actions, registry impacts, tests, screenshots, deploy, and live-smoke gates.",
+      "acceptance_criteria": [
+        "Current-state screenshots or exact blockers exist for required desktop/tablet/mobile viewports.",
+        "Implementation is split between Operations/provider review and portal/latest-video surfaces.",
+        "No provider upload or publication action is represented as available until Vimeo and approval gates pass.",
+        "Parent/student/member surfaces remain entitlement-scoped and workspace-isolated.",
+        "The student unlabeled-action finding is either fixed in a focused packet or carried as a blocker."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "blocked_pending_auth_and_member_screenshot_evidence",
+    "criteria": [
+      "Current-state visual audit exists with 40 screenshots across 8 active routes and five required viewports.",
+      "Operations command-center implementation is blocked until authenticated Operations screenshots are captured or the blocker is explicitly accepted.",
+      "Member/latest-video implementation is blocked until the hanging member-login route is replaced with a valid member/latest-video route or session.",
+      "PQC validator must pass before any UI code edit.",
+      "Vimeo upload and member publication remain separate approval-gated packets."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": 1440,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open content library before the queue/review package payload finishes loading.",
+      "expected_visible_title": "One Time content library",
+      "expected_visible_message": "Loading content jobs and review packages.",
+      "expected_primary_action": "Refresh",
+      "expected_secondary_actions": ["Filters", "Open job"],
+      "forbidden_content": ["raw transcript body", "secret", "private Vimeo token", "BNA workspace records"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Loading region has readable status text.",
+      "accessibility_expectation": "Controls remain keyboard reachable.",
+      "test_smoke_assertion": "Later smoke intercepts delayed payload and asserts loading state.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": 1024,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use a fixture with no queued content jobs.",
+      "expected_visible_title": "One Time content library",
+      "expected_visible_message": "No class videos are waiting for review.",
+      "expected_primary_action": "Refresh",
+      "expected_secondary_actions": ["Open Drive intake setup"],
+      "forbidden_content": ["GHL", "LeadConnector", "raw provider payload"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state is plain text with labeled actions.",
+      "accessibility_expectation": "No empty icon-only action.",
+      "test_smoke_assertion": "Later fixture smoke asserts empty state copy.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    "populated": {
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": 1440,
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open classroom review route with seeded review data.",
+      "expected_visible_title": "One Time classroom",
+      "expected_visible_message": "Latest approved class package is visible with video, worksheet, and class metadata.",
+      "expected_primary_action": "Watch latest class",
+      "expected_secondary_actions": ["Open worksheets", "Open older classes"],
+      "forbidden_content": ["raw private transcript", "unapproved video", "BNA-only record"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Video and worksheet sections have headings.",
+      "accessibility_expectation": "Video actions have labels and no mobile overflow.",
+      "test_smoke_assertion": "Captured classroom review screenshots exist for five viewports.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": 768,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Apply a filter that matches no content jobs.",
+      "expected_visible_title": "One Time content library",
+      "expected_visible_message": "No matching class videos.",
+      "expected_primary_action": "Clear filters",
+      "expected_secondary_actions": ["Refresh"],
+      "forbidden_content": ["unscoped records", "private parent data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filter controls have labels.",
+      "accessibility_expectation": "Filter bar wraps without horizontal overflow.",
+      "test_smoke_assertion": "Later fixture smoke asserts filtered-empty state.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": 430,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use a fixture or network intercept that returns a safe content-library error.",
+      "expected_visible_title": "One Time content library",
+      "expected_visible_message": "Could not load class video queue.",
+      "expected_primary_action": "Retry",
+      "expected_secondary_actions": ["Open setup checklist"],
+      "forbidden_content": ["stack trace", "SQL", "token", "raw provider response"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error region announces failure and retry action.",
+      "accessibility_expectation": "Retry action is labeled.",
+      "test_smoke_assertion": "Later fixture smoke asserts safe error text.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time",
+      "viewport": 390,
+      "auth_role": "INTERNAL_AGENT_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open tasks/decisions while Vimeo private upload gate is unresolved.",
+      "expected_visible_title": "One Time tasks and decisions",
+      "expected_visible_message": "Vimeo private upload needs owner/test-project approval.",
+      "expected_primary_action": "Review setup decision",
+      "expected_secondary_actions": ["Copy blocker", "Refresh"],
+      "forbidden_content": ["secret value", "client secret", "bearer token"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked setup state is readable as text, not color-only.",
+      "accessibility_expectation": "Decision actions have labels.",
+      "test_smoke_assertion": "Audit captured Operations tasks route in all five viewports, but authenticated proof is blocked by OPS login.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    "preview_only": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 1440,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open provider review route before publication approval.",
+      "expected_visible_title": "Provider review",
+      "expected_visible_message": "Class package is available for review but not published.",
+      "expected_primary_action": "Review package",
+      "expected_secondary_actions": ["View classroom", "Request changes"],
+      "forbidden_content": ["publish without approval", "upload now without Vimeo gate"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview-only status is text-visible.",
+      "accessibility_expectation": "Review actions are labeled.",
+      "test_smoke_assertion": "Audit captured provider review in all five viewports.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    "success_readback": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 430,
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open parent review after an approved class package exists.",
+      "expected_visible_title": "Parent portal",
+      "expected_visible_message": "Latest approved class video is visible for the entitled family.",
+      "expected_primary_action": "Watch latest class",
+      "expected_secondary_actions": ["Open older classes", "Open worksheets"],
+      "forbidden_content": ["other family data", "unapproved class", "raw transcript body"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Latest-video area has heading and labeled playback action.",
+      "accessibility_expectation": "No mobile overlap with bottom controls.",
+      "test_smoke_assertion": "Later live smoke must prove approved latest-video readback.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": 390,
+      "auth_role": "logged_out_or_invalid_ops_session",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Run the audit without a valid Operations session.",
+      "expected_visible_title": "Operations login required",
+      "expected_visible_message": "Invalid credentials or login required.",
+      "expected_primary_action": "Sign in",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["private contact data", "private class records", "secret"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Auth blocker is clear and does not expose private data.",
+      "accessibility_expectation": "Login controls are labeled.",
+      "test_smoke_assertion": "Current audit observed permission_denied for Operations because login returned 401.",
+      "requirement_id": "REQ-20260713-920"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/student.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open student review route on 390px mobile and open a detail/drawer path if available.",
+      "expected_visible_title": "Student portal",
+      "expected_visible_message": "Latest class and student-safe actions remain readable.",
+      "expected_primary_action": "Open latest class",
+      "expected_secondary_actions": ["Back", "Older classes"],
+      "forbidden_content": ["adult/private notes", "parent-only data", "unapproved video"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile action controls have labels.",
+      "accessibility_expectation": "Fix current unlabeled/empty student action finding before UI Done.",
+      "test_smoke_assertion": "Current audit captured student review mobile and reported unlabeled action controls.",
+      "requirement_id": "REQ-20260713-920"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "viewport": 1440, "path_or_blocker": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/" },
+      { "viewport": 1024, "path_or_blocker": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/" },
+      { "viewport": 768, "path_or_blocker": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/" },
+      { "viewport": 430, "path_or_blocker": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/" },
+      { "viewport": 390, "path_or_blocker": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/" }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260713-920-001",
+        "route": "/student.html?review=one-time",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/student-review-390-mobile.png",
+        "screenshot_after_or_blocker": "No after screenshot; UI implementation is blocked before code.",
+        "defect_codes": ["VQ-ACTION-003"],
+        "severity": "P2",
+        "user_impact": "Student mobile action controls may be unclear to keyboard, screen-reader, and touch users.",
+        "expected_fix": "Give every empty or icon-only student action a visible label, aria-label, title, or a clearly labeled replacement control.",
+        "requirement_id": "REQ-20260713-920"
+      },
+      {
+        "finding_id": "VQF-20260713-920-002",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+        "viewport": 1440,
+        "screenshot_before": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots/operations-library-1440-desktop.png",
+        "screenshot_after_or_blocker": "Authenticated Operations evidence blocked by 401 Invalid credentials.",
+        "defect_codes": ["VQ-STATE-002"],
+        "severity": "P1",
+        "user_impact": "The current audit cannot prove the authenticated Rabbi/provider content command center state.",
+        "expected_fix": "Provide valid Operations audit credentials or a safe authenticated fixture before implementing Operations command-center UI.",
+        "requirement_id": "REQ-20260713-920"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Every action must have visible text or an accessible name.",
+      "Mobile views must avoid horizontal overflow.",
+      "Status states must be text-visible and not color-only.",
+      "Video, worksheet, review, and publication sections need headings."
+    ],
+    "known_findings": [
+      "Student review unlabeled/empty actions across five viewports."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Review package",
+      "selector_or_action_key": "one_time.class_package.review",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "RABBI_PROVIDER_ADMIN",
+      "external_write": false,
+      "handler_or_blocker": "Review package can be previewed before publish; publication remains gated.",
+      "registry_required": true
+    },
+    {
+      "label": "Upload to Vimeo",
+      "selector_or_action_key": "one_time.class_package.vimeo_upload",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "INTERNAL_AGENT_SUPPORT",
+      "external_write": true,
+      "handler_or_blocker": "Blocked by REQ-20260713-918 until test folder/project, upload-capable user token/scope/plan, and synthetic upload approval are present.",
+      "registry_required": true
+    },
+    {
+      "label": "Publish to member library",
+      "selector_or_action_key": "one_time.class_package.publish_member_library",
+      "action_state": "NEEDS_RABBI_DECISION",
+      "owner": "RABBI_PROVIDER_ADMIN",
+      "external_write": false,
+      "handler_or_blocker": "Requires approved package, scoped video, transcript/metadata review, and explicit publication approval.",
+      "registry_required": true
+    },
+    {
+      "label": "Watch latest class",
+      "selector_or_action_key": "one_time.portal.watch_latest_class",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "MEMBER_PARENT_PORTAL",
+      "external_write": false,
+      "handler_or_blocker": "May display only approved entitled One Time videos; live proof still pending.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "required_records": [
+      "content job with One Time workspace/project scope",
+      "transcript version with hash and private body storage outside Git",
+      "metadata draft with review state",
+      "class review package",
+      "approved video/library item",
+      "parent/student/member entitlement"
+    ],
+    "forbidden_records": [
+      "BNA classroom records in One Time portals",
+      "One Time provider records in BNA public pages",
+      "raw transcript body in tracked files",
+      "raw provider payloads or secrets in UI"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "privacy_rules": [
+      "Public pages are anonymous-safe.",
+      "Parent scope sees only entitled family/student data.",
+      "Student scope is student-safe.",
+      "Provider/Rabbi scope cannot read unrelated BNA/private/provider/family data.",
+      "No raw private message bodies, contact exports, secrets, passwords, API keys, student-sensitive details, or private screenshots are committed."
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "id": "PKT-20260713-004-07A",
+      "scope": "Operations/provider review package UI only after authenticated Operations evidence is available.",
+      "instructions": [
+        "Do not touch parent/student/member portal routes in this batch.",
+        "Keep Vimeo upload disabled or setup-blocked.",
+        "Add route/action registry coverage for any changed action."
+      ]
+    },
+    {
+      "id": "PKT-20260713-004-07B",
+      "scope": "Parent/student/member latest-video and older-library readback only after publication/entitlement data is available.",
+      "instructions": [
+        "Do not implement provider upload or approval logic in this batch.",
+        "Prove entitlement isolation and no raw transcript leakage.",
+        "Capture five viewports after implementation."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/one-time-classroom.html",
+      "public/parent.html",
+      "public/student.html",
+      "public/member-library.html",
+      "server.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json"
+    ],
+    "files_allowed_to_edit": [
+      "Only the focused child packet's named route files, tests, and registries."
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Operations review-package UI and portal latest-video UI are separate route families.",
+    "split_if_exceeds": true,
+    "context_risk_level": "high"
+  },
+  "tests": {
+    "required": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.product-quality.json",
+      "focused route tests for touched files",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift",
+      "five-viewport screenshot smoke for touched routes",
+      "deploy/live smoke for app-visible changes"
+    ],
+    "current_evidence": [
+      "Current-state audit captured 40 screenshots and generated report.json/report.md.",
+      "Operations authenticated view and member/latest-video route remain blockers."
+    ]
+  },
+  "evidence": {
+    "current_state_report": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.md",
+    "current_state_json": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.json",
+    "screenshot_dir": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/screenshots",
+    "state_matrix": "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/state-matrix/observed-state-matrix.json"
+  },
+  "deployment_gate": "BLOCKED_WITH_REASON",
+  "definition_of_done": {
+    "criteria": [
+      "This spec validates with the PQC validator.",
+      "No UI code is edited by this spec packet.",
+      "Later implementation packets run focused tests, screenshots, action/route watchdogs, deploy, and live smoke before Done.",
+      "Every external upload/publication action remains blocked until explicit approval and provider readiness proof exist."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260713-004-onetime-drive-classroom-video-automation.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.product-quality.json",
+    "validator_result_path": "terminal output for npm run pqc:validate",
+    "tool_actions_expected": [
+      "visual audit readback",
+      "PQC validation",
+      "no UI implementation"
+    ],
+    "skipped_actions_policy": "Skipped UI implementation, external provider writes, and publication because Definition of Ready is blocked.",
+    "blocker_decisions": [
+      "DEC-20260713-006",
+      "OPS_AUTH_BLOCKER",
+      "MEMBER_ROUTE_SCREENSHOT_BLOCKER"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-13-onetime-drive-classroom-video-automation-current-state/report.md",
+      "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/01-current-state-visual-audit.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-13-onetime-drive-classroom-video-automation.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No Product Quality protocol drift findings for the focused UI implementation packet."
+  },
+  "next_packet": "Resolve blockers, then create PKT-20260713-004-07A or PKT-20260713-004-07B as a focused implementation packet."
+}

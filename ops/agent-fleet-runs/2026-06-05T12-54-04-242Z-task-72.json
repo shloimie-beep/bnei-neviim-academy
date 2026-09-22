@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-06-05T12:54:04.242Z",
+  "task_id": 72,
+  "ok": true,
+  "codex_exit_code": 0,
+  "codex_final": "STATUS: done\n\nSUMMARY: Implemented the One Time Mishnah Class workspace model without creating a duplicate database/concept. Existing `mishna`/`mishnah`/`one time` aliases now normalize to `one_time_mishnah_class`; BNA and One Time projects are seeded/backfilled, task comments and Decision Required are wired, and Operations Tasks now exposes project filters, project selector, assignment, One Time categories, and comments. I did not patch the live task status.\n\nVERIFICATION: Passed `node --check server.js`, `node --check scripts/telegram-kimi-bridge.mjs`, inline `public/operations.html` VM compile, `npm test` 20/20, `git diff --check`, Playwright dashboard smoke on temporary updated server, and API create/comment/delete smoke proving `project: \"mishna\"` routes to One Time.\n\nFILES: Changed `server.js`, `public/operations.html`, `.env.example`, `railway-migration-2026-06-05-one-time-projects.sql`, `tasks-pending/2026-06-05-telegram-ai-mode-and-one-time-rabbi-setup.md`, `ops/agent-changelog.md`, `ops/agent-task-ledger.jsonl`. Screenshot: `screenshots/local-operations-one-time-projects-20260605.png`.",
+  "codex_error": "",
+  "codex_log": ".runtime/agent-fleet/task-72-2026-06-05T12-32-00-317Z.codex.log",
+  "codex_last_message": ".runtime/agent-fleet/task-72-2026-06-05T12-32-00-317Z.last-message.txt",
+  "verification_results": [
+    {
+      "command": "node --check server.js",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "node --check scripts/telegram-kimi-bridge.mjs",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "node --check scripts/agent-fleet-supervisor.mjs",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "npm test",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "> bna-website@1.0.0 test\n> node --test\n\n✔ Listening goal full completion (0.8439ms)\n✔ Listening goal partial completion (0.1135ms)\n✔ Listening goal over completion caps at 100 (0.1096ms)\n✔ Inside goal full inside completion (0.0828ms)\n✔ Inside goal listening without following counts as half (0.0791ms)\n✔ Inside goal half inside and half listening reaches 75 percent (0.0668ms)\n✔ Parsed Torah timer maps inside, listening, and distracted minutes (0.3323ms)\n✔ Parsed Torah percentage update maps to active inside goal minutes (0.1246ms)\n✔ Parsed Torah listening-only shorthand maps to half credit for inside goals (0.1108ms)\n✔ Parsed engagement-only percentage does not become daily completion (0.1497ms)\n✔ Inside goal distracted time does not count (0.086ms)\n✔ Group progress all complete (0.1047ms)\n✔ Group progress one incomplete (0.044ms)\n✔ Goal minutes 0 throws validation error (0.2809ms)\n✔ Trip progress carried-over only rounds to 12 percent (0.1189ms)\n✔ Trip progress carried-over plus one completed day reaches 15 percent (0.0588ms)\n✔ Daily 100 percent does not imply full trip completion after one day (0.0554ms)\n✔ Group trip progress stays locked at 15 percent when everyone is at 15 (0.0653ms)\n✔ Group trip progress keeps raw average when one student is at 99 (0.055ms)\n✔ Trip progress reaches 100 only when all students are at 100 (0.0434ms)\nℹ tests 20\nℹ suites 0\nℹ pass 20\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 172.1139",
+      "stderr": ""
+    },
+    {
+      "command": "npm run openai:smoke",
+      "code": 0,
+      "ok": true,
+      "timedOut": false,
+      "stdout": "> bna-website@1.0.0 openai:smoke\n> node scripts/smoke-openai-sidekick.mjs\n\nOpenAI sidekick smoke: PASS\n\nRepo files: 8 readable\nTranscript exports: 18\nProtected app endpoints: 10 readable\nDrive folders: 7 readable\nOpenAI model: gpt-4.1-mini\n\nActive Codex tasks: 3 (101, 100, 72)\nStudents: Amitai Kosofsky, Eitan Chaim Golombo, Hillel Baraka, Huda Weber, Menachem Mendel Dratler\nTranscript jobs: 19\nPending payment names detected: Hillel Baraka\nDrive raw folder: 00 Upload Here - Raw Media Intake\n\nReport: ops/openai-smokes/2026-06-05T12-54-04-130Z-openai-sidekick-smoke.md",
+      "stderr": ""
+    }
+  ]
+}

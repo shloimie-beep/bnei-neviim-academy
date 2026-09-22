@@ -1,0 +1,131 @@
+- complementary "BNA Operations navigation":
+  - text: All Operations CRM, school operations, providers, portals, usage, and automation in one workspace.
+  - group:
+    - text: Workspace Directory
+    - strong: All Operations
+    - text: Super Admin / Super Admin Switch
+  - navigation:
+    - button "Platform Dashboard PD"
+    - button "Watchdog WG"
+    - button "Workspaces WS"
+    - button "Operations OP"
+    - button "Agents AG"
+    - button "Platform Suite PS"
+    - button "Students ST"
+    - button "Parents / Contacts PC"
+    - button "Community CO"
+    - button "Studio ST"
+    - button "Content CT"
+    - button "Live Classes LC"
+    - button "Calendar CA"
+    - button "Providers PR"
+    - button "Communications CM"
+    - button "Pipelines PL"
+    - button "Accounting AC"
+    - button "Automations AU"
+    - button "Integrations IN"
+    - button "API / Bots API"
+    - button "Settings SE"
+  - button "Settings"
+  - button "Help"
+  - link "Logout":
+    - /url: /operations-login.html
+- main:
+  - text: All Operations / Communications / Email
+  - heading "Email" [level=1]
+  - 'button "Need decision: 0. Human choices that unlock the next step."':
+    - text: Need decision
+    - strong: "0"
+  - 'button "Codex Queue: 0. Queued or running machine work."':
+    - text: Codex Queue
+    - strong: "0"
+  - 'button "Student accountability: 0. Students with accountability attention signals."':
+    - text: Student accountability
+    - strong: "0"
+  - 'button "Alerts: 0. Unread private Operations alerts."':
+    - text: Alerts
+    - strong: "0"
+  - text: All Operations / Super Admin
+  - button "Ask or search within All Operations / Communications / Email": Ask / Search
+  - text: Tue 7 Jul
+  - button "New Message"
+  - navigation "Communications sections":
+    - text: Communications
+    - strong: Email
+    - tablist "Communications sections":
+      - tab "Overview 0"
+      - tab "Parent Messages 0"
+      - tab "Student Messages 0"
+      - tab "Provider Messages 0"
+      - tab "Internal Dialogue 0"
+      - tab "WhatsApp 0"
+      - tab "Email 0" [selected]
+      - tab "Bot Conversations 0"
+      - tab "Announcements 0"
+      - tab "Templates 0"
+      - tab "Support Threads 0"
+      - tab "Settings 0"
+  - text: Messages
+  - heading "Communications" [level=2]
+  - paragraph: Parent, student, provider, internal, WhatsApp, email, and bot conversations are separated by permission-aware lanes.
+  - heading "Email Workspace" [level=3]
+  - paragraph: Drafts, logged emails, sender readiness, DNS tasks, and approval gates stay first-party. No email is sent from this lane without the exact SEND_RESEND_EMAIL phrase.
+  - text: Locked until sender/domain readiness
+  - 'heading "Now Viewing: Rabbi / One Time Inbox" [level=3]'
+  - paragraph: "[redacted-email] / rabbi_sheller_provider / one_time_mishnah_class"
+  - button "BNA / Shloimie (0)"
+  - button "Rabbi / One Time (0)"
+  - button "View One Time as Rabbi"
+  - strong: Provider account
+  - paragraph: Resend API readiness is checked separately from sender and domain readiness.
+  - text: Blocked Missing
+  - strong: Sender identity
+  - paragraph: From identity must be explicitly configured for this workspace before send.
+  - text: Blocked Not finalized
+  - strong: Domain readiness
+  - paragraph: Verified domain or explicit fallback approval is required before send.
+  - text: Blocked No domain
+  - strong: Recipients
+  - paragraph: Recipient validation uses workspace/project filters to prevent accidental cross-workspace sends.
+  - text: Scoped one_time_mishnah_class
+  - strong: Send confirmation
+  - paragraph: The send endpoint rejects requests without the exact approval phrase.
+  - text: Required SEND_RESEND_EMAIL
+  - navigation "Email workspace views":
+    - tablist "Email operations views":
+      - tab "Inbox/imported 0":
+        - text: Inbox/imported
+        - strong: "0"
+      - tab "Drafts 0" [selected]:
+        - text: Drafts
+        - strong: "0"
+      - tab "Approved 0":
+        - text: Approved
+        - strong: "0"
+      - tab "Sent/logged 0":
+        - text: Sent/logged
+        - strong: "0"
+      - tab "Failed 0":
+        - text: Failed
+        - strong: "0"
+      - tab "Templates 4":
+        - text: Templates
+        - strong: "4"
+      - tab "Domain readiness 0":
+        - text: Domain readiness
+        - strong: "0"
+      - tab "DNS setup 0":
+        - text: DNS setup
+        - strong: "0"
+  - heading "Draft Editor" [level=3]
+  - text: Preview only
+  - textbox "From identity"
+  - textbox "Reply-to"
+  - textbox "Recipient email"
+  - textbox "Subject"
+  - button "template key": Manual template
+  - textbox "Related record or contact ID"
+  - textbox "Text body preview"
+  - textbox "HTML body preview"
+  - button "Create draft"
+  - text: Draft creation stores a local review item and readiness blocker only. It does not send email. No emails match this view.

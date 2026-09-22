@@ -1,0 +1,67 @@
+{
+  "started_at": "2026-06-21T17:30:59.449Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 556,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "content job project filters are enforced",
+      "ok": true,
+      "duration_ms": 3841,
+      "details": {
+        "bna": 75,
+        "one_time": 1
+      }
+    },
+    {
+      "name": "class session project filters are enforced",
+      "ok": true,
+      "duration_ms": 2746,
+      "details": {
+        "bna": 56,
+        "one_time": 11
+      }
+    },
+    {
+      "name": "BNA admin prompt library API returns usable prompts",
+      "ok": true,
+      "duration_ms": 4923,
+      "details": {
+        "prompts": 11
+      }
+    },
+    {
+      "name": "Operations content research and prompt markers are deployed",
+      "ok": true,
+      "duration_ms": 1579,
+      "details": {
+        "markers": 6
+      }
+    },
+    {
+      "name": "student portal question markers are public-shell safe",
+      "ok": true,
+      "duration_ms": 771,
+      "details": {
+        "markers": 5
+      }
+    }
+  ],
+  "summary": {
+    "health_status": "ok/connected",
+    "bna_content_jobs": 75,
+    "one_time_content_jobs": 1,
+    "bna_class_sessions": 56,
+    "one_time_class_sessions": 11,
+    "prompt_rows": 11,
+    "operations_markers_checked": 6,
+    "student_markers_checked": 5
+  }
+}

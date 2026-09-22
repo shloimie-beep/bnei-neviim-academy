@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "event": "onetime_parent_invite_live_send_readback",
+  "checked_at": "2026-07-08T11:07:10.970Z",
+  "recipient_redacted": true,
+  "zoom_url_redacted": "https://us06web.zoom.us/j/83339110316?pwd=[redacted]",
+  "sender_readiness": {
+    "configured": true,
+    "connected": true,
+    "from_email": "info@onetimeonetime.com",
+    "domain": "onetimeonetime.com",
+    "domain_verified": true,
+    "send_allowed": true,
+    "send_blocked": false,
+    "blocker": null
+  },
+  "send_response": {
+    "status": 200,
+    "success": true,
+    "email_sent": true,
+    "external_write_performed": true,
+    "local_write_performed": true,
+    "no_payment_created": true,
+    "no_checkout_created": true,
+    "one_time_public_base_url": "https://join.onetimeonetime.com",
+    "live_class_url_included": true
+  },
+  "communications_readback": {
+    "email_log_id": 80,
+    "email_type": "one_time_parent_trial_invite",
+    "template_key": "parent_trial_invite",
+    "status": "sent",
+    "provider": "resend",
+    "created_at": "2026-07-08T11:07:10.970Z",
+    "subject_present": true
+  },
+  "redactions": [
+    "Zoom password not recorded",
+    "Parent password setup link not recorded",
+    "Member access code/link not recorded",
+    "Recipient email address not recorded in full"
+  ]
+}

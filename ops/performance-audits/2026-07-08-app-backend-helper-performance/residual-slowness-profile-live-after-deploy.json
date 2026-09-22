@@ -1,0 +1,353 @@
+{
+  "base_url": "https://join.onetimeonetime.com",
+  "path": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+  "out_suffix": "live-after-deploy",
+  "captured_at": "2026-07-08T20:50:43.072Z",
+  "credentials_source": "ONE_TIME_OPS",
+  "login": {
+    "ok": true,
+    "status": 200,
+    "duration_ms": 536,
+    "response_bytes": 469,
+    "cookie": "present",
+    "blocker": ""
+  },
+  "marks": {
+    "dom_content_loaded_ms": 991,
+    "shell_visible_ms": 1318,
+    "overview_visible_ms": 1325,
+    "capture_complete_ms": 11332,
+    "page_marks": [
+      {
+        "name": "domcontentloaded",
+        "time_ms": 989,
+        "detail": {}
+      },
+      {
+        "name": "load",
+        "time_ms": 990,
+        "detail": {}
+      },
+      {
+        "name": "overview_visible",
+        "time_ms": 1325,
+        "detail": {}
+      },
+      {
+        "name": "capture_complete",
+        "time_ms": 11330,
+        "detail": {}
+      }
+    ]
+  },
+  "navigation": {
+    "dom_content_loaded_ms": 990,
+    "load_event_ms": 990,
+    "duration_ms": 990,
+    "transfer_size": 982,
+    "encoded_body_size": 682
+  },
+  "fetches": [
+    {
+      "url": "/api/bna/auth/me",
+      "method": "GET",
+      "start_ms": 980,
+      "end_ms": 1246,
+      "duration_ms": 265,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/service-providers?approved_only=false",
+      "method": "GET",
+      "start_ms": 1260,
+      "end_ms": 1504,
+      "duration_ms": 244,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/auth/me",
+      "method": "GET",
+      "start_ms": 1519,
+      "end_ms": 1772,
+      "duration_ms": 253,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/rabbi/config",
+      "method": "GET",
+      "start_ms": 1773,
+      "end_ms": 2093,
+      "duration_ms": 320,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/rabbi/tiers",
+      "method": "GET",
+      "start_ms": 1773,
+      "end_ms": 2042,
+      "duration_ms": 269,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/rabbi/checkouts",
+      "method": "GET",
+      "start_ms": 1773,
+      "end_ms": 2042,
+      "duration_ms": 269,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/rabbi/members",
+      "method": "GET",
+      "start_ms": 1773,
+      "end_ms": 2103,
+      "duration_ms": 330,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/rabbi/access-grants",
+      "method": "GET",
+      "start_ms": 1773,
+      "end_ms": 2093,
+      "duration_ms": 320,
+      "status": 200,
+      "ok": true
+    }
+  ],
+  "fetch_summary": {
+    "count": 8,
+    "before_overview_count": 2,
+    "after_overview_count": 6,
+    "median_ms": 269,
+    "p95_ms": 330,
+    "max_ms": 330,
+    "top_slowest": [
+      {
+        "method": "GET",
+        "path": "/api/bna/rabbi/members",
+        "start_ms": 1773,
+        "duration_ms": 330,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/rabbi/config",
+        "start_ms": 1773,
+        "duration_ms": 320,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/rabbi/access-grants",
+        "start_ms": 1773,
+        "duration_ms": 320,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/rabbi/tiers",
+        "start_ms": 1773,
+        "duration_ms": 269,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/rabbi/checkouts",
+        "start_ms": 1773,
+        "duration_ms": 269,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/auth/me",
+        "start_ms": 980,
+        "duration_ms": 265,
+        "status": 200,
+        "after_overview": false
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/auth/me",
+        "start_ms": 1519,
+        "duration_ms": 253,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/service-providers?approved_only=false",
+        "start_ms": 1260,
+        "duration_ms": 244,
+        "status": 200,
+        "after_overview": false
+      }
+    ],
+    "by_family": [
+      {
+        "path": "/api/bna/auth/me",
+        "count": 2,
+        "total_ms": 518,
+        "max_ms": 265,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 259
+      },
+      {
+        "path": "/api/bna/rabbi/members",
+        "count": 1,
+        "total_ms": 330,
+        "max_ms": 330,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 330
+      },
+      {
+        "path": "/api/bna/rabbi/config",
+        "count": 1,
+        "total_ms": 320,
+        "max_ms": 320,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 320
+      },
+      {
+        "path": "/api/bna/rabbi/access-grants",
+        "count": 1,
+        "total_ms": 320,
+        "max_ms": 320,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 320
+      },
+      {
+        "path": "/api/bna/rabbi/tiers",
+        "count": 1,
+        "total_ms": 269,
+        "max_ms": 269,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 269
+      },
+      {
+        "path": "/api/bna/rabbi/checkouts",
+        "count": 1,
+        "total_ms": 269,
+        "max_ms": 269,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 269
+      },
+      {
+        "path": "/api/bna/service-providers",
+        "count": 1,
+        "total_ms": 244,
+        "max_ms": 244,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 244
+      }
+    ]
+  },
+  "long_tasks": {
+    "count": 0,
+    "total_ms": 0,
+    "max_ms": 0,
+    "top": []
+  },
+  "resources": {
+    "count": 18,
+    "transfer_size": 320304,
+    "encoded_body_size": 314904,
+    "scripts": [
+      {
+        "path": "/js/platform-ui/platform-ui-fixtures.js",
+        "transfer_size": 4938,
+        "encoded_body_size": 4638,
+        "duration_ms": 247
+      },
+      {
+        "path": "/js/platform-ui/platform-ui.js",
+        "transfer_size": 9863,
+        "encoded_body_size": 9563,
+        "duration_ms": 318
+      },
+      {
+        "path": "/js/operations-shell.js",
+        "transfer_size": 209103,
+        "encoded_body_size": 208803,
+        "duration_ms": 562
+      },
+      {
+        "path": "/js/app-select.js",
+        "transfer_size": 4743,
+        "encoded_body_size": 4443,
+        "duration_ms": 327
+      }
+    ],
+    "styles": [
+      {
+        "path": "/css2",
+        "transfer_size": 1042,
+        "encoded_body_size": 742,
+        "duration_ms": 168
+      },
+      {
+        "path": "/css/platform-ui/platform-ui.css",
+        "transfer_size": 3688,
+        "encoded_body_size": 3388,
+        "duration_ms": 237
+      },
+      {
+        "path": "/css/bna-app-shell.css",
+        "transfer_size": 5607,
+        "encoded_body_size": 5307,
+        "duration_ms": 319
+      },
+      {
+        "path": "/css/operations-shell.css",
+        "transfer_size": 25369,
+        "encoded_body_size": 25069,
+        "duration_ms": 367
+      },
+      {
+        "path": "/css/one-time-operations.css",
+        "transfer_size": 6136,
+        "encoded_body_size": 5836,
+        "duration_ms": 387
+      }
+    ]
+  },
+  "dom": {
+    "dom_nodes": 521,
+    "button_count": 123,
+    "link_count": 3,
+    "script_count": 5,
+    "stylesheet_count": 6,
+    "body_text_length": 2248,
+    "body_text_preview": "One Time Mishnah Class Provider workspace for members, classes, Studio, communications, payments, tasks, and setup. CURRENT WORKSPACE One Time Mishnah Class Provider / Provider Workspace Admin Scoped Overview Workspace Setup Overview OV Members MB Classes & Content CC Studio ST Live Class LC Schedule SC Community CO Communications CM Automations AU Payments PA Tasks TS Reporting RP Integrations IN Workspace Setup SU Back to all modules PROGRAM SECTIONS Overview Choose a section for this workspace. Overview 1 Launch 0 Program 0 Membership 0 Content 0 Schedule 0 Questions 0 Access 0 Settings 1 Platform Support Help Logout ONE TIME MISHNAH CLASS / OVERVIEW / OVERVIEW Overview Members 1 Classes ",
+    "error_banners": [],
+    "one_time_route": "overview",
+    "title": "One Time Mishnah Class - Operations"
+  },
+  "console_errors": [],
+  "failed_requests": []
+}

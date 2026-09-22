@@ -1,0 +1,650 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260707-121",
+  "parent_raw_id": "RAW-20260707-012",
+  "source_statement_ids": [
+    "SRC-20260707-012-001",
+    "SRC-20260707-012-002",
+    "SRC-20260707-012-003",
+    "SRC-20260707-012-004",
+    "SRC-20260707-012-005"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260707-012-rabbi-crm-config-noise-cleanup.md",
+      "public/provider.html",
+      "tests/one-time-provider-review-navigation.test.js",
+      "tests/provider-mailbox-portal.test.js"
+    ],
+    "produces": [
+      "public/provider.html",
+      "tests/one-time-provider-review-navigation.test.js",
+      "tests/provider-mailbox-portal.test.js",
+      "tasks-pending/2026-07-07-rabbi-crm-config-noise-cleanup.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-07-rabbi-crm-config-noise-cleanup/00-rabbi-crm-config-noise-cleanup.product-quality.json",
+    "terminal_condition": "Rabbi/provider CRM and mailbox views show role-facing CRM actions and no Super Admin configuration diagnostics.",
+    "handoff_target": "tasks-pending/2026-07-07-rabbi-crm-config-noise-cleanup.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Rabbi CRM Role View Cleanup",
+  "created_at": "2026-07-07T15:35:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "EMAIL_PROVIDER_SETUP"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260707-012",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "CRM_PIPELINE",
+      "COMMUNICATIONS_EMAIL",
+      "SECURITY_PRIVACY",
+      "DEPLOY_RELEASE"
+    ],
+    "confidence": 0.95,
+    "reasons": [
+      "Operator reported that Rabbi could not find the CRM or email storage.",
+      "Operator identified Super Admin configuration diagnostics leaking into a Rabbi role surface.",
+      "The work touches email/CRM actions and must preserve send/write guardrails."
+    ],
+    "affected_product_surfaces": [
+      "One Time Rabbi provider portal CRM and mailbox"
+    ],
+    "likely_external_provider_blockers": [
+      "Live outbound email remains approval-gated and is not enabled by this packet.",
+      "Webhook/provider setup diagnostics remain Super Admin-only and are not displayed in the Rabbi role view."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-rabbi-crm-config-noise-cleanup"
+    ],
+    "next_exact_packet": "Patch provider.html review/view-as Rabbi CRM and mailbox surfaces, then verify with focused browser tests."
+  },
+  "operator_intent_summary": "Make the Rabbi/provider CRM and mailbox feel like a normal role-facing workspace with clear actions, while keeping configured/not configured/setup/readiness diagnostics in Super Admin only.",
+  "raw_quotes": [
+    "I was not able to even see the actual rabbis CRM",
+    "where his emails are stored",
+    "I didn't see any clean CRM with like you know send a message send an email",
+    "all I see is a bunch of like random information about what's configured not configured",
+    "that information I've already told you before should not appear anywhere other than super admin"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260707-121",
+      "decision": "Remove Super Admin readiness/configuration panels from the Rabbi review/view-as navigation instead of merely relabeling them.",
+      "status": "decided"
+    },
+    {
+      "id": "DEC-20260707-122",
+      "decision": "Keep live outbound email governed by existing server-side send approval; the Rabbi role view may show draft/compose routes but cannot silently enable sends.",
+      "status": "decided"
+    }
+  ],
+  "out_of_scope": [
+    "No live email, WhatsApp, SMS, Telegram, payment, access, DNS, Zoom, Vimeo, Drive, or external CRM write is approved.",
+    "No provider password, secret, webhook, API token, or raw private message body is exposed.",
+    "No broader parent/student visual redesign is implemented in this packet.",
+    "No Super Admin diagnostics are deleted; they are only kept out of the Rabbi/provider role surface."
+  ],
+  "affected_surfaces": [
+    "One Time provider CRM",
+    "One Time provider mailbox",
+    "One Time provider review/view-as navigation"
+  ],
+  "affected_routes": [
+    "/provider.html?review=one-time&section=crm",
+    "/provider.html?review=one-time&section=mailbox",
+    "/provider.html?view_as_rabbi=:token"
+  ],
+  "affected_files": [
+    "public/provider.html",
+    "tests/one-time-provider-review-navigation.test.js",
+    "tests/provider-mailbox-portal.test.js",
+    "tasks-pending/2026-07-07-rabbi-crm-config-noise-cleanup.md",
+    "ops/agent-task-ledger.jsonl",
+    "ops/agent-changelog.md"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "providerSections review/view-as branch includes Business and Configuration panels.",
+      "Mailbox readiness pills expose webhook/runtime/provider setup labels.",
+      "CRM review branch shows pipelines and portal navigation but no clear contact/action workspace.",
+      "Integration/commercial/access panels expose readiness decisions that belong in Super Admin."
+    ],
+    "known_blockers": [
+      "Live outbound sends remain gated outside this packet."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "CRM",
+      "configured",
+      "not configured",
+      "send a message",
+      "send an email"
+    ],
+    "expanded_phrases": {
+      "clean": "Rabbi role surfaces must show a small set of predictable panels with role-facing labels, stable spacing, and no internal setup diagnostics.",
+      "CRM": "A contact and conversation workspace showing parent/student/support records plus actions to open inbox, draft a message, and review email templates.",
+      "configured": "Provider setup/readiness language belongs only in Super Admin or setup-specific surfaces, not Rabbi role navigation.",
+      "not configured": "Do not show negative integration setup status in the Rabbi role view; show role-safe action states instead.",
+      "send a message": "Visible message actions must route to safe draft/review surfaces or existing guarded handlers.",
+      "send an email": "Visible email actions must route to the mailbox/email preview or existing guarded composer path; no silent live send."
+    },
+    "first_party_pattern_interpretation": "Use first-party BNA CRM/mailbox surfaces, not GHL/LeadConnector runtime."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md",
+    "memory-topics/email-resend.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260707-121",
+      "statement": "Rabbi/provider CRM view must show a clear contact/conversation workspace with role-safe actions.",
+      "expected_result": "CRM section shows parent, student, support/private question cues, and buttons/links for mailbox, email preview, parent view, student view, and classroom.",
+      "acceptance_criteria": [
+        "CRM panel contains Send message or Draft message language tied to safe role actions.",
+        "CRM panel contains Send email or Email preview action tied to mailbox/email preview.",
+        "CRM panel does not show setup/readiness diagnostics."
+      ]
+    },
+    {
+      "id": "REQ-20260707-122",
+      "statement": "Rabbi/provider mailbox view must explain where One Time emails live without exposing webhook/runtime setup labels.",
+      "expected_result": "Mailbox section shows info@onetimeonetime.com, sample inbox/thread state, search/open thread/save draft actions, and no configured/not configured/setup labels.",
+      "acceptance_criteria": [
+        "No visible webhook/runtime readiness labels in Rabbi review/view-as mailbox.",
+        "No Bulk email locked label in Rabbi role view.",
+        "Existing server-side mailbox send approval remains in place."
+      ]
+    },
+    {
+      "id": "REQ-20260707-123",
+      "statement": "Rabbi/provider navigation must remove Super Admin Business/Configuration diagnostics.",
+      "expected_result": "One Time review/view-as navigation shows Dashboard, CRM, Mailbox, Communications, Content, Live Class, Library, Users, Badges, and Support only.",
+      "acceptance_criteria": [
+        "Payments, Integrations, and Access Checklist are not selectable in Rabbi review/view-as navigation.",
+        "section=integrations, section=commercial, and section=access fall back to Overview.",
+        "Super Admin configuration surfaces remain out of scope for this route."
+      ]
+    },
+    {
+      "id": "REQ-20260707-124",
+      "statement": "Focused tests must prove the cleanup across desktop and mobile.",
+      "expected_result": "Browser tests verify CRM/mailbox text, forbidden diagnostics, section fallback, and no mobile overflow.",
+      "acceptance_criteria": [
+        "Focused node tests pass.",
+        "PQC validator passes for this packet.",
+        "Live smoke runs after deployment before Done."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw request captured as RAW-20260707-012.",
+      "Affected route and role are limited to Rabbi/provider review/view-as One Time workspace.",
+      "Current-state code inspection identified exact offending provider.html branches.",
+      "No external writes or provider setup changes are authorized."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/provider.html?review=one-time&section=mailbox",
+      "viewport": 1440,
+      "auth_role": "review_rabbi_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mailbox while the review payload loads.",
+      "expected_visible_title": "Provider portal",
+      "expected_visible_message": "Loading One Time provider review or mailbox.",
+      "expected_primary_action": "Wait for mailbox",
+      "expected_secondary_actions": [
+        "Return to Dashboard"
+      ],
+      "forbidden_content": [
+        "webhook secret",
+        "runtime config",
+        "password"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Loading text remains inside the provider workspace.",
+      "accessibility_expectation": "Loading state is readable and not color-only.",
+      "test_smoke_assertion": "Page resolves to the mailbox section without horizontal overflow.",
+      "requirement_id": "REQ-20260707-124"
+    },
+    "empty": {
+      "route": "/provider.html?review=one-time&section=mailbox",
+      "viewport": 1024,
+      "auth_role": "review_rabbi_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mailbox with no captured messages.",
+      "expected_visible_title": "Mailbox",
+      "expected_visible_message": "No captured emails yet.",
+      "expected_primary_action": "Search",
+      "expected_secondary_actions": [
+        "Open CRM"
+      ],
+      "forbidden_content": [
+        "configured",
+        "not configured",
+        "needs secret"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty mailbox copy is inside the mailbox region.",
+      "accessibility_expectation": "Empty state does not rely only on color.",
+      "test_smoke_assertion": "Forbidden setup diagnostics are absent.",
+      "requirement_id": "REQ-20260707-122"
+    },
+    "populated": {
+      "route": "/provider.html?review=one-time&section=mailbox",
+      "viewport": 1440,
+      "auth_role": "review_rabbi_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Render the test CRM mailbox thread in review mode.",
+      "expected_visible_title": "Mailbox",
+      "expected_visible_message": "Worksheet link question",
+      "expected_primary_action": "Save Draft",
+      "expected_secondary_actions": [
+        "Send Reply",
+        "Open CRM"
+      ],
+      "forbidden_content": [
+        "Inbound webhook",
+        "runtime config",
+        "Bulk email locked"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Thread list and thread detail are distinct regions.",
+      "accessibility_expectation": "Thread actions are keyboard reachable.",
+      "test_smoke_assertion": "Mailbox shows thread/action UI and no setup labels.",
+      "requirement_id": "REQ-20260707-122"
+    },
+    "filtered_empty": {
+      "route": "/provider.html?review=one-time&section=mailbox",
+      "viewport": 768,
+      "auth_role": "review_rabbi_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Search mailbox for a term that has no results.",
+      "expected_visible_title": "Mailbox",
+      "expected_visible_message": "No captured emails yet or no match.",
+      "expected_primary_action": "Search",
+      "expected_secondary_actions": [
+        "Clear search"
+      ],
+      "forbidden_content": [
+        "webhook",
+        "configured",
+        "setup"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Search result state remains associated with the mailbox form.",
+      "accessibility_expectation": "Search input has a label.",
+      "test_smoke_assertion": "Search toolbar does not overflow on tablet.",
+      "requirement_id": "REQ-20260707-124"
+    },
+    "error": {
+      "route": "/provider.html?view_as_rabbi=invalid",
+      "viewport": 430,
+      "auth_role": "anonymous_or_invalid_token",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open an invalid view-as token.",
+      "expected_visible_title": "Sign in",
+      "expected_visible_message": "A valid signed View as Rabbi session is required.",
+      "expected_primary_action": "Sign In",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "password",
+        "session token",
+        "email body"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error appears in the login panel.",
+      "accessibility_expectation": "Error text is visible on mobile.",
+      "test_smoke_assertion": "Invalid token does not expose provider data.",
+      "requirement_id": "REQ-20260707-124"
+    },
+    "blocked_setup": {
+      "route": "/provider.html?review=one-time&section=crm",
+      "viewport": 390,
+      "auth_role": "review_rabbi_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open CRM in review mode.",
+      "expected_visible_title": "CRM",
+      "expected_visible_message": "Draft actions only or preview actions only.",
+      "expected_primary_action": "Open Inbox",
+      "expected_secondary_actions": [
+        "Preview Email",
+        "Open Parent View"
+      ],
+      "forbidden_content": [
+        "Needs live policy",
+        "Needs sender decision",
+        "OAuth not configured"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked external writes are not presented as configuration failures.",
+      "accessibility_expectation": "Buttons fit their containers on 390px mobile.",
+      "test_smoke_assertion": "CRM mobile view has no horizontal overflow.",
+      "requirement_id": "REQ-20260707-121"
+    },
+    "preview_only": {
+      "route": "/provider.html?review=one-time&section=crm",
+      "viewport": 1440,
+      "auth_role": "review_rabbi_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use review mode CRM actions.",
+      "expected_visible_title": "CRM",
+      "expected_visible_message": "Preview Email or Save Draft.",
+      "expected_primary_action": "Open Inbox",
+      "expected_secondary_actions": [
+        "Preview Email",
+        "Open Student View",
+        "Open Classroom"
+      ],
+      "forbidden_content": [
+        "external CRM",
+        "LeadConnector",
+        "secret"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview actions are real links or guarded buttons.",
+      "accessibility_expectation": "Action labels are explicit.",
+      "test_smoke_assertion": "CRM actions route without executing external writes.",
+      "requirement_id": "REQ-20260707-121"
+    },
+    "success_readback": {
+      "route": "/provider.html?review=one-time&section=crm",
+      "viewport": 1024,
+      "auth_role": "review_rabbi_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open CRM after render completes.",
+      "expected_visible_title": "CRM",
+      "expected_visible_message": "TEST Parent One Time",
+      "expected_primary_action": "Open Inbox",
+      "expected_secondary_actions": [
+        "Preview Email"
+      ],
+      "forbidden_content": [
+        "configured",
+        "not configured",
+        "readiness"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM cards render as articles or grouped actions.",
+      "accessibility_expectation": "Cards have readable headings.",
+      "test_smoke_assertion": "CRM route includes parent/student/support content.",
+      "requirement_id": "REQ-20260707-121"
+    },
+    "permission_denied": {
+      "route": "/provider.html?view_as_rabbi=invalid",
+      "viewport": 768,
+      "auth_role": "invalid_view_as_token",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open view-as route without a valid token.",
+      "expected_visible_title": "Sign in",
+      "expected_visible_message": "valid signed View as Rabbi session",
+      "expected_primary_action": "Sign In",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "CRM record",
+        "email body",
+        "student private question"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Provider data is not rendered.",
+      "accessibility_expectation": "Denied message is readable.",
+      "test_smoke_assertion": "Invalid token path does not call review rendering.",
+      "requirement_id": "REQ-20260707-124"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/provider.html?review=one-time&section=mailbox",
+      "viewport": 390,
+      "auth_role": "review_rabbi_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mailbox on 390px mobile.",
+      "expected_visible_title": "Mailbox",
+      "expected_visible_message": "info@onetimeonetime.com",
+      "expected_primary_action": "Search",
+      "expected_secondary_actions": [
+        "Save Draft"
+      ],
+      "forbidden_content": [
+        "runtime config",
+        "needs setup",
+        "Bulk email locked"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Thread list and detail stack vertically.",
+      "accessibility_expectation": "No button text overflows.",
+      "test_smoke_assertion": "document.documentElement.scrollWidth <= window.innerWidth + 2",
+      "requirement_id": "REQ-20260707-124"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "/provider.html?review=one-time&section=crm", "viewport": 1440 },
+      { "route": "/provider.html?review=one-time&section=crm", "viewport": 1024 },
+      { "route": "/provider.html?review=one-time&section=mailbox", "viewport": 768 },
+      { "route": "/provider.html?review=one-time&section=mailbox", "viewport": 430 },
+      { "route": "/provider.html?review=one-time&section=mailbox", "viewport": 390 }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-RABBI-CRM-001",
+        "route": "/provider.html?review=one-time&section=crm",
+        "viewport": 1440,
+        "screenshot_before": "manual current-state inspection of public/provider.html",
+        "screenshot_after_or_blocker": "required after implementation",
+        "defect_codes": [
+          "VQ-IA-001"
+        ],
+        "severity": "P1",
+        "user_impact": "Rabbi cannot tell where CRM records and email actions live.",
+        "expected_fix": "Replace setup-heavy CRM review cards with role-facing contact and action cards.",
+        "requirement_id": "REQ-20260707-121"
+      },
+      {
+        "finding_id": "VQ-RABBI-CRM-002",
+        "route": "/provider.html?review=one-time&section=mailbox",
+        "viewport": 390,
+        "screenshot_before": "manual current-state inspection of public/provider.html",
+        "screenshot_after_or_blocker": "required after implementation",
+        "defect_codes": [
+          "VQ-ROLE-001"
+        ],
+        "severity": "P1",
+        "user_impact": "Provider sees internal setup/readiness language instead of a normal inbox.",
+        "expected_fix": "Hide webhook/runtime/readiness labels in Rabbi/provider role views.",
+        "requirement_id": "REQ-20260707-122"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "All CRM/mailbox action links and buttons must have visible labels.",
+      "Mailbox search retains an associated label.",
+      "Mobile width 390px must not have horizontal overflow.",
+      "Status text cannot be color-only."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Open Inbox",
+      "selector_or_action_key": "ACTION-PROVIDER-SECTION-NAVIGATION mailbox",
+      "action_state": "WORKS_NOW",
+      "owner": "Rabbi/provider role",
+      "external_write": false,
+      "handler_or_blocker": "Provider section navigation",
+      "registry_required": true
+    },
+    {
+      "label": "Preview Email",
+      "selector_or_action_key": "one-time-email-review link",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Rabbi/provider role",
+      "external_write": false,
+      "handler_or_blocker": "/one-time-email-review.html",
+      "registry_required": true
+    },
+    {
+      "label": "Save Draft",
+      "selector_or_action_key": "ACTION-PROVIDER-MAILBOX-DRAFT",
+      "action_state": "WORKS_NOW",
+      "owner": "Rabbi/provider role",
+      "external_write": false,
+      "handler_or_blocker": "/api/provider-portal/mailbox/:threadKey/draft",
+      "registry_required": true
+    },
+    {
+      "label": "Send Reply",
+      "selector_or_action_key": "ACTION-PROVIDER-MAILBOX-SEND",
+      "action_state": "NEEDS_SHLOIMIE_SETUP",
+      "owner": "BNA/Super Admin",
+      "external_write": true,
+      "handler_or_blocker": "Existing server-side explicit confirmation and send-readiness gate; not enabled by this UI cleanup",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "read_sources": [
+      "One Time review fixture",
+      "provider portal mailbox API",
+      "bna_communications via existing server code"
+    ],
+    "write_sources": [
+      "Draft save only through existing provider mailbox draft endpoint"
+    ],
+    "forbidden_data": [
+      "passwords",
+      "secrets",
+      "webhook details",
+      "raw private email bodies in committed proof"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "workspace_scope_required": true,
+    "notes": [
+      "Rabbi view must remain scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+      "Super Admin diagnostics must not leak into Rabbi/provider role view."
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "id": "BATCH-20260707-121-A",
+      "scope": "Rabbi CRM and mailbox role view cleanup",
+      "instructions": [
+        "Remove Payments, Integrations, and Access Checklist from One Time review/view-as navigation.",
+        "Rewrite CRM section to show contact/activity/action cards.",
+        "Rewrite mailbox review section and readiness labels to avoid provider setup diagnostics.",
+        "Update focused tests."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/provider.html",
+      "src/platform/instances/one-time-shared-review-data.js",
+      "tests/one-time-provider-review-navigation.test.js",
+      "tests/provider-mailbox-portal.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/provider.html",
+      "tests/one-time-provider-review-navigation.test.js",
+      "tests/provider-mailbox-portal.test.js",
+      "tasks-pending/2026-07-07-rabbi-crm-config-noise-cleanup.md"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 2,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if work expands beyond Rabbi/provider CRM/mailbox into parent/student redesign or server-side email send policy.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    "npm run pqc:validate -- ops/prompt-packets/2026-07-07-rabbi-crm-config-noise-cleanup/00-rabbi-crm-config-noise-cleanup.product-quality.json",
+    "node --test tests/one-time-provider-review-navigation.test.js tests/provider-mailbox-portal.test.js",
+    "npm run watchdog:protocol-drift",
+    "npm run app:smoke:one-time-shared-review"
+  ],
+  "evidence": {
+    "required": [
+      "PQC validation report",
+      "Focused node/browser test output",
+      "Protocol drift watchdog output",
+      "Live smoke report after deployment"
+    ],
+    "paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/live-smokes/"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "Raw intake, PQC packet, and requirement register exist.",
+      "Provider CRM/mailbox code inspected and patched.",
+      "Focused tests pass.",
+      "Protocol drift watchdog runs or blocker is recorded.",
+      "Commit/push/deploy/live-smoke complete before Done."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260707-012-rabbi-crm-config-noise-cleanup.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-07-rabbi-crm-config-noise-cleanup/00-rabbi-crm-config-noise-cleanup.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "node --test",
+      "npm run pqc:validate",
+      "npm run watchdog:protocol-drift"
+    ],
+    "skipped_actions_policy": "Skip external writes and live sends unless separately approved.",
+    "blocker_decisions": [
+      "Live outbound email is not approved in this packet."
+    ],
+    "evidence_paths": [
+      "tasks-pending/2026-07-07-rabbi-crm-config-noise-cleanup.md",
+      "ops/live-smokes/"
+    ],
+    "final_status_path": "tasks-pending/2026-07-07-rabbi-crm-config-noise-cleanup.md",
+    "next_packet_path": null
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No protocol drift finding for implementing UI before raw/PQC/register capture."
+  },
+  "next_packet": {
+    "status": "not_required_for_this_scope",
+    "recommended_next": "Create a separate parent/student visual polish packet if work expands beyond Rabbi CRM/mailbox cleanup."
+  }
+}

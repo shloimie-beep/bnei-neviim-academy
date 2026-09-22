@@ -1,0 +1,622 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-811",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-004",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802",
+      "PKT-20260702-805",
+      "PKT-20260702-806",
+      "PKT-20260702-807",
+      "PKT-20260702-808",
+      "PKT-20260702-809",
+      "PKT-20260702-810"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/screenshots/student-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/screenshots/student-review-390-mobile.png",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "produces": [
+      "public/student.html",
+      "public/css/one-time-shared-review.css",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/report.md",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/09-student-review-mobile-readability.product-quality.json",
+    "terminal_condition": "The One Time student review portal has a readable first page title and non-clipped review metric cards on desktop and mobile without changing student data, auth, forms, or APIs.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Student Review Mobile Readability Cleanup",
+  "created_at": "2026-07-02T23:10:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "STUDENT_PORTAL"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.92,
+    "reasons": [
+      "Fresh screenshots show the student review title area rendered dark-on-dark and difficult to read.",
+      "Long reward/status values are rendered in hero-scale metric text, clipping on mobile and overflowing on desktop.",
+      "The defect can be scoped to One Time review-mode CSS and review metric markup without student data or API changes."
+    ],
+    "affected_product_surfaces": [
+      "One Time student review portal"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "Student auth, questions, class links, payments, email, WhatsApp, Stripe, Drive, Vimeo, Zoom, DNS, access grants, and account mutations are out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state",
+      "06-task-dialogue-lane-contrast",
+      "07-task-route-layout-density",
+      "08-provider-review-load-error",
+      "09-student-review-mobile-readability"
+    ],
+    "next_exact_packet": "After this student review readability cleanup, continue manual screenshot-reviewed packets for Operations participants CRM layout or automation center contrast."
+  },
+  "operator_intent_summary": "Make the One Time student review portal look even and clean by fixing unreadable title copy and clipped metric text.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "even",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No parent portal, provider portal, member login, public landing, Operations, or classroom UI change.",
+    "No student auth, access-code, session, question submit, support ticket, class link, payment, progress, attendance, badge, reward, or API behavior change.",
+    "No email, WhatsApp, Telegram, Stripe/payment, access grant, Drive, Vimeo, Zoom, DNS, account mutation, publish, send, upload, or delete.",
+    "No GHL runtime, LeadConnector reference, external CRM write, raw private evidence, or secret exposure."
+  ],
+  "affected_surfaces": [
+    "One Time student review portal"
+  ],
+  "affected_routes": [
+    "/student.html?review=one-time"
+  ],
+  "affected_files": [
+    "public/student.html",
+    "public/css/one-time-shared-review.css",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/student.html renderOneTimeStudentReview",
+      "public/student.html reviewMetric",
+      "public/css/one-time-shared-review.css one-time-review-hero-card",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/screenshots/student-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/screenshots/student-review-390-mobile.png"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "The top student review title block is low contrast and hard to read on mobile and desktop.",
+      "The hero review metric for reward status clips the value ready_for_rabbi_review on mobile and overflows the card on desktop.",
+      "The sidebar trial/access metric also uses oversized metric typography for a status string."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "even",
+      "loads nicely"
+    ],
+    "expanded_phrases": {
+      "clean": "The student review title and key review metrics should be readable at first glance without raw/clipped status strings.",
+      "even": "Metric cards should use consistent fixed dimensions and compact text treatment across desktop and mobile.",
+      "loads nicely": "The first rendered student review screen should show readable title, intro, and metrics immediately after the review data loads."
+    },
+    "first_party_pattern_interpretation": "The student review route remains a first-party One Time portal scoped to one TEST student in rabbi_sheller_provider / one_time_mishnah_class."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-811",
+      "statement": "Fix One Time student review readability so the first title block and review metrics do not render dark-on-dark or clip long status values.",
+      "expected_result": "Desktop and mobile student-review screenshots show a readable top title/intro and metric cards whose long values wrap or scale within the card boundaries.",
+      "acceptance_criteria": [
+        "One Time review mode applies a readable title/intro hero treatment on /student.html?review=one-time.",
+        "Review-only metric cards use a compact class so long achievement/reward/status strings wrap without horizontal clipping.",
+        "The sidebar trial/access metric and the hero reward metric remain visible and readable on 1440px and 390px screenshots.",
+        "Student review forms, buttons, links, student data, auth, APIs, and external-provider behavior are unchanged."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and broad UI cleanup register exist for RAW-20260702-008.",
+      "Current screenshot evidence shows the student review readability and clipping defects.",
+      "The likely fix is scoped to review-mode CSS and review-only metric markup.",
+      "No student data, auth, external provider, money, access, or credential decision is required for local implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/student.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "review_mode_student",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the student review route before review API data finishes rendering.",
+      "expected_visible_title": "Student review portal",
+      "expected_visible_message": "Student dashboard for live Mishnayos",
+      "expected_primary_action": "Review",
+      "expected_secondary_actions": [
+        "One Time",
+        "Parent",
+        "Classroom"
+      ],
+      "forbidden_content": [
+        "dark-on-dark page title",
+        "clipped reward metric"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The page keeps one visible h1.",
+      "accessibility_expectation": "Title and intro are readable in the first mobile viewport.",
+      "test_smoke_assertion": "Audit captures student-review route with no h1 or label findings.",
+      "requirement_id": "REQ-20260702-811"
+    },
+    "empty": {
+      "route": "/student.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "review_mode_student",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load review data where optional reward/achievement fields may be empty.",
+      "expected_visible_title": "TEST Student One Time",
+      "expected_visible_message": "Not available",
+      "expected_primary_action": "Review",
+      "expected_secondary_actions": [
+        "Open classroom/library"
+      ],
+      "forbidden_content": [
+        "metric text clipped outside card"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty metric value is readable as text, not hidden.",
+      "accessibility_expectation": "Fallback values fit within metric cards.",
+      "test_smoke_assertion": "Metric probe shows no horizontal overflow for review metric strong elements.",
+      "requirement_id": "REQ-20260702-811"
+    },
+    "populated": {
+      "route": "/student.html?review=one-time",
+      "viewport": 1440,
+      "auth_role": "review_mode_student",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load populated One Time review fixture.",
+      "expected_visible_title": "TEST Student One Time",
+      "expected_visible_message": "ready_for_rabbi_review",
+      "expected_primary_action": "Submit preview",
+      "expected_secondary_actions": [
+        "Open classroom/library",
+        "Open resource"
+      ],
+      "forbidden_content": [
+        "ready_for_rabbi_review overflowing metric card"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Metric labels and values remain in the reading order.",
+      "accessibility_expectation": "Long status strings wrap or scale inside cards.",
+      "test_smoke_assertion": "Desktop screenshot shows no clipped reward metric.",
+      "requirement_id": "REQ-20260702-811"
+    },
+    "filtered_empty": {
+      "route": "/student.html?review=one-time",
+      "viewport": 768,
+      "auth_role": "review_mode_student",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Navigate to sections with no additional rows beyond review fixture cards.",
+      "expected_visible_title": "One Time only",
+      "expected_visible_message": "No bot / no BNA goals",
+      "expected_primary_action": "Questions/support",
+      "expected_secondary_actions": [
+        "Review",
+        "Class",
+        "Library"
+      ],
+      "forbidden_content": [
+        "clipped navigation or metric labels"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Section navigation links retain readable labels.",
+      "accessibility_expectation": "No metric or section title is visually cut off.",
+      "test_smoke_assertion": "Tablet screenshot has no horizontal overflow.",
+      "requirement_id": "REQ-20260702-811"
+    },
+    "error": {
+      "route": "/student.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "review_mode_student",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Review API fails or a metric value is missing.",
+      "expected_visible_title": "Student login",
+      "expected_visible_message": "Could not open this student link.",
+      "expected_primary_action": "Sign in",
+      "expected_secondary_actions": [
+        "Open My Goals"
+      ],
+      "forbidden_content": [
+        "raw clipped metric text"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error/login labels remain associated with controls.",
+      "accessibility_expectation": "Error/login state is not worsened by review metric CSS.",
+      "test_smoke_assertion": "Normal student login smoke remains without console errors.",
+      "requirement_id": "REQ-20260702-811"
+    },
+    "blocked_setup": {
+      "route": "/student.html?review=one-time",
+      "viewport": 430,
+      "auth_role": "review_mode_student",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load review mode where live Zoom/join link is gated.",
+      "expected_visible_title": "TEST Weekly Mishnah Live Class",
+      "expected_visible_message": "Protected join class ready for review",
+      "expected_primary_action": "Class",
+      "expected_secondary_actions": [
+        "Review",
+        "Library"
+      ],
+      "forbidden_content": [
+        "unreadable gated status"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked setup status remains visible and intentional.",
+      "accessibility_expectation": "Gated status text remains readable on mobile.",
+      "test_smoke_assertion": "No external Zoom or live class write occurs.",
+      "requirement_id": "REQ-20260702-811"
+    },
+    "preview_only": {
+      "route": "/student.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "review_mode_student",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the TEST-only One Time review route.",
+      "expected_visible_title": "TEST Student One Time",
+      "expected_visible_message": "This review uses TEST-only class data",
+      "expected_primary_action": "Submit preview",
+      "expected_secondary_actions": [
+        "One Time",
+        "Parent"
+      ],
+      "forbidden_content": [
+        "dark-on-dark page title",
+        "clipped reward metric"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview-only controls retain visible text labels.",
+      "accessibility_expectation": "Preview-only title, intro, and metrics are readable.",
+      "test_smoke_assertion": "Mobile screenshot shows readable title and metric cards.",
+      "requirement_id": "REQ-20260702-811"
+    },
+    "success_readback": {
+      "route": "/student.html?review=one-time",
+      "viewport": 1440,
+      "auth_role": "review_mode_student",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Review API returns student, class, attendance, course, achievement, and reward data.",
+      "expected_visible_title": "TEST Student One Time",
+      "expected_visible_message": "Achievement and reward",
+      "expected_primary_action": "Submit preview",
+      "expected_secondary_actions": [
+        "Open classroom/library",
+        "Open resource"
+      ],
+      "forbidden_content": [
+        "metric values outside card bounds"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Readback cards retain headings and labels.",
+      "accessibility_expectation": "Achievement/reward readback is visible without clipped status text.",
+      "test_smoke_assertion": "Local route smoke passes without page errors.",
+      "requirement_id": "REQ-20260702-811"
+    },
+    "permission_denied": {
+      "route": "/student.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "logged_out_or_review_denied",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open student portal without usable session or access code outside review mode.",
+      "expected_visible_title": "Student login",
+      "expected_visible_message": "Sign in with the username and password your parent set for you.",
+      "expected_primary_action": "Sign in",
+      "expected_secondary_actions": [
+        "Open My Goals"
+      ],
+      "forbidden_content": [
+        "review metric cards on denied login state"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Login form retains labels and h1 context.",
+      "accessibility_expectation": "Login state is unaffected by review-only CSS.",
+      "test_smoke_assertion": "Review-only class is added only in review mode.",
+      "requirement_id": "REQ-20260702-811"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/student.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "review_mode_student",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the mobile student review route and expose the Review/Menu controls.",
+      "expected_visible_title": "TEST Student One Time",
+      "expected_visible_message": "Review",
+      "expected_primary_action": "Review",
+      "expected_secondary_actions": [
+        "Menu",
+        "Questions/support"
+      ],
+      "forbidden_content": [
+        "metric text clipped horizontally",
+        "dark-on-dark page title"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile menu trigger retains aria-expanded.",
+      "accessibility_expectation": "Mobile first viewport has readable title and no clipped metric values.",
+      "test_smoke_assertion": "Mobile metric probe passes for all review metrics.",
+      "requirement_id": "REQ-20260702-811"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/student.html?review=one-time",
+        "viewport": 1440,
+        "state": "populated",
+        "required": true
+      },
+      {
+        "route": "/student.html?review=one-time",
+        "viewport": 1024,
+        "state": "success_readback",
+        "required": true
+      },
+      {
+        "route": "/student.html?review=one-time",
+        "viewport": 768,
+        "state": "filtered_empty",
+        "required": true
+      },
+      {
+        "route": "/student.html?review=one-time",
+        "viewport": 430,
+        "state": "blocked_setup",
+        "required": true
+      },
+      {
+        "route": "/student.html?review=one-time",
+        "viewport": 390,
+        "state": "mobile_drawer_or_detail_state",
+        "required": true
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260702-811-001",
+        "route": "/student.html?review=one-time",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/screenshots/student-review-390-mobile.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/screenshots/student-review-390-mobile.png",
+        "defect_codes": [
+          "VQ-CONTRAST-001",
+          "VQ-TEXT-001",
+          "VQ-OVERFLOW-001"
+        ],
+        "severity": "P1",
+        "user_impact": "The student review page looks broken because the first title block is hard to read and the reward status is clipped.",
+        "expected_fix": "Apply One Time review-only title contrast and metric wrapping/dynamic sizing.",
+        "requirement_id": "REQ-20260702-811"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Top page title and intro text meet readable contrast in One Time review mode.",
+      "Long metric values wrap within their cards and remain available to assistive technologies.",
+      "No additional unlabeled controls are introduced."
+    ],
+    "test_expectations": [
+      "Audit has missing_h1=0.",
+      "Audit has visible unlabeled controls=0.",
+      "Metric probe reports no text overflowing its metric card bounds."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Submit preview",
+      "selector_or_action_key": "[data-one-time-review-form] button[type=\"submit\"]",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time student review",
+      "external_write": false,
+      "handler_or_blocker": "Existing review-only form handler; unchanged by this packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Open classroom/library",
+      "selector_or_action_key": "a[href*=\"one-time-classroom\"]",
+      "action_state": "TEST_ONLY",
+      "owner": "One Time student review",
+      "external_write": false,
+      "handler_or_blocker": "Existing review link; unchanged by this packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Review/menu navigation",
+      "selector_or_action_key": "#portalMenuToggle, .portal-nav-button",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time student review",
+      "external_write": false,
+      "handler_or_blocker": "Existing navigation/menu controls; unchanged by this packet.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "inputs": [
+      "data.achievement.title and data.reward.status may contain short labels or long status keys.",
+      "payment.access_state may contain long machine-style status text."
+    ],
+    "outputs": [
+      "Long review metric values remain readable inside fixed card bounds."
+    ],
+    "no_schema_change": true,
+    "no_database_write": true
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_private_data_in_screenshots": true,
+    "no_secret_exposure": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class only"
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260702-811-LOCAL-FIX",
+      "scope": "One Time student review page title and review metric readability only.",
+      "instructions": [
+        "Add review-only metric markup/CSS so long values wrap or scale inside cards.",
+        "Add a review-only student hero/title treatment so title and intro are readable.",
+        "Do not change student portal API calls, auth, data values, forms, links, or external-provider behavior."
+      ],
+      "requirement_ids": [
+        "REQ-20260702-811"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "small",
+    "source_files_to_read": [
+      "public/student.html",
+      "public/css/one-time-shared-review.css",
+      "scripts/audit-rabbi-onetime-current-state.mjs"
+    ],
+    "files_allowed_to_edit": [
+      "public/student.html",
+      "public/css/one-time-shared-review.css",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Any parent/member/provider/Operations or normal student portal behavior work must become a later packet.",
+    "split_if_exceeds": true,
+    "context_risk_level": "low"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/09-student-review-mobile-readability.product-quality.json",
+      "expected_result": "Product Quality packet passes validation."
+    },
+    {
+      "command": "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "expected_result": "One Time review routes still pass without console/page errors or external writes."
+    },
+    {
+      "command": "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:8095 --out=ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability",
+      "expected_result": "Full local visual audit captures 75 screenshots with no automated findings."
+    }
+  ],
+  "evidence": {
+    "before": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/screenshots/student-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/screenshots/student-review-390-mobile.png"
+    ],
+    "after_required": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/screenshots/student-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/screenshots/student-review-390-mobile.png"
+    ],
+    "blocker_if_missing": "Leave REQ-20260702-811 open or blocked if local screenshot proof cannot be generated."
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Student review title and intro are readable on desktop/mobile screenshots.",
+      "Reward/status review metrics wrap within their cards on desktop/mobile screenshots.",
+      "Local smoke and full audit pass without console/page errors or automated findings.",
+      "Register, ledger, and changelog record local verification and deploy/live-smoke blocker."
+    ],
+    "terminal_status": "local_verified_deploy_live_smoke_blocked_until_DEC-20260702-801"
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/09-student-review-mobile-readability.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "npm run pqc:validate",
+      "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "node scripts/audit-rabbi-onetime-current-state.mjs"
+    ],
+    "skipped_actions_policy": "No external provider, send, upload, payment, access grant, DNS, account, or production deploy action in this local packet.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/report.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "drift_watchdog": {
+    "command": "npm run watchdog:protocol-drift",
+    "required": true,
+    "expected_result": "0 enforceable product-quality drift findings for this packet.",
+    "blocker_policy": "If unrelated historical drift appears, record it separately and do not mark this packet terminally done without explaining scope."
+  },
+  "next_packet": {
+    "recommended": "Operations participants CRM layout polish or automation center contrast.",
+    "path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "app_visible": true
+}

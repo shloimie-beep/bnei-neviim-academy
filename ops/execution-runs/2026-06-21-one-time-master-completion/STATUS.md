@@ -1,0 +1,967 @@
+# Status
+
+Status as of 2026-06-21T17:04:18+03:00.
+
+Batch 0 and Batch 1 are done locally. The successor run is the single active
+run. The execution CLI now validates structured requirements, reports the next
+unblocked batch, lists external blockers, reports source coverage, and detects
+stale evidence. The next executable batch is `REQ-20260621-501`, master backlog
+reconciliation.
+
+<!-- batch-2:start -->
+## Batch 2 - Master Backlog Reconciliation
+
+Status: done / verified local
+
+Updated `ops/one-time-mishnah/master-backlog-reconciliation.md` and `ops/one-time-mishnah/master-backlog-reconciliation.json` for the June 21 active run. No visible Task fan-out, production mutation, external write, or app runtime change was performed.
+
+Next unblocked batch after verification: `REQ-20260619-302` production Task and Decision cleanup.
+<!-- batch-2:end -->
+
+<!-- batch-3:start -->
+## Batch 3 - Production Task And Decision Cleanup
+
+Status: done / deployed / verified live
+
+Created the live production Task/Decision census and reversible cleanup tooling.
+Applied only reversible production changes through existing authenticated task
+APIs: One Time task re-scopes, one internal handoff quarantine, and
+non-private duplicate fan-out archive actions. No hard deletes and no
+parent/student/payment/communication records were mutated.
+
+Final post-cleanup census:
+
+- Tasks seen: 864
+- Lane counts: Decisions 16, Blocked 14, Tasks 406, Calendar 18, Codex Queue 6, Completed/Activity 404
+- Duplicate groups remaining in dry-run plan: 12
+- Workspace isolation: 0 BNA records in One Time, 0 One Time records in BNA
+
+The Operations UI/server changes for default Task and Decision views are
+deployed in Railway deployment `89967278-38dc-49f3-a70d-4536c59f82f6` at
+commit `f8a2fd62` and verified by standard plus focused live smokes.
+
+Next unblocked batch: `REQ-20260619-303` workspace users and roles.
+<!-- batch-3:end -->
+
+<!-- batch-4:start -->
+## Batch 4 - Workspace Users And Roles
+
+Status: done / deployed / verified live
+
+The canonical One Time role model now includes platform, workspace, and member
+roles; Rabbi Ellie Scheller is the public-facing One Time owner/admin identity
+with legacy aliases preserved; and Shloimie retains platform super-admin plus
+One Time workspace admin/manager access.
+
+The Operations Users screen now has real no-send workspace-user actions for Add
+Member / Invite User, Assign Role, Deactivate, Reactivate, reversible Remove
+Membership, and role-change audit readback. Server APIs enforce workspace scope,
+block scoped users from assigning platform roles, and keep external sends and
+account writes disabled.
+
+Focused local verification passed with 58 tests and syntax checks. The safe
+app-visible changes were deployed to Railway deployment
+`04fde749-fca1-4e54-a7c4-f2ece847847b` at commit `c8d93646`. Standard live
+smoke and focused workspace-user role live smoke passed.
+
+Next unblocked batch: `REQ-20260621-502` visible action coverage.
+<!-- batch-4:end -->
+
+<!-- batch-5:start -->
+## Batch 5 - Visible Action Coverage
+
+Status: done / verified live
+
+Created the One Time action coverage registry and report, mapped required
+visible controls to handlers/endpoints/setup paths, and removed generic
+placeholder actions from Help, provider website import, and settings Test/Reset.
+Task/Decision creation now has visible Add Task and Create Decision actions,
+One Time class/library controls use explicit labels, and gated appointment,
+Vimeo upload, and recording retry controls open exact setup prompts.
+
+Focused verification passed with 52 tests. The safe app-visible Operations UI
+changes were pushed at `90da952bf3a0c57ce60b4532e193f869a677df47`, deployed to
+Railway deployment `9c31c21f-143e-46f3-b95d-2b458a848d9f`, and verified by
+standard plus focused visible-action live smokes.
+
+Next unblocked batch: `REQ-20260619-304` Operations UI/design correction.
+<!-- batch-5:end -->
+
+<!-- batch-6:start -->
+## Batch 6 - Operations UI And Design Correction
+
+Status: done / deployed / verified live
+
+Operations module navigation and top filters are now separated: the left side
+panel renders primary modules, while the sticky top rail renders only the
+current module's filters/subviews. The top filter rail is horizontal,
+single-row, touch-scrollable, and keeps module buttons out of the toolbar.
+
+The existing UI audit harness was extended rather than replaced. Batch 6 mode
+captures the requested 1440px, 1024px, 768px, 430px, 390px, and 360px
+viewports across Operations, communications, content/classroom/library,
+settings/agents, One Time public, and portal surfaces. Production before-audit
+evidence was captured before deploying the local fix, and after-audit evidence
+was captured after Railway deployment `d6c09c49-8372-42d7-8b3b-a049ab24ad63`
+at commit `c98c06d7735ec19dec1684684a594de0636064c7`.
+
+Focused local verification, standard production smoke, production after-audit,
+and focused Operations filter-rail live smoke passed. Next unblocked batch:
+`REQ-20260621-503` WhatsApp UX.
+<!-- batch-6:end -->
+
+<!-- batch-7:start -->
+## Batch 7 - WhatsApp UX
+
+Status: base slice deployed / verified live; parent requirement reopened for
+new child requirements
+
+The existing first-party WAPI/Whapi workspace was extended rather than
+replaced. Operations Communications > WhatsApp now keeps the desktop
+phonebook/conversation/details model, adds sequential mobile pane state, shows
+chronological local timelines, links related tasks, Decisions, tickets, and
+internal/Telegram notes, and exposes explicit send-readiness gates without
+sending WhatsApp messages.
+
+Server readback for `/api/bna/whatsapp/messages` is workspace-scoped and hides
+raw provider payloads by default. The WAPI phonebook report now supports a
+workspace-scoped report for scoped One Time users while preserving account-wide
+reporting for unscoped platform admins.
+
+Focused local verification passed. The safe app-visible changes were pushed at
+`b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f`, deployed to Railway deployment
+`3265d380-9a93-488d-844f-f523367aa4e2`, and verified by standard plus
+focused WhatsApp UX live smokes. No WhatsApp send or external write was
+performed.
+
+Next unblocked batch: `REQ-20260621-504` Email and Resend UX.
+<!-- batch-7:end -->
+
+<!-- batch-8:start -->
+## Batch 8 - Email and Resend UX
+
+Status: done / deployed / verified live
+
+Operations Communications > Email and Communications > Settings now expose
+first-party Email/Resend readiness without sending email. Provider API
+readiness, sender identity, domain readiness, recipient/workspace scope, DNS
+tasks, webhook event readback, and the exact `SEND_RESEND_EMAIL` confirmation
+gate are separated in the UI. The visible send controls remain disabled unless
+the draft is reviewed, scoped, send-ready, and explicitly confirmed.
+
+The Resend webhook route now uses raw-body Svix-header verification, stores a
+safe first-party event summary in `bna_resend_webhook_events`, updates local
+email communication/email-log rows when message IDs match, and keeps raw
+provider payloads hidden by default. Resend API-key propagation is separated
+from sender/domain readiness so a key can be installed without inventing a
+sender domain.
+
+Focused local verification passed. The app-visible implementation landed at
+`fdd39bf327356675f8006bcc4ce04425061ef57e`, then Resend API-key propagation
+evidence and closeout tests were pushed at
+`847649198dfaf9f12fd69db958c3f927b460ecd8`. Final Railway deployment
+`3ec03a01-2141-401f-988f-a734176a778c` picked up the propagated
+`RESEND_API_KEY`; focused live smoke confirmed `configured: true`, one domain
+readable through the domain endpoint, sender/domain readiness still blocked,
+and no send path enabled. No email send, DNS verification/mutation, Resend
+domain mutation, or provider send was performed.
+
+Next unblocked batch: `REQ-20260619-306` product, schedule, booking, portals,
+and billing/access foundations.
+<!-- batch-8:end -->
+
+<!-- batch-9-10:start -->
+## Batch 9/10 - Product, Scheduling, Booking, And Portal Foundations
+
+Status: base slice deployed / verified live; parent requirement reopened for
+new child requirements
+
+The One Time product system now has safe internal product-offer contracts for
+the $67 monthly membership and premium Masechta intensive, with final pricing,
+payment links, checkout, invoices, refunds, and access automation explicitly
+disabled until the operator approves billing fields.
+
+The product API now returns availability rules, appointment intent templates,
+saved appointment intents, and scoped parent/student/provider portal
+foundations. Operations > Provider Workspace exposes Add Class and Add
+Appointment as real internal actions. These actions create only One Time
+calendar-event and appointment-intent records; they do not create Zoom meetings,
+send reminders, charge cards, grant access, invite participants, or write to an
+external calendar.
+
+Focused local verification passed. The safe app-visible changes were pushed at
+`45ed36787ca519819a1adfb8f372267d96330a64`, deployed to Railway deployment
+`8c20ae67-9acc-43f2-b77d-c10fcd425d73`, and verified by standard plus focused
+One Time product/booking live smokes. The focused live smoke created only
+clearly marked internal One Time class-event and appointment-intent records.
+
+The base product/booking slice remains deployed and live-verified. The latest
+`RAW-20260621-002` revenue-launch/parser follow-up split parent
+`REQ-20260619-306` into child requirements `REQ-20260621-901` through
+`REQ-20260621-910`; do not mark the parent complete until those children are
+terminal. Next unblocked child: `REQ-20260621-901` source-envelope and
+mixed-context parser v2.
+<!-- batch-9-10:end -->
+
+<!-- batch-9A:start -->
+## Batch 9A - Source-Envelope And Mixed-Context Parser V2
+
+Status: done / deployed / verified live
+
+The intake source layer now creates a `source-envelope-v2` record with source
+ID/hash, filename/title, channel, upload/source time, uploader, language,
+default workspace/project/context, source confidence, privacy level, parser
+version, processing status, source kind, and local context overrides.
+
+Supported context types are `class_recording`, `family_meeting`,
+`provider_meeting`, `operations_ramble`, `crm_spreadsheet`,
+`content_recording`, `mixed`, and `unknown_needs_review`. Title and filename
+defaults now route Dratler family material, Rabbi Scheller/One Time class
+material, Operations rambles, CRM spreadsheets, and content recordings before
+item filing, while explicit local fragments can override that default.
+
+The canonical parser now attaches `metadata.source_context` to parsed items and
+uses the local context when assigning `workspace_key` and `project_key`, so an
+Operations task inside a Dratler-family source is filed under
+`internal_super_admin` / `bna_operations` instead of inheriting the family
+scope. The live intake parse route now passes filename/source title into the
+parser and parse-run metadata.
+
+Focused local verification passed. The implementation commit
+`efe1d86d194cef483f5d6d9d418a769e20800989` was pushed, deployed to Railway
+deployment `c1623618-a00c-46d0-8be9-5a8e4102b376`, and verified by standard
+plus focused live smokes. The focused live smoke used a synthetic
+`dry_run: true` parser fixture only; it did not apply/file parse results or
+perform external writes.
+
+Known unrelated QA caveat: `tests/one-time-intake-api-readback.test.js` has a
+pre-existing HEAD fixture mismatch where the live auth helper returns
+`Rabbi Ellie Scheller` while the test expects `Rabbi Elie Scheller`; Batch 9A
+focused parser and media-routing regressions passed.
+
+Next unblocked child: `REQ-20260621-902` today's class-upload trace.
+<!-- batch-9A:end -->
+
+<!-- batch-9B:start -->
+## Batch 9B - Today's Class-Upload Trace
+
+Status: blocked / live blocker verified
+
+The latest live class-upload candidate is content job `#78`, title
+`Drive Class Sunday balak`, source type `google_drive`, project `bna`, created
+`2026-06-21T10:04:38.843Z`, drive stage `02 Ingesting`, and Drive file
+`Class Sunday balak.m4a`. The job has source provenance but no transcript text
+and no parse run for source `content_recording` / `78`.
+
+Dry-run reprocess confirmed the existing job would be transcribed and patched
+in place. The actual reprocess downloaded the audio and began transcription
+chunking, but stopped before any transcript or parse run was saved because the
+hosted transcription credential returned `401 invalid_credential`.
+
+The live content-job notes were patched to a sanitized blocker summary without
+secret-like credential material. Focused live smoke
+`ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md`
+verified the blocked source readback, sanitized notes, zero transcript chars,
+and absence of a parse run. Standard live smoke also passed at
+`ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md`.
+
+No deployment was required because Batch 9B made no app-visible runtime code
+change. The only committed code change is the repeatable focused live smoke
+command at `72b5723a`; the live production data mutation was limited to marking
+job `#78` blocked with sanitized notes.
+
+Next unblocked child: `REQ-20260621-903` Downloads spreadsheet inventory.
+<!-- batch-9B:end -->
+
+<!-- batch-9C:start -->
+## Batch 9C - Downloads Spreadsheet Inventory
+
+Status: done / verified locally
+
+Downloads spreadsheet inventory is complete without committing spreadsheet
+rows, contact values, raw headers, formulas, private exports, or absolute local
+paths. The inventory script scans spreadsheet-like files under Downloads,
+computes SHA-256 hashes, row/column estimates, sheet/header fingerprints,
+redacted filename labels, redacted schema signals, classifications, duplicate
+hash groups, and import-candidate lanes.
+
+Generated inventory:
+
+- `ops/one-time-mishnah/downloads-spreadsheet-inventory.json`
+- `ops/one-time-mishnah/downloads-spreadsheet-inventory.md`
+
+Summary:
+
+- Files inventoried: 203
+- Import candidates: 56
+- One Time Rabbi Scheller follower workbook: 1
+- Email audience exports: 5
+- Legacy CRM/pipeline exports: 29
+- Contact-list candidates: 21
+- External lead lists: 48
+- Unknown spreadsheets needing review: 78
+
+The highest-priority import candidate is `Rabbi Scheller Followers.xlsx` for
+One Time CRM review. Email audience exports are marked for reconciliation
+before any campaign send. Historical GHL/CRM/opportunity exports are labeled as
+first-party BNA Operations migration candidates only; no GHL runtime, client,
+API key, env var, schema, or connector was added.
+
+Verification passed: syntax check, inventory command, privacy regression test,
+JSON parse, tracked secret audit, and diff check. No deployment or live smoke
+was required because this batch only produced local redacted inventory and
+repo tooling.
+
+Next unblocked child: `REQ-20260621-904` CRM import and deduplication.
+<!-- batch-9C:end -->
+
+<!-- batch-12:start -->
+## Batch 12 - Zoom Meeting And Attendance Foundation
+
+Status: done / deployed / verified live
+
+The existing first-party Zoom integration helper now models the credential-free
+parts of Batch 12 without creating a real Zoom meeting. It includes
+Server-to-Server OAuth token retrieval with cache support, API client
+scaffolding, meeting and registrant request builders, participant/recording/
+transcript/summary readback request builders, webhook signature verification,
+replay protection, idempotency keys, quick-ack/queued/dead-letter planning, and
+attendance reconciliation that treats dashboard clicks as non-attendance.
+
+The One Time migration now declares internal Zoom foundation tables for
+meetings, occurrences, registrants, protected join references, webhook events,
+participant events, attendance results, recording/transcript/summary assets,
+retry jobs, and audit events. Operations > Live Classes now describes the full
+no-write Zoom/attendance foundation while keeping meeting creation, registrant
+writes, live webhook attendance writes, join redirects, external sends, portal
+publishing, recording/transcript/summary reads, and attendance corrections
+disabled.
+
+Focused local verification passed. The safe app-visible changes were pushed at
+`7685133a6e675db6883135eb775ae4cae6b44ad2`, deployed to Railway deployment
+`b2d02f20-64a8-4183-9dba-3587d0449ef7`, and verified by standard plus focused
+One Time Zoom/attendance live smokes. The focused smoke confirmed the Zoom
+status/readiness API, preview routes, Operations Live Classes panel, blocked
+meeting-create route, desktop/mobile rendering, and no real Zoom writes.
+
+Next: continue with the runner-selected `batch-11-13` / `REQ-20260619-308`
+Vimeo, member-library, recording, transcript, and publication pipeline. Manual
+Vimeo mode must be usable now; automated upload remains disabled behind setup
+and authorization gates.
+<!-- batch-12:end -->
+
+<!-- batch-11-13:start -->
+## Batch 11/13 - Vimeo, Member Library, Recording, Transcript, And Publication Pipeline
+
+Status: done / deployed / verified live
+
+Vimeo is now recorded as the selected One Time video-hosting direction while
+manual Vimeo mode remains the usable production path. Operations can create or
+update class packages with a Vimeo URL, validated Vimeo ID, Masechta, Perek,
+Mishnah range, class date, duration, thumbnail, transcript state, source
+assets, review state, approval, publish, unpublish/rollback, and member-library
+visibility/tier controls.
+
+Automated Vimeo upload is implemented only as readiness and workflow
+foundation behind a disabled feature flag. The setup screen states the exact
+remaining external requirements: authenticated Vimeo user, account owner, plan,
+upload scope and capability, storage/quota, folder, privacy default, allowed
+embed domains, callback URL, token state, and last verification. No real Vimeo
+upload, provider publish/unpublish/delete, OAuth exchange, or external account
+write was performed.
+
+The member library now has horizontal filters for All, Recently Added, Continue
+Watching, Masechta, Perek, Review, and Completed, with Masechta/Perek grouping,
+class metadata, duration, assets, local continue-watching progress, empty
+states, loading states, and mobile-safe filter scrolling.
+
+The recording/publication pipeline now models the safe lifecycle from scheduled
+through recording/transcript/summary readiness, privacy review, Rabbi review,
+approval, Vimeo manual/automated upload states, playback verification,
+member-library publication, indexing, archive, retries, rejection, unpublish,
+retention checks, and deletion gates. Webhook-originated material is not
+published directly.
+
+Focused local verification passed. The implementation commit
+`37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92` was pushed, and the current PR head
+`23e16a126f6e7461858b5701f2dbd2ba719a35c7` was deployed to Railway deployment
+`38393641-ee8e-46ed-8daf-16e67b1cde2a`. Standard, focused Vimeo/member-library,
+and source-envelope parser regression smokes passed against that deployed
+bundle. The focused live smoke created only a temporary smoke-scoped class
+package and smoke-scoped library item, then rolled back the library item and
+archived the temporary class. A follow-up production API check found zero
+unarchived `Codex Vimeo Smoke` classes.
+
+Next: run `npm run bna:run:next` after the closeout evidence commit is pushed
+and continue with the next unblocked requirement selected by the runner.
+<!-- batch-11-13:end -->
+
+<!-- batch-9D:start -->
+## Batch 9D - CRM Import And Deduplication
+
+Status: done / deployed / verified live
+
+The first-party One Time CRM import preview/dedupe path is now scoped to the
+Rabbi Ellie Scheller workspace and `one_time_mishnah_class` project. The
+generic contact-import preview endpoint attaches metadata-only source inventory
+references, computes scoped dedupe keys, strips raw source rows from preview
+responses, and keeps every preview row no-send/no-local-write/no-external-write.
+
+The One Time product system now exposes a read-only CRM import readiness
+payload and direct `/api/bna/one-time/crm-import-preview` route. Operations >
+Provider Workspace > Tiers renders a CRM Import Preview panel with candidate
+source cards, scoped counts, Preview Mapping/Open Import Decision actions, and
+a disabled Apply Import action with the exact approval blocker.
+
+Duplicate lookup is constrained to the resolved workspace/project, preview
+responses carry `import_policy.mode: preview_only`, warm leads remain no-send
+until operator approval, and GHL/GoHighLevel/LeadConnector remain explicitly
+forbidden inactive runtimes. The focused live smoke submitted only synthetic
+`.invalid` rows and verified the readiness route, Operations panel, no raw
+`source_row` data, no local writes, no external writes, no external CRM writes,
+no sends, no billing records, and no GHL records.
+
+The implementation was committed and pushed at
+`aedb04aade8d518427b9f4df011c8b5a9d07f306`, deployed to Railway deployment
+`4919c095-6301-4806-a712-0d64b4d01850`, and verified by standard plus focused
+live smokes:
+
+- `ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md`
+- `ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md`
+
+Next unblocked child: `REQ-20260621-905` CRM Contacts UX.
+<!-- batch-9D:end -->
+
+<!-- batch-9E:start -->
+## Batch 9E - CRM Contacts UX
+
+Status: done / deployed / verified live
+
+Operations Contacts for the Rabbi/One Time workspace now has a first-party CRM
+Contacts tab and review table. The UX combines scoped parent leads, One Time
+product-interest leads, and member/access rows into one read-only review
+surface with explicit record status, source/status, no-send state,
+dedupe/review state, local communication linkage, next action, and guarded
+direct actions.
+
+The `/api/bna/parent-leads` route now honors the selected workspace/project
+query scope and returns project metadata for verification. Operations passes
+the selected `workspaceDataProjectFilters()` into parent-lead loading, so an
+unscoped admin switching into One Time does not load BNA school leads into the
+One Time contacts surface.
+
+The final PR head `35db6c0e876243e61e7bce2f94db787a44626f06` was deployed
+from a clean detached worktree to Railway deployment
+`bf53e21c-a793-4af8-8630-a0e855d857c7`. Standard live smoke and focused One
+Time CRM Contacts UX smoke passed. The focused smoke verified 88 scoped One
+Time parent leads, 94 scoped contact communications, the deployed UX markers,
+and the absence of raw contact bodies in the report.
+
+Guardrails: no email send, WhatsApp send, payment write, external CRM write,
+GHL/LeadConnector runtime, raw private contact dump, or BNA private
+goals/check-ins/admin notes in the One Time Contacts UX.
+
+Next unblocked child: `REQ-20260621-906` warm-lead trial and referral
+configuration.
+<!-- batch-9E:end -->
+
+<!-- batch-9F:start -->
+## Batch 9F - Warm-Lead Trial And Referral Configuration
+
+Status: done / deployed / verified live
+
+Implemented the configurable One Time warm-lead launch promotion and referral
+model in test/local mode. The product system now exposes the 30-day trial,
+`$67` renewal, card-required rule, one-intro-trial-per-household rule,
+policy-version acceptance storage, referral-after-first-paid-cycle model,
+single legal wording Decision, and Stripe local-beta no-write guardrails.
+
+Operations renders a Trial / Referral Configuration panel under the One Time
+provider workspace. The focused readback route is
+`/api/bna/one-time/trial-referral-config`; it returns policy metadata only and
+keeps checkout, live charges, payment links, subscriptions, invoice credits,
+access automation, sends, and external CRM writes disabled.
+
+Local verification passed:
+
+- Focused product/Operations suite: 25/25.
+- Focused Stripe/Rabbi/provider integration guardrail suite: 16/16.
+- Syntax checks, execution-run validation, tracked secret audit, action
+  watchdog, and diff check with line-ending warnings only.
+
+The app-visible implementation was committed in `32708bfa5aa1d673a44ed5765178081ad57dc3de`. Local evidence was committed and pushed in `4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4`; the safe app-visible bundle from `32708bfa5aa1d673a44ed5765178081ad57dc3de` was deployed from a clean detached worktree to Railway deployment `12249b2b-f11c-44b0-b9fa-ba75c511c633`.
+
+Standard live smoke passed at
+`ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md`. Focused Batch 9F
+live smoke passed at
+`ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md`.
+
+An intermediate standard smoke at
+`ops/live-smokes/2026-06-21T14-49-04-951Z-live-app-smoke.md` failed after login
+because `/api/bna/auth/me` did not return success; the final standard smoke
+rerun passed.
+
+Next unblocked child: `REQ-20260621-907` payment-to-access and class-link flow.
+<!-- batch-9F:end -->
+
+<!-- batch-9G:start -->
+## Batch 9G - Payment-To-Access And Class-Link Flow
+
+Status: done / deployed / verified live
+
+Closed the safe test-mode flow for `REQ-20260621-907`:
+
+- Product-system readiness maps paid test/manual checkout state to access
+  readiness without live charges, checkout sessions, payment links, or
+  subscriptions.
+- Access readiness requires an approved local/test event and manual admin
+  review; automated access grants remain disabled.
+- Class-link readiness is scoped to member/session plus active live grant, and
+  raw member Zoom URLs plus Zoom host/start URLs are blocked.
+- Operations renders the Payment / Access / Class Links panel in the One Time
+  provider workspace.
+- Member page rendering now uses protected class-link state instead of
+  `session.zoom_url`.
+
+Implementation commit `62715fd68ad0956d92134560af303ba9d5fc7720` was pushed
+and deployed from a clean detached worktree. The final active Railway
+deployment is `ec7724a3-76b9-4858-85e2-370af327759a`. Railway doctor passed, standard live
+smoke passed at
+`ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md`, and focused
+payment/access/class-link live smoke passed at
+`ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md`.
+
+Focused live smoke verified the production readiness API, Operations panel
+markers, no live charge, no checkout/payment-link creation, no automated access
+grant, relationship-scoped class links, no raw Zoom member URL, no Zoom
+host/start URL, and the member portal script blocker. Continue automatically
+with the next unblocked requirement after running `npm run bna:run:next`.
+<!-- batch-9G:end -->
+
+<!-- batch-9H:start -->
+## Batch 9H - Authenticated Questions And Support-Ticket Bot
+
+Status: done / deployed / verified live
+
+Closed `REQ-20260621-908` for authenticated One Time member questions and
+support tickets.
+
+Member support now requires a valid Rabbi/One Time member session token, stores
+workspace/project/requester context, persists `OT-SUP-######` ticket numbers,
+and returns only the authenticated member's scoped tickets. Member-visible
+support readback hides source context, staff internal notes, and other-user
+data while returning project-visible staff replies.
+
+Private member questions now write to the first-party
+`bna_one_time_question_reviews` review queue with `OT-Q-######` question
+numbers, `member_id` scoping, `no_public_forum`, `no_member_feed`, `no_send`,
+and `external_write_performed=false`. The member view exposes sanitized
+question previews and only approved member-visible replies.
+
+The member portal now includes guarded Private Questions and Support panels,
+loads the shared select enhancer for native selects, and calls only the member
+session-authenticated APIs. The Rabbi Telegram bridge now tags scoped support
+tickets with ticket-only bot metadata and returns `OT-SUP` ticket numbers in
+operator-facing confirmations.
+
+Implementation commit `98b293d9b8957ec4567d8ede45f3e0d05bb1178b` added the
+authenticated support flows. Follow-up commit
+`b71b14c5252ca2145b738e11fe4ab547bb412c3a` fixed the classroom action label
+compatibility check and was pushed to PR #5. The final app-visible bundle was
+deployed from a clean detached worktree at `b71b14c5252ca2145b738e11fe4ab547bb412c3a`.
+Railway deployment `977430a7-fa56-480d-9289-5abbd6536658` reached `SUCCESS`.
+Railway doctor passed, standard live smoke passed at
+`ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md`, and focused
+authenticated support/question live smoke passed at
+`ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md`.
+
+Focused local verification passed: syntax checks, 19/19 focused
+member/support/community tests, 59/59 broader portal/action/classroom tests,
+action/security watchdogs, execution-run validation, tracked secret audit, and
+diff check with line-ending warnings only.
+
+Known intermediate verification failures: `npm run watchdog:security-routes`
+is not a package script; the correct `npm run watchdog:security` passed.
+The first `npm run app:smoke` attempt failed before touching the app because
+this worktree lacked `OPS_USERNAME`/`OPS_PASSWORD`; rerunning with the existing
+local BNA env file loaded passed.
+
+Guardrails: no email send, WhatsApp send, SMS send, Telegram send, public forum
+post, member-feed publish, checkout/payment write, access grant, external CRM
+write, GHL/LeadConnector runtime, Google/Zoom write, DNS mutation, or secret
+exposure was performed.
+
+Next unblocked child: `REQ-20260621-909` test identities and mock data.
+<!-- batch-9H:end -->
+
+<!-- batch-9I:start -->
+## Batch 9I - Test Identities And Mock Data
+
+Status: done / deployed / verified live
+
+Closed `REQ-20260621-909` by adding a credential-free, read-only One Time test
+identity and mock data preview. The preview builds deterministic `TEST-`
+prefixed parent, student, provider, staff, and BNA control identities with
+`example.test` contact values, cleanup keys, and no private export sources.
+
+The fixture set covers CRM dedupe/no-send, local test payment/access review,
+protected class links, private questions, and ticket-only support. It also
+ships a 12-case negative authorization matrix for Rabbi/BNA cross-workspace
+denials, parent/student own-record denials, platform-role assignment denial,
+query-parameter cross-scope denial, and cross-workspace task/Decision/message/
+recording denial.
+
+The admin-only route `/api/bna/one-time/test-identities-preview` and Operations
+panel are deployed as preview-only surfaces. Apply Mock Data and Cleanup TEST
+Records are disabled with explicit dry-run/setup reasons. The platform
+synthetic E2E artifact now records the TEST fixture safety summary.
+
+Implementation/pushed/deployed commit:
+`f741fa91a909db89a79a33b6de5193c6c481732c`. Railway deployment
+`5751098c-2095-4d24-97db-712aba136915` reached `SUCCESS`. Standard live smoke
+passed at `ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md`, and
+focused 9I live smoke passed at
+`ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md`.
+
+Local verification passed: syntax checks, 49/49 focused tests,
+`npm run platform:synthetic-e2e`, action/security watchdogs, execution-run
+validation, tracked secret audit, and diff check with line-ending warnings only.
+
+Guardrails: no real private exports, raw private rows, production record
+creation, email send, WhatsApp send, SMS send, Telegram send, payment/billing
+write, access grant, Zoom/Vimeo/Google mutation, DNS mutation, external CRM
+write, GHL/LeadConnector runtime, or secret exposure was performed.
+
+Next unblocked child: `REQ-20260621-910` Agent Mode end-to-end acceptance.
+<!-- batch-9I:end -->
+
+<!-- batch-9J:start -->
+## Batch 9J - Agent Mode End-To-End Acceptance
+
+Status: done / deployed / verified live
+
+Closed `REQ-20260621-910` by adding a credential-free, read-only One Time
+Agent Mode acceptance artifact. The artifact verifies parser, CRM
+import/dedupe, trial/referral, payment/access/class links, authenticated
+support/questions, and TEST beta data readiness without performing real external
+writes.
+
+The admin-only route `/api/bna/one-time/agent-mode-acceptance` is deployed and
+the Operations Rabbi launch area now includes an Agent Mode acceptance panel.
+`View Agent Status` and `View Acceptance Evidence` are active. `Run Live Agent
+Mode` remains disabled with an explicit authorization blocker.
+
+Implementation/pushed/deployed commit:
+`6c45c4a4f5be60ae8b5dcceee66087f3d54430ae`. Railway deployment
+`b006acf0-41d5-458c-b661-2b673d8de1f7` reached `SUCCESS`. Standard live smoke
+passed at `ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md`, and
+focused 9J live smoke passed at
+`ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md`.
+
+Local verification passed: syntax checks, 17/17 focused tests, acceptance
+evidence generation, action/security watchdogs, execution-run validation,
+tracked secret audit, and diff check with line-ending warnings only.
+
+Guardrails: no real Agent Mode external write run, live charge, email send,
+WhatsApp send, SMS send, Telegram send, external CRM/GHL write, Zoom/Vimeo/
+Google/DNS mutation, production private-data export, or secret exposure was
+performed.
+
+The product/schedule/portal launch parent `REQ-20260619-306` is closed for all
+currently possible credential-free work. Hosted transcription remains isolated
+as child blocker `REQ-20260621-902`.
+
+Next unblocked requirement: run `npm run bna:run:next`.
+<!-- batch-9J:end -->
+
+<!-- batch-14:start -->
+## Batch 14 - Transcript Privacy
+
+Status: done / deployed / verified live
+
+Closed `REQ-20260619-309` by implementing transcript privacy release policy,
+storage fields, member-safe redaction, an admin readiness route, Operations
+readiness panel, focused tests, and a read-only production smoke.
+
+Transcript segments now require accepted student match methods, enrollment or
+registrant context, confidence threshold, and human review before they can be
+treated as student-private or parent-visible data. Guessed speaker labels,
+voice guesses, LLM guesses, and name mentions cannot become student records
+even at high confidence. Parent-visible release prefers reviewed Rabbi feedback
+cards or Rabbi-approved text instead of raw transcript excerpts.
+
+Implementation/pushed/deployed commit:
+`b89c17c0ec34a9ba871289afbec7b065c3a0d78f`. Railway deployment
+`7feae8ec-f34f-4e33-9e2d-9dcb479b1f14` reached `SUCCESS`. Standard live smoke
+passed at `ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md`, and
+focused Batch 14 live smoke passed at
+`ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md`.
+
+Local verification passed: syntax checks, 24/24 focused tests,
+action/security watchdogs, execution-run validation, tracked secret audit, and
+diff check with line-ending warnings only.
+
+Guardrails: no transcript content was written to student records; no raw
+transcript body, staff-private note, cross-student private segment, send,
+charge, public helper corpus mutation, Zoom/Vimeo/Google/DNS mutation, external
+CRM/GHL write, or secret exposure was performed.
+
+Next unblocked requirement: run `npm run bna:run:next`.
+<!-- batch-14:end -->
+
+<!-- batch-15:start -->
+## Batch 15 - Gamification
+
+Status: done / deployed / verified live
+
+Closed `REQ-20260619-310` by completing the One Time badge/gamification
+workflow. Automatic badge awards now use the shared event-driven per-badge
+evaluator, configurable thresholds, active-badge suppression, stable
+idempotency keys, source-event evidence, and badge audit events. Rabbi-awarded
+badges are available only through an audited admin/Rabbi award route that
+requires student scope, a Rabbi-awarded badge slug, source evidence, and a
+human reason. Manual badge reversal now requires a reversal reason and writes
+an audit event.
+
+Final app implementation/pushed/deployed commit:
+`68e62775a0f0414427e6b5e6a592022c78d84742`. Docs/status closeout was pushed
+at `93c07e05f0e640c4da1fc9bb86e78a85f1f56a0c`. Railway deployment
+`b6f0a4de-2857-4de0-9053-be0c74c7ab74` reached `SUCCESS`. Standard live smoke
+passed at `ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.md`, and
+focused Batch 15 live smoke passed at
+`ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.md`.
+An intermediate standard smoke
+`ops/live-smokes/2026-06-21T16-44-00-563Z-live-app-smoke.md` failed because it
+used scoped One Time credentials against the full `/me` expectation; the final
+rerun used full Ops credentials and passed.
+
+Local verification passed: syntax checks, 13/13 focused gamification tests,
+12/12 adjacent UI/model/privacy tests,
+action/security watchdogs, execution-run validation, tracked secret audit, and
+diff check with line-ending warnings only.
+
+Guardrails: focused smoke was read-only; no badge award, badge reversal,
+notification, access grant, prize/coupon/credit, public individual leaderboard,
+send, charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret
+exposure was performed.
+
+Next unblocked requirement: run `npm run bna:run:next`.
+<!-- batch-15:end -->
+
+<!-- batch-16:start -->
+## Batch 16 - Community
+
+Status: done / deployed / verified live
+
+Closed `REQ-20260619-311` by completing the One Time community moderation
+workflow. The community readiness route now reports `implemented_read_only`,
+private questions stay body-free and private-first, report/flag flow is
+implemented, parent-visible and staff-only visibility states remain separate,
+and the private-to-public workflow preserves linked versions while keeping
+public promotion writes disabled.
+
+Implementation/pushed/deployed commit:
+`be7e46ae9fefd2ea9f31c403c114b008ec7fc899`. Railway deployment
+`44220c69-fdb0-4796-96fc-80d39771e244` reached `SUCCESS`. Standard live smoke
+passed at `ops/live-smokes/2026-06-21T16-54-31-139Z-live-app-smoke.md`, and
+focused Batch 16 live smoke passed at
+`ops/live-smokes/2026-06-21T16-55-06-536Z-one-time-community-live-smoke.md`.
+
+Local verification passed: syntax checks, 14/14 focused community/action
+tests, action/security watchdogs, execution-run validation, tracked secret
+audit, and diff check with line-ending warnings only.
+
+Guardrails: focused smoke was read-only; no community thread/message write,
+approval, parent-visible message, public post, staff note, notification,
+delete purge, unrestricted student direct messaging, send, charge,
+Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret exposure was
+performed.
+
+Next unblocked requirement: run `npm run bna:run:next`.
+<!-- batch-16:end -->
+
+<!-- batch-17:start -->
+## Batch 17 - Sefaria And Study Assistant Readiness
+
+Status: done / deployed / verified live
+
+Closed `REQ-20260619-312` by shipping the disabled-feature One Time
+Sefaria/study-assistant readiness foundation. The readiness route reports
+`implemented_read_only`, source-version approval and scoped retrieval previews
+are metadata-only, authorization runs before retrieval previews, and answer
+generation, unrestricted AI chat, arbitrary version ingestion, Sefaria/API
+ingestion, source corpus mutation, portal publishing, raw transcript retrieval,
+raw source text return, and cross-student retrieval remain disabled.
+
+Implementation/pushed/deployed app commit:
+`7efc8ce3cd3b03c08b1d573d341efed212124785`. Railway deployment
+`9657afe5-958c-4cfb-bb6c-6afec77bcd05` reached `SUCCESS`. Standard live smoke
+passed at `ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md`, and
+focused Batch 17 live smoke passed at
+`ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md`.
+
+Local verification passed: syntax checks, 19/19 focused
+study-assistant/transcript/action tests, action/security watchdogs, execution
+run validation, tracked secret audit, and diff check with line-ending warnings
+only.
+
+Initial focused smoke caveat: the first run failed because the local smoke
+scanner treated the policy key `apply_authorization_before_retrieval` as a
+secret-like value. The scanner now checks secret-like string values instead of
+policy key names, the focused test covers that regression, and the rerun
+passed.
+
+Guardrails: no Sefaria/API ingestion, arbitrary version ingestion, source
+corpus mutation, answer generation, portal publish, chat session creation, raw
+source text retrieval, raw transcript retrieval, cross-student retrieval, send,
+charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret
+exposure occurred.
+
+Next unblocked requirement: run `npm run bna:run:next`.
+<!-- batch-17:end -->
+
+<!-- batch-19:start -->
+## Batch 19 - Final Verification And Release
+
+Status: done / deployed / verified live / PR unmerged
+
+Closed `REQ-20260619-314` for PR #5. Final release-gate work stabilized the
+last stale final-check contracts, restored explicit Operations topbar status
+chip labels, aligned the UI-design audit with the current sidebar/top-filter
+rail shell, and updated the focused final live smoke for the current provider
+index CTA.
+
+Pushed/deployed app commit:
+`34c74f22145a4422777515b740b8e33eef3f539d`. Railway deployment
+`48cf7b0e-5623-43a3-9c5a-278e4d8b7997` reached `SUCCESS`; Railway doctor
+passed. Standard live smoke passed at
+`ops/live-smokes/2026-06-21T17-29-33-860Z-live-app-smoke.md`. Focused final
+register surfaces live smoke passed at
+`ops/live-smokes/2026-06-21T17-30-14-986Z-final-register-surfaces-live-smoke.md`.
+Additional focused live smokes passed for public privacy, Operations workspace
+taxonomy, Operations helper/settings/provider classroom/content/communications,
+WhatsApp UX, Email/Resend UX, One Time CRM import/contacts, trial/referral,
+payment/access/class links, authenticated member support, test identities,
+Agent Mode acceptance, transcript privacy, gamification, community,
+study-assistant readiness, Rabbi landing, WS11 parent progress, source-envelope
+parsing, class-upload blocked-state trace, student auth, operator setup,
+public navigation positioning, developer-tester tickets, and signup credit
+email preview.
+
+Local verification passed: targeted release-gate regression suite 32/32,
+provider/final-register contract suite 18/18, full `npm test` 1017/1017,
+action watchdog, security watchdog, execution-run validation, tracked secret
+audit, syntax checks, and diff check with line-ending warnings only.
+
+Final watchdog reports:
+`ops/watchdog-audits/2026-06-21T17-35-watchdog-action-audit.md` and
+`ops/watchdog-audits/2026-06-21T17-35-watchdog-security-routes.md`.
+
+Local-only caveats: `npm run smoke:local` remains blocked by the local harness
+`spawnSync npm.cmd EINVAL`/placeholder local `DATABASE_URL` configuration, and
+`npm run ops:audit` remains blocked by missing authenticated Playwright storage
+state `.runtime/auth/operations-storage-state.json`. Production health and
+focused live smokes passed with established live credentials loaded into the
+process without printing secrets.
+
+Guardrails: PR #5 was not merged. No external send, WhatsApp send, email send,
+charge, refund, access grant, public publish, Google Classroom/Calendar/Drive
+write, Zoom meeting/registrant/attendance write, Vimeo upload/publish, DNS or
+Railway variable mutation, external CRM/GHL write, raw private export, or
+secret exposure was performed.
+
+Remaining terminal blocker: `REQ-20260619-313` stays
+`needs_operator_decision` for separate paid One Time infrastructure, Railway
+project/database/domain, DNS authority, budget, and ownership approval.
+<!-- batch-19:end -->
+
+<!-- req-313-provisioning:start -->
+## REQ-20260619-313 - Separate One Time Instance Provisioning
+
+Status: blocked external / apply automation ready
+
+Local implementation commit: `1aed3f2bc3478db9a5c61f192d66d80c14a6f523`
+
+Operator authorization was received on 2026-06-21 in
+`raw-input/RAW-20260621-003-one-time-separate-instance-authorization.md`.
+The requirement is no longer waiting on the prior Option B decision. The
+deployable version was frozen, the One Time single-tenant runtime package was
+implemented, and the redacted provisioning package, idempotent One Time-only
+seed SQL, isolation scan SQL, domain handoff, live-smoke script, operator UI
+review package, guarded apply-capable Railway runner, and guarded database
+bootstrap runner now exist.
+
+Provisioning itself is blocked because Railway account-level authentication is
+not available in this shell. The operator's AppData note was checked:
+AppData contains the Railway CLI install path, not an account-auth config.
+`C:\Users\User\.railway\config.json` is valid but contains no token-like/auth
+keys, and `railway whoami`, `railway list --json`, and `railway status --json`
+still return unauthorized. The prompt explicitly forbids creating One Time
+services inside `skillful-motivation`. No Railway project, Postgres database,
+web service, worker, custom domain, DNS record, production variable, payment
+send, email send, Zoom meeting, Vimeo upload, or BNA data copy was created.
+
+New continuation evidence:
+
+- `scripts/provision-onetime-railway-instance.mjs`
+- `scripts/bootstrap-onetime-database.mjs`
+- `tests/one-time-railway-provisioner.test.js`
+- `tests/one-time-database-bootstrap.test.js`
+- `ops/one-time-mishnah/onetime-railway-provisioning-report.json`
+- `ops/one-time-mishnah/onetime-database-bootstrap-report.json`
+- `ops/one-time-mishnah/railway-auth-followup-2026-06-22.md`
+- `ops/one-time-mishnah/backend-ui-review-readiness-tracker.md`
+- `memory/2026-06-22.md`
+
+Exact next operator action: provide an account-level Railway login/session
+that can list/create projects, or provide a pre-created separate Railway
+project token for `one-time-production` with permission to create/configure
+`one-time-web` and `one-time-postgres`. Then run:
+
+```powershell
+npm run one-time:separate-instance-package
+npm run one-time:railway-provision:apply -- --apply --confirm PROVISION_ONE_TIME_INSTANCE
+npm run one-time:db:bootstrap -- --apply --confirm BOOTSTRAP_ONE_TIME_DATABASE
+```
+
+The apply runner is dry-run by default, refuses the forbidden shared BNA
+Railway project, uses stdin for secrets, writes a redacted report, and should
+be followed by the separate database bootstrap/seed/isolation scan plus
+`npm run app:smoke:onetime-separate-instance -- <base-url>`.
+<!-- req-313-provisioning:end -->
+
+<!-- shared-review-branding:start -->
+## REQ-20260622-002 - Shared One Time Branded Review
+
+Status: done / pushed / deployed / live-smoked.
+
+The existing shared One Time review surfaces have been branded for Shloimie's review. The final shared app deployment used the existing `skillful-motivation` Railway service only; no Railway topology, DNS, separate service, separate database, external send, charge, Zoom write, Vimeo upload, or access grant was performed.
+
+Final pushed app commit: `168bda1f18fb65864fdf4e75e242f9480c571325`.
+
+Shared Railway deployment: `3671af2d-26e1-4e24-b918-52074d821ad7`, `SUCCESS`.
+
+Updated review surfaces:
+
+- One Time landing: `/one-time`
+- Provider/Rabbi review: `/provider.html?review=one-time`
+- Parent review: `/parent.html?review=one-time`
+- Student review: `/student.html?review=one-time`
+- Classroom/library: `/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS`
+- Email template preview: `/one-time-email-review.html`
+- One Time Operations review route: `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview`
+
+The review packet is current at `ops/one-time-mishnah/operator-ui-review/`. It includes exact review links, known blockers, the secure local review-login handoff path, route map, and the next UI-correction ramble template.
+
+Verification summary:
+
+- PASS focused tests, full `npm test` 1043/1043, action/security watchdogs, secret audit, syntax checks, and diff check.
+- PASS local review-only Playwright smoke for public review routes.
+- PASS standard live app smoke: `ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md`.
+- PASS focused live smoke across landing, provider, parent, student, classroom, email, and Operations review routes at 390x844, 768x1024, and 1440x900: `ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md`.
+- Student review mode no longer leaks stale BNA/Goal Board shell labels in the One Time review context.
+
+Known validator caveat: `npm run bna:run:validate` still fails in this detached/stripped worktree because older requirements reference historical ignored live-smoke evidence files missing from this checkout and `git_refs` expects a branch name instead of `HEAD`. This caveat is not caused by `REQ-20260622-002`; current evidence for this requirement is present.
+
+Next purpose: `One Time UI/workflow corrections and full Agent Mode visual QA`.
+<!-- shared-review-branding:end -->

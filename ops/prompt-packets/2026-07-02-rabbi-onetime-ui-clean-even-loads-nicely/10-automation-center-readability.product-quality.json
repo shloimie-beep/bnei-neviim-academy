@@ -1,0 +1,675 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-812",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-004",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802",
+      "PKT-20260702-805",
+      "PKT-20260702-806",
+      "PKT-20260702-807",
+      "PKT-20260702-808",
+      "PKT-20260702-809",
+      "PKT-20260702-810",
+      "PKT-20260702-811"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/screenshots/operations-automations-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/screenshots/operations-automations-390-mobile.png",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "produces": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-automation-center-readability/report.md",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/10-automation-center-readability.product-quality.json",
+    "terminal_condition": "The One Time Operations Automations Center renders a readable, non-overlapping heading, filter toolbar, and empty/list state on desktop and mobile without changing automation data, permissions, helper prompts, or external-write behavior.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Automation Center Readability Cleanup",
+  "created_at": "2026-07-02T23:30:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.91,
+    "reasons": [
+      "Fresh screenshots show the Operations Automations Center title rendered low-contrast over a dark portrait-backed panel.",
+      "The desktop filter card floats over the content area and visually cuts across the title/table region.",
+      "The empty table state is washed out against the dark/photo background and needs a stable route-specific layout treatment."
+    ],
+    "affected_product_surfaces": [
+      "One Time Operations Automations Center"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "Live automation sends, publishes, payment/access actions, external account mutations, and provider connector writes are out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state",
+      "06-task-dialogue-lane-contrast",
+      "07-task-route-layout-density",
+      "08-provider-review-load-error",
+      "09-student-review-mobile-readability",
+      "10-automation-center-readability"
+    ],
+    "next_exact_packet": "After this automation-center readability cleanup, continue manual screenshot-reviewed packets for Operations participants/contact CRM polish or remaining portal visual defects."
+  },
+  "operator_intent_summary": "Make the Rabbi / One Time Automations Center feel even, clean, and loaded by fixing the unreadable title area, overlapping filter card, and washed empty state.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "even",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No automation create, edit, save, run, enable, disable, approval, permission, API, filter behavior, or helper prompt behavior change.",
+    "No public landing, parent portal, student portal, provider portal, member login, classroom, payments, email, WhatsApp, Telegram, Stripe, Drive, Vimeo, Zoom, DNS, account, or access-grant change.",
+    "No GHL runtime, LeadConnector reference, external CRM write, external send/publish/upload/payment, raw private evidence, or secret exposure."
+  ],
+  "affected_surfaces": [
+    "One Time Operations Automations Center"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "public/css/one-time-operations.css",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/operations.html renderAutomationCenter",
+      "public/operations.html renderAutomationToolbar",
+      "public/operations.html automation CSS block",
+      "public/css/one-time-operations.css One Time Operations route overrides",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/screenshots/operations-automations-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/screenshots/operations-automations-390-mobile.png"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "The Automation Center title and description render dark-on-dark over the One Time portrait panel.",
+      "The desktop filter toolbar is visually detached and overlaps the page-heading/list area.",
+      "The empty-state panel appears as a low-contrast washed overlay instead of a deliberate table/list empty state."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "even",
+      "loads nicely"
+    ],
+    "expanded_phrases": {
+      "clean": "The automations route should have a quiet, readable admin layout with no photo overlay fighting the table/filter content.",
+      "even": "The heading, toolbar, and empty/list state should align within one stable route container across desktop and mobile.",
+      "loads nicely": "Once data loads, the route should immediately show a readable Automation Center title, counts, filters, and empty/list state without overlap."
+    },
+    "first_party_pattern_interpretation": "The automations route remains a first-party BNA Operations metadata view scoped to rabbi_sheller_provider / one_time_mishnah_class."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-812",
+      "statement": "Fix the One Time Operations Automations Center readability and layout so the heading, filter toolbar, and empty/list state no longer render over a low-contrast portrait panel or overlap each other.",
+      "expected_result": "Desktop and mobile automations screenshots show a readable title, subcopy, count summary, filter controls, and empty/list state in a stable admin layout with no horizontal overflow or clipped controls.",
+      "acceptance_criteria": [
+        "The Automations Center route has a scoped One Time route marker for CSS targeting.",
+        "The route uses a compact solid/dark panel treatment rather than the portrait dashboard hero treatment.",
+        "Heading and toolbar text meet readable contrast on desktop and mobile.",
+        "Filter controls and empty/list states are contained, aligned, and non-overlapping on 1440px and 390px screenshots.",
+        "Automation metadata, filters, helper action, edit/detail action, APIs, action registry, and external-provider guardrails are unchanged."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and broad UI cleanup register exist for RAW-20260702-008.",
+      "Current screenshot evidence shows the automations route readability and overlap defects.",
+      "The likely fix is scoped to route marker markup and One Time Operations CSS overrides.",
+      "No automation behavior, external provider, money, access, credential, or account decision is required for local implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the automations route before registry data finishes loading.",
+      "expected_visible_title": "Automation Center",
+      "expected_visible_message": "Loading BNA Operations",
+      "expected_primary_action": "Refresh",
+      "expected_secondary_actions": [
+        "Ask / Search",
+        "Menu"
+      ],
+      "forbidden_content": [
+        "dark-on-dark route title",
+        "filter card overlapping route heading"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The Operations shell keeps one visible h1 and the route heading remains visible.",
+      "accessibility_expectation": "Loading and loaded states are readable.",
+      "test_smoke_assertion": "Audit waits for loading shell to clear before screenshot capture.",
+      "requirement_id": "REQ-20260702-812"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load the route with zero matching automations after filters.",
+      "expected_visible_title": "Automation Center",
+      "expected_visible_message": "No automations match these filters.",
+      "expected_primary_action": "Create automation with helper",
+      "expected_secondary_actions": [
+        "Apply",
+        "Refresh"
+      ],
+      "forbidden_content": [
+        "washed-out empty state",
+        "title text hidden by background image"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The empty state remains in the automation registry section.",
+      "accessibility_expectation": "Empty state text has sufficient contrast.",
+      "test_smoke_assertion": "Automations screenshot shows no overlap between toolbar and heading/list.",
+      "requirement_id": "REQ-20260702-812"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+      "viewport": 1024,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load the route with one or more registry automations.",
+      "expected_visible_title": "Automation Center",
+      "expected_visible_message": "visible automations",
+      "expected_primary_action": "Edit / Details",
+      "expected_secondary_actions": [
+        "Create automation with helper",
+        "Apply",
+        "Refresh"
+      ],
+      "forbidden_content": [
+        "row text over portrait image",
+        "filter controls cut off horizontally"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Automation rows retain labels and edit/detail buttons.",
+      "accessibility_expectation": "Row and filter labels remain readable.",
+      "test_smoke_assertion": "No console/page errors on automations route.",
+      "requirement_id": "REQ-20260702-812"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile automations route with the current filters resulting in no rows.",
+      "expected_visible_title": "Automation Center",
+      "expected_visible_message": "0 visible automations",
+      "expected_primary_action": "Apply",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Create automation with helper"
+      ],
+      "forbidden_content": [
+        "overlapping filter card",
+        "horizontal overflow"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Select controls retain visible labels.",
+      "accessibility_expectation": "Filter controls stack cleanly without clipped labels.",
+      "test_smoke_assertion": "Mobile screenshot has no horizontal overflow.",
+      "requirement_id": "REQ-20260702-812"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Automation API fails or returns a notice.",
+      "expected_visible_title": "Automation Center",
+      "expected_visible_message": "Unable to",
+      "expected_primary_action": "Refresh",
+      "expected_secondary_actions": [
+        "Ask / Search"
+      ],
+      "forbidden_content": [
+        "notice hidden under toolbar",
+        "raw automation JSON"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error/notice text remains visible in the route flow.",
+      "accessibility_expectation": "Notice is not visually obscured by the route shell.",
+      "test_smoke_assertion": "Console/network errors are recorded in audit but page layout remains readable.",
+      "requirement_id": "REQ-20260702-812"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Render automation rows with guarded or blocked setup state.",
+      "expected_visible_title": "Automation Center",
+      "expected_visible_message": "setup blockers",
+      "expected_primary_action": "Edit / Details",
+      "expected_secondary_actions": [
+        "Refresh"
+      ],
+      "forbidden_content": [
+        "guarded/blocked status hidden by low contrast"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked/guarded status badges remain text-visible.",
+      "accessibility_expectation": "Status badges keep readable color contrast.",
+      "test_smoke_assertion": "No external automation run is triggered.",
+      "requirement_id": "REQ-20260702-812"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use the helper action to draft an automation plan prompt without sending or mutating external systems.",
+      "expected_visible_title": "Automation Center",
+      "expected_visible_message": "Create automation with helper",
+      "expected_primary_action": "Create automation with helper",
+      "expected_secondary_actions": [
+        "Apply",
+        "Refresh"
+      ],
+      "forbidden_content": [
+        "button text clipped on mobile"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The helper button remains a visible button with the existing action id.",
+      "accessibility_expectation": "Button label remains readable.",
+      "test_smoke_assertion": "Action registry still covers ACTION-HELPER-CREATE-AUTOMATION.",
+      "requirement_id": "REQ-20260702-812"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Automation registry data loads and count/filter metadata render.",
+      "expected_visible_title": "Automation Center",
+      "expected_visible_message": "registry items loaded",
+      "expected_primary_action": "Refresh",
+      "expected_secondary_actions": [
+        "Apply",
+        "Create automation with helper"
+      ],
+      "forbidden_content": [
+        "count summary detached from filters"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Toolbar remains labeled as Automation filters.",
+      "accessibility_expectation": "Count summary and filter controls are readable in one flow.",
+      "test_smoke_assertion": "Full route audit reports findings_count=0.",
+      "requirement_id": "REQ-20260702-812"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+      "viewport": 390,
+      "auth_role": "logged_out_or_wrong_scope",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Operations without an authorized session.",
+      "expected_visible_title": "BNA Operations",
+      "expected_visible_message": "Sign in",
+      "expected_primary_action": "Sign in",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "private automation metadata"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Login controls retain labels.",
+      "accessibility_expectation": "Route-specific CSS does not expose or distort the login state.",
+      "test_smoke_assertion": "Private route access remains unchanged.",
+      "requirement_id": "REQ-20260702-812"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile menu/helper while on the Automations route.",
+      "expected_visible_title": "Automation Center",
+      "expected_visible_message": "Provider Workspace Admin",
+      "expected_primary_action": "Menu",
+      "expected_secondary_actions": [
+        "Ask",
+        "Refresh"
+      ],
+      "forbidden_content": [
+        "route content hidden behind closed helper",
+        "horizontal overflow"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile controls preserve aria states.",
+      "accessibility_expectation": "Route content stays readable before and after mobile chrome controls.",
+      "test_smoke_assertion": "Full mobile audit screenshot is non-overlapping.",
+      "requirement_id": "REQ-20260702-812"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+        "viewport": 1440,
+        "state": "success_readback",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+        "viewport": 1024,
+        "state": "populated",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+        "viewport": 768,
+        "state": "filtered_empty",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+        "viewport": 430,
+        "state": "filtered_empty",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+        "viewport": 390,
+        "state": "mobile_drawer_or_detail_state",
+        "required": true
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260702-812-001",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+        "viewport": 1440,
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/screenshots/operations-automations-1440-desktop.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-automation-center-readability/screenshots/operations-automations-1440-desktop.png",
+        "defect_codes": [
+          "VQ-CONTRAST-001",
+          "VQ-LAYOUT-001",
+          "VQ-EMPTY-001"
+        ],
+        "severity": "P1",
+        "user_impact": "The route looks unfinished because the heading and empty state are hard to read and the filter card appears to float over the content.",
+        "expected_fix": "Add a route marker and scoped One Time Automations CSS that uses a solid panel, readable text, contained toolbar, and intentional empty/list state.",
+        "requirement_id": "REQ-20260702-812"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Automation Center title, subcopy, toolbar summary, filter labels, and empty/list state meet readable contrast.",
+      "Filter controls remain visible and operable on mobile without horizontal overflow.",
+      "No additional unlabeled controls or missing h1 conditions are introduced."
+    ],
+    "test_expectations": [
+      "Audit has missing_h1=0.",
+      "Audit has visible unlabeled controls=0.",
+      "Automations screenshot/probe reports no horizontal overflow or route-heading overlap."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Create automation with helper",
+      "selector_or_action_key": "ACTION-HELPER-CREATE-AUTOMATION",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time Operations Automations Center",
+      "external_write": false,
+      "handler_or_blocker": "Existing openBnaHelperWithPrompt handler; unchanged by this packet.",
+      "registry_required": true
+    },
+    {
+      "label": "Apply",
+      "selector_or_action_key": "applyAutomationFilters()",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations Automations Center",
+      "external_write": false,
+      "handler_or_blocker": "Existing local render/filter handler; unchanged by this packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Refresh",
+      "selector_or_action_key": "refreshAutomations()",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations Automations Center",
+      "external_write": false,
+      "handler_or_blocker": "Existing automations metadata reload; unchanged by this packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Edit / Details",
+      "selector_or_action_key": "toggleAutomationDetail(event, id)",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations Automations Center",
+      "external_write": false,
+      "handler_or_blocker": "Existing detail/metadata flow; unchanged by this visual packet.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "read_paths": [
+      "GET /automations"
+    ],
+    "write_paths": [],
+    "fixtures_or_seed": [
+      "Existing local One Time review/audit fixtures"
+    ],
+    "data_privacy_notes": [
+      "Use screenshots of TEST/local audit data only.",
+      "Do not commit raw private automation payloads, secrets, or account data."
+    ],
+    "unchanged_contracts": [
+      "Automation filter parameters",
+      "Automation detail metadata schema",
+      "Helper prompt string",
+      "Action registry action id"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "privacy_scope": "Private Operations view scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+    "forbidden_data": [
+      "Raw private contact/student/parent/provider data",
+      "Secrets, API keys, tokens, session cookies, or account identifiers",
+      "External automation payloads or send/publish/charge/access-grant proof"
+    ],
+    "required_checks": [
+      "No external automation run.",
+      "No new GHL/LeadConnector runtime.",
+      "No route access behavior change."
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-REQ-20260702-812-A",
+      "scope": "Add route marker and scoped One Time Automations CSS overrides.",
+      "files_allowed": [
+        "public/operations.html",
+        "public/css/one-time-operations.css"
+      ],
+      "verification": [
+        "PQC validation",
+        "local One Time smoke test",
+        "full Rabbi / One Time current-state audit",
+        "watchdog:actions",
+        "watchdog:protocol-drift"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 5,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "This packet only covers the Automations Center route. Any CRM/contact details, participants, public/member/student/provider portal polish, or automation behavior changes must split into new packets.",
+    "split_if_exceeds": true,
+    "context_risk_level": "low"
+  },
+  "tests": {
+    "commands": [
+      "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/10-automation-center-readability.product-quality.json",
+      "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:8095 --out=ops/ui-audits/2026-07-02-rabbi-onetime-automation-center-readability",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "manual_spot_checks": [
+      "Spot-check operations-automations-1440-desktop.png.",
+      "Spot-check operations-automations-390-mobile.png."
+    ],
+    "expected_failures_or_warnings": [
+      "Production deploy/live-smoke remains blocked by DEC-20260702-801.",
+      "Local server may log the known bna_email_log_status_check startup warning."
+    ]
+  },
+  "evidence": {
+    "before": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/screenshots/operations-automations-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/screenshots/operations-automations-390-mobile.png"
+    ],
+    "after_required": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-automation-center-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-automation-center-readability/screenshots/operations-automations-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-automation-center-readability/screenshots/operations-automations-390-mobile.png"
+    ],
+    "record_updates": [
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Route marker and scoped CSS are implemented.",
+      "Local screenshots show readable, non-overlapping automations desktop and mobile states.",
+      "Automations behavior/API/action states are unchanged.",
+      "Watchdogs pass and records are updated."
+    ],
+    "terminal_status": "local_verified_deploy_live_smoke_blocked_until_DEC-20260702-801"
+  },
+  "trace": {
+    "raw_id": "RAW-20260702-008",
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/10-automation-center-readability.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "npm run pqc:validate",
+      "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "node scripts/audit-rabbi-onetime-current-state.mjs",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "skipped_actions_policy": "No external provider, send, upload, payment, access grant, DNS, account, automation run, or production deploy action in this local packet.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-automation-center-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-automation-center-readability/screenshots/operations-automations-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-automation-center-readability/screenshots/operations-automations-390-mobile.png"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "requirement_ids": [
+      "REQ-20260702-812"
+    ],
+    "decision_ids": [
+      "DEC-20260702-801"
+    ],
+    "ledger_event": "rabbi_onetime_automation_center_readability_verified_local"
+  },
+  "drift_watchdog": {
+    "command": "npm run watchdog:protocol-drift",
+    "required": true,
+    "expected_result": "findings=0",
+    "record_report": true,
+    "blocker_policy": "If unrelated historical drift appears, record it separately and do not mark this packet terminally done without explaining scope."
+  },
+  "next_packet": {
+    "recommended": "Continue manual screenshot-reviewed cleanup for Operations participants/contact CRM layout or remaining One Time portal defects.",
+    "do_not_solve_in_this_packet": [
+      "CRM/contact detail polish",
+      "Participants/member IA",
+      "Public/student/provider/member portal redesign",
+      "Automation API or registry behavior",
+      "Deploy/live-smoke unblock"
+    ]
+  }
+}

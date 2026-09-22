@@ -1,0 +1,184 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const test = require('node:test');
+
+test('One Time focused landing copy uses launch funnel offer and safe CTAs', () => {
+  const html = fs.readFileSync('public/one-time/index.html', 'utf8');
+  const signup = fs.readFileSync('public/one-time/signup.html', 'utf8');
+
+  assert.match(html, /One Time Mishnayos/);
+  assert.match(html, /Give your son a love for learning Torah\./);
+  assert.match(html, /Sign Up Now/);
+  assert.match(html, /href="\/one-time\/signup"/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/join\.onetimeonetime\.com\/one-time">/);
+  assert.match(html, /<link rel="icon" href="\/images\/one-time\/social\/one-time-icon-32\.png" sizes="32x32" type="image\/png">/);
+  assert.match(html, /<link rel="apple-touch-icon" href="\/images\/one-time\/social\/one-time-apple-touch-icon\.png">/);
+  assert.match(html, /<meta property="og:image" content="https:\/\/join\.onetimeonetime\.com\/images\/one-time\/social\/one-time-link-preview-icon\.png">/);
+  assert.match(html, /<meta name="twitter:image" content="https:\/\/join\.onetimeonetime\.com\/images\/one-time\/social\/one-time-link-preview-icon\.png">/);
+  assert.match(html, /<meta property="og:image:alt" content="One Time black and white logo">/);
+  assert.ok(fs.statSync('public/images/one-time/social/one-time-icon-32.png').size > 0);
+  assert.ok(fs.statSync('public/images/one-time/social/one-time-apple-touch-icon.png').size > 0);
+  assert.ok(fs.statSync('public/images/one-time/social/one-time-link-preview-icon.png').size > 0);
+  assert.doesNotMatch(html, /<link rel="icon" href="\/favicon\.ico"/);
+  assert.doesNotMatch(html, /bna-social-preview|Bnei Neviim Academy logo|\/icons\/favicon|\/icons\/apple-touch-icon/);
+  assert.match(html, /--yellow: #ede518;/);
+  assert.match(html, /\.site-header \{[\s\S]*background: rgba\(8, 9, 16, 0\.96\);[\s\S]*box-shadow: none;/);
+  assert.match(html, /\.section \{ position: relative; overflow: hidden; padding: clamp\(52px, 6vw, 82px\) 0; \}/);
+  assert.match(html, /\.hero-actions \{ margin-top: -10px; \}/);
+  assert.doesNotMatch(html, /inset 0 -2px 0 rgba\(5, 5, 5, 0\.28\)/);
+  assert.doesNotMatch(html, /data-signup-modal/);
+  assert.doesNotMatch(html, /data-signup-form/);
+  assert.match(signup, /name="contact_name"/);
+  assert.match(signup, /name="signup_as"/);
+  assert.match(signup, /name="city_label"/);
+  assert.match(signup, /name="email"/);
+  assert.match(signup, /name="phone"/);
+  assert.match(signup, /name="reminder_preference"/);
+  assert.match(signup, /<span>One Time Mishnayos<small>Sign up<\/small><\/span>/);
+  assert.match(signup, /box-shadow: 0 8px 18px rgba\(237, 229, 24, 0\.2\);/);
+  assert.doesNotMatch(signup, /box-shadow: 0 14px 34px rgba\(242, 229, 59, 0\.28\);/);
+  assert.doesNotMatch(html, /name="student_name"|name="studentName"|name="learner_name"|name="learnerName"/);
+  assert.doesNotMatch(signup, /name="student_name"|name="studentName"|name="learner_name"|name="learnerName"/);
+  assert.doesNotMatch(signup, /preferred_class_format/);
+  assert.doesNotMatch(signup, /data-continue-link|data-continue-onboarding/);
+  assert.doesNotMatch(signup, /\/one-time-onboarding\?\$\{params\.toString\(\)\}/);
+  assert.match(html, /Member Login/);
+  assert.match(html, /data-rosh-hashanah-ticker/);
+  assert.match(html, /ROSH HASHANAH SPECIAL/);
+  assert.match(html, /Meet Rabbi Scheller/);
+  assert.match(html, /As Seen Across the Jewish World/);
+  assert.match(html, /<h3>Clarity<\/h3>/);
+  assert.match(html, /<h3>Accomplishment<\/h3>/);
+  assert.match(html, /<h3>Excitement for learning Torah<\/h3>/);
+  assert.match(html, /<h3>Live daily Mishnayos class<\/h3>/);
+  assert.match(html, /Everything a family or school needs to join the live class/);
+  assert.match(html, /<h3>Class link for each session<\/h3>/);
+  assert.match(html, /<h3>Review support<\/h3>/);
+  assert.match(html, /<h3>Family and school signup<\/h3>/);
+  assert.match(html, /<h3>Review sheets<\/h3>/);
+  assert.match(html, /<h3>Daily reminders<\/h3>/);
+  assert.match(html, /<h3>Safe class communication<\/h3>/);
+  assert.match(html, /<h3>Questions with Rabbi Scheller<\/h3>/);
+  assert.match(html, /a real sense of finishing each day&rsquo;s learning/);
+  assert.match(html, /Sign up, get the class information, and join the daily 7:00 p\.m\. live Mishnayos class\./);
+  assert.match(html, /<h3>Sign up<\/h3>/);
+  assert.match(html, /<h3>Receive the class link<\/h3>/);
+  assert.match(html, /<h3>Enjoy the live class<\/h3>/);
+  assert.match(html, /<h3>Families<\/h3>/);
+  assert.match(html, /<h3>English-speaking homeschoolers<\/h3>/);
+  assert.match(html, /<h3>Schools<\/h3>/);
+  assert.match(html, /<h3>Local boys in Ramat Beit Shemesh Alef<\/h3><p>Free live class at 7:00 p\.m\.<\/p>/);
+  assert.match(html, /How It Works/);
+  assert.match(html, /Teaching Torah Across the Jewish World/);
+  assert.match(html, /\/one-time\/privacy\.html/);
+  assert.match(html, /\/one-time\/terms\.html/);
+  assert.doesNotMatch(html, /TODO: replace with final hero video\/image/);
+  assert.doesNotMatch(html, /hero-media-placeholder|image-placeholder/);
+  assert.doesNotMatch(html, /Teaching Torah Across The World/);
+  assert.doesNotMatch(html, /Verified photo slot|Replacement-ready|usage rights are confirmed|approved .* asset/i);
+  assert.doesNotMatch(html, /HaGaon|MiVilna/);
+  assert.doesNotMatch(html, /most sought-after/);
+  assert.doesNotMatch(html, /approved Zoom details/);
+  assert.doesNotMatch(html, /signup-strip/);
+  assert.doesNotMatch(html, /Join the Free Class/);
+  assert.doesNotMatch(html, /Save My Spot/);
+  assert.doesNotMatch(html, /See How It Works/);
+  assert.doesNotMatch(html, /WhatsApp Robot Scheller/);
+  assert.doesNotMatch(html, /Quick answers before you start/);
+  assert.doesNotMatch(html, /FAQ/);
+  assert.doesNotMatch(html, /class="announcement"/);
+  assert.doesNotMatch(html, /class="ticker"/);
+  assert.doesNotMatch(html, />Region</);
+  assert.doesNotMatch(html, />Notes</);
+  assert.doesNotMatch(html, /parent access next steps/i);
+  assert.doesNotMatch(html, /Parent portal setup instructions/i);
+  assert.doesNotMatch(html, /A complete online dashboard|Online class library|Student portal|Parent portal|Monitored online platform|progress badges|student portal|refining the technology/i);
+  assert.doesNotMatch(html, /private asset library/i);
+  assert.doesNotMatch(html, /server-backed/i);
+  assert.doesNotMatch(html, /video ID/i);
+  assert.doesNotMatch(html, /player\.vimeo\.com/);
+  assert.doesNotMatch(html, /approved launch configuration/i);
+  assert.doesNotMatch(html, /No charge or external send was performed/i);
+  assert.doesNotMatch(html, /The next step asks whether|Choose the right onboarding path|does not charge|external send|grant access/i);
+  assert.doesNotMatch(html, /raw external page/i);
+  assert.doesNotMatch(html, /CAPTCHA/i);
+  assert.doesNotMatch(html, /\/provider\.html\?review=one-time/);
+  assert.doesNotMatch(html, /\/parent\.html\?review=one-time/);
+  assert.doesNotMatch(html, /\/student\.html\?review=one-time/);
+  assert.doesNotMatch(html, /TEST-ONETIME-REVIEW-ACCESS/);
+  assert.doesNotMatch(html, /Academy\s*&\s*Hotline/i);
+  assert.doesNotMatch(html, /Academy and Hotline/i);
+});
+
+test('One Time focused offer route and registries are declared', () => {
+  const server = fs.readFileSync('server.js', 'utf8');
+  const operations = fs.readFileSync('public/operations.html', 'utf8');
+  const botWidget = fs.readFileSync('public/js/bna-bot-widget.js', 'utf8');
+  const routeRegistry = JSON.parse(fs.readFileSync('ops/route-registry.json', 'utf8'));
+  const actionRegistry = JSON.parse(fs.readFileSync('ops/action-registry.json', 'utf8'));
+  const siteConfig = JSON.parse(fs.readFileSync('config/service-provider-sites/one-time.json', 'utf8'));
+  const robotAsset = fs.statSync('public/assets/one-time/robot/robot-scheller-whatsapp.png');
+
+  assert.match(server, /'\/one-time\/mishnayos'/);
+  assert.match(server, /function isOneTimeSingleTenantRuntime\(\)/);
+  assert.match(server, /app\.get\(\['\/', '\/index\.html', '\/public', '\/public\/'\]/);
+  assert.match(server, /INSTANCE_RUNTIME_FLAGS\.single_tenant/);
+  assert.match(server, /'\/one-time\/'/);
+  assert.match(server, /ONE_TIME_SINGLE_TENANT_ICON_ALIASES/);
+  assert.match(server, /\['\/favicon\.ico', 'public\/images\/one-time\/social\/one-time-icon-32\.png'\]/);
+  assert.match(server, /\['\/icons\/apple-touch-icon\.png', 'public\/images\/one-time\/social\/one-time-apple-touch-icon\.png'\]/);
+  assert.ok(
+    server.indexOf('ONE_TIME_SINGLE_TENANT_ICON_ALIASES') < server.indexOf("app.use(express.static('public'"),
+    'One Time single-tenant favicon aliases must run before shared public static assets'
+  );
+  assert.match(operations, /function updateDocumentTitleForWorkspace\(\)/);
+  assert.match(operations, /currentWorkspaceIsOneTime\(\)[\s\S]*document\.title = `\$\{workspaceName\} - Operations`/);
+
+  const routes = new Set(routeRegistry.routes.map((route) => route.route));
+  assert.ok(routes.has('/one-time'));
+  assert.ok(routes.has('/one-time/signup'));
+  assert.ok(routes.has('/public'));
+  assert.ok(routes.has('/one-time/mishnayos'));
+  assert.ok(routes.has('/one-time/privacy.html'));
+  assert.ok(routes.has('/one-time/terms.html'));
+  assert.ok(routes.has('/one-time-onboarding'));
+  assert.ok(routes.has('/one-time-preview'));
+
+  assert.equal(siteConfig.assets.teaching_gallery.length, 8);
+  assert.ok(siteConfig.assets.teaching_gallery.every((entry) => entry.src.startsWith('/assets/one-time/rabbi/teaching-locations/')));
+  assert.equal(siteConfig.assets.robot_scheller, '/assets/one-time/robot/robot-scheller-whatsapp.png');
+  assert.ok(robotAsset.size < 500_000, `expected optimized Robot PNG below 500 KB, got ${robotAsset.size}`);
+  assert.match(botWidget, /<img class="bna-bot-avatar" src="\/assets\/one-time\/robot\/robot-scheller-whatsapp\.png"/);
+  assert.match(botWidget, /\.bna-bot-avatar[\s\S]*object-fit: contain;[\s\S]*object-position: center;/);
+  assert.match(botWidget, /body\.bna-assistant-surface-one-time-public \.bna-bot-launcher \.bna-bot-avatar[\s\S]*width: 100px;[\s\S]*height: 100px;/);
+  assert.match(botWidget, /body\.bna-assistant-surface-one-time-public \.bna-bot-head \.bna-bot-avatar[\s\S]*width: 84px;[\s\S]*height: 84px;/);
+  assert.match(botWidget, /@media \(max-width: 520px\)[\s\S]*width: 88px;[\s\S]*min-height: 88px;[\s\S]*width: 80px;[\s\S]*height: 80px;/);
+
+  const actions = new Set(actionRegistry.actions.map((action) => action.action_id));
+  assert.ok(actions.has('ACTION-ONETIME-JOIN-SHIR-CTA'));
+  assert.ok(actions.has('ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT'));
+  assert.ok(actions.has('ACTION-ONETIME-PUBLIC-MOBILE-MENU'));
+  assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-PREV'));
+  assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-NEXT'));
+  assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE'));
+  assert.ok(actions.has('ACTION-ONETIME-MEMBER-LOGIN-LINK'));
+  for (const id of [
+    'ACTION-ONETIME-TEACHING-CAROUSEL-PREV',
+    'ACTION-ONETIME-TEACHING-CAROUSEL-NEXT',
+    'ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE',
+  ]) {
+    const action = actionRegistry.actions.find((entry) => entry.action_id === id);
+    assert.equal(action.status, 'active');
+    assert.match(action.expected_behavior, /selected .*teaching/i);
+  }
+  const joinAction = actionRegistry.actions.find((action) => action.action_id === 'ACTION-ONETIME-JOIN-SHIR-CTA');
+  assert.match(joinAction.selector_hint, /\/one-time\/signup/);
+  assert.match(joinAction.expected_behavior, /\/one-time\/signup/);
+  const formAction = actionRegistry.actions.find((action) => action.action_id === 'ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT');
+  assert.equal(formAction.route, '/one-time/signup');
+  assert.match(formAction.expected_behavior, /email/i);
+  assert.match(formAction.expected_behavior, /CRM/i);
+  assert.match(formAction.expected_behavior, /Rabbi Telegram/i);
+  assert.match(formAction.expected_behavior, /no student name/i);
+  assert.match(formAction.expected_behavior, /does not create checkout|no checkout/i);
+});

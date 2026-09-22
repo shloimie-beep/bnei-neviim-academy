@@ -1,0 +1,27 @@
+{
+  "requirement_id": "REQ-20260623-026",
+  "local_verification": {
+    "scope_policy": "PASS 10/10",
+    "control_center_data_model_scope": "PASS 18/18",
+    "focused_assistant_action": "PASS 122/122",
+    "watchdog_actions": "PASS 0 findings"
+  },
+  "live_verification": {
+    "deployment_id": "02944240-4c1b-477b-a57f-5f6140e80400",
+    "deployment_status": "SUCCESS",
+    "standard_smoke": "ops/live-smokes/2026-06-23T21-07-46-763Z-live-app-smoke.md",
+    "control_center_readback_status": 200
+  },
+  "covered_journeys": [
+    "telegram_website_planner_parity",
+    "provider_onboarding_studio",
+    "parent_linked_child_chart_flow",
+    "super_admin_campaign_drip_automation_previews",
+    "natural_language_ticketing",
+    "unified_reminders",
+    "file_media_intake",
+    "role_workspace_security",
+    "operations_control_center"
+  ],
+  "external_actions_performed": false
+}

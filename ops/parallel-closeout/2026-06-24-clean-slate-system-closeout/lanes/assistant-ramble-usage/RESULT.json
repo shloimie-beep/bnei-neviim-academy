@@ -1,0 +1,44 @@
+{
+  "lane": "assistant-ramble-usage",
+  "branch": "codex/closeout-assistant-ramble-usage-20260624",
+  "status": "complete_with_external_blockers",
+  "base_branch": "codex/clean-slate-integration-20260624",
+  "base_sha": "68f0b02fa1fe8928a8b4dd52704ec7e92c0fcba5",
+  "result_summary": "Implemented assistant runtime matrix proof, provider API usage persistence interface/schema proposal, model readiness states, and pure ramble-routing package with focused tests. No production DB migration, live provider call, user message send, central task/memory/ledger edit, or deployment was performed in this lane.",
+  "requirements_closed": [
+    "assistant-runtime-matrix",
+    "shared-control-plane-api-usage-recorder",
+    "ramble-to-done-routing-package",
+    "api-usage-persistence-interface",
+    "model-credential-state-classification",
+    "lane-handoff-docs"
+  ],
+  "files_changed": [
+    "docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md",
+    "migrations/20260624-provider-api-usage-persistence.sql",
+    "ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.json",
+    "ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.md",
+    "scripts/smoke-owner-review-assistant-runtime.mjs",
+    "src/lib/bna/provider-api-usage.js",
+    "src/lib/bna/ramble-routing.js",
+    "src/platform/assistant/control-plane.js",
+    "src/platform/assistant/model-readiness.js",
+    "tests/assistant-model-readiness.test.js",
+    "tests/provider-api-usage-readiness.test.js",
+    "tests/ramble-routing-pipeline.test.js",
+    "tests/universal-control-plane-scope-policy.test.js"
+  ],
+  "verification": [
+    "node --test tests/provider-api-usage-readiness.test.js tests/assistant-model-readiness.test.js tests/ramble-routing-pipeline.test.js tests/universal-control-plane-scope-policy.test.js",
+    "npm run owner-review:assistant-runtime",
+    "git diff --check",
+    "npm run secrets:audit",
+    "npm run watchdog:actions"
+  ],
+  "blockers": [
+    "Optional local DB E2E blocked until BNA_OWNER_REVIEW_ASSISTANT_DATABASE_URL points to a local/test database.",
+    "Live hosted-AI proof blocked until provider credentials and explicit live-smoke approval are available.",
+    "Production migration/deploy/live smoke blocked by lane scope and release approval."
+  ],
+  "safe_to_merge": true
+}

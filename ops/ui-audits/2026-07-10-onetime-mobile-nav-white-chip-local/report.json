@@ -1,0 +1,737 @@
+{
+  "generated_at": "2026-07-10T15:07:54.870Z",
+  "base_url": "http://127.0.0.1:3210",
+  "success": true,
+  "rows": [
+    {
+      "route": "one-time",
+      "url": "http://127.0.0.1:3210/one-time/",
+      "width": 390,
+      "status": 200,
+      "result": "PASS",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/one-time-390.png",
+      "metrics": {
+        "page_overflow_px": 0,
+        "rail_overflow_x": "auto",
+        "rail_flex_wrap": "nowrap",
+        "cue_display": "block",
+        "white_chip_count": 5,
+        "black_text_count": 6,
+        "selected_count": 1,
+        "items": [
+          {
+            "label": "One Time",
+            "current": true,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgb(255, 255, 255)",
+            "boxShadow": "rgba(237, 229, 24, 0.86) 0px 0px 0px 2px inset",
+            "clipped": false
+          },
+          {
+            "label": "Watch",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Program",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "How It Works",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "FAQ",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Sign Up Now",
+            "current": false,
+            "backgroundColor": "rgb(237, 229, 24)",
+            "color": "rgb(16, 16, 16)",
+            "borderColor": "rgb(237, 229, 24)",
+            "boxShadow": "none",
+            "clipped": false
+          }
+        ]
+      }
+    },
+    {
+      "route": "one-time",
+      "url": "http://127.0.0.1:3210/one-time/",
+      "width": 430,
+      "status": 200,
+      "result": "PASS",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/one-time-430.png",
+      "metrics": {
+        "page_overflow_px": 0,
+        "rail_overflow_x": "auto",
+        "rail_flex_wrap": "nowrap",
+        "cue_display": "block",
+        "white_chip_count": 5,
+        "black_text_count": 6,
+        "selected_count": 1,
+        "items": [
+          {
+            "label": "One Time",
+            "current": true,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgb(255, 255, 255)",
+            "boxShadow": "rgba(237, 229, 24, 0.86) 0px 0px 0px 2px inset",
+            "clipped": false
+          },
+          {
+            "label": "Watch",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Program",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "How It Works",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "FAQ",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Sign Up Now",
+            "current": false,
+            "backgroundColor": "rgb(237, 229, 24)",
+            "color": "rgb(16, 16, 16)",
+            "borderColor": "rgb(237, 229, 24)",
+            "boxShadow": "none",
+            "clipped": false
+          }
+        ]
+      }
+    },
+    {
+      "route": "rabbi-member",
+      "url": "http://127.0.0.1:3210/rabbi-member?review=one-time",
+      "width": 390,
+      "status": 200,
+      "result": "PASS",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/rabbi-member-390.png",
+      "metrics": {
+        "page_overflow_px": 0,
+        "rail_overflow_x": "auto",
+        "rail_flex_wrap": "nowrap",
+        "cue_display": "block",
+        "white_chip_count": 6,
+        "black_text_count": 6,
+        "selected_count": 1,
+        "items": [
+          {
+            "label": "Home",
+            "current": true,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgb(255, 255, 255)",
+            "boxShadow": "rgba(237, 229, 24, 0.86) 0px 0px 0px 2px inset",
+            "clipped": false
+          },
+          {
+            "label": "Library",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Classroom",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Student preview",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Helper",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Support",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          }
+        ]
+      }
+    },
+    {
+      "route": "rabbi-member",
+      "url": "http://127.0.0.1:3210/rabbi-member?review=one-time",
+      "width": 430,
+      "status": 200,
+      "result": "PASS",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/rabbi-member-430.png",
+      "metrics": {
+        "page_overflow_px": 0,
+        "rail_overflow_x": "auto",
+        "rail_flex_wrap": "nowrap",
+        "cue_display": "block",
+        "white_chip_count": 6,
+        "black_text_count": 6,
+        "selected_count": 1,
+        "items": [
+          {
+            "label": "Home",
+            "current": true,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgb(255, 255, 255)",
+            "boxShadow": "rgba(237, 229, 24, 0.86) 0px 0px 0px 2px inset",
+            "clipped": false
+          },
+          {
+            "label": "Library",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Classroom",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Student preview",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Helper",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Support",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          }
+        ]
+      }
+    },
+    {
+      "route": "member-library",
+      "url": "http://127.0.0.1:3210/member-library?review=one-time",
+      "width": 390,
+      "status": 200,
+      "result": "PASS",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/member-library-390.png",
+      "metrics": {
+        "page_overflow_px": 0,
+        "rail_overflow_x": "auto",
+        "rail_flex_wrap": "nowrap",
+        "cue_display": "block",
+        "white_chip_count": 6,
+        "black_text_count": 6,
+        "selected_count": 1,
+        "items": [
+          {
+            "label": "Home",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Library",
+            "current": true,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgb(255, 255, 255)",
+            "boxShadow": "rgba(237, 229, 24, 0.86) 0px 0px 0px 2px inset",
+            "clipped": false
+          },
+          {
+            "label": "Classroom",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Helper",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Support",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Logout",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          }
+        ]
+      }
+    },
+    {
+      "route": "member-library",
+      "url": "http://127.0.0.1:3210/member-library?review=one-time",
+      "width": 430,
+      "status": 200,
+      "result": "PASS",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/member-library-430.png",
+      "metrics": {
+        "page_overflow_px": 0,
+        "rail_overflow_x": "auto",
+        "rail_flex_wrap": "nowrap",
+        "cue_display": "block",
+        "white_chip_count": 6,
+        "black_text_count": 6,
+        "selected_count": 1,
+        "items": [
+          {
+            "label": "Home",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Library",
+            "current": true,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgb(255, 255, 255)",
+            "boxShadow": "rgba(237, 229, 24, 0.86) 0px 0px 0px 2px inset",
+            "clipped": false
+          },
+          {
+            "label": "Classroom",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Helper",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Support",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Logout",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          }
+        ]
+      }
+    },
+    {
+      "route": "one-time-classroom",
+      "url": "http://127.0.0.1:3210/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "width": 390,
+      "status": 200,
+      "result": "PASS",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/one-time-classroom-390.png",
+      "metrics": {
+        "page_overflow_px": 0,
+        "rail_overflow_x": "auto",
+        "rail_flex_wrap": "nowrap",
+        "cue_display": "block",
+        "white_chip_count": 6,
+        "black_text_count": 6,
+        "selected_count": 1,
+        "items": [
+          {
+            "label": "Home",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Library",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Classroom",
+            "current": true,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgb(255, 255, 255)",
+            "boxShadow": "rgba(237, 229, 24, 0.86) 0px 0px 0px 2px inset",
+            "clipped": false
+          },
+          {
+            "label": "Helper",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Support",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Logout",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          }
+        ]
+      }
+    },
+    {
+      "route": "one-time-classroom",
+      "url": "http://127.0.0.1:3210/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "width": 430,
+      "status": 200,
+      "result": "PASS",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/one-time-classroom-430.png",
+      "metrics": {
+        "page_overflow_px": 0,
+        "rail_overflow_x": "auto",
+        "rail_flex_wrap": "nowrap",
+        "cue_display": "block",
+        "white_chip_count": 6,
+        "black_text_count": 6,
+        "selected_count": 1,
+        "items": [
+          {
+            "label": "Home",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Library",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Classroom",
+            "current": true,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgb(255, 255, 255)",
+            "boxShadow": "rgba(237, 229, 24, 0.86) 0px 0px 0px 2px inset",
+            "clipped": false
+          },
+          {
+            "label": "Helper",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Support",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Logout",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          }
+        ]
+      }
+    },
+    {
+      "route": "provider-review",
+      "url": "http://127.0.0.1:3210/provider.html?review=one-time",
+      "width": 390,
+      "status": 200,
+      "result": "PASS",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/provider-review-390.png",
+      "metrics": {
+        "page_overflow_px": 0,
+        "rail_overflow_x": "auto",
+        "rail_flex_wrap": "nowrap",
+        "cue_display": "block",
+        "white_chip_count": 6,
+        "black_text_count": 6,
+        "selected_count": 1,
+        "items": [
+          {
+            "label": "Provider",
+            "current": true,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgb(255, 255, 255)",
+            "boxShadow": "rgba(237, 229, 24, 0.86) 0px 0px 0px 2px inset",
+            "clipped": false
+          },
+          {
+            "label": "One Time",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Parent",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Student",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Member",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Classroom",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          }
+        ]
+      }
+    },
+    {
+      "route": "provider-review",
+      "url": "http://127.0.0.1:3210/provider.html?review=one-time",
+      "width": 430,
+      "status": 200,
+      "result": "PASS",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/provider-review-430.png",
+      "metrics": {
+        "page_overflow_px": 0,
+        "rail_overflow_x": "auto",
+        "rail_flex_wrap": "nowrap",
+        "cue_display": "block",
+        "white_chip_count": 6,
+        "black_text_count": 6,
+        "selected_count": 1,
+        "items": [
+          {
+            "label": "Provider",
+            "current": true,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgb(255, 255, 255)",
+            "boxShadow": "rgba(237, 229, 24, 0.86) 0px 0px 0px 2px inset",
+            "clipped": false
+          },
+          {
+            "label": "One Time",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Parent",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Student",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Member",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          },
+          {
+            "label": "Classroom",
+            "current": false,
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(8, 9, 16)",
+            "borderColor": "rgba(255, 255, 255, 0.92)",
+            "boxShadow": "none",
+            "clipped": false
+          }
+        ]
+      }
+    }
+  ]
+}

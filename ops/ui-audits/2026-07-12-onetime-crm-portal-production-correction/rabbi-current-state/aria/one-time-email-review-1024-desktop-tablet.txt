@@ -1,0 +1,230 @@
+- banner:
+  - text: Review-only email templates
+  - heading "One Time Email Review" [level=1]
+  - paragraph: Preview-only parent, student, class, payment, and support templates. No live email can be sent from this page.
+  - navigation "One Time review links":
+    - link "One Time":
+      - /url: /one-time
+    - link "Provider":
+      - /url: /provider.html?review=one-time
+    - link "Parent":
+      - /url: /parent.html?review=one-time
+    - link "Student":
+      - /url: /student.html?review=one-time
+    - link "Classroom":
+      - /url: /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+- main:
+  - text: Email sending is blocked here until Resend sender/domain setup, recipient policy, and launch approval are complete. No external write.
+  - region "Email review status":
+    - strong: 21 templates ready for review
+    - text: Preview-only until sender/domain and recipient policy are approved. preview_only No-send
+  - article:
+    - heading "Parent invitation" [level=2]
+    - paragraph: parent_invitation
+    - text: No-send Subject
+    - paragraph:
+      - strong: You are invited to One Time Mishnayos
+    - text: Preview text
+    - paragraph: Set up your parent portal and review your child access.
+    - text: Welcome. Use your secure parent portal to see classes, attendance, progress, videos, worksheets, payments, and support. One selected parent preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Student invitation" [level=2]
+    - paragraph: student_invitation
+    - text: No-send Subject
+    - paragraph:
+      - strong: Your One Time Mishnayos classroom is ready
+    - text: Preview text
+    - paragraph: Open your student portal for the next class and review materials.
+    - text: Your student portal includes the next class, protected Join Class readiness, lessons, worksheets, videos, achievements, and questions. One linked student preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Parent verification" [level=2]
+    - paragraph: parent_verification
+    - text: No-send Subject
+    - paragraph:
+      - strong: Verify your One Time parent email
+    - text: Preview text
+    - paragraph: Confirm your email before receiving One Time account updates.
+    - text: Use the secure verification button to confirm your parent account. This preview does not send a live verification email. One selected parent preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Student verification" [level=2]
+    - paragraph: student_verification
+    - text: No-send Subject
+    - paragraph:
+      - strong: Confirm your One Time student access
+    - text: Preview text
+    - paragraph: Your student review access is ready to verify.
+    - text: The student verification flow is shown for review only and does not activate a real login credential. One linked student preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Password recovery" [level=2]
+    - paragraph: password_recovery
+    - text: No-send Subject
+    - paragraph:
+      - strong: Reset your One Time access
+    - text: Preview text
+    - paragraph: Recover access to the One Time portal.
+    - text: A secure reset link would appear here after sender/domain readiness and reset policy are approved. Parent or student account holder preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Trial confirmation" [level=2]
+    - paragraph: trial_confirmation
+    - text: No-send Subject
+    - paragraph:
+      - strong: Your 30-day One Time trial is active
+    - text: Preview text
+    - paragraph: Your membership trial and access are ready for review.
+    - text: The trial is active in test mode. Billing is not live and no card is charged from this preview. Parent account holder preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Pre-renewal reminder" [level=2]
+    - paragraph: pre_renewal_reminder
+    - text: No-send Subject
+    - paragraph:
+      - strong: Your One Time membership renews soon
+    - text: Preview text
+    - paragraph: Review upcoming renewal and access status.
+    - text: This reminder previews renewal copy only. Live sending waits for sender/domain readiness and billing approval. Active trial or membership parent preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Class reminder" [level=2]
+    - paragraph: class_reminder
+    - text: No-send Subject
+    - paragraph:
+      - strong: "Reminder: Mishnah class is coming up"
+    - text: Preview text
+    - paragraph: Your next live class and join readiness are listed in the portal.
+    - text: The protected Join Class action appears in the portal. This preview does not create or send a real Zoom meeting link. Enrolled parent and student preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Zoom readiness reminder" [level=2]
+    - paragraph: zoom_readiness_reminder
+    - text: No-send Subject
+    - paragraph:
+      - strong: Your protected Join Class button is ready for review
+    - text: Preview text
+    - paragraph: Check class time and join readiness in the portal.
+    - text: This template previews reminder language only. No Zoom meeting is created and no join URL is emailed from review mode. Live Membership parent and student preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Class recording available" [level=2]
+    - paragraph: class_recording_available
+    - text: No-send Subject
+    - paragraph:
+      - strong: Your latest One Time class recording is ready
+    - text: Preview text
+    - paragraph: Review the new recording in the member library.
+    - text: The recording notice points members back to the protected library. Automated upload and live send remain gated. Members with library access preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "New video/library item" [level=2]
+    - paragraph: new_video_library_item
+    - text: No-send Subject
+    - paragraph:
+      - strong: New Mishnah review video is available
+    - text: Preview text
+    - paragraph: Continue watching the latest class review in the member library.
+    - text: A manual Vimeo reference is visible for review. Automated upload and publishing remain gated. Members with library access preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Worksheet/resource" [level=2]
+    - paragraph: worksheet_resource
+    - text: No-send Subject
+    - paragraph:
+      - strong: New worksheet for Pesachim Perek 10
+    - text: Preview text
+    - paragraph: Open the new worksheet/resource from your portal.
+    - text: The worksheet card appears in the student and parent review portals with a safe sample resource link. Enrolled parent and student preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Attendance/progress summary" [level=2]
+    - paragraph: attendance_progress_summary
+    - text: No-send Subject
+    - paragraph:
+      - strong: This week in One Time Mishnayos
+    - text: Preview text
+    - paragraph: Attendance minutes, progress, and review status are ready.
+    - text: TEST Student One Time attended 39 of 45 minutes and is 42% through the review course. Linked parent preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Milestone notice" [level=2]
+    - paragraph: milestone_notice
+    - text: No-send Subject
+    - paragraph:
+      - strong: A One Time milestone was reached
+    - text: Preview text
+    - paragraph: First Mishnah Review Completed is ready for review.
+    - text: The milestone appears in the parent and student portals with TEST-only progress data. Linked parent and student preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Achievement earned" [level=2]
+    - paragraph: achievement_earned
+    - text: No-send Subject
+    - paragraph:
+      - strong: A new achievement was earned
+    - text: Preview text
+    - paragraph: First Class achievement is ready for review.
+    - text: The achievement card is visible in the portals with a parent-safe explanation. Linked parent and student preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Reward ready" [level=2]
+    - paragraph: reward_ready
+    - text: No-send Subject
+    - paragraph:
+      - strong: A One Time reward is ready for review
+    - text: Preview text
+    - paragraph: Individual Review Reward is waiting for Rabbi review.
+    - text: The reward card previews lifecycle state only and does not ship a prize or message anyone. Linked parent and student preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Payment receipt" [level=2]
+    - paragraph: payment_receipt_preview
+    - text: No-send Subject
+    - paragraph:
+      - strong: One Time payment receipt preview
+    - text: Preview text
+    - paragraph: Receipt language for a future approved payment.
+    - text: This receipt preview is not connected to a live charge, invoice, card, Stripe checkout, or Green Invoice checkout. Parent account holder preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Payment issue" [level=2]
+    - paragraph: payment_issue_preview
+    - text: No-send Subject
+    - paragraph:
+      - strong: Action may be needed on your One Time payment
+    - text: Preview text
+    - paragraph: Payment issue language for a future approved billing workflow.
+    - text: This preview does not retry a card, revoke access, or trigger dunning. Billing policy remains approval-gated. Parent account holder preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Cancellation request" [level=2]
+    - paragraph: cancellation_request_received
+    - text: No-send Subject
+    - paragraph:
+      - strong: We received your One Time cancellation request
+    - text: Preview text
+    - paragraph: Your request is waiting for review.
+    - text: Cancellation copy is shown for review only. It does not cancel billing, remove access, or update an external provider. Parent account holder preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Support ticket created" [level=2]
+    - paragraph: support_ticket_created
+    - text: No-send Subject
+    - paragraph:
+      - strong: We received your One Time support request
+    - text: Preview text
+    - paragraph: Your support ticket is open.
+    - text: Your worksheet link question was received and is listed in the support/private questions review surface. Ticket requester preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.
+  - article:
+    - heading "Support reply" [level=2]
+    - paragraph: support_reply
+    - text: No-send Subject
+    - paragraph:
+      - strong: Reply to your One Time support request
+    - text: Preview text
+    - paragraph: There is an update on your support ticket.
+    - text: This preview shows the reply format only. Live email sending is disabled until sender/domain readiness is complete. Ticket requester preview_only
+    - paragraph: Resend sender/domain readiness is not confirmed in this shared review environment.

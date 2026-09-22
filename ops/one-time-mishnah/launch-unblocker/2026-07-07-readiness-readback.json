@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-07-07T22:52:43+03:00",
+  "mode": "read_only",
+  "external_write_performed": false,
+  "provider_mutation_performed": false,
+  "dns_mutation_performed": false,
+  "email_send_performed": false,
+  "whatsapp_send_performed": false,
+  "live_payment_performed": false,
+  "credential_mutation_performed": false,
+  "drive_upload_performed": false,
+  "vimeo_upload_performed": false,
+  "database_mutation_performed": false,
+  "commands": [
+    {
+      "command": "npm run one-time:setup:check",
+      "exit_code": 1,
+      "summary": "Full setup is not ready; current Railway variable readback says Service 'one-time-web' not found; ready count is 2/8."
+    },
+    {
+      "command": "npm run one-time:railway-target:guard",
+      "exit_code": 0,
+      "summary": "Railway-only report is ready from the historical guarded provisioning report, but current variable readback still says Service 'one-time-web' not found."
+    },
+    {
+      "command": "npm run one-time:db:bootstrap",
+      "exit_code": 0,
+      "summary": "Dry-run only; mutation_performed false; confirmation required BOOTSTRAP_ONE_TIME_DATABASE; local apply guards are not set."
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "exit_code": 0,
+      "summary": "Clean after read-only checks."
+    }
+  ],
+  "railway_blockers": [
+    "Current Railway token/env cannot read one-time-web variables: Service 'one-time-web' not found.",
+    "Separate One Time database cannot be proven ready because DATABASE_URL service reference cannot be read from current context.",
+    "Bootstrap apply remains blocked until the One Time service target and environment guards are proven in the active Railway context."
+  ],
+  "provider_blockers": [
+    "Missing ONE_TIME_ZOOM_SESSION_ALIAS_or_zoom_join_url_alias.",
+    "Missing ONE_TIME_DRIVE_DROP_FOLDER_ALIAS.",
+    "Need Rabbi Stripe sandbox/test key status and 67/month product/price alias; live Stripe must not be used for sandbox smoke.",
+    "Missing Whapi/WAPI instance ID and phone number.",
+    "Missing final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet."
+  ],
+  "next_safe_action": [
+    "Reconcile Railway auth/target context so the current CLI/token can see one-time-production / one-time-web / production.",
+    "Rerun npm run one-time:setup:check.",
+    "Rerun npm run one-time:db:bootstrap.",
+    "Run the post-setup deploy/live-smoke packet only after setup check is ready."
+  ]
+}

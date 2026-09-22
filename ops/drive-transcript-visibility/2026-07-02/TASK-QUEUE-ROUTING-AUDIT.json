@@ -1,0 +1,42 @@
+{
+  "status": "verified_planned_no_writes",
+  "generated_at": "2026-07-02T16:10:00Z",
+  "no_production_mutation": true,
+  "scope": {
+    "range_start": "2026-06-25T00:00:00+03:00",
+    "range_end": "2026-07-02T23:59:59+03:00",
+    "jobs_checked": [
+      101,
+      100,
+      91,
+      85,
+      84,
+      83,
+      82
+    ]
+  },
+  "counts": {
+    "task_candidates_found": 0,
+    "codex_queue_tasks_created": 0,
+    "duplicates_created": 0
+  },
+  "routing_contract": {
+    "required_fields": [
+      "owner",
+      "category",
+      "priority",
+      "depends_on",
+      "related_file_or_source",
+      "notes",
+      "privacy_classification",
+      "source_job",
+      "idempotency_key"
+    ],
+    "privacy_rule": "Do not expose raw private student text in task title/body.",
+    "lifecycle_rule": "Codex/system work routes to the canonical agent lifecycle, not human Pending."
+  },
+  "evidence": [
+    "tests/transcript-digest-export.test.js",
+    "ops/drive-transcript-visibility/2026-07-02/BACKLOG-20260625-20260702.json"
+  ]
+}

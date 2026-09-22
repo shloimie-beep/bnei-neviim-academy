@@ -1,0 +1,1217 @@
+# Test Results
+
+## 2026-07-13 One Time-First Addendum Control Correction
+
+- PASS JSON parse check for `requirements.json`, source-statement matrix, packet manifest, `latest.json`, and `run.json`.
+- PASS `npm run bna:run:validate` after recording `REQ-20260713-905` through `REQ-20260713-911`.
+- PASS `npm run bna:run:next`; selected `REQ-20260713-907` as the next unblocked executable batch.
+- No owner email/WhatsApp send was attempted in the control-correction step.
+
+## 2026-07-13 Owner-Test Readiness Preflight
+
+- PASS `node --check src/lib/bna/one-time-owner-test-readiness.js`.
+- PASS `node --check scripts/check-onetime-owner-test-readiness.mjs`.
+- PASS `node --check scripts/check-onetime-external-setup-readiness.mjs`.
+- PASS `node --test tests/one-time-owner-test-readiness.test.js tests/one-time-delivery-outbox.test.js tests/one-time-signup-reminder-workflow.test.js` (19/19).
+- BLOCKED `npm run one-time:owner-test:readiness` only on missing secure owner-test email and WhatsApp aliases. Report: `ops/watchdog-audits/2026-07-13T05-10-06-583Z-onetime-owner-test-readiness.md`. No email, WhatsApp, CRM mutation, public auto-reply activation, or external write occurred.
+- BLOCKED `npm run one-time:wapi:readiness` only on Telegram notification approval being false; WAPI outbound/provider setup and auto-reply readiness were true, and `whatsapp_send_performed=false`.
+- PASS no-send One Time Resend readiness through `scripts/smoke-email.mjs` with `external_send_performed=false`.
+
+## 2026-07-13 Architecture/Performance Baseline
+
+- PASS `node --check scripts/audit-onetime-architecture-performance-baseline.mjs`.
+- PASS `npm run one-time:architecture-performance-baseline -- --repeats=2`.
+  - Live target: `https://join.onetimeonetime.com`.
+  - Live deploy SHA: `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
+  - Samples: 160 measured, 0 skipped.
+  - Attention samples: 32 (`large_transfer=16`, `heavy_dom=16`).
+  - No forms submitted, no buttons clicked, no sends, no provider mutations, no Railway mutation, no production data mutation.
+  - Report: `ops/performance-audits/2026-07-13-onetime-architecture-performance-baseline/report.md`.
+- PASS ADR recorded at `docs/architecture/one-time-app-shell-adr-2026-07-13.md`.
+- PASS `npm run bna:run:validate` after marking `REQ-20260713-907` Done.
+- PASS `npm run bna:run:next`; selected `REQ-20260713-908` as the next unblocked executable batch.
+- PASS `npm run watchdog:protocol-drift` after adding Product Quality gate markers to the active task packets; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md` shows 0 findings and is mapped to `REQ-20260713-907`, `REQ-20260713-908`, and `REQ-20260713-909`.
+- PASS `npm run audit:governance`; current addendum artifacts are mapped to active requirements, no untracked audit packages were reported, and the remaining `NEEDS TASK MAPPING` result is from older repo-wide audit backlog outside this scoped packet.
+- PASS final `npm run bna:run:validate`; active run remains valid and work remains.
+
+## 2026-07-13 Dedicated Provider Shell Routing Slice
+
+- PASS `node --check server.js`.
+- PASS `node --test tests/one-time-provider-operations-login.test.js tests/one-time-provider-review-navigation.test.js` (11/11).
+- PASS `node scripts/smoke-onetime-provider-crm-layout-local.mjs`; report `ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md`.
+- PASS `node --test tests/one-time-route-role-mapping.test.js tests/one-time-action-coverage.test.js` (11/11).
+- PASS `npm run watchdog:actions`.
+- PASS `npm run bna:run:validate`.
+- PASS commit/push at `c0b8ab8139c6166d89527a949ce4dd70bf67df3a` on `master`.
+- PASS BNA Railway deploy through `railway:redeploy`; deployment `33571043-54ce-4631-99c1-b54209edebc7` reached `SUCCESS`.
+- PASS One Time Railway deploy through `railway:redeploy` with target profile `one-time`; deployment `b39ce70a-89e0-44a3-80c5-77e8c2b43754` reached `SUCCESS`.
+- PASS live smoke `ops/live-smokes/2026-07-13T06-06-50-onetime-provider-shell-routing.md`: exact deploy-info SHA matched, default provider route loaded One Time shell without Operations CSS/JS, and explicit `ops_fallback=1` redirected to scoped Operations CRM.
+- Superseded by later route-module slices: `REQ-20260713-908` is now Done after CRM, mailbox, and communications route-module deploy/live-smoke proof.
+
+## 2026-07-13 CRM Route Module Extraction Slice
+
+- PASS `node --check public/js/one-time-provider-crm-route.js public/js/one-time-provider-mailbox-route.js public/js/one-time-provider-communications-route.js`.
+- PASS `node --check scripts/smoke-onetime-provider-crm-layout-local.mjs`.
+- PASS `node --test tests/one-time-provider-operations-login.test.js tests/one-time-provider-review-navigation.test.js` (11/11).
+- PASS `node --test tests/one-time-route-role-mapping.test.js tests/one-time-action-coverage.test.js` (11/11).
+- PASS `node scripts/smoke-onetime-provider-crm-layout-local.mjs`; report records `routeModules=["crm"]` and no eager mailbox/communications module load.
+- PASS `npm run one-time:provider-route-module-budget -- --base-ref HEAD`; report `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` shows `provider.html` shrank by 805 bytes, default overview loaded no route modules, CRM loaded only `/js/one-time-provider-crm-route.js`, mailbox loaded only its stub, Operations assets stayed absent, and failed/bad/console counts were `0/0/0`.
+- PASS `npm run watchdog:actions`, `npm run secrets:audit`, and `npm run bna:run:validate`.
+- PASS commit/push at `a9447271e29ed0f30401b05f760f4d314f91c9a9` on `master`.
+- PASS One Time Railway deploy and doctor; deployment `fac38cc0-23c4-4158-8556-4c11e6c95215` reached `SUCCESS`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha a9447271e29ed0f30401b05f760f4d314f91c9a9`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha a9447271e29ed0f30401b05f760f4d314f91c9a9`; report `ops/live-smokes/2026-07-13T06-38-20-407Z-onetime-provider-route-module-live-smoke.md`.
+- Superseded by the mailbox/messages route-module slice below; performance/instrumentation gates continue under `REQ-20260713-911`.
+
+## 2026-07-13 Mailbox And Messages Route Module Slice
+
+- PASS `node --check public/js/one-time-provider-mailbox-route.js public/js/one-time-provider-communications-route.js scripts/audit-onetime-provider-route-module-budget.mjs scripts/smoke-onetime-provider-route-module-live.mjs`.
+- PASS `node --test tests/one-time-provider-operations-login.test.js tests/one-time-provider-review-navigation.test.js` (11/11).
+- PASS `node --test tests/one-time-route-role-mapping.test.js tests/one-time-action-coverage.test.js` (11/11).
+- PASS `node --test tests/provider-mailbox-portal.test.js` (6/6).
+- PASS `node scripts/smoke-onetime-provider-crm-layout-local.mjs`.
+- PASS `npm run one-time:provider-route-module-budget -- --base-ref HEAD`; report confirms overview no module load, CRM/mailbox/communications isolated route modules, no Operations assets, and `provider.html` -4,183 bytes.
+- PASS `npm run watchdog:actions`, `npm run secrets:audit`, and `npm run bna:run:validate`.
+- Done: commit/push/deploy/live-smoke completed for mailbox/messages module isolation.
+
+## One Time Mailbox/Messages Route Modules Deployed - 2026-07-13
+
+- PASS `git push origin master` for `72650231e9d6eba9a367a59251cb58202f8910b1`.
+- PASS One Time Railway deploy/doctor: deployment `df3a27b2-a930-430d-b29d-0d8390b62a17` reached `SUCCESS`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 72650231e9d6eba9a367a59251cb58202f8910b1`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 72650231e9d6eba9a367a59251cb58202f8910b1`; report `ops/live-smokes/2026-07-13T06-59-53-991Z-onetime-provider-route-module-live-smoke.md`.
+- PASS live route-module proof: overview loads no route modules; CRM, mailbox, and communications each load only their own module; Operations CSS/JS are absent; 390px CRM has no horizontal overflow; failed/bad/console counts are 0/0/0; no external send or production mutation was attempted.
+- Remaining: start `REQ-20260713-911` instrumentation/regression gates.
+
+## 2026-07-13 Mobile CRM IA Definition of Ready
+
+- PASS current-state audit packet: `ops/ui-audits/2026-07-13-onetime-mobile-crm-ia-current-state/report.md`.
+- PASS `npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json`.
+- PASS `npm run watchdog:protocol-drift` after adding protocol markers to the mobile CRM IA markdown packet and manifest.
+- Ready for scoped `REQ-20260713-909` UI implementation; no email, WhatsApp, Telegram, payment, access, provider-account, external CRM, or production-data write was attempted.
+
+## 2026-07-13 Mobile CRM IA Current-State And PQC
+
+- PASS `node scripts/smoke-onetime-operations-crm-workbench-local.mjs`; refreshed `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS current-state audit readback for `REQ-20260713-909`: split shell and monolith 1440/1024/768/430/390 evidence, shared CRM contract, 40px mobile back control, no horizontal overflow, no wrong-workspace leak, no failed requests, no console errors, and no page errors.
+- PASS `npm run pqc:validate -- ops/prompt-packets/2026-07-13-onetime-mobile-crm-ia/00-mobile-crm-ia.product-quality.json`.
+- PASS `npm run watchdog:protocol-drift` after adding required packet markdown protocol markers for `REQ-20260713-909`.
+- Remaining: implement the scoped mobile CRM IA and run local/deployed/live proof before marking `REQ-20260713-909` Done.
+
+## 2026-07-13 Mobile CRM IA Local Implementation
+
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/watchdog-action-registry.test.js` (19/19).
+- PASS `node scripts/generate-one-time-action-coverage.mjs`; report refreshed in `ops/action-registry/one-time-action-coverage.md`.
+- PASS `node scripts/generate-universal-action-parity.mjs`; report refreshed in `ops/action-registry/universal-action-parity.md`.
+- PASS `npm run watchdog:actions`; finding count 0.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- Browser smoke proof covers split shell and monolith at 1440, 1024, 768, 430, and 390; verifies focused contact header, section rail, contextual action overflow, lazy section data, mobile Back restoration, scoped inbox context, no horizontal overflow, no console/page/request failures, and no writes.
+- Completed in the deployed mobile CRM closeout: exact implementation SHA, BNA/One Time deployments, and live route/CRM smokes passed before `REQ-20260713-909` was marked Done.
+
+## 2026-07-13 Performance Instrumentation And Regression Gates
+
+- PASS `node --check server.js`.
+- PASS `node --check scripts/audit-onetime-performance-regression-gates.mjs`.
+- PASS `node --check scripts/audit-onetime-provider-route-module-budget.mjs`.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/one-time-performance-instrumentation.test.js` (3/3).
+- PASS `npm run one-time:performance-regression-gates` local marker/budget gate.
+- PASS `npm run one-time:provider-route-module-budget`; report `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md`.
+- PASS `node --test tests/one-time-performance-instrumentation.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js` (33/33).
+- PASS `npm run secrets:audit`.
+- PASS `git diff --check`.
+- PASS commit/push at `2c72bc0bf060d33567544e97d07c77317e54e971` on `master`.
+- PASS One Time Railway deploy/doctor: deployment `a5c64bbc-c82f-4130-8a54-dbf217a02985` reached `SUCCESS`.
+- PASS BNA Railway deploy/doctor: deployment `28f84dbc-3629-436d-9811-36318d0a3aad` reached `SUCCESS`.
+- PASS live deploy-info readback: `https://join.onetimeonetime.com/api/deploy-info` and `https://bneineviimacademy.org/api/deploy-info` both returned `commit_sha=2c72bc0bf060d33567544e97d07c77317e54e971`.
+- PASS production performance gate: `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 2c72bc0bf060d33567544e97d07c77317e54e971`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- PASS `npm run app:smoke`; report `ops/live-smokes/2026-07-13T08-14-25-029Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T08-14-24-391Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T08-14-46-620Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Done: `REQ-20260713-911` performance instrumentation/regression gates are deployed and live-verified; `REQ-20260713-910` remains blocked by missing owner-test aliases in `REQ-20260713-906`.
+
+## 2026-07-13 Communication Agents UI
+
+- PASS `node --check public/js/one-time-provider-agents-route.js scripts/audit-onetime-provider-route-module-budget.mjs scripts/smoke-onetime-provider-route-module-live.mjs`.
+- PASS `node --test tests/one-time-provider-review-navigation.test.js` (10/10).
+- PASS `node --test tests/communication-agent-model.test.js tests/communication-agent-response-runtime.test.js tests/one-time-focused-landing.test.js` (14/14).
+- PASS `npm run one-time:provider-route-module-budget -- --base-ref HEAD`; report `ops/performance-audits/2026-07-13-onetime-provider-route-module-budget/report.md` confirmed overview loads no route modules and Agents loads only `/js/one-time-provider-agents-route.js`.
+- PASS `npm run watchdog:actions`.
+- PASS `npm run secrets:audit`.
+- PASS `git diff --check`.
+- PASS `npm run bna:run:validate`.
+- PASS `git push origin master` for `f799b5818fe408c53f1888213bd74732883f13d0`.
+- PASS One Time Railway doctor: deployment `aef4fa28-75ea-4759-b45d-9d29409aec85` reached `SUCCESS`.
+- PASS BNA Railway doctor: deployment `6ce036ae-4a54-4d5b-a15d-927ddc1885e8` reached `SUCCESS`.
+- PASS live deploy-info readback: One Time and BNA both returned `commit_sha=f799b5818fe408c53f1888213bd74732883f13d0`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f799b5818fe408c53f1888213bd74732883f13d0`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha f799b5818fe408c53f1888213bd74732883f13d0`; report `ops/live-smokes/2026-07-13T15-47-15-724Z-onetime-provider-route-module-live-smoke.md`.
+- BLOCKED BNA Operations taxonomy rerun in this temp process only because `OPS_USERNAME` and `OPS_PASSWORD` are not available; BNA exact-SHA deploy-info and Railway doctor passed.
+
+- PASS `node --check server.js`
+- PASS `node --check src/lib/integrations/resend-inbound-crm.js`
+- PASS `node --test tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js` (19/19)
+- PASS `node --test tests/rabbi-telegram-notifications.test.js tests/agent-review-hub.test.js tests/bna-helper-tools.test.js tests/production-readiness-gate.test.js tests/production-unblocker.test.js` (54/54)
+- PASS `npm run app:smoke:rabbi-agent-review-direct-proof`
+- BLOCKED `npm run production:readiness:gate -- --json --allow-dirty` only on external Stripe/campaign setup fields after Agent Mode proof was cleared.
+- PASS `git push origin master`
+- PASS `npm run railway:doctor` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=1` for BNA.
+- PASS `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=1` for BNA.
+- PASS BNA live readback: `/api/health`, `/api/deploy-info`, and `/operations-login.html`; deploy-info SHA `966ded41b517433533f24370949426cfd1200213`.
+- PASS `npm run railway:doctor` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=1` and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- PASS `npm run railway:redeploy` with `BNA_RAILWAY_USE_ACCOUNT_AUTH=1` and `BNA_RAILWAY_TARGET_PROFILE=one-time`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 966ded41b517433533f24370949426cfd1200213`
+- PASS One Time signup no-write Playwright proof: Family and School clicks set the hidden value and intercepted payload classification correctly.
+- PASS One Time signup API dry-run proof: Family and School normalize to the expected signup type.
+- PASS `node --check scripts/smoke-crm-identity-isolation-live.mjs`
+- PASS `npm run app:smoke:crm-identity-isolation -- --allow-transactional-live-proof --write-report`
+  - Same synthetic email coexisted across `bna` and `rabbi_sheller_provider`.
+  - Same synthetic phone coexisted across `bna` and `rabbi_sheller_provider`.
+  - Workspace-filtered email and phone lookups returned one row per workspace.
+  - Same-workspace duplicate email identity was blocked with unique violation `23505`.
+  - Transaction rollback left zero synthetic contacts and zero synthetic identities.
+- PASS `node --check server.js`
+- PASS `node --check src/lib/bna/crm/contact-service.js`
+- PASS `node --check public/js/crm/crm-api.js public/js/crm/crm-store.js public/js/crm/contacts-index.js public/js/crm/contact-workspace.js public/js/crm/crm-actions.js public/js/crm/crm-inbox.js`
+- PASS `node --check public/js/operations-shell.js`
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js` (31/31)
+- PASS `npm run operations:check-generated`
+- PASS `npm run pqc:validate -- tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json`
+- PASS `npm run secrets:audit`
+- PASS `npm run watchdog:actions` finding_count `0`
+- PASS `npm run watchdog:protocol-drift` findings `0`
+- PASS `npm run bna:run:validate`
+- PASS `git diff --check` with line-ending warnings only
+- PASS `git push origin master` for shared CRM slice commit `1bbe74691eac18c83808f27cd9c9dfa949b1aa7a`
+- PASS `git push origin master` for CRM row-loader hotfix commit `bf0ec619b5ed10b2c057d5cf4f1553362d6614f4`
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `b7363013-f56e-4a27-80bc-0c4d3f5ab2c4`
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `3132ec38-3b28-4583-a2b9-0aab261ef112`
+- PASS BNA live `/api/health` and `/api/deploy-info`; deployed SHA `bf0ec619b5ed10b2c057d5cf4f1553362d6614f4`
+- PASS One Time live `/api/deploy-info`; deployed SHA `bf0ec619b5ed10b2c057d5cf4f1553362d6614f4`
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha bf0ec619b5ed10b2c057d5cf4f1553362d6614f4`
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`
+  - Operations login used One Time Railway auth fallback.
+  - Deployed Operations HTML included shared CRM workbench markers.
+  - Scoped CRM contacts API returned 12 cards with no external-write flags.
+  - Selected CRM timeline API was read-only.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js` (32/32) after CRM URL-state slice.
+- PASS `node scripts/smoke-onetime-operations-crm-workbench-local.mjs` after CRM URL-state slice; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run operations:check-generated` after CRM URL-state slice.
+- PASS `npm run watchdog:actions` finding_count `0` after CRM URL-state slice.
+- PASS `npm run watchdog:protocol-drift` after CRM URL-state slice.
+- PASS `npm run secrets:audit` after CRM URL-state slice.
+- PASS `npm run bna:run:validate` after CRM URL-state slice.
+- PASS `git diff --check` with line-ending warnings only after CRM URL-state slice.
+- PASS `git push origin master` for CRM URL-state commit `f818822bb3969dca5d27f7c5a70d4dbf0baa8744`
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `c4ff8057-66be-497d-ac52-c8865e64769f`
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `ff0a3380-f42f-4481-a028-9f33d33e8184`
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `f818822bb3969dca5d27f7c5a70d4dbf0baa8744`
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f818822bb3969dca5d27f7c5a70d4dbf0baa8744`
+- PASS `npm run app:smoke:onetime-operations-crm-workbench` after CRM URL-state deploy
+  - Scoped CRM contacts API returned 12 cards with no external-write flags.
+  - Selected CRM timeline API was read-only.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js` (33/33) after local update/no-auto-task slice.
+- PASS `node scripts/smoke-onetime-operations-crm-workbench-local.mjs` after local update/no-auto-task slice.
+- PASS `npm run operations:check-generated` after local update/no-auto-task slice.
+- PASS `npm run watchdog:actions` finding_count `0` after local update/no-auto-task slice.
+- PASS `npm run watchdog:protocol-drift` after local update/no-auto-task slice.
+- PASS `npm run secrets:audit` after local update/no-auto-task slice.
+- PASS `npm run bna:run:validate` after local update/no-auto-task slice.
+- PASS `git diff --check` with line-ending warnings only after local update/no-auto-task slice.
+- PASS `git push origin master` for local update/no-auto-task commit `224bc077919c624f115c264d35e35092ed4144da`
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `cb4febee-2ddc-4ae7-97e8-fa207196b8c4`
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `13eed8ec-cf2a-4c65-ace5-a3d8522816c4`
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `224bc077919c624f115c264d35e35092ed4144da`
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 224bc077919c624f115c264d35e35092ed4144da`
+- PASS `npm run app:smoke:onetime-operations-crm-workbench` after local update/no-auto-task deploy
+  - Scoped CRM contacts API returned 12 cards with no external-write flags.
+  - Selected CRM timeline API was read-only.
+- BLOCKED `npm run production:readiness:gate -- --json` only on full-launch external Stripe/campaign setup fields.
+- PASS `npm run operations:check-generated` after explicit CRM Create task action slice.
+- PASS `node --check public\js\crm\crm-actions.js public\js\operations-shell.js` after explicit CRM Create task action slice.
+- PASS `node --test tests\crm-contact-service.test.js tests\shared-crm-workbench-contract.test.js tests\crm-contact-model.test.js tests\rabbi-scheller-tenant-isolation-contract.test.js tests\one-time-communications-workspace.test.js tests\operations-contacts-intake-cleanup.test.js` (34/34) after explicit CRM Create task action slice.
+- PASS `node scripts\smoke-onetime-operations-crm-workbench-local.mjs` after explicit CRM Create task action slice.
+  - Split-shell and monolith checks passed at 1440, 1024, 768, 430, and 390.
+  - Each selected contact workspace showed active `ACTION-CRM-CREATE-TASK` and no horizontal overflow.
+  - No external sends, payments, access grants, or external CRM writes occurred.
+- PASS `npm run watchdog:actions` finding_count `0` after replacing the disabled Create task placeholder with the explicit first-party action.
+- PASS `npm run watchdog:protocol-drift` after explicit CRM Create task action slice.
+- PASS `npm run secrets:audit` after explicit CRM Create task action slice.
+- PASS `npm run bna:run:validate` after explicit CRM Create task action slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after explicit CRM Create task action slice.
+- PASS `git push origin master` for explicit CRM Create task action commit `ded53274e31f91abff7944c094bdcdfaa9c55c5e`.
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `ab35f8b9-9670-486b-9b4a-94719e01098d`.
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `988210a8-3fbf-41f5-aa52-f7f54b69bdc8`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `ded53274e31f91abff7944c094bdcdfaa9c55c5e`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha ded53274e31f91abff7944c094bdcdfaa9c55c5e`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com` after explicit CRM Create task action deploy.
+  - Scoped CRM contacts API returned 12 cards with no external-write flags.
+  - Selected CRM timeline API was read-only.
+- PASS `npm run operations:check-generated` after enabled CRM workspace tabs slice.
+- PASS `node --check public\js\crm\contact-workspace.js public\js\operations-shell.js scripts\smoke-onetime-operations-crm-workbench-local.mjs` after enabled CRM workspace tabs slice.
+- PASS `node --test tests\crm-contact-service.test.js tests\shared-crm-workbench-contract.test.js tests\crm-contact-model.test.js tests\rabbi-scheller-tenant-isolation-contract.test.js tests\one-time-communications-workspace.test.js tests\operations-contacts-intake-cleanup.test.js` (35/35) after enabled CRM workspace tabs slice.
+- PASS `node scripts\smoke-onetime-operations-crm-workbench-local.mjs` after enabled CRM workspace tabs slice.
+  - Split-shell and monolith checks passed at 1440, 1024, 768, 430, and 390.
+  - Overview, Activity, Conversations, Tasks, and Access tabs are clickable and render non-disabled workspace panels.
+- PASS `npm run watchdog:actions` finding_count `0` after enabled CRM workspace tabs slice.
+- PASS `npm run watchdog:protocol-drift` after enabled CRM workspace tabs slice.
+- PASS `npm run secrets:audit` after enabled CRM workspace tabs slice.
+- PASS `npm run bna:run:validate` after enabled CRM workspace tabs slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after enabled CRM workspace tabs slice.
+- PASS `git push origin master` for enabled CRM workspace tabs commit `1c4880418954d984c08683ba0955a32549eb33aa`.
+- PASS BNA Railway post-deploy doctor; deployment `d580fdf6-535a-42e4-bfab-aff27fc0ce7b` reached `SUCCESS`.
+- PASS One Time Railway post-deploy doctor; deployment `e66f0964-6752-4c20-8eac-adec647b58dd` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `1c4880418954d984c08683ba0955a32549eb33aa`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1c4880418954d984c08683ba0955a32549eb33aa`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T22-41-20-271Z-one-time-operations-crm-workbench-live-smoke.md`, 12 scoped cards, selected timeline read-only.
+- PASS `node --check src/lib/bna/provider-lead-bot.js` after One Time bot knowledge/landing polish slice.
+- PASS `npm run pqc:validate -- tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json`.
+- PASS `node --test tests\service-provider-lead-bot.test.js tests\one-time-focused-landing.test.js tests\one-time-canonical-journey.test.js tests\one-time-brand-helper-isolation.test.js tests\one-time-shared-review-branding.test.js` (33/33) after One Time bot knowledge/landing polish slice.
+- PASS `node scripts\smoke-onetime-landing-whatsapp-local.mjs`
+  - Captured local screenshots at 1440, 1024, 768, 430, and 390.
+  - Confirmed no helper script requests, no write requests, no missing assets/API routes, no console errors, and no HTTP errors.
+  - Confirmed hero CTA does not overlap the WhatsApp launcher and is above the mobile bottom safe zone.
+- PASS `npm run watchdog:actions` finding_count `0` after One Time public section nav registration.
+- PASS `npm run watchdog:protocol-drift` findings `0` after One Time bot knowledge/landing polish slice.
+- PASS `npm run secrets:audit` after One Time bot knowledge/landing polish slice.
+- PASS `npm run bna:run:validate` after One Time bot knowledge/landing polish slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after One Time bot knowledge/landing polish slice.
+- PASS `git push origin master` for One Time bot knowledge/landing polish commit `301b408b36fa982d4562d06f30de56758cd0e168`.
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `640fc22a-5172-4729-ab92-7882426a13e0`.
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `2c2c7631-a004-4019-bf3f-328cd61cd905`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `301b408b36fa982d4562d06f30de56758cd0e168`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 301b408b36fa982d4562d06f30de56758cd0e168`.
+- PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
+  - Verified `/rabbi` One Time branding, direct signup CTA, WhatsApp launcher, no Academy chrome, public WhatsApp readiness configured/scoped/no-send, lightweight Family/School signup fields, and scoped One Time instance config.
+- PASS `node --test tests/service-provider-lead-bot.test.js tests/one-time-focused-landing.test.js tests/one-time-direct-signup-page.test.js` (14/14) after v2 no-portal wording, public header/button/CTA polish, signup header polish, and Family/School classification coverage.
+- PASS `node scripts/smoke-onetime-landing-whatsapp-local.mjs` after v2 polish.
+  - Captured/refreshed local screenshots at 1440, 1024, 768, 430, and 390.
+  - Confirmed the mobile hero CTA clears the bottom browser/launcher zone.
+- PASS `npm run test:onetime:focused` (76/76) after v2 polish.
+- PASS `npm run watchdog:actions` finding_count `0` after v2 polish.
+- PASS `npm run secrets:audit` after v2 polish.
+- PASS `npm run bna:run:validate` after v2 polish; work remains on the broader addendum.
+- PASS `npm run pqc:validate` after v2 polish.
+- PASS `npm run watchdog:protocol-drift` findings `0` after v2 polish.
+- PASS `git diff --check` with line-ending warnings only after v2 polish.
+- PASS `git push origin master` for v2 One Time bot/landing polish commit `3712308731910a6e77fb9a18ce18b57ae35f22dd`.
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `77191e2f-0aaf-4fde-ae2c-cf69ce299af8`.
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `38d75556-5a94-42d3-b8b3-65a5a3290fe7`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `3712308731910a6e77fb9a18ce18b57ae35f22dd`.
+- PASS live marker checks for deployed yellow token, no header shadow, lifted mobile CTA, removed old black CTA inset shadow, and signup member-style header.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 3712308731910a6e77fb9a18ce18b57ae35f22dd`.
+- PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T00-26-05-640Z-rabbi-onetime-landing-smoke.md`.
+- PASS `node --check server.js public/js/operations-shell.js scripts/smoke-onetime-operations-crm-workbench-local.mjs` after Add Contact slice.
+- PASS `npm run operations:check-generated` after Add Contact slice.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js` (11/11) after Add Contact slice.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js` (36/36) after Add Contact slice.
+- PASS `node scripts/smoke-onetime-operations-crm-workbench-local.mjs` after Add Contact slice.
+  - Report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` records Add Contact form coverage without submitting a write.
+- PASS `npm run watchdog:actions` finding_count `0` after Add Contact slice; report `ops/watchdog-audits/2026-07-12T22-54-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift` after Add Contact slice.
+- PASS `npm run secrets:audit` after Add Contact slice.
+- PASS `npm run bna:run:validate` after Add Contact slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after Add Contact slice.
+- PASS `git push origin master` for Add Contact commit `de48d8aef8b4764b5144a89edef9e269c102c25f`.
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `e3f91da7-ed02-4554-8b05-7ea11606cf2e` reached `SUCCESS`.
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `4cd41025-343f-488a-bf07-4f6550fa2a0d` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `de48d8aef8b4764b5144a89edef9e269c102c25f`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha de48d8aef8b4764b5144a89edef9e269c102c25f`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-00-18-923Z-one-time-operations-crm-workbench-live-smoke.md`, 12 scoped cards, selected timeline read-only.
+- PASS `node --check public\js\operations-shell.js scripts\smoke-onetime-operations-crm-workbench-local.mjs` after Archive Contact slice.
+- PASS `npm run operations:check-generated` after Archive Contact slice.
+- PASS `node --test tests\shared-crm-workbench-contract.test.js tests\crm-contact-service.test.js` (12/12) after Archive Contact slice.
+- PASS `node --test tests\crm-contact-service.test.js tests\shared-crm-workbench-contract.test.js tests\crm-contact-model.test.js tests\rabbi-scheller-tenant-isolation-contract.test.js tests\one-time-communications-workspace.test.js tests\operations-contacts-intake-cleanup.test.js` (37/37) after Archive Contact slice.
+- PASS `node scripts\smoke-onetime-operations-crm-workbench-local.mjs` after Archive Contact slice; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions` finding_count `0` after Archive Contact slice; report `ops/watchdog-audits/2026-07-12T23-08-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift` after Archive Contact slice.
+- PASS `npm run secrets:audit` after Archive Contact slice.
+- PASS `npm run bna:run:validate` after Archive Contact slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after Archive Contact slice.
+- PASS `git push origin master` for Archive Contact commit `3293d3528ace28938d5f13d8b65b485448c9ebc9`.
+- PASS BNA Railway post-deploy doctor for deployment `d454d665-4e81-43d7-868e-8c02888c0080`.
+- PASS One Time Railway post-deploy doctor for deployment `e4883410-13ce-4ad8-8d59-db5fc50effd4`.
+- PASS BNA and One Time deploy-info readbacks returned `commit_sha=3293d3528ace28938d5f13d8b65b485448c9ebc9`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 3293d3528ace28938d5f13d8b65b485448c9ebc9`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-12-32-836Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only deployed HTML marker check: `https://join.onetimeonetime.com/operations.html` contains `ACTION-CRM-ARCHIVE-CONTACT` and `archiveFirstPartyCrmContact`.
+- PASS `node --check public\js\operations-shell.js scripts\smoke-onetime-operations-crm-workbench-local.mjs public\js\crm\contact-workspace.js` after shared CRM contract/geometry slice.
+- PASS `npm run operations:check-generated` after shared CRM contract/geometry slice.
+- PASS `node --test tests\shared-crm-workbench-contract.test.js tests\crm-contact-service.test.js` (12/12) after shared CRM contract/geometry slice.
+- PASS `node --test tests\crm-contact-service.test.js tests\shared-crm-workbench-contract.test.js tests\crm-contact-model.test.js tests\rabbi-scheller-tenant-isolation-contract.test.js tests\one-time-communications-workspace.test.js tests\operations-contacts-intake-cleanup.test.js` (37/37) after shared CRM contract/geometry slice.
+- PASS `node scripts\smoke-onetime-operations-crm-workbench-local.mjs` after shared CRM contract/geometry slice; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions` finding_count `0` after shared CRM contract/geometry slice; report `ops/watchdog-audits/2026-07-12T23-18-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift` after shared CRM contract/geometry slice.
+- PASS `npm run secrets:audit` after shared CRM contract/geometry slice.
+- PASS `npm run bna:run:validate` after shared CRM contract/geometry slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after shared CRM contract/geometry slice.
+- PASS `git push origin master` for shared CRM contract/geometry commit `909cb26d9a21a1e505ee30835ff31646b7c1c9cd`.
+- PASS BNA Railway post-deploy doctor for deployment `d5771dd9-f35a-4610-b382-e15afe4a885e`.
+- PASS One Time Railway post-deploy doctor for deployment `279b82a0-a726-4493-a4f6-23ed409b487d`.
+- PASS BNA and One Time deploy-info readbacks returned `commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 909cb26d9a21a1e505ee30835ff31646b7c1c9cd`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-25-19-779Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only deployed HTML marker check: `https://join.onetimeonetime.com/operations.html` contains shared CRM contract attributes and the 40px back-control CSS marker.
+- PASS `node --check public\js\operations-shell.js scripts\smoke-onetime-operations-crm-workbench-local.mjs public\js\crm\contact-workspace.js` after Identity/Family workspace slice.
+- PASS `npm run operations:check-generated` after Identity/Family workspace slice.
+- PASS `node --test tests\shared-crm-workbench-contract.test.js tests\crm-contact-service.test.js` (12/12) after Identity/Family workspace slice.
+- PASS `node --test tests\crm-contact-service.test.js tests\shared-crm-workbench-contract.test.js tests\crm-contact-model.test.js tests\rabbi-scheller-tenant-isolation-contract.test.js tests\one-time-communications-workspace.test.js tests\operations-contacts-intake-cleanup.test.js` (37/37) after Identity/Family workspace slice.
+- PASS `node scripts\smoke-onetime-operations-crm-workbench-local.mjs` after Identity/Family workspace slice; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions` finding_count `0` after Identity/Family workspace slice; report `ops/watchdog-audits/2026-07-12T23-29-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift` after Identity/Family workspace slice.
+- PASS `npm run secrets:audit` after Identity/Family workspace slice.
+- PASS `npm run bna:run:validate` after Identity/Family workspace slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after Identity/Family workspace slice.
+- PASS `git push origin master` for Identity/Family workspace commit `d1c0d3a596ad420876941445faad9f1e60c7ce48`.
+- PASS BNA Railway post-deploy doctor for deployment `32cd90dd-38cf-4398-93db-6af86939deeb`.
+- PASS One Time Railway post-deploy doctor for deployment `00290796-3917-4269-b573-981cf0ff7206`.
+- PASS BNA and One Time deploy-info readbacks returned `commit_sha=d1c0d3a596ad420876941445faad9f1e60c7ce48`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha d1c0d3a596ad420876941445faad9f1e60c7ce48`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-34-34-660Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only deployed HTML marker check: `https://join.onetimeonetime.com/operations.html` contains Identity and Family tab panel markers.
+- PASS `node --check public\js\operations-shell.js public\js\operations-deferred-renderers.js scripts\smoke-onetime-operations-crm-workbench-local.mjs` after Complete/Reopen task slice.
+- PASS `npm run operations:check-generated` after Complete/Reopen task slice.
+- PASS `node --test tests\shared-crm-workbench-contract.test.js tests\crm-contact-service.test.js tests\crm-contact-model.test.js` (23/23) after Complete/Reopen task slice.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local` after Complete/Reopen task slice; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions` finding_count `0` after Complete/Reopen task slice.
+- PASS `npm run watchdog:protocol-drift` after Complete/Reopen task slice.
+- PASS `npm run secrets:audit` after Complete/Reopen task slice.
+- PASS `npm run bna:run:validate` after Complete/Reopen task slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after Complete/Reopen task slice.
+- PASS `git push origin master` for Complete/Reopen task commit `ec1e893848f12242a30fd1fc59c236442997f30e`.
+- PASS BNA Railway post-deploy doctor for deployment `3b43615c-3fde-4fad-bb1c-326baed500aa`.
+- PASS One Time Railway post-deploy doctor for deployment `8f022587-8b8e-474e-8c59-886b68e18faa`.
+- PASS BNA and One Time deploy-info readbacks returned `commit_sha=ec1e893848f12242a30fd1fc59c236442997f30e`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha ec1e893848f12242a30fd1fc59c236442997f30e`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-51-23-358Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only deployed JS/CSS marker checks for Complete/Reopen task controls and linked-task CSS.
+- PASS `node --check server.js` after Link member/member-aggregate isolation slice.
+- PASS `node --check public/js/operations-shell.js`.
+- PASS `node --check public/js/operations-deferred-renderers.js`.
+- PASS `node --check scripts/smoke-onetime-operations-crm-workbench-local.mjs`.
+- PASS `npm run operations:check-generated` after Link member slice.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/live-class-infrastructure.test.js` (28/28) after Link member slice.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` verifies `ACTION-CRM-LINK-MEMBER` is visible without clicking the write.
+- PASS `npm run watchdog:actions` finding_count `0` after Link member slice.
+- PASS `npm run watchdog:protocol-drift` after Link member slice.
+- PASS `npm run secrets:audit` after Link member slice.
+- PASS `npm run bna:run:validate` after Link member slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after Link member slice.
+- PASS `git push origin master` for Link member commit `8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`.
+- PASS BNA Railway post-deploy doctor for deployment `91234f89-084d-4dc0-bc8b-4de7fbd33325`.
+- PASS One Time Railway post-deploy doctor for deployment `dc45500e-960c-4adf-8e78-dcb92a2a725c`.
+- PASS BNA and One Time deploy-info readbacks returned `commit_sha=8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8ea9b798fe9187fbb5f311fbd6073b49f1befcf3`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T00-11-08-626Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only deployed JS/HTML marker checks for `ACTION-CRM-LINK-MEMBER`, `linkFirstPartyCrmMember`, `data-crm-member-link-state`, `access_status: 'paused'`, and `access_enabled: false`.
+- PASS `node --check server.js`, `node --check src/lib/bna/one-time-signup-workflow.js`, and `node --check scripts/diagnose-onetime-signup-production.mjs` after the One Time signup P0 repair.
+- PASS `node --test tests/one-time-signup-form-matrix.test.js tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js` (17/17) after the One Time signup P0 repair.
+  - Covers Family/School + Email without phone, Family/School + No reminders without phone/consent, WhatsApp/Both phone errors, WhatsApp/Both valid phone + consent success, missing audience/location/reminder, invalid email, switching WhatsApp to Email, switching Email to No reminders, Family/School toggling, double-click submit, server validation recovery, mobile 430/390, and keyboard-only completion.
+- PASS `npm run test:onetime:focused` (76/76) after the One Time signup P0 repair.
+- PASS `npm run watchdog:actions` with `finding_count=0` after updating `ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT` and Family/School radio registry coverage.
+- PASS `npm run secrets:audit` after the One Time signup P0 repair.
+- PASS `npm run bna:run:validate` after the One Time signup P0 repair; broader addendum work remains open.
+- PASS `git diff --check` with line-ending warnings only after the One Time signup P0 repair.
+- PASS `git push origin master` for One Time signup form repair commit `881f892523eb9a20137377882e2452e45cd581ca`.
+- PASS One Time Railway redeploy and doctor; deployment `35633776-51a0-4185-9bd0-61d73c187d45` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; deployed SHA `881f892523eb9a20137377882e2452e45cd581ca`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 881f892523eb9a20137377882e2452e45cd581ca`.
+- PASS `node scripts/diagnose-onetime-signup-production.mjs https://join.onetimeonetime.com`; no-write/intercept browser proof generated `ops/live-smokes/2026-07-13T00-56-04-223Z-one-time-signup-production-diagnostic.md`.
+- PASS production direct-signup API dry-run with canonical payload; response validated the direct workflow, scoped workspace/project, outbox previews, and no-write/no-send guardrails.
+- PARTIAL/BLOCKED synthetic DB readback: actual synthetic direct-signup write created `bna_contacts:37` and `bna_parent_leads:22`, and both were archived through the production CRM API. Local DB-level readback/outbox cancellation is blocked because the current One Time Railway `DATABASE_URL` uses an internal Railway host unavailable from this machine, while the older local Supabase URL also fails DNS resolution.
+- FAIL reproduced before keyboard-card patch: `ops/live-smokes/2026-07-13T09-15-12-884Z-one-time-signup-form-matrix-live.md` showed the production keyboard-only path attempted zero POSTs because Enter on the Family/School and reminder cards left the underlying radios unchecked.
+- PASS keyboard-card patch syntax and generated checks: `node --check server.js`, `node --check scripts/smoke-onetime-signup-form-matrix-live.mjs`, `node --check scripts/smoke-onetime-crm-delivery-outbox-dto-live.mjs`, and `npm run operations:check-generated`.
+- PASS keyboard-card patch local tests: signup matrix/reminder/direct-signup tests `17/17`; CRM/service-provider/Operations contract tests `34/34`.
+- PASS keyboard-card patch watchdogs: `npm run watchdog:actions`, `npm run secrets:audit`, `npm run bna:run:validate`, `npm run watchdog:protocol-drift`, and `git diff --check` with line-ending warnings only.
+- PASS One Time Railway redeploy and doctor for keyboard-card patch; deployment `2645a6c7-3b51-4ae6-915f-5a267dacde22` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; deployed SHA `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
+- PASS `npm run app:smoke:onetime-signup-form-matrix -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T09-32-18-347Z-one-time-signup-form-matrix-live.md` recorded all success/error/switch/double-click/mobile/keyboard cases with `failed=[]`.
+- PASS `npm run app:smoke:one-time-interest-dry-run`; report `ops/live-smokes/2026-07-13T09-32-18-048Z-one-time-interest-dry-run-live-smoke.md`.
+- PASS post-deploy One Time CRM/provider regression smokes at the same deployed SHA: CRM workbench `ops/live-smokes/2026-07-13T09-33-33-379Z-one-time-operations-crm-workbench-live-smoke.md`, provider route-module `ops/live-smokes/2026-07-13T09-33-33-717Z-onetime-provider-route-module-live-smoke.md`, and delivery-outbox DTO `ops/live-smokes/2026-07-13T09-32-18-053Z-one-time-crm-delivery-outbox-dto-live-smoke.md`.
+- PASS `node --check src/lib/bna/provider-lead-bot.js` after the One Time public WhatsApp agent profile/class-link policy slice.
+- PASS `node --check server.js` after the One Time public WhatsApp agent profile/class-link policy slice.
+- PASS `node --test tests/service-provider-lead-bot.test.js` (10/10) after adding `one_time_parent_information_agent`, approved public facts, and `ACTION-ONETIME-GET-CURRENT-CLASS-LINK`.
+- PASS `node --test tests/one-time-brand-helper-isolation.test.js` (11/11) after updating public WhatsApp readiness identity/fallback behavior.
+- PASS `npm run test:onetime:focused` (76/76) after the public WhatsApp agent slice.
+- PASS `npm run watchdog:actions` with `finding_count=0`; report `ops/watchdog-audits/2026-07-13T01-20-watchdog-action-audit.md`.
+- PASS `npm run secrets:audit`; 9265 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` with line-ending warnings only after the public WhatsApp agent slice.
+- BLOCKED/EXPECTED `node scripts/check-onetime-wapi-readiness.mjs`: no-send/no-write readiness shows outbound configured, One Time scoped credentials, provider setup ready, and class link configured, but auto-reply/Telegram notifications are blocked until `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
+- PASS `git push origin master` for public WhatsApp agent commit `9fb436760872bab77019b3769652c8b517025c8d`.
+- PASS One Time Railway redeploy and doctor; deployment `eac01ac4-5589-4c24-b21f-5aea52aeb8d6` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; deployed SHA `9fb436760872bab77019b3769652c8b517025c8d`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 9fb436760872bab77019b3769652c8b517025c8d`.
+- PASS live `GET https://join.onetimeonetime.com/api/one-time/public-whatsapp`; response identified `Rabbi Scheller's Digital Assistant`, scoped workspace/project, class-link configured, full number hidden, no WhatsApp send, and no external write.
+- PASS `node --check server.js` after the Rabbi Telegram ticket approval slice.
+- PASS `node --check scripts/telegram-kimi-bridge.mjs` after the Rabbi Telegram ticket approval slice.
+- PASS `node --test tests/rabbi-telegram-notifications.test.js tests/rabbi-telegram-ticket-approval.test.js` (20/20).
+- PASS `node --test tests/one-time-external-user-portal.test.js tests/one-time-delivery-outbox.test.js tests/action-registry-telegram-ui-bot.test.js` (76/76).
+- PASS `npm run test:onetime:focused` (76/76) after preserving the One Time dashboard IA owner/manager view contract.
+- PASS `npm run watchdog:actions` with `finding_count=0`; report `ops/watchdog-audits/2026-07-13T01-45-watchdog-action-audit.md`.
+- PASS `npm run secrets:audit`; 9265 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for Rabbi Telegram ticket approval commit `8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- PASS BNA Railway redeploy and doctor; deployment `6ddd918b-3c4a-453d-8a07-8b6a53407607` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `16a16da1-4ca7-491c-87f8-d1f9637de5f7` reached `SUCCESS`.
+- PASS BNA live `/api/deploy-info`; deployed SHA `8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- PASS One Time live `/api/deploy-info`; deployed SHA `8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8f6441523a5cd3547ecd4ba633dab90c8951ffd9`.
+- PASS live approval route unauthenticated guard on BNA and One Time: `401 Unauthorized`.
+- PASS `npm run telegram:rabbi:readiness` in no-send mode; Super Admin and Rabbi targets configured/ready, external_write_performed=false.
+- EXPECTED BLOCKER `node scripts/check-onetime-wapi-readiness.mjs`: no-send/no-write readiness remains blocked until `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM=APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM`.
+- PASS `node --check server.js` after the CRM Family/Student link slice.
+- PASS `node --check public/js/operations-shell.js` after regenerating Operations shell.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/live-class-infrastructure.test.js` (29/29).
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions` with `finding_count=0`.
+- PASS `npm run secrets:audit`; 9266 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM Family/Student link commit `003e3e7fe23684a40131e53be280787811bcc8a4`.
+- PASS BNA Railway redeploy and doctor; deployment `f8ff55d2-ebe1-4f1e-8250-7a4d34e873a6` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `7e9d6c53-e77f-493a-82ea-573e6b1fcb29` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `003e3e7fe23684a40131e53be280787811bcc8a4`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 003e3e7fe23684a40131e53be280787811bcc8a4`.
+- PASS deployed JS marker checks for Family/Student link actions.
+- PASS `node --check server.js` after the CRM Schedule/Change/Clear follow-up slice.
+- PASS `node --check public/js/operations-shell.js` after regenerating Operations shell for follow-up actions.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/live-class-infrastructure.test.js` (30/30).
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions` with `finding_count=0`; report `ops/watchdog-audits/2026-07-13T02-18-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run secrets:audit`; 9266 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM follow-up actions commit `eee9a431dd426d8627652b972c3d3336eaf18362`.
+- PASS BNA Railway redeploy and doctor; deployment `01b5cbf9-a187-4c5e-8e4e-a5e8985d3445` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `2eeead32-2f44-49b9-9a70-1528c3ad5945` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `eee9a431dd426d8627652b972c3d3336eaf18362`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha eee9a431dd426d8627652b972c3d3336eaf18362`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T02-23-19-932Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS deployed JS marker checks for `ACTION-CRM-SET-FOLLOW-UP`, `ACTION-CRM-CHANGE-FOLLOW-UP`, `ACTION-CRM-CLEAR-FOLLOW-UP`, `CRM follow-up cleared`, `crm_action_id: submitterActionId`, and clear-follow-up payload branch.
+- PASS `node --check server.js` after the CRM note/tag/owner/lifecycle action slice.
+- PASS `node --check public/js/operations-shell.js` after regenerating Operations shell.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/live-class-infrastructure.test.js` (31/31).
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions` with `finding_count=0`; report `ops/watchdog-audits/2026-07-13T02-28-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run secrets:audit`; 9266 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM note/tag/owner/lifecycle actions commit `15796035598280b3ae14d748e3673d6a186af5cd`.
+- PASS BNA Railway redeploy and doctor; deployment `7e32345a-71c3-4296-a899-f10710339020` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `8dc13638-9225-4c0f-99ca-bdc2bb5daab1` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `15796035598280b3ae14d748e3673d6a186af5cd`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 15796035598280b3ae14d748e3673d6a186af5cd`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T02-32-29-354Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS deployed JS marker checks for `ACTION-CRM-ADD-NOTE`, `ACTION-CRM-ADD-TAG`, `ACTION-CRM-REMOVE-TAG`, `ACTION-CRM-ASSIGN-OWNER`, `ACTION-CRM-CHANGE-LIFECYCLE`, tag remove validation copy, and no-auto-task marker.
+- PASS `node --check src/lib/bna/crm/contact-service.js` after adding selected-contact conversation/task DTOs.
+- PASS `node --check server.js` after adding selected-contact conversation/task routes.
+- PASS route registry JSON parse after registering `/api/bna/crm/contacts/:id/conversations` and `/api/bna/crm/contacts/:id/tasks`.
+- PASS `node --test tests/crm-contact-service.test.js` (4/4).
+- PASS `node --test tests/shared-crm-workbench-contract.test.js` (14/14).
+- PASS `node --test tests/service-provider-scope-routes.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js` (8/8).
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T02-40-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `node scripts/watchdog-link-audit.mjs`; report `ops/watchdog-audits/2026-07-13T02-40-watchdog-link-audit.md`.
+- PASS `node scripts/watchdog-security-routes.mjs`; report `ops/watchdog-audits/2026-07-13T02-40-watchdog-security-routes.md`.
+- PASS `npm run secrets:audit`; 9266 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM conversation/task DTO routes commit `1a8bca34048a8b0213b0a608cae5320727f6747b`.
+- PASS BNA Railway redeploy and doctor; deployment `aa2a2f07-7900-4eed-beb8-7fc47e20cfcd` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `11a938f8-387c-43e6-bfa9-5e91d10645fc` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `1a8bca34048a8b0213b0a608cae5320727f6747b`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1a8bca34048a8b0213b0a608cae5320727f6747b`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T02-43-26-025Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only live endpoint smoke through Operations auth for selected-contact `/conversations` and `/tasks`; returned scoped One Time DTOs with `no_send=true`, `external_write_performed=false`, `aggregate_service=bna_crm_contact_service_v1`, and page limits `[5,5]`.
+- PASS `npm run operations:build` after wiring the CRM tabs to selected-contact conversation/task DTO payloads.
+- PASS `node --check public/js/operations-shell.js` and `node --check public/js/operations-deferred-renderers.js`.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js` (21/21).
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T02-53-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run secrets:audit`; 9267 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM DTO tab-consumption commit `132fdbdb454f51f7c9d073237e8c21b1e5fba070`.
+- PASS BNA Railway redeploy and doctor; deployment `d717976a-69b1-4e9d-9758-9c774b3d468d` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `a698d7a2-6531-40b2-a7e9-1b7868650f0a` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `132fdbdb454f51f7c9d073237e8c21b1e5fba070`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 132fdbdb454f51f7c9d073237e8c21b1e5fba070`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T02-57-50-282Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS deployed JS marker check for `getCrmContactConversations`, `getCrmContactTasks`, `data-crm-dto-source="contact-conversations"`, `data-crm-dto-source="contact-tasks"`, and `Promise.allSettled`.
+- PASS read-only live endpoint smoke through Operations auth for selected-contact `/conversations` and `/tasks`; returned scoped One Time DTOs with `no_send=true`, `external_write_performed=false`, `aggregate_service=bna_crm_contact_service_v1`, and page limits `[5,5]`.
+- PASS `node --check server.js` after adding safe conversation thread metadata to CRM DTO rows.
+- PASS `node --check src/lib/bna/crm/contact-service.js`.
+- PASS `node --check public/js/operations-shell.js` after regenerating Operations shell.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/service-provider-scope-routes.test.js` (21/21).
+- PASS `npm run watchdog:actions`; first run caught a dynamic `${actionId}` marker, then rerun passed with `finding_count=0`.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `npm run secrets:audit`; 9267 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run watchdog:links`; report `ops/watchdog-audits/2026-07-13T03-08-watchdog-link-audit.md`.
+- PASS `npm run watchdog:security`; report `ops/watchdog-audits/2026-07-13T03-08-watchdog-security-routes.md`.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM conversation thread open commit `83427a7a7d7d1c255d83f1e13da24b18265e55fd`.
+- PASS BNA Railway redeploy and sequential doctor; deployment `8744a95d-c510-412a-9f57-f72f69f72ce2` reached `SUCCESS`.
+- PASS One Time Railway redeploy and sequential doctor; deployment `16db8dd7-50d7-4ec1-ad79-e951956c07c3` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `83427a7a7d7d1c255d83f1e13da24b18265e55fd`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 83427a7a7d7d1c255d83f1e13da24b18265e55fd`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T03-12-16-557Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS deployed JS marker checks on both BNA and One Time for `openFirstPartyCrmConversationThread`, literal email/WhatsApp conversation action markers, and no-send WhatsApp copy.
+- PASS read-only live endpoint smoke through Operations auth for selected-contact `/conversations`; returned 12 scoped cards, 6 selected conversations, `open_actions=["whatsapp"]`, `no_send=true`, and `external_write_performed=false`.
+- PASS `npm run operations:build` after adding DTO task Complete/Reopen controls.
+- PASS `node --check public/js/operations-shell.js`.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js` (21/21).
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T03-18-watchdog-action-audit.md`.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `npm run secrets:audit`; 9268 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run watchdog:links`; report `ops/watchdog-audits/2026-07-13T03-19-watchdog-link-audit.md`.
+- PASS `npm run watchdog:security`; report `ops/watchdog-audits/2026-07-13T03-19-watchdog-security-routes.md`.
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM task DTO action commit `09d239dd095e59299f06c5b3cd38893cd5696fb8`.
+- PASS BNA Railway redeploy and sequential doctor; deployment `91aab958-0b12-442b-bf15-545517abc9b9` reached `SUCCESS`.
+- PASS One Time Railway redeploy and sequential doctor; deployment `36827b53-3ffb-420e-ac37-2ef329db94ec` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `09d239dd095e59299f06c5b3cd38893cd5696fb8`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 09d239dd095e59299f06c5b3cd38893cd5696fb8`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T03-23-44-897Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS deployed JS marker checks on both BNA and One Time for `updateFirstPartyCrmTaskDto`, DTO task action containers, and explicit Complete/Reopen task audit notes.
+- PASS `node --check server.js` after adding scoped support-ticket timeline aggregation.
+- PASS `node --check src/lib/bna/crm/contact-service.js`.
+- PASS `node --test tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js` (31/31).
+- PASS `node --test tests/rabbi-scheller-tenant-isolation-contract.test.js tests/service-provider-scope-routes.test.js` (8/8).
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T03-32-watchdog-action-audit.md`.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run secrets:audit`; 9269 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run test:onetime:focused` (76/76).
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run watchdog:links`; report `ops/watchdog-audits/2026-07-13T03-33-watchdog-link-audit.md`.
+- PASS `npm run watchdog:security`; report `ops/watchdog-audits/2026-07-13T03-33-watchdog-security-routes.md`.
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM support-ticket aggregate commit `e830ca924a2fd4853fc523a4bad6e55c454bf420`.
+- PASS BNA Railway redeploy and sequential doctor; deployment `2db01b8e-2241-413e-8df1-21a2926e892b` reached `SUCCESS`.
+- PASS One Time Railway redeploy and sequential doctor; deployment `2357d677-5991-40e4-8c05-621b201d0ad6` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `e830ca924a2fd4853fc523a4bad6e55c454bf420`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e830ca924a2fd4853fc523a4bad6e55c454bf420`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T03-36-02-229Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only live DTO readback through Operations auth: 12 scoped cards, `support_summary_cards=0`, sampled `support_timeline_items=0`, `support_conversation_items=0`, `no_send=true`, and `external_write_performed=false`.
+- PASS `node --check server.js` after adding One Time signup-context aggregate joins.
+- PASS `node --check src/lib/bna/crm-contact-model.js`.
+- PASS `npm run operations:build`.
+- PASS `node --check public/js/operations-shell.js`.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js` (32/32).
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T03-47-watchdog-action-audit.md`.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run secrets:audit`; 9270 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run test:onetime:focused` (77/77).
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run watchdog:links`; report `ops/watchdog-audits/2026-07-13T03-48-watchdog-link-audit.md`.
+- PASS `npm run watchdog:security`; report `ops/watchdog-audits/2026-07-13T03-48-watchdog-security-routes.md`.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM signup-context aggregate commit `feaece026a62daaf1ff85bdb53ac25ffb246ab89`.
+- PASS BNA Railway redeploy and sequential doctor; deployment `aff0823d-e323-439a-8837-150273689bc4` reached `SUCCESS`.
+- PASS One Time Railway redeploy and sequential doctor; deployment `b119d430-216a-43c9-b59a-37b2b8dcfdb1` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `feaece026a62daaf1ff85bdb53ac25ffb246ab89`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha feaece026a62daaf1ff85bdb53ac25ffb246ab89`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T03-52-25-026Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only live DTO readback through Operations auth: 12 scoped cards, `signup_context_cards=5`, `linked_lead_cards=5`, `duplicate_email_or_phone_count=0`, `no_send=true`, and `external_write_performed=false`.
+- PASS `node --check server.js` after adding student/member Activity timeline rows.
+- PASS `node --check src/lib/bna/crm/contact-service.js`.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/crm-contact-model.test.js tests/shared-crm-workbench-contract.test.js` (32/32).
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T04-00-watchdog-action-audit.md`.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run secrets:audit`; 9271 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run test:onetime:focused` (77/77).
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run watchdog:links`; report `ops/watchdog-audits/2026-07-13T04-00-watchdog-link-audit.md`.
+- PASS `npm run watchdog:security`; report `ops/watchdog-audits/2026-07-13T04-00-watchdog-security-routes.md`.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM student/member activity context commit `381023aad5fdaf1b23ef4c7ab0c12327ee2d369b`.
+- PASS BNA Railway redeploy and sequential doctor; deployment `5b39768d-21ad-4d76-b414-d685447d3542` reached `SUCCESS`.
+- PASS One Time Railway redeploy and sequential doctor; deployment `965166eb-7cbb-4935-aa43-9ca497978b4e` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `381023aad5fdaf1b23ef4c7ab0c12327ee2d369b`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 381023aad5fdaf1b23ef4c7ab0c12327ee2d369b`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T04-03-00-662Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only live DTO readback through Operations auth: 12 scoped cards, `total_student_activity_rows=0`, `total_membership_activity_rows=0`, `list_no_send=true`, and `list_external_write_performed=false`; current live sample had no student/member rows.
+- PASS `node --check server.js` after adding scoped class-attendance Activity timeline rows.
+- PASS `node --check src/lib/bna/crm/contact-service.js`.
+- PASS `npm run operations:build`.
+- PASS `npm run operations:check-generated`.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/crm-contact-model.test.js tests/shared-crm-workbench-contract.test.js` (32/32).
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T04-10-watchdog-action-audit.md`.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run secrets:audit`; 9272 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run test:onetime:focused` (77/77).
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run watchdog:links`; report `ops/watchdog-audits/2026-07-13T04-10-watchdog-link-audit.md`.
+- PASS `npm run watchdog:security`; report `ops/watchdog-audits/2026-07-13T04-10-watchdog-security-routes.md`.
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM class-attendance activity context commit `593398dd6f3f927e321c24fad4bd2d01e13dcd51`.
+- PASS BNA Railway redeploy and sequential doctor; deployment `8886d1ce-677e-406e-a34f-49313e9fde86` reached `SUCCESS`.
+- PASS One Time Railway redeploy and sequential doctor; deployment `1bef031c-3522-440f-8e62-ac33972515cb` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `593398dd6f3f927e321c24fad4bd2d01e13dcd51`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 593398dd6f3f927e321c24fad4bd2d01e13dcd51`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T04-13-58-713Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only live DTO readback through Operations auth: 12 scoped cards, 20 sampled timeline rows, `class_attendance_timeline_rows=0`, `class_attendance_conversation_rows=0`, `no_send=true`, and `external_write_performed=false`; current live sample had no class-attendance rows.
+- PASS `node --check server.js` after adding communication consent/suppression DTO fields.
+- PASS `node --check src/lib/bna/crm-contact-model.js`.
+- PASS `node --test tests/crm-contact-model.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js` (29/29).
+- PASS `npm run operations:check-generated`.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T04-23-watchdog-action-audit.md`.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `npm run secrets:audit`; 9273 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run test:onetime:focused` (78/78).
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run watchdog:links`; report `ops/watchdog-audits/2026-07-13T04-23-watchdog-link-audit.md`.
+- PASS `npm run watchdog:security`; report `ops/watchdog-audits/2026-07-13T04-23-watchdog-security-routes.md`.
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for CRM communication consent context commit `0e33764d66519d8f45d86e57b320a1988a604058`.
+- PASS BNA Railway redeploy and sequential doctor; deployment `1cf2ff91-2ead-4124-851d-a71b17742b56` reached `SUCCESS`.
+- PASS One Time Railway redeploy and sequential doctor; deployment `57c2454e-60e2-40e9-9214-b7f5572df6c6` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `0e33764d66519d8f45d86e57b320a1988a604058`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 0e33764d66519d8f45d86e57b320a1988a604058`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T04-26-18-047Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only live DTO readback through Operations auth: 12 scoped cards, `communication_preferences_cards=12`, preference counts `{whatsapp:2,email:3,not_set:7}`, consent counts `{not_recorded:12}`, suppression counts `{none_recorded:12}`, `no_send=true`, and `external_write_performed=false`.
+
+## CRM Suppression / Opt-Out Activity Timeline Context - 2026-07-13
+
+- PASS `node --check server.js` after adding `communication_suppression` timeline rows.
+- PASS `node --check src/lib/bna/crm/contact-service.js`.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js`; 21/21 tests passed.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run test:onetime:focused`; 78/78 tests passed.
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T04-36-watchdog-action-audit.md`, finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`.
+- PASS `npm run watchdog:links`; report `ops/watchdog-audits/2026-07-13T04-36-watchdog-link-audit.md`, finding_count 0.
+- PASS `npm run watchdog:security`; report `ops/watchdog-audits/2026-07-13T04-36-watchdog-security-routes.md`, finding_count 0.
+- PASS `npm run secrets:audit`; 9274 tracked paths checked.
+- PASS `npm run bna:run:validate`.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git diff --cached --check`.
+- PASS `git push origin master` for CRM suppression timeline context commit `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
+- PASS BNA Railway redeploy and doctor; deployment `476ad2fb-8178-44b2-af2d-20d2eb7f15cd` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `9fd12f58-f9ca-4eb3-b581-e0b9f7aca3f9` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e4d6977c2a8db5ec1d8d37c4e7efa23b72eff5d1`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T04-40-38-338Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS read-only live DTO readback through Operations auth: 12 scoped cards, `suppression_timeline_rows=0`, `suppression_conversation_rows=0`, `suppression_task_rows=0`, `no_send=true`, and `external_write_performed=false`.
+
+## One Time-First Control Correction - 2026-07-13
+
+- PASS `npm run bna:run:validate` after adding `RAW-20260713-003`, superseding the simultaneous BNA/One Time frontend parity criterion for the current phase, and registering `REQ-20260713-905` through `REQ-20260713-911`.
+- PASS JSON parse/readback of `requirements.json`; new packet IDs are `REQ-20260713-905` through `REQ-20260713-911`.
+- PASS `git diff --check` with line-ending warnings only.
+
+## Mobile CRM Information Architecture - 2026-07-13
+
+- PASS `npm run operations:check-generated` after mobile CRM IA implementation.
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/watchdog-action-registry.test.js`; 19/19 tests passed.
+- PASS `npm run watchdog:actions`; `ACTION-CRM-ACTION-OVERFLOW` is registered and action coverage/parity regenerated.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` covers split shell and monolith at 1440/1024/768/430/390, mobile list/detail/subview/action-overflow states, Back restoration, lazy conversations/tasks requests, no horizontal overflow, no console/page/request failures, and no writes.
+- PASS `npm run watchdog:protocol-drift`.
+- PASS `npm run secrets:audit`.
+- PASS `npm run bna:run:validate`.
+- PASS `git diff --cached --check`.
+- PASS `git push origin master` for commit `e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- PASS One Time Railway redeploy and doctor; deployment `9baac6d8-a249-49f7-a228-a77efcf87d5f` reached `SUCCESS`.
+- PASS BNA Railway redeploy and doctor; deployment `1e95c912-8985-42a2-b4d7-294f26dd0939` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- PASS BNA live `/api/deploy-info`; returned `commit_sha=e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- PASS `node scripts/smoke-onetime-separate-instance-live.mjs https://join.onetimeonetime.com --expected-sha e971aa1e69eae63be8682b699b78d4b7733fefb8`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T07-45-19-025Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-provider-route-module`; report `ops/live-smokes/2026-07-13T07-45-30-679Z-onetime-provider-route-module-live-smoke.md`.
+- PASS BNA live `/api/deploy-info` exact-SHA readback returned `target_app=bna`; generic `npm run app:smoke` was skipped because it creates/deletes task test data.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T07-48-07-488Z-operations-workspace-taxonomy-live-smoke.md`.
+
+## CRM Selected-Contact Email Thread DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --check scripts/smoke-onetime-operations-crm-workbench-local.mjs`.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js`; 22/22 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; report `ops/watchdog-audits/2026-07-13T08-32-watchdog-action-audit.md`, finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; report `ops/watchdog-audits/2026-07-13-product-quality-drift.md`, finding_count 0.
+- PASS `npm run watchdog:security`; report `ops/watchdog-audits/2026-07-13T08-32-watchdog-security-routes.md`, finding_count 0.
+- PASS `npm run secrets:audit`; 9317 tracked paths checked.
+- PASS `npm run bna:run:validate` before deploy.
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for runtime/proof commit `298751d8d940c02ce4c8a9c70c5b36862ea67766`.
+- PASS BNA Railway redeploy and doctor; deployment `fccc5a3d-2f96-4c7f-a8ab-5fae904b1bf7` reached `SUCCESS`.
+- PASS One Time Railway redeploy and doctor; deployment `4002d6ca-6a1c-483b-bd56-65906d60020e` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `298751d8d940c02ce4c8a9c70c5b36862ea67766` with target apps `bna` and `one-time`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 298751d8d940c02ce4c8a9c70c5b36862ea67766`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 298751d8d940c02ce4c8a9c70c5b36862ea67766`; report `ops/live-smokes/2026-07-13T08-36-47-586Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 298751d8d940c02ce4c8a9c70c5b36862ea67766`; report `ops/live-smokes/2026-07-13T08-36-47-920Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T08-37-02-076Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-email-thread-dto`; report `ops/live-smokes/2026-07-13T08-38-11-769Z-one-time-crm-email-thread-dto-live-smoke.md` with 12 scoped cards, 8 mailbox candidates, 1 inspected candidate, 21 selected-contact conversations, 1 email conversation, `no_send=true`, and no external writes.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 298751d8d940c02ce4c8a9c70c5b36862ea67766`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+
+## CRM Legacy Contact-Note DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js`; 31/31 tests passed.
+- PASS `node --check scripts/smoke-onetime-crm-contact-notes-dto-live.mjs`.
+- PASS `package.json` parse check after adding `app:smoke:onetime-crm-contact-notes-dto`.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; finding_count 0.
+- PASS `npm run secrets:audit`; 9325 tracked paths checked.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check`.
+- PASS `git push origin master` for final deployed commit `e0dd3d48543740efb32b35f64ad27cf0cc6e676b`.
+- PASS One Time Railway redeploy and doctor; deployment `99ea47d8-a5a1-4403-b435-a732b7df21d1` reached `SUCCESS`.
+- PASS BNA Railway redeploy and doctor; deployment `b35f96f7-f610-410a-b206-86b6900c07f0` reached `SUCCESS`.
+- PASS One Time and BNA live `/api/deploy-info`; both returned `e0dd3d48543740efb32b35f64ad27cf0cc6e676b`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha e0dd3d48543740efb32b35f64ad27cf0cc6e676b`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha e0dd3d48543740efb32b35f64ad27cf0cc6e676b`; report `ops/live-smokes/2026-07-13T08-59-55-777Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`; report `ops/live-smokes/2026-07-13T09-00-20-966Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-email-thread-dto`; report `ops/live-smokes/2026-07-13T09-00-20-963Z-one-time-crm-email-thread-dto-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T09-00-42-212Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-contact-notes-dto`; report `ops/live-smokes/2026-07-13T09-00-20-964Z-one-time-crm-contact-notes-dto-live-smoke.md` recorded `skipped_no_live_contact_notes` and created no synthetic data.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha e0dd3d48543740efb32b35f64ad27cf0cc6e676b`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+
+## CRM Delivery Outbox Activity DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/crm/contact-service.js`.
+- PASS `node --check scripts/smoke-onetime-crm-delivery-outbox-dto-live.mjs`.
+- PASS package JSON parse after adding `app:smoke:onetime-crm-delivery-outbox-dto`.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-signup-form-matrix.test.js tests/one-time-signup-reminder-workflow.test.js`; 42/42 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding count 0.
+- PASS `npm run watchdog:protocol-drift`; finding count 0.
+- PASS `npm run secrets:audit`; 9326 tracked paths checked before commit.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`.
+- PASS `npm run test:onetime:focused`; 78/78 tests passed after updating stale dedicated-provider-shell and RUM fixture test contracts.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for app-code commit `fc36995bf85e31b988e1d7e1d756bf4e51e00ca4`; deployed head is `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
+- PASS BNA Railway deploy/doctor; deployment `b49f07c2-86e5-44d3-8092-e4ed1bdaed2e` reached `SUCCESS`.
+- PASS One Time Railway deploy/doctor; deployment `2645a6c7-3b51-4ae6-915f-5a267dacde22` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha ee9391d2bd4a1ff3ef41fc99296089254373a4d6`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha ee9391d2bd4a1ff3ef41fc99296089254373a4d6`; report `ops/live-smokes/2026-07-13T09-33-33-717Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha ee9391d2bd4a1ff3ef41fc99296089254373a4d6`; report `ops/live-smokes/2026-07-13T09-33-33-379Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-delivery-outbox-dto`; report `ops/live-smokes/2026-07-13T09-32-18-053Z-one-time-crm-delivery-outbox-dto-live-smoke.md` recorded `skipped_no_live_delivery_outbox` and created no synthetic data.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T09-28-14-579Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha ee9391d2bd4a1ff3ef41fc99296089254373a4d6`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+
+## CRM Delivery Dead-Letter Activity DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --check scripts/smoke-onetime-crm-dead-letter-dto-live.mjs`.
+- PASS package JSON parse after adding `app:smoke:onetime-crm-dead-letter-dto`.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/service-provider-scope-routes.test.js`; 22/22 tests passed.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/one-time-delivery-outbox.test.js tests/one-time-delivery-outbox-cron.test.js`; 42/42 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run watchdog:protocol-drift`.
+- PASS `npm run secrets:audit`; 9352 tracked paths checked.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for commit `01d5a054ad99ba0a41196b18fc5b8098972e1d5a`.
+- PASS BNA Railway deploy/doctor; deployment `86b1d98c-d4d3-4c52-8f0f-784ebee3deef` reached `SUCCESS`.
+- PASS One Time Railway deploy/doctor; deployment `7c81033a-ffc4-46e2-b2f5-f8ff0da1cf91` reached `SUCCESS`.
+- PASS BNA and One Time live `/api/deploy-info`; both returned `01d5a054ad99ba0a41196b18fc5b8098972e1d5a`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a`; report `ops/live-smokes/2026-07-13T09-51-50-534Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a`; report `ops/live-smokes/2026-07-13T09-51-50-245Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-dead-letter-dto`; report `ops/live-smokes/2026-07-13T09-51-50-226Z-one-time-crm-dead-letter-dto-live-smoke.md` recorded `skipped_no_live_dead_letters` and created no synthetic data.
+- PASS `npm run app:smoke:onetime-crm-delivery-outbox-dto`; report `ops/live-smokes/2026-07-13T09-52-15-195Z-one-time-crm-delivery-outbox-dto-live-smoke.md` recorded `skipped_no_live_delivery_outbox` and created no synthetic data.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T09-52-15-192Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 01d5a054ad99ba0a41196b18fc5b8098972e1d5a`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+
+## CRM Signup Context And Lifecycle Activity DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/crm/contact-service.js`.
+- PASS `node --check scripts/smoke-onetime-crm-signup-context-dto-live.mjs`.
+- PASS package JSON parse after adding `app:smoke:onetime-crm-signup-context-dto`.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js`; 31/31 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; finding_count 0.
+- PASS `npm run secrets:audit`; 9364 tracked paths checked.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS One Time Railway deploy/doctor; deployment `36d753a9-b0f0-4dd6-a757-c7eb8b2f0bcb` reached `SUCCESS`.
+- PASS BNA Railway deploy/doctor; deployment `2efc3746-dbf0-4531-b4c2-d82ab1a61898` reached `SUCCESS`.
+- PASS One Time and BNA live `/api/deploy-info`; both returned `c2b0878b66a50679589ee240ebdbd194622008fa`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha c2b0878b66a50679589ee240ebdbd194622008fa`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha c2b0878b66a50679589ee240ebdbd194622008fa`; report `ops/live-smokes/2026-07-13T10-17-24-169Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-signup-context-dto`; report `ops/live-smokes/2026-07-13T10-17-24-142Z-one-time-crm-signup-context-dto-live-smoke.md` with `signup_context_candidate_count=1` and `signup_context_match=true`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha c2b0878b66a50679589ee240ebdbd194622008fa`; report `ops/live-smokes/2026-07-13T10-17-38-051Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T10-17-37-675Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha c2b0878b66a50679589ee240ebdbd194622008fa`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- BLOCKED owner-only email/WhatsApp sends: `npm run one-time:owner-test:readiness` wrote `ops/watchdog-audits/2026-07-13T10-06-52-478Z-onetime-owner-test-readiness.md`; Resend/WAPI are ready but secure owner-test email and WhatsApp aliases are missing, so no send was attempted.
+
+## CRM Phone / WhatsApp Communication Matching DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --check scripts/smoke-onetime-crm-whatsapp-thread-dto-live.mjs`.
+- PASS package JSON parse after adding `app:smoke:onetime-crm-whatsapp-thread-dto`.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js`; 22/22 tests passed.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js`; 31/31 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; finding_count 0.
+- PASS `npm run secrets:audit`; 9366 tracked paths checked.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for runtime commit `c00b46668111bbc898ddc7a571fe8d3605d6384d` and smoke/proof commit `35a0a5d2e0ad157e383537dfbb1518d2a8df33bd`.
+- PASS One Time Railway deploy/doctor; deployment `61721d1e-977b-4ffe-a6a2-d8cda226abf1` reached `SUCCESS`.
+- PASS BNA Railway deploy/doctor; deployment `a6b1ffeb-038f-45a4-b04f-ff5dc00b3125` reached `SUCCESS`.
+- PASS One Time and BNA live `/api/deploy-info`; both returned `35a0a5d2e0ad157e383537dfbb1518d2a8df33bd`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 35a0a5d2e0ad157e383537dfbb1518d2a8df33bd`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 35a0a5d2e0ad157e383537dfbb1518d2a8df33bd`; report `ops/live-smokes/2026-07-13T10-34-52-397Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 35a0a5d2e0ad157e383537dfbb1518d2a8df33bd`; report `ops/live-smokes/2026-07-13T10-35-15-519Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-whatsapp-thread-dto`; report `ops/live-smokes/2026-07-13T10-35-15-518Z-one-time-crm-whatsapp-thread-dto-live-smoke.md` with `phone_candidate_count=2` and `selected_contact_whatsapp_thread_match=true`.
+- PASS `npm run app:smoke:onetime-crm-signup-context-dto`; report `ops/live-smokes/2026-07-13T10-35-27-719Z-one-time-crm-signup-context-dto-live-smoke.md` with `signup_context_match=true`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T10-34-52-326Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 35a0a5d2e0ad157e383537dfbb1518d2a8df33bd`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw phone/message/contact logging, or production data mutation was performed by this DTO smoke.
+
+## CRM Direct Signup Record Activity DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/crm/contact-service.js`.
+- PASS `node --check scripts/smoke-onetime-crm-signup-record-dto-live.mjs`.
+- PASS package JSON parse after adding `app:smoke:onetime-crm-signup-record-dto`.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/service-provider-scope-routes.test.js`; 22/22 tests passed.
+- PASS `node --test tests/crm-contact-service.test.js tests/service-provider-scope-routes.test.js tests/shared-crm-workbench-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js`; 31/31 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; finding_count 0.
+- PASS `npm run secrets:audit`; 9369 tracked paths checked.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` and `git diff --cached --check` with line-ending warnings only.
+- PASS `git push origin master` for final deployed/proof commit `1318c67da0d79e7a158aa0b13d3085906ffcdf15`.
+- PASS One Time Railway deploy/doctor; deployment `af6b2ea0-721e-42de-b487-fe9ef7ea27c8` reached `SUCCESS`.
+- PASS BNA Railway doctor; current deployment `896c0a2f-ed48-4d44-ae6d-b415c669bd8d` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned `1318c67da0d79e7a158aa0b13d3085906ffcdf15`.
+- PASS BNA live `/api/deploy-info`; currently returns proof-refresh head `d12e31694f2a0475936c945f1d7ec0d0c2c35664`, which contains the `1318c67da0d79e7a158aa0b13d3085906ffcdf15` runtime changes.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1318c67da0d79e7a158aa0b13d3085906ffcdf15`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 1318c67da0d79e7a158aa0b13d3085906ffcdf15`; report `ops/live-smokes/2026-07-13T10-52-38-477Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 1318c67da0d79e7a158aa0b13d3085906ffcdf15`; report `ops/live-smokes/2026-07-13T10-52-38-292Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-signup-record-dto`; report `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-signup-record-dto-live-smoke.md` recorded `skipped_no_live_signup_records` after inspecting 12 scoped cards and created no synthetic data.
+- PASS `npm run app:smoke:onetime-crm-whatsapp-thread-dto`; report `ops/live-smokes/2026-07-13T10-52-56-884Z-one-time-crm-whatsapp-thread-dto-live-smoke.md` with `phone_candidate_count=2` and `selected_contact_whatsapp_thread_match=true`.
+- PASS `npm run app:smoke:onetime-crm-signup-context-dto`; report `ops/live-smokes/2026-07-13T10-53-15-856Z-one-time-crm-signup-context-dto-live-smoke.md` with `signup_context_match=true`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; original report `ops/live-smokes/2026-07-13T10-52-56-884Z-operations-workspace-taxonomy-live-smoke.md`; current BNA proof-refresh head recheck report `ops/live-smokes/2026-07-13T11-00-32-825Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 1318c67da0d79e7a158aa0b13d3085906ffcdf15`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw signup private data logging, or production data mutation was performed by this DTO smoke.
+
+## CRM Website Assistant Thread Activity DTO Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --check scripts/smoke-onetime-crm-assistant-thread-dto-live.mjs`.
+- PASS package JSON parse after adding `app:smoke:onetime-crm-assistant-thread-dto`.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/service-provider-scope-routes.test.js`; 22/22 tests passed.
+- PASS `node --test tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js`; 9/9 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; finding_count 0.
+- PASS `npm run secrets:audit`; 9370 tracked paths checked.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `git push origin master` for app-code commit `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- PASS One Time Railway deploy/doctor; deployment `c2b6b88a-036a-4a33-93d9-3bd2f9de7719` reached `SUCCESS`.
+- PASS BNA Railway deploy/doctor; deployment `55f38854-f00a-4432-bfdf-0dfcf6c400fc` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned `8ea2cd06e1920eecfd1ae97b937c22d701c00099`, `target_app=one-time`.
+- PASS BNA live `/api/deploy-info`; returned `8ea2cd06e1920eecfd1ae97b937c22d701c00099`, `target_app=bna`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 8ea2cd06e1920eecfd1ae97b937c22d701c00099`; report `ops/live-smokes/2026-07-13T11-11-46-347Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 8ea2cd06e1920eecfd1ae97b937c22d701c00099`; report `ops/live-smokes/2026-07-13T11-11-46-046Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-assistant-thread-dto`; report `ops/live-smokes/2026-07-13T11-11-46-025Z-one-time-crm-assistant-thread-dto-live-smoke.md` with `inspected_candidate_count=1`, `assistant_thread_match=true`, `assistant_thread_conversation_count=0`, and no synthetic data.
+- PASS `npm run app:smoke:onetime-crm-signup-record-dto`; report `ops/live-smokes/2026-07-13T11-12-08-074Z-one-time-crm-signup-record-dto-live-smoke.md` recorded `skipped_no_live_signup_records` after inspecting 12 scoped cards and created no synthetic data.
+- PASS `npm run app:smoke:onetime-crm-whatsapp-thread-dto`; report `ops/live-smokes/2026-07-13T11-12-07-959Z-one-time-crm-whatsapp-thread-dto-live-smoke.md` with `phone_candidate_count=2` and `selected_contact_whatsapp_thread_match=true`.
+- PASS `npm run app:smoke:onetime-crm-signup-context-dto`; report `ops/live-smokes/2026-07-13T11-12-08-074Z-one-time-crm-signup-context-dto-live-smoke.md` with `signup_context_match=true`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T11-12-08-098Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS `npm run one-time:performance-regression-gates -- --base-url https://join.onetimeonetime.com --expected-sha 8ea2cd06e1920eecfd1ae97b937c22d701c00099`; report `ops/performance-audits/2026-07-13-onetime-performance-regression-gates/report.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM mutation, provider mutation, payment/access mutation, credential mutation, raw assistant body/contact logging, or production data mutation was performed by this DTO smoke.
+
+## Shared CRM Current-Phase Closeout - 2026-07-13
+
+- PASS `npm run pqc:validate -- tasks-pending/2026-07-12-shared-crm-workbench-slice.product-quality.json`.
+- PASS `npm run operations:build`.
+- PASS `npm run operations:check-generated`.
+- PASS `node --check server.js`.
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js`; 46/46 tests passed.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run secrets:audit`; 9372 tracked paths checked.
+- PASS `npm run watchdog:protocol-drift`; finding_count 0 after hardening the new One Time Drive/Classroom packet guardrails.
+- PASS `npm run bna:run:validate`; counts after closeout were 7 not_started, 3 in_progress, 2 blocked, 9 done.
+- PASS `npm run bna:run:next`; selector advanced to `REQ-20260712-303`.
+
+## Canonical CRM Contact Aggregate Service Closeout - 2026-07-13
+
+- PASS `node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/service-provider-scope-routes.test.js`; 22/22 tests passed during the `8ea2cd06` assistant-thread slice.
+- PASS `node --test tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js`; 9/9 tests passed during the same closeout.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run watchdog:actions`; finding_count 0.
+- PASS `npm run watchdog:protocol-drift`; finding_count 0.
+- PASS `npm run secrets:audit`; 9370 tracked paths checked before the app-code deploy.
+- PASS `npm run bna:run:validate`; broader addendum work remains open.
+- PASS live One Time CRM workbench, assistant-thread DTO, WhatsApp DTO, signup-context DTO, signup-record DTO, BNA taxonomy, and One Time performance regression smokes at deployed SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- `REQ-20260712-306` marked Done because its exact DTO/service acceptance contract is now implemented, deployed, and proved; no new deploy was required for this status-only closeout.
+
+## Dedicated CRM Actions Closeout - 2026-07-13
+
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js`; 46/46 tests passed.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; finding_count `0`.
+- PASS production read-only marker proof for 18 CRM action IDs on One Time deployed SHA `8ea2cd06e1920eecfd1ae97b937c22d701c00099`.
+- `REQ-20260712-303` marked Done because URL/back-state, mobile one-pane contact detail, and the persisted action matrix are implemented and already deployed; no new runtime deploy was required for this status-only closeout.
+
+## CRM Internal-Copy Cleanup Closeout - 2026-07-13
+
+- PASS `node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js`; 47/47 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `node --check public/js/operations-shell.js`; `node --check public/js/operations-deferred-renderers.js`; `node --check server.js`; `node --check scripts/smoke-onetime-operations-crm-workbench-local.mjs`; `node --check scripts/smoke-onetime-operations-crm-workbench-live.mjs`.
+- PASS `npm run one-time:smoke:operations-crm-workbench-local`; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions`; finding_count `0`.
+- PASS `npm run bna:run:validate`.
+- PASS `git diff --check`.
+- PASS `npm run secrets:audit`.
+- PASS One Time Railway deploy/doctor; deployment `6059d148-7708-43ae-9665-abdaa544a5d6` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned `a8df4c9b9cc091028105a16430aae6927cd0b429`, `target_app=one-time`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-13T12-00-42-976Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS BNA Railway deploy/doctor; deployment `16f00bed-0cb2-49df-b725-8ea8ee672415` reached `SUCCESS`.
+- PASS BNA live `/api/deploy-info`; returned `a8df4c9b9cc091028105a16430aae6927cd0b429`, `target_app=bna`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy`; report `ops/live-smokes/2026-07-13T12-01-50-016Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no external send, WhatsApp/WAPI send, Telegram send, CRM production write, provider mutation, payment/access mutation, import, credential mutation, or production data mutation was performed by this closeout proof.
+
+## Canonical Inbound Communication Pipeline Runtime Slice - 2026-07-13
+
+- PASS `node --check src/lib/bna/crm/ingest-inbound-communication.js`.
+- PASS `node --check src/lib/integrations/resend-inbound-crm.js`.
+- PASS `node --check server.js`.
+- PASS `node --test tests/inbound-communication-ingest.test.js tests/resend-inbound-crm.test.js tests/one-time-wapi-scope-contract.test.js tests/service-provider-lead-bot.test.js tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/one-time-communications-workspace.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js`; 49/49 tests passed before runtime commit `a692c6e002a09557b81c350c5c0187222d87b7de`.
+- PASS `node --test tests/inbound-communication-pipeline.test.js`; 4/4 tests passed.
+- PASS `node --test tests/inbound-communication-ingest.test.js tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js`; 11/11 tests passed.
+- PASS `node --test tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js tests/one-time-wapi-scope-contract.test.js`; 26/26 tests passed.
+- PASS `npm run operations:check-generated`.
+- PASS `npm run bna:run:validate` before runtime commit.
+- PASS `git diff --check` before runtime commit.
+- PASS `npm run secrets:audit` before runtime commit.
+- PASS `npm run watchdog:protocol-drift`; finding_count `0` after adding the
+  Product Quality Protocol Envelope and action-state registry coverage to the
+  Vimeo owner-readiness packet.
+- PASS One Time Railway doctor at current production head `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`; deployment `641ad29c-d8d6-4053-b4d3-c7412fa6b7d7` reached `SUCCESS`.
+- PASS BNA Railway doctor at current production head `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`; deployment `68858c05-474e-4419-91c7-d934e7796305` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`, `target_app=one-time`.
+- PASS BNA live `/api/deploy-info`; returned `f8df93a4ca86ecd607d5c3b63d113f77be4327c2`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha f8df93a4ca86ecd607d5c3b63d113f77be4327c2`; report `ops/live-smokes/2026-07-13T12-25-01-672Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha f8df93a4ca86ecd607d5c3b63d113f77be4327c2`; report `ops/live-smokes/2026-07-13T12-25-01-801Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw contact/message logging, or destructive production mutation was performed by this slice proof.
+
+## Canonical Inbound Website Assistant And Rabbi Telegram Slice - 2026-07-13
+
+- PASS `node --check server.js`.
+- PASS `node --test tests/inbound-communication-pipeline.test.js tests/rabbi-telegram-ticket-approval.test.js`; 12/12 tests passed.
+- PASS `node --test tests/inbound-communication-ingest.test.js tests/resend-inbound-crm.test.js tests/one-time-wapi-scope-contract.test.js`; 10/10 tests passed.
+- PARTIAL unrelated broad-suite check: `node --test tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/assistant-portal-communications-contract.test.js tests/whapi-log-sync-contract.test.js tests/one-time-wapi-scope-contract.test.js tests/rabbi-telegram-ticket-approval.test.js tests/one-time-external-user-portal.test.js`; 69/70 tests passed, with one pre-existing Operations copy assertion in `tests/one-time-external-user-portal.test.js` failing outside this inbound slice.
+- PASS `npm run bna:run:validate`; work remains yes.
+- PASS scoped `git diff --check` for `server.js`, `tests/inbound-communication-pipeline.test.js`, and `tests/rabbi-telegram-ticket-approval.test.js`.
+- PASS `npm run secrets:audit`; 9393 tracked paths checked and 0 tracked secret-risk files found.
+- PASS One Time Railway deployment `ca335eed-37f9-4c47-acf3-cb310d1c80da` reached `SUCCESS`.
+- PASS BNA Railway deployment `cb2ee7e7-abee-4cbf-95ec-a12711a25442` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`, `target_app=one-time`.
+- PASS BNA live `/api/deploy-info`; returned `c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`, `target_app=bna`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`; report `ops/live-smokes/2026-07-13T12-45-53-175Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`; report `ops/live-smokes/2026-07-13T12-46-12-200Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha c8865b070b8f2ee59615ad2a3ddf21ee171a32d8`; report `ops/live-smokes/2026-07-13T12-46-11-923Z-operations-workspace-taxonomy-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw Telegram chat/message value logging, raw contact/message logging, or destructive production mutation was performed by this slice proof.
+
+## Communication-Agent Metadata And Outbox Convergence Local Proof - 2026-07-13
+
+- PASS `node --test tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/one-time-delivery-outbox.test.js tests/service-provider-lead-bot.test.js tests/one-time-wapi-scope-contract.test.js`; 30/30 tests passed.
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/crm/ingest-inbound-communication.js; node --check src/lib/bna/crm/communication-agent-runtime.js; node --check src/lib/bna/one-time-delivery-outbox.js`.
+- PASS `npm run bna:run:validate`; work remains yes.
+- PASS `node --test tests/inbound-communication-ingest.test.js tests/resend-inbound-crm.test.js tests/one-time-wapi-scope-contract.test.js tests/one-time-delivery-outbox.test.js`; 16/16 tests passed.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw contact/message logging, or destructive production mutation was performed by this local proof.
+
+## Canonical Inbound Communication Pipeline Closeout - 2026-07-13
+
+- PASS `git push origin master` for runtime commit `40ffdc1aca34a02774275ba7b2902e46c709e9ce`; the commit is an ancestor of deployed head `43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- PASS One Time Railway doctor; deployment `9cc413fb-da9b-42f4-a2b1-ce5b6744d2cb` reached `SUCCESS`.
+- PASS BNA Railway doctor; deployment `c4f33394-0881-425b-a2de-c862e44dd09e` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned exact SHA `43f7c33733880745d8f1191c86fe8e196ef68baa`, `target_app=one-time`.
+- PASS BNA live `/api/deploy-info`; returned exact SHA `43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 43f7c33733880745d8f1191c86fe8e196ef68baa`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 43f7c33733880745d8f1191c86fe8e196ef68baa`; report `ops/live-smokes/2026-07-13T13-24-30-029Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 43f7c33733880745d8f1191c86fe8e196ef68baa`; report `ops/live-smokes/2026-07-13T13-24-38-990Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha 43f7c33733880745d8f1191c86fe8e196ef68baa`; report `ops/live-smokes/2026-07-13T13-24-53-876Z-operations-workspace-taxonomy-live-smoke.md`.
+- `REQ-20260712-307` marked Done because Resend, WAPI/history, website assistant input, private Rabbi Telegram ticket intake, channel-assigned agent metadata, knowledge snapshot metadata, and outbox handoff are implemented, pushed, deployed, and live-smoked.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw contact/message logging, or destructive production mutation was performed by this deployed closeout proof.
+
+## One Time WAPI Zero-Task Contact Capture Closeout - 2026-07-13
+
+- PASS clean-worktree `node --check server.js`.
+- PASS clean-worktree `node --test tests/one-time-wapi-scope-contract.test.js tests/service-provider-lead-bot.test.js tests/inbound-communication-ingest.test.js tests/inbound-communication-pipeline.test.js tests/one-time-delivery-outbox.test.js`; 29/29 tests passed.
+- PASS clean-worktree `node --test tests/communications-screening-import-ui.test.js`; 5/5 tests passed.
+- PASS staged `git diff --cached --check` and staged `server.js` syntax check before commit.
+- PASS `git push origin master` for runtime commit `7ec31290c08ede0957dbd60b2c3253979253feba`.
+- PASS One Time Railway doctor; deployment `75d521fa-6826-49f5-875a-5f6f03f3dc44` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned exact SHA `7ec31290c08ede0957dbd60b2c3253979253feba`, `target_app=one-time`.
+- PASS BNA live `/api/deploy-info`; returned exact SHA `7ec31290c08ede0957dbd60b2c3253979253feba`, `target_app=bna`.
+- NOTE BNA Railway doctor access passed, but current deployment status still reported `BUILDING`; live deploy-info and taxonomy smoke proved the exact SHA.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 7ec31290c08ede0957dbd60b2c3253979253feba`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 7ec31290c08ede0957dbd60b2c3253979253feba`; report `ops/live-smokes/2026-07-13T13-45-08-361Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 7ec31290c08ede0957dbd60b2c3253979253feba`; report `ops/live-smokes/2026-07-13T13-44-50-006Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha 7ec31290c08ede0957dbd60b2c3253979253feba`; report `ops/live-smokes/2026-07-13T13-44-53-216Z-operations-workspace-taxonomy-live-smoke.md`.
+- `REQ-20260712-308` marked Done for code/deploy proof; owner-only real WAPI send/inbound proof remains blocked by `REQ-20260713-906`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw contact/message logging, or destructive production mutation was performed by this deployed closeout proof.
+
+## Communication-Agent Model Closeout - 2026-07-13
+
+- PASS clean-worktree `node --check server.js`.
+- PASS clean-worktree `node --check src/lib/bna/crm/communication-agent-runtime.js`.
+- PASS clean-worktree `node --test tests/communication-agent-model.test.js tests/inbound-communication-pipeline.test.js tests/resend-inbound-crm.test.js tests/one-time-delivery-outbox.test.js tests/service-provider-lead-bot.test.js tests/one-time-wapi-scope-contract.test.js`; 37/37 tests passed.
+- PASS clean-worktree `npm run secrets:audit`; 9522 tracked paths checked and 0 tracked secret-risk files found.
+- PASS main-worktree `npm run bna:run:validate` before runtime commit.
+- PASS staged `git diff --cached --check` and staged `server.js` syntax check before runtime commit.
+- PASS `git push origin master` for runtime commit `98e449a5777158a1125ddfbcbd7925dd489d8f18` and final deployed SHA `1e6a977818f1393fd3721d796d9c025e0ac95eb9`.
+- PASS One Time Railway doctor; deployment `7a02b4b9-c2cc-48ef-8376-e7755266836d` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned exact SHA `1e6a977818f1393fd3721d796d9c025e0ac95eb9`, `target_app=one-time`.
+- PASS BNA live `/api/deploy-info`; returned exact SHA `1e6a977818f1393fd3721d796d9c025e0ac95eb9`, `target_app=bna`.
+- NOTE BNA Railway doctor access passed, but current deployment status still reported `BUILDING`; live deploy-info and taxonomy smoke proved the exact SHA.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 1e6a977818f1393fd3721d796d9c025e0ac95eb9`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com --expected-sha 1e6a977818f1393fd3721d796d9c025e0ac95eb9`; report `ops/live-smokes/2026-07-13T14-04-45-139Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 1e6a977818f1393fd3721d796d9c025e0ac95eb9`; report `ops/live-smokes/2026-07-13T14-04-45-800Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:operations-workspace-taxonomy -- https://bneineviimacademy.org --expected-sha 1e6a977818f1393fd3721d796d9c025e0ac95eb9`; report `ops/live-smokes/2026-07-13T14-04-45-310Z-operations-workspace-taxonomy-live-smoke.md`.
+- `REQ-20260712-309` marked Done for code/deploy proof; owner-only real email/WhatsApp send proof remains blocked by `REQ-20260713-906`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, payment/access mutation, provider credential mutation, raw contact/message logging, or destructive production mutation was performed by this deployed closeout proof.
+
+## One Time Communication Agents Operations Console/API Closeout - 2026-07-13
+
+- PASS `node --check public/js/operations-shell.js`.
+- PASS `node --check server.js`.
+- PASS `node --check src/platform/instances/one-time-rabbi-dashboard-ia.js`.
+- PASS `node --test tests\one-time-rabbi-dashboard-ia.test.js`; 9/9 tests passed.
+- PASS `node --test tests\communication-agent-model.test.js`; 7/7 tests passed.
+- PASS `node --test tests\agent-control-center.test.js`; 5/5 tests passed.
+- PASS `node --test tests\one-time-operations-ui-smoke.test.js`; 1/1 tests passed.
+- PASS `npm run test:onetime:focused`; 80/80 tests passed after rebase.
+- PASS `node --test tests\communication-agent-model.test.js tests\agent-control-center.test.js`; 12/12 tests passed after rebase.
+- PASS `npm run watchdog:actions`; finding_count `0`.
+- PASS `npm run watchdog:protocol-drift`; finding_count `0`.
+- PASS `npm run bna:run:validate`; work remains yes with 17 done, 2 not_started, and 2 blocked requirements.
+- PASS `npm run secrets:audit`; 9595 tracked paths checked and 0 secret-risk files found.
+- PASS One Time Railway doctor/deploy; deployment `a1f5928b-7668-4e19-b337-938859ce3c71` reached `SUCCESS`.
+- PASS One Time live `/api/deploy-info`; returned exact SHA `dab8c6d8ce23e0a2cda4d619d302ed32c6bac415`, `target_app=one-time`.
+- PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com --expected-sha dab8c6d8ce23e0a2cda4d619d302ed32c6bac415`; report `ops/live-smokes/2026-07-13T16-05-25-906Z-rabbi-onetime-landing-smoke.md`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha dab8c6d8ce23e0a2cda4d619d302ed32c6bac415`; report `ops/live-smokes/2026-07-13T16-05-26-231Z-onetime-provider-route-module-live-smoke.md`.
+- PASS authenticated Communication Agents API live smoke; report `ops/live-smokes/2026-07-13T16-06-41-853Z-one-time-communication-agents-live-smoke.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, CRM production write, provider mutation, credential mutation, payment/access mutation, raw private payload logging, or destructive production mutation was performed.
+## One Time WAPI / Rabbi Telegram Safe Activation Gate - 2026-07-13
+
+- PASS `node --check server.js scripts/check-onetime-external-setup-readiness.mjs scripts/check-onetime-wapi-readiness.mjs`.
+- PASS `node --check scripts/check-rabbi-telegram-ticket-readiness.mjs`.
+- PASS `node --test tests/one-time-wapi-scope-contract.test.js tests/one-time-external-setup-readiness.test.js tests/one-time-owner-test-readiness.test.js tests/service-provider-lead-bot.test.js`; 29/29 tests passed.
+- PASS `node --test tests/rabbi-telegram-notifications.test.js`; 15/15 tests passed.
+- PASS-with-blocker `npm run one-time:wapi:readiness`: WAPI provider setup ready with one-time scoped Railway token, class link, instance, sender metadata, and webhook secret; `auto_reply.ready=false` only because `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` is not approved; no send or CRM mutation.
+- PASS-with-blocker `npm run one-time:owner-test:readiness`: Resend send-ready and WAPI provider setup-ready; secure owner-test email and WhatsApp aliases missing; no owner email/WhatsApp send.
+- PASS dry-run `BNA_RUNTIME_ENV_FILE=... BNA_RUNTIME_SECRETS_DIR=... npm run telegram:rabbi:readiness`: Rabbi Telegram profile ready, Super Admin target ready, dry-run only, no token/chat ID printed, no Telegram send.
+- PASS `BNA_RUNTIME_ENV_FILE=... BNA_RUNTIME_SECRETS_DIR=... npm run app:smoke:rabbi-agent-review-direct-proof`; report `ops/live-smokes/2026-07-13T16-08-00-665Z-rabbi-agent-review-direct-proof.md`.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, CRM production write, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed by this local proof.
+
+## One Time WAPI Safe Activation Gate Deploy Proof - 2026-07-13
+
+- PASS `git push origin master` for deploy candidate `80b75432672d282855b350a2f7c5adc160e63623`.
+- PASS scoped `BNA_DEPLOY_APP=one-time npm run railway:redeploy`; Railway deployment `74f45880-7a11-4b06-9632-d858843cb4fb` created.
+- PASS scoped `BNA_DEPLOY_APP=one-time npm run railway:doctor`; deployment `74f45880-7a11-4b06-9632-d858843cb4fb` reached `SUCCESS`.
+- PASS live deploy-info: `https://join.onetimeonetime.com/api/deploy-info` returned exact SHA `80b75432672d282855b350a2f7c5adc160e63623`, `target_app=one-time`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 80b75432672d282855b350a2f7c5adc160e63623`.
+- PASS `npm run app:smoke:onetime-provider-route-module -- https://join.onetimeonetime.com --expected-sha 80b75432672d282855b350a2f7c5adc160e63623`; report `ops/live-smokes/2026-07-13T16-18-12-320Z-onetime-provider-route-module-live-smoke.md`.
+- PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com --expected-sha 80b75432672d282855b350a2f7c5adc160e63623`; report `ops/live-smokes/2026-07-13T16-18-59-085Z-rabbi-onetime-landing-smoke.md`.
+- PASS-with-blocker post-deploy `npm run one-time:wapi:readiness`: WAPI provider setup ready; public auto-reply remains blocked by missing `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM`; no send or CRM mutation.
+- PASS-with-blocker post-deploy `npm run one-time:owner-test:readiness`: Resend/WAPI preflight ready; secure owner aliases missing; no owner send.
+- PASS post-deploy `BNA_RUNTIME_ENV_FILE=... BNA_RUNTIME_SECRETS_DIR=... npm run telegram:rabbi:readiness`: Rabbi Telegram dry-run ready; no Telegram send.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, CRM production write, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed by this deployed proof.
+
+## One Time Activation Gate Final No-Send Contract Proof - 2026-07-13
+
+- PASS final exact-SHA deploy-info readback: current One Time live SHA is `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`.
+- PASS no-send activation contract suite `39/39`: communication-agent response runtime, canonical inbound pipeline/ingest, delivery outbox/cron contracts, Resend inbound webhook/CRM, and communication-agent model.
+- PASS WAPI/Rabbi/bot policy suite `30/30`: One Time WAPI scoped send contract, provider lead bot, and Rabbi Telegram notifications.
+- `REQ-20260712-313` remains Blocked, not Done: owner-only live email/WhatsApp send/readback requires secure owner aliases, and unrestricted public WhatsApp auto-reply requires explicit `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` approval.
+- Guardrails: no owner-test email send, WhatsApp/WAPI provider send, Telegram send, public auto-reply enablement, CRM production write, payment/access mutation, raw destination/chat/token logging, or destructive production mutation was performed by this proof.
+
+## Final Release Matrix Blocked Proof - 2026-07-13
+
+- PASS final report artifact recorded:
+  `ops/execution-runs/2026-07-12-shared-crm-communication-agents-addendum/FINAL-REPORT.md`.
+- PASS `npm run bna:run:validate` after marking `REQ-20260712-314` blocked by
+  external live-send gates.
+- PASS `npm run secrets:audit` after adding the final report artifact.
+- PASS exact-SHA One Time deploy-info readback for
+  `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`.
+- PASS exact-SHA One Time separate-instance route matrix for
+  `49f3edda2da37e3afd9bdf3056ab5f6fc91e981c`.
+- PASS no-send activation contract suite `39/39`.
+- PASS WAPI/Rabbi/provider-bot policy suite `30/30`.
+- BLOCKED owner-only email/WhatsApp live sends: secure owner-test aliases are
+  not configured, so no external owner send was attempted.
+- BLOCKED unrestricted public WhatsApp auto-reply: explicit
+  `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM` approval is not configured.
+
+## Safe One Time Activation Read-Only DTO Proof - 2026-07-13
+
+- PASS `node --check scripts/check-onetime-wapi-readiness.mjs`.
+- PASS `node --test tests\one-time-wapi-scope-contract.test.js`; 5/5 tests passed.
+- PASS focused convergence suite:
+  `node --test tests\communication-agent-response-runtime.test.js tests\communication-agent-model.test.js tests\service-provider-lead-bot.test.js tests\inbound-communication-pipeline.test.js tests\resend-inbound-crm.test.js tests\one-time-delivery-outbox.test.js tests\one-time-wapi-scope-contract.test.js`;
+  45/45 tests passed.
+- PASS `npm run one-time:wapi:readiness` generated no-send readiness with
+  provider setup ready, credential scope `one_time_scoped`, auto-reply
+  fail-closed behind `ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM`, and no send.
+- PASS `npm run one-time:owner-test:readiness` generated no-send readiness with
+  Resend send allowed and WAPI setup ready; owner-test aliases remain missing
+  under `REQ-20260713-906`.
+- PASS `npm run one-time:smoke:resend-vimeo-stripe`; no-send/no-upload/no-charge
+  safe smoke, Resend send allowed.
+- PASS `npm run app:smoke:onetime-crm-whatsapp-thread-dto -- https://join.onetimeonetime.com --expected-sha 4c38c4674c2877a701f99de788c9e086a74d0de6`;
+  report `ops/live-smokes/2026-07-13T16-18-40-554Z-one-time-crm-whatsapp-thread-dto-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-email-thread-dto -- https://join.onetimeonetime.com --expected-sha 4c38c4674c2877a701f99de788c9e086a74d0de6`;
+  report `ops/live-smokes/2026-07-13T16-18-40-557Z-one-time-crm-email-thread-dto-live-smoke.md`.
+- PASS `npm run app:smoke:onetime-crm-delivery-outbox-dto -- https://join.onetimeonetime.com --expected-sha 4c38c4674c2877a701f99de788c9e086a74d0de6`;
+  report `ops/live-smokes/2026-07-13T16-18-39-947Z-one-time-crm-delivery-outbox-dto-live-smoke.md`.
+- PASS `npm run bna:run:validate`; work remains yes with 17 done, 3 blocked,
+  and 1 not_started requirements.
+- Guardrails: no email send, WhatsApp/WAPI send, Telegram send, public
+  auto-reply mutation, CRM production write, provider mutation, credential
+  mutation, payment/access mutation, raw private payload logging, or destructive
+  production mutation was performed.

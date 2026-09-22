@@ -1,0 +1,610 @@
+{
+  "generated_at": "2026-07-13T16:15:59.595Z",
+  "scope": "one_time_resend_vimeo_stripe_safe_smoke",
+  "guardrails": {
+    "external_write_performed": false,
+    "resend_send_attempted": false,
+    "vimeo_upload_attempted": false,
+    "stripe_charge_attempted": false,
+    "stripe_checkout_session_created": false,
+    "stripe_payment_intent_created": false
+  },
+  "results": {
+    "resend": {
+      "provider": "resend",
+      "api_key_configured": true,
+      "account_owner": "shloimie",
+      "provider_account_configured": false,
+      "from_configured": true,
+      "domain_configured": true,
+      "read_only_domain_check_attempted": true,
+      "send_attempted": false,
+      "external_write_performed": false,
+      "connection": {
+        "ok": true,
+        "endpoint": "GET /domains",
+        "domains": {
+          "count": 1,
+          "statuses": {
+            "verified": 1
+          },
+          "regions": {
+            "us-east-1": 1
+          },
+          "configured_domain_present": true,
+          "configured_domain_status": "verified",
+          "record_count_total": 0
+        }
+      },
+      "readiness": {
+        "configured": true,
+        "connected": true,
+        "domain_verified": true,
+        "send_allowed": true,
+        "fallback_approved": false,
+        "domain_status": "verified",
+        "blocker": null,
+        "domains": {
+          "count": 1,
+          "statuses": {
+            "verified": 1
+          },
+          "regions": {
+            "us-east-1": 1
+          },
+          "configured_domain_present": true,
+          "configured_domain_status": "verified",
+          "record_count_total": 0
+        }
+      },
+      "blocker": "Send path is configured, but this smoke intentionally does not call Resend /emails without an approved target recipient."
+    },
+    "vimeo": {
+      "provider": "vimeo",
+      "selected_provider": "vimeo",
+      "access_token_configured": true,
+      "client_id_configured": true,
+      "client_secret_configured": true,
+      "automated_upload_enabled": false,
+      "auth_read_only_check": {
+        "provider": "vimeo",
+        "ok": true,
+        "status": "private_test_ready",
+        "legacy_status": "api_auth_ready",
+        "external_write_performed": false,
+        "reason": "Vimeo token can read the account.",
+        "next_action": "Confirm intended test account and test project before synthetic upload.",
+        "account": {
+          "name": "Shloimie Dratler",
+          "uri": "/users/171089182",
+          "account": "free"
+        }
+      },
+      "folder_read_only_check": {
+        "provider": "vimeo",
+        "ok": true,
+        "status": "private_test_ready",
+        "legacy_status": "api_auth_ready",
+        "folders": [
+          {
+            "name": "BNA Synthetic Vimeo Smoke Tests",
+            "uri": "/users/171089182/projects/29844813"
+          }
+        ],
+        "external_write_performed": false
+      },
+      "recent_videos_read_only_check": {
+        "provider": "vimeo",
+        "ok": true,
+        "status": "private_test_ready",
+        "legacy_status": "api_auth_ready",
+        "videos": [
+          {
+            "name": "BNA synthetic Vimeo private smoke",
+            "uri": "/videos/1208196259",
+            "link": "https://vimeo.com/1208196259",
+            "privacy": {
+              "view": "nobody",
+              "embed": "private",
+              "download": false,
+              "add": true,
+              "comments": "anybody"
+            }
+          }
+        ],
+        "external_write_performed": false
+      },
+      "public_embed_checks": [
+        {
+          "label": "one_time_public_funnel_hero",
+          "parsed_ok": true,
+          "vimeo_id": "1158542993",
+          "player_url_status": {
+            "ok": true,
+            "status": 200,
+            "contains_vimeo_id": true,
+            "contains_player_marker": true
+          },
+          "oembed_status": {
+            "ok": true,
+            "status": 200,
+            "provider_name": "Vimeo",
+            "title_present": true,
+            "duration_seconds": 32,
+            "thumbnail_present": true,
+            "html_present": true
+          },
+          "external_write_performed": false
+        },
+        {
+          "label": "one_time_member_lesson_embed",
+          "parsed_ok": true,
+          "vimeo_id": "1178363755",
+          "player_url_status": {
+            "ok": true,
+            "status": 200,
+            "contains_vimeo_id": true,
+            "contains_player_marker": true
+          },
+          "oembed_status": {
+            "ok": true,
+            "status": 200,
+            "provider_name": "Vimeo",
+            "title_present": true,
+            "duration_seconds": 2380,
+            "thumbnail_present": true,
+            "html_present": true
+          },
+          "external_write_performed": false
+        }
+      ],
+      "manual_attach_preview": {
+        "provider": "vimeo",
+        "ok": true,
+        "status": "manual_ready",
+        "legacy_status": "manual_vimeo_url_attached",
+        "external_write_performed": false,
+        "reason": "Valid Vimeo URL can be attached for internal review.",
+        "next_action": "Keep the library item approval-gated until playback, metadata, entitlement, and transcript checks pass.",
+        "content_id": "one-time-safe-smoke-preview",
+        "library_item": {
+          "media_provider": "vimeo",
+          "media_url": "https://player.vimeo.com/video/1158542993?h=daa31d3417",
+          "vimeo_id": "1158542993",
+          "embed_url": "https://player.vimeo.com/video/1158542993",
+          "publish_status": "needs_approval"
+        }
+      },
+      "upload_intent_preview": {
+        "provider": "vimeo",
+        "preview_only": true,
+        "external_write_performed": false,
+        "status": "manual_ready",
+        "legacy_status": "manual_upload_required",
+        "upload_method": "manual_upload_then_paste_url",
+        "title": "One Time safe smoke upload preview",
+        "readiness": {
+          "provider": "video_hosting",
+          "label": "Vimeo / Video Hosting",
+          "selectedProviderDecision": "vimeo",
+          "decisionStatus": "vimeo_selected_for_one_time",
+          "configured": true,
+          "status": "test_target_missing",
+          "readiness_status": "test_target_missing",
+          "legacy_status": "configured",
+          "reason": "Vimeo automated readiness needs plan, account owner, intended test account, and private test project proof.",
+          "next_action": "Complete the missing Vimeo owner, token, plan, or test-project setup item, then rerun readiness.",
+          "mode": "vimeo",
+          "accountOwner": "unknown",
+          "safeActions": [
+            "hosting_decision_review",
+            "video_library_draft",
+            "manual_vimeo_url_attach",
+            "worksheet_preview",
+            "upload_preview"
+          ],
+          "blockedActions": [
+            "provider_upload",
+            "provider_publish",
+            "host_migration"
+          ],
+          "blockers": [
+            "Confirm the current Vimeo plan/account supports API uploads and intended embed controls.",
+            "Video-host account owner/admin must be documented before upload or publish actions."
+          ],
+          "decisionTable": [
+            {
+              "provider": "vimeo",
+              "filterReliability": "Usually better for private embeds than public video portals, but plan/account support must be confirmed.",
+              "embedControl": "Private links and domain/embed controls may fit family/student access if the plan supports them.",
+              "apiUpload": "Requires token and plan/account capability confirmation.",
+              "captionsTranscripts": "Supports caption workflows; transcript source can remain BNA/Drive-first.",
+              "ownershipModel": "Needs a documented BNA or Rabbi-owned admin account."
+            },
+            {
+              "provider": "youtube",
+              "filterReliability": "May be blocked by family/student filters, especially for supervised devices.",
+              "embedControl": "Unlisted/private embed behavior depends on account and viewer restrictions.",
+              "apiUpload": "API upload requires OAuth scopes and quota planning.",
+              "captionsTranscripts": "Good caption ecosystem, but public-platform exposure must be reviewed.",
+              "ownershipModel": "Needs BNA/Rabbi channel ownership and OAuth approval."
+            },
+            {
+              "provider": "drive_or_first_party",
+              "filterReliability": "Often works where video portals are filtered, but player UX and permissions need care.",
+              "embedControl": "Strong first-party gating possible if files are copied/hosted through approved app paths.",
+              "apiUpload": "Drive upload/write actions require explicit Google approval gates.",
+              "captionsTranscripts": "BNA transcript/worksheet pipeline can remain provider-neutral.",
+              "ownershipModel": "Can stay under BNA Operations/Drive ownership if approved."
+            }
+          ],
+          "vimeo": {
+            "configured": true,
+            "appCredentialsConfigured": false,
+            "planConfigured": false,
+            "manualUploadFallbackReady": true,
+            "readiness_status": "test_target_missing",
+            "apiUploadStatus": "credential_missing",
+            "legacyApiUploadStatus": "manual_only",
+            "automatedUploadEnabled": false
+          },
+          "manualFallback": {
+            "ready": true,
+            "mode": "manual_vimeo_url_attach",
+            "library_item_status": "manual_ready",
+            "workflow_steps": [
+              "operator_selects_class_session",
+              "operator_pastes_vimeo_url",
+              "system_validates_vimeo_url",
+              "system_stores_vimeo_video_id",
+              "operator_assigns_learning_metadata",
+              "rabbi_or_admin_reviews",
+              "admin_approves",
+              "admin_publishes_to_member_library",
+              "member_library_displays_item",
+              "admin_can_unpublish_or_restore"
+            ],
+            "next_step": "Manually upload/select the Vimeo video, paste the Vimeo URL, complete learning metadata, approve, then publish to the first-party member library."
+          },
+          "automatedUpload": {
+            "provider": "vimeo",
+            "requirement_id": "REQ-20260619-308",
+            "mode": "automated_vimeo_upload",
+            "selected_provider": "vimeo",
+            "preview_only": true,
+            "external_write_performed": false,
+            "production_mutation_performed": false,
+            "feature_flag_enabled": false,
+            "status": "disabled_feature_flag",
+            "api_upload_enabled": false,
+            "oauth_or_token_install_flow_present": true,
+            "upload_job_model_present": true,
+            "idempotency_key_required": true,
+            "resumable_upload_planned": true,
+            "retry_state_supported": true,
+            "transcode_polling_supported": true,
+            "playback_verification_required": true,
+            "embed_verification_required": true,
+            "audit_trail_required": true,
+            "setup": {
+              "authenticated_vimeo_user": "token_present_user_readback_pending",
+              "account_owner": "unknown",
+              "plan": "unknown",
+              "upload_scope": "unknown",
+              "upload_capability": "unknown",
+              "storage_quota": "unknown",
+              "folder": "not_selected",
+              "privacy_default": "not_selected",
+              "allowed_embed_domains": [],
+              "callback_url": "not_configured",
+              "token_state": "present_but_user_capability_unverified",
+              "app_credentials_state": "client_credentials_missing",
+              "last_verification": null
+            },
+            "upload_states": [
+              "disabled_feature_flag",
+              "needs_authenticated_vimeo_user",
+              "needs_account_owner_and_plan_readback",
+              "needs_upload_scope_and_quota_readback",
+              "needs_folder_privacy_embed_defaults",
+              "ready_for_operator_gated_upload_smoke"
+            ],
+            "disabled_reason": "Automated Vimeo upload requires explicit authorization plus a user-level token, account owner, plan/quota, folder/privacy/embed defaults, and a focused upload smoke."
+          },
+          "lastCheckedAt": "2026-07-13T16:15:59.595Z"
+        },
+        "approval_required": true,
+        "required_confirmation": "UPLOAD_VIDEO",
+        "reason": "Manual Vimeo URL attachment is available while automated upload is not configured.",
+        "next_action": "Upload manually in Vimeo, keep privacy private/unlisted, then paste the Vimeo URL for review."
+      },
+      "upload_attempted": false,
+      "external_write_performed": false,
+      "blocker": null
+    },
+    "stripe": {
+      "provider": "stripe",
+      "configured": true,
+      "mode": "test",
+      "source_type": "keyholder",
+      "account_owner": "unknown",
+      "provider_account_configured": false,
+      "readiness": {
+        "provider": "stripe",
+        "label": "Stripe",
+        "configured": true,
+        "status": "configured_test_mode",
+        "billing_config_state": "sandbox_configured",
+        "billing_effective_mode": "sandbox",
+        "webhook_secret_configured": true,
+        "mode": "test",
+        "accountOwner": "unknown",
+        "providerAccount": null,
+        "safeActions": [
+          "health_check",
+          "checkout_preview"
+        ],
+        "blockedActions": [
+          "product_write",
+          "price_write",
+          "checkout_create",
+          "live_billing"
+        ],
+        "blockers": [
+          "Stripe account ownership must be documented before checkout or live billing.",
+          "Sandbox key is present but API readiness has not been verified in this run."
+        ],
+        "lastCheckedAt": "2026-07-13T16:15:57.216Z"
+      },
+      "test_mode_api_check": {
+        "ok": true,
+        "endpoint": "GET /v1/account",
+        "account": {
+          "retrieved": true,
+          "livemode": null,
+          "charges_enabled": true,
+          "payouts_enabled": true,
+          "details_submitted": true,
+          "country": "US",
+          "default_currency": "usd"
+        }
+      },
+      "checkout_preview": {
+        "provider": "stripe",
+        "preview_only": true,
+        "external_write_performed": false,
+        "readiness": {
+          "provider": "stripe",
+          "label": "Stripe",
+          "configured": true,
+          "status": "configured_test_mode",
+          "billing_config_state": "sandbox_configured",
+          "billing_effective_mode": "sandbox",
+          "webhook_secret_configured": true,
+          "mode": "test",
+          "accountOwner": "unknown",
+          "providerAccount": null,
+          "safeActions": [
+            "health_check",
+            "checkout_preview"
+          ],
+          "blockedActions": [
+            "product_write",
+            "price_write",
+            "checkout_create",
+            "live_billing"
+          ],
+          "blockers": [
+            "Stripe account ownership must be documented before checkout or live billing.",
+            "Sandbox key is present but API readiness has not been verified in this run."
+          ],
+          "lastCheckedAt": "2026-07-13T16:15:58.090Z"
+        },
+        "billing_preview": {
+          "provider": "stripe",
+          "config": {
+            "provider": "stripe",
+            "state": "sandbox_configured",
+            "effective_mode": "sandbox",
+            "requested_mode": "sandbox",
+            "key_mode": "sandbox",
+            "secret_configured": true,
+            "webhook_secret_configured": true,
+            "publishable_key_configured": false,
+            "account_owner_configured": true,
+            "account_owner": "unknown",
+            "live_billing_enabled": false,
+            "live_approved": false,
+            "sandbox_api_verified": false,
+            "missing": [],
+            "blockers": [
+              "Sandbox key is present but API readiness has not been verified in this run."
+            ],
+            "safe_to_create_checkout_session": false,
+            "safe_to_create_live_charge": false,
+            "secret_fingerprint": "fd9db300a2e9",
+            "webhook_secret_fingerprint": "465bd5c61dda",
+            "secrets_included": false
+          },
+          "policy": {
+            "policy_key": "one_time_provisional_stripe_sandbox_policy",
+            "policy_version": "stripe-sandbox-provisional-2026-06-24",
+            "policy_status": "provisional_test_only",
+            "price": {
+              "offer_key": "membership_67_monthly",
+              "product_key": "one_time_membership",
+              "display_name": "One Time membership sandbox test",
+              "amount_cents": 6700,
+              "currency": "USD",
+              "interval": "month"
+            },
+            "trial": {
+              "days": 30,
+              "card_required": true,
+              "one_intro_trial_per_household": true
+            },
+            "renewal": {
+              "interval": "month",
+              "retry_collection": "stripe_smart_retries"
+            },
+            "cancellation": {
+              "behavior": "period_end"
+            },
+            "refund": {
+              "status": "decision_required",
+              "default_action": "manual_review_only"
+            },
+            "tax": {
+              "status": "not_configured",
+              "automatic_tax_enabled": false
+            },
+            "grace_period": {
+              "days": 7,
+              "access_during_grace": true
+            },
+            "receipt_invoice_language": {
+              "status": "draft",
+              "customer_facing_copy_approved": false
+            },
+            "provider_revenue_split": {
+              "status": "decision_required",
+              "provider_share_basis_points": null
+            },
+            "credential_free": true,
+            "canonical_approved": false,
+            "provisional_test_policy": true,
+            "gaps": [
+              "Canonical live price is not approved; $67/month and 30-day trial are provisional sandbox defaults.",
+              "Currency, tax handling, refund policy, grace period, cancellation effective date, receipt/invoice language, and provider revenue split need approved Decisions before live mode.",
+              "Provider payout/Stripe Connect ownership is unresolved and must not be inferred from sandbox readiness."
+            ]
+          },
+          "price_map": {
+            "default_offer_key": "membership_67_monthly",
+            "offers": {
+              "membership_67_monthly": {
+                "offer_key": "membership_67_monthly",
+                "product_key": "one_time_membership",
+                "display_name": "One Time membership sandbox test",
+                "amount_cents": 6700,
+                "currency": "USD",
+                "interval": "month",
+                "stripe_price_id": "",
+                "access_scopes": [
+                  "library"
+                ],
+                "policy_status": "provisional_test_only",
+                "provisional_test_policy": true
+              }
+            },
+            "missing_price_ids": [
+              "membership_67_monthly"
+            ]
+          },
+          "checkout_preview": {
+            "error": "Stripe offer membership_67_monthly does not have a non-secret price ID.",
+            "code": "stripe_price_id_missing",
+            "statusCode": 409,
+            "state": null,
+            "details": {
+              "offerKey": "membership_67_monthly"
+            }
+          },
+          "preview_only": true,
+          "external_write_performed": false,
+          "secrets_included": false
+        },
+        "checkout": {
+          "title": "One Time Mishnah membership preview",
+          "currency": "usd",
+          "amount": 6700,
+          "success_url_configured": true,
+          "cancel_url_configured": true
+        }
+      },
+      "local_beta_plan": {
+        "provider": "stripe",
+        "requirement_id": "REQ-20260621-906",
+        "mode": "test_local_only",
+        "preview_only": true,
+        "external_write_performed": false,
+        "readiness": {
+          "provider": "stripe",
+          "label": "Stripe",
+          "configured": true,
+          "status": "configured_test_mode",
+          "billing_config_state": "sandbox_configured",
+          "billing_effective_mode": "sandbox",
+          "webhook_secret_configured": true,
+          "mode": "test",
+          "accountOwner": "unknown",
+          "providerAccount": null,
+          "safeActions": [
+            "health_check",
+            "checkout_preview"
+          ],
+          "blockedActions": [
+            "product_write",
+            "price_write",
+            "checkout_create",
+            "live_billing"
+          ],
+          "blockers": [
+            "Stripe account ownership must be documented before checkout or live billing.",
+            "Sandbox key is present but API readiness has not been verified in this run."
+          ],
+          "lastCheckedAt": "2026-07-13T16:15:58.091Z"
+        },
+        "launch_trial": {
+          "policy_key": "one_time_warm_lead_intro_trial",
+          "policy_version": "one-time-warm-lead-intro-trial-v1",
+          "offer_key": "membership_67_monthly",
+          "trial_days": 30,
+          "renewal_amount_cents": 6700,
+          "currency": "USD",
+          "billing_interval": "month",
+          "card_required": true,
+          "one_intro_trial_per_household": true
+        },
+        "referral_credit": {
+          "policy_key": "one_time_referral_credit_after_first_paid_cycle",
+          "policy_version": "one-time-referral-credit-v1",
+          "activation_trigger": "first_successful_paid_cycle",
+          "reward_type": "manual_month_credit_candidate",
+          "reward_amount_cents": 6700,
+          "currency": "USD",
+          "manual_review_required": true
+        },
+        "actions": {
+          "checkout_preview_enabled": true,
+          "checkout_session_creation_enabled": false,
+          "subscription_creation_enabled": false,
+          "payment_method_collection_live_enabled": false,
+          "invoice_credit_enabled": false,
+          "live_charge_enabled": false,
+          "external_write_performed": false
+        },
+        "blocked_actions": [
+          "checkout_session_create",
+          "subscription_create",
+          "payment_method_collection",
+          "invoice_credit_apply",
+          "live_charge"
+        ],
+        "guardrails": {
+          "no_customer_created": true,
+          "no_subscription_created": true,
+          "no_payment_method_collected": true,
+          "no_invoice_credit_created": true,
+          "no_live_charge": true,
+          "external_write_performed": false
+        }
+      },
+      "checkout_session_created": false,
+      "payment_intent_created": false,
+      "charge_created": false,
+      "external_write_performed": false,
+      "blocker": null
+    }
+  }
+}

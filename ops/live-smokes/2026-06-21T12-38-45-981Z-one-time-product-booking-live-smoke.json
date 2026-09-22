@@ -1,0 +1,96 @@
+{
+  "started_at": "2026-06-21T12:38:45.981Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "operations login",
+      "ok": true,
+      "duration_ms": 692,
+      "data": {
+        "cookie": "[redacted]",
+        "role": "super_admin",
+        "scope": {
+          "type": "all",
+          "projectKey": "[redacted]"
+        }
+      }
+    },
+    {
+      "name": "product-system api and internal records",
+      "ok": true,
+      "duration_ms": 4763,
+      "data": {
+        "initial": {
+          "offer_count": 2,
+          "availability_rule_count": 2,
+          "appointment_type_count": 5,
+          "student_join_enabled": false
+        },
+        "created_class_id": 4,
+        "created_appointment_id": 3,
+        "final": {
+          "calendar_events": 4,
+          "appointment_intents": 3,
+          "portal_parent_sections": 11,
+          "portal_student_sections": 9,
+          "portal_provider_sections": 8
+        }
+      }
+    },
+    {
+      "name": "operations schedule ui 1440px",
+      "ok": true,
+      "duration_ms": 4846,
+      "data": {
+        "width": 1440,
+        "state": {
+          "has_schedule_form": true,
+          "has_appointment_form": true,
+          "has_availability_panel": true,
+          "mentions_internal_class": true,
+          "mentions_no_zoom": true,
+          "mentions_no_external_calendar": true,
+          "enabled_send_or_zoom_buttons": [],
+          "page_overflow": false,
+          "client_width": 1440,
+          "scroll_width": 1440
+        },
+        "console_errors": []
+      }
+    },
+    {
+      "name": "operations schedule ui 390px",
+      "ok": true,
+      "duration_ms": 5638,
+      "data": {
+        "width": 390,
+        "state": {
+          "has_schedule_form": true,
+          "has_appointment_form": true,
+          "has_availability_panel": true,
+          "mentions_internal_class": true,
+          "mentions_no_zoom": true,
+          "mentions_no_external_calendar": true,
+          "enabled_send_or_zoom_buttons": [],
+          "page_overflow": false,
+          "client_width": 390,
+          "scroll_width": 390
+        },
+        "console_errors": []
+      }
+    }
+  ],
+  "summary": {
+    "product_offers_readable": true,
+    "availability_readable": true,
+    "portal_foundations_readable": true,
+    "internal_class_event_created": true,
+    "internal_appointment_intent_created": true,
+    "external_write_performed": false,
+    "zoom_meeting_created": false,
+    "runtime_widths_checked": [
+      1440,
+      390
+    ]
+  }
+}

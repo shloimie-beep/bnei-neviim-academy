@@ -1,0 +1,77 @@
+{
+  "result": "passed",
+  "baseUrl": "http://127.0.0.1:8095",
+  "selected_student_id": 999999,
+  "synthetic_student_id": true,
+  "assertions": [
+    {
+      "ok": true,
+      "message": "BNA Students roster requests students with project_key=bna.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "BNA Students roster was empty locally; using synthetic student_id=999999 to verify request scoping only.",
+      "detail": {
+        "selected_student_id": 999999,
+        "synthetic": true
+      }
+    },
+    {
+      "ok": true,
+      "message": "Selected student profile still requests the BNA-scoped student roster.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "Selected student profile requests assignments with project_key=bna and student_id.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "Selected student profile requests devices with project_key=bna and student_id.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "Selected student profile requests device rules with project_key=bna and student_id.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "Selected student profile requests accountability with project_key=bna and student_id.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "Selected student detail made no unscoped detail-data requests.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "Provider Students roster requests project_key=one_time_mishnah_class.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "Provider Students view makes no unscoped BNA Torah summary request.",
+      "detail": {}
+    },
+    {
+      "ok": true,
+      "message": "No body/document horizontal overflow on final desktop viewport.",
+      "detail": {
+        "body": false,
+        "doc": false,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      }
+    }
+  ],
+  "screenshots": [
+    "ops/playwright-smokes/2026-06-18-student-detail-scope-local/bna-students-list-mobile.png",
+    "ops/playwright-smokes/2026-06-18-student-detail-scope-local/bna-student-profile-mobile.png",
+    "ops/playwright-smokes/2026-06-18-student-detail-scope-local/provider-students-scope-desktop.png"
+  ],
+  "checked_at": "2026-06-18T08:24:35.097Z"
+}

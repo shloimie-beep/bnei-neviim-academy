@@ -1,0 +1,27 @@
+{
+  "started_at": "2026-06-21T17:32:18.713Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "cookie bna_ops_session"
+    },
+    {
+      "name": "Trial/referral config API responds with no-write policy",
+      "ok": true,
+      "detail": "30-day trial, $67 renewal, card rule, first-paid-cycle referral, and no-write gates returned"
+    },
+    {
+      "name": "Operations ships trial/referral UX markers",
+      "ok": true,
+      "detail": "Trial/referral panel markers shipped"
+    }
+  ],
+  "trial_days": 30,
+  "renewal_amount_cents": 6700,
+  "card_required": true,
+  "referral_trigger": "first_successful_paid_cycle",
+  "acceptance_table": "bna_one_time_policy_acceptances",
+  "promotion_policy_count": 3
+}

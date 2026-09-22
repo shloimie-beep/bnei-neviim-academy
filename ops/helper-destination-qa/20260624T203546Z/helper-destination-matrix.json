@@ -1,0 +1,377 @@
+{
+  "ok": true,
+  "results": [
+    {
+      "case_id": "owner_operations_tasks",
+      "passed": true,
+      "expected_ok": true,
+      "expected_path": "/operations?view=tasks&section=decisions&workspace=bna",
+      "result": {
+        "ok": true,
+        "path": "/operations?view=tasks&section=decisions&workspace=bna",
+        "attempted_path": "/operations?view=tasks&section=decisions&workspace=bna",
+        "route_key": "operations",
+        "route": "/operations",
+        "access": "private",
+        "required_role": "super_admin",
+        "public_allowed": false,
+        "scope": {
+          "role": "super_admin",
+          "workspace_key": "bna",
+          "project_key": "bna",
+          "channel": "operations_helper"
+        },
+        "action_key": "ACTION-HELPER-OPEN-OPERATIONS-VIEW",
+        "helper_tool": "open_operations_view",
+        "action_id": null,
+        "reason": "registry_resolved",
+        "fallback": null,
+        "checks": {
+          "same_origin": true,
+          "route_registered": true,
+          "action_registered": true,
+          "role_allowed": true,
+          "workspace_allowed": true,
+          "typed_action_allowed": true,
+          "browser_click_substitution_allowed": false
+        }
+      }
+    },
+    {
+      "case_id": "owner_calendar_week",
+      "passed": true,
+      "expected_ok": true,
+      "expected_path": "/operations?view=tasks&section=schedule&workspace=bna&calendar_mode=week",
+      "result": {
+        "ok": true,
+        "path": "/operations?view=tasks&section=schedule&workspace=bna&calendar_mode=week",
+        "attempted_path": "/operations?view=tasks&section=schedule&workspace=bna&calendar_mode=week",
+        "route_key": "operations",
+        "route": "/operations",
+        "access": "private",
+        "required_role": "super_admin",
+        "public_allowed": false,
+        "scope": {
+          "role": "super_admin",
+          "workspace_key": "bna",
+          "project_key": "bna",
+          "channel": "operations_helper"
+        },
+        "action_key": "ACTION-HELPER-OPEN-OPERATIONS-VIEW",
+        "helper_tool": "open_operations_view",
+        "action_id": null,
+        "reason": "registry_resolved",
+        "fallback": null,
+        "checks": {
+          "same_origin": true,
+          "route_registered": true,
+          "action_registered": true,
+          "role_allowed": true,
+          "workspace_allowed": true,
+          "typed_action_allowed": true,
+          "browser_click_substitution_allowed": false
+        }
+      }
+    },
+    {
+      "case_id": "parent_portal_self",
+      "passed": true,
+      "expected_ok": true,
+      "expected_path": "/parent",
+      "result": {
+        "ok": true,
+        "path": "/parent",
+        "attempted_path": "/parent",
+        "route_key": "parent_portal",
+        "route": "/parent",
+        "access": "private",
+        "required_role": "parent",
+        "public_allowed": false,
+        "scope": {
+          "role": "parent",
+          "workspace_key": "bna",
+          "project_key": "bna",
+          "channel": "operations_helper"
+        },
+        "action_key": null,
+        "helper_tool": null,
+        "action_id": null,
+        "reason": "registry_resolved",
+        "fallback": null,
+        "checks": {
+          "same_origin": true,
+          "route_registered": true,
+          "action_registered": false,
+          "role_allowed": true,
+          "workspace_allowed": true,
+          "typed_action_allowed": true,
+          "browser_click_substitution_allowed": false
+        }
+      }
+    },
+    {
+      "case_id": "student_portal_self",
+      "passed": true,
+      "expected_ok": true,
+      "expected_path": "/student",
+      "result": {
+        "ok": true,
+        "path": "/student",
+        "attempted_path": "/student",
+        "route_key": "student_portal",
+        "route": "/student",
+        "access": "private",
+        "required_role": "student",
+        "public_allowed": false,
+        "scope": {
+          "role": "student",
+          "workspace_key": "bna",
+          "project_key": "bna",
+          "channel": "operations_helper"
+        },
+        "action_key": null,
+        "helper_tool": null,
+        "action_id": null,
+        "reason": "registry_resolved",
+        "fallback": null,
+        "checks": {
+          "same_origin": true,
+          "route_registered": true,
+          "action_registered": false,
+          "role_allowed": true,
+          "workspace_allowed": true,
+          "typed_action_allowed": true,
+          "browser_click_substitution_allowed": false
+        }
+      }
+    },
+    {
+      "case_id": "provider_workspace_self",
+      "passed": true,
+      "expected_ok": true,
+      "expected_path": "/provider",
+      "result": {
+        "ok": true,
+        "path": "/provider",
+        "attempted_path": "/provider",
+        "route_key": "provider_portal",
+        "route": "/provider",
+        "access": "public_entry",
+        "required_role": "provider",
+        "public_allowed": true,
+        "scope": {
+          "role": "provider_admin",
+          "workspace_key": "rabbi_sheller_provider",
+          "project_key": "one_time_mishnah_class",
+          "channel": "operations_helper"
+        },
+        "action_key": null,
+        "helper_tool": null,
+        "action_id": null,
+        "reason": "registry_resolved",
+        "fallback": null,
+        "checks": {
+          "same_origin": true,
+          "route_registered": true,
+          "action_registered": false,
+          "role_allowed": true,
+          "workspace_allowed": true,
+          "typed_action_allowed": true,
+          "browser_click_substitution_allowed": false
+        }
+      }
+    },
+    {
+      "case_id": "public_provider_index",
+      "passed": true,
+      "expected_ok": true,
+      "expected_path": "/service-providers",
+      "result": {
+        "ok": true,
+        "path": "/service-providers",
+        "attempted_path": "/service-providers",
+        "route_key": "public_provider_index",
+        "route": "/service-providers",
+        "access": "public",
+        "required_role": null,
+        "public_allowed": true,
+        "scope": {
+          "role": "guest",
+          "workspace_key": "bna",
+          "project_key": "bna",
+          "channel": "operations_helper"
+        },
+        "action_key": null,
+        "helper_tool": null,
+        "action_id": null,
+        "reason": "registry_resolved",
+        "fallback": null,
+        "checks": {
+          "same_origin": true,
+          "route_registered": true,
+          "action_registered": false,
+          "role_allowed": true,
+          "workspace_allowed": true,
+          "typed_action_allowed": true,
+          "browser_click_substitution_allowed": false
+        }
+      }
+    },
+    {
+      "case_id": "parent_cannot_open_operations",
+      "passed": true,
+      "expected_ok": false,
+      "expected_path": "/parent",
+      "result": {
+        "ok": false,
+        "path": null,
+        "attempted_path": "/operations?view=tasks&section=tasks&workspace=bna",
+        "route_key": "operations",
+        "route": "/operations",
+        "access": "private",
+        "required_role": "super_admin",
+        "public_allowed": false,
+        "scope": {
+          "role": "parent",
+          "workspace_key": "bna",
+          "project_key": "bna",
+          "channel": "operations_helper"
+        },
+        "action_key": "ACTION-HELPER-OPEN-OPERATIONS-VIEW",
+        "helper_tool": "open_operations_view",
+        "action_id": null,
+        "reason": "role_not_allowed",
+        "fallback": {
+          "path": "/parent",
+          "reason": "parent_safe_fallback"
+        },
+        "checks": {
+          "same_origin": true,
+          "route_registered": true,
+          "action_registered": true,
+          "role_allowed": false,
+          "workspace_allowed": true,
+          "typed_action_allowed": true,
+          "browser_click_substitution_allowed": false
+        }
+      }
+    },
+    {
+      "case_id": "provider_cannot_cross_to_bna_operations",
+      "passed": true,
+      "expected_ok": false,
+      "expected_path": "/provider",
+      "result": {
+        "ok": false,
+        "path": null,
+        "attempted_path": "/operations?view=tasks&workspace=bna",
+        "route_key": "operations",
+        "route": "/operations",
+        "access": "private",
+        "required_role": "super_admin",
+        "public_allowed": false,
+        "scope": {
+          "role": "provider_admin",
+          "workspace_key": "rabbi_sheller_provider",
+          "project_key": "one_time_mishnah_class",
+          "channel": "operations_helper"
+        },
+        "action_key": "ACTION-HELPER-OPEN-OPERATIONS-VIEW",
+        "helper_tool": "open_operations_view",
+        "action_id": null,
+        "reason": "role_not_allowed,workspace_scope_mismatch",
+        "fallback": {
+          "path": "/provider",
+          "reason": "provider_safe_fallback"
+        },
+        "checks": {
+          "same_origin": true,
+          "route_registered": true,
+          "action_registered": true,
+          "role_allowed": false,
+          "workspace_allowed": false,
+          "typed_action_allowed": true,
+          "browser_click_substitution_allowed": false
+        }
+      }
+    },
+    {
+      "case_id": "missing_route_rejected",
+      "passed": true,
+      "expected_ok": false,
+      "expected_path": "/operations-login.html",
+      "result": {
+        "ok": false,
+        "path": null,
+        "attempted_path": "/totally-missing-route",
+        "route_key": null,
+        "route": null,
+        "access": null,
+        "required_role": null,
+        "public_allowed": false,
+        "scope": {
+          "role": "super_admin",
+          "workspace_key": "bna",
+          "project_key": "bna",
+          "channel": "operations_helper"
+        },
+        "action_key": null,
+        "helper_tool": null,
+        "action_id": null,
+        "reason": "route_not_registered",
+        "fallback": {
+          "path": "/operations-login.html",
+          "reason": "operations_login_fallback"
+        },
+        "checks": {
+          "same_origin": true,
+          "route_registered": false,
+          "action_registered": false,
+          "role_allowed": true,
+          "workspace_allowed": true,
+          "typed_action_allowed": true,
+          "browser_click_substitution_allowed": false
+        }
+      }
+    },
+    {
+      "case_id": "external_url_rejected",
+      "passed": true,
+      "expected_ok": false,
+      "expected_path": "/operations-login.html",
+      "result": {
+        "ok": false,
+        "path": null,
+        "attempted_path": null,
+        "route_key": null,
+        "route": null,
+        "access": null,
+        "required_role": null,
+        "public_allowed": false,
+        "scope": {
+          "role": "super_admin",
+          "workspace_key": "bna",
+          "project_key": "bna",
+          "channel": "operations_helper"
+        },
+        "action_key": null,
+        "helper_tool": null,
+        "action_id": null,
+        "reason": "non_same_origin_or_invalid_route,route_not_registered",
+        "fallback": {
+          "path": "/operations-login.html",
+          "reason": "operations_login_fallback"
+        },
+        "checks": {
+          "same_origin": false,
+          "route_registered": false,
+          "action_registered": false,
+          "role_allowed": true,
+          "workspace_allowed": true,
+          "typed_action_allowed": true,
+          "browser_click_substitution_allowed": false
+        }
+      }
+    }
+  ]
+}

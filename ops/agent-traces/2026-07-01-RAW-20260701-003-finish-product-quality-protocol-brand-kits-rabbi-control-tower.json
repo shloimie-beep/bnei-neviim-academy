@@ -1,0 +1,223 @@
+{
+  "trace_schema_version": "agent-trace.v2",
+  "trace_id": "TRACE-20260701-003",
+  "parent_raw_id": "RAW-20260701-003",
+  "raw_id": "RAW-20260701-003",
+  "packet_ids": [
+    "PKT-20260701-109",
+    "PKT-20260701-110",
+    "PKT-20260701-111",
+    "PKT-20260701-112"
+  ],
+  "stage_transitions": [
+    "raw_capture",
+    "source_readback",
+    "protocol_reconciliation",
+    "brand_pipeline_correction",
+    "provider_packet_generation",
+    "rabbi_onetime_packet_generation",
+    "validation"
+  ],
+  "source_files_read": [
+    "BNA-START-HERE.md",
+    "AGENTS.md",
+    "docs/BNA-RAMBLE-TO-DONE.md",
+    "README.md",
+    "MEMORY.md",
+    "TASKS.md",
+    "SYSTEM-STATE.md",
+    "GOAL-MODE.md",
+    "QUALITY-GOALS.md",
+    "AGENTIC-MEMORY.md",
+    "docs/PRODUCT-QUALITY-OPERATING-SYSTEM.md",
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/RAMBLE-ROUTER.md",
+    "docs/PACKET-DAG.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "docs/AGENT-TRACE-OBSERVABILITY.md",
+    "docs/CONTEXT-BUDGET-AND-PACKET-SPLITTING.md",
+    "docs/REPO-SURFACE-MAP.md",
+    "ops/product-quality-compiler.schema.json",
+    "ops/prompt-packets/README.md",
+    "ops/visual-quality-rubric.md",
+    "config/brands/one-time.json",
+    "src/platform/brands/index.js",
+    "package.json",
+    "ops/execution-runs/latest.json",
+    "ops/execution-runs/2026-06-29-rabbi-onetime-comms-crm-email-import/NEXT-SESSION.md",
+    "ops/action-registry.json",
+    "ops/route-registry.json"
+  ],
+  "source_statements_mapped": [
+    "Brand correction: Rabbi / One Time black + yellow, BNA cream + navy + teal/cyan.",
+    "Pipeline correction: One Time has a separate provider classroom/content/community pipeline.",
+    "Provider correction: Resend and Stripe need practical smoke/readback packets, not repeated generic blockers.",
+    "Workflow correction: protocol should be validated and prepared for real Rabbi/One Time UI correction rambles.",
+    "Next product packets: 00-control-tower and 01-current-state-visual-audit."
+  ],
+  "compiler_schema_version": "pqc.v2",
+  "router_classification": [
+    "SOURCE_OF_TRUTH_UPDATE",
+    "PRODUCT_QUALITY",
+    "SUPER_RAMBLE",
+    "PROVIDER_SETUP",
+    "SECURITY_PRIVACY",
+    "VERIFIER_CLOSEOUT"
+  ],
+  "packet_dag_transitions": [
+    "00-control-tower generated",
+    "01-current-state-visual-audit generated",
+    "provider smoke packets generated",
+    "implementation packets intentionally not generated as code work"
+  ],
+  "context_budget_decisions": [
+    "No Rabbi UI implementation in this packet.",
+    "Provider setup separated from UI cleanup.",
+    "Future implementation packets limited to one major surface."
+  ],
+  "repo_surface_map_path": "docs/REPO-SURFACE-MAP.md",
+  "validation_results": [
+    "PASS node --check scripts/validate-product-quality-packets.mjs",
+    "PASS node --check scripts/watchdog-product-quality-drift.mjs",
+    "PASS node --check ops/product-quality-compiler/evals/run-product-quality-compiler-evals.mjs",
+    "PASS node --check scripts/validate-agent-traces.mjs",
+    "PASS npm run pqc:all",
+    "PASS npm run bna:run:status",
+    "PASS npm run bna:run:validate",
+    "PASS npm run bna:run:source-coverage",
+    "PASS npm run bna:run:stale-evidence",
+    "PASS npm run secrets:audit",
+    "PASS focused One Time/brand tests",
+    "PASS JSON/JSONL validation",
+    "PASS git diff --check with line-ending warnings only",
+    "BLOCKED npm run railway:target:doctor: missing explicit Railway project and service target"
+  ],
+  "tool_actions_taken": [
+    "read source-of-truth files",
+    "created raw intake",
+    "created requirement register",
+    "updated memory/config/docs",
+    "created design-reference correction package",
+    "created provider setup smoke packets",
+    "created Rabbi / One Time control tower and visual audit packets",
+    "ran syntax checks",
+    "ran PQC fixture validation",
+    "ran PQC evals",
+    "ran protocol drift watchdog and repaired findings"
+  ],
+  "tool_actions_skipped": [
+    "Rabbi UI implementation",
+    "screen redesign",
+    "email send",
+    "Stripe action",
+    "DNS mutation",
+    "GHL runtime setup",
+    "bulk campaign",
+    "hard delete",
+    "deploy/live smoke"
+  ],
+  "skipped_action_reasons": [
+    "Explicitly out of scope for RAW-20260701-003.",
+    "Deploy/live smoke is not required for docs/protocol packets; brand config runtime visibility remains pending merge/deploy decision."
+  ],
+  "browser_routes_visited": [],
+  "screenshots_captured": [],
+  "aria_snapshots_captured": [],
+  "accessibility_scans": [],
+  "visual_audit_evidence": {
+    "performed": false,
+    "reason": "This packet generated the visual-audit packet. It did not run the UI audit."
+  },
+  "tests_run": [
+    "node --check scripts/validate-product-quality-packets.mjs",
+    "node --check scripts/watchdog-product-quality-drift.mjs",
+    "node --check ops/product-quality-compiler/evals/run-product-quality-compiler-evals.mjs",
+    "node --check scripts/validate-agent-traces.mjs",
+    "npm run pqc:validate",
+    "npm run pqc:validate:fixtures",
+    "npm run pqc:evals",
+    "npm run watchdog:protocol-drift",
+    "npm run bna:run:status",
+    "git diff --check"
+  ],
+  "watchdogs_run": [
+    "npm run watchdog:protocol-drift"
+  ],
+  "external_actions_blocked": [
+    "No email send",
+    "No Stripe payment or live charge",
+    "No DNS/provider mutation",
+    "No GHL/LeadConnector runtime or external CRM write",
+    "No bulk campaign",
+    "No hard delete"
+  ],
+  "decisions_created_or_updated": [
+    "DEC-20260701-ONETIME-SEPARATE-PROVIDER-PIPELINE"
+  ],
+  "blockers": [
+    "Railway deploy/live smoke blocked by target guard: explicit project and service target missing."
+  ],
+  "implementation_files_changed": [
+    "AGENTS.md",
+    "MEMORY.md",
+    "docs/BNA-RAMBLE-TO-DONE.md",
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/DESIGN-REFERENCE-CAPTURE.md",
+    "config/brands/one-time.json",
+    "config/brands/bna.json",
+    "src/platform/brands/index.js",
+    "memory-topics/brand-kits.md",
+    "memory-topics/provider-pipelines.md",
+    "memory-topics/one-time-rabbi-sheller.md",
+    "memory-topics/email-resend.md",
+    "memory-topics/stripe-payments.md",
+    "memory-topics/workspace-scope-isolation.md",
+    "memory-topics/design-references.md",
+    "memory-topics/rabbi-scheller-onetime.md",
+    "memory-topics/service-provider-classrooms.md",
+    "memory-topics/workspace-model.md",
+    "ops/design-references/2026-07-01-brand-kit-correction/",
+    "ops/prompt-packets/2026-07-01-provider-config-readback/",
+    "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/",
+    "raw-input/RAW-20260701-003-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md",
+    "tasks-pending/2026-07-01-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md"
+  ],
+  "commits": [
+    "73542446",
+    "1fd7ddcc514cc7e0e3f98b7787c7b177d38f376a"
+  ],
+  "PR": {
+    "number": 59,
+    "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/59",
+    "state": "MERGED",
+    "merged_at": "2026-07-01T09:57:29Z",
+    "merge_commit": "1fd7ddcc514cc7e0e3f98b7787c7b177d38f376a"
+  },
+  "deployment": {
+    "required": true,
+    "status": "blocked_by_railway_target_guard",
+    "blocker": "Railway target requires explicit project ID/name and service ID/name; no production fallback is allowed."
+  },
+  "live_smoke": {
+    "required": true,
+    "status": "not_run_deployment_blocked"
+  },
+  "final_status": "merged_deploy_blocked",
+  "next_packet": "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/01-current-state-visual-audit.md",
+  "evidence_paths": [
+    "raw-input/RAW-20260701-003-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md",
+    "tasks-pending/2026-07-01-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md",
+    "ops/design-references/2026-07-01-brand-kit-correction/",
+    "ops/prompt-packets/2026-07-01-provider-config-readback/09-resend-send-enabled-smoke.md",
+    "ops/prompt-packets/2026-07-01-provider-config-readback/10-stripe-sandbox-smoke.md",
+    "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/00-control-tower.md",
+    "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/01-current-state-visual-audit.md",
+    "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "ops/product-quality-compiler/evals/latest-eval-report.md",
+    "ops/watchdog-audits/2026-07-01-product-quality-drift.md",
+    "https://github.com/shloimie-beep/bnei-neviim-academy/pull/59"
+  ]
+}

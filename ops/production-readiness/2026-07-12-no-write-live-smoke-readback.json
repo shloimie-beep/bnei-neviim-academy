@@ -1,0 +1,58 @@
+{
+  "recorded_at": "2026-07-12T08:36:45Z",
+  "report_version": "bna-no-write-live-smoke-readback-v1",
+  "source_goal": "GOAL-PROD-001",
+  "status": "passed",
+  "production_ready": false,
+  "external_write_performed": false,
+  "production_data_mutation_performed": false,
+  "guardrails": [
+    "No checkout POST, payment link creation, member creation, access grant, email, WhatsApp/WAPI, social post, upload, charge, DNS write, external connector write, provider mutation, credential mutation, or production data mutation was performed.",
+    "The generic npm run app:smoke command was intentionally skipped because it creates and deletes a live task as part of its test flow.",
+    "The OneTime lead-capture smoke used dry_run=true and asserted no product lead, CRM lead, internal note, Telegram reminder, email, WhatsApp/WAPI, checkout, access grant, or Zoom meeting was created."
+  ],
+  "commands": [
+    {
+      "command": "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com",
+      "status": "passed",
+      "writes_report_file": false,
+      "summary": "GET/read-only smoke passed for /api/health, /api/one-time/instance-config, /, /public, /one-time, /one-time/, /operations-login.html, /parent.html, /student.html, /provider.html, and /one-time-classroom.html.",
+      "base_url": "https://join.onetimeonetime.com"
+    },
+    {
+      "command": "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com",
+      "status": "passed",
+      "report_path": "ops/live-smokes/2026-07-12T08-36-21-853Z-rabbi-onetime-landing-smoke.md",
+      "summary": "/rabbi has focused OneTime branding, no Academy chrome, and OneTime instance config is scoped to Rabbi Scheller provider.",
+      "base_url": "https://join.onetimeonetime.com"
+    },
+    {
+      "command": "npm run app:smoke:one-time-interest-dry-run",
+      "status": "passed",
+      "report_path": "ops/live-smokes/2026-07-12T08-36-21-908Z-one-time-interest-dry-run-live-smoke.md",
+      "json_report_path": "ops/live-smokes/2026-07-12T08-36-21-908Z-one-time-interest-dry-run-live-smoke.json",
+      "summary": "Public OneTime landing form points to the interest endpoint and dry-run lead-capture mapping validates without writes.",
+      "base_url": "https://join.onetimeonetime.com"
+    },
+    {
+      "command": "npm run app:smoke:public-privacy",
+      "status": "passed",
+      "report_path": "ops/live-smokes/2026-07-12T08-36-33-417Z-public-route-privacy-smoke.md",
+      "summary": "Public routes return anonymous-safe shells, member aliases redirect to /rabbi-member, and protected parent/student/provider/member/operations APIs reject anonymous access.",
+      "base_url": "https://bneineviimacademy.org"
+    }
+  ],
+  "remaining_blockers": [
+    "rabbi_stripe_test_secret_key_alias_or_test_key_status",
+    "67_month_product_price_id_or_alias",
+    "whapi_wapi_instance_id",
+    "whapi_wapi_phone_number",
+    "final_campaign_copy",
+    "exact_recipient_segment_or_list",
+    "suppression_unsubscribe_proof",
+    "explicit_seed_packet_approval",
+    "Rabbi Telegram hosted restart and scoped live-smoke proof",
+    "Two Rabbi Agent Review terminal proofs",
+    "No unblocked executable batch until external/proof blockers clear"
+  ]
+}

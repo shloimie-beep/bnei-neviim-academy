@@ -1,0 +1,97 @@
+{
+  "started_at": "2026-06-21T17:33:57.277Z",
+  "app_url": "https://bneineviimacademy.org",
+  "checks": [
+    {
+      "name": "anonymous parent WS11 route rejects access",
+      "ok": true,
+      "duration_ms": 570,
+      "details": {
+        "status": 401,
+        "private_payload_leaked": false
+      }
+    },
+    {
+      "name": "live database connects through configured secret",
+      "ok": true,
+      "duration_ms": 2716,
+      "details": {
+        "source": "DATABASE_URL",
+        "fingerprint": "4ef124c0b50a"
+      }
+    },
+    {
+      "name": "WS11 live tables and seed rows are present",
+      "ok": true,
+      "duration_ms": 238,
+      "details": {
+        "has_communities": true,
+        "has_courses": true,
+        "has_worksheets": true,
+        "has_worksheet_submissions": true,
+        "has_gamification_events": true,
+        "has_student_references": true,
+        "has_parent_student_links": true,
+        "has_parent_progress_reports": true,
+        "ws11_communities": 1,
+        "ws11_courses": 1,
+        "ws11_seed_badges": 24,
+        "gamification_events": 0,
+        "student_references": 0,
+        "worksheet_submissions": 0,
+        "active_parent_student_links": 2,
+        "parent_progress_reports": 0
+      }
+    },
+    {
+      "name": "active parent-student link is available for live parent readback",
+      "ok": true,
+      "duration_ms": 231,
+      "details": {
+        "student_id": 2800,
+        "parent_email_hash_prefix": "dba16957e45a",
+        "course_id": 1,
+        "temporary_link": false
+      }
+    },
+    {
+      "name": "temporary hidden WS11 rows are inserted for privacy proof",
+      "ok": true,
+      "duration_ms": 1186,
+      "details": {
+        "event_id": 6,
+        "reference_id": 6,
+        "worksheet_submission_id": 6,
+        "report_id": 6
+      }
+    },
+    {
+      "name": "temporary parent session is created without exposing credentials",
+      "ok": true,
+      "duration_ms": 310,
+      "details": {
+        "session_hash_prefix": "9ae065a8184944af",
+        "expires_minutes": 10
+      }
+    },
+    {
+      "name": "live parent WS11 API filters hidden rows and returns only approved parent-visible data",
+      "ok": true,
+      "duration_ms": 2928,
+      "details": {
+        "course_count": 0,
+        "event_count": 0,
+        "shoutout_count": 0,
+        "worksheet_submission_count": 0,
+        "report_count": 0,
+        "hidden_fixture_ids_absent": true
+      }
+    }
+  ],
+  "database": {
+    "source": "DATABASE_URL",
+    "fingerprint": "4ef124c0b50a"
+  },
+  "finished_at": "2026-06-21T17:34:08.681Z",
+  "success": true
+}

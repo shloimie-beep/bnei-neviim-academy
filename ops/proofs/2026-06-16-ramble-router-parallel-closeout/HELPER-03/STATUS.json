@@ -1,0 +1,9 @@
+{
+  "workstream_id": "HELPER-03",
+  "cycle_id": "2026-06-16-ramble-router-parallel-chatgpt-to-codex",
+  "status": "blocked_needs_human_decision",
+  "title": "BNA Helper scoped tool registry and duplicate helper cleanup",
+  "proof_path": "ops/proofs/2026-06-16-ramble-router-parallel-closeout/HELPER-03/",
+  "needed_from_shloimie": "Approve a safe deploy window or isolated release path for the WS05 helper implementation.",
+  "notes": "Local helper implementation exists. Final live deployment/scope smoke remains blocked."
+}

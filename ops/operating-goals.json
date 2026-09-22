@@ -1,0 +1,262 @@
+{
+  "last_updated": "2026-06-17",
+  "goals": [
+    {
+      "goal_id": "GOAL-001",
+      "title": "Scoped natural-language helper everywhere",
+      "scope": "Public site, Operations, parent portal, student portal, provider workspace, One Time/Rabbi workspace, and Family App/Home Accountability.",
+      "definition_of_done": "Each surface has one visible helper named for that scope; helper responses and tools are permission-scoped; actions use confirmation gates; missing integrations create blockers instead of fake success.",
+      "current_status": "deployed_helper_foundation_integration_status_readback_passed",
+      "open_decisions": [
+        "Final helper names per workspace",
+        "Which high-risk tools can become live after approval"
+      ],
+      "pending_external_actions": [
+        "Approval for any high-risk live tool action"
+      ],
+      "codex_workstreams": [
+        "HELPER-03",
+        "INT-05",
+        "UI-01"
+      ],
+      "proof_required": [
+        "Role/scope tests",
+        "Helper audit readback",
+        "Desktop/mobile screenshots",
+        "Live Operations smoke",
+        "No duplicate helper button proof"
+      ],
+      "last_updated": "2026-06-16"
+    },
+    {
+      "goal_id": "GOAL-002",
+      "title": "Long ramble intake to decisions, pending, and Codex work",
+      "scope": "Telegram, Codex attachments, Downloads prompt files, repo memory, Operations task lanes, agent lifecycle, and prompt intake.",
+      "definition_of_done": "Raw rambles are captured, distilled, deduped, mapped to decisions, pending access items, Codex work, blocker records, proof files, and terminal statuses.",
+      "current_status": "prompt_register_added_stale_ledger_cleanup_pending",
+      "open_decisions": [
+        "Automatic Downloads watcher versus explicit audit command"
+      ],
+      "pending_external_actions": [
+        "Approved queue cleanup decisions"
+      ],
+      "codex_workstreams": [
+        "OPS-02",
+        "PROMPT-INTAKE",
+        "MASTER-07"
+      ],
+      "proof_required": [
+        "npm run prompts:audit",
+        "Register JSONL and summary",
+        "Stale-ledger closeout report",
+        "Operations status readback"
+      ],
+      "last_updated": "2026-06-16"
+    },
+    {
+      "goal_id": "GOAL-003",
+      "title": "Natural-language assignment and accountability",
+      "scope": "BNA students, parents, admins, One Time Mishnayos participants, goal boards, worksheets, questions, checkoffs, and reports.",
+      "definition_of_done": "Parent/admin natural-language notes become scoped accountability records; students receive assignments/goals; progress, questions, worksheets, participation, and reports remain privacy-scoped.",
+      "current_status": "foundations_present_additive_extension_deployed_live_smoked",
+      "open_decisions": [
+        "Tablet/device-control policy details",
+        "Parent-visible reporting defaults"
+      ],
+      "pending_external_actions": [
+        "Approved parent credential/session path for additional parent visual proof",
+        "Tablet/reporting decisions"
+      ],
+      "codex_workstreams": [
+        "COMMUNITY-06",
+        "WS11",
+        "OPS-02"
+      ],
+      "proof_required": [
+        "Student/parent privacy tests",
+        "Parent progress smoke",
+        "Student-auth smoke",
+        "Operations/student screenshots"
+      ],
+      "last_updated": "2026-06-16"
+    },
+    {
+      "goal_id": "GOAL-004",
+      "title": "Provider integration onboarding and secret storage",
+      "scope": "Provider-owned Resend, Buffer, WAPI/WhatsApp, Vimeo, Zoom, Stripe, GoDaddy/DNS, Google Drive, and future connector accounts.",
+      "definition_of_done": "Provider/workspace-scoped integration rows, secret refs, redacted audit logs, setup UI, helper tools, readiness tests, and approval gates exist; raw secrets are never returned or logged.",
+      "current_status": "provider_model_deployed_live_status_readback_passed",
+      "open_decisions": [
+        "Compatibility aliases for bna_workspace_integrations/bna_secret_refs naming versus current provider-scoped model"
+      ],
+      "pending_external_actions": [
+        "Provider account access",
+        "DNS records",
+        "Credentials",
+        "Explicit approvals for real provider actions"
+      ],
+      "codex_workstreams": [
+        "INT-05",
+        "THURSDAY-ACCESS",
+        "HELPER-03"
+      ],
+      "proof_required": [
+        "Secret redaction tests",
+        "npm run secrets:audit",
+        "Integration UI smoke",
+        "Helper tool tests",
+        "Live migration/readback"
+      ],
+      "last_updated": "2026-06-16"
+    },
+    {
+      "goal_id": "GOAL-005",
+      "title": "Service provider index and free basic landing pages",
+      "scope": "Public provider directory, provider join flow, free basic provider pages, provider workspace, provider-specific leads and integrations.",
+      "definition_of_done": "Providers can get a reviewed free basic listing/page from uploaded media/info; provider workspace and integrations remain scoped; custom domains stay optional/future.",
+      "current_status": "directory_foundation_present_media_to_page_automation_pending",
+      "open_decisions": [
+        "Exact free listing fields",
+        "Moderation policy",
+        "Upgrade packaging"
+      ],
+      "pending_external_actions": [
+        "Provider source material",
+        "Approval for public listing publication"
+      ],
+      "codex_workstreams": [
+        "UI-01",
+        "provider-index",
+        "INT-05"
+      ],
+      "proof_required": [
+        "Public service provider pages smoke",
+        "Provider workspace screenshots",
+        "Live provider route smoke"
+      ],
+      "last_updated": "2026-06-16"
+    },
+    {
+      "goal_id": "GOAL-006",
+      "title": "One Time Mishnayos product, funnels, class, and library",
+      "scope": "Rabbi Scheller / One Time provider workspace, public draft funnels, 7pm Israel class calendar, product tiers, interest leads, member/library workflow, source prep.",
+      "definition_of_done": "Product system is decision-ready, draft/noindex funnels exist, class calendar and library workflow are first-party, live checkout and access grants happen only after explicit decisions and smoke proof.",
+      "current_status": "rabbi_04_deployed_product_decisions_blocked",
+      "open_decisions": [
+        "Final prices",
+        "Refund/legal copy",
+        "Payment owner",
+        "Billing provider readiness",
+        "Launch copy",
+        "Source transcript",
+        "Member-library destination"
+      ],
+      "pending_external_actions": [
+        "Thursday owner-access session",
+        "Final product/payment decisions",
+        "Source artifacts"
+      ],
+      "codex_workstreams": [
+        "RABBI-04",
+        "COMMUNITY-06",
+        "INT-05",
+        "THURSDAY-ACCESS"
+      ],
+      "proof_required": [
+        "One Time public/Operations screenshots",
+        "Tests",
+        "Live funnel smoke",
+        "Scoped Operations smoke",
+        "No checkout/access-grant proof"
+      ],
+      "last_updated": "2026-06-16"
+    },
+    {
+      "goal_id": "GOAL-007",
+      "title": "Product-grade UI cleanup",
+      "scope": "Public site, Operations, super admin, service provider workspace, parent portal, student portal, Family App/Home Accountability, One Time, integration setup, decisions/pending/tasks/detail modals.",
+      "definition_of_done": "One brand system and predictable navigation per surface; mobile-first; no duplicate helper buttons, unreadable panels/cards, random duplicate actions, or horizontal overflow at 375px.",
+      "current_status": "ui_01_deployed_optional_visual_qa_pending",
+      "open_decisions": [
+        "Which additional UI surfaces need visual proof before launch"
+      ],
+      "pending_external_actions": [
+        "Optional live UI screenshot QA"
+      ],
+      "codex_workstreams": [
+        "UI-01",
+        "OPS-02",
+        "INT-05",
+        "HELPER-03"
+      ],
+      "proof_required": [
+        "Desktop screenshots",
+        "390px screenshots",
+        "375px screenshots",
+        "No-overflow smoke",
+        "Live Operations/public smoke"
+      ],
+      "last_updated": "2026-06-16"
+    },
+    {
+      "goal_id": "GOAL-008",
+      "title": "Legacy Family Accountability cleanup while preserving Family App",
+      "scope": "README, setup docs, archived family-app docs/code, active BNA runtime, Family App/Home Accountability workspace.",
+      "definition_of_done": "Repo identity is BNA v2.0; archived family-accountability material is historical; any active Family App/Home Accountability product is explicitly scoped as one workspace/product, not the whole repo.",
+      "current_status": "readme_cleaned_periodic_audit_pending",
+      "open_decisions": [
+        "Whether Family App/Home Accountability is a retained product line and what its first live scope should be"
+      ],
+      "pending_external_actions": [
+        "Shloimie product decision if family workspace should become active"
+      ],
+      "codex_workstreams": [
+        "FAMILY-CLEANUP",
+        "UI-01"
+      ],
+      "proof_required": [
+        "Stale-family docs audit",
+        "No active archived runtime edits",
+        "Smoke proving BNA/public/Operations identity remains current"
+      ],
+      "last_updated": "2026-06-16"
+    },
+    {
+      "goal_id": "GOAL-009",
+      "title": "Ramble watchdog and goal-led work until done",
+      "scope": "Long rambles, prompt packets, Downloads files, Codex attachments, Telegram captures, Operations status, prompt register, agent ledger, changelog, tasks-pending handoffs, and live-proof requirements.",
+      "definition_of_done": "Each ramble/prompt source is captured, deduped, mapped to durable goals, decisions, pending blockers, Codex work, proof requirements, and terminal statuses; watchdog audits catch stale starts, duplicate work, prompt-without-proof gaps, local-only work marked done, UI drift, helper architecture gaps, secret risks, and unresolved Thursday blockers.",
+      "current_status": "watchdog_rules_goal_mode_contract_parser_telegram_metadata_deployed_live_smoked_queue_hygiene_pending",
+      "open_decisions": [
+        "Explicit command versus automatic Downloads/attachments watcher",
+        "Safe auto-fix authority for docs, queue cleanup, and UI/code fixes",
+        "When staged watchdog helper tool names become live helper actions"
+      ],
+      "pending_external_actions": [
+        "Thursday access/account-owner decisions for Zoom, GoDaddy/DNS, Vimeo, Resend, Buffer, WAPI/WhatsApp, Stripe, and old One Time app preservation"
+      ],
+      "codex_workstreams": [
+        "WATCHDOG",
+        "PROMPT-INTAKE",
+        "OPS-02",
+        "HELPER-03",
+        "UI-01",
+        "THURSDAY-ACCESS"
+      ],
+      "proof_required": [
+        "node --check scripts/watchdog-audit.mjs",
+        "npm run watchdog:audit",
+        "npm run prompts:audit",
+        "Operations inline-script parse",
+        "Source-of-truth updates",
+        "Audit report under ops/watchdog-audits/",
+        "Railway doctor SUCCESS for ff95e44f-f1f5-4eeb-a83d-fc8f9456674b",
+        "Goal-mode/helper live smoke ops/live-smokes/2026-06-17T04-53-04-502Z-goal-mode-helper-live-smoke.md",
+        "Live Watchdog browser smoke ops/live-smokes/2026-06-16T15-20-14-711Z-watchdog-live-smoke.md",
+        "Direct authenticated allowedViews readback includes watchdog",
+        "Focused tests proving BNA_GOAL_MODE_EXECUTION_PACKET and should_create_or_continue_goal parser metadata"
+      ],
+      "last_updated": "2026-06-17"
+    }
+  ]
+}

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sign In - BNA Operations</title>
+    <meta name="theme-color" content="#1e3a5f">
+    <link rel="manifest" href="/operations-manifest.json">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" type="image/png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root { --login-vh: 100svh; }
+        html { width: 100%; min-height: 100%; }
+        body {
+            width: 100%;
+            min-height: var(--login-vh, 100svh);
+        }
+        @supports (height: 100dvh) {
+            :root { --login-vh: 100dvh; }
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-font-smoothing: antialiased;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 28px;
+            font-weight: 800;
+            color: #c9a227;
+            letter-spacing: -1px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.2s;
+            outline: none;
+        }
+        input:focus {
+            border-color: #0f172a;
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #0f172a;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+        button:hover {
+            background: #1e293b;
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .error.show { display: block; }
+        .login-note {
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.45;
+            margin: -4px 0 14px;
+        }
+        .chooser {
+            display: none;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 18px;
+        }
+        .chooser.show { display: block; }
+        .chooser p {
+            color: #334155;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        .chooser a {
+            display: block;
+            text-decoration: none;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 650;
+            margin-top: 8px;
+            background: #ffffff;
+        }
+        @media (max-width: 640px) {
+            body {
+                align-items: flex-start;
+                justify-content: flex-start;
+                padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+            }
+            .card {
+                margin: 18px auto 32px;
+                padding: 28px 20px;
+            }
+            input {
+                font-size: 16px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/css/bna-app-shell.css">
+</head>
+<body class="bna-shell bna-login-shell">
+    <div class="card">
+        <div class="logo">BNA</div>
+        <h1>Welcome back</h1>
+        <p class="subtitle">Sign in to BNA Operations</p>
+        
+        <div id="error" class="error"></div>
+        <div id="chooser" class="chooser"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Operations email or username</label>
+                <input type="text" id="username" name="username" required autocomplete="username" placeholder="Enter your Operations email or username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
+            </div>
+            <p class="login-note">Use the same identity password from any legitimate portal. Access still follows your actual role and workspace permissions.</p>
+            <button type="submit" id="submitBtn">Sign In</button>
+        </form>
+    </div>
+
+    <script>
+        function operationsReturnTo() {
+            const fallback = '/operations';
+            const candidate = new URLSearchParams(window.location.search).get('returnTo');
+            if (!candidate) return fallback;
+            try {
+                const url = new URL(candidate, window.location.origin);
+                const allowedPaths = new Set(['/operations', '/operations/agent-review', '/operations/agent-review/dropoff']);
+                if (url.origin !== window.location.origin || !allowedPaths.has(url.pathname)) return fallback;
+                return url.pathname + url.search + url.hash;
+            } catch {
+                return fallback;
+            }
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            })[char]);
+        }
+
+        function showChooser(data) {
+            const chooser = document.getElementById('chooser');
+            const destinations = Array.isArray(data?.destinations) ? data.destinations : [];
+            if (!destinations.length) {
+                chooser.classList.remove('show');
+                chooser.innerHTML = '';
+                return;
+            }
+            chooser.innerHTML = `
+                <p>${escapeHtml(data?.message || 'Choose the portal or workspace to open.')}</p>
+                ${destinations.map((destination) => `
+                    <a data-action-id="ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION" href="${escapeHtml(destination.redirect_to || '/')}">${escapeHtml(destination.label || destination.role || destination.portal || 'Open portal')}</a>
+                `).join('')}
+            `;
+            chooser.classList.add('show');
+        }
+
+        function isOperationsSession(data) {
+            if (!data || (data.authenticated !== true && data.success !== true)) return false;
+            const role = String(data.role || data.legacy_role || '').toLowerCase();
+            return ['super_admin', 'project_owner', 'project_manager', 'one_time_ai_studio_operator', 'one_time_ai_video_worker'].includes(role);
+        }
+
+        function syncLoginViewport() {
+            const height = window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight || 640;
+            document.documentElement.style.setProperty('--login-vh', `${Math.max(420, Math.round(height))}px`);
+        }
+
+        function loginTextEntryActive() {
+            const active = document.activeElement;
+            if (!active || !active.closest || !active.closest('#loginForm')) return false;
+            return ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName);
+        }
+
+        window.visualViewport?.addEventListener('resize', syncLoginViewport);
+        window.visualViewport?.addEventListener('scroll', syncLoginViewport);
+        window.addEventListener('resize', syncLoginViewport);
+        document.addEventListener('focusin', (event) => {
+            if (event.target?.closest?.('#loginForm')) syncLoginViewport();
+        });
+        document.addEventListener('focusout', () => setTimeout(syncLoginViewport, 120));
+        syncLoginViewport();
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations()
+                .then((registrations) => registrations.forEach((registration) => registration.unregister()))
+                .catch(() => {});
+        }
+
+        async function redirectIfAlreadySignedIn() {
+            try {
+                const response = await fetch('/api/bna/auth/me', {
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await response.json().catch(() => ({}));
+                if (response.ok && isOperationsSession(data)) {
+                    if (loginTextEntryActive()) return;
+                    window.location.replace(operationsReturnTo());
+                }
+            } catch {
+                // Stay on the login form when the session check cannot complete.
+            }
+        }
+
+        redirectIfAlreadySignedIn();
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorEl = document.getElementById('error');
+            const chooserEl = document.getElementById('chooser');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            errorEl.classList.remove('show');
+            chooserEl.classList.remove('show');
+            chooserEl.innerHTML = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing in...';
+
+            try {
+                const response = await fetch('/api/operations/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value.trim(),
+                        password: document.getElementById('password').value,
+                        returnTo: operationsReturnTo()
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.chooser_required) {
+                        showChooser(data);
+                        return;
+                    }
+                    if (data.portal_redirect && data.redirect_to) {
+                        window.location.href = data.redirect_to;
+                        return;
+                    }
+                    localStorage.setItem('bna_ops_session', data.sessionId || '');
+                    window.location.href = operationsReturnTo();
+                } else {
+                    errorEl.textContent = data.error || 'Invalid Operations credentials. Use the Operations admin email or username, not a parent, student, or provider login.';
+                    errorEl.classList.add('show');
+                }
+            } catch (err) {
+                errorEl.textContent = 'Network error. Please try again.';
+                errorEl.classList.add('show');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign In';
+            }
+        });
+    </script>
+</body>
+</html>

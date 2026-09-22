@@ -1,0 +1,682 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260712-106",
+  "parent_raw_id": "RAW-20260712-004",
+  "source_statement_ids": [
+    "SRC-20260712-004-001"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260712-101",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260712-102",
+      "PKT-20260712-105"
+    ],
+    "blocks_packet_ids": [
+      "PKT-20260712-107",
+      "PKT-20260712-111",
+      "PKT-20260712-112"
+    ],
+    "consumes": [
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/report.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/requirements.json",
+      "public/operations.html",
+      "public/js/operations-shell.js"
+    ],
+    "produces": [
+      "public/operations.html",
+      "public/js/operations-shell.js",
+      "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/02-crm-frontend-performance.product-quality.json",
+    "terminal_condition": "REQ-20260712-106 is locally implemented with scoped CRM list/detail rendering, <=50 initial rows, debounced/cancelable search, hidden legacy table avoidance, and passing local smoke evidence.",
+    "handoff_target": "REQ-20260712-107 CRM/inbox UI packet or REQ-20260712-111 performance budget packet after local proof."
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "done",
+  "title": "One Time CRM frontend performance and scoped selection flow",
+  "created_at": "2026-07-12T18:15:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "RABBI_PROVIDER_ADMIN"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260712-004",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "CRM_PIPELINE",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": "high",
+    "reasons": [
+      "The source statement specifically names CRM frontend performance and root rerender behavior.",
+      "Audit evidence shows CRM routes can remain loading and the existing loader needs a scoped proof harness.",
+      "The work is app-visible but narrow enough for a focused implementation packet."
+    ],
+    "affected_product_surfaces": [
+      "Operations CRM workbench",
+      "Operations split shell"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live smoke remains blocked from Done until REQ-20260712-112 release lane."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "validate this focused packet",
+      "patch CRM frontend list/detail loader",
+      "run local split-shell and monolith smokes",
+      "update execution-run evidence"
+    ],
+    "next_exact_packet": "Implement REQ-20260712-106 only; do not redesign the whole CRM/inbox."
+  },
+  "operator_intent_summary": "Remove the CRM root rerender and global data-loader side effects so One Time CRM list/search/detail interactions stay scoped, paginated, cancelable, and measurable.",
+  "raw_quotes": [
+    "CRM frontend must avoid the giant global data loader/root rerender on contact selection, use AbortController, debounced search, cached detail, scoped refresh, hidden legacy table avoidance, and retire duplicate legacy renderer after parity.",
+    "Contact selection does not call the application-wide render function.",
+    "Initial CRM API calls after auth are no more than 3.",
+    "Initial rows rendered are no more than 50.",
+    "Stale requests are aborted and search is debounced.",
+    "Legacy CRM review table is not constructed while closed."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260712-101",
+      "decision": "Required source screenshots are unavailable locally.",
+      "status": "blocked"
+    }
+  ],
+  "out_of_scope": [
+    "No broad CRM/inbox redesign in this packet; that remains REQ-20260712-107.",
+    "No email, WhatsApp, payment, access grant, DNS, provider-account, external CRM, or production-data writes.",
+    "No deploy/live-smoke Done claim; release proof remains REQ-20260712-112.",
+    "No fixing unrelated VQ findings outside CRM loader/performance behavior."
+  ],
+  "affected_surfaces": [
+    "Operations One Time CRM workbench",
+    "Operations split shell /operations route",
+    "Operations monolithic operations.html fallback",
+    "One Time CRM review/source safeguards details panel"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+    "/operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "public/js/operations-shell.js",
+    "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+    "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/",
+    "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/"
+  ],
+  "current_state": {
+    "inspected": [
+      "public/operations.html CRM functions call render() on list load and contact selection.",
+      "public/js/operations-shell.js is the actual /operations split shell and has older CRM workbench behavior.",
+      "Local smoke served operations.html directly and needs to cover operations-bootstrap.html as well.",
+      "Legacy One Time CRM review/source safeguards table is built even when its details element is closed."
+    ],
+    "known_gaps": [
+      "Contact selection currently triggers application-wide render().",
+      "Search filter reloads immediately and is not debounced.",
+      "CRM fetches do not use AbortController.",
+      "Initial list does not enforce a frontend 50-card render cap.",
+      "Split shell and monolith CRM behavior are not in parity."
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/report.md",
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md"
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "CRM",
+      "working",
+      "professional",
+      "clean"
+    ],
+    "expanded_phrases": {
+      "CRM": "For this packet, CRM means the first-party One Time Operations contact list/search/filter/selected detail/timeline flow only; it excludes broad inbox redesign and all external CRM runtimes.",
+      "working": "Working means measured local behavior: no root render on selection, <=3 CRM API calls after auth, <=50 initial cards, abortable stale requests, debounced search, and smoke evidence.",
+      "professional": "Professional means the loader behaves predictably, preserves context, avoids jank, and keeps no-send/read-only states explicit.",
+      "clean": "Clean means legacy review/source safeguards stay collapsed without constructing hidden table DOM until opened."
+    },
+    "first_party_pattern_interpretation": "Use first-party BNA CRM records and local timeline readbacks only; no GHL, LeadConnector, or external CRM writes."
+  },
+  "design_pattern_references": [
+    "memory-topics/one-time-rabbi-sheller.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-STATE-MATRIX.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260712-106",
+      "title": "Remove CRM root rerender and global data-loader side effects",
+      "status": "ready_for_codex",
+      "acceptance_criteria": [
+        "Contact selection does not call the application-wide render function.",
+        "Initial CRM API calls after auth are no more than 3.",
+        "Initial rows rendered are no more than 50.",
+        "Stale requests are aborted and search is debounced.",
+        "Legacy CRM review table is not constructed while closed."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "REQ-20260712-102 current-state audit is regenerated and marked Done with evidence paths.",
+      "REQ-20260712-105 paginated CRM API is locally implemented and verified.",
+      "Allowed implementation scope is limited to Operations CRM loader/detail behavior plus local smoke proof.",
+      "No external provider writes or broad CRM/inbox redesign are in scope.",
+      "This packet has a validated Product Quality Compiler state matrix, actions, evidence, tests, and deployment gate before source edits."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "CRM list is loading within the CRM panel only.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "CRM list is loading within the CRM panel only.",
+      "expected_primary_action": "Wait for scoped list",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search",
+        "Select contact"
+      ],
+      "forbidden_content": [
+        "BNA school-only private data",
+        "active external send/write controls",
+        "GHL runtime"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM region, filter controls, contact buttons, and selected detail are labeled/readable.",
+      "accessibility_expectation": "Controls remain keyboard reachable and visible without color-only state.",
+      "test_smoke_assertion": "Local smoke must assert this state or record an exact blocker.",
+      "requirement_id": "REQ-20260712-106"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "1024",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "CRM returns no matching records for the current filter.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "CRM returns no matching records for the current filter.",
+      "expected_primary_action": "Clear filters",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search",
+        "Select contact"
+      ],
+      "forbidden_content": [
+        "BNA school-only private data",
+        "active external send/write controls",
+        "GHL runtime"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM region, filter controls, contact buttons, and selected detail are labeled/readable.",
+      "accessibility_expectation": "Controls remain keyboard reachable and visible without color-only state.",
+      "test_smoke_assertion": "Local smoke must assert this state or record an exact blocker.",
+      "requirement_id": "REQ-20260712-106"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "1024",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "CRM list is populated with no more than 50 cards.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "CRM list is populated with no more than 50 cards.",
+      "expected_primary_action": "Select contact",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search",
+        "Select contact"
+      ],
+      "forbidden_content": [
+        "BNA school-only private data",
+        "active external send/write controls",
+        "GHL runtime"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM region, filter controls, contact buttons, and selected detail are labeled/readable.",
+      "accessibility_expectation": "Controls remain keyboard reachable and visible without color-only state.",
+      "test_smoke_assertion": "Local smoke must assert this state or record an exact blocker.",
+      "requirement_id": "REQ-20260712-106"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "768",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Debounced search/filter returns no matching contacts.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Debounced search/filter returns no matching contacts.",
+      "expected_primary_action": "Change search",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search",
+        "Select contact"
+      ],
+      "forbidden_content": [
+        "BNA school-only private data",
+        "active external send/write controls",
+        "GHL runtime"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM region, filter controls, contact buttons, and selected detail are labeled/readable.",
+      "accessibility_expectation": "Controls remain keyboard reachable and visible without color-only state.",
+      "test_smoke_assertion": "Local smoke must assert this state or record an exact blocker.",
+      "requirement_id": "REQ-20260712-106"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "430",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "CRM API failure displays a scoped panel error without replacing the app shell.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "CRM API failure displays a scoped panel error without replacing the app shell.",
+      "expected_primary_action": "Retry refresh",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search",
+        "Select contact"
+      ],
+      "forbidden_content": [
+        "BNA school-only private data",
+        "active external send/write controls",
+        "GHL runtime"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM region, filter controls, contact buttons, and selected detail are labeled/readable.",
+      "accessibility_expectation": "Controls remain keyboard reachable and visible without color-only state.",
+      "test_smoke_assertion": "Local smoke must assert this state or record an exact blocker.",
+      "requirement_id": "REQ-20260712-106"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "External sends/writes remain blocked and visibly no-send.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "External sends/writes remain blocked and visibly no-send.",
+      "expected_primary_action": "Review blocker",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search",
+        "Select contact"
+      ],
+      "forbidden_content": [
+        "BNA school-only private data",
+        "active external send/write controls",
+        "GHL runtime"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM region, filter controls, contact buttons, and selected detail are labeled/readable.",
+      "accessibility_expectation": "Controls remain keyboard reachable and visible without color-only state.",
+      "test_smoke_assertion": "Local smoke must assert this state or record an exact blocker.",
+      "requirement_id": "REQ-20260712-106"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "430",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "View remains read-only/no-send with preview-safe action states.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "View remains read-only/no-send with preview-safe action states.",
+      "expected_primary_action": "Open contact",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search",
+        "Select contact"
+      ],
+      "forbidden_content": [
+        "BNA school-only private data",
+        "active external send/write controls",
+        "GHL runtime"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM region, filter controls, contact buttons, and selected detail are labeled/readable.",
+      "accessibility_expectation": "Controls remain keyboard reachable and visible without color-only state.",
+      "test_smoke_assertion": "Local smoke must assert this state or record an exact blocker.",
+      "requirement_id": "REQ-20260712-106"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Selected contact timeline loads in the detail panel only.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Selected contact timeline loads in the detail panel only.",
+      "expected_primary_action": "Refresh timeline",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search",
+        "Select contact"
+      ],
+      "forbidden_content": [
+        "BNA school-only private data",
+        "active external send/write controls",
+        "GHL runtime"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM region, filter controls, contact buttons, and selected detail are labeled/readable.",
+      "accessibility_expectation": "Controls remain keyboard reachable and visible without color-only state.",
+      "test_smoke_assertion": "Local smoke must assert this state or record an exact blocker.",
+      "requirement_id": "REQ-20260712-106"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Wrong scope/auth cannot read CRM data.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Wrong scope/auth cannot read CRM data.",
+      "expected_primary_action": "Return to allowed workspace",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search",
+        "Select contact"
+      ],
+      "forbidden_content": [
+        "BNA school-only private data",
+        "active external send/write controls",
+        "GHL runtime"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM region, filter controls, contact buttons, and selected detail are labeled/readable.",
+      "accessibility_expectation": "Controls remain keyboard reachable and visible without color-only state.",
+      "test_smoke_assertion": "Local smoke must assert this state or record an exact blocker.",
+      "requirement_id": "REQ-20260712-106"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Mobile CRM list/detail remains usable without horizontal overflow.",
+      "expected_visible_title": "One Time CRM Workbench",
+      "expected_visible_message": "Mobile CRM list/detail remains usable without horizontal overflow.",
+      "expected_primary_action": "Back/select contact",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Search",
+        "Select contact"
+      ],
+      "forbidden_content": [
+        "BNA school-only private data",
+        "active external send/write controls",
+        "GHL runtime"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM region, filter controls, contact buttons, and selected detail are labeled/readable.",
+      "accessibility_expectation": "Controls remain keyboard reachable and visible without color-only state.",
+      "test_smoke_assertion": "Local smoke must assert this state or record an exact blocker.",
+      "requirement_id": "REQ-20260712-106"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 1440,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-106"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 1024,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-106"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 768,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-106"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 430,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-106"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": 390,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260712-106"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260712-106-001",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+        "viewport": "390",
+        "screenshot_before": "ops/ui-audits/2026-07-12-onetime-crm-portal-production-correction/rabbi-current-state/screenshots/operations-crm-contacts-390-mobile.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "defect_codes": [
+          "VQ-LAYOUT-003",
+          "VQ-RESP-005"
+        ],
+        "severity": "P1",
+        "user_impact": "CRM can remain in a loading-looking state and card labels can clip on mobile if the loader rerenders the whole shell.",
+        "expected_fix": "Use scoped CRM rendering, request caps, and mobile smoke screenshots after patch.",
+        "requirement_id": "REQ-20260712-106"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Filter controls keep labels.",
+      "Contact buttons keep aria-expanded state.",
+      "Selected detail has a labeled region.",
+      "Touch targets remain measurable in smoke/audit."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Refresh CRM contacts",
+      "selector_or_action_key": "ACTION-CRM-CONTACTS-FILTER",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "loadFirstPartyCrmContacts with AbortController, cache, and limit=50.",
+      "registry_required": true
+    },
+    {
+      "label": "Open CRM contact detail",
+      "selector_or_action_key": "ACTION-CRM-CONTACT-CARD-EXPAND",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "openFirstPartyCrmContact updates the CRM detail/timeline panel only.",
+      "registry_required": true
+    },
+    {
+      "label": "Legacy review/source safeguards",
+      "selector_or_action_key": "data-one-time-crm-review-context",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Legacy review table renders only after the details element is opened.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "api_calls": [
+      "GET /api/bna/crm/contacts?limit=50&workspace=rabbi_sheller_provider&project_key=one_time_mishnah_class",
+      "GET /api/bna/crm/contacts/:id/timeline scoped to same workspace/project"
+    ],
+    "limits": [
+      "frontend card render cap 50",
+      "initial CRM API calls after auth <=3"
+    ],
+    "caching": [
+      "list cache by normalized filter key during page session"
+    ],
+    "abort_debounce": [
+      "AbortController for list and timeline requests",
+      "search debounce before list reload"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Browser screenshots/network counts are evidence only, not authority.",
+      "One Time CRM reads stay scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+      "No sends, payments, access grants, external CRM writes, provider account changes, or production data mutation in this packet."
+    ],
+    "forbidden_content": [
+      "signed view-as token",
+      "secrets",
+      "raw private contact export",
+      "raw private message bodies",
+      "active GHL or LeadConnector runtime instructions"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-05-CRM-FRONTEND",
+      "scope": "Operations One Time first-party CRM loader/detail only",
+      "instructions": [
+        "Patch API request helper to accept AbortController signals.",
+        "Patch list/detail rendering to update only the CRM panel instead of calling render() from selection.",
+        "Add search debounce, normalized query cache, frontend 50-card cap, and stale request aborts.",
+        "Render legacy review/source safeguards table only after details are opened.",
+        "Extend smoke harness to cover split shell and monolith fallback with request/card assertions."
+      ],
+      "requirements": [
+        "REQ-20260712-106"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "focused",
+    "source_files_to_read": [
+      "public/operations.html",
+      "public/js/operations-shell.js",
+      "scripts/smoke-onetime-operations-crm-workbench-local.mjs"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "public/js/operations-shell.js",
+      "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/*"
+    ],
+    "max_files_to_edit": 6,
+    "max_routes_to_touch": 2,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Broad CRM/inbox redesign, portals, landing, and deployment are separate requirements.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "commands": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/02-crm-frontend-performance.product-quality.json",
+      "node --check scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+      "node scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+      "node --test tests/operations-shell-navigation-contract.test.js tests/service-provider-scope-routes.test.js",
+      "npm run bna:run:validate",
+      "npm run watchdog:protocol-drift"
+    ],
+    "manual_checks": [
+      "Inspect generated CRM smoke screenshots.",
+      "Confirm no external writes occurred."
+    ]
+  },
+  "evidence": {
+    "required": [
+      "PQC validation PASS",
+      "local CRM workbench smoke report with split shell and monolith coverage",
+      "execution-run status/evidence update"
+    ],
+    "paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/STATUS.md",
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/TEST-RESULTS.md"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "DEPLOY_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "Operations monolith and split shell use scoped CRM list/detail rendering without root render on contact selection.",
+      "CRM initial list renders no more than 50 cards and requests limit=50.",
+      "Search is debounced and stale list/detail requests are abortable.",
+      "Closed legacy review/source safeguards do not construct the legacy CRM review table.",
+      "Local smoke report records CRM API call counts, rendered card count, split-shell route coverage, selected detail readback, and no external writes.",
+      "Production deploy/live-smoke remains open under REQ-20260712-112."
+    ],
+    "actual_status": "local_done_release_pending"
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260712-004-onetime-crm-portal-production-correction.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/02-crm-frontend-performance.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "node smoke",
+      "node tests"
+    ],
+    "skipped_actions_policy": "No external sends/writes/deploy in this local batch.",
+    "blocker_decisions": [
+      "DEC-20260712-101 direct source screenshots missing but regenerated audit evidence is usable."
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+      "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/requirements.json"
+    ],
+    "final_status_path": "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/STATUS.md",
+    "next_packet_path": "tasks-pending/2026-07-12-onetime-crm-portal-production-correction.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No protocol drift findings introduced by the CRM frontend implementation packet or closeout records."
+  },
+  "next_packet": {
+    "id": "PKT-20260712-107-or-PKT-20260712-111",
+    "condition": "Continue broader CRM/inbox UI with a focused packet, or address split-shell byte budget in performance batch before broader UI work.",
+    "status": "pending"
+  }
+}

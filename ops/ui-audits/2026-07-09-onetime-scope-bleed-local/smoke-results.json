@@ -1,0 +1,79 @@
+{
+  "ok": true,
+  "checked_at": "2026-07-09T03:46:27.442Z",
+  "checks": [
+    {
+      "id": "parent-login",
+      "finalUrl": "http://127.0.0.1:8123/one-time-parent",
+      "hasOneTime": true,
+      "visibleBnaAcademy": false,
+      "hasHebrewToggle": false,
+      "hasAccessFallback": false,
+      "helperOk": true,
+      "urlOk": true,
+      "readableHero": true,
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\ui-audits\\2026-07-09-onetime-scope-bleed-local\\parent-login.png"
+    },
+    {
+      "id": "student-login",
+      "finalUrl": "http://127.0.0.1:8123/student.html?one_time_login=1",
+      "hasOneTime": true,
+      "visibleBnaAcademy": false,
+      "hasHebrewToggle": false,
+      "hasAccessFallback": false,
+      "helperOk": true,
+      "urlOk": true,
+      "readableHero": true,
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\ui-audits\\2026-07-09-onetime-scope-bleed-local\\student-login.png"
+    },
+    {
+      "id": "provider-review-crm",
+      "finalUrl": "http://127.0.0.1:8123/provider.html?review=one-time&section=crm",
+      "hasOneTime": true,
+      "visibleBnaAcademy": false,
+      "hasHebrewToggle": false,
+      "hasAccessFallback": false,
+      "helperOk": true,
+      "urlOk": true,
+      "readableHero": true,
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\ui-audits\\2026-07-09-onetime-scope-bleed-local\\provider-review-crm.png"
+    }
+  ],
+  "mobile_checked_at": "2026-07-09T03:46:49.005Z",
+  "mobile_ok": true,
+  "mobile_checks": [
+    {
+      "id": "parent-login-mobile",
+      "finalUrl": "http://127.0.0.1:8123/one-time-parent",
+      "hasOneTime": true,
+      "visibleBnaAcademy": false,
+      "hasHebrewToggle": false,
+      "hasAccessFallback": false,
+      "urlOk": true,
+      "noHorizontalOverflow": true,
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\ui-audits\\2026-07-09-onetime-scope-bleed-local\\parent-login-mobile.png"
+    },
+    {
+      "id": "student-login-mobile",
+      "finalUrl": "http://127.0.0.1:8123/student.html?one_time_login=1",
+      "hasOneTime": true,
+      "visibleBnaAcademy": false,
+      "hasHebrewToggle": false,
+      "hasAccessFallback": false,
+      "urlOk": true,
+      "noHorizontalOverflow": true,
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\ui-audits\\2026-07-09-onetime-scope-bleed-local\\student-login-mobile.png"
+    },
+    {
+      "id": "provider-review-crm-mobile",
+      "finalUrl": "http://127.0.0.1:8123/provider.html?review=one-time&section=crm",
+      "hasOneTime": true,
+      "visibleBnaAcademy": false,
+      "hasHebrewToggle": false,
+      "hasAccessFallback": false,
+      "urlOk": true,
+      "noHorizontalOverflow": true,
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\ui-audits\\2026-07-09-onetime-scope-bleed-local\\provider-review-crm-mobile.png"
+    }
+  ]
+}

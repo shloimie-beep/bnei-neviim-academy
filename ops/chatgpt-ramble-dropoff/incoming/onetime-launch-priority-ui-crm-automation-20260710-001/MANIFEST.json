@@ -1,0 +1,54 @@
+{
+  "packet_id": "onetime-launch-priority-ui-crm-automation-20260710-001",
+  "schema_version": "bna.chatgpt_dropoff_manifest.v1",
+  "generated_by": "chatgpt",
+  "target_repo": "shloimie-beep/bnei-neviim-academy",
+  "target_branch": "master",
+  "packet_type": "implementation_bundle",
+  "packet_role": "goal_mode_correction_and_code_package_compiler",
+  "lane_key": "rabbi_sheller_provider-one_time_mishnah_class-launch-priority",
+  "files": [
+    {"path": "RAW.md", "purpose": "Preserve the latest operator correction without public private data."},
+    {"path": "CODEX_PROMPT.md", "purpose": "Require source reconciliation, immediate safe implementation, and generation of actual coding-window packages."},
+    {"path": "PATCHES.md", "purpose": "States that this correction packet contains no production patch and requires child code-preparation packets."}
+  ],
+  "proposed_repo_changes": [
+    "raw input and dated requirement register",
+    "landing copy/media/production cleanup",
+    "Robot Scheller assistant identity and canonical lead capture",
+    "form-to-visible-CRM E2E",
+    "CRM contact workbench",
+    "historical inbox reconciliation/import package",
+    "gated inbound WAPI/email class-link automation",
+    "Rabbi backend launch-readiness UI cleanup",
+    "refreshed Agent Mode acceptance prompts"
+  ],
+  "tests_expected": [
+    "PQC and protocol watchdogs",
+    "landing/helper visual and accessibility tests",
+    "form-to-CRM E2E",
+    "CRM list/detail/deep-link tests",
+    "email import dedupe/thread/contact tests",
+    "WAPI idempotency/approval tests",
+    "live One Time smokes and manual screenshot review"
+  ],
+  "known_blockers": [
+    "runtime-only exact WhatsApp number and credentials",
+    "historical email source discovery",
+    "one controlled seed approval before a real provider send"
+  ],
+  "risk_notes": [
+    "public repo must not receive private phone/email data",
+    "shared provider/Operations files require collision control",
+    "stale Agent Mode contracts could validate the wrong product behavior",
+    "external sends must remain idempotent and narrowly approved"
+  ],
+  "handoff_rules": [
+    "Do not solve the whole parent system in one child packet.",
+    "Do not stop at audit or prompt generation.",
+    "Codex audits generated code before applying it.",
+    "App-visible Done requires push, correct deploy, live smoke, screenshots, and manual source-level acceptance.",
+    "Do not expose secrets/private data or perform bulk sends/payments/provider mutations."
+  ],
+  "handback_required": true
+}

@@ -1,0 +1,141 @@
+One Time Mishnah Class
+Provider workspace for members, classes, Studio, communications, payments, tasks, and setup.
+CURRENT WORKSPACE
+One Time Mishnah Class
+Provider / Provider Workspace Admin
+Scoped
+Overview
+Workspace Setup
+Overview
+OV
+Members
+MB
+Classes & Content
+CC
+Studio
+ST
+Live Class
+LC
+Schedule
+SC
+Community
+CO
+Communications
+CM
+Automations
+AU
+Payments
+PA
+Tasks
+TS
+Reporting
+RP
+Integrations
+IN
+Workspace Setup
+SU
+Back to all modules
+PROGRAM SECTIONS
+Overview
+Choose a section for this workspace.
+Overview
+1
+Launch
+0
+Program
+0
+Membership
+0
+Content
+0
+Schedule
+0
+Questions
+0
+Access
+0
+Settings
+1
+Platform Support
+Help
+Logout
+ONE TIME MISHNAH CLASS / OVERVIEW / OVERVIEW
+Overview
+One Time Mishnah Class / Provider Workspace Admin
+Ask / Search
+Fri 10 Jul
+Open Schedule
+Overview
+Overview
+Overview
+1
+Launch
+0
+Program
+0
+Members
+0
+Content
+0
+Schedule
+0
+Questions
+0
+Access
+0
+Settings
+1
+PROVIDER WORKSPACE
+One Time Mishnah Class
+
+Rabbi Sheller is the current service provider and revenue-share partner for this workspace. Members are participants, not BNA students, and this workspace does not expose BNA accountability data.
+
+Program Overview
+Provider Workspace
+LAUNCH
+2
+PROGRAM
+1
+TIERS
+3
+CONTENT
+0
+PARTICIPANTS
+1
+ACCESS
+1
+Safe Role Preview
+Rabbi / student / member
+
+Open the One Time app perspectives from here. View-as Rabbi is a signed read-only session; student and member previews use TEST review data only.
+
+View One Time as Rabbi
+Student Preview
+Member Preview
+Read-only
+No-send
+No-charge
+No access grant
+Mishnayos Membership
+Revenue-share partner
+PROVIDER
+[redacted private value]
+COMMERCIAL MODEL
+[redacted private value]
+PROGRAM
+[redacted private value]
+CLASS/SESSION
+[redacted private value]
+USERS
+[redacted private value]
+CALENDAR STATUS
+[redacted private value]
+DELIVERY
+[redacted private value]
+Private provider fields such as business terms, credentials, partnership terms, setup history, and performance notes stay admin-only and never appear on public provider profiles.
+Command Bot Actions
+0 typed actions
+
+The bot reads page/workspace context and previews typed actions. Sensitive actions require approval and dedicated handlers before mutation.
+
+No typed actions are registered for this page yet.

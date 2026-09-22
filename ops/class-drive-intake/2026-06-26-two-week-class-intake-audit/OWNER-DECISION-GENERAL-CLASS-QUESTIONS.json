@@ -1,0 +1,75 @@
+{
+  "generated_at": "2026-06-30T05:32:10.297Z",
+  "issue": 41,
+  "decision": "Six unclear questions are general class questions, not student-specific questions. Do not ask again.",
+  "general_class_question_fanout_approved": false,
+  "target": "class_scoped_question_or_review_record",
+  "rows": [
+    {
+      "job_id": 58,
+      "question_ref": "question:c516d14ee4e5d49f",
+      "question_text_hash": "c516d14ee4e5d49f",
+      "previous_match_status": "no_student_name",
+      "owner_final_scope": "general_class_question",
+      "owner_final_routing": "class_scoped_question_or_review_record",
+      "student_id": null,
+      "student_match_blocker": false,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 58,
+      "question_ref": "question:1a8cf5034c4c839f",
+      "question_text_hash": "1a8cf5034c4c839f",
+      "previous_match_status": "no_student_name",
+      "owner_final_scope": "general_class_question",
+      "owner_final_routing": "class_scoped_question_or_review_record",
+      "student_id": null,
+      "student_match_blocker": false,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:51aa618b95a7d29d",
+      "question_text_hash": "51aa618b95a7d29d",
+      "previous_match_status": "unmatched",
+      "owner_final_scope": "general_class_question",
+      "owner_final_routing": "class_scoped_question_or_review_record",
+      "student_id": null,
+      "student_match_blocker": false,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:2158d47f6c0c2923",
+      "question_text_hash": "2158d47f6c0c2923",
+      "previous_match_status": "no_student_name",
+      "owner_final_scope": "general_class_question",
+      "owner_final_routing": "class_scoped_question_or_review_record",
+      "student_id": null,
+      "student_match_blocker": false,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:8f9c41ec6da4ca8c",
+      "question_text_hash": "8f9c41ec6da4ca8c",
+      "previous_match_status": "no_student_name",
+      "owner_final_scope": "general_class_question",
+      "owner_final_routing": "class_scoped_question_or_review_record",
+      "student_id": null,
+      "student_match_blocker": false,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 25,
+      "question_ref": "question:e1d44fb96cef6915",
+      "question_text_hash": "e1d44fb96cef6915",
+      "previous_match_status": "no_student_name",
+      "owner_final_scope": "general_class_question",
+      "owner_final_routing": "class_scoped_question_or_review_record",
+      "student_id": null,
+      "student_match_blocker": false,
+      "raw_text_included": false
+    }
+  ]
+}

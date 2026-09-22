@@ -1,0 +1,34 @@
+{
+  "report_id": "2026-07-03-rabbi-onetime-ui-goal-terminal-audit",
+  "generated_at": "2026-07-03T04:02:07+03:00",
+  "goal_objective": "Complete Rabbi / One Time Mishnah UI cleanup from RAW-20260702-008 through validated product-quality packets, working implementation batches to terminal statuses with screenshot, test, registry, ledger/changelog, and deploy/live-smoke proof or exact blockers.",
+  "verdict": "terminal_with_exact_deploy_blocker",
+  "raw_id": "RAW-20260702-008",
+  "requirement_register": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+  "release_pr": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/87",
+  "release_branch": "codex/rabbi-onetime-ui-cleanup-release-20260703",
+  "terminal_audit_commit": "6fadb922",
+  "head_reference_note": "This is the commit that recorded the terminal audit; later PR bookkeeping commits may advance the branch without changing the verdict.",
+  "local_verification": {
+    "pqc_packet_21": "passed",
+    "focused_tests": "11/11 passed",
+    "watchdog_actions": "finding_count 0",
+    "watchdog_protocol_drift": "0 findings",
+    "latest_visual_audit": "80 screenshots, findings_count 0",
+    "latest_manual_contact_sheet_review": "no additional concrete defect selected"
+  },
+  "deploy_live_smoke": {
+    "production_contract_present": false,
+    "deploy_performed": false,
+    "live_smoke_performed_after_deploy": false,
+    "exact_blocker": "DEC-20260702-801",
+    "blocker_summary": "Deploy gate requires BNA_PRODUCTION_DEPLOY_APPROVED=approved and integration/readback readiness; production bneineviimacademy.org does not yet have the final Library first-viewport contract."
+  },
+  "guardrails": {
+    "production_mutation_performed": false,
+    "external_provider_write_performed": false,
+    "send_or_payment_or_access_or_dns_mutation_performed": false,
+    "secrets_exposed": false,
+    "ghl_or_leadconnector_runtime_added": false
+  }
+}

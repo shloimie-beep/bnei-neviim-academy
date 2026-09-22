@@ -1,0 +1,67 @@
+- navigation "One Time member navigation":
+  - text: One Time Mishnayos Member area
+  - link "Member home":
+    - /url: /rabbi-member
+    - text: Home
+  - link "Library":
+    - /url: /member-library
+  - link "Classroom":
+    - /url: /one-time-classroom
+  - link "Student preview":
+    - /url: /student.html?review=one-time
+  - link "Assistant/help":
+    - /url: "#bnaBotPanel"
+    - text: Helper
+  - link "Questions/support":
+    - /url: "#support"
+    - text: Support
+  - link "Account/logout":
+    - /url: /rabbi-member?logout=1
+    - text: Logout
+- region "One Time Mishnayos":
+  - text: Member Area
+  - heading "One Time Mishnayos" [level=1]
+  - paragraph: Library and live class access are shown only when an active grant exists.
+- main:
+  - complementary:
+    - text: Login
+    - heading "Request member link" [level=2]
+    - text: Email
+    - textbox "Email"
+    - button "Request login"
+    - text: Request a member login link to view access.
+  - text: Library
+  - heading "Recorded Classes" [level=2]
+  - text: Library access is pending. Live
+  - heading "Live Sessions" [level=2]
+  - text: No live sessions are scheduled yet. Private Questions
+  - heading "Ask the Rabbi" [level=2]
+  - text: Topic
+  - textbox "Topic"
+  - text: Question
+  - textbox "Question"
+  - button "Submit Question"
+  - text: Open a member session to submit private questions. Support
+  - heading "Open a Ticket" [level=2]
+  - text: Title
+  - textbox "Title"
+  - text: Details
+  - textbox "Details"
+  - text: Category
+  - button "Category": Access
+  - text: Severity
+  - button "Severity": Normal
+  - button "Open Ticket"
+  - text: Open a member session to create support tickets.
+- contentinfo:
+  - strong: One Time Mishnayos
+  - paragraph: Copyright 2026 One Time Mishnayos. Member access is scoped to the One Time Mishnayos workspace.
+  - navigation "One Time footer navigation":
+    - link "Member Home":
+      - /url: /rabbi-member
+    - link "Privacy":
+      - /url: /one-time/privacy.html
+    - link "Terms":
+      - /url: /one-time/terms.html
+    - link "Library":
+      - /url: /member-library

@@ -1,0 +1,568 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260708-054",
+  "parent_raw_id": "RAW-20260708-015",
+  "source_statement_ids": [
+    "SRC-20260708-015-001",
+    "SRC-20260708-015-002",
+    "SRC-20260708-015-003",
+    "SRC-20260708-015-004",
+    "SRC-20260708-015-005",
+    "SRC-20260708-015-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260708-053"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260708-015-onetime-public-signup-agent-workflow.md",
+      "public/one-time/index.html",
+      "src/lib/bna/agent-review-hub.js",
+      "public/agent-review.html",
+      "ops/action-registry.json",
+      "ops/route-registry.json"
+    ],
+    "produces": [
+      "public/one-time/index.html",
+      "src/lib/bna/agent-review-hub.js",
+      "public/agent-review.html",
+      "public/agent-review-prompts/*.md",
+      "tests/one-time-focused-landing.test.js",
+      "tests/one-time-product-system.test.js",
+      "tests/agent-review-hub.test.js",
+      "ops/prompt-packets/2026-07-08-onetime-public-signup-agent-workflow/00-onetime-public-signup-agent-workflow.product-quality.json",
+      "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-public-signup-agent-workflow/00-onetime-public-signup-agent-workflow.product-quality.json",
+    "terminal_condition": "The public OneTime landing has a black/yellow header, black-on-white logo treatment, and email-only bottom signup strip; the Agent Review Hub has a focused workflow prompt and moves copied prompts into a running/dropoff-needed lane.",
+    "handoff_target": "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "in_progress",
+  "title": "OneTime Public Signup Strip And Agent Workflow",
+  "created_at": "2026-07-08T19:20:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "PUBLIC_MARKETING",
+    "INTERNAL_AGENT_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260708-015",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "CRM_PIPELINE",
+      "UI_VISUAL_AUDIT",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.94,
+    "reasons": [
+      "The request changes the public landing page information architecture and lead capture form.",
+      "The request adds Agent Mode workflow prompts and copy/dropoff state tracking.",
+      "The request mentions WhatsApp and external workflow testing, which must remain guarded from live sends or external mutations."
+    ],
+    "affected_product_surfaces": [
+      "OneTime public landing",
+      "Agent Review Hub prompt workflow"
+    ],
+    "likely_external_provider_blockers": [
+      "No live WhatsApp/WAPI send is allowed until Rabbi WAPI credentials, class-link env, and explicit send approval are present.",
+      "Agent Mode may inspect and report WhatsApp readiness, but cannot send or mutate external provider state."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-onetime-public-signup-agent-workflow"
+    ],
+    "next_exact_packet": "After this packet, run Agent Mode against the new public signup/WhatsApp workflow prompt and ingest the saved AGR result."
+  },
+  "operator_intent_summary": "The OneTime public landing should feel launch-ready: black/yellow scoped, compact, and clear. The top yellow announcement should become a bottom hero signup strip with only an email capture and Sign Up Now CTA. Agent Mode prompts should test this workflow and WhatsApp readiness, and copying a prompt should move it into a running/dropoff-needed section so the same prompt is not copied twice by mistake.",
+  "raw_quotes": [
+    "capture on the bottom with the just email",
+    "sign up now",
+    "that yellow bar should just be on the bottom before the next section",
+    "the top toolbar is black with like a yellow outline",
+    "the logo is black black on white",
+    "agent mode prompts to check to test those workflows",
+    "when I click copy ... it automatically moves it over to like the next section"
+  ],
+  "decisions_captured": [
+    "DEC-20260708-010",
+    "DEC-20260708-011"
+  ],
+  "out_of_scope": [
+    "No real WhatsApp send.",
+    "No WAPI credential storage or external-provider mutation.",
+    "No real email send.",
+    "No Stripe, payment, DNS, Zoom, Drive, or Vimeo write.",
+    "No broad redesign of provider, parent, student, member, or classroom portals."
+  ],
+  "affected_surfaces": [
+    "OneTime public landing hero and signup strip",
+    "OneTime public interest API client payload",
+    "Agent Review Hub prompt pack",
+    "Agent Review Hub prompt card lane layout"
+  ],
+  "affected_routes": [
+    "/one-time",
+    "/",
+    "/rabbi",
+    "/operations/agent-review",
+    "/operations/agent-review/dropoff",
+    "/api/one-time/interest",
+    "/api/bna/agent-review/prompts/start",
+    "/api/bna/agent-review/results"
+  ],
+  "affected_files": [
+    "public/one-time/index.html",
+    "public/agent-review.html",
+    "src/lib/bna/agent-review-hub.js",
+    "public/agent-review-prompts/*.md",
+    "tests/one-time-focused-landing.test.js",
+    "tests/one-time-product-system.test.js",
+    "tests/agent-review-hub.test.js",
+    "ops/action-registry.json",
+    "ops/route-registry.json"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/one-time/index.html header, announcement bar, ticker, and interest form",
+      "src/lib/bna/one-time-product-system.js email-only lead validation",
+      "src/lib/bna/agent-review-hub.js prompt list and prompt workflow state",
+      "public/agent-review.html copyPrompt and prompt-grid rendering",
+      "tests covering OneTime landing and Agent Review Hub"
+    ],
+    "observed": [
+      "The landing page currently has a top sticky yellow announcement and a separate multi-field form near the bottom.",
+      "The interest API validation already accepts email-only leads as long as one contact field is present.",
+      "The Agent Review Hub starts an in-progress AGR before copying but does not render a durable copied/running lane after copy."
+    ],
+    "known_blockers": [
+      "Real WhatsApp send remains blocked by external credential/setup decisions.",
+      "Live synthetic form submission can create a first-party test lead and must be explicit in evidence."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "just email",
+      "sign up now",
+      "yellow bar on the bottom",
+      "toolbar black with yellow outline",
+      "perfect template",
+      "drop it in the right place"
+    ],
+    "expanded_phrases": {
+      "just email": "The public lead capture form should expose one visible email input and hidden first-party consent/source fields only.",
+      "sign up now": "The primary public CTA copy should be Sign Up Now and should scroll/focus to the signup strip.",
+      "yellow bar on the bottom": "The yellow promotional band belongs at the bottom of the hero before the next content section, not as a sticky top announcement.",
+      "toolbar black with yellow outline": "The sticky header should be black, visually bounded by a yellow border/outline, and not reserve vertical space for the removed announcement.",
+      "perfect template": "The Agent Mode prompt must include exact navigation, safe workflow boundaries, failure reporting, and dropoff/readback requirements.",
+      "drop it in the right place": "The hub should group prompts by ready, running/dropoff-needed, and saved/repair states; copy should move the prompt into the running lane.",
+      "launch-ready": "This packet defines launch readiness as scoped OneTime branding, one visible email field, first-party no-send/no-checkout/no-access persistence, mobile screenshots, Agent Mode prompt lane tracking, tests, deploy proof, and live smoke evidence."
+    }
+  },
+  "design_pattern_references": [
+    "memory-topics/one-time-rabbi-sheller.md",
+    "memory-topics/workspace-scope-isolation.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/AGENT-TRACE-OBSERVABILITY.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260708-071",
+      "statement": "OneTime public signup and agent workflow testing must be launch-ready, scoped, and trackable.",
+      "expected_result": "The public page shows an email-only yellow Sign Up Now strip at the bottom of the hero, the header is black with yellow outline and black-on-white logo treatment, the form posts only to first-party interest capture with no sends/charges/access grants, and Agent Review prompts can be copied, tracked, moved to running/dropoff-needed, and saved back through AGR dropoff."
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "Raw input captured as RAW-20260708-015.",
+      "Current OneTime landing and Agent Review Hub files were inspected.",
+      "Email-only lead backend validation was confirmed in src/lib/bna/one-time-product-system.js.",
+      "External sends remain explicitly out of scope."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/one-time",
+      "viewport": 1440,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the public landing before helper scripts finish.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "Black OneTime header with yellow outline; no top yellow announcement consuming space.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": ["See How It Works", "Member Login"],
+      "forbidden_content": ["BNA Academy", "Hebrew/English toggle", "top sticky yellow announcement"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "One main landmark, nav label, and signup form label exist.",
+      "accessibility_expectation": "Header and signup inputs remain readable at desktop width.",
+      "test_smoke_assertion": "Static and browser tests find #start-free.signup-strip and a single visible email field.",
+      "requirement_id": "REQ-20260708-071"
+    },
+    "empty": {
+      "route": "/one-time",
+      "viewport": 390,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the public landing on mobile before typing an email.",
+      "expected_visible_title": "Sign Up Now",
+      "expected_visible_message": "Yellow email capture strip appears before the next section and stacks cleanly.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": ["Member Login"],
+      "forbidden_content": ["Parent name", "Phone / WhatsApp", "Region", "Notes"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Email input has a real label or accessible name.",
+      "accessibility_expectation": "No horizontal overflow and button/input heights match.",
+      "test_smoke_assertion": "Mobile smoke finds no visible non-email signup fields.",
+      "requirement_id": "REQ-20260708-071"
+    },
+    "populated": {
+      "route": "/one-time",
+      "viewport": 1024,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Type a syntactically valid email into the signup strip.",
+      "expected_visible_title": "Sign Up Now",
+      "expected_visible_message": "The form is ready to save a first-party interest lead.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": ["Member Login"],
+      "forbidden_content": ["checkout", "charge", "access granted", "external send"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Status region uses aria-live.",
+      "accessibility_expectation": "Focus state is visible and text does not overlap.",
+      "test_smoke_assertion": "Local submit smoke receives no_send/no_checkout/no_access_granted.",
+      "requirement_id": "REQ-20260708-071"
+    },
+    "filtered_empty": {
+      "route": "/operations/agent-review",
+      "viewport": 1440,
+      "auth_role": "super_admin",
+      "workspace_project": "platform / agent_review",
+      "how_to_enter_state": "Open Agent Review Hub with no copied prompt filter.",
+      "expected_visible_title": "Prompt Pack",
+      "expected_visible_message": "Ready To Copy, Running / Drop-off Needed, and Saved / Needs Repair prompt lanes are visible.",
+      "expected_primary_action": "Copy Agent Prompt",
+      "expected_secondary_actions": ["Start Audit", "Open drop-off"],
+      "forbidden_content": ["manual upload required", "prepared JSON only"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Prompt lanes have headings and prompt cards remain keyboard reachable.",
+      "accessibility_expectation": "Cards stay readable without nested card overflow.",
+      "test_smoke_assertion": "Hub static test finds lane labels and prompt_copied state handling.",
+      "requirement_id": "REQ-20260708-071"
+    },
+    "error": {
+      "route": "/one-time",
+      "viewport": 430,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit an invalid email or fail the interest API.",
+      "expected_visible_title": "Sign Up Now",
+      "expected_visible_message": "A concise error appears in the form status region and the button re-enables.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": ["Try again"],
+      "forbidden_content": ["stack trace", "database error", "secret", "BNA fallback"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The error is announced in aria-live text.",
+      "accessibility_expectation": "Error text wraps without covering the input.",
+      "test_smoke_assertion": "Form script has catch/finally and no alert/prompt.",
+      "requirement_id": "REQ-20260708-071"
+    },
+    "blocked_setup": {
+      "route": "/operations/agent-review",
+      "viewport": 1440,
+      "auth_role": "super_admin",
+      "workspace_project": "platform / agent_review",
+      "how_to_enter_state": "Agent Mode cannot reach a route, helper, or dropoff path.",
+      "expected_visible_title": "Agent Review Drop-Off",
+      "expected_visible_message": "The prompt instructs the agent to save BLOCKED with exact failed step and smallest repair.",
+      "expected_primary_action": "Mark blocked",
+      "expected_secondary_actions": ["Open drop-off", "POST API fallback"],
+      "forbidden_content": ["give up in chat", "ask owner to upload payload"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Dropoff form exposes blocked_route_or_step and partial findings.",
+      "accessibility_expectation": "The blocked save action is reachable.",
+      "test_smoke_assertion": "Generated prompt contains OPERATIONS_DROPOFF_FAILED only as last resort.",
+      "requirement_id": "REQ-20260708-071"
+    },
+    "preview_only": {
+      "route": "/operations/agent-review",
+      "viewport": 1024,
+      "auth_role": "super_admin",
+      "workspace_project": "platform / agent_review",
+      "how_to_enter_state": "Open the new public signup/WhatsApp workflow prompt before running Agent Mode.",
+      "expected_visible_title": "One Time Public Signup And WhatsApp Workflow",
+      "expected_visible_message": "The prompt names no live WhatsApp send, no email send, and no external mutation.",
+      "expected_primary_action": "Copy Agent Prompt",
+      "expected_secondary_actions": ["Open context", "Open drop-off"],
+      "forbidden_content": ["send WhatsApp now", "store token", "real email blast"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Prompt card has clear status pill.",
+      "accessibility_expectation": "Buttons have stable heights.",
+      "test_smoke_assertion": "Agent prompt text includes no-send/no-checkout/no-access and no external send language.",
+      "requirement_id": "REQ-20260708-071"
+    },
+    "success_readback": {
+      "route": "/operations/agent-review",
+      "viewport": 1440,
+      "auth_role": "super_admin",
+      "workspace_project": "platform / agent_review",
+      "how_to_enter_state": "Click Copy Agent Prompt after Start Audit succeeds.",
+      "expected_visible_title": "Running / Drop-off Needed",
+      "expected_visible_message": "Copied prompt card moves out of Ready To Copy and shows prompt copied / awaiting drop-off.",
+      "expected_primary_action": "Open drop-off",
+      "expected_secondary_actions": ["View saved result"],
+      "forbidden_content": ["Result pending in ready lane"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The moved state is represented by text, not color alone.",
+      "accessibility_expectation": "Lane update does not lose focus unexpectedly.",
+      "test_smoke_assertion": "copyPrompt sets prompt.workflow_state = prompt_copied and re-renders lanes.",
+      "requirement_id": "REQ-20260708-071"
+    },
+    "permission_denied": {
+      "route": "/operations/agent-review",
+      "viewport": 390,
+      "auth_role": "anonymous",
+      "workspace_project": "platform / agent_review",
+      "how_to_enter_state": "Open the hub while logged out.",
+      "expected_visible_title": "Blocked",
+      "expected_visible_message": "Operations login is required; no prompt contents or private review data leak.",
+      "expected_primary_action": "Login",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["saved AGR private payload", "credentials", "tokens"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Error text is visible in the summary band.",
+      "accessibility_expectation": "Login failure does not loop.",
+      "test_smoke_assertion": "Existing requireAdmin route guards remain unchanged.",
+      "requirement_id": "REQ-20260708-071"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time",
+      "viewport": 390,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the OneTime public page on a narrow phone.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "Header, nav, hero text, signup strip, helper launcher, and next section fit without horizontal overflow.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": ["Member Login"],
+      "forbidden_content": ["overlap", "cut off button text", "sideways scroll"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Navigation remains in a labelled nav element.",
+      "accessibility_expectation": "All tap targets are at least 38px high.",
+      "test_smoke_assertion": "Playwright mobile smoke checks no horizontal overflow and single visible email input.",
+      "requirement_id": "REQ-20260708-071"
+    }
+  },
+  "visual_quality": {
+    "required_viewports": [1440, 1024, 768, 430, 390],
+    "screenshot_requirements": [
+      {
+        "route": "/one-time",
+        "viewport": 1440,
+        "state": "desktop public hero/signup strip"
+      },
+      {
+        "route": "/one-time",
+        "viewport": 1024,
+        "state": "tablet public hero/signup strip"
+      },
+      {
+        "route": "/one-time",
+        "viewport": 768,
+        "state": "narrow tablet public hero/signup strip"
+      },
+      {
+        "route": "/one-time",
+        "viewport": 430,
+        "state": "large phone public hero/signup strip"
+      },
+      {
+        "route": "/one-time",
+        "viewport": 390,
+        "state": "small phone public hero/signup strip"
+      }
+    ],
+    "severity_scale": ["P0", "P1", "P2", "P3"],
+    "checks": [
+      "No top yellow announcement bar.",
+      "Header is black with yellow border/outline.",
+      "Logo sits on a white tile and renders as dark/black artwork.",
+      "Signup strip is yellow, bottom of hero, before the next content section.",
+      "Email input and Sign Up Now button are aligned on desktop and stack cleanly on mobile.",
+      "No horizontal overflow at 390px."
+    ]
+  },
+  "accessibility": {
+    "required": true,
+    "checks": [
+      "Email input has a label or accessible name.",
+      "Form status uses aria-live.",
+      "Button text is visible at mobile widths.",
+      "Prompt lane status is text-visible, not color-only."
+    ]
+  },
+  "action_states": [
+    {
+      "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
+      "label": "Sign Up Now",
+      "selector_or_action_key": "a[href=\"#start-free\"][data-action-id=\"ACTION-ONETIME-JOIN-SHIR-CTA\"]",
+      "action_state": "WORKS_NOW",
+      "owner": "public_visitor",
+      "external_write": false,
+      "handler_or_blocker": "Browser anchor scroll to #start-free signup strip.",
+      "registry_required": true,
+      "expectation": "Scrolls to #start-free signup strip."
+    },
+    {
+      "action_id": "ACTION-ONETIME-INTEREST-FORM",
+      "label": "Submit email-only OneTime interest",
+      "selector_or_action_key": "#interestForm button[type=\"submit\"]",
+      "action_state": "WORKS_NOW",
+      "owner": "public_visitor",
+      "external_write": false,
+      "handler_or_blocker": "/api/one-time/interest first-party lead capture only.",
+      "registry_required": true,
+      "expectation": "Posts email-only payload to /api/one-time/interest and receives first-party no-send/no-checkout/no-access response."
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-COPY-PROMPT",
+      "label": "Copy Agent Prompt",
+      "selector_or_action_key": "[data-action-id=\"ACTION-AGENT-REVIEW-COPY-PROMPT\"]",
+      "action_state": "WORKS_NOW",
+      "owner": "super_admin",
+      "external_write": false,
+      "handler_or_blocker": "copyPrompt starts audit through /api/bna/agent-review/prompts/start, copies the prompt, and marks local workflow state prompt_copied.",
+      "registry_required": true,
+      "expectation": "Starts the audit, copies the prompt, marks prompt_copied locally, and moves the card into Running / Drop-off Needed."
+    }
+  ],
+  "data_requirements": {
+    "public_signup_payload": ["email", "consent", "source_landing_page"],
+    "forbidden_signup_payload_fields": ["parent_name visible input", "phone visible input", "region visible input", "notes visible input"],
+    "lead_policy": "First-party interest lead only; no checkout, no external send, no access grant.",
+    "agent_review_policy": "Prompt copy uses existing idempotency key and must save final PASS/FAIL/BLOCKED back to AGR."
+  },
+  "security_privacy": {
+    "public_page": "Anonymous-safe and no private data exposure.",
+    "agent_mode": "No credentials, tokens, screenshots with private data, external writes, sends, charges, or provider mutations.",
+    "test_data": "Live form submit, if performed, must use clearly synthetic non-customer data and evidence must state that a first-party test lead was created.",
+    "browser_content_untrusted": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "SETUP_ONLY_NO_WRITE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260708-071A",
+      "scope": "Patch public OneTime header and email-only signup strip.",
+      "files": ["public/one-time/index.html", "tests/one-time-focused-landing.test.js", "tests/one-time-product-system.test.js"]
+    },
+    {
+      "batch_id": "BATCH-20260708-071B",
+      "scope": "Patch Agent Review prompt lanes, copied state, and public signup/WhatsApp workflow prompt.",
+      "files": ["public/agent-review.html", "src/lib/bna/agent-review-hub.js", "public/agent-review-prompts/*.md", "tests/agent-review-hub.test.js"]
+    },
+    {
+      "batch_id": "BATCH-20260708-071C",
+      "scope": "Verify with tests, browser smoke, watchdogs, deploy, and live readback.",
+      "files": ["ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/*", "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md"]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/one-time/index.html",
+      "src/lib/bna/agent-review-hub.js",
+      "public/agent-review.html",
+      "tests/one-time-focused-landing.test.js",
+      "tests/one-time-product-system.test.js",
+      "tests/agent-review-hub.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/one-time/index.html",
+      "src/lib/bna/agent-review-hub.js",
+      "public/agent-review.html",
+      "public/agent-review-prompts/*.md",
+      "tests/one-time-focused-landing.test.js",
+      "tests/one-time-product-system.test.js",
+      "tests/agent-review-hub.test.js",
+      "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+      "ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/*"
+    ],
+    "max_files_to_edit": 12,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if WhatsApp credential setup, real sends, email sending, or portal redesign becomes necessary.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-public-signup-agent-workflow/00-onetime-public-signup-agent-workflow.product-quality.json",
+    "node --test tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js tests/agent-review-hub.test.js tests/one-time-brand-helper-isolation.test.js",
+    "npm run agent-review:prompts",
+    "npm run watchdog:actions",
+    "npm run watchdog:protocol-drift",
+    "npm run secrets:audit",
+    "git diff --check",
+    "Playwright desktop/mobile local smoke for /one-time and /operations/agent-review",
+    "Live smoke after deploy for join.onetimeonetime.com /one-time and /operations/agent-review prompt index"
+  ],
+  "evidence": {
+    "required_paths": [
+      "ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/local-report.md",
+      "ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/live-report.md"
+    ],
+    "required_screenshots": [
+      "desktop OneTime signup strip",
+      "mobile OneTime signup strip",
+      "Agent Review prompt lanes"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "Raw input and PQC packet exist and validate.",
+      "Landing page shows black/yellow header, black-on-white logo tile, and email-only bottom signup strip.",
+      "Agent Review Hub has copied/running/saved prompt lanes and a focused public signup/WhatsApp workflow prompt.",
+      "Tests and watchdogs pass or blockers are recorded.",
+      "Scoped code is committed, pushed, deployed to the OneTime service, and live-smoked."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260708-015-onetime-public-signup-agent-workflow.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-08-onetime-public-signup-agent-workflow/00-onetime-public-signup-agent-workflow.product-quality.json",
+    "validator_result_path": "ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/pqc-validate.txt",
+    "tool_actions_expected": ["apply_patch", "npm run agent-review:prompts", "tests", "browser smoke", "deploy"],
+    "skipped_actions_policy": "Skip only external sends, credential writes, payments, DNS, email sends, WhatsApp sends, Drive/Vimeo mutations, and real customer writes.",
+    "blocker_decisions": ["DEC-20260708-010", "DEC-20260708-011"],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/local-report.md",
+      "ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/live-report.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-08-onetime-public-signup-agent-workflow/NEXT.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No protocol drift for PQC, raw capture, dropoff, route/action registry, or agent review workflow."
+  },
+  "next_packet": {
+    "packet_id": "PKT-20260708-055",
+    "title": "Run Agent Mode Signup Workflow Audit And Ingest AGR Result",
+    "blocked_until": "REQ-20260708-071 implementation deploys and live smoke evidence exists."
+  }
+}

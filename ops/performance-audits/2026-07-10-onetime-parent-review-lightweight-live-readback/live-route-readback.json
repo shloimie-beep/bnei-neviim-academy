@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-07-09T21:44:45.119Z",
+  "commit": "9350c43a",
+  "one_time_deployment": {
+    "provider": "railway",
+    "project": "one-time-production",
+    "service": "one-time-web",
+    "environment": "production",
+    "deployment_id": "a447201e-f28a-4111-ab59-f6c65ee64e58",
+    "status": "SUCCESS"
+  },
+  "bna_deployment_readback": {
+    "provider": "railway",
+    "project": "skillful-motivation",
+    "service": "skillful-motivation",
+    "environment": "production",
+    "deployment_id": "105fabb5-63f1-4f6d-9e5f-0221c90fae65",
+    "status": "SUCCESS"
+  },
+  "readbacks": [
+    {
+      "url": "https://join.onetimeonetime.com/parent.html?review=one-time",
+      "status": 200,
+      "cache_control": "no-store",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length_header": "16886",
+      "body_length": 16886,
+      "has_light_shell": true,
+      "has_old_onboarding": false,
+      "has_full_parent_title": false
+    },
+    {
+      "url": "https://bneineviimacademy.org/parent.html?review=one-time",
+      "status": 200,
+      "cache_control": "no-store",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length_header": "16886",
+      "body_length": 16886,
+      "has_light_shell": true,
+      "has_old_onboarding": false,
+      "has_full_parent_title": false
+    }
+  ],
+  "verification": [
+    "PASS OneTime railway doctor deployment a447201e-f28a-4111-ab59-f6c65ee64e58 SUCCESS",
+    "PASS live OneTime parent review route readback served lightweight shell with no-store",
+    "PASS live BNA parent review route readback served lightweight shell with no-store",
+    "PASS live OneTime lag audit needs_attention_count 0",
+    "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com",
+    "PASS npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com",
+    "PASS npm run app:smoke:one-time-interest-dry-run",
+    "PASS npm run app:smoke:public-privacy"
+  ],
+  "guardrails": [
+    "No external send",
+    "No payment/access mutation",
+    "No CRM/provider/DNS/credential mutation",
+    "No Agent Review result save",
+    "No live Telegram smoke",
+    "No Drive write",
+    "No class backfill",
+    "No production-data mutation"
+  ]
+}

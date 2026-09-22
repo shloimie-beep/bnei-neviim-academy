@@ -1,0 +1,111 @@
+{
+  "lane": "class-drive-intake",
+  "branch": "codex/closeout-class-drive-intake-20260624",
+  "head_sha": "ecdc22ed94559745ce8bd30bdbea67d0a3c01024",
+  "status": "complete_no_backfill_apply",
+  "goal_status": "all_lane_requirements_done_with_guarded_backfill_blocked_by_dry_run",
+  "base_branch": "codex/clean-slate-integration-20260624",
+  "base_sha": "68f0b02fa1fe8928a8b4dd52704ec7e92c0fcba5",
+  "control_integration_app_base_sha": "161f8623c50d7ef226066d101bfa58c28aff2346",
+  "updated_at": "2026-06-24T17:18:00+03:00",
+  "result_summary": "Read-only class/Drive intake reconciliation is complete. The lane built a production no-write pipeline census, source coverage matrix, auth readiness report, shared parser/apply repair patch, focused tests, and guarded backfill dry-run. The backfill recommendation is safe_to_apply=false with no row-level write plan for the requested 64-74 range, so final integration must not apply class backfill from this lane evidence.",
+  "requirements_closed": [
+    "REQ-20260624-101 raw source and lane register preserved",
+    "REQ-20260624-102 read-only pipeline census built for content jobs and Drive orphans",
+    "REQ-20260624-103 suspected stuck/intake/parser/apply causes verified or disproved",
+    "REQ-20260624-104 guarded backfill dry-run and recommendation generated",
+    "REQ-20260624-105 multi-student/session/progress/question/idempotency/rollback contracts covered",
+    "REQ-20260624-106 credential/auth readiness recorded without secret exposure",
+    "REQ-20260624-107 shared parser/apply repair patch prepared but not applied",
+    "REQ-20260624-108 focused tests, source coverage, JSON checks, secret audit, and diff check passed",
+    "REQ-20260624-109 branch committed and pushed"
+  ],
+  "files_changed": [
+    "ops/class-drive-intake/2026-06-24-closeout/AUTH-READINESS.md",
+    "ops/class-drive-intake/2026-06-24-closeout/BACKFILL-DRY-RUN.md",
+    "ops/class-drive-intake/2026-06-24-closeout/BACKFILL-RECOMMENDATION.json",
+    "ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.json",
+    "ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.md",
+    "ops/class-drive-intake/2026-06-24-closeout/SHARED-PATCH.diff",
+    "ops/class-drive-intake/2026-06-24-closeout/SOURCE-COVERAGE.json",
+    "ops/class-drive-intake/2026-06-24-closeout/SOURCE-COVERAGE.md",
+    "ops/class-drive-intake/2026-06-24-closeout/VERIFICATION.md",
+    "raw-input/RAW-20260624-003-class-drive-intake-goal.md",
+    "scripts/class-drive-intake-reconcile.cjs",
+    "src/lib/bna/class-drive-intake-reconcile.js",
+    "tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md",
+    "tests/class-drive-intake-reconcile.test.js",
+    "tests/class-drive-intake-shared-patch.test.js",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/RESULT.json",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/HANDOFF.md",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/TESTS.md",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/FILES.txt",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/BLOCKERS.md"
+  ],
+  "verification": [
+    "node --check src/lib/bna/class-drive-intake-reconcile.js PASS",
+    "node --check scripts/class-drive-intake-reconcile.cjs PASS",
+    "node --test tests/class-drive-intake-reconcile.test.js PASS",
+    "node --test tests/class-drive-intake-shared-patch.test.js PASS",
+    "node --test tests/class-drive-intake-reconcile.test.js tests/class-drive-intake-shared-patch.test.js tests/student-match.test.js tests/torah-learning.test.js tests/telegram-media-routing.test.js tests/intake-parser-class-recording.test.js tests/intake-parser-student-questions.test.js tests/parent-progress-privacy.test.js tests/parent-student-portal-contract.test.js PASS 86/86",
+    "JSON parse check PASS for PIPELINE-CENSUS.json and BACKFILL-RECOMMENDATION.json",
+    "Lane source coverage PASS: 12/12 statements mapped, 0 unmapped executable statements, 0 missing evidence paths",
+    "npm run secrets:audit PASS: 4422 tracked paths checked, 0 tracked secret-risk files found",
+    "git diff --check PASS"
+  ],
+  "external_reads": [
+    {
+      "target": "production database metadata/content jobs",
+      "type": "read_only",
+      "writes": false,
+      "summary": "75 content jobs classified, including jobs 64-74"
+    },
+    {
+      "target": "Google Drive configured stage folders",
+      "type": "read_only",
+      "writes": false,
+      "summary": "OAuth refresh-token auth path ready; 21 stage folders detected; 341 files inspected; 75 Drive orphan rows recorded"
+    }
+  ],
+  "external_writes": [],
+  "backfill_recommendation": {
+    "path": "ops/class-drive-intake/2026-06-24-closeout/BACKFILL-RECOMMENDATION.json",
+    "safe_to_apply": false,
+    "approved_candidate_jobs": [],
+    "required_gate_phrase": "APPLY_GUARDED_CLASS_BACKFILL",
+    "final_integrator_action": "Do not apply class backfill from this lane evidence unless a later dry run produces safe_to_apply=true with exact row-level changes."
+  },
+  "shared_patch": {
+    "path": "ops/class-drive-intake/2026-06-24-closeout/SHARED-PATCH.diff",
+    "requested": true,
+    "summary": "Prepared parser/apply wiring repair using activeStudentsForMixedRecordingParse, progress-only contentBacked false, and idempotency guards. Patch is not applied in this lane by ownership rule."
+  },
+  "blockers": [
+    {
+      "id": "LANE-BLOCKER-CLASS-DRIVE-001",
+      "status": "reserved_for_final_integrator",
+      "summary": "The central bna:run source-coverage command is branch-guarded to codex/clean-slate-integration-20260624 and failed on this lane branch. Lane-local source coverage is complete in SOURCE-COVERAGE.json/md.",
+      "owner": "final integrator",
+      "next_action": "Run central execution-run validation from the integrated release branch after merging lane branches."
+    },
+    {
+      "id": "LANE-BLOCKER-CLASS-DRIVE-002",
+      "status": "do_not_apply_backfill",
+      "summary": "Guarded backfill dry-run for the suspected jobs 64-74 range produced safe_to_apply=false, zero approved candidate jobs, and no row-level write plan.",
+      "owner": "final integrator",
+      "next_action": "Do not run APPLY_GUARDED_CLASS_BACKFILL from this recommendation. Re-run a dry run only if new evidence changes the candidate set."
+    },
+    {
+      "id": "LANE-BLOCKER-CLASS-DRIVE-003",
+      "status": "external_mutation_not_approved_in_lane",
+      "summary": "No production DB mutation, Drive write, real transcription of private media, or class backfill was approved in this lane.",
+      "owner": "final integrator / Shloimie",
+      "next_action": "Keep external writes blocked unless the final release gate separately authorizes a safe exact operation."
+    }
+  ],
+  "safe_to_merge": true,
+  "deployment_performed": false,
+  "production_mutation_performed": false,
+  "external_write_performed": false,
+  "secrets_exposed": false
+}

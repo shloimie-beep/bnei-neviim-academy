@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-07-07T23:29:00+03:00",
+  "scope": "BNA production read-only deploy/status proof after pushed closeout commit",
+  "app_url": "https://bneineviimacademy.org",
+  "railway_project": "skillful-motivation",
+  "railway_service": "skillful-motivation",
+  "deployment_id": "d070322e-4c9b-485e-bd9a-249493f776bc",
+  "commit": "2fcce56f58b776860aadc178fab7ea4d332bc9ec",
+  "status": "SUCCESS",
+  "checks": [
+    {
+      "name": "direct_railway_status_readback",
+      "result": "pass",
+      "summary": "Deployment d070322e-4c9b-485e-bd9a-249493f776bc reached SUCCESS for commit 2fcce56f58b776860aadc178fab7ea4d332bc9ec."
+    },
+    {
+      "name": "npm run app:smoke",
+      "result": "pass",
+      "report": "ops/live-smokes/2026-07-07T19-58-52-265Z-live-app-smoke.md"
+    },
+    {
+      "name": "npm run app:smoke:rabbi-onetime-landing",
+      "result": "pass",
+      "report": "ops/live-smokes/2026-07-07T19-58-51-486Z-rabbi-onetime-landing-smoke.md"
+    },
+    {
+      "name": "npm run railway:doctor",
+      "result": "blocked",
+      "summary": "Target guard passed with explicit service/domain env, but railway link failed with Unauthorized because the current project-scoped token can read status but cannot link."
+    },
+    {
+      "name": "railway variable list --service one-time-web --environment production --json",
+      "result": "blocked",
+      "summary": "Service 'one-time-web' not found in the current Railway auth context."
+    }
+  ],
+  "guardrails": {
+    "external_send_performed": false,
+    "provider_mutation_performed": false,
+    "dns_mutation_performed": false,
+    "payment_performed": false,
+    "credential_mutation_performed": false,
+    "drive_upload_performed": false,
+    "vimeo_upload_performed": false,
+    "database_mutation_performed": false
+  },
+  "remaining_blocker": "Separate One Time deploy/bootstrap/live smoke needs a Railway auth/target context that can see one-time-production / one-time-web / production."
+}

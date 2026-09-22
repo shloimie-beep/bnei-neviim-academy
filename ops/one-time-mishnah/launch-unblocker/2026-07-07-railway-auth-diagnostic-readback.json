@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-07-07T23:36:00+03:00",
+  "mode": "read_only_tooling_hardening",
+  "external_write_performed": false,
+  "provider_mutation_performed": false,
+  "dns_mutation_performed": false,
+  "email_send_performed": false,
+  "whatsapp_send_performed": false,
+  "live_payment_performed": false,
+  "credential_mutation_performed": false,
+  "drive_upload_performed": false,
+  "vimeo_upload_performed": false,
+  "database_mutation_performed": false,
+  "current_railway_context": {
+    "project": "skillful-motivation",
+    "environment": "production",
+    "visible_services": [
+      "Postgres",
+      "academy-telegram-worker",
+      "rabbi-telegram-worker",
+      "skillful-motivation"
+    ],
+    "expected_service": "one-time-web",
+    "target_service_visible": false
+  },
+  "commands": [
+    {
+      "command": "node --check scripts/check-onetime-external-setup-readiness.mjs",
+      "exit_code": 0,
+      "summary": "Syntax passed."
+    },
+    {
+      "command": "node --test tests/one-time-external-setup-readiness.test.js",
+      "exit_code": 0,
+      "summary": "5/5 focused readiness tests passed."
+    },
+    {
+      "command": "npm run one-time:setup:check",
+      "exit_code": 1,
+      "summary": "Correctly blocked full setup; ready count is 1/8 and current auth cannot see one-time-web."
+    },
+    {
+      "command": "npm run one-time:railway-target:guard",
+      "exit_code": 1,
+      "summary": "Correctly blocked railway-only readiness; ready count is 0/1 with current_railway_auth_can_read_one-time-web missing."
+    }
+  ],
+  "next_safe_action": [
+    "Provide Railway auth/target context that can read one-time-production / one-time-web / production.",
+    "Rerun npm run one-time:railway-target:guard.",
+    "Rerun npm run one-time:setup:check.",
+    "Rerun npm run one-time:db:bootstrap.",
+    "Only then run the post-setup deploy/live-smoke packet for join.onetimeonetime.com."
+  ]
+}

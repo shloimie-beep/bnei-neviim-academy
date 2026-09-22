@@ -1,0 +1,277 @@
+{
+  "started_at": "2026-07-08T08:59:04.813Z",
+  "app_url": "https://bneineviimacademy.org",
+  "deployment_id": "ab2651c8-1c4f-497b-be3a-ea8b5745a4af",
+  "commit": "856cee8f04ac83fdd1599d42b3d40bca7e8c868e",
+  "steps": [
+    {
+      "name": "operations login",
+      "ok": true,
+      "duration_ms": 714,
+      "data": {
+        "cookie": "[redacted]",
+        "role": "super_admin",
+        "scope": {
+          "type": "all",
+          "projectKey": "[redacted]"
+        }
+      }
+    },
+    {
+      "name": "slide deck asset member-safe preview",
+      "ok": true,
+      "duration_ms": 6943,
+      "data": {
+        "class_id": 1006,
+        "preview_asset_types": [
+          "source_sheet",
+          "worksheet",
+          "slide_deck"
+        ],
+        "editable_source_hidden": true
+      }
+    },
+    {
+      "name": "classroom browser ui 1440px",
+      "ok": true,
+      "duration_ms": 1457,
+      "data": {
+        "width": 1440,
+        "before": {
+          "has_class_materials": true,
+          "has_slides": true,
+          "has_worksheets": true,
+          "has_source_sheets": true,
+          "has_security_note": true,
+          "has_play_video": true,
+          "has_fallback_vimeo": false,
+          "iframe_count": 0,
+          "page_overflow": false,
+          "toolbar_clipped": false,
+          "toolbar_buttons": [
+            {
+              "text": "One Time home",
+              "left": 558.9375,
+              "right": 694.171875,
+              "width": 135.234375
+            },
+            {
+              "text": "Member home",
+              "left": 702.171875,
+              "right": 828.984375,
+              "width": 126.8125
+            },
+            {
+              "text": "Library",
+              "left": 836.984375,
+              "right": 906.8125,
+              "width": 69.828125
+            },
+            {
+              "text": "Classroom",
+              "left": 914.8125,
+              "right": 1010.40625,
+              "width": 95.59375
+            },
+            {
+              "text": "Assistant/help",
+              "left": 1018.40625,
+              "right": 1139.953125,
+              "width": 121.546875
+            },
+            {
+              "text": "Questions/support",
+              "left": 1147.953125,
+              "right": 1302,
+              "width": 154.046875
+            },
+            {
+              "text": "Account/logout",
+              "left": 997.265625,
+              "right": 1130.03125,
+              "width": 132.765625
+            },
+            {
+              "text": "Return to public site",
+              "left": 1138.03125,
+              "right": 1302,
+              "width": 163.96875
+            }
+          ]
+        },
+        "after": {
+          "iframe_count": 1,
+          "page_overflow": false
+        },
+        "console_errors": []
+      }
+    },
+    {
+      "name": "classroom browser ui 430px",
+      "ok": true,
+      "duration_ms": 2398,
+      "data": {
+        "width": 430,
+        "before": {
+          "has_class_materials": true,
+          "has_slides": true,
+          "has_worksheets": true,
+          "has_source_sheets": true,
+          "has_security_note": true,
+          "has_play_video": true,
+          "has_fallback_vimeo": false,
+          "iframe_count": 0,
+          "page_overflow": false,
+          "toolbar_clipped": false,
+          "toolbar_buttons": [
+            {
+              "text": "One Time home",
+              "left": 10,
+              "right": 211,
+              "width": 201
+            },
+            {
+              "text": "Member home",
+              "left": 219,
+              "right": 420,
+              "width": 201
+            },
+            {
+              "text": "Library",
+              "left": 10,
+              "right": 211,
+              "width": 201
+            },
+            {
+              "text": "Classroom",
+              "left": 219,
+              "right": 420,
+              "width": 201
+            },
+            {
+              "text": "Assistant/help",
+              "left": 10,
+              "right": 211,
+              "width": 201
+            },
+            {
+              "text": "Questions/support",
+              "left": 219,
+              "right": 420,
+              "width": 201
+            },
+            {
+              "text": "Account/logout",
+              "left": 10,
+              "right": 211,
+              "width": 201
+            },
+            {
+              "text": "Return to public site",
+              "left": 219,
+              "right": 420,
+              "width": 201
+            }
+          ]
+        },
+        "after": {
+          "iframe_count": 1,
+          "page_overflow": false
+        },
+        "console_errors": []
+      }
+    },
+    {
+      "name": "classroom browser ui 390px",
+      "ok": true,
+      "duration_ms": 1633,
+      "data": {
+        "width": 390,
+        "before": {
+          "has_class_materials": true,
+          "has_slides": true,
+          "has_worksheets": true,
+          "has_source_sheets": true,
+          "has_security_note": true,
+          "has_play_video": true,
+          "has_fallback_vimeo": false,
+          "iframe_count": 0,
+          "page_overflow": false,
+          "toolbar_clipped": false,
+          "toolbar_buttons": [
+            {
+              "text": "One Time home",
+              "left": 10,
+              "right": 191,
+              "width": 181
+            },
+            {
+              "text": "Member home",
+              "left": 199,
+              "right": 380,
+              "width": 181
+            },
+            {
+              "text": "Library",
+              "left": 10,
+              "right": 191,
+              "width": 181
+            },
+            {
+              "text": "Classroom",
+              "left": 199,
+              "right": 380,
+              "width": 181
+            },
+            {
+              "text": "Assistant/help",
+              "left": 10,
+              "right": 191,
+              "width": 181
+            },
+            {
+              "text": "Questions/support",
+              "left": 199,
+              "right": 380,
+              "width": 181
+            },
+            {
+              "text": "Account/logout",
+              "left": 10,
+              "right": 191,
+              "width": 181
+            },
+            {
+              "text": "Return to public site",
+              "left": 199,
+              "right": 380,
+              "width": 181
+            }
+          ]
+        },
+        "after": {
+          "iframe_count": 1,
+          "page_overflow": false
+        },
+        "console_errors": []
+      }
+    }
+  ],
+  "summary": {
+    "temporary_class_id": 1006,
+    "preview_asset_types": [
+      "source_sheet",
+      "worksheet",
+      "slide_deck"
+    ],
+    "editable_source_hidden": true,
+    "browser_widths_checked": [
+      1440,
+      430,
+      390
+    ],
+    "iframe_before_play_all_zero": true,
+    "iframe_after_play_all_one": true,
+    "toolbar_clipped_any": false
+  }
+}

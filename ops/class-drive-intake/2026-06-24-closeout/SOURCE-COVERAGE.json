@@ -1,0 +1,164 @@
+{
+  "generated_at": "2026-06-24T13:44:04.980Z",
+  "source_id": "RAW-20260624-003",
+  "source_path": "raw-input/RAW-20260624-003-class-drive-intake-goal.md",
+  "no_production_mutation": true,
+  "source_statement_count": 12,
+  "mapped_statement_count": 12,
+  "unmapped_executable_statement_count": 0,
+  "missing_evidence_count": 0,
+  "by_requirement": {
+    "REQ-20260624-101": 2,
+    "REQ-20260624-102": 2,
+    "REQ-20260624-103": 1,
+    "REQ-20260624-104": 2,
+    "REQ-20260624-105": 1,
+    "REQ-20260624-106": 1,
+    "REQ-20260624-107": 1,
+    "REQ-20260624-108": 1,
+    "REQ-20260624-109": 1
+  },
+  "statements": [
+    {
+      "statement_id": "SRC-20260624-101",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Create and activate the class/Drive intake goal; preserve raw source and register requirements.",
+      "requirement_id": "REQ-20260624-101",
+      "classification": "requirement",
+      "evidence_paths": [
+        "raw-input/RAW-20260624-003-class-drive-intake-goal.md",
+        "tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260624-102",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Read control manifest and branch from the exact integration base.",
+      "requirement_id": "REQ-20260624-101",
+      "classification": "requirement",
+      "evidence_paths": [
+        "tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260624-103",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Build read-only diagnostics for pipeline census, stage reports, orphan output, ambiguity, proposed changes, duplicates, UI mismatch, and credentials/workers.",
+      "requirement_id": "REQ-20260624-102",
+      "classification": "requirement",
+      "evidence_paths": [
+        "scripts/class-drive-intake-reconcile.cjs",
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.json"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260624-104",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Trace every known uploaded class/job through the 20 required stages, explicitly inspecting jobs 64-74 if present.",
+      "requirement_id": "REQ-20260624-102",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.json",
+        "ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260624-105",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Verify or disprove the suspected causes including OpenAI 401, Drive config/auth, worker/parser/apply gaps, aliases, duplicates, generic parser, deployment, and stale status.",
+      "requirement_id": "REQ-20260624-103",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.json",
+        "ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260624-106",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Prepare a dry-run-only guarded backfill with row-level plan, exclusions, expected counts, transaction boundaries, rollback, idempotency, and gate phrase.",
+      "requirement_id": "REQ-20260624-104",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-24-closeout/BACKFILL-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-24-closeout/BACKFILL-RECOMMENDATION.json"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260624-107",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Write BACKFILL-RECOMMENDATION.json for Prompt 09 / final integrator consumption.",
+      "requirement_id": "REQ-20260624-104",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-24-closeout/BACKFILL-RECOMMENDATION.json"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260624-108",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Cover multi-student extraction, scores/progress, student questions, linkage, ambiguity, duplicates, retries, visible failures, idempotency, read models, dry-run, and rollback with tests.",
+      "requirement_id": "REQ-20260624-105",
+      "classification": "requirement",
+      "evidence_paths": [
+        "tests/class-drive-intake-reconcile.test.js",
+        "tests/class-drive-intake-shared-patch.test.js",
+        "ops/class-drive-intake/2026-06-24-closeout/VERIFICATION.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260624-109",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Detect credential readiness without printing secrets or raw Drive IDs.",
+      "requirement_id": "REQ-20260624-106",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-24-closeout/AUTH-READINESS.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260624-110",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Do not edit server.js; provide SHARED-PATCH.diff when shared wiring is required.",
+      "requirement_id": "REQ-20260624-107",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-24-closeout/SHARED-PATCH.diff",
+        "tests/class-drive-intake-shared-patch.test.js"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260624-111",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Run focused tests, source coverage, JSON checks, secret audit, and git diff --check.",
+      "requirement_id": "REQ-20260624-108",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-24-closeout/VERIFICATION.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260624-112",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Commit and push the lane branch.",
+      "requirement_id": "REQ-20260624-109",
+      "classification": "requirement",
+      "evidence_paths": [
+        "tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md"
+      ],
+      "evidence_present": true
+    }
+  ]
+}

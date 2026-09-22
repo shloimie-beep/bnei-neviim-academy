@@ -1,0 +1,113 @@
+- complementary "BNA Operations navigation":
+  - text: One Time Mishnah Class Provider workspace for members, classes, Studio, communications, payments, tasks, and setup. Current Workspace
+  - strong: One Time Mishnah Class
+  - text: Provider / Provider Workspace Admin Scoped
+  - button "Overview"
+  - button "Workspace Setup"
+  - navigation:
+    - button "Overview O"
+    - button "Members M"
+    - button "Content C"
+    - button "Live L"
+    - button "Schedule S"
+    - button "Community C"
+    - button "Comms C"
+    - button "Auto A"
+    - button "Payments P"
+    - button "Tasks T"
+    - button "Reports R"
+    - button "Connectors C"
+    - button "Setup S"
+  - button "Back to all modules"
+  - text: Automations Sections Auto Choose a section for this workspace.
+  - button "Enrollment 0"
+  - button "Class Reminders 0"
+  - button "Content Publishing 0"
+  - button "Retention & Support 0"
+  - button "Platform Support"
+  - button "Help"
+  - link "Logout":
+    - /url: /operations-login.html
+- main:
+  - text: One Time Mishnah Class / Auto / Center
+  - heading "Center" [level=1]
+  - 'button "CRM: 1. One Time participants, leads, and CRM records scoped to this provider."':
+    - text: CRM
+    - strong: "1"
+  - 'button "Classes: 0. One Time classes, source material, and library items."':
+    - text: Classes
+    - strong: "0"
+  - 'button "Setup: 0. Provider setup, connectors, and access items."':
+    - text: Setup
+    - strong: "0"
+  - text: One Time Mishnah Class / Provider Workspace Admin
+  - button "Ask or search within One Time Mishnah Class / Auto / Center": Ask / Search
+  - text: Sun 12 Jul
+  - button "Refresh"
+  - navigation "Auto sections":
+    - text: Auto
+    - strong: Enrollment
+    - tablist "Auto sections":
+      - tab "Enrollment" [selected]: Enrollment 0
+      - tab "Class Reminders": Class Reminders 0
+      - tab "Content Publishing": Content Publishing 0
+      - tab "Retention & Support": Retention & Support 0
+  - text: Operations Registry
+  - heading "Automation Center" [level=2]
+  - paragraph: Compact automation metadata across packages, services, owners, setup blockers, logs, and related tasks.
+  - button "Create automation with helper"
+  - region "Automation filters":
+    - text: Automation Center
+    - strong: 2 visible automations
+    - paragraph: 2 registry items loaded. Run controls stay outside this read/write metadata surface.
+    - text: Package
+    - button "Package": All
+    - text: Service
+    - button "Service": All
+    - text: Workspace
+    - button "Workspace": All
+    - text: Owner
+    - button "Owner": All
+    - text: Status
+    - button "Status": All
+    - text: Channel
+    - button "Channel": All
+    - text: Type
+    - button "Type": All
+    - text: Search
+    - textbox "Search":
+      - /placeholder: Name, owner, trigger
+    - button "Apply"
+    - button "Refresh"
+  - region "Automation registry":
+    - text: Automation / Purpose / Trigger Package Workspace Enabled Edit
+    - article:
+      - text: One Time Private Question Digest
+      - strong: "Purpose:"
+      - text: Builds a private Rabbi-facing review digest for One Time student questions without public answers, notifications, or rewards.
+      - strong: "Trigger:"
+      - text: Operations private question moderation / Dashboard
+      - strong: "Action:"
+      - text: Workflow / Question Moderation
+      - strong: One Time
+      - text: Question Moderation
+      - strong: One Time
+      - text: Project
+      - strong
+      - text: "Status: Active / Workflow"
+      - button "Edit / Details"
+    - article:
+      - text: One Time Member Library Package Review
+      - strong: "Purpose:"
+      - text: Previews One Time class media packages, blockers, and member-library visibility without publishing until approval exists.
+      - strong: "Trigger:"
+      - text: Operations One Time Library review / Dashboard
+      - strong: "Action:"
+      - text: Content / Member Library
+      - strong: One Time
+      - text: Member Library
+      - strong: One Time
+      - text: Project
+      - strong
+      - text: "Status: Guarded / Content"
+      - button "Edit / Details"

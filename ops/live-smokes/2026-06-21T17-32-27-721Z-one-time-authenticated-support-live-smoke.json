@@ -1,0 +1,62 @@
+{
+  "started_at": "2026-06-21T17:32:27.721Z",
+  "app_url": "https://bneineviimacademy.org",
+  "requirement_id": "REQ-20260621-908",
+  "steps": [
+    {
+      "name": "Member portal and script expose authenticated support UX",
+      "ok": true,
+      "duration_ms": 1132,
+      "detail": "portal forms and member API calls present"
+    },
+    {
+      "name": "Logged-out member support APIs reject unauthenticated access",
+      "ok": true,
+      "duration_ms": 452,
+      "detail": "missing bearer token rejected"
+    },
+    {
+      "name": "Create disposable One Time member and open dry-run member session",
+      "ok": true,
+      "duration_ms": 2622,
+      "detail": "member 18 session opened"
+    },
+    {
+      "name": "Authenticated member creates scoped support ticket",
+      "ok": true,
+      "duration_ms": 1062,
+      "detail": "OT-SUP-000020"
+    },
+    {
+      "name": "Staff-visible reply is returned while internal note stays hidden",
+      "ok": true,
+      "duration_ms": 1911,
+      "detail": "1 visible member reply row(s)"
+    },
+    {
+      "name": "Authenticated member submits private question with no forum/feed/send",
+      "ok": true,
+      "duration_ms": 782,
+      "detail": "OT-Q-000004"
+    },
+    {
+      "name": "Member lists return only sanitized own support/question rows",
+      "ok": true,
+      "duration_ms": 1691,
+      "detail": "tickets=1, questions=1"
+    },
+    {
+      "name": "Close smoke support ticket without sending notifications",
+      "ok": true,
+      "duration_ms": 1333,
+      "detail": "ticket closed with no external-send notification draft"
+    }
+  ],
+  "result": {
+    "member_id": 18,
+    "ticket_id": 20,
+    "ticket_number": "OT-SUP-000020",
+    "question_id": 4,
+    "question_number": "OT-Q-000004"
+  }
+}

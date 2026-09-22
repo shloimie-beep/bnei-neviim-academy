@@ -1,0 +1,164 @@
+{
+  "generated_at": "2026-06-24T17:27:16.936Z",
+  "source": "none",
+  "read_only": true,
+  "total_tasks_seen": 0,
+  "counts": {
+    "by_lane": {},
+    "by_stage": {},
+    "by_status": {},
+    "by_task_kind": {},
+    "by_item_type": {},
+    "by_agent_status": {},
+    "by_workspace": {},
+    "by_project": {},
+    "by_source": {},
+    "by_owner": {},
+    "by_requirement": {},
+    "by_agent_run": {},
+    "by_contact": {},
+    "by_student": {},
+    "by_provider": {},
+    "by_duplicate_fingerprint": {},
+    "by_age": {},
+    "by_last_activity": {}
+  },
+  "default_task_views": [
+    {
+      "id": "my_tasks",
+      "label": "My Tasks",
+      "description": "Open work owned by Shloimie/operator roles."
+    },
+    {
+      "id": "one_time_tasks",
+      "label": "One Time Tasks",
+      "description": "Open One Time Mishnah Class work only."
+    },
+    {
+      "id": "codex_agent_work",
+      "label": "Codex / Agent Work",
+      "description": "Machine work and observable agent jobs."
+    },
+    {
+      "id": "blocked",
+      "label": "Blocked",
+      "description": "Open work blocked by a human or external account/system."
+    },
+    {
+      "id": "due_soon",
+      "label": "Due Soon",
+      "description": "Open work due within seven days."
+    },
+    {
+      "id": "calendar",
+      "label": "Calendar",
+      "description": "Open work with a planned or due date."
+    },
+    {
+      "id": "completed_activity",
+      "label": "Done / Activity",
+      "description": "Closed work and recent task activity."
+    },
+    {
+      "id": "archived",
+      "label": "Archived",
+      "description": "Reversible archive, duplicate, or hidden records."
+    }
+  ],
+  "default_decision_views": [
+    {
+      "id": "needs_my_decision",
+      "label": "Needs My Decision",
+      "description": "Open Decisions owned by Shloimie/operator roles."
+    },
+    {
+      "id": "needs_rabbi_scheller",
+      "label": "Needs Rabbi Scheller",
+      "description": "Open Decisions owned by Rabbi Ellie Scheller or provider staff."
+    },
+    {
+      "id": "needs_external_owner",
+      "label": "Needs External Owner",
+      "description": "Open Decisions blocked by an outside account, credential, legal, billing, DNS, or platform owner."
+    },
+    {
+      "id": "decided",
+      "label": "Decided",
+      "description": "Decisions with a selected outcome or terminal lifecycle status."
+    },
+    {
+      "id": "superseded",
+      "label": "Superseded",
+      "description": "Duplicate, stale, or replaced Decision records."
+    },
+    {
+      "id": "archived",
+      "label": "Archived",
+      "description": "Hidden or archived Decision records."
+    }
+  ],
+  "card_contract": [
+    "concise title",
+    "owner",
+    "workspace",
+    "project",
+    "priority",
+    "status",
+    "next action",
+    "blocker",
+    "source",
+    "due date",
+    "latest meaningful activity",
+    "direct action"
+  ],
+  "default_view_rules": [
+    "My Tasks: open work assigned to or waiting on Shloimie/operator roles.",
+    "One Time Tasks: open rabbi_sheller_provider / one_time_mishnah_class records only.",
+    "Codex / Agent Work: Codex/agent/system work and agent_job rows, including queued/running/failed machine states.",
+    "Blocked: human or external blockers only, with blocker owner and next action.",
+    "Due Soon: open work due within seven days.",
+    "Calendar: open work with due_date or planned_at.",
+    "Done / Activity: done/archive/history rows with proof or verification notes.",
+    "Archived: archived, hidden, or duplicate-archived rows excluded from default active views."
+  ],
+  "duplicate_groups": [],
+  "violations": [],
+  "cleanup_plan": [],
+  "cleanup_behavior": {
+    "mode": "dry_run_only_no_production_mutation",
+    "backup_export_evidence": "ops/one-time-mishnah/task-decision-production-census.json",
+    "dry_run_plan": [],
+    "before_counts": {
+      "tasks_seen": 0,
+      "by_lane": {},
+      "by_workspace": {},
+      "by_project": {},
+      "violations": {},
+      "duplicate_groups": 0
+    },
+    "after_counts_if_applied_now": {
+      "tasks_seen": 0,
+      "by_lane": {},
+      "by_workspace": {},
+      "by_project": {},
+      "violations": {},
+      "duplicate_groups": 0
+    },
+    "no_private_parent_student_data_deleted": true,
+    "rollback_plan": [
+      "Export affected bna_tasks rows before any approved mutation.",
+      "Apply only reversible archive/quarantine/reclassification fields.",
+      "Restore archived_at, duplicate_archived_at, decision_hidden_at, task_kind, stage, project_id, workspace_id, owner, and source fields from the backup export if rollback is needed.",
+      "Never hard-delete source provenance, comments, parent/student records, payments, communications, or private notes."
+    ],
+    "workspace_isolation_checks": {
+      "bna_records_in_one_time": 0,
+      "one_time_records_in_bna": 0,
+      "passed": true
+    }
+  },
+  "warnings": [
+    "BNA_APP_URL/OPS_USERNAME/OPS_PASSWORD unavailable for live API read.",
+    "DATABASE_URL unavailable for read-only DB census."
+  ]
+}

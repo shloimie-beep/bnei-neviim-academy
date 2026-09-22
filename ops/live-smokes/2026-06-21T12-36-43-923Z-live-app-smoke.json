@@ -1,0 +1,178 @@
+{
+  "started_at": "2026-06-21T12:36:43.923Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 692,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "operations login session",
+      "ok": true,
+      "duration_ms": 717,
+      "details": {
+        "user": "SHLOIMIE",
+        "role": "super_admin",
+        "scoped": "all"
+      }
+    },
+    {
+      "name": "session auth /me",
+      "ok": true,
+      "duration_ms": 901,
+      "details": {
+        "user": "SHLOIMIE",
+        "role": "super_admin",
+        "views": [
+          "dashboard",
+          "watchdog",
+          "pipelines",
+          "tasks",
+          "agents",
+          "platform_suite",
+          "students",
+          "contacts",
+          "intake",
+          "community",
+          "content",
+          "live_classes",
+          "calendar",
+          "service_providers",
+          "communications",
+          "internal_dialogue",
+          "accounting",
+          "automations",
+          "api_usage",
+          "admin",
+          "integrations",
+          "settings"
+        ]
+      }
+    },
+    {
+      "name": "protected API reads",
+      "ok": true,
+      "duration_ms": 19331,
+      "details": {
+        "projects": 11,
+        "tasks": 500,
+        "students": 8,
+        "content_jobs": 76,
+        "content_bundles": 1,
+        "signups": 7,
+        "payment_intake": 4,
+        "payments": 5,
+        "reminders_due": 0,
+        "green_invoice_webhooks": 0,
+        "agent_fleet": "running",
+        "active_machine_queue": 4
+      }
+    },
+    {
+      "name": "Torah public cumulative progress",
+      "ok": true,
+      "duration_ms": 7078,
+      "details": {
+        "group_percentage": 28,
+        "trip_unlocked": false,
+        "active_student_count": 5,
+        "public_range": "25-32",
+        "per_student_records": 0
+      }
+    },
+    {
+      "name": "Torah admin cumulative fields",
+      "ok": true,
+      "duration_ms": 7439,
+      "details": {
+        "date": "2026-06-21",
+        "group_percentage": null,
+        "trip_unlocked": false,
+        "students": [
+          {
+            "name": "Huda Weber",
+            "daily_completion_percentage": null,
+            "total_trip_progress_percentage": 28
+          },
+          {
+            "name": "Hillel Baraka",
+            "daily_completion_percentage": null,
+            "total_trip_progress_percentage": 29
+          },
+          {
+            "name": "Menachem Mendel Dratler",
+            "daily_completion_percentage": null,
+            "total_trip_progress_percentage": 25
+          },
+          {
+            "name": "Eitan Chaim Golombo",
+            "daily_completion_percentage": null,
+            "total_trip_progress_percentage": 25
+          },
+          {
+            "name": "Amitai Kosofsky",
+            "daily_completion_percentage": null,
+            "total_trip_progress_percentage": 32
+          }
+        ]
+      }
+    },
+    {
+      "name": "task create comment delete",
+      "ok": true,
+      "duration_ms": 2440,
+      "details": {
+        "created_task_id": 1323,
+        "deleted": true
+      }
+    },
+    {
+      "name": "signup submit dry-run validation",
+      "ok": true,
+      "duration_ms": 1821,
+      "details": {
+        "validation": "passed",
+        "paymentMethods": {
+          "bank_transfer": "bank_transfer",
+          "credit": "credit",
+          "cash": "cash"
+        },
+        "agreementSignatures": 4,
+        "missingSignatureRejected": true,
+        "signerMismatchRejected": true,
+        "wrote_records": false
+      }
+    },
+    {
+      "name": "Buffer social diagnostics",
+      "ok": true,
+      "duration_ms": 413,
+      "details": {
+        "configured": true,
+        "blocked": true,
+        "status": 429,
+        "error": "Too many requests from this client. Please try again later.",
+        "hint": "Check the Buffer channel IDs and API permissions."
+      }
+    },
+    {
+      "name": "Drive website image lane",
+      "ok": true,
+      "duration_ms": 1,
+      "details": {
+        "skipped": true,
+        "reason": "Website Images folder id missing"
+      }
+    }
+  ],
+  "finished_at": "2026-06-21T12:37:24.757Z",
+  "success": true,
+  "counts": {
+    "true": 10
+  }
+}

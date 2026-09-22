@@ -1,0 +1,54 @@
+diff --git a/server.js b/server.js
+--- a/server.js
++++ b/server.js
+@@
++const { buildOwnerSetupCatalog } = require('./src/lib/integrations/setup-catalog');
+@@
+ app.get('/api/bna/integrations/status', requireAdmin, async (req, res) => {
+   res.json(buildOneTimeIntegrationReadinessPayload());
+ });
++
++app.get('/api/bna/integration-setup/readiness', requireAdmin, async (req, res) => {
++  res.json(buildOwnerSetupCatalog({
++    generatedAt: new Date().toISOString(),
++    env: process.env,
++    validationTimestamps: {},
++    statusOverrides: {
++      githubWorkflow: process.env.BNA_GITHUB_WORKFLOW_SCOPE_READY === 'true' ? 'available' : ''
++    }
++  }));
++});
+diff --git a/public/operations.html b/public/operations.html
+--- a/public/operations.html
++++ b/public/operations.html
+@@
+         getIntegrationStatus(filters = {}) {
+             const params = new URLSearchParams(filters);
+             return this.request('GET', '/integrations/status' + (params.toString() ? '?' + params.toString() : ''));
+         },
++        getIntegrationSetupReadiness() { return this.request('GET', '/integration-setup/readiness'); },
+@@
+             { id: 'readiness', label: 'Readiness' },
++            { id: 'owner_setup', label: 'Owner Setup' },
+             { id: 'google', label: 'Google' },
+@@
++        function renderIntegrationOwnerSetupPanel() {
++            return `
++                <section class="focus-panel" data-owner-setup-center>
++                    <div class="task-section-header">
++                        <h3>Owner Setup Center</h3>
++                        <span>Exact links, steps, status, and validation</span>
++                    </div>
++                    <p class="settings-disabled-note">This opens the static setup center. The protected readiness endpoint may replace the static catalog after login.</p>
++                    <div class="task-actions">
++                        <a class="task-action primary" href="/integration-setup.html">Open setup page</a>
++                        <button class="task-action" type="button" onclick="api.getIntegrationSetupReadiness().then(() => showNotice('Owner setup readiness loaded')).catch(error => showNotice(error.message || 'Owner setup readiness unavailable'))">Run validation</button>
++                    </div>
++                </section>
++            `;
++        }
+@@
+-            if (section === 'readiness') body = renderIntegrationsReadinessPanel();
++            if (section === 'readiness') body = renderIntegrationsReadinessPanel();
++            if (section === 'owner_setup') body = renderIntegrationOwnerSetupPanel();
+             if (section === 'google') body = renderGoogleIntegrationPanel();

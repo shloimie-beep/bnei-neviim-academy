@@ -1,0 +1,27 @@
+{
+  "raw_id": "RAW-20260701-003",
+  "captured_at": "2026-07-01T00:00:00.000Z",
+  "correction_type": "brand_kit_scope",
+  "requirements": [
+    "REQ-20260701-104",
+    "REQ-20260701-107"
+  ],
+  "operator_corrections": [
+    "Rabbi / One Time brand = black + yellow.",
+    "BNA brand = cream + navy + teal/cyan.",
+    "Do not mix these palettes in the wrong brand config."
+  ],
+  "config_sources": {
+    "one_time": "config/brands/one-time.json",
+    "bna": "config/brands/bna.json",
+    "platform_presets": "src/platform/brands/index.js"
+  },
+  "design_reference_gap": {
+    "missing_screenshots_or_replit_reference": true,
+    "blocker_for_visual_redesign": true,
+    "blocker_reason": "No screenshot or Replit reference was provided in this packet. Source-of-truth colors can be corrected, but UI styling needs visual audit/design reference before implementation."
+  },
+  "external_write_performed": false,
+  "secrets_included": false
+}
+

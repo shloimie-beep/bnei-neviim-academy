@@ -1,0 +1,583 @@
+{
+  "created_at": "2026-06-17T08:54:27.481Z",
+  "base_url": "http://127.0.0.1:8080",
+  "routes": [
+    {
+      "id": "dashboard-overview",
+      "viewport": {
+        "height": 900,
+        "width": 1366
+      },
+      "url": "http://127.0.0.1:8080/operations?view=dashboard&section=overview&workspace=platform&proof=1781686363058",
+      "found": [
+        {
+          "item": "Command Center",
+          "present": true
+        },
+        {
+          "item": "Today's Work",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 900,
+        "width": 1366
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\desktop-dashboard-overview.png"
+    },
+    {
+      "id": "settings-users-access-category",
+      "viewport": {
+        "height": 900,
+        "width": 1366
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=users_access&workspace=platform&proof=1781686378369",
+      "found": [
+        {
+          "item": "Users & Roles",
+          "present": true
+        },
+        {
+          "item": "compact",
+          "present": true
+        },
+        {
+          "item": "Portal Access",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 900,
+        "width": 1366
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\desktop-settings-users-access-category.png"
+    },
+    {
+      "id": "settings-users-roles-leaf",
+      "viewport": {
+        "height": 900,
+        "width": 1366
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=users_roles&workspace=platform&proof=1781686380311",
+      "found": [
+        {
+          "item": "Users & Roles Access Desk",
+          "present": true
+        },
+        {
+          "item": "Add user",
+          "present": true
+        },
+        {
+          "item": "Reset portal access",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 900,
+        "width": 1366
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\desktop-settings-users-roles-leaf.png"
+    },
+    {
+      "id": "settings-learning-portals",
+      "viewport": {
+        "height": 900,
+        "width": 1366
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=learning_portals&workspace=bna&proof=1781686383445",
+      "found": [
+        {
+          "item": "Learning Portal Access",
+          "present": true
+        },
+        {
+          "item": "Send new portal email",
+          "present": true
+        },
+        {
+          "item": "Track people",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 900,
+        "width": 1366
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\desktop-settings-learning-portals.png"
+    },
+    {
+      "id": "settings-api-limits",
+      "viewport": {
+        "height": 900,
+        "width": 1366
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=api_limits&workspace=platform&proof=1781686386418",
+      "found": [
+        {
+          "item": "Bots & AI Usage Limits",
+          "present": true
+        },
+        {
+          "item": "Parent role limit",
+          "present": true
+        },
+        {
+          "item": "Spend / budget limits",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 900,
+        "width": 1366
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\desktop-settings-api-limits.png"
+    },
+    {
+      "id": "settings-billing-payments",
+      "viewport": {
+        "height": 900,
+        "width": 1366
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=billing_payments&workspace=platform&proof=1781686390211",
+      "found": [
+        {
+          "item": "Billing & Payments",
+          "present": true
+        },
+        {
+          "item": "Payment links",
+          "present": true
+        },
+        {
+          "item": "Integration status",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 900,
+        "width": 1366
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\desktop-settings-billing-payments.png"
+    },
+    {
+      "id": "settings-integrations-core",
+      "viewport": {
+        "height": 900,
+        "width": 1366
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=integrations_core&workspace=platform&proof=1781686393932",
+      "found": [
+        {
+          "item": "Integrations",
+          "present": true
+        },
+        {
+          "item": "Resend Email Provider",
+          "present": true
+        },
+        {
+          "item": "Buffer Social Scheduler",
+          "present": true
+        },
+        {
+          "item": "Payment Provider",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 900,
+        "width": 1366
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\desktop-settings-integrations-core.png"
+    },
+    {
+      "id": "settings-google-calendar",
+      "viewport": {
+        "height": 900,
+        "width": 1366
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=google_calendar&workspace=platform&proof=1781686397819",
+      "found": [
+        {
+          "item": "Google Calendar",
+          "present": true
+        },
+        {
+          "item": "Coming soon / internal-first",
+          "present": true
+        },
+        {
+          "item": "Internal-first status",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 900,
+        "width": 1366
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\desktop-settings-google-calendar.png"
+    },
+    {
+      "id": "settings-google-classroom",
+      "viewport": {
+        "height": 900,
+        "width": 1366
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=google_classroom&workspace=platform&proof=1781686401514",
+      "found": [
+        {
+          "item": "Google Classroom",
+          "present": true
+        },
+        {
+          "item": "Coming soon / internal-first",
+          "present": true
+        },
+        {
+          "item": "Internal-first status",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 900,
+        "width": 1366
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\desktop-settings-google-classroom.png"
+    },
+    {
+      "id": "automations-center",
+      "viewport": {
+        "height": 900,
+        "width": 1366
+      },
+      "url": "http://127.0.0.1:8080/operations?view=automations&section=center&workspace=platform&proof=1781686405195",
+      "found": [
+        {
+          "item": "Automation Center",
+          "present": true
+        },
+        {
+          "item": "Create automation with helper",
+          "present": true
+        },
+        {
+          "item": "Automation / Purpose / Trigger",
+          "present": true
+        },
+        {
+          "item": "Enabled",
+          "present": true
+        },
+        {
+          "item": "Last run",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 900,
+        "width": 1366
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\desktop-automations-center.png"
+    },
+    {
+      "id": "dashboard-overview",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:8080/operations?view=dashboard&section=overview&workspace=platform&proof=1781686407924",
+      "found": [
+        {
+          "item": "Command Center",
+          "present": true
+        },
+        {
+          "item": "Today's Work",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 844,
+        "width": 390
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\mobile-dashboard-overview.png"
+    },
+    {
+      "id": "settings-users-access-category",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=users_access&workspace=platform&proof=1781686421946",
+      "found": [
+        {
+          "item": "Users & Roles",
+          "present": true
+        },
+        {
+          "item": "compact",
+          "present": true
+        },
+        {
+          "item": "Portal Access",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 844,
+        "width": 390
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\mobile-settings-users-access-category.png"
+    },
+    {
+      "id": "settings-users-roles-leaf",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=users_roles&workspace=platform&proof=1781686426324",
+      "found": [
+        {
+          "item": "Users & Roles Access Desk",
+          "present": true
+        },
+        {
+          "item": "Add user",
+          "present": true
+        },
+        {
+          "item": "Reset portal access",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 844,
+        "width": 390
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\mobile-settings-users-roles-leaf.png"
+    },
+    {
+      "id": "settings-learning-portals",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=learning_portals&workspace=bna&proof=1781686430830",
+      "found": [
+        {
+          "item": "Learning Portal Access",
+          "present": true
+        },
+        {
+          "item": "Send new portal email",
+          "present": true
+        },
+        {
+          "item": "Track people",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 844,
+        "width": 390
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\mobile-settings-learning-portals.png"
+    },
+    {
+      "id": "settings-api-limits",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=api_limits&workspace=platform&proof=1781686435145",
+      "found": [
+        {
+          "item": "Bots & AI Usage Limits",
+          "present": true
+        },
+        {
+          "item": "Parent role limit",
+          "present": true
+        },
+        {
+          "item": "Spend / budget limits",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 844,
+        "width": 390
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\mobile-settings-api-limits.png"
+    },
+    {
+      "id": "settings-billing-payments",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=billing_payments&workspace=platform&proof=1781686440539",
+      "found": [
+        {
+          "item": "Billing & Payments",
+          "present": true
+        },
+        {
+          "item": "Payment links",
+          "present": true
+        },
+        {
+          "item": "Integration status",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 844,
+        "width": 390
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\mobile-settings-billing-payments.png"
+    },
+    {
+      "id": "settings-integrations-core",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=integrations_core&workspace=platform&proof=1781686445579",
+      "found": [
+        {
+          "item": "Integrations",
+          "present": true
+        },
+        {
+          "item": "Resend Email Provider",
+          "present": true
+        },
+        {
+          "item": "Buffer Social Scheduler",
+          "present": true
+        },
+        {
+          "item": "Payment Provider",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 844,
+        "width": 390
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\mobile-settings-integrations-core.png"
+    },
+    {
+      "id": "settings-google-calendar",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=google_calendar&workspace=platform&proof=1781686450649",
+      "found": [
+        {
+          "item": "Google Calendar",
+          "present": true
+        },
+        {
+          "item": "Coming soon / internal-first",
+          "present": true
+        },
+        {
+          "item": "Internal-first status",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 844,
+        "width": 390
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\mobile-settings-google-calendar.png"
+    },
+    {
+      "id": "settings-google-classroom",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:8080/operations?view=settings&section=google_classroom&workspace=platform&proof=1781686456824",
+      "found": [
+        {
+          "item": "Google Classroom",
+          "present": true
+        },
+        {
+          "item": "Coming soon / internal-first",
+          "present": true
+        },
+        {
+          "item": "Internal-first status",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 844,
+        "width": 390
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\mobile-settings-google-classroom.png"
+    },
+    {
+      "id": "automations-center",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:8080/operations?view=automations&section=center&workspace=platform&proof=1781686461991",
+      "found": [
+        {
+          "item": "Automation Center",
+          "present": true
+        },
+        {
+          "item": "Create automation with helper",
+          "present": true
+        },
+        {
+          "item": "Automation / Purpose / Trigger",
+          "present": true
+        },
+        {
+          "item": "Enabled",
+          "present": true
+        },
+        {
+          "item": "Last run",
+          "present": true
+        }
+      ],
+      "hasHorizontalOverflow": false,
+      "viewport_size": {
+        "height": 844,
+        "width": 390
+      },
+      "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-17-operations-settings-dashboard-local\\mobile-automations-center.png"
+    }
+  ],
+  "all_checks_passed": true
+}

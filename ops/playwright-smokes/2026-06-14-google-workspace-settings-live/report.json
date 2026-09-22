@@ -1,0 +1,53 @@
+{
+  "title": "Live Google Workspace Settings Playwright Smoke",
+  "generated_at": "2026-06-14T14:55:08.841Z",
+  "base_url": "https://bneineviimacademy.org",
+  "deployment": "e38167f2-5e6d-4447-b9d4-e195375c4315",
+  "checks": [
+    {
+      "name": "operations login",
+      "ok": true,
+      "method": "session cookie"
+    },
+    {
+      "name": "desktop Google Workspace UI",
+      "ok": true,
+      "viewport": "1440x1100",
+      "screenshot": "desktop-google-workspace-settings.png",
+      "status_endpoint": {
+        "ok": true,
+        "status": 200,
+        "success": true,
+        "hasOauth": true,
+        "hasBusiness": true,
+        "keys": [
+          "success",
+          "oauth",
+          "maps",
+          "business_profile",
+          "connections"
+        ]
+      }
+    },
+    {
+      "name": "mobile Google Workspace UI",
+      "ok": true,
+      "viewport": "390x844",
+      "screenshot": "mobile-google-workspace-settings.png",
+      "status_endpoint": {
+        "ok": true,
+        "status": 200,
+        "success": true,
+        "hasOauth": true,
+        "hasBusiness": true,
+        "keys": [
+          "success",
+          "oauth",
+          "maps",
+          "business_profile",
+          "connections"
+        ]
+      }
+    }
+  ]
+}

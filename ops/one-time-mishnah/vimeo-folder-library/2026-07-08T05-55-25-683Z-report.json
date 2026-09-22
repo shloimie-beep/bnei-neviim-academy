@@ -1,0 +1,47 @@
+{
+  "ok": true,
+  "run_id": "2026-07-08T05:55:25.683Z",
+  "generated_at": "2026-07-08T05:55:25.683Z",
+  "workflow": "one_time_vimeo_folder_library",
+  "raw_id": "RAW-20260706-967",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "folder": "C:\\Users\\User\\BNA v2.0\\media-inbox\\one-time-vimeo-drop",
+  "folder_relative_to_repo": "media-inbox/one-time-vimeo-drop",
+  "dry_run": true,
+  "apply_requested": false,
+  "upload_requested": false,
+  "review_package_requested": false,
+  "publish_requested": false,
+  "external_write_performed": false,
+  "production_mutation_performed": false,
+  "member_visibility_performed": false,
+  "vimeo_access_status": {
+    "configured": true,
+    "source": "keyholder",
+    "length": 232,
+    "fingerprint": "d57f6ab0e5c0"
+  },
+  "gates": {
+    "upload_confirmation_required": "UPLOAD_ONE_TIME_VIMEO_LIBRARY",
+    "upload_confirmation_present": false,
+    "review_confirmation_required": "CREATE_ONE_TIME_LIBRARY_REVIEW",
+    "review_confirmation_present": false,
+    "publish_approval_required": "APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING",
+    "publish_approval_present": false,
+    "allow_real_media": false
+  },
+  "candidates": [],
+  "blockers": [],
+  "next_actions": [
+    "Drop .mp4, .mov, .m4v, or .webm files into media-inbox/one-time-vimeo-drop."
+  ],
+  "summary": {
+    "candidate_count": 0,
+    "ready_for_review_count": 0,
+    "upload_blocked_count": 0,
+    "review_package_written_count": 0,
+    "published_count": 0,
+    "blockers_count": 0
+  }
+}

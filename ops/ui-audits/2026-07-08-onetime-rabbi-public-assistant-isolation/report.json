@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-07-08T15:31:56.270Z",
+  "base_url": "http://127.0.0.1:4789",
+  "routes": [
+    "/one-time",
+    "/rabbi",
+    "/rabbi.html",
+    "/rabbi-preview",
+    "/one-time-mishnayos"
+  ],
+  "results": [
+    {
+      "route": "/one-time",
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "badHits": [],
+      "helperButton": "Rabbi Scheller Assistant"
+    },
+    {
+      "route": "/rabbi",
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "badHits": [],
+      "helperButton": "Rabbi Scheller Assistant"
+    },
+    {
+      "route": "/rabbi.html",
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "badHits": [],
+      "helperButton": "Rabbi Scheller Assistant"
+    },
+    {
+      "route": "/rabbi-preview",
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "badHits": [],
+      "helperButton": "Rabbi Scheller Assistant"
+    },
+    {
+      "route": "/one-time-mishnayos",
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "badHits": [],
+      "helperButton": "Rabbi Scheller Assistant"
+    }
+  ],
+  "badHelperRoutes": [],
+  "panel_title_ok": true,
+  "panel_mentions_digital_assistant": true,
+  "panelBadHits": [],
+  "screenshot": "ops\\ui-audits\\2026-07-08-onetime-rabbi-public-assistant-isolation\\one-time-helper-mobile.png"
+}

@@ -1,0 +1,87 @@
+{
+  "generated_at": "2026-06-30T05:32:10.297Z",
+  "issue": 41,
+  "rows": [
+    {
+      "job_id": 21,
+      "needs_parse_reason": "Digest/card audit marked Needs parse because canonical class/progress read-model evidence was incomplete.",
+      "terminal_status": "dry_run_evidence_available_no_apply_in_this_packet",
+      "private_source_read": true,
+      "transcript_chars": 8568,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 25,
+      "needs_parse_reason": "Digest/card audit marked Needs parse because canonical class/progress read-model evidence was incomplete.",
+      "terminal_status": "dry_run_evidence_available_no_apply_in_this_packet",
+      "private_source_read": true,
+      "transcript_chars": 58244,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 26,
+      "needs_parse_reason": "Digest/card audit marked Needs parse because canonical class/progress read-model evidence was incomplete.",
+      "terminal_status": "dry_run_evidence_available_no_apply_in_this_packet",
+      "private_source_read": true,
+      "transcript_chars": 71944,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 30,
+      "needs_parse_reason": "Digest/card audit marked Needs parse because canonical class/progress read-model evidence was incomplete.",
+      "terminal_status": "dry_run_evidence_available_no_apply_in_this_packet",
+      "private_source_read": true,
+      "transcript_chars": 29040,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 31,
+      "needs_parse_reason": "Digest/card audit marked Needs parse because canonical class/progress read-model evidence was incomplete.",
+      "terminal_status": "dry_run_evidence_available_no_apply_in_this_packet",
+      "private_source_read": true,
+      "transcript_chars": 52560,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 56,
+      "needs_parse_reason": "Digest/card audit marked Needs parse because canonical class/progress read-model evidence was incomplete.",
+      "terminal_status": "dry_run_evidence_available_no_apply_in_this_packet",
+      "private_source_read": true,
+      "transcript_chars": 105867,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 57,
+      "needs_parse_reason": "Digest/card audit marked Needs parse because canonical class/progress read-model evidence was incomplete.",
+      "terminal_status": "dry_run_evidence_available_no_apply_in_this_packet",
+      "private_source_read": true,
+      "transcript_chars": 35521,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 58,
+      "needs_parse_reason": "Digest/card audit marked Needs parse because canonical class/progress read-model evidence was incomplete.",
+      "terminal_status": "dry_run_evidence_available_no_apply_in_this_packet",
+      "private_source_read": true,
+      "transcript_chars": 55809,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 59,
+      "needs_parse_reason": "Digest/card audit marked Needs parse because canonical class/progress read-model evidence was incomplete.",
+      "terminal_status": "dry_run_evidence_available_no_apply_in_this_packet",
+      "private_source_read": true,
+      "transcript_chars": 5481,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 71,
+      "needs_parse_reason": "Transcript exists, but parser request/output metadata is missing.",
+      "terminal_status": "dry_run_evidence_available_no_apply_in_this_packet",
+      "private_source_read": true,
+      "transcript_chars": 751,
+      "raw_text_included": false
+    }
+  ],
+  "raw_transcript_bodies_included": false
+}

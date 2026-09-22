@@ -1,0 +1,1518 @@
+- main:
+  - button "Open navigation"
+  - strong: One Time Mishnah Class
+  - text: Provider Workspace Admin / Content / One Time Library
+  - button "Ask"
+  - text: 1 Jul
+  - navigation "Content filters":
+    - text: Content
+    - strong: One Time Library
+    - tablist "Content views":
+      - tab "Library 7"
+      - tab "One Time Library 0" [selected]
+      - tab "Meeting Drops 1"
+      - tab "Research 14"
+      - tab "Selected 0"
+      - tab "Repurpose 7"
+      - tab "Newsletter 1"
+      - tab "Prompts 11"
+      - tab "Bundles 1"
+  - text: Content Review
+  - heading "One Time Library" [level=2]
+  - paragraph: "Scoped Rabbi Sheller video library review: hosted media readiness, transcript review, worksheet/source-sheet drafts, internal approvals, and publishing guardrails."
+  - group:
+    - text: Filters Search
+    - searchbox "Search title, summary, topic, source, output, or metadata"
+    - text: Topic
+    - button "Content topic filter": All topics (7)
+    - text: Source
+    - button "Content source filter": All sources (7)
+    - text: Media
+    - button "Content media filter": All (7)
+    - text: Status
+    - button "Content status filter": All status (7)
+    - text: Uploaded
+    - button "All dates"
+    - button "Today"
+    - button "Last 7 days"
+    - button "Last 30 days"
+    - text: Project
+    - button "Content project filter": All (7)
+    - text: Showing 7 of 7 content items.
+  - strong: "0"
+  - text: Total Items
+  - strong: "0"
+  - text: Needs Review
+  - strong: "0"
+  - text: Approved Internally
+  - strong: 0 / 0
+  - text: Hosted / Blocked One Time library items stay scoped to
+  - code: one_time_mishnah_class
+  - text: . Hosted URLs, Vimeo/manual media URLs, transcripts, worksheet/source-sheet drafts, social plans, and newsletter plans stay first-party BNA records. No email, WhatsApp, social post, checkout, external CRM, Drive/video-host write, or member-library publish happens from this screen without the Class Package Manager and exact approval phrase. Approval here records internal review state only for the legacy output review lanes.
+  - region "One Time recording Vimeo readiness":
+    - strong: Recording / Vimeo Pipeline
+    - text: REQ-20260619-308 / manual mode ready, automated upload disabled
+    - paragraph: Manual Vimeo URL attachment and approval-gated first-party member-library publish run through the Class Package Manager. No provider webhook, recording fetch, Vimeo upload, provider publish, provider unpublish, provider delete, watch-progress write, notification send, or external portal publish runs from this panel.
+    - strong: "14"
+    - text: Class packages
+    - strong: "14"
+    - text: Transcripts
+    - strong: "14"
+    - text: Summaries
+    - strong: "6"
+    - text: Vimeo refs
+    - button "Preview Upload setup"
+    - button "Retry setup"
+    - text: authenticated Vimeo user account owner plan upload scope upload capability storage/quota folder privacy default allowed embed domains callback URL token state last verification
+    - article:
+      - strong: Recording webhook handling
+      - text: Local contract
+      - paragraph: Provider recording events can be normalized only as previews; no live webhook is accepted.
+    - article:
+      - strong: Recording file selection
+      - text: Preview ready
+      - paragraph: Multiple recording files, preferred layout selection, and audio-only fallback are modeled locally.
+    - article:
+      - strong: Transcript and summary
+      - text: Review ready
+      - paragraph: Transcript and summary must be saved before publication approval.
+    - article:
+      - strong: Retry and dead letter
+      - text: Local contract
+      - paragraph: Retry, dead-letter, and idempotency keys are defined without mutating provider or member-library state.
+    - article:
+      - strong: Review and correction
+      - text: Local contract
+      - paragraph: Rabbi/operator correction, approval, and rejection states are internal review states only.
+    - article:
+      - strong: Manual/API Vimeo modes
+      - text: Manual ready
+      - paragraph: Manual Vimeo URL attachment and first-party member-library publishing are usable with the approval phrase; API upload remains disabled pending owner token, plan, quota, folder, privacy, embed domains, and upload smoke approval.
+    - article:
+      - strong: Publish, unpublish, delete
+      - text: Approval gated
+      - paragraph: Never publish directly from a webhook; first-party publish/unpublish uses the Class Package Manager and explicit approval phrase while provider deletion remains blocked.
+    - article:
+      - strong: Entitlement and watch progress
+      - text: Publish ready / progress blocked
+      - paragraph: Member visibility is enabled only after approved first-party publication; watch-progress writes stay future-scoped.
+  - region "One Time transcript privacy readiness":
+    - strong: Transcript Privacy / Knowledge Scope
+    - text: REQ-20260619-309 / no-write readiness
+    - paragraph: No raw unreviewed transcript, staff-private note, student-private segment, guessed speaker identity, cross-student question/feedback, or public helper raw transcript dump is exposed by this panel.
+    - strong: "14"
+    - text: Sources
+    - strong: "1"
+    - text: Transcript refs
+    - strong: "13"
+    - text: Approved
+    - strong: "14"
+    - text: Need review
+    - strong: "0"
+    - text: "Guess blocks provider_general: 0 cohort_general: 0 student_private: 0 parent_visible: 0 staff_private: 0 excluded: 0 needs_review: 14"
+    - article:
+      - strong: Transcript versions
+      - text: Local contract
+      - paragraph: Raw, normalized, corrected, and Rabbi-approved versions are tracked as states; raw bodies are not rendered here.
+    - article:
+      - strong: Segments, speakers, confidence
+      - text: Implemented
+      - paragraph: Timestamped segment, speaker label, speaker confidence, match method, student match, and match confidence fields are modeled for review.
+    - article:
+      - strong: Privacy classes
+      - text: Local contract
+      - paragraph: provider_general, cohort_general, student_private, parent_visible, staff_private, excluded, and needs_review are explicit classes.
+    - article:
+      - strong: Student matching and review
+      - text: Needs review
+      - paragraph: Uncertain student matches require enrollment context, accepted match method, confidence threshold, and manual review; guessed speaker labels are never student data.
+    - article:
+      - strong: Retrieval boundaries
+      - text: Preview ready
+      - paragraph: Student and parent views can only resolve their own approved private segments; cross-student retrieval stays blocked.
+    - article:
+      - strong: Public helper guardrails
+      - text: Preview ready
+      - paragraph: Public helper context can use only reviewed safe snippets, never raw unreviewed transcript dumps.
+    - article:
+      - strong: Audit and release
+      - text: Live smoke ready
+      - paragraph: Read-only production smoke verifies no raw body, no guessed student mapping, and no cross-student retrieval without external writes.
+  - region "One Time community moderation readiness":
+    - strong: Community / Moderation Workflow
+    - text: REQ-20260619-311 / implemented no-write readiness
+    - paragraph: No unrestricted student-to-student messaging, public/member-visible post publication, external notification, temporary-hold enforcement, delete purge, or anonymized public promotion write runs from this panel. The private-to-public workflow is implemented as a linked-version, anonymized preview path.
+    - strong: "0"
+    - text: Threads
+    - strong: "0"
+    - text: Private queue
+    - strong: "0"
+    - text: Parent holds
+    - strong: "0"
+    - text: "Flags Announcements: 0 Cohort discussions: 0 Staff-only: 0 Public anonymized: 0"
+    - article:
+      - strong: Rabbi announcements
+      - text: Teacher controlled
+      - paragraph: Rabbi/admin announcements stay as teacher-led threads, not participant broadcasts.
+    - article:
+      - strong: Cohort discussions
+      - text: Moderated
+      - paragraph: Approved discussion is cohort/member scoped and still requires review before visibility changes.
+    - article:
+      - strong: Private questions
+      - text: Implemented private-first
+      - paragraph: Student/member questions submit privately and remain hidden until Rabbi/admin review.
+    - article:
+      - strong: Parent-visible communication
+      - text: Guarded
+      - paragraph: Safety flags can move an item to parent hold without exposing it to the cohort.
+    - article:
+      - strong: Staff-only notes
+      - text: Guarded
+      - paragraph: Staff-only visibility is modeled separately from parent, cohort, and public surfaces.
+    - article:
+      - strong: Moderated posting
+      - text: Guarded
+      - paragraph: Unreviewed posts, temporary holds, and flagged items cannot auto-publish.
+    - article:
+      - strong: Edit and deletion history
+      - text: Implemented
+      - paragraph: Original, edited, published, anonymized, edit-history, and deletion-history fields are required for review traceability.
+    - article:
+      - strong: Report / flag flow
+      - text: Implemented guarded
+      - paragraph: Contact info, direct-chat requests, unsafe language, and private identifiers stay in the moderation queue.
+    - article:
+      - strong: Private-to-public workflow
+      - text: Implemented preview-only
+      - paragraph: Student submits privately, Rabbi/moderator reviews, reviewer edits or anonymizes, visibility is selected, and original/published versions remain linked.
+    - article:
+      - strong: Private-to-public anonymization
+      - text: Implemented preview-only
+      - paragraph: Public promotion requires an edited anonymized version, stores original/published versions, and blocks identifying private data.
+    - article:
+      - strong: No unrestricted messaging
+      - text: Policy
+      - paragraph: No unrestricted student-to-student private messaging is enabled.
+    - article:
+      - strong: Audit and release
+      - text: Live smoke ready
+      - paragraph: Read-only production smoke is safe; public/member publication writes, notifications, and deletion purge still require a separate approval path.
+  - region "One Time Sefaria and study assistant readiness":
+    - strong: Sefaria / Study Assistant Readiness
+    - text: REQ-20260619-312 / implemented disabled-feature foundation
+    - paragraph: No unrestricted AI chat, Sefaria/API ingestion, arbitrary translation merge, arbitrary version ingestion, source corpus mutation, raw transcript retrieval, cross-student retrieval, portal publish, or answer generation runs from this panel.
+    - strong: "10"
+    - text: Sources
+    - strong: "10"
+    - text: Need metadata
+    - strong: "0"
+    - text: Rabbi approved
+    - strong: "0"
+    - text: "Citations Provider-wide: 0 Cohort: 10 Student-private: 0 Restricted: 0 License reviewed: 0"
+    - article:
+      - strong: Source-version model
+      - text: Implemented
+      - paragraph: Canonical reference, version, language, license, attribution, source URL, retrieved timestamp, content hash, Rabbi approval, and quote/summary/index permissions are required.
+    - article:
+      - strong: Provider-wide retrieval
+      - text: Implemented preview
+      - paragraph: Approved recordings, transcripts, summaries, handouts, and Sefaria source metadata can be scoped provider-wide after review.
+    - article:
+      - strong: Cohort retrieval
+      - text: Implemented preview
+      - paragraph: Class curriculum, recordings, summaries, discussions, and sources require matching cohort context.
+    - article:
+      - strong: Student-private retrieval
+      - text: Guarded
+      - paragraph: Student questions, feedback, assignments, progress, attendance, badges, and approved student transcript segments stay scoped to the matching student.
+    - article:
+      - strong: Restricted sources
+      - text: Blocked by policy
+      - paragraph: Another student information, raw transcripts, staff notes, moderation metadata, and family-private material are blocked.
+    - article:
+      - strong: Licensing and citation review
+      - text: Implemented gate
+      - paragraph: Licensing, citation verification, scoped retrieval tests, transcript review, privacy tests, and Rabbi approval must pass before launch.
+    - article:
+      - strong: Disabled feature flag
+      - text: Disabled by policy
+      - paragraph: The study assistant and unrestricted AI chat remain off; this panel does not generate answers.
+    - article:
+      - strong: No arbitrary versions
+      - text: Guarded
+      - paragraph: Only approved source-version metadata may appear in retrieval previews; arbitrary versions and raw text ingestion stay disabled.
+    - article:
+      - strong: Audit and release
+      - text: Live smoke ready
+      - paragraph: Read-only production smoke is safe while Sefaria/API ingestion, source corpus mutation, portal publishing, and answer generation stay disabled.
+  - region "One Time classroom console":
+    - strong: One Time Classroom Console
+    - text: Rabbi-led Mishnah classroom, internal calendar, moderated responses, approved leaderboard, and source-grounded bot policy.
+    - link "Open Classroom":
+      - /url: /one-time-classroom
+    - strong: "6"
+    - text: Sedarim
+    - strong: "14"
+    - text: Videos
+    - strong: "0"
+    - text: Calendar items
+    - strong: "0"
+    - text: Held responses
+    - strong: "0"
+    - text: Leaderboard rows
+    - strong: Class list
+    - paragraph: Class sessions and videos stay grouped by Seder and classroom schedule.
+    - text: Visible 14 classes/videos
+    - strong: Student/member list
+    - paragraph: Member/student participation is summarized without opening an unmoderated forum.
+    - text: Visible 0 participation rows
+    - strong: Teacher posts
+    - paragraph: Rabbi/admin prompts, announcements, and source discussions are teacher-led.
+    - text: Teacher controlled 0 Rabbi/admin threads
+    - strong: Student questions/replies
+    - paragraph: Students can reply privately to Rabbi/admin threads; replies are not member-visible until reviewed.
+    - text: Private first 0 held responses
+    - strong: No student-student chat
+    - paragraph: The default One Time classroom does not allow open student-to-student chat.
+    - text: Policy Off unless enabled
+    - strong: Display / publish controls
+    - paragraph: Rabbi or provider admin chooses which replies/questions publish to the public/community display.
+    - text: Moderated Approve / Feature / Parent Hold / Reject
+    - article:
+      - text: Natural-language video assignment Plain English schedule
+      - textbox "Plain English schedule":
+        - /placeholder: assign Berachos video 3 next Tuesday, due Thursday
+      - text: Assignment title
+      - textbox "Assignment title":
+        - /placeholder: Optional title
+      - text: Video
+      - button "Video": Video / class session
+      - text: Seder
+      - button "Seder": Curriculum unit
+      - text: Duration minutes
+      - spinbutton "Duration minutes": "30"
+      - text: Visibility
+      - button "Visibility": members
+      - text: Instructions
+      - textbox "Instructions":
+        - /placeholder: Optional assignment notes
+      - button "Preview"
+      - button "Add Session": Create Internal Calendar Item
+      - text: No schedule preview yet.
+    - article:
+      - text: Rabbi thread Title
+      - textbox "Title":
+        - /placeholder: Thread title
+      - text: Type
+      - button "Type": announcement
+      - text: Video
+      - button "Video": Video / class session
+      - text: Seder
+      - button "Seder": Curriculum unit
+      - text: Public Rabbi/admin prompt
+      - textbox "Public Rabbi/admin prompt":
+        - /placeholder: Question, announcement, or source prompt
+      - checkbox "Eligible for top Q&A / leaderboard"
+      - text: Eligible for top Q&A / leaderboard
+      - button "Post Rabbi Thread"
+    - article: Moderation review No held classroom responses.
+    - article: Top classroom signals Approved questions and featured responses will appear here.
+  - region "Rabbi One Time local classroom flow":
+    - strong: Local One Time Classroom
+    - text: "Rabbi Elie Scheller / One Time uses the same first-party classroom and content pipeline: class sessions, assignments/materials, source sheets, worksheets, recordings, questions, and content outputs. Content parsing enabled Buffer draft-only No auto-publish No Resend or mass email required"
+    - strong: "14"
+    - text: Class packages
+    - strong: "0"
+    - text: Classroom items
+    - strong: "0"
+    - text: Worksheets / source sheets
+    - strong: "4"
+    - text: "Questions in review Member-library publishing, public Q&A, notifications, rewards, and leaderboards stay behind the approval gates already created. Social output can be committed only as a Buffer draft after exact source, channel, copy, hosted media URL if any, and rollback/no-post details are approved. Approved social candidates: 0 Google Classroom sync: optional preview only Email: manual/current Gmail-style path No One Time classroom assignments/materials are loaded yet. Use reviewed recordings and class packages here first; roster-linked assignments can be added once the scoped participant roster is ready."
+  - region "One Time class package manager":
+    - strong: Class Package Manager
+    - text: 14 packages | 0 published Title
+    - textbox "Title":
+      - /placeholder: Class title
+    - text: Date
+    - textbox "Date"
+    - text: Media provider
+    - button "Media provider": manual url
+    - text: Vimeo/manual hosted URL
+    - textbox "Vimeo/manual hosted URL":
+      - /placeholder: https://
+    - text: Masechta
+    - textbox "Masechta":
+      - /placeholder: Berachos
+    - text: Perek
+    - textbox "Perek":
+      - /placeholder: "1"
+    - text: Mishnah range
+    - textbox "Mishnah range":
+      - /placeholder: 1-3
+    - text: Duration seconds
+    - spinbutton "Duration seconds"
+    - text: Thumbnail URL
+    - textbox "Thumbnail URL":
+      - /placeholder: https://
+    - text: Transcript status
+    - button "Transcript status": draft
+    - text: Description
+    - textbox "Description"
+    - text: Source sheet draft
+    - textbox "Source sheet draft"
+    - button "Add Class"
+    - button "Run Smoke"
+    - textbox "APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING"
+    - article:
+      - strong: Codex Vimeo Smoke 2026-06-23T17:28:42.169Z
+      - paragraph: Temporary smoke package for manual Vimeo member-library workflow.
+      - text: archived vimeo Smoke 1:1-2 30 min member hidden Title
+      - textbox "Title": Codex Vimeo Smoke 2026-06-23T17:28:42.169Z
+      - text: Date
+      - textbox "Date": 2026-06-23
+      - text: Status
+      - button "Status": archived
+      - text: Transcript
+      - button "Transcript": approved
+      - text: Provider
+      - button "Provider": vimeo
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+        - text: https://vimeo.com/123456789
+      - text: Vimeo ID
+      - textbox "Vimeo ID": "123456789"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+        - text: Smoke
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+        - text: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+        - text: 1-2
+      - text: Duration seconds
+      - spinbutton "Duration seconds": "1800"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+        - text: https://example.com/one-time-vimeo-smoke-thumbnail.jpg
+      - text: Description
+      - textbox "Description": Temporary smoke package for manual Vimeo member-library workflow.
+      - text: Transcript notes
+      - textbox "Transcript notes"
+      - text: Source sheet draft
+      - textbox "Source sheet draft": Smoke source sheet placeholder.
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - text: "source_sheet: Smoke source sheet (published) Visibility"
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - button "Unpublish / Restore Latest"
+      - link "Open Library":
+        - /url: /member-library
+      - text: "#11 archived smoke rollback by SHLOIMIE | publish by SHLOIMIE | approve by SHLOIMIE"
+    - article:
+      - strong: Smoke One Time library item a2a164adaa874116
+      - paragraph: Smoke-only member-library verification item.
+      - text: archived placeholder member hidden Title
+      - textbox "Title": Smoke One Time library item a2a164adaa874116
+      - text: Date
+      - textbox "Date": 2026-06-23
+      - text: Status
+      - button "Status": archived
+      - text: Transcript
+      - button "Transcript": approved
+      - text: Provider
+      - button "Provider": placeholder
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+      - text: Vimeo ID
+      - textbox "Vimeo ID"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+      - text: Duration seconds
+      - spinbutton "Duration seconds"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+      - text: Description
+      - textbox "Description": Smoke-only member-library verification item.
+      - text: Transcript notes
+      - textbox "Transcript notes": Smoke transcript note kept admin-only.
+      - text: Source sheet draft
+      - textbox "Source sheet draft": Smoke source sheet placeholder.
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - text: "source_sheet: Smoke source sheet (published) Visibility"
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - button "Unpublish / Restore Latest"
+      - link "Open Library":
+        - /url: /member-library
+      - text: "#12 archived smoke smoke by SHLOIMIE"
+    - article:
+      - strong: Codex Vimeo Smoke 2026-06-21T13:37:41.388Z
+      - paragraph: Temporary smoke package for manual Vimeo member-library workflow.
+      - text: archived vimeo Smoke 1:1-2 30 min member hidden Title
+      - textbox "Title": Codex Vimeo Smoke 2026-06-21T13:37:41.388Z
+      - text: Date
+      - textbox "Date": 2026-06-21
+      - text: Status
+      - button "Status": archived
+      - text: Transcript
+      - button "Transcript": approved
+      - text: Provider
+      - button "Provider": vimeo
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+        - text: https://vimeo.com/123456789
+      - text: Vimeo ID
+      - textbox "Vimeo ID": "123456789"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+        - text: Smoke
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+        - text: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+        - text: 1-2
+      - text: Duration seconds
+      - spinbutton "Duration seconds": "1800"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+        - text: https://example.com/one-time-vimeo-smoke-thumbnail.jpg
+      - text: Description
+      - textbox "Description": Temporary smoke package for manual Vimeo member-library workflow.
+      - text: Transcript notes
+      - textbox "Transcript notes"
+      - text: Source sheet draft
+      - textbox "Source sheet draft": Smoke source sheet placeholder.
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - text: "source_sheet: Smoke source sheet (published) Visibility"
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - button "Unpublish / Restore Latest"
+      - link "Open Library":
+        - /url: /member-library
+      - text: "#9 archived smoke rollback by SHLOIMIE | publish by SHLOIMIE | approve by SHLOIMIE"
+    - article:
+      - strong: Smoke One Time library item 46ce22551ef54505
+      - paragraph: Smoke-only member-library verification item.
+      - text: archived placeholder member hidden Title
+      - textbox "Title": Smoke One Time library item 46ce22551ef54505
+      - text: Date
+      - textbox "Date": 2026-06-21
+      - text: Status
+      - button "Status": archived
+      - text: Transcript
+      - button "Transcript": approved
+      - text: Provider
+      - button "Provider": placeholder
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+      - text: Vimeo ID
+      - textbox "Vimeo ID"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+      - text: Duration seconds
+      - spinbutton "Duration seconds"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+      - text: Description
+      - textbox "Description": Smoke-only member-library verification item.
+      - text: Transcript notes
+      - textbox "Transcript notes": Smoke transcript note kept admin-only.
+      - text: Source sheet draft
+      - textbox "Source sheet draft": Smoke source sheet placeholder.
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - text: "source_sheet: Smoke source sheet (published) Visibility"
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - button "Unpublish / Restore Latest"
+      - link "Open Library":
+        - /url: /member-library
+      - text: "#10 archived smoke smoke by SHLOIMIE"
+    - article:
+      - strong: Codex Vimeo Smoke 2026-06-21T13:27:05.481Z
+      - paragraph: Temporary smoke package for manual Vimeo member-library workflow.
+      - text: archived vimeo Smoke 1:1-2 30 min member hidden Title
+      - textbox "Title": Codex Vimeo Smoke 2026-06-21T13:27:05.481Z
+      - text: Date
+      - textbox "Date": 2026-06-21
+      - text: Status
+      - button "Status": archived
+      - text: Transcript
+      - button "Transcript": approved
+      - text: Provider
+      - button "Provider": vimeo
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+        - text: https://vimeo.com/123456789
+      - text: Vimeo ID
+      - textbox "Vimeo ID": "123456789"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+        - text: Smoke
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+        - text: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+        - text: 1-2
+      - text: Duration seconds
+      - spinbutton "Duration seconds": "1800"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+        - text: https://example.com/one-time-vimeo-smoke-thumbnail.jpg
+      - text: Description
+      - textbox "Description": Temporary smoke package for manual Vimeo member-library workflow.
+      - text: Transcript notes
+      - textbox "Transcript notes"
+      - text: Source sheet draft
+      - textbox "Source sheet draft": Smoke source sheet placeholder.
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - text: "source_sheet: Smoke source sheet (published) Visibility"
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - button "Unpublish / Restore Latest"
+      - link "Open Library":
+        - /url: /member-library
+      - text: "#7 archived smoke rollback by SHLOIMIE | publish by SHLOIMIE | approve by SHLOIMIE"
+    - article:
+      - strong: Smoke One Time library item 36ce53788ac94a79
+      - paragraph: Smoke-only member-library verification item.
+      - text: archived placeholder member hidden Title
+      - textbox "Title": Smoke One Time library item 36ce53788ac94a79
+      - text: Date
+      - textbox "Date": 2026-06-21
+      - text: Status
+      - button "Status": archived
+      - text: Transcript
+      - button "Transcript": approved
+      - text: Provider
+      - button "Provider": placeholder
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+      - text: Vimeo ID
+      - textbox "Vimeo ID"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+      - text: Duration seconds
+      - spinbutton "Duration seconds"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+      - text: Description
+      - textbox "Description": Smoke-only member-library verification item.
+      - text: Transcript notes
+      - textbox "Transcript notes": Smoke transcript note kept admin-only.
+      - text: Source sheet draft
+      - textbox "Source sheet draft": Smoke source sheet placeholder.
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - text: "source_sheet: Smoke source sheet (published) Visibility"
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - button "Unpublish / Restore Latest"
+      - link "Open Library":
+        - /url: /member-library
+      - text: "#8 archived smoke smoke by SHLOIMIE"
+    - article:
+      - strong: Codex Vimeo Smoke 2026-06-21T13:21:13.527Z
+      - paragraph: Temporary smoke package for manual Vimeo member-library workflow.
+      - text: archived vimeo Smoke 1:1-2 30 min member hidden Title
+      - textbox "Title": Codex Vimeo Smoke 2026-06-21T13:21:13.527Z
+      - text: Date
+      - textbox "Date": 2026-06-21
+      - text: Status
+      - button "Status": archived
+      - text: Transcript
+      - button "Transcript": approved
+      - text: Provider
+      - button "Provider": vimeo
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+        - text: https://vimeo.com/123456789
+      - text: Vimeo ID
+      - textbox "Vimeo ID": "123456789"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+        - text: Smoke
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+        - text: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+        - text: 1-2
+      - text: Duration seconds
+      - spinbutton "Duration seconds": "1800"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+        - text: https://example.com/one-time-vimeo-smoke-thumbnail.jpg
+      - text: Description
+      - textbox "Description": Temporary smoke package for manual Vimeo member-library workflow.
+      - text: Transcript notes
+      - textbox "Transcript notes"
+      - text: Source sheet draft
+      - textbox "Source sheet draft": Smoke source sheet placeholder.
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - text: "source_sheet: Smoke source sheet (approved) Visibility"
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - link "Open Library":
+        - /url: /member-library
+      - text: preview by SHLOIMIE | preview by SHLOIMIE
+    - article:
+      - strong: Codex Vimeo Smoke 2026-06-21T13:21:36.456Z
+      - paragraph: Temporary smoke package for manual Vimeo member-library workflow.
+      - text: archived vimeo Smoke 1:1-2 30 min member hidden Title
+      - textbox "Title": Codex Vimeo Smoke 2026-06-21T13:21:36.456Z
+      - text: Date
+      - textbox "Date": 2026-06-21
+      - text: Status
+      - button "Status": archived
+      - text: Transcript
+      - button "Transcript": approved
+      - text: Provider
+      - button "Provider": vimeo
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+        - text: https://vimeo.com/123456789
+      - text: Vimeo ID
+      - textbox "Vimeo ID": "123456789"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+        - text: Smoke
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+        - text: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+        - text: 1-2
+      - text: Duration seconds
+      - spinbutton "Duration seconds": "1800"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+        - text: https://example.com/one-time-vimeo-smoke-thumbnail.jpg
+      - text: Description
+      - textbox "Description": Temporary smoke package for manual Vimeo member-library workflow.
+      - text: Transcript notes
+      - textbox "Transcript notes"
+      - text: Source sheet draft
+      - textbox "Source sheet draft": Smoke source sheet placeholder.
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - text: "source_sheet: Smoke source sheet (published) Visibility"
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - button "Unpublish / Restore Latest"
+      - link "Open Library":
+        - /url: /member-library
+      - text: "#3 archived smoke rollback by SHLOIMIE | publish by SHLOIMIE | approve by SHLOIMIE"
+    - article:
+      - strong: Codex Vimeo Smoke 2026-06-21T13:22:45.791Z
+      - paragraph: Temporary smoke package for manual Vimeo member-library workflow.
+      - text: archived vimeo Smoke 1:1-2 30 min member hidden Title
+      - textbox "Title": Codex Vimeo Smoke 2026-06-21T13:22:45.791Z
+      - text: Date
+      - textbox "Date": 2026-06-21
+      - text: Status
+      - button "Status": archived
+      - text: Transcript
+      - button "Transcript": approved
+      - text: Provider
+      - button "Provider": vimeo
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+        - text: https://vimeo.com/123456789
+      - text: Vimeo ID
+      - textbox "Vimeo ID": "123456789"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+        - text: Smoke
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+        - text: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+        - text: 1-2
+      - text: Duration seconds
+      - spinbutton "Duration seconds": "1800"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+        - text: https://example.com/one-time-vimeo-smoke-thumbnail.jpg
+      - text: Description
+      - textbox "Description": Temporary smoke package for manual Vimeo member-library workflow.
+      - text: Transcript notes
+      - textbox "Transcript notes"
+      - text: Source sheet draft
+      - textbox "Source sheet draft": Smoke source sheet placeholder.
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - text: "source_sheet: Smoke source sheet (published) Visibility"
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - button "Unpublish / Restore Latest"
+      - link "Open Library":
+        - /url: /member-library
+      - text: "#5 archived smoke rollback by SHLOIMIE | publish by SHLOIMIE | approve by SHLOIMIE"
+    - article:
+      - strong: Smoke One Time library item 8694e85779ee4620
+      - paragraph: Smoke-only member-library verification item.
+      - text: archived placeholder member hidden Title
+      - textbox "Title": Smoke One Time library item 8694e85779ee4620
+      - text: Date
+      - textbox "Date": 2026-06-21
+      - text: Status
+      - button "Status": archived
+      - text: Transcript
+      - button "Transcript": approved
+      - text: Provider
+      - button "Provider": placeholder
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+      - text: Vimeo ID
+      - textbox "Vimeo ID"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+      - text: Duration seconds
+      - spinbutton "Duration seconds"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+      - text: Description
+      - textbox "Description": Smoke-only member-library verification item.
+      - text: Transcript notes
+      - textbox "Transcript notes": Smoke transcript note kept admin-only.
+      - text: Source sheet draft
+      - textbox "Source sheet draft": Smoke source sheet placeholder.
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - text: "source_sheet: Smoke source sheet (published) Visibility"
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - button "Unpublish / Restore Latest"
+      - link "Open Library":
+        - /url: /member-library
+      - text: "#6 archived smoke smoke by SHLOIMIE"
+    - article:
+      - strong: Smoke One Time library item a8d41e2aa63e416e
+      - paragraph: Smoke-only member-library verification item.
+      - text: archived placeholder member hidden Title
+      - textbox "Title": Smoke One Time library item a8d41e2aa63e416e
+      - text: Date
+      - textbox "Date": 2026-06-21
+      - text: Status
+      - button "Status": archived
+      - text: Transcript
+      - button "Transcript": approved
+      - text: Provider
+      - button "Provider": placeholder
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+      - text: Vimeo ID
+      - textbox "Vimeo ID"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+      - text: Duration seconds
+      - spinbutton "Duration seconds"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+      - text: Description
+      - textbox "Description": Smoke-only member-library verification item.
+      - text: Transcript notes
+      - textbox "Transcript notes": Smoke transcript note kept admin-only.
+      - text: Source sheet draft
+      - textbox "Source sheet draft": Smoke source sheet placeholder.
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - text: "source_sheet: Smoke source sheet (published) Visibility"
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - button "Unpublish / Restore Latest"
+      - link "Open Library":
+        - /url: /member-library
+      - text: "#4 archived smoke smoke by SHLOIMIE"
+    - article:
+      - strong: Smoke One Time library item 22e33838ab104e14
+      - paragraph: Smoke-only member-library verification item.
+      - text: archived placeholder member hidden Title
+      - textbox "Title": Smoke One Time library item 22e33838ab104e14
+      - text: Date
+      - textbox "Date": 2026-06-15
+      - text: Status
+      - button "Status": archived
+      - text: Transcript
+      - button "Transcript": approved
+      - text: Provider
+      - button "Provider": placeholder
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+      - text: Vimeo ID
+      - textbox "Vimeo ID"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+      - text: Duration seconds
+      - spinbutton "Duration seconds"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+      - text: Description
+      - textbox "Description": Smoke-only member-library verification item.
+      - text: Transcript notes
+      - textbox "Transcript notes": Smoke transcript note kept admin-only.
+      - text: Source sheet draft
+      - textbox "Source sheet draft": Smoke source sheet placeholder.
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - text: "source_sheet: Smoke source sheet (published) Visibility"
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - button "Unpublish / Restore Latest"
+      - link "Open Library":
+        - /url: /member-library
+      - text: "#2 archived smoke smoke by codex-live-classroom-smoke"
+    - article:
+      - strong: Smoke One Time library item edd43964d88a48d4
+      - paragraph: Smoke-only member-library verification item.
+      - text: archived placeholder member hidden Title
+      - textbox "Title": Smoke One Time library item edd43964d88a48d4
+      - text: Date
+      - textbox "Date": 2026-06-15
+      - text: Status
+      - button "Status": archived
+      - text: Transcript
+      - button "Transcript": approved
+      - text: Provider
+      - button "Provider": placeholder
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+      - text: Vimeo ID
+      - textbox "Vimeo ID"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+      - text: Duration seconds
+      - spinbutton "Duration seconds"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+      - text: Description
+      - textbox "Description": Smoke-only member-library verification item.
+      - text: Transcript notes
+      - textbox "Transcript notes": Smoke transcript note kept admin-only.
+      - text: Source sheet draft
+      - textbox "Source sheet draft": Smoke source sheet placeholder.
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - text: "source_sheet: Smoke source sheet (published) Visibility"
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - button "Unpublish / Restore Latest"
+      - link "Open Library":
+        - /url: /member-library
+      - text: "#1 archived smoke smoke by codex-live-smoke"
+    - article:
+      - strong: Mishnayos Classes Website Strategy Discussion
+      - paragraph: Concept of a micro school with one Rebbe providing inspiration and motivation, supplemented by external service providers offering extracurricular activities. The model includes a free index of providers with optional paid marketing/admin services and discounts for students within the network.
+      - text: draft manual_url member hidden Title
+      - textbox "Title": Mishnayos Classes Website Strategy Discussion
+      - text: Date
+      - textbox "Date": 2026-06-10
+      - text: Status
+      - button "Status": draft
+      - text: Transcript
+      - button "Transcript": draft
+      - text: Provider
+      - button "Provider": manual url
+      - text: Vimeo/manual hosted URL
+      - textbox "Vimeo/manual hosted URL":
+        - /placeholder: https://
+        - text: https://drive.google.com/file/d/1cLQ7Rn3OEHfWIymhB1AUlTqV4WTWPAyg/view?usp=drivesdk
+      - text: Vimeo ID
+      - textbox "Vimeo ID"
+      - text: Masechta
+      - textbox "Masechta":
+        - /placeholder: Berachos
+      - text: Perek
+      - textbox "Perek":
+        - /placeholder: "1"
+      - text: Mishnah range
+      - textbox "Mishnah range":
+        - /placeholder: 1-3
+      - text: Duration seconds
+      - spinbutton "Duration seconds"
+      - text: Thumbnail URL
+      - textbox "Thumbnail URL":
+        - /placeholder: https://
+      - text: Description
+      - textbox "Description": Concept of a micro school with one Rebbe providing inspiration and motivation, supplemented by external service providers offering extracurricular activities. The model includes a free index of providers with optional paid marketing/admin services and discounts for students within the network.
+      - text: Transcript notes
+      - textbox "Transcript notes"
+      - text: Source sheet draft
+      - textbox "Source sheet draft"
+      - button "Save / Attach Vimeo Video"
+      - button "Preview Upload"
+      - text: Asset type
+      - button "Asset type": source sheet
+      - text: Asset title
+      - textbox "Asset title":
+        - /placeholder: Worksheet or source sheet
+      - text: Linked asset URL
+      - textbox "Linked asset URL":
+        - /placeholder: https://
+      - text: Status
+      - button "Status": draft
+      - text: Description
+      - textbox "Description"
+      - button "Attach Source Asset"
+      - paragraph: No linked assets yet.
+      - text: Visibility
+      - button "Visibility": tier
+      - text: Audience tier
+      - button "Audience tier": library only
+      - text: Approval phrase
+      - textbox "Approval phrase":
+        - /placeholder: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING
+      - text: Rollback note
+      - textbox "Rollback note":
+        - /placeholder: Reason
+      - button "Member Preview"
+      - button "Approve"
+      - button "Publish"
+      - link "Open Library":
+        - /url: /member-library
+  - region "One Time private question moderation queue":
+    - strong: Private Question Moderation Queue
+    - text: 4 private review items
+    - paragraph: One Time questions stay private, no-send, and non-public. This queue is not a forum and does not create member-visible answers.
+    - strong: "4"
+    - text: Total
+    - strong: "4"
+    - text: Needs Review
+    - strong: "0"
+    - text: Source Sheet
+    - strong: "0"
+    - text: "Safe Response Guardrails: no public forum, no member-visible feed, no email, no WhatsApp/SMS, no portal notification, no agent job, and no external CRM write. Reviews still go through the approval-gated"
+    - code: review_moderated_question
+    - text: action.
+    - heading "Private Question Digest Preview" [level=3]
+    - paragraph: Rabbi-facing review digest only. It groups private questions for triage without creating forum posts, publishing answers, sending notifications, or exposing submitter identities.
+    - text: No-write
+    - strong: Digest mode
+    - paragraph: Read-only summary generated from the private moderation queue.
+    - text: No-write Preview only
+    - strong: Visibility
+    - paragraph: Digest items stay hidden from members until an explicit future publish/response approval exists.
+    - text: Private Private
+    - strong: External writes
+    - paragraph: No email, WhatsApp, Telegram, Google, Buffer, billing, WAPI, member-library, portal, or external CRM write runs from this digest.
+    - text: Locked None
+    - article:
+      - text: Needs triage 4 items
+      - paragraph: Triage into Rabbi review, source-sheet support, clarification, duplicate grouping, or private rejection.
+      - list:
+        - listitem: Live smoke private question - Can the Rabbi review this smoke question privately?
+        - listitem: Live smoke private question - Can the Rabbi review this smoke question privately?
+        - listitem: Live smoke private question - Can the Rabbi review this smoke question privately?
+        - listitem: Live smoke private question - Can the Rabbi review this smoke question privately?
+    - strong: Duplicate grouping candidates
+    - paragraph: Live smoke private question (4)
+    - text: Review 1 topic
+    - strong: Next step 1
+    - paragraph: Review needs-triage questions first.
+    - text: Private Manual review
+    - strong: Next step 2
+    - paragraph: Group duplicates before asking Rabbi to answer.
+    - text: Private Manual review
+    - strong: Next step 3
+    - paragraph: Route source-heavy questions to source-sheet support.
+    - text: Private Manual review
+    - strong: Next step 4
+    - paragraph: Keep parent/member-safe responses private until explicitly approved.
+    - text: Private Manual review
+    - strong: Guardrail 1
+    - paragraph: No forum post is created by this digest.
+    - text: No-write Locked
+    - strong: Guardrail 2
+    - paragraph: No member-visible answer is published by this digest.
+    - text: No-write Locked
+    - strong: Guardrail 3
+    - paragraph: No email, WhatsApp, SMS, Telegram, portal notification, Google, Buffer, billing, member-library, WAPI, or external CRM write runs from this digest.
+    - text: No-write Locked
+    - article:
+      - text: Needs review Moderated question
+      - paragraph: Can the Rabbi review this smoke question privately?
+      - text: Codex Auth Support Smoke Ã‚Â·Live smoke private question Ã‚Â·21 Jun, 20:32 Private Member hidden No-send No forum post
+    - article:
+      - text: Needs review Moderated question
+      - paragraph: Can the Rabbi review this smoke question privately?
+      - text: Codex Auth Support Smoke Ã‚Â·Live smoke private question Ã‚Â·21 Jun, 18:38 Private Member hidden No-send No forum post
+    - article:
+      - text: Needs review Moderated question
+      - paragraph: Can the Rabbi review this smoke question privately?
+      - text: Codex Auth Support Smoke Ã‚Â·Live smoke private question Ã‚Â·21 Jun, 18:35 Private Member hidden No-send No forum post
+    - article:
+      - text: Needs review Moderated question
+      - paragraph: Can the Rabbi review this smoke question privately?
+      - text: Codex Auth Support Smoke Ã‚Â·Live smoke private question Ã‚Â·21 Jun, 18:33 Private Member hidden No-send No forum post
+  - region "One Time publishing approval packet":
+    - strong: One Time Publishing Approval Packet
+    - text: Readiness checklist
+    - paragraph: No Buffer/social, email, WhatsApp, Drive/video-host, checkout, member visibility, or external CRM write runs from this packet.
+    - article:
+      - strong: Member-library destination
+      - text: Needs approval
+      - paragraph: Confirm where approved videos live, who can see them, and whether the destination is BNA-hosted, Rabbi-owned, Vimeo, Drive, Replit, or another app.
+    - article:
+      - strong: Visibility and audience rules
+      - text: Needs approval
+      - paragraph: Define eligible One Time members, preview/admin-only states, paid/free access, and private-question/source sensitivity before any member visibility.
+    - article:
+      - strong: Hosted media provider
+      - text: 0 ready
+      - paragraph: Choose hosted media URL policy, upload/rollback owner, thumbnail policy, and whether Drive/video-host writes are allowed.
+    - article:
+      - strong: Notification and social channels
+      - text: No-send until approved
+      - paragraph: Approve channel, copy, recipient/source list, Buffer/social scheduling, newsletter, WhatsApp, and rollback/no-send path separately.
+    - article:
+      - strong: Confirmation phrase
+      - text: Required for live publishing
+      - paragraph: Use APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING only after destination, visibility, hosting, copy, smoke item, and rollback are approved.
+    - article:
+      - strong: Smoke evidence
+      - text: Not run yet
+      - paragraph: Use one approved test item, verify destination readback, verify no publish-now behavior without separate approval, and record rollback/takedown evidence.
+    - button "Preview Decision Draft"
+    - button "Copy Phrase"
+    - paragraph:
+      - text: Preview Decision Draft logs a local
+      - code: create_decision
+      - text: dry-run only. It creates no decision task and performs no publishing, send, checkout, member visibility, Drive/video-host, Buffer/social, or external CRM write.
+  - article:
+    - strong: Library Card
+    - text: 0 saved / 0 review / 0 approved
+    - paragraph: Title, summary, release review, and member-library readiness.
+  - article:
+    - strong: Transcript
+    - text: 0 saved / 0 review / 0 approved
+    - paragraph: Transcript text or transcript review notes.
+  - article:
+    - strong: Thumbnail
+    - text: 0 saved / 0 review / 0 approved
+    - paragraph: Design brief or hosted thumbnail reference.
+  - article:
+    - strong: Worksheet / Source Sheet
+    - text: 0 saved / 0 review / 0 approved
+    - paragraph: Student handout or source-sheet review lane.
+  - article:
+    - strong: Social Plan
+    - text: 0 saved / 0 review / 0 approved
+    - paragraph: Internal copy plan only; no Buffer write from this workspace.
+  - article:
+    - strong: Newsletter Plan
+    - text: 0 saved / 0 review / 0 approved
+    - paragraph: Internal newsletter plan only; no email send from this workspace.
+  - text: No One Time video library items match these filters yet. Use the One Time video-library helper to create scoped review records first.
+- dialog "Shloimie's BNA Helper":
+  - text: Shloimie's BNA Helper Provider Workspace Admin / Content
+  - button "Close Shloimie's BNA Helper": x
+  - region "Helper scope":
+    - strong: admin / rabbi_sheller_provider
+    - text: Scoped to this workspace and current page context. 0 tools standard
+    - button "Teach helper"
+  - text: Ready for scoped Operations actions. Confirmation is required before email sends, social scheduling, or other sensitive changes.
+  - textbox "Ask Shloimie's BNA Helper to open a task, mark done, report a problem, draft an email, check the queue, or prepare an action."
+  - button "Send"

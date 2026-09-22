@@ -1,0 +1,13 @@
+{
+  "route": "/operations?workspace=platform&view=communications&section=email&inbox=rabbi",
+  "viewport": "1440-desktop",
+  "checks": {
+    "has_h1": true,
+    "horizontal_overflow": false,
+    "visible_action_count": 45,
+    "unlabeled_action_count": 0,
+    "visible_control_count": 7,
+    "controls_without_labels": 0,
+    "browser_content_untrusted": true
+  }
+}

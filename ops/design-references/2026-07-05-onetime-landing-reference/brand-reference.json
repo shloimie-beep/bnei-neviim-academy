@@ -1,0 +1,31 @@
+{
+  "captured_at": "2026-07-05T15:20:00+03:00",
+  "source_type": "repo_asset_and_operator_note",
+  "source_location": [
+    "public/images/one-time-existing-site-preview.jpg",
+    "raw-input/RAW-20260705-005-onetime-landing-signup-funnel.md"
+  ],
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "authoritative_for": [
+    "public_one_time_landing_visual_direction",
+    "black_white_yellow_brand_application",
+    "signup_funnel_structure"
+  ],
+  "colors": {
+    "black": "#080910",
+    "dark_panel": "#12151d",
+    "yellow": "#ede518",
+    "white": "#ffffff",
+    "paper": "#f7f7f1"
+  },
+  "typography": {
+    "display": "serif fallback matching original-site feel",
+    "body": "Inter/system sans"
+  },
+  "nav_style": "dark sticky toolbar, logo left, compact nav right, yellow CTA",
+  "hero_style": "full-viewport dark overlay, centered serif headline, primary yellow CTA, secondary white CTA, yellow ticker",
+  "card_style": "8px radius, subtle border, dark cards for program, light cards for FAQ/logos",
+  "contradictions": [],
+  "next_action": "Replace placeholder hero/card media only after final approved assets are supplied."
+}

@@ -1,0 +1,35 @@
+- main:
+  - button "Open navigation"
+  - heading "Access" [level=1]
+  - text: Provider Workspace Admin / Overview / Access
+  - button "Ask about One Time Mishnah Class / Overview / Access": Ask
+  - text: 12 Jul
+  - navigation "Overview sections":
+    - tablist "Overview sections":
+      - tab "Package Status" [selected]: Package Status 0
+      - tab "Launch Readiness": Launch Readiness 0
+      - tab "Role Links": Role Links 0
+      - tab "Owner Actions": Owner Actions 0
+  - text: Provider Workspace
+  - heading "One Time Mishnah Class" [level=2]
+  - paragraph: Rabbi Sheller is the current service provider and revenue-share partner for this workspace. Members are participants, not BNA students, and this workspace does not expose BNA accountability data.
+  - heading "Payment / Access" [level=3]
+  - text: 1 participants
+  - table:
+    - rowgroup:
+      - row "Participant Status Access Next Action":
+        - columnheader "Participant"
+        - columnheader "Status"
+        - columnheader "Access"
+        - columnheader "Next Action"
+    - rowgroup:
+      - row "Mishnayos member sample Needs payment/access review Load participants from provider signup/payment source.":
+        - cell "Mishnayos member"
+        - cell "sample"
+        - cell "Needs payment/access review"
+        - cell "Load participants from provider signup/payment source."
+  - paragraph: No payment, payout, or access sync fires until the connector is explicitly configured and confirmed.
+  - heading "Command Bot Actions" [level=3]
+  - text: 0 typed actions
+  - paragraph: The bot reads page/workspace context and previews typed actions. Sensitive actions require approval and dedicated handlers before mutation.
+  - text: No typed actions are registered for this page yet.

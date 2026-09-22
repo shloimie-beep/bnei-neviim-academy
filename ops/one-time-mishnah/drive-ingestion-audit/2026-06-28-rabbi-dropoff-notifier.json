@@ -1,0 +1,55 @@
+{
+  "date": "2026-06-28",
+  "status": "active_local_scheduled_task",
+  "watched_folders": [
+    {
+      "key": "videoDrop",
+      "title": "04.00 Upload Here - Videos and Audio for Transcription",
+      "url": "https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t",
+      "triggers_transcription": true,
+      "source_material_only": false
+    },
+    {
+      "key": "sourceMaterials",
+      "title": "04.05 Upload Here - Slideshows and Source Materials",
+      "url": "https://drive.google.com/drive/folders/15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp",
+      "triggers_transcription": false,
+      "source_material_only": true
+    }
+  ],
+  "drive_title_correction": {
+    "folder_key": "videoDrop",
+    "before": "04.00 Upload Here - Rabbi Video Drops",
+    "after": "04.00 Upload Here - Videos and Audio for Transcription"
+  },
+  "automation": {
+    "task_name": "BNA One Time Drive Dropoff Email",
+    "frequency_minutes": 5,
+    "watcher_script": "scripts/notify-one-time-drive-dropoffs.mjs",
+    "manual_runner": "scripts/run-one-time-drive-dropoff-notifier.ps1",
+    "scheduled_launcher": "scripts/run-one-time-drive-dropoff-notifier.vbs",
+    "state_path": ".runtime/one-time-drive-dropoff-notifier/state.json",
+    "log_path": ".runtime/one-time-drive-dropoff-notifier/scheduled-task.log",
+    "recipient": "operator_email_configured_in_local_scheduled_task"
+  },
+  "verification": {
+    "baseline_marked_seen": 0,
+    "gmail_setup_test_message_id": "19f0f4ac1dcbce47",
+    "scheduled_task_last_result": 0,
+    "scheduled_log_new_notification_count": 0,
+    "scheduled_log_watched_folder_count": 2
+  },
+  "guardrails": {
+    "operator_notification_email_only": true,
+    "no_transcription": true,
+    "no_ai_call": true,
+    "no_raw_transcript_export": true,
+    "no_production_db_mutation": true,
+    "no_student_or_member_portal_write": true,
+    "no_score_or_progress_write": true,
+    "no_class_backfill": true,
+    "no_drive_move_delete": true,
+    "no_publish_or_social_newsletter_send": true,
+    "no_access_grant": true
+  }
+}

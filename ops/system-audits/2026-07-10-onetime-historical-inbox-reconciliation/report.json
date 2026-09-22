@@ -1,0 +1,110 @@
+{
+  "generated_at": "2026-07-10T11:58:00+03:00",
+  "requirement_id": "REQ-20260710-021",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "status": "needs_operator_decision",
+  "privacy": {
+    "raw_email_addresses_committed": false,
+    "raw_message_bodies_committed": false,
+    "contact_exports_committed": false,
+    "credential_values_committed": false,
+    "evidence_level": "metadata_counts_and_redacted_readback"
+  },
+  "source_candidates": [
+    {
+      "path": "C:/Users/User/Downloads/subscribed_email_audience_export_b12dfa345d.csv",
+      "type": "csv",
+      "rows": 1311,
+      "columns": 31,
+      "last_modified": "2026-06-21T14:37:20",
+      "sha256_prefix": "B1E7BB30E6464D4C"
+    },
+    {
+      "path": "C:/Users/User/Downloads/unsubscribed_email_audience_export_b12dfa345d.csv",
+      "type": "csv",
+      "rows": 152,
+      "columns": 35,
+      "last_modified": "2026-06-21T14:37:17",
+      "sha256_prefix": "4A5F84834B4E4F80"
+    },
+    {
+      "path": "C:/Users/User/Downloads/cleaned_email_audience_export_b12dfa345d.csv",
+      "type": "csv",
+      "rows": 60,
+      "columns": 33,
+      "last_modified": "2026-06-21T14:37:14",
+      "sha256_prefix": "B3093F6D3A7B4E9E"
+    },
+    {
+      "path": "C:/Users/User/Downloads/Rabbi Scheller Followers.xlsx",
+      "type": "xlsx",
+      "rows": 812,
+      "shape": "ta-speaker_540_followers!A1:B812",
+      "last_modified": "2026-06-21T14:37:23",
+      "sha256_prefix": "E17BBB32C8B2E642"
+    },
+    {
+      "path": "C:/Users/User/Downloads/subscribers.csv",
+      "type": "csv",
+      "rows": 88,
+      "columns": 5,
+      "last_modified": "2026-06-16T19:56:27",
+      "sha256_prefix": "3732CB909F796920",
+      "prior_import_report": "ops/imports/2026-06-16-one-time-email-contacts-import.md"
+    },
+    {
+      "path": "C:/Users/User/Downloads/subscribers_detailed.csv",
+      "type": "csv",
+      "rows": 86,
+      "columns": 8,
+      "last_modified": "2026-06-17T18:53:16",
+      "sha256_prefix": "0E05CD969C15E732"
+    }
+  ],
+  "located_source_row_totals": {
+    "june_21_audience_and_followers": 2335,
+    "including_subscribers_csv": 2423,
+    "including_subscribers_and_subscribers_detailed": 2509
+  },
+  "existing_evidence": {
+    "small_subscribers_import_rows": 88,
+    "small_subscribers_import_report": "ops/imports/2026-06-16-one-time-email-contacts-import.md",
+    "resend_backfill_received_emails": 9,
+    "resend_backfill_report": "ops/live-smokes/2026-07-06T15-03-36-636Z-one-time-mailbox-resend-backfill.md"
+  },
+  "live_visibility": {
+    "base_url": "https://join.onetimeonetime.com",
+    "operations_auth_source": "railway",
+    "parent_leads_count": 4,
+    "parent_leads_email_import_tag_count": 0,
+    "parent_leads_no_send_tag_count": 0,
+    "parent_leads_campaign_staging_tag_count": 0,
+    "crm_total": 12,
+    "crm_filtered_total": 12,
+    "crm_email_import_filtered_total": 0,
+    "crm_email_import_cards_returned": 0,
+    "crm_filter_tags_include_email_import": false,
+    "no_send": true,
+    "external_write_performed": false,
+    "provider_mailbox_current_readback": {
+      "attempted": true,
+      "status": "blocked",
+      "reason": "stored provider mailbox credential returned 401 against current live provider login",
+      "latest_usable_prior_report": "ops/live-smokes/2026-07-06T15-03-36-636Z-one-time-mailbox-resend-backfill.md"
+    }
+  },
+  "technical_gaps": [
+    "Existing import script handles only the older 5-column subscribers.csv format.",
+    "June 21 source package mixes subscribed, unsubscribed, cleaned/bounced, and follower rows that require separate suppression/retention policy.",
+    "CRM workbench API is not a complete 2600-row import-proof surface because its source queries are limited to 500 rows."
+  ],
+  "decision": {
+    "id": "DEC-20260710-004",
+    "status": "needs_operator_decision",
+    "missing_information": "canonical source package and suppression/import policy for subscribed, unsubscribed, cleaned, and follower rows",
+    "owner": "Shloimie / One Time data owner",
+    "recommended_option": "approve a no-write dry-run normalizer for the June 21 source files before any production import",
+    "exact_next_action": "Run a redacted no-write import dry-run over the approved source package; do not write production contact rows until source/suppression policy is approved."
+  }
+}

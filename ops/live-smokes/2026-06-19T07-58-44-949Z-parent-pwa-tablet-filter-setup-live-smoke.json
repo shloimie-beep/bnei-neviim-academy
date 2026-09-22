@@ -1,0 +1,43 @@
+{
+  "started_at": "2026-06-19T07:58:44.949Z",
+  "app_url": "https://bneineviimacademy.org",
+  "success": false,
+  "checks": [
+    {
+      "name": "live parent manifest is parent-scoped",
+      "ok": false,
+      "duration_ms": 15368,
+      "error": "manifest returned 502"
+    },
+    {
+      "name": "live parent page exposes install and setup contracts",
+      "ok": false,
+      "duration_ms": 15525,
+      "error": "parent.html returned 502"
+    },
+    {
+      "name": "live setup API remains parent-session gated",
+      "ok": false,
+      "duration_ms": 30553,
+      "error": "anonymous setup read expected 401, got 502"
+    },
+    {
+      "name": "mocked parent setup UI works at 390px",
+      "ok": false,
+      "duration_ms": 28202,
+      "error": "page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-parent-section-panel=\"setup\"]:not(.portal-section-hidden)') to be visible\u001b[22m\n"
+    },
+    {
+      "name": "mocked parent setup UI works at 820px",
+      "ok": false,
+      "duration_ms": 25435,
+      "error": "page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-parent-section-panel=\"setup\"]:not(.portal-section-hidden)') to be visible\u001b[22m\n"
+    },
+    {
+      "name": "mocked parent setup UI works at 1024px",
+      "ok": false,
+      "duration_ms": 25701,
+      "error": "page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-parent-section-panel=\"setup\"]:not(.portal-section-hidden)') to be visible\u001b[22m\n"
+    }
+  ]
+}

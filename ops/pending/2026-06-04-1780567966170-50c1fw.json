@@ -1,0 +1,18 @@
+{
+  "id": "2026-06-04-1780567966170-50c1fw",
+  "kind": "drive-voice",
+  "createdAt": "2026-06-04T10:12:46.170Z",
+  "chatId": "8202155026",
+  "messageId": 0,
+  "caption": "Auto Drive Intake: Transcribe audio/video or describe image. Title/name it from the content. Save it in the BNA content queue with the Drive link. Then ask the operator what to do next with WhatsApp and Facebook buttons.",
+  "localPath": "C:\\Users\\User\\BNA v2.0\\media-inbox\\2026-06-04\\2026-06-04T10-12-13-935Z-drive-Voice-260604_095939.m4a",
+  "mediaUrl": "https://drive.google.com/file/d/1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa/view?usp=drivesdk",
+  "mimeType": "audio/mp4",
+  "targets": [],
+  "publishNow": false,
+  "summary": "",
+  "status": "queued",
+  "notes": [
+    "Google Drive file 1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa downloaded from Raw Intake"
+  ]
+}

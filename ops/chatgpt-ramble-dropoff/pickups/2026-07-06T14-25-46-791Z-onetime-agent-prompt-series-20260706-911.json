@@ -1,0 +1,12 @@
+{
+  "generated_at": "2026-07-06T14:25:43.968Z",
+  "packet_id": "onetime-agent-prompt-series-20260706-911",
+  "packet_path": "ops/chatgpt-ramble-dropoff/incoming/onetime-agent-prompt-series-20260706-911",
+  "fingerprint": "1dee0ca24ebe3eae7b913fa25c44565f3bd92bbcdde2f29268b43df17ccbae2d",
+  "status": "queued",
+  "queued": true,
+  "task_id": 1945,
+  "agent_job_id": 397,
+  "findings": [],
+  "error": ""
+}

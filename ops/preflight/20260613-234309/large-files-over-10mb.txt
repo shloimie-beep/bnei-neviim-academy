@@ -1,0 +1,54 @@
+﻿
+    Length FullName                                                                                                    
+    ------ --------                                                                                                    
+1801061943 C:\Users\User\BNA v2.0\media-inbox\2026-05-27\2026-05-27T17-26-11-630Z-drive-20260527_140157.mp4            
+1801061943 C:\Users\User\BNA v2.0\media-inbox\2026-05-28\2026-05-28T05-47-27-390Z-drive-20260527_140157.mp4            
+ 970142294 C:\Users\User\BNA v2.0\media-inbox\2026-06-04\2026-06-04T16-44-01-281Z-drive-20260604_191840.mp4            
+ 681426432 C:\Users\User\BNA v2.0\media-inbox\2026-06-11\2026-06-11T11-17-10-845Z-drive-20260611_135837.mp4            
+ 281411798 C:\Users\User\BNA v2.0\media-inbox\2026-05-31\2026-05-31T18-27-43-988Z-drive-20260531_185700.mp4            
+ 202939392 C:\Users\User\BNA v2.0\node_modules\.remotion\chrome-headless-shell\win64\chrome-headless-shell-win64\chr...
+ 179321039 C:\Users\User\BNA v2.0\media-inbox\2026-06-04\2026-06-04T10-12-13-935Z-drive-Voice-260604_095939.m4a        
+ 175152078 C:\Users\User\BNA v2.0\media-inbox\2026-06-10\2026-06-10T10-11-37-003Z-drive-Voice-260610_100130.m4a        
+ 136912350 C:\Users\User\BNA v2.0\media-inbox\2026-06-03\2026-06-03T10-06-22-861Z-drive-Learning-pool.m4a              
+ 135232869 C:\Users\User\BNA v2.0\media-inbox\2026-06-11\2026-06-11T10-10-45-424Z-drive-Voice-260611_100701.m4a        
+ 118640404 C:\Users\User\BNA v2.0\media-inbox\2026-06-08\2026-06-08T10-13-25-840Z-drive-Class-iran-war.m4a             
+  98978262 C:\Users\User\BNA v2.0\media-inbox\2026-05-28\2026-05-28T15-27-16-790Z-drive-Weber-torah.m4a                
+  92602388 C:\Users\User\BNA v2.0\media-inbox\2026-06-09\2026-06-09T10-08-30-119Z-drive-Weber-clas-amita-huda.m4a      
+  88339299 C:\Users\User\BNA v2.0\.next\cache\webpack\server-production\0.pack                                         
+  82959930 C:\Users\User\BNA v2.0\media-inbox\2026-06-11\2026-06-11T19-13-16-557Z-drive-Voice-260611_204453.m4a        
+  82797568 C:\Users\User\BNA v2.0\node_modules\ffmpeg-static\ffmpeg.exe                                                
+  82552376 C:\Users\User\BNA v2.0\media-inbox\2026-06-08\2026-06-08T10-09-58-871Z-drive-Voice-260607_100052.m4a        
+  61903429 C:\Users\User\BNA v2.0\media-inbox\2026-06-01\2026-06-01T12-31-25-385Z-drive-Voice-260601_101009.m4a        
+  57598116 C:\Users\User\BNA v2.0\media-inbox\2026-05-31\2026-05-31T18-34-16-952Z-drive-Meeting-rabbi-sheller.m4a      
+  52279284 C:\Users\User\BNA v2.0\media-inbox\2026-06-09\2026-06-09T08-23-28-024Z-drive-Webers-learning.m4a            
+  52249976 C:\Users\User\BNA v2.0\install-packages\BNA-Laptop-Installer-20260610-140913\payload\repo-source.zip        
+  49006632 C:\Users\User\BNA v2.0\media-inbox\2026-05-28\whatsapp-parts\2026-05-28T05-47-27-390Z-drive-20260527_1401...
+  47475200 C:\Users\User\BNA v2.0\node_modules\@rspack\binding-win32-x64-msvc\rspack.win32-x64-msvc.node               
+  47094859 C:\Users\User\BNA v2.0\media-inbox\2026-06-04\whatsapp-parts\2026-06-04T16-44-01-281Z-drive-20260604_1918...
+  45451334 C:\Users\User\BNA v2.0\media-inbox\2026-05-28\whatsapp-parts\2026-05-28T05-47-27-390Z-drive-20260527_1401...
+  44045623 C:\Users\User\BNA v2.0\media-inbox\2026-06-10\2026-06-10T13-22-25-578Z-drive-Voice-260610_153550.m4a        
+  42842202 C:\Users\User\BNA v2.0\node_modules\.cache\webpack\remotion-production-4.0.471\093005c3ff66e4fe4cc1767a19...
+  37679226 C:\Users\User\BNA v2.0\media-inbox\2026-06-01\2026-06-01T12-34-23-590Z-drive-Voice-260601_121819.m4a        
+  34527336 C:\Users\User\BNA v2.0\ops\release\2026-06-11-operations-release-cleanup\full-dirty-diff.patch              
+  33127578 C:\Users\User\BNA v2.0\node_modules\.cache\webpack\remotion-production-4.0.471\093005c3ff66e4fe4cc1767a19...
+  32830334 C:\Users\User\BNA v2.0\media-inbox\2026-06-11\whatsapp-parts\2026-06-11T11-17-10-845Z-drive-20260611_1358...
+  27803795 C:\Users\User\BNA v2.0\.next\cache\webpack\client-production\0.pack                                         
+  25773941 C:\Users\User\BNA v2.0\renders\bna-26-27-admissions-no-black-intro.mp4                                      
+  23114141 C:\Users\User\BNA v2.0\.next\cache\webpack\edge-server-production\0.pack                                    
+  21735618 C:\Users\User\BNA v2.0\ops\ux-audit-runs\2026-06-11-click-map\actions.csv                                   
+  19260770 C:\Users\User\BNA v2.0\node_modules\.cache\webpack\remotion-production-4.0.471\093005c3ff66e4fe4cc1767a19...
+  16481792 C:\Users\User\BNA v2.0\node_modules\@remotion\compositor-win32-x64-msvc\avcodec-60.dll                      
+  16414720 C:\Users\User\BNA v2.0\node_modules\@remotion\compositor-win32-x64-msvc\avcodec-61.dll                      
+  15447525 C:\Users\User\BNA v2.0\ops\ux-audit-runs\2026-06-11-click-map\manifest.json                                 
+  14921343 C:\Users\User\BNA v2.0\ops\ux-audit-runs\2026-06-11-click-map\screenshots\desktop\BNAADMIN__BNA__CONTENT_...
+  14817798 C:\Users\User\BNA v2.0\ops\ux-audit-runs\2026-06-11-click-map\screenshots\desktop\PROVIDERADMIN__SHELLER_...
+  13146590 C:\Users\User\BNA v2.0\ops\ux-audit-runs\2026-06-11-click-map\screenshots\desktop\PROVIDERADMIN__SHELLER_...
+  12767745 C:\Users\User\BNA v2.0\media-inbox\2026-05-31\whatsapp-parts\2026-05-31T18-27-43-988Z-drive-20260531_1857...
+  12576656 C:\Users\User\BNA v2.0\.next\cache\webpack\server-production\index.pack                                     
+  12576627 C:\Users\User\BNA v2.0\.next\cache\webpack\server-production\index.pack.old                                 
+  11635200 C:\Users\User\BNA v2.0\node_modules\@esbuild\win32-x64\esbuild.exe                                          
+  10876464 C:\Users\User\BNA v2.0\node_modules\.remotion\chrome-headless-shell\win64\chrome-headless-shell-win64\icu...
+  10784982 C:\Users\User\BNA v2.0\node_modules\.cache\webpack\remotion-production-4.0.471\093005c3ff66e4fe4cc1767a19...
+  10776207 C:\Users\User\BNA v2.0\node_modules\googleapis\build\src\apis\compute\alpha.d.ts                            
+
+

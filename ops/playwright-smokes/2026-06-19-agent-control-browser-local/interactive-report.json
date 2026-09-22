@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "target": "/operations/agents/runs/run_agent_control_smoke",
+  "runKey": "run_agent_control_smoke",
+  "actionSequence": [
+    "claim",
+    "progress",
+    "artifacts",
+    "submit",
+    "seal"
+  ],
+  "finalStatus": "sealed_pass",
+  "artifactCount": 2,
+  "eventTypes": [
+    "created",
+    "prompt_generated",
+    "claimed",
+    "progress",
+    "evidence_attached",
+    "submitted",
+    "sealed"
+  ],
+  "screenshot": "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png",
+  "guardrails": {
+    "productionWrites": false,
+    "productionDataMutation": false,
+    "externalWrites": false,
+    "secretsInFixture": false,
+    "broadCrawl": false
+  }
+}

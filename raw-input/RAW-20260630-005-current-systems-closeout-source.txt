@@ -1,0 +1,411 @@
+You are working in the BNA / One Time system.
+
+Primary repo:
+shloimie-beep/bnei-neviim-academy
+
+Primary local root:
+C:\Users\User\BNA v2.0
+
+Goal:
+Finish the current in-flight operational systems before Shloimie resumes UI correction work. Do not start a broad redesign. Audit, debug, repair, test, push, deploy where authorized, and leave the app in a clean state with the unfinished systems properly reconciled.
+
+Highest priorities, in order:
+1. One Time Mishnah Class email/contact setup.
+2. BNA class/content parsing, sorting, topic taxonomy, and Drive-upload processing.
+3. Telegram bot/runtime health and natural-language parser behavior.
+4. Dirty worktree / branch / PR / deployment reconciliation.
+5. Only obvious UI corrections needed to make the above usable; defer larger visual redesign until Shloimie resumes UI corrections.
+
+Important user complaint to resolve:
+Operations Content currently shows many cards overall, but filtering by Torah shows only one item. This is not acceptable. Torah/class content is not being parsed, classified, sorted, and surfaced correctly. Cards should not show random raw script, weird fallback text, raw transcript fragments, or mechanical job names. Content must be organized by useful topic, date, class/session, source, project/workspace, and status.
+
+Known current context to re-check, not blindly trust:
+- The live app is the Express/Postgres/static app centered on server.js, public/, src/lib/, and root Railway migrations.
+- The active canonical project key for One Time Mishnah Class is one_time_mishnah_class.
+- The One Time workspace/provider key is rabbi_sheller_provider.
+- Do not revive archived React/Supabase paths.
+- Do not create a second task system, second parser protocol, second agent queue, or second execution source of truth.
+- PR #54 recently fixed the Operations Content Library recursion/rendering bug. It reported 70 rendered cards, but Torah still filtered to 1 card. Treat that as an unresolved taxonomy/routing bug, not a completed feature.
+- PR #52, “Wire OneTime Resend inbound CRM,” is open/draft. It adds inbound Resend CRM/contact plumbing but still has live deployment/configuration blockers.
+- PR #53 repaired Telegram Torah participation parsing and was merged/deployed, but Telegram runtime and parser behavior still need current readback.
+- Issue #18 remains the read-only guardrail for class intake reconciliation/backfill. Do not perform class backfill writes unless the established safe_to_apply gate and explicit owner approval exist.
+- Issue #24 concerns helper/Agent Review Hub/navigation/newest Drive recording trace; only touch it if it directly blocks the current parsing/contact/email closeout.
+
+Hard safety rules:
+- Do not print, commit, screenshot, or expose secrets.
+- Do not hard-delete production parent, student, billing, communication, meeting, content, or task records.
+- Do not send real email, WhatsApp, Telegram broadcasts, invoices, payment requests, Zoom invites, DNS changes, or external account mutations without explicit owner approval.
+- Do not expose raw transcript bodies or private student/parent details in GitHub, screenshots, logs, or evidence files.
+- Use backups, dry-runs, reversible archive/quarantine states, idempotency keys, and rollback notes for any cleanup.
+- If a task requires a real external account/domain/DNS/provider decision, create exactly one concise Decision and continue independent work.
+
+Start with preflight:
+1. Confirm current git status, branch, HEAD, origin/master, open PRs, dirty worktree, untracked files, and local-only changes.
+2. Do not reset, clean, rebase, discard, or overwrite unrelated local changes.
+3. Identify whether work should continue from current branch/worktree or whether a new narrow branch is needed from current master.
+4. Confirm Railway target, deployed SHA, latest successful deployment, app health, and live API health.
+5. Run:
+   - npm run bna:run:status
+   - npm run bna:run:validate
+   - npm run secrets:audit
+   - git diff --check
+6. Read:
+   - AGENTS.md
+   - BNA-START-HERE.md
+   - MEMORY.md
+   - SYSTEM-STATE.md
+   - TASKS.md
+   - docs/BNA-RAMBLE-TO-DONE.md
+   - relevant current execution-run files
+   - raw-input/RAW-20260630-003-content-library-filter-visibility-followup.md
+   - tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md
+   - ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/NEXT-SESSION.md
+   - PR #52, #53, #54 metadata/diffs
+   - Issue #18 and Issue #24 only for guardrails/current blockers
+
+Create one closeout run/report:
+Create or update one canonical run/report, not a parallel backlog:
+ops/system-audits/2026-06-30-current-systems-closeout.md
+and, if useful:
+ops/system-audits/2026-06-30-current-systems-closeout.json
+
+The report must include:
+- Git truth
+- Deploy truth
+- Dirty worktree inventory
+- Open PR/state inventory
+- Current blockers
+- Email/contact state
+- Content parsing/taxonomy state
+- Telegram bot/runtime state
+- Class upload/Drive intake state
+- Tests run
+- Files changed
+- Deploy/live smoke state
+- Remaining Decisions only where truly owner/external
+
+Workstream A — One Time email/contact setup:
+Audit and finish the One Time email/contact workflow as far as can be done without real sends/DNS/account-owner actions.
+
+Required checks:
+1. Inspect PR #52 branch and decide whether it should be rebased/updated/merged/continued or replaced by a clean branch.
+2. Verify the code paths added or touched:
+   - server.js
+   - public/operations.html
+   - src/lib/integrations/resend-client.js
+   - src/lib/integrations/resend-inbound-crm.js
+   - tests/resend-client.test.js
+   - tests/resend-inbound-crm.test.js
+   - tests/resend-inbound-webhook.test.js
+   - tests/one-time-communications-workspace.test.js
+   - tests/assistant-portal-communications-contract.test.js
+   - tests/communications-screening-import-ui.test.js
+   - docs/integrations/RESEND.md
+   - docs/operator-walkthroughs/integrations/resend-email.md
+3. Confirm the first-party email workspace supports or cleanly stubs:
+   - inbox/imported messages
+   - drafts
+   - approved-to-send
+   - sent/logged
+   - failed
+   - templates
+   - domain/readiness
+   - DNS setup tasks
+4. Confirm email list cards show:
+   - sender
+   - recipients
+   - subject
+   - preview
+   - date
+   - status
+   - workspace
+   - linked contact
+   - linked task/Decision
+   - provider/project context
+5. Confirm email details show:
+   - clean rendered content
+   - text fallback
+   - recipients
+   - attachments metadata only
+   - thread relationship
+   - delivery/readiness status
+   - linked contacts
+   - related task/ticket/Decision
+   - audit trail
+6. Confirm draft editor supports:
+   - subject
+   - from identity
+   - recipients
+   - reply-to
+   - body preview
+   - template selection
+   - workspace/project
+   - related record
+   - approval status
+   - cross-workspace recipient prevention
+7. Confirm inbound Resend webhook behavior:
+   - signed request verification
+   - invalid signature rejection
+   - email.received only
+   - fetch Received Email API by ID
+   - dedupe by event/email/message IDs
+   - contact match/create in rabbi_sheller_provider / one_time_mishnah_class
+   - bna_communications storage with safe metadata
+   - no raw secret/header leakage
+   - no cross-workspace contact pollution
+8. Confirm send controls remain disabled unless:
+   - sender identity exists
+   - domain is verified or fallback is explicitly approved
+   - recipients are validated
+   - explicit send confirmation is supplied
+9. If domain/sender/DNS is still unresolved, create exactly one Decision covering:
+   - selected One Time sender domain
+   - sender name
+   - sender email
+   - DNS owner
+   - required DNS records
+   - whether One Time uses its own Resend account/domain or the platform account
+   - recommended option
+   - exact owner action required
+10. Do not send real email.
+
+Deliverable for Workstream A:
+- Either finish and merge/deploy PR #52 safely, or produce a precise blocker explaining why not.
+- Add/refresh live smoke for email UI/readiness:
+  npm run app:smoke:email-resend-ux
+  npm run email:smoke
+  plus focused Resend tests.
+- Record exact live result.
+
+Workstream B — BNA content/class parsing, sorting, and Torah/topic filtering:
+This is the main user-visible bug. Operations Content must become trustworthy.
+
+Current observed failure:
+- Content Library now renders cards, but Torah filter shows only 1 card.
+- The user expects lots of Torah/class content to appear under Torah and be separated by topic/date/class/session.
+- Cards must not display raw/random script or mechanical fallback content.
+
+Audit:
+1. Inspect:
+   - public/operations.html
+   - src/lib/bna/content-card-view-model.js
+   - tests/content-card-view-model.test.js
+   - tests/operations-content-library-taxonomy.test.js
+   - scripts/audit-content-card-topic-filter.cjs
+   - scripts/export-content-digests.cjs
+   - scripts/sync-drive-content-library.mjs
+   - scripts/trace-newest-drive-recording.cjs
+   - scripts/audit-two-week-class-intake.cjs
+   - content-memory/transcript-digests/
+   - ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/
+   - any parser output/read-model files for job 64+ and newest Drive recordings
+2. Run:
+   - npm run content:card-topic-audit
+   - npm run content:transcript-gap-audit
+   - npm run content:recording-classify
+   - npm run watchdog:content
+   - npm run app:smoke:content-research-scope
+   - npm run app:smoke:class-upload-trace
+3. Confirm whether live API contains:
+   - expected total content jobs
+   - transcript/digest cards
+   - project/workspace keys
+   - topic/category arrays
+   - dates
+   - source type
+   - parser status
+   - class/session linkage
+   - questions extracted count
+   - scores/progress extracted count
+   - review status
+4. Confirm whether UI filtering uses safe digest/category/topic metadata, not raw transcript body search.
+5. Confirm why Torah only shows 1 card:
+   - missing topic metadata?
+   - normalized aliases wrong?
+   - Torah content routed as class_notes but not torah?
+   - class jobs lack multi-topic category arrays?
+   - digest cards not included in live deploy bundle?
+   - API returns digest cards but UI drops categories?
+   - Content filter counts computed before hydrated card model?
+   - project/workspace filter hiding records?
+   - old records never reprocessed?
+   - parser outputs stored in tables/files the UI does not read?
+   - topics named “Class Notes”/“Mishnah”/“Gemara” but not mapped to Torah?
+6. Repair the taxonomy model:
+   - Keep detailed categories such as class_notes, class_session, student_question, student_score, etc.
+   - Add broader topic buckets where needed, including Torah, One Time, Operations, Content/Marketing, Psychology, Health, Education, Parenting, Other.
+   - Allow multi-topic cards. A Torah class card can be both Torah and Class Notes.
+   - Torah should include class recordings/notes/questions/source sheets/Mishnah/Gemara/Chumash/Hebrew/Jewish learning unless explicitly unrelated.
+   - One Time Mishnah Class content should include One Time and Torah where appropriate.
+   - BNA Torah class content should include BNA/School context and Torah where appropriate.
+7. Repair card display:
+   - Use clean generated display titles.
+   - Show date where known.
+   - Show source/job ID in a small metadata line, not as the title.
+   - Show parse/digest/routing/topic status.
+   - Show next action.
+   - Show class/session/source/topic badges.
+   - Do not show raw transcript body.
+   - Do not show weird random script, raw JSON, escaped code, broken encoding, or mechanical filenames as primary card text.
+8. Backfill/reprocess safely:
+   - Do read-only/dry-run first.
+   - Rebuild privacy-safe digest/topic cards if needed.
+   - Include all relevant uploaded class jobs, not just a guessed range.
+   - Do not mutate production student/class/accountability records unless the established safe_to_apply gate and explicit owner approval exist.
+   - It is acceptable to update repo-safe digest metadata, UI/read-model logic, and non-sensitive classification artifacts.
+9. Add tests proving:
+   - Torah filter count is greater than 1 when digest fixtures contain Torah/class content.
+   - Multi-topic cards count in each applicable filter.
+   - Class Notes and Torah are not mutually exclusive.
+   - One Time Mishnah content appears under both One Time and Torah when appropriate.
+   - Raw transcript body is never exposed.
+   - Mechanical file names are replaced with clean generated titles.
+   - Missing parse/routing/topic states are explicit.
+   - UI topic counts match card arrays.
+10. Live verify:
+   - Operations Content renders nonzero cards.
+   - All topics count matches expected visible cards.
+   - Torah count is plausible and not 1 unless production evidence genuinely proves only one Torah card.
+   - Class Notes and One Time filters are sane.
+   - Search and filters work together.
+   - No console stack overflow.
+   - No card displays raw transcript/script/JSON.
+
+Deliverable for Workstream B:
+- A committed audit artifact:
+  ops/class-drive-intake/2026-06-30-content-topic-routing-closeout/
+    CONTENT-TOPIC-ROUTING-AUDIT.md
+    CONTENT-TOPIC-ROUTING-AUDIT.json
+    LIVE-READBACK.md
+- Updated tests.
+- Updated Operations UI/read model if needed.
+- Deployed/live-smoked if app-visible.
+
+Workstream C — class uploads, BNA folder parsing, questions, grades, and natural-language updates:
+The parser is the core app behavior. Verify that new and old class uploads/recordings/natural-language rambles are going through one canonical path.
+
+Required:
+1. Confirm every class upload/Drive raw intake/Telegram voice/video/freeform ramble creates a raw intake/source envelope or equivalent canonical source record.
+2. Confirm parser routes:
+   - class topics
+   - class/session notes
+   - student dialogue
+   - student questions
+   - research items
+   - tasks
+   - accountability notes
+   - content items
+   - decisions
+   - score/progress/participation updates
+3. Confirm all questions and grades/progress extracted from natural-language conversations are updated or at least appear in a review queue.
+4. Confirm ambiguous student names do not auto-merge.
+5. Confirm parsed outputs are visible in the UI section that the operator actually uses.
+6. Confirm a failed transcription/parser state remains visible with exact failure point.
+7. Confirm no production backfill writes are performed unless owner approval exists.
+8. If there are old uploaded/raw content jobs that never got parsed/sorted, produce a backfill/reprocess plan:
+   - job/source ID
+   - status
+   - missing routed outputs
+   - proposed safe action
+   - whether production write is needed
+   - blocker
+9. Do not dump private transcript bodies or student details in GitHub evidence.
+
+Workstream D — Telegram bot/runtime:
+Audit current Telegram state without spamming or sending real messages.
+
+Required:
+1. Check scripts/telegram-kimi-bridge.mjs and Telegram runtime helpers.
+2. Re-run focused checks:
+   - node --check scripts/telegram-kimi-bridge.mjs
+   - node --test tests/telegram-daily-participation-parser.test.js tests/telegram-media-routing.test.js
+3. Confirm current hosted polling worker/runtime health if tooling exists.
+4. Confirm bot username/config status if safely readable.
+5. Confirm Codex/OpenAI mode rules still work:
+   - regular natural-language conversation routes appropriately
+   - development/system requests route to Codex
+   - Torah participation parser only defaults present/100% when stated
+   - no duplicate task spam
+   - BNA vs One Time workspace scoping is correct
+6. If Telegram is broken, fix only the clear blocker:
+   - missing runtime helper
+   - wrong env guard
+   - route misclassification
+   - polling conflict
+   - deploy bundle omission
+   - mode persistence bug
+7. Do not send broad real Telegram messages.
+
+Workstream E — dirty worktree, PRs, deploy:
+Bring the repo/process to a clean, understandable state.
+
+Required:
+1. Inventory dirty worktree and untracked files.
+2. Classify changes:
+   - current required work
+   - unrelated local-only work
+   - generated evidence
+   - secrets/private data that must stay ignored
+   - stale files safe to archive
+3. Do not discard unrelated changes.
+4. If an open PR exists for relevant work, update it rather than creating duplicate PRs unless that is unsafe.
+5. If PR #52 is still open/draft and relevant, finish it or leave one exact blocker.
+6. If app-visible changes are made:
+   - commit
+   - push
+   - deploy to the correct Railway service only after target guard passes
+   - run Railway doctor
+   - run live smoke
+7. Verify master/deployed truth in the final report.
+8. Do not merge/deploy from a dirty or ambiguous state.
+
+Minimum verification before final:
+Run focused tests for changed areas, then:
+- npm run bna:run:validate
+- npm run secrets:audit
+- git diff --check
+- npm run watchdog:content
+- npm run watchdog:communications
+- npm run app:smoke
+- npm run app:smoke:content-research-scope
+- npm run app:smoke:class-upload-trace
+- npm run app:smoke:email-resend-ux
+- npm run app:smoke:one-time-crm-contacts-ux
+- npm run app:smoke:operations-helper
+- npm test, unless blocked by a documented unrelated environment failure
+
+If a command is environment-blocked, report:
+- command
+- exact error
+- whether it is local-only or production-relevant
+- next action
+- whether app-visible work can still safely deploy
+
+Final response format:
+Return this exact structure:
+
+1. Executive verdict
+2. Git/branch/worktree truth
+3. PR status, especially PR #52/#53/#54
+4. Railway/deployed truth
+5. Email/contact setup result
+6. Resend/domain/DNS remaining Decision, if any
+7. Content Library/Torah filter diagnosis
+8. Content parsing/taxonomy fixes implemented
+9. Class upload / Drive intake parsing result
+10. Questions/grades/progress routing result
+11. Telegram runtime/parser result
+12. Dirty worktree cleanup result
+13. Files changed
+14. Tests run and results
+15. Deploy/live smoke result
+16. Evidence files created
+17. Remaining blockers, each with owner and exact next action
+18. Recommended next step for Shloimie
+
+End with exactly one of:
+SYSTEMS CLOSED OUT — READY FOR UI CORRECTION
+PARTIAL — SAFE REMAINING BLOCKERS LISTED
+BLOCKED — EXACT OWNER ACTION REQUIRED
+
+Do not end with vague “done.” Do not say something is deployed/live if only local tests passed.

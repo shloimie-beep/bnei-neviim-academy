@@ -1,0 +1,272 @@
+{
+  "started_at": "2026-06-22T13:36:16.426Z",
+  "app_url": "https://bneineviimacademy.org",
+  "routes": [
+    {
+      "label": "landing",
+      "path": "/one-time/"
+    },
+    {
+      "label": "provider",
+      "path": "/provider.html?review=one-time"
+    },
+    {
+      "label": "parent",
+      "path": "/parent.html?review=one-time"
+    },
+    {
+      "label": "student",
+      "path": "/student.html?review=one-time"
+    },
+    {
+      "label": "classroom",
+      "path": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS"
+    },
+    {
+      "label": "email",
+      "path": "/one-time-email-review.html"
+    },
+    {
+      "label": "operations",
+      "path": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview"
+    }
+  ],
+  "viewports": [
+    {
+      "name": "mobile390",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "tablet768",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "desktop1440",
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "checks": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 541,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "landing mobile390",
+      "ok": true,
+      "duration_ms": 2122,
+      "details": {
+        "title": "OneTimeOneTime Mishnah - Worldwide Live Mishnah Learning",
+        "bytes": 5208,
+        "image_count": 10
+      }
+    },
+    {
+      "name": "provider mobile390",
+      "ok": true,
+      "duration_ms": 1927,
+      "details": {
+        "title": "OneTimeOneTime Provider Review",
+        "bytes": 739,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "parent mobile390",
+      "ok": true,
+      "duration_ms": 1954,
+      "details": {
+        "title": "OneTimeOneTime Parent Review",
+        "bytes": 1635,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "student mobile390",
+      "ok": true,
+      "duration_ms": 2120,
+      "details": {
+        "title": "OneTimeOneTime Student Review",
+        "bytes": 1736,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "classroom mobile390",
+      "ok": true,
+      "duration_ms": 1838,
+      "details": {
+        "title": "One Time Mishnah Classroom",
+        "bytes": 1904,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "email mobile390",
+      "ok": true,
+      "duration_ms": 1361,
+      "details": {
+        "title": "One Time Email Review",
+        "bytes": 8378,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "operations mobile390",
+      "ok": true,
+      "duration_ms": 5434,
+      "details": {
+        "title": "One Time Mishnah Class - Operations",
+        "bytes": 1962,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "landing tablet768",
+      "ok": true,
+      "duration_ms": 2173,
+      "details": {
+        "title": "OneTimeOneTime Mishnah - Worldwide Live Mishnah Learning",
+        "bytes": 5263,
+        "image_count": 10
+      }
+    },
+    {
+      "name": "provider tablet768",
+      "ok": true,
+      "duration_ms": 1662,
+      "details": {
+        "title": "OneTimeOneTime Provider Review",
+        "bytes": 739,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "parent tablet768",
+      "ok": true,
+      "duration_ms": 2017,
+      "details": {
+        "title": "OneTimeOneTime Parent Review",
+        "bytes": 1635,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "student tablet768",
+      "ok": true,
+      "duration_ms": 2414,
+      "details": {
+        "title": "OneTimeOneTime Student Review",
+        "bytes": 1727,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "classroom tablet768",
+      "ok": true,
+      "duration_ms": 1366,
+      "details": {
+        "title": "One Time Mishnah Classroom",
+        "bytes": 1904,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "email tablet768",
+      "ok": true,
+      "duration_ms": 1628,
+      "details": {
+        "title": "One Time Email Review",
+        "bytes": 8378,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "operations tablet768",
+      "ok": true,
+      "duration_ms": 6993,
+      "details": {
+        "title": "One Time Mishnah Class - Operations",
+        "bytes": 1962,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "landing desktop1440",
+      "ok": true,
+      "duration_ms": 2177,
+      "details": {
+        "title": "OneTimeOneTime Mishnah - Worldwide Live Mishnah Learning",
+        "bytes": 5263,
+        "image_count": 10
+      }
+    },
+    {
+      "name": "provider desktop1440",
+      "ok": true,
+      "duration_ms": 1654,
+      "details": {
+        "title": "OneTimeOneTime Provider Review",
+        "bytes": 756,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "parent desktop1440",
+      "ok": true,
+      "duration_ms": 1968,
+      "details": {
+        "title": "OneTimeOneTime Parent Review",
+        "bytes": 1658,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "student desktop1440",
+      "ok": true,
+      "duration_ms": 1943,
+      "details": {
+        "title": "OneTimeOneTime Student Review",
+        "bytes": 1749,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "classroom desktop1440",
+      "ok": true,
+      "duration_ms": 1362,
+      "details": {
+        "title": "One Time Mishnah Classroom",
+        "bytes": 1904,
+        "image_count": 2
+      }
+    },
+    {
+      "name": "email desktop1440",
+      "ok": true,
+      "duration_ms": 1363,
+      "details": {
+        "title": "One Time Email Review",
+        "bytes": 8378,
+        "image_count": 1
+      }
+    },
+    {
+      "name": "operations desktop1440",
+      "ok": true,
+      "duration_ms": 5371,
+      "details": {
+        "title": "One Time Mishnah Class - Operations",
+        "bytes": 2455,
+        "image_count": 2
+      }
+    }
+  ]
+}

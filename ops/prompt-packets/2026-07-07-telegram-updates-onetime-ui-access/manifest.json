@@ -1,0 +1,76 @@
+{
+  "manifest_id": "MANIFEST-20260707-030",
+  "parent_raw_id": "RAW-20260707-003",
+  "created_at": "2026-07-07T08:05:00+03:00",
+  "title": "Telegram Codex Updates And One Time Role UI Access",
+  "workspace_keys": [
+    "bna_platform",
+    "rabbi_sheller_provider"
+  ],
+  "project_keys": [
+    "agent_ops",
+    "one_time_mishnah_class"
+  ],
+  "super_ramble": true,
+  "source_input": "raw-input/RAW-20260707-003-telegram-codex-updates-onetime-role-ui-student-view.md",
+  "requirement_register": "tasks-pending/2026-07-07-telegram-codex-updates-onetime-role-ui-student-view.md",
+  "packets": [
+    {
+      "packet_id": "PKT-20260707-030",
+      "path": "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/00-control-tower.product-quality.json",
+      "role": "CONTROL_TOWER",
+      "status": "generated",
+      "depends_on": [],
+      "produces": [
+        "router output",
+        "packet DAG",
+        "source coverage",
+        "next packet list"
+      ]
+    },
+    {
+      "packet_id": "PKT-20260707-031",
+      "path": "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/01-current-state-visual-audit.md",
+      "role": "VISUAL_AUDITOR",
+      "status": "ready_for_generation",
+      "depends_on": [
+        "PKT-20260707-030"
+      ],
+      "produces": [
+        "route inventory",
+        "screenshots",
+        "VQ findings",
+        "role/scope leakage findings",
+        "implementation packet proposals"
+      ]
+    },
+    {
+      "packet_id": "PKT-20260707-032",
+      "path": "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/02-telegram-codex-progress-notifications.md",
+      "role": "PROVIDER_SETUP_PACKET",
+      "status": "ready_for_codex",
+      "depends_on": [
+        "PKT-20260707-030"
+      ],
+      "produces": [
+        "Telegram/agent-fleet notification repair implementation packet"
+      ]
+    },
+    {
+      "packet_id": "PKT-20260707-033",
+      "path": "to-be-generated-after-visual-audit/03-role-view-access-spec.md",
+      "role": "SPEC_COMPILER",
+      "status": "not_started",
+      "depends_on": [
+        "PKT-20260707-031"
+      ],
+      "produces": [
+        "provider admin role-view implementation packet",
+        "student view-as implementation packet"
+      ]
+    }
+  ],
+  "do_not_solve_whole_parent_ramble": true,
+  "external_write_policy": "No Telegram send, email send, payment/access grant, DNS/provider mutation, Drive write, or external CRM write from this manifest without a child packet and approval/readback gate.",
+  "next_packet": "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/01-current-state-visual-audit.md"
+}
