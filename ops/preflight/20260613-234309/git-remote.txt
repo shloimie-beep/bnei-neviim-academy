@@ -1,2 +1,0 @@
-﻿origin	https://github.com/shloimie-beep/bnei-neviim-academy.git (fetch)
-origin	https://github.com/shloimie-beep/bnei-neviim-academy.git (push)

@@ -80,7 +80,7 @@ test('partial-write retry and temporary Sheets outage remain recoverable without
 test('receiver integration uses a phone advisory lock and durable recovery without sending an automatic reply', () => {
   const server = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
   const start = server.indexOf('async function syncLifeSkillsInboundToSheet');
-  const end = server.indexOf("app.get('/api/webhooks/wapi'", start);
+  const end = server.indexOf('function authorizeLifeSkillsAppBridge', start);
   const integration = server.slice(start, end);
   assert.match(integration, /bna_life_skills_sheet_crm_sync/);
   assert.match(integration, /pg_advisory_xact_lock/);
@@ -127,4 +127,48 @@ test('actual inbound producer output is accepted by the shared stable-ID consume
   assert.match(producedLeadId, /^LS-(?:LEAD|WAPI)-[A-Za-z0-9-]+$/);
   assert.match(producedLeadId, /^LS-WAPI-[a-f0-9]{16}$/);
   assert.equal(crm.SHEET_FIELD_MAP_VERSION, 'life-skills-inbound-v2');
+});
+
+test('private-app prospect bridge reads named fields and changes only explicitly owned cells', async () => {
+  const onboardingHeaders = ['Form sent', 'Form submitted', 'Payment link sent', 'Payment method', 'Payment status', 'Payment allocation', 'Booking status', 'Message receipt', 'Update provenance'];
+  const sheets = new Sheets([...headers, ...onboardingHeaders, ...Object.values(crm.MACHINE_HEADERS)]);
+  await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound(), config: config() });
+  const leadId = sheets.grid[1][0];
+  sheets.grid[1][24] = 'Existing note';
+  const listed = await crm.listLifeSkillsLeads({ sheets, config: config() });
+  assert.equal(listed.length, 1);
+  assert.equal(listed[0].leadId, leadId);
+  assert.equal(listed[0].notes, 'Existing note');
+  await crm.updateLifeSkillsLeadFields({ sheets, config: config(), leadId, fields: { stage: 'Contacted', nextAction: 'Call tomorrow', dueDate: '2026-09-23' } });
+  assert.equal(sheets.grid[1][13], 'Contacted');
+  assert.equal(sheets.grid[1][15], 'Call tomorrow');
+  assert.equal(sheets.grid[1][16], '2026-09-23');
+  assert.equal(sheets.grid[1][24], 'Existing note');
+  await assert.rejects(() => crm.updateLifeSkillsLeadFields({ sheets, config: config(), leadId, fields: { phone: '+972500000000' } }), /not editable/);
+});
+
+test('manual prospect creation is deduplicated by normalized phone and never sends', async () => {
+  const onboardingHeaders = ['Form sent', 'Form submitted', 'Payment link sent', 'Payment method', 'Payment status', 'Payment allocation', 'Booking status', 'Message receipt', 'Update provenance'];
+  const sheets = new Sheets([...headers, ...onboardingHeaders, ...Object.values(crm.MACHINE_HEADERS)]);
+  const first = await crm.createLifeSkillsLead({ sheets, config: config(), now: new Date('2026-09-22T08:00:00Z'), input: { phone: '050-123-4567', name: '', language: '', source: 'Referral', notes: 'Administrative note', nextAction: 'Call', dueDate: '2026-09-23' } });
+  const second = await crm.createLifeSkillsLead({ sheets, config: config(), now: new Date('2026-09-22T09:00:00Z'), input: { phone: '+972501234567', name: 'Ignored duplicate' } });
+  assert.equal(first.action, 'created');
+  assert.equal(second.action, 'existing');
+  assert.equal(second.leadId, first.leadId);
+  assert.match(first.leadId, /^LS-LEAD-[a-f0-9]{16}$/);
+  assert.equal(sheets.grid.length, 2);
+});
+
+test('practitioner sends are secret-bound, durably recorded and replay-suppressed before Whapi', () => {
+  const server = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
+  const start = server.indexOf('function authorizeLifeSkillsAppBridge');
+  const end = server.indexOf("app.get('/api/webhooks/wapi'", start);
+  const bridge = server.slice(start, end);
+  assert.match(bridge, /x-life-skills-bridge-secret/);
+  assert.match(bridge, /timingSafeEqual/);
+  assert.match(bridge, /life_skills_delivery_key/);
+  assert.match(bridge, /pg_advisory_xact_lock/);
+  assert.match(bridge, /replaySuppressed: true/);
+  assert.ok(bridge.indexOf('createOutboundWapiCommunicationAttempt') < bridge.indexOf('sendWapiTextMessage'));
+  assert.doesNotMatch(bridge, /LIFE_SKILLS_WAPI_AUTO_REPLY_ENABLED/);
 });

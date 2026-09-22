@@ -1,9 +1,0 @@
-{
-  "run_id": "2026-06-23-service-provider-studio",
-  "title": "Universal Service Provider Studio",
-  "created_at": "2026-06-23T06:16:38.679Z",
-  "updated_at": "2026-06-23T10:36:00+03:00",
-  "active": false,
-  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
-  "requirements_file": "requirements.json"
-}

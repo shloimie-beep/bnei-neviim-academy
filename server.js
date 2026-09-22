@@ -37,9 +37,13 @@ const {
 } = require('./src/lib/bna/life-skills-wapi-auto-reply');
 const {
   buildLifeSkillsSheetCrmReadiness,
+  createLifeSkillsLead,
   isLifeSkillsInboundInquiry,
   lifeSkillsSheetCrmConfig,
+  listLifeSkillsLeads,
   messageAttribution,
+  normalizeLifeSkillsPhone,
+  updateLifeSkillsLeadFields,
   upsertLifeSkillsSheetLead,
 } = require('./src/lib/bna/life-skills-sheet-crm');
 const {
@@ -69526,6 +69530,108 @@ app.post('/api/bna/life-skills-sheet-crm/recover', requireAdmin, async (req, res
     res.json({ success: true, recovered });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Life Skills Sheet CRM recovery failed' });
+  }
+});
+
+function authorizeLifeSkillsAppBridge(req) {
+  const expected = String(process.env.LIFE_SKILLS_APP_BRIDGE_SECRET || '').trim();
+  const supplied = String(req.headers['x-life-skills-bridge-secret'] || '').trim();
+  if (expected.length < 32 || supplied.length !== expected.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(supplied), Buffer.from(expected));
+}
+
+function lifeSkillsBridgeClient(req, res) {
+  res.setHeader('Cache-Control', 'private, no-store');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  if (!authorizeLifeSkillsAppBridge(req)) {
+    res.status(401).json({ success: false, error: 'Unauthorized Life Skills app bridge' });
+    return null;
+  }
+  const client = lifeSkillsSheetCrmClient();
+  if (!client.readiness.ready) {
+    res.status(503).json({ success: false, error: 'Life Skills CRM unavailable', blockers: client.readiness.blockers });
+    return null;
+  }
+  return client;
+}
+
+app.get('/api/bna/life-skills-app/prospects', async (req, res) => {
+  const client = lifeSkillsBridgeClient(req, res); if (!client) return;
+  try {
+    const prospects = await listLifeSkillsLeads({ sheets: client.sheets, config: client.readiness.config });
+    res.json({ success: true, prospects });
+  } catch {
+    res.status(503).json({ success: false, error: 'Life Skills CRM read failed' });
+  }
+});
+
+app.post('/api/bna/life-skills-app/prospects', async (req, res) => {
+  const client = lifeSkillsBridgeClient(req, res); if (!client) return;
+  const phone = normalizeLifeSkillsPhone(req.body?.phone, client.readiness.config.defaultCountry);
+  if (!phone) return res.status(400).json({ success: false, error: 'Valid phone is required' });
+  const db = await pool.connect();
+  try {
+    await db.query('BEGIN');
+    await db.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`life-skills-manual-prospect:${phone}`]);
+    const result = await createLifeSkillsLead({ sheets: client.sheets, config: client.readiness.config, input: { ...req.body, phone } });
+    await db.query('COMMIT');
+    res.status(result.action === 'created' ? 201 : 200).json({ success: true, result });
+  } catch {
+    await db.query('ROLLBACK').catch(() => null);
+    res.status(400).json({ success: false, error: 'Life Skills prospect creation rejected' });
+  } finally { db.release(); }
+});
+
+app.patch('/api/bna/life-skills-app/prospects/:leadId', async (req, res) => {
+  const client = lifeSkillsBridgeClient(req, res); if (!client) return;
+  try {
+    const result = await updateLifeSkillsLeadFields({ sheets: client.sheets, config: client.readiness.config, leadId: req.params.leadId, fields: req.body?.fields });
+    res.json({ success: true, result });
+  } catch (error) {
+    const message = String(error?.message || '');
+    res.status(message.includes('not found') ? 404 : 400).json({ success: false, error: 'Life Skills CRM update rejected' });
+  }
+});
+
+app.post('/api/bna/life-skills-app/prospects/:leadId/send', async (req, res) => {
+  const client = lifeSkillsBridgeClient(req, res); if (!client) return;
+  let attempt = null;
+  try {
+    const body = String(req.body?.body || '').trim();
+    if (!body || body.length > 2000) return res.status(400).json({ success: false, error: 'WhatsApp message is required' });
+    const prospects = await listLifeSkillsLeads({ sheets: client.sheets, config: client.readiness.config });
+    const prospect = prospects.find(row => row.leadId === req.params.leadId);
+    if (!prospect) return res.status(404).json({ success: false, error: 'Life Skills lead not found' });
+    const localDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jerusalem' }).format(new Date());
+    const deliveryKey = crypto.createHash('sha256').update(`${prospect.leadId}\n${body}\n${localDate}`).digest('hex');
+    const db = await pool.connect();
+    try {
+      await db.query('BEGIN');
+      await db.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`life-skills-practitioner-send:${deliveryKey}`]);
+      const prior = (await db.query("SELECT id,metadata,source_context FROM bna_contact_communications WHERE metadata->>'life_skills_delivery_key'=$1 ORDER BY id DESC LIMIT 1", [deliveryKey])).rows[0];
+      if (prior) {
+        await db.query('COMMIT');
+        const state = prior.metadata?.delivery_status || prior.source_context?.delivery_status || 'attempted';
+        if (['sent','delivered','read','played'].includes(state)) return res.json({ success: true, receipt: { provider: 'whapi', providerMessageId: prior.metadata?.wapi_message_id || prior.source_context?.wapi_message_id || null, sentAt: prior.metadata?.checked_at || null, replaySuppressed: true } });
+        return res.status(409).json({ success: false, error: 'Prior WhatsApp delivery is unresolved; the message was not sent again' });
+      }
+      attempt = await createOutboundWapiCommunicationAttempt({ recipient: { to: prospect.phone, phone: prospect.phone, name: prospect.name, contact_type: 'life_skills_prospect', match_source: 'life_skills_sheet' }, messageBody: body, summary: `Life Skills practitioner WhatsApp attempted for ${prospect.leadId}`.slice(0,240), source: 'life_skills_private_app', createdBy: 'life-skills-practitioner', metadata: { life_skills_delivery_key: deliveryKey, stable_lead_id: prospect.leadId }, sourceContext: { stable_lead_id: prospect.leadId } }, db);
+      await db.query('COMMIT');
+    } catch (error) {
+      await db.query('ROLLBACK').catch(() => null); throw error;
+    } finally { db.release(); }
+    const sent = await sendWapiTextMessage({ to: prospect.phone, body, workspace_key: '', project_key: '' });
+    const providerMessageId = wapiResponseMessageId(sent.response) || null;
+    const now = new Date().toISOString();
+    await updateOutboundWapiCommunicationResult(attempt.id, { sendResult: sent, summary: `Life Skills WhatsApp sent for ${prospect.leadId}`.slice(0,240), metadata: { stable_lead_id: prospect.leadId } });
+    let sheetUpdated = true;
+    try { await updateLifeSkillsLeadFields({ sheets: client.sheets, config: client.readiness.config, leadId: prospect.leadId, fields: {
+      messageReceipt: providerMessageId || `Whapi HTTP ${sent.status} at ${now}`, lastContact: now, updateProvenance: 'private-app:practitioner-click',
+    } }); } catch { sheetUpdated = false; }
+    res.json({ success: true, receipt: { provider: 'whapi', providerMessageId, sentAt: now, replaySuppressed: false, sheetUpdated } });
+  } catch (error) {
+    if (attempt?.id) await updateOutboundWapiCommunicationResult(attempt.id, { error, summary: `Life Skills WhatsApp not confirmed for ${req.params.leadId}`.slice(0,240) }).catch(() => null);
+    res.status(error?.statusCode || 503).json({ success: false, error: 'WhatsApp delivery was not confirmed' });
   }
 });
 
