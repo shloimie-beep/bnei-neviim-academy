@@ -17,6 +17,12 @@ const LEAD_HEADERS = Object.freeze({
   source: 'Lead source', campaign: 'Campaign', stage: 'Pipeline stage', lastContact: 'Last contact',
   nextAction: 'Next action', dueDate: 'Next-action date',
 });
+const ADMIN_HEADERS = Object.freeze({
+  email: 'Email', outcome: 'Outcome', notes: 'General sales notes', caseId: 'Enrolled case ID',
+  formSent: 'Form sent', formSubmitted: 'Form submitted', paymentLinkSent: 'Payment link sent',
+  paymentMethod: 'Payment method', paymentStatus: 'Payment status', paymentAllocation: 'Payment allocation',
+  bookingStatus: 'Booking status', messageReceipt: 'Message receipt', updateProvenance: 'Update provenance',
+});
 
 function truthy(value) { return /^(?:1|true|yes|on|enabled|live)$/i.test(String(value || '').trim()); }
 function normalizeText(value, max = 160) { return String(value || '').replace(/\s+/g, ' ').trim().slice(0, max); }
@@ -101,6 +107,7 @@ function isLifeSkillsInboundInquiry({ normalized = {}, scope = {}, config = life
 }
 
 function stableLeadId(phone) { return `LS-WAPI-${crypto.createHash('sha256').update(`life-skills-sheet-crm:v1:${phone}`).digest('hex').slice(0, 16)}`; }
+function stableManualLeadId(phone) { return `LS-LEAD-${crypto.createHash('sha256').update(`life-skills-sheet-crm:manual:v1:${phone}`).digest('hex').slice(0, 16)}`; }
 function providerMessageIds(value, nextId) {
   const known = String(value || '').split(',').map((item) => item.trim()).filter(Boolean);
   const id = normalizeText(nextId, 180);
@@ -141,6 +148,92 @@ function resolveSheetHeaderMap(headers = []) {
     else machine[key] = columnName(index);
   }
   return { version: SHEET_FIELD_MAP_VERSION, columns, machine, missingMachine, headers: normalized.slice(), maxColumnIndex: Math.max(normalized.length - 1, 0) };
+}
+
+function resolveAdminHeaderMap(headers = []) {
+  const base = resolveSheetHeaderMap(headers);
+  const admin = {};
+  for (const [key, label] of Object.entries(ADMIN_HEADERS)) {
+    const index = headerIndex(base.headers, label);
+    if (index === null) throw new Error(`Life Skills CRM required header missing: ${label}`);
+    admin[key] = columnName(index);
+  }
+  return { ...base, admin };
+}
+
+function cell(row, column) { return String(row?.[columnIndex(column)] || '').trim(); }
+async function currentAdminSheet(sheets, config) {
+  const values = (await sheets.spreadsheets.values.get({ spreadsheetId: config.spreadsheetId, range: sheetRange(config, 'A1:AM1000') })).data?.values || [];
+  const headers = values[0] || [];
+  return { headerMap: resolveAdminHeaderMap(headers), rows: values.slice(1) };
+}
+
+async function listLifeSkillsLeads({ sheets, config = lifeSkillsSheetCrmConfig() } = {}) {
+  if (!sheets?.spreadsheets?.values) throw new Error('Google Sheets adapter is required');
+  const { headerMap, rows } = await currentAdminSheet(sheets, config);
+  return rows.map((row, index) => ({
+    row: index + 2,
+    leadId: cell(row, headerMap.columns.leadId), receivedAt: cell(row, headerMap.columns.receivedAt),
+    name: cell(row, headerMap.columns.parentName), phone: normalizeLifeSkillsPhone(cell(row, headerMap.columns.phone), config.defaultCountry),
+    email: cell(row, headerMap.admin.email), language: cell(row, headerMap.columns.language),
+    source: cell(row, headerMap.columns.source), campaign: cell(row, headerMap.columns.campaign), stage: cell(row, headerMap.columns.stage),
+    lastContact: cell(row, headerMap.columns.lastContact), nextAction: cell(row, headerMap.columns.nextAction), dueDate: cell(row, headerMap.columns.dueDate),
+    outcome: cell(row, headerMap.admin.outcome), notes: cell(row, headerMap.admin.notes), caseId: cell(row, headerMap.admin.caseId),
+    formSent: cell(row, headerMap.admin.formSent), formSubmitted: cell(row, headerMap.admin.formSubmitted), paymentLinkSent: cell(row, headerMap.admin.paymentLinkSent),
+    paymentMethod: cell(row, headerMap.admin.paymentMethod), paymentStatus: cell(row, headerMap.admin.paymentStatus), paymentAllocation: cell(row, headerMap.admin.paymentAllocation),
+    bookingStatus: cell(row, headerMap.admin.bookingStatus), messageReceipt: cell(row, headerMap.admin.messageReceipt), updateProvenance: cell(row, headerMap.admin.updateProvenance),
+    firstInboundAt: cell(row, headerMap.machine.firstInboundAt), lastInboundAt: cell(row, headerMap.machine.lastInboundAt), owner: cell(row, headerMap.machine.responseOwner),
+  })).filter(row => row.leadId && row.phone);
+}
+
+const EDITABLE_HEADERS = Object.freeze({
+  stage: 'stage', nextAction: 'nextAction', dueDate: 'dueDate', outcome: 'outcome', notes: 'notes', caseId: 'caseId',
+  formSent: 'formSent', formSubmitted: 'formSubmitted', paymentLinkSent: 'paymentLinkSent', paymentMethod: 'paymentMethod',
+  paymentStatus: 'paymentStatus', paymentAllocation: 'paymentAllocation', bookingStatus: 'bookingStatus',
+  messageReceipt: 'messageReceipt', updateProvenance: 'updateProvenance', owner: 'responseOwner', lastContact: 'lastContact',
+});
+
+async function updateLifeSkillsLeadFields({ sheets, leadId, fields = {}, config = lifeSkillsSheetCrmConfig() } = {}) {
+  if (!/^LS-(?:LEAD|WAPI)-[A-Za-z0-9_-]+$/.test(String(leadId || ''))) throw new Error('Invalid Life Skills lead ID');
+  const { headerMap, rows } = await currentAdminSheet(sheets, config);
+  const rowIndex = rows.findIndex(row => cell(row, headerMap.columns.leadId) === leadId);
+  if (rowIndex < 0) throw new Error('Life Skills lead not found');
+  const data = [];
+  for (const [field, value] of Object.entries(fields)) {
+    const mapped = EDITABLE_HEADERS[field];
+    if (!mapped) throw new Error(`Life Skills CRM field is not editable: ${field}`);
+    const column = headerMap.columns[mapped] || headerMap.admin[mapped] || headerMap.machine[mapped];
+    const normalized = normalizeText(value, field === 'notes' ? 5000 : 500);
+    data.push({ range: sheetRange(config, `${column}${rowIndex + 2}`), values: [[normalized]] });
+  }
+  if (!data.length) throw new Error('No Life Skills CRM fields supplied');
+  await sheets.spreadsheets.values.batchUpdate({ spreadsheetId: config.spreadsheetId, requestBody: { valueInputOption: 'RAW', data } });
+  return { leadId, row: rowIndex + 2, updatedFields: Object.keys(fields) };
+}
+
+async function createLifeSkillsLead({ sheets, input = {}, config = lifeSkillsSheetCrmConfig(), now = new Date() } = {}) {
+  if (!sheets?.spreadsheets?.values) throw new Error('Google Sheets adapter is required');
+  const phone = normalizeLifeSkillsPhone(input.phone, config.defaultCountry);
+  if (!phone) throw new Error('Invalid Life Skills prospect phone');
+  const { headerMap, rows } = await currentAdminSheet(sheets, config);
+  const existingIndex = rows.findIndex(row => normalizeLifeSkillsPhone(cell(row, headerMap.columns.phone), config.defaultCountry) === phone);
+  if (existingIndex >= 0) return { action: 'existing', leadId: cell(rows[existingIndex], headerMap.columns.leadId), row: existingIndex + 2 };
+  if (headerMap.missingMachine?.length) throw new Error('Life Skills CRM machine headers are unresolved');
+  const at = now instanceof Date ? now : new Date(now);
+  if (!Number.isFinite(at.getTime())) throw new Error('Invalid Life Skills prospect timestamp');
+  const receivedAt = at.toISOString(), leadId = stableManualLeadId(phone);
+  const row = Array(headerMap.maxColumnIndex + 1).fill('');
+  const set = (column, value) => { row[columnIndex(column)] = value; };
+  set(headerMap.columns.leadId, leadId); set(headerMap.columns.receivedAt, receivedAt);
+  set(headerMap.columns.parentName, normalizeText(input.name, 120)); set(headerMap.columns.phone, phone);
+  set(headerMap.columns.language, input.language === 'he' ? 'Hebrew' : input.language === 'en' ? 'English' : '');
+  set(headerMap.columns.source, normalizeText(input.source, 120) || 'Manual'); set(headerMap.columns.stage, 'New inquiry');
+  set(headerMap.columns.nextAction, normalizeText(input.nextAction, 500) || 'Contact prospect');
+  set(headerMap.columns.dueDate, /^\d{4}-\d{2}-\d{2}$/.test(String(input.dueDate || '')) ? input.dueDate : dateOnlyInTimeZone(at, config.timeZone));
+  set(headerMap.admin.notes, normalizeText(input.notes, 5000)); set(headerMap.admin.updateProvenance, 'private-app:manual-prospect');
+  set(headerMap.machine.responseOwner, config.responseOwner);
+  const append = await sheets.spreadsheets.values.append({ spreadsheetId: config.spreadsheetId, range: sheetRange(config, `A:${columnName(headerMap.maxColumnIndex)}`), valueInputOption: 'RAW', insertDataOption: 'INSERT_ROWS', requestBody: { values: [row] } });
+  return { action: 'created', leadId, row: rowNumberFromUpdatedRange(append.data?.updates?.updatedRange) };
 }
 function legacyHeaderMap() {
   return resolveSheetHeaderMap([
@@ -229,4 +322,4 @@ async function upsertLifeSkillsSheetLead({ sheets, normalized = {}, payload = {}
   return { action: 'created', row: rowNumberFromUpdatedRange(append.data?.updates?.updatedRange), providerMessageIds: providerMessageIds('', normalized.messageId) };
 }
 
-module.exports = { DEFAULT_SHEET_ID, DEFAULT_SHEET_NAME, LEAD_HEADERS, LIFE_SKILLS_SHEET_CRM_CONFIRM, MACHINE_HEADERS, SHEET_FIELD_MAP_VERSION, buildLifeSkillsSheetCrmReadiness, dateOnlyInTimeZone, initialLeadRow, isLifeSkillsInboundInquiry, lifeSkillsSheetCrmConfig, messageAttribution, normalizeLifeSkillsPhone, providerMessageIds, resolveSheetHeaderMap, stableLeadId, upsertLifeSkillsSheetLead };
+module.exports = { ADMIN_HEADERS, DEFAULT_SHEET_ID, DEFAULT_SHEET_NAME, LEAD_HEADERS, LIFE_SKILLS_SHEET_CRM_CONFIRM, MACHINE_HEADERS, SHEET_FIELD_MAP_VERSION, buildLifeSkillsSheetCrmReadiness, createLifeSkillsLead, dateOnlyInTimeZone, initialLeadRow, isLifeSkillsInboundInquiry, lifeSkillsSheetCrmConfig, listLifeSkillsLeads, messageAttribution, normalizeLifeSkillsPhone, providerMessageIds, resolveAdminHeaderMap, resolveSheetHeaderMap, stableLeadId, stableManualLeadId, updateLifeSkillsLeadFields, upsertLifeSkillsSheetLead };
