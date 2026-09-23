@@ -46,6 +46,7 @@ const {
   updateLifeSkillsLeadFields,
   upsertLifeSkillsSheetLead,
 } = require('./src/lib/bna/life-skills-sheet-crm');
+const { readLifeSkillsMarketingSnapshot } = require('./src/lib/bna/life-skills-marketing');
 const {
   goalBoardBucket,
   goalBoardStatus,
@@ -69562,6 +69563,16 @@ app.get('/api/bna/life-skills-app/prospects', async (req, res) => {
     res.json({ success: true, prospects });
   } catch {
     res.status(503).json({ success: false, error: 'Life Skills CRM read failed' });
+  }
+});
+
+app.get('/api/bna/life-skills-app/marketing', async (req, res) => {
+  const client = lifeSkillsBridgeClient(req, res); if (!client) return;
+  try {
+    const snapshot = await readLifeSkillsMarketingSnapshot({ sheets: client.sheets });
+    res.json({ success: true, snapshot });
+  } catch {
+    res.status(503).json({ success: false, error: 'Life Skills marketing workbook read failed' });
   }
 });
 
