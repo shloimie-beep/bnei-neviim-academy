@@ -35278,9 +35278,9 @@ async function initDb() {
     await pool.query(createScheduleItemsSQL);
     await pool.query(createOneTimeClassroomSQL);
     await pool.query(createGoogleConnectionsSQL);
-    await pool.query(createBnaIndexesSQL);
     await pool.query(createWorkspaceLinkedColumnsSQL);
     await pool.query(createIdentityLinkingCompatibilitySQL);
+    await pool.query(createBnaIndexesSQL);
     await pool.query(createWs11CommunityGamificationSQL);
     await pool.query(createIntakeParserSQL);
     await ensureSystemSectionDefinitions();
@@ -94490,9 +94490,9 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createOpsAccessLinksSQL);
     await pool.query(createSecureDownloadsSQL);
     await pool.query(createAgentReviewSessionsSQL);
-    await pool.query(createBnaIndexesSQL);
     await pool.query(createWorkspaceLinkedColumnsSQL);
     await pool.query(createIdentityLinkingCompatibilitySQL);
+    await pool.query(createBnaIndexesSQL);
     await pool.query(createWs11CommunityGamificationSQL);
     await pool.query(normalizeTasksCategoryCheckSQL);
     await pool.query(normalizeTasksStageCheckSQL);
