@@ -40526,3 +40526,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   hero plus CTA remains inside each tested first viewport.
 - Source and downstream focused tests pass; external public deployment and
   public URL readback are recorded after the production PR is merged.
+
+## 2026-09-23 - Life Skills inbound durable-receipt repair prepared
+
+- Confirmed from production request and deploy logs that Whapi reaches the
+  existing HTTPS receiver with real `messages.post` callbacks and the expected
+  channel binding, while eligible payloads that omit a destination number fail
+  the durable CRM insert on the non-null `to_number` column.
+- Centralized the Life Skills destination binding so an exact configured
+  channel match records the already-configured canonical business number; a
+  supplied destination is still accepted only when it matches that number.
+- Kept group/status/non-Life-Skills filtering, provider-message idempotency,
+  advisory locking, durable recovery, note preservation and automatic replies
+  unchanged. No history scan, backfill, provider send or prospect contact was
+  performed.
+- Focused CRM and no-auto-reply tests pass 18/18; deployment and controlled
+  provider-originated readback remain the next release proof.
