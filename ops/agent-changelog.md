@@ -40542,3 +40542,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   performed.
 - Focused CRM and no-auto-reply tests pass 18/18; deployment and controlled
   provider-originated readback remain the next release proof.
+
+## 2026-09-23 - Life Skills inbound database preflight follow-up
+
+- The first merged receiver repair deployed at exact SHA
+  `14c9367cae21b9e7a59142f7aa633414d9aefec0`, but startup readback still
+  exposed a pre-existing compatibility-order failure: a content-job index was
+  created before the older production table had received `processing_state`.
+- Added an idempotent Railway web-process preflight that adds only the missing
+  content-job compatibility columns before `server.js` starts. A failed
+  preflight now stops startup instead of allowing a partially initialized web
+  process.
+- Syntax checks and focused database-order, process-dispatch, Life Skills CRM,
+  dedupe, note-preservation and no-auto-reply tests pass 22/22. Live startup and
+  provider-originated receiver proof remain separate release checks.
+- No provider send, history scan, backfill, automatic reply, contact import,
+  payment, access grant or destructive database action was performed.

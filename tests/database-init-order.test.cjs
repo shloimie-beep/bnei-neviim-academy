@@ -12,4 +12,22 @@ test('compatibility columns are added before indexes in every database initializ
   for (const [index, indexCall] of indexCalls.entries()) {
     assert.ok(compatibilityCalls[index] < indexCall, `database initialization path ${index + 1} must add compatibility columns before indexes`);
   }
+
+  const railwayStart = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'railway-start.mjs'), 'utf8');
+  const preflight = fs.readFileSync(
+    path.join(__dirname, '..', 'scripts', 'ensure-content-job-compatibility.mjs'),
+    'utf8'
+  );
+  assert.match(railwayStart, /spawnSync\('node', \['scripts\/ensure-content-job-compatibility\.mjs'\]/);
+  assert.ok(
+    railwayStart.indexOf("spawnSync('node', ['scripts/ensure-content-job-compatibility.mjs']") <
+      railwayStart.indexOf('const child = spawn(selected.command'),
+    'Railway web compatibility preflight must finish before the server starts'
+  );
+  assert.match(
+    preflight,
+    /ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS processing_state TEXT DEFAULT 'queued'/
+  );
+  assert.match(preflight, /ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS lease_expires_at TIMESTAMP/);
+  assert.match(preflight, /ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS next_retry_at TIMESTAMP/);
 });

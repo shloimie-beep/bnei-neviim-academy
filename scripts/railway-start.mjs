@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 
 const rawProcessName = String(
   process.env.BNA_RAILWAY_PROCESS ||
@@ -32,6 +32,20 @@ if (!selected) {
 }
 
 console.log(`Starting Railway process "${processName}": ${selected.command} ${selected.args.join(' ')}`);
+
+if (processName === 'web' || processName === 'server') {
+  const preflight = spawnSync('node', ['scripts/ensure-content-job-compatibility.mjs'], {
+    env: process.env,
+    stdio: 'inherit',
+    shell: process.platform === 'win32',
+  });
+  if (preflight.error || preflight.status !== 0) {
+    console.error(
+      `Database compatibility preflight failed${preflight.error ? `: ${preflight.error.message}` : '.'}`,
+    );
+    process.exit(preflight.status || 1);
+  }
+}
 
 const child = spawn(selected.command, selected.args, {
   env: process.env,
