@@ -32,7 +32,9 @@ test('auth-bound inbound validation rejects outbound, delivery-status, and wrong
   const channelBoundConfig = { ...config(), requiredChannelId: 'life-skills-channel' };
   assert.equal(crm.isLifeSkillsInboundInquiry({ normalized: inbound({ fromMe: true }), config: config() }).eligible, false);
   assert.equal((await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound({ toNumber: '+972500000000' }), config: config() })).action, 'skipped_ineligible');
-  assert.equal(crm.isLifeSkillsInboundInquiry({ normalized: inbound({ toNumber: '', channelId: 'life-skills-channel' }), config: channelBoundConfig }).eligible, true);
+  const channelBound = crm.isLifeSkillsInboundInquiry({ normalized: inbound({ toNumber: '', channelId: 'life-skills-channel' }), config: channelBoundConfig });
+  assert.equal(channelBound.eligible, true);
+  assert.equal(channelBound.toNumber, '+972534932631');
   assert.equal(crm.isLifeSkillsInboundInquiry({ normalized: inbound({ toNumber: '', channelId: 'another-channel' }), config: channelBoundConfig }).eligible, false);
   assert.equal((await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound({ messageId: 'bna-scope-message' }), scope: { project_key: 'bna', workspace_key: 'bna' }, config: config() })).action, 'created');
   assert.equal((await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound(), scope: { project_key: 'one_time_mishnah_class' }, config: config() })).action, 'skipped_ineligible');
@@ -84,6 +86,8 @@ test('receiver integration uses a phone advisory lock and durable recovery witho
   const integration = server.slice(start, end);
   assert.match(integration, /bna_life_skills_sheet_crm_sync/);
   assert.match(integration, /pg_advisory_xact_lock/);
+  assert.match(integration, /eligibility\.toNumber/);
+  assert.doesNotMatch(integration, /eligibility\.phone, normalized\.toNumber/);
   assert.match(integration, /life-skills-sheet-crm\/recover/);
   assert.match(server, /lifeSkillsSheetCrm: lifeSkillsSheetCrmResultView/);
   assert.doesNotMatch(integration, /sendWapiTextMessage/);

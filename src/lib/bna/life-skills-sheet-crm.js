@@ -82,6 +82,18 @@ function buildLifeSkillsSheetCrmReadiness({ env = {}, googleReady = false } = {}
   return { ready: blockers.length === 0, blockers, config };
 }
 
+function lifeSkillsInboundDestination({ normalized = {}, config = lifeSkillsSheetCrmConfig() } = {}) {
+  const requiredDigits = String(config.requiredBusinessDigits || '').replace(/\D/g, '');
+  const supplied = normalizeLifeSkillsPhone(normalized.toNumber || '', config.defaultCountry);
+  const suppliedDigits = supplied.replace(/\D/g, '');
+  if (requiredDigits && suppliedDigits && suppliedDigits.endsWith(requiredDigits)) return supplied;
+
+  const channelId = normalizeText(normalized.channelId || normalized.instanceId, 180);
+  const channelBound = Boolean(config.requiredChannelId && channelId && channelId === config.requiredChannelId);
+  if (channelBound && requiredDigits) return `+${requiredDigits}`;
+  return '';
+}
+
 function isLifeSkillsInboundInquiry({ normalized = {}, scope = {}, config = lifeSkillsSheetCrmConfig() } = {}) {
   const blockers = [];
   const projectKey = String(scope.project_key || scope.project || '').trim().toLowerCase();
@@ -98,12 +110,9 @@ function isLifeSkillsInboundInquiry({ normalized = {}, scope = {}, config = life
   if (!normalized.messageText && !normalized.hasMedia) blockers.push('missing_inbound_content');
   const phone = normalizeLifeSkillsPhone(normalized.fromNumber || normalized.chatId || '', config.defaultCountry);
   if (!phone) blockers.push('missing_or_invalid_sender_phone');
-  const destinationDigits = String(normalized.toNumber || '').replace(/\D/g, '');
-  const destinationBound = Boolean(destinationDigits && config.requiredBusinessDigits && destinationDigits.endsWith(config.requiredBusinessDigits));
-  const channelId = normalizeText(normalized.channelId || normalized.instanceId, 180);
-  const channelBound = Boolean(config.requiredChannelId && channelId && channelId === config.requiredChannelId);
-  if (!destinationBound && !channelBound) blockers.push('unbound_life_skills_business_number');
-  return { eligible: blockers.length === 0, blockers, phone };
+  const toNumber = lifeSkillsInboundDestination({ normalized, config });
+  if (!toNumber) blockers.push('unbound_life_skills_business_number');
+  return { eligible: blockers.length === 0, blockers, phone, toNumber };
 }
 
 function stableLeadId(phone) { return `LS-WAPI-${crypto.createHash('sha256').update(`life-skills-sheet-crm:v1:${phone}`).digest('hex').slice(0, 16)}`; }
@@ -322,4 +331,4 @@ async function upsertLifeSkillsSheetLead({ sheets, normalized = {}, payload = {}
   return { action: 'created', row: rowNumberFromUpdatedRange(append.data?.updates?.updatedRange), providerMessageIds: providerMessageIds('', normalized.messageId) };
 }
 
-module.exports = { ADMIN_HEADERS, DEFAULT_SHEET_ID, DEFAULT_SHEET_NAME, LEAD_HEADERS, LIFE_SKILLS_SHEET_CRM_CONFIRM, MACHINE_HEADERS, SHEET_FIELD_MAP_VERSION, buildLifeSkillsSheetCrmReadiness, createLifeSkillsLead, dateOnlyInTimeZone, initialLeadRow, isLifeSkillsInboundInquiry, lifeSkillsSheetCrmConfig, listLifeSkillsLeads, messageAttribution, normalizeLifeSkillsPhone, providerMessageIds, resolveAdminHeaderMap, resolveSheetHeaderMap, stableLeadId, stableManualLeadId, updateLifeSkillsLeadFields, upsertLifeSkillsSheetLead };
+module.exports = { ADMIN_HEADERS, DEFAULT_SHEET_ID, DEFAULT_SHEET_NAME, LEAD_HEADERS, LIFE_SKILLS_SHEET_CRM_CONFIRM, MACHINE_HEADERS, SHEET_FIELD_MAP_VERSION, buildLifeSkillsSheetCrmReadiness, createLifeSkillsLead, dateOnlyInTimeZone, initialLeadRow, isLifeSkillsInboundInquiry, lifeSkillsInboundDestination, lifeSkillsSheetCrmConfig, listLifeSkillsLeads, messageAttribution, normalizeLifeSkillsPhone, providerMessageIds, resolveAdminHeaderMap, resolveSheetHeaderMap, stableLeadId, stableManualLeadId, updateLifeSkillsLeadFields, upsertLifeSkillsSheetLead };

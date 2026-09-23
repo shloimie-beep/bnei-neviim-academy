@@ -69478,7 +69478,7 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`life-skills-sheet-crm:${eligibility.phone}`]);
     const stored = (await client.query(
       'INSERT INTO bna_life_skills_sheet_crm_sync (provider_message_id, communication_id, webhook_log_id, phone_e164, to_number, push_name, has_media, message_type, occurred_at, attribution) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9::timestamp, NOW()), $10::jsonb) ON CONFLICT (provider_message_id) DO UPDATE SET communication_id = COALESCE(bna_life_skills_sheet_crm_sync.communication_id, EXCLUDED.communication_id), webhook_log_id = COALESCE(bna_life_skills_sheet_crm_sync.webhook_log_id, EXCLUDED.webhook_log_id), updated_at = NOW() RETURNING *',
-      [normalized.messageId, communicationId, webhookLogId, eligibility.phone, normalized.toNumber, normalized.pushName || null, Boolean(normalized.hasMedia), normalized.messageType || null, normalized.occurredAt || null, JSON.stringify(messageAttribution(payload))]
+      [normalized.messageId, communicationId, webhookLogId, eligibility.phone, eligibility.toNumber, normalized.pushName || null, Boolean(normalized.hasMedia), normalized.messageType || null, normalized.occurredAt || null, JSON.stringify(messageAttribution(payload))]
     )).rows[0];
     if (stored.status === 'synced') {
       await client.query('COMMIT');
