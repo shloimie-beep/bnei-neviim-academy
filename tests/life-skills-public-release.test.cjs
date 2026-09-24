@@ -96,13 +96,20 @@ test('public hero files match the four exact owner-approved masters', () => {
   const expected = {
     'founder-boy-hero-en-mobile.png': 'ee2924444efc3d21dda5186b3a1107c3fde935ce4c76ded75ae3458aa99c7a71',
     'founder-boy-hero-he-mobile.png': '56dc8fcbe99f16d723a8b07b41eda8ebb03eb27716829b8c786f27b82a3ddcbe',
-    'founder-boy-hero-en-desktop.png': '5c28d22d7b6b784eb6becb4cfabb7977c80a304b5bcaca93943564ed74394f50',
+    'founder-boy-hero-en-desktop.png': 'ad14bc884b0ef29aa95d00564277b059bd8afc208998aa53420dcaae0a25dfe6',
     'founder-boy-hero-he-desktop.png': '74c7d3258770abdab5c146e1211c4cbd16e0738840d5c274390f9a707f8dd824',
   };
   for (const [name, sha256] of Object.entries(expected)) {
     const bytes = fs.readFileSync(path.join(SITE, 'assets', 'images', name));
     assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), sha256, name);
   }
+});
+
+test('Hero V2 keeps the desktop CTA container-relative and leaves mobile geometry intact', () => {
+  const css = read('assets/css/site.css');
+  assert.match(css, /\.hero-photo img\{aspect-ratio:16\/9;object-fit:contain\}/);
+  assert.match(css, /\.hero-action\{position:absolute;z-index:2;left:36\.5%;top:76\.888889%;display:flex;width:27%;height:6\.296296%;min-height:0\}/);
+  assert.match(css, /\.hero-action\{left:8\.501594%;top:65\.467626%;width:83\.103082%;height:8\.175278%;min-height:50px\}/);
 });
 
 test('Life Skills route owns its favicon, install identity, and social metadata', () => {
