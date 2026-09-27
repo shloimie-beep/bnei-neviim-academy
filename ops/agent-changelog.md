@@ -40565,3 +40565,9 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Eligible inbound events now keep a recoverable database receipt when the Sheets client is unavailable after the existing capture opt-in. Deliberately disabled capture creates no backlog. A capture-only hold suppresses Sheet writes, admin recovery and private-app Sheet mutations while preserving inbound receipt replay identity and a derived language marker, not the private message body.
 - Focused synthetic Life Skills tests passed 34/34; `node --check server.js` and `git diff --check` passed. Protected review/merge and live receiver readback remain pending; the whole Life Skills app is not marked ready.
 - No provider send, history scan, backfill, real contact import, auto-reply enablement, payment, or live database mutation was performed.
+
+## 2026-09-27 - Life Skills receiver safety slice deployed
+
+- `REQ-20260927-001` merged through PR #165 at `727973ad629228c5c1ee287304a534952da8ab2c` and was deployed to the existing BNA website receiver as Railway deployment `4eebad7a-99f6-4177-95c5-e8fe00ed5db6` (SUCCESS).
+- The running `server.js` hash matched the merged source. Health and public Life Skills returned 200; unauthenticated private bridge returned 401; the existing durable ledger read 15 synced and no pending receipts. Live writer mode remains `sheet`, and Life Skills automatic WhatsApp replies remain off.
+- Focused Life Skills tests passed 34/34; exact-head review findings were repaired/adjudicated. No capture-only switch, native CRM cutover, controlled new provider inquiry, provider send, history scan or database repoint was performed. Full app readiness is still open in the Life Skills Build Control workbook.
