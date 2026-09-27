@@ -27,6 +27,15 @@ test('normalizes WAPI numbers and fails closed until the scoped Google CRM gate 
   assert.equal(crm.buildLifeSkillsSheetCrmReadiness({ env: { LIFE_SKILLS_SHEET_CRM_ENABLED: 'true', LIFE_SKILLS_SHEET_CRM_CONFIRM: crm.LIFE_SKILLS_SHEET_CRM_CONFIRM }, googleReady: true }).ready, true);
 });
 
+test('receiver writer defaults to the existing Sheet and requires a named epoch for a capture-only hold', () => {
+  assert.deepEqual(crm.lifeSkillsCrmWriterState({}), { mode: 'sheet', epoch: null, ready: true, blockers: [] });
+  assert.equal(crm.lifeSkillsCrmWriterState({ LIFE_SKILLS_CRM_WRITER_MODE: 'capture_only' }).ready, false);
+  assert.deepEqual(crm.lifeSkillsCrmWriterState({ LIFE_SKILLS_CRM_WRITER_MODE: 'capture_only', LIFE_SKILLS_CRM_WRITER_EPOCH: 'LS-20260927-CUTOVER-01' }),
+    { mode: 'capture_only', epoch: 'LS-20260927-CUTOVER-01', ready: true, blockers: [] });
+  assert.equal(crm.lifeSkillsCrmWriterState({ LIFE_SKILLS_CRM_WRITER_MODE: 'native' }).ready, false);
+  assert.equal(crm.lifeSkillsCrmWriterState({ LIFE_SKILLS_CRM_WRITER_MODE: 'Sheet' }).ready, false);
+});
+
 test('auth-bound inbound validation rejects outbound, delivery-status, and wrong-business-number events', async () => {
   const sheets = new Sheets();
   const channelBoundConfig = { ...config(), requiredChannelId: 'life-skills-channel' };
@@ -91,6 +100,116 @@ test('receiver integration uses a phone advisory lock and durable recovery witho
   assert.match(integration, /life-skills-sheet-crm\/recover/);
   assert.match(server, /lifeSkillsSheetCrm: lifeSkillsSheetCrmResultView/);
   assert.doesNotMatch(integration, /sendWapiTextMessage/);
+  assert.match(integration, /writer\.mode === 'capture_only'/);
+  assert.match(integration, /held_for_cutover/);
+  assert.match(integration, /writer\.mode !== 'sheet'/);
+  assert.ok(integration.indexOf("writer.mode === 'capture_only'") < integration.indexOf('upsertLifeSkillsSheetLead'));
+});
+
+test('capture-only receipt holds and replays durably without touching Sheets; default still syncs', async () => {
+  const server = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
+  const start = server.indexOf('async function syncLifeSkillsInboundToSheet');
+  const end = server.indexOf('async function recoverLifeSkillsSheetCrm', start);
+  assert.ok(start > 0 && end > start);
+  const source = server.slice(start, end);
+  const rows = new Map();
+  let nextId = 1, sheetCalls = 0, clientCalls = 0, sheetReady = true;
+  const client = {
+    async query(sql, values = []) {
+      if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK' || sql.includes('pg_advisory_xact_lock')) return { rows: [] };
+      if (sql.startsWith('INSERT INTO bna_life_skills_sheet_crm_sync')) {
+        let row = rows.get(values[0]);
+        if (row) return { rows: [] };
+        row = { id: nextId++, status: 'pending', phone_e164: values[3], to_number: values[4], sheet_receipt: {}, sheet_row: null, attribution: JSON.parse(values[9]), attempt_count: 0 };
+        rows.set(values[0], row);
+        return { rows: [{ ...row }] };
+      }
+      if (sql.startsWith('UPDATE bna_life_skills_sheet_crm_sync SET communication_id')) {
+        const row = rows.get(values[0]);
+        return { rows: row ? [{ ...row }] : [] };
+      }
+      const row = [...rows.values()].find(item => item.id === values[0]);
+      assert.ok(row, 'durable row exists before status update');
+      if (sql.includes("status = 'pending'")) row.status = 'pending';
+      else if (sql.includes("status = 'blocked_configuration'")) row.status = 'blocked_configuration';
+      else if (sql.includes('attempt_count = attempt_count + 1')) { row.status = values[1]; row.attempt_count += 1; }
+      else if (sql.includes('sheet_receipt =')) { row.status = values[1]; row.sheet_row = values[2]; row.sheet_receipt = JSON.parse(values[3]); }
+      else assert.fail(`unexpected SQL: ${sql}`);
+      return { rows: [] };
+    },
+    release() {},
+  };
+  const pool = { async connect() { clientCalls += 1; return client; } };
+  let writer = { mode: 'capture_only', epoch: 'LS-20260927-CUTOVER-01', ready: true, blockers: [] }, captureAuthorized = true;
+  const sync = new Function('pool', 'process', 'lifeSkillsSheetCrmConfig', 'isLifeSkillsInboundInquiry', 'lifeSkillsCrmWriterState', 'lifeSkillsSheetCrmClient', 'messageAttribution', 'detectedLanguage', 'upsertLifeSkillsSheetLead',
+    `${source}; return syncLifeSkillsInboundToSheet;`)(pool, { env: {} }, () => ({ ...config(), enabled: captureAuthorized, approved: captureAuthorized }), crm.isLifeSkillsInboundInquiry, () => writer,
+    () => { sheetCalls += 1; return { readiness: { ready: sheetReady, blockers: sheetReady ? [] : ['synthetic_google_unavailable'] }, sheets: {} }; }, crm.messageAttribution, crm.detectedLanguage,
+    async () => { sheetCalls += 1; return { action: 'created', row: 2, providerMessageIds: 'provider-message-1' }; });
+  captureAuthorized = false;
+  assert.equal((await sync({ normalized: inbound() })).status, 'blocked_configuration');
+  assert.equal(rows.size, 0, 'disabled CRM events must never become a later recovery backlog');
+  assert.equal(clientCalls, 0);
+  captureAuthorized = true;
+  const first = await sync({ normalized: inbound() });
+  const replay = await sync({ normalized: inbound() });
+  assert.equal(first.status, 'held_for_cutover');
+  assert.equal(first.durable, true);
+  assert.equal(first.replay_suppressed, false);
+  assert.equal(replay.replay_suppressed, true);
+  await assert.rejects(() => sync({ normalized: inbound({ fromNumber: '+972 52 555 0202' }) }), /receipt binding mismatch/);
+  assert.equal(rows.size, 1);
+  assert.equal(rows.get('provider-message-1').attribution.writer_epoch, writer.epoch);
+  assert.equal(rows.get('provider-message-1').attribution.detected_language, 'English');
+  assert.equal(rows.get('provider-message-1').attempt_count, 0);
+  assert.equal(sheetCalls, 0);
+  rows.get('provider-message-1').status = 'failed';
+  assert.equal((await sync({ normalized: inbound() })).replay_suppressed, true, 'a previously failed receipt is still a replay');
+  assert.equal(rows.get('provider-message-1').status, 'pending');
+  writer = { mode: 'sheet', epoch: null, ready: true, blockers: [] };
+  sheetReady = false;
+  const unavailable = await sync({ normalized: inbound() });
+  assert.equal(unavailable.status, 'blocked_configuration');
+  assert.equal(unavailable.durable, true);
+  assert.equal(rows.get('provider-message-1').status, 'blocked_configuration');
+  assert.equal(rows.get('provider-message-1').attempt_count, 0);
+  sheetReady = true;
+  const resumed = await sync({ normalized: inbound() });
+  assert.equal(resumed.status, 'synced');
+  assert.equal(rows.get('provider-message-1').attempt_count, 1);
+  assert.equal(sheetCalls, 3);
+  assert.equal((await sync({ normalized: inbound() })).replay_suppressed, true);
+  assert.equal(sheetCalls, 3, 'no readiness or duplicate Sheet upsert for a synced replay');
+  writer = { mode: 'blocked', epoch: null, ready: false, blockers: ['invalid_writer_mode'] };
+  assert.equal((await sync({ normalized: inbound({ messageId: 'provider-message-2' }) })).status, 'blocked_configuration');
+  assert.equal(clientCalls, 7);
+  assert.equal(rows.size, 1);
+});
+
+test('a held Hebrew inbound preserves only the derived language for later Sheet recovery', () => {
+  const server = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
+  const start = server.indexOf('function lifeSkillsSheetCrmNormalizedOutboxRecord');
+  const end = server.indexOf('async function syncLifeSkillsInboundToSheet', start);
+  assert.ok(start > 0 && end > start);
+  const rehydrate = new Function(`${server.slice(start, end)}; return lifeSkillsSheetCrmNormalizedOutboxRecord;`)();
+  assert.equal(crm.detectedLanguage('שלום'), 'Hebrew');
+  const record = { provider_message_id: 'hebrew-message', phone_e164: '+972525550101', to_number: '+972534932631', has_media: false,
+    attribution: { source: 'WhatsApp', detected_language: 'Hebrew' }, occurred_at: '2026-09-14T08:05:00.000Z' };
+  const normalized = rehydrate(record);
+  assert.equal(normalized.detectedLanguage, 'Hebrew');
+  assert.equal(normalized.messageText.includes('שלום'), false, 'raw body is not stored in the CRM receipt');
+  const row = crm.initialLeadRow({ normalized, payload: record.attribution, config: config() });
+  assert.equal(row[7], 'Hebrew');
+});
+
+test('capture-only hold fences all private-app Sheet mutations and admin recovery', () => {
+  const server = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
+  const bridge = server.slice(server.indexOf('function lifeSkillsBridgeClient'), server.indexOf("app.get('/api/webhooks/wapi'"));
+  assert.match(bridge, /write && writer\.mode !== 'sheet'/);
+  assert.equal((bridge.match(/lifeSkillsBridgeClient\(req, res, \{ write: true \}\)/g) || []).length, 3);
+  const recovery = server.slice(server.indexOf('async function recoverLifeSkillsSheetCrm'), server.indexOf('function authorizeLifeSkillsAppBridge'));
+  assert.match(recovery, /writer\.mode !== 'sheet'/);
+  assert.match(recovery, /'blocked_configuration'/);
+  assert.match(recovery, /res\.status\(423\)/);
 });
 
 test('uses the current named-header map, leaves AA:AI onboarding fields alone, and preserves notes on a second inbound message', async () => {

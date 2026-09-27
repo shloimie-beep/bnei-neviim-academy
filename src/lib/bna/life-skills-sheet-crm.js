@@ -70,6 +70,17 @@ function lifeSkillsSheetCrmConfig(env = {}) {
   };
 }
 
+/** The default keeps the existing Sheet writer. A cutover hold needs a named
+ * epoch so a later operator can reconcile its durable provider receipts. */
+function lifeSkillsCrmWriterState(env = {}) {
+  const mode = String(env.LIFE_SKILLS_CRM_WRITER_MODE || 'sheet').trim();
+  const epoch = String(env.LIFE_SKILLS_CRM_WRITER_EPOCH || '').trim();
+  if (mode === 'sheet') return { mode, epoch: null, ready: true, blockers: [] };
+  if (mode === 'capture_only' && /^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$/.test(epoch))
+    return { mode, epoch, ready: true, blockers: [] };
+  return { mode: 'blocked', epoch: null, ready: false, blockers: [mode === 'capture_only' ? 'LIFE_SKILLS_CRM_WRITER_EPOCH missing or invalid' : 'LIFE_SKILLS_CRM_WRITER_MODE invalid'] };
+}
+
 function buildLifeSkillsSheetCrmReadiness({ env = {}, googleReady = false } = {}) {
   const config = lifeSkillsSheetCrmConfig(env);
   const blockers = [];
@@ -260,7 +271,7 @@ function initialLeadRow({ normalized = {}, payload = {}, config = lifeSkillsShee
   const row = Array(Math.max(headerMap.maxColumnIndex + 1, ...Object.values({ ...headerMap.columns, ...headerMap.machine }).map(columnIndex))).fill('');
   const set = (column, value) => { row[columnIndex(column)] = value; };
   set(headerMap.columns.leadId, stableLeadId(phone)); set(headerMap.columns.receivedAt, receivedIso); set(headerMap.columns.parentName, normalizeText(normalized.pushName, 120)); set(headerMap.columns.phone, phone);
-  set(headerMap.columns.language, detectedLanguage(normalized.messageText || '')); set(headerMap.columns.source, attribution.source || 'WhatsApp'); set(headerMap.columns.campaign, attribution.campaign);
+  set(headerMap.columns.language, ['Hebrew', 'English'].includes(normalized.detectedLanguage) ? normalized.detectedLanguage : detectedLanguage(normalized.messageText || '')); set(headerMap.columns.source, attribution.source || 'WhatsApp'); set(headerMap.columns.campaign, attribution.campaign);
   set(headerMap.columns.stage, 'New inquiry'); set(headerMap.columns.lastContact, receivedIso); set(headerMap.columns.nextAction, 'Respond to inbound WhatsApp inquiry'); set(headerMap.columns.dueDate, dateOnlyInTimeZone(receivedAt, config.timeZone));
   set(headerMap.machine.providerMessageIds, providerMessageIds('', normalized.messageId)); set(headerMap.machine.firstInboundAt, receivedIso); set(headerMap.machine.lastInboundAt, receivedIso); set(headerMap.machine.responseOwner, config.responseOwner);
   return row;
@@ -331,4 +342,4 @@ async function upsertLifeSkillsSheetLead({ sheets, normalized = {}, payload = {}
   return { action: 'created', row: rowNumberFromUpdatedRange(append.data?.updates?.updatedRange), providerMessageIds: providerMessageIds('', normalized.messageId) };
 }
 
-module.exports = { ADMIN_HEADERS, DEFAULT_SHEET_ID, DEFAULT_SHEET_NAME, LEAD_HEADERS, LIFE_SKILLS_SHEET_CRM_CONFIRM, MACHINE_HEADERS, SHEET_FIELD_MAP_VERSION, buildLifeSkillsSheetCrmReadiness, createLifeSkillsLead, dateOnlyInTimeZone, initialLeadRow, isLifeSkillsInboundInquiry, lifeSkillsInboundDestination, lifeSkillsSheetCrmConfig, listLifeSkillsLeads, messageAttribution, normalizeLifeSkillsPhone, providerMessageIds, resolveAdminHeaderMap, resolveSheetHeaderMap, stableLeadId, stableManualLeadId, updateLifeSkillsLeadFields, upsertLifeSkillsSheetLead };
+module.exports = { ADMIN_HEADERS, DEFAULT_SHEET_ID, DEFAULT_SHEET_NAME, LEAD_HEADERS, LIFE_SKILLS_SHEET_CRM_CONFIRM, MACHINE_HEADERS, SHEET_FIELD_MAP_VERSION, buildLifeSkillsSheetCrmReadiness, createLifeSkillsLead, dateOnlyInTimeZone, detectedLanguage, initialLeadRow, isLifeSkillsInboundInquiry, lifeSkillsCrmWriterState, lifeSkillsInboundDestination, lifeSkillsSheetCrmConfig, listLifeSkillsLeads, messageAttribution, normalizeLifeSkillsPhone, providerMessageIds, resolveAdminHeaderMap, resolveSheetHeaderMap, stableLeadId, stableManualLeadId, updateLifeSkillsLeadFields, upsertLifeSkillsSheetLead };
