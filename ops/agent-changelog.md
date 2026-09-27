@@ -40558,3 +40558,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   provider-originated receiver proof remain separate release checks.
 - No provider send, history scan, backfill, automatic reply, contact import,
   payment, access grant or destructive database action was performed.
+
+## 2026-09-27 - Life Skills receiver writer fence prepared
+
+- `REQ-20260927-001` adds an explicit named-epoch capture-only hold to the existing inbound receipt path. The default remains the current Sheet writer; no live writer-mode change is made in this code slice.
+- Eligible inbound events now keep a recoverable database receipt when the Sheets client is unavailable. A capture-only hold suppresses Sheet writes, admin recovery and private-app Sheet mutations while preserving inbound receipt replay identity.
+- Focused synthetic Life Skills tests passed 33/33; `node --check server.js` and `git diff --check` passed. Protected review/merge and live receiver readback remain pending; the whole Life Skills app is not marked ready.
+- No provider send, history scan, backfill, real contact import, auto-reply enablement, payment, or live database mutation was performed.

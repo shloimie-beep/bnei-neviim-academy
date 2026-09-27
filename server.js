@@ -39,6 +39,7 @@ const {
   buildLifeSkillsSheetCrmReadiness,
   createLifeSkillsLead,
   isLifeSkillsInboundInquiry,
+  lifeSkillsCrmWriterState,
   lifeSkillsSheetCrmConfig,
   listLifeSkillsLeads,
   messageAttribution,
@@ -69471,19 +69472,32 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
   const config = lifeSkillsSheetCrmConfig(process.env);
   const eligibility = isLifeSkillsInboundInquiry({ normalized, scope, config });
   if (!eligibility.eligible) return { status: 'skipped_ineligible', blockers: eligibility.blockers };
-  const clientConfig = lifeSkillsSheetCrmClient();
-  if (!clientConfig.readiness.ready) return { status: 'blocked_configuration', blockers: clientConfig.readiness.blockers };
+  const writer = lifeSkillsCrmWriterState(process.env);
+  if (!writer.ready) return { status: 'blocked_configuration', blockers: writer.blockers };
+  // Both a planned cutover and a temporary Sheets configuration failure must
+  // retain the eligible provider receipt before acknowledging this webhook.
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`life-skills-sheet-crm:${eligibility.phone}`]);
     const stored = (await client.query(
       'INSERT INTO bna_life_skills_sheet_crm_sync (provider_message_id, communication_id, webhook_log_id, phone_e164, to_number, push_name, has_media, message_type, occurred_at, attribution) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9::timestamp, NOW()), $10::jsonb) ON CONFLICT (provider_message_id) DO UPDATE SET communication_id = COALESCE(bna_life_skills_sheet_crm_sync.communication_id, EXCLUDED.communication_id), webhook_log_id = COALESCE(bna_life_skills_sheet_crm_sync.webhook_log_id, EXCLUDED.webhook_log_id), updated_at = NOW() RETURNING *',
-      [normalized.messageId, communicationId, webhookLogId, eligibility.phone, eligibility.toNumber, normalized.pushName || null, Boolean(normalized.hasMedia), normalized.messageType || null, normalized.occurredAt || null, JSON.stringify(messageAttribution(payload))]
+      [normalized.messageId, communicationId, webhookLogId, eligibility.phone, eligibility.toNumber, normalized.pushName || null, Boolean(normalized.hasMedia), normalized.messageType || null, normalized.occurredAt || null, JSON.stringify({ ...messageAttribution(payload), writer_epoch: writer.epoch || 'sheet' })]
     )).rows[0];
     if (stored.status === 'synced') {
       await client.query('COMMIT');
       return { status: 'synced', action: stored.sheet_receipt?.action || null, row: stored.sheet_row || null, replay_suppressed: true, durable: true };
+    }
+    if (writer.mode === 'capture_only') {
+      await client.query("UPDATE bna_life_skills_sheet_crm_sync SET status = 'pending', updated_at = NOW() WHERE id = $1", [stored.id]);
+      await client.query('COMMIT');
+      return { status: 'held_for_cutover', replay_suppressed: stored.status === 'pending', durable: true };
+    }
+    const clientConfig = lifeSkillsSheetCrmClient();
+    if (!clientConfig.readiness.ready) {
+      await client.query("UPDATE bna_life_skills_sheet_crm_sync SET status = 'blocked_configuration', updated_at = NOW() WHERE id = $1", [stored.id]);
+      await client.query('COMMIT');
+      return { status: 'blocked_configuration', blockers: clientConfig.readiness.blockers, durable: true };
     }
     await client.query('UPDATE bna_life_skills_sheet_crm_sync SET status = $2, attempt_count = attempt_count + 1, last_error = NULL, updated_at = NOW() WHERE id = $1', [stored.id, 'pending']);
     try {
@@ -69505,7 +69519,9 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
 }
 
 async function recoverLifeSkillsSheetCrm(limit = 25) {
-  const pending = await pool.query('SELECT * FROM bna_life_skills_sheet_crm_sync WHERE status IN ($1, $2) ORDER BY updated_at ASC, id ASC LIMIT $3', ['pending', 'failed', Math.min(Math.max(Number(limit) || 25, 1), 25)]);
+  const writer = lifeSkillsCrmWriterState(process.env);
+  if (!writer.ready || writer.mode !== 'sheet') return { blocked: true, blockers: writer.blockers.length ? writer.blockers : ['life_skills_crm_writer_held_for_cutover'] };
+  const pending = await pool.query('SELECT * FROM bna_life_skills_sheet_crm_sync WHERE status IN ($1, $2, $3) ORDER BY updated_at ASC, id ASC LIMIT $4', ['pending', 'failed', 'blocked_configuration', Math.min(Math.max(Number(limit) || 25, 1), 25)]);
   const recovered = [];
   for (const record of pending.rows) {
     const result = await syncLifeSkillsInboundToSheet({
@@ -69522,12 +69538,14 @@ async function recoverLifeSkillsSheetCrm(limit = 25) {
 
 app.get('/api/bna/life-skills-sheet-crm/readiness', requireAdmin, (req, res) => {
   const { readiness } = lifeSkillsSheetCrmClient();
-  res.json({ ready: readiness.ready, blockers: readiness.blockers, sheetName: readiness.config.sheetName, responseOwner: readiness.config.responseOwner });
+  const writer = lifeSkillsCrmWriterState(process.env);
+  res.json({ ready: readiness.ready && writer.ready, blockers: [...readiness.blockers, ...writer.blockers], sheetName: readiness.config.sheetName, responseOwner: readiness.config.responseOwner, writerMode: writer.mode, writerEpoch: writer.epoch });
 });
 
 app.post('/api/bna/life-skills-sheet-crm/recover', requireAdmin, async (req, res) => {
   try {
     const recovered = await recoverLifeSkillsSheetCrm(req.body?.limit);
+    if (recovered.blocked) return res.status(423).json({ success: false, blockers: recovered.blockers });
     res.json({ success: true, recovered });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Life Skills Sheet CRM recovery failed' });
@@ -69541,11 +69559,16 @@ function authorizeLifeSkillsAppBridge(req) {
   return crypto.timingSafeEqual(Buffer.from(supplied), Buffer.from(expected));
 }
 
-function lifeSkillsBridgeClient(req, res) {
+function lifeSkillsBridgeClient(req, res, { write = false } = {}) {
   res.setHeader('Cache-Control', 'private, no-store');
   res.setHeader('Referrer-Policy', 'no-referrer');
   if (!authorizeLifeSkillsAppBridge(req)) {
     res.status(401).json({ success: false, error: 'Unauthorized Life Skills app bridge' });
+    return null;
+  }
+  const writer = lifeSkillsCrmWriterState(process.env);
+  if (!writer.ready || (write && writer.mode !== 'sheet')) {
+    res.status(423).json({ success: false, error: 'Life Skills CRM writer is paused for reconciliation', blockers: writer.blockers });
     return null;
   }
   const client = lifeSkillsSheetCrmClient();
@@ -69577,7 +69600,7 @@ app.get('/api/bna/life-skills-app/marketing', async (req, res) => {
 });
 
 app.post('/api/bna/life-skills-app/prospects', async (req, res) => {
-  const client = lifeSkillsBridgeClient(req, res); if (!client) return;
+  const client = lifeSkillsBridgeClient(req, res, { write: true }); if (!client) return;
   const phone = normalizeLifeSkillsPhone(req.body?.phone, client.readiness.config.defaultCountry);
   if (!phone) return res.status(400).json({ success: false, error: 'Valid phone is required' });
   const db = await pool.connect();
@@ -69594,7 +69617,7 @@ app.post('/api/bna/life-skills-app/prospects', async (req, res) => {
 });
 
 app.patch('/api/bna/life-skills-app/prospects/:leadId', async (req, res) => {
-  const client = lifeSkillsBridgeClient(req, res); if (!client) return;
+  const client = lifeSkillsBridgeClient(req, res, { write: true }); if (!client) return;
   try {
     const result = await updateLifeSkillsLeadFields({ sheets: client.sheets, config: client.readiness.config, leadId: req.params.leadId, fields: req.body?.fields });
     res.json({ success: true, result });
@@ -69605,7 +69628,7 @@ app.patch('/api/bna/life-skills-app/prospects/:leadId', async (req, res) => {
 });
 
 app.post('/api/bna/life-skills-app/prospects/:leadId/send', async (req, res) => {
-  const client = lifeSkillsBridgeClient(req, res); if (!client) return;
+  const client = lifeSkillsBridgeClient(req, res, { write: true }); if (!client) return;
   let attempt = null;
   try {
     const body = String(req.body?.body || '').trim();
