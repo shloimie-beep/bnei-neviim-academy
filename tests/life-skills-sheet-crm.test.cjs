@@ -119,8 +119,14 @@ test('capture-only receipt holds and replays durably without touching Sheets; de
       if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK' || sql.includes('pg_advisory_xact_lock')) return { rows: [] };
       if (sql.startsWith('INSERT INTO bna_life_skills_sheet_crm_sync')) {
         let row = rows.get(values[0]);
-        if (!row) { row = { id: nextId++, status: 'pending', sheet_receipt: {}, sheet_row: null, attribution: JSON.parse(values[9]), attempt_count: 0 }; rows.set(values[0], row); }
+        if (row) return { rows: [] };
+        row = { id: nextId++, status: 'pending', sheet_receipt: {}, sheet_row: null, attribution: JSON.parse(values[9]), attempt_count: 0 };
+        rows.set(values[0], row);
         return { rows: [{ ...row }] };
+      }
+      if (sql.startsWith('UPDATE bna_life_skills_sheet_crm_sync SET communication_id')) {
+        const row = rows.get(values[0]);
+        return { rows: row ? [{ ...row }] : [] };
       }
       const row = [...rows.values()].find(item => item.id === values[0]);
       assert.ok(row, 'durable row exists before status update');
@@ -143,11 +149,15 @@ test('capture-only receipt holds and replays durably without touching Sheets; de
   const replay = await sync({ normalized: inbound() });
   assert.equal(first.status, 'held_for_cutover');
   assert.equal(first.durable, true);
+  assert.equal(first.replay_suppressed, false);
   assert.equal(replay.replay_suppressed, true);
   assert.equal(rows.size, 1);
   assert.equal(rows.get('provider-message-1').attribution.writer_epoch, writer.epoch);
   assert.equal(rows.get('provider-message-1').attempt_count, 0);
   assert.equal(sheetCalls, 0);
+  rows.get('provider-message-1').status = 'failed';
+  assert.equal((await sync({ normalized: inbound() })).replay_suppressed, true, 'a previously failed receipt is still a replay');
+  assert.equal(rows.get('provider-message-1').status, 'pending');
   writer = { mode: 'sheet', epoch: null, ready: true, blockers: [] };
   sheetReady = false;
   const unavailable = await sync({ normalized: inbound() });
@@ -164,7 +174,7 @@ test('capture-only receipt holds and replays durably without touching Sheets; de
   assert.equal(sheetCalls, 3, 'no readiness or duplicate Sheet upsert for a synced replay');
   writer = { mode: 'blocked', epoch: null, ready: false, blockers: ['invalid_writer_mode'] };
   assert.equal((await sync({ normalized: inbound({ messageId: 'provider-message-2' }) })).status, 'blocked_configuration');
-  assert.equal(clientCalls, 5);
+  assert.equal(clientCalls, 6);
   assert.equal(rows.size, 1);
 });
 

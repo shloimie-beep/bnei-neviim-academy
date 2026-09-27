@@ -69480,10 +69480,15 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
   try {
     await client.query('BEGIN');
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`life-skills-sheet-crm:${eligibility.phone}`]);
-    const stored = (await client.query(
-      'INSERT INTO bna_life_skills_sheet_crm_sync (provider_message_id, communication_id, webhook_log_id, phone_e164, to_number, push_name, has_media, message_type, occurred_at, attribution) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9::timestamp, NOW()), $10::jsonb) ON CONFLICT (provider_message_id) DO UPDATE SET communication_id = COALESCE(bna_life_skills_sheet_crm_sync.communication_id, EXCLUDED.communication_id), webhook_log_id = COALESCE(bna_life_skills_sheet_crm_sync.webhook_log_id, EXCLUDED.webhook_log_id), updated_at = NOW() RETURNING *',
+    const inserted = (await client.query(
+      'INSERT INTO bna_life_skills_sheet_crm_sync (provider_message_id, communication_id, webhook_log_id, phone_e164, to_number, push_name, has_media, message_type, occurred_at, attribution) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9::timestamp, NOW()), $10::jsonb) ON CONFLICT (provider_message_id) DO NOTHING RETURNING *',
       [normalized.messageId, communicationId, webhookLogId, eligibility.phone, eligibility.toNumber, normalized.pushName || null, Boolean(normalized.hasMedia), normalized.messageType || null, normalized.occurredAt || null, JSON.stringify({ ...messageAttribution(payload), writer_epoch: writer.epoch || 'sheet' })]
     )).rows[0];
+    const stored = inserted || (await client.query(
+      'UPDATE bna_life_skills_sheet_crm_sync SET communication_id = COALESCE(communication_id, $2), webhook_log_id = COALESCE(webhook_log_id, $3), updated_at = NOW() WHERE provider_message_id = $1 RETURNING *',
+      [normalized.messageId, communicationId, webhookLogId]
+    )).rows[0];
+    if (!stored) throw new Error('Life Skills inbound receipt missing after conflict');
     if (stored.status === 'synced') {
       await client.query('COMMIT');
       return { status: 'synced', action: stored.sheet_receipt?.action || null, row: stored.sheet_row || null, replay_suppressed: true, durable: true };
@@ -69491,7 +69496,7 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
     if (writer.mode === 'capture_only') {
       await client.query("UPDATE bna_life_skills_sheet_crm_sync SET status = 'pending', updated_at = NOW() WHERE id = $1", [stored.id]);
       await client.query('COMMIT');
-      return { status: 'held_for_cutover', replay_suppressed: stored.status === 'pending', durable: true };
+      return { status: 'held_for_cutover', replay_suppressed: !inserted, durable: true };
     }
     const clientConfig = lifeSkillsSheetCrmClient();
     if (!clientConfig.readiness.ready) {
