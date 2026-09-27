@@ -10,7 +10,7 @@
 ## Acceptance and gates
 
 1. Default writer mode preserves current Sheet behavior and automatic replies remain off.
-2. Explicit `capture_only` plus a named epoch durably holds eligible inbound provider IDs in `bna_life_skills_sheet_crm_sync` without writing Sheets. Replay remains one receipt. Admin recovery and private-app add/edit/send cannot write while held.
+2. Explicit `capture_only` plus a named epoch durably holds eligible inbound provider IDs in `bna_life_skills_sheet_crm_sync` without writing Sheets, but only after the existing CRM enabled/confirmation opt-in has passed. Deliberately disabled capture creates no recoverable backlog. Replay remains one receipt. Admin recovery and private-app add/edit/send cannot write while held.
 3. A temporary Sheets-client readiness failure also leaves a durable recoverable receipt; `blocked_configuration` is included in admin recovery after readiness returns.
 4. Existing destination/One Time exclusion, per-phone lock, notes preservation, auth and dedupe tests continue passing. No history scan, backfill, provider send or production data mutation in tests.
 5. Protected review, exact-head checks, merge, release and live readback are required before the server-visible slice is Done. The writer mode itself is not switched during this slice.

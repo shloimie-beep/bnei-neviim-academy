@@ -120,7 +120,7 @@ test('capture-only receipt holds and replays durably without touching Sheets; de
       if (sql.startsWith('INSERT INTO bna_life_skills_sheet_crm_sync')) {
         let row = rows.get(values[0]);
         if (row) return { rows: [] };
-        row = { id: nextId++, status: 'pending', sheet_receipt: {}, sheet_row: null, attribution: JSON.parse(values[9]), attempt_count: 0 };
+        row = { id: nextId++, status: 'pending', phone_e164: values[3], to_number: values[4], sheet_receipt: {}, sheet_row: null, attribution: JSON.parse(values[9]), attempt_count: 0 };
         rows.set(values[0], row);
         return { rows: [{ ...row }] };
       }
@@ -140,17 +140,23 @@ test('capture-only receipt holds and replays durably without touching Sheets; de
     release() {},
   };
   const pool = { async connect() { clientCalls += 1; return client; } };
-  let writer = { mode: 'capture_only', epoch: 'LS-20260927-CUTOVER-01', ready: true, blockers: [] };
+  let writer = { mode: 'capture_only', epoch: 'LS-20260927-CUTOVER-01', ready: true, blockers: [] }, captureAuthorized = true;
   const sync = new Function('pool', 'process', 'lifeSkillsSheetCrmConfig', 'isLifeSkillsInboundInquiry', 'lifeSkillsCrmWriterState', 'lifeSkillsSheetCrmClient', 'messageAttribution', 'upsertLifeSkillsSheetLead',
-    `${source}; return syncLifeSkillsInboundToSheet;`)(pool, { env: {} }, () => config(), crm.isLifeSkillsInboundInquiry, () => writer,
+    `${source}; return syncLifeSkillsInboundToSheet;`)(pool, { env: {} }, () => ({ ...config(), enabled: captureAuthorized, approved: captureAuthorized }), crm.isLifeSkillsInboundInquiry, () => writer,
     () => { sheetCalls += 1; return { readiness: { ready: sheetReady, blockers: sheetReady ? [] : ['synthetic_google_unavailable'] }, sheets: {} }; }, crm.messageAttribution,
     async () => { sheetCalls += 1; return { action: 'created', row: 2, providerMessageIds: 'provider-message-1' }; });
+  captureAuthorized = false;
+  assert.equal((await sync({ normalized: inbound() })).status, 'blocked_configuration');
+  assert.equal(rows.size, 0, 'disabled CRM events must never become a later recovery backlog');
+  assert.equal(clientCalls, 0);
+  captureAuthorized = true;
   const first = await sync({ normalized: inbound() });
   const replay = await sync({ normalized: inbound() });
   assert.equal(first.status, 'held_for_cutover');
   assert.equal(first.durable, true);
   assert.equal(first.replay_suppressed, false);
   assert.equal(replay.replay_suppressed, true);
+  await assert.rejects(() => sync({ normalized: inbound({ fromNumber: '+972 52 555 0202' }) }), /receipt binding mismatch/);
   assert.equal(rows.size, 1);
   assert.equal(rows.get('provider-message-1').attribution.writer_epoch, writer.epoch);
   assert.equal(rows.get('provider-message-1').attempt_count, 0);
@@ -174,7 +180,7 @@ test('capture-only receipt holds and replays durably without touching Sheets; de
   assert.equal(sheetCalls, 3, 'no readiness or duplicate Sheet upsert for a synced replay');
   writer = { mode: 'blocked', epoch: null, ready: false, blockers: ['invalid_writer_mode'] };
   assert.equal((await sync({ normalized: inbound({ messageId: 'provider-message-2' }) })).status, 'blocked_configuration');
-  assert.equal(clientCalls, 6);
+  assert.equal(clientCalls, 7);
   assert.equal(rows.size, 1);
 });
 

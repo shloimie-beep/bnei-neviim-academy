@@ -69472,6 +69472,8 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
   const config = lifeSkillsSheetCrmConfig(process.env);
   const eligibility = isLifeSkillsInboundInquiry({ normalized, scope, config });
   if (!eligibility.eligible) return { status: 'skipped_ineligible', blockers: eligibility.blockers };
+  // Deliberately disabled CRM capture is not a backlog to replay later.
+  if (!config.enabled || !config.approved) return { status: 'blocked_configuration', blockers: ['life_skills_crm_capture_not_authorized'] };
   const writer = lifeSkillsCrmWriterState(process.env);
   if (!writer.ready) return { status: 'blocked_configuration', blockers: writer.blockers };
   // Both a planned cutover and a temporary Sheets configuration failure must
@@ -69489,6 +69491,8 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
       [normalized.messageId, communicationId, webhookLogId]
     )).rows[0];
     if (!stored) throw new Error('Life Skills inbound receipt missing after conflict');
+    if (stored.phone_e164 !== eligibility.phone || stored.to_number !== eligibility.toNumber)
+      throw new Error('Life Skills inbound receipt binding mismatch');
     if (stored.status === 'synced') {
       await client.query('COMMIT');
       return { status: 'synced', action: stored.sheet_receipt?.action || null, row: stored.sheet_row || null, replay_suppressed: true, durable: true };
