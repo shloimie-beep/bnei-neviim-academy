@@ -48,6 +48,12 @@ const {
   updateLifeSkillsLeadFields,
   upsertLifeSkillsSheetLead,
 } = require('./src/lib/bna/life-skills-sheet-crm');
+const {
+  OUTBOX_SQL: createLifeSkillsAppInboundOutboxSQL,
+  forwardConfig: lifeSkillsAppInboundConfig,
+  inquiriesFromEnvelope: lifeSkillsAppInquiries,
+  LifeSkillsAppInboundOutbox,
+} = require('./src/lib/bna/life-skills-app-inbound');
 const { readLifeSkillsMarketingSnapshot } = require('./src/lib/bna/life-skills-marketing');
 const {
   goalBoardBucket,
@@ -35249,6 +35255,7 @@ async function initDb() {
     await pool.query(createGreenInvoiceWebhookLogSQL);
     await pool.query(createWapiWebhookLogSQL);
     await pool.query(createLifeSkillsSheetCrmSyncSQL);
+    await pool.query(createLifeSkillsAppInboundOutboxSQL);
     await pool.query(createWapiSyncRunsSQL);
     await pool.query(createWapiPhonebookCorrectionsSQL);
     await pool.query(createAccountabilityEventsSQL);
@@ -69688,6 +69695,34 @@ app.get('/api/webhooks/wapi', (req, res) => {
   });
 });
 
+async function captureLifeSkillsAppInbound(payload, scope) {
+  const config = lifeSkillsAppInboundConfig(process.env);
+  const inquiries = lifeSkillsAppInquiries(payload, scope, config);
+  if (!inquiries.length) return { status:config.enabled ? 'skipped_ineligible' : 'disabled', captured:0 };
+  const outbox = new LifeSkillsAppInboundOutbox(pool, config);
+  // Await each durable encrypted commit before acknowledging a provider event.
+  // Neither this path nor the retry loop reads historical receiver/Sheet rows.
+  const result=await outbox.captureBatch(inquiries);
+  return {status:result.conflicts ? 'durably_captured_with_conflicts' : 'durably_captured',...result};
+}
+
+function startLifeSkillsAppInboundScheduler() {
+  if (!lifeSkillsAppInboundConfig(process.env).ready) return;
+  let running = false;
+  const timer = setInterval(async () => {
+    if (running) return;
+    const config = lifeSkillsAppInboundConfig(process.env);
+    if (!config.ready) return;
+    running = true;
+    try {
+      const result = await new LifeSkillsAppInboundOutbox(pool, config).drain(25);
+      if (result.attempted) console.log('Life Skills private inbox forward:', JSON.stringify(result));
+    } catch { console.error('Life Skills private inbox forward: durable queue unavailable'); }
+    finally { running = false; }
+  }, 30000);
+  timer.unref();
+}
+
 app.post('/api/webhooks/wapi', async (req, res) => {
   const receivedAt = new Date().toISOString();
   const payload = req.body && typeof req.body === 'object' ? req.body : {};
@@ -69699,6 +69734,9 @@ app.post('/api/webhooks/wapi', async (req, res) => {
   const webhookScope = authorization.scope || {};
 
   try {
+    // Future-only capture uses the already authenticated provider envelope.
+    // A DB failure here propagates to the existing failed webhook response.
+    const lifeSkillsAppInboundResult=await captureLifeSkillsAppInbound(payload, webhookScope);
     const webhookProject = webhookScope.project_key
       ? await getProjectByKey(webhookScope.project_key).catch(() => null)
       : null;
@@ -69905,6 +69943,9 @@ app.post('/api/webhooks/wapi', async (req, res) => {
             : `Filed into contact communications #${communicationResult.communication?.id}.`,
           !isOneTimeWapiScope(webhookScope)
             ? `Life Skills Sheet CRM ${lifeSkillsSheetCrmResult.status || 'not_evaluated'}.`
+            : null,
+          lifeSkillsAppInboundResult.captured || lifeSkillsAppInboundResult.conflicts
+            ? `Life Skills private inbox ${lifeSkillsAppInboundResult.status}; accepted=${lifeSkillsAppInboundResult.captured}; conflicts=${lifeSkillsAppInboundResult.conflicts || 0}.`
             : null,
           autoReplyResult
             ? `${isOneTimeWapiScope(webhookScope) ? 'One Time' : 'Life Skills'} auto-reply ${autoReplyResult.status || 'not_evaluated'}.`
@@ -94925,6 +94966,7 @@ app.listen(PORT, HOST, () => {
   console.log(`BNA Server running on ${HOST}:${PORT}`);
   if (!(ONE_TIME_REVIEW_ONLY_NO_DB && !DATABASE_URL)) {
     startPaymentReminderScheduler();
+    startLifeSkillsAppInboundScheduler();
   }
 });
 // Deploy timestamp: 2026-05-26T17:02:05Z
