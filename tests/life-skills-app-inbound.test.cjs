@@ -85,7 +85,9 @@ test('actual webhook awaits encrypted capture before communication/ACK; timer dr
   assert.ok(handler.indexOf('authorizeWapiWebhookRequest')<handler.indexOf('await captureLifeSkillsAppInbound'));
   assert.ok(handler.indexOf('await captureLifeSkillsAppInbound')<handler.indexOf('createCommunicationFromWapiWebhook'));
   assert.match(server,/await outbox.captureBatch\(inquiries\)/);
-  assert.match(server,/await pool.query\(createLifeSkillsAppInboundOutboxSQL\)/);
+  assert.match(server,/lifeSkillsAppInboundPool.query\(createLifeSkillsAppInboundOutboxSQL\)/);
+  assert.doesNotMatch(server,/await pool.query\(createLifeSkillsAppInboundOutboxSQL\)/);
+  assert.match(server,/new LifeSkillsAppInboundOutbox\(await lifeSkillsAppInboundDatabase\(\), config\)/);
   assert.match(server,/startLifeSkillsAppInboundScheduler\(\)/);
   const module=fs.readFileSync(path.join(__dirname,'..','src/lib/bna/life-skills-app-inbound.js'),'utf8');
   assert.doesNotMatch(module,/bna_wapi_webhook_log|bna_contact_communications|bna_life_skills_sheet_crm_sync|sendWapiTextMessage|messages\/list/);

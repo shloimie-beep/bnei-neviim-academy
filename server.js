@@ -54,6 +54,7 @@ const {
   inquiriesFromEnvelope: lifeSkillsAppInquiries,
   LifeSkillsAppInboundOutbox,
 } = require('./src/lib/bna/life-skills-app-inbound');
+const { createOutboxPool: createLifeSkillsAppInboundPool } = require('./src/lib/bna/life-skills-inbound-database');
 const { readLifeSkillsMarketingSnapshot } = require('./src/lib/bna/life-skills-marketing');
 const {
   goalBoardBucket,
@@ -35255,7 +35256,8 @@ async function initDb() {
     await pool.query(createGreenInvoiceWebhookLogSQL);
     await pool.query(createWapiWebhookLogSQL);
     await pool.query(createLifeSkillsSheetCrmSyncSQL);
-    await pool.query(createLifeSkillsAppInboundOutboxSQL);
+    // This future-only feature never borrows the legacy shared insecure pool.
+    if (lifeSkillsAppInboundConfig(process.env).ready) await lifeSkillsAppInboundDatabase();
     await pool.query(createWapiSyncRunsSQL);
     await pool.query(createWapiPhonebookCorrectionsSQL);
     await pool.query(createAccountabilityEventsSQL);
@@ -69695,11 +69697,23 @@ app.get('/api/webhooks/wapi', (req, res) => {
   });
 });
 
+let lifeSkillsAppInboundPool = null;
+let lifeSkillsAppInboundDatabaseReady = null;
+async function lifeSkillsAppInboundDatabase() {
+  if (!lifeSkillsAppInboundPool) lifeSkillsAppInboundPool = createLifeSkillsAppInboundPool(process.env);
+  if (!lifeSkillsAppInboundDatabaseReady) {
+    lifeSkillsAppInboundDatabaseReady = lifeSkillsAppInboundPool.query(createLifeSkillsAppInboundOutboxSQL)
+      .catch(error => { lifeSkillsAppInboundDatabaseReady = null; throw error; });
+  }
+  await lifeSkillsAppInboundDatabaseReady;
+  return lifeSkillsAppInboundPool;
+}
+
 async function captureLifeSkillsAppInbound(payload, scope) {
   const config = lifeSkillsAppInboundConfig(process.env);
   const inquiries = lifeSkillsAppInquiries(payload, scope, config);
   if (!inquiries.length) return { status:config.enabled ? 'skipped_ineligible' : 'disabled', captured:0 };
-  const outbox = new LifeSkillsAppInboundOutbox(pool, config);
+  const outbox = new LifeSkillsAppInboundOutbox(await lifeSkillsAppInboundDatabase(), config);
   // Await each durable encrypted commit before acknowledging a provider event.
   // Neither this path nor the retry loop reads historical receiver/Sheet rows.
   const result=await outbox.captureBatch(inquiries);
@@ -69715,7 +69729,7 @@ function startLifeSkillsAppInboundScheduler() {
     if (!config.ready) return;
     running = true;
     try {
-      const result = await new LifeSkillsAppInboundOutbox(pool, config).drain(25);
+      const result = await new LifeSkillsAppInboundOutbox(await lifeSkillsAppInboundDatabase(), config).drain(25);
       if (result.attempted) console.log('Life Skills private inbox forward:', JSON.stringify(result));
     } catch { console.error('Life Skills private inbox forward: durable queue unavailable'); }
     finally { running = false; }
