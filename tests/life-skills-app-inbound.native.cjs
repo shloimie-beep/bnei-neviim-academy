@@ -3,7 +3,7 @@
 const assert = require('node:assert/strict');
 const {test,before,after,beforeEach} = require('node:test');
 const {Pool} = require('pg');
-const {APP_INBOUND_URL,OUTBOX_SQL,forwardConfig,inquiriesFromEnvelope,LifeSkillsAppInboundOutbox} = require('../src/lib/bna/life-skills-app-inbound');
+const {APP_INBOUND_URL,OUTBOX_SQL,forwardConfig,inquiriesFromEnvelope,receiptDigest,LifeSkillsAppInboundOutbox} = require('../src/lib/bna/life-skills-app-inbound');
 const url = new URL(process.env.TEST_DATABASE_URL || 'invalid:');
 assert.equal(url.protocol,'postgresql:'); assert.equal(url.hostname,'127.0.0.1'); assert.equal(url.username,'synthetic');
 assert.match(url.pathname,/^\/ls_calendar_test_voice_[a-f0-9]{8}_test$/);
@@ -16,7 +16,7 @@ function inquiry(id='synthetic-message-1',text='DEMO synthetic inquiry') {
   return inquiriesFromEnvelope({channel_id:'synthetic-channel',event:{type:'messages',event:'post'},messages:[{
     id,from_me:false,type:'text',chat_id:'972525550101@s.whatsapp.net',timestamp:1790500000,from:'972525550101',from_name:'DEMO',text:{body:text}}]}, {},config)[0];
 }
-function receipt(replayed=false) { return Response.json({ok:true,data:{replayed,storedAt:'2026-09-28T03:00:00.000Z'},requestId:'synthetic-request'}, {status:replayed?200:201}); }
+function receipt(replayed=false,dto=inquiry()) { return Response.json({ok:true,data:{replayed,storedAt:'2026-09-28T03:00:00.000Z',ackDigest:receiptDigest(dto,config.secret)},requestId:'synthetic-request'}, {status:replayed?200:201}); }
 const count=async()=>Number((await pool.query('SELECT count(*) AS n FROM bna_life_skills_app_inbound_outbox')).rows[0].n);
 before(async()=>{ await pool.query(OUTBOX_SQL); await pool.query(OUTBOX_SQL); });
 beforeEach(async()=>{ await pool.query('TRUNCATE bna_life_skills_app_inbound_outbox'); });
@@ -65,8 +65,19 @@ test('durable queue survives transport failure and uncertain ACK; replay deliver
   const row=(await pool.query('SELECT status,attempts,delivered_at,last_code FROM bna_life_skills_app_inbound_outbox')).rows[0];
   assert.equal(row.attempts,2); assert.ok(row.delivered_at instanceof Date); assert.equal(row.last_code,'COMMITTED_PRIVATE_RECEIPT');
 });
+test('altered replay cannot poison later valid batch messages; original is retained and conflict persists',async()=>{
+  const outbox=new LifeSkillsAppInboundOutbox(pool,config,async()=>receipt()),original=inquiry();
+  await outbox.capture(original);
+  const batch=[{...original,messageText:'altered replay'},inquiry('synthetic-message-2','new valid message')];
+  assert.deepEqual(await outbox.captureBatch(batch),{captured:1,conflicts:1}); assert.equal(await count(),2);
+  assert.deepEqual(await outbox.captureBatch(batch),{captured:1,conflicts:1}); assert.equal(await count(),2);
+  const rows=(await pool.query('SELECT * FROM bna_life_skills_app_inbound_outbox')).rows;
+  const prior=rows.find(row=>row.event_key===outbox.eventKey(original));
+  assert.equal(prior.conflict_detected,true); assert.deepEqual(outbox.unseal(prior),original);
+  assert.equal(rows.find(row=>row.event_key!==prior.event_key).conflict_detected,false);
+});
 test('forged 200, redirect/auth/binding failure and corrupt ciphertext never count as successful private capture',async()=>{
-  for (const [response,expected] of [[Response.json({ok:true}),'pending'],[Response.json({ok:true,data:{replayed:false,storedAt:'not-a-time'}}),'pending'],[new Response('x'.repeat(4097)),'pending'],
+  for (const [response,expected] of [[Response.json({ok:true}),'pending'],[Response.json({ok:true,data:{replayed:false,storedAt:'not-a-time'}}),'pending'],[receipt(false,inquiry('different-event')),'pending'],[new Response('x'.repeat(4097)),'pending'],
     [new Response('redirect',{status:302}),'pending'],[new Response('denied',{status:401}),'blocked'],[new Response('wrong binding',{status:403}),'blocked']]) {
     await pool.query('TRUNCATE bna_life_skills_app_inbound_outbox');
     const outbox=new LifeSkillsAppInboundOutbox(pool,config,async()=>response), {eventKey}=await outbox.capture(inquiry());
@@ -79,7 +90,7 @@ test('forged 200, redirect/auth/binding failure and corrupt ciphertext never cou
   assert.equal((await outbox.deliver(eventKey)).status,'blocked'); assert.equal(sent,0);
 });
 test('concurrent delivery locks one row and bounded retry reads only newly captured pending rows',async()=>{
-  let sent=0; const outbox=new LifeSkillsAppInboundOutbox(pool,config,async()=>{sent++;return receipt();}), {eventKey}=await outbox.capture(inquiry());
+  let sent=0; const outbox=new LifeSkillsAppInboundOutbox(pool,config,async(_url,opts)=>{sent++;return receipt(false,JSON.parse(opts.body));}), {eventKey}=await outbox.capture(inquiry());
   await Promise.all(Array.from({length:4},()=>outbox.deliver(eventKey))); assert.equal(sent,1);
   const a=await outbox.capture(inquiry('synthetic-message-2')), b=await outbox.capture(inquiry('synthetic-message-3'));
   await pool.query(`UPDATE bna_life_skills_app_inbound_outbox SET next_attempt_at=clock_timestamp()+interval '1 hour' WHERE event_key=$1`,[b.eventKey]);

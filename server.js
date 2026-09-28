@@ -69702,8 +69702,8 @@ async function captureLifeSkillsAppInbound(payload, scope) {
   const outbox = new LifeSkillsAppInboundOutbox(pool, config);
   // Await each durable encrypted commit before acknowledging a provider event.
   // Neither this path nor the retry loop reads historical receiver/Sheet rows.
-  for (const inquiry of inquiries) await outbox.capture(inquiry);
-  return { status:'durably_captured', captured:inquiries.length };
+  const result=await outbox.captureBatch(inquiries);
+  return {status:result.conflicts ? 'durably_captured_with_conflicts' : 'durably_captured',...result};
 }
 
 function startLifeSkillsAppInboundScheduler() {
@@ -69736,7 +69736,7 @@ app.post('/api/webhooks/wapi', async (req, res) => {
   try {
     // Future-only capture uses the already authenticated provider envelope.
     // A DB failure here propagates to the existing failed webhook response.
-    await captureLifeSkillsAppInbound(payload, webhookScope);
+    const lifeSkillsAppInboundResult=await captureLifeSkillsAppInbound(payload, webhookScope);
     const webhookProject = webhookScope.project_key
       ? await getProjectByKey(webhookScope.project_key).catch(() => null)
       : null;
@@ -69943,6 +69943,9 @@ app.post('/api/webhooks/wapi', async (req, res) => {
             : `Filed into contact communications #${communicationResult.communication?.id}.`,
           !isOneTimeWapiScope(webhookScope)
             ? `Life Skills Sheet CRM ${lifeSkillsSheetCrmResult.status || 'not_evaluated'}.`
+            : null,
+          lifeSkillsAppInboundResult.captured || lifeSkillsAppInboundResult.conflicts
+            ? `Life Skills private inbox ${lifeSkillsAppInboundResult.status}; accepted=${lifeSkillsAppInboundResult.captured}; conflicts=${lifeSkillsAppInboundResult.conflicts || 0}.`
             : null,
           autoReplyResult
             ? `${isOneTimeWapiScope(webhookScope) ? 'One Time' : 'Life Skills'} auto-reply ${autoReplyResult.status || 'not_evaluated'}.`

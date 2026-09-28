@@ -3,7 +3,7 @@ const test = require('node:test');
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
-const { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inquiriesFromEnvelope, LifeSkillsAppInboundOutbox } = require('../src/lib/bna/life-skills-app-inbound');
+const { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inquiriesFromEnvelope, receiptDigest, LifeSkillsAppInboundOutbox } = require('../src/lib/bna/life-skills-app-inbound');
 
 function env(extra={}) { return { LIFE_SKILLS_APP_INBOUND_FORWARD_ENABLED:'true', LIFE_SKILLS_SHEET_CRM_ENABLED:'true',
   LIFE_SKILLS_SHEET_CRM_CONFIRM:'APPROVE_LIFE_SKILLS_SHEET_CRM_INBOUND_UPSERT', LIFE_SKILLS_APP_BRIDGE_SECRET:'synthetic-key-not-a-real-secret-123456789',
@@ -25,6 +25,13 @@ test('binding is the private app canonical SHA-256; no owner-controlled destinat
   const c=forwardConfig(env({LIFE_SKILLS_APP_INBOUND_URL:'https://untrusted.invalid'}));
   assert.equal(c.bindingSha256,crypto.createHash('sha256').update(JSON.stringify({businessNumber:'+972534932631',channelId:'synthetic-channel',provider:'whapi'})).digest('hex'));
   assert.equal(c.ready,true);
+});
+test('blind acknowledgement binds the exact normalized event/body to the existing bridge secret',()=>{
+  const config=forwardConfig(env()),[dto]=inquiriesFromEnvelope(envelope(),{},config),digest=receiptDigest(dto,config.secret);
+  assert.match(digest,/^[a-f0-9]{64}$/);
+  assert.notEqual(receiptDigest({...dto,providerEventId:'different-event'},config.secret),digest);
+  assert.notEqual(receiptDigest({...dto,messageText:'different-body'},config.secret),digest);
+  assert.notEqual(receiptDigest(dto,config.secret+'different-key'),digest);
 });
 test('maps actual messages.post shape, stable message/event IDs, Hebrew and provider time', () => {
   const [dto]=inquiriesFromEnvelope(envelope(),{},forwardConfig(env()));
@@ -77,7 +84,7 @@ test('actual webhook awaits encrypted capture before communication/ACK; timer dr
   const handler=server.slice(server.indexOf("app.post('/api/webhooks/wapi'"));
   assert.ok(handler.indexOf('authorizeWapiWebhookRequest')<handler.indexOf('await captureLifeSkillsAppInbound'));
   assert.ok(handler.indexOf('await captureLifeSkillsAppInbound')<handler.indexOf('createCommunicationFromWapiWebhook'));
-  assert.match(server,/for \(const inquiry of inquiries\) await outbox.capture\(inquiry\)/);
+  assert.match(server,/await outbox.captureBatch\(inquiries\)/);
   assert.match(server,/await pool.query\(createLifeSkillsAppInboundOutboxSQL\)/);
   assert.match(server,/startLifeSkillsAppInboundScheduler\(\)/);
   const module=fs.readFileSync(path.join(__dirname,'..','src/lib/bna/life-skills-app-inbound.js'),'utf8');

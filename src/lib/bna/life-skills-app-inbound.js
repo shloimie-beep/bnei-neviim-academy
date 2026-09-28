@@ -16,6 +16,7 @@ const OUTBOX_SQL = `CREATE TABLE IF NOT EXISTS bna_life_skills_app_inbound_outbo
   attempts INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0),
   next_attempt_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
   last_code TEXT CHECK (last_code IS NULL OR last_code ~ '^[A-Z0-9_]{1,40}$'),
+  conflict_detected BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (binding_sha256,event_key)
 );
 CREATE INDEX IF NOT EXISTS idx_bna_life_skills_app_inbound_pending
@@ -23,6 +24,9 @@ CREATE INDEX IF NOT EXISTS idx_bna_life_skills_app_inbound_pending
 REVOKE ALL ON bna_life_skills_app_inbound_outbox FROM PUBLIC;`;
 
 function fail(code) { const error = new Error(code); error.code = code; return error; }
+function receiptDigest(inquiry, secret) {
+  return crypto.createHmac('sha256',secret).update('life-skills-inbound-ack/v1\n').update(canonical(inquiry)).digest('hex');
+}
 function canonical(value) {
   if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
   if (value && typeof value === 'object') return `{${Object.keys(value).sort().map(k => `${JSON.stringify(k)}:${canonical(value[k])}`).join(',')}}`;
@@ -131,6 +135,17 @@ class LifeSkillsAppInboundOutbox {
     } catch (error) { await db.query('ROLLBACK').catch(() => null); throw error; }
     finally { db.release(); }
   }
+  async captureBatch(inquiries) {
+    const conflicts=[]; let captured=0;
+    for (const inquiry of inquiries) {
+      try { await this.capture(inquiry); captured++; }
+      catch (error) { if(error.code !== 'INQUIRY_REPLAY_CONFLICT') throw error; conflicts.push(this.eventKey(inquiry)); }
+    }
+    // Retain the original immutable payload, record the conflict durably and
+    // allow valid later messages to commit instead of poisoning batch retries.
+    if(conflicts.length) await this.pool.query(`UPDATE bna_life_skills_app_inbound_outbox SET conflict_detected=TRUE WHERE binding_sha256=$1 AND event_key=ANY($2::text[])`,[this.config.bindingSha256,conflicts]);
+    return {captured,conflicts:conflicts.length};
+  }
   async deliver(eventKey) {
     const db = await this.pool.connect();
     try {
@@ -147,7 +162,9 @@ class LifeSkillsAppInboundOutbox {
         if ([200,201].includes(response.status)) {
           const text = await boundedResponse(response);
           const receipt = JSON.parse(text);
-          if (receipt.ok === true && typeof receipt.data?.replayed === 'boolean' && typeof receipt.data?.storedAt === 'string' && Number.isFinite(Date.parse(receipt.data.storedAt))) { status='delivered'; code='COMMITTED_PRIVATE_RECEIPT'; }
+          const ack=receipt.data?.ackDigest;
+          const correlated=typeof ack === 'string' && /^[a-f0-9]{64}$/.test(ack) && crypto.timingSafeEqual(Buffer.from(ack,'hex'),Buffer.from(receiptDigest(inquiry,this.config.secret),'hex'));
+          if (correlated && receipt.ok === true && typeof receipt.data?.replayed === 'boolean' && typeof receipt.data?.storedAt === 'string' && Number.isFinite(Date.parse(receipt.data.storedAt))) { status='delivered'; code='COMMITTED_PRIVATE_RECEIPT'; }
           else code='INVALID_PRIVATE_RECEIPT';
         } else {
           code=`HTTP_${response.status}`;
@@ -177,4 +194,4 @@ async function boundedResponse(response) {
   return Buffer.concat(parts).toString('utf8');
 }
 
-module.exports = { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inquiriesFromEnvelope, LifeSkillsAppInboundOutbox };
+module.exports = { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inquiriesFromEnvelope, receiptDigest, LifeSkillsAppInboundOutbox };
