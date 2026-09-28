@@ -35256,8 +35256,12 @@ async function initDb() {
     await pool.query(createGreenInvoiceWebhookLogSQL);
     await pool.query(createWapiWebhookLogSQL);
     await pool.query(createLifeSkillsSheetCrmSyncSQL);
-    // This future-only feature never borrows the legacy shared insecure pool.
-    if (lifeSkillsAppInboundConfig(process.env).ready) await lifeSkillsAppInboundDatabase();
+    // Optional outbox startup must not abort healthy shared BNA initialization.
+    // The actual webhook still awaits the unwrapped durable DB and fails closed.
+    if (lifeSkillsAppInboundConfig(process.env).ready) {
+      try { await lifeSkillsAppInboundDatabase(); }
+      catch { console.error('Life Skills future inbox: optional startup unavailable; inbound remains fail-closed'); }
+    }
     await pool.query(createWapiSyncRunsSQL);
     await pool.query(createWapiPhonebookCorrectionsSQL);
     await pool.query(createAccountabilityEventsSQL);
