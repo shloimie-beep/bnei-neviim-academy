@@ -40583,3 +40583,13 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 
 - Independent review of d6235793f found two P2 defects, now corrected: correlate the exact committed request with a blinded existing-secret HMAC, and preserve valid later batch captures while recording an altered replay conflict without overwriting the original payload.
 - Private-app PR94 is the acknowledgement prerequisite; it must be released before forwarding is enabled. Corrected source suites 51/51 and native PostgreSQL17.11 6/6 PASS before commit; exact-head rerun/re-review and normal release remain required. No provider, database binding, Sheet authority, source/image ownership, send or ad change occurred. Full native CRM and controlled provider/practitioner acceptance remain open.
+
+## 2026-09-28 - Existing receiver released; strict future-outbox TLS prepared
+
+- PR167 corrected43f7b087c exact re-review PASS; normal merge5b31c36de / existing receiver SUCCESSfe14f34f. Running source and public DB binding/cluster/native outbox catalog verified, writerSheet/autoReplyOFF/forwardOFF/zero rows. Public certificate/localhost readback was strict; it did not establish secure proxy transport for the original shared pool.
+- Continued same REQ-20260927-001 / LS-INBOUND-TLS-20260928: new isolated outbox connection verifies exact registered runtime IDs, attested CA+leaf fingerprints and actual localhost certificate identity with chain/expiry validation enabled. Uses unchanged existing public receiver database URL; old shared pool untouched. No private-app DB reuse, live cert/key/database change, new provider/service/plan or outbound effect.
+-56 focused source tests,3 new native TLS tests and6 existing native outbox tests PASS on prepared tree; fixtures stop/remove, no skip/database mocks. Initial fixture DNS/SNI and local pg-resolution failures corrected; malformed pin transcription stopped before a connection and was corrected against authorized DB-service certificate evidence. Committed-head rerun, exact independent review and normal protected release are next, not full CRM/provider acceptance.
+
+## 2026-09-28 — PR168 independent startup isolation correction
+
+- Independent review of d6cac3eff80dccff9a6038fe2b7149e1e8244a76 found optional outbox startup could skip remaining shared initialization after a fail-closed TLS error. Only optional startup catches a sanitized failure locally; actual webhook database/capture failures still reject before durable write/ACK. Two executable actual-server regressions cover both boundaries. Same eight-path claim, no shared pool/DB/flags/provider changes; exact-head tests and independent re-review required.

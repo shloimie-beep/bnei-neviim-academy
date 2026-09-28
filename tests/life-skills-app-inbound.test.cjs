@@ -3,6 +3,7 @@ const test = require('node:test');
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
 const { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inquiriesFromEnvelope, receiptDigest, LifeSkillsAppInboundOutbox } = require('../src/lib/bna/life-skills-app-inbound');
 
 function env(extra={}) { return { LIFE_SKILLS_APP_INBOUND_FORWARD_ENABLED:'true', LIFE_SKILLS_SHEET_CRM_ENABLED:'true',
@@ -85,11 +86,47 @@ test('actual webhook awaits encrypted capture before communication/ACK; timer dr
   assert.ok(handler.indexOf('authorizeWapiWebhookRequest')<handler.indexOf('await captureLifeSkillsAppInbound'));
   assert.ok(handler.indexOf('await captureLifeSkillsAppInbound')<handler.indexOf('createCommunicationFromWapiWebhook'));
   assert.match(server,/await outbox.captureBatch\(inquiries\)/);
-  assert.match(server,/await pool.query\(createLifeSkillsAppInboundOutboxSQL\)/);
+  assert.match(server,/lifeSkillsAppInboundPool.query\(createLifeSkillsAppInboundOutboxSQL\)/);
+  assert.doesNotMatch(server,/await pool.query\(createLifeSkillsAppInboundOutboxSQL\)/);
+  assert.match(server,/new LifeSkillsAppInboundOutbox\(await lifeSkillsAppInboundDatabase\(\), config\)/);
   assert.match(server,/startLifeSkillsAppInboundScheduler\(\)/);
   const module=fs.readFileSync(path.join(__dirname,'..','src/lib/bna/life-skills-app-inbound.js'),'utf8');
   assert.doesNotMatch(module,/bna_wapi_webhook_log|bna_contact_communications|bna_life_skills_sheet_crm_sync|sendWapiTextMessage|messages\/list/);
   assert.match(OUTBOX_SQL,/REVOKE ALL ON bna_life_skills_app_inbound_outbox FROM PUBLIC/);
+});
+
+test('optional outbox startup cannot interrupt healthy shared initialization or log failure details', async () => {
+  const server=fs.readFileSync(path.join(__dirname,'..','server.js'),'utf8');
+  const start=server.indexOf('    // Optional outbox startup must not abort');
+  const end=server.indexOf('    await pool.query(createWapiSyncRunsSQL);',start);
+  assert.ok(start>0&&end>start);
+  const startup=server.slice(start,end)+'    await pool.query(createWapiSyncRunsSQL);';
+  for(const ready of [false,true]) {
+    const calls=[],messages=[];
+    await vm.runInNewContext(`(async()=>{${startup}})()`,{
+      process:{env:{}},lifeSkillsAppInboundConfig:()=>({ready}),
+      lifeSkillsAppInboundDatabase:async()=>{calls.push('outbox');throw new Error('synthetic-private-failure-detail');},
+      console:{error:message=>messages.push(message)},
+      pool:{query:async()=>calls.push('shared')},createWapiSyncRunsSQL:'synthetic-shared-migration',
+    });
+    assert.deepEqual(calls,ready?['outbox','shared']:['shared']);
+    assert.equal(messages.length,ready?1:0);
+    assert.doesNotMatch(messages.join(' '),/synthetic-private-failure-detail/);
+  }
+});
+test('actual webhook capture still rejects the same unavailable durable database before capture or ACK', async () => {
+  const server=fs.readFileSync(path.join(__dirname,'..','server.js'),'utf8');
+  const start=server.indexOf('async function captureLifeSkillsAppInbound(');
+  const end=server.indexOf('function startLifeSkillsAppInboundScheduler()',start);
+  assert.ok(start>0&&end>start);
+  let captureCalls=0;
+  const result=vm.runInNewContext(`${server.slice(start,end)};captureLifeSkillsAppInbound({},{});`,{
+    process:{env:{}},lifeSkillsAppInboundConfig:()=>({enabled:true,ready:true}),lifeSkillsAppInquiries:()=>[{}],
+    lifeSkillsAppInboundDatabase:async()=>{throw new Error('OUTBOX_DATABASE_TLS_UNAVAILABLE');},
+    LifeSkillsAppInboundOutbox:class { async captureBatch(){captureCalls++;return {};} },
+  });
+  await assert.rejects(result,/OUTBOX_DATABASE_TLS_UNAVAILABLE/);
+  assert.equal(captureCalls,0);
 });
 
 module.exports={env,envelope};
