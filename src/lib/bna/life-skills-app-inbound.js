@@ -48,6 +48,24 @@ function bounded(value, max, required = false) {
   if (text.length > max || (required && !text.length)) throw fail('INVALID_INQUIRY');
   return text;
 }
+/** Complete provider evidence only, after webhook/channel authorization. Never
+ * infer business intent from message text, UTM, push name or a contact prefix.
+ * Whapi: context.ad.ctwa/attrib/source.id/type. Missing/invalid evidence stays
+ * unqualified; it must not prevent durable capture of the ordinary message.
+ */
+function ctwaAttributionFromProviderMessage(message) {
+  const record = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+  const own = (value, key) => Object.hasOwn(value, key) ? value[key] : undefined;
+  if (!record(message)) return null;
+  const context = own(message, 'context'); if (!record(context)) return null;
+  const ad = own(context, 'ad'); if (!record(ad)) return null;
+  const source = own(ad, 'source'); if (!record(source)) return null;
+  const click = own(ad, 'ctwa'), id = own(source, 'id');
+  if (typeof click !== 'string' || typeof id !== 'string' || own(ad, 'attrib') !== true || own(source, 'type') !== 'ad') return null;
+  const clickId = click.trim(), adId = id.trim();
+  if (!clickId.length || clickId.length > 2048 || !adId.length || adId.length > 180) return null;
+  return { clickId, adId, attributed:true, sourceType:'ad' };
+}
 /** Consume only authenticated new messages.post envelopes. The provider message
  * ID is also the event idempotency key: replayed callbacks have one identity.
  * An attachment is its real provider descriptor, never its URL or preview.
@@ -90,6 +108,8 @@ function inquiriesFromEnvelope(payload = {}, scope = {}, config) {
       providerEventId:id, providerMessageId:id, providerThreadId:bounded(thread,180,true), eventType:'inbound_message',
       fromMe:false, fromNumber, pushName:bounded(message.from_name,120), messageType:type, messageText,
       occurredAt:date.toISOString(), media };
+    const ctwaAttribution = ctwaAttributionFromProviderMessage(message);
+    if (ctwaAttribution) inquiry.ctwaAttribution = ctwaAttribution;
     if (Buffer.byteLength(JSON.stringify(inquiry)) > 65536) throw fail('INVALID_INQUIRY');
     result.push(inquiry);
   }
@@ -194,4 +214,4 @@ async function boundedResponse(response) {
   return Buffer.concat(parts).toString('utf8');
 }
 
-module.exports = { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inquiriesFromEnvelope, receiptDigest, LifeSkillsAppInboundOutbox };
+module.exports = { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inquiriesFromEnvelope, ctwaAttributionFromProviderMessage, receiptDigest, LifeSkillsAppInboundOutbox };

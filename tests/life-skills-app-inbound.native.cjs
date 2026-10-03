@@ -65,6 +65,23 @@ test('durable queue survives transport failure and uncertain ACK; replay deliver
   const row=(await pool.query('SELECT status,attempts,delivered_at,last_code FROM bna_life_skills_app_inbound_outbox')).rows[0];
   assert.equal(row.attempts,2); assert.ok(row.delivered_at instanceof Date); assert.equal(row.last_code,'COMMITTED_PRIVATE_RECEIPT');
 });
+test('native CTWA replay preserves exact encrypted attribution and requires a matching full acknowledgement',async()=>{
+  const dto={...inquiry(),ctwaAttribution:{clickId:'synthetic-click',adId:'synthetic-ad',attributed:true,sourceType:'ad'}};
+  let acknowledge=false,transmissions=0;
+  const outbox=new LifeSkillsAppInboundOutbox(pool,config,async(_url,opts)=>{
+    transmissions++;assert.deepEqual(JSON.parse(opts.body),dto);
+    return receipt(false,acknowledge?dto:inquiry()); // Omitting attribution does not acknowledge this event.
+  });
+  const first=await outbox.capture(dto),second=await outbox.capture(dto);assert.equal(second.replayed,true);assert.equal(first.eventKey,second.eventKey);assert.equal(await count(),1);
+  const stored=(await pool.query('SELECT * FROM bna_life_skills_app_inbound_outbox')).rows[0];
+  assert.deepEqual(outbox.unseal(stored),dto);assert.equal(stored.payload_ciphertext.includes(Buffer.from('synthetic-click')),false);
+  await assert.rejects(()=>outbox.capture({...dto,ctwaAttribution:{...dto.ctwaAttribution,adId:'changed-ad'}}),/INQUIRY_REPLAY_CONFLICT/);
+  assert.equal((await outbox.deliver(first.eventKey)).status,'pending');
+  assert.equal((await pool.query('SELECT delivered_at FROM bna_life_skills_app_inbound_outbox')).rows[0].delivered_at,null);
+  await pool.query('UPDATE bna_life_skills_app_inbound_outbox SET next_attempt_at=clock_timestamp()');acknowledge=true;
+  assert.equal((await outbox.deliver(first.eventKey)).status,'delivered');assert.equal(transmissions,2);assert.equal(await count(),1);
+  assert.deepEqual(outbox.unseal((await pool.query('SELECT * FROM bna_life_skills_app_inbound_outbox')).rows[0]),dto);
+});
 test('altered replay cannot poison later valid batch messages; original is retained and conflict persists',async()=>{
   const outbox=new LifeSkillsAppInboundOutbox(pool,config,async()=>receipt()),original=inquiry();
   await outbox.capture(original);
