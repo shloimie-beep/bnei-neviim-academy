@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inquiriesFromEnvelope, receiptDigest, LifeSkillsAppInboundOutbox } = require('../src/lib/bna/life-skills-app-inbound');
+const { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inquiriesFromEnvelope, ctwaAttributionFromProviderMessage, receiptDigest, LifeSkillsAppInboundOutbox } = require('../src/lib/bna/life-skills-app-inbound');
 
 function env(extra={}) { return { LIFE_SKILLS_APP_INBOUND_FORWARD_ENABLED:'true', LIFE_SKILLS_SHEET_CRM_ENABLED:'true',
   LIFE_SKILLS_SHEET_CRM_CONFIRM:'APPROVE_LIFE_SKILLS_SHEET_CRM_INBOUND_UPSERT', LIFE_SKILLS_APP_BRIDGE_SECRET:'synthetic-key-not-a-real-secret-123456789',
@@ -46,6 +46,42 @@ test('captures every new message in a batch instead of only its first item', () 
   const payload=envelope(); payload.messages.push({...payload.messages[0],id:'synthetic-message-2',text:{body:'second'}});
   const dtos=inquiriesFromEnvelope(payload,{},forwardConfig(env()));
   assert.equal(dtos.length,2); assert.equal(dtos[1].messageText,'second'); assert.equal(dtos[1].providerEventId,'synthetic-message-2');
+});
+test('complete authenticated provider CTWA evidence reaches the existing exact DTO and acknowledgement', () => {
+  const config=forwardConfig(env()),context={ad:{ctwa:' synthetic-click ',attrib:true,source:{id:' synthetic-ad ',type:'ad',url:'https://ignored.invalid'},headline:'ignored headline'}};
+  const [dto]=inquiriesFromEnvelope(envelope({context}),{},config),[ordinary]=inquiriesFromEnvelope(envelope(),{},config);
+  assert.deepEqual(dto.ctwaAttribution,{clickId:'synthetic-click',adId:'synthetic-ad',attributed:true,sourceType:'ad'});
+  const {ctwaAttribution,...retained}=dto;assert.deepEqual(retained,ordinary);
+  assert.equal(Object.hasOwn(ordinary,'ctwaAttribution'),false); // Old digest/DTO bytes are unchanged.
+  assert.notEqual(receiptDigest(dto,config.secret),receiptDigest(ordinary,config.secret));
+  assert.notEqual(receiptDigest(dto,config.secret),receiptDigest({...dto,ctwaAttribution:{...ctwaAttribution,clickId:'another-click'}},config.secret));
+  assert.doesNotMatch(JSON.stringify(dto),/ignored\.invalid|headline/);
+});
+test('body/UTM/name never qualify and incomplete or invalid attribution still captures an ordinary message', () => {
+  const config=forwardConfig(env());
+  for(const ad of [{},{ctwa:'click',attrib:true},{ctwa:'click',attrib:'true',source:{id:'ad',type:'ad'}},
+    {ctwa:'click',attrib:false,source:{id:'ad',type:'ad'}},{ctwa:'',attrib:true,source:{id:'ad',type:'ad'}},
+    {ctwa:'x'.repeat(2049),attrib:true,source:{id:'ad',type:'ad'}},{ctwa:'click',attrib:true,source:{id:'x'.repeat(181),type:'ad'}},
+    {ctwa:'click',attrib:true,source:{id:123,type:'ad'}},{ctwa:'click',attrib:true,source:{id:'ad',type:'post'}}]){
+    const [dto]=inquiriesFromEnvelope(envelope({context:{ad},from_name:'LS • Lead',text:{body:'utm_source=facebook ctwa=click business inquiry'}}),{},config);
+    assert.equal(Object.hasOwn(dto,'ctwaAttribution'),false);assert.equal(dto.messageText,'utm_source=facebook ctwa=click business inquiry');
+  }
+});
+test('inherited CTWA properties cannot qualify a shared personal-number message', () => {
+  const ad={ctwa:'click',attrib:true,source:{id:'ad',type:'ad'}};
+  for(const message of [Object.create({context:{ad}}),{context:Object.create({ad})},
+    {context:{ad:Object.create(ad)}},{context:{ad:{ctwa:'click',attrib:true,source:Object.create({id:'ad',type:'ad'})}}}])
+    assert.equal(ctwaAttributionFromProviderMessage(message),null);
+  for(const value of [null,undefined,'click',[],{context:{ad:[]}}])assert.equal(ctwaAttributionFromProviderMessage(value),null);
+});
+test('CTWA metadata retains channel/consent/scope exclusions and never creates contacts or sends', () => {
+  const payload=envelope({context:{ad:{ctwa:'click',attrib:true,source:{id:'ad',type:'ad'}}}}),config=forwardConfig(env());
+  assert.deepEqual(inquiriesFromEnvelope({...payload,channel_id:'other'},{},config),[]);
+  assert.deepEqual(inquiriesFromEnvelope(payload,{project_key:'one_time_mishnah_class'},config),[]);
+  assert.deepEqual(inquiriesFromEnvelope(payload,{},forwardConfig(env({LIFE_SKILLS_APP_INBOUND_FORWARD_ENABLED:'false'}))),[]);
+  assert.deepEqual(inquiriesFromEnvelope(envelope({...payload.messages[0],from_me:true}),{},config),[]);
+  const source=fs.readFileSync(path.join(__dirname,'..','src/lib/bna/life-skills-app-inbound.js'),'utf8');
+  assert.doesNotMatch(source,/sendWapiTextMessage|messages\/list|people\.create|contacts\/put/);
 });
 test('wrong channel, One Time, groups, Status, newsletters, outbound and delivery events never enter this inbox', () => {
   const config=forwardConfig(env());
