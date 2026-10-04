@@ -93,6 +93,13 @@ function heldSuccessorCalendarUpdates(calendar, heldSuccessors) {
   }
   return { updates, slots };
 }
+function scheduledSuccessorCalendarUpdates(slot, scheduledAt) {
+  if (!slot) return [];
+  return [
+    ...(slot.recoverPublisherSelectionHold ? [cells(`'30-Day Calendar'!H${slot.rowNumber}`, slot.calendarRestoreStatus)] : []),
+    cells(`'30-Day Calendar'!N${slot.rowNumber}`, `SCHEDULED — ${localStamp(scheduledAt)} Asia/Jerusalem via rolling Status publisher`),
+  ];
+}
 function expectedScheduleMarker(asset, slot) {
   if (asset?.delivery?.state !== 'SCHEDULED' || !asset.delivery.scheduledAt || asset.delivery.anchorSlot !== slot?.slot) return false;
   return slot.scheduler === `SCHEDULED — ${localStamp(asset.delivery.scheduledAt)} Asia/Jerusalem via rolling Status publisher`;
@@ -106,22 +113,31 @@ function calendarHoldState(slot) {
   const match = `${slot?.status || ''} ${slot?.scheduler || ''}`.match(/\b(HELD|BLOCKED|OFF)\b/i);
   return match ? match[1].toUpperCase() : null;
 }
-function hasCalendarSendEvidence(slot, ignoreExpectedSchedule = false) {
+function hasCalendarSendEvidence(slot, ignoreExpectedSchedule = false, ignoreSelectionHold = false) {
   let scheduler = String(slot?.scheduler || '');
   if (ignoreExpectedSchedule) scheduler = '';
-  const state = `${slot?.status || ''} ${scheduler}`.replace(/no send queued|no post queued/ig, '');
-  if (/PUBLISHED|SENDING|RESERVED|UNKNOWN|FAILED|QUEUED|SCHEDULED/i.test(state) || calendarHoldState({ status: slot?.status, scheduler })) return true;
+  const status = ignoreSelectionHold && slot?.recoverPublisherSelectionHold ? '' : String(slot?.status || '');
+  const state = `${status} ${scheduler}`.replace(/no send queued|no post queued/ig, '');
+  if (/PUBLISHED|SENDING|RESERVED|UNKNOWN|FAILED|QUEUED|SCHEDULED/i.test(state) ||
+      (!(ignoreSelectionHold && slot?.recoverPublisherSelectionHold) && calendarHoldState({ status, scheduler }))) return true;
   const receipt = String(slot?.receipts || '').trim();
   return Boolean(receipt && !/^(?:no provider delivery|no provider call(?: yet)?|no receipt|none|[-—])(?:\s|;|$)/i.test(receipt));
 }
-function sameAssetAndSlot(asset, slot, { allowExpectedSchedule = false } = {}) {
+function sameAssetAndSlot(asset, slot, { allowExpectedSchedule = false, allowSelectionHold = false } = {}) {
   const expected = allowExpectedSchedule && expectedScheduleMarker(asset, slot);
   return slot && asset.url === slot.assetUrl &&
     String(slot.version || '').toLowerCase().includes(asset.digest) && calendarVersionMatches(asset, slot) &&
-    /^Approved$/i.test(slot.approval) && !quietSlot(slot) && !hasCalendarSendEvidence(slot, expected);
+    /^Approved$/i.test(slot.approval) && !quietSlot(slot) && !hasCalendarSendEvidence(slot, expected, allowSelectionHold);
 }
 function noPriorDelivery(asset) {
+  if (asset?.delivery?.state === 'HELD' && asset.delivery.holdType === 'SELECTION') return true;
   return !asset.delivery && (!asset.deliveryText || /^(?:No provider delivery|No provider call)/i.test(asset.deliveryText));
+}
+function calendarSelectionHold(workbook, slot) {
+  const error = String(slot?.status || '').match(/^HELD — (.+)$/)?.[1];
+  if (!error || slot.scheduler !== error || !/^(?:AMBIGUOUS_NEXT_HEBREW_ASSET|HEBREW_CALENDAR_BINDING_MISMATCH):/.test(error)) return null;
+  return workbook.assets.find(asset => asset.delivery?.state === 'HELD' && asset.delivery.holdType === 'SELECTION' &&
+    asset.delivery.anchorSlot === slot.slot && asset.delivery.error === error)?.delivery || null;
 }
 function scheduledIdentityMatches(asset) {
   const delivery = asset?.delivery;
@@ -258,12 +274,15 @@ function nextAsset(workbook, language, anchorSlot) {
     if (number <= anchor || !number) continue;
     const conceptAssets = workbook.assets.filter(item => item.language === 'HE' && item.concept === number && isEligible(item) && !hasPriorConceptDelivery(workbook, item));
     const calendarHold = calendarHoldState(slot);
-    if (calendarHold) return { state: 'HELD', reason: `HEBREW_CALENDAR_${calendarHold}`, conceptId: number,
+    const selectionHold = calendarSelectionHold(workbook, slot);
+    if (calendarHold && !selectionHold) return { state: 'HELD', reason: `HEBREW_CALENDAR_${calendarHold}`, conceptId: number,
       candidates: conceptAssets, slot, preserveCalendarHold: true };
     if (!conceptAssets.length) continue;
-    const matches = conceptAssets.filter(item => sameAssetAndSlot(item, slot));
+    const selectionSlot = selectionHold ? { ...slot, recoverPublisherSelectionHold: true } : slot;
+    const matches = conceptAssets.filter(item => sameAssetAndSlot(item, selectionSlot, { allowSelectionHold: Boolean(selectionHold) }));
     if (matches.length > 1) return { state: 'HELD', reason: 'AMBIGUOUS_NEXT_HEBREW_ASSET', conceptId: number, candidates: matches, slot };
-    if (matches.length === 1) return { asset: matches[0], slot };
+    if (matches.length === 1) return { asset: matches[0], slot: selectionHold ? { ...selectionSlot,
+      calendarRestoreStatus: selectionHold.calendarRestoreStatus, calendarRestoreScheduler: selectionHold.calendarRestoreScheduler } : slot };
     return { state: 'HELD', reason: 'HEBREW_CALENDAR_BINDING_MISMATCH', conceptId: number, candidates: conceptAssets, slot };
   }
   return null;
@@ -275,8 +294,13 @@ function holdAmbiguousNextTurn(selection, heldAt) {
   const error = selection.reason === 'HEBREW_CALENDAR_BINDING_MISMATCH'
     ? `${selection.reason}: concept ${selection.conceptId}; renew the exact calendar binding before scheduling`
     : `${selection.reason}: concept ${selection.conceptId}; choose one exact approved asset before scheduling`;
-  return selection.candidates.map(asset => ({ asset, slot: selection.slot || null,
-    delivery: makeRecord(asset, 'HELD', { heldAt, error, candidateAssetIds, ...(selection.slot ? { anchorSlot: selection.slot.slot } : {}) }) }));
+  return selection.candidates.map(asset => {
+    const calendarRestoreStatus = asset.delivery?.holdType === 'SELECTION' ? asset.delivery.calendarRestoreStatus : selection.slot?.status;
+    const calendarRestoreScheduler = asset.delivery?.holdType === 'SELECTION' ? asset.delivery.calendarRestoreScheduler : selection.slot?.scheduler;
+    return { asset, slot: selection.slot || null,
+      delivery: makeRecord(asset, 'HELD', { heldAt, error, holdType: 'SELECTION', candidateAssetIds,
+        ...(selection.slot ? { anchorSlot: selection.slot.slot, calendarRestoreStatus, calendarRestoreScheduler } : {}) }) };
+  });
 }
 function scheduledPreflight(workbook, now = Date.now()) {
   const scheduled = workbook.assets.filter(item => item.delivery?.state === 'SCHEDULED');
@@ -423,8 +447,12 @@ function successorPreflightMatches(original, current, selection, { nextLanguage,
   if (nextLanguage === 'HE') {
     const oldSlot = selection.slot;
     slot = uniqueRow(current.calendar, 'slot', oldSlot?.slot);
+    const recoverSelectionHold = Boolean(oldSlot?.recoverPublisherSelectionHold && currentSelection?.slot?.recoverPublisherSelectionHold);
+    if (slot && recoverSelectionHold) slot = { ...slot, recoverPublisherSelectionHold: true,
+      calendarRestoreStatus: currentSelection.slot.calendarRestoreStatus,
+      calendarRestoreScheduler: currentSelection.slot.calendarRestoreScheduler };
     if (!oldSlot || !slot || !sameCalendarSource(oldSlot, slot) ||
-        refreshed.some(asset => !sameAssetAndSlot(asset, slot)) || quietSlot(slot))
+        refreshed.some(asset => !sameAssetAndSlot(asset, slot, { allowSelectionHold: recoverSelectionHold })) || quietSlot(slot))
       return { ok: false, reason: 'SUCCESSOR_CALENDAR_HOLD_OR_EXACT_BINDING_CHANGED_BEFORE_SCHEDULE' };
   }
   if (quietDate(new Date(now).toISOString(), current.calendar))
@@ -577,7 +605,7 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
     if (post.http === 200 && id) verified = await verifyStory(api, id).catch(() => null);
     const resultWorkbook = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID,
       ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
-    const resultCheck = publicationResultPreflight(workbook, resultWorkbook,
+    let resultCheck = publicationResultPreflight(workbook, resultWorkbook,
       { assetId: asset.id, baselineAsset, baselineSlot, expectedDelivery: sending });
     if (!resultCheck.ok) return { state: 'UNKNOWN', assetId: asset.id, providerHttp: post.http,
       providerReceiptId: id, providerReadback: Boolean(verified), error: resultCheck.reason,
@@ -606,14 +634,25 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
         (nextSelection.asset || nextSelection.candidates?.length)) {
       const latestForSuccessor = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID,
         ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
-      const successorCheck = successorPreflightMatches(resultWorkbook, latestForSuccessor, nextSelection,
-        { nextLanguage, publishingAssetId: asset.id, anchorSlot, now: Date.now() });
-      if (successorCheck.ok) {
-        nextSelection = successorCheck.selection;
-        successorWorkbook = successorCheck.workbook;
+      const latestPublicationCheck = publicationResultPreflight(resultWorkbook, latestForSuccessor,
+        { assetId: asset.id, baselineAsset, baselineSlot, expectedDelivery: sending });
+      if (!latestPublicationCheck.ok) return { state: 'UNKNOWN', assetId: asset.id, providerHttp: post.http,
+        providerReceiptId: id, providerReadback: true, error: latestPublicationCheck.reason,
+        retry: 'blocked until provider history and canonical send state are reconciled' };
+      resultCheck = latestPublicationCheck;
+      asset = resultCheck.asset;
+      slot = resultCheck.slot;
+      successorWorkbook = latestForSuccessor;
+      if (resultCheck.assetBindingChanged || (baselineSlot && !resultCheck.canUpdateCalendarState)) {
+        nextSelection = { state: 'HELD', reason: 'PUBLISHING_ASSET_OR_CALENDAR_CHANGED_AFTER_PROVIDER_SUBMISSION',
+          conceptId: null, candidates: [], preserveCalendarHold: true };
+      } else {
+        const successorCheck = successorPreflightMatches(resultWorkbook, latestForSuccessor, nextSelection,
+          { nextLanguage, publishingAssetId: asset.id, anchorSlot, now: Date.now() });
+        if (successorCheck.ok) nextSelection = successorCheck.selection;
+        else nextSelection = { state: 'HELD', reason: `SUCCESSOR_PREFLIGHT_FAILED: ${successorCheck.reason}`,
+          conceptId: (nextSelection.asset || nextSelection.candidates?.[0])?.concept || null, candidates: [], preserveCalendarHold: true };
       }
-      else nextSelection = { state: 'HELD', reason: `SUCCESSOR_PREFLIGHT_FAILED: ${successorCheck.reason}`,
-        conceptId: (nextSelection.asset || nextSelection.candidates?.[0])?.concept || null, candidates: [], preserveCalendarHold: true };
     }
     const ambiguousNext = nextSelection?.state === 'HELD' ? nextSelection : null;
     const nextTurnHold = ambiguousNext ? { state: 'HELD', language: nextLanguage, reason: ambiguousNext.reason,
@@ -638,7 +677,7 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
         anchorSlot: nextSlot?.slot || anchorSlot, predecessorReceiptId: id });
       updates.push(cells(`'Asset Registry'!T${nextItem.rowNumber}`, `${localStamp(nextAt)} Asia/Jerusalem`));
       updates.push(cells(`'Asset Registry'!V${nextItem.rowNumber}`, JSON.stringify(nextRecord)));
-      if (nextSlot) updates.push(cells(`'30-Day Calendar'!N${nextSlot.rowNumber}`, `SCHEDULED — ${localStamp(nextAt)} Asia/Jerusalem via rolling Status publisher`));
+      updates.push(...scheduledSuccessorCalendarUpdates(nextSlot, nextAt));
     }
     for (const { asset: heldAsset, delivery: heldDelivery } of heldSuccessors) {
       updates.push(cells(`'Asset Registry'!V${heldAsset.rowNumber}`, JSON.stringify(heldDelivery)));
@@ -707,4 +746,5 @@ module.exports = { lockedRun, oneShot, startScheduler, parseWorkbook, isEligible
   sameAssetAndSlot, scheduledIdentityMatches, verifiedStoryReadback, hasPriorConceptDelivery, validScheduledAt,
   invalidScheduledHolds, invalidActiveAttemptHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
   publisherStatePreflightMatches, successorPreflightMatches, publicationResultPreflight, holdOwnReservation,
-  successorScheduleIso, heldSuccessorCalendarUpdates, attachPoolErrorHandler, record, exactMedia, MAX_MEDIA_BYTES };
+  successorScheduleIso, heldSuccessorCalendarUpdates, scheduledSuccessorCalendarUpdates,
+  attachPoolErrorHandler, record, exactMedia, MAX_MEDIA_BYTES };

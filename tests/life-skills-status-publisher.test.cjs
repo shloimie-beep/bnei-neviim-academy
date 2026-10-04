@@ -5,7 +5,8 @@ const { Readable } = require('node:stream');
 const { parseWorkbook, isEligible, nextAllowedIso, nextAsset, record, scheduledIdentityMatches, sameAssetAndSlot, verifiedStoryReadback, hasPriorConceptDelivery,
   validScheduledAt, invalidScheduledHolds, invalidActiveAttemptHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
   publisherStatePreflightMatches, successorPreflightMatches, publicationResultPreflight,
-  successorScheduleIso, heldSuccessorCalendarUpdates, attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
+  successorScheduleIso, heldSuccessorCalendarUpdates, scheduledSuccessorCalendarUpdates,
+  attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
 const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-skills-marketing');
 
 const digest = 'a'.repeat(64);
@@ -80,12 +81,22 @@ test('ambiguous Hebrew exact matches and changed calendar bindings are durably h
   const first=statusRow('C20-HE-r04','HE'), second=statusRow('C20-HE-copy','HE');
   first[1]=second[1]='20';
   const calendar=Array(15).fill('');
-  Object.assign(calendar,{0:'D20',1:'2026-10-04',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});
+  Object.assign(calendar,{0:'D20',1:'2026-10-04',7:'MEDIA ASSOCIATED — no send queued',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});
   const ambiguous=parseWorkbook({data:{valueRanges:[{values:[[],first,second]},{values:[['Slot'],calendar]}]}});
   const selection=nextAsset(ambiguous,'HE','D19');
   assert.equal(selection.state,'HELD');assert.equal(selection.reason,'AMBIGUOUS_NEXT_HEBREW_ASSET');assert.equal(selection.slot.slot,'D20');
   const held=holdAmbiguousNextTurn(selection,'2026-10-04T13:00:00.000Z');
-  assert.ok(held.every(item=>item.delivery.state==='HELD'&&item.delivery.anchorSlot==='D20'));
+  assert.ok(held.every(item=>item.delivery.state==='HELD'&&item.delivery.holdType==='SELECTION'&&item.delivery.anchorSlot==='D20'));
+  const firstHeld=[...first],secondHeld=[...second];firstHeld[21]=JSON.stringify(held[0].delivery);secondHeld[21]=JSON.stringify(held[1].delivery);
+  const heldSlot=[...calendar];heldSlot[7]=`HELD — ${held[0].delivery.error}`;heldSlot[13]=held[0].delivery.error;
+  secondHeld[26]='CURRENT_REVIEW';
+  const resolved=parseWorkbook({data:{valueRanges:[{values:[[],firstHeld,secondHeld]},{values:[['Slot'],heldSlot]}]}});
+  const recovered=nextAsset(resolved,'HE','D19');
+  assert.equal(recovered.asset.id,first[0]);assert.equal(recovered.slot.recoverPublisherSelectionHold,true);
+  assert.equal(recovered.slot.calendarRestoreStatus,'MEDIA ASSOCIATED — no send queued');
+  assert.equal(hasPriorConceptDelivery(resolved,recovered.asset),false);
+  const recheck=successorPreflightMatches(resolved,resolved,recovered,{nextLanguage:'HE',publishingAssetId:'C19-HE',anchorSlot:'D19',now:Date.parse('2026-10-04T09:00:00.000Z')});
+  assert.equal(recheck.ok,true);assert.equal(recheck.selection.slot.recoverPublisherSelectionHold,true);
   const changed=statusRow('C20-HE-r05','HE');changed[1]='20';changed[10]='https://drive.google.com/file/d/replacement1/view';changed[4]='v05';changed[12]='b'.repeat(64);
   const changedWorkbook=parseWorkbook({data:{valueRanges:[{values:[[],changed]},{values:[['Slot'],calendar]}]}});
   const changedSelection=nextAsset(changedWorkbook,'HE','D19');
@@ -310,6 +321,14 @@ test('successor holds use the refreshed Calendar row after an insertion',()=>{
   assert.deepEqual(result.updates.map(item=>item.range),["'30-Day Calendar'!H12","'30-Day Calendar'!N12"]);
 });
 
+test('scheduling a resolved selection hold restores its prior Calendar state',()=>{
+  const slot={rowNumber:12,recoverPublisherSelectionHold:true,calendarRestoreStatus:'MEDIA ASSOCIATED — no send queued'};
+  const updates=scheduledSuccessorCalendarUpdates(slot,'2026-10-05T09:22:08.000Z');
+  assert.deepEqual(updates.map(item=>item.range),["'30-Day Calendar'!H12","'30-Day Calendar'!N12"]);
+  assert.equal(updates[0].values[0][0],'MEDIA ASSOCIATED — no send queued');
+  assert.match(updates[1].values[0][0],/^SCHEDULED —/);
+});
+
 test('provider result reread resolves shifted rows and preserves post-send Calendar interventions',()=>{
   const sent=statusRow('C20-HE','HE');
   const calendar=Array(15).fill('');
@@ -327,6 +346,17 @@ test('provider result reread resolves shifted rows and preserves post-send Calen
   const resolved=publicationResultPreflight(original,shifted,{assetId:sent[0],baselineAsset,baselineSlot,expectedDelivery:sending});
   assert.equal(resolved.ok,true);assert.equal(resolved.asset.rowNumber,4);assert.equal(resolved.slot.rowNumber,12);
   assert.equal(resolved.canWriteCalendarReceipt,true);assert.equal(resolved.canUpdateCalendarState,true);
+
+  const beforeNewest=[...calendar];beforeNewest[0]='D17';
+  const newest=parse([statusRow('C17-HE','HE'),statusRow('C18-HE','HE'),statusRow('C19-HE','HE'),prepared],
+    [['Slot'],beforeNewest,prior1,prior2,marked]);
+  const newestResolved=publicationResultPreflight(shifted,newest,
+    {assetId:sent[0],baselineAsset,baselineSlot,expectedDelivery:sending});
+  assert.equal(newestResolved.ok,true);
+  assert.equal(newestResolved.asset.rowNumber,5);
+  assert.equal(newestResolved.slot.rowNumber,13);
+  assert.equal(newestResolved.canWriteCalendarReceipt,true);
+  assert.equal(newestResolved.canUpdateCalendarState,true);
 
   const held=[...marked];held[7]='OFF — operator hold';held[13]='OFF — preserve operator decision';
   const heldResult=publicationResultPreflight(original,parse([prepared],[['Slot'],held]),
