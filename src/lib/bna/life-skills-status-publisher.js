@@ -58,8 +58,21 @@ function quietDate(iso, calendar) {
   const date = localDate(iso);
   const day = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Jerusalem', weekday: 'short' }).format(new Date(iso));
   if (day === 'Fri' || day === 'Sat') return true;
-  const row = calendar.find(item => item.date === date);
-  return Boolean(row && quietSlot(row));
+  return calendar.some(item => item.date === date && quietSlot(item));
+}
+function calendarHorizonDate(calendar) {
+  return calendar.map(item => item.date).filter(date => /^\d{4}-\d{2}-\d{2}$/.test(String(date || '')) &&
+    Number.isFinite(Date.parse(`${date}T00:00:00Z`))).sort().at(-1) || null;
+}
+function nextPermittedAtOrAfter(candidate, calendar, horizonDate) {
+  const horizonTime = Date.parse(`${horizonDate}T00:00:00Z`);
+  for (let days = 0; days <= 366; days++) {
+    const iso = candidate.toISOString();
+    if (Date.parse(`${localDate(iso)}T00:00:00Z`) > horizonTime) return null;
+    if (!quietDate(iso, calendar)) return iso;
+    candidate = new Date(candidate.getTime() + 86400000);
+  }
+  return null;
 }
 function quietSlot(slot) {
   const day = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Jerusalem', weekday: 'short' }).format(new Date(`${slot.date}T12:00:00Z`));
@@ -67,18 +80,23 @@ function quietSlot(slot) {
     (/SKIP|QUIET|HOLIDAY|NO POST/i.test(slot.quiet) && !/NO RECORDED|NO HOLIDAY|NO QUIET/i.test(slot.quiet));
 }
 function nextAllowedIso(confirmedIso, calendar) {
-  let next = new Date(new Date(confirmedIso).getTime() + INTERVAL_MS);
-  for (let i = 0; i < 8 && quietDate(next.toISOString(), calendar); i++) next = new Date(next.getTime() + 86400000);
-  return next.toISOString();
+  const confirmedAt = Date.parse(confirmedIso);
+  const horizonDate = calendarHorizonDate(calendar);
+  if (!Number.isFinite(confirmedAt) || !horizonDate) return null;
+  return nextPermittedAtOrAfter(new Date(confirmedAt + INTERVAL_MS), calendar, horizonDate);
 }
 function successorScheduleIso(confirmedIso, calendar, nextSlot = null) {
   let nextAt = nextAllowedIso(confirmedIso, calendar);
-  if (nextSlot) {
-    for (let i = 0; i < 30 && localDate(nextAt) < nextSlot.date; i++) {
-      nextAt = new Date(Date.parse(nextAt) + 86400000).toISOString();
-      while (quietDate(nextAt, calendar)) nextAt = new Date(Date.parse(nextAt) + 86400000).toISOString();
-    }
+  if (!nextAt || !nextSlot) return nextAt;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(nextSlot.date || ''))) return null;
+  const horizonDate = calendarHorizonDate(calendar);
+  if (!horizonDate || nextSlot.date > horizonDate) return null;
+  let candidate = new Date(nextAt);
+  while (localDate(candidate.toISOString()) < nextSlot.date) {
+    candidate = new Date(candidate.getTime() + 86400000);
+    if (localDate(candidate.toISOString()) > horizonDate) return null;
   }
+  nextAt = nextPermittedAtOrAfter(candidate, calendar, horizonDate);
   return nextAt;
 }
 function heldSuccessorCalendarUpdates(calendar, heldSuccessors) {
@@ -183,6 +201,23 @@ function invalidActiveAttemptHolds(workbook, heldAt) {
       error: `ACTIVE_ATTEMPT_TIMESTAMP_INVALID: ${action}` } };
   });
 }
+function invalidPublisherRecordHolds(workbook, heldAt) {
+  return workbook.assets.filter(asset => {
+    const text = asset.deliveryText;
+    return !asset.delivery && text && !/^(?:No provider delivery|No provider call(?: yet)?|No post receipt|No receipt|none|[-—])(?:\s|;|$)/i.test(text);
+  }).map(asset => {
+    const raw = asset.deliveryText;
+    const evidence = { malformedRecordSha256: createHash('sha256').update(raw).digest('hex'), malformedRecordLength: raw.length };
+    if (raw.length <= 12000) evidence.malformedRecordRaw = raw;
+    else evidence.malformedRecordPreview = `${raw.slice(0, 3000)}…${raw.slice(-3000)}`;
+    const mayHaveSent = /"state"\s*:\s*"(?:RESERVED|SENDING|UNKNOWN|PUBLISHED|FAILED)"|providerReceiptId|provider receipt|WHAPI:/i.test(raw);
+    const state = mayHaveSent ? 'UNKNOWN' : 'HELD';
+    const error = mayHaveSent
+      ? 'MALFORMED_PUBLISHER_RECORD: inspect provider history before retry'
+      : 'MALFORMED_PUBLISHER_RECORD: reconcile saved send state before rescheduling';
+    return { asset, delivery: makeRecord(asset, state, { heldAt, holdType: 'MALFORMED_RECORD', error, ...evidence }) };
+  });
+}
 function createClient(env = process.env) {
   const auth = new google.auth.OAuth2(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET, env.GOOGLE_REDIRECT_URI);
   auth.setCredentials({ refresh_token: env.GOOGLE_REFRESH_TOKEN });
@@ -269,9 +304,12 @@ function nextAsset(workbook, language, anchorSlot) {
     return sameConcept[0];
   }
   const anchor = Number(String(anchorSlot || '').match(/\d+/)?.[0] || 0);
-  for (const slot of workbook.calendar) {
-    const number = Number(slot.slot.match(/^D(\d+)$/i)?.[1] || 0);
-    if (number <= anchor || !number) continue;
+  const slots = workbook.calendar.map(slot => ({ slot, number: Number(slot.slot.match(/^D(\d+)$/i)?.[1] || 0) }))
+    .filter(item => item.number > anchor)
+    .sort((left, right) => left.number - right.number || String(left.slot.date).localeCompare(String(right.slot.date)) || left.slot.rowNumber - right.slot.rowNumber);
+  for (const { slot, number } of slots) {
+    if (workbook.calendar.filter(item => item.slot === slot.slot).length !== 1)
+      return { state: 'HELD', reason: 'DUPLICATE_HEBREW_CALENDAR_SLOT', conceptId: number, candidates: [], slot, preserveCalendarHold: true };
     const conceptAssets = workbook.assets.filter(item => item.language === 'HE' && item.concept === number && isEligible(item) && !hasPriorConceptDelivery(workbook, item));
     const calendarHold = calendarHoldState(slot);
     const selectionHold = calendarSelectionHold(workbook, slot);
@@ -303,6 +341,12 @@ function holdAmbiguousNextTurn(selection, heldAt) {
   });
 }
 function scheduledPreflight(workbook, now = Date.now()) {
+  const malformed = workbook.assets.filter(item => item.delivery?.holdType === 'MALFORMED_RECORD' &&
+    ['HELD', 'UNKNOWN'].includes(item.delivery.state));
+  if (malformed.length) {
+    const state = malformed.some(item => item.delivery.state === 'UNKNOWN') ? 'UNKNOWN' : 'HELD';
+    return { state, reason: 'MALFORMED_PUBLISHER_RECORD_REQUIRES_RECONCILIATION', assetIds: malformed.map(item => item.id) };
+  }
   const scheduled = workbook.assets.filter(item => item.delivery?.state === 'SCHEDULED');
   if (scheduled.length > 1) return { state: 'HELD', reason: 'Multiple scheduled Status records need reconciliation', assetIds: scheduled.map(item => item.id) };
   const due = scheduled.filter(item => Date.parse(item.delivery.scheduledAt) <= now);
@@ -515,6 +559,14 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
         await write(sheets, updates);
         return { state: 'HELD', reason: 'SCHEDULED_TIMESTAMP_INVALID', assetIds: invalidSchedules.map(({ asset }) => asset.id) };
       }
+      const invalidRecords = invalidPublisherRecordHolds(workbook, new Date().toISOString());
+      if (invalidRecords.length) {
+        await write(sheets, invalidRecords.map(({ asset, delivery }) =>
+          cells(`'Asset Registry'!V${asset.rowNumber}`, JSON.stringify(delivery))));
+        const state = invalidRecords.some(item => item.delivery.state === 'UNKNOWN') ? 'UNKNOWN' : 'HELD';
+        return { state, reason: 'MALFORMED_PUBLISHER_RECORD_REQUIRES_RECONCILIATION',
+          assetIds: invalidRecords.map(({ asset }) => asset.id) };
+      }
       const invalidAttempts = invalidActiveAttemptHolds(workbook, new Date().toISOString());
       if (invalidAttempts.length) {
         const updates = [];
@@ -655,17 +707,27 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
       }
     }
     const ambiguousNext = nextSelection?.state === 'HELD' ? nextSelection : null;
-    const nextTurnHold = ambiguousNext ? { state: 'HELD', language: nextLanguage, reason: ambiguousNext.reason,
+    let nextTurnHold = ambiguousNext ? { state: 'HELD', language: nextLanguage, reason: ambiguousNext.reason,
       conceptId: ambiguousNext.conceptId, candidateAssetIds: ambiguousNext.candidates.map(item => item.id) } :
       !nextSelection ? { state: 'HELD', language: nextLanguage, reason: 'NO_ELIGIBLE_EXACT_APPROVED_ASSET' } : null;
-    const heldSuccessors = holdAmbiguousNextTurn(ambiguousNext, new Date().toISOString());
-    const next = nextTurnHold ? null : nextSelection;
-    const nextItem = next?.asset || next;
-    const nextSlot = next?.slot || null;
+    const successorHeldAt = new Date().toISOString();
+    const heldSuccessors = holdAmbiguousNextTurn(ambiguousNext, successorHeldAt);
+    let nextItem = nextTurnHold ? null : (nextSelection?.asset || nextSelection);
+    let nextSlot = nextTurnHold ? null : (nextSelection?.slot || null);
+    let nextAt = nextItem ? successorScheduleIso(confirmedAt, successorWorkbook.calendar, nextSlot) : null;
+    if (nextItem && !nextAt) {
+      const horizon = calendarHorizonDate(successorWorkbook.calendar) || 'unavailable';
+      const error = `SUCCESSOR_SCHEDULE_HORIZON_EXHAUSTED: no permitted time on or before ${horizon}; refresh Calendar restrictions before rescheduling`;
+      nextTurnHold = { state: 'HELD', language: nextLanguage, reason: error, conceptId: nextItem.concept, candidateAssetIds: [nextItem.id] };
+      heldSuccessors.push({ asset: nextItem, delivery: makeRecord(nextItem, 'HELD', { heldAt: successorHeldAt, error,
+        ...(nextSlot ? { anchorSlot: nextSlot.slot } : {}), predecessorReceiptId: id }) });
+      nextItem = null;
+      nextSlot = null;
+      nextAt = null;
+    }
     const publication = { ...sending, state: 'PUBLISHED', used: true, providerHttp: post.http, providerReceiptId: id,
       confirmedAt, verificationAt: verified.verifiedAt, providerType: verified.type, providerWidth: verified.width, providerHeight: verified.height,
       ...(nextTurnHold ? { nextTurnHold } : {}) };
-    const nextAt = nextItem ? successorScheduleIso(confirmedAt, successorWorkbook.calendar, nextSlot) : null;
     const updates = [cells(`'Asset Registry'!V${asset.rowNumber}`, JSON.stringify(publication))];
     if (resultCheck.canWriteCalendarReceipt && slot) {
       if (resultCheck.canUpdateCalendarState) updates.push(cells(`'30-Day Calendar'!H${slot.rowNumber}`, `PUBLISHED / USED — ${asset.id}`),
@@ -744,7 +806,7 @@ function attachPoolErrorHandler(pool, logger = console) {
 }
 module.exports = { lockedRun, oneShot, startScheduler, parseWorkbook, isEligible, nextAllowedIso, nextAsset,
   sameAssetAndSlot, scheduledIdentityMatches, verifiedStoryReadback, hasPriorConceptDelivery, validScheduledAt,
-  invalidScheduledHolds, invalidActiveAttemptHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
+  invalidScheduledHolds, invalidActiveAttemptHolds, invalidPublisherRecordHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
   publisherStatePreflightMatches, successorPreflightMatches, publicationResultPreflight, holdOwnReservation,
   successorScheduleIso, heldSuccessorCalendarUpdates, scheduledSuccessorCalendarUpdates,
   attachPoolErrorHandler, record, exactMedia, MAX_MEDIA_BYTES };

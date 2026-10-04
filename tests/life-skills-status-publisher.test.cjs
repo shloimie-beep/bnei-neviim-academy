@@ -6,7 +6,7 @@ const { parseWorkbook, isEligible, nextAllowedIso, nextAsset, record, scheduledI
   validScheduledAt, invalidScheduledHolds, invalidActiveAttemptHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
   publisherStatePreflightMatches, successorPreflightMatches, publicationResultPreflight,
   successorScheduleIso, heldSuccessorCalendarUpdates, scheduledSuccessorCalendarUpdates,
-  attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
+  invalidPublisherRecordHolds, attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
 const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-skills-marketing');
 
 const digest = 'a'.repeat(64);
@@ -75,6 +75,15 @@ test('Hebrew selection binds the calendar slot to its concept and exact unique r
   assert.equal(selected.asset.id,'C20-HE');
   assert.equal(selected.asset.concept,20);
   assert.equal(selected.slot.slot,'D20');
+});
+
+test('Hebrew successor selection follows the lowest numeric Calendar slot, not sheet row order',()=>{
+  const c21=statusRow('C21-HE','HE'),c22=statusRow('C22-HE','HE');c21[1]='21';c22[1]='22';
+  const slot=(name,date)=>{const row=Array(15).fill('');Object.assign(row,{0:name,1:date,9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});return row;};
+  const workbook=parseWorkbook({data:{valueRanges:[{values:[[],c21,c22]},{values:[['Slot'],slot('D22','2026-10-06'),slot('D21','2026-10-05')]}]}});
+  const selection=nextAsset(workbook,'HE','D20');
+  assert.equal(selection.asset.id,'C21-HE');
+  assert.equal(selection.slot.slot,'D21');
 });
 
 test('ambiguous Hebrew exact matches and changed calendar bindings are durably held',()=>{
@@ -162,6 +171,31 @@ test('malformed active-attempt timestamps are held and SENDING attempts become U
   assert.deepEqual(held.map(item=>[item.asset.id,item.delivery.state]),[['C01-EN','HELD'],['C02-EN','UNKNOWN'],['C03-EN','UNKNOWN']]);
   assert.ok(held[1].delivery.error.includes('inspect provider history before retry'));
   assert.ok(held.every(item=>item.delivery.recoveryAt==='2026-10-04T13:00:00.000Z'&&item.delivery.error.startsWith('ACTIVE_ATTEMPT_TIMESTAMP_INVALID')));
+});
+
+test('malformed saved publisher records become durable actionable holds',()=>{
+  const raw='{"kind":"LIFE_SKILLS_STATUS_V1","state":"SCHEDULED","assetId":"C01-EN';
+  const workbook=parseWorkbook({data:{valueRanges:[{values:[[],statusRow('C01-EN','EN',raw)]},{values:[['Slot']]}]}});
+  const [held]=invalidPublisherRecordHolds(workbook,'2026-10-04T09:00:00.000Z');
+  assert.equal(held.asset.id,'C01-EN');
+  assert.equal(held.delivery.state,'HELD');
+  assert.equal(held.delivery.holdType,'MALFORMED_RECORD');
+  assert.match(held.delivery.error,/reconcile saved send state/);
+  assert.equal(held.delivery.malformedRecordRaw,raw);
+  assert.equal(held.delivery.malformedRecordLength,raw.length);
+  assert.equal(held.delivery.malformedRecordSha256,createHash('sha256').update(raw).digest('hex'));
+  assert.equal(scheduledPreflight({assets:[{...held.asset,delivery:held.delivery}],calendar:[]}).state,'HELD');
+  const attemptedRaw='{"kind":"LIFE_SKILLS_STATUS_V1","state":"SENDING","providerReceiptId":"possible-receipt"';
+  const attempted=parseWorkbook({data:{valueRanges:[
+    {values:[[],statusRow('C03-EN','EN',attemptedRaw)]},
+    {values:[['Slot']]},
+  ]}});
+  const [unknown]=invalidPublisherRecordHolds(attempted,'2026-10-04T09:00:00.000Z');
+  assert.equal(unknown.delivery.state,'UNKNOWN');
+  assert.match(unknown.delivery.error,/inspect provider history before retry/);
+  assert.equal(scheduledPreflight({assets:[{...unknown.asset,delivery:unknown.delivery}],calendar:[]}).state,'UNKNOWN');
+  const sentinel=parseWorkbook({data:{valueRanges:[{values:[[],statusRow('C02-EN','EN','No provider delivery')]},{values:[['Slot']]}]}});
+  assert.deepEqual(invalidPublisherRecordHolds(sentinel,'2026-10-04T09:00:00.000Z'),[]);
 });
 
 test('duplicate aliases for one concept and language cannot bypass a prior receipt, while the other language stays eligible', () => {
@@ -388,13 +422,23 @@ test('a Status is confirmed only by a read provider story with matching ID and d
 });
 
 test('rolling time uses confirmed provider time and skips Friday and Saturday', () => {
-  assert.equal(nextAllowedIso('2026-10-04T09:27:08.000Z', []), '2026-10-05T09:22:08.000Z');
-  assert.equal(nextAllowedIso('2026-10-08T09:27:08.000Z', []), '2026-10-11T09:22:08.000Z');
+  const calendar=Array.from({length:30},(_,index)=>({slot:`D${index+1}`,date:new Date(Date.UTC(2026,9,5+index)).toISOString().slice(0,10),quiet:'No recorded holiday conflict'}));
+  assert.equal(nextAllowedIso('2026-10-04T09:27:08.000Z', calendar), '2026-10-05T09:22:08.000Z');
+  assert.equal(nextAllowedIso('2026-10-08T09:27:08.000Z', calendar), '2026-10-11T09:22:08.000Z');
+  assert.equal(nextAllowedIso('2026-10-04T09:27:08.000Z', []), null);
 });
 
 test('successor time uses the refreshed Calendar quiet-day markers',()=>{
-  const refreshed=[{slot:'D21',date:'2026-10-05',quiet:'HOLIDAY — no Status publication'}];
+  const refreshed=[{slot:'D21',date:'2026-10-05',quiet:'HOLIDAY — no Status publication'},
+    {slot:'D22',date:'2026-10-06',quiet:'No recorded holiday conflict'}];
   assert.equal(successorScheduleIso('2026-10-04T09:27:08.000Z',refreshed,{slot:'D21',date:'2026-10-05'}),'2026-10-06T09:22:08.000Z');
+});
+
+test('rolling time scans long quiet stretches and holds when none remain inside Calendar horizon',()=>{
+  const quietStretch=Array.from({length:11},(_,index)=>({slot:`D${index+21}`,date:new Date(Date.UTC(2026,9,5+index)).toISOString().slice(0,10),
+    quiet:index<10?'HOLIDAY — no Status publication':'No recorded holiday conflict'}));
+  assert.equal(nextAllowedIso('2026-10-04T09:27:08.000Z',quietStretch),'2026-10-15T09:22:08.000Z');
+  assert.equal(nextAllowedIso('2026-10-04T09:27:08.000Z',quietStretch.slice(0,10)),null);
 });
 
 test('marketing read model exposes the scheduled English Status from the existing registry', () => {
