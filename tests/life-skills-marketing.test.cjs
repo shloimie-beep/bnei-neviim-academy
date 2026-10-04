@@ -66,7 +66,7 @@ function approvedStatus(revision=1,hash=digest){const row=Array(27).fill('');Obj
 const exactCalendarHeaders=['Slot','Asset ID','Proposed caption','Version / SHA256','Exact approval','Asset link','WhatsApp Status'];
 const exactCalendar=(revision,caption,approval='Approved',hash=digest)=>['D03','LS-MONTH-20260914-03',caption,`v${revision} / ${hash}`,approval,'https://drive.google.com/file/d/synthetic_status/view','READY'];
 
-for(const planned of ['READY','QUEUED'])test(`held exact accepted artwork cannot inherit calendar caption or ${planned} publication eligibility`,()=>{
+for(const planned of ['READY','QUEUED','SENDING'])test(`held exact accepted artwork cannot inherit calendar caption or ${planned} publication eligibility`,()=>{
  const held=approvedStatus();held[8]='OWNER_ACCEPTED_DISPLAYED_BATCH';held[18]='QA/caption/publication hold — do not publish';held[26]='CURRENT_ACCEPTED_HELD';
  const row=exactCalendar(1,'Previously approved caption');row[6]=planned;
  const result=parseWorkbook({assetRows:[headers,held],calendarRows:[exactCalendarHeaders,row]});

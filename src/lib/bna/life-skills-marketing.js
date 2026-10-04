@@ -165,7 +165,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const matching = calendarAsset(row, calendarHeaders, calendarFiles);
     // Display acceptance never clears release holds. Preserve historical verified
     // publication/error evidence, but do not advertise a held future slot as ready.
-    const publicationHeld = matching?.libraryState === 'CURRENT_ACCEPTED_HELD' && ['ready', 'scheduled'].includes(sourceState);
+    const publicationHeld = matching?.libraryState === 'CURRENT_ACCEPTED_HELD' && ['ready', 'scheduled', 'sending'].includes(sourceState);
     const state = publicationHeld ? 'draft' : sourceState;
     const digest = matching?.contentDigest || '';
     const assetId = matching?.assetId || cell(row, calendarHeaders, 'Asset ID');
