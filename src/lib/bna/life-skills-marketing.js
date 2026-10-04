@@ -221,20 +221,22 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const deliveryBoundToSlot = deliveryMatches && delivery?.anchorSlot === slot;
     const scheduleBindingMissing = sourceState === 'scheduled' && !matching;
     const scheduleBindingChanged = deliveryState === 'SCHEDULED' && (!deliveryMatches || delivery?.anchorSlot !== slot);
+    const futurePublication = ['ready', 'scheduled', 'sending'].includes(sourceState);
+    const bindingUnavailable = futurePublication && !matching;
     // Display acceptance never clears release holds. Preserve historical verified
     // publication/error evidence, but do not advertise a held future slot as ready.
-    const publicationHeld = evidenceAsset?.libraryState === 'CURRENT_ACCEPTED_HELD' &&
-      (['ready', 'scheduled', 'sending'].includes(sourceState) || (publicationClaimed(status, scheduler) && !exactReceipt && !verifiedDelivery));
+    const releaseAsset = matching || evidenceAsset;
+    const publicationHeld = !!releaseAsset &&
+      ((futurePublication && (releaseAsset.libraryState !== 'CURRENT_APPROVED' || releaseAsset.review !== 'approved' || !releaseAsset.caption || !usableDimensions(releaseAsset))) ||
+       (releaseAsset.libraryState === 'CURRENT_ACCEPTED_HELD' && publicationClaimed(status, scheduler) && !exactReceipt && !verifiedDelivery));
     let state = sourceState;
-    if (publicationHeld && !exactReceipt && !verifiedDelivery) {
-      state = 'draft';
-    } else if (['unknown', 'failed', 'skipped', 'sending'].includes(sourceState)) {
+    if (['unknown', 'failed', 'skipped', 'sending'].includes(sourceState)) {
       state = sourceState;
     } else if (sourceState === 'published' && (exactReceipt || verifiedDelivery)) {
       state = 'published';
     } else if (verifiedDelivery && delivery?.state === 'PUBLISHED') {
       state = 'published';
-    } else if (publicationHeld || scheduleBindingMissing || scheduleBindingChanged) {
+    } else if ((publicationHeld && !exactReceipt && !verifiedDelivery) || bindingUnavailable || scheduleBindingMissing || scheduleBindingChanged) {
       state = 'draft';
     } else if (deliveryBoundToSlot && deliveryState === 'SENDING') {
       state = 'sending';
@@ -268,7 +270,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       postUrl: null,
       receiptKind: state === 'published' && providerReceiptId ? 'publication' : 'unknown',
       manualReportedAt: null,
-      errorCode: publicationHeld ? 'ASSET_PUBLICATION_HELD' : bindingError || (['failed', 'unknown', 'draft'].includes(state) ? (status || scheduler || null) : null),
+      errorCode: bindingError || (bindingUnavailable ? 'ASSET_BINDING_UNAVAILABLE' : publicationHeld ? 'ASSET_PUBLICATION_HELD' : (['failed', 'unknown', 'draft'].includes(state) ? (status || scheduler || null) : null)),
     };
   });
 
@@ -317,7 +319,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     if (delivery.providerReceiptId) publicationReceipts.add(delivery.providerReceiptId);
   }
 
-  const unavailablePublications = publications.filter(item => ['draft', 'failed', 'unknown', 'held'].includes(item.state));
+  const unavailablePublications = publications.filter(item => ['draft', 'failed', 'unknown', 'held'].includes(item.state) || (item.state === 'sending' && item.errorCode));
   const uncoveredHeldAssets = current.filter(asset => asset.libraryState === 'CURRENT_ACCEPTED_HELD' && !unavailablePublications.some(item => item.assetId === asset.assetId && item.creativeRevision === asset.revision && item.creativeDigest === asset.contentDigest));
 
   return {

@@ -4,7 +4,7 @@ const { parseWorkbook, nextAllowedIso, nextAsset, record, scheduledIdentityMatch
 const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-skills-marketing');
 
 const digest = 'a'.repeat(64);
-const url = 'https://drive.google.com/file/d/abc123/view';
+const url = 'https://drive.google.com/file/d/abc12345/view';
 const statusRow = (id, language, delivery = '') => {
   const row = Array(27).fill('');
   Object.assign(row, { 0: id, 1: language === 'HE' ? '20' : '1', 2: language, 3: 'VERTICAL',
@@ -31,6 +31,7 @@ test('next English asset excludes an already published exact revision', () => {
     { values: [[], statusRow('C01-EN', 'EN'), statusRow('C02-EN', 'EN')] },
     { values: [['Slot']] },
   ] } });
+  pending.assets[1].concept = 2;
   assert.equal(nextAsset(pending, 'EN').id, 'C01-EN');
   pending.assets[0].deliveryText = JSON.stringify({ kind: 'LIFE_SKILLS_STATUS_V1', state: 'PUBLISHED' });
   pending.assets[0].delivery = record(pending.assets[0].deliveryText);
@@ -39,7 +40,7 @@ test('next English asset excludes an already published exact revision', () => {
 
 test('duplicate aliases for one concept and language cannot bypass a prior receipt, while the other language stays eligible', () => {
   const used = statusRow('C01-HE', 'HE'), alias = statusRow('C01-HE-copy', 'HE'), english = statusRow('C01-EN', 'EN'), next = statusRow('C02-EN', 'EN');
-  used[1] = alias[1] = english[1] = '1';
+  used[1] = alias[1] = english[1] = '1';next[1]='2';
   alias[12] = 'b'.repeat(64);
   const published = JSON.stringify({ kind: 'LIFE_SKILLS_STATUS_V1', state: 'PUBLISHED', providerReceiptId: 'receipt' });
   used[21] = published;
@@ -47,8 +48,8 @@ test('duplicate aliases for one concept and language cannot bypass a prior recei
     { values: [[], used, alias, english, next] },
     { values: [['Slot']] },
   ] } });
-  assert.equal(hasPriorConceptDelivery(workbook, alias), true);
-  assert.equal(hasPriorConceptDelivery(workbook, english), false);
+  assert.equal(hasPriorConceptDelivery(workbook, workbook.assets[1]), true);
+  assert.equal(hasPriorConceptDelivery(workbook, workbook.assets[2]), false);
   assert.equal(nextAsset(workbook, 'EN')?.id, 'C01-EN');
 });
 
@@ -56,6 +57,7 @@ test('any saved send or receipt state blocks automatic selection of that concept
   for (const state of ['PUBLISHED', 'UNKNOWN', 'SENDING', 'RESERVED', 'FAILED', 'SCHEDULED']) {
     const attempted = statusRow('C01-EN', 'EN', JSON.stringify({ kind: 'LIFE_SKILLS_STATUS_V1', state }));
     const next = statusRow('C02-EN', 'EN');
+    next[1] = '2';
     const workbook = parseWorkbook({ data: { valueRanges: [
       { values: [[], attempted, next] },
       { values: [['Slot']] },
@@ -64,6 +66,7 @@ test('any saved send or receipt state blocks automatic selection of that concept
   }
   const receiptText = statusRow('C01-EN', 'EN', 'Provider receipt exists; reconcile before retry');
   const next = statusRow('C02-EN', 'EN');
+  next[1] = '2';
   const workbook = parseWorkbook({ data: { valueRanges: [{ values: [[], receiptText, next] }, { values: [['Slot']] }] } });
   assert.equal(nextAsset(workbook, 'EN')?.id, 'C02-EN');
 });
@@ -75,7 +78,7 @@ test('scheduled delivery must retain the exact registry asset, revision, Drive f
   ] } });
   const asset = workbook.assets[0];
   const delivery = { kind: 'LIFE_SKILLS_STATUS_V1', state: 'SCHEDULED', assetId: asset.id, conceptId: asset.concept,
-    language: asset.language, surface: asset.surface, revision: asset.revision, driveFileId: 'abc123', sha256: digest };
+    language: asset.language, surface: asset.surface, revision: asset.revision, driveFileId: 'abc12345', sha256: digest };
   assert.equal(scheduledIdentityMatches({ ...asset, delivery }), true);
   for (const change of [
     { assetId: 'renamed-copy' }, { revision: 'v05' }, { driveFileId: 'replacement-file' }, { sha256: 'b'.repeat(64) }, { conceptId: 21 },
@@ -90,7 +93,7 @@ test('queued calendar interventions and prior receipts remain visible in the sen
   const asset = workbook.assets[0];
   const scheduledAt = '2026-10-04T09:22:08.000Z';
   asset.delivery = { kind: 'LIFE_SKILLS_STATUS_V1', state: 'SCHEDULED', assetId: asset.id, conceptId: asset.concept,
-    language: asset.language, surface: asset.surface, revision: asset.revision, driveFileId: 'abc123', sha256: digest,
+    language: asset.language, surface: asset.surface, revision: asset.revision, driveFileId: 'abc12345', sha256: digest,
     scheduledAt, anchorSlot: 'D21' };
   const local = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jerusalem', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(scheduledAt));
   const slot = { slot: 'D21', date: '2026-10-05', assetUrl: url, version: `v04 FROZEN / ${digest}`, approval: 'Approved', quiet: '',
@@ -117,7 +120,7 @@ test('rolling time uses confirmed provider time and skips Friday and Saturday', 
 
 test('marketing read model exposes the scheduled English Status from the existing registry', () => {
   const scheduled = JSON.stringify({ kind: 'LIFE_SKILLS_STATUS_V1', state: 'SCHEDULED',
-    assetId: 'C01-EN', conceptId: 1, language: 'EN', surface: 'VERTICAL', revision: 'v04', driveFileId: 'abc123', sha256: digest,
+    assetId: 'C01-EN', conceptId: 1, language: 'EN', surface: 'VERTICAL', revision: 'v04', driveFileId: 'abc12345', sha256: digest,
     scheduledAt: '2026-10-05T09:22:08.000Z' });
   const row = statusRow('C01-EN', 'EN', scheduled);
   row[8] = 'OWNER_APPROVED_EXACT_FILE';
