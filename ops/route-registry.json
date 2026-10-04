@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-09-09T18:30:00+03:00",
+  "updated_at": "2026-10-04T09:12:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -12,6 +12,34 @@
     ]
   },
   "routes": [
+    {
+      "route": "/api/bna/life-skills-app/marketing",
+      "surface": "life_skills_marketing_bridge",
+      "access": "private",
+      "required_role": "life_skills_service_bridge",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized_401",
+      "expected_logged_in_behavior": "read_registered_marketing_inventory_only_with_existing_bridge_authorization",
+      "privacy_risk": "private_marketing_inventory",
+      "security_expectation": "Existing constant-time bridge-secret gate; no client or clinical records; read-only existing Google identity; independent from the CRM writer fence; private no-store.",
+      "smoke_expectation": "tests/life-skills-marketing-media.test.cjs verifies the actual registered route denies public access and reports unavailable existing authorization without false empty success.",
+      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-015"]
+    },
+    {
+      "route": "/api/bna/life-skills-app/marketing/assets/:assetId",
+      "surface": "life_skills_registered_original_media_bridge",
+      "access": "private",
+      "required_role": "life_skills_service_bridge",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized_401",
+      "expected_logged_in_behavior": "read_exact_current_registered_original_bytes_only",
+      "privacy_risk": "private_registered_artwork",
+      "security_expectation": "Existing bridge authorization before provider access; registry-bound ID/revision/SHA-256; PNG, dimension and 10MiB bounds; private no-store/nosniff; no arbitrary URL proxy or approval/schedule/send mutation.",
+      "smoke_expectation": "tests/life-skills-marketing-media.test.cjs verifies actual route authorization, exact bytes, stale conflict, unavailable permission and registry declarations.",
+      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-015"]
+    },
     {
       "route": "/",
       "surface": "public_site",

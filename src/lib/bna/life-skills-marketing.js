@@ -1,7 +1,8 @@
 const DEFAULT_SPREADSHEET_ID = '1UbbkY6h74L3_sG_m2hcBZ_rmBRLJDO7pYgghrXGdARI';
 const WORKBOOK_URL = `https://docs.google.com/spreadsheets/d/${DEFAULT_SPREADSHEET_ID}/edit`;
 const CONTENT_SURFACES = new Set(['FEED', 'VERTICAL', 'STATUS', 'STORY']);
-const APPROVED_STATES = new Set(['OWNER_APPROVED', 'APPROVED_PARENT_EXPORT']);
+const APPROVED_STATES = new Set(['OWNER_APPROVED', 'OWNER_APPROVED_EXACT_FILE', 'APPROVED_PARENT_EXPORT']);
+const CURRENT_STATES = new Set(['CURRENT_APPROVED', 'CURRENT_REVIEW', 'CURRENT_REVIEW_CANDIDATE']);
 
 function text(value) {
   return String(value ?? '').trim();
@@ -59,15 +60,27 @@ function creativeReview(approval, libraryState, readiness, qa) {
   return 'draft';
 }
 
+function sourceLink(value, fallback) {
+  try { const url = new URL(value); if (url.protocol === 'https:') return url.href; } catch { /* Registry evidence may be prose, not a link. */ }
+  return fallback;
+}
+
+function usableDimensions(item) {
+  return item.width === 1080 && (item.surface === 'FEED' ? item.height === 1350 : item.height === 1920);
+}
+
 function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date().toISOString() } = {}) {
   const assetHeaders = headerIndex(assetRows[0]);
   const calendarHeaderRow = calendarRows.findIndex(row => text(row[0]) === 'Slot');
   const calendarHeaders = headerIndex(calendarRows[calendarHeaderRow] || []);
   const calendar = calendarHeaderRow >= 0 ? calendarRows.slice(calendarHeaderRow + 1) : [];
+  // This calendar is the Hebrew WhatsApp Status source, not a concept-wide
+  // copy library. Bind its copy to the exact bytes; never borrow HE copy for
+  // an English asset or a different placement/revision of the same concept.
   const captions = new Map();
   for (const row of calendar) {
-    const concept = conceptNumber(cell(row, calendarHeaders, 'Asset ID'));
-    if (concept) captions.set(concept, cell(row, calendarHeaders, 'Proposed caption'));
+    const digest = (cell(row, calendarHeaders, 'Version / SHA256').match(/[a-f0-9]{64}/i) || [])[0]?.toLowerCase();
+    if (digest) captions.set(digest, cell(row, calendarHeaders, 'Proposed caption'));
   }
 
   const contentFiles = [];
@@ -81,18 +94,21 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const readiness = cell(row, assetHeaders, 'Readiness').toUpperCase();
     const qa = cell(row, assetHeaders, 'QA / hold').toUpperCase();
     const review = creativeReview(approval, libraryState, readiness, qa);
+    const locale = cell(row, assetHeaders, 'Language').toLowerCase();
+    if (!['he', 'en'].includes(locale)) continue;
+    const imageUrl = cell(row, assetHeaders, 'Drive file / archive') || null;
     contentFiles.push({
       assetId: cell(row, assetHeaders, 'Asset key'),
       concept,
       revision: revisionNumber(cell(row, assetHeaders, 'Revision')),
-      locale: cell(row, assetHeaders, 'Language').toLowerCase() === 'he' ? 'he' : 'en',
+      locale,
       surface,
       width: Number(cell(row, assetHeaders, 'Width px')) || 0,
       height: Number(cell(row, assetHeaders, 'Height px')) || 0,
-      imageUrl: cell(row, assetHeaders, 'Drive file / archive') || null,
-      sourceUrl: cell(row, assetHeaders, 'Record evidence') || WORKBOOK_URL,
+      imageUrl,
+      sourceUrl: sourceLink(cell(row, assetHeaders, 'Record evidence'), sourceLink(imageUrl, WORKBOOK_URL)),
       title: concept ? `Concept ${String(concept).padStart(2, '0')} — ${surface}` : cell(row, assetHeaders, 'Asset key'),
-      caption: captions.get(concept) || '',
+      caption: locale === 'he' && surface !== 'FEED' ? captions.get(digest) || '' : '',
       contentDigest: digest,
       review,
       approvedDigest: review === 'approved' ? digest : null,
@@ -101,13 +117,12 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     });
   }
 
-  const current = contentFiles.filter(item => item.libraryState === 'CURRENT_APPROVED' || item.libraryState === 'CURRENT_REVIEW_CANDIDATE');
+  const current = contentFiles.filter(item => CURRENT_STATES.has(item.libraryState));
   const approved = current.filter(item => item.review === 'approved');
   const readyStatus = approved.filter(item => item.locale === 'he' && item.width === 1080 && item.height === 1920);
   const readyHeFeed = approved.filter(item => item.locale === 'he' && item.width === 1080 && item.height === 1350);
   const readyEnFeed = approved.filter(item => item.locale === 'en' && item.width === 1080 && item.height === 1350);
   const concepts = new Set(contentFiles.map(item => item.concept).filter(Boolean));
-  const readyConcepts = new Set(approved.map(item => item.concept).filter(Boolean));
 
   const publications = calendar.filter(row => /^D\d+$/i.test(cell(row, calendarHeaders, 'Slot'))).map(row => {
     const slot = cell(row, calendarHeaders, 'Slot');
@@ -149,7 +164,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     inventory: {
       files: Math.max(assetRows.length - 1, 0),
       concepts: concepts.size,
-      publishablePosts: readyConcepts.size,
+      publishablePosts: approved.filter(item => item.caption && usableDimensions(item)).length,
       heStatusReady: readyStatus.length,
       heFeedReady: readyHeFeed.length,
       enFeedReady: readyEnFeed.length,
@@ -158,7 +173,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       queued: publications.filter(item => item.state === 'scheduled').length,
       published: publications.filter(item => item.state === 'published').length,
       needsApproval: current.filter(item => item.review === 'in_review' || item.review === 'draft').length,
-      needsResizeOrCaption: current.filter(item => !item.caption || !([1080, 1920].includes(item.height) && item.width === 1080)).length,
+      needsResizeOrCaption: current.filter(item => !item.caption || !usableDimensions(item)).length,
       heldMissing: publications.filter(item => item.state === 'draft' || item.state === 'failed' || item.state === 'unknown').length,
       partial: true,
       asOf: fetchedAt,
@@ -174,6 +189,10 @@ async function readLifeSkillsMarketingSnapshot({ sheets, spreadsheetId = DEFAULT
     valueRenderOption: 'FORMATTED_VALUE',
   });
   const [assets, calendar] = response.data.valueRanges || [];
+  const assetHeaders = headerIndex(assets?.values?.[0]);
+  if (!['Asset key', 'Language', 'Surface', 'Revision', 'Width px', 'Height px', 'SHA256', 'Approval', 'Drive file / archive', 'Current library state'].every(name => assetHeaders.has(name.toLowerCase()))) {
+    throw new Error('GRAPHICS_REGISTRY_UNAVAILABLE');
+  }
   return parseWorkbook({
     assetRows: assets?.values || [],
     calendarRows: calendar?.values || [],
