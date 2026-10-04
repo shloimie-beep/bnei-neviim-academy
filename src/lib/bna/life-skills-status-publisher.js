@@ -508,6 +508,46 @@ function successorPreflightMatches(original, current, selection, { nextLanguage,
       : refreshed[0];
   return { ok: true, selection: nextSelection, workbook: current, preserveHold: false };
 }
+function pendingSuccessorPlan(workbook, now = Date.now()) {
+  const pending = workbook.assets.filter(asset => asset.delivery?.state === 'PUBLISHED' && asset.delivery.nextTurnHold?.state === 'HELD');
+  if (!pending.length) return null;
+  if (pending.length !== 1) return { state: 'HELD', reason: 'MULTIPLE_UNRESOLVED_NEXT_TURN_HOLDS', assetIds: pending.map(asset => asset.id) };
+  const predecessor = pending[0];
+  const delivery = predecessor.delivery;
+  const nextLanguage = String(delivery.nextTurnHold.language || '').toUpperCase();
+  const expectedLanguage = delivery.language === 'HE' ? 'EN' : (delivery.language === 'EN' ? 'HE' : null);
+  if (!expectedLanguage || nextLanguage !== expectedLanguage || !delivery.providerReceiptId || !delivery.used ||
+      delivery.providerType !== 'story' || Number(delivery.providerWidth) !== 1080 || Number(delivery.providerHeight) !== 1920 ||
+      !deliveryAssetIdentityMatches(predecessor, delivery) ||
+      !validScheduledAt(delivery.confirmedAt) || !validScheduledAt(delivery.verificationAt))
+    return { state: 'HELD', predecessor, reason: 'PREDECESSOR_PUBLICATION_RECEIPT_OR_NEXT_LANGUAGE_UNVERIFIED' };
+  const selection = nextAsset(workbook, nextLanguage, delivery.anchorSlot);
+  if (!selection || selection.state === 'HELD')
+    return { state: 'HELD', predecessor, reason: selection?.reason || delivery.nextTurnHold.reason || 'NO_ELIGIBLE_EXACT_APPROVED_ASSET' };
+  const preflight = successorPreflightMatches(workbook, workbook, selection,
+    { nextLanguage, publishingAssetId: predecessor.id, anchorSlot: delivery.anchorSlot, now });
+  if (!preflight.ok) return { state: 'HELD', predecessor, reason: preflight.reason };
+  const resolvedSelection = preflight.selection;
+  const asset = resolvedSelection?.asset || resolvedSelection;
+  const slot = resolvedSelection?.slot || null;
+  const scheduledAt = successorScheduleIso(delivery.confirmedAt, workbook.calendar, slot);
+  if (!scheduledAt) return { state: 'HELD', predecessor, asset, slot, reason: 'SUCCESSOR_SCHEDULE_HORIZON_EXHAUSTED' };
+  if (Date.parse(scheduledAt) <= now)
+    return { state: 'HELD', predecessor, asset, slot, scheduledAt, reason: 'SUCCESSOR_SCHEDULE_TIME_PASSED_NO_BACKFILL' };
+  return { state: 'READY', predecessor, selection: resolvedSelection, asset, slot, nextLanguage, scheduledAt };
+}
+function pendingSuccessorPreflightMatches(original, current, plan, { now = Date.now() } = {}) {
+  if (plan?.state !== 'READY') return { ok: false, reason: plan?.reason || 'NO_RESOLVABLE_HELD_SUCCESSOR' };
+  const originalPredecessor = uniqueRow(original.assets, 'id', plan.predecessor?.id);
+  const predecessor = uniqueRow(current.assets, 'id', plan.predecessor?.id);
+  if (!originalPredecessor || !predecessor || !sameDelivery(originalPredecessor.delivery, plan.predecessor.delivery) ||
+      !sameDelivery(predecessor.delivery, plan.predecessor.delivery))
+    return { ok: false, reason: 'PUBLISHED_PREDECESSOR_OR_HELD_TURN_CHANGED_BEFORE_SCHEDULE' };
+  const refreshed = pendingSuccessorPlan(current, now);
+  if (refreshed?.state !== 'READY' || refreshed.predecessor.id !== predecessor.id || refreshed.asset.id !== plan.asset.id)
+    return { ok: false, reason: refreshed?.reason || 'HELD_SUCCESSOR_SELECTION_CHANGED_BEFORE_SCHEDULE' };
+  return { ok: true, plan: refreshed };
+}
 async function holdOwnReservation(sheets, workbook, { assetId, expectedDelivery, baselineSlot, reason, now = new Date().toISOString() }) {
   const asset = uniqueRow(workbook.assets, 'id', assetId);
   if (!asset || !sameDelivery(asset.delivery, expectedDelivery)) return false;
@@ -596,6 +636,49 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
         return { state, assetId: stale.id, reason: 'Stale publisher attempt requires provider reconciliation' };
       }
       const schedule = scheduledPreflight(workbook);
+    if (schedule.state === 'WAITING' && !schedule.next?.length && !dryRun) {
+      const pendingPlan = pendingSuccessorPlan(workbook, Date.now());
+      if (pendingPlan) {
+        if (pendingPlan.state !== 'READY')
+          return { state: pendingPlan.state, assetId: pendingPlan.predecessor?.id || null, reason: pendingPlan.reason };
+        const latestForSuccessor = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID,
+          ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
+        const pendingCheck = pendingSuccessorPreflightMatches(workbook, latestForSuccessor, pendingPlan, { now: Date.now() });
+        if (!pendingCheck.ok) return { state: 'HELD', assetId: pendingPlan.predecessor.id, reason: pendingCheck.reason };
+        const resolved = pendingCheck.plan;
+        const queuedAt = new Date().toISOString();
+        const predecessorDelivery = { ...resolved.predecessor.delivery,
+          nextTurnHold: { ...resolved.predecessor.delivery.nextTurnHold, state: 'RESOLVED', resolvedAt: queuedAt,
+            scheduledAssetId: resolved.asset.id, scheduledAt: resolved.scheduledAt } };
+        const scheduledDelivery = makeRecord(resolved.asset, 'SCHEDULED', { queuedAt, scheduledAt: resolved.scheduledAt,
+          anchorSlot: resolved.slot?.slot || resolved.predecessor.delivery.anchorSlot,
+          predecessorReceiptId: resolved.predecessor.delivery.providerReceiptId });
+        const updates = [cells(`'Asset Registry'!V${resolved.predecessor.rowNumber}`, JSON.stringify(predecessorDelivery)),
+          cells(`'Asset Registry'!T${resolved.asset.rowNumber}`, `${localStamp(resolved.scheduledAt)} Asia/Jerusalem`),
+          cells(`'Asset Registry'!V${resolved.asset.rowNumber}`, JSON.stringify(scheduledDelivery)),
+          ...scheduledSuccessorCalendarUpdates(resolved.slot, resolved.scheduledAt)];
+        await write(sheets, updates);
+        const readback = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID,
+          ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
+        const previous = uniqueRow(readback.assets, 'id', resolved.predecessor.id)?.delivery;
+        const scheduled = uniqueRow(readback.assets, 'id', resolved.asset.id)?.delivery;
+        if (previous?.providerReceiptId !== resolved.predecessor.delivery.providerReceiptId ||
+            previous?.nextTurnHold?.state !== 'RESOLVED' || previous.nextTurnHold.scheduledAssetId !== resolved.asset.id ||
+            previous.nextTurnHold.scheduledAt !== resolved.scheduledAt || scheduled?.state !== 'SCHEDULED' ||
+            scheduled.scheduledAt !== resolved.scheduledAt || scheduled.predecessorReceiptId !== previous.providerReceiptId)
+          throw new Error('Canonical held-successor recovery readback failed');
+        if (resolved.slot) {
+          const calendarSlot = uniqueRow(readback.calendar, 'slot', resolved.slot.slot);
+          const expectedStatus = resolved.slot.recoverPublisherSelectionHold ? resolved.slot.calendarRestoreStatus : resolved.slot.status;
+          const expectedScheduler = `SCHEDULED — ${localStamp(resolved.scheduledAt)} Asia/Jerusalem via rolling Status publisher`;
+          if (calendarSlot?.status !== expectedStatus || calendarSlot.scheduler !== expectedScheduler)
+            throw new Error('Canonical held-successor Calendar readback failed');
+        }
+        return { state: 'SCHEDULED', assetId: resolved.asset.id, language: resolved.asset.language,
+          scheduledAt: resolved.scheduledAt, predecessorReceiptId: resolved.predecessor.delivery.providerReceiptId,
+          schedulerReadback: true };
+      }
+    }
       if (schedule.state !== 'DUE') return schedule;
       asset = schedule.asset; scheduledAt = asset.delivery.scheduledAt; anchorSlot = asset.delivery.anchorSlot;
       slot = asset.language === 'HE' ? workbook.calendar.find(item => item.slot === anchorSlot) : null;
@@ -787,10 +870,10 @@ function startScheduler({ env = process.env, logger = console } = {}) {
     inFlight = true;
     try {
       const result = await lockedRun({ env, pool });
-      if (!['WAITING', 'PUBLISHED'].includes(result.state)) logger.warn('[life-skills-status] scheduler needs attention', result);
+      if (!['WAITING', 'SCHEDULED', 'PUBLISHED'].includes(result.state)) logger.warn('[life-skills-status] scheduler needs attention', result);
       else if (result.state === 'PUBLISHED' && result.nextTurnHold) { logger.warn('[life-skills-status] published; next language turn held', result); nextLogged = false; }
       else if (result.state === 'PUBLISHED') { logger.info('[life-skills-status] published', result); nextLogged = false; }
-      else if (!nextLogged) { logger.info('[life-skills-status] next durable schedule', result.next); nextLogged = true; }
+      else if (!nextLogged) { logger.info('[life-skills-status] next durable schedule', result.next || (result.state === 'SCHEDULED' ? [{ assetId: result.assetId, scheduledAt: result.scheduledAt }] : [])); nextLogged = true; }
     } catch (error) { logger.error('[life-skills-status] scheduler error', { code: String(error.code || error.name || 'UNKNOWN').slice(0, 40) }); }
     finally { inFlight = false; }
   };
@@ -807,6 +890,7 @@ function attachPoolErrorHandler(pool, logger = console) {
 module.exports = { lockedRun, oneShot, startScheduler, parseWorkbook, isEligible, nextAllowedIso, nextAsset,
   sameAssetAndSlot, scheduledIdentityMatches, verifiedStoryReadback, hasPriorConceptDelivery, validScheduledAt,
   invalidScheduledHolds, invalidActiveAttemptHolds, invalidPublisherRecordHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
-  publisherStatePreflightMatches, successorPreflightMatches, publicationResultPreflight, holdOwnReservation,
+  publisherStatePreflightMatches, successorPreflightMatches, pendingSuccessorPlan, pendingSuccessorPreflightMatches,
+  publicationResultPreflight, holdOwnReservation,
   successorScheduleIso, heldSuccessorCalendarUpdates, scheduledSuccessorCalendarUpdates,
   attachPoolErrorHandler, record, exactMedia, MAX_MEDIA_BYTES };

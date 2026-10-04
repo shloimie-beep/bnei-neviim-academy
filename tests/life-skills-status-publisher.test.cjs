@@ -6,7 +6,8 @@ const { parseWorkbook, isEligible, nextAllowedIso, nextAsset, record, scheduledI
   validScheduledAt, invalidScheduledHolds, invalidActiveAttemptHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
   publisherStatePreflightMatches, successorPreflightMatches, publicationResultPreflight,
   successorScheduleIso, heldSuccessorCalendarUpdates, scheduledSuccessorCalendarUpdates,
-  invalidPublisherRecordHolds, attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
+  invalidPublisherRecordHolds, pendingSuccessorPlan, pendingSuccessorPreflightMatches,
+  attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
 const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-skills-marketing');
 
 const digest = 'a'.repeat(64);
@@ -361,6 +362,31 @@ test('scheduling a resolved selection hold restores its prior Calendar state',()
   assert.deepEqual(updates.map(item=>item.range),["'30-Day Calendar'!H12","'30-Day Calendar'!N12"]);
   assert.equal(updates[0].values[0][0],'MEDIA ASSOCIATED — no send queued');
   assert.match(updates[1].values[0][0],/^SCHEDULED —/);
+});
+
+test('a resolved held successor resumes at its original future roll time and never backfills',()=>{
+  const priorDelivery={kind:'LIFE_SKILLS_STATUS_V1',state:'PUBLISHED',used:true,assetId:'C20-HE',conceptId:20,
+    language:'HE',surface:'VERTICAL',revision:'v04',driveFileId:'abc12345',sha256:digest,anchorSlot:'D20',
+    providerReceiptId:'receipt20',confirmedAt:'2026-10-04T09:27:08.000Z',verificationAt:'2026-10-04T09:27:15.762Z',
+    providerType:'story',providerWidth:1080,providerHeight:1920,
+    nextTurnHold:{state:'HELD',language:'EN',reason:'AMBIGUOUS_NEXT_ENGLISH_ASSET',candidateAssetIds:['C01-EN','C01-EN-copy']}};
+  const prior=statusRow('C20-HE','HE',JSON.stringify(priorDelivery));
+  const selected=statusRow('C01-EN','EN',JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'HELD',holdType:'SELECTION'}));
+  const revoked=statusRow('C01-EN-copy','EN',JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'HELD',holdType:'SELECTION'}));
+  revoked[26]='CURRENT_REVIEW';
+  const calendar=Array.from({length:27},(_,index)=>{const date=new Date(Date.UTC(2026,9,4+index)).toISOString().slice(0,10);return {slot:index===0?'D20':`D${index+20}`,date,day:'',status:'',assetUrl:'',version:'',approval:'',quiet:'No recorded holiday conflict',scheduler:'',receipts:''};});
+  const workbook={assets:parseWorkbook({data:{valueRanges:[{values:[[],prior,selected,revoked]},{values:[['Slot']]}]}}).assets,calendar};
+  const plan=pendingSuccessorPlan(workbook,Date.parse('2026-10-04T10:00:00.000Z'));
+  assert.equal(plan.state,'READY');
+  assert.equal(plan.asset.id,'C01-EN');
+  assert.equal(plan.scheduledAt,'2026-10-05T09:22:08.000Z');
+  assert.equal(pendingSuccessorPreflightMatches(workbook,workbook,plan,{now:Date.parse('2026-10-04T10:00:00.000Z')}).ok,true);
+  const past=pendingSuccessorPlan(workbook,Date.parse('2026-10-05T09:23:00.000Z'));
+  assert.equal(past.state,'HELD');
+  assert.equal(past.reason,'SUCCESSOR_SCHEDULE_TIME_PASSED_NO_BACKFILL');
+  const changed={...workbook,assets:workbook.assets.map(item=>item.id==='C20-HE'
+    ? {...item,delivery:{...item.delivery,nextTurnHold:{...item.delivery.nextTurnHold,state:'RESOLVED'}}} : item)};
+  assert.equal(pendingSuccessorPreflightMatches(workbook,changed,plan,{now:Date.parse('2026-10-04T10:00:00.000Z')}).ok,false);
 });
 
 test('provider result reread resolves shifted rows and preserves post-send Calendar interventions',()=>{
