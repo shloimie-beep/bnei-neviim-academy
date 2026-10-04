@@ -5,6 +5,13 @@ const APPROVED_STATES = new Set(['OWNER_APPROVED', 'OWNER_APPROVED_EXACT_FILE', 
 const CURRENT_STATES = new Set(['CURRENT_APPROVED', 'CURRENT_REVIEW', 'CURRENT_REVIEW_CANDIDATE', 'CURRENT_ACCEPTED_HELD']);
 const { driveFileId } = require('./life-skills-marketing-media');
 
+function statusDelivery(value) {
+  try {
+    const parsed = JSON.parse(text(value));
+    return parsed.kind === 'LIFE_SKILLS_STATUS_V1' ? parsed : null;
+  } catch { return null; }
+}
+
 function text(value) {
   return String(value ?? '').trim();
 }
@@ -34,20 +41,24 @@ function publicationClaimed(status, scheduler) {
   return [status, scheduler].some(value => /^PUBLISHED\b/i.test(text(value)));
 }
 
-function verifiedPublicationReceipt(receipts) {
+function verifiedPublicationReceipt(receipts, asset = null) {
   const receipt = parseReceipt(receipts);
-  const reads = [...text(receipts).matchAll(/\bGET\s+\/messages\/([^;\s/?]+)\s+returned\s+HTTP\s*200\s*,\s*type=story\b/gi)];
-  return receipt && reads.length === 1 && reads[0][1] === receipt ? receipt : null;
+  const reads = [...text(receipts).matchAll(/\bGET\s+\/(?:messages|stories)\/([^;\s/?]+)\s+(?:returned\s+)?HTTP\s*200\s*,\s*type=story\b/gi)];
+  if (!receipt || reads.length !== 1 || reads[0][1] !== receipt) return null;
+  if (asset && !text(receipts).toLowerCase().includes(`exact asset ${text(asset.assetId).toLowerCase()} sha256 ${text(asset.contentDigest).toLowerCase()}`)) return null;
+  return receipt;
 }
 
-function publicationState(status, scheduler, receipts) {
+function publicationState(status, scheduler, receipts, asset = null) {
   const combined = `${status} ${scheduler}`.toUpperCase();
-  if (publicationClaimed(status, scheduler)) return verifiedPublicationReceipt(receipts) ? 'published' : 'unknown';
-  if (combined.includes('QUEUED')) return 'scheduled';
+  if (publicationClaimed(status, scheduler)) return verifiedPublicationReceipt(receipts, asset) ? 'published' : 'unknown';
+  if (receiptEvidencePresent(receipts)) return verifiedPublicationReceipt(receipts, asset) ? 'published' : 'unknown';
   if (combined.includes('SENDING')) return 'sending';
+  if (combined.includes('RESERVED')) return 'scheduled';
   if (combined.includes('UNKNOWN')) return 'unknown';
   if (combined.includes('FAILED')) return 'failed';
   if (combined.includes('SKIP')) return 'skipped';
+  if (combined.includes('QUEUED') || combined.includes('SCHEDULED')) return 'scheduled';
   if (combined.includes('BLOCKED') || combined.includes('HELD') || combined.includes('OFF')) return 'draft';
   if (combined.includes('READY') || combined.includes('APPROVED')) return 'ready';
   return 'draft';
@@ -56,6 +67,11 @@ function publicationState(status, scheduler, receipts) {
 function parseReceipt(receipts) {
   const match = text(receipts).match(/WHAPI:\s*([^;\s]+)/i) || text(receipts).match(/receipt\s+([^;\s]+)/i);
   return match ? match[1] : null;
+}
+
+function receiptEvidencePresent(receipts) {
+  const value = text(receipts);
+  return Boolean(value && !/^(?:no provider delivery|no provider call(?: yet)?|no post receipt|no receipt|none|[-—])(?:\s|;|$)/i.test(value));
 }
 
 function scheduledIso(date, time) {
@@ -75,6 +91,23 @@ function explicitRevisionNumber(value) {
   const match = text(value).match(/^(?:NUMERIC-)?[vr]?(\d+)(?:-derived)?(?:\/(?:BOLD|APPB))?$/i);
   const revision = match ? Number(match[1]) : null;
   return Number.isSafeInteger(revision) && revision > 0 && revision <= 999999 ? revision : null;
+}
+
+function statusDeliveryMatchesAsset(delivery, asset) {
+  if (!delivery || !asset?.registeredRevision || !asset.imageUrl) return false;
+  let currentFileId;
+  try { currentFileId = driveFileId(asset.imageUrl); } catch { return false; }
+  return delivery.assetId === asset.assetId && Number(delivery.conceptId) === asset.concept &&
+    text(delivery.language).toLowerCase() === asset.locale && text(delivery.surface).toUpperCase() === asset.surface &&
+    explicitRevisionNumber(delivery.revision) === asset.revision &&
+    text(delivery.driveFileId) === currentFileId && text(delivery.sha256).toLowerCase() === asset.contentDigest;
+}
+
+function verifiedStatusDelivery(delivery) {
+  return delivery?.state === 'PUBLISHED' && Boolean(delivery.providerReceiptId) &&
+    Number(delivery.providerHttp) === 200 && Number.isFinite(Date.parse(delivery.confirmedAt)) &&
+    Number.isFinite(Date.parse(delivery.verificationAt)) && delivery.providerType === 'story' &&
+    Number(delivery.providerWidth) === 1080 && Number(delivery.providerHeight) === 1920;
 }
 
 function sourceLink(value, fallback) {
@@ -123,6 +156,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       assetId: cell(row, assetHeaders, 'Asset key'),
       concept,
       revision: revisionNumber(cell(row, assetHeaders, 'Revision')),
+      registeredRevisionLabel: cell(row, assetHeaders, 'Revision'),
       registeredRevision: explicitRevisionNumber(cell(row, assetHeaders, 'Revision')) !== null,
       locale,
       surface,
@@ -137,6 +171,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       approvedDigest: review === 'approved' ? digest : null,
       holdReason: review === 'approved' && libraryState === 'CURRENT_APPROVED' ? null : (cell(row, assetHeaders, 'QA / hold') || cell(row, assetHeaders, 'Readiness') || 'Not approved'),
       libraryState: libraryState || 'UNRECORDED',
+      statusDelivery: statusDelivery(cell(row, assetHeaders, 'Provider delivery')),
     };
     contentFiles.push(asset);
     // Keep legacy display metadata visible, but never use its implicit fallback
@@ -171,38 +206,120 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const status = cell(row, calendarHeaders, 'WhatsApp Status');
     const scheduler = cell(row, calendarHeaders, 'Scheduler state');
     const receipts = cell(row, calendarHeaders, 'Provider receipts / errors');
-    const sourceState = publicationState(status, scheduler, receipts);
     const matching = calendarAsset(row, calendarHeaders, calendarFiles);
+    const readbackReceipt = verifiedPublicationReceipt(receipts);
+    const receiptAsset = readbackReceipt && contentFiles.find(item => item.statusDelivery?.providerReceiptId === readbackReceipt && verifiedStatusDelivery(item.statusDelivery));
+    const slotDeliveryAsset = !matching && /^D\d+$/i.test(slot) ? contentFiles.find(item => item.statusDelivery?.anchorSlot === slot && item.locale === 'he' && ['VERTICAL', 'STATUS'].includes(item.surface)) : null;
+    const evidenceAsset = receiptAsset || matching || slotDeliveryAsset || null;
+    const delivery = evidenceAsset?.statusDelivery || null;
+    const receiptProofAsset = receiptAsset ? { assetId: delivery.assetId, contentDigest: delivery.sha256 } : matching;
+    const exactReceipt = receiptProofAsset ? verifiedPublicationReceipt(receipts, receiptProofAsset) : null;
+    const sourceState = publicationState(status, scheduler, receipts, receiptProofAsset);
+    const deliveryMatches = statusDeliveryMatchesAsset(delivery, evidenceAsset);
+    const deliveryState = String(delivery?.state || '').toUpperCase();
+    const verifiedDelivery = verifiedStatusDelivery(delivery);
+    const deliveryBoundToSlot = deliveryMatches && delivery?.anchorSlot === slot;
+    const scheduleBindingMissing = sourceState === 'scheduled' && !matching;
+    const scheduleBindingChanged = deliveryState === 'SCHEDULED' && (!deliveryMatches || delivery?.anchorSlot !== slot);
     // Display acceptance never clears release holds. Preserve historical verified
     // publication/error evidence, but do not advertise a held future slot as ready.
-    const publicationHeld = matching?.libraryState === 'CURRENT_ACCEPTED_HELD' &&
-      (['ready', 'scheduled', 'sending'].includes(sourceState) || (publicationClaimed(status, scheduler) && !verifiedPublicationReceipt(receipts)));
-    const state = publicationHeld ? 'draft' : sourceState;
-    const digest = matching?.contentDigest || '';
-    const assetId = matching?.assetId || cell(row, calendarHeaders, 'Asset ID');
-    const providerReceiptId = state === 'published' ? verifiedPublicationReceipt(receipts) : null;
+    const publicationHeld = evidenceAsset?.libraryState === 'CURRENT_ACCEPTED_HELD' &&
+      (['ready', 'scheduled', 'sending'].includes(sourceState) || (publicationClaimed(status, scheduler) && !exactReceipt && !verifiedDelivery));
+    let state = sourceState;
+    if (publicationHeld && !exactReceipt && !verifiedDelivery) {
+      state = 'draft';
+    } else if (['unknown', 'failed', 'skipped', 'sending'].includes(sourceState)) {
+      state = sourceState;
+    } else if (sourceState === 'published' && (exactReceipt || verifiedDelivery)) {
+      state = 'published';
+    } else if (verifiedDelivery && delivery?.state === 'PUBLISHED') {
+      state = 'published';
+    } else if (publicationHeld || scheduleBindingMissing || scheduleBindingChanged) {
+      state = 'draft';
+    } else if (deliveryBoundToSlot && deliveryState === 'SENDING') {
+      state = 'sending';
+    } else if ((deliveryBoundToSlot && ['SCHEDULED', 'RESERVED'].includes(deliveryState)) || (sourceState === 'scheduled' && matching)) {
+      state = 'scheduled';
+    } else if (sourceState === 'published') {
+      state = 'unknown';
+    } else if (sourceState === 'scheduled') {
+      state = 'draft';
+    }
+    const creative = evidenceAsset || matching;
+    const providerReceiptId = state === 'published' ? (exactReceipt || (verifiedDelivery ? delivery.providerReceiptId : null)) : null;
+    const digest = /^[a-f0-9]{64}$/i.test(String(delivery?.sha256 || '')) ? String(delivery.sha256).toLowerCase() : (creative?.contentDigest || '');
+    const assetId = delivery?.assetId || creative?.assetId || cell(row, calendarHeaders, 'Asset ID');
+    const revision = explicitRevisionNumber(delivery?.revision) || creative?.revision || 1;
+    const bindingError = scheduleBindingChanged ? 'SCHEDULED_ASSET_BINDING_CHANGED' : scheduleBindingMissing ? 'SCHEDULED_ASSET_BINDING_MISSING' : null;
     return {
       id: `whatsapp-status:${slot}:${date}`,
       assetId,
-      creativeRevision: matching?.revision || 1,
+      creativeRevision: revision,
       creativeDigest: digest,
       channel: 'whatsapp_status',
       destinationLabel: 'Life Skills WhatsApp Status',
-      scheduledFor: scheduledIso(date, time),
+      scheduledFor: ['scheduled', 'published'].includes(state) || bindingError ? (delivery?.scheduledAt || scheduledIso(date, time)) : null,
+      confirmedAt: delivery?.confirmedAt || null,
       timezone: 'Asia/Jerusalem',
       state,
       provider: state === 'published' || state === 'scheduled' ? 'whapi' : 'unbound',
       providerReceiptId,
-      providerReadAt: providerReceiptId ? fetchedAt : null,
+      providerReadAt: verifiedDelivery ? delivery.verificationAt : (providerReceiptId ? fetchedAt : null),
       postUrl: null,
       receiptKind: state === 'published' && providerReceiptId ? 'publication' : 'unknown',
       manualReportedAt: null,
-      errorCode: publicationHeld ? 'ASSET_PUBLICATION_HELD' : ['failed', 'unknown', 'draft'].includes(state) ? (status || scheduler || null) : null,
+      errorCode: publicationHeld ? 'ASSET_PUBLICATION_HELD' : bindingError || (['failed', 'unknown', 'draft'].includes(state) ? (status || scheduler || null) : null),
     };
   });
 
-  const unavailablePublications = publications.filter(item => item.state === 'draft' || item.state === 'failed' || item.state === 'unknown');
+  const publicationKeys = new Set(publications.filter(item => item.assetId && item.creativeDigest).map(item => `${item.assetId}|${item.creativeRevision}|${item.creativeDigest}`));
+  const publicationReceipts = new Set(publications.map(item => item.providerReceiptId).filter(Boolean));
+  for (const item of contentFiles) {
+    const delivery = item.statusDelivery;
+    if (!delivery) continue;
+    const stateValue = String(delivery.state || 'UNKNOWN').toUpperCase();
+    const exactBinding = statusDeliveryMatchesAsset(delivery, item);
+    let state;
+    if (stateValue === 'PUBLISHED') state = verifiedStatusDelivery(delivery) ? 'published' : 'unknown';
+    else if (stateValue === 'SCHEDULED') state = exactBinding ? 'scheduled' : 'draft';
+    else if (stateValue === 'RESERVED') state = exactBinding ? 'scheduled' : 'draft';
+    else if (stateValue === 'SENDING') state = exactBinding ? 'sending' : 'unknown';
+    else if (['UNKNOWN', 'FAILED', 'SKIPPED'].includes(stateValue)) state = stateValue.toLowerCase();
+    else if (stateValue === 'HELD') state = 'draft';
+    else continue;
+    if (item.libraryState === 'CURRENT_ACCEPTED_HELD' && ['ready', 'scheduled', 'sending'].includes(state)) state = 'draft';
+    const revision = explicitRevisionNumber(delivery.revision) || item.revision;
+    const digest = /^[a-f0-9]{64}$/i.test(String(delivery.sha256 || '')) ? String(delivery.sha256).toLowerCase() : item.contentDigest;
+    const assetId = delivery.assetId || item.assetId;
+    const key = `${assetId}|${revision}|${digest}`;
+    if (publicationKeys.has(key) || (delivery.providerReceiptId && publicationReceipts.has(delivery.providerReceiptId))) continue;
+    const identityMismatch = ['SCHEDULED', 'RESERVED'].includes(stateValue) && !exactBinding;
+    publications.push({
+      id: `whatsapp-status:${assetId}:${revision}:${digest}`,
+      assetId,
+      creativeRevision: revision,
+      creativeDigest: digest,
+      channel: 'whatsapp_status',
+      destinationLabel: 'Life Skills WhatsApp Status',
+      scheduledFor: ['scheduled', 'draft'].includes(state) && delivery.scheduledAt ? delivery.scheduledAt : null,
+      confirmedAt: delivery.confirmedAt || null,
+      timezone: 'Asia/Jerusalem',
+      state,
+      provider: ['RESERVED', 'SENDING', 'PUBLISHED', 'UNKNOWN', 'FAILED'].includes(stateValue) || delivery.providerReceiptId ? 'whapi' : 'unbound',
+      providerReceiptId: state === 'published' ? delivery.providerReceiptId || null : null,
+      providerReadAt: state === 'published' ? delivery.verificationAt || null : null,
+      postUrl: null,
+      receiptKind: state === 'published' && delivery.providerReceiptId ? 'publication' : 'unknown',
+      manualReportedAt: null,
+      errorCode: identityMismatch ? 'SCHEDULED_ASSET_BINDING_CHANGED' : delivery.error || null,
+    });
+    publicationKeys.add(key);
+    if (delivery.providerReceiptId) publicationReceipts.add(delivery.providerReceiptId);
+  }
+
+  const unavailablePublications = publications.filter(item => ['draft', 'failed', 'unknown', 'held'].includes(item.state));
   const uncoveredHeldAssets = current.filter(asset => asset.libraryState === 'CURRENT_ACCEPTED_HELD' && !unavailablePublications.some(item => item.assetId === asset.assetId && item.creativeRevision === asset.revision && item.creativeDigest === asset.contentDigest));
+
   return {
     fetchedAt,
     workbookUrl: WORKBOOK_URL,

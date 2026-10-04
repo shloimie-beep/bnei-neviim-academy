@@ -80,7 +80,7 @@ test('held exact artwork without a calendar record is still counted as held, not
 });
 test('later artwork holds do not erase historical verified publication receipt evidence',()=>{
  const held=approvedStatus();held[8]='OWNER_ACCEPTED_DISPLAYED_BATCH';held[26]='CURRENT_ACCEPTED_HELD';
- const row=exactCalendar(1,'Historical caption');row[6]='PUBLISHED';row.push('WHAPI: synthetic-receipt; Direct Whapi GET /messages/synthetic-receipt returned HTTP200, type=story');
+ const row=exactCalendar(1,'Historical caption');row[6]='PUBLISHED';row.push(`WHAPI: synthetic-receipt; Direct Whapi GET /messages/synthetic-receipt returned HTTP200, type=story; exact asset DEMO-HE-STATUS-r1 SHA256 ${digest}`);
  const result=parseWorkbook({assetRows:[headers,held],calendarRows:[[...exactCalendarHeaders,'Provider receipts / errors'],row],fetchedAt:'2026-10-04T11:55:00Z'});
  assert.equal(result.creatives[0].caption,'');assert.equal(result.publications[0].state,'published');assert.equal(result.publications[0].providerReceiptId,'synthetic-receipt');assert.equal(result.publications[0].providerReadAt,'2026-10-04T11:55:00Z');assert.equal(result.inventory.published,1);assert.equal(result.inventory.heldMissing,1);
 });
@@ -125,4 +125,39 @@ test('an explicit corrected row cannot lend its approved caption to a legacy mal
  }
  const a=approvedStatus(),b=[...a];b[10]='https://drive.google.com/file/d/another_status/view';
  const matched=parseWorkbook({assetRows:[headers,a,b],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Only exact file')]});assert.equal(matched.creatives[0].caption,'Only exact file');assert.equal(matched.creatives[1].caption,'');
+});
+
+function publisherDelivery(asset, state, extra={}) {
+  return JSON.stringify({ kind:'LIFE_SKILLS_STATUS_V1', state, assetId:asset[0], conceptId:Number(asset[1]), language:asset[2], surface:asset[3],
+    revision:asset[4], driveFileId:'synthetic_status', sha256:asset[12], scheduledAt:'2026-10-05T09:22:08.000Z', anchorSlot:'D03', ...extra });
+}
+
+test('an exact registry-bound Status reservation projects as scheduled with its durable time',()=>{
+ const asset=approvedStatus();asset[21]=publisherDelivery(asset,'SCHEDULED');
+ const row=exactCalendar(1,'Approved exact caption');row[6]='MEDIA ASSOCIATED — no send queued';row.push('OFF — exact approved Status media associated; publishing owner must act','');
+ const calendarHeaders=[...exactCalendarHeaders,'Scheduler state','Provider receipts / errors'];
+ const result=parseWorkbook({assetRows:[headers,asset],calendarRows:[calendarHeaders,row]});
+ assert.equal(result.publications[0].state,'scheduled');assert.equal(result.publications[0].provider,'whapi');assert.equal(result.publications[0].scheduledFor,'2026-10-05T09:22:08.000Z');assert.equal(result.inventory.queued,1);
+});
+
+test('a queued calendar row without a unique exact Asset Registry match is held, not shown as scheduled',()=>{
+ const asset=approvedStatus();const row=exactCalendar(1,'Approved exact caption');row[5]='https://drive.google.com/file/d/replacement_status/view';row.push('SCHEDULED — future Status','');
+ const result=parseWorkbook({assetRows:[headers,asset],calendarRows:[[...exactCalendarHeaders,'Scheduler state','Provider receipts / errors'],row]});
+ assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].provider,'unbound');assert.equal(result.publications[0].errorCode,'SCHEDULED_ASSET_BINDING_MISSING');assert.equal(result.inventory.queued,0);
+});
+
+test('a scheduled image replacement stays bound to the original revision and is held pending renewed scheduling approval',()=>{
+ const asset=approvedStatus();asset[21]=publisherDelivery(asset,'SCHEDULED');
+ const row=exactCalendar(1,'Approved exact caption');row.push('SCHEDULED — future Status','');
+ asset[10]='https://drive.google.com/file/d/replacement_status/view';asset[12]='b'.repeat(64);
+ const result=parseWorkbook({assetRows:[headers,asset],calendarRows:[[...exactCalendarHeaders,'Scheduler state','Provider receipts / errors'],row]});
+ assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].errorCode,'SCHEDULED_ASSET_BINDING_CHANGED');assert.equal(result.publications[0].creativeDigest,digest);assert.equal(result.publications[0].scheduledFor,'2026-10-05T09:22:08.000Z');assert.equal(result.inventory.queued,0);
+});
+
+test('a verified Whapi story receipt is recognized and bound to the exact published revision',()=>{
+ const asset=approvedStatus();asset[21]=publisherDelivery(asset,'PUBLISHED',{providerHttp:200,providerReceiptId:'synthetic-story',confirmedAt:'2026-10-04T09:27:08.000Z',verificationAt:'2026-10-04T09:27:15.000Z',providerType:'story',providerWidth:1080,providerHeight:1920});
+ const row=exactCalendar(1,'Published exact caption');row[6]='PUBLISHED / USED';
+ row.push(`WHAPI: synthetic-story; GET /stories/synthetic-story HTTP200, type=story, 1080x1920; exact asset ${asset[0]} SHA256 ${digest}`);
+ const result=parseWorkbook({assetRows:[headers,asset],calendarRows:[[...exactCalendarHeaders,'Provider receipts / errors'],row]});
+ assert.equal(result.publications.length,1);assert.equal(result.publications[0].state,'published');assert.equal(result.publications[0].providerReceiptId,'synthetic-story');assert.equal(result.publications[0].creativeDigest,digest);assert.equal(result.inventory.published,1);
 });
