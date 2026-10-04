@@ -21,6 +21,10 @@ test('exact current review bytes can be privately inspected without approving or
   assert.equal(JSON.stringify(f.request.snapshot), before); assert.equal(f.calls.length, 2);
   assert.equal(f.calls[1].options.responseType, 'stream');
 });
+test('exact accepted-but-held bytes can be inspected privately without clearing the publishing hold',async()=>{
+ const f=fixture({row:{...asset,review:'approved',libraryState:'CURRENT_ACCEPTED_HELD',holdReason:'NOT_RELEASE_READY'}}),before=JSON.stringify(f.request.snapshot);
+ assert.deepEqual((await readLifeSkillsMarketingMedia({...f.request,drive:f.drive})).bytes,png);assert.equal(JSON.stringify(f.request.snapshot),before);
+});
 test('actual workbook fallback revisions cannot select media or obtain a Drive file', async () => {
   const { parseWorkbook } = require('../src/lib/bna/life-skills-marketing');
   const headers=['Asset key','Concept','Language','Surface','Revision','Width px','Height px','Approval','Drive file / archive','SHA256','Current library state'];

@@ -17,7 +17,7 @@ function selectedAsset(snapshot, { assetId, revision, digest }) {
   if (!matches.length) throw new MarketingMediaError('ASSET_NOT_FOUND', 404);
   if (matches.length !== 1) throw new MarketingMediaError('ASSET_REGISTRY_CONFLICT', 409);
   const asset = matches[0];
-  if (!['CURRENT_APPROVED', 'CURRENT_REVIEW', 'CURRENT_REVIEW_CANDIDATE'].includes(asset.libraryState) || asset.review === 'retired') throw new MarketingMediaError('ASSET_NOT_FOUND', 404);
+  if (!['CURRENT_APPROVED', 'CURRENT_REVIEW', 'CURRENT_REVIEW_CANDIDATE', 'CURRENT_ACCEPTED_HELD'].includes(asset.libraryState) || asset.review === 'retired') throw new MarketingMediaError('ASSET_NOT_FOUND', 404);
   if (asset.registeredRevision !== true || asset.revision !== Number(revision) || asset.contentDigest !== digest) throw new MarketingMediaError('ASSET_VERSION_CHANGED', 409);
   return asset;
 }

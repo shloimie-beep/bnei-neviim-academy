@@ -2,7 +2,7 @@ const DEFAULT_SPREADSHEET_ID = '1UbbkY6h74L3_sG_m2hcBZ_rmBRLJDO7pYgghrXGdARI';
 const WORKBOOK_URL = `https://docs.google.com/spreadsheets/d/${DEFAULT_SPREADSHEET_ID}/edit`;
 const CONTENT_SURFACES = new Set(['FEED', 'VERTICAL', 'STATUS', 'STORY']);
 const APPROVED_STATES = new Set(['OWNER_APPROVED', 'OWNER_APPROVED_EXACT_FILE', 'APPROVED_PARENT_EXPORT']);
-const CURRENT_STATES = new Set(['CURRENT_APPROVED', 'CURRENT_REVIEW', 'CURRENT_REVIEW_CANDIDATE']);
+const CURRENT_STATES = new Set(['CURRENT_APPROVED', 'CURRENT_REVIEW', 'CURRENT_REVIEW_CANDIDATE', 'CURRENT_ACCEPTED_HELD']);
 const { driveFileId } = require('./life-skills-marketing-media');
 
 function text(value) {
@@ -57,6 +57,7 @@ function creativeReview(approval, libraryState, readiness, qa) {
   const combined = `${libraryState} ${readiness} ${qa}`.toUpperCase();
   if (combined.includes('REJECT') || combined.includes('SUPERSEDED') || combined.includes('DO_NOT_USE')) return 'retired';
   if (APPROVED_STATES.has(approval) && libraryState === 'CURRENT_APPROVED') return 'approved';
+  if (approval === 'OWNER_ACCEPTED_DISPLAYED_BATCH' && libraryState === 'CURRENT_ACCEPTED_HELD') return 'approved';
   if (combined.includes('REVIEW') || combined.includes('PENDING') || combined.includes('HOLD')) return 'in_review';
   return 'draft';
 }
@@ -124,7 +125,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       contentDigest: digest,
       review,
       approvedDigest: review === 'approved' ? digest : null,
-      holdReason: review === 'approved' ? null : (cell(row, assetHeaders, 'QA / hold') || cell(row, assetHeaders, 'Readiness') || 'Not approved'),
+      holdReason: review === 'approved' && libraryState === 'CURRENT_APPROVED' ? null : (cell(row, assetHeaders, 'QA / hold') || cell(row, assetHeaders, 'Readiness') || 'Not approved'),
       libraryState: libraryState || 'UNRECORDED',
     };
     contentFiles.push(asset);
@@ -147,7 +148,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     if (rows?.length === 1 && rows[0].approved) asset.caption = rows[0].caption;
   }
   const current = contentFiles.filter(item => CURRENT_STATES.has(item.libraryState));
-  const approved = current.filter(item => item.review === 'approved');
+  const approved = current.filter(item => item.review === 'approved' && item.libraryState === 'CURRENT_APPROVED');
   const readyStatus = approved.filter(item => item.locale === 'he' && item.width === 1080 && item.height === 1920);
   const readyHeFeed = approved.filter(item => item.locale === 'he' && item.width === 1080 && item.height === 1350);
   const readyEnFeed = approved.filter(item => item.locale === 'en' && item.width === 1080 && item.height === 1350);

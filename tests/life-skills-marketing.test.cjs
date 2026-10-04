@@ -4,6 +4,10 @@ const { parseWorkbook, publicationState, readLifeSkillsMarketingSnapshot } = req
 
 const digest = 'a'.repeat(64);
 const headers=['Asset key','Concept','Language','Surface','Revision','Kind','Width px','Height px','Approval','Verification','Drive file / archive','Archive member / locator','SHA256','Source / parent','Approval evidence','Prompt / job source','Provider job / ref','Template','QA / hold','Release date (planned)','Calendar slot','Provider delivery','Filename','Record evidence','Ingest date','Readiness','Current library state'];
+test('accepted exact recovered bytes stay visible and approved while their release hold does not qualify ads or posts',()=>{
+ const row=Array(27).fill('');Object.assign(row,{0:'C03-HE-FEED-RECOVERED',1:'3',2:'HE',3:'FEED',4:'v02',6:'1080',7:'1350',8:'OWNER_ACCEPTED_DISPLAYED_BATCH',10:'https://drive.google.com/file/d/synthetic_accepted/view',12:digest,18:'QA_RECEIPT_NOT_AVAILABLE; do not publish',25:'NOT_RELEASE_READY',26:'CURRENT_ACCEPTED_HELD'});
+ const result=parseWorkbook({assetRows:[headers,row]});assert.equal(result.creatives.length,1);assert.equal(result.creatives[0].review,'approved');assert.equal(result.creatives[0].approvedDigest,digest);assert.equal(result.creatives[0].holdReason,row[18]);assert.equal(result.inventory.publishablePosts,0);assert.equal(result.inventory.adEligible,0);assert.equal(result.inventory.heFeedReady,0);assert.equal(result.inventory.needsApproval,0);
+});
 
 test('exact-file approval and current review rows remain distinct, including unscheduled assets',()=>{
   const approved=Array(27).fill(''),review=Array(27).fill('');
