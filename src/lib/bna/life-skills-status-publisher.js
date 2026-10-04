@@ -116,6 +116,15 @@ function makeRecord(asset, state, extra = {}) {
     surface: asset.surface, revision: asset.revision, sha256: asset.digest, driveFileId: driveId(asset.url),
     ...extra };
 }
+function validScheduledAt(value) {
+  if (typeof value !== 'string') return false;
+  const time = Date.parse(value);
+  return Number.isFinite(time) && new Date(time).toISOString() === value;
+}
+function invalidScheduledHolds(workbook, heldAt) {
+  return workbook.assets.filter(asset => asset.delivery?.state === 'SCHEDULED' && !validScheduledAt(asset.delivery.scheduledAt))
+    .map(asset => ({ asset, delivery: { ...asset.delivery, state: 'HELD', heldAt, error: 'SCHEDULED_TIMESTAMP_INVALID: inspect the saved time before rescheduling' } }));
+}
 function createClient(env = process.env) {
   const auth = new google.auth.OAuth2(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET, env.GOOGLE_REDIRECT_URI);
   auth.setCredentials({ refresh_token: env.GOOGLE_REFRESH_TOKEN });
@@ -171,8 +180,15 @@ async function write(sheets, data) {
   await sheets.spreadsheets.values.batchUpdate({ spreadsheetId: SPREADSHEET_ID, requestBody: { valueInputOption: 'RAW', data } });
 }
 function nextAsset(workbook, language, anchorSlot) {
-  if (language === 'EN') return workbook.assets.filter(asset => asset.language === 'EN' && isEligible(asset) && !hasPriorConceptDelivery(workbook, asset))
-    .sort((a, b) => a.concept - b.concept || a.rowNumber - b.rowNumber)[0] || null;
+  if (language === 'EN') {
+    const candidates = workbook.assets.filter(asset => asset.language === 'EN' && isEligible(asset) && !hasPriorConceptDelivery(workbook, asset))
+      .sort((a, b) => a.concept - b.concept || a.rowNumber - b.rowNumber);
+    if (!candidates.length) return null;
+    const conceptId = candidates[0].concept;
+    const sameConcept = candidates.filter(asset => asset.concept === conceptId);
+    if (sameConcept.length !== 1) return { state: 'HELD', reason: 'AMBIGUOUS_NEXT_ENGLISH_ASSET', conceptId, candidates: sameConcept };
+    return sameConcept[0];
+  }
   const anchor = Number(String(anchorSlot || '').match(/\d+/)?.[0] || 0);
   for (const slot of workbook.calendar) {
     const number = Number(slot.slot.match(/^D(\d+)$/i)?.[1] || 0);
@@ -181,6 +197,12 @@ function nextAsset(workbook, language, anchorSlot) {
     if (asset) return { asset, slot };
   }
   return null;
+}
+function holdAmbiguousNextTurn(selection, heldAt) {
+  if (selection?.state !== 'HELD' || !Array.isArray(selection.candidates)) return [];
+  const candidateAssetIds = selection.candidates.map(asset => asset.id);
+  const error = `${selection.reason}: concept ${selection.conceptId}; choose one exact approved asset before scheduling`;
+  return selection.candidates.map(asset => ({ asset, delivery: makeRecord(asset, 'HELD', { heldAt, error, candidateAssetIds }) }));
 }
 async function lockedRun({ initial = false, dryRun = false, env = process.env, pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 1 }) } = {}) {
   const db = await pool.connect();
@@ -205,6 +227,17 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
       if (recent.http !== 200 || !Array.isArray(ownStories(recent.body)) || ownStories(recent.body).some(item => Number(item.timestamp) >= 1791061200))
         return { state: 'HELD', reason: 'Recent provider Status history needs reconciliation before first send' };
     } else {
+      const invalidSchedules = invalidScheduledHolds(workbook, new Date().toISOString());
+      if (invalidSchedules.length) {
+        const updates = invalidSchedules.flatMap(({ asset, delivery }) => {
+          const heldSlot = asset.language === 'HE' ? workbook.calendar.find(item => item.slot === delivery.anchorSlot) : null;
+          return [cells(`'Asset Registry'!V${asset.rowNumber}`, JSON.stringify(delivery)),
+            ...(heldSlot ? [cells(`'30-Day Calendar'!H${heldSlot.rowNumber}`, `HELD — ${asset.id}`),
+              cells(`'30-Day Calendar'!N${heldSlot.rowNumber}`, delivery.error)] : [])];
+        });
+        await write(sheets, updates);
+        return { state: 'HELD', reason: 'SCHEDULED_TIMESTAMP_INVALID', assetIds: invalidSchedules.map(({ asset }) => asset.id) };
+      }
       const stale = workbook.assets.find(item => ['RESERVED', 'SENDING'].includes(item.delivery?.state) &&
         Date.parse(item.delivery.reservedAt || item.delivery.submittedAt) <= Date.now() - 10 * 60 * 1000);
       if (stale) {
@@ -256,12 +289,19 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
       return { state, assetId: asset.id, providerHttp: post.http, providerReceiptId: id };
     }
     const confirmedAt = isoFromEpoch(verified.timestamp);
-    const publication = { ...sending, state: 'PUBLISHED', used: true, providerHttp: post.http, providerReceiptId: id,
-      confirmedAt, verificationAt: verified.verifiedAt, providerType: verified.type, providerWidth: verified.width, providerHeight: verified.height };
     const nextLanguage = asset.language === 'HE' ? 'EN' : 'HE';
-    const next = nextAsset(workbook, nextLanguage, anchorSlot);
+    const nextSelection = nextAsset(workbook, nextLanguage, anchorSlot);
+    const ambiguousNext = nextSelection?.state === 'HELD' ? nextSelection : null;
+    const nextTurnHold = ambiguousNext ? { state: 'HELD', language: nextLanguage, reason: ambiguousNext.reason,
+      conceptId: ambiguousNext.conceptId, candidateAssetIds: ambiguousNext.candidates.map(item => item.id) } :
+      !nextSelection ? { state: 'HELD', language: nextLanguage, reason: 'NO_ELIGIBLE_EXACT_APPROVED_ASSET' } : null;
+    const heldSuccessors = holdAmbiguousNextTurn(ambiguousNext, new Date().toISOString());
+    const next = nextTurnHold ? null : nextSelection;
     const nextItem = next?.asset || next;
     const nextSlot = next?.slot || null;
+    const publication = { ...sending, state: 'PUBLISHED', used: true, providerHttp: post.http, providerReceiptId: id,
+      confirmedAt, verificationAt: verified.verifiedAt, providerType: verified.type, providerWidth: verified.width, providerHeight: verified.height,
+      ...(nextTurnHold ? { nextTurnHold } : {}) };
     let nextAt = nextItem ? nextAllowedIso(confirmedAt, workbook.calendar) : null;
     if (nextSlot) {
       for (let i = 0; i < 30 && localDate(nextAt) < nextSlot.date; i++) {
@@ -278,14 +318,22 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
       updates.push(cells(`'Asset Registry'!V${nextItem.rowNumber}`, JSON.stringify(nextRecord)));
       if (nextSlot) updates.push(cells(`'30-Day Calendar'!N${nextSlot.rowNumber}`, `SCHEDULED — ${localStamp(nextAt)} Asia/Jerusalem via rolling Status publisher`));
     }
+    for (const { asset: heldAsset, delivery: heldDelivery } of heldSuccessors)
+      updates.push(cells(`'Asset Registry'!V${heldAsset.rowNumber}`, JSON.stringify(heldDelivery)));
     await write(sheets, updates);
     const readback = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID, ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
     const published = readback.assets.find(item => item.id === asset.id)?.delivery;
     const scheduled = nextItem ? readback.assets.find(item => item.id === nextItem.id)?.delivery : null;
-    if (published?.state !== 'PUBLISHED' || published.providerReceiptId !== id || (nextItem && scheduled?.scheduledAt !== nextAt)) throw new Error('Canonical publication/schedule readback failed');
+    if (published?.state !== 'PUBLISHED' || published.providerReceiptId !== id || (nextItem && scheduled?.scheduledAt !== nextAt) ||
+        (nextTurnHold && (published.nextTurnHold?.state !== 'HELD' || published.nextTurnHold?.language !== nextLanguage || published.nextTurnHold?.reason !== nextTurnHold.reason)))
+      throw new Error('Canonical publication/schedule readback failed');
+    for (const { asset: heldAsset, delivery: heldDelivery } of heldSuccessors) {
+      const persisted = readback.assets.find(item => item.rowNumber === heldAsset.rowNumber)?.delivery;
+      if (persisted?.state !== 'HELD' || persisted.error !== heldDelivery.error) throw new Error('Canonical next-turn hold readback failed');
+    }
     return { state: 'PUBLISHED', assetId: asset.id, language: asset.language, sha256: asset.digest, confirmedAt,
       providerReceiptId: id, providerReadback: true, nextAssetId: nextItem?.id || null, nextLanguage,
-      nextScheduledAt: nextAt, schedulerReadback: Boolean(scheduled && scheduled.state === 'SCHEDULED') };
+      nextScheduledAt: nextAt, schedulerReadback: Boolean(scheduled && scheduled.state === 'SCHEDULED'), nextTurnHold };
   } finally {
     if (locked) await db.query('SELECT pg_advisory_unlock($1, $2)', LOCK_KEYS).catch(() => {});
     db.release();
@@ -306,6 +354,7 @@ function startScheduler({ env = process.env, logger = console } = {}) {
     try {
       const result = await lockedRun({ env, pool });
       if (!['WAITING', 'PUBLISHED'].includes(result.state)) logger.warn('[life-skills-status] scheduler needs attention', result);
+      else if (result.state === 'PUBLISHED' && result.nextTurnHold) { logger.warn('[life-skills-status] published; next language turn held', result); nextLogged = false; }
       else if (result.state === 'PUBLISHED') { logger.info('[life-skills-status] published', result); nextLogged = false; }
       else if (!nextLogged) { logger.info('[life-skills-status] next durable schedule', result.next); nextLogged = true; }
     } catch (error) { logger.error('[life-skills-status] scheduler error', { code: String(error.code || error.name || 'UNKNOWN').slice(0, 40) }); }
@@ -317,4 +366,5 @@ function startScheduler({ env = process.env, logger = console } = {}) {
   return true;
 }
 module.exports = { lockedRun, oneShot, startScheduler, parseWorkbook, isEligible, nextAllowedIso, nextAsset,
-  sameAssetAndSlot, scheduledIdentityMatches, verifiedStoryReadback, hasPriorConceptDelivery, record };
+  sameAssetAndSlot, scheduledIdentityMatches, verifiedStoryReadback, hasPriorConceptDelivery, validScheduledAt,
+  invalidScheduledHolds, holdAmbiguousNextTurn, record };

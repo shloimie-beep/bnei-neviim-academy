@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const { parseWorkbook, nextAllowedIso, nextAsset, record, scheduledIdentityMatches, sameAssetAndSlot, verifiedStoryReadback, hasPriorConceptDelivery } = require('../src/lib/bna/life-skills-status-publisher');
+const { parseWorkbook, nextAllowedIso, nextAsset, record, scheduledIdentityMatches, sameAssetAndSlot, verifiedStoryReadback, hasPriorConceptDelivery,
+  validScheduledAt, invalidScheduledHolds, holdAmbiguousNextTurn } = require('../src/lib/bna/life-skills-status-publisher');
 const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-skills-marketing');
 
 const digest = 'a'.repeat(64);
@@ -36,6 +37,29 @@ test('next English asset excludes an already published exact revision', () => {
   pending.assets[0].deliveryText = JSON.stringify({ kind: 'LIFE_SKILLS_STATUS_V1', state: 'PUBLISHED' });
   pending.assets[0].delivery = record(pending.assets[0].deliveryText);
   assert.equal(nextAsset(pending, 'EN').id, 'C02-EN');
+});
+
+test('multiple eligible English assets for the next concept produce durable holds instead of row-order selection', () => {
+  const first=statusRow('C01-EN-r01','EN'), second=statusRow('C01-EN-r02','EN'), later=statusRow('C02-EN','EN');
+  later[1]='2';
+  const workbook=parseWorkbook({data:{valueRanges:[{values:[[],first,second,later]},{values:[['Slot']]}]}});
+  const selection=nextAsset(workbook,'EN');
+  assert.equal(selection.state,'HELD');assert.equal(selection.reason,'AMBIGUOUS_NEXT_ENGLISH_ASSET');assert.equal(selection.conceptId,1);
+  assert.deepEqual(selection.candidates.map(asset=>asset.id),['C01-EN-r01','C01-EN-r02']);
+  const held=holdAmbiguousNextTurn(selection,'2026-10-06T09:22:08.000Z');
+  assert.equal(held.length,2);assert.ok(held.every(item=>item.delivery.state==='HELD'&&!item.delivery.scheduledAt&&item.delivery.error.includes('choose one exact approved asset')));
+});
+
+test('malformed saved scheduled timestamps are detected and converted into actionable held records',()=>{
+  const valid=statusRow('C01-EN','EN',JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'SCHEDULED',scheduledAt:'2026-10-05T09:22:08.000Z'}));
+  const malformed=statusRow('C02-EN','EN',JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'SCHEDULED',scheduledAt:'not-a-date'}));
+  const missing=statusRow('C03-EN','EN',JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'SCHEDULED'}));
+  const workbook=parseWorkbook({data:{valueRanges:[{values:[[],valid,malformed,missing]},{values:[['Slot']]}]}});
+  assert.equal(validScheduledAt(workbook.assets[0].delivery.scheduledAt),true);
+  assert.equal(validScheduledAt('2026-10-05T09:22:08.000Z'),true);
+  const held=invalidScheduledHolds(workbook,'2026-10-04T13:00:00.000Z');
+  assert.deepEqual(held.map(item=>item.asset.id),['C02-EN','C03-EN']);
+  assert.ok(held.every(item=>item.delivery.state==='HELD'&&item.delivery.heldAt==='2026-10-04T13:00:00.000Z'&&item.delivery.error.startsWith('SCHEDULED_TIMESTAMP_INVALID')));
 });
 
 test('duplicate aliases for one concept and language cannot bypass a prior receipt, while the other language stays eligible', () => {
@@ -132,4 +156,12 @@ test('marketing read model exposes the scheduled English Status from the existin
   assert.equal(result.publications.length, 1);
   assert.equal(result.publications[0].state, 'scheduled');
   assert.equal(result.publications[0].scheduledFor, '2026-10-05T09:22:08.000Z');
+});
+
+test('marketing read model preserves a durable publisher HELD state and its reason',()=>{
+  const reason='SCHEDULED_TIMESTAMP_INVALID: inspect the saved time before rescheduling';
+  const held=JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'HELD',assetId:'C01-EN',conceptId:1,language:'EN',surface:'VERTICAL',revision:'v04',driveFileId:'abc12345',sha256:digest,heldAt:'2026-10-04T13:00:00.000Z',error:reason});
+  const row=statusRow('C01-EN','EN',held);row[8]='OWNER_APPROVED_EXACT_FILE';
+  const result=parseMarketingWorkbook({assetRows:[['Asset key','Concept','Language','Surface','Revision','Kind','Width px','Height px','Approval','Verification','Drive file / archive','Archive member / locator','SHA256','Source / parent','Approval evidence','Prompt / job source','Provider job / ref','Template','QA / hold','Release date (planned)','Calendar slot','Provider delivery','Filename','Record evidence','Ingest date','Readiness','Current library state'],row],calendarRows:[['Slot','Date','Day','Local time','Asset ID','Headline','Proposed caption','WhatsApp Status','Facebook Page','Asset link','Version / SHA256','Exact approval','Holiday / quiet rule','Scheduler state','Provider receipts / errors']]});
+  assert.equal(result.publications[0].state,'held');assert.equal(result.publications[0].scheduledFor,null);assert.equal(result.publications[0].errorCode,reason);assert.equal(result.inventory.queued,0);assert.equal(result.inventory.heldMissing,1);
 });

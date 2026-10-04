@@ -58,8 +58,9 @@ function publicationState(status, scheduler, receipts, asset = null) {
   if (combined.includes('UNKNOWN')) return 'unknown';
   if (combined.includes('FAILED')) return 'failed';
   if (combined.includes('SKIP')) return 'skipped';
+  if (combined.includes('HELD')) return 'held';
   if (combined.includes('QUEUED') || combined.includes('SCHEDULED')) return 'scheduled';
-  if (combined.includes('BLOCKED') || combined.includes('HELD') || combined.includes('OFF')) return 'draft';
+  if (combined.includes('BLOCKED') || combined.includes('OFF')) return 'draft';
   if (combined.includes('READY') || combined.includes('APPROVED')) return 'ready';
   return 'draft';
 }
@@ -245,6 +246,8 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       state = 'published';
     } else if (verifiedDelivery && delivery?.state === 'PUBLISHED') {
       state = 'published';
+    } else if (sourceState === 'held' || deliveryState === 'HELD') {
+      state = 'held';
     } else if ((publicationHeld && !exactReceipt && !verifiedDelivery) || bindingUnavailable || scheduleBindingMissing || scheduleBindingChanged) {
       state = 'draft';
     } else if (deliveryBoundToSlot && deliveryState === 'SENDING') {
@@ -279,7 +282,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       postUrl: null,
       receiptKind: state === 'published' && providerReceiptId ? 'publication' : 'unknown',
       manualReportedAt: null,
-      errorCode: bindingError || (bindingUnavailable ? 'ASSET_BINDING_UNAVAILABLE' : publicationHeld ? 'ASSET_PUBLICATION_HELD' : (['failed', 'unknown', 'draft'].includes(state) ? (status || scheduler || null) : null)),
+      errorCode: bindingError || (deliveryState === 'HELD' ? delivery.error || 'PUBLISHER_HELD' : (bindingUnavailable ? 'ASSET_BINDING_UNAVAILABLE' : publicationHeld ? 'ASSET_PUBLICATION_HELD' : (['failed', 'unknown', 'draft', 'held'].includes(state) ? (status || scheduler || null) : null))),
     };
   });
 
@@ -295,8 +298,8 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     else if (stateValue === 'SCHEDULED') state = exactBinding ? 'scheduled' : 'draft';
     else if (stateValue === 'RESERVED') state = exactBinding ? 'scheduled' : 'draft';
     else if (stateValue === 'SENDING') state = exactBinding ? 'sending' : 'unknown';
+    else if (stateValue === 'HELD') state = 'held';
     else if (['UNKNOWN', 'FAILED', 'SKIPPED'].includes(stateValue)) state = stateValue.toLowerCase();
-    else if (stateValue === 'HELD') state = 'draft';
     else continue;
     if (item.libraryState === 'CURRENT_ACCEPTED_HELD' && ['ready', 'scheduled', 'sending'].includes(state)) state = 'draft';
     const revision = explicitRevisionNumber(delivery.revision) || item.revision;
@@ -316,7 +319,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       confirmedAt: delivery.confirmedAt || null,
       timezone: 'Asia/Jerusalem',
       state,
-      provider: ['RESERVED', 'SENDING', 'PUBLISHED', 'UNKNOWN', 'FAILED'].includes(stateValue) || delivery.providerReceiptId ? 'whapi' : 'unbound',
+      provider: ['RESERVED', 'SENDING', 'PUBLISHED', 'UNKNOWN', 'FAILED', 'HELD'].includes(stateValue) || delivery.providerReceiptId ? 'whapi' : 'unbound',
       providerReceiptId: state === 'published' ? delivery.providerReceiptId || null : null,
       providerReadAt: state === 'published' ? delivery.verificationAt || null : null,
       postUrl: null,
