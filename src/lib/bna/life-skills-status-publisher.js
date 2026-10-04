@@ -8,6 +8,7 @@ const ENVIRONMENT_ID = '3ce30933-49c7-4b90-8c36-a5afd67df329';
 const CHANNEL_ID = 'WOLVRN-YRJVR';
 const PHONE = '972534932631';
 const INTERVAL_MS = 23 * 60 * 60 * 1000 + 55 * 60 * 1000;
+const MAX_MEDIA_BYTES = 10 * 1024 * 1024;
 const LOCK_KEYS = [20261004, 972534];
 const MARKER = 'LIFE_SKILLS_STATUS_V1';
 const HEADER = { asset: "'Asset Registry'!A1:AA600", calendar: "'30-Day Calendar'!A9:O100" };
@@ -149,13 +150,34 @@ function assertBinding(env, health) {
 async function exactMedia(drive, asset) {
   const id = driveId(asset.url);
   if (!id) throw new Error('Drive file ID unavailable');
-  const metadata = (await drive.files.get({ fileId: id, fields: 'id,mimeType,trashed' })).data;
+  const metadata = (await drive.files.get({ fileId: id, fields: 'id,mimeType,trashed,size' })).data;
   if (metadata.trashed || metadata.mimeType !== 'image/png') throw new Error('Approved PNG unavailable');
-  const media = await drive.files.get({ fileId: id, alt: 'media' }, { responseType: 'arraybuffer' });
-  const bytes = Buffer.from(media.data);
+  const declaredSize = Number(metadata.size);
+  if (!Number.isSafeInteger(declaredSize) || declaredSize < 33 || declaredSize > MAX_MEDIA_BYTES)
+    throw new Error('Approved PNG size is unavailable or exceeds maximum size');
+  const media = await drive.files.get({ fileId: id, alt: 'media' }, { responseType: 'stream' });
+  const bytes = await readBounded(media.data, Math.min(MAX_MEDIA_BYTES, declaredSize));
+  if (bytes.length !== declaredSize) throw new Error('Approved PNG size changed during download');
   if (bytes.toString('hex', 0, 8) !== '89504e470d0a1a0a' || bytes.readUInt32BE(16) !== 1080 || bytes.readUInt32BE(20) !== 1920 ||
       createHash('sha256').update(bytes).digest('hex') !== asset.digest) throw new Error('Approved PNG bytes/hash/dimensions mismatch');
   return bytes;
+}
+async function readBounded(stream, maxBytes) {
+  if (!stream || typeof stream[Symbol.asyncIterator] !== 'function') throw new Error('Approved PNG download stream unavailable');
+  const chunks = [];
+  let total = 0;
+  try {
+    for await (const chunk of stream) {
+      const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      total += bytes.length;
+      if (total > maxBytes) throw new Error('Approved PNG download exceeds maximum size');
+      chunks.push(bytes);
+    }
+  } catch (error) {
+    stream.destroy?.();
+    throw error;
+  }
+  return Buffer.concat(chunks, total);
 }
 function receiptId(body) { return body?.id || body?.message?.id || body?.messages?.[0]?.id || body?.sent?.[0]?.id || null; }
 function ownStories(body) { return body?.messages || body?.stories || []; }
@@ -193,16 +215,23 @@ function nextAsset(workbook, language, anchorSlot) {
   for (const slot of workbook.calendar) {
     const number = Number(slot.slot.match(/^D(\d+)$/i)?.[1] || 0);
     if (number <= anchor || !number) continue;
-    const asset = workbook.assets.find(item => item.language === 'HE' && isEligible(item) && !hasPriorConceptDelivery(workbook, item) && sameAssetAndSlot(item, slot));
-    if (asset) return { asset, slot };
+    const conceptAssets = workbook.assets.filter(item => item.language === 'HE' && item.concept === number && isEligible(item) && !hasPriorConceptDelivery(workbook, item));
+    if (!conceptAssets.length) continue;
+    const matches = conceptAssets.filter(item => sameAssetAndSlot(item, slot));
+    if (matches.length > 1) return { state: 'HELD', reason: 'AMBIGUOUS_NEXT_HEBREW_ASSET', conceptId: number, candidates: matches, slot };
+    if (matches.length === 1) return { asset: matches[0], slot };
+    return { state: 'HELD', reason: 'HEBREW_CALENDAR_BINDING_MISMATCH', conceptId: number, candidates: conceptAssets, slot };
   }
   return null;
 }
 function holdAmbiguousNextTurn(selection, heldAt) {
   if (selection?.state !== 'HELD' || !Array.isArray(selection.candidates)) return [];
   const candidateAssetIds = selection.candidates.map(asset => asset.id);
-  const error = `${selection.reason}: concept ${selection.conceptId}; choose one exact approved asset before scheduling`;
-  return selection.candidates.map(asset => ({ asset, delivery: makeRecord(asset, 'HELD', { heldAt, error, candidateAssetIds }) }));
+  const error = selection.reason === 'HEBREW_CALENDAR_BINDING_MISMATCH'
+    ? `${selection.reason}: concept ${selection.conceptId}; renew the exact calendar binding before scheduling`
+    : `${selection.reason}: concept ${selection.conceptId}; choose one exact approved asset before scheduling`;
+  return selection.candidates.map(asset => ({ asset, slot: selection.slot || null,
+    delivery: makeRecord(asset, 'HELD', { heldAt, error, candidateAssetIds, ...(selection.slot ? { anchorSlot: selection.slot.slot } : {}) }) }));
 }
 async function lockedRun({ initial = false, dryRun = false, env = process.env, pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 1 }) } = {}) {
   const db = await pool.connect();
@@ -318,8 +347,16 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
       updates.push(cells(`'Asset Registry'!V${nextItem.rowNumber}`, JSON.stringify(nextRecord)));
       if (nextSlot) updates.push(cells(`'30-Day Calendar'!N${nextSlot.rowNumber}`, `SCHEDULED — ${localStamp(nextAt)} Asia/Jerusalem via rolling Status publisher`));
     }
-    for (const { asset: heldAsset, delivery: heldDelivery } of heldSuccessors)
+    const heldCalendarSlots = new Set();
+    for (const { asset: heldAsset, delivery: heldDelivery } of heldSuccessors) {
       updates.push(cells(`'Asset Registry'!V${heldAsset.rowNumber}`, JSON.stringify(heldDelivery)));
+      const heldSlot = workbook.calendar.find(item => item.slot === heldDelivery.anchorSlot);
+      if (heldSlot && !heldCalendarSlots.has(heldSlot.slot)) {
+        heldCalendarSlots.add(heldSlot.slot);
+        updates.push(cells(`'30-Day Calendar'!H${heldSlot.rowNumber}`, `HELD — ${heldDelivery.error}`),
+          cells(`'30-Day Calendar'!N${heldSlot.rowNumber}`, heldDelivery.error));
+      }
+    }
     await write(sheets, updates);
     const readback = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID, ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
     const published = readback.assets.find(item => item.id === asset.id)?.delivery;
@@ -330,6 +367,12 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
     for (const { asset: heldAsset, delivery: heldDelivery } of heldSuccessors) {
       const persisted = readback.assets.find(item => item.rowNumber === heldAsset.rowNumber)?.delivery;
       if (persisted?.state !== 'HELD' || persisted.error !== heldDelivery.error) throw new Error('Canonical next-turn hold readback failed');
+    }
+    for (const slotName of heldCalendarSlots) {
+      const persistedSlot = readback.calendar.find(item => item.slot === slotName);
+      const expectedHold = heldSuccessors.find(item => item.delivery.anchorSlot === slotName)?.delivery.error;
+      if (!persistedSlot?.status?.startsWith('HELD — ') || persistedSlot.scheduler !== expectedHold)
+        throw new Error('Canonical next-turn calendar hold readback failed');
     }
     return { state: 'PUBLISHED', assetId: asset.id, language: asset.language, sha256: asset.digest, confirmedAt,
       providerReceiptId: id, providerReadback: true, nextAssetId: nextItem?.id || null, nextLanguage,
@@ -367,4 +410,4 @@ function startScheduler({ env = process.env, logger = console } = {}) {
 }
 module.exports = { lockedRun, oneShot, startScheduler, parseWorkbook, isEligible, nextAllowedIso, nextAsset,
   sameAssetAndSlot, scheduledIdentityMatches, verifiedStoryReadback, hasPriorConceptDelivery, validScheduledAt,
-  invalidScheduledHolds, holdAmbiguousNextTurn, record };
+  invalidScheduledHolds, holdAmbiguousNextTurn, record, exactMedia, MAX_MEDIA_BYTES };

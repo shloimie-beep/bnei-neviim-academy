@@ -1,7 +1,9 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
+const { createHash } = require('node:crypto');
+const { Readable } = require('node:stream');
 const { parseWorkbook, nextAllowedIso, nextAsset, record, scheduledIdentityMatches, sameAssetAndSlot, verifiedStoryReadback, hasPriorConceptDelivery,
-  validScheduledAt, invalidScheduledHolds, holdAmbiguousNextTurn } = require('../src/lib/bna/life-skills-status-publisher');
+  validScheduledAt, invalidScheduledHolds, holdAmbiguousNextTurn, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
 const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-skills-marketing');
 
 const digest = 'a'.repeat(64);
@@ -48,6 +50,50 @@ test('multiple eligible English assets for the next concept produce durable hold
   assert.deepEqual(selection.candidates.map(asset=>asset.id),['C01-EN-r01','C01-EN-r02']);
   const held=holdAmbiguousNextTurn(selection,'2026-10-06T09:22:08.000Z');
   assert.equal(held.length,2);assert.ok(held.every(item=>item.delivery.state==='HELD'&&!item.delivery.scheduledAt&&item.delivery.error.includes('choose one exact approved asset')));
+});
+
+test('Hebrew selection binds the calendar slot to its concept and exact unique registry asset', () => {
+  const wrongConcept = statusRow('C19-alias','HE'); wrongConcept[1]='19';
+  const intended = statusRow('C20-HE','HE'); intended[1]='20';
+  const calendar=Array(15).fill('');
+  Object.assign(calendar,{0:'D20',1:'2026-10-04',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});
+  const workbook=parseWorkbook({data:{valueRanges:[{values:[[],wrongConcept,intended]},{values:[['Slot'],calendar] }]}});
+  const selected=nextAsset(workbook,'HE','D19');
+  assert.equal(selected.asset.id,'C20-HE');
+  assert.equal(selected.asset.concept,20);
+  assert.equal(selected.slot.slot,'D20');
+});
+
+test('ambiguous Hebrew exact matches and changed calendar bindings are durably held',()=>{
+  const first=statusRow('C20-HE-r04','HE'), second=statusRow('C20-HE-copy','HE');
+  first[1]=second[1]='20';
+  const calendar=Array(15).fill('');
+  Object.assign(calendar,{0:'D20',1:'2026-10-04',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});
+  const ambiguous=parseWorkbook({data:{valueRanges:[{values:[[],first,second]},{values:[['Slot'],calendar]}]}});
+  const selection=nextAsset(ambiguous,'HE','D19');
+  assert.equal(selection.state,'HELD');assert.equal(selection.reason,'AMBIGUOUS_NEXT_HEBREW_ASSET');assert.equal(selection.slot.slot,'D20');
+  const held=holdAmbiguousNextTurn(selection,'2026-10-04T13:00:00.000Z');
+  assert.ok(held.every(item=>item.delivery.state==='HELD'&&item.delivery.anchorSlot==='D20'));
+  const changed=statusRow('C20-HE-r05','HE');changed[1]='20';changed[10]='https://drive.google.com/file/d/replacement1/view';changed[4]='v05';changed[12]='b'.repeat(64);
+  const changedWorkbook=parseWorkbook({data:{valueRanges:[{values:[[],changed]},{values:[['Slot'],calendar]}]}});
+  const changedSelection=nextAsset(changedWorkbook,'HE','D19');
+  assert.equal(changedSelection.state,'HELD');assert.equal(changedSelection.reason,'HEBREW_CALENDAR_BINDING_MISMATCH');
+});
+
+test('approved media uses its registry size and a hard stream cap before buffering',async()=>{
+  const png=Buffer.alloc(33);Buffer.from('89504e470d0a1a0a','hex').copy(png);png.writeUInt32BE(1080,16);png.writeUInt32BE(1920,20);
+  const asset={url,digest:createHash('sha256').update(png).digest('hex')};
+  const drive={files:{get:async(params,options)=>params.alt==='media'
+    ? {data:Readable.from([png.subarray(0,10),png.subarray(10)])}
+    : {data:{id:'abc12345',mimeType:'image/png',trashed:false,size:String(png.length)}}}};
+  assert.deepEqual(await exactMedia(drive,asset),png);
+  let downloads=0;
+  const oversizedMetadata={files:{get:async(params)=>{if(params.alt==='media'){downloads++;return {data:Readable.from([])}};return {data:{mimeType:'image/png',trashed:false,size:String(MAX_MEDIA_BYTES+1)}};}}};
+  await assert.rejects(exactMedia(oversizedMetadata,asset),/exceeds maximum size/);assert.equal(downloads,0);
+  const oversizedStream={files:{get:async(params)=>params.alt==='media'
+    ? {data:Readable.from([png,Buffer.alloc(MAX_MEDIA_BYTES)])}
+    : {data:{mimeType:'image/png',trashed:false,size:String(png.length)}}}};
+  await assert.rejects(exactMedia(oversizedStream,asset),/download exceeds maximum size/);
 });
 
 test('malformed saved scheduled timestamps are detected and converted into actionable held records',()=>{
