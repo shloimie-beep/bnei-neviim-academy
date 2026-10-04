@@ -80,11 +80,15 @@ function calendarVersionMatches(asset, slot) {
   const revision = String(asset?.revision || '').trim().toLowerCase();
   return revision && (version === revision || version.startsWith(`${revision} `));
 }
+function calendarHoldState(slot) {
+  const match = `${slot?.status || ''} ${slot?.scheduler || ''}`.match(/\b(HELD|BLOCKED|OFF)\b/i);
+  return match ? match[1].toUpperCase() : null;
+}
 function hasCalendarSendEvidence(slot, ignoreExpectedSchedule = false) {
   let scheduler = String(slot?.scheduler || '');
   if (ignoreExpectedSchedule) scheduler = '';
   const state = `${slot?.status || ''} ${scheduler}`.replace(/no send queued|no post queued/ig, '');
-  if (/PUBLISHED|SENDING|RESERVED|UNKNOWN|FAILED|QUEUED|SCHEDULED/i.test(state)) return true;
+  if (/PUBLISHED|SENDING|RESERVED|UNKNOWN|FAILED|QUEUED|SCHEDULED/i.test(state) || calendarHoldState({ status: slot?.status, scheduler })) return true;
   const receipt = String(slot?.receipts || '').trim();
   return Boolean(receipt && !/^(?:no provider delivery|no provider call(?: yet)?|no receipt|none|[-—])(?:\s|;|$)/i.test(receipt));
 }
@@ -216,6 +220,9 @@ function nextAsset(workbook, language, anchorSlot) {
     const number = Number(slot.slot.match(/^D(\d+)$/i)?.[1] || 0);
     if (number <= anchor || !number) continue;
     const conceptAssets = workbook.assets.filter(item => item.language === 'HE' && item.concept === number && isEligible(item) && !hasPriorConceptDelivery(workbook, item));
+    const calendarHold = calendarHoldState(slot);
+    if (calendarHold) return { state: 'HELD', reason: `HEBREW_CALENDAR_${calendarHold}`, conceptId: number,
+      candidates: conceptAssets, slot, preserveCalendarHold: true };
     if (!conceptAssets.length) continue;
     const matches = conceptAssets.filter(item => sameAssetAndSlot(item, slot));
     if (matches.length > 1) return { state: 'HELD', reason: 'AMBIGUOUS_NEXT_HEBREW_ASSET', conceptId: number, candidates: matches, slot };
@@ -226,12 +233,20 @@ function nextAsset(workbook, language, anchorSlot) {
 }
 function holdAmbiguousNextTurn(selection, heldAt) {
   if (selection?.state !== 'HELD' || !Array.isArray(selection.candidates)) return [];
+  if (selection.preserveCalendarHold) return [];
   const candidateAssetIds = selection.candidates.map(asset => asset.id);
   const error = selection.reason === 'HEBREW_CALENDAR_BINDING_MISMATCH'
     ? `${selection.reason}: concept ${selection.conceptId}; renew the exact calendar binding before scheduling`
     : `${selection.reason}: concept ${selection.conceptId}; choose one exact approved asset before scheduling`;
   return selection.candidates.map(asset => ({ asset, slot: selection.slot || null,
     delivery: makeRecord(asset, 'HELD', { heldAt, error, candidateAssetIds, ...(selection.slot ? { anchorSlot: selection.slot.slot } : {}) }) }));
+}
+function scheduledPreflight(workbook, now = Date.now()) {
+  const scheduled = workbook.assets.filter(item => item.delivery?.state === 'SCHEDULED');
+  if (scheduled.length > 1) return { state: 'HELD', reason: 'Multiple scheduled Status records need reconciliation', assetIds: scheduled.map(item => item.id) };
+  const due = scheduled.filter(item => Date.parse(item.delivery.scheduledAt) <= now);
+  if (!due.length) return { state: 'WAITING', next: scheduled.map(item => ({ assetId: item.id, scheduledAt: item.delivery.scheduledAt })) };
+  return { state: 'DUE', asset: due[0] };
 }
 async function lockedRun({ initial = false, dryRun = false, env = process.env, pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 1 }) } = {}) {
   const db = await pool.connect();
@@ -278,10 +293,9 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
             cells(`'30-Day Calendar'!N${staleSlot.rowNumber}`, `${state} — reconcile provider before retry`)] : [])]);
         return { state, assetId: stale.id, reason: 'Stale publisher attempt requires provider reconciliation' };
       }
-      const due = workbook.assets.filter(item => item.delivery?.state === 'SCHEDULED' && Date.parse(item.delivery.scheduledAt) <= Date.now());
-      if (!due.length) return { state: 'WAITING', next: workbook.assets.filter(item => item.delivery?.state === 'SCHEDULED').map(item => ({ assetId: item.id, scheduledAt: item.delivery.scheduledAt })) };
-      if (due.length !== 1) return { state: 'HELD', reason: 'Multiple due Status records need reconciliation' };
-      asset = due[0]; scheduledAt = asset.delivery.scheduledAt; anchorSlot = asset.delivery.anchorSlot;
+      const schedule = scheduledPreflight(workbook);
+      if (schedule.state !== 'DUE') return schedule;
+      asset = schedule.asset; scheduledAt = asset.delivery.scheduledAt; anchorSlot = asset.delivery.anchorSlot;
       slot = asset.language === 'HE' ? workbook.calendar.find(item => item.slot === anchorSlot) : null;
       const bindingMatches = scheduledIdentityMatches(asset);
       const calendarMatches = asset.language !== 'HE' || (slot && sameAssetAndSlot(asset, slot, { allowExpectedSchedule: true }));
@@ -410,4 +424,4 @@ function startScheduler({ env = process.env, logger = console } = {}) {
 }
 module.exports = { lockedRun, oneShot, startScheduler, parseWorkbook, isEligible, nextAllowedIso, nextAsset,
   sameAssetAndSlot, scheduledIdentityMatches, verifiedStoryReadback, hasPriorConceptDelivery, validScheduledAt,
-  invalidScheduledHolds, holdAmbiguousNextTurn, record, exactMedia, MAX_MEDIA_BYTES };
+  invalidScheduledHolds, holdAmbiguousNextTurn, scheduledPreflight, record, exactMedia, MAX_MEDIA_BYTES };

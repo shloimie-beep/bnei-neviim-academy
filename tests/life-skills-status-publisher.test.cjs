@@ -3,7 +3,7 @@ const test = require('node:test');
 const { createHash } = require('node:crypto');
 const { Readable } = require('node:stream');
 const { parseWorkbook, nextAllowedIso, nextAsset, record, scheduledIdentityMatches, sameAssetAndSlot, verifiedStoryReadback, hasPriorConceptDelivery,
-  validScheduledAt, invalidScheduledHolds, holdAmbiguousNextTurn, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
+  validScheduledAt, invalidScheduledHolds, holdAmbiguousNextTurn, scheduledPreflight, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
 const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-skills-marketing');
 
 const digest = 'a'.repeat(64);
@@ -78,6 +78,27 @@ test('ambiguous Hebrew exact matches and changed calendar bindings are durably h
   const changedWorkbook=parseWorkbook({data:{valueRanges:[{values:[[],changed]},{values:[['Slot'],calendar]}]}});
   const changedSelection=nextAsset(changedWorkbook,'HE','D19');
   assert.equal(changedSelection.state,'HELD');assert.equal(changedSelection.reason,'HEBREW_CALENDAR_BINDING_MISMATCH');
+});
+
+test('an explicit Hebrew calendar hold blocks the next turn without overwriting the hold',()=>{
+  const asset=statusRow('C21-HE','HE');asset[1]='21';
+  const calendar=Array(15).fill('');
+  Object.assign(calendar,{0:'D21',1:'2026-10-05',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict',13:'OFF — exact approved Status media associated; publishing owner must act'});
+  const workbook=parseWorkbook({data:{valueRanges:[{values:[[],asset]},{values:[['Slot'],calendar]}]}});
+  const selection=nextAsset(workbook,'HE','D20');
+  assert.equal(selection.state,'HELD');assert.equal(selection.reason,'HEBREW_CALENDAR_OFF');assert.equal(selection.preserveCalendarHold,true);
+  assert.deepEqual(holdAmbiguousNextTurn(selection,'2026-10-04T13:00:00.000Z'),[]);
+});
+
+test('the publisher refuses any parallel scheduled record, even if only one record is due',()=>{
+  const due=statusRow('C01-EN','EN',JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'SCHEDULED',scheduledAt:'2026-10-05T09:22:08.000Z'}));
+  const future=statusRow('C02-EN','EN',JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'SCHEDULED',scheduledAt:'2026-10-06T09:22:08.000Z'}));future[1]='2';
+  const workbook=parseWorkbook({data:{valueRanges:[{values:[[],due,future]},{values:[['Slot']]}]}});
+  assert.deepEqual(scheduledPreflight(workbook,Date.parse('2026-10-05T10:00:00.000Z')),
+    {state:'HELD',reason:'Multiple scheduled Status records need reconciliation',assetIds:['C01-EN','C02-EN']});
+  const single=parseWorkbook({data:{valueRanges:[{values:[[],due]},{values:[['Slot']]}]}});
+  assert.equal(scheduledPreflight(single,Date.parse('2026-10-05T09:22:07.000Z')).state,'WAITING');
+  assert.equal(scheduledPreflight(single,Date.parse('2026-10-05T09:22:08.000Z')).asset.id,'C01-EN');
 });
 
 test('approved media uses its registry size and a hard stream cap before buffering',async()=>{
@@ -172,6 +193,10 @@ test('queued calendar interventions and prior receipts remain visible in the sen
   assert.equal(sameAssetAndSlot(asset, { ...slot, status: 'PUBLISHED / USED' }, { allowExpectedSchedule: true }), false);
   assert.equal(sameAssetAndSlot(asset, { ...slot, scheduler: 'UNKNOWN — operator reconciliation' }, { allowExpectedSchedule: true }), false);
   assert.equal(sameAssetAndSlot(asset, { ...slot, receipts: 'WHAPI: old-receipt' }, { allowExpectedSchedule: true }), false);
+  for(const state of ['HELD','BLOCKED','OFF']) {
+    assert.equal(sameAssetAndSlot(asset,{...slot,status:`${state} — operator intervention`},{allowExpectedSchedule:true}),false,state);
+    assert.equal(sameAssetAndSlot(asset,{...slot,scheduler:`${state} — operator intervention`},{allowExpectedSchedule:true}),false,state);
+  }
 });
 
 test('a Status is confirmed only by a read provider story with matching ID and dimensions', () => {
