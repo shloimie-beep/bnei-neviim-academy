@@ -65,6 +65,25 @@ test('missing registry columns fail the runtime read instead of returning an emp
 function approvedStatus(revision=1,hash=digest){const row=Array(27).fill('');Object.assign(row,{0:`DEMO-HE-STATUS-r${revision}`,1:'3',2:'HE',3:'VERTICAL',4:`r${revision}`,6:'1080',7:'1920',8:'OWNER_APPROVED',10:'https://drive.google.com/file/d/synthetic_status/view',12:hash,26:'CURRENT_APPROVED'});return row;}
 const exactCalendarHeaders=['Slot','Asset ID','Proposed caption','Version / SHA256','Exact approval','Asset link','WhatsApp Status'];
 const exactCalendar=(revision,caption,approval='Approved',hash=digest)=>['D03','LS-MONTH-20260914-03',caption,`v${revision} / ${hash}`,approval,'https://drive.google.com/file/d/synthetic_status/view','READY'];
+
+for(const planned of ['READY','QUEUED'])test(`held exact accepted artwork cannot inherit calendar caption or ${planned} publication eligibility`,()=>{
+ const held=approvedStatus();held[8]='OWNER_ACCEPTED_DISPLAYED_BATCH';held[18]='QA/caption/publication hold — do not publish';held[26]='CURRENT_ACCEPTED_HELD';
+ const row=exactCalendar(1,'Previously approved caption');row[6]=planned;
+ const result=parseWorkbook({assetRows:[headers,held],calendarRows:[exactCalendarHeaders,row]});
+ assert.equal(result.creatives[0].review,'approved');assert.equal(result.creatives[0].approvedDigest,digest);assert.equal(result.creatives[0].imageUrl,held[10]);assert.equal(result.creatives[0].holdReason,held[18]);
+ assert.equal(result.creatives[0].caption,'');assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].errorCode,'ASSET_PUBLICATION_HELD');assert.equal(result.publications[0].creativeDigest,digest);
+ assert.equal(result.inventory.queued,0);assert.equal(result.inventory.publishablePosts,0);assert.equal(result.inventory.heStatusReady,0);assert.equal(result.inventory.needsResizeOrCaption,1);assert.equal(result.inventory.heldMissing,1);
+});
+test('held exact artwork without a calendar record is still counted as held, not ready',()=>{
+ const held=approvedStatus();held[8]='OWNER_ACCEPTED_DISPLAYED_BATCH';held[26]='CURRENT_ACCEPTED_HELD';
+ const result=parseWorkbook({assetRows:[headers,held]});assert.equal(result.inventory.heldMissing,1);assert.equal(result.inventory.publishablePosts,0);assert.equal(result.publications.length,0);
+});
+test('later artwork holds do not erase historical verified publication receipt evidence',()=>{
+ const held=approvedStatus();held[8]='OWNER_ACCEPTED_DISPLAYED_BATCH';held[26]='CURRENT_ACCEPTED_HELD';
+ const row=exactCalendar(1,'Historical caption');row[6]='PUBLISHED';row.push('WHAPI: synthetic-receipt; Direct Whapi GET /messages/synthetic-receipt returned HTTP200, type=story');
+ const result=parseWorkbook({assetRows:[headers,held],calendarRows:[[...exactCalendarHeaders,'Provider receipts / errors'],row],fetchedAt:'2026-10-04T11:55:00Z'});
+ assert.equal(result.creatives[0].caption,'');assert.equal(result.publications[0].state,'published');assert.equal(result.publications[0].providerReceiptId,'synthetic-receipt');assert.equal(result.publications[0].providerReadAt,'2026-10-04T11:55:00Z');assert.equal(result.inventory.published,1);assert.equal(result.inventory.heldMissing,1);
+});
 test('identical bytes cannot borrow another revision or an unapproved calendar caption',()=>{
  const result=parseWorkbook({assetRows:[headers,approvedStatus(1),approvedStatus(2)],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Approved version one'),exactCalendar(2,'Pending version two','Pending')]});
  assert.equal(result.creatives[0].caption,'Approved version one');assert.equal(result.creatives[1].caption,'');assert.equal(result.inventory.publishablePosts,1);assert.equal(result.publications[0].creativeRevision,1);assert.equal(result.publications[1].creativeRevision,2);

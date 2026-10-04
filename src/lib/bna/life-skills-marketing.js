@@ -145,7 +145,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     // Object identity binds the one eligible matched registry row. Display
     // fallback revisions or same-digest siblings must never inherit its copy.
     const rows = captions.get(asset);
-    if (rows?.length === 1 && rows[0].approved) asset.caption = rows[0].caption;
+    if (asset.libraryState !== 'CURRENT_ACCEPTED_HELD' && rows?.length === 1 && rows[0].approved) asset.caption = rows[0].caption;
   }
   const current = contentFiles.filter(item => CURRENT_STATES.has(item.libraryState));
   const approved = current.filter(item => item.review === 'approved' && item.libraryState === 'CURRENT_APPROVED');
@@ -161,8 +161,12 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const status = cell(row, calendarHeaders, 'WhatsApp Status');
     const scheduler = cell(row, calendarHeaders, 'Scheduler state');
     const receipts = cell(row, calendarHeaders, 'Provider receipts / errors');
-    const state = publicationState(status, scheduler, receipts);
+    const sourceState = publicationState(status, scheduler, receipts);
     const matching = calendarAsset(row, calendarHeaders, calendarFiles);
+    // Display acceptance never clears release holds. Preserve historical verified
+    // publication/error evidence, but do not advertise a held future slot as ready.
+    const publicationHeld = matching?.libraryState === 'CURRENT_ACCEPTED_HELD' && ['ready', 'scheduled'].includes(sourceState);
+    const state = publicationHeld ? 'draft' : sourceState;
     const digest = matching?.contentDigest || '';
     const assetId = matching?.assetId || cell(row, calendarHeaders, 'Asset ID');
     const providerReceiptId = state === 'published' ? parseReceipt(receipts) : null;
@@ -182,10 +186,12 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       postUrl: null,
       receiptKind: state === 'published' && providerReceiptId ? 'publication' : 'unknown',
       manualReportedAt: null,
-      errorCode: ['failed', 'unknown', 'draft'].includes(state) ? (status || scheduler || null) : null,
+      errorCode: publicationHeld ? 'ASSET_PUBLICATION_HELD' : ['failed', 'unknown', 'draft'].includes(state) ? (status || scheduler || null) : null,
     };
   });
 
+  const unavailablePublications = publications.filter(item => item.state === 'draft' || item.state === 'failed' || item.state === 'unknown');
+  const uncoveredHeldAssets = current.filter(asset => asset.libraryState === 'CURRENT_ACCEPTED_HELD' && !unavailablePublications.some(item => item.assetId === asset.assetId && item.creativeRevision === asset.revision && item.creativeDigest === asset.contentDigest));
   return {
     fetchedAt,
     workbookUrl: WORKBOOK_URL,
@@ -204,7 +210,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       published: publications.filter(item => item.state === 'published').length,
       needsApproval: current.filter(item => item.review === 'in_review' || item.review === 'draft').length,
       needsResizeOrCaption: current.filter(item => !item.caption || !usableDimensions(item)).length,
-      heldMissing: publications.filter(item => item.state === 'draft' || item.state === 'failed' || item.state === 'unknown').length,
+      heldMissing: unavailablePublications.length + uncoveredHeldAssets.length,
       partial: true,
       asOf: fetchedAt,
     },
