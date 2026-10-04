@@ -12,6 +12,7 @@ const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-s
 
 const digest = 'a'.repeat(64);
 const url = 'https://drive.google.com/file/d/abc12345/view';
+const calendarConceptId = concept => `LS-MONTH-20260914-${String(concept).padStart(2, '0')}`;
 const statusRow = (id, language, delivery = '') => {
   const row = Array(27).fill('');
   Object.assign(row, { 0: id, 1: language === 'HE' ? '20' : '1', 2: language, 3: 'VERTICAL',
@@ -79,17 +80,24 @@ test('Hebrew selection binds the calendar slot to its concept and exact unique r
   const wrongConcept = statusRow('C19-alias','HE'); wrongConcept[1]='19';
   const intended = statusRow('C20-HE','HE'); intended[1]='20';
   const calendar=Array(15).fill('');
-  Object.assign(calendar,{0:'D20',1:'2026-10-04',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});
+  Object.assign(calendar,{0:'D20',1:'2026-10-04',4:calendarConceptId(20),9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});
   const workbook=parseWorkbook({data:{valueRanges:[{values:[[],wrongConcept,intended]},{values:[['Slot'],calendar] }]}});
   const selected=nextAsset(workbook,'HE','D19');
   assert.equal(selected.asset.id,'C20-HE');
   assert.equal(selected.asset.concept,20);
   assert.equal(selected.slot.slot,'D20');
+  assert.equal(selected.slot.assetId,calendarConceptId(20));
+  const wrongCalendarAsset=[...calendar];wrongCalendarAsset[4]=calendarConceptId(19);
+  const mismatched=parseWorkbook({data:{valueRanges:[{values:[[],wrongConcept,intended]},{values:[['Slot'],wrongCalendarAsset]}]}});
+  assert.equal(nextAsset(mismatched,'HE','D19').reason,'HEBREW_CALENDAR_BINDING_MISMATCH');
+  const exactRegistryBinding=[...calendar];exactRegistryBinding[4]='C20-HE';
+  const exact=parseWorkbook({data:{valueRanges:[{values:[[],intended]},{values:[['Slot'],exactRegistryBinding]}]}});
+  assert.equal(nextAsset(exact,'HE','D19').asset.id,'C20-HE');
 });
 
 test('Hebrew successor selection follows the lowest numeric Calendar slot, not sheet row order',()=>{
   const c21=statusRow('C21-HE','HE'),c22=statusRow('C22-HE','HE');c21[1]='21';c22[1]='22';
-  const slot=(name,date)=>{const row=Array(15).fill('');Object.assign(row,{0:name,1:date,9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});return row;};
+  const slot=(name,date)=>{const row=Array(15).fill('');const concept=Number(name.match(/\d+/)?.[0]);Object.assign(row,{0:name,1:date,4:calendarConceptId(concept),9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});return row;};
   const workbook=parseWorkbook({data:{valueRanges:[{values:[[],c21,c22]},{values:[['Slot'],slot('D22','2026-10-06'),slot('D21','2026-10-05')]}]}});
   const selection=nextAsset(workbook,'HE','D20');
   assert.equal(selection.asset.id,'C21-HE');
@@ -100,7 +108,7 @@ test('ambiguous Hebrew exact matches and changed calendar bindings are durably h
   const first=statusRow('C20-HE-r04','HE'), second=statusRow('C20-HE-copy','HE');
   first[1]=second[1]='20';
   const calendar=Array(15).fill('');
-  Object.assign(calendar,{0:'D20',1:'2026-10-04',7:'MEDIA ASSOCIATED — no send queued',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});
+  Object.assign(calendar,{0:'D20',1:'2026-10-04',4:calendarConceptId(20),7:'MEDIA ASSOCIATED — no send queued',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});
   const ambiguous=parseWorkbook({data:{valueRanges:[{values:[[],first,second]},{values:[['Slot'],calendar]}]}});
   const selection=nextAsset(ambiguous,'HE','D19');
   assert.equal(selection.state,'HELD');assert.equal(selection.reason,'AMBIGUOUS_NEXT_HEBREW_ASSET');assert.equal(selection.slot.slot,'D20');
@@ -125,7 +133,7 @@ test('ambiguous Hebrew exact matches and changed calendar bindings are durably h
 test('an explicit Hebrew calendar hold blocks the next turn without overwriting the hold',()=>{
   const asset=statusRow('C21-HE','HE');asset[1]='21';
   const calendar=Array(15).fill('');
-  Object.assign(calendar,{0:'D21',1:'2026-10-05',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict',13:'OFF — exact approved Status media associated; publishing owner must act'});
+  Object.assign(calendar,{0:'D21',1:'2026-10-05',4:calendarConceptId(21),9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict',13:'OFF — exact approved Status media associated; publishing owner must act'});
   const workbook=parseWorkbook({data:{valueRanges:[{values:[[],asset]},{values:[['Slot'],calendar]}]}});
   const selection=nextAsset(workbook,'HE','D20');
   assert.equal(selection.state,'HELD');assert.equal(selection.reason,'HEBREW_CALENDAR_OFF');assert.equal(selection.preserveCalendarHold,true);
@@ -266,17 +274,18 @@ test('scheduled delivery must retain the exact registry asset, revision, Drive f
 });
 
 test('queued calendar interventions and prior receipts remain visible in the sending preflight', () => {
+  const queuedAsset=statusRow('C21-HE','HE');queuedAsset[1]='21';
   const workbook = parseWorkbook({ data: { valueRanges: [
-    { values: [[], statusRow('C20-HE', 'HE')] },
+    { values: [[], queuedAsset] },
     { values: [['Slot']] },
   ] } });
   const asset = workbook.assets[0];
-  const scheduledAt = '2026-10-04T09:22:08.000Z';
+  const scheduledAt = '2026-10-05T09:22:08.000Z';
   asset.delivery = { kind: 'LIFE_SKILLS_STATUS_V1', state: 'SCHEDULED', assetId: asset.id, conceptId: asset.concept,
     language: asset.language, surface: asset.surface, revision: asset.revision, driveFileId: 'abc12345', sha256: digest,
     scheduledAt, anchorSlot: 'D21' };
   const local = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jerusalem', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(scheduledAt));
-  const slot = { slot: 'D21', date: '2026-10-05', assetUrl: url, version: `v04 FROZEN / ${digest}`, approval: 'Approved', quiet: '',
+  const slot = { slot: 'D21', date: '2026-10-05', assetId: calendarConceptId(21), assetUrl: url, version: `v04 FROZEN / ${digest}`, approval: 'Approved', quiet: '',
     status: 'MEDIA ASSOCIATED — no send queued', scheduler: `SCHEDULED — ${local} Asia/Jerusalem via rolling Status publisher`, receipts: '' };
   assert.equal(sameAssetAndSlot(asset, slot, { allowExpectedSchedule: true }), true);
   assert.equal(sameAssetAndSlot(asset, { ...slot, status: 'PUBLISHED / USED' }, { allowExpectedSchedule: true }), false);
@@ -291,13 +300,15 @@ test('queued calendar interventions and prior receipts remain visible in the sen
 test('reservation reread blocks changed Asset Registry approval and Calendar holds',()=>{
   const asset=statusRow('C20-HE','HE');
   const calendar=Array(15).fill('');
-  Object.assign(calendar,{0:'D20',1:'2026-10-04',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict',7:'MEDIA ASSOCIATED — no send queued'});
+  Object.assign(calendar,{0:'D20',1:'2026-10-04',4:calendarConceptId(20),9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict',7:'MEDIA ASSOCIATED — no send queued'});
   const parse=(a,c)=>parseWorkbook({data:{valueRanges:[{values:[[],a]},{values:[['Slot'],c]}]}});
   const original=parse(asset,calendar);
   const changedApproval=[...asset];changedApproval[8]='REVIEW';changedApproval[26]='CURRENT_REVIEW';
   assert.equal(reservationPreflightMatches(original,parse(changedApproval,calendar),{initial:true,assetId:'C20-HE',anchorSlot:'D20',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
   const changedReadiness=[...asset];changedReadiness[25]='HOLD — owner review required';
   assert.equal(reservationPreflightMatches(original,parse(changedReadiness,calendar),{initial:true,assetId:'C20-HE',anchorSlot:'D20',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
+  const changedCalendarAsset=[...calendar];changedCalendarAsset[4]=calendarConceptId(19);
+  assert.equal(reservationPreflightMatches(original,parse(asset,changedCalendarAsset),{initial:true,assetId:'C20-HE',anchorSlot:'D20',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
   const heldCalendar=[...calendar];heldCalendar[13]='OFF — operator hold';
   assert.equal(reservationPreflightMatches(original,parse(asset,heldCalendar),{initial:true,assetId:'C20-HE',anchorSlot:'D20',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
 });
@@ -305,7 +316,7 @@ test('reservation reread blocks changed Asset Registry approval and Calendar hol
 test('provider POST preflight requires our exact SENDING record and unchanged Calendar fields',()=>{
   const asset=statusRow('C20-HE','HE');
   const calendar=Array(15).fill('');
-  Object.assign(calendar,{0:'D20',1:'2026-10-04',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict',7:'MEDIA ASSOCIATED — no send queued'});
+  Object.assign(calendar,{0:'D20',1:'2026-10-04',4:calendarConceptId(20),9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict',7:'MEDIA ASSOCIATED — no send queued'});
   const parse=(a,c)=>parseWorkbook({data:{valueRanges:[{values:[[],a]},{values:[['Slot'],c]}]}});
   const baseline=parse(asset,calendar), baselineAsset=baseline.assets[0], baselineSlot=baseline.calendar[0];
   const sending={kind:'LIFE_SKILLS_STATUS_V1',state:'SENDING',assetId:baselineAsset.id,conceptId:baselineAsset.concept,
@@ -318,6 +329,8 @@ test('provider POST preflight requires our exact SENDING record and unchanged Ca
   assert.equal(publisherStatePreflightMatches(state,args).ok,true);
   const held=[...marked];held[7]='OFF — operator hold';
   assert.equal(publisherStatePreflightMatches(parse(prepared,held),args).ok,false);
+  const changedAssetId=[...marked];changedAssetId[4]=calendarConceptId(19);
+  assert.equal(publisherStatePreflightMatches(parse(prepared,changedAssetId),args).ok,false);
   const receipt=[...marked];receipt[14]='WHAPI: unexpected-existing-receipt';
   assert.equal(publisherStatePreflightMatches(parse(prepared,receipt),args).ok,false);
 });
@@ -357,7 +370,7 @@ test('successor reread refuses a changed approval, replacement, Calendar interve
     {nextLanguage:'EN',publishingAssetId:'C20-HE',anchorSlot:'D20',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
 
   const c21=statusRow('C21-HE','HE');c21[1]='21';
-  const d21=Array(15).fill('');Object.assign(d21,{0:'D21',1:'2026-10-05',7:'MEDIA ASSOCIATED — no send queued',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});
+  const d21=Array(15).fill('');Object.assign(d21,{0:'D21',1:'2026-10-05',4:calendarConceptId(21),7:'MEDIA ASSOCIATED — no send queued',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});
   const hebrewOriginal=parse([hebrew,c21],[['Slot'],d21]);
   const hebrewSelection=nextAsset(hebrewOriginal,'HE','D20');
   assert.equal(hebrewSelection.asset.id,'C21-HE');
@@ -439,7 +452,7 @@ test('a successor schedule horizon hold becomes eligible again when Calendar is 
 test('provider result reread resolves shifted rows and preserves post-send Calendar interventions',()=>{
   const sent=statusRow('C20-HE','HE');
   const calendar=Array(15).fill('');
-  Object.assign(calendar,{0:'D20',1:'2026-10-04',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict',7:'MEDIA ASSOCIATED — no send queued'});
+  Object.assign(calendar,{0:'D20',1:'2026-10-04',4:calendarConceptId(20),9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict',7:'MEDIA ASSOCIATED — no send queued'});
   const parse=(assets,calRows)=>parseWorkbook({data:{valueRanges:[{values:[[],...assets]},{values:calRows}]}});
   const original=parse([sent],[['Slot'],calendar]);
   const baselineAsset=original.assets[0], baselineSlot=original.calendar[0];
@@ -479,6 +492,10 @@ test('provider result reread resolves shifted rows and preserves post-send Calen
   const calendarChanged=publicationResultPreflight(original,parse([prepared],[['Slot'],replacedCalendar]),
     {assetId:sent[0],baselineAsset,baselineSlot,expectedDelivery:sending});
   assert.equal(calendarChanged.ok,true);assert.equal(calendarChanged.canWriteCalendarReceipt,false);assert.equal(calendarChanged.canUpdateCalendarState,false);
+  const changedCalendarAssetId=[...marked];changedCalendarAssetId[4]=calendarConceptId(19);
+  const calendarAssetChanged=publicationResultPreflight(original,parse([prepared],[['Slot'],changedCalendarAssetId]),
+    {assetId:sent[0],baselineAsset,baselineSlot,expectedDelivery:sending});
+  assert.equal(calendarAssetChanged.ok,true);assert.equal(calendarAssetChanged.canWriteCalendarReceipt,false);
 
   const alteredDelivery=[...prepared];alteredDelivery[21]=JSON.stringify({...sending,state:'UNKNOWN',error:'operator reconciliation'});
   assert.equal(publicationResultPreflight(original,parse([alteredDelivery],[['Slot'],marked]),

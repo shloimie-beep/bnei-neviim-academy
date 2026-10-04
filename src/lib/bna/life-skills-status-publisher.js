@@ -40,7 +40,7 @@ function assetFromRow(row, rowNumber) {
 }
 function calendarFromRow(row, rowNumber) {
   return { rowNumber, slot: value(row, 0), date: value(row, 1), day: value(row, 2),
-    status: value(row, 7), assetUrl: value(row, 9), version: value(row, 10), approval: value(row, 11),
+    assetId: value(row, 4), status: value(row, 7), assetUrl: value(row, 9), version: value(row, 10), approval: value(row, 11),
     quiet: value(row, 12), scheduler: value(row, 13), receipts: value(row, 14) };
 }
 function parseWorkbook(result) {
@@ -142,9 +142,15 @@ function hasCalendarSendEvidence(slot, ignoreExpectedSchedule = false, ignoreSel
   const receipt = String(slot?.receipts || '').trim();
   return Boolean(receipt && !/^(?:no provider delivery|no provider call(?: yet)?|no receipt|none|[-—])(?:\s|;|$)/i.test(receipt));
 }
+function calendarAssetIdMatchesConcept(asset, slot) {
+  const key = String(slot?.assetId || '').trim();
+  if (!key) return false;
+  const calendarConcept = key.match(/^LS-MONTH-\d{8}-(\d{2})$/)?.[1];
+  return key === asset?.id || Boolean(calendarConcept && Number(calendarConcept) === asset?.concept);
+}
 function sameAssetAndSlot(asset, slot, { allowExpectedSchedule = false, allowSelectionHold = false } = {}) {
   const expected = allowExpectedSchedule && expectedScheduleMarker(asset, slot);
-  return slot && asset.url === slot.assetUrl &&
+  return slot && calendarAssetIdMatchesConcept(asset, slot) && asset.url === slot.assetUrl &&
     String(slot.version || '').toLowerCase().includes(asset.digest) && calendarVersionMatches(asset, slot) &&
     /^Approved$/i.test(slot.approval) && !quietSlot(slot) && !hasCalendarSendEvidence(slot, expected, allowSelectionHold);
 }
@@ -370,15 +376,15 @@ function sameAssetSource(left, right) {
     'url', 'digest', 'qa', 'readiness', 'planned', 'slot', 'libraryState'].every(key => left?.[key] === right?.[key]);
 }
 function sameCalendarSource(left, right) {
-  return ['rowNumber', 'slot', 'date', 'day', 'status', 'assetUrl', 'version', 'approval', 'quiet', 'scheduler', 'receipts']
+  return ['rowNumber', 'slot', 'date', 'day', 'assetId', 'status', 'assetUrl', 'version', 'approval', 'quiet', 'scheduler', 'receipts']
     .every(key => left?.[key] === right?.[key]);
 }
 function sameCalendarBinding(left, right) {
-  return ['rowNumber', 'slot', 'date', 'day', 'assetUrl', 'version', 'approval', 'quiet', 'receipts']
+  return ['rowNumber', 'slot', 'date', 'day', 'assetId', 'assetUrl', 'version', 'approval', 'quiet', 'receipts']
     .every(key => left?.[key] === right?.[key]);
 }
 function sameCalendarIdentity(left, right) {
-  return ['slot', 'date', 'day', 'assetUrl', 'version', 'approval', 'quiet']
+  return ['slot', 'date', 'day', 'assetId', 'assetUrl', 'version', 'approval', 'quiet']
     .every(key => left?.[key] === right?.[key]);
 }
 function uniqueRow(rows, key, value) {
