@@ -84,6 +84,14 @@ test('later artwork holds do not erase historical verified publication receipt e
  const result=parseWorkbook({assetRows:[headers,held],calendarRows:[[...exactCalendarHeaders,'Provider receipts / errors'],row],fetchedAt:'2026-10-04T11:55:00Z'});
  assert.equal(result.creatives[0].caption,'');assert.equal(result.publications[0].state,'published');assert.equal(result.publications[0].providerReceiptId,'synthetic-receipt');assert.equal(result.publications[0].providerReadAt,'2026-10-04T11:55:00Z');assert.equal(result.inventory.published,1);assert.equal(result.inventory.heldMissing,1);
 });
+
+for(const evidence of ['not published because delivery failed','WHAPI: synthetic-receipt','type=story','WHAPI: synthetic-receipt; GET /messages/other-receipt returned HTTP200, type=story','WHAPI: synthetic-receipt; GET /messages/synthetic-receipt returned HTTP500, type=story','WHAPI: synthetic-receipt; GET /messages/synthetic-receipt returned HTTP200, type=video'])test(`unverified publication text never exempts held artwork: ${evidence}`,()=>{
+ const held=approvedStatus();held[8]='OWNER_ACCEPTED_DISPLAYED_BATCH';held[26]='CURRENT_ACCEPTED_HELD';
+ const row=exactCalendar(1,'Held caption');row[6]='PUBLISHED';row.push(evidence);
+ const result=parseWorkbook({assetRows:[headers,held],calendarRows:[[...exactCalendarHeaders,'Provider receipts / errors'],row]});
+ assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].errorCode,'ASSET_PUBLICATION_HELD');assert.equal(result.publications[0].providerReceiptId,null);assert.equal(result.publications[0].providerReadAt,null);assert.equal(result.publications[0].receiptKind,'unknown');assert.equal(result.inventory.published,0);
+ assert.equal(publicationState('PUBLISHED','complete',evidence),'unknown');
+});
 test('identical bytes cannot borrow another revision or an unapproved calendar caption',()=>{
  const result=parseWorkbook({assetRows:[headers,approvedStatus(1),approvedStatus(2)],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Approved version one'),exactCalendar(2,'Pending version two','Pending')]});
  assert.equal(result.creatives[0].caption,'Approved version one');assert.equal(result.creatives[1].caption,'');assert.equal(result.inventory.publishablePosts,1);assert.equal(result.publications[0].creativeRevision,1);assert.equal(result.publications[1].creativeRevision,2);

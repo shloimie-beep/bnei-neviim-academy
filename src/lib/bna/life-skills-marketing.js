@@ -30,9 +30,19 @@ function conceptNumber(value) {
   return match ? Number(match[0]) : null;
 }
 
+function publicationClaimed(status, scheduler) {
+  return [status, scheduler].some(value => /^PUBLISHED\b/i.test(text(value)));
+}
+
+function verifiedPublicationReceipt(receipts) {
+  const receipt = parseReceipt(receipts);
+  const reads = [...text(receipts).matchAll(/\bGET\s+\/messages\/([^;\s/?]+)\s+returned\s+HTTP\s*200\s*,\s*type=story\b/gi)];
+  return receipt && reads.length === 1 && reads[0][1] === receipt ? receipt : null;
+}
+
 function publicationState(status, scheduler, receipts) {
   const combined = `${status} ${scheduler}`.toUpperCase();
-  if (combined.includes('PUBLISHED') && /WHAPI:|type=story|published/i.test(receipts)) return 'published';
+  if (publicationClaimed(status, scheduler)) return verifiedPublicationReceipt(receipts) ? 'published' : 'unknown';
   if (combined.includes('QUEUED')) return 'scheduled';
   if (combined.includes('SENDING')) return 'sending';
   if (combined.includes('UNKNOWN')) return 'unknown';
@@ -165,11 +175,12 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const matching = calendarAsset(row, calendarHeaders, calendarFiles);
     // Display acceptance never clears release holds. Preserve historical verified
     // publication/error evidence, but do not advertise a held future slot as ready.
-    const publicationHeld = matching?.libraryState === 'CURRENT_ACCEPTED_HELD' && ['ready', 'scheduled', 'sending'].includes(sourceState);
+    const publicationHeld = matching?.libraryState === 'CURRENT_ACCEPTED_HELD' &&
+      (['ready', 'scheduled', 'sending'].includes(sourceState) || (publicationClaimed(status, scheduler) && !verifiedPublicationReceipt(receipts)));
     const state = publicationHeld ? 'draft' : sourceState;
     const digest = matching?.contentDigest || '';
     const assetId = matching?.assetId || cell(row, calendarHeaders, 'Asset ID');
-    const providerReceiptId = state === 'published' ? parseReceipt(receipts) : null;
+    const providerReceiptId = state === 'published' ? verifiedPublicationReceipt(receipts) : null;
     return {
       id: `whatsapp-status:${slot}:${date}`,
       assetId,
@@ -182,7 +193,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       state,
       provider: state === 'published' || state === 'scheduled' ? 'whapi' : 'unbound',
       providerReceiptId,
-      providerReadAt: state === 'published' && /GET \/messages\//i.test(receipts) ? fetchedAt : null,
+      providerReadAt: providerReceiptId ? fetchedAt : null,
       postUrl: null,
       receiptKind: state === 'published' && providerReceiptId ? 'publication' : 'unknown',
       manualReportedAt: null,
