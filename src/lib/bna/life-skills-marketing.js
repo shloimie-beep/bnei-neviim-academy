@@ -1,7 +1,14 @@
 const DEFAULT_SPREADSHEET_ID = '1UbbkY6h74L3_sG_m2hcBZ_rmBRLJDO7pYgghrXGdARI';
 const WORKBOOK_URL = `https://docs.google.com/spreadsheets/d/${DEFAULT_SPREADSHEET_ID}/edit`;
 const CONTENT_SURFACES = new Set(['FEED', 'VERTICAL', 'STATUS', 'STORY']);
-const APPROVED_STATES = new Set(['OWNER_APPROVED', 'APPROVED_PARENT_EXPORT']);
+const APPROVED_STATES = new Set(['OWNER_APPROVED', 'OWNER_APPROVED_EXACT_FILE', 'APPROVED_PARENT_EXPORT']);
+
+function statusDelivery(value) {
+  try {
+    const parsed = JSON.parse(text(value));
+    return parsed.kind === 'LIFE_SKILLS_STATUS_V1' ? parsed : null;
+  } catch { return null; }
+}
 
 function text(value) {
   return String(value ?? '').trim();
@@ -98,6 +105,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       approvedDigest: review === 'approved' ? digest : null,
       holdReason: review === 'approved' ? null : (cell(row, assetHeaders, 'QA / hold') || cell(row, assetHeaders, 'Readiness') || 'Not approved'),
       libraryState: libraryState || 'UNRECORDED',
+      statusDelivery: statusDelivery(cell(row, assetHeaders, 'Provider delivery')),
     });
   }
 
@@ -121,6 +129,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const matching = contentFiles.find(item => item.contentDigest === digest);
     const assetId = matching?.assetId || cell(row, calendarHeaders, 'Asset ID');
     const providerReceiptId = state === 'published' ? parseReceipt(receipts) : null;
+    const exactDelivery = matching?.statusDelivery;
     return {
       id: `whatsapp-status:${slot}:${date}`,
       assetId,
@@ -128,18 +137,44 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       creativeDigest: digest,
       channel: 'whatsapp_status',
       destinationLabel: 'Life Skills WhatsApp Status',
-      scheduledFor: scheduledIso(date, time),
+      scheduledFor: exactDelivery?.scheduledAt || scheduledIso(date, time),
+      confirmedAt: exactDelivery?.confirmedAt || null,
       timezone: 'Asia/Jerusalem',
       state,
       provider: state === 'published' || state === 'scheduled' ? 'whapi' : 'unbound',
-      providerReceiptId,
-      providerReadAt: state === 'published' && /GET \/messages\//i.test(receipts) ? fetchedAt : null,
+      providerReceiptId: exactDelivery?.providerReceiptId || providerReceiptId,
+      providerReadAt: exactDelivery?.verificationAt || (state === 'published' && /GET \/(?:messages|stories)\//i.test(receipts) ? fetchedAt : null),
       postUrl: null,
       receiptKind: state === 'published' && providerReceiptId ? 'publication' : 'unknown',
       manualReportedAt: null,
       errorCode: ['failed', 'unknown', 'draft'].includes(state) ? (status || scheduler || null) : null,
     };
   });
+
+  const calendarDigests = new Set(publications.map(item => item.creativeDigest).filter(Boolean));
+  for (const item of contentFiles) {
+    const delivery = item.statusDelivery;
+    if (!delivery || calendarDigests.has(item.contentDigest)) continue;
+    publications.push({
+      id: `whatsapp-status:${item.assetId}:${item.contentDigest}`,
+      assetId: item.assetId,
+      creativeRevision: item.revision,
+      creativeDigest: item.contentDigest,
+      channel: 'whatsapp_status',
+      destinationLabel: 'Life Skills WhatsApp Status',
+      scheduledFor: delivery.scheduledAt || null,
+      confirmedAt: delivery.confirmedAt || null,
+      timezone: 'Asia/Jerusalem',
+      state: String(delivery.state || 'UNKNOWN').toLowerCase(),
+      provider: 'whapi',
+      providerReceiptId: delivery.providerReceiptId || null,
+      providerReadAt: delivery.verificationAt || null,
+      postUrl: null,
+      receiptKind: delivery.state === 'PUBLISHED' ? 'publication' : 'unknown',
+      manualReportedAt: null,
+      errorCode: delivery.error || null,
+    });
+  }
 
   return {
     fetchedAt,

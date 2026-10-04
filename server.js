@@ -56,6 +56,7 @@ const {
 } = require('./src/lib/bna/life-skills-app-inbound');
 const { createOutboxPool: createLifeSkillsAppInboundPool } = require('./src/lib/bna/life-skills-inbound-database');
 const { readLifeSkillsMarketingSnapshot } = require('./src/lib/bna/life-skills-marketing');
+const { startScheduler: startLifeSkillsStatusScheduler } = require('./src/lib/bna/life-skills-status-publisher');
 const {
   goalBoardBucket,
   goalBoardStatus,
@@ -94985,6 +94986,7 @@ app.listen(PORT, HOST, () => {
   if (!(ONE_TIME_REVIEW_ONLY_NO_DB && !DATABASE_URL)) {
     startPaymentReminderScheduler();
     startLifeSkillsAppInboundScheduler();
+    startLifeSkillsStatusScheduler();
   }
 });
 // Deploy timestamp: 2026-05-26T17:02:05Z
