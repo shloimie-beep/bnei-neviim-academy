@@ -3,7 +3,7 @@ const WORKBOOK_URL = `https://docs.google.com/spreadsheets/d/${DEFAULT_SPREADSHE
 const CONTENT_SURFACES = new Set(['FEED', 'VERTICAL', 'STATUS', 'STORY']);
 const APPROVED_STATES = new Set(['OWNER_APPROVED', 'OWNER_APPROVED_EXACT_FILE', 'APPROVED_PARENT_EXPORT']);
 const CURRENT_STATES = new Set(['CURRENT_APPROVED', 'CURRENT_REVIEW', 'CURRENT_REVIEW_CANDIDATE', 'CURRENT_ACCEPTED_HELD']);
-const { driveFileId } = require('./life-skills-marketing-media');
+const { driveFileId, selectedAsset } = require('./life-skills-marketing-media');
 
 function text(value) {
   return String(value ?? '').trim();
@@ -86,6 +86,12 @@ function usableDimensions(item) {
   return item.width === 1080 && (item.surface === 'FEED' ? item.height === 1350 : item.height === 1920);
 }
 
+function mediaBindingAvailable(asset, current) {
+  try {
+    return selectedAsset({ creatives: current }, { assetId: asset.assetId, revision: asset.revision, digest: asset.contentDigest }) === asset;
+  } catch { return false; }
+}
+
 function calendarAsset(row, headers, assets) {
   // This maintained calendar owns Hebrew WhatsApp Status only. Its exact file,
   // asset/concept, version and hash must all identify ONE matching revision.
@@ -158,7 +164,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     if (asset.libraryState !== 'CURRENT_ACCEPTED_HELD' && rows?.length === 1 && rows[0].approved) asset.caption = rows[0].caption;
   }
   const current = contentFiles.filter(item => CURRENT_STATES.has(item.libraryState));
-  const approved = current.filter(item => item.review === 'approved' && item.libraryState === 'CURRENT_APPROVED');
+  const approved = current.filter(item => item.review === 'approved' && item.libraryState === 'CURRENT_APPROVED' && mediaBindingAvailable(item, current));
   const readyStatus = approved.filter(item => item.locale === 'he' && item.width === 1080 && item.height === 1920);
   const readyHeFeed = approved.filter(item => item.locale === 'he' && item.width === 1080 && item.height === 1350);
   const readyEnFeed = approved.filter(item => item.locale === 'en' && item.width === 1080 && item.height === 1350);
@@ -174,7 +180,10 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const sourceState = publicationState(status, scheduler, receipts);
     const matching = calendarAsset(row, calendarHeaders, calendarFiles);
     const futurePublication = ['ready', 'scheduled', 'sending'].includes(sourceState);
-    const bindingUnavailable = futurePublication && !matching;
+    // Use the same current-key and request validation as private delivery.
+    // A unique calendar tuple is insufficient when that key is conflicting.
+    const bindingUnavailable = futurePublication && (!matching ||
+      (CURRENT_STATES.has(matching.libraryState) && !mediaBindingAvailable(matching, current)));
     // Display acceptance never clears release holds. Preserve historical verified
     // publication/error evidence, but do not advertise a held future slot as ready.
     const publicationHeld = !!matching &&
