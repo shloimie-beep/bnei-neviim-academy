@@ -112,6 +112,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       assetId: cell(row, assetHeaders, 'Asset key'),
       concept,
       revision: revisionNumber(cell(row, assetHeaders, 'Revision')),
+      registeredRevision: explicitRevisionNumber(cell(row, assetHeaders, 'Revision')) !== null,
       locale,
       surface,
       width: Number(cell(row, assetHeaders, 'Width px')) || 0,

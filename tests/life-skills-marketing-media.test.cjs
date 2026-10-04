@@ -8,7 +8,7 @@ const vm = require('node:vm');
 const { MAX_BYTES, driveFileId, selectedAsset, readLifeSkillsMarketingMedia } = require('../src/lib/bna/life-skills-marketing-media');
 const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aNfkAAAAASUVORK5CYII=', 'base64');
 const digest = createHash('sha256').update(png).digest('hex');
-const asset = { assetId: 'DEMO-EN-FEED-r1', revision: 1, contentDigest: digest, libraryState: 'CURRENT_REVIEW', review: 'in_review', imageUrl: 'https://drive.google.com/file/d/synthetic_file_01/view', width: 1, height: 1 };
+const asset = { assetId: 'DEMO-EN-FEED-r1', revision: 1, registeredRevision: true, contentDigest: digest, libraryState: 'CURRENT_REVIEW', review: 'in_review', imageUrl: 'https://drive.google.com/file/d/synthetic_file_01/view', width: 1, height: 1 };
 function fixture({ row = asset, metadata = {}, bytes = png, error = false } = {}) {
   const calls = [], request = { snapshot: { creatives: [row] }, assetId: asset.assetId, revision: 1, digest };
   const drive = { files: { get: async (params, options) => { calls.push({ params, options }); if (error) throw Error('PRIVATE_PROVIDER_DETAIL'); return params.alt === 'media' ? { data: Readable.from([bytes]) } : { data: { id: 'synthetic_file_01', mimeType: 'image/png', size: String(png.length), trashed: false, capabilities: { canDownload: true }, ...metadata } }; } } };
@@ -20,6 +20,17 @@ test('exact current review bytes can be privately inspected without approving or
   assert.deepEqual(result.bytes, png); assert.equal(result.digest, digest); assert.equal(result.mimeType, 'image/png');
   assert.equal(JSON.stringify(f.request.snapshot), before); assert.equal(f.calls.length, 2);
   assert.equal(f.calls[1].options.responseType, 'stream');
+});
+test('actual workbook fallback revisions cannot select media or obtain a Drive file', async () => {
+  const { parseWorkbook } = require('../src/lib/bna/life-skills-marketing');
+  const headers=['Asset key','Concept','Language','Surface','Revision','Width px','Height px','Approval','Drive file / archive','SHA256','Current library state'];
+  for(const revision of ['', 'unknown', 'revision one', 'r0', 'r1 trailing', '1000000']){
+    const snapshot=parseWorkbook({assetRows:[headers,[asset.assetId,'1','EN','FEED',revision,'1','1','REVIEW',asset.imageUrl,digest,'CURRENT_REVIEW']]}),f=fixture();
+    await assert.rejects(readLifeSkillsMarketingMedia({...f.request,snapshot,drive:f.drive}),error=>error.code==='ASSET_VERSION_CHANGED'&&error.status===409);assert.deepEqual(f.calls,[]);
+  }
+  const snapshot=parseWorkbook({assetRows:[headers,[asset.assetId,'1','EN','FEED','r1','1','1','REVIEW',asset.imageUrl,digest,'CURRENT_REVIEW']]}),f=fixture();
+  assert.deepEqual((await readLifeSkillsMarketingMedia({...f.request,snapshot,drive:f.drive})).bytes,png);assert.equal(f.calls.length,2);
+  for(const registeredRevision of [undefined,false,'true',1]){const f=fixture({row:{...asset,registeredRevision}});await assert.rejects(readLifeSkillsMarketingMedia({...f.request,drive:f.drive}),/ASSET_VERSION_CHANGED/);assert.deepEqual(f.calls,[]);}
 });
 test('selection rejects unregistered IDs, stale hashes/revisions, retired entries and ambiguous registry rows before a provider read', async () => {
   const f = fixture();
