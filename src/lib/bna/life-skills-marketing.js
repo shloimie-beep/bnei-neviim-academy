@@ -51,12 +51,13 @@ function verifiedPublicationReceipt(receipts, asset = null) {
 
 function publicationState(status, scheduler, receipts, asset = null) {
   const combined = `${status} ${scheduler}`.toUpperCase();
-  if (publicationClaimed(status, scheduler)) return verifiedPublicationReceipt(receipts, asset) ? 'published' : 'unknown';
-  if (receiptEvidencePresent(receipts)) return verifiedPublicationReceipt(receipts, asset) ? 'published' : 'unknown';
-  if (combined.includes('SENDING')) return 'sending';
-  if (combined.includes('RESERVED')) return 'scheduled';
+  if (verifiedPublicationReceipt(receipts, asset)) return 'published';
+  if (publicationClaimed(status, scheduler)) return 'unknown';
   if (combined.includes('UNKNOWN')) return 'unknown';
   if (combined.includes('FAILED')) return 'failed';
+  if (combined.includes('SENDING')) return 'sending';
+  if (receiptEvidencePresent(receipts)) return 'unknown';
+  if (combined.includes('RESERVED')) return 'scheduled';
   if (combined.includes('SKIP')) return 'skipped';
   if (combined.includes('HELD')) return 'held';
   if (combined.includes('QUEUED') || combined.includes('SCHEDULED')) return 'scheduled';

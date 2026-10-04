@@ -51,6 +51,12 @@ test('provider acceptance is not publication and quiet-day slots stay skipped', 
   assert.equal(publicationState('SKIP — quiet day', 'SKIP — no backfill', ''), 'skipped');
   assert.equal(publicationState('PUBLISHED', 'complete', 'WHAPI: receipt-1; Direct Whapi GET /messages/receipt-1 returned HTTP200, type=story'), 'published');
 });
+
+test('explicit FAILED and UNKNOWN states outrank error text that resembles a receipt',()=>{
+ assert.equal(publicationState('FAILED — provider rejected','FAILED — reconcile before retry','WHAPI FAILED; receipt none; HTTP 400'),'failed');
+ assert.equal(publicationState('UNKNOWN — inspect provider history','UNKNOWN — no automatic retry','WHAPI UNKNOWN; receipt unclear'),'unknown');
+ assert.equal(publicationState('FAILED — stale label','FAILED — stale label','WHAPI: story-1; GET /stories/story-1 HTTP200, type=story'),'published');
+});
 test('a concept-wide HE caption cannot attach to EN or feed artwork, and prose evidence does not become a hyperlink', () => {
   const status = Array(27).fill('');Object.assign(status,{0:'DEMO-HE-STATUS',1:'3',2:'HE',3:'VERTICAL',4:'r1',6:'1080',7:'1920',8:'OWNER_APPROVED',10:'https://drive.google.com/file/d/synthetic_status/view',12:digest,23:'Exact byte verification recorded privately',26:'CURRENT_APPROVED'});
   const english=[...status];english[0]='DEMO-EN-STATUS';english[2]='EN';

@@ -324,6 +324,41 @@ function publisherStatePreflightMatches(workbook, { baselineAsset, baselineSlot 
     return { ok: false, reason: 'Quiet-day restriction became active before provider POST' };
   return { ok: true, asset, slot };
 }
+function successorPreflightMatches(original, current, selection, { nextLanguage, publishingAssetId, now = Date.now() } = {}) {
+  if (!selection) return { ok: false, reason: 'NO_ELIGIBLE_EXACT_APPROVED_ASSET' };
+  if (selection.state === 'HELD' && selection.preserveCalendarHold)
+    return { ok: true, selection, preserveHold: true };
+  const candidates = selection.state === 'HELD' ? selection.candidates : [selection.asset || selection];
+  if (!Array.isArray(candidates) || !candidates.length)
+    return { ok: false, reason: selection.reason || 'NO_ELIGIBLE_EXACT_APPROVED_ASSET' };
+  if (current.assets.some(item => item.delivery?.state === 'SCHEDULED' ||
+      (item.id !== publishingAssetId && ['RESERVED', 'SENDING'].includes(item.delivery?.state))))
+    return { ok: false, reason: 'ANOTHER_STATUS_SEND_OR_SCHEDULE_APPEARED_BEFORE_SUCCESSOR_SCHEDULE' };
+  const refreshed = [];
+  for (const candidate of candidates) {
+    const originalCandidate = uniqueRow(original.assets, 'id', candidate.id);
+    const asset = uniqueRow(current.assets, 'id', candidate.id);
+    if (!originalCandidate || !asset || asset.language !== nextLanguage || !sameAssetSource(originalCandidate, asset) ||
+        !isEligible(asset) || !noPriorDelivery(originalCandidate) || !noPriorDelivery(asset) ||
+        hasPriorConceptDelivery(current, asset))
+      return { ok: false, reason: 'SUCCESSOR_ASSET_APPROVAL_OR_EXACT_REVISION_CHANGED_BEFORE_SCHEDULE' };
+    refreshed.push(asset);
+  }
+  let slot = null;
+  if (nextLanguage === 'HE') {
+    const oldSlot = selection.slot;
+    slot = uniqueRow(current.calendar, 'slot', oldSlot?.slot);
+    if (!oldSlot || !slot || !sameCalendarSource(oldSlot, slot) ||
+        refreshed.some(asset => !sameAssetAndSlot(asset, slot)) || quietSlot(slot))
+      return { ok: false, reason: 'SUCCESSOR_CALENDAR_HOLD_OR_EXACT_BINDING_CHANGED_BEFORE_SCHEDULE' };
+  }
+  if (quietDate(new Date(now).toISOString(), current.calendar))
+    return { ok: false, reason: 'SUCCESSOR_QUIET_DAY_RESTRICTION_ACTIVE' };
+  const nextSelection = selection.state === 'HELD'
+    ? { ...selection, candidates: refreshed, slot: slot || selection.slot }
+    : { ...selection, asset: refreshed[0], slot: slot || selection.slot };
+  return { ok: true, selection: nextSelection, preserveHold: false };
+}
 async function holdOwnReservation(sheets, workbook, { assetId, expectedDelivery, baselineSlot, reason, now = new Date().toISOString() }) {
   const asset = uniqueRow(workbook.assets, 'id', assetId);
   if (!asset || !sameDelivery(asset.delivery, expectedDelivery)) return false;
@@ -415,7 +450,8 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
     asset = baselineAsset;
     slot = baselineSlot;
     const queuedAt = initial ? new Date().toISOString() : asset.delivery.queuedAt;
-    const base = makeRecord(asset, 'RESERVED', { queuedAt, scheduledAt, anchorSlot, reservedAt: new Date().toISOString() });
+    const base = makeRecord(asset, 'RESERVED', { queuedAt, scheduledAt, anchorSlot, reservedAt: new Date().toISOString(),
+      ...(asset.delivery?.predecessorReceiptId ? { predecessorReceiptId: asset.delivery.predecessorReceiptId } : {}) });
     const registryRange = `'Asset Registry'!V${asset.rowNumber}`;
     const calendarUpdates = state => slot ? [cells(`'30-Day Calendar'!H${slot.rowNumber}`, `${state} — ${asset.id}`), cells(`'30-Day Calendar'!N${slot.rowNumber}`, `${state} — rolling Status publisher`)] : [];
     await write(sheets, [cells(registryRange, JSON.stringify(base)), ...calendarUpdates('RESERVED')]);
@@ -453,7 +489,17 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
     }
     const confirmedAt = isoFromEpoch(verified.timestamp);
     const nextLanguage = asset.language === 'HE' ? 'EN' : 'HE';
-    const nextSelection = nextAsset(workbook, nextLanguage, anchorSlot);
+    let nextSelection = nextAsset(workbook, nextLanguage, anchorSlot);
+    if (nextSelection && !(nextSelection.state === 'HELD' && nextSelection.preserveCalendarHold) &&
+        (nextSelection.asset || nextSelection.candidates?.length)) {
+      const latestForSuccessor = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID,
+        ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
+      const successorCheck = successorPreflightMatches(workbook, latestForSuccessor, nextSelection,
+        { nextLanguage, publishingAssetId: asset.id, now: Date.now() });
+      if (successorCheck.ok) nextSelection = successorCheck.selection;
+      else nextSelection = { state: 'HELD', reason: `SUCCESSOR_PREFLIGHT_FAILED: ${successorCheck.reason}`,
+        conceptId: (nextSelection.asset || nextSelection.candidates?.[0])?.concept || null, candidates: [], preserveCalendarHold: true };
+    }
     const ambiguousNext = nextSelection?.state === 'HELD' ? nextSelection : null;
     const nextTurnHold = ambiguousNext ? { state: 'HELD', language: nextLanguage, reason: ambiguousNext.reason,
       conceptId: ambiguousNext.conceptId, candidateAssetIds: ambiguousNext.candidates.map(item => item.id) } :
@@ -551,4 +597,4 @@ function attachPoolErrorHandler(pool, logger = console) {
 module.exports = { lockedRun, oneShot, startScheduler, parseWorkbook, isEligible, nextAllowedIso, nextAsset,
   sameAssetAndSlot, scheduledIdentityMatches, verifiedStoryReadback, hasPriorConceptDelivery, validScheduledAt,
   invalidScheduledHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
-  publisherStatePreflightMatches, holdOwnReservation, attachPoolErrorHandler, record, exactMedia, MAX_MEDIA_BYTES };
+  publisherStatePreflightMatches, successorPreflightMatches, holdOwnReservation, attachPoolErrorHandler, record, exactMedia, MAX_MEDIA_BYTES };

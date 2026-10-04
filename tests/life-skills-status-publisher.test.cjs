@@ -4,7 +4,7 @@ const { createHash } = require('node:crypto');
 const { Readable } = require('node:stream');
 const { parseWorkbook, nextAllowedIso, nextAsset, record, scheduledIdentityMatches, sameAssetAndSlot, verifiedStoryReadback, hasPriorConceptDelivery,
   validScheduledAt, invalidScheduledHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
-  publisherStatePreflightMatches, attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
+  publisherStatePreflightMatches, successorPreflightMatches, attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
 const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-skills-marketing');
 
 const digest = 'a'.repeat(64);
@@ -239,6 +239,31 @@ test('the persistent scheduler pool logs idle-client errors instead of emitting 
   assert.doesNotThrow(()=>pool.emit('error',Object.assign(new Error('connection reset'),{code:'ECONNRESET'})));
   assert.equal(logged[0][0],'[life-skills-status] database pool idle client error');
   assert.deepEqual(logged[0][1],{code:'ECONNRESET'});
+});
+
+test('successor reread refuses a changed approval, replacement, Calendar intervention, or parallel schedule',()=>{
+  const hebrew=statusRow('C20-HE','HE'), english=statusRow('C01-EN','EN');
+  const parse=(assets,calendar=[['Slot']])=>parseWorkbook({data:{valueRanges:[{values:[[],...assets]},{values:calendar}]}});
+  const original=parse([hebrew,english]);
+  const selection=nextAsset(original,'EN','D20');
+  assert.equal(selection.id,'C01-EN');
+  assert.equal(successorPreflightMatches(original,parse([hebrew,english]),selection,
+    {nextLanguage:'EN',publishingAssetId:'C20-HE',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,true);
+  const revoked=[...english];revoked[26]='CURRENT_REVIEW';
+  assert.equal(successorPreflightMatches(original,parse([hebrew,revoked]),selection,
+    {nextLanguage:'EN',publishingAssetId:'C20-HE',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
+  const scheduled=[...statusRow('C02-EN','EN',JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'SCHEDULED',scheduledAt:'2026-10-05T09:22:08.000Z'}))];scheduled[1]='2';
+  assert.equal(successorPreflightMatches(original,parse([hebrew,english,scheduled]),selection,
+    {nextLanguage:'EN',publishingAssetId:'C20-HE',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
+
+  const c21=statusRow('C21-HE','HE');c21[1]='21';
+  const d21=Array(15).fill('');Object.assign(d21,{0:'D21',1:'2026-10-05',7:'MEDIA ASSOCIATED — no send queued',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});
+  const hebrewOriginal=parse([hebrew,c21],[['Slot'],d21]);
+  const hebrewSelection=nextAsset(hebrewOriginal,'HE','D20');
+  assert.equal(hebrewSelection.asset.id,'C21-HE');
+  const off=[...d21];off[13]='OFF — operator hold';
+  assert.equal(successorPreflightMatches(hebrewOriginal,parse([hebrew,c21],[['Slot'],off]),hebrewSelection,
+    {nextLanguage:'HE',publishingAssetId:'C20-HE',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
 });
 
 test('a Status is confirmed only by a read provider story with matching ID and dimensions', () => {
