@@ -56,6 +56,7 @@ const {
 } = require('./src/lib/bna/life-skills-app-inbound');
 const { createOutboxPool: createLifeSkillsAppInboundPool } = require('./src/lib/bna/life-skills-inbound-database');
 const { readLifeSkillsMarketingSnapshot } = require('./src/lib/bna/life-skills-marketing');
+const { readLifeSkillsMarketingMedia, MarketingMediaError } = require('./src/lib/bna/life-skills-marketing-media');
 const {
   goalBoardBucket,
   goalBoardStatus,
@@ -69613,8 +69614,18 @@ app.get('/api/bna/life-skills-app/prospects', async (req, res) => {
   }
 });
 
+function lifeSkillsMarketingClient(req, res) {
+  res.setHeader('Cache-Control', 'private, no-store');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  if (!authorizeLifeSkillsAppBridge(req)) { res.status(401).json({ success: false, error: 'Unauthorized Life Skills app bridge' }); return null; }
+  // The mixed workbook retains graphics/scheduling authority after Leads
+  // cutover. A paused or native CRM writer must not disable read-only artwork.
+  let auth; try { auth = createGoogleClientFromRefreshToken(); } catch { res.status(503).json({ success: false, error: 'Life Skills graphics source unavailable' }); return null; }
+  return { sheets: google.sheets({ version: 'v4', auth }), drive: google.drive({ version: 'v3', auth }) };
+}
+
 app.get('/api/bna/life-skills-app/marketing', async (req, res) => {
-  const client = lifeSkillsBridgeClient(req, res); if (!client) return;
+  const client = lifeSkillsMarketingClient(req, res); if (!client) return;
   try {
     const snapshot = await readLifeSkillsMarketingSnapshot({ sheets: client.sheets });
     res.json({ success: true, snapshot });
@@ -69699,6 +69710,22 @@ app.get('/api/webhooks/wapi', (req, res) => {
     webhook: 'wapi',
     message: 'BNA WAPI webhook endpoint is ready. Use POST for live webhook events.',
   });
+});
+
+app.get('/api/bna/life-skills-app/marketing/assets/:assetId', async (req, res) => {
+  const client = lifeSkillsMarketingClient(req, res); if (!client) return;
+  try {
+    const snapshot = await readLifeSkillsMarketingSnapshot({ sheets: client.sheets });
+    const media = await readLifeSkillsMarketingMedia({ drive: client.drive, snapshot, assetId: req.params.assetId, revision: req.query.revision, digest: req.query.digest });
+    res.setHeader('Content-Type', media.mimeType);
+    res.setHeader('Content-Length', String(media.bytes.length));
+    res.setHeader('Content-Disposition', `${req.query.download === '1' ? 'attachment' : 'inline'}; filename="${media.filename}"`);
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+    res.send(media.bytes);
+  } catch (error) {
+    res.status(error instanceof MarketingMediaError ? error.status : 503).json({ success: false, code: error instanceof MarketingMediaError ? error.code : 'ASSET_SOURCE_UNAVAILABLE' });
+  }
 });
 
 let lifeSkillsAppInboundPool = null;

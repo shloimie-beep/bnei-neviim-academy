@@ -1,7 +1,9 @@
 const DEFAULT_SPREADSHEET_ID = '1UbbkY6h74L3_sG_m2hcBZ_rmBRLJDO7pYgghrXGdARI';
 const WORKBOOK_URL = `https://docs.google.com/spreadsheets/d/${DEFAULT_SPREADSHEET_ID}/edit`;
 const CONTENT_SURFACES = new Set(['FEED', 'VERTICAL', 'STATUS', 'STORY']);
-const APPROVED_STATES = new Set(['OWNER_APPROVED', 'APPROVED_PARENT_EXPORT']);
+const APPROVED_STATES = new Set(['OWNER_APPROVED', 'OWNER_APPROVED_EXACT_FILE', 'APPROVED_PARENT_EXPORT']);
+const CURRENT_STATES = new Set(['CURRENT_APPROVED', 'CURRENT_REVIEW', 'CURRENT_REVIEW_CANDIDATE', 'CURRENT_ACCEPTED_HELD']);
+const { driveFileId, selectedAsset } = require('./life-skills-marketing-media');
 
 function text(value) {
   return String(value ?? '').trim();
@@ -28,9 +30,19 @@ function conceptNumber(value) {
   return match ? Number(match[0]) : null;
 }
 
+function publicationClaimed(status, scheduler) {
+  return [status, scheduler].some(value => /^PUBLISHED\b/i.test(text(value)));
+}
+
+function verifiedPublicationReceipt(receipts) {
+  const receipt = parseReceipt(receipts);
+  const reads = [...text(receipts).matchAll(/\bGET\s+\/messages\/([^;\s/?]+)\s+returned\s+HTTP\s*200\s*,\s*type=story\b/gi)];
+  return receipt && reads.length === 1 && reads[0][1] === receipt ? receipt : null;
+}
+
 function publicationState(status, scheduler, receipts) {
   const combined = `${status} ${scheduler}`.toUpperCase();
-  if (combined.includes('PUBLISHED') && /WHAPI:|type=story|published/i.test(receipts)) return 'published';
+  if (publicationClaimed(status, scheduler)) return verifiedPublicationReceipt(receipts) ? 'published' : 'unknown';
   if (combined.includes('QUEUED')) return 'scheduled';
   if (combined.includes('SENDING')) return 'sending';
   if (combined.includes('UNKNOWN')) return 'unknown';
@@ -55,8 +67,43 @@ function creativeReview(approval, libraryState, readiness, qa) {
   const combined = `${libraryState} ${readiness} ${qa}`.toUpperCase();
   if (combined.includes('REJECT') || combined.includes('SUPERSEDED') || combined.includes('DO_NOT_USE')) return 'retired';
   if (APPROVED_STATES.has(approval) && libraryState === 'CURRENT_APPROVED') return 'approved';
+  if (approval === 'OWNER_ACCEPTED_DISPLAYED_BATCH' && libraryState === 'CURRENT_ACCEPTED_HELD') return 'approved';
   if (combined.includes('REVIEW') || combined.includes('PENDING') || combined.includes('HOLD')) return 'in_review';
   return 'draft';
+}
+function explicitRevisionNumber(value) {
+  const match = text(value).match(/^(?:NUMERIC-)?[vr]?(\d+)(?:-derived)?(?:\/(?:BOLD|APPB))?$/i);
+  const revision = match ? Number(match[1]) : null;
+  return Number.isSafeInteger(revision) && revision > 0 && revision <= 999999 ? revision : null;
+}
+
+function sourceLink(value, fallback) {
+  try { const url = new URL(value); if (url.protocol === 'https:') return url.href; } catch { /* Registry evidence may be prose, not a link. */ }
+  return fallback;
+}
+
+function usableDimensions(item) {
+  return item.width === 1080 && (item.surface === 'FEED' ? item.height === 1350 : item.height === 1920);
+}
+
+function mediaBindingAvailable(asset, current, conflictingAssetIds) {
+  try {
+    return selectedAsset({ creatives: current, conflictingAssetIds }, { assetId: asset.assetId, revision: asset.revision, digest: asset.contentDigest }) === asset;
+  } catch { return false; }
+}
+
+function calendarAsset(row, headers, assets) {
+  // This maintained calendar owns Hebrew WhatsApp Status only. Its exact file,
+  // asset/concept, version and hash must all identify ONE matching revision.
+  const key = cell(row, headers, 'Asset ID'), concept = key.match(/^LS-MONTH-\d{8}-(\d{2})$/)?.[1];
+  let file; try { file = driveFileId(cell(row, headers, 'Asset link')); } catch { return null; }
+  const versions = [...cell(row, headers, 'Version / SHA256').matchAll(/\bv(\d+)(?:-derived)?(?:\s+original)?\s*[/|]\s*([a-f0-9]{64})\b/gi)].map(match => ({ revision: Number(match[1]), digest: match[2].toLowerCase() }));
+  const matches = assets.filter(asset => {
+    if (asset.locale !== 'he' || !['VERTICAL', 'STATUS'].includes(asset.surface) || !(asset.assetId === key || concept && asset.concept === Number(concept))) return false;
+    let source; try { source = driveFileId(asset.imageUrl); } catch { return false; }
+    return source === file && versions.filter(version => version.revision === asset.revision && version.digest === asset.contentDigest).length === 1;
+  });
+  return matches.length === 1 ? matches[0] : null;
 }
 
 function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date().toISOString() } = {}) {
@@ -64,13 +111,16 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
   const calendarHeaderRow = calendarRows.findIndex(row => text(row[0]) === 'Slot');
   const calendarHeaders = headerIndex(calendarRows[calendarHeaderRow] || []);
   const calendar = calendarHeaderRow >= 0 ? calendarRows.slice(calendarHeaderRow + 1) : [];
-  const captions = new Map();
-  for (const row of calendar) {
-    const concept = conceptNumber(cell(row, calendarHeaders, 'Asset ID'));
-    if (concept) captions.set(concept, cell(row, calendarHeaders, 'Proposed caption'));
+  // Count CURRENT keys before malformed display rows are rejected. Otherwise
+  // an invalid sibling can silently make a conflicting key look unique.
+  const currentKeys = new Map();
+  for (const row of assetRows.slice(1)) {
+    if (!CURRENT_STATES.has(cell(row, assetHeaders, 'Current library state').toUpperCase())) continue;
+    const key = cell(row, assetHeaders, 'Asset key');
+    currentKeys.set(key, (currentKeys.get(key) || 0) + 1);
   }
-
-  const contentFiles = [];
+  const conflictingAssetIds = [...currentKeys].filter(([, count]) => count > 1).map(([key]) => key);
+  const contentFiles = [], calendarFiles = [];
   for (const row of assetRows.slice(1)) {
     const surface = cell(row, assetHeaders, 'Surface').toUpperCase();
     const digest = cell(row, assetHeaders, 'SHA256').toLowerCase();
@@ -81,33 +131,53 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const readiness = cell(row, assetHeaders, 'Readiness').toUpperCase();
     const qa = cell(row, assetHeaders, 'QA / hold').toUpperCase();
     const review = creativeReview(approval, libraryState, readiness, qa);
-    contentFiles.push({
+    const locale = cell(row, assetHeaders, 'Language').toLowerCase();
+    if (!['he', 'en'].includes(locale)) continue;
+    const imageUrl = cell(row, assetHeaders, 'Drive file / archive') || null;
+    const asset = {
       assetId: cell(row, assetHeaders, 'Asset key'),
       concept,
       revision: revisionNumber(cell(row, assetHeaders, 'Revision')),
-      locale: cell(row, assetHeaders, 'Language').toLowerCase() === 'he' ? 'he' : 'en',
+      registeredRevision: explicitRevisionNumber(cell(row, assetHeaders, 'Revision')) !== null,
+      locale,
       surface,
       width: Number(cell(row, assetHeaders, 'Width px')) || 0,
       height: Number(cell(row, assetHeaders, 'Height px')) || 0,
-      imageUrl: cell(row, assetHeaders, 'Drive file / archive') || null,
-      sourceUrl: cell(row, assetHeaders, 'Record evidence') || WORKBOOK_URL,
+      imageUrl,
+      sourceUrl: sourceLink(cell(row, assetHeaders, 'Record evidence'), sourceLink(imageUrl, WORKBOOK_URL)),
       title: concept ? `Concept ${String(concept).padStart(2, '0')} — ${surface}` : cell(row, assetHeaders, 'Asset key'),
-      caption: captions.get(concept) || '',
+      caption: '',
       contentDigest: digest,
       review,
       approvedDigest: review === 'approved' ? digest : null,
-      holdReason: review === 'approved' ? null : (cell(row, assetHeaders, 'QA / hold') || cell(row, assetHeaders, 'Readiness') || 'Not approved'),
+      holdReason: review === 'approved' && libraryState === 'CURRENT_APPROVED' ? null : (cell(row, assetHeaders, 'QA / hold') || cell(row, assetHeaders, 'Readiness') || 'Not approved'),
       libraryState: libraryState || 'UNRECORDED',
-    });
+    };
+    contentFiles.push(asset);
+    // Keep legacy display metadata visible, but never use its implicit fallback
+    // as evidence that a calendar row belongs to this exact registry revision.
+    if (explicitRevisionNumber(cell(row, assetHeaders, 'Revision')) === asset.revision) calendarFiles.push(asset);
   }
 
-  const current = contentFiles.filter(item => item.libraryState === 'CURRENT_APPROVED' || item.libraryState === 'CURRENT_REVIEW_CANDIDATE');
-  const approved = current.filter(item => item.review === 'approved');
+  const captions = new Map();
+  for (const row of calendar.filter(row => /^D\d+$/i.test(cell(row, calendarHeaders, 'Slot')))) {
+    const asset = calendarAsset(row, calendarHeaders, calendarFiles); if (!asset) continue;
+    const list = captions.get(asset) || [];
+    list.push({ approved: ['APPROVED', ...APPROVED_STATES].includes(cell(row, calendarHeaders, 'Exact approval').toUpperCase()), caption: cell(row, calendarHeaders, 'Proposed caption') });
+    captions.set(asset, list);
+  }
+  for (const asset of contentFiles) {
+    // Object identity binds the one eligible matched registry row. Display
+    // fallback revisions or same-digest siblings must never inherit its copy.
+    const rows = captions.get(asset);
+    if (asset.libraryState !== 'CURRENT_ACCEPTED_HELD' && rows?.length === 1 && rows[0].approved) asset.caption = rows[0].caption;
+  }
+  const current = contentFiles.filter(item => CURRENT_STATES.has(item.libraryState));
+  const approved = current.filter(item => item.review === 'approved' && item.libraryState === 'CURRENT_APPROVED' && mediaBindingAvailable(item, current, conflictingAssetIds));
   const readyStatus = approved.filter(item => item.locale === 'he' && item.width === 1080 && item.height === 1920);
   const readyHeFeed = approved.filter(item => item.locale === 'he' && item.width === 1080 && item.height === 1350);
   const readyEnFeed = approved.filter(item => item.locale === 'en' && item.width === 1080 && item.height === 1350);
   const concepts = new Set(contentFiles.map(item => item.concept).filter(Boolean));
-  const readyConcepts = new Set(approved.map(item => item.concept).filter(Boolean));
 
   const publications = calendar.filter(row => /^D\d+$/i.test(cell(row, calendarHeaders, 'Slot'))).map(row => {
     const slot = cell(row, calendarHeaders, 'Slot');
@@ -116,11 +186,22 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const status = cell(row, calendarHeaders, 'WhatsApp Status');
     const scheduler = cell(row, calendarHeaders, 'Scheduler state');
     const receipts = cell(row, calendarHeaders, 'Provider receipts / errors');
-    const state = publicationState(status, scheduler, receipts);
-    const digest = (cell(row, calendarHeaders, 'Version / SHA256').match(/[a-f0-9]{64}/i) || [])[0]?.toLowerCase() || '';
-    const matching = contentFiles.find(item => item.contentDigest === digest);
+    const sourceState = publicationState(status, scheduler, receipts);
+    const matching = calendarAsset(row, calendarHeaders, calendarFiles);
+    const futurePublication = ['ready', 'scheduled', 'sending'].includes(sourceState);
+    // Use the same current-key and request validation as private delivery.
+    // A unique calendar tuple is insufficient when that key is conflicting.
+    const bindingUnavailable = futurePublication && (!matching ||
+      (CURRENT_STATES.has(matching.libraryState) && !mediaBindingAvailable(matching, current, conflictingAssetIds)));
+    // Display acceptance never clears release holds. Preserve historical verified
+    // publication/error evidence, but do not advertise a held future slot as ready.
+    const publicationHeld = !!matching &&
+      ((futurePublication && (matching.libraryState !== 'CURRENT_APPROVED' || matching.review !== 'approved' || !matching.caption || !usableDimensions(matching))) ||
+       (matching.libraryState === 'CURRENT_ACCEPTED_HELD' && publicationClaimed(status, scheduler) && !verifiedPublicationReceipt(receipts)));
+    const state = bindingUnavailable || publicationHeld ? 'draft' : sourceState;
+    const digest = matching?.contentDigest || '';
     const assetId = matching?.assetId || cell(row, calendarHeaders, 'Asset ID');
-    const providerReceiptId = state === 'published' ? parseReceipt(receipts) : null;
+    const providerReceiptId = state === 'published' ? verifiedPublicationReceipt(receipts) : null;
     return {
       id: `whatsapp-status:${slot}:${date}`,
       assetId,
@@ -133,23 +214,26 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       state,
       provider: state === 'published' || state === 'scheduled' ? 'whapi' : 'unbound',
       providerReceiptId,
-      providerReadAt: state === 'published' && /GET \/messages\//i.test(receipts) ? fetchedAt : null,
+      providerReadAt: providerReceiptId ? fetchedAt : null,
       postUrl: null,
       receiptKind: state === 'published' && providerReceiptId ? 'publication' : 'unknown',
       manualReportedAt: null,
-      errorCode: ['failed', 'unknown', 'draft'].includes(state) ? (status || scheduler || null) : null,
+      errorCode: bindingUnavailable ? 'ASSET_BINDING_UNAVAILABLE' : publicationHeld ? 'ASSET_PUBLICATION_HELD' : ['failed', 'unknown', 'draft'].includes(state) ? (status || scheduler || null) : null,
     };
   });
 
+  const unavailablePublications = publications.filter(item => item.state === 'draft' || item.state === 'failed' || item.state === 'unknown');
+  const uncoveredHeldAssets = current.filter(asset => asset.libraryState === 'CURRENT_ACCEPTED_HELD' && !unavailablePublications.some(item => item.assetId === asset.assetId && item.creativeRevision === asset.revision && item.creativeDigest === asset.contentDigest));
   return {
     fetchedAt,
     workbookUrl: WORKBOOK_URL,
     creatives: current,
+    conflictingAssetIds,
     publications,
     inventory: {
       files: Math.max(assetRows.length - 1, 0),
       concepts: concepts.size,
-      publishablePosts: readyConcepts.size,
+      publishablePosts: approved.filter(item => item.caption && usableDimensions(item)).length,
       heStatusReady: readyStatus.length,
       heFeedReady: readyHeFeed.length,
       enFeedReady: readyEnFeed.length,
@@ -158,8 +242,8 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       queued: publications.filter(item => item.state === 'scheduled').length,
       published: publications.filter(item => item.state === 'published').length,
       needsApproval: current.filter(item => item.review === 'in_review' || item.review === 'draft').length,
-      needsResizeOrCaption: current.filter(item => !item.caption || !([1080, 1920].includes(item.height) && item.width === 1080)).length,
-      heldMissing: publications.filter(item => item.state === 'draft' || item.state === 'failed' || item.state === 'unknown').length,
+      needsResizeOrCaption: current.filter(item => !item.caption || !usableDimensions(item)).length,
+      heldMissing: unavailablePublications.length + uncoveredHeldAssets.length,
       partial: true,
       asOf: fetchedAt,
     },
@@ -174,6 +258,10 @@ async function readLifeSkillsMarketingSnapshot({ sheets, spreadsheetId = DEFAULT
     valueRenderOption: 'FORMATTED_VALUE',
   });
   const [assets, calendar] = response.data.valueRanges || [];
+  const assetHeaders = headerIndex(assets?.values?.[0]);
+  if (!['Asset key', 'Language', 'Surface', 'Revision', 'Width px', 'Height px', 'SHA256', 'Approval', 'Drive file / archive', 'Current library state'].every(name => assetHeaders.has(name.toLowerCase()))) {
+    throw new Error('GRAPHICS_REGISTRY_UNAVAILABLE');
+  }
   return parseWorkbook({
     assetRows: assets?.values || [],
     calendarRows: calendar?.values || [],
