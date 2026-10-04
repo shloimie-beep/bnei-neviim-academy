@@ -71,6 +71,28 @@ function nextAllowedIso(confirmedIso, calendar) {
   for (let i = 0; i < 8 && quietDate(next.toISOString(), calendar); i++) next = new Date(next.getTime() + 86400000);
   return next.toISOString();
 }
+function successorScheduleIso(confirmedIso, calendar, nextSlot = null) {
+  let nextAt = nextAllowedIso(confirmedIso, calendar);
+  if (nextSlot) {
+    for (let i = 0; i < 30 && localDate(nextAt) < nextSlot.date; i++) {
+      nextAt = new Date(Date.parse(nextAt) + 86400000).toISOString();
+      while (quietDate(nextAt, calendar)) nextAt = new Date(Date.parse(nextAt) + 86400000).toISOString();
+    }
+  }
+  return nextAt;
+}
+function heldSuccessorCalendarUpdates(calendar, heldSuccessors) {
+  const updates = [], slots = new Set();
+  for (const { delivery } of heldSuccessors) {
+    const heldSlot = uniqueRow(calendar, 'slot', delivery.anchorSlot);
+    if (heldSlot && !slots.has(heldSlot.slot)) {
+      slots.add(heldSlot.slot);
+      updates.push(cells(`'30-Day Calendar'!H${heldSlot.rowNumber}`, `HELD — ${delivery.error}`),
+        cells(`'30-Day Calendar'!N${heldSlot.rowNumber}`, delivery.error));
+    }
+  }
+  return { updates, slots };
+}
 function expectedScheduleMarker(asset, slot) {
   if (asset?.delivery?.state !== 'SCHEDULED' || !asset.delivery.scheduledAt || asset.delivery.anchorSlot !== slot?.slot) return false;
   return slot.scheduler === `SCHEDULED — ${localStamp(asset.delivery.scheduledAt)} Asia/Jerusalem via rolling Status publisher`;
@@ -132,6 +154,18 @@ function validScheduledAt(value) {
 function invalidScheduledHolds(workbook, heldAt) {
   return workbook.assets.filter(asset => asset.delivery?.state === 'SCHEDULED' && !validScheduledAt(asset.delivery.scheduledAt))
     .map(asset => ({ asset, delivery: { ...asset.delivery, state: 'HELD', heldAt, error: 'SCHEDULED_TIMESTAMP_INVALID: inspect the saved time before rescheduling' } }));
+}
+function invalidActiveAttemptHolds(workbook, heldAt) {
+  return workbook.assets.filter(asset => {
+    const delivery = asset.delivery;
+    return ['RESERVED', 'SENDING'].includes(delivery?.state) &&
+      (!validScheduledAt(delivery.reservedAt) || (delivery.state === 'SENDING' && !validScheduledAt(delivery.submittedAt)));
+  }).map(asset => {
+    const state = asset.delivery.state === 'SENDING' ? 'UNKNOWN' : 'HELD';
+    const action = state === 'UNKNOWN' ? 'inspect provider history before retry' : 'reconcile the active reservation before continuing';
+    return { asset, delivery: { ...asset.delivery, state, recoveryAt: heldAt,
+      error: `ACTIVE_ATTEMPT_TIMESTAMP_INVALID: ${action}` } };
+  });
 }
 function createClient(env = process.env) {
   const auth = new google.auth.OAuth2(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET, env.GOOGLE_REDIRECT_URI);
@@ -400,7 +434,7 @@ function successorPreflightMatches(original, current, selection, { nextLanguage,
     : currentSelection.asset
       ? { ...currentSelection, asset: refreshed[0], slot: slot || currentSelection.slot }
       : refreshed[0];
-  return { ok: true, selection: nextSelection, preserveHold: false };
+  return { ok: true, selection: nextSelection, workbook: current, preserveHold: false };
 }
 async function holdOwnReservation(sheets, workbook, { assetId, expectedDelivery, baselineSlot, reason, now = new Date().toISOString() }) {
   const asset = uniqueRow(workbook.assets, 'id', assetId);
@@ -453,8 +487,25 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
         await write(sheets, updates);
         return { state: 'HELD', reason: 'SCHEDULED_TIMESTAMP_INVALID', assetIds: invalidSchedules.map(({ asset }) => asset.id) };
       }
+      const invalidAttempts = invalidActiveAttemptHolds(workbook, new Date().toISOString());
+      if (invalidAttempts.length) {
+        const updates = [];
+        for (const { asset, delivery } of invalidAttempts) {
+          updates.push(cells(`'Asset Registry'!V${asset.rowNumber}`, JSON.stringify(delivery)));
+          const oldState = asset.delivery.state;
+          const heldSlot = asset.language === 'HE' ? uniqueRow(workbook.calendar, 'slot', asset.delivery.anchorSlot) : null;
+          if (heldSlot && heldSlot.status === `${oldState} — ${asset.id}` &&
+              heldSlot.scheduler === `${oldState} — rolling Status publisher`) {
+            updates.push(cells(`'30-Day Calendar'!H${heldSlot.rowNumber}`, `${delivery.state} — ${asset.id}`),
+              cells(`'30-Day Calendar'!N${heldSlot.rowNumber}`, delivery.error));
+          }
+        }
+        await write(sheets, updates);
+        const state = invalidAttempts.some(item => item.delivery.state === 'UNKNOWN') ? 'UNKNOWN' : 'HELD';
+        return { state, reason: 'ACTIVE_ATTEMPT_TIMESTAMP_INVALID', assetIds: invalidAttempts.map(({ asset }) => asset.id) };
+      }
       const stale = workbook.assets.find(item => ['RESERVED', 'SENDING'].includes(item.delivery?.state) &&
-        Date.parse(item.delivery.reservedAt || item.delivery.submittedAt) <= Date.now() - 10 * 60 * 1000);
+        Date.parse(item.delivery.reservedAt) <= Date.now() - 10 * 60 * 1000);
       if (stale) {
         const state = stale.delivery.state === 'SENDING' ? 'UNKNOWN' : 'FAILED';
         const updated = { ...stale.delivery, state, recoveryAt: new Date().toISOString(), error: 'Publisher process ended before verification; inspect provider history before retry' };
@@ -547,6 +598,7 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
     }
     const confirmedAt = isoFromEpoch(verified.timestamp);
     const nextLanguage = asset.language === 'HE' ? 'EN' : 'HE';
+    let successorWorkbook = resultWorkbook;
     let nextSelection = resultCheck.assetBindingChanged || (baselineSlot && !resultCheck.canUpdateCalendarState)
       ? { state: 'HELD', reason: 'PUBLISHING_ASSET_OR_CALENDAR_CHANGED_AFTER_PROVIDER_SUBMISSION', conceptId: null, candidates: [], preserveCalendarHold: true }
       : nextAsset(resultWorkbook, nextLanguage, anchorSlot);
@@ -556,7 +608,10 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
         ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
       const successorCheck = successorPreflightMatches(resultWorkbook, latestForSuccessor, nextSelection,
         { nextLanguage, publishingAssetId: asset.id, anchorSlot, now: Date.now() });
-      if (successorCheck.ok) nextSelection = successorCheck.selection;
+      if (successorCheck.ok) {
+        nextSelection = successorCheck.selection;
+        successorWorkbook = successorCheck.workbook;
+      }
       else nextSelection = { state: 'HELD', reason: `SUCCESSOR_PREFLIGHT_FAILED: ${successorCheck.reason}`,
         conceptId: (nextSelection.asset || nextSelection.candidates?.[0])?.concept || null, candidates: [], preserveCalendarHold: true };
     }
@@ -571,13 +626,7 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
     const publication = { ...sending, state: 'PUBLISHED', used: true, providerHttp: post.http, providerReceiptId: id,
       confirmedAt, verificationAt: verified.verifiedAt, providerType: verified.type, providerWidth: verified.width, providerHeight: verified.height,
       ...(nextTurnHold ? { nextTurnHold } : {}) };
-    let nextAt = nextItem ? nextAllowedIso(confirmedAt, resultWorkbook.calendar) : null;
-    if (nextSlot) {
-      for (let i = 0; i < 30 && localDate(nextAt) < nextSlot.date; i++) {
-        nextAt = new Date(Date.parse(nextAt) + 86400000).toISOString();
-        while (quietDate(nextAt, resultWorkbook.calendar)) nextAt = new Date(Date.parse(nextAt) + 86400000).toISOString();
-      }
-    }
+    const nextAt = nextItem ? successorScheduleIso(confirmedAt, successorWorkbook.calendar, nextSlot) : null;
     const updates = [cells(`'Asset Registry'!V${asset.rowNumber}`, JSON.stringify(publication))];
     if (resultCheck.canWriteCalendarReceipt && slot) {
       if (resultCheck.canUpdateCalendarState) updates.push(cells(`'30-Day Calendar'!H${slot.rowNumber}`, `PUBLISHED / USED — ${asset.id}`),
@@ -591,16 +640,12 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
       updates.push(cells(`'Asset Registry'!V${nextItem.rowNumber}`, JSON.stringify(nextRecord)));
       if (nextSlot) updates.push(cells(`'30-Day Calendar'!N${nextSlot.rowNumber}`, `SCHEDULED — ${localStamp(nextAt)} Asia/Jerusalem via rolling Status publisher`));
     }
-    const heldCalendarSlots = new Set();
     for (const { asset: heldAsset, delivery: heldDelivery } of heldSuccessors) {
       updates.push(cells(`'Asset Registry'!V${heldAsset.rowNumber}`, JSON.stringify(heldDelivery)));
-      const heldSlot = workbook.calendar.find(item => item.slot === heldDelivery.anchorSlot);
-      if (heldSlot && !heldCalendarSlots.has(heldSlot.slot)) {
-        heldCalendarSlots.add(heldSlot.slot);
-        updates.push(cells(`'30-Day Calendar'!H${heldSlot.rowNumber}`, `HELD — ${heldDelivery.error}`),
-          cells(`'30-Day Calendar'!N${heldSlot.rowNumber}`, heldDelivery.error));
-      }
     }
+    const heldCalendar = heldSuccessorCalendarUpdates(successorWorkbook.calendar, heldSuccessors);
+    updates.push(...heldCalendar.updates);
+    const heldCalendarSlots = heldCalendar.slots;
     await write(sheets, updates);
     const readback = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID, ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
     const published = uniqueRow(readback.assets, 'id', asset.id)?.delivery;
@@ -660,6 +705,6 @@ function attachPoolErrorHandler(pool, logger = console) {
 }
 module.exports = { lockedRun, oneShot, startScheduler, parseWorkbook, isEligible, nextAllowedIso, nextAsset,
   sameAssetAndSlot, scheduledIdentityMatches, verifiedStoryReadback, hasPriorConceptDelivery, validScheduledAt,
-  invalidScheduledHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
+  invalidScheduledHolds, invalidActiveAttemptHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
   publisherStatePreflightMatches, successorPreflightMatches, publicationResultPreflight, holdOwnReservation,
-  attachPoolErrorHandler, record, exactMedia, MAX_MEDIA_BYTES };
+  successorScheduleIso, heldSuccessorCalendarUpdates, attachPoolErrorHandler, record, exactMedia, MAX_MEDIA_BYTES };

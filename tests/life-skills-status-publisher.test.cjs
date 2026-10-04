@@ -3,9 +3,9 @@ const test = require('node:test');
 const { createHash } = require('node:crypto');
 const { Readable } = require('node:stream');
 const { parseWorkbook, isEligible, nextAllowedIso, nextAsset, record, scheduledIdentityMatches, sameAssetAndSlot, verifiedStoryReadback, hasPriorConceptDelivery,
-  validScheduledAt, invalidScheduledHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
+  validScheduledAt, invalidScheduledHolds, invalidActiveAttemptHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
   publisherStatePreflightMatches, successorPreflightMatches, publicationResultPreflight,
-  attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
+  successorScheduleIso, heldSuccessorCalendarUpdates, attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
 const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-skills-marketing');
 
 const digest = 'a'.repeat(64);
@@ -141,6 +141,18 @@ test('malformed saved scheduled timestamps are detected and converted into actio
   assert.ok(held.every(item=>item.delivery.state==='HELD'&&item.delivery.heldAt==='2026-10-04T13:00:00.000Z'&&item.delivery.error.startsWith('SCHEDULED_TIMESTAMP_INVALID')));
 });
 
+test('malformed active-attempt timestamps are held and SENDING attempts become UNKNOWN',()=>{
+  const reserved=statusRow('C01-EN','EN',JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'RESERVED',submittedAt:'2026-10-04T12:59:00.000Z'}));
+  const malformedReserved=statusRow('C02-EN','EN',JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'SENDING',reservedAt:'not-a-date',submittedAt:'2026-10-04T12:59:00.000Z'}));
+  const missingSubmitted=statusRow('C03-EN','EN',JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'SENDING',reservedAt:'2026-10-04T12:58:00.000Z'}));
+  const valid=statusRow('C04-EN','EN',JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'SENDING',reservedAt:'2026-10-04T12:58:00.000Z',submittedAt:'2026-10-04T12:59:00.000Z'}));
+  const workbook=parseWorkbook({data:{valueRanges:[{values:[[],reserved,malformedReserved,missingSubmitted,valid]},{values:[['Slot']]}]}});
+  const held=invalidActiveAttemptHolds(workbook,'2026-10-04T13:00:00.000Z');
+  assert.deepEqual(held.map(item=>[item.asset.id,item.delivery.state]),[['C01-EN','HELD'],['C02-EN','UNKNOWN'],['C03-EN','UNKNOWN']]);
+  assert.ok(held[1].delivery.error.includes('inspect provider history before retry'));
+  assert.ok(held.every(item=>item.delivery.recoveryAt==='2026-10-04T13:00:00.000Z'&&item.delivery.error.startsWith('ACTIVE_ATTEMPT_TIMESTAMP_INVALID')));
+});
+
 test('duplicate aliases for one concept and language cannot bypass a prior receipt, while the other language stays eligible', () => {
   const used = statusRow('C01-HE', 'HE'), alias = statusRow('C01-HE-copy', 'HE'), english = statusRow('C01-EN', 'EN'), next = statusRow('C02-EN', 'EN');
   used[1] = alias[1] = english[1] = '1';next[1]='2';
@@ -260,8 +272,10 @@ test('successor reread refuses a changed approval, replacement, Calendar interve
   const original=parse([hebrew,english]);
   const selection=nextAsset(original,'EN','D20');
   assert.equal(selection.id,'C01-EN');
-  assert.equal(successorPreflightMatches(original,parse([hebrew,english]),selection,
-    {nextLanguage:'EN',publishingAssetId:'C20-HE',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,true);
+  const refreshed=parse([hebrew,english]);
+  const matched=successorPreflightMatches(original,refreshed,selection,
+    {nextLanguage:'EN',publishingAssetId:'C20-HE',now:Date.parse('2026-10-04T09:00:00.000Z')});
+  assert.equal(matched.ok,true);assert.equal(matched.workbook,refreshed);
   const revoked=[...english];revoked[26]='CURRENT_REVIEW';
   assert.equal(successorPreflightMatches(original,parse([hebrew,revoked]),selection,
     {nextLanguage:'EN',publishingAssetId:'C20-HE',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
@@ -285,6 +299,15 @@ test('successor reread refuses a changed approval, replacement, Calendar interve
   const off=[...d21];off[13]='OFF — operator hold';
   assert.equal(successorPreflightMatches(hebrewOriginal,parse([hebrew,c21],[['Slot'],off]),hebrewSelection,
     {nextLanguage:'HE',publishingAssetId:'C20-HE',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
+});
+
+test('successor holds use the refreshed Calendar row after an insertion',()=>{
+  const d21=Array(15).fill('');Object.assign(d21,{0:'D21',1:'2026-10-05'});
+  const current=parseWorkbook({data:{valueRanges:[{values:[[]]},{values:[['Slot'],['D19','2026-10-03'],['D20','2026-10-04'],d21]}]}});
+  const held=[{asset:{id:'C21-HE',rowNumber:4},delivery:{anchorSlot:'D21',error:'AMBIGUOUS_NEXT_HEBREW_ASSET'}}];
+  const result=heldSuccessorCalendarUpdates(current.calendar,held);
+  assert.deepEqual([...result.slots],['D21']);
+  assert.deepEqual(result.updates.map(item=>item.range),["'30-Day Calendar'!H12","'30-Day Calendar'!N12"]);
 });
 
 test('provider result reread resolves shifted rows and preserves post-send Calendar interventions',()=>{
@@ -337,6 +360,11 @@ test('a Status is confirmed only by a read provider story with matching ID and d
 test('rolling time uses confirmed provider time and skips Friday and Saturday', () => {
   assert.equal(nextAllowedIso('2026-10-04T09:27:08.000Z', []), '2026-10-05T09:22:08.000Z');
   assert.equal(nextAllowedIso('2026-10-08T09:27:08.000Z', []), '2026-10-11T09:22:08.000Z');
+});
+
+test('successor time uses the refreshed Calendar quiet-day markers',()=>{
+  const refreshed=[{slot:'D21',date:'2026-10-05',quiet:'HOLIDAY — no Status publication'}];
+  assert.equal(successorScheduleIso('2026-10-04T09:27:08.000Z',refreshed,{slot:'D21',date:'2026-10-05'}),'2026-10-06T09:22:08.000Z');
 });
 
 test('marketing read model exposes the scheduled English Status from the existing registry', () => {
