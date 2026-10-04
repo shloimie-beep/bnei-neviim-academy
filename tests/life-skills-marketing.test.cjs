@@ -119,6 +119,24 @@ test('a retired duplicate key does not block the unique current private original
  const result=parseWorkbook({assetRows:[headers,asset,retired],calendarRows:[exactCalendarHeaders,row]});
  assert.equal(selectedAsset(result,{assetId:asset[0],revision:1,digest}),result.creatives[0]);assert.equal(result.publications[0].state,'scheduled');assert.equal(result.inventory.publishablePosts,1);
 });
+
+for(const [field,value] of [[12,''],[12,'b'.repeat(63)],[12,'z'.repeat(64)],[2,''],[2,'FR'],[3,''],[3,'OTHER']])test(`a rejected CURRENT sibling still fences its key: column${field}/${value}`,()=>{
+ for(const state of ['READY','QUEUED','SENDING']){
+  const asset=approvedStatus(),sibling=[...asset];sibling[field]=value;
+  const slot=exactCalendar(1,'Exact caption');slot[6]=state;
+  const result=parseWorkbook({assetRows:[headers,asset,sibling],calendarRows:[exactCalendarHeaders,slot]});
+  assert.equal(result.creatives.length,1);
+  assert.throws(()=>selectedAsset(result,{assetId:asset[0],revision:1,digest}),error=>error.code==='ASSET_REGISTRY_CONFLICT');
+  assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].errorCode,'ASSET_BINDING_UNAVAILABLE');assert.equal(result.inventory.publishablePosts,0);assert.equal(result.inventory.queued,0);assert.equal(result.inventory.heStatusReady,0);
+ }
+});
+
+test('a rejected non-current sibling does not fence the valid current asset',()=>{
+ const asset=approvedStatus(),retired=[...asset];retired[12]='';retired[26]='SUPERSEDED';
+ const slot=exactCalendar(1,'Exact caption');slot[6]='QUEUED';
+ const result=parseWorkbook({assetRows:[headers,asset,retired],calendarRows:[exactCalendarHeaders,slot]});
+ assert.equal(selectedAsset(result,{assetId:asset[0],revision:1,digest}),result.creatives[0]);assert.equal(result.inventory.publishablePosts,1);assert.equal(result.publications[0].state,'scheduled');
+});
 test('conflicting current keys do not erase a verified historical publication receipt',()=>{
  const asset=approvedStatus(),sibling=[...asset];sibling[4]='r2';
  const row=exactCalendar(1,'Historical caption');row[6]='PUBLISHED';row.push('WHAPI: synthetic-receipt; GET /messages/synthetic-receipt returned HTTP200, type=story');

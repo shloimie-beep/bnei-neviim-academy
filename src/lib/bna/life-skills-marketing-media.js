@@ -13,6 +13,8 @@ function driveFileId(value) {
 }
 function selectedAsset(snapshot, { assetId, revision, digest }) {
   if (typeof assetId !== 'string' || !/^[A-Za-z0-9._-]{1,200}$/.test(assetId) || !/^[1-9]\d{0,5}$/.test(String(revision)) || typeof digest !== 'string' || !/^[a-f0-9]{64}$/.test(digest)) throw new MarketingMediaError('INVALID_ASSET_REQUEST', 400);
+  if (snapshot?.conflictingAssetIds !== undefined &&
+    (!Array.isArray(snapshot.conflictingAssetIds) || snapshot.conflictingAssetIds.some(key => typeof key !== 'string') || snapshot.conflictingAssetIds.includes(assetId))) throw new MarketingMediaError('ASSET_REGISTRY_CONFLICT', 409);
   const matches = (snapshot?.creatives || []).filter(item => item.assetId === assetId);
   if (!matches.length) throw new MarketingMediaError('ASSET_NOT_FOUND', 404);
   if (matches.length !== 1) throw new MarketingMediaError('ASSET_REGISTRY_CONFLICT', 409);

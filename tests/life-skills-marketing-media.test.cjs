@@ -42,6 +42,16 @@ test('selection rejects unregistered IDs, stale hashes/revisions, retired entrie
   assert.equal(f.calls.length, 0);
   assert.throws(() => selectedAsset(null, f.request), /ASSET_NOT_FOUND/);
 });
+
+test('malformed raw CURRENT siblings block private delivery before any Drive read',async()=>{
+ const {parseWorkbook}=require('../src/lib/bna/life-skills-marketing');
+ const headers=['Asset key','Language','Surface','Revision','Width px','Height px','Approval','Drive file / archive','SHA256','Current library state'];
+ for(const [field,value]of [[8,''],[8,'b'.repeat(63)],[1,''],[1,'OTHER'],[2,'']]){
+  const row=[asset.assetId,'EN','FEED','r1','1','1','REVIEW',asset.imageUrl,digest,'CURRENT_REVIEW'],sibling=[...row];sibling[field]=value;
+  const snapshot=parseWorkbook({assetRows:[headers,row,sibling]}),f=fixture();
+  await assert.rejects(readLifeSkillsMarketingMedia({...f.request,snapshot,drive:f.drive}),error=>error.code==='ASSET_REGISTRY_CONFLICT'&&error.status===409);assert.deepEqual(f.calls,[]);
+ }
+});
 test('Drive identifiers come only from the registered exact-file source, never arbitrary URLs or a folder', () => {
   assert.equal(driveFileId(asset.imageUrl), 'synthetic_file_01');
   for (const url of ['http://drive.google.com/file/d/synthetic_file_01/view', 'https://drive.google.com.evil.invalid/file/d/synthetic_file_01/view', 'https://drive.google.com/drive/folders/synthetic_file_01', 'https://user:secret@drive.google.com/file/d/synthetic_file_01/view', 'https://example.invalid/image.png']) assert.throws(() => driveFileId(url), /ASSET_SOURCE_UNAVAILABLE/);

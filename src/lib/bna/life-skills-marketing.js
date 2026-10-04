@@ -86,9 +86,9 @@ function usableDimensions(item) {
   return item.width === 1080 && (item.surface === 'FEED' ? item.height === 1350 : item.height === 1920);
 }
 
-function mediaBindingAvailable(asset, current) {
+function mediaBindingAvailable(asset, current, conflictingAssetIds) {
   try {
-    return selectedAsset({ creatives: current }, { assetId: asset.assetId, revision: asset.revision, digest: asset.contentDigest }) === asset;
+    return selectedAsset({ creatives: current, conflictingAssetIds }, { assetId: asset.assetId, revision: asset.revision, digest: asset.contentDigest }) === asset;
   } catch { return false; }
 }
 
@@ -111,6 +111,15 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
   const calendarHeaderRow = calendarRows.findIndex(row => text(row[0]) === 'Slot');
   const calendarHeaders = headerIndex(calendarRows[calendarHeaderRow] || []);
   const calendar = calendarHeaderRow >= 0 ? calendarRows.slice(calendarHeaderRow + 1) : [];
+  // Count CURRENT keys before malformed display rows are rejected. Otherwise
+  // an invalid sibling can silently make a conflicting key look unique.
+  const currentKeys = new Map();
+  for (const row of assetRows.slice(1)) {
+    if (!CURRENT_STATES.has(cell(row, assetHeaders, 'Current library state').toUpperCase())) continue;
+    const key = cell(row, assetHeaders, 'Asset key');
+    currentKeys.set(key, (currentKeys.get(key) || 0) + 1);
+  }
+  const conflictingAssetIds = [...currentKeys].filter(([, count]) => count > 1).map(([key]) => key);
   const contentFiles = [], calendarFiles = [];
   for (const row of assetRows.slice(1)) {
     const surface = cell(row, assetHeaders, 'Surface').toUpperCase();
@@ -164,7 +173,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     if (asset.libraryState !== 'CURRENT_ACCEPTED_HELD' && rows?.length === 1 && rows[0].approved) asset.caption = rows[0].caption;
   }
   const current = contentFiles.filter(item => CURRENT_STATES.has(item.libraryState));
-  const approved = current.filter(item => item.review === 'approved' && item.libraryState === 'CURRENT_APPROVED' && mediaBindingAvailable(item, current));
+  const approved = current.filter(item => item.review === 'approved' && item.libraryState === 'CURRENT_APPROVED' && mediaBindingAvailable(item, current, conflictingAssetIds));
   const readyStatus = approved.filter(item => item.locale === 'he' && item.width === 1080 && item.height === 1920);
   const readyHeFeed = approved.filter(item => item.locale === 'he' && item.width === 1080 && item.height === 1350);
   const readyEnFeed = approved.filter(item => item.locale === 'en' && item.width === 1080 && item.height === 1350);
@@ -183,7 +192,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     // Use the same current-key and request validation as private delivery.
     // A unique calendar tuple is insufficient when that key is conflicting.
     const bindingUnavailable = futurePublication && (!matching ||
-      (CURRENT_STATES.has(matching.libraryState) && !mediaBindingAvailable(matching, current)));
+      (CURRENT_STATES.has(matching.libraryState) && !mediaBindingAvailable(matching, current, conflictingAssetIds)));
     // Display acceptance never clears release holds. Preserve historical verified
     // publication/error evidence, but do not advertise a held future slot as ready.
     const publicationHeld = !!matching &&
@@ -219,6 +228,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     fetchedAt,
     workbookUrl: WORKBOOK_URL,
     creatives: current,
+    conflictingAssetIds,
     publications,
     inventory: {
       files: Math.max(assetRows.length - 1, 0),
