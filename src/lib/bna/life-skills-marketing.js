@@ -119,7 +119,7 @@ function usableDimensions(item) {
   return item.width === 1080 && (item.surface === 'FEED' ? item.height === 1350 : item.height === 1920);
 }
 
-function calendarAsset(row, headers, assets) {
+function calendarAsset(row, headers, assets, allCreatives = assets) {
   // This maintained calendar owns Hebrew WhatsApp Status only. Its exact file,
   // asset/concept, version and hash must all identify ONE matching revision.
   const key = cell(row, headers, 'Asset ID'), concept = key.match(/^LS-MONTH-\d{8}-(\d{2})$/)?.[1];
@@ -130,7 +130,16 @@ function calendarAsset(row, headers, assets) {
     let source; try { source = driveFileId(asset.imageUrl); } catch { return false; }
     return source === file && versions.filter(version => version.revision === asset.revision && version.digest === asset.contentDigest).length === 1;
   });
-  return matches.length === 1 ? matches[0] : null;
+  if (matches.length !== 1) return null;
+  const match = matches[0];
+  const currentKeyMatches = allCreatives.filter(asset => CURRENT_STATES.has(asset.libraryState) && asset.assetId === match.assetId);
+  // The media route selects by Asset key first. A matching calendar row is not
+  // operational if that lookup would be ambiguous or invalid in selectedAsset.
+  if (currentKeyMatches.length !== 1 || currentKeyMatches[0] !== match ||
+      !/^[A-Za-z0-9._-]{1,200}$/.test(match.assetId) || match.review === 'retired' ||
+      match.registeredRevision !== true || !Number.isSafeInteger(match.revision) || match.revision < 1 ||
+      !/^[a-f0-9]{64}$/.test(match.contentDigest)) return null;
+  return match;
 }
 
 function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date().toISOString() } = {}) {
@@ -181,7 +190,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
 
   const captions = new Map();
   for (const row of calendar.filter(row => /^D\d+$/i.test(cell(row, calendarHeaders, 'Slot')))) {
-    const asset = calendarAsset(row, calendarHeaders, calendarFiles); if (!asset) continue;
+    const asset = calendarAsset(row, calendarHeaders, calendarFiles, contentFiles); if (!asset) continue;
     const list = captions.get(asset) || [];
     list.push({ approved: ['APPROVED', ...APPROVED_STATES].includes(cell(row, calendarHeaders, 'Exact approval').toUpperCase()), caption: cell(row, calendarHeaders, 'Proposed caption') });
     captions.set(asset, list);
@@ -206,7 +215,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const status = cell(row, calendarHeaders, 'WhatsApp Status');
     const scheduler = cell(row, calendarHeaders, 'Scheduler state');
     const receipts = cell(row, calendarHeaders, 'Provider receipts / errors');
-    const matching = calendarAsset(row, calendarHeaders, calendarFiles);
+    const matching = calendarAsset(row, calendarHeaders, calendarFiles, contentFiles);
     const readbackReceipt = verifiedPublicationReceipt(receipts);
     const receiptAsset = readbackReceipt && contentFiles.find(item => item.statusDelivery?.providerReceiptId === readbackReceipt && verifiedStatusDelivery(item.statusDelivery));
     const slotDeliveryAsset = !matching && /^D\d+$/i.test(slot) ? contentFiles.find(item => item.statusDelivery?.anchorSlot === slot && item.locale === 'he' && ['VERTICAL', 'STATUS'].includes(item.surface)) : null;

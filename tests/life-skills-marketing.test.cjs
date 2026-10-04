@@ -89,7 +89,7 @@ for(const planned of ['READY','QUEUED','SENDING'])test(`${planned} requires a un
 test('bound future records retain artwork, placement and caption approval gates without erasing verified history',()=>{
  for(const patch of [{8:'REVIEW',26:'CURRENT_REVIEW'},{26:'SUPERSEDED'},{7:'1350'}]){
   const asset=approvedStatus();Object.assign(asset,patch);const row=exactCalendar(1,'Caption');row[6]='QUEUED';
-  const result=parseWorkbook({assetRows:[headers,asset],calendarRows:[exactCalendarHeaders,row]});assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].errorCode,'ASSET_PUBLICATION_HELD');assert.equal(result.inventory.queued,0);
+   const result=parseWorkbook({assetRows:[headers,asset],calendarRows:[exactCalendarHeaders,row]});assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].errorCode,patch[26]==='SUPERSEDED'?'SCHEDULED_ASSET_BINDING_MISSING':'ASSET_PUBLICATION_HELD');assert.equal(result.inventory.queued,0);
  }
  const row=exactCalendar(1,'');row[6]='QUEUED';const result=parseWorkbook({assetRows:[headers,approvedStatus()],calendarRows:[exactCalendarHeaders,row]});assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].errorCode,'ASSET_PUBLICATION_HELD');assert.equal(result.inventory.queued,0);
 });
@@ -120,6 +120,12 @@ test('calendar source binds the actual Status derivative and rejects different f
  const result=parseWorkbook({assetRows:[headers,feed,status],calendarRows:[exactCalendarHeaders,row]});assert.equal(result.creatives[0].caption,'');assert.equal(result.creatives[1].caption,'Exact approved derivative');assert.equal(result.publications[0].assetId,status[0]);assert.equal(result.publications[0].creativeDigest,derived);
  for(const patch of [{1:'LS-MONTH-20260914-04'},{5:'https://drive.google.com/file/d/another_status/view'},{3:`v01 / ${derived}`},{4:'Pending'}]){const changed=[...row];Object.assign(changed,patch);assert.equal(parseWorkbook({assetRows:[headers,status],calendarRows:[exactCalendarHeaders,changed]}).creatives[0].caption,'');}
 });
+test('duplicate current Asset keys cannot project an actionable publication the private media route rejects',()=>{
+ const asset=approvedStatus(),collision=approvedStatus(2,'b'.repeat(64));collision[0]=asset[0];collision[10]='https://drive.google.com/file/d/another_status/view';
+ const row=exactCalendar(1,'Approved exact caption');row[6]='QUEUED';
+ const result=parseWorkbook({assetRows:[headers,asset,collision],calendarRows:[exactCalendarHeaders,row]});
+ assert.equal(result.creatives[0].caption,'');assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].provider,'unbound');assert.equal(result.publications[0].errorCode,'SCHEDULED_ASSET_BINDING_MISSING');assert.equal(result.inventory.queued,0);
+});
 test('calendar binding requires an explicit valid registry revision instead of display fallback',()=>{
  for(const revision of ['', 'canonical', 'unknown revision 1', 'v1junk', 'r0', 'v1/v2']){
   const asset=approvedStatus();asset[4]=revision;
@@ -133,13 +139,13 @@ test('calendar binding requires an explicit valid registry revision instead of d
 });
 
 test('an explicit corrected row cannot lend its approved caption to a legacy malformed sibling',()=>{
- for(const revision of ['', 'canonical', 'unknown revision 1', 'v1junk', 'r0', 'v1/v2']){
+  for(const revision of ['', 'canonical', 'unknown revision 1', 'v1junk', 'r0', 'v1/v2']){
   const explicit=approvedStatus(),legacy=[...explicit];legacy[4]=revision;
   const result=parseWorkbook({assetRows:[headers,explicit,legacy],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Only the explicit row')]});
-  assert.equal(result.creatives[0].caption,'Only the explicit row',revision);assert.equal(result.creatives[1].caption,'',revision);assert.equal(result.inventory.publishablePosts,1,revision);
+   assert.equal(result.creatives[0].caption,'',revision);assert.equal(result.creatives[1].caption,'',revision);assert.equal(result.inventory.publishablePosts,0,revision);assert.equal(result.publications[0].state,'draft',revision);
  }
  const a=approvedStatus(),b=[...a];b[10]='https://drive.google.com/file/d/another_status/view';
- const matched=parseWorkbook({assetRows:[headers,a,b],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Only exact file')]});assert.equal(matched.creatives[0].caption,'Only exact file');assert.equal(matched.creatives[1].caption,'');
+  const matched=parseWorkbook({assetRows:[headers,a,b],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Only exact file')]});assert.equal(matched.creatives[0].caption,'');assert.equal(matched.creatives[1].caption,'');assert.equal(matched.publications[0].state,'draft');assert.equal(matched.inventory.queued,0);
 });
 
 function publisherDelivery(asset, state, extra={}) {
