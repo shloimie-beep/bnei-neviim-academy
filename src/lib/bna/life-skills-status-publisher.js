@@ -11,7 +11,7 @@ const INTERVAL_MS = 23 * 60 * 60 * 1000 + 55 * 60 * 1000;
 const MAX_MEDIA_BYTES = 10 * 1024 * 1024;
 const LOCK_KEYS = [20261004, 972534];
 const MARKER = 'LIFE_SKILLS_STATUS_V1';
-const HEADER = { asset: "'Asset Registry'!A1:AA600", calendar: "'30-Day Calendar'!A9:O100" };
+const HEADER = { asset: "'Asset Registry'!A1:AA1000", calendar: "'30-Day Calendar'!A9:O100" };
 
 function value(row, index) { return String(row?.[index] ?? '').trim(); }
 function record(cell) {
@@ -28,7 +28,7 @@ function isEligible(asset) {
     ['OWNER_APPROVED', 'OWNER_APPROVED_EXACT_FILE'].includes(asset.approval) &&
     asset.libraryState === 'CURRENT_APPROVED' && /^[a-f0-9]{64}$/.test(asset.digest) &&
     /^https:\/\/drive\.google\.com\/file\/d\/[A-Za-z0-9_-]+\//.test(asset.url) &&
-    !/REJECT|HOLD|PENDING|REVIEW|SUPERSEDED|DO_NOT_USE/i.test(`${asset.qa} ${asset.readiness}`);
+    !/REJECT|HOLD|PENDING|REVIEW|SUPERSEDED|DO_NOT_USE|NOT[_ -]?RELEASE[_ -]?READY|DO\s+NOT\s+PUBLISH/i.test(`${asset.qa} ${asset.readiness}`);
 }
 function assetFromRow(row, rowNumber) {
   return { rowNumber, id: value(row, 0), concept: Number(value(row, 1)) || null,

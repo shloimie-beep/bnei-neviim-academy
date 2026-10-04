@@ -55,6 +55,15 @@ test('Asset Registry Readiness HOLD, PENDING, and REVIEW values block automatic 
   }
 });
 
+test('explicit release blockers in Readiness or QA prevent Status selection',()=>{
+  const notReady=statusRow('C01-EN','EN');notReady[25]='NOT_RELEASE_READY';
+  const doNotPublish=statusRow('C02-EN','EN');doNotPublish[1]='2';doNotPublish[18]='Owner note: do not publish';
+  const workbook=parseWorkbook({data:{valueRanges:[{values:[[],notReady,doNotPublish]},{values:[['Slot']] } ]}});
+  assert.equal(isEligible(workbook.assets[0]),false);
+  assert.equal(isEligible(workbook.assets[1]),false);
+  assert.equal(nextAsset(workbook,'EN'),null);
+});
+
 test('multiple eligible English assets for the next concept produce durable holds instead of row-order selection', () => {
   const first=statusRow('C01-EN-r01','EN'), second=statusRow('C01-EN-r02','EN'), later=statusRow('C02-EN','EN');
   later[1]='2';
