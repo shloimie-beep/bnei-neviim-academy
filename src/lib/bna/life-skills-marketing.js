@@ -135,12 +135,14 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
   const captions = new Map();
   for (const row of calendar.filter(row => /^D\d+$/i.test(cell(row, calendarHeaders, 'Slot')))) {
     const asset = calendarAsset(row, calendarHeaders, calendarFiles); if (!asset) continue;
-    const identity = `${asset.assetId}:${asset.revision}:${asset.contentDigest}`, list = captions.get(identity) || [];
+    const list = captions.get(asset) || [];
     list.push({ approved: ['APPROVED', ...APPROVED_STATES].includes(cell(row, calendarHeaders, 'Exact approval').toUpperCase()), caption: cell(row, calendarHeaders, 'Proposed caption') });
-    captions.set(identity, list);
+    captions.set(asset, list);
   }
   for (const asset of contentFiles) {
-    const rows = captions.get(`${asset.assetId}:${asset.revision}:${asset.contentDigest}`);
+    // Object identity binds the one eligible matched registry row. Display
+    // fallback revisions or same-digest siblings must never inherit its copy.
+    const rows = captions.get(asset);
     if (rows?.length === 1 && rows[0].approved) asset.caption = rows[0].caption;
   }
   const current = contentFiles.filter(item => CURRENT_STATES.has(item.libraryState));

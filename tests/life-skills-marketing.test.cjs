@@ -85,3 +85,13 @@ test('calendar binding requires an explicit valid registry revision instead of d
   assert.equal(parseWorkbook({assetRows:[headers,asset],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Explicit version')]}).creatives[0].caption,'Explicit version',revision);
  }
 });
+
+test('an explicit corrected row cannot lend its approved caption to a legacy malformed sibling',()=>{
+ for(const revision of ['', 'canonical', 'unknown revision 1', 'v1junk', 'r0', 'v1/v2']){
+  const explicit=approvedStatus(),legacy=[...explicit];legacy[4]=revision;
+  const result=parseWorkbook({assetRows:[headers,explicit,legacy],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Only the explicit row')]});
+  assert.equal(result.creatives[0].caption,'Only the explicit row',revision);assert.equal(result.creatives[1].caption,'',revision);assert.equal(result.inventory.publishablePosts,1,revision);
+ }
+ const a=approvedStatus(),b=[...a];b[10]='https://drive.google.com/file/d/another_status/view';
+ const matched=parseWorkbook({assetRows:[headers,a,b],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Only exact file')]});assert.equal(matched.creatives[0].caption,'Only exact file');assert.equal(matched.creatives[1].caption,'');
+});
