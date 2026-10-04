@@ -3,6 +3,7 @@ const WORKBOOK_URL = `https://docs.google.com/spreadsheets/d/${DEFAULT_SPREADSHE
 const CONTENT_SURFACES = new Set(['FEED', 'VERTICAL', 'STATUS', 'STORY']);
 const APPROVED_STATES = new Set(['OWNER_APPROVED', 'OWNER_APPROVED_EXACT_FILE', 'APPROVED_PARENT_EXPORT']);
 const CURRENT_STATES = new Set(['CURRENT_APPROVED', 'CURRENT_REVIEW', 'CURRENT_REVIEW_CANDIDATE']);
+const { driveFileId } = require('./life-skills-marketing-media');
 
 function text(value) {
   return String(value ?? '').trim();
@@ -69,20 +70,25 @@ function usableDimensions(item) {
   return item.width === 1080 && (item.surface === 'FEED' ? item.height === 1350 : item.height === 1920);
 }
 
+function calendarAsset(row, headers, assets) {
+  // This maintained calendar owns Hebrew WhatsApp Status only. Its exact file,
+  // asset/concept, version and hash must all identify ONE matching revision.
+  const key = cell(row, headers, 'Asset ID'), concept = key.match(/^LS-MONTH-\d{8}-(\d{2})$/)?.[1];
+  let file; try { file = driveFileId(cell(row, headers, 'Asset link')); } catch { return null; }
+  const versions = [...cell(row, headers, 'Version / SHA256').matchAll(/\bv(\d+)(?:-derived)?(?:\s+original)?\s*[/|]\s*([a-f0-9]{64})\b/gi)].map(match => ({ revision: Number(match[1]), digest: match[2].toLowerCase() }));
+  const matches = assets.filter(asset => {
+    if (asset.locale !== 'he' || !['VERTICAL', 'STATUS'].includes(asset.surface) || !(asset.assetId === key || concept && asset.concept === Number(concept))) return false;
+    let source; try { source = driveFileId(asset.imageUrl); } catch { return false; }
+    return source === file && versions.filter(version => version.revision === asset.revision && version.digest === asset.contentDigest).length === 1;
+  });
+  return matches.length === 1 ? matches[0] : null;
+}
+
 function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date().toISOString() } = {}) {
   const assetHeaders = headerIndex(assetRows[0]);
   const calendarHeaderRow = calendarRows.findIndex(row => text(row[0]) === 'Slot');
   const calendarHeaders = headerIndex(calendarRows[calendarHeaderRow] || []);
   const calendar = calendarHeaderRow >= 0 ? calendarRows.slice(calendarHeaderRow + 1) : [];
-  // This calendar is the Hebrew WhatsApp Status source, not a concept-wide
-  // copy library. Bind its copy to the exact bytes; never borrow HE copy for
-  // an English asset or a different placement/revision of the same concept.
-  const captions = new Map();
-  for (const row of calendar) {
-    const digest = (cell(row, calendarHeaders, 'Version / SHA256').match(/[a-f0-9]{64}/i) || [])[0]?.toLowerCase();
-    if (digest) captions.set(digest, cell(row, calendarHeaders, 'Proposed caption'));
-  }
-
   const contentFiles = [];
   for (const row of assetRows.slice(1)) {
     const surface = cell(row, assetHeaders, 'Surface').toUpperCase();
@@ -108,7 +114,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       imageUrl,
       sourceUrl: sourceLink(cell(row, assetHeaders, 'Record evidence'), sourceLink(imageUrl, WORKBOOK_URL)),
       title: concept ? `Concept ${String(concept).padStart(2, '0')} — ${surface}` : cell(row, assetHeaders, 'Asset key'),
-      caption: locale === 'he' && surface !== 'FEED' ? captions.get(digest) || '' : '',
+      caption: '',
       contentDigest: digest,
       review,
       approvedDigest: review === 'approved' ? digest : null,
@@ -117,6 +123,17 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     });
   }
 
+  const captions = new Map();
+  for (const row of calendar.filter(row => /^D\d+$/i.test(cell(row, calendarHeaders, 'Slot')))) {
+    const asset = calendarAsset(row, calendarHeaders, contentFiles); if (!asset) continue;
+    const identity = `${asset.assetId}:${asset.revision}:${asset.contentDigest}`, list = captions.get(identity) || [];
+    list.push({ approved: ['APPROVED', ...APPROVED_STATES].includes(cell(row, calendarHeaders, 'Exact approval').toUpperCase()), caption: cell(row, calendarHeaders, 'Proposed caption') });
+    captions.set(identity, list);
+  }
+  for (const asset of contentFiles) {
+    const rows = captions.get(`${asset.assetId}:${asset.revision}:${asset.contentDigest}`);
+    if (rows?.length === 1 && rows[0].approved) asset.caption = rows[0].caption;
+  }
   const current = contentFiles.filter(item => CURRENT_STATES.has(item.libraryState));
   const approved = current.filter(item => item.review === 'approved');
   const readyStatus = approved.filter(item => item.locale === 'he' && item.width === 1080 && item.height === 1920);
@@ -132,8 +149,8 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const scheduler = cell(row, calendarHeaders, 'Scheduler state');
     const receipts = cell(row, calendarHeaders, 'Provider receipts / errors');
     const state = publicationState(status, scheduler, receipts);
-    const digest = (cell(row, calendarHeaders, 'Version / SHA256').match(/[a-f0-9]{64}/i) || [])[0]?.toLowerCase() || '';
-    const matching = contentFiles.find(item => item.contentDigest === digest);
+    const matching = calendarAsset(row, calendarHeaders, contentFiles);
+    const digest = matching?.contentDigest || '';
     const assetId = matching?.assetId || cell(row, calendarHeaders, 'Asset ID');
     const providerReceiptId = state === 'published' ? parseReceipt(receipts) : null;
     return {
