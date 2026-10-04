@@ -199,6 +199,16 @@ test('malformed saved publisher records become durable actionable holds',()=>{
   assert.deepEqual(invalidPublisherRecordHolds(sentinel,'2026-10-04T09:00:00.000Z'),[]);
 });
 
+test('malformed-record repair leaves unrelated registry formats and ordinary Status notes untouched',()=>{
+  const publisherRaw='{"kind":"LIFE_SKILLS_STATUS_V1","state":"SENDING"';
+  const statusNote=statusRow('C02-EN','EN','Manual review note: check marketing row');
+  const feedRecord=statusRow('C03-EN-FEED','EN',publisherRaw);feedRecord[3]='FEED';
+  const workbook=parseWorkbook({data:{valueRanges:[{values:[[],statusRow('C01-EN','EN',publisherRaw),statusNote,feedRecord]},{values:[['Slot']]}]}});
+  const held=invalidPublisherRecordHolds(workbook,'2026-10-04T09:00:00.000Z');
+  assert.deepEqual(held.map(item=>item.asset.id),['C01-EN']);
+  assert.equal(held[0].delivery.state,'UNKNOWN');
+});
+
 test('duplicate aliases for one concept and language cannot bypass a prior receipt, while the other language stays eligible', () => {
   const used = statusRow('C01-HE', 'HE'), alias = statusRow('C01-HE-copy', 'HE'), english = statusRow('C01-EN', 'EN'), next = statusRow('C02-EN', 'EN');
   used[1] = alias[1] = english[1] = '1';next[1]='2';
@@ -354,6 +364,8 @@ test('successor holds use the refreshed Calendar row after an insertion',()=>{
   const result=heldSuccessorCalendarUpdates(current.calendar,held);
   assert.deepEqual([...result.slots],['D21']);
   assert.deepEqual(result.updates.map(item=>item.range),["'30-Day Calendar'!H12","'30-Day Calendar'!N12"]);
+  const scheduleHold=heldSuccessorCalendarUpdates(current.calendar,[{asset:{id:'C01-EN'},delivery:{anchorSlot:'D21',holdType:'SUCCESSOR_SCHEDULE',error:'SUCCESSOR_SCHEDULE_HORIZON_EXHAUSTED'}}]);
+  assert.deepEqual(scheduleHold,{updates:[],slots:new Set()});
 });
 
 test('scheduling a resolved selection hold restores its prior Calendar state',()=>{
@@ -387,6 +399,32 @@ test('a resolved held successor resumes at its original future roll time and nev
   const changed={...workbook,assets:workbook.assets.map(item=>item.id==='C20-HE'
     ? {...item,delivery:{...item.delivery,nextTurnHold:{...item.delivery.nextTurnHold,state:'RESOLVED'}}} : item)};
   assert.equal(pendingSuccessorPreflightMatches(workbook,changed,plan,{now:Date.parse('2026-10-04T10:00:00.000Z')}).ok,false);
+});
+
+test('a successor schedule horizon hold becomes eligible again when Calendar is extended',()=>{
+  const priorDelivery={kind:'LIFE_SKILLS_STATUS_V1',state:'PUBLISHED',used:true,assetId:'C20-HE',conceptId:20,
+    language:'HE',surface:'VERTICAL',revision:'v04',driveFileId:'abc12345',sha256:digest,anchorSlot:'D20',
+    providerReceiptId:'receipt20',confirmedAt:'2026-10-04T09:27:08.000Z',verificationAt:'2026-10-04T09:27:15.762Z',
+    providerType:'story',providerWidth:1080,providerHeight:1920,
+    nextTurnHold:{state:'HELD',language:'EN',reason:'SUCCESSOR_SCHEDULE_HORIZON_EXHAUSTED',candidateAssetIds:['C01-EN']}};
+  const successorHold={kind:'LIFE_SKILLS_STATUS_V1',state:'HELD',holdType:'SUCCESSOR_SCHEDULE',assetId:'C01-EN',
+    conceptId:1,language:'EN',surface:'VERTICAL',revision:'v04',driveFileId:'abc12345',sha256:digest,
+    anchorSlot:'D20',predecessorReceiptId:'receipt20',error:'SUCCESSOR_SCHEDULE_HORIZON_EXHAUSTED: refresh Calendar'};
+  const prior=statusRow('C20-HE','HE',JSON.stringify(priorDelivery));
+  const english=statusRow('C01-EN','EN',JSON.stringify(successorHold));
+  const parse=(calendarRows)=>parseWorkbook({data:{valueRanges:[{values:[[],prior,english]},{values:calendarRows}]}});
+  const short=parse([['Slot'],['D20','2026-10-04']]);
+  const now=Date.parse('2026-10-04T10:00:00.000Z');
+  assert.equal(pendingSuccessorPlan(short,now).reason,'SUCCESSOR_SCHEDULE_HORIZON_EXHAUSTED');
+  const extended=parse([['Slot'],['D20','2026-10-04'],['D21','2026-10-05']]);
+  const recovered=pendingSuccessorPlan(extended,now);
+  assert.equal(recovered.state,'READY');
+  assert.equal(recovered.asset.id,'C01-EN');
+  assert.equal(recovered.scheduledAt,'2026-10-05T09:22:08.000Z');
+  assert.equal(pendingSuccessorPreflightMatches(extended,extended,recovered,{now}).ok,true);
+  const foreignHold={...extended,assets:extended.assets.map(asset=>asset.id==='C01-EN'
+    ? {...asset,delivery:{...asset.delivery,predecessorReceiptId:'different-receipt'}} : asset)};
+  assert.equal(pendingSuccessorPlan(foreignHold,now).reason,'SUCCESSOR_SCHEDULE_HOLD_PREDECESSOR_MISMATCH');
 });
 
 test('provider result reread resolves shifted rows and preserves post-send Calendar interventions',()=>{

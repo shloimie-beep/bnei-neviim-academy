@@ -102,6 +102,7 @@ function successorScheduleIso(confirmedIso, calendar, nextSlot = null) {
 function heldSuccessorCalendarUpdates(calendar, heldSuccessors) {
   const updates = [], slots = new Set();
   for (const { delivery } of heldSuccessors) {
+    if (delivery.holdType === 'SUCCESSOR_SCHEDULE') continue;
     const heldSlot = uniqueRow(calendar, 'slot', delivery.anchorSlot);
     if (heldSlot && !slots.has(heldSlot.slot)) {
       slots.add(heldSlot.slot);
@@ -149,6 +150,8 @@ function sameAssetAndSlot(asset, slot, { allowExpectedSchedule = false, allowSel
 }
 function noPriorDelivery(asset) {
   if (asset?.delivery?.state === 'HELD' && asset.delivery.holdType === 'SELECTION') return true;
+  if (asset?.delivery?.state === 'HELD' && asset.delivery.holdType === 'SUCCESSOR_SCHEDULE' &&
+      asset.delivery.predecessorReceiptId && /^SUCCESSOR_SCHEDULE_HORIZON_EXHAUSTED:/.test(asset.delivery.error || '')) return true;
   return !asset.delivery && (!asset.deliveryText || /^(?:No provider delivery|No provider call)/i.test(asset.deliveryText));
 }
 function calendarSelectionHold(workbook, slot) {
@@ -203,8 +206,9 @@ function invalidActiveAttemptHolds(workbook, heldAt) {
 }
 function invalidPublisherRecordHolds(workbook, heldAt) {
   return workbook.assets.filter(asset => {
-    const text = asset.deliveryText;
-    return !asset.delivery && text && !/^(?:No provider delivery|No provider call(?: yet)?|No post receipt|No receipt|none|[-—])(?:\s|;|$)/i.test(text);
+    const text = String(asset.deliveryText || '').trim();
+    return !asset.delivery && asset.surface === 'VERTICAL' && ['HE', 'EN'].includes(asset.language) &&
+      text.startsWith('{') && new RegExp(`\"kind\"\\s*:\\s*\"${MARKER}\"`).test(text);
   }).map(asset => {
     const raw = asset.deliveryText;
     const evidence = { malformedRecordSha256: createHash('sha256').update(raw).digest('hex'), malformedRecordLength: raw.length };
@@ -524,6 +528,10 @@ function pendingSuccessorPlan(workbook, now = Date.now()) {
   const selection = nextAsset(workbook, nextLanguage, delivery.anchorSlot);
   if (!selection || selection.state === 'HELD')
     return { state: 'HELD', predecessor, reason: selection?.reason || delivery.nextTurnHold.reason || 'NO_ELIGIBLE_EXACT_APPROVED_ASSET' };
+  const selectedAsset = selection.asset || selection;
+  if (selectedAsset.delivery?.holdType === 'SUCCESSOR_SCHEDULE' &&
+      selectedAsset.delivery.predecessorReceiptId !== delivery.providerReceiptId)
+    return { state: 'HELD', predecessor, asset: selectedAsset, reason: 'SUCCESSOR_SCHEDULE_HOLD_PREDECESSOR_MISMATCH' };
   const preflight = successorPreflightMatches(workbook, workbook, selection,
     { nextLanguage, publishingAssetId: predecessor.id, anchorSlot: delivery.anchorSlot, now });
   if (!preflight.ok) return { state: 'HELD', predecessor, reason: preflight.reason };
@@ -802,7 +810,7 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
       const horizon = calendarHorizonDate(successorWorkbook.calendar) || 'unavailable';
       const error = `SUCCESSOR_SCHEDULE_HORIZON_EXHAUSTED: no permitted time on or before ${horizon}; refresh Calendar restrictions before rescheduling`;
       nextTurnHold = { state: 'HELD', language: nextLanguage, reason: error, conceptId: nextItem.concept, candidateAssetIds: [nextItem.id] };
-      heldSuccessors.push({ asset: nextItem, delivery: makeRecord(nextItem, 'HELD', { heldAt: successorHeldAt, error,
+      heldSuccessors.push({ asset: nextItem, delivery: makeRecord(nextItem, 'HELD', { heldAt: successorHeldAt, holdType: 'SUCCESSOR_SCHEDULE', error,
         ...(nextSlot ? { anchorSlot: nextSlot.slot } : {}), predecessorReceiptId: id }) });
       nextItem = null;
       nextSlot = null;
