@@ -3,7 +3,8 @@ const test = require('node:test');
 const { createHash } = require('node:crypto');
 const { Readable } = require('node:stream');
 const { parseWorkbook, nextAllowedIso, nextAsset, record, scheduledIdentityMatches, sameAssetAndSlot, verifiedStoryReadback, hasPriorConceptDelivery,
-  validScheduledAt, invalidScheduledHolds, holdAmbiguousNextTurn, scheduledPreflight, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
+  validScheduledAt, invalidScheduledHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
+  publisherStatePreflightMatches, attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
 const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-skills-marketing');
 
 const digest = 'a'.repeat(64);
@@ -197,6 +198,47 @@ test('queued calendar interventions and prior receipts remain visible in the sen
     assert.equal(sameAssetAndSlot(asset,{...slot,status:`${state} — operator intervention`},{allowExpectedSchedule:true}),false,state);
     assert.equal(sameAssetAndSlot(asset,{...slot,scheduler:`${state} — operator intervention`},{allowExpectedSchedule:true}),false,state);
   }
+});
+
+test('reservation reread blocks changed Asset Registry approval and Calendar holds',()=>{
+  const asset=statusRow('C20-HE','HE');
+  const calendar=Array(15).fill('');
+  Object.assign(calendar,{0:'D20',1:'2026-10-04',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict',7:'MEDIA ASSOCIATED — no send queued'});
+  const parse=(a,c)=>parseWorkbook({data:{valueRanges:[{values:[[],a]},{values:[['Slot'],c]}]}});
+  const original=parse(asset,calendar);
+  const changedApproval=[...asset];changedApproval[8]='REVIEW';changedApproval[26]='CURRENT_REVIEW';
+  assert.equal(reservationPreflightMatches(original,parse(changedApproval,calendar),{initial:true,assetId:'C20-HE',anchorSlot:'D20',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
+  const heldCalendar=[...calendar];heldCalendar[13]='OFF — operator hold';
+  assert.equal(reservationPreflightMatches(original,parse(asset,heldCalendar),{initial:true,assetId:'C20-HE',anchorSlot:'D20',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
+});
+
+test('provider POST preflight requires our exact SENDING record and unchanged Calendar fields',()=>{
+  const asset=statusRow('C20-HE','HE');
+  const calendar=Array(15).fill('');
+  Object.assign(calendar,{0:'D20',1:'2026-10-04',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict',7:'MEDIA ASSOCIATED — no send queued'});
+  const parse=(a,c)=>parseWorkbook({data:{valueRanges:[{values:[[],a]},{values:[['Slot'],c]}]}});
+  const baseline=parse(asset,calendar), baselineAsset=baseline.assets[0], baselineSlot=baseline.calendar[0];
+  const sending={kind:'LIFE_SKILLS_STATUS_V1',state:'SENDING',assetId:baselineAsset.id,conceptId:baselineAsset.concept,
+    language:baselineAsset.language,surface:baselineAsset.surface,revision:baselineAsset.revision,driveFileId:'abc12345',sha256:digest,
+    queuedAt:'2026-10-04T09:00:00.000Z',scheduledAt:'2026-10-04T09:00:00.000Z',anchorSlot:'D20',reservedAt:'2026-10-04T09:00:01.000Z',submittedAt:'2026-10-04T09:00:02.000Z'};
+  const prepared=[...asset];prepared[21]=JSON.stringify(sending);
+  const marked=[...calendar];marked[7]='SENDING — C20-HE';marked[13]='SENDING — rolling Status publisher';
+  const state=parse(prepared,marked);
+  const args={baselineAsset,baselineSlot,expectedDelivery:sending,now:Date.parse('2026-10-04T09:00:03.000Z')};
+  assert.equal(publisherStatePreflightMatches(state,args).ok,true);
+  const held=[...marked];held[7]='OFF — operator hold';
+  assert.equal(publisherStatePreflightMatches(parse(prepared,held),args).ok,false);
+  const receipt=[...marked];receipt[14]='WHAPI: unexpected-existing-receipt';
+  assert.equal(publisherStatePreflightMatches(parse(prepared,receipt),args).ok,false);
+});
+
+test('the persistent scheduler pool logs idle-client errors instead of emitting an uncaught error',()=>{
+  const { EventEmitter }=require('node:events');
+  const pool=new EventEmitter(), logged=[];
+  attachPoolErrorHandler(pool,{error:(...args)=>logged.push(args)});
+  assert.doesNotThrow(()=>pool.emit('error',Object.assign(new Error('connection reset'),{code:'ECONNRESET'})));
+  assert.equal(logged[0][0],'[life-skills-status] database pool idle client error');
+  assert.deepEqual(logged[0][1],{code:'ECONNRESET'});
 });
 
 test('a Status is confirmed only by a read provider story with matching ID and dimensions', () => {

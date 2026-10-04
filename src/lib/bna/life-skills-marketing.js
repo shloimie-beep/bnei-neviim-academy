@@ -229,6 +229,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const deliveryState = String(delivery?.state || '').toUpperCase();
     const verifiedDelivery = verifiedStatusDelivery(delivery);
     const deliveryBoundToSlot = deliveryMatches && delivery?.anchorSlot === slot;
+    const calendarBlock = `${status} ${scheduler}`.match(/\b(OFF|BLOCKED)\b/i)?.[1]?.toUpperCase() || null;
     const scheduleBindingMissing = sourceState === 'scheduled' && !matching;
     const scheduleBindingChanged = deliveryState === 'SCHEDULED' && (!deliveryMatches || delivery?.anchorSlot !== slot);
     const futurePublication = ['ready', 'scheduled', 'sending'].includes(sourceState);
@@ -248,6 +249,8 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       state = 'published';
     } else if (sourceState === 'held' || deliveryState === 'HELD') {
       state = 'held';
+    } else if (calendarBlock && (sourceState === 'scheduled' || ['SCHEDULED', 'RESERVED'].includes(deliveryState))) {
+      state = 'draft';
     } else if ((publicationHeld && !exactReceipt && !verifiedDelivery) || bindingUnavailable || scheduleBindingMissing || scheduleBindingChanged) {
       state = 'draft';
     } else if (deliveryBoundToSlot && deliveryState === 'SENDING') {
@@ -282,7 +285,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       postUrl: null,
       receiptKind: state === 'published' && providerReceiptId ? 'publication' : 'unknown',
       manualReportedAt: null,
-      errorCode: bindingError || (deliveryState === 'HELD' ? delivery.error || 'PUBLISHER_HELD' : (bindingUnavailable ? 'ASSET_BINDING_UNAVAILABLE' : publicationHeld ? 'ASSET_PUBLICATION_HELD' : (['failed', 'unknown', 'draft', 'held'].includes(state) ? (status || scheduler || null) : null))),
+      errorCode: bindingError || (calendarBlock && state === 'draft' ? `CALENDAR_${calendarBlock}` : null) || (deliveryState === 'HELD' ? delivery.error || 'PUBLISHER_HELD' : (bindingUnavailable ? 'ASSET_BINDING_UNAVAILABLE' : publicationHeld ? 'ASSET_PUBLICATION_HELD' : (['failed', 'unknown', 'draft', 'held'].includes(state) ? (status || scheduler || null) : null))),
     };
   });
 
@@ -293,10 +296,12 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     if (!delivery) continue;
     const stateValue = String(delivery.state || 'UNKNOWN').toUpperCase();
     const exactBinding = statusDeliveryMatchesAsset(delivery, item);
+    const scheduledApprovalValid = item.libraryState === 'CURRENT_APPROVED' && item.review === 'approved' &&
+      item.registeredRevision === true && /^[a-f0-9]{64}$/.test(item.contentDigest) && usableDimensions(item);
     let state;
     if (stateValue === 'PUBLISHED') state = verifiedStatusDelivery(delivery) ? 'published' : 'unknown';
-    else if (stateValue === 'SCHEDULED') state = exactBinding ? 'scheduled' : 'draft';
-    else if (stateValue === 'RESERVED') state = exactBinding ? 'scheduled' : 'draft';
+    else if (stateValue === 'SCHEDULED') state = exactBinding && scheduledApprovalValid ? 'scheduled' : 'draft';
+    else if (stateValue === 'RESERVED') state = exactBinding && scheduledApprovalValid ? 'scheduled' : 'draft';
     else if (stateValue === 'SENDING') state = exactBinding ? 'sending' : 'unknown';
     else if (stateValue === 'HELD') state = 'held';
     else if (['UNKNOWN', 'FAILED', 'SKIPPED'].includes(stateValue)) state = stateValue.toLowerCase();
@@ -308,6 +313,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const key = `${assetId}|${revision}|${digest}`;
     if (publicationKeys.has(key) || (delivery.providerReceiptId && publicationReceipts.has(delivery.providerReceiptId))) continue;
     const identityMismatch = ['SCHEDULED', 'RESERVED'].includes(stateValue) && !exactBinding;
+    const approvalMismatch = ['SCHEDULED', 'RESERVED'].includes(stateValue) && !scheduledApprovalValid;
     publications.push({
       id: `whatsapp-status:${assetId}:${revision}:${digest}`,
       assetId,
@@ -325,7 +331,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       postUrl: null,
       receiptKind: state === 'published' && delivery.providerReceiptId ? 'publication' : 'unknown',
       manualReportedAt: null,
-      errorCode: identityMismatch ? 'SCHEDULED_ASSET_BINDING_CHANGED' : delivery.error || null,
+      errorCode: identityMismatch ? 'SCHEDULED_ASSET_BINDING_CHANGED' : approvalMismatch ? 'SCHEDULED_ASSET_APPROVAL_REVOKED' : delivery.error || null,
     });
     publicationKeys.add(key);
     if (delivery.providerReceiptId) publicationReceipts.add(delivery.providerReceiptId);

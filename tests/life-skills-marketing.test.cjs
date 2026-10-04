@@ -155,10 +155,34 @@ function publisherDelivery(asset, state, extra={}) {
 
 test('an exact registry-bound Status reservation projects as scheduled with its durable time',()=>{
  const asset=approvedStatus();asset[21]=publisherDelivery(asset,'SCHEDULED');
- const row=exactCalendar(1,'Approved exact caption');row[6]='MEDIA ASSOCIATED — no send queued';row.push('OFF — exact approved Status media associated; publishing owner must act','');
+ const row=exactCalendar(1,'Approved exact caption');row[6]='MEDIA ASSOCIATED — no send queued';row.push('SCHEDULED — future Status','');
  const calendarHeaders=[...exactCalendarHeaders,'Scheduler state','Provider receipts / errors'];
  const result=parseWorkbook({assetRows:[headers,asset],calendarRows:[calendarHeaders,row]});
  assert.equal(result.publications[0].state,'scheduled');assert.equal(result.publications[0].provider,'whapi');assert.equal(result.publications[0].scheduledFor,'2026-10-05T09:22:08.000Z');assert.equal(result.inventory.queued,1);
+});
+
+test('Calendar OFF and BLOCKED keep a bound scheduled Status out of queued inventory',()=>{
+ for(const blocker of ['OFF','BLOCKED']){
+  const asset=approvedStatus();asset[21]=publisherDelivery(asset,'SCHEDULED');
+  const row=exactCalendar(1,'Approved exact caption');row[6]='MEDIA ASSOCIATED — no send queued';row.push(`${blocker} — operator intervention`,'');
+  const result=parseWorkbook({assetRows:[headers,asset],calendarRows:[[...exactCalendarHeaders,'Scheduler state','Provider receipts / errors'],row]});
+  assert.equal(result.publications[0].state,'draft',blocker);assert.equal(result.publications[0].errorCode,`CALENDAR_${blocker}`,blocker);assert.equal(result.inventory.queued,0,blocker);
+ }
+});
+
+test('a standalone scheduled Status requires current approval, review clearance, and Status dimensions',()=>{
+ for(const change of [
+  row=>{row[26]='CURRENT_REVIEW';},
+  row=>{row[26]='CURRENT_REVIEW_CANDIDATE';},
+  row=>{row[26]='SUPERSEDED';},
+  row=>{row[7]='1350';},
+ ]){
+  const asset=approvedStatus();asset[2]='EN';asset[8]='OWNER_APPROVED_EXACT_FILE';
+  asset[21]=publisherDelivery(asset,'SCHEDULED',{language:'EN',anchorSlot:'D20'});change(asset);
+  const result=parseWorkbook({assetRows:[headers,asset],calendarRows:[exactCalendarHeaders]});
+  assert.equal(result.publications.length,1);assert.equal(result.publications[0].state,'draft');
+  assert.equal(result.publications[0].errorCode,'SCHEDULED_ASSET_APPROVAL_REVOKED');assert.equal(result.inventory.queued,0);
+ }
 });
 
 test('a queued calendar row without a unique exact Asset Registry match is held, not shown as scheduled',()=>{

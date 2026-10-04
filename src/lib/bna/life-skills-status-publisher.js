@@ -104,7 +104,10 @@ function noPriorDelivery(asset) {
 function scheduledIdentityMatches(asset) {
   const delivery = asset?.delivery;
   if (!delivery || delivery.state !== 'SCHEDULED') return false;
-  return delivery.assetId === asset.id && Number(delivery.conceptId) === asset.concept &&
+  return deliveryAssetIdentityMatches(asset, delivery);
+}
+function deliveryAssetIdentityMatches(asset, delivery) {
+  return delivery?.assetId === asset?.id && Number(delivery?.conceptId) === asset?.concept &&
     String(delivery.language || '').toUpperCase() === asset.language &&
     String(delivery.surface || '').toUpperCase() === asset.surface &&
     String(delivery.revision || '') === asset.revision &&
@@ -248,6 +251,96 @@ function scheduledPreflight(workbook, now = Date.now()) {
   if (!due.length) return { state: 'WAITING', next: scheduled.map(item => ({ assetId: item.id, scheduledAt: item.delivery.scheduledAt })) };
   return { state: 'DUE', asset: due[0] };
 }
+function stableValue(value) {
+  if (Array.isArray(value)) return value.map(stableValue);
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(Object.keys(value).sort().map(key => [key, stableValue(value[key])]));
+}
+function sameDelivery(left, right) {
+  return JSON.stringify(stableValue(left)) === JSON.stringify(stableValue(right));
+}
+function sameAssetSource(left, right) {
+  return ['rowNumber', 'id', 'concept', 'language', 'surface', 'revision', 'width', 'height', 'approval',
+    'url', 'digest', 'qa', 'planned', 'slot', 'libraryState'].every(key => left?.[key] === right?.[key]);
+}
+function sameCalendarSource(left, right) {
+  return ['rowNumber', 'slot', 'date', 'day', 'status', 'assetUrl', 'version', 'approval', 'quiet', 'scheduler', 'receipts']
+    .every(key => left?.[key] === right?.[key]);
+}
+function sameCalendarBinding(left, right) {
+  return ['rowNumber', 'slot', 'date', 'day', 'assetUrl', 'version', 'approval', 'quiet', 'receipts']
+    .every(key => left?.[key] === right?.[key]);
+}
+function uniqueRow(rows, key, value) {
+  const matches = rows.filter(row => row?.[key] === value);
+  return matches.length === 1 ? matches[0] : null;
+}
+function reservationPreflightMatches(original, current, { initial = false, assetId, anchorSlot, now = Date.now() } = {}) {
+  const oldAsset = uniqueRow(original.assets, 'id', assetId);
+  const asset = uniqueRow(current.assets, 'id', assetId);
+  if (!oldAsset || !asset || !sameAssetSource(oldAsset, asset) || !isEligible(asset))
+    return { ok: false, reason: 'Asset Registry approval or exact revision changed before reservation' };
+  if (initial) {
+    if (!noPriorDelivery(oldAsset) || !noPriorDelivery(asset))
+      return { ok: false, reason: 'Asset already has send or receipt state before reservation' };
+  } else if (!sameDelivery(oldAsset.delivery, asset.delivery) || !scheduledIdentityMatches(asset) ||
+      !validScheduledAt(asset.delivery?.scheduledAt) || Date.parse(asset.delivery.scheduledAt) > now) {
+    return { ok: false, reason: 'Scheduled Asset Registry reservation changed before sending' };
+  }
+  const calendarSlot = asset.language === 'HE' ? anchorSlot : null;
+  let slot = null;
+  if (calendarSlot) {
+    const oldSlot = uniqueRow(original.calendar, 'slot', calendarSlot);
+    slot = uniqueRow(current.calendar, 'slot', calendarSlot);
+    if (!oldSlot || !slot || !sameCalendarSource(oldSlot, slot) ||
+        !sameAssetAndSlot(asset, slot, { allowExpectedSchedule: !initial }))
+      return { ok: false, reason: 'Calendar approval, hold, quiet-day, or exact asset binding changed before reservation' };
+  }
+  if (quietDate(new Date(now).toISOString(), current.calendar))
+    return { ok: false, reason: 'Quiet-day restriction became active before reservation' };
+  return { ok: true, asset, slot };
+}
+function publisherStatePreflightMatches(workbook, { baselineAsset, baselineSlot = null, expectedDelivery, now = Date.now() } = {}) {
+  const asset = uniqueRow(workbook.assets, 'id', baselineAsset?.id);
+  if (!asset || !sameAssetSource(baselineAsset, asset) || !isEligible(asset) ||
+      !sameDelivery(asset.delivery, expectedDelivery) || !deliveryAssetIdentityMatches(asset, expectedDelivery) ||
+      !['RESERVED', 'SENDING'].includes(expectedDelivery?.state))
+    return { ok: false, reason: 'Asset, approval, or reserved send state changed before provider POST' };
+  if (workbook.assets.some(item => item.id !== asset.id && ['SCHEDULED', 'RESERVED', 'SENDING'].includes(item.delivery?.state)))
+    return { ok: false, reason: 'Another Status send or schedule appeared before provider POST' };
+  if (workbook.assets.some(other => other !== asset && other.concept === asset.concept &&
+      other.language === asset.language && other.surface === asset.surface && !noPriorDelivery(other)))
+    return { ok: false, reason: 'A duplicate concept/language send state appeared before provider POST' };
+  let slot = null;
+  if (baselineSlot) {
+    slot = uniqueRow(workbook.calendar, 'slot', baselineSlot.slot);
+    const marker = `${expectedDelivery.state} — ${asset.id}`;
+    const scheduler = `${expectedDelivery.state} — rolling Status publisher`;
+    if (!slot || !sameCalendarBinding(baselineSlot, slot) || slot.status !== marker || slot.scheduler !== scheduler ||
+        calendarHoldState(slot) || quietSlot(slot))
+      return { ok: false, reason: 'Calendar hold, approval, exact binding, or receipt changed before provider POST' };
+  }
+  if (quietDate(new Date(now).toISOString(), workbook.calendar))
+    return { ok: false, reason: 'Quiet-day restriction became active before provider POST' };
+  return { ok: true, asset, slot };
+}
+async function holdOwnReservation(sheets, workbook, { assetId, expectedDelivery, baselineSlot, reason, now = new Date().toISOString() }) {
+  const asset = uniqueRow(workbook.assets, 'id', assetId);
+  if (!asset || !sameDelivery(asset.delivery, expectedDelivery)) return false;
+  const held = { ...expectedDelivery, state: 'HELD', heldAt: now, error: reason };
+  const updates = [cells(`'Asset Registry'!V${asset.rowNumber}`, JSON.stringify(held))];
+  if (baselineSlot) {
+    const slot = uniqueRow(workbook.calendar, 'slot', baselineSlot.slot);
+    const ownMarker = `${expectedDelivery.state} — ${asset.id}`;
+    const ownScheduler = `${expectedDelivery.state} — rolling Status publisher`;
+    if (slot && sameCalendarBinding(baselineSlot, slot) && slot.status === ownMarker && slot.scheduler === ownScheduler) {
+      updates.push(cells(`'30-Day Calendar'!H${slot.rowNumber}`, `HELD — ${asset.id}`),
+        cells(`'30-Day Calendar'!N${slot.rowNumber}`, reason));
+    }
+  }
+  await write(sheets, updates);
+  return true;
+}
 async function lockedRun({ initial = false, dryRun = false, env = process.env, pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 1 }) } = {}) {
   const db = await pool.connect();
   let locked = false;
@@ -312,13 +405,40 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
     const bytes = await exactMedia(drive, asset);
     if (dryRun) return { state: 'PREPARED', assetId: asset.id, language: asset.language, sha256: asset.digest,
       width: asset.width, height: asset.height, bytes: bytes.length, scheduledAt, channelId: health.body.channel_id };
+    const latestWorkbook = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID,
+      ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
+    const reservationCheck = reservationPreflightMatches(workbook, latestWorkbook,
+      { initial, assetId: asset.id, anchorSlot, now: Date.now() });
+    if (!reservationCheck.ok) return { state: 'HELD', assetId: asset.id, reason: reservationCheck.reason };
+    const baselineAsset = reservationCheck.asset;
+    const baselineSlot = reservationCheck.slot;
+    asset = baselineAsset;
+    slot = baselineSlot;
     const queuedAt = initial ? new Date().toISOString() : asset.delivery.queuedAt;
     const base = makeRecord(asset, 'RESERVED', { queuedAt, scheduledAt, anchorSlot, reservedAt: new Date().toISOString() });
     const registryRange = `'Asset Registry'!V${asset.rowNumber}`;
     const calendarUpdates = state => slot ? [cells(`'30-Day Calendar'!H${slot.rowNumber}`, `${state} — ${asset.id}`), cells(`'30-Day Calendar'!N${slot.rowNumber}`, `${state} — rolling Status publisher`)] : [];
     await write(sheets, [cells(registryRange, JSON.stringify(base)), ...calendarUpdates('RESERVED')]);
+    let reservedWorkbook = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID,
+      ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
+    let reservationReadback = publisherStatePreflightMatches(reservedWorkbook,
+      { baselineAsset, baselineSlot, expectedDelivery: base, now: Date.now() });
+    if (!reservationReadback.ok) {
+      await holdOwnReservation(sheets, reservedWorkbook, { assetId: asset.id, expectedDelivery: base, baselineSlot,
+        reason: reservationReadback.reason });
+      return { state: 'HELD', assetId: asset.id, reason: reservationReadback.reason };
+    }
     const sending = { ...base, state: 'SENDING', submittedAt: new Date().toISOString() };
     await write(sheets, [cells(registryRange, JSON.stringify(sending)), ...calendarUpdates('SENDING')]);
+    reservedWorkbook = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID,
+      ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
+    reservationReadback = publisherStatePreflightMatches(reservedWorkbook,
+      { baselineAsset, baselineSlot, expectedDelivery: sending, now: Date.now() });
+    if (!reservationReadback.ok) {
+      await holdOwnReservation(sheets, reservedWorkbook, { assetId: asset.id, expectedDelivery: sending, baselineSlot,
+        reason: reservationReadback.reason });
+      return { state: 'HELD', assetId: asset.id, reason: reservationReadback.reason };
+    }
     let post;
     try { post = await api('/stories/send/media', { method: 'POST', body: JSON.stringify({ media: `data:image/png;base64,${bytes.toString('base64')}`, mime_type: 'image/png' }) }); }
     catch (error) { post = { http: 0, body: { error: String(error.message || '').slice(0, 100) } }; }
@@ -403,6 +523,7 @@ async function oneShot(initial, dryRun = false) {
 function startScheduler({ env = process.env, logger = console } = {}) {
   if (env.RAILWAY_SERVICE_ID !== SERVICE_ID || env.RAILWAY_ENVIRONMENT_ID !== ENVIRONMENT_ID) return false;
   const pool = new Pool({ connectionString: env.DATABASE_URL, max: 1 });
+  attachPoolErrorHandler(pool, logger);
   let inFlight = false;
   let nextLogged = false;
   const tick = async () => {
@@ -422,6 +543,12 @@ function startScheduler({ env = process.env, logger = console } = {}) {
   logger.info('[life-skills-status] scheduler active');
   return true;
 }
+function attachPoolErrorHandler(pool, logger = console) {
+  pool.on('error', error => logger.error('[life-skills-status] database pool idle client error',
+    { code: String(error?.code || error?.name || 'UNKNOWN').slice(0, 40) }));
+  return pool;
+}
 module.exports = { lockedRun, oneShot, startScheduler, parseWorkbook, isEligible, nextAllowedIso, nextAsset,
   sameAssetAndSlot, scheduledIdentityMatches, verifiedStoryReadback, hasPriorConceptDelivery, validScheduledAt,
-  invalidScheduledHolds, holdAmbiguousNextTurn, scheduledPreflight, record, exactMedia, MAX_MEDIA_BYTES };
+  invalidScheduledHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
+  publisherStatePreflightMatches, holdOwnReservation, attachPoolErrorHandler, record, exactMedia, MAX_MEDIA_BYTES };
