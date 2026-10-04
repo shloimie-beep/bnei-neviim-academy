@@ -271,9 +271,37 @@ function sameCalendarBinding(left, right) {
   return ['rowNumber', 'slot', 'date', 'day', 'assetUrl', 'version', 'approval', 'quiet', 'receipts']
     .every(key => left?.[key] === right?.[key]);
 }
+function sameCalendarIdentity(left, right) {
+  return ['slot', 'date', 'day', 'assetUrl', 'version', 'approval', 'quiet']
+    .every(key => left?.[key] === right?.[key]);
+}
 function uniqueRow(rows, key, value) {
   const matches = rows.filter(row => row?.[key] === value);
   return matches.length === 1 ? matches[0] : null;
+}
+function publicationResultPreflight(original, current, { assetId, baselineAsset, baselineSlot = null, expectedDelivery } = {}) {
+  const originalAsset = uniqueRow(original.assets, 'id', assetId);
+  const asset = uniqueRow(current.assets, 'id', assetId);
+  if (!originalAsset || !asset || !sameDelivery(asset.delivery, expectedDelivery) || expectedDelivery?.state !== 'SENDING')
+    return { ok: false, reason: 'Provider result cannot be bound to the unique unchanged SENDING record' };
+  const bindingFields = ['id', 'concept', 'language', 'surface', 'revision', 'width', 'height', 'approval',
+    'url', 'digest', 'qa', 'readiness', 'planned', 'slot', 'libraryState'];
+  const assetBindingChanged = !bindingFields.every(key => baselineAsset?.[key] === asset?.[key]);
+  let slot = null;
+  let canWriteCalendarReceipt = false;
+  let canUpdateCalendarState = false;
+  if (baselineSlot) {
+    slot = uniqueRow(current.calendar, 'slot', baselineSlot.slot);
+    const uniqueOriginalSlot = uniqueRow(original.calendar, 'slot', baselineSlot.slot);
+    if (slot && uniqueOriginalSlot && sameCalendarIdentity(baselineSlot, slot) &&
+        slot.receipts === baselineSlot.receipts) {
+      canWriteCalendarReceipt = true;
+      canUpdateCalendarState = slot.status === `SENDING — ${assetId}` &&
+        slot.scheduler === 'SENDING — rolling Status publisher';
+    }
+  }
+  return { ok: true, asset, slot: canWriteCalendarReceipt ? slot : null, canWriteCalendarReceipt,
+    canUpdateCalendarState, assetBindingChanged };
 }
 function reservationPreflightMatches(original, current, { initial = false, assetId, anchorSlot, now = Date.now() } = {}) {
   const oldAsset = uniqueRow(original.assets, 'id', assetId);
@@ -324,11 +352,24 @@ function publisherStatePreflightMatches(workbook, { baselineAsset, baselineSlot 
     return { ok: false, reason: 'Quiet-day restriction became active before provider POST' };
   return { ok: true, asset, slot };
 }
-function successorPreflightMatches(original, current, selection, { nextLanguage, publishingAssetId, now = Date.now() } = {}) {
+function successorPreflightMatches(original, current, selection, { nextLanguage, publishingAssetId, anchorSlot, now = Date.now() } = {}) {
   if (!selection) return { ok: false, reason: 'NO_ELIGIBLE_EXACT_APPROVED_ASSET' };
   if (selection.state === 'HELD' && selection.preserveCalendarHold)
     return { ok: true, selection, preserveHold: true };
-  const candidates = selection.state === 'HELD' ? selection.candidates : [selection.asset || selection];
+  const currentSelection = nextAsset(current, nextLanguage, anchorSlot);
+  if (selection.state === 'HELD') {
+    const originalIds = (selection.candidates || []).map(item => item.id).sort();
+    const currentIds = (currentSelection?.candidates || []).map(item => item.id).sort();
+    if (currentSelection?.state !== 'HELD' || currentSelection.reason !== selection.reason ||
+        currentSelection.conceptId !== selection.conceptId || JSON.stringify(currentIds) !== JSON.stringify(originalIds))
+      return { ok: false, reason: 'SUCCESSOR_SELECTION_CHANGED_BEFORE_SCHEDULE' };
+  } else {
+    const currentAsset = currentSelection?.asset || currentSelection;
+    const selectedAsset = selection.asset || selection;
+    if (!currentAsset || currentSelection?.state === 'HELD' || currentAsset.id !== selectedAsset.id)
+      return { ok: false, reason: 'SUCCESSOR_SELECTION_CHANGED_BEFORE_SCHEDULE' };
+  }
+  const candidates = currentSelection.state === 'HELD' ? currentSelection.candidates : [currentSelection.asset || currentSelection];
   if (!Array.isArray(candidates) || !candidates.length)
     return { ok: false, reason: selection.reason || 'NO_ELIGIBLE_EXACT_APPROVED_ASSET' };
   if (current.assets.some(item => item.delivery?.state === 'SCHEDULED' ||
@@ -354,9 +395,11 @@ function successorPreflightMatches(original, current, selection, { nextLanguage,
   }
   if (quietDate(new Date(now).toISOString(), current.calendar))
     return { ok: false, reason: 'SUCCESSOR_QUIET_DAY_RESTRICTION_ACTIVE' };
-  const nextSelection = selection.state === 'HELD'
-    ? { ...selection, candidates: refreshed, slot: slot || selection.slot }
-    : { ...selection, asset: refreshed[0], slot: slot || selection.slot };
+  const nextSelection = currentSelection.state === 'HELD'
+    ? { ...currentSelection, candidates: refreshed, slot: slot || currentSelection.slot }
+    : currentSelection.asset
+      ? { ...currentSelection, asset: refreshed[0], slot: slot || currentSelection.slot }
+      : refreshed[0];
   return { ok: true, selection: nextSelection, preserveHold: false };
 }
 async function holdOwnReservation(sheets, workbook, { assetId, expectedDelivery, baselineSlot, reason, now = new Date().toISOString() }) {
@@ -481,21 +524,38 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
     const id = receiptId(post.body);
     let verified = null;
     if (post.http === 200 && id) verified = await verifyStory(api, id).catch(() => null);
+    const resultWorkbook = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID,
+      ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
+    const resultCheck = publicationResultPreflight(workbook, resultWorkbook,
+      { assetId: asset.id, baselineAsset, baselineSlot, expectedDelivery: sending });
+    if (!resultCheck.ok) return { state: 'UNKNOWN', assetId: asset.id, providerHttp: post.http,
+      providerReceiptId: id, providerReadback: Boolean(verified), error: resultCheck.reason,
+      retry: 'blocked until provider history and canonical send state are reconciled' };
+    asset = resultCheck.asset;
+    slot = resultCheck.slot;
     if (!verified) {
       const state = post.http >= 400 && post.http < 500 && !id ? 'FAILED' : 'UNKNOWN';
       const failure = { ...sending, state, providerHttp: post.http, providerReceiptId: id, verificationAt: new Date().toISOString(), error: 'Provider readback did not prove publication; reconcile history before retry' };
-      await write(sheets, [cells(registryRange, JSON.stringify(failure)), ...calendarUpdates(state), ...(slot ? [cells(`'30-Day Calendar'!O${slot.rowNumber}`, `WHAPI ${state}; receipt ${id || 'none'}; HTTP ${post.http}; no automatic retry`)] : [])]);
+      const updates = [cells(`'Asset Registry'!V${asset.rowNumber}`, JSON.stringify(failure))];
+      if (resultCheck.canWriteCalendarReceipt && slot) {
+        if (resultCheck.canUpdateCalendarState) updates.push(cells(`'30-Day Calendar'!H${slot.rowNumber}`, `${state} — ${asset.id}`),
+          cells(`'30-Day Calendar'!N${slot.rowNumber}`, `${state} — reconcile provider before retry`));
+        updates.push(cells(`'30-Day Calendar'!O${slot.rowNumber}`, `WHAPI ${state}; receipt ${id || 'none'}; HTTP ${post.http}; no automatic retry`));
+      }
+      await write(sheets, updates);
       return { state, assetId: asset.id, providerHttp: post.http, providerReceiptId: id };
     }
     const confirmedAt = isoFromEpoch(verified.timestamp);
     const nextLanguage = asset.language === 'HE' ? 'EN' : 'HE';
-    let nextSelection = nextAsset(workbook, nextLanguage, anchorSlot);
+    let nextSelection = resultCheck.assetBindingChanged || (baselineSlot && !resultCheck.canUpdateCalendarState)
+      ? { state: 'HELD', reason: 'PUBLISHING_ASSET_OR_CALENDAR_CHANGED_AFTER_PROVIDER_SUBMISSION', conceptId: null, candidates: [], preserveCalendarHold: true }
+      : nextAsset(resultWorkbook, nextLanguage, anchorSlot);
     if (nextSelection && !(nextSelection.state === 'HELD' && nextSelection.preserveCalendarHold) &&
         (nextSelection.asset || nextSelection.candidates?.length)) {
       const latestForSuccessor = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID,
         ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
-      const successorCheck = successorPreflightMatches(workbook, latestForSuccessor, nextSelection,
-        { nextLanguage, publishingAssetId: asset.id, now: Date.now() });
+      const successorCheck = successorPreflightMatches(resultWorkbook, latestForSuccessor, nextSelection,
+        { nextLanguage, publishingAssetId: asset.id, anchorSlot, now: Date.now() });
       if (successorCheck.ok) nextSelection = successorCheck.selection;
       else nextSelection = { state: 'HELD', reason: `SUCCESSOR_PREFLIGHT_FAILED: ${successorCheck.reason}`,
         conceptId: (nextSelection.asset || nextSelection.candidates?.[0])?.concept || null, candidates: [], preserveCalendarHold: true };
@@ -511,15 +571,19 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
     const publication = { ...sending, state: 'PUBLISHED', used: true, providerHttp: post.http, providerReceiptId: id,
       confirmedAt, verificationAt: verified.verifiedAt, providerType: verified.type, providerWidth: verified.width, providerHeight: verified.height,
       ...(nextTurnHold ? { nextTurnHold } : {}) };
-    let nextAt = nextItem ? nextAllowedIso(confirmedAt, workbook.calendar) : null;
+    let nextAt = nextItem ? nextAllowedIso(confirmedAt, resultWorkbook.calendar) : null;
     if (nextSlot) {
       for (let i = 0; i < 30 && localDate(nextAt) < nextSlot.date; i++) {
         nextAt = new Date(Date.parse(nextAt) + 86400000).toISOString();
-        while (quietDate(nextAt, workbook.calendar)) nextAt = new Date(Date.parse(nextAt) + 86400000).toISOString();
+        while (quietDate(nextAt, resultWorkbook.calendar)) nextAt = new Date(Date.parse(nextAt) + 86400000).toISOString();
       }
     }
-    const updates = [cells(registryRange, JSON.stringify(publication)),
-      ...(slot ? [...calendarUpdates('PUBLISHED / USED'), cells(`'30-Day Calendar'!O${slot.rowNumber}`, `WHAPI: ${id}; confirmed ${confirmedAt}; GET /stories/${id} HTTP200, type=story, 1080x1920; exact asset ${asset.id} SHA256 ${asset.digest}; verified ${verified.verifiedAt}`)] : [])];
+    const updates = [cells(`'Asset Registry'!V${asset.rowNumber}`, JSON.stringify(publication))];
+    if (resultCheck.canWriteCalendarReceipt && slot) {
+      if (resultCheck.canUpdateCalendarState) updates.push(cells(`'30-Day Calendar'!H${slot.rowNumber}`, `PUBLISHED / USED — ${asset.id}`),
+        cells(`'30-Day Calendar'!N${slot.rowNumber}`, 'PUBLISHED / USED — rolling Status publisher'));
+      updates.push(cells(`'30-Day Calendar'!O${slot.rowNumber}`, `WHAPI: ${id}; confirmed ${confirmedAt}; GET /stories/${id} HTTP200, type=story, 1080x1920; exact asset ${sending.assetId} SHA256 ${sending.sha256}; verified ${verified.verifiedAt}`));
+    }
     if (nextItem) {
       const nextRecord = makeRecord(nextItem, 'SCHEDULED', { queuedAt: new Date().toISOString(), scheduledAt: nextAt,
         anchorSlot: nextSlot?.slot || anchorSlot, predecessorReceiptId: id });
@@ -539,17 +603,17 @@ async function lockedRun({ initial = false, dryRun = false, env = process.env, p
     }
     await write(sheets, updates);
     const readback = parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID, ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
-    const published = readback.assets.find(item => item.id === asset.id)?.delivery;
-    const scheduled = nextItem ? readback.assets.find(item => item.id === nextItem.id)?.delivery : null;
+    const published = uniqueRow(readback.assets, 'id', asset.id)?.delivery;
+    const scheduled = nextItem ? uniqueRow(readback.assets, 'id', nextItem.id)?.delivery : null;
     if (published?.state !== 'PUBLISHED' || published.providerReceiptId !== id || (nextItem && scheduled?.scheduledAt !== nextAt) ||
         (nextTurnHold && (published.nextTurnHold?.state !== 'HELD' || published.nextTurnHold?.language !== nextLanguage || published.nextTurnHold?.reason !== nextTurnHold.reason)))
       throw new Error('Canonical publication/schedule readback failed');
     for (const { asset: heldAsset, delivery: heldDelivery } of heldSuccessors) {
-      const persisted = readback.assets.find(item => item.rowNumber === heldAsset.rowNumber)?.delivery;
+      const persisted = uniqueRow(readback.assets, 'id', heldAsset.id)?.delivery;
       if (persisted?.state !== 'HELD' || persisted.error !== heldDelivery.error) throw new Error('Canonical next-turn hold readback failed');
     }
     for (const slotName of heldCalendarSlots) {
-      const persistedSlot = readback.calendar.find(item => item.slot === slotName);
+      const persistedSlot = uniqueRow(readback.calendar, 'slot', slotName);
       const expectedHold = heldSuccessors.find(item => item.delivery.anchorSlot === slotName)?.delivery.error;
       if (!persistedSlot?.status?.startsWith('HELD — ') || persistedSlot.scheduler !== expectedHold)
         throw new Error('Canonical next-turn calendar hold readback failed');
@@ -597,4 +661,5 @@ function attachPoolErrorHandler(pool, logger = console) {
 module.exports = { lockedRun, oneShot, startScheduler, parseWorkbook, isEligible, nextAllowedIso, nextAsset,
   sameAssetAndSlot, scheduledIdentityMatches, verifiedStoryReadback, hasPriorConceptDelivery, validScheduledAt,
   invalidScheduledHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
-  publisherStatePreflightMatches, successorPreflightMatches, holdOwnReservation, attachPoolErrorHandler, record, exactMedia, MAX_MEDIA_BYTES };
+  publisherStatePreflightMatches, successorPreflightMatches, publicationResultPreflight, holdOwnReservation,
+  attachPoolErrorHandler, record, exactMedia, MAX_MEDIA_BYTES };

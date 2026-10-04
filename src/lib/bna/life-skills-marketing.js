@@ -3,7 +3,7 @@ const WORKBOOK_URL = `https://docs.google.com/spreadsheets/d/${DEFAULT_SPREADSHE
 const CONTENT_SURFACES = new Set(['FEED', 'VERTICAL', 'STATUS', 'STORY']);
 const APPROVED_STATES = new Set(['OWNER_APPROVED', 'OWNER_APPROVED_EXACT_FILE', 'APPROVED_PARENT_EXPORT']);
 const CURRENT_STATES = new Set(['CURRENT_APPROVED', 'CURRENT_REVIEW', 'CURRENT_REVIEW_CANDIDATE', 'CURRENT_ACCEPTED_HELD']);
-const { driveFileId } = require('./life-skills-marketing-media');
+const { driveFileId, selectedAsset } = require('./life-skills-marketing-media');
 
 function statusDelivery(value) {
   try {
@@ -121,27 +121,25 @@ function usableDimensions(item) {
   return item.width === 1080 && (item.surface === 'FEED' ? item.height === 1350 : item.height === 1920);
 }
 
-function calendarAsset(row, headers, assets, allCreatives = assets) {
+function mediaBindingAvailable(asset, current, conflictingAssetIds) {
+  try {
+    return selectedAsset({ creatives: current, conflictingAssetIds }, { assetId: asset.assetId, revision: asset.revision, digest: asset.contentDigest }) === asset;
+  } catch { return false; }
+}
+
+function calendarAsset(row, headers, assets) {
   // This maintained calendar owns Hebrew WhatsApp Status only. Its exact file,
   // asset/concept, version and hash must all identify ONE matching revision.
   const key = cell(row, headers, 'Asset ID'), concept = key.match(/^LS-MONTH-\d{8}-(\d{2})$/)?.[1];
   let file; try { file = driveFileId(cell(row, headers, 'Asset link')); } catch { return null; }
   const versions = [...cell(row, headers, 'Version / SHA256').matchAll(/\bv(\d+)(?:-derived)?(?:\s+original)?\s*[/|]\s*([a-f0-9]{64})\b/gi)].map(match => ({ revision: Number(match[1]), digest: match[2].toLowerCase() }));
   const matches = assets.filter(asset => {
-    if (asset.locale !== 'he' || !['VERTICAL', 'STATUS'].includes(asset.surface) || !(asset.assetId === key || concept && asset.concept === Number(concept))) return false;
+    if (!CURRENT_STATES.has(asset.libraryState) || asset.locale !== 'he' || !['VERTICAL', 'STATUS'].includes(asset.surface) || !(asset.assetId === key || concept && asset.concept === Number(concept))) return false;
     let source; try { source = driveFileId(asset.imageUrl); } catch { return false; }
     return source === file && versions.filter(version => version.revision === asset.revision && version.digest === asset.contentDigest).length === 1;
   });
   if (matches.length !== 1) return null;
-  const match = matches[0];
-  const currentKeyMatches = allCreatives.filter(asset => CURRENT_STATES.has(asset.libraryState) && asset.assetId === match.assetId);
-  // The media route selects by Asset key first. A matching calendar row is not
-  // operational if that lookup would be ambiguous or invalid in selectedAsset.
-  if (currentKeyMatches.length !== 1 || currentKeyMatches[0] !== match ||
-      !/^[A-Za-z0-9._-]{1,200}$/.test(match.assetId) || match.review === 'retired' ||
-      match.registeredRevision !== true || !Number.isSafeInteger(match.revision) || match.revision < 1 ||
-      !/^[a-f0-9]{64}$/.test(match.contentDigest)) return null;
-  return match;
+  return matches[0];
 }
 
 function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date().toISOString() } = {}) {
@@ -149,6 +147,15 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
   const calendarHeaderRow = calendarRows.findIndex(row => text(row[0]) === 'Slot');
   const calendarHeaders = headerIndex(calendarRows[calendarHeaderRow] || []);
   const calendar = calendarHeaderRow >= 0 ? calendarRows.slice(calendarHeaderRow + 1) : [];
+  // Count CURRENT keys before malformed display rows are rejected. Otherwise
+  // an invalid sibling can silently make a conflicting key look unique.
+  const currentKeys = new Map();
+  for (const row of assetRows.slice(1)) {
+    if (!CURRENT_STATES.has(cell(row, assetHeaders, 'Current library state').toUpperCase())) continue;
+    const key = cell(row, assetHeaders, 'Asset key');
+    currentKeys.set(key, (currentKeys.get(key) || 0) + 1);
+  }
+  const conflictingAssetIds = [...currentKeys].filter(([, count]) => count > 1).map(([key]) => key);
   const contentFiles = [], calendarFiles = [];
   for (const row of assetRows.slice(1)) {
     const surface = cell(row, assetHeaders, 'Surface').toUpperCase();
@@ -181,6 +188,8 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       review,
       approvedDigest: review === 'approved' ? digest : null,
       holdReason: review === 'approved' && libraryState === 'CURRENT_APPROVED' ? null : (cell(row, assetHeaders, 'QA / hold') || cell(row, assetHeaders, 'Readiness') || 'Not approved'),
+      readiness,
+      qa,
       libraryState: libraryState || 'UNRECORDED',
       statusDelivery: statusDelivery(cell(row, assetHeaders, 'Provider delivery')),
     };
@@ -192,7 +201,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
 
   const captions = new Map();
   for (const row of calendar.filter(row => /^D\d+$/i.test(cell(row, calendarHeaders, 'Slot')))) {
-    const asset = calendarAsset(row, calendarHeaders, calendarFiles, contentFiles); if (!asset) continue;
+    const asset = calendarAsset(row, calendarHeaders, calendarFiles); if (!asset) continue;
     const list = captions.get(asset) || [];
     list.push({ approved: ['APPROVED', ...APPROVED_STATES].includes(cell(row, calendarHeaders, 'Exact approval').toUpperCase()), caption: cell(row, calendarHeaders, 'Proposed caption') });
     captions.set(asset, list);
@@ -204,7 +213,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     if (asset.libraryState !== 'CURRENT_ACCEPTED_HELD' && rows?.length === 1 && rows[0].approved) asset.caption = rows[0].caption;
   }
   const current = contentFiles.filter(item => CURRENT_STATES.has(item.libraryState));
-  const approved = current.filter(item => item.review === 'approved' && item.libraryState === 'CURRENT_APPROVED');
+  const approved = current.filter(item => item.review === 'approved' && item.libraryState === 'CURRENT_APPROVED' && mediaBindingAvailable(item, current, conflictingAssetIds));
   const readyStatus = approved.filter(item => item.locale === 'he' && item.width === 1080 && item.height === 1920);
   const readyHeFeed = approved.filter(item => item.locale === 'he' && item.width === 1080 && item.height === 1350);
   const readyEnFeed = approved.filter(item => item.locale === 'en' && item.width === 1080 && item.height === 1350);
@@ -217,7 +226,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const status = cell(row, calendarHeaders, 'WhatsApp Status');
     const scheduler = cell(row, calendarHeaders, 'Scheduler state');
     const receipts = cell(row, calendarHeaders, 'Provider receipts / errors');
-    const matching = calendarAsset(row, calendarHeaders, calendarFiles, contentFiles);
+    const matching = calendarAsset(row, calendarHeaders, calendarFiles);
     const readbackReceipt = verifiedPublicationReceipt(receipts);
     const receiptAsset = readbackReceipt && contentFiles.find(item => item.statusDelivery?.providerReceiptId === readbackReceipt && verifiedStatusDelivery(item.statusDelivery));
     const slotDeliveryAsset = !matching && /^D\d+$/i.test(slot) ? contentFiles.find(item => item.statusDelivery?.anchorSlot === slot && item.locale === 'he' && ['VERTICAL', 'STATUS'].includes(item.surface)) : null;
@@ -234,7 +243,10 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const scheduleBindingMissing = sourceState === 'scheduled' && !matching;
     const scheduleBindingChanged = deliveryState === 'SCHEDULED' && (!deliveryMatches || delivery?.anchorSlot !== slot);
     const futurePublication = ['ready', 'scheduled', 'sending'].includes(sourceState);
-    const bindingUnavailable = futurePublication && !matching;
+    // Use the same current-key and request validation as private delivery.
+    // A unique calendar tuple is insufficient when that key is conflicting.
+    const bindingUnavailable = futurePublication && (!matching ||
+      (CURRENT_STATES.has(matching.libraryState) && !mediaBindingAvailable(matching, current, conflictingAssetIds)));
     // Display acceptance never clears release holds. Preserve historical verified
     // publication/error evidence, but do not advertise a held future slot as ready.
     const releaseAsset = matching || evidenceAsset;
@@ -297,7 +309,8 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     if (!delivery) continue;
     const stateValue = String(delivery.state || 'UNKNOWN').toUpperCase();
     const exactBinding = statusDeliveryMatchesAsset(delivery, item);
-    const scheduledApprovalValid = item.libraryState === 'CURRENT_APPROVED' && item.review === 'approved' &&
+    const explicitApprovalHold = /REVIEW|PENDING|HOLD|BLOCKED|NOT_READY/i.test(`${item.readiness || ''} ${item.qa || ''}`);
+    const scheduledApprovalValid = item.libraryState === 'CURRENT_APPROVED' && item.review === 'approved' && !explicitApprovalHold &&
       item.registeredRevision === true && /^[a-f0-9]{64}$/.test(item.contentDigest) && usableDimensions(item);
     let state;
     if (stateValue === 'PUBLISHED') state = verifiedStatusDelivery(delivery) ? 'published' : 'unknown';
@@ -345,6 +358,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     fetchedAt,
     workbookUrl: WORKBOOK_URL,
     creatives: current,
+    conflictingAssetIds,
     publications,
     inventory: {
       files: Math.max(assetRows.length - 1, 0),

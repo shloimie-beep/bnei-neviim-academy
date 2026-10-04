@@ -4,7 +4,8 @@ const { createHash } = require('node:crypto');
 const { Readable } = require('node:stream');
 const { parseWorkbook, isEligible, nextAllowedIso, nextAsset, record, scheduledIdentityMatches, sameAssetAndSlot, verifiedStoryReadback, hasPriorConceptDelivery,
   validScheduledAt, invalidScheduledHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
-  publisherStatePreflightMatches, successorPreflightMatches, attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
+  publisherStatePreflightMatches, successorPreflightMatches, publicationResultPreflight,
+  attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
 const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-skills-marketing');
 
 const digest = 'a'.repeat(64);
@@ -267,6 +268,14 @@ test('successor reread refuses a changed approval, replacement, Calendar interve
   const scheduled=[...statusRow('C02-EN','EN',JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'SCHEDULED',scheduledAt:'2026-10-05T09:22:08.000Z'}))];scheduled[1]='2';
   assert.equal(successorPreflightMatches(original,parse([hebrew,english,scheduled]),selection,
     {nextLanguage:'EN',publishingAssetId:'C20-HE',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
+  const c02=statusRow('C02-EN','EN');c02[1]='2';
+  const originalC02=parse([hebrew,c02]), selectionC02=nextAsset(originalC02,'EN','D20');
+  const newlyEarlier=statusRow('C01-EN','EN');
+  assert.equal(successorPreflightMatches(originalC02,parse([hebrew,newlyEarlier,c02]),selectionC02,
+    {nextLanguage:'EN',publishingAssetId:'C20-HE',anchorSlot:'D20',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
+  const duplicateConcept=statusRow('C02-EN-copy','EN');duplicateConcept[1]='2';
+  assert.equal(successorPreflightMatches(originalC02,parse([hebrew,c02,duplicateConcept]),selectionC02,
+    {nextLanguage:'EN',publishingAssetId:'C20-HE',anchorSlot:'D20',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
 
   const c21=statusRow('C21-HE','HE');c21[1]='21';
   const d21=Array(15).fill('');Object.assign(d21,{0:'D21',1:'2026-10-05',7:'MEDIA ASSOCIATED — no send queued',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict'});
@@ -276,6 +285,44 @@ test('successor reread refuses a changed approval, replacement, Calendar interve
   const off=[...d21];off[13]='OFF — operator hold';
   assert.equal(successorPreflightMatches(hebrewOriginal,parse([hebrew,c21],[['Slot'],off]),hebrewSelection,
     {nextLanguage:'HE',publishingAssetId:'C20-HE',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
+});
+
+test('provider result reread resolves shifted rows and preserves post-send Calendar interventions',()=>{
+  const sent=statusRow('C20-HE','HE');
+  const calendar=Array(15).fill('');
+  Object.assign(calendar,{0:'D20',1:'2026-10-04',9:url,10:`v04 FROZEN / ${digest}`,11:'Approved',12:'No recorded holiday conflict',7:'MEDIA ASSOCIATED — no send queued'});
+  const parse=(assets,calRows)=>parseWorkbook({data:{valueRanges:[{values:[[],...assets]},{values:calRows}]}});
+  const original=parse([sent],[['Slot'],calendar]);
+  const baselineAsset=original.assets[0], baselineSlot=original.calendar[0];
+  const sending={kind:'LIFE_SKILLS_STATUS_V1',state:'SENDING',assetId:baselineAsset.id,conceptId:baselineAsset.concept,
+    language:baselineAsset.language,surface:baselineAsset.surface,revision:baselineAsset.revision,driveFileId:'abc12345',sha256:digest,
+    queuedAt:'2026-10-04T09:00:00.000Z',scheduledAt:'2026-10-04T09:00:00.000Z',anchorSlot:'D20',reservedAt:'2026-10-04T09:00:01.000Z',submittedAt:'2026-10-04T09:00:02.000Z'};
+  const prepared=[...sent];prepared[21]=JSON.stringify(sending);
+  const marked=[...calendar];marked[7]='SENDING — C20-HE';marked[13]='SENDING — rolling Status publisher';
+  const prior1=[...calendar],prior2=[...calendar];prior1[0]='D18';prior2[0]='D19';
+  const shifted=parse([statusRow('C18-HE','HE'),statusRow('C19-HE','HE'),prepared],[['Slot'],prior1,prior2,marked]);
+  const resolved=publicationResultPreflight(original,shifted,{assetId:sent[0],baselineAsset,baselineSlot,expectedDelivery:sending});
+  assert.equal(resolved.ok,true);assert.equal(resolved.asset.rowNumber,4);assert.equal(resolved.slot.rowNumber,12);
+  assert.equal(resolved.canWriteCalendarReceipt,true);assert.equal(resolved.canUpdateCalendarState,true);
+
+  const held=[...marked];held[7]='OFF — operator hold';held[13]='OFF — preserve operator decision';
+  const heldResult=publicationResultPreflight(original,parse([prepared],[['Slot'],held]),
+    {assetId:sent[0],baselineAsset,baselineSlot,expectedDelivery:sending});
+  assert.equal(heldResult.ok,true);assert.equal(heldResult.canWriteCalendarReceipt,true);assert.equal(heldResult.canUpdateCalendarState,false);
+
+  const changed=[...prepared];changed[10]='https://drive.google.com/file/d/replacement/view';changed[12]='b'.repeat(64);
+  const changedResult=publicationResultPreflight(original,parse([changed],[['Slot'],marked]),
+    {assetId:sent[0],baselineAsset,baselineSlot,expectedDelivery:sending});
+  assert.equal(changedResult.ok,true);assert.equal(changedResult.assetBindingChanged,true);
+
+  const replacedCalendar=[...marked];replacedCalendar[9]='https://drive.google.com/file/d/replacement/view';
+  const calendarChanged=publicationResultPreflight(original,parse([prepared],[['Slot'],replacedCalendar]),
+    {assetId:sent[0],baselineAsset,baselineSlot,expectedDelivery:sending});
+  assert.equal(calendarChanged.ok,true);assert.equal(calendarChanged.canWriteCalendarReceipt,false);assert.equal(calendarChanged.canUpdateCalendarState,false);
+
+  const alteredDelivery=[...prepared];alteredDelivery[21]=JSON.stringify({...sending,state:'UNKNOWN',error:'operator reconciliation'});
+  assert.equal(publicationResultPreflight(original,parse([alteredDelivery],[['Slot'],marked]),
+    {assetId:sent[0],baselineAsset,baselineSlot,expectedDelivery:sending}).ok,false);
 });
 
 test('a Status is confirmed only by a read provider story with matching ID and dimensions', () => {

@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const { parseWorkbook, publicationState, readLifeSkillsMarketingSnapshot } = require('../src/lib/bna/life-skills-marketing');
+const { selectedAsset } = require('../src/lib/bna/life-skills-marketing-media');
 
 const digest = 'a'.repeat(64);
 const headers=['Asset key','Concept','Language','Surface','Revision','Kind','Width px','Height px','Approval','Verification','Drive file / archive','Archive member / locator','SHA256','Source / parent','Approval evidence','Prompt / job source','Provider job / ref','Template','QA / hold','Release date (planned)','Calendar slot','Provider delivery','Filename','Record evidence','Ingest date','Readiness','Current library state'];
@@ -99,6 +100,55 @@ test('bound future records retain artwork, placement and caption approval gates 
  }
  const row=exactCalendar(1,'');row[6]='QUEUED';const result=parseWorkbook({assetRows:[headers,approvedStatus()],calendarRows:[exactCalendarHeaders,row]});assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].errorCode,'ASSET_PUBLICATION_HELD');assert.equal(result.inventory.queued,0);
 });
+
+for(const planned of ['READY','QUEUED','SENDING'])test(`${planned} cannot use conflicting current asset keys even when one exact tuple matches`,()=>{
+ for(const patch of [{4:'r2'},{10:'https://drive.google.com/file/d/another_status/view'},{12:'b'.repeat(64)},{4:'canonical'}]){
+  const asset=approvedStatus(),sibling=[...asset];Object.assign(sibling,patch);
+  const row=exactCalendar(1,'Exact caption');row[6]=planned;
+  const result=parseWorkbook({assetRows:[headers,asset,sibling],calendarRows:[exactCalendarHeaders,row]});
+  assert.throws(()=>selectedAsset(result,{assetId:asset[0],revision:1,digest}),error=>error.code==='ASSET_REGISTRY_CONFLICT');
+  assert.equal(result.publications[0].state,planned==='SENDING'?'sending':'draft');assert.equal(result.publications[0].errorCode,'ASSET_BINDING_UNAVAILABLE');assert.equal(result.publications[0].provider,'unbound');
+  assert.equal(result.inventory.queued,0);assert.equal(result.inventory.publishablePosts,0);assert.equal(result.inventory.heStatusReady,0);
+ }
+});
+for(const planned of ['READY','QUEUED','SENDING'])test(`${planned} requires a valid private-delivery asset key`,()=>{
+ for(const key of ['bad asset key','', 'x'.repeat(201)]){
+  const asset=approvedStatus();asset[0]=key;const row=exactCalendar(1,'Exact caption');row[6]=planned;
+  const result=parseWorkbook({assetRows:[headers,asset],calendarRows:[exactCalendarHeaders,row]});
+  assert.throws(()=>selectedAsset(result,{assetId:key,revision:1,digest}),error=>error.code==='INVALID_ASSET_REQUEST');
+  assert.equal(result.publications[0].state,planned==='SENDING'?'sending':'draft');assert.equal(result.publications[0].errorCode,'ASSET_BINDING_UNAVAILABLE');assert.equal(result.inventory.queued,0);assert.equal(result.inventory.publishablePosts,0);
+ }
+});
+test('a retired duplicate key does not block the unique current private original',()=>{
+ const asset=approvedStatus(),retired=[...asset];retired[4]='r2';retired[26]='SUPERSEDED';
+ const row=exactCalendar(1,'Exact caption');row[6]='QUEUED';
+ const result=parseWorkbook({assetRows:[headers,asset,retired],calendarRows:[exactCalendarHeaders,row]});
+ assert.equal(selectedAsset(result,{assetId:asset[0],revision:1,digest}),result.creatives[0]);assert.equal(result.publications[0].state,'scheduled');assert.equal(result.inventory.publishablePosts,1);
+});
+
+for(const [field,value] of [[12,''],[12,'b'.repeat(63)],[12,'z'.repeat(64)],[2,''],[2,'FR'],[3,''],[3,'OTHER']])test(`a rejected CURRENT sibling still fences its key: column${field}/${value}`,()=>{
+ for(const state of ['READY','QUEUED','SENDING']){
+  const asset=approvedStatus(),sibling=[...asset];sibling[field]=value;
+  const slot=exactCalendar(1,'Exact caption');slot[6]=state;
+  const result=parseWorkbook({assetRows:[headers,asset,sibling],calendarRows:[exactCalendarHeaders,slot]});
+  assert.equal(result.creatives.length,1);
+  assert.throws(()=>selectedAsset(result,{assetId:asset[0],revision:1,digest}),error=>error.code==='ASSET_REGISTRY_CONFLICT');
+  assert.equal(result.publications[0].state,state==='SENDING'?'sending':'draft');assert.equal(result.publications[0].errorCode,'ASSET_BINDING_UNAVAILABLE');assert.equal(result.inventory.publishablePosts,0);assert.equal(result.inventory.queued,0);assert.equal(result.inventory.heStatusReady,0);
+ }
+});
+
+test('a rejected non-current sibling does not fence the valid current asset',()=>{
+ const asset=approvedStatus(),retired=[...asset];retired[12]='';retired[26]='SUPERSEDED';
+ const slot=exactCalendar(1,'Exact caption');slot[6]='QUEUED';
+ const result=parseWorkbook({assetRows:[headers,asset,retired],calendarRows:[exactCalendarHeaders,slot]});
+ assert.equal(selectedAsset(result,{assetId:asset[0],revision:1,digest}),result.creatives[0]);assert.equal(result.inventory.publishablePosts,1);assert.equal(result.publications[0].state,'scheduled');
+});
+test('conflicting current keys do not erase a verified historical publication receipt',()=>{
+ const asset=approvedStatus(),sibling=[...asset];sibling[4]='r2';
+ const row=exactCalendar(1,'Historical caption');row[6]='PUBLISHED';row.push(`WHAPI: synthetic-receipt; GET /messages/synthetic-receipt returned HTTP200, type=story; exact asset ${asset[0]} SHA256 ${digest}`);
+ const result=parseWorkbook({assetRows:[headers,asset,sibling],calendarRows:[[...exactCalendarHeaders,'Provider receipts / errors'],row]});
+ assert.equal(result.publications[0].state,'published');assert.equal(result.publications[0].providerReceiptId,'synthetic-receipt');assert.equal(result.inventory.published,1);
+});
 test('later artwork holds do not erase historical verified publication receipt evidence',()=>{
  const held=approvedStatus();held[8]='OWNER_ACCEPTED_DISPLAYED_BATCH';held[26]='CURRENT_ACCEPTED_HELD';
  const row=exactCalendar(1,'Historical caption');row[6]='PUBLISHED';row.push(`WHAPI: synthetic-receipt; Direct Whapi GET /messages/synthetic-receipt returned HTTP200, type=story; exact asset DEMO-HE-STATUS-r1 SHA256 ${digest}`);
@@ -130,7 +180,7 @@ test('duplicate current Asset keys cannot project an actionable publication the 
  const asset=approvedStatus(),collision=approvedStatus(2,'b'.repeat(64));collision[0]=asset[0];collision[10]='https://drive.google.com/file/d/another_status/view';
  const row=exactCalendar(1,'Approved exact caption');row[6]='QUEUED';
  const result=parseWorkbook({assetRows:[headers,asset,collision],calendarRows:[exactCalendarHeaders,row]});
- assert.equal(result.creatives[0].caption,'');assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].provider,'unbound');assert.equal(result.publications[0].errorCode,'SCHEDULED_ASSET_BINDING_MISSING');assert.equal(result.inventory.queued,0);
+  assert.equal(result.creatives[0].caption,'Approved exact caption');assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].provider,'unbound');assert.equal(result.publications[0].errorCode,'ASSET_BINDING_UNAVAILABLE');assert.equal(result.inventory.queued,0);
 });
 test('calendar binding requires an explicit valid registry revision instead of display fallback',()=>{
  for(const revision of ['', 'canonical', 'unknown revision 1', 'v1junk', 'r0', 'v1/v2']){
@@ -148,10 +198,14 @@ test('an explicit corrected row cannot lend its approved caption to a legacy mal
   for(const revision of ['', 'canonical', 'unknown revision 1', 'v1junk', 'r0', 'v1/v2']){
   const explicit=approvedStatus(),legacy=[...explicit];legacy[4]=revision;
   const result=parseWorkbook({assetRows:[headers,explicit,legacy],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Only the explicit row')]});
-   assert.equal(result.creatives[0].caption,'',revision);assert.equal(result.creatives[1].caption,'',revision);assert.equal(result.inventory.publishablePosts,0,revision);assert.equal(result.publications[0].state,'draft',revision);
+  assert.equal(result.creatives[0].caption,'Only the explicit row',revision);assert.equal(result.creatives[1].caption,'',revision);
+  // The exact row still owns its caption, but duplicate current private keys
+  // are unavailable for delivery and cannot count as usable publications.
+  assert.equal(result.inventory.publishablePosts,0,revision);
+  assert.throws(()=>selectedAsset(result,{assetId:explicit[0],revision:1,digest}),error=>error.code==='ASSET_REGISTRY_CONFLICT');
  }
  const a=approvedStatus(),b=[...a];b[10]='https://drive.google.com/file/d/another_status/view';
-  const matched=parseWorkbook({assetRows:[headers,a,b],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Only exact file')]});assert.equal(matched.creatives[0].caption,'');assert.equal(matched.creatives[1].caption,'');assert.equal(matched.publications[0].state,'draft');assert.equal(matched.inventory.queued,0);
+  const matched=parseWorkbook({assetRows:[headers,a,b],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Only exact file')]});assert.equal(matched.creatives[0].caption,'Only exact file');assert.equal(matched.creatives[1].caption,'');assert.equal(matched.publications[0].state,'draft');assert.equal(matched.inventory.publishablePosts,0);assert.equal(matched.inventory.queued,0);
 });
 
 function publisherDelivery(asset, state, extra={}) {
@@ -182,6 +236,21 @@ test('a standalone scheduled Status requires current approval, review clearance,
   row=>{row[26]='CURRENT_REVIEW_CANDIDATE';},
   row=>{row[26]='SUPERSEDED';},
   row=>{row[7]='1350';},
+ ]){
+  const asset=approvedStatus();asset[2]='EN';asset[8]='OWNER_APPROVED_EXACT_FILE';
+  asset[21]=publisherDelivery(asset,'SCHEDULED',{language:'EN',anchorSlot:'D20'});change(asset);
+  const result=parseWorkbook({assetRows:[headers,asset],calendarRows:[exactCalendarHeaders]});
+  assert.equal(result.publications.length,1);assert.equal(result.publications[0].state,'draft');
+  assert.equal(result.publications[0].errorCode,'SCHEDULED_ASSET_APPROVAL_REVOKED');assert.equal(result.inventory.queued,0);
+ }
+});
+
+test('Readiness and QA holds override approved state in the scheduled marketing projection',()=>{
+ for(const change of [
+  row=>{row[25]='HOLD — owner review required';},
+  row=>{row[25]='PENDING — exact approval';},
+  row=>{row[25]='REVIEW — current export';},
+  row=>{row[18]='QA HOLD — do not publish';},
  ]){
   const asset=approvedStatus();asset[2]='EN';asset[8]='OWNER_APPROVED_EXACT_FILE';
   asset[21]=publisherDelivery(asset,'SCHEDULED',{language:'EN',anchorSlot:'D20'});change(asset);
