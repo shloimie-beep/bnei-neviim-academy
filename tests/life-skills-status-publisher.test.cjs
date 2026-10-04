@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const test = require('node:test');
 const { createHash } = require('node:crypto');
 const { Readable } = require('node:stream');
-const { parseWorkbook, nextAllowedIso, nextAsset, record, scheduledIdentityMatches, sameAssetAndSlot, verifiedStoryReadback, hasPriorConceptDelivery,
+const { parseWorkbook, isEligible, nextAllowedIso, nextAsset, record, scheduledIdentityMatches, sameAssetAndSlot, verifiedStoryReadback, hasPriorConceptDelivery,
   validScheduledAt, invalidScheduledHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
   publisherStatePreflightMatches, successorPreflightMatches, attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
 const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-skills-marketing');
@@ -40,6 +40,16 @@ test('next English asset excludes an already published exact revision', () => {
   pending.assets[0].deliveryText = JSON.stringify({ kind: 'LIFE_SKILLS_STATUS_V1', state: 'PUBLISHED' });
   pending.assets[0].delivery = record(pending.assets[0].deliveryText);
   assert.equal(nextAsset(pending, 'EN').id, 'C02-EN');
+});
+
+test('Asset Registry Readiness HOLD, PENDING, and REVIEW values block automatic eligibility',()=>{
+  for(const readiness of ['HOLD — owner review required','PENDING exact approval','REVIEW current export']){
+    const asset=statusRow('C01-EN','EN');asset[25]=readiness;
+    const workbook=parseWorkbook({data:{valueRanges:[{values:[[],asset]},{values:[['Slot']]}]}});
+    assert.equal(workbook.assets[0].readiness,readiness.toUpperCase());
+    assert.equal(isEligible(workbook.assets[0]),false,readiness);
+    assert.equal(nextAsset(workbook,'EN'),null,readiness);
+  }
 });
 
 test('multiple eligible English assets for the next concept produce durable holds instead of row-order selection', () => {
@@ -208,6 +218,8 @@ test('reservation reread blocks changed Asset Registry approval and Calendar hol
   const original=parse(asset,calendar);
   const changedApproval=[...asset];changedApproval[8]='REVIEW';changedApproval[26]='CURRENT_REVIEW';
   assert.equal(reservationPreflightMatches(original,parse(changedApproval,calendar),{initial:true,assetId:'C20-HE',anchorSlot:'D20',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
+  const changedReadiness=[...asset];changedReadiness[25]='HOLD — owner review required';
+  assert.equal(reservationPreflightMatches(original,parse(changedReadiness,calendar),{initial:true,assetId:'C20-HE',anchorSlot:'D20',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
   const heldCalendar=[...calendar];heldCalendar[13]='OFF — operator hold';
   assert.equal(reservationPreflightMatches(original,parse(asset,heldCalendar),{initial:true,assetId:'C20-HE',anchorSlot:'D20',now:Date.parse('2026-10-04T09:00:00.000Z')}).ok,false);
 });

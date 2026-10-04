@@ -28,13 +28,13 @@ function isEligible(asset) {
     ['OWNER_APPROVED', 'OWNER_APPROVED_EXACT_FILE'].includes(asset.approval) &&
     asset.libraryState === 'CURRENT_APPROVED' && /^[a-f0-9]{64}$/.test(asset.digest) &&
     /^https:\/\/drive\.google\.com\/file\/d\/[A-Za-z0-9_-]+\//.test(asset.url) &&
-    !/REJECT|HOLD|SUPERSEDED|DO_NOT_USE/i.test(asset.qa);
+    !/REJECT|HOLD|PENDING|REVIEW|SUPERSEDED|DO_NOT_USE/i.test(`${asset.qa} ${asset.readiness}`);
 }
 function assetFromRow(row, rowNumber) {
   return { rowNumber, id: value(row, 0), concept: Number(value(row, 1)) || null,
     language: value(row, 2).toUpperCase(), surface: value(row, 3).toUpperCase(), revision: value(row, 4),
     width: Number(value(row, 6)), height: Number(value(row, 7)), approval: value(row, 8).toUpperCase(),
-    url: value(row, 10), digest: value(row, 12).toLowerCase(), qa: value(row, 18),
+    url: value(row, 10), digest: value(row, 12).toLowerCase(), qa: value(row, 18), readiness: value(row, 25).toUpperCase(),
     planned: value(row, 19), slot: value(row, 20), deliveryText: value(row, 21),
     delivery: record(value(row, 21)), libraryState: value(row, 26).toUpperCase() };
 }
@@ -261,7 +261,7 @@ function sameDelivery(left, right) {
 }
 function sameAssetSource(left, right) {
   return ['rowNumber', 'id', 'concept', 'language', 'surface', 'revision', 'width', 'height', 'approval',
-    'url', 'digest', 'qa', 'planned', 'slot', 'libraryState'].every(key => left?.[key] === right?.[key]);
+    'url', 'digest', 'qa', 'readiness', 'planned', 'slot', 'libraryState'].every(key => left?.[key] === right?.[key]);
 }
 function sameCalendarSource(left, right) {
   return ['rowNumber', 'slot', 'date', 'day', 'status', 'assetUrl', 'version', 'approval', 'quiet', 'scheduler', 'receipts']
