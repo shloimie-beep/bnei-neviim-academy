@@ -78,6 +78,21 @@ test('held exact artwork without a calendar record is still counted as held, not
  const held=approvedStatus();held[8]='OWNER_ACCEPTED_DISPLAYED_BATCH';held[26]='CURRENT_ACCEPTED_HELD';
  const result=parseWorkbook({assetRows:[headers,held]});assert.equal(result.inventory.heldMissing,1);assert.equal(result.inventory.publishablePosts,0);assert.equal(result.publications.length,0);
 });
+
+for(const planned of ['READY','QUEUED','SENDING'])test(`${planned} requires a unique exact current asset binding before it can be operational`,()=>{
+ for(const patch of [{5:'https://drive.google.com/file/d/wrong_original/view'},{1:'LS-MONTH-20260914-04'},{3:`v2 / ${digest}`},{3:`v1 / ${'b'.repeat(64)}`}]){
+  const row=exactCalendar(1,'Exact approved caption');row[6]=planned;Object.assign(row,patch);
+  const result=parseWorkbook({assetRows:[headers,approvedStatus()],calendarRows:[exactCalendarHeaders,row]});
+  assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].errorCode,'ASSET_BINDING_UNAVAILABLE');assert.equal(result.publications[0].provider,'unbound');assert.equal(result.publications[0].providerReceiptId,null);assert.equal(result.inventory.queued,0);assert.equal(result.inventory.heldMissing,1);
+ }
+});
+test('bound future records retain artwork, placement and caption approval gates without erasing verified history',()=>{
+ for(const patch of [{8:'REVIEW',26:'CURRENT_REVIEW'},{26:'SUPERSEDED'},{7:'1350'}]){
+  const asset=approvedStatus();Object.assign(asset,patch);const row=exactCalendar(1,'Caption');row[6]='QUEUED';
+  const result=parseWorkbook({assetRows:[headers,asset],calendarRows:[exactCalendarHeaders,row]});assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].errorCode,'ASSET_PUBLICATION_HELD');assert.equal(result.inventory.queued,0);
+ }
+ const row=exactCalendar(1,'');row[6]='QUEUED';const result=parseWorkbook({assetRows:[headers,approvedStatus()],calendarRows:[exactCalendarHeaders,row]});assert.equal(result.publications[0].state,'draft');assert.equal(result.publications[0].errorCode,'ASSET_PUBLICATION_HELD');assert.equal(result.inventory.queued,0);
+});
 test('later artwork holds do not erase historical verified publication receipt evidence',()=>{
  const held=approvedStatus();held[8]='OWNER_ACCEPTED_DISPLAYED_BATCH';held[26]='CURRENT_ACCEPTED_HELD';
  const row=exactCalendar(1,'Historical caption');row[6]='PUBLISHED';row.push('WHAPI: synthetic-receipt; Direct Whapi GET /messages/synthetic-receipt returned HTTP200, type=story');

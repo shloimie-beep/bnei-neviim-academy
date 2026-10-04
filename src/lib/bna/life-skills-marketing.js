@@ -173,11 +173,14 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const receipts = cell(row, calendarHeaders, 'Provider receipts / errors');
     const sourceState = publicationState(status, scheduler, receipts);
     const matching = calendarAsset(row, calendarHeaders, calendarFiles);
+    const futurePublication = ['ready', 'scheduled', 'sending'].includes(sourceState);
+    const bindingUnavailable = futurePublication && !matching;
     // Display acceptance never clears release holds. Preserve historical verified
     // publication/error evidence, but do not advertise a held future slot as ready.
-    const publicationHeld = matching?.libraryState === 'CURRENT_ACCEPTED_HELD' &&
-      (['ready', 'scheduled', 'sending'].includes(sourceState) || (publicationClaimed(status, scheduler) && !verifiedPublicationReceipt(receipts)));
-    const state = publicationHeld ? 'draft' : sourceState;
+    const publicationHeld = !!matching &&
+      ((futurePublication && (matching.libraryState !== 'CURRENT_APPROVED' || matching.review !== 'approved' || !matching.caption || !usableDimensions(matching))) ||
+       (matching.libraryState === 'CURRENT_ACCEPTED_HELD' && publicationClaimed(status, scheduler) && !verifiedPublicationReceipt(receipts)));
+    const state = bindingUnavailable || publicationHeld ? 'draft' : sourceState;
     const digest = matching?.contentDigest || '';
     const assetId = matching?.assetId || cell(row, calendarHeaders, 'Asset ID');
     const providerReceiptId = state === 'published' ? verifiedPublicationReceipt(receipts) : null;
@@ -197,7 +200,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       postUrl: null,
       receiptKind: state === 'published' && providerReceiptId ? 'publication' : 'unknown',
       manualReportedAt: null,
-      errorCode: publicationHeld ? 'ASSET_PUBLICATION_HELD' : ['failed', 'unknown', 'draft'].includes(state) ? (status || scheduler || null) : null,
+      errorCode: bindingUnavailable ? 'ASSET_BINDING_UNAVAILABLE' : publicationHeld ? 'ASSET_PUBLICATION_HELD' : ['failed', 'unknown', 'draft'].includes(state) ? (status || scheduler || null) : null,
     };
   });
 
