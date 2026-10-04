@@ -74,3 +74,14 @@ test('calendar source binds the actual Status derivative and rejects different f
  const result=parseWorkbook({assetRows:[headers,feed,status],calendarRows:[exactCalendarHeaders,row]});assert.equal(result.creatives[0].caption,'');assert.equal(result.creatives[1].caption,'Exact approved derivative');assert.equal(result.publications[0].assetId,status[0]);assert.equal(result.publications[0].creativeDigest,derived);
  for(const patch of [{1:'LS-MONTH-20260914-04'},{5:'https://drive.google.com/file/d/another_status/view'},{3:`v01 / ${derived}`},{4:'Pending'}]){const changed=[...row];Object.assign(changed,patch);assert.equal(parseWorkbook({assetRows:[headers,status],calendarRows:[exactCalendarHeaders,changed]}).creatives[0].caption,'');}
 });
+test('calendar binding requires an explicit valid registry revision instead of display fallback',()=>{
+ for(const revision of ['', 'canonical', 'unknown revision 1', 'v1junk', 'r0', 'v1/v2']){
+  const asset=approvedStatus();asset[4]=revision;
+  const result=parseWorkbook({assetRows:[headers,asset],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Must not attach')]});
+  assert.equal(result.creatives[0].caption,'',revision);assert.equal(result.inventory.publishablePosts,0,revision);assert.equal(result.publications[0].creativeDigest,'',revision);
+ }
+ for(const revision of ['r01','v01','1','v01-derived','v01/BOLD','NUMERIC-v01']){
+  const asset=approvedStatus();asset[4]=revision;
+  assert.equal(parseWorkbook({assetRows:[headers,asset],calendarRows:[exactCalendarHeaders,exactCalendar(1,'Explicit version')]}).creatives[0].caption,'Explicit version',revision);
+ }
+});

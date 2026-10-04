@@ -60,6 +60,11 @@ function creativeReview(approval, libraryState, readiness, qa) {
   if (combined.includes('REVIEW') || combined.includes('PENDING') || combined.includes('HOLD')) return 'in_review';
   return 'draft';
 }
+function explicitRevisionNumber(value) {
+  const match = text(value).match(/^(?:NUMERIC-)?[vr]?(\d+)(?:-derived)?(?:\/(?:BOLD|APPB))?$/i);
+  const revision = match ? Number(match[1]) : null;
+  return Number.isSafeInteger(revision) && revision > 0 && revision <= 999999 ? revision : null;
+}
 
 function sourceLink(value, fallback) {
   try { const url = new URL(value); if (url.protocol === 'https:') return url.href; } catch { /* Registry evidence may be prose, not a link. */ }
@@ -89,7 +94,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
   const calendarHeaderRow = calendarRows.findIndex(row => text(row[0]) === 'Slot');
   const calendarHeaders = headerIndex(calendarRows[calendarHeaderRow] || []);
   const calendar = calendarHeaderRow >= 0 ? calendarRows.slice(calendarHeaderRow + 1) : [];
-  const contentFiles = [];
+  const contentFiles = [], calendarFiles = [];
   for (const row of assetRows.slice(1)) {
     const surface = cell(row, assetHeaders, 'Surface').toUpperCase();
     const digest = cell(row, assetHeaders, 'SHA256').toLowerCase();
@@ -103,7 +108,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const locale = cell(row, assetHeaders, 'Language').toLowerCase();
     if (!['he', 'en'].includes(locale)) continue;
     const imageUrl = cell(row, assetHeaders, 'Drive file / archive') || null;
-    contentFiles.push({
+    const asset = {
       assetId: cell(row, assetHeaders, 'Asset key'),
       concept,
       revision: revisionNumber(cell(row, assetHeaders, 'Revision')),
@@ -120,12 +125,16 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
       approvedDigest: review === 'approved' ? digest : null,
       holdReason: review === 'approved' ? null : (cell(row, assetHeaders, 'QA / hold') || cell(row, assetHeaders, 'Readiness') || 'Not approved'),
       libraryState: libraryState || 'UNRECORDED',
-    });
+    };
+    contentFiles.push(asset);
+    // Keep legacy display metadata visible, but never use its implicit fallback
+    // as evidence that a calendar row belongs to this exact registry revision.
+    if (explicitRevisionNumber(cell(row, assetHeaders, 'Revision')) === asset.revision) calendarFiles.push(asset);
   }
 
   const captions = new Map();
   for (const row of calendar.filter(row => /^D\d+$/i.test(cell(row, calendarHeaders, 'Slot')))) {
-    const asset = calendarAsset(row, calendarHeaders, contentFiles); if (!asset) continue;
+    const asset = calendarAsset(row, calendarHeaders, calendarFiles); if (!asset) continue;
     const identity = `${asset.assetId}:${asset.revision}:${asset.contentDigest}`, list = captions.get(identity) || [];
     list.push({ approved: ['APPROVED', ...APPROVED_STATES].includes(cell(row, calendarHeaders, 'Exact approval').toUpperCase()), caption: cell(row, calendarHeaders, 'Proposed caption') });
     captions.set(identity, list);
@@ -149,7 +158,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     const scheduler = cell(row, calendarHeaders, 'Scheduler state');
     const receipts = cell(row, calendarHeaders, 'Provider receipts / errors');
     const state = publicationState(status, scheduler, receipts);
-    const matching = calendarAsset(row, calendarHeaders, contentFiles);
+    const matching = calendarAsset(row, calendarHeaders, calendarFiles);
     const digest = matching?.contentDigest || '';
     const assetId = matching?.assetId || cell(row, calendarHeaders, 'Asset ID');
     const providerReceiptId = state === 'published' ? parseReceipt(receipts) : null;
