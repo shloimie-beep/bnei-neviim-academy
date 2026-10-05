@@ -67605,6 +67605,13 @@ function oneTimeProviderLeadBotTelegramApproved() {
 }
 
 function wapiCredentialsForScope(scope = {}) {
+  // Native Life Skills sends may never fall back to another application's token.
+  if (scope.life_skills_native === true) return {
+    token: usableSecretValue(process.env.LIFE_SKILLS_WAPI_API_TOKEN),
+    baseUrl: WAPI_API_BASE_URL,
+    credential_scope: 'life_skills_scoped',
+    one_time_scope: false,
+  };
   const oneTimeScope = isOneTimeWapiScope(scope);
   const scopedToken = oneTimeScope ? ONE_TIME_WAPI_API_TOKEN : '';
   return {
@@ -68611,8 +68618,9 @@ async function sendWapiTextMessage({
   timeoutMs = WAPI_SEND_TIMEOUT_MS,
   workspace_key = '',
   project_key = '',
+  life_skills_native = false,
 }) {
-  const credentials = wapiCredentialsForScope({ workspace_key, project_key });
+  const credentials = wapiCredentialsForScope({ workspace_key, project_key, life_skills_native });
   if (!credentials.token) {
     const error = new Error('WAPI_API_TOKEN or WHAPI_API_TOKEN is not configured for outbound WhatsApp sending');
     error.statusCode = 503;

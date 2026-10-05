@@ -26,7 +26,9 @@ function validateNativeSend(input, env) {
     throw failure('NATIVE_SEND_AUTHORITY_HELD', 423);
   if (!binding.ready || input.bindingSha256 !== binding.bindingSha256)
     throw failure('NATIVE_SEND_BINDING_UNAVAILABLE', 503);
-  return { ...input, digest: crypto.createHmac('sha256', binding.secret)
+  if (typeof env.LIFE_SKILLS_WAPI_API_TOKEN !== 'string' || !env.LIFE_SKILLS_WAPI_API_TOKEN.trim())
+    throw failure('NATIVE_SEND_CREDENTIAL_UNAVAILABLE', 503);
+  return { ...input, digest: crypto.createHash('sha256')
     .update('life-skills-native-send/v1\n').update(JSON.stringify([...allowed].map(key => input[key]))).digest('hex') };
 }
 
@@ -75,7 +77,7 @@ async function deliverNativeProspectMessage(input, {env, pool, createAttempt, up
     throw error;
   } finally { db.release(); }
   // No retry here: the app retains its encrypted intent on any unknown outcome.
-  const sent = await send({to:request.phone, body:request.body, workspace_key:'', project_key:''});
+  const sent = await send({to:request.phone, body:request.body, life_skills_native:true});
   const id = messageId(sent.response);
   if (typeof id !== 'string' || !id || id.length > 200) throw failure('NATIVE_SEND_OUTCOME_UNRESOLVED', 503);
   const saved = await updateResult(attempt.id, {sendResult:sent, summary:'Life Skills practitioner WhatsApp sent'});

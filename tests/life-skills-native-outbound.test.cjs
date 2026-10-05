@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const {nativeEpoch, validateNativeSend, deliverNativeProspectMessage} = require('../src/lib/bna/life-skills-native-outbound');
 const {forwardConfig} = require('../src/lib/bna/life-skills-app-inbound');
 const env = {LIFE_SKILLS_CRM_WRITER_MODE:'capture_only', LIFE_SKILLS_CRM_WRITER_EPOCH:nativeEpoch(4),
+  LIFE_SKILLS_WAPI_API_TOKEN:'synthetic-life-skills-only-token',
   LIFE_SKILLS_APP_INBOUND_FORWARD_ENABLED:'true', LIFE_SKILLS_APP_BRIDGE_SECRET:'synthetic-bridge-secret-for-isolated-unit-tests',
   LIFE_SKILLS_WAPI_CHANNEL_ID:'synthetic-channel', LIFE_SKILLS_SHEET_CRM_ENABLED:'true',
   LIFE_SKILLS_SHEET_CRM_CONFIRM:'APPROVE_LIFE_SKILLS_SHEET_CRM_INBOUND_UPSERT'};
@@ -18,7 +19,7 @@ function fixture() {
   },release(){calls.release++;}};
   const d={env:{...env},pool:{async connect(){calls.connect++;return db;}},
     async createAttempt(args){calls.create++; const row={id:++sequence,body:args.messageBody,metadata:{...args.metadata,recipient_phone:args.recipient.phone,delivery_status:'attempted'},source_context:args.sourceContext};rows.push(row);return row;},
-    async send(){calls.send++;return {status:200,response:{id:'synthetic-provider-message-001'}};},
+    async send(args){assert.equal(args.life_skills_native,true);assert.equal(args.workspace_key,undefined);calls.send++;return {status:200,response:{id:'synthetic-provider-message-001'}};},
     messageId:r=>r.id,
     async updateResult(id,{sendResult}){calls.update++; const row=rows.find(r=>r.id===id);row.metadata={...row.metadata,
       delivery_status:'sent',wapi_message_id:sendResult.response.id,checked_at:'2026-10-05T09:00:00.000Z'};return row;}};
@@ -40,6 +41,11 @@ test('binding or disabled existing forward consent fails before ledger/provider'
     assert.equal(f.calls.connect,0);
   }
 });
+test('missing scoped credential fails before an attempt even when a generic token exists',async()=>{
+  const f=fixture();Object.assign(f.d.env,{LIFE_SKILLS_WAPI_API_TOKEN:'',WAPI_API_TOKEN:'synthetic-unrelated'});
+  await assert.rejects(deliverNativeProspectMessage(input(),f.d),{code:'NATIVE_SEND_CREDENTIAL_UNAVAILABLE'});
+  assert.equal(f.calls.connect,0);assert.equal(f.calls.send,0);
+});
 test('rejects DEMO, extra fields, malformed recipient/group, operation, epoch and message', ()=>{
   for(const override of [{recordMode:'demo'},{role:'practitioner'},{phone:'15555550123@g.us'},{phone:'+012345678'},
     {operationId:'not-uuid'},{authorityEpoch:NaN},{authorityEpoch:0},{authorityEpoch:1.2},{authorityEpoch:1000000001},
@@ -57,6 +63,29 @@ test('reused operation with changed exact body or recipient cannot send', async(
   for(const change of [{body:'Different message'},{phone:'+15555550124'},{leadId:'LS-LEAD-other'}])
     await assert.rejects(deliverNativeProspectMessage({...input(),...change},f.d),{code:'NATIVE_SEND_OPERATION_CONFLICT'});
   assert.equal(f.calls.send,1);
+});
+test('bridge-auth secret rotation preserves confirmed and unresolved operation identities', async()=>{
+  for(const unresolved of [false,true]){
+    const f=fixture();
+    if(unresolved)f.d.send=async()=>{f.calls.send++;throw Error('timeout');};
+    if(unresolved)await assert.rejects(deliverNativeProspectMessage(input(),f.d),/timeout/);
+    else await deliverNativeProspectMessage(input(),f.d);
+    f.d.env.LIFE_SKILLS_APP_BRIDGE_SECRET='different-synthetic-bridge-secret-after-rotation';
+    if(unresolved)await assert.rejects(deliverNativeProspectMessage(input(),f.d),{code:'NATIVE_SEND_OUTCOME_UNRESOLVED'});
+    else assert.equal((await deliverNativeProspectMessage(input(),f.d)).replaySuppressed,true);
+    assert.equal(f.calls.send,1);
+  }
+});
+test('native provider credential selection cannot fall back to generic or One Time credentials',()=>{
+  const source=fs.readFileSync(require.resolve('../server.js'),'utf8');
+  const code=source.slice(source.indexOf('function wapiCredentialsForScope('),source.indexOf('function oneTimeWapiAutoReplyMessage('));
+  const resolve=new Function('usableSecretValue','process','WAPI_API_BASE_URL','isOneTimeWapiScope','ONE_TIME_WAPI_API_TOKEN','WAPI_API_TOKEN',`${code};return wapiCredentialsForScope;`);
+  for(const token of ['', 'synthetic-life-skills-token']){
+    const choose=resolve(value=>value||'',{env:{LIFE_SKILLS_WAPI_API_TOKEN:token}},'https://gate.whapi.cloud',()=>true,'synthetic-other-scoped','synthetic-generic');
+    assert.equal(choose({life_skills_native:true}).token,token);
+    assert.equal(choose({life_skills_native:true}).credential_scope,'life_skills_scoped');
+  }
+  assert.match(source,/wapiCredentialsForScope\(\{ workspace_key, project_key, life_skills_native \}\)/);
 });
 test('same-day browser retry with a new operation reuses confirmed receipt; changed phone conflicts',async()=>{
   const f=fixture();await deliverNativeProspectMessage(input(),f.d);
