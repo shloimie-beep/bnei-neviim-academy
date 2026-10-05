@@ -55,6 +55,7 @@ const {
   LifeSkillsAppInboundOutbox,
 } = require('./src/lib/bna/life-skills-app-inbound');
 const { createOutboxPool: createLifeSkillsAppInboundPool } = require('./src/lib/bna/life-skills-inbound-database');
+const { deliverNativeProspectMessage } = require('./src/lib/bna/life-skills-native-outbound');
 const { readLifeSkillsMarketingSnapshot } = require('./src/lib/bna/life-skills-marketing');
 const { readLifeSkillsMarketingMedia, MarketingMediaError } = require('./src/lib/bna/life-skills-marketing-media');
 const { startScheduler: startLifeSkillsStatusScheduler } = require('./src/lib/bna/life-skills-status-publisher');
@@ -69702,6 +69703,24 @@ app.post('/api/bna/life-skills-app/prospects/:leadId/send', async (req, res) => 
   } catch (error) {
     if (attempt?.id) await updateOutboundWapiCommunicationResult(attempt.id, { error, summary: `Life Skills WhatsApp not confirmed for ${req.params.leadId}`.slice(0,240) }).catch(() => null);
     res.status(error?.statusCode || 503).json({ success: false, error: 'WhatsApp delivery was not confirmed' });
+  }
+});
+
+// Native People uses the same authorized sender, but never consults the retired
+// Leads writer. The explicit matching native epoch keeps this route inert until
+// the coordinated cutover; ordinary legacy sends retain their existing fence.
+app.post('/api/bna/life-skills-app/native-prospects/send', async (req, res) => {
+  res.setHeader('Cache-Control', 'private, no-store');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  if (!authorizeLifeSkillsAppBridge(req)) return res.status(401).json({success:false, error:'Unauthorized Life Skills app bridge'});
+  try {
+    const receipt = await deliverNativeProspectMessage(req.body, {env:process.env, pool,
+      createAttempt:createOutboundWapiCommunicationAttempt, updateResult:updateOutboundWapiCommunicationResult,
+      send:sendWapiTextMessage, messageId:wapiResponseMessageId});
+    res.json({success:true, receipt});
+  } catch (error) {
+    res.status([400,409,423,503].includes(error?.statusCode) ? error.statusCode : 503)
+      .json({success:false, error:'Native WhatsApp delivery was not confirmed; do not resend without reconciliation'});
   }
 });
 
