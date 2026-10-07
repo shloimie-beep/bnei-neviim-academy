@@ -697,10 +697,10 @@ async function authorizedReanchor({ authorization, env = process.env,
       ...scheduledSuccessorCalendarUpdates(checked.slot, checked.scheduledAt),
     ]);
     const readback = await load();
-    const persisted = existingReanchorSchedule(readback, authorization);
+    const persisted = reanchorPreflight(readback, authorization, { now: clock() });
     const active = readback.assets.filter(item => ['SCHEDULED', 'RESERVED', 'SENDING', 'UNKNOWN'].includes(item.delivery?.state));
-    if (!persisted || active.length !== 1 || active[0].id !== checked.asset.id)
-      throw new Error('Canonical authorized re-anchor readback failed');
+    if (!persisted.ok || !persisted.replay || active.length !== 1 || active[0].id !== checked.asset.id)
+      throw new Error(`Canonical authorized re-anchor readback failed${persisted.reason ? `: ${persisted.reason}` : ''}`);
     return { state: 'SCHEDULED', assetId: persisted.asset.id, language: persisted.asset.language,
       scheduledAt: authorization.scheduledAt, predecessorReceiptId: authorization.predecessorReceiptId,
       reanchorRequestKey: persisted.requestKey, schedulerReadback: true, replay: false };
