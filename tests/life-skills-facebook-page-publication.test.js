@@ -231,14 +231,25 @@ test('lock contention and pre-insert delay cannot create a past-due reservation'
   const ready = preview();
   const scheduled = Date.parse(scheduledAt);
   const afterLockPool = fakeReservationPool();
-  const afterLockTimes = [now, scheduled, scheduled];
+  const afterLockTimes = [scheduled, scheduled];
   const afterLock = await reserveFacebookPagePublication(afterLockPool, ready, { clock: () => afterLockTimes.shift() });
   assert.equal(afterLock.reason, 'FUTURE_SCHEDULE_REQUIRED_NO_BACKFILL');
   assert.equal(afterLockPool.rows.length, 0);
 
   const beforeInsertPool = fakeReservationPool();
-  const beforeInsertTimes = [now, now + 1, scheduled];
+  const beforeInsertTimes = [now + 1, scheduled];
   const beforeInsert = await reserveFacebookPagePublication(beforeInsertPool, ready, { clock: () => beforeInsertTimes.shift() });
   assert.equal(beforeInsert.reason, 'FUTURE_SCHEDULE_REQUIRED_NO_BACKFILL');
   assert.equal(beforeInsertPool.rows.length, 0);
+});
+
+test('an exact existing reservation remains replayable after its scheduled time without another insert', async () => {
+  const pool = fakeReservationPool();
+  const ready = preview();
+  const first = await reserveFacebookPagePublication(pool, ready, { clock: () => now });
+  const replay = await reserveFacebookPagePublication(pool, ready, { clock: () => Date.parse(scheduledAt) + 1 });
+  assert.equal(first.state, 'RESERVED');
+  assert.equal(replay.state, 'RESERVED');
+  assert.equal(replay.replay, true);
+  assert.equal(pool.rows.length, 1);
 });

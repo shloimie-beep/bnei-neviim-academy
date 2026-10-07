@@ -226,7 +226,7 @@ function applyFacebookPageProviderReadback(record, readback = {}, { readAt = new
 async function reserveFacebookPagePublication(pool, preview, { actor = 'life-skills-private-app', clock = Date.now } = {}) {
   if (preview?.state !== 'READY')
     return { state: 'BLOCKED', reason: preview?.reason || 'PAGE_PUBLICATION_NOT_READY', externalWritePerformed: false };
-  if (!validIso(preview.scheduledAt) || Date.parse(preview.scheduledAt) <= clock())
+  if (!validIso(preview.scheduledAt))
     return { state: 'BLOCKED', reason: 'FUTURE_SCHEDULE_REQUIRED_NO_BACKFILL', externalWritePerformed: false };
   const client = typeof pool?.connect === 'function' ? await pool.connect() : pool;
   if (!client?.query) throw new Error('A PostgreSQL client or pool is required');
