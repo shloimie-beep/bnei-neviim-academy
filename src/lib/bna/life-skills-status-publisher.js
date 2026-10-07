@@ -579,7 +579,9 @@ function existingReanchorSchedule(workbook, authorization) {
   const requestKey = reanchorRequestKey(authorization);
   if (!requestKey) return null;
   const asset = uniqueRow(workbook.assets, 'id', authorization.assetId);
-  const predecessor = workbook.assets.find(item => item.delivery?.providerReceiptId === authorization.predecessorReceiptId);
+  const predecessors = workbook.assets.filter(item => item.delivery?.providerReceiptId === authorization.predecessorReceiptId);
+  if (predecessors.length !== 1) return null;
+  const predecessor = predecessors[0];
   const delivery = asset?.delivery;
   const resolved = predecessor?.delivery?.nextTurnHold;
   if (!asset || !predecessor || delivery?.state !== 'SCHEDULED' ||
@@ -590,7 +592,7 @@ function existingReanchorSchedule(workbook, authorization) {
       resolved.state !== 'RESOLVED' || resolved.scheduledAssetId !== asset.id ||
       resolved.scheduledAt !== authorization.scheduledAt) return null;
   const slot = uniqueRow(workbook.calendar, 'slot', delivery.anchorSlot);
-  if (asset.language === 'HE' && (!slot || !expectedScheduleMarker(asset, slot))) return null;
+  if (asset.language === 'HE' && !slot) return null;
   return { predecessor, asset, slot, requestKey };
 }
 function reanchorPreflight(workbook, authorization, { now = Date.now() } = {}) {
@@ -599,10 +601,23 @@ function reanchorPreflight(workbook, authorization, { now = Date.now() } = {}) {
   const requestKey = reanchorRequestKey(authorization);
   if (!requestKey) return { ok: false, state: 'HELD', reason: 'REANCHOR_IDENTITY_INCOMPLETE' };
   const replay = existingReanchorSchedule(workbook, authorization);
-  if (replay) return { ok: true, replay: true, ...replay, scheduledAt: authorization.scheduledAt };
+  const unknown = workbook.assets.filter(item => item.delivery?.state === 'UNKNOWN');
+  if (unknown.length)
+    return { ok: false, state: 'UNKNOWN', reason: 'UNRESOLVED_PROVIDER_DELIVERY_REQUIRES_RECONCILIATION', assetIds: unknown.map(item => item.id) };
+  const active = workbook.assets.filter(item => ['SCHEDULED', 'RESERVED', 'SENDING'].includes(item.delivery?.state));
+  if (replay) {
+    if (active.length !== 1 || active[0].id !== replay.asset.id)
+      return { ok: false, state: 'HELD', reason: 'ANOTHER_STATUS_SEND_OR_SCHEDULE_EXISTS', assetIds: active.map(item => item.id) };
+    if (replay.asset.language === 'HE' && (calendarHoldState(replay.slot) || quietSlot(replay.slot) ||
+        quietDate(authorization.scheduledAt, workbook.calendar)))
+      return { ok: false, state: 'HELD', reason: calendarHoldState(replay.slot)
+        ? `HEBREW_CALENDAR_${calendarHoldState(replay.slot)}` : 'AUTHORIZED_REANCHOR_CALENDAR_OR_QUIET_DAY_FAILED' };
+    if (replay.asset.language === 'HE' && !expectedScheduleMarker(replay.asset, replay.slot))
+      return { ok: false, state: 'HELD', reason: 'REANCHOR_SCHEDULE_READBACK_CHANGED' };
+    return { ok: true, replay: true, ...replay, scheduledAt: authorization.scheduledAt };
+  }
   if (!validScheduledAt(authorization?.scheduledAt) || Date.parse(authorization.scheduledAt) <= now)
     return { ok: false, state: 'HELD', reason: 'AUTHORIZED_REANCHOR_TIME_NOT_FUTURE' };
-  const active = workbook.assets.filter(item => ['SCHEDULED', 'RESERVED', 'SENDING'].includes(item.delivery?.state));
   if (active.length)
     return { ok: false, state: 'HELD', reason: 'ANOTHER_STATUS_SEND_OR_SCHEDULE_EXISTS', assetIds: active.map(item => item.id) };
   const predecessors = workbook.assets.filter(item => item.delivery?.providerReceiptId === authorization.predecessorReceiptId);
@@ -640,7 +655,7 @@ function reanchorPreflight(workbook, authorization, { now = Date.now() } = {}) {
 }
 async function authorizedReanchor({ authorization, env = process.env,
   pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 1 }), clients = null,
-  now = Date.now() } = {}) {
+  clock = Date.now } = {}) {
   const db = await pool.connect();
   let locked = false;
   try {
@@ -651,20 +666,23 @@ async function authorizedReanchor({ authorization, env = process.env,
     const load = async () => parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID,
       ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
     const original = await load();
-    const initial = reanchorPreflight(original, authorization, { now });
+    const initial = reanchorPreflight(original, authorization, { now: clock() });
     if (!initial.ok) return { state: initial.state, reason: initial.reason, assetIds: initial.assetIds };
     if (initial.replay) return { state: 'SCHEDULED', assetId: initial.asset.id, scheduledAt: initial.scheduledAt,
       predecessorReceiptId: authorization.predecessorReceiptId, reanchorRequestKey: initial.requestKey,
       schedulerReadback: true, replay: true };
     const current = await load();
-    const checked = reanchorPreflight(current, authorization, { now });
+    const checked = reanchorPreflight(current, authorization, { now: clock() });
     if (!checked.ok || checked.replay)
       return checked.replay
         ? { state: 'SCHEDULED', assetId: checked.asset.id, scheduledAt: checked.scheduledAt,
           predecessorReceiptId: authorization.predecessorReceiptId, reanchorRequestKey: checked.requestKey,
           schedulerReadback: true, replay: true }
         : { state: checked.state, reason: checked.reason, assetIds: checked.assetIds };
-    const queuedAt = new Date(now).toISOString();
+    const writeNow = clock();
+    if (Date.parse(authorization.scheduledAt) <= writeNow)
+      return { state: 'HELD', reason: 'AUTHORIZED_REANCHOR_TIME_PASSED_BEFORE_WRITE' };
+    const queuedAt = new Date(writeNow).toISOString();
     const predecessorDelivery = { ...checked.predecessor.delivery,
       nextTurnHold: { ...checked.predecessor.delivery.nextTurnHold, state: 'RESOLVED', resolvedAt: queuedAt,
         scheduledAssetId: checked.asset.id, scheduledAt: checked.scheduledAt,
@@ -680,7 +698,7 @@ async function authorizedReanchor({ authorization, env = process.env,
     ]);
     const readback = await load();
     const persisted = existingReanchorSchedule(readback, authorization);
-    const active = readback.assets.filter(item => ['SCHEDULED', 'RESERVED', 'SENDING'].includes(item.delivery?.state));
+    const active = readback.assets.filter(item => ['SCHEDULED', 'RESERVED', 'SENDING', 'UNKNOWN'].includes(item.delivery?.state));
     if (!persisted || active.length !== 1 || active[0].id !== checked.asset.id)
       throw new Error('Canonical authorized re-anchor readback failed');
     return { state: 'SCHEDULED', assetId: persisted.asset.id, language: persisted.asset.language,
