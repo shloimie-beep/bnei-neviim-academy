@@ -6,6 +6,15 @@ const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const allowed = new Set(['operationId','authorityEpoch','bindingSha256','leadId','phone','body','recordMode']);
 function failure(code, statusCode) { return Object.assign(new Error(code), { code, statusCode }); }
 const nativeEpoch = epoch => `native-epoch-${String(epoch).padStart(8, '0')}`;
+function usableLifeSkillsScopedToken(value) {
+  let normalized = String(value || '').replace(/^\uFEFF/, '').trim();
+  if ((normalized.startsWith('"') && normalized.endsWith('"')) ||
+      (normalized.startsWith("'") && normalized.endsWith("'"))) {
+    normalized = normalized.slice(1, -1).trim();
+  }
+  if (!normalized || normalized.includes('[YOUR-PASSWORD]')) return '';
+  return normalized;
+}
 
 /** The private app owns recipient resolution, authorization and encrypted
  * pre-send intent. This transport never reads/writes Leads or changes authority.
@@ -26,7 +35,7 @@ function validateNativeSend(input, env) {
     throw failure('NATIVE_SEND_AUTHORITY_HELD', 423);
   if (!binding.ready || input.bindingSha256 !== binding.bindingSha256)
     throw failure('NATIVE_SEND_BINDING_UNAVAILABLE', 503);
-  if (typeof env.LIFE_SKILLS_WAPI_API_TOKEN !== 'string' || !env.LIFE_SKILLS_WAPI_API_TOKEN.trim())
+  if (!usableLifeSkillsScopedToken(env.LIFE_SKILLS_WAPI_API_TOKEN))
     throw failure('NATIVE_SEND_CREDENTIAL_UNAVAILABLE', 503);
   return { ...input, digest: crypto.createHash('sha256')
     .update('life-skills-native-send/v1\n').update(JSON.stringify([...allowed].map(key => input[key]))).digest('hex') };
@@ -86,4 +95,4 @@ async function deliverNativeProspectMessage(input, {env, pool, createAttempt, up
   return {provider:'whapi', providerMessageId:id, sentAt:saved.metadata.checked_at, replaySuppressed:false, sheetUpdated:false};
 }
 
-module.exports = { nativeEpoch, validateNativeSend, deliverNativeProspectMessage };
+module.exports = { nativeEpoch, usableLifeSkillsScopedToken, validateNativeSend, deliverNativeProspectMessage };

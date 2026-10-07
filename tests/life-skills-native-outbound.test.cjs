@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const {nativeEpoch, validateNativeSend, deliverNativeProspectMessage} = require('../src/lib/bna/life-skills-native-outbound');
+const {nativeEpoch, usableLifeSkillsScopedToken, validateNativeSend, deliverNativeProspectMessage} = require('../src/lib/bna/life-skills-native-outbound');
 const {forwardConfig} = require('../src/lib/bna/life-skills-app-inbound');
 const env = {LIFE_SKILLS_CRM_WRITER_MODE:'capture_only', LIFE_SKILLS_CRM_WRITER_EPOCH:nativeEpoch(4),
   LIFE_SKILLS_WAPI_API_TOKEN:'synthetic-life-skills-only-token',
@@ -41,10 +41,13 @@ test('binding or disabled existing forward consent fails before ledger/provider'
     assert.equal(f.calls.connect,0);
   }
 });
-test('missing scoped credential fails before an attempt even when a generic token exists',async()=>{
-  const f=fixture();Object.assign(f.d.env,{LIFE_SKILLS_WAPI_API_TOKEN:'',WAPI_API_TOKEN:'synthetic-unrelated'});
-  await assert.rejects(deliverNativeProspectMessage(input(),f.d),{code:'NATIVE_SEND_CREDENTIAL_UNAVAILABLE'});
-  assert.equal(f.calls.connect,0);assert.equal(f.calls.send,0);
+test('missing or unusable scoped credential fails before an attempt even when a generic token exists',async()=>{
+  for (const token of ['', '   ', '"   "', "'   '", '[YOUR-PASSWORD]', 'prefix-[YOUR-PASSWORD]-suffix']) {
+    const f=fixture();Object.assign(f.d.env,{LIFE_SKILLS_WAPI_API_TOKEN:token,WAPI_API_TOKEN:'synthetic-unrelated'});
+    await assert.rejects(deliverNativeProspectMessage(input(),f.d),{code:'NATIVE_SEND_CREDENTIAL_UNAVAILABLE'});
+    assert.equal(f.calls.connect,0);assert.equal(f.calls.create,0);assert.equal(f.calls.send,0);
+  }
+  assert.equal(usableLifeSkillsScopedToken('  "synthetic-scoped"  '),'synthetic-scoped');
 });
 test('rejects DEMO, extra fields, malformed recipient/group, operation, epoch and message', ()=>{
   for(const override of [{recordMode:'demo'},{role:'practitioner'},{phone:'15555550123@g.us'},{phone:'+012345678'},
@@ -79,9 +82,9 @@ test('bridge-auth secret rotation preserves confirmed and unresolved operation i
 test('native provider credential selection cannot fall back to generic or One Time credentials',()=>{
   const source=fs.readFileSync(require.resolve('../server.js'),'utf8');
   const code=source.slice(source.indexOf('function wapiCredentialsForScope('),source.indexOf('function oneTimeWapiAutoReplyMessage('));
-  const resolve=new Function('usableSecretValue','process','WAPI_API_BASE_URL','isOneTimeWapiScope','ONE_TIME_WAPI_API_TOKEN','WAPI_API_TOKEN',`${code};return wapiCredentialsForScope;`);
+  const resolve=new Function('usableSecretValue','usableLifeSkillsScopedToken','process','WAPI_API_BASE_URL','isOneTimeWapiScope','ONE_TIME_WAPI_API_TOKEN','WAPI_API_TOKEN',`${code};return wapiCredentialsForScope;`);
   for(const token of ['', 'synthetic-life-skills-token']){
-    const choose=resolve(value=>value||'',{env:{LIFE_SKILLS_WAPI_API_TOKEN:token}},'https://gate.whapi.cloud',()=>true,'synthetic-other-scoped','synthetic-generic');
+    const choose=resolve(value=>value||'',usableLifeSkillsScopedToken,{env:{LIFE_SKILLS_WAPI_API_TOKEN:token}},'https://gate.whapi.cloud',()=>true,'synthetic-other-scoped','synthetic-generic');
     assert.equal(choose({life_skills_native:true}).token,token);
     assert.equal(choose({life_skills_native:true}).credential_scope,'life_skills_scoped');
   }
@@ -123,4 +126,10 @@ test('real route checks existing bridge auth before transport and has no Sheet a
   assert.match(route,/createAttempt:createOutboundWapiCommunicationAttempt/);
   assert.match(route,/send:sendWapiTextMessage/);
   assert.doesNotMatch(route,/listLifeSkillsLeads|updateLifeSkillsLeadFields|setInterval|createGoogleClient/);
+  const registry=JSON.parse(fs.readFileSync(require.resolve('../ops/route-registry.json'),'utf8'));
+  const registered=registry.routes.find(row=>row.route==='/api/bna/life-skills-app/native-prospects/send');
+  assert.equal(registered?.access,'private');
+  assert.equal(registered?.required_role,'life_skills_service_bridge');
+  assert.equal(registered?.workspace_scope_required,true);
+  assert.equal(registered?.expected_logged_out_behavior,'reject_unauthorized_401');
 });

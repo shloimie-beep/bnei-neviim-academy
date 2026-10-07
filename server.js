@@ -55,7 +55,7 @@ const {
   LifeSkillsAppInboundOutbox,
 } = require('./src/lib/bna/life-skills-app-inbound');
 const { createOutboxPool: createLifeSkillsAppInboundPool } = require('./src/lib/bna/life-skills-inbound-database');
-const { deliverNativeProspectMessage } = require('./src/lib/bna/life-skills-native-outbound');
+const { deliverNativeProspectMessage, usableLifeSkillsScopedToken } = require('./src/lib/bna/life-skills-native-outbound');
 const { readLifeSkillsMarketingSnapshot } = require('./src/lib/bna/life-skills-marketing');
 const { readLifeSkillsMarketingMedia, MarketingMediaError } = require('./src/lib/bna/life-skills-marketing-media');
 const { startScheduler: startLifeSkillsStatusScheduler } = require('./src/lib/bna/life-skills-status-publisher');
@@ -67607,7 +67607,7 @@ function oneTimeProviderLeadBotTelegramApproved() {
 function wapiCredentialsForScope(scope = {}) {
   // Native Life Skills sends may never fall back to another application's token.
   if (scope.life_skills_native === true) return {
-    token: usableSecretValue(process.env.LIFE_SKILLS_WAPI_API_TOKEN),
+    token: usableLifeSkillsScopedToken(process.env.LIFE_SKILLS_WAPI_API_TOKEN),
     baseUrl: WAPI_API_BASE_URL,
     credential_scope: 'life_skills_scoped',
     one_time_scope: false,
