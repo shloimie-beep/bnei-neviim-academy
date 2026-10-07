@@ -562,6 +562,135 @@ function pendingSuccessorPreflightMatches(original, current, plan, { now = Date.
     return { ok: false, reason: refreshed?.reason || 'HELD_SUCCESSOR_SELECTION_CHANGED_BEFORE_SCHEDULE' };
   return { ok: true, plan: refreshed };
 }
+function reanchorRequestKey({ predecessorReceiptId, assetId, revision, sha256, scheduledAt } = {}) {
+  const parts = [predecessorReceiptId, assetId, revision, String(sha256 || '').toLowerCase(), scheduledAt]
+    .map(item => String(item || '').trim());
+  if (parts.some(item => !item)) return null;
+  return `life-skills-status-reanchor:${createHash('sha256').update(parts.join('\n')).digest('hex')}`;
+}
+function exactReanchorIdentityMatches(asset, authorization) {
+  return asset?.id === authorization?.assetId && asset?.revision === authorization?.revision &&
+    asset?.digest === String(authorization?.sha256 || '').toLowerCase() &&
+    driveId(asset?.url) === authorization?.driveFileId && asset?.language === authorization?.language &&
+    asset?.surface === authorization?.surface && asset?.width === Number(authorization?.width) &&
+    asset?.height === Number(authorization?.height);
+}
+function existingReanchorSchedule(workbook, authorization) {
+  const requestKey = reanchorRequestKey(authorization);
+  if (!requestKey) return null;
+  const asset = uniqueRow(workbook.assets, 'id', authorization.assetId);
+  const predecessor = workbook.assets.find(item => item.delivery?.providerReceiptId === authorization.predecessorReceiptId);
+  const delivery = asset?.delivery;
+  const resolved = predecessor?.delivery?.nextTurnHold;
+  if (!asset || !predecessor || delivery?.state !== 'SCHEDULED' ||
+      delivery.reanchorRequestKey !== requestKey || resolved?.reanchorRequestKey !== requestKey) return null;
+  if (!exactReanchorIdentityMatches(asset, authorization) || !deliveryAssetIdentityMatches(asset, delivery) ||
+      delivery.scheduledAt !== authorization.scheduledAt ||
+      delivery.predecessorReceiptId !== authorization.predecessorReceiptId ||
+      resolved.state !== 'RESOLVED' || resolved.scheduledAssetId !== asset.id ||
+      resolved.scheduledAt !== authorization.scheduledAt) return null;
+  const slot = uniqueRow(workbook.calendar, 'slot', delivery.anchorSlot);
+  if (asset.language === 'HE' && (!slot || !expectedScheduleMarker(asset, slot))) return null;
+  return { predecessor, asset, slot, requestKey };
+}
+function reanchorPreflight(workbook, authorization, { now = Date.now() } = {}) {
+  if (authorization?.ownerAuthorized !== true)
+    return { ok: false, state: 'HELD', reason: 'EXPLICIT_REANCHOR_AUTHORIZATION_REQUIRED' };
+  const requestKey = reanchorRequestKey(authorization);
+  if (!requestKey) return { ok: false, state: 'HELD', reason: 'REANCHOR_IDENTITY_INCOMPLETE' };
+  const replay = existingReanchorSchedule(workbook, authorization);
+  if (replay) return { ok: true, replay: true, ...replay, scheduledAt: authorization.scheduledAt };
+  if (!validScheduledAt(authorization?.scheduledAt) || Date.parse(authorization.scheduledAt) <= now)
+    return { ok: false, state: 'HELD', reason: 'AUTHORIZED_REANCHOR_TIME_NOT_FUTURE' };
+  const active = workbook.assets.filter(item => ['SCHEDULED', 'RESERVED', 'SENDING'].includes(item.delivery?.state));
+  if (active.length)
+    return { ok: false, state: 'HELD', reason: 'ANOTHER_STATUS_SEND_OR_SCHEDULE_EXISTS', assetIds: active.map(item => item.id) };
+  const predecessors = workbook.assets.filter(item => item.delivery?.providerReceiptId === authorization.predecessorReceiptId);
+  if (predecessors.length !== 1)
+    return { ok: false, state: 'HELD', reason: 'PUBLISHED_PREDECESSOR_RECEIPT_NOT_UNIQUE' };
+  const predecessor = predecessors[0];
+  const publication = predecessor.delivery;
+  const expectedLanguage = publication?.language === 'HE' ? 'EN' : (publication?.language === 'EN' ? 'HE' : null);
+  if (publication?.state !== 'PUBLISHED' || publication?.used !== true || publication?.providerType !== 'story' ||
+      Number(publication?.providerWidth) !== 1080 || Number(publication?.providerHeight) !== 1920 ||
+      !validScheduledAt(publication?.confirmedAt) || !validScheduledAt(publication?.verificationAt) ||
+      !deliveryAssetIdentityMatches(predecessor, publication) || publication?.nextTurnHold?.state !== 'HELD' ||
+      String(publication.nextTurnHold.language || '').toUpperCase() !== expectedLanguage ||
+      String(authorization.language || '').toUpperCase() !== expectedLanguage)
+    return { ok: false, state: 'HELD', reason: 'PREDECESSOR_PUBLICATION_OR_LANGUAGE_TURN_UNVERIFIED' };
+  const asset = uniqueRow(workbook.assets, 'id', authorization.assetId);
+  if (!asset || !exactReanchorIdentityMatches(asset, authorization) || !isEligible(asset))
+    return { ok: false, state: 'HELD', reason: 'SUCCESSOR_EXACT_ASSET_OR_APPROVAL_CHANGED' };
+  if (!noPriorDelivery(asset) || hasPriorConceptDelivery(workbook, asset))
+    return { ok: false, state: 'HELD', reason: 'SUCCESSOR_HAS_PRIOR_DELIVERY_OR_DUPLICATE_STATE' };
+  const selection = nextAsset(workbook, expectedLanguage, publication.anchorSlot);
+  const selectedAsset = selection?.asset || selection;
+  if (!selection || selection.state === 'HELD')
+    return { ok: false, state: 'HELD', reason: selection?.reason || 'NO_ELIGIBLE_EXACT_APPROVED_ASSET' };
+  if (selectedAsset?.id !== asset.id)
+    return { ok: false, state: 'HELD', reason: 'AUTHORIZED_SUCCESSOR_IS_NOT_CURRENT_EXACT_SELECTION' };
+  const slot = selection?.slot || null;
+  if (asset.language === 'HE' && (!slot || calendarHoldState(slot) || quietSlot(slot) ||
+      !sameAssetAndSlot(asset, slot) || quietDate(authorization.scheduledAt, workbook.calendar)))
+    return { ok: false, state: 'HELD', reason: calendarHoldState(slot)
+      ? `HEBREW_CALENDAR_${calendarHoldState(slot)}` : 'AUTHORIZED_REANCHOR_CALENDAR_OR_QUIET_DAY_FAILED' };
+  if (asset.language !== 'HE' && quietDate(authorization.scheduledAt, workbook.calendar))
+    return { ok: false, state: 'HELD', reason: 'AUTHORIZED_REANCHOR_QUIET_DAY_FAILED' };
+  return { ok: true, replay: false, predecessor, asset, slot, requestKey, scheduledAt: authorization.scheduledAt };
+}
+async function authorizedReanchor({ authorization, env = process.env,
+  pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 1 }), clients = null,
+  now = Date.now() } = {}) {
+  const db = await pool.connect();
+  let locked = false;
+  try {
+    const lock = await db.query('SELECT pg_try_advisory_lock($1, $2) AS acquired', LOCK_KEYS);
+    locked = lock.rows[0]?.acquired === true;
+    if (!locked) return { state: 'HELD', reason: 'Another Status publisher holds the production lock' };
+    const { sheets } = clients || createClient(env);
+    const load = async () => parseWorkbook(await sheets.spreadsheets.values.batchGet({ spreadsheetId: SPREADSHEET_ID,
+      ranges: [HEADER.asset, HEADER.calendar], valueRenderOption: 'FORMATTED_VALUE' }));
+    const original = await load();
+    const initial = reanchorPreflight(original, authorization, { now });
+    if (!initial.ok) return { state: initial.state, reason: initial.reason, assetIds: initial.assetIds };
+    if (initial.replay) return { state: 'SCHEDULED', assetId: initial.asset.id, scheduledAt: initial.scheduledAt,
+      predecessorReceiptId: authorization.predecessorReceiptId, reanchorRequestKey: initial.requestKey,
+      schedulerReadback: true, replay: true };
+    const current = await load();
+    const checked = reanchorPreflight(current, authorization, { now });
+    if (!checked.ok || checked.replay)
+      return checked.replay
+        ? { state: 'SCHEDULED', assetId: checked.asset.id, scheduledAt: checked.scheduledAt,
+          predecessorReceiptId: authorization.predecessorReceiptId, reanchorRequestKey: checked.requestKey,
+          schedulerReadback: true, replay: true }
+        : { state: checked.state, reason: checked.reason, assetIds: checked.assetIds };
+    const queuedAt = new Date(now).toISOString();
+    const predecessorDelivery = { ...checked.predecessor.delivery,
+      nextTurnHold: { ...checked.predecessor.delivery.nextTurnHold, state: 'RESOLVED', resolvedAt: queuedAt,
+        scheduledAssetId: checked.asset.id, scheduledAt: checked.scheduledAt,
+        reanchorRequestKey: checked.requestKey } };
+    const scheduledDelivery = makeRecord(checked.asset, 'SCHEDULED', { queuedAt, scheduledAt: checked.scheduledAt,
+      anchorSlot: checked.slot?.slot || checked.predecessor.delivery.anchorSlot,
+      predecessorReceiptId: authorization.predecessorReceiptId, reanchorRequestKey: checked.requestKey });
+    await write(sheets, [
+      cells(`'Asset Registry'!V${checked.predecessor.rowNumber}`, JSON.stringify(predecessorDelivery)),
+      cells(`'Asset Registry'!T${checked.asset.rowNumber}`, `${localStamp(checked.scheduledAt)} Asia/Jerusalem`),
+      cells(`'Asset Registry'!V${checked.asset.rowNumber}`, JSON.stringify(scheduledDelivery)),
+      ...scheduledSuccessorCalendarUpdates(checked.slot, checked.scheduledAt),
+    ]);
+    const readback = await load();
+    const persisted = existingReanchorSchedule(readback, authorization);
+    const active = readback.assets.filter(item => ['SCHEDULED', 'RESERVED', 'SENDING'].includes(item.delivery?.state));
+    if (!persisted || active.length !== 1 || active[0].id !== checked.asset.id)
+      throw new Error('Canonical authorized re-anchor readback failed');
+    return { state: 'SCHEDULED', assetId: persisted.asset.id, language: persisted.asset.language,
+      scheduledAt: authorization.scheduledAt, predecessorReceiptId: authorization.predecessorReceiptId,
+      reanchorRequestKey: persisted.requestKey, schedulerReadback: true, replay: false };
+  } finally {
+    if (locked) await db.query('SELECT pg_advisory_unlock($1, $2)', LOCK_KEYS).catch(() => {});
+    db.release();
+  }
+}
 async function holdOwnReservation(sheets, workbook, { assetId, expectedDelivery, baselineSlot, reason, now = new Date().toISOString() }) {
   const asset = uniqueRow(workbook.assets, 'id', assetId);
   if (!asset || !sameDelivery(asset.delivery, expectedDelivery)) return false;
@@ -905,6 +1034,7 @@ module.exports = { lockedRun, oneShot, startScheduler, parseWorkbook, isEligible
   sameAssetAndSlot, scheduledIdentityMatches, verifiedStoryReadback, hasPriorConceptDelivery, validScheduledAt,
   invalidScheduledHolds, invalidActiveAttemptHolds, invalidPublisherRecordHolds, holdAmbiguousNextTurn, scheduledPreflight, reservationPreflightMatches,
   publisherStatePreflightMatches, successorPreflightMatches, pendingSuccessorPlan, pendingSuccessorPreflightMatches,
+  reanchorRequestKey, reanchorPreflight, authorizedReanchor,
   publicationResultPreflight, holdOwnReservation,
   successorScheduleIso, heldSuccessorCalendarUpdates, scheduledSuccessorCalendarUpdates,
   attachPoolErrorHandler, record, exactMedia, MAX_MEDIA_BYTES };
