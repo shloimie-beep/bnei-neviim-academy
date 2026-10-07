@@ -18,7 +18,8 @@ function fixture() {
     return {rows:[]};
   },release(){calls.release++;}};
   const d={env:{...env},pool:{async connect(){calls.connect++;return db;}},
-    async createAttempt(args){calls.create++; const row={id:++sequence,body:args.messageBody,metadata:{...args.metadata,recipient_phone:args.recipient.phone,delivery_status:'attempted'},source_context:args.sourceContext};rows.push(row);return row;},
+    async createAttempt(args){calls.create++;assert.equal(args.recipient.contact_type,'general');assert.equal(args.recipient.match_source,'life_skills_native');
+      const row={id:++sequence,body:args.messageBody,metadata:{...args.metadata,recipient_phone:args.recipient.phone,delivery_status:'attempted'},source_context:args.sourceContext};rows.push(row);return row;},
     async send(args){assert.equal(args.life_skills_native,true);assert.equal(args.workspace_key,undefined);calls.send++;return {status:200,response:{id:'synthetic-provider-message-001'}};},
     messageId:r=>r.id,
     async updateResult(id,{sendResult}){calls.update++; const row=rows.find(r=>r.id===id);row.metadata={...row.metadata,
@@ -132,4 +133,7 @@ test('real route checks existing bridge auth before transport and has no Sheet a
   assert.equal(registered?.required_role,'life_skills_service_bridge');
   assert.equal(registered?.workspace_scope_required,true);
   assert.equal(registered?.expected_logged_out_behavior,'reject_unauthorized_401');
+  const transport=fs.readFileSync(require.resolve('../src/lib/bna/life-skills-native-outbound.js'),'utf8');
+  assert.match(transport,/contact_type:'general', match_source:'life_skills_native'/);
+  assert.doesNotMatch(transport,/contact_type:'life_skills_prospect'/);
 });

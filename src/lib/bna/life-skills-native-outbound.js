@@ -72,7 +72,10 @@ async function deliverNativeProspectMessage(input, {env, pool, createAttempt, up
         sentAt:prior.metadata.checked_at, replaySuppressed:true, sheetUpdated:false };
     }
     attempt = await createAttempt({
-      recipient:{to:request.phone, phone:request.phone, contact_type:'life_skills_prospect', match_source:'life_skills_native'},
+      // The app's stable lead ID is not a BNA integer lead FK. Keep the
+      // communication in the valid general bucket and retain the exact app
+      // identity in immutable metadata/source_context below.
+      recipient:{to:request.phone, phone:request.phone, contact_type:'general', match_source:'life_skills_native'},
       messageBody:request.body, summary:'Life Skills practitioner WhatsApp attempted',
       source:'life_skills_private_app', createdBy:'life-skills-practitioner',
       metadata:{life_skills_native_operation:request.operationId, life_skills_native_digest:request.digest,
