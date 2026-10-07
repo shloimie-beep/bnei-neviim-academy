@@ -507,7 +507,7 @@ test('future re-anchor rejects quiet days and any attempted or duplicate success
     language:'HE',surface:'VERTICAL',revision:'v04',driveFileId:authorization.driveFileId,sha256:authorization.sha256,
     providerReceiptId:'possible-receipt'});
   assert.equal(reanchorPreflight(reanchorFixture({off:false,successorDelivery:unknown}).workbook,authorization,{now}).reason,
-    'SUCCESSOR_HAS_PRIOR_DELIVERY_OR_DUPLICATE_STATE');
+    'UNRESOLVED_PROVIDER_DELIVERY_REQUIRES_RECONCILIATION');
 });
 
 test('authorized re-anchor uses the existing lock, writes one canonical schedule, reads it back, and replays idempotently',async()=>{
@@ -525,7 +525,7 @@ test('authorized re-anchor uses the existing lock, writes one canonical schedule
     writes.push(requestBody.data);requestBody.data.forEach(apply);return {data:{}};}}}};
   const queries=[];const db={query:async(sql)=>{queries.push(sql);return /pg_try_advisory_lock/.test(sql)?{rows:[{acquired:true}]}:{rows:[]};},release:()=>{}};
   const pool={connect:async()=>db};
-  const first=await authorizedReanchor({authorization,pool,clients:{sheets},now:Date.parse('2026-10-07T08:00:00.000Z')});
+  const first=await authorizedReanchor({authorization,pool,clients:{sheets},clock:()=>Date.parse('2026-10-07T08:00:00.000Z')});
   assert.equal(first.state,'SCHEDULED');assert.equal(first.replay,false);assert.equal(first.schedulerReadback,true);assert.equal(writes.length,1);
   const parsed=parseWorkbook({data:{valueRanges:ranges()}});const predecessor=parsed.assets[0].delivery,scheduled=parsed.assets[1].delivery;
   assert.equal(predecessor.providerReceiptId,authorization.predecessorReceiptId);assert.equal(predecessor.confirmedAt,'2026-10-05T09:23:11.000Z');
@@ -533,7 +533,7 @@ test('authorized re-anchor uses the existing lock, writes one canonical schedule
   assert.equal(scheduled.state,'SCHEDULED');assert.equal(scheduled.predecessorReceiptId,authorization.predecessorReceiptId);
   assert.equal(scheduled.scheduledAt,authorization.scheduledAt);assert.equal(scheduled.reanchorRequestKey,first.reanchorRequestKey);
   assert.match(parsed.calendar[0].scheduler,/^SCHEDULED — .*12:18 Asia\/Jerusalem via rolling Status publisher$/);
-  const second=await authorizedReanchor({authorization,pool,clients:{sheets},now:Date.parse('2026-10-08T09:19:00.000Z')});
+  const second=await authorizedReanchor({authorization,pool,clients:{sheets},clock:()=>Date.parse('2026-10-08T09:19:00.000Z')});
   assert.equal(second.state,'SCHEDULED');assert.equal(second.replay,true);assert.equal(second.reanchorRequestKey,first.reanchorRequestKey);
   assert.equal(writes.length,1);assert.equal(queries.filter(sql=>/pg_try_advisory_lock/.test(sql)).length,2);
   assert.equal(queries.filter(sql=>/pg_advisory_unlock/.test(sql)).length,2);
@@ -545,8 +545,41 @@ test('authorized re-anchor makes no canonical write when the existing publisher 
   const pool={connect:async()=>{connected=true;return db;}};
   const sheets={spreadsheets:{values:{batchGet:async()=>{throw new Error('must not read without lock');},
     batchUpdate:async()=>{writes++;}}}};
-  const result=await authorizedReanchor({authorization:reanchorAuthorization(),pool,clients:{sheets},now:Date.parse('2026-10-07T08:00:00.000Z')});
+  const result=await authorizedReanchor({authorization:reanchorAuthorization(),pool,clients:{sheets},clock:()=>Date.parse('2026-10-07T08:00:00.000Z')});
   assert.equal(result.state,'HELD');assert.match(result.reason,/holds the production lock/);assert.equal(writes,0);assert.equal(connected,false);
+});
+
+test('re-anchor replay blocks new active, unknown, duplicate-predecessor, and Calendar hold state',()=>{
+  const fixture=reanchorFixture({off:false}),authorization=reanchorAuthorization(),requestKey=reanchorRequestKey(authorization);
+  const predecessor=fixture.workbook.assets[0],asset=fixture.workbook.assets[1],slot=fixture.workbook.calendar[0];
+  predecessor.delivery={...predecessor.delivery,nextTurnHold:{...predecessor.delivery.nextTurnHold,state:'RESOLVED',
+    scheduledAssetId:asset.id,scheduledAt:authorization.scheduledAt,reanchorRequestKey:requestKey}};
+  asset.delivery={kind:'LIFE_SKILLS_STATUS_V1',state:'SCHEDULED',assetId:asset.id,conceptId:asset.concept,
+    language:asset.language,surface:asset.surface,revision:asset.revision,driveFileId:authorization.driveFileId,sha256:authorization.sha256,
+    queuedAt:'2026-10-07T08:00:00.000Z',scheduledAt:authorization.scheduledAt,anchorSlot:slot.slot,
+    predecessorReceiptId:authorization.predecessorReceiptId,reanchorRequestKey:requestKey};
+  slot.scheduler=scheduledSuccessorCalendarUpdates(slot,authorization.scheduledAt).at(-1).values[0][0];
+  const now=Date.parse('2026-10-07T08:00:00.000Z');
+  assert.equal(reanchorPreflight(fixture.workbook,authorization,{now}).replay,true);
+  const parallel={...asset,id:'C99-EN',delivery:{state:'RESERVED'}};
+  assert.equal(reanchorPreflight({...fixture.workbook,assets:[...fixture.workbook.assets,parallel]},authorization,{now}).reason,
+    'ANOTHER_STATUS_SEND_OR_SCHEDULE_EXISTS');
+  const unknown={...asset,id:'C98-EN',delivery:{state:'UNKNOWN'}};
+  assert.equal(reanchorPreflight({...fixture.workbook,assets:[...fixture.workbook.assets,unknown]},authorization,{now}).state,'UNKNOWN');
+  const duplicatePredecessor={...predecessor,id:'C01-EN-duplicate'};
+  assert.equal(reanchorPreflight({...fixture.workbook,assets:[...fixture.workbook.assets,duplicatePredecessor]},authorization,{now}).ok,false);
+  slot.scheduler='OFF — publishing owner hold restored';
+  assert.equal(reanchorPreflight(fixture.workbook,authorization,{now}).reason,'HEBREW_CALENDAR_OFF');
+});
+
+test('authorized re-anchor rechecks the clock immediately before write and never creates a past-due schedule',async()=>{
+  const fixture=reanchorFixture({off:false}),authorization=reanchorAuthorization({scheduledAt:'2026-10-08T09:18:11.000Z'}),writes=[];
+  const ranges=()=>[{values:fixture.raw.assetRows},{values:fixture.raw.calendarRows}];
+  const sheets={spreadsheets:{values:{batchGet:async()=>({data:{valueRanges:ranges()}}),batchUpdate:async()=>{writes.push(true);}}}};
+  const db={query:async(sql)=>/pg_try_advisory_lock/.test(sql)?{rows:[{acquired:true}]}:{rows:[]},release:()=>{}};
+  const times=[Date.parse('2026-10-08T09:18:00.000Z'),Date.parse('2026-10-08T09:18:05.000Z'),Date.parse('2026-10-08T09:18:12.000Z')];
+  const result=await authorizedReanchor({authorization,pool:{connect:async()=>db},clients:{sheets},clock:()=>times.shift()});
+  assert.equal(result.state,'HELD');assert.equal(result.reason,'AUTHORIZED_REANCHOR_TIME_PASSED_BEFORE_WRITE');assert.equal(writes.length,0);
 });
 
 test('provider result reread resolves shifted rows and preserves post-send Calendar interventions',()=>{
