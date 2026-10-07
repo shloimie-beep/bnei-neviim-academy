@@ -539,6 +539,32 @@ test('authorized re-anchor uses the existing lock, writes one canonical schedule
   assert.equal(queries.filter(sql=>/pg_advisory_unlock/.test(sql)).length,2);
 });
 
+test('authorized re-anchor refuses success when an owner Calendar hold appears before canonical readback',async()=>{
+  const fixture=reanchorFixture({off:false}),authorization=reanchorAuthorization(),writes=[];
+  const ranges=()=>[{values:fixture.raw.assetRows},{values:fixture.raw.calendarRows}];
+  const apply=(item)=>{
+    const match=item.range.match(/'(Asset Registry|30-Day Calendar)'!([A-Z]+)(\d+)/);assert.ok(match,item.range);
+    const [,sheet,column,rowText]=match;const row=Number(rowText);
+    const index=[...column].reduce((sum,ch)=>sum*26+ch.charCodeAt(0)-64,0)-1;
+    const rows=sheet==='Asset Registry'?fixture.raw.assetRows:fixture.raw.calendarRows;
+    const offset=sheet==='Asset Registry'?1:9;const rawIndex=row-offset;
+    while(rows[rawIndex].length<=index) rows[rawIndex].push('');
+    rows[rawIndex][index]=item.values[0][0];
+  };
+  let reads=0;
+  const sheets={spreadsheets:{values:{batchGet:async()=>{
+    reads++;
+    if(reads===3) fixture.raw.calendarRows[1][13]='OFF — owner intervention before readback';
+    return {data:{valueRanges:ranges()}};
+  },batchUpdate:async({requestBody})=>{writes.push(requestBody.data);requestBody.data.forEach(apply);return {data:{}};}}}};
+  const db={query:async(sql)=>/pg_try_advisory_lock/.test(sql)?{rows:[{acquired:true}]}:{rows:[]},release:()=>{}};
+  await assert.rejects(
+    authorizedReanchor({authorization,pool:{connect:async()=>db},clients:{sheets},clock:()=>Date.parse('2026-10-07T08:00:00.000Z')}),
+    /Canonical authorized re-anchor readback failed: HEBREW_CALENDAR_OFF/,
+  );
+  assert.equal(writes.length,1);assert.equal(reads,3);
+});
+
 test('authorized re-anchor makes no canonical write when the existing publisher lock is unavailable',async()=>{
   let connected=false,writes=0;
   const db={query:async(sql)=>/pg_try_advisory_lock/.test(sql)?{rows:[{acquired:false}]}:{rows:[]},release:()=>{connected=false;}};
