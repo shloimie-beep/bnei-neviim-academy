@@ -112,6 +112,33 @@ function verifiedStatusDelivery(delivery) {
     Number(delivery.providerWidth) === 1080 && Number(delivery.providerHeight) === 1920;
 }
 
+function currentNextStatusHold(contentFiles) {
+  const current = contentFiles.filter(item => CURRENT_STATES.has(item.libraryState));
+  const holds = [];
+  for (const predecessor of current) {
+    const delivery = predecessor.statusDelivery;
+    const hold = delivery?.nextTurnHold;
+    if (!verifiedStatusDelivery(delivery) || !statusDeliveryMatchesAsset(delivery, predecessor) ||
+        !hold || typeof hold !== 'object' || Array.isArray(hold) || hold.state !== 'HELD') continue;
+    const keys = Object.keys(hold);
+    if (keys.some(key => !['state', 'language', 'reason', 'conceptId', 'candidateAssetIds'].includes(key))) continue;
+    const language = text(hold.language).toLowerCase();
+    const expectedLanguage = predecessor.locale === 'he' ? 'en' : predecessor.locale === 'en' ? 'he' : null;
+    const reason = text(hold.reason);
+    const conceptId = Number(hold.conceptId);
+    const candidateAssetIds = Array.isArray(hold.candidateAssetIds) ? hold.candidateAssetIds.map(text) : [];
+    if (!expectedLanguage || language !== expectedLanguage || !/^[A-Z0-9_:-]{1,120}$/.test(reason) ||
+        !Number.isSafeInteger(conceptId) || conceptId < 1 || conceptId > 999999 ||
+        candidateAssetIds.length < 1 || candidateAssetIds.length > 20 ||
+        new Set(candidateAssetIds).size !== candidateAssetIds.length) continue;
+    const candidates = candidateAssetIds.map(assetId => current.find(item => item.assetId === assetId));
+    if (candidates.some(item => !item || item.locale !== language || item.concept !== conceptId ||
+        !['VERTICAL', 'STATUS'].includes(item.surface) || item.registeredRevision !== true)) continue;
+    holds.push({ state: 'held', language, reason, conceptId, candidateAssetIds });
+  }
+  return holds.length === 1 ? holds[0] : null;
+}
+
 function sourceLink(value, fallback) {
   try { const url = new URL(value); if (url.protocol === 'https:') return url.href; } catch { /* Registry evidence may be prose, not a link. */ }
   return fallback;
@@ -360,6 +387,7 @@ function parseWorkbook({ assetRows = [], calendarRows = [], fetchedAt = new Date
     creatives: current,
     conflictingAssetIds,
     publications,
+    nextStatusHold: currentNextStatusHold(contentFiles),
     inventory: {
       files: Math.max(assetRows.length - 1, 0),
       concepts: concepts.size,
