@@ -191,8 +191,8 @@ function fakeReservationPool() {
 test('two workers for the same Page/day share the transaction lock and create only one native reservation', async () => {
   const pool = fakeReservationPool();
   const ready = preview();
-  const first = await reserveFacebookPagePublication(pool, ready, { now });
-  const second = await reserveFacebookPagePublication(pool, ready, { now });
+  const first = await reserveFacebookPagePublication(pool, ready, { clock: () => now });
+  const second = await reserveFacebookPagePublication(pool, ready, { clock: () => now });
   assert.equal(first.state, 'RESERVED');
   assert.equal(first.internalRecordWritten, true);
   assert.equal(second.state, 'RESERVED');
@@ -206,13 +206,13 @@ test('two workers for the same Page/day share the transaction lock and create on
 test('a different same-day request is blocked before Buffer and unknown prior state is preserved', async () => {
   const pool = fakeReservationPool();
   const ready = preview();
-  await reserveFacebookPagePublication(pool, ready, { now });
+  await reserveFacebookPagePublication(pool, ready, { clock: () => now });
   const changed = preview({ caption: 'Different approved caption' });
-  const blocked = await reserveFacebookPagePublication(pool, changed, { now });
+  const blocked = await reserveFacebookPagePublication(pool, changed, { clock: () => now });
   assert.equal(blocked.reason, 'ONE_PAGE_POST_PER_LOCAL_DAY');
   assert.equal(blocked.externalWritePerformed, false);
   pool.rows[0].metadata.publication_state = 'UNKNOWN';
-  const unknown = await reserveFacebookPagePublication(pool, ready, { now });
+  const unknown = await reserveFacebookPagePublication(pool, ready, { clock: () => now });
   assert.equal(unknown.state, 'UNKNOWN');
   assert.equal(unknown.replay, true);
   assert.equal(pool.rows.length, 1);
@@ -221,8 +221,24 @@ test('a different same-day request is blocked before Buffer and unknown prior st
 test('a stale READY preview cannot reserve after the future schedule fence closes', async () => {
   const pool = fakeReservationPool();
   const ready = preview();
-  const blocked = await reserveFacebookPagePublication(pool, ready, { now: Date.parse(scheduledAt) });
+  const blocked = await reserveFacebookPagePublication(pool, ready, { clock: () => Date.parse(scheduledAt) });
   assert.equal(blocked.state, 'BLOCKED');
   assert.equal(blocked.reason, 'FUTURE_SCHEDULE_REQUIRED_NO_BACKFILL');
   assert.equal(pool.rows.length, 0);
+});
+
+test('lock contention and pre-insert delay cannot create a past-due reservation', async () => {
+  const ready = preview();
+  const scheduled = Date.parse(scheduledAt);
+  const afterLockPool = fakeReservationPool();
+  const afterLockTimes = [now, scheduled, scheduled];
+  const afterLock = await reserveFacebookPagePublication(afterLockPool, ready, { clock: () => afterLockTimes.shift() });
+  assert.equal(afterLock.reason, 'FUTURE_SCHEDULE_REQUIRED_NO_BACKFILL');
+  assert.equal(afterLockPool.rows.length, 0);
+
+  const beforeInsertPool = fakeReservationPool();
+  const beforeInsertTimes = [now, now + 1, scheduled];
+  const beforeInsert = await reserveFacebookPagePublication(beforeInsertPool, ready, { clock: () => beforeInsertTimes.shift() });
+  assert.equal(beforeInsert.reason, 'FUTURE_SCHEDULE_REQUIRED_NO_BACKFILL');
+  assert.equal(beforeInsertPool.rows.length, 0);
 });
