@@ -55,6 +55,7 @@ const {
   LifeSkillsAppInboundOutbox,
 } = require('./src/lib/bna/life-skills-app-inbound');
 const { createOutboxPool: createLifeSkillsAppInboundPool } = require('./src/lib/bna/life-skills-inbound-database');
+const { deliverNativeProspectMessage, usableLifeSkillsScopedToken } = require('./src/lib/bna/life-skills-native-outbound');
 const { readLifeSkillsMarketingSnapshot } = require('./src/lib/bna/life-skills-marketing');
 const { readLifeSkillsMarketingMedia, MarketingMediaError } = require('./src/lib/bna/life-skills-marketing-media');
 const { startScheduler: startLifeSkillsStatusScheduler } = require('./src/lib/bna/life-skills-status-publisher');
@@ -67604,6 +67605,13 @@ function oneTimeProviderLeadBotTelegramApproved() {
 }
 
 function wapiCredentialsForScope(scope = {}) {
+  // Native Life Skills sends may never fall back to another application's token.
+  if (scope.life_skills_native === true) return {
+    token: usableLifeSkillsScopedToken(process.env.LIFE_SKILLS_WAPI_API_TOKEN),
+    baseUrl: WAPI_API_BASE_URL,
+    credential_scope: 'life_skills_scoped',
+    one_time_scope: false,
+  };
   const oneTimeScope = isOneTimeWapiScope(scope);
   const scopedToken = oneTimeScope ? ONE_TIME_WAPI_API_TOKEN : '';
   return {
@@ -68610,8 +68618,9 @@ async function sendWapiTextMessage({
   timeoutMs = WAPI_SEND_TIMEOUT_MS,
   workspace_key = '',
   project_key = '',
+  life_skills_native = false,
 }) {
-  const credentials = wapiCredentialsForScope({ workspace_key, project_key });
+  const credentials = wapiCredentialsForScope({ workspace_key, project_key, life_skills_native });
   if (!credentials.token) {
     const error = new Error('WAPI_API_TOKEN or WHAPI_API_TOKEN is not configured for outbound WhatsApp sending');
     error.statusCode = 503;
@@ -69702,6 +69711,24 @@ app.post('/api/bna/life-skills-app/prospects/:leadId/send', async (req, res) => 
   } catch (error) {
     if (attempt?.id) await updateOutboundWapiCommunicationResult(attempt.id, { error, summary: `Life Skills WhatsApp not confirmed for ${req.params.leadId}`.slice(0,240) }).catch(() => null);
     res.status(error?.statusCode || 503).json({ success: false, error: 'WhatsApp delivery was not confirmed' });
+  }
+});
+
+// Native People uses the same authorized sender, but never consults the retired
+// Leads writer. The explicit matching native epoch keeps this route inert until
+// the coordinated cutover; ordinary legacy sends retain their existing fence.
+app.post('/api/bna/life-skills-app/native-prospects/send', async (req, res) => {
+  res.setHeader('Cache-Control', 'private, no-store');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  if (!authorizeLifeSkillsAppBridge(req)) return res.status(401).json({success:false, error:'Unauthorized Life Skills app bridge'});
+  try {
+    const receipt = await deliverNativeProspectMessage(req.body, {env:process.env, pool,
+      createAttempt:createOutboundWapiCommunicationAttempt, updateResult:updateOutboundWapiCommunicationResult,
+      send:sendWapiTextMessage, messageId:wapiResponseMessageId});
+    res.json({success:true, receipt});
+  } catch (error) {
+    res.status([400,409,423,503].includes(error?.statusCode) ? error.statusCode : 503)
+      .json({success:false, error:'Native WhatsApp delivery was not confirmed; do not resend without reconciliation'});
   }
 });
 

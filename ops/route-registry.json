@@ -13,6 +13,20 @@
   },
   "routes": [
     {
+      "route": "/api/bna/life-skills-app/native-prospects/send",
+      "surface": "life_skills_native_prospect_whatsapp_bridge",
+      "access": "private",
+      "required_role": "life_skills_service_bridge",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized_401",
+      "expected_logged_in_behavior": "require the existing bridge authorization, matching native authority epoch and registered binding before creating a durable attempt and using only the Life Skills scoped WAPI credential",
+      "privacy_risk": "private_contact_delivery",
+      "security_expectation": "Private no-store route; bridge authorization precedes transport; native writer epoch and binding fail closed; unusable scoped credentials fail before the attempt ledger; no generic or One Time credential fallback; confirmed replays suppress duplicate delivery; unresolved outcomes never resend automatically; no Leads Sheet access.",
+      "smoke_expectation": "tests/life-skills-native-outbound.test.cjs verifies anonymous rejection ordering, exact authority and binding fences, scoped-credential normalization, durable pre-send recording, replay and unknown-outcome behavior, and absence of Sheet or scheduler access.",
+      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-015"]
+    },
+    {
       "route": "/api/bna/life-skills-app/marketing",
       "surface": "life_skills_marketing_bridge",
       "access": "private",
