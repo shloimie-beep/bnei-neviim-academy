@@ -223,10 +223,10 @@ function applyFacebookPageProviderReadback(record, readback = {}, { readAt = new
     publishedAt: post.publishedAt, providerReadAt: validIso(readAt) ? readAt : null, noBlindRetry: true };
 }
 
-async function reserveFacebookPagePublication(pool, preview, { actor = 'life-skills-private-app', now = Date.now() } = {}) {
+async function reserveFacebookPagePublication(pool, preview, { actor = 'life-skills-private-app', clock = Date.now } = {}) {
   if (preview?.state !== 'READY')
     return { state: 'BLOCKED', reason: preview?.reason || 'PAGE_PUBLICATION_NOT_READY', externalWritePerformed: false };
-  if (!validIso(preview.scheduledAt) || Date.parse(preview.scheduledAt) <= now)
+  if (!validIso(preview.scheduledAt) || Date.parse(preview.scheduledAt) <= clock())
     return { state: 'BLOCKED', reason: 'FUTURE_SCHEDULE_REQUIRED_NO_BACKFILL', externalWritePerformed: false };
   const client = typeof pool?.connect === 'function' ? await pool.connect() : pool;
   if (!client?.query) throw new Error('A PostgreSQL client or pool is required');
@@ -236,6 +236,7 @@ async function reserveFacebookPagePublication(pool, preview, { actor = 'life-ski
     began = true;
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1), hashtext($2))',
       [SOURCE, `${preview.pageIdentityKey}:${preview.localBusinessDate}`]);
+    const afterLock = clock();
     const existing = await client.query(
       `SELECT id, status, source, source_id, provider_post_id, scheduled_at, metadata
        FROM bna_social_posts
@@ -262,6 +263,11 @@ async function reserveFacebookPagePublication(pool, preview, { actor = 'life-ski
           id: row.id, requestKey, internalRecordWritten: false, externalWritePerformed: false }
         : { state: 'BLOCKED', reason: 'ONE_PAGE_POST_PER_LOCAL_DAY', existingRecordId: row.id,
           externalWritePerformed: false };
+    }
+    if (Date.parse(preview.scheduledAt) <= afterLock || Date.parse(preview.scheduledAt) <= clock()) {
+      await client.query('ROLLBACK');
+      began = false;
+      return { state: 'BLOCKED', reason: 'FUTURE_SCHEDULE_REQUIRED_NO_BACKFILL', externalWritePerformed: false };
     }
     const metadata = {
       publication_state: 'RESERVED',
