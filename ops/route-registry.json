@@ -55,6 +55,20 @@
       "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-015"]
     },
     {
+      "route": "/api/bna/life-skills-app/marketing/facebook-page-publication",
+      "surface": "life_skills_facebook_page_publication_state_bridge",
+      "access": "private",
+      "required_role": "life_skills_service_bridge",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized_401",
+      "expected_logged_in_behavior": "read_disabled_local_page_publication_lifecycle_only",
+      "privacy_risk": "private_marketing_publication_metadata",
+      "security_expectation": "Existing constant-time bridge-secret gate; private no-store; bounded reads from bna_social_posts; no destination credentials, provider call, reservation, scheduling or publication action.",
+      "smoke_expectation": "tests/life-skills-facebook-page-publication-adapter.test.js verifies actual route authorization and disabled read-only behavior plus disposable synthetic preview, reservation and readback lifecycles.",
+      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-015"]
+    },
+    {
       "route": "/",
       "surface": "public_site",
       "access": "public",

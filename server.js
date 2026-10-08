@@ -58,6 +58,7 @@ const { createOutboxPool: createLifeSkillsAppInboundPool } = require('./src/lib/
 const { deliverNativeProspectMessage, usableLifeSkillsScopedToken } = require('./src/lib/bna/life-skills-native-outbound');
 const { readLifeSkillsMarketingSnapshot } = require('./src/lib/bna/life-skills-marketing');
 const { readLifeSkillsMarketingMedia, MarketingMediaError } = require('./src/lib/bna/life-skills-marketing-media');
+const { readDisabledFacebookPagePublicationState } = require('./src/lib/bna/life-skills-facebook-page-publication-adapter');
 const { startScheduler: startLifeSkillsStatusScheduler } = require('./src/lib/bna/life-skills-status-publisher');
 const {
   goalBoardBucket,
@@ -69641,6 +69642,21 @@ app.get('/api/bna/life-skills-app/marketing', async (req, res) => {
     res.json({ success: true, snapshot });
   } catch {
     res.status(503).json({ success: false, error: 'Life Skills marketing workbook read failed' });
+  }
+});
+
+app.get('/api/bna/life-skills-app/marketing/facebook-page-publication', async (req, res) => {
+  res.setHeader('Cache-Control', 'private, no-store');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  if (!authorizeLifeSkillsAppBridge(req))
+    return res.status(401).json({ success: false, error: 'Unauthorized Life Skills app bridge' });
+  try {
+    // Destination binding and provider writes remain deliberately absent. This
+    // route only exposes the durable local lifecycle state to the private app.
+    const publication = await readDisabledFacebookPagePublicationState({ pool });
+    res.json({ success: true, publication });
+  } catch {
+    res.status(503).json({ success: false, error: 'Life Skills Facebook Page publication state unavailable' });
   }
 });
 
