@@ -46,7 +46,7 @@ jobs:
           echo "event_head=${{ github.event.pull_request.head.sha }}"
           echo "checked_out_sha=$(git rev-parse HEAD)"
           echo "checked_out_tree=$(git show -s --format=%T HEAD)"
-          git show -s --format='checked_out_parents=%P'
+          git cat-file -p HEAD | sed -n 's/^parent /checked_out_parent=/p'
 
       - name: Install locked dependencies without lifecycle scripts
         run: npm ci --ignore-scripts --no-audit --no-fund
