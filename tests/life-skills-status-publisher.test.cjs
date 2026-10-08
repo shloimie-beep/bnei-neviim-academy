@@ -608,6 +608,17 @@ test('authorized re-anchor rechecks the clock immediately before write and never
   assert.equal(result.state,'HELD');assert.equal(result.reason,'AUTHORIZED_REANCHOR_TIME_PASSED_BEFORE_WRITE');assert.equal(writes.length,0);
 });
 
+test('authorized re-anchor rechecks the invocation expiry immediately before write',async()=>{
+  const fixture=reanchorFixture({off:false}),authorization=reanchorAuthorization(),writes=[];
+  const ranges=()=>[{values:fixture.raw.assetRows},{values:fixture.raw.calendarRows}];
+  const sheets={spreadsheets:{values:{batchGet:async()=>({data:{valueRanges:ranges()}}),batchUpdate:async()=>{writes.push(true);}}}};
+  const db={query:async(sql)=>/pg_try_advisory_lock/.test(sql)?{rows:[{acquired:true}]}:{rows:[]},release:()=>{}};
+  const times=[Date.parse('2026-10-07T08:00:00.000Z'),Date.parse('2026-10-07T08:00:01.000Z'),Date.parse('2026-10-07T08:00:06.000Z')];
+  const result=await authorizedReanchor({authorization,authorizationExpiresAt:'2026-10-07T08:00:05.000Z',
+    pool:{connect:async()=>db},clients:{sheets},clock:()=>times.shift()});
+  assert.equal(result.state,'HELD');assert.equal(result.reason,'AUTHORIZED_REANCHOR_INVOCATION_EXPIRED_BEFORE_WRITE');assert.equal(writes.length,0);
+});
+
 test('provider result reread resolves shifted rows and preserves post-send Calendar interventions',()=>{
   const sent=statusRow('C20-HE','HE');
   const calendar=Array(15).fill('');
