@@ -653,7 +653,7 @@ function reanchorPreflight(workbook, authorization, { now = Date.now() } = {}) {
     return { ok: false, state: 'HELD', reason: 'AUTHORIZED_REANCHOR_QUIET_DAY_FAILED' };
   return { ok: true, replay: false, predecessor, asset, slot, requestKey, scheduledAt: authorization.scheduledAt };
 }
-async function authorizedReanchor({ authorization, env = process.env,
+async function authorizedReanchor({ authorization, authorizationExpiresAt = null, env = process.env,
   pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 1 }), clients = null,
   clock = Date.now } = {}) {
   const db = await pool.connect();
@@ -680,6 +680,9 @@ async function authorizedReanchor({ authorization, env = process.env,
           schedulerReadback: true, replay: true }
         : { state: checked.state, reason: checked.reason, assetIds: checked.assetIds };
     const writeNow = clock();
+    const authorizationExpiry = authorizationExpiresAt === null ? null : Date.parse(authorizationExpiresAt);
+    if (authorizationExpiresAt !== null && (!Number.isFinite(authorizationExpiry) || authorizationExpiry <= writeNow))
+      return { state: 'HELD', reason: 'AUTHORIZED_REANCHOR_INVOCATION_EXPIRED_BEFORE_WRITE' };
     if (Date.parse(authorization.scheduledAt) <= writeNow)
       return { state: 'HELD', reason: 'AUTHORIZED_REANCHOR_TIME_PASSED_BEFORE_WRITE' };
     const queuedAt = new Date(writeNow).toISOString();
