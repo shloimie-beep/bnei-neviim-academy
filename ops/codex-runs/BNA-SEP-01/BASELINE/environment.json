@@ -1,0 +1,16 @@
+{
+  "run_id": "BNA-SEP-01",
+  "captured_at": "2026-07-15T14:13:53.3994380Z",
+  "repository": "https://github.com/shloimie-beep/bnei-neviim-academy.git",
+  "remote_branch": "master",
+  "base_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "worktree": "C:\\Users\\User\\.codex-worktrees\\bna-sep-01-20260715T135234Z",
+  "browser_measurement_status": "blocked",
+  "browser_measurement_blocker": "No approved authenticated local/staging admin, parent, or student session and no stable browser/database measurement target were available in this run.",
+  "privacy_policy": "No cookies, authorization headers, response bodies, private DOM text, private database rows, screenshots, or HAR files were committed.",
+  "source_baseline": {
+    "focused_school_admin_route_existed": false,
+    "focused_school_admin_summary_api_existed": false,
+    "source_finding": "Base SHA routed School work through broader Operations behavior rather than a dedicated /operations/school shell."
+  }
+}

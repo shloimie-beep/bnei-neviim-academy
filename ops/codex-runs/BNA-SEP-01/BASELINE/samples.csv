@@ -1,0 +1,3 @@
+route,viewport,mode,sample_index,status,useful_action_ms,ttfb_ms,request_count,total_transfer_bytes,error
+all,all,cold,0,blocked,,,,,"No authenticated browser measurement target available"
+all,all,warm,0,blocked,,,,,"No authenticated browser measurement target available"

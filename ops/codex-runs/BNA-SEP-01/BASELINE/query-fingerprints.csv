@@ -1,0 +1,2 @@
+route,query_fingerprint,count,p50_ms,p75_ms,p95_ms,max_rows,status,note
+all,blocked,,,,,,blocked,"No database measurement target or approved query-plan environment available"

@@ -1,0 +1,2 @@
+route,method,status,server_duration_ms,auth_lookup_count,db_query_count,db_query_ms,response_bytes,note
+all,all,blocked,,,,,,"No authenticated server-timing sample captured"

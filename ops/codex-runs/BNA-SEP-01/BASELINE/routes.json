@@ -1,0 +1,60 @@
+{
+  "run_id": "BNA-SEP-01",
+  "status": "source_routes_recorded_browser_samples_blocked",
+  "routes": [
+    {
+      "id": "login",
+      "url": "/operations-login.html",
+      "baseline_browser_samples": 0,
+      "blocker": "authenticated browser harness not available"
+    },
+    {
+      "id": "school_admin_dashboard",
+      "url": "/operations/school",
+      "baseline_browser_samples": 0,
+      "source_baseline": "focused route absent at base SHA"
+    },
+    {
+      "id": "students",
+      "url": "/operations/school?view=students",
+      "baseline_browser_samples": 0,
+      "source_baseline": "focused deep link absent at base SHA"
+    },
+    {
+      "id": "families",
+      "url": "/operations/school?view=families",
+      "baseline_browser_samples": 0,
+      "source_baseline": "focused deep link absent at base SHA"
+    },
+    {
+      "id": "classes",
+      "url": "/operations/school?view=classes",
+      "baseline_browser_samples": 0,
+      "source_baseline": "focused deep link absent at base SHA"
+    },
+    {
+      "id": "attendance",
+      "url": "/operations/school?view=attendance",
+      "baseline_browser_samples": 0,
+      "source_baseline": "focused deep link absent at base SHA"
+    },
+    {
+      "id": "progress",
+      "url": "/operations/school?view=progress",
+      "baseline_browser_samples": 0,
+      "source_baseline": "focused deep link absent at base SHA"
+    },
+    {
+      "id": "parent_portal",
+      "url": "/parent",
+      "baseline_browser_samples": 0,
+      "blocker": "authenticated parent browser harness not available"
+    },
+    {
+      "id": "student_portal",
+      "url": "/student",
+      "baseline_browser_samples": 0,
+      "blocker": "authenticated student browser harness not available"
+    }
+  ]
+}

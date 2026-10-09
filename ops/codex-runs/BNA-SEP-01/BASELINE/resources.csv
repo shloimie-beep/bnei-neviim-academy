@@ -1,0 +1,2 @@
+route,viewport,mode,resource_type,compressed_bytes,decoded_bytes,status,note
+all,all,baseline,unknown,,,blocked,"No browser resource waterfall captured"
