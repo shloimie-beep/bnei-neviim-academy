@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inquiriesFromEnvelope, ctwaAttributionFromProviderMessage, receiptDigest, LifeSkillsAppInboundOutbox } = require('../src/lib/bna/life-skills-app-inbound');
+const { readInboundReconciliation } = require('../src/lib/bna/life-skills-inbound-reconciliation');
 
 function env(extra={}) { return { LIFE_SKILLS_APP_INBOUND_FORWARD_ENABLED:'true', LIFE_SKILLS_SHEET_CRM_ENABLED:'true',
   LIFE_SKILLS_SHEET_CRM_CONFIRM:'APPROVE_LIFE_SKILLS_SHEET_CRM_INBOUND_UPSERT', LIFE_SKILLS_APP_BRIDGE_SECRET:'synthetic-key-not-a-real-secret-123456789',
@@ -121,14 +122,20 @@ test('actual webhook awaits encrypted capture before communication/ACK; timer dr
   const handler=server.slice(server.indexOf("app.post('/api/webhooks/wapi'"));
   assert.ok(handler.indexOf('authorizeWapiWebhookRequest')<handler.indexOf('await captureLifeSkillsAppInbound'));
   assert.ok(handler.indexOf('await captureLifeSkillsAppInbound')<handler.indexOf('createCommunicationFromWapiWebhook'));
-  assert.match(server,/await outbox.captureBatch\(inquiries\)/);
+  assert.match(server,/await outbox.captureBatch\(inquiries,writer\.epoch\|\|'sheet'\)/);
+  assert.ok(handler.indexOf('await captureLifeSkillsAppInbound')<handler.indexOf('const receipts=Array.isArray'));
+  assert.ok(handler.indexOf('const receipts=Array.isArray')<handler.indexOf('await syncLifeSkillsInboundToSheet'));
+  assert.match(handler,/privateReceipt:receipt/);
+  assert.doesNotMatch(handler,/inquiries\?\.find/);
   assert.match(server,/lifeSkillsAppInboundPool.query\(createLifeSkillsAppInboundOutboxSQL\)/);
   assert.doesNotMatch(server,/await pool.query\(createLifeSkillsAppInboundOutboxSQL\)/);
-  assert.match(server,/new LifeSkillsAppInboundOutbox\(await lifeSkillsAppInboundDatabase\(\), config\)/);
+  assert.match(server,/new LifeSkillsAppInboundOutbox\(await lifeSkillsAppInboundDatabase\(\), config, fetch/);
   assert.match(server,/startLifeSkillsAppInboundScheduler\(\)/);
   const module=fs.readFileSync(path.join(__dirname,'..','src/lib/bna/life-skills-app-inbound.js'),'utf8');
   assert.doesNotMatch(module,/bna_wapi_webhook_log|bna_contact_communications|bna_life_skills_sheet_crm_sync|sendWapiTextMessage|messages\/list/);
   assert.match(OUTBOX_SQL,/REVOKE ALL ON bna_life_skills_app_inbound_outbox FROM PUBLIC/);
+  assert.match(OUTBOX_SQL,/private_ack_digest/);
+  assert.equal(typeof readInboundReconciliation,'function');
 });
 
 test('optional outbox startup cannot interrupt healthy shared initialization or log failure details', async () => {
@@ -157,9 +164,9 @@ test('actual webhook capture still rejects the same unavailable durable database
   assert.ok(start>0&&end>start);
   let captureCalls=0;
   const result=vm.runInNewContext(`${server.slice(start,end)};captureLifeSkillsAppInbound({},{});`,{
-    process:{env:{}},lifeSkillsAppInboundConfig:()=>({enabled:true,ready:true}),lifeSkillsAppInquiries:()=>[{}],
+    process:{env:{}},lifeSkillsAppInboundConfig:()=>({enabled:true,ready:true}),lifeSkillsAppInquiries:()=>[{}],lifeSkillsCrmWriterState:()=>({ready:true,epoch:null}),
     lifeSkillsAppInboundDatabase:async()=>{throw new Error('OUTBOX_DATABASE_TLS_UNAVAILABLE');},
-    LifeSkillsAppInboundOutbox:class { async captureBatch(){captureCalls++;return {};} },
+    LifeSkillsAppInboundOutbox:class { async captureBatch(){captureCalls++;return {};} },fetch:async()=>{},registerLifeSkillsInboundReconciliation:async()=>{},confirmLifeSkillsPrivateReceipt:async()=>{},markLifeSkillsPrivateReceiptBlocked:async()=>{},messageAttribution:()=>({}),
   });
   await assert.rejects(result,/OUTBOX_DATABASE_TLS_UNAVAILABLE/);
   assert.equal(captureCalls,0);

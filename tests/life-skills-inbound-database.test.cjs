@@ -55,7 +55,7 @@ test('production factory has fixed registered receiver identity and cannot trust
 test('both actual receiver paths use only the new pool; default OFF never initializes this feature or alters shared pool',()=>{
  const server=fs.readFileSync(path.join(__dirname,'..','server.js'),'utf8');
  assert.match(server,/if \(lifeSkillsAppInboundConfig\(process.env\).ready\) \{\s*try \{ await lifeSkillsAppInboundDatabase\(\); \}\s*catch \{ console.error\('Life Skills future inbox: optional startup unavailable; inbound remains fail-closed'\); \}\s*\}/);
- assert.equal((server.match(/new LifeSkillsAppInboundOutbox\(await lifeSkillsAppInboundDatabase\(\), config\)/g)||[]).length,2);
+ assert.equal((server.match(/new LifeSkillsAppInboundOutbox\(await lifeSkillsAppInboundDatabase\(\), config, fetch,/g)||[]).length,2);
  assert.doesNotMatch(server,/new LifeSkillsAppInboundOutbox\(pool, config\)/);
  assert.match(server,/lifeSkillsAppInboundPool = createLifeSkillsAppInboundPool\(process.env\)/);
  // This narrowly scoped repair must not change shared One Time/BNA connectivity.
