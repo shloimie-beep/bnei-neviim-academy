@@ -45,7 +45,7 @@ async function registerInboundReconciliation(db,{inquiry,bindingSha256,eventKey,
   if(!inquiry||inquiry.providerEventId!==inquiry.providerMessageId||![bindingSha256,eventKey,messageKey,payloadDigest].every(hex))throw fail('INBOUND_RECONCILIATION_INVALID');
   const originalEpoch=epoch(captureEpoch);
   await lockInboundReconciliation(db,{bindingSha256,eventKey});
-  const existingSheet=(await db.query(`SELECT id,phone_e164,to_number,attribution,native_binding_sha256,native_event_key
+  const existingSheet=(await db.query(`SELECT id,phone_e164,to_number,attribution,native_binding_sha256,native_event_key,status
     FROM bna_life_skills_sheet_crm_sync WHERE provider_message_id=$1 FOR UPDATE`,[inquiry.providerMessageId])).rows[0];
   if(existingSheet&&(existingSheet.phone_e164!==inquiry.fromNumber||existingSheet.to_number!==inquiry.businessNumber||
     (existingSheet.native_binding_sha256&&existingSheet.native_binding_sha256!==bindingSha256)||
@@ -63,7 +63,7 @@ async function registerInboundReconciliation(db,{inquiry,bindingSha256,eventKey,
   const inserted=existingSheet?null:(await db.query(`INSERT INTO bna_life_skills_sheet_crm_sync
     (provider_message_id,phone_e164,to_number,push_name,has_media,message_type,occurred_at,attribution,native_binding_sha256,native_event_key)
     VALUES($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10) ON CONFLICT(provider_message_id) DO NOTHING
-    RETURNING id,phone_e164,to_number,native_binding_sha256,native_event_key,attribution`,
+    RETURNING id,phone_e164,to_number,native_binding_sha256,native_event_key,attribution,status`,
     [inquiry.providerMessageId,inquiry.fromNumber,inquiry.businessNumber,inquiry.pushName||null,Boolean(inquiry.media?.length),inquiry.messageType||null,inquiry.occurredAt,
       JSON.stringify({...messageAttribution(attribution),detected_language:detectedLanguage(inquiry.messageText||''),writer_epoch:retained.capture_epoch}),bindingSha256,eventKey])).rows[0];
   const sheet=inserted||(await db.query(`UPDATE bna_life_skills_sheet_crm_sync SET
@@ -71,7 +71,7 @@ async function registerInboundReconciliation(db,{inquiry,bindingSha256,eventKey,
     WHERE provider_message_id=$1 AND phone_e164=$4 AND to_number=$5
      AND (native_binding_sha256 IS NULL OR native_binding_sha256=$2)
      AND (native_event_key IS NULL OR native_event_key=$3)
-    RETURNING id,phone_e164,to_number,native_binding_sha256,native_event_key,attribution`,
+    RETURNING id,phone_e164,to_number,native_binding_sha256,native_event_key,attribution,status`,
     [inquiry.providerMessageId,bindingSha256,eventKey,inquiry.fromNumber,inquiry.businessNumber])).rows[0];
   if(!sheet||sheet.native_binding_sha256!==bindingSha256||sheet.native_event_key!==eventKey)throw fail('INBOUND_RECONCILIATION_CONFLICT');
   // An absent first lookup does not lock a future Sheet row. Validate the
@@ -81,6 +81,14 @@ async function registerInboundReconciliation(db,{inquiry,bindingSha256,eventKey,
   if(retained.sheet_sync_id!==null&&Number(retained.sheet_sync_id)!==Number(sheet.id))throw fail('INBOUND_RECONCILIATION_CONFLICT');
   await db.query(`UPDATE bna_life_skills_app_inbound_reconciliation SET sheet_sync_id=$3,updated_at=clock_timestamp()
     WHERE binding_sha256=$1 AND event_key=$2`,[bindingSha256,eventKey,sheet.id]);
+  // A Sheet-first transaction can commit its external receipt before this
+  // outbox registration exists. Adopt that durable winner while holding the
+  // shared event lock so rollback state does not remain falsely unresolved.
+  if(sheet.status==='synced'&&retained.capture_epoch!=='legacy_unbound'){
+    await db.query(`UPDATE bna_life_skills_app_inbound_reconciliation SET authority_disposition='sheet_materialized',
+      rollback_disposition='not_required',updated_at=clock_timestamp()
+      WHERE binding_sha256=$1 AND event_key=$2`,[bindingSha256,eventKey]);
+  }
   return {captureEpoch:retained.capture_epoch,sheetSyncId:Number(sheet.id),lineageHeld:retained.capture_epoch==='legacy_unbound'};
 }
 
@@ -108,7 +116,7 @@ async function markPrivateReceiptBlocked(db,{bindingSha256,eventKey}){
 /** Called only after the external Sheet upsert returned and its local sync row
  * was checkpointed. A failed local commit leaves the event retryable; the
  * provider message-id upsert makes the external retry idempotent. */
-async function markSheetMaterialized(db,{bindingSha256,eventKey}){
+async function markSheetMaterialized(db,{bindingSha256,eventKey},{allowMissingRegistration=false}={}){
   if(![bindingSha256,eventKey].every(hex))throw fail('INBOUND_RECONCILIATION_INVALID');
   await lockInboundReconciliation(db,{bindingSha256,eventKey});
   const rows=(await db.query(`UPDATE bna_life_skills_app_inbound_reconciliation r SET authority_disposition='sheet_materialized',
@@ -116,7 +124,14 @@ async function markSheetMaterialized(db,{bindingSha256,eventKey}){
     WHERE r.binding_sha256=$1 AND r.event_key=$2 AND r.sheet_sync_id=s.id AND s.status='synced'
       AND r.capture_epoch<>'legacy_unbound' RETURNING r.event_key`,
     [bindingSha256,eventKey])).rows;
-  if(rows.length!==1)throw fail('INBOUND_RECONCILIATION_CONFLICT');
+  if(rows.length===1)return {materialized:true,registrationPending:false};
+  if(allowMissingRegistration){
+    const existing=(await db.query(`SELECT r.sheet_sync_id,r.capture_epoch,s.status FROM bna_life_skills_app_inbound_reconciliation r
+      LEFT JOIN bna_life_skills_sheet_crm_sync s ON s.id=r.sheet_sync_id
+      WHERE r.binding_sha256=$1 AND r.event_key=$2`,[bindingSha256,eventKey])).rows;
+    if(existing.length===0)return {materialized:false,registrationPending:true};
+  }
+  throw fail('INBOUND_RECONCILIATION_CONFLICT');
 }
 
 /** Aggregate-only owner readback. Native projection deliberately remains null:

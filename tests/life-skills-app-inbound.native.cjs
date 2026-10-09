@@ -268,18 +268,24 @@ test('real Sheet sync and registration concurrency share event-before-row orderi
   const dto=inquiry('lock-order-event','lock order inquiry');
   const outbox=new LifeSkillsAppInboundOutbox(pool,config,async()=>receipt(false,dto),reconciliation);
   const privateReceipt={providerEventId:dto.providerEventId,bindingSha256:config.bindingSha256,eventKey:outbox.eventKey(dto)};
-  let sheetCalls=0;
-  const sync=nativeSheetSync(async({normalized})=>{sheetCalls++;await new Promise(resolve=>setTimeout(resolve,25));return {action:'created',row:2,providerMessageIds:normalized.messageId};});
-  const [captured,synced]=await bounded(Promise.all([
-    outbox.capture(dto,'LS-OUTBOX-E2'),
-    sync({normalized:sheetNormalized(dto),payload:{},privateReceipt,receiptPool:pool}),
-  ]));
+  let sheetCalls=0,releaseSheet;
+  let sheetEnteredResolve;
+  const sheetEntered=new Promise(resolve=>{sheetEnteredResolve=resolve;});
+  const sheetRelease=new Promise(resolve=>{releaseSheet=resolve;});
+  const sync=nativeSheetSync(async({normalized})=>{sheetCalls++;sheetEnteredResolve();await sheetRelease;return {action:'created',row:2,providerMessageIds:normalized.messageId};});
+  const syncedPromise=sync({normalized:sheetNormalized(dto),payload:{},privateReceipt,receiptPool:pool});
+  await bounded(sheetEntered);
+  const capturedPromise=outbox.capture(dto,'LS-OUTBOX-E2');
+  releaseSheet();
+  const [captured,synced]=await bounded(Promise.all([capturedPromise,syncedPromise]));
   assert.equal(synced.status,'synced');assert.equal(sheetCalls,1);
   const rows=(await pool.query(`SELECT o.capture_epoch AS outbox_epoch,r.capture_epoch AS reconciliation_epoch,
     s.attribution->>'writer_epoch' AS sheet_epoch,s.status FROM bna_life_skills_app_inbound_outbox o
     JOIN bna_life_skills_app_inbound_reconciliation r USING(binding_sha256,event_key)
     JOIN bna_life_skills_sheet_crm_sync s ON s.id=r.sheet_sync_id WHERE o.event_key=$1`,[captured.eventKey])).rows;
   assert.equal(rows.length,1);assert.equal(rows[0].outbox_epoch,rows[0].reconciliation_epoch);assert.equal(rows[0].outbox_epoch,rows[0].sheet_epoch);assert.equal(rows[0].status,'synced');
+  const state=await readInboundReconciliation(pool,rows[0].outbox_epoch);
+  assert.equal(state.sheetApplied,1);assert.equal(state.sheetReplayRequiredIfRollback,0);
   const [replay,replayedSync]=await bounded(Promise.all([
     outbox.capture(dto,'LS-IGNORED-LATER-EPOCH'),
     sync({normalized:sheetNormalized(dto),payload:{},privateReceipt,receiptPool:pool}),

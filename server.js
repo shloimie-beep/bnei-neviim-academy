@@ -69579,7 +69579,8 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
       throw new Error('Life Skills private receipt replay mismatch');
     const retainedReceiptLink=lockLink?.event?{bindingSha256:lockLink.binding,eventKey:lockLink.event}:null;
     if (stored.status === 'synced') {
-      if(retainedReceiptLink)await markLifeSkillsSheetMaterialized(client,retainedReceiptLink);
+      if(retainedReceiptLink)await markLifeSkillsSheetMaterialized(client,retainedReceiptLink,
+        {allowMissingRegistration:true});
       await client.query('COMMIT');
       return { status: 'synced', action: stored.sheet_receipt?.action || null, row: stored.sheet_row || null, replay_suppressed: true, durable: true };
     }
@@ -69598,7 +69599,8 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
     try {
       const sheetResult = await upsertLifeSkillsSheetLead({ sheets: clientConfig.sheets, normalized, payload, scope, config });
       await client.query('UPDATE bna_life_skills_sheet_crm_sync SET status = $2, sheet_row = $3, sheet_receipt = $4::jsonb, last_error = NULL, updated_at = NOW() WHERE id = $1', [stored.id, 'synced', sheetResult.row || null, JSON.stringify({ action: sheetResult.action, provider_message_count: String(sheetResult.providerMessageIds || '').split(',').filter(Boolean).length })]);
-      if(retainedReceiptLink)await markLifeSkillsSheetMaterialized(client,retainedReceiptLink);
+      if(retainedReceiptLink)await markLifeSkillsSheetMaterialized(client,retainedReceiptLink,
+        {allowMissingRegistration:true});
       await client.query('COMMIT');
       return { status: 'synced', action: sheetResult.action, row: sheetResult.row || null, durable: true };
     } catch (error) {
