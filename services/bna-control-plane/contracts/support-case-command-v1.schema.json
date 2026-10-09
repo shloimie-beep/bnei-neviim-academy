@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bnei-neviim.com/contracts/bna-control-plane/support-case-command-v1.schema.json",
+  "title": "BNA Control Plane Support Case Command v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "command_id",
+    "command_type",
+    "requested_at",
+    "issuer",
+    "target",
+    "instruction",
+    "trace"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "1.0.0"
+    },
+    "command_id": {
+      "type": "string",
+      "pattern": "^cmd_[A-Za-z0-9_]{10,96}$"
+    },
+    "command_type": {
+      "enum": [
+        "support.case.assign_queue.v1",
+        "support.case.set_severity.v1",
+        "support.case.request_information.v1",
+        "support.case.close.v1",
+        "support.case.reopen.v1"
+      ]
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "issuer": {
+      "$ref": "#/$defs/issuer"
+    },
+    "target": {
+      "$ref": "#/$defs/target"
+    },
+    "instruction": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "queue": {
+          "enum": [
+            "support_ops",
+            "school_ops",
+            "billing_ops",
+            "technical_ops",
+            "content_ops"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "sev1",
+            "sev2",
+            "sev3",
+            "sev4"
+          ]
+        },
+        "template_code": {
+          "enum": [
+            "request_reproduction_steps",
+            "request_screenshot_in_product",
+            "request_error_code",
+            "request_account_verification_in_product"
+          ]
+        },
+        "resolution_code": {
+          "enum": [
+            "resolved_by_product",
+            "duplicate_case",
+            "operator_review"
+          ]
+        },
+        "reason_code": {
+          "enum": [
+            "routing_correction",
+            "severity_correction",
+            "missing_information",
+            "duplicate_case",
+            "resolved_by_product",
+            "operator_review"
+          ]
+        }
+      }
+    },
+    "trace": {
+      "$ref": "#/$defs/trace"
+    }
+  },
+  "$defs": {
+    "issuer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "service",
+        "environment",
+        "deployment_id",
+        "source_commit",
+        "operator_id"
+      ],
+      "properties": {
+        "service": {
+          "const": "bna_control_plane"
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "deployment_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "source_commit": {
+          "type": "string",
+          "minLength": 7,
+          "maxLength": 40
+        },
+        "operator_id": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_]{10,96}$"
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product",
+        "product_case_id",
+        "expected_product_version"
+      ],
+      "properties": {
+        "product": {
+          "enum": [
+            "one_time",
+            "bna_school"
+          ]
+        },
+        "product_case_id": {
+          "type": "string",
+          "pattern": "^case_[A-Za-z0-9_]{10,96}$"
+        },
+        "expected_product_version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "correlation_id"
+      ],
+      "properties": {
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^corr_[A-Za-z0-9_]{10,96}$"
+        }
+      }
+    }
+  }
+}

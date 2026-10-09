@@ -1,0 +1,28 @@
+{
+  "contract_version": "1.0.0",
+  "event_id": "evt_01JCONTROLPLANEOTCASE000001",
+  "event_type": "support.case.created.v1",
+  "occurred_at": "2026-07-17T08:00:00Z",
+  "producer": {
+    "product": "one_time",
+    "environment": "production",
+    "deployment_id": "one-time-prod-20260717",
+    "source_commit": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c"
+  },
+  "case": {
+    "product_case_id": "case_01JCONTROLPLANEOT000001",
+    "case_kind": "access_login",
+    "severity": "sev2",
+    "queue": "support_ops",
+    "status": "new",
+    "redacted_summary": "Subscriber cannot open the member library.",
+    "product_case_url": "https://join.onetimeonetime.com/support/cases/case_01JCONTROLPLANEOT000001",
+    "product_version": 4,
+    "opened_at": "2026-07-17T07:58:00Z",
+    "updated_at": "2026-07-17T08:00:00Z",
+    "closed_at": null
+  },
+  "trace": {
+    "correlation_id": "corr_01JCONTROLPLANEOT000001"
+  }
+}
