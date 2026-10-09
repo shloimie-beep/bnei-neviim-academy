@@ -201,6 +201,41 @@ test('legacy schema backfill is upgraded without turning an exact replay into a 
   assert.equal((await readInboundReconciliation(pool,'LS-NEW-EPOCH')).total,0);
 });
 
+test('migrated schema accepts the exact serving old-writer insert and retains it for lossless adoption',async()=>{
+  await pool.query('DROP TABLE bna_life_skills_app_inbound_outbox');
+  await pool.query(`CREATE TABLE bna_life_skills_app_inbound_outbox (
+    binding_sha256 TEXT NOT NULL CHECK (binding_sha256 ~ '^[a-f0-9]{64}$'),
+    event_key TEXT NOT NULL CHECK (event_key ~ '^[a-f0-9]{64}$'),
+    key_sha256 TEXT NOT NULL CHECK (key_sha256 ~ '^[a-f0-9]{64}$'),
+    payload_digest TEXT NOT NULL CHECK (payload_digest ~ '^[a-f0-9]{64}$'),
+    payload_ciphertext BYTEA NOT NULL CHECK (octet_length(payload_ciphertext) > 28),
+    stored_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),delivered_at TIMESTAMPTZ,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','delivered','blocked')),
+    attempts INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0),next_attempt_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
+    last_code TEXT CHECK (last_code IS NULL OR last_code ~ '^[A-Z0-9_]{1,40}$'),conflict_detected BOOLEAN NOT NULL DEFAULT FALSE,
+    PRIMARY KEY (binding_sha256,event_key));
+    CREATE INDEX idx_bna_life_skills_app_inbound_pending ON bna_life_skills_app_inbound_outbox(next_attempt_at) WHERE status='pending';
+    REVOKE ALL ON bna_life_skills_app_inbound_outbox FROM PUBLIC;`);
+  const oldDto=inquiry('old-writer-after-migration','accepted by serving writer');
+  const outbox=new LifeSkillsAppInboundOutbox(pool,config,async()=>receipt(false,oldDto),reconciliation);
+  const eventKey=outbox.eventKey(oldDto),payloadDigest=outbox.digest(oldDto);
+  await pool.query(OUTBOX_SQL);await pool.query(OUTBOX_SQL);
+  await pool.query(`INSERT INTO bna_life_skills_app_inbound_outbox(binding_sha256,event_key,key_sha256,payload_digest,payload_ciphertext)
+    VALUES($1,$2,$3,$4,$5)`,[config.bindingSha256,eventKey,outbox.keySha256,payloadDigest,outbox.seal(oldDto,eventKey)]);
+  let row=(await pool.query(`SELECT message_key,capture_epoch,status FROM bna_life_skills_app_inbound_outbox
+    WHERE binding_sha256=$1 AND event_key=$2`,[config.bindingSha256,eventKey])).rows[0];
+  assert.deepEqual(row,{message_key:eventKey,capture_epoch:'legacy_unbound',status:'pending'});
+  assert.equal(Number((await pool.query(`SELECT count(*) AS n FROM pg_trigger WHERE tgname='bna_ls_app_inbound_legacy_defaults'
+    AND tgrelid='bna_life_skills_app_inbound_outbox'::regclass AND NOT tgisinternal`)).rows[0].n),1);
+  const adopted=await outbox.capture(oldDto,'LS-CANDIDATE-EPOCH');
+  assert.equal(adopted.replayed,true);assert.equal(adopted.captureEpoch,'legacy_unbound');
+  row=(await pool.query(`SELECT message_key,capture_epoch,status FROM bna_life_skills_app_inbound_outbox
+    WHERE binding_sha256=$1 AND event_key=$2`,[config.bindingSha256,eventKey])).rows[0];
+  assert.deepEqual(row,{message_key:outbox.messageKey(oldDto),capture_epoch:'legacy_unbound',status:'pending'});
+  const state=await readInboundReconciliation(pool,'legacy_unbound');
+  assert.equal(state.total,1);assert.equal(state.sheetReplayRequiredIfRollback,1);assert.equal(state.privateReceiptOnly,0);
+});
+
 test('a failed local commit after private ACK stays pending and replay completes both public receipts',async()=>{
   const dto=inquiry();let sends=0,failCommit=true;
   const unstable={register:registerInboundReconciliation,confirm:async(db,input)=>{

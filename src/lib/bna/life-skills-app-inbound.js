@@ -29,6 +29,22 @@ ALTER TABLE bna_life_skills_app_inbound_outbox
   ADD COLUMN IF NOT EXISTS capture_epoch TEXT,
   ADD COLUMN IF NOT EXISTS private_ack_digest TEXT,
   ADD COLUMN IF NOT EXISTS private_acknowledged_at TIMESTAMPTZ;
+CREATE OR REPLACE FUNCTION bna_life_skills_app_inbound_legacy_defaults()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  IF NEW.message_key IS NULL THEN NEW.message_key := NEW.event_key; END IF;
+  IF NEW.capture_epoch IS NULL THEN NEW.capture_epoch := 'legacy_unbound'; END IF;
+  RETURN NEW;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname='bna_ls_app_inbound_legacy_defaults'
+    AND tgrelid='bna_life_skills_app_inbound_outbox'::regclass AND NOT tgisinternal) THEN
+    CREATE TRIGGER bna_ls_app_inbound_legacy_defaults
+      BEFORE INSERT ON bna_life_skills_app_inbound_outbox
+      FOR EACH ROW EXECUTE FUNCTION bna_life_skills_app_inbound_legacy_defaults();
+  END IF;
+END $$;
+REVOKE ALL ON FUNCTION bna_life_skills_app_inbound_legacy_defaults() FROM PUBLIC;
 UPDATE bna_life_skills_app_inbound_outbox SET message_key=event_key WHERE message_key IS NULL;
 UPDATE bna_life_skills_app_inbound_outbox SET capture_epoch='legacy_unbound' WHERE capture_epoch IS NULL;
 ALTER TABLE bna_life_skills_app_inbound_outbox ALTER COLUMN message_key SET NOT NULL,ALTER COLUMN capture_epoch SET NOT NULL;
