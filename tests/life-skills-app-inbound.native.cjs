@@ -39,6 +39,15 @@ function nativeSheetSync(upsert,writer={mode:'sheet',epoch:null,ready:true,block
     ()=>({readiness:{ready:true,blockers:[]},sheets:{}}),crm.messageAttribution,crm.detectedLanguage,upsert,lockInboundReconciliation,markSheetMaterialized,error=>String(error?.message||'sheet failure'));
 }
 async function bounded(promise,ms=4000){let timer;try{return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('native concurrency timeout')),ms);})]);}finally{clearTimeout(timer);}}
+async function waitForBlockedReconciliationInsert(){
+  for(let attempt=0;attempt<100;attempt++){
+    const row=(await pool.query(`SELECT count(*)::int AS n FROM pg_stat_activity WHERE datname=current_database()
+      AND wait_event_type='Lock' AND position('bna_life_skills_app_inbound_reconciliation' in query)>0`)).rows[0];
+    if(row.n>0)return;
+    await new Promise(resolve=>setTimeout(resolve,10));
+  }
+  throw Error('registration did not reach deterministic barrier');
+}
 const count=async()=>Number((await pool.query('SELECT count(*) AS n FROM bna_life_skills_app_inbound_outbox')).rows[0].n);
 before(async()=>{
   await pool.query(SHEET_SYNC_SQL);
@@ -305,6 +314,43 @@ test('Sheet-first origin is retained and missing legacy origin stays explicitly 
   finally{heldClient.release();}
   const state=await readInboundReconciliation(pool,'legacy_unbound');
   assert.equal(state.total,1);assert.equal(state.sheetApplied,0);assert.equal(state.sheetReplayRequiredIfRollback,1);
+});
+
+test('empty-lookup conflict winner is validated before commit and safe retry adopts its actual origin',async()=>{
+  await pool.query(`CREATE TABLE ls_test_reconciliation_barrier(id INTEGER PRIMARY KEY);
+    INSERT INTO ls_test_reconciliation_barrier VALUES(1);
+    CREATE FUNCTION ls_test_pause_reconciliation() RETURNS trigger LANGUAGE plpgsql AS $$
+      BEGIN PERFORM 1 FROM ls_test_reconciliation_barrier WHERE id=1 FOR UPDATE; RETURN NEW; END $$;
+    CREATE TRIGGER ls_test_pause_reconciliation BEFORE INSERT ON bna_life_skills_app_inbound_reconciliation
+      FOR EACH ROW EXECUTE FUNCTION ls_test_pause_reconciliation()`);
+  const race=async(dto,insertWinner,expectedOrigin)=>{
+    const outbox=new LifeSkillsAppInboundOutbox(pool,config,async()=>receipt(false,dto),reconciliation);
+    const barrier=await pool.connect();await barrier.query('BEGIN');await barrier.query('SELECT * FROM ls_test_reconciliation_barrier WHERE id=1 FOR UPDATE');
+    const pending=outbox.capture(dto,'LS-RACE-E2').then(value=>({value}),error=>({error}));
+    await waitForBlockedReconciliationInsert();
+    await insertWinner(dto);
+    await barrier.query('COMMIT');barrier.release();
+    const failed=await bounded(pending);assert.equal(failed.error?.code,'INBOUND_RECONCILIATION_CONFLICT');
+    assert.equal(Number((await pool.query(`SELECT count(*) AS n FROM bna_life_skills_app_inbound_outbox WHERE event_key=$1`,[outbox.eventKey(dto)])).rows[0].n),0);
+    assert.equal(Number((await pool.query(`SELECT count(*) AS n FROM bna_life_skills_app_inbound_reconciliation WHERE event_key=$1`,[outbox.eventKey(dto)])).rows[0].n),0);
+    const winner=(await pool.query(`SELECT attribution,native_event_key FROM bna_life_skills_sheet_crm_sync WHERE provider_message_id=$1`,[dto.providerMessageId])).rows[0];
+    assert.equal(winner.native_event_key,null,'rolled-back loser cannot link inconsistent evidence');
+    const retried=await outbox.capture(dto,'LS-RACE-E2');assert.equal(retried.captureEpoch,expectedOrigin);
+    const linked=(await pool.query(`SELECT o.capture_epoch AS outbox_epoch,r.capture_epoch AS reconciliation_epoch,
+      s.attribution->>'writer_epoch' AS sheet_epoch FROM bna_life_skills_app_inbound_outbox o
+      JOIN bna_life_skills_app_inbound_reconciliation r USING(binding_sha256,event_key)
+      JOIN bna_life_skills_sheet_crm_sync s ON s.id=r.sheet_sync_id WHERE o.event_key=$1`,[retried.eventKey])).rows[0];
+    assert.equal(linked.outbox_epoch,expectedOrigin);assert.equal(linked.reconciliation_epoch,expectedOrigin);
+    assert.equal(linked.sheet_epoch,expectedOrigin==='legacy_unbound'?null:expectedOrigin);
+  };
+  const sync=nativeSheetSync(async({normalized})=>({action:'created',row:2,providerMessageIds:normalized.messageId}));
+  await race(inquiry('empty-lookup-sheet-winner','sheet winner'),dto=>sync({normalized:sheetNormalized(dto),payload:{}}),'sheet');
+  await race(inquiry('empty-lookup-missing-origin','legacy winner'),dto=>pool.query(`INSERT INTO bna_life_skills_sheet_crm_sync
+    (provider_message_id,phone_e164,to_number,push_name,has_media,message_type,occurred_at,attribution,status)
+    VALUES($1,$2,$3,$4,FALSE,$5,$6,'{}'::jsonb,'pending')`,[dto.providerMessageId,dto.fromNumber,dto.businessNumber,dto.pushName,dto.messageType,dto.occurredAt]),'legacy_unbound');
+  const held=await readInboundReconciliation(pool,'legacy_unbound');assert.equal(held.sheetReplayRequiredIfRollback,1);assert.equal(held.sheetApplied,0);
+  await pool.query(`DROP TRIGGER ls_test_pause_reconciliation ON bna_life_skills_app_inbound_reconciliation;
+    DROP FUNCTION ls_test_pause_reconciliation();DROP TABLE ls_test_reconciliation_barrier`);
 });
 
 test('actual populated baseline Sheet schema upgrades exactly once and repeats without data loss',async()=>{

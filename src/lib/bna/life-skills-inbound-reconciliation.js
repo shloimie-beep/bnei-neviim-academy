@@ -62,7 +62,8 @@ async function registerInboundReconciliation(db,{inquiry,bindingSha256,eventKey,
   if(rows.length!==1||retained.message_key!==messageKey||retained.payload_digest!==payloadDigest||retained.capture_epoch!==effectiveEpoch)throw fail('INBOUND_RECONCILIATION_CONFLICT');
   const inserted=existingSheet?null:(await db.query(`INSERT INTO bna_life_skills_sheet_crm_sync
     (provider_message_id,phone_e164,to_number,push_name,has_media,message_type,occurred_at,attribution,native_binding_sha256,native_event_key)
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10) ON CONFLICT(provider_message_id) DO NOTHING RETURNING id,phone_e164,to_number,native_binding_sha256,native_event_key`,
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10) ON CONFLICT(provider_message_id) DO NOTHING
+    RETURNING id,phone_e164,to_number,native_binding_sha256,native_event_key,attribution`,
     [inquiry.providerMessageId,inquiry.fromNumber,inquiry.businessNumber,inquiry.pushName||null,Boolean(inquiry.media?.length),inquiry.messageType||null,inquiry.occurredAt,
       JSON.stringify({...messageAttribution(attribution),detected_language:detectedLanguage(inquiry.messageText||''),writer_epoch:retained.capture_epoch}),bindingSha256,eventKey])).rows[0];
   const sheet=inserted||(await db.query(`UPDATE bna_life_skills_sheet_crm_sync SET
@@ -73,6 +74,10 @@ async function registerInboundReconciliation(db,{inquiry,bindingSha256,eventKey,
     RETURNING id,phone_e164,to_number,native_binding_sha256,native_event_key,attribution`,
     [inquiry.providerMessageId,bindingSha256,eventKey,inquiry.fromNumber,inquiry.businessNumber])).rows[0];
   if(!sheet||sheet.native_binding_sha256!==bindingSha256||sheet.native_event_key!==eventKey)throw fail('INBOUND_RECONCILIATION_CONFLICT');
+  // An absent first lookup does not lock a future Sheet row. Validate the
+  // actual INSERT/UPDATE winner under its row lock before linking evidence.
+  // A losing new capture rolls back; its safe retry may then adopt the winner.
+  if(sheetOrigin(sheet)!==retained.capture_epoch)throw fail('INBOUND_RECONCILIATION_CONFLICT');
   if(retained.sheet_sync_id!==null&&Number(retained.sheet_sync_id)!==Number(sheet.id))throw fail('INBOUND_RECONCILIATION_CONFLICT');
   await db.query(`UPDATE bna_life_skills_app_inbound_reconciliation SET sheet_sync_id=$3,updated_at=clock_timestamp()
     WHERE binding_sha256=$1 AND event_key=$2`,[bindingSha256,eventKey,sheet.id]);
