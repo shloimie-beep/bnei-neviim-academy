@@ -408,6 +408,67 @@ test('empty-lookup conflict winner is validated before commit and safe retry ado
     DROP FUNCTION ls_test_pause_reconciliation();DROP TABLE ls_test_reconciliation_barrier`);
 });
 
+test('populated exact-parent reconciliation schema upgrades twice and accepts the terminal native receipt',async()=>{
+  const dto=inquiry('reconciliation-forward-upgrade','forward upgrade receipt');
+  const outbox=new LifeSkillsAppInboundOutbox(pool,config,async()=>receipt(false,dto));
+  const captured=await outbox.capture(dto,'LS-UPGRADE-E1');
+  const retained=(await pool.query(`SELECT message_key,payload_digest,capture_epoch FROM bna_life_skills_app_inbound_outbox
+    WHERE binding_sha256=$1 AND event_key=$2`,[config.bindingSha256,captured.eventKey])).rows[0];
+  await pool.query('DROP TABLE bna_life_skills_app_inbound_reconciliation');
+  await pool.query(`CREATE TABLE bna_life_skills_app_inbound_reconciliation (
+    binding_sha256 TEXT NOT NULL CHECK (binding_sha256 ~ '^[a-f0-9]{64}$'),
+    event_key TEXT NOT NULL CHECK (event_key ~ '^[a-f0-9]{64}$'),
+    message_key TEXT NOT NULL CHECK (message_key ~ '^[a-f0-9]{64}$'),
+    payload_digest TEXT NOT NULL CHECK (payload_digest ~ '^[a-f0-9]{64}$'),
+    capture_epoch TEXT NOT NULL CHECK (capture_epoch ~ '^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$'),
+    sheet_sync_id INTEGER REFERENCES bna_life_skills_sheet_crm_sync(id) ON DELETE RESTRICT,
+    private_receipt_status TEXT NOT NULL DEFAULT 'pending' CHECK (private_receipt_status IN ('pending','confirmed','blocked')),
+    private_ack_digest TEXT CHECK (private_ack_digest IS NULL OR private_ack_digest ~ '^[a-f0-9]{64}$'),
+    private_acknowledged_at TIMESTAMPTZ,
+    authority_disposition TEXT NOT NULL DEFAULT 'unresolved' CHECK (authority_disposition IN ('unresolved','sheet_materialized')),
+    rollback_disposition TEXT NOT NULL DEFAULT 'sheet_materialization_required' CHECK (rollback_disposition IN ('sheet_materialization_required','not_required')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),updated_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
+    CHECK ((private_ack_digest IS NULL) = (private_acknowledged_at IS NULL)),
+    CHECK ((authority_disposition='sheet_materialized') = (rollback_disposition='not_required')),
+    PRIMARY KEY(binding_sha256,event_key));
+    CREATE INDEX idx_bna_ls_inbound_reconciliation_epoch
+      ON bna_life_skills_app_inbound_reconciliation(capture_epoch,authority_disposition,private_receipt_status);
+    REVOKE ALL ON bna_life_skills_app_inbound_reconciliation FROM PUBLIC`);
+  const sheet=(await pool.query(`INSERT INTO bna_life_skills_sheet_crm_sync
+    (provider_message_id,phone_e164,to_number,push_name,has_media,message_type,occurred_at,attribution,status,native_binding_sha256,native_event_key)
+    VALUES($1,$2,$3,$4,FALSE,$5,$6,$7::jsonb,'pending',$8,$9) RETURNING id`,
+    [dto.providerMessageId,dto.fromNumber,dto.businessNumber,dto.pushName,dto.messageType,dto.occurredAt,
+      JSON.stringify({writer_epoch:retained.capture_epoch}),config.bindingSha256,captured.eventKey])).rows[0];
+  await pool.query(`INSERT INTO bna_life_skills_app_inbound_reconciliation
+    (binding_sha256,event_key,message_key,payload_digest,capture_epoch,sheet_sync_id)
+    VALUES($1,$2,$3,$4,$5,$6)`,[config.bindingSha256,captured.eventKey,retained.message_key,retained.payload_digest,retained.capture_epoch,sheet.id]);
+  const before=(await pool.query(`SELECT row_to_json(r)::text AS snapshot FROM bna_life_skills_app_inbound_reconciliation r
+    WHERE binding_sha256=$1 AND event_key=$2`,[config.bindingSha256,captured.eventKey])).rows[0].snapshot;
+  await pool.query(RECONCILIATION_SQL);await pool.query(RECONCILIATION_SQL);
+  const after=(await pool.query(`SELECT row_to_json(r)::text AS snapshot FROM bna_life_skills_app_inbound_reconciliation r
+    WHERE binding_sha256=$1 AND event_key=$2`,[config.bindingSha256,captured.eventKey])).rows[0].snapshot;
+  assert.equal(after,before,'forward migration preserves the populated exact-parent row');
+  const constraintNames=(await pool.query(`SELECT conname FROM pg_constraint
+    WHERE conrelid='bna_life_skills_app_inbound_reconciliation'::regclass
+      AND conname IN('bna_ls_inbound_reconciliation_authority_check','bna_ls_inbound_reconciliation_rollback_pair')
+    ORDER BY conname`)).rows.map(row=>row.conname);
+  assert.deepEqual(constraintNames,['bna_ls_inbound_reconciliation_authority_check','bna_ls_inbound_reconciliation_rollback_pair']);
+  assert.equal((await pool.query(`SELECT count(*)::int AS n FROM pg_constraint
+    WHERE conrelid='bna_life_skills_app_inbound_reconciliation'::regclass AND contype='c'
+      AND pg_get_constraintdef(oid) LIKE '%authority_disposition%'`)).rows[0].n,2);
+  const client=await pool.connect();
+  try{
+    await client.query('BEGIN');
+    assert.deepEqual(await confirmPrivateReceipt(client,{bindingSha256:config.bindingSha256,eventKey:captured.eventKey,
+      ackDigest:receiptDigest(dto,config.secret)}),{nativeForwarded:true});
+    await client.query('COMMIT');
+  }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
+  const terminal=(await pool.query(`SELECT r.authority_disposition,r.rollback_disposition,s.status
+    FROM bna_life_skills_app_inbound_reconciliation r JOIN bna_life_skills_sheet_crm_sync s ON s.id=r.sheet_sync_id
+    WHERE r.binding_sha256=$1 AND r.event_key=$2`,[config.bindingSha256,captured.eventKey])).rows[0];
+  assert.deepEqual(terminal,{authority_disposition:'native_receipt_accepted',rollback_disposition:'not_required',status:'native_forwarded'});
+});
+
 test('actual populated baseline Sheet schema upgrades exactly once and repeats without data loss',async()=>{
   await pool.query('DROP TABLE bna_life_skills_app_inbound_reconciliation');
   await pool.query('DROP TABLE bna_life_skills_sheet_crm_sync');

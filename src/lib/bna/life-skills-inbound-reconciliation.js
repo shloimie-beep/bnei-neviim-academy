@@ -10,14 +10,33 @@ const RECONCILIATION_SQL=`CREATE TABLE IF NOT EXISTS bna_life_skills_app_inbound
   private_receipt_status TEXT NOT NULL DEFAULT 'pending' CHECK (private_receipt_status IN ('pending','confirmed','blocked')),
   private_ack_digest TEXT CHECK (private_ack_digest IS NULL OR private_ack_digest ~ '^[a-f0-9]{64}$'),
   private_acknowledged_at TIMESTAMPTZ,
-  authority_disposition TEXT NOT NULL DEFAULT 'unresolved' CHECK (authority_disposition IN ('unresolved','sheet_materialized','native_receipt_accepted')),
+  authority_disposition TEXT NOT NULL DEFAULT 'unresolved' CONSTRAINT bna_ls_inbound_reconciliation_authority_check CHECK (authority_disposition IN ('unresolved','sheet_materialized','native_receipt_accepted')),
   rollback_disposition TEXT NOT NULL DEFAULT 'sheet_materialization_required' CHECK (rollback_disposition IN ('sheet_materialization_required','not_required')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
   CHECK ((private_ack_digest IS NULL) = (private_acknowledged_at IS NULL)),
-  CHECK ((authority_disposition IN ('sheet_materialized','native_receipt_accepted')) = (rollback_disposition='not_required')),
+  CONSTRAINT bna_ls_inbound_reconciliation_rollback_pair CHECK ((authority_disposition IN ('sheet_materialized','native_receipt_accepted')) = (rollback_disposition='not_required')),
   PRIMARY KEY(binding_sha256,event_key)
 );
+DO $$ DECLARE legacy_constraint TEXT; BEGIN
+  FOR legacy_constraint IN SELECT conname FROM pg_constraint
+    WHERE conrelid='bna_life_skills_app_inbound_reconciliation'::regclass AND contype='c'
+      AND pg_get_constraintdef(oid) LIKE '%authority_disposition%'
+      AND pg_get_constraintdef(oid) NOT LIKE '%native_receipt_accepted%'
+  LOOP
+    EXECUTE format('ALTER TABLE bna_life_skills_app_inbound_reconciliation DROP CONSTRAINT %I',legacy_constraint);
+  END LOOP;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bna_ls_inbound_reconciliation_authority_check'
+    AND conrelid='bna_life_skills_app_inbound_reconciliation'::regclass) THEN
+    ALTER TABLE bna_life_skills_app_inbound_reconciliation ADD CONSTRAINT bna_ls_inbound_reconciliation_authority_check
+      CHECK (authority_disposition IN ('unresolved','sheet_materialized','native_receipt_accepted'));
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bna_ls_inbound_reconciliation_rollback_pair'
+    AND conrelid='bna_life_skills_app_inbound_reconciliation'::regclass) THEN
+    ALTER TABLE bna_life_skills_app_inbound_reconciliation ADD CONSTRAINT bna_ls_inbound_reconciliation_rollback_pair
+      CHECK ((authority_disposition IN ('sheet_materialized','native_receipt_accepted')) = (rollback_disposition='not_required'));
+  END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_bna_ls_inbound_reconciliation_epoch
  ON bna_life_skills_app_inbound_reconciliation(capture_epoch,authority_disposition,private_receipt_status);
 REVOKE ALL ON bna_life_skills_app_inbound_reconciliation FROM PUBLIC;`;
