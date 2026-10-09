@@ -1,0 +1,72 @@
+{
+  "run_id": "BNA-SEP-02",
+  "phase": "definition_of_ready_gate",
+  "status": "BLOCKED_DEFINITION_OF_READY",
+  "legacy_repository": {
+    "remote_url": "https://github.com/shloimie-beep/bnei-neviim-academy.git",
+    "remote_branch": "master",
+    "resolved_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+    "ls_remote_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c"
+  },
+  "legacy_worktree": {
+    "path": "C:\\Users\\User\\.codex-worktrees\\bna-sep-02-20260715T143000Z",
+    "branch": "codex/bna-sep-02-dor-gate-20260715T143000Z",
+    "base_head": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c"
+  },
+  "target_repository": {
+    "status": "not_created_or_validated",
+    "reason": "Definition of Ready did not pass and no approved decisions file authorizes repository creation."
+  },
+  "definition_of_ready": {
+    "overall_status": "BLOCKED_DEFINITION_OF_READY",
+    "result_path": "ops/codex-runs/BNA-SEP-02/DEFINITION-OF-READY-RESULT.json",
+    "blocking_requirements": [
+      "DOR-B01",
+      "DOR-B02",
+      "DOR-B03",
+      "DOR-B04",
+      "DOR-B05",
+      "DOR-B08",
+      "DOR-B11",
+      "DOR-B12",
+      "DOR-B13",
+      "DOR-B15",
+      "DOR-B16",
+      "DOR-B18",
+      "DOR-B21",
+      "DOR-B22",
+      "DOR-B23",
+      "DOR-B27",
+      "DOR-B28"
+    ]
+  },
+  "approved_decisions": {
+    "status": "missing",
+    "path": "ops/codex-runs/BNA-SEP-02/APPROVED-DECISIONS.json",
+    "authorize_repository_creation": false
+  },
+  "external_mutations": [],
+  "tests": [
+    {
+      "command": "node -e JSON.parse(...) for BNA-SEP-02 JSON artifacts",
+      "result": "pending"
+    }
+  ],
+  "commit": {
+    "status": "local_commit_created",
+    "commit": "0cdac3c52a816d3a87b42c1cc0af39f18ca69639",
+    "message": "Record BNA SEP 02 DOR gate blocker"
+  },
+  "push": {
+    "status": "pushed",
+    "remote": "origin",
+    "branch": "codex/bna-sep-02-dor-gate-20260715T143000Z"
+  },
+  "pull_request": {
+    "status": "draft_open",
+    "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/135",
+    "number": 135
+  },
+  "next_command": "Provide ops/codex-runs/BNA-SEP-02/APPROVED-DECISIONS.json or BNA_SEP_02_APPROVED_DECISIONS_FILE, then rerun the BNA-SEP-02 Definition of Ready gate from a clean worktree.",
+  "updated_at": "2026-07-15T14:37:18.0099970Z"
+}

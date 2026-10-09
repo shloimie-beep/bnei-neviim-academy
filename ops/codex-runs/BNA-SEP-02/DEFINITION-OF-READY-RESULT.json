@@ -1,0 +1,283 @@
+{
+  "gate_id": "BNA-SEP-02-DOR",
+  "evaluated_at": "2026-07-15T14:33:42.2139036Z",
+  "evaluator_commit": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "legacy_repository": "https://github.com/shloimie-beep/bnei-neviim-academy.git",
+  "legacy_branch": "master",
+  "legacy_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "decision_file": {
+    "status": "missing",
+    "path": "ops/codex-runs/BNA-SEP-02/APPROVED-DECISIONS.json",
+    "sha256": null,
+    "fingerprint": null
+  },
+  "overall_status": "BLOCKED_DEFINITION_OF_READY",
+  "requirements": [
+    {
+      "id": "DOR-B01",
+      "status": "BLOCKED",
+      "evidence": ["DEFINITION-OF-READY.md", "DECISIONS-NEEDED.md"],
+      "blocker": "Exact target repository is recommended but not authorized.",
+      "owner": "operator",
+      "next_action": "Provide an approved decisions file naming the exact repository and authorization."
+    },
+    {
+      "id": "DOR-B02",
+      "status": "BLOCKED",
+      "evidence": ["DEFINITION-OF-READY.md", "DECISIONS-NEEDED.md"],
+      "blocker": "School production domain is recommended but not selected by an approved decision.",
+      "owner": "operator",
+      "next_action": "Approve the School production domain and separate Control Plane host."
+    },
+    {
+      "id": "DOR-B03",
+      "status": "BLOCKED",
+      "evidence": ["DEFINITION-OF-READY.md", "DECISIONS-NEEDED.md"],
+      "blocker": "First extraction slice is recommended but not approved.",
+      "owner": "operator",
+      "next_action": "Approve the bounded first slice or mark specific domains out of scope."
+    },
+    {
+      "id": "DOR-B04",
+      "status": "BLOCKED",
+      "evidence": ["DEFINITION-OF-READY.md", "DECISIONS-NEEDED.md"],
+      "blocker": "Account migration method is not approved.",
+      "owner": "operator",
+      "next_action": "Approve activation/reset or a verified compatible-hash policy."
+    },
+    {
+      "id": "DOR-B05",
+      "status": "BLOCKED",
+      "evidence": ["DEFINITION-OF-READY.md", "DECISIONS-NEEDED.md"],
+      "blocker": "Payment ownership is not approved; billing may be deferred only by explicit first-slice decision.",
+      "owner": "operator",
+      "next_action": "Approve School billing ownership or mark billing out of scope for the first slice."
+    },
+    {
+      "id": "DOR-B06",
+      "status": "PARTIAL",
+      "evidence": ["TARGET-ARCHITECTURE-ADR.md"],
+      "blocker": "Target ADR exists as an audit recommendation but lacks owner acceptance.",
+      "owner": "operator",
+      "next_action": "Accept or revise the target ADR."
+    },
+    {
+      "id": "DOR-B07",
+      "status": "PASS",
+      "evidence": ["INPUTS.json"],
+      "blocker": "",
+      "owner": "codex",
+      "next_action": "Re-resolve remote truth in every future run."
+    },
+    {
+      "id": "DOR-B08",
+      "status": "BLOCKED",
+      "evidence": ["DEFINITION-OF-READY.md", "REPOSITORY-WORKTREE-PR-DEPLOYMENT-TRUTH.md"],
+      "blocker": "Current deployed legacy SHA was not independently read back.",
+      "owner": "operator_or_deployment_runner",
+      "next_action": "Provide deployment readback or record exact unavailability."
+    },
+    {
+      "id": "DOR-B09",
+      "status": "PARTIAL",
+      "evidence": ["SCHOOL-SURFACE-INVENTORY.csv", "ROUTE-DEPENDENCY-MAP.md"],
+      "blocker": "Source inventory exists from the audit but was not refreshed into a runtime extraction gate pass.",
+      "owner": "codex",
+      "next_action": "Refresh route/API/action/worker inventory at execution head after decisions are approved."
+    },
+    {
+      "id": "DOR-B10",
+      "status": "PARTIAL",
+      "evidence": ["EXTRACTION-SEAMS-AND-CONTRACTS.md"],
+      "blocker": "Generated/canonical ownership is not complete enough for extraction implementation.",
+      "owner": "codex",
+      "next_action": "Complete deterministic source ownership ledger for the approved slice."
+    },
+    {
+      "id": "DOR-B11",
+      "status": "BLOCKED",
+      "evidence": ["ops/codex-runs/BNA-SEP-01/STATE.json", "https://github.com/shloimie-beep/bnei-neviim-academy/pull/134"],
+      "blocker": "CODEX-01 reached IMPLEMENTED_NEEDS_MEASUREMENT; accepted 30-sample baseline/budgets are still missing.",
+      "owner": "operator_or_authorized_staging_runner",
+      "next_action": "Collect and accept the 30-sample cold/warm browser matrix."
+    },
+    {
+      "id": "DOR-B12",
+      "status": "BLOCKED",
+      "evidence": ["DATABASE-DEPENDENCY-MAP.md"],
+      "blocker": "No approved production schema/catalog/index/constraint metadata export exists for extraction.",
+      "owner": "operator_or_database_runner",
+      "next_action": "Provide a privacy-safe read-only metadata export from approved source."
+    },
+    {
+      "id": "DOR-B13",
+      "status": "BLOCKED",
+      "evidence": ["DATA-OWNERSHIP-MATRIX.csv"],
+      "blocker": "Aggregate table/domain counts and positive School ownership predicates are not independently read back.",
+      "owner": "operator_or_database_runner",
+      "next_action": "Run approved aggregate ownership count readback without private rows."
+    },
+    {
+      "id": "DOR-B14",
+      "status": "PARTIAL",
+      "evidence": ["DATA-OWNERSHIP-MATRIX.csv", "MIGRATION-WAVES.md"],
+      "blocker": "Canonical ID and mapping ledger design is not accepted for implementation.",
+      "owner": "operator",
+      "next_action": "Approve mapping ledger schema for the first slice."
+    },
+    {
+      "id": "DOR-B15",
+      "status": "BLOCKED",
+      "evidence": ["DEFINITION-OF-READY.md"],
+      "blocker": "Duplicate/orphan/relationship policy lacks aggregate findings and manual-review rules.",
+      "owner": "operator_or_database_runner",
+      "next_action": "Provide duplicate/orphan aggregates and no-name-only-merge tests."
+    },
+    {
+      "id": "DOR-B16",
+      "status": "BLOCKED",
+      "evidence": ["DEFINITION-OF-READY.md"],
+      "blocker": "Consent, suppression and retention classifications are not accepted.",
+      "owner": "operator",
+      "next_action": "Approve field/table policy for minors, guardians, communications, payments and audit."
+    },
+    {
+      "id": "DOR-B17",
+      "status": "PARTIAL",
+      "evidence": ["MIGRATION-WAVES.md"],
+      "blocker": "Import/reconciliation/checksum specification is conceptual but not versioned for the first slice.",
+      "owner": "codex",
+      "next_action": "Prepare transform manifest after approved scope and schema readback."
+    },
+    {
+      "id": "DOR-B18",
+      "status": "BLOCKED",
+      "evidence": ["DEFINITION-OF-READY.md"],
+      "blocker": "No repeated dry-run import exists on safe data.",
+      "owner": "codex_after_source_access",
+      "next_action": "Run deterministic import dry-runs after safe source and target fixtures exist."
+    },
+    {
+      "id": "DOR-B19",
+      "status": "PARTIAL",
+      "evidence": ["AUTH-SESSION-ROLE-MATRIX.md"],
+      "blocker": "Role/account/relationship matrix needs acceptance and negative cases for the target slice.",
+      "owner": "operator",
+      "next_action": "Approve School role and relationship matrix."
+    },
+    {
+      "id": "DOR-B20",
+      "status": "PASS_AS_ARCHITECTURE",
+      "evidence": ["AUTH-SESSION-ROLE-MATRIX.md", "TARGET-ARCHITECTURE-ADR.md"],
+      "blocker": "Implementation remains absent.",
+      "owner": "codex_after_gate_pass",
+      "next_action": "Implement separate cookie/session/CSRF/key policy only after Gate B passes."
+    },
+    {
+      "id": "DOR-B21",
+      "status": "BLOCKED",
+      "evidence": ["DEFINITION-OF-READY.md"],
+      "blocker": "No approved synthetic or staging admin/guardian/learner test-account policy exists.",
+      "owner": "operator",
+      "next_action": "Provide privacy-safe test account policy."
+    },
+    {
+      "id": "DOR-B22",
+      "status": "BLOCKED",
+      "evidence": ["DEFINITION-OF-READY.md"],
+      "blocker": "Activation, recovery, logout and revocation acceptance plan is missing.",
+      "owner": "operator",
+      "next_action": "Approve account acceptance plan."
+    },
+    {
+      "id": "DOR-B23",
+      "status": "BLOCKED",
+      "evidence": ["RISK-REGISTER.md"],
+      "blocker": "Privacy/threat model for minor and guardian data is not reviewed.",
+      "owner": "operator_or_security_reviewer",
+      "next_action": "Review data-flow/threat model and logging/redaction controls."
+    },
+    {
+      "id": "DOR-B24",
+      "status": "PARTIAL",
+      "evidence": ["EXTRACTION-SEAMS-AND-CONTRACTS.md"],
+      "blocker": "Signed/idempotent event contract is architectural only.",
+      "owner": "codex_after_gate_pass",
+      "next_action": "Implement versioned event schemas and tests after approved slice."
+    },
+    {
+      "id": "DOR-B25",
+      "status": "PARTIAL",
+      "evidence": ["EXTRACTION-SEAMS-AND-CONTRACTS.md"],
+      "blocker": "Diagnostic API contract is architectural only.",
+      "owner": "codex_after_gate_pass",
+      "next_action": "Implement allowlisted diagnostic contract after gate pass."
+    },
+    {
+      "id": "DOR-B26",
+      "status": "PARTIAL",
+      "evidence": ["RUNTIME-FANOUT-AND-PERFORMANCE.md", "ops/codex-runs/BNA-SEP-01/STATE.json"],
+      "blocker": "CODEX-01 static budget evidence exists, but accepted browser budgets are not complete.",
+      "owner": "operator_or_authorized_staging_runner",
+      "next_action": "Accept measured Wave 0 budgets."
+    },
+    {
+      "id": "DOR-B27",
+      "status": "BLOCKED",
+      "evidence": ["DEFINITION-OF-READY.md"],
+      "blocker": "Independent staging deployment plan is missing.",
+      "owner": "operator",
+      "next_action": "Approve target staging environment and release/rollback plan."
+    },
+    {
+      "id": "DOR-B28",
+      "status": "BLOCKED",
+      "evidence": ["DEFINITION-OF-READY.md"],
+      "blocker": "School database backup and restore-drill plan is missing.",
+      "owner": "operator_or_database_runner",
+      "next_action": "Provide backup ownership, RPO/RTO and restore-drill procedure."
+    },
+    {
+      "id": "DOR-B29",
+      "status": "PARTIAL",
+      "evidence": ["INTEGRATION-AND-WORKER-MATRIX.md"],
+      "blocker": "Worker/process ownership plan is not accepted.",
+      "owner": "operator",
+      "next_action": "Approve one-owner worker/process plan."
+    },
+    {
+      "id": "DOR-B30",
+      "status": "PARTIAL",
+      "evidence": ["INTEGRATION-AND-WORKER-MATRIX.md"],
+      "blocker": "Secrets/provider ownership plan is not accepted.",
+      "owner": "operator",
+      "next_action": "Approve product-scoped secret aliases/accounts."
+    },
+    {
+      "id": "DOR-B31",
+      "status": "PARTIAL",
+      "evidence": ["EXTRACTION-SEAMS-AND-CONTRACTS.md"],
+      "blocker": "File ownership and collision ledger is audit-level, not implementation-ready.",
+      "owner": "codex",
+      "next_action": "Create exact target ownership ledger after approved slice."
+    },
+    {
+      "id": "DOR-B32",
+      "status": "PASS_CONCEPT",
+      "evidence": ["DEFINITION-OF-READY.md", "CODEX-02-ACADEMY-EXTRACTION-FOUNDATION.md"],
+      "blocker": "Test/evidence plan exists conceptually; implementation awaits Gate B pass.",
+      "owner": "codex_after_gate_pass",
+      "next_action": "Instantiate tests only after repository/scaffold authorization."
+    }
+  ],
+  "blocked_mutations": [
+    "target_repository_creation",
+    "target_repository_push",
+    "standalone_product_implementation",
+    "database_creation_or_migration",
+    "deployment",
+    "dns",
+    "production_or_staging_data_readback",
+    "account_or_credential_creation"
+  ]
+}

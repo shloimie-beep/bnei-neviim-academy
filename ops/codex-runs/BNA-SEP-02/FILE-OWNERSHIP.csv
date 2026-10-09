@@ -1,0 +1,4 @@
+path,canonical_or_generated,primary_surface,current_consumers,planned_change,run_owner,collision_risk,coordination_required
+ops/codex-runs/BNA-SEP-02/**,generated run evidence,CODEX-02 DOR gate,Codex continuation,Record blocked Definition of Ready result,BNA-SEP-02,low,commit as gate evidence only
+target repository,external mutation,standalone School,none,Blocked and not created,BNA-SEP-02,high,requires approved decisions and PASS gate
+production database/external accounts,external mutation,standalone School,none,Blocked and not touched,BNA-SEP-02,high,requires approved readback and authorization

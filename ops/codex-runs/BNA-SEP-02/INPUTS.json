@@ -1,0 +1,27 @@
+{
+  "run_id": "BNA-SEP-02",
+  "created_at": "2026-07-15T14:33:42.2139036Z",
+  "prompt_source": "raw-input/RAW-20260715-007-bna-school-separation-audit-and-codex-prompts/CODEX-02-ACADEMY-EXTRACTION-FOUNDATION.md",
+  "prompt_sha256": "5850174be7a5f9ecc1dd320c831d38ce274a7cfb2e281ab3b72e836276a88f89",
+  "legacy_repository": "https://github.com/shloimie-beep/bnei-neviim-academy.git",
+  "legacy_remote_branch": "master",
+  "legacy_resolved_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "legacy_ls_remote_sha": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c",
+  "legacy_worktree": {
+    "path": "C:\\Users\\User\\.codex-worktrees\\bna-sep-02-20260715T143000Z",
+    "branch": "codex/bna-sep-02-dor-gate-20260715T143000Z",
+    "base_head": "cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c"
+  },
+  "original_checkout": {
+    "path": "C:\\Users\\User\\BNA v2.0",
+    "branch": "safety/2026-07-14-bna-dirty-checkpoint",
+    "policy": "status captured without staging, stashing, resetting, or cleaning"
+  },
+  "approved_decisions_source": {
+    "repo_path_exists": false,
+    "env_path_variable": "BNA_SEP_02_APPROVED_DECISIONS_FILE",
+    "env_path_supplied": false,
+    "selected": false
+  },
+  "external_mutations_attempted": []
+}
