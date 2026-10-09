@@ -10,33 +10,14 @@ const RECONCILIATION_SQL=`CREATE TABLE IF NOT EXISTS bna_life_skills_app_inbound
   private_receipt_status TEXT NOT NULL DEFAULT 'pending' CHECK (private_receipt_status IN ('pending','confirmed','blocked')),
   private_ack_digest TEXT CHECK (private_ack_digest IS NULL OR private_ack_digest ~ '^[a-f0-9]{64}$'),
   private_acknowledged_at TIMESTAMPTZ,
-  authority_disposition TEXT NOT NULL DEFAULT 'unresolved' CONSTRAINT bna_ls_inbound_reconciliation_authority_check CHECK (authority_disposition IN ('unresolved','sheet_materialized','native_receipt_accepted')),
+  authority_disposition TEXT NOT NULL DEFAULT 'unresolved' CHECK (authority_disposition IN ('unresolved','sheet_materialized')),
   rollback_disposition TEXT NOT NULL DEFAULT 'sheet_materialization_required' CHECK (rollback_disposition IN ('sheet_materialization_required','not_required')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
   CHECK ((private_ack_digest IS NULL) = (private_acknowledged_at IS NULL)),
-  CONSTRAINT bna_ls_inbound_reconciliation_rollback_pair CHECK ((authority_disposition IN ('sheet_materialized','native_receipt_accepted')) = (rollback_disposition='not_required')),
+  CHECK ((authority_disposition='sheet_materialized') = (rollback_disposition='not_required')),
   PRIMARY KEY(binding_sha256,event_key)
 );
-DO $$ DECLARE legacy_constraint TEXT; BEGIN
-  FOR legacy_constraint IN SELECT conname FROM pg_constraint
-    WHERE conrelid='bna_life_skills_app_inbound_reconciliation'::regclass AND contype='c'
-      AND pg_get_constraintdef(oid) LIKE '%authority_disposition%'
-      AND pg_get_constraintdef(oid) NOT LIKE '%native_receipt_accepted%'
-  LOOP
-    EXECUTE format('ALTER TABLE bna_life_skills_app_inbound_reconciliation DROP CONSTRAINT %I',legacy_constraint);
-  END LOOP;
-  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bna_ls_inbound_reconciliation_authority_check'
-    AND conrelid='bna_life_skills_app_inbound_reconciliation'::regclass) THEN
-    ALTER TABLE bna_life_skills_app_inbound_reconciliation ADD CONSTRAINT bna_ls_inbound_reconciliation_authority_check
-      CHECK (authority_disposition IN ('unresolved','sheet_materialized','native_receipt_accepted'));
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bna_ls_inbound_reconciliation_rollback_pair'
-    AND conrelid='bna_life_skills_app_inbound_reconciliation'::regclass) THEN
-    ALTER TABLE bna_life_skills_app_inbound_reconciliation ADD CONSTRAINT bna_ls_inbound_reconciliation_rollback_pair
-      CHECK ((authority_disposition IN ('sheet_materialized','native_receipt_accepted')) = (rollback_disposition='not_required'));
-  END IF;
-END $$;
 CREATE INDEX IF NOT EXISTS idx_bna_ls_inbound_reconciliation_epoch
  ON bna_life_skills_app_inbound_reconciliation(capture_epoch,authority_disposition,private_receipt_status);
 REVOKE ALL ON bna_life_skills_app_inbound_reconciliation FROM PUBLIC;`;
@@ -111,46 +92,16 @@ async function registerInboundReconciliation(db,{inquiry,bindingSha256,eventKey,
   return {captureEpoch:retained.capture_epoch,sheetSyncId:Number(sheet.id),lineageHeld:retained.capture_epoch==='legacy_unbound'};
 }
 
-/** Same pinned public transaction as the outbox delivery marker. In ordinary
- * Sheet mode a successful private ACK is secondary to the already materialized
- * Sheet row. While a named cutover epoch is fenced, the correlated durable
- * private receipt becomes the terminal native-forwarded receipt and must never
- * later be replayed into Sheet. */
+/** Same pinned public transaction as the outbox delivery marker. A successful
+ * private ACK remains receipt_only; it cannot close rollback responsibility. */
 async function confirmPrivateReceipt(db,{bindingSha256,eventKey,ackDigest}){
   if(![bindingSha256,eventKey,ackDigest].every(hex))throw fail('INBOUND_RECONCILIATION_INVALID');
-  await lockInboundReconciliation(db,{bindingSha256,eventKey});
   const rows=(await db.query(`UPDATE bna_life_skills_app_inbound_reconciliation SET
     private_receipt_status='confirmed',private_ack_digest=COALESCE(private_ack_digest,$3),
     private_acknowledged_at=COALESCE(private_acknowledged_at,clock_timestamp()),updated_at=clock_timestamp()
     WHERE binding_sha256=$1 AND event_key=$2 AND (private_ack_digest IS NULL OR private_ack_digest=$3)
-    RETURNING authority_disposition,rollback_disposition,capture_epoch,sheet_sync_id`,[bindingSha256,eventKey,ackDigest])).rows;
+    RETURNING authority_disposition,rollback_disposition`,[bindingSha256,eventKey,ackDigest])).rows;
   if(rows.length!==1||(rows[0].authority_disposition==='unresolved'&&rows[0].rollback_disposition!=='sheet_materialization_required'))throw fail('INBOUND_RECONCILIATION_CONFLICT');
-  const retained=rows[0];
-  const sheet=(await db.query(`SELECT s.id,s.provider_message_id,s.phone_e164,s.to_number,s.attribution,s.status,
-      s.native_binding_sha256,s.native_event_key,s.native_ack_digest,s.native_acknowledged_at
-    FROM bna_life_skills_sheet_crm_sync s
-    JOIN bna_life_skills_app_inbound_reconciliation r ON r.sheet_sync_id=s.id
-    JOIN bna_life_skills_app_inbound_outbox o ON o.binding_sha256=r.binding_sha256 AND o.event_key=r.event_key
-    WHERE r.binding_sha256=$1 AND r.event_key=$2 AND s.native_binding_sha256=$1 AND s.native_event_key=$2
-      AND o.capture_epoch=r.capture_epoch FOR UPDATE OF s`,[bindingSha256,eventKey])).rows;
-  if(sheet.length!==1||Number(sheet[0].id)!==Number(retained.sheet_sync_id)||sheetOrigin(sheet[0])!==retained.capture_epoch||
-    (sheet[0].native_ack_digest&&sheet[0].native_ack_digest!==ackDigest)||
-    ((sheet[0].native_ack_digest===null)!==(sheet[0].native_acknowledged_at===null)))throw fail('INBOUND_RECONCILIATION_CONFLICT');
-  if(retained.capture_epoch==='sheet'||retained.capture_epoch==='legacy_unbound'||sheet[0].status==='synced')return {nativeForwarded:false};
-  const forwarded=(await db.query(`UPDATE bna_life_skills_sheet_crm_sync SET status='native_forwarded',
-      native_ack_digest=COALESCE(native_ack_digest,$3),native_acknowledged_at=COALESCE(native_acknowledged_at,clock_timestamp()),
-      last_error=NULL,updated_at=clock_timestamp()
-    WHERE id=$4 AND native_binding_sha256=$1 AND native_event_key=$2
-      AND status IN ('pending','failed','blocked_configuration')
-      AND (native_ack_digest IS NULL OR native_ack_digest=$3)
-    RETURNING id`,[bindingSha256,eventKey,ackDigest,retained.sheet_sync_id])).rows;
-  if(forwarded.length!==1)throw fail('INBOUND_RECONCILIATION_CONFLICT');
-  const terminal=(await db.query(`UPDATE bna_life_skills_app_inbound_reconciliation SET
-      authority_disposition='native_receipt_accepted',rollback_disposition='not_required',updated_at=clock_timestamp()
-    WHERE binding_sha256=$1 AND event_key=$2 AND private_receipt_status='confirmed' AND private_ack_digest=$3
-      AND capture_epoch NOT IN ('sheet','legacy_unbound') RETURNING event_key`,[bindingSha256,eventKey,ackDigest])).rows;
-  if(terminal.length!==1)throw fail('INBOUND_RECONCILIATION_CONFLICT');
-  return {nativeForwarded:true};
 }
 
 async function markPrivateReceiptBlocked(db,{bindingSha256,eventKey}){
@@ -192,13 +143,12 @@ async function readInboundReconciliation(pool,writerEpoch){
     count(*) FILTER(WHERE private_receipt_status='pending')::int AS private_receipt_pending,
     count(*) FILTER(WHERE private_receipt_status='blocked')::int AS private_receipt_blocked,
     count(*) FILTER(WHERE authority_disposition='sheet_materialized')::int AS sheet_applied,
-    count(*) FILTER(WHERE authority_disposition='native_receipt_accepted')::int AS native_forwarded,
     count(*) FILTER(WHERE rollback_disposition='sheet_materialization_required')::int AS sheet_replay_required_if_rollback,
     count(*) FILTER(WHERE sheet_sync_id IS NULL)::int AS missing_sheet_receipts
    FROM bna_life_skills_app_inbound_reconciliation WHERE capture_epoch=$1`,[selected])).rows[0];
   return {captureEpoch:selected,total:Number(row.total),privateReceiptOnly:Number(row.private_receipt_only),
     privateReceiptPending:Number(row.private_receipt_pending),privateReceiptBlocked:Number(row.private_receipt_blocked),
-    sheetApplied:Number(row.sheet_applied),nativeForwarded:Number(row.native_forwarded),sheetReplayRequiredIfRollback:Number(row.sheet_replay_required_if_rollback),
+    sheetApplied:Number(row.sheet_applied),sheetReplayRequiredIfRollback:Number(row.sheet_replay_required_if_rollback),
     missingSheetReceipts:Number(row.missing_sheet_receipts),authorityEpoch:null,nativeProjectionProofAvailable:false,nativeProjected:null};
 }
 
