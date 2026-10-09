@@ -54,6 +54,14 @@ const {
   inquiriesFromEnvelope: lifeSkillsAppInquiries,
   LifeSkillsAppInboundOutbox,
 } = require('./src/lib/bna/life-skills-app-inbound');
+const { readInboundReconciliation: readLifeSkillsInboundReconciliation } = require('./src/lib/bna/life-skills-inbound-reconciliation');
+const {
+  RECONCILIATION_SQL: createLifeSkillsInboundReconciliationSQL,
+  registerInboundReconciliation: registerLifeSkillsInboundReconciliation,
+  confirmPrivateReceipt: confirmLifeSkillsPrivateReceipt,
+  markPrivateReceiptBlocked: markLifeSkillsPrivateReceiptBlocked,
+  markSheetMaterialized: markLifeSkillsSheetMaterialized,
+} = require('./src/lib/bna/life-skills-inbound-reconciliation');
 const { createOutboxPool: createLifeSkillsAppInboundPool } = require('./src/lib/bna/life-skills-inbound-database');
 const { deliverNativeProspectMessage, usableLifeSkillsScopedToken } = require('./src/lib/bna/life-skills-native-outbound');
 const { readLifeSkillsMarketingSnapshot } = require('./src/lib/bna/life-skills-marketing');
@@ -17927,6 +17935,8 @@ const createLifeSkillsSheetCrmSyncSQL = `CREATE TABLE IF NOT EXISTS bna_life_ski
   message_type TEXT,
   occurred_at TIMESTAMP,
   attribution JSONB NOT NULL DEFAULT '{}',
+  native_binding_sha256 TEXT CHECK (native_binding_sha256 IS NULL OR native_binding_sha256 ~ '^[a-f0-9]{64}$'),
+  native_event_key TEXT CHECK (native_event_key IS NULL OR native_event_key ~ '^[a-f0-9]{64}$'),
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'synced', 'blocked_configuration', 'failed')),
   attempt_count INTEGER NOT NULL DEFAULT 0,
   sheet_row INTEGER,
@@ -17935,8 +17945,26 @@ const createLifeSkillsSheetCrmSyncSQL = `CREATE TABLE IF NOT EXISTS bna_life_ski
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE bna_life_skills_sheet_crm_sync
+  ADD COLUMN IF NOT EXISTS native_binding_sha256 TEXT,
+  ADD COLUMN IF NOT EXISTS native_event_key TEXT;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bna_ls_sheet_crm_native_binding_format'
+    AND conrelid='bna_life_skills_sheet_crm_sync'::regclass) THEN
+    ALTER TABLE bna_life_skills_sheet_crm_sync ADD CONSTRAINT bna_ls_sheet_crm_native_binding_format
+      CHECK (native_binding_sha256 IS NULL OR native_binding_sha256 ~ '^[a-f0-9]{64}$');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bna_ls_sheet_crm_native_event_format'
+    AND conrelid='bna_life_skills_sheet_crm_sync'::regclass) THEN
+    ALTER TABLE bna_life_skills_sheet_crm_sync ADD CONSTRAINT bna_ls_sheet_crm_native_event_format
+      CHECK (native_event_key IS NULL OR native_event_key ~ '^[a-f0-9]{64}$');
+  END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_bna_life_skills_sheet_crm_sync_recovery
   ON bna_life_skills_sheet_crm_sync (status, updated_at);
+CREATE INDEX IF NOT EXISTS idx_bna_life_skills_sheet_crm_sync_native_receipt
+  ON bna_life_skills_sheet_crm_sync (native_binding_sha256,native_event_key)
+  WHERE native_event_key IS NOT NULL;
 `;
 
 const createWapiSyncRunsSQL = `
@@ -69494,7 +69522,15 @@ function lifeSkillsSheetCrmNormalizedOutboxRecord(record = {}) {
   };
 }
 
-async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = {}, webhookLogId = null, communicationId = null } = {}) {
+function lifeSkillsPrivateInquirySheetRecord(inquiry = {}) {
+  return {
+    messageId: inquiry.providerMessageId || '', fromNumber: inquiry.fromNumber || '', chatId: inquiry.fromNumber || '',
+    toNumber: inquiry.businessNumber || '', pushName: inquiry.pushName || '', hasMedia: Boolean(inquiry.media?.length),
+    messageType: inquiry.messageType || '', messageText: inquiry.messageText || '', occurredAt: inquiry.occurredAt || null,
+  };
+}
+
+async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = {}, webhookLogId = null, communicationId = null, privateReceipt = null, receiptPool = null } = {}) {
   const config = lifeSkillsSheetCrmConfig(process.env);
   const eligibility = isLifeSkillsInboundInquiry({ normalized, scope, config });
   if (!eligibility.eligible) return { status: 'skipped_ineligible', blockers: eligibility.blockers };
@@ -69502,24 +69538,37 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
   if (!config.enabled || !config.approved) return { status: 'blocked_configuration', blockers: ['life_skills_crm_capture_not_authorized'] };
   const writer = lifeSkillsCrmWriterState(process.env);
   if (!writer.ready) return { status: 'blocked_configuration', blockers: writer.blockers };
+  const receiptLink = privateReceipt && privateReceipt.providerEventId === normalized.messageId &&
+    /^[a-f0-9]{64}$/.test(privateReceipt.bindingSha256 || '') && /^[a-f0-9]{64}$/.test(privateReceipt.eventKey || '')
+    ? { binding: privateReceipt.bindingSha256, event: privateReceipt.eventKey }
+    : privateReceipt ? (() => { throw new Error('Life Skills private receipt link mismatch'); })() : { binding: null, event: null };
   // Both a planned cutover and a temporary Sheets configuration failure must
   // retain the eligible provider receipt before acknowledging this webhook.
-  const client = await pool.connect();
+  const client = await (receiptPool || pool).connect();
   try {
     await client.query('BEGIN');
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`life-skills-sheet-crm:${eligibility.phone}`]);
     const inserted = (await client.query(
-      'INSERT INTO bna_life_skills_sheet_crm_sync (provider_message_id, communication_id, webhook_log_id, phone_e164, to_number, push_name, has_media, message_type, occurred_at, attribution) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9::timestamp, NOW()), $10::jsonb) ON CONFLICT (provider_message_id) DO NOTHING RETURNING *',
-      [normalized.messageId, communicationId, webhookLogId, eligibility.phone, eligibility.toNumber, normalized.pushName || null, Boolean(normalized.hasMedia), normalized.messageType || null, normalized.occurredAt || null, JSON.stringify({ ...messageAttribution(payload), detected_language: detectedLanguage(normalized.messageText || ''), writer_epoch: writer.epoch || 'sheet' })]
+      'INSERT INTO bna_life_skills_sheet_crm_sync (provider_message_id, communication_id, webhook_log_id, phone_e164, to_number, push_name, has_media, message_type, occurred_at, attribution, native_binding_sha256, native_event_key) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9::timestamp, NOW()), $10::jsonb, $11, $12) ON CONFLICT (provider_message_id) DO NOTHING RETURNING *',
+      [normalized.messageId, communicationId, webhookLogId, eligibility.phone, eligibility.toNumber, normalized.pushName || null, Boolean(normalized.hasMedia), normalized.messageType || null, normalized.occurredAt || null, JSON.stringify({ ...messageAttribution(payload), detected_language: detectedLanguage(normalized.messageText || ''), writer_epoch: writer.epoch || 'sheet' }), receiptLink.binding, receiptLink.event]
     )).rows[0];
     const stored = inserted || (await client.query(
-      'UPDATE bna_life_skills_sheet_crm_sync SET communication_id = COALESCE(communication_id, $2), webhook_log_id = COALESCE(webhook_log_id, $3), updated_at = NOW() WHERE provider_message_id = $1 RETURNING *',
-      [normalized.messageId, communicationId, webhookLogId]
+      `UPDATE bna_life_skills_sheet_crm_sync SET communication_id = COALESCE(communication_id, $2),
+       webhook_log_id = COALESCE(webhook_log_id, $3),
+       native_binding_sha256 = COALESCE(native_binding_sha256, $4), native_event_key = COALESCE(native_event_key, $5), updated_at = NOW()
+       WHERE provider_message_id = $1
+        AND ($4::text IS NULL OR native_binding_sha256 IS NULL OR native_binding_sha256 = $4)
+        AND ($5::text IS NULL OR native_event_key IS NULL OR native_event_key = $5) RETURNING *`,
+      [normalized.messageId, communicationId, webhookLogId, receiptLink.binding, receiptLink.event]
     )).rows[0];
     if (!stored) throw new Error('Life Skills inbound receipt missing after conflict');
     if (stored.phone_e164 !== eligibility.phone || stored.to_number !== eligibility.toNumber)
       throw new Error('Life Skills inbound receipt binding mismatch');
+    if (receiptLink.event && ((stored.native_binding_sha256 || null) !== receiptLink.binding || (stored.native_event_key || null) !== receiptLink.event))
+      throw new Error('Life Skills private receipt replay mismatch');
+    const retainedReceiptLink=stored.native_event_key?{bindingSha256:stored.native_binding_sha256,eventKey:stored.native_event_key}:null;
     if (stored.status === 'synced') {
+      if(retainedReceiptLink)await markLifeSkillsSheetMaterialized(client,retainedReceiptLink);
       await client.query('COMMIT');
       return { status: 'synced', action: stored.sheet_receipt?.action || null, row: stored.sheet_row || null, replay_suppressed: true, durable: true };
     }
@@ -69538,6 +69587,7 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
     try {
       const sheetResult = await upsertLifeSkillsSheetLead({ sheets: clientConfig.sheets, normalized, payload, scope, config });
       await client.query('UPDATE bna_life_skills_sheet_crm_sync SET status = $2, sheet_row = $3, sheet_receipt = $4::jsonb, last_error = NULL, updated_at = NOW() WHERE id = $1', [stored.id, 'synced', sheetResult.row || null, JSON.stringify({ action: sheetResult.action, provider_message_count: String(sheetResult.providerMessageIds || '').split(',').filter(Boolean).length })]);
+      if(retainedReceiptLink)await markLifeSkillsSheetMaterialized(client,retainedReceiptLink);
       await client.query('COMMIT');
       return { status: 'synced', action: sheetResult.action, row: sheetResult.row || null, durable: true };
     } catch (error) {
@@ -69571,10 +69621,15 @@ async function recoverLifeSkillsSheetCrm(limit = 25) {
   return recovered;
 }
 
-app.get('/api/bna/life-skills-sheet-crm/readiness', requireAdmin, (req, res) => {
+app.get('/api/bna/life-skills-sheet-crm/readiness', requireAdmin, async (req, res) => {
   const { readiness } = lifeSkillsSheetCrmClient();
   const writer = lifeSkillsCrmWriterState(process.env);
-  res.json({ ready: readiness.ready && writer.ready, blockers: [...readiness.blockers, ...writer.blockers], sheetName: readiness.config.sheetName, responseOwner: readiness.config.responseOwner, writerMode: writer.mode, writerEpoch: writer.epoch });
+  let inboundReconciliation={status:'disabled'};
+  if(lifeSkillsAppInboundConfig(process.env).ready){
+    try{inboundReconciliation={status:'ready',...await readLifeSkillsInboundReconciliation(await lifeSkillsAppInboundDatabase(),writer.epoch||'sheet')};}
+    catch{inboundReconciliation={status:'unavailable'};}
+  }
+  res.json({ ready: readiness.ready && writer.ready, blockers: [...readiness.blockers, ...writer.blockers], sheetName: readiness.config.sheetName, responseOwner: readiness.config.responseOwner, writerMode: writer.mode, writerEpoch: writer.epoch, inboundReconciliation });
 });
 
 app.post('/api/bna/life-skills-sheet-crm/recover', requireAdmin, async (req, res) => {
@@ -69762,6 +69817,7 @@ async function lifeSkillsAppInboundDatabase() {
   if (!lifeSkillsAppInboundPool) lifeSkillsAppInboundPool = createLifeSkillsAppInboundPool(process.env);
   if (!lifeSkillsAppInboundDatabaseReady) {
     lifeSkillsAppInboundDatabaseReady = lifeSkillsAppInboundPool.query(createLifeSkillsAppInboundOutboxSQL)
+      .then(()=>lifeSkillsAppInboundPool.query(createLifeSkillsInboundReconciliationSQL))
       .catch(error => { lifeSkillsAppInboundDatabaseReady = null; throw error; });
   }
   await lifeSkillsAppInboundDatabaseReady;
@@ -69772,11 +69828,17 @@ async function captureLifeSkillsAppInbound(payload, scope) {
   const config = lifeSkillsAppInboundConfig(process.env);
   const inquiries = lifeSkillsAppInquiries(payload, scope, config);
   if (!inquiries.length) return { status:config.enabled ? 'skipped_ineligible' : 'disabled', captured:0 };
-  const outbox = new LifeSkillsAppInboundOutbox(await lifeSkillsAppInboundDatabase(), config);
+  const writer=lifeSkillsCrmWriterState(process.env);
+  if(!writer.ready)throw new Error('Life Skills CRM writer state unavailable');
+  const outbox = new LifeSkillsAppInboundOutbox(await lifeSkillsAppInboundDatabase(), config, fetch, {
+    register:(db,input)=>registerLifeSkillsInboundReconciliation(db,{...input,attribution:messageAttribution(payload)}),
+    confirm:confirmLifeSkillsPrivateReceipt,
+    block:markLifeSkillsPrivateReceiptBlocked,
+  });
   // Await each durable encrypted commit before acknowledging a provider event.
   // Neither this path nor the retry loop reads historical receiver/Sheet rows.
-  const result=await outbox.captureBatch(inquiries);
-  return {status:result.conflicts ? 'durably_captured_with_conflicts' : 'durably_captured',...result};
+  const result=await outbox.captureBatch(inquiries,writer.epoch||'sheet');
+  return {status:result.conflicts ? 'durably_captured_with_conflicts' : 'durably_captured',...result,inquiries};
 }
 
 function startLifeSkillsAppInboundScheduler() {
@@ -69788,7 +69850,9 @@ function startLifeSkillsAppInboundScheduler() {
     if (!config.ready) return;
     running = true;
     try {
-      const result = await new LifeSkillsAppInboundOutbox(await lifeSkillsAppInboundDatabase(), config).drain(25);
+      const result = await new LifeSkillsAppInboundOutbox(await lifeSkillsAppInboundDatabase(), config, fetch, {
+        register:registerLifeSkillsInboundReconciliation,confirm:confirmLifeSkillsPrivateReceipt,block:markLifeSkillsPrivateReceiptBlocked,
+      }).drain(25);
       if (result.attempted) console.log('Life Skills private inbox forward:', JSON.stringify(result));
     } catch { console.error('Life Skills private inbox forward: durable queue unavailable'); }
     finally { running = false; }
@@ -69949,15 +70013,27 @@ app.post('/api/webhooks/wapi', async (req, res) => {
         lead: providerBotLead,
       });
     }
-    const lifeSkillsSheetCrmResult = isOneTimeWapiScope(webhookScope)
-      ? { status: 'skipped_non_life_skills_scope', blockers: ['one_time_scope'] }
-      : await syncLifeSkillsInboundToSheet({
-          normalized,
-          payload,
-          scope: webhookScope,
-          webhookLogId: webhookLog.id,
-          communicationId: communicationResult.communication?.id || null,
-        });
+    let lifeSkillsSheetCrmResult;
+    if(isOneTimeWapiScope(webhookScope))lifeSkillsSheetCrmResult={ status: 'skipped_non_life_skills_scope', blockers: ['one_time_scope'] };
+    else{
+      const receipts=Array.isArray(lifeSkillsAppInboundResult.receipts)?lifeSkillsAppInboundResult.receipts:[];
+      const privateInquiries=Array.isArray(lifeSkillsAppInboundResult.receipts)
+        ? receipts.map(receipt=>lifeSkillsAppInboundResult.inquiries?.find(inquiry=>inquiry.providerEventId===receipt.providerEventId)).filter(Boolean)
+        : [null];
+      const receiptPool=receipts.length?await lifeSkillsAppInboundDatabase():null;
+      const results=[];
+      for(const inquiry of privateInquiries){
+        const item=inquiry?lifeSkillsPrivateInquirySheetRecord(inquiry):normalized;
+        const privateReceipt=receipts.find(candidate=>candidate.providerEventId===item.messageId)||null;
+        results.push(await syncLifeSkillsInboundToSheet({normalized:item,payload,scope:webhookScope,
+          webhookLogId:item.messageId===normalized.messageId?webhookLog.id:null,
+          communicationId:item.messageId===normalized.messageId?communicationResult.communication?.id||null:null,
+          privateReceipt,receiptPool}));
+      }
+      lifeSkillsSheetCrmResult=results.length?{...results[0],batchCount:results.length,
+        status:results.length>1&&new Set(results.map(item=>item.status)).size>1?'mixed_batch':results[0].status}
+        : {status:lifeSkillsAppInboundResult.conflicts?'blocked_replay_conflict':'not_evaluated',batchCount:0};
+    }
     const autoReplyResult = communicationResult.duplicate
       ? {
           auto_reply_type: isOneTimeWapiScope(webhookScope)

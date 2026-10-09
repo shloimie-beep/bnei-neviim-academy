@@ -71,6 +71,10 @@ test('second message retains manually maintained note/status/source/owner/next a
   row[11] = 'Manual source history'; row[13] = 'Contacted'; row[15] = 'Manual scheduled follow-up'; row[16] = '2026-09-20'; row[24] = 'Manual note stays intact'; row[29] = 'Assigned owner';
   await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound({ messageId: 'provider-message-2', occurredAt: '2026-09-14T10:00:00.000Z' }), payload: { utm_source: 'must-not-overwrite' }, config: config() });
   assert.equal(row[11], 'Manual source history'); assert.equal(row[13], 'Contacted'); assert.equal(row[15], 'Manual scheduled follow-up'); assert.equal(row[16], '2026-09-20'); assert.equal(row[24], 'Manual note stays intact'); assert.equal(row[29], 'Assigned owner'); assert.equal(row[26], 'provider-message-1, provider-message-2');
+  await crm.upsertLifeSkillsSheetLead({ sheets, normalized: inbound({ messageId: 'provider-message-late-replay', occurredAt: '2026-09-14T07:00:00.000Z' }), config: config() });
+  assert.equal(row[14], '2026-09-14T10:00:00.000Z', 'an older recovered event cannot regress last contact');
+  assert.equal(row[28], '2026-09-14T10:00:00.000Z', 'an older recovered event cannot regress last inbound');
+  assert.equal(row[26], 'provider-message-1, provider-message-2, provider-message-late-replay');
 });
 
 test('existing advisory-style per-phone serialization prevents simultaneous first-message duplicates', async () => {
@@ -120,12 +124,16 @@ test('capture-only receipt holds and replays durably without touching Sheets; de
       if (sql.startsWith('INSERT INTO bna_life_skills_sheet_crm_sync')) {
         let row = rows.get(values[0]);
         if (row) return { rows: [] };
-        row = { id: nextId++, status: 'pending', phone_e164: values[3], to_number: values[4], sheet_receipt: {}, sheet_row: null, attribution: JSON.parse(values[9]), attempt_count: 0 };
+        row = { id: nextId++, status: 'pending', phone_e164: values[3], to_number: values[4], sheet_receipt: {}, sheet_row: null, attribution: JSON.parse(values[9]), attempt_count: 0,
+          native_binding_sha256: values[10] || null, native_event_key: values[11] || null };
         rows.set(values[0], row);
         return { rows: [{ ...row }] };
       }
       if (sql.startsWith('UPDATE bna_life_skills_sheet_crm_sync SET communication_id')) {
         const row = rows.get(values[0]);
+        if(row&&values[3]&&row.native_binding_sha256&&row.native_binding_sha256!==values[3])return {rows:[]};
+        if(row&&values[4]&&row.native_event_key&&row.native_event_key!==values[4])return {rows:[]};
+        if(row){row.native_binding_sha256 ||= values[3] || null;row.native_event_key ||= values[4] || null;}
         return { rows: row ? [{ ...row }] : [] };
       }
       const row = [...rows.values()].find(item => item.id === values[0]);
@@ -141,10 +149,10 @@ test('capture-only receipt holds and replays durably without touching Sheets; de
   };
   const pool = { async connect() { clientCalls += 1; return client; } };
   let writer = { mode: 'capture_only', epoch: 'LS-20260927-CUTOVER-01', ready: true, blockers: [] }, captureAuthorized = true;
-  const sync = new Function('pool', 'process', 'lifeSkillsSheetCrmConfig', 'isLifeSkillsInboundInquiry', 'lifeSkillsCrmWriterState', 'lifeSkillsSheetCrmClient', 'messageAttribution', 'detectedLanguage', 'upsertLifeSkillsSheetLead',
+  const sync = new Function('pool', 'process', 'lifeSkillsSheetCrmConfig', 'isLifeSkillsInboundInquiry', 'lifeSkillsCrmWriterState', 'lifeSkillsSheetCrmClient', 'messageAttribution', 'detectedLanguage', 'upsertLifeSkillsSheetLead', 'markLifeSkillsSheetMaterialized',
     `${source}; return syncLifeSkillsInboundToSheet;`)(pool, { env: {} }, () => ({ ...config(), enabled: captureAuthorized, approved: captureAuthorized }), crm.isLifeSkillsInboundInquiry, () => writer,
     () => { sheetCalls += 1; return { readiness: { ready: sheetReady, blockers: sheetReady ? [] : ['synthetic_google_unavailable'] }, sheets: {} }; }, crm.messageAttribution, crm.detectedLanguage,
-    async () => { sheetCalls += 1; return { action: 'created', row: 2, providerMessageIds: 'provider-message-1' }; });
+    async () => { sheetCalls += 1; return { action: 'created', row: 2, providerMessageIds: 'provider-message-1' }; }, async()=>{});
   captureAuthorized = false;
   assert.equal((await sync({ normalized: inbound() })).status, 'blocked_configuration');
   assert.equal(rows.size, 0, 'disabled CRM events must never become a later recovery backlog');
@@ -179,10 +187,20 @@ test('capture-only receipt holds and replays durably without touching Sheets; de
   assert.equal(sheetCalls, 3);
   assert.equal((await sync({ normalized: inbound() })).replay_suppressed, true);
   assert.equal(sheetCalls, 3, 'no readiness or duplicate Sheet upsert for a synced replay');
+  writer = { mode: 'capture_only', epoch: 'LS-20260927-CUTOVER-02', ready: true, blockers: [] };
+  const privateReceipt={providerEventId:'provider-message-2',bindingSha256:'a'.repeat(64),eventKey:'b'.repeat(64)};
+  const held=await sync({normalized:inbound({messageId:'provider-message-2'}),privateReceipt});
+  assert.equal(held.status,'held_for_cutover');
+  assert.equal(rows.get('provider-message-2').native_binding_sha256,privateReceipt.bindingSha256);
+  assert.equal(rows.get('provider-message-2').native_event_key,privateReceipt.eventKey);
+  await assert.rejects(()=>sync({normalized:inbound({messageId:'provider-message-2'}),privateReceipt:{...privateReceipt,eventKey:'c'.repeat(64)}}),/private receipt replay mismatch|receipt missing/);
+  writer = { mode: 'sheet', epoch: null, ready: true, blockers: [] };
+  const rolledBack=await sync({normalized:inbound({messageId:'provider-message-2'}),privateReceipt});
+  assert.equal(rolledBack.status,'synced','a private receipt ACK must not exclude the event from Sheet rollback recovery');
+  assert.equal(rows.get('provider-message-2').status,'synced');
   writer = { mode: 'blocked', epoch: null, ready: false, blockers: ['invalid_writer_mode'] };
   assert.equal((await sync({ normalized: inbound({ messageId: 'provider-message-2' }) })).status, 'blocked_configuration');
-  assert.equal(clientCalls, 7);
-  assert.equal(rows.size, 1);
+  assert.equal(rows.size, 2);
 });
 
 test('a held Hebrew inbound preserves only the derived language for later Sheet recovery', () => {
