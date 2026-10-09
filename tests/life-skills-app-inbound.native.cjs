@@ -155,7 +155,7 @@ test('concurrent delivery locks one row and bounded retry reads only newly captu
   await assert.rejects(()=>outbox.drain(26),/INVALID_LIMIT/);
 });
 
-test('dual-receipt readback never equates a private ACK with native CRM projection and preserves rollback replay',async()=>{
+test('capture-only private ACK atomically seals the matching Sheet receipt as native-forwarded',async()=>{
   const dto=inquiry(),outbox=new LifeSkillsAppInboundOutbox(pool,config,async()=>receipt(false,dto),reconciliation);
   const captured=await outbox.capture(dto,'LS-CUTOVER-SYNTHETIC');
   let state=await readInboundReconciliation(pool,'LS-CUTOVER-SYNTHETIC');
@@ -164,17 +164,30 @@ test('dual-receipt readback never equates a private ACK with native CRM projecti
   assert.equal(state.nativeProjectionProofAvailable,false);assert.equal(state.nativeProjected,null);
   assert.equal((await outbox.deliver(captured.eventKey)).status,'delivered');
   state=await readInboundReconciliation(pool,'LS-CUTOVER-SYNTHETIC');
-  assert.equal(state.privateReceiptOnly,1);assert.equal(state.sheetReplayRequiredIfRollback,1);
+  assert.equal(state.privateReceiptOnly,0);assert.equal(state.nativeForwarded,1);assert.equal(state.sheetReplayRequiredIfRollback,0);
   assert.equal(state.nativeProjectionProofAvailable,false);assert.equal(state.nativeProjected,null);
-  assert.equal((await outbox.deliver(captured.eventKey)).status,'delivered','replay is stable and does not become projection proof');
-  await pool.query(`UPDATE bna_life_skills_sheet_crm_sync SET status='synced' WHERE provider_message_id=$1`,[dto.providerMessageId]);
-  const materializeClient=await pool.connect();
-  try{await materializeClient.query('BEGIN');await markSheetMaterialized(materializeClient,{bindingSha256:config.bindingSha256,eventKey:captured.eventKey});await materializeClient.query('COMMIT');}
-  finally{materializeClient.release();}
-  state=await readInboundReconciliation(pool,'LS-CUTOVER-SYNTHETIC');
-  assert.equal(state.sheetApplied,1);assert.equal(state.sheetReplayRequiredIfRollback,0);assert.equal(state.privateReceiptOnly,0);
-  assert.equal(state.nativeProjected,null);
+  assert.equal((await outbox.deliver(captured.eventKey)).status,'delivered','replay is stable and does not change terminal receipt state');
+  const terminal=(await pool.query(`SELECT status,native_ack_digest,native_acknowledged_at FROM bna_life_skills_sheet_crm_sync WHERE provider_message_id=$1`,[dto.providerMessageId])).rows[0];
+  assert.equal(terminal.status,'native_forwarded');assert.match(terminal.native_ack_digest,/^[a-f0-9]{64}$/);assert.ok(terminal.native_acknowledged_at instanceof Date);
   await assert.rejects(()=>pool.query(`UPDATE bna_life_skills_app_inbound_outbox SET private_ack_digest=$1,private_acknowledged_at=NULL`,['a'.repeat(64)]),{code:'23514'});
+});
+
+test('native-forwarded replay never reaches Sheet while ordinary sheet epoch remains materializable',async()=>{
+  const cutoverDto=inquiry(),cutover=new LifeSkillsAppInboundOutbox(pool,config,async()=>receipt(false,cutoverDto),reconciliation);
+  const cutoverReceipt=await cutover.capture(cutoverDto,'LS-CAPTURE-ONLY-E1');
+  assert.equal((await cutover.deliver(cutoverReceipt.eventKey)).status,'delivered');
+  let sheetCalls=0;
+  const sheet=nativeSheetSync(async()=>{sheetCalls++;return {action:'created',row:2,providerMessageIds:cutoverDto.providerMessageId};});
+  const held=await sheet({normalized:sheetNormalized(cutoverDto),payload:{},privateReceipt:{providerEventId:cutoverDto.providerEventId,bindingSha256:config.bindingSha256,eventKey:cutoverReceipt.eventKey},receiptPool:pool});
+  assert.equal(held.status,'native_forwarded');assert.equal(held.replay_suppressed,true);assert.equal(sheetCalls,0);
+
+  const ordinaryDto=inquiry('ordinary-sheet-event','ordinary sheet inquiry'),ordinary=new LifeSkillsAppInboundOutbox(pool,config,async()=>receipt(false,ordinaryDto),reconciliation);
+  const ordinaryReceipt=await ordinary.capture(ordinaryDto,'sheet');
+  assert.equal((await ordinary.deliver(ordinaryReceipt.eventKey)).status,'delivered');
+  let state=await readInboundReconciliation(pool,'sheet');assert.equal(state.privateReceiptOnly,1);assert.equal(state.nativeForwarded,0);assert.equal(state.sheetReplayRequiredIfRollback,1);
+  const synced=await sheet({normalized:sheetNormalized(ordinaryDto),payload:{},privateReceipt:{providerEventId:ordinaryDto.providerEventId,bindingSha256:config.bindingSha256,eventKey:ordinaryReceipt.eventKey},receiptPool:pool});
+  assert.equal(synced.status,'synced');assert.equal(sheetCalls,1);
+  state=await readInboundReconciliation(pool,'sheet');assert.equal(state.sheetApplied,1);assert.equal(state.sheetReplayRequiredIfRollback,0);
 });
 
 test('delivery repairs a missing late registration before the private request',async()=>{
@@ -185,7 +198,7 @@ test('delivery repairs a missing late registration before the private request',a
   const delivery=new LifeSkillsAppInboundOutbox(pool,config,async()=>{sent++;return receipt(false,dto);},reconciliation);
   assert.equal((await delivery.deliver(captured.eventKey)).status,'delivered');assert.equal(sent,1);
   const state=await readInboundReconciliation(pool,'LS-LATE-REGISTRATION');
-  assert.equal(state.total,1);assert.equal(state.privateReceiptOnly,1);assert.equal(state.missingSheetReceipts,0);
+  assert.equal(state.total,1);assert.equal(state.privateReceiptOnly,0);assert.equal(state.nativeForwarded,1);assert.equal(state.sheetReplayRequiredIfRollback,0);assert.equal(state.missingSheetReceipts,0);
 });
 
 test('legacy schema backfill is upgraded without turning an exact replay into a conflict',async()=>{
@@ -247,6 +260,7 @@ test('a failed local commit after private ACK stays pending and replay completes
   await assert.rejects(()=>outbox.deliver(captured.eventKey),/synthetic local commit failure/);
   let row=(await pool.query('SELECT status,attempts,private_ack_digest FROM bna_life_skills_app_inbound_outbox')).rows[0];
   assert.deepEqual(row,{status:'pending',attempts:0,private_ack_digest:null});
+  assert.deepEqual((await pool.query('SELECT status,native_ack_digest FROM bna_life_skills_sheet_crm_sync')).rows[0],{status:'pending',native_ack_digest:null});
   let state=await readInboundReconciliation(pool,'LS-ACK-ROLLBACK');
   assert.equal(state.privateReceiptPending,1);assert.equal(state.privateReceiptOnly,0);
   failCommit=false;
@@ -254,7 +268,7 @@ test('a failed local commit after private ACK stays pending and replay completes
   assert.equal((await retry.deliver(captured.eventKey)).status,'delivered');assert.equal(sends,2);
   row=(await pool.query('SELECT status,attempts,private_ack_digest FROM bna_life_skills_app_inbound_outbox')).rows[0];
   assert.equal(row.status,'delivered');assert.equal(row.attempts,1);assert.match(row.private_ack_digest,/^[a-f0-9]{64}$/);
-  state=await readInboundReconciliation(pool,'LS-ACK-ROLLBACK');assert.equal(state.privateReceiptOnly,1);
+  state=await readInboundReconciliation(pool,'LS-ACK-ROLLBACK');assert.equal(state.nativeForwarded,1);assert.equal(state.sheetReplayRequiredIfRollback,0);
 });
 
 test('a non-retryable private denial is visible as blocked while Sheet rollback remains required',async()=>{
@@ -416,9 +430,10 @@ test('actual populated baseline Sheet schema upgrades exactly once and repeats w
   const after=(await pool.query(`SELECT row_to_json(s)::text AS snapshot FROM (SELECT id,provider_message_id,communication_id,webhook_log_id,phone_e164,to_number,push_name,has_media,message_type,occurred_at,attribution,status,attempt_count,sheet_row,sheet_receipt,last_error,created_at,updated_at FROM bna_life_skills_sheet_crm_sync WHERE provider_message_id='populated-baseline') s`)).rows[0].snapshot;
   const original=JSON.parse(before);delete original.native_binding_sha256;delete original.native_event_key;
   assert.deepEqual(JSON.parse(after),original);
-  const columns=(await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name='bna_life_skills_sheet_crm_sync' AND column_name IN('native_binding_sha256','native_event_key') ORDER BY column_name`)).rows.map(row=>row.column_name);
-  assert.deepEqual(columns,['native_binding_sha256','native_event_key']);
-  const constraints=(await pool.query(`SELECT conname FROM pg_constraint WHERE conrelid='bna_life_skills_sheet_crm_sync'::regclass AND conname IN('bna_ls_sheet_crm_native_binding_format','bna_ls_sheet_crm_native_event_format') ORDER BY conname`)).rows.map(row=>row.conname);
-  assert.deepEqual(constraints,['bna_ls_sheet_crm_native_binding_format','bna_ls_sheet_crm_native_event_format']);
+  const columns=(await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name='bna_life_skills_sheet_crm_sync' AND column_name IN('native_binding_sha256','native_event_key','native_ack_digest','native_acknowledged_at') ORDER BY column_name`)).rows.map(row=>row.column_name);
+  assert.deepEqual(columns,['native_ack_digest','native_acknowledged_at','native_binding_sha256','native_event_key']);
+  const constraints=(await pool.query(`SELECT conname FROM pg_constraint WHERE conrelid='bna_life_skills_sheet_crm_sync'::regclass AND conname IN('bna_ls_sheet_crm_native_ack_format','bna_ls_sheet_crm_native_ack_pair','bna_ls_sheet_crm_native_binding_format','bna_ls_sheet_crm_native_event_format','bna_ls_sheet_crm_status') ORDER BY conname`)).rows.map(row=>row.conname);
+  assert.deepEqual(constraints,['bna_ls_sheet_crm_native_ack_format','bna_ls_sheet_crm_native_ack_pair','bna_ls_sheet_crm_native_binding_format','bna_ls_sheet_crm_native_event_format','bna_ls_sheet_crm_status']);
+  assert.equal((await pool.query(`SELECT count(*)::int AS n FROM pg_constraint WHERE conrelid='bna_life_skills_sheet_crm_sync'::regclass AND contype='c' AND pg_get_constraintdef(oid) LIKE '%status%'`)).rows[0].n,1);
   assert.equal((await pool.query(`SELECT count(*)::int AS n FROM pg_indexes WHERE tablename='bna_life_skills_sheet_crm_sync' AND indexname='idx_bna_life_skills_sheet_crm_sync_native_receipt'`)).rows[0].n,1);
 });

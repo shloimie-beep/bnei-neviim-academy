@@ -197,10 +197,13 @@ test('capture-only receipt holds and replays durably without touching Sheets; de
   assert.equal(rows.get('provider-message-2').native_binding_sha256,privateReceipt.bindingSha256);
   assert.equal(rows.get('provider-message-2').native_event_key,privateReceipt.eventKey);
   await assert.rejects(()=>sync({normalized:inbound({messageId:'provider-message-2'}),privateReceipt:{...privateReceipt,eventKey:'c'.repeat(64)}}),/private receipt replay mismatch|receipt missing/);
+  rows.get('provider-message-2').status='native_forwarded';
   writer = { mode: 'sheet', epoch: null, ready: true, blockers: [] };
   const rolledBack=await sync({normalized:inbound({messageId:'provider-message-2'}),privateReceipt});
-  assert.equal(rolledBack.status,'synced','a private receipt ACK must not exclude the event from Sheet rollback recovery');
-  assert.equal(rows.get('provider-message-2').status,'synced');
+  assert.equal(rolledBack.status,'native_forwarded','a confirmed private receipt cannot later replay into Sheet');
+  assert.equal(rolledBack.replay_suppressed,true);
+  assert.equal(rows.get('provider-message-2').status,'native_forwarded');
+  assert.equal(sheetCalls,3,'terminal native-forwarded receipts never call the external Sheet boundary');
   writer = { mode: 'blocked', epoch: null, ready: false, blockers: ['invalid_writer_mode'] };
   assert.equal((await sync({ normalized: inbound({ messageId: 'provider-message-2' }) })).status, 'blocked_configuration');
   assert.equal(rows.size, 2);
@@ -230,6 +233,7 @@ test('capture-only hold fences all private-app Sheet mutations and admin recover
   const recovery = server.slice(server.indexOf('async function recoverLifeSkillsSheetCrm'), server.indexOf('function authorizeLifeSkillsAppBridge'));
   assert.match(recovery, /writer\.mode !== 'sheet'/);
   assert.match(recovery, /'blocked_configuration'/);
+  assert.doesNotMatch(recovery, /native_forwarded/);
   assert.match(recovery, /res\.status\(423\)/);
 });
 

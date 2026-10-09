@@ -17938,18 +17938,34 @@ const createLifeSkillsSheetCrmSyncSQL = `CREATE TABLE IF NOT EXISTS bna_life_ski
   attribution JSONB NOT NULL DEFAULT '{}',
   native_binding_sha256 TEXT CHECK (native_binding_sha256 IS NULL OR native_binding_sha256 ~ '^[a-f0-9]{64}$'),
   native_event_key TEXT CHECK (native_event_key IS NULL OR native_event_key ~ '^[a-f0-9]{64}$'),
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'synced', 'blocked_configuration', 'failed')),
+  native_ack_digest TEXT CHECK (native_ack_digest IS NULL OR native_ack_digest ~ '^[a-f0-9]{64}$'),
+  native_acknowledged_at TIMESTAMPTZ,
+  status TEXT NOT NULL DEFAULT 'pending' CONSTRAINT bna_ls_sheet_crm_status CHECK (status IN ('pending', 'synced', 'blocked_configuration', 'failed', 'native_forwarded')),
   attempt_count INTEGER NOT NULL DEFAULT 0,
   sheet_row INTEGER,
   sheet_receipt JSONB NOT NULL DEFAULT '{}',
   last_error TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CHECK ((native_ack_digest IS NULL) = (native_acknowledged_at IS NULL))
 );
 ALTER TABLE bna_life_skills_sheet_crm_sync
   ADD COLUMN IF NOT EXISTS native_binding_sha256 TEXT,
-  ADD COLUMN IF NOT EXISTS native_event_key TEXT;
-DO $$ BEGIN
+  ADD COLUMN IF NOT EXISTS native_event_key TEXT,
+  ADD COLUMN IF NOT EXISTS native_ack_digest TEXT,
+  ADD COLUMN IF NOT EXISTS native_acknowledged_at TIMESTAMPTZ;
+DO $$ DECLARE legacy_status_constraint TEXT; BEGIN
+  SELECT conname INTO legacy_status_constraint FROM pg_constraint
+   WHERE conrelid='bna_life_skills_sheet_crm_sync'::regclass AND contype='c'
+     AND pg_get_constraintdef(oid) LIKE '%status%' AND pg_get_constraintdef(oid) NOT LIKE '%native_forwarded%' LIMIT 1;
+  IF legacy_status_constraint IS NOT NULL THEN
+    EXECUTE format('ALTER TABLE bna_life_skills_sheet_crm_sync DROP CONSTRAINT %I',legacy_status_constraint);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bna_ls_sheet_crm_status'
+    AND conrelid='bna_life_skills_sheet_crm_sync'::regclass) THEN
+    ALTER TABLE bna_life_skills_sheet_crm_sync ADD CONSTRAINT bna_ls_sheet_crm_status
+      CHECK (status IN ('pending','synced','blocked_configuration','failed','native_forwarded'));
+  END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bna_ls_sheet_crm_native_binding_format'
     AND conrelid='bna_life_skills_sheet_crm_sync'::regclass) THEN
     ALTER TABLE bna_life_skills_sheet_crm_sync ADD CONSTRAINT bna_ls_sheet_crm_native_binding_format
@@ -17959,6 +17975,16 @@ DO $$ BEGIN
     AND conrelid='bna_life_skills_sheet_crm_sync'::regclass) THEN
     ALTER TABLE bna_life_skills_sheet_crm_sync ADD CONSTRAINT bna_ls_sheet_crm_native_event_format
       CHECK (native_event_key IS NULL OR native_event_key ~ '^[a-f0-9]{64}$');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bna_ls_sheet_crm_native_ack_format'
+    AND conrelid='bna_life_skills_sheet_crm_sync'::regclass) THEN
+    ALTER TABLE bna_life_skills_sheet_crm_sync ADD CONSTRAINT bna_ls_sheet_crm_native_ack_format
+      CHECK (native_ack_digest IS NULL OR native_ack_digest ~ '^[a-f0-9]{64}$');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bna_ls_sheet_crm_native_ack_pair'
+    AND conrelid='bna_life_skills_sheet_crm_sync'::regclass) THEN
+    ALTER TABLE bna_life_skills_sheet_crm_sync ADD CONSTRAINT bna_ls_sheet_crm_native_ack_pair
+      CHECK ((native_ack_digest IS NULL) = (native_acknowledged_at IS NULL));
   END IF;
 END $$;
 CREATE INDEX IF NOT EXISTS idx_bna_life_skills_sheet_crm_sync_recovery
@@ -69578,6 +69604,10 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
     if (receiptLink.event && ((stored.native_binding_sha256 || null) !== receiptLink.binding || (stored.native_event_key || null) !== receiptLink.event))
       throw new Error('Life Skills private receipt replay mismatch');
     const retainedReceiptLink=lockLink?.event?{bindingSha256:lockLink.binding,eventKey:lockLink.event}:null;
+    if (stored.status === 'native_forwarded') {
+      await client.query('COMMIT');
+      return { status: 'native_forwarded', replay_suppressed: true, durable: true };
+    }
     if (stored.status === 'synced') {
       if(retainedReceiptLink)await markLifeSkillsSheetMaterialized(client,retainedReceiptLink,
         {allowMissingRegistration:true});
