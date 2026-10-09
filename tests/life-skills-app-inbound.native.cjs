@@ -1,15 +1,26 @@
 // Explicit native gate: node --test tests/life-skills-app-inbound.native.cjs.
 // No skip, mock database, production URL or history data is permitted.
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const {test,before,after,beforeEach} = require('node:test');
 const {Pool} = require('pg');
 const {APP_INBOUND_URL,OUTBOX_SQL,forwardConfig,inquiriesFromEnvelope,receiptDigest,LifeSkillsAppInboundOutbox} = require('../src/lib/bna/life-skills-app-inbound');
-const {RECONCILIATION_SQL,registerInboundReconciliation,confirmPrivateReceipt,markPrivateReceiptBlocked,markSheetMaterialized,readInboundReconciliation} = require('../src/lib/bna/life-skills-inbound-reconciliation');
+const crm = require('../src/lib/bna/life-skills-sheet-crm');
+const {RECONCILIATION_SQL,lockInboundReconciliation,registerInboundReconciliation,confirmPrivateReceipt,markPrivateReceiptBlocked,markSheetMaterialized,readInboundReconciliation} = require('../src/lib/bna/life-skills-inbound-reconciliation');
 const url = new URL(process.env.TEST_DATABASE_URL || 'invalid:');
 assert.equal(url.protocol,'postgresql:'); assert.equal(url.hostname,'127.0.0.1'); assert.equal(url.username,'synthetic');
 assert.match(url.pathname,/^\/ls_calendar_test_voice_[a-f0-9]{8}_test$/);
 assert.equal(process.env.LS_CALENDAR_TEST_ALLOW,'true');
 const pool = new Pool({connectionString:url.href,ssl:false,max:5});
+const serverSource=fs.readFileSync(path.join(__dirname,'..','server.js'),'utf8');
+const sheetSqlMatch=serverSource.match(/const createLifeSkillsSheetCrmSyncSQL = `([\s\S]*?)`;/);
+assert.ok(sheetSqlMatch,'actual Sheet receipt migration must remain extractable');
+const SHEET_SYNC_SQL=sheetSqlMatch[1];
+const syncStart=serverSource.indexOf('async function syncLifeSkillsInboundToSheet');
+const syncEnd=serverSource.indexOf('async function recoverLifeSkillsSheetCrm',syncStart);
+assert.ok(syncStart>0&&syncEnd>syncStart);
+const syncSource=serverSource.slice(syncStart,syncEnd);
 const config = forwardConfig({LIFE_SKILLS_APP_INBOUND_FORWARD_ENABLED:'true',LIFE_SKILLS_SHEET_CRM_ENABLED:'true',
   LIFE_SKILLS_SHEET_CRM_CONFIRM:'APPROVE_LIFE_SKILLS_SHEET_CRM_INBOUND_UPSERT',LIFE_SKILLS_APP_BRIDGE_SECRET:'synthetic-not-real-credential-0123456789',
   WHAPI_CHANNEL_ID:'synthetic-channel',LIFE_SKILLS_WAPI_REQUIRED_SENDER_DIGITS:'972534932631'});
@@ -19,17 +30,18 @@ function inquiry(id='synthetic-message-1',text='DEMO synthetic inquiry') {
     id,from_me:false,type:'text',chat_id:'972525550101@s.whatsapp.net',timestamp:1790500000,from:'972525550101',from_name:'DEMO',text:{body:text}}]}, {},config)[0];
 }
 function receipt(replayed=false,dto=inquiry()) { return Response.json({ok:true,data:{replayed,storedAt:'2026-09-28T03:00:00.000Z',ackDigest:receiptDigest(dto,config.secret)},requestId:'synthetic-request'}, {status:replayed?200:201}); }
+function sheetNormalized(dto){return {messageId:dto.providerMessageId,fromNumber:dto.fromNumber,chatId:dto.fromNumber,toNumber:dto.businessNumber,
+  pushName:dto.pushName||'',hasMedia:Boolean(dto.media?.length),messageType:dto.messageType||'',messageText:dto.messageText||'',occurredAt:dto.occurredAt};}
+function nativeSheetSync(upsert,writer={mode:'sheet',epoch:null,ready:true,blockers:[]}){
+  const sheetConfig={enabled:true,approved:true,spreadsheetId:'synthetic',sheetName:'Leads',responseOwner:'Synthetic',requiredBusinessDigits:'972534932631',requiredChannelId:'synthetic-channel',defaultCountry:'972',timeZone:'Asia/Jerusalem'};
+  return new Function('pool','process','lifeSkillsSheetCrmConfig','isLifeSkillsInboundInquiry','lifeSkillsCrmWriterState','lifeSkillsSheetCrmClient','messageAttribution','detectedLanguage','upsertLifeSkillsSheetLead','lockLifeSkillsInboundReconciliation','markLifeSkillsSheetMaterialized','lifeSkillsSheetCrmSafeError',
+    `${syncSource}; return syncLifeSkillsInboundToSheet;`)(pool,{env:{}},()=>sheetConfig,crm.isLifeSkillsInboundInquiry,()=>writer,
+    ()=>({readiness:{ready:true,blockers:[]},sheets:{}}),crm.messageAttribution,crm.detectedLanguage,upsert,lockInboundReconciliation,markSheetMaterialized,error=>String(error?.message||'sheet failure'));
+}
+async function bounded(promise,ms=4000){let timer;try{return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('native concurrency timeout')),ms);})]);}finally{clearTimeout(timer);}}
 const count=async()=>Number((await pool.query('SELECT count(*) AS n FROM bna_life_skills_app_inbound_outbox')).rows[0].n);
 before(async()=>{
-  await pool.query(`CREATE TABLE IF NOT EXISTS bna_life_skills_sheet_crm_sync (
-    id SERIAL PRIMARY KEY,provider_message_id TEXT NOT NULL UNIQUE,phone_e164 TEXT NOT NULL,to_number TEXT NOT NULL,
-    push_name TEXT,has_media BOOLEAN NOT NULL DEFAULT FALSE,message_type TEXT,occurred_at TIMESTAMP,
-    attribution JSONB NOT NULL DEFAULT '{}',native_binding_sha256 TEXT,native_event_key TEXT,
-    status TEXT NOT NULL DEFAULT 'pending',attempt_count INTEGER NOT NULL DEFAULT 0,sheet_row INTEGER,
-    sheet_receipt JSONB NOT NULL DEFAULT '{}',last_error TEXT,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
-  await pool.query(`ALTER TABLE bna_life_skills_sheet_crm_sync ADD COLUMN IF NOT EXISTS native_binding_sha256 TEXT,
-    ADD COLUMN IF NOT EXISTS native_event_key TEXT`);
+  await pool.query(SHEET_SYNC_SQL);
   await pool.query(OUTBOX_SQL); await pool.query(OUTBOX_SQL);
   await pool.query(RECONCILIATION_SQL); await pool.query(RECONCILIATION_SQL);
 });
@@ -41,6 +53,7 @@ test('native schema is idempotent, owner-only and rejects malformed identifiers/
   assert.equal(permissions,0);
   await assert.rejects(()=>pool.query(`INSERT INTO bna_life_skills_app_inbound_outbox(binding_sha256,event_key,message_key,capture_epoch,key_sha256,payload_digest,payload_ciphertext)
     VALUES('bad','bad','bad','bad epoch','bad','bad',decode('00','hex'))`),{code:'23514'});
+  await assert.rejects(()=>lockInboundReconciliation(pool,{bindingSha256:'a'.repeat(64),eventKey:'b'.repeat(64)}),/INBOUND_RECONCILIATION_PINNED_CONNECTION_REQUIRED/);
   assert.equal(await count(),0);
   await pool.query('CREATE ROLE ls_inbound_denied NOSUPERUSER');
   const deniedPool={connect:async()=>{
@@ -146,7 +159,9 @@ test('dual-receipt readback never equates a private ACK with native CRM projecti
   assert.equal(state.nativeProjectionProofAvailable,false);assert.equal(state.nativeProjected,null);
   assert.equal((await outbox.deliver(captured.eventKey)).status,'delivered','replay is stable and does not become projection proof');
   await pool.query(`UPDATE bna_life_skills_sheet_crm_sync SET status='synced' WHERE provider_message_id=$1`,[dto.providerMessageId]);
-  await markSheetMaterialized(pool,{bindingSha256:config.bindingSha256,eventKey:captured.eventKey});
+  const materializeClient=await pool.connect();
+  try{await materializeClient.query('BEGIN');await markSheetMaterialized(materializeClient,{bindingSha256:config.bindingSha256,eventKey:captured.eventKey});await materializeClient.query('COMMIT');}
+  finally{materializeClient.release();}
   state=await readInboundReconciliation(pool,'LS-CUTOVER-SYNTHETIC');
   assert.equal(state.sheetApplied,1);assert.equal(state.sheetReplayRequiredIfRollback,0);assert.equal(state.privateReceiptOnly,0);
   assert.equal(state.nativeProjected,null);
@@ -218,4 +233,105 @@ test('every batch event receives a Sheet-side registration and replay keeps the 
   assert.equal(replay.replayed,true);assert.equal(replay.captureEpoch,'LS-BATCH-EPOCH-A');
   assert.equal((await readInboundReconciliation(pool,'LS-BATCH-EPOCH-A')).total,2);
   assert.equal((await readInboundReconciliation(pool,'LS-BATCH-EPOCH-B')).total,0);
+});
+
+test('same-ID batch orderings pass only the exact accepted payload to the actual Sheet boundary',async()=>{
+  const seen=[];
+  const sync=nativeSheetSync(async({normalized})=>{seen.push({...normalized});return {action:'updated_existing',row:2,providerMessageIds:normalized.messageId};});
+  for(const [id,order] of [['altered-first','altered-first'],['exact-first','exact-first']]){
+    const original={...inquiry(`same-id-${id}`,'original accepted body'),pushName:`ORIGINAL ${id}`,occurredAt:'2026-09-28T04:00:00.000Z'};
+    const altered={...original,pushName:`ALTERED ${id}`,occurredAt:'2026-09-29T04:00:00.000Z',messageText:'rejected altered body'};
+    const outbox=new LifeSkillsAppInboundOutbox(pool,config,async()=>receipt(false,original),reconciliation);
+    await outbox.capture(original,'LS-ACCEPTED-PAYLOAD');
+    const batch=order==='altered-first'?[altered,original]:[original,altered];
+    const result=await outbox.captureBatch(batch,'LS-DIFFERENT-EPOCH');
+    assert.equal(result.captured,1);assert.equal(result.conflicts,1);assert.equal(result.receipts.length,1);
+    const accepted=result.receipts[0];assert.strictEqual(accepted.acceptedInquiry,original);
+    await sync({normalized:sheetNormalized(accepted.acceptedInquiry),payload:{},privateReceipt:accepted,receiptPool:pool});
+  }
+  assert.deepEqual(seen.map(row=>({messageId:row.messageId,pushName:row.pushName,occurredAt:row.occurredAt})),[
+    {messageId:'same-id-altered-first',pushName:'ORIGINAL altered-first',occurredAt:'2026-09-28T04:00:00.000Z'},
+    {messageId:'same-id-exact-first',pushName:'ORIGINAL exact-first',occurredAt:'2026-09-28T04:00:00.000Z'},
+  ]);
+});
+
+test('real Sheet sync and registration concurrency share event-before-row ordering, including synced replay',async()=>{
+  const dto=inquiry('lock-order-event','lock order inquiry');
+  const outbox=new LifeSkillsAppInboundOutbox(pool,config,async()=>receipt(false,dto),reconciliation);
+  const privateReceipt={providerEventId:dto.providerEventId,bindingSha256:config.bindingSha256,eventKey:outbox.eventKey(dto)};
+  let sheetCalls=0;
+  const sync=nativeSheetSync(async({normalized})=>{sheetCalls++;await new Promise(resolve=>setTimeout(resolve,25));return {action:'created',row:2,providerMessageIds:normalized.messageId};});
+  const [captured,synced]=await bounded(Promise.all([
+    outbox.capture(dto,'LS-OUTBOX-E2'),
+    sync({normalized:sheetNormalized(dto),payload:{},privateReceipt,receiptPool:pool}),
+  ]));
+  assert.equal(synced.status,'synced');assert.equal(sheetCalls,1);
+  const rows=(await pool.query(`SELECT o.capture_epoch AS outbox_epoch,r.capture_epoch AS reconciliation_epoch,
+    s.attribution->>'writer_epoch' AS sheet_epoch,s.status FROM bna_life_skills_app_inbound_outbox o
+    JOIN bna_life_skills_app_inbound_reconciliation r USING(binding_sha256,event_key)
+    JOIN bna_life_skills_sheet_crm_sync s ON s.id=r.sheet_sync_id WHERE o.event_key=$1`,[captured.eventKey])).rows;
+  assert.equal(rows.length,1);assert.equal(rows[0].outbox_epoch,rows[0].reconciliation_epoch);assert.equal(rows[0].outbox_epoch,rows[0].sheet_epoch);assert.equal(rows[0].status,'synced');
+  const [replay,replayedSync]=await bounded(Promise.all([
+    outbox.capture(dto,'LS-IGNORED-LATER-EPOCH'),
+    sync({normalized:sheetNormalized(dto),payload:{},privateReceipt,receiptPool:pool}),
+  ]));
+  assert.equal(replay.replayed,true);assert.equal(replay.captureEpoch,rows[0].outbox_epoch);
+  assert.equal(replayedSync.replay_suppressed,true);assert.equal(sheetCalls,1,'synced replay cannot call the external Sheet boundary again');
+});
+
+test('Sheet-first origin is retained and missing legacy origin stays explicitly held',async()=>{
+  const e1=inquiry('sheet-first-e1','sheet first epoch');
+  await pool.query(`INSERT INTO bna_life_skills_sheet_crm_sync
+    (provider_message_id,phone_e164,to_number,push_name,has_media,message_type,occurred_at,attribution,status)
+    VALUES($1,$2,$3,$4,FALSE,$5,$6,$7::jsonb,'pending')`,[e1.providerMessageId,e1.fromNumber,e1.businessNumber,e1.pushName,e1.messageType,e1.occurredAt,JSON.stringify({writer_epoch:'LS-SHEET-E1',source:'preserved'})]);
+  const outbox=new LifeSkillsAppInboundOutbox(pool,config,async()=>receipt(false,e1),reconciliation);
+  const accepted=await outbox.capture(e1,'LS-OUTBOX-E2');
+  assert.equal(accepted.captureEpoch,'LS-SHEET-E1');
+  const retained=(await pool.query(`SELECT o.capture_epoch AS outbox_epoch,r.capture_epoch AS reconciliation_epoch,
+    s.attribution,s.native_event_key FROM bna_life_skills_app_inbound_outbox o
+    JOIN bna_life_skills_app_inbound_reconciliation r USING(binding_sha256,event_key)
+    JOIN bna_life_skills_sheet_crm_sync s ON s.id=r.sheet_sync_id WHERE o.event_key=$1`,[accepted.eventKey])).rows[0];
+  assert.equal(retained.outbox_epoch,'LS-SHEET-E1');assert.equal(retained.reconciliation_epoch,'LS-SHEET-E1');
+  assert.deepEqual(retained.attribution,{source:'preserved',writer_epoch:'LS-SHEET-E1'});assert.equal(retained.native_event_key,accepted.eventKey);
+
+  const unknown=inquiry('sheet-first-unknown','missing epoch');
+  await pool.query(`INSERT INTO bna_life_skills_sheet_crm_sync
+    (provider_message_id,phone_e164,to_number,push_name,has_media,message_type,occurred_at,attribution,status)
+    VALUES($1,$2,$3,$4,FALSE,$5,$6,'{}'::jsonb,'synced')`,[unknown.providerMessageId,unknown.fromNumber,unknown.businessNumber,unknown.pushName,unknown.messageType,unknown.occurredAt]);
+  const held=await outbox.capture(unknown,'LS-OUTBOX-E2');
+  assert.equal(held.captureEpoch,'legacy_unbound');
+  const heldClient=await pool.connect();
+  try{await heldClient.query('BEGIN');await assert.rejects(()=>markSheetMaterialized(heldClient,{bindingSha256:config.bindingSha256,eventKey:held.eventKey}),/INBOUND_RECONCILIATION_CONFLICT/);await heldClient.query('ROLLBACK');}
+  finally{heldClient.release();}
+  const state=await readInboundReconciliation(pool,'legacy_unbound');
+  assert.equal(state.total,1);assert.equal(state.sheetApplied,0);assert.equal(state.sheetReplayRequiredIfRollback,1);
+});
+
+test('actual populated baseline Sheet schema upgrades exactly once and repeats without data loss',async()=>{
+  await pool.query('DROP TABLE bna_life_skills_app_inbound_reconciliation');
+  await pool.query('DROP TABLE bna_life_skills_sheet_crm_sync');
+  await pool.query(`CREATE TABLE bna_life_skills_sheet_crm_sync (
+    id SERIAL PRIMARY KEY,provider_message_id TEXT NOT NULL UNIQUE,
+    communication_id INTEGER REFERENCES bna_contact_communications(id) ON DELETE SET NULL,
+    webhook_log_id INTEGER REFERENCES bna_wapi_webhook_log(id) ON DELETE SET NULL,
+    phone_e164 TEXT NOT NULL,to_number TEXT NOT NULL,push_name TEXT,has_media BOOLEAN NOT NULL DEFAULT FALSE,
+    message_type TEXT,occurred_at TIMESTAMP,attribution JSONB NOT NULL DEFAULT '{}',
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','synced','blocked_configuration','failed')),
+    attempt_count INTEGER NOT NULL DEFAULT 0,sheet_row INTEGER,sheet_receipt JSONB NOT NULL DEFAULT '{}',last_error TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+    CREATE INDEX idx_bna_life_skills_sheet_crm_sync_recovery ON bna_life_skills_sheet_crm_sync(status,updated_at);`);
+  await pool.query(`INSERT INTO bna_life_skills_sheet_crm_sync
+    (provider_message_id,phone_e164,to_number,push_name,attribution,status,attempt_count,sheet_row,sheet_receipt,last_error)
+    VALUES('populated-baseline','+972525550101','+972534932631','PRESERVE',
+      '{"writer_epoch":"LS-BASELINE-E1","source":"preserve"}'::jsonb,'failed',3,27,'{"action":"updated_existing"}'::jsonb,'preserve error')`);
+  const before=(await pool.query(`SELECT row_to_json(s)::text AS snapshot FROM bna_life_skills_sheet_crm_sync s WHERE provider_message_id='populated-baseline'`)).rows[0].snapshot;
+  await pool.query(SHEET_SYNC_SQL);await pool.query(SHEET_SYNC_SQL);
+  const after=(await pool.query(`SELECT row_to_json(s)::text AS snapshot FROM (SELECT id,provider_message_id,communication_id,webhook_log_id,phone_e164,to_number,push_name,has_media,message_type,occurred_at,attribution,status,attempt_count,sheet_row,sheet_receipt,last_error,created_at,updated_at FROM bna_life_skills_sheet_crm_sync WHERE provider_message_id='populated-baseline') s`)).rows[0].snapshot;
+  const original=JSON.parse(before);delete original.native_binding_sha256;delete original.native_event_key;
+  assert.deepEqual(JSON.parse(after),original);
+  const columns=(await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name='bna_life_skills_sheet_crm_sync' AND column_name IN('native_binding_sha256','native_event_key') ORDER BY column_name`)).rows.map(row=>row.column_name);
+  assert.deepEqual(columns,['native_binding_sha256','native_event_key']);
+  const constraints=(await pool.query(`SELECT conname FROM pg_constraint WHERE conrelid='bna_life_skills_sheet_crm_sync'::regclass AND conname IN('bna_ls_sheet_crm_native_binding_format','bna_ls_sheet_crm_native_event_format') ORDER BY conname`)).rows.map(row=>row.conname);
+  assert.deepEqual(constraints,['bna_ls_sheet_crm_native_binding_format','bna_ls_sheet_crm_native_event_format']);
+  assert.equal((await pool.query(`SELECT count(*)::int AS n FROM pg_indexes WHERE tablename='bna_life_skills_sheet_crm_sync' AND indexname='idx_bna_life_skills_sheet_crm_sync_native_receipt'`)).rows[0].n,1);
 });

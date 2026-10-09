@@ -190,22 +190,38 @@ class LifeSkillsAppInboundOutbox {
       if (!prior) await db.query(`INSERT INTO bna_life_skills_app_inbound_outbox(binding_sha256,event_key,message_key,capture_epoch,key_sha256,payload_digest,payload_ciphertext) VALUES($1,$2,$3,$4,$5,$6,$7)`,
         [this.config.bindingSha256,eventKey,messageKey,captureEpoch,this.keySha256,payloadDigest,this.seal(inquiry,eventKey)]);
       const retainedEpoch=prior?.capture_epoch||captureEpoch;
-      if(this.reconciliation?.register)await this.reconciliation.register(db,{inquiry,bindingSha256:this.config.bindingSha256,eventKey,messageKey,payloadDigest,captureEpoch:retainedEpoch});
+      const registered=this.reconciliation?.register?await this.reconciliation.register(db,{inquiry,bindingSha256:this.config.bindingSha256,eventKey,messageKey,payloadDigest,captureEpoch:retainedEpoch,allowOriginAdoption:!prior}):null;
+      const reconciledEpoch=registered?.captureEpoch||retainedEpoch;
+      if(reconciledEpoch!==retainedEpoch){
+        if(prior)throw fail('INBOUND_RECONCILIATION_CONFLICT');
+        const changed=(await db.query(`UPDATE bna_life_skills_app_inbound_outbox SET capture_epoch=$3
+          WHERE binding_sha256=$1 AND event_key=$2 AND capture_epoch=$4 RETURNING event_key`,
+          [this.config.bindingSha256,eventKey,reconciledEpoch,retainedEpoch])).rows;
+        if(changed.length!==1)throw fail('INBOUND_RECONCILIATION_CONFLICT');
+      }
       await db.query('COMMIT'); // Only this committed encrypted row permits ACK.
-      return { replayed:Boolean(prior), eventKey, captureEpoch:retainedEpoch };
+      return { replayed:Boolean(prior), eventKey, captureEpoch:reconciledEpoch };
     } catch (error) { await db.query('ROLLBACK').catch(() => null); throw error; }
     finally { db.release(); }
   }
   async captureBatch(inquiries,captureEpoch='sheet') {
-    const conflicts=[]; const receipts=[]; let captured=0;
+    const conflicts=[]; const receipts=[]; const acceptedEventKeys=new Set();
     for (const inquiry of inquiries) {
-      try { const result=await this.capture(inquiry,captureEpoch); captured++; receipts.push({providerEventId:inquiry.providerEventId,eventKey:result.eventKey,replayed:result.replayed,bindingSha256:this.config.bindingSha256,captureEpoch:result.captureEpoch}); }
+      try {
+        const result=await this.capture(inquiry,captureEpoch);
+        if(!acceptedEventKeys.has(result.eventKey)){
+          acceptedEventKeys.add(result.eventKey);
+          // Keep the exact object that passed capture beside its receipt. The
+          // webhook must never reconstruct accepted content by provider ID.
+          receipts.push({providerEventId:inquiry.providerEventId,eventKey:result.eventKey,replayed:result.replayed,bindingSha256:this.config.bindingSha256,captureEpoch:result.captureEpoch,acceptedInquiry:inquiry});
+        }
+      }
       catch (error) { if(error.code !== 'INQUIRY_REPLAY_CONFLICT') throw error; conflicts.push(this.eventKey(inquiry)); }
     }
     // Retain the original immutable payload, record the conflict durably and
     // allow valid later messages to commit instead of poisoning batch retries.
     if(conflicts.length) await this.pool.query(`UPDATE bna_life_skills_app_inbound_outbox SET conflict_detected=TRUE WHERE binding_sha256=$1 AND event_key=ANY($2::text[])`,[this.config.bindingSha256,conflicts]);
-    return {captured,conflicts:conflicts.length,receipts};
+    return {captured:receipts.length,conflicts:conflicts.length,receipts};
   }
   async deliver(eventKey) {
     const db = await this.pool.connect();

@@ -57,6 +57,7 @@ const {
 const { readInboundReconciliation: readLifeSkillsInboundReconciliation } = require('./src/lib/bna/life-skills-inbound-reconciliation');
 const {
   RECONCILIATION_SQL: createLifeSkillsInboundReconciliationSQL,
+  lockInboundReconciliation: lockLifeSkillsInboundReconciliation,
   registerInboundReconciliation: registerLifeSkillsInboundReconciliation,
   confirmPrivateReceipt: confirmLifeSkillsPrivateReceipt,
   markPrivateReceiptBlocked: markLifeSkillsPrivateReceiptBlocked,
@@ -69548,6 +69549,16 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
   try {
     await client.query('BEGIN');
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`life-skills-sheet-crm:${eligibility.phone}`]);
+    // Lock order for linked receipts is always phone -> reconciliation event
+    // -> Sheet-sync row. The read is deliberately unlocked: if an outbox
+    // registration links the row after this snapshot, this transaction leaves
+    // reconciliation unresolved for a later bounded replay rather than
+    // acquiring the event lock after the Sheet row.
+    const existingLink=(await client.query(`SELECT native_binding_sha256,native_event_key
+      FROM bna_life_skills_sheet_crm_sync WHERE provider_message_id=$1`,[normalized.messageId])).rows[0];
+    const lockLink=receiptLink.event?receiptLink:existingLink?.native_event_key
+      ?{binding:existingLink.native_binding_sha256,event:existingLink.native_event_key}:null;
+    if(lockLink?.event)await lockLifeSkillsInboundReconciliation(client,{bindingSha256:lockLink.binding,eventKey:lockLink.event});
     const inserted = (await client.query(
       'INSERT INTO bna_life_skills_sheet_crm_sync (provider_message_id, communication_id, webhook_log_id, phone_e164, to_number, push_name, has_media, message_type, occurred_at, attribution, native_binding_sha256, native_event_key) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9::timestamp, NOW()), $10::jsonb, $11, $12) ON CONFLICT (provider_message_id) DO NOTHING RETURNING *',
       [normalized.messageId, communicationId, webhookLogId, eligibility.phone, eligibility.toNumber, normalized.pushName || null, Boolean(normalized.hasMedia), normalized.messageType || null, normalized.occurredAt || null, JSON.stringify({ ...messageAttribution(payload), detected_language: detectedLanguage(normalized.messageText || ''), writer_epoch: writer.epoch || 'sheet' }), receiptLink.binding, receiptLink.event]
@@ -69566,7 +69577,7 @@ async function syncLifeSkillsInboundToSheet({ normalized, payload = {}, scope = 
       throw new Error('Life Skills inbound receipt binding mismatch');
     if (receiptLink.event && ((stored.native_binding_sha256 || null) !== receiptLink.binding || (stored.native_event_key || null) !== receiptLink.event))
       throw new Error('Life Skills private receipt replay mismatch');
-    const retainedReceiptLink=stored.native_event_key?{bindingSha256:stored.native_binding_sha256,eventKey:stored.native_event_key}:null;
+    const retainedReceiptLink=lockLink?.event?{bindingSha256:lockLink.binding,eventKey:lockLink.event}:null;
     if (stored.status === 'synced') {
       if(retainedReceiptLink)await markLifeSkillsSheetMaterialized(client,retainedReceiptLink);
       await client.query('COMMIT');
@@ -69615,6 +69626,8 @@ async function recoverLifeSkillsSheetCrm(limit = 25) {
       scope: {},
       webhookLogId: record.webhook_log_id || null,
       communicationId: record.communication_id || null,
+      privateReceipt: record.native_event_key ? { providerEventId: record.provider_message_id,
+        bindingSha256: record.native_binding_sha256, eventKey: record.native_event_key } : null,
     });
     recovered.push({ syncId: record.id, ...lifeSkillsSheetCrmResultView(result) });
   }
@@ -69838,7 +69851,7 @@ async function captureLifeSkillsAppInbound(payload, scope) {
   // Await each durable encrypted commit before acknowledging a provider event.
   // Neither this path nor the retry loop reads historical receiver/Sheet rows.
   const result=await outbox.captureBatch(inquiries,writer.epoch||'sheet');
-  return {status:result.conflicts ? 'durably_captured_with_conflicts' : 'durably_captured',...result,inquiries};
+  return {status:result.conflicts ? 'durably_captured_with_conflicts' : 'durably_captured',...result};
 }
 
 function startLifeSkillsAppInboundScheduler() {
@@ -70017,18 +70030,21 @@ app.post('/api/webhooks/wapi', async (req, res) => {
     if(isOneTimeWapiScope(webhookScope))lifeSkillsSheetCrmResult={ status: 'skipped_non_life_skills_scope', blockers: ['one_time_scope'] };
     else{
       const receipts=Array.isArray(lifeSkillsAppInboundResult.receipts)?lifeSkillsAppInboundResult.receipts:[];
-      const privateInquiries=Array.isArray(lifeSkillsAppInboundResult.receipts)
-        ? receipts.map(receipt=>lifeSkillsAppInboundResult.inquiries?.find(inquiry=>inquiry.providerEventId===receipt.providerEventId)).filter(Boolean)
-        : [null];
       const receiptPool=receipts.length?await lifeSkillsAppInboundDatabase():null;
       const results=[];
-      for(const inquiry of privateInquiries){
-        const item=inquiry?lifeSkillsPrivateInquirySheetRecord(inquiry):normalized;
-        const privateReceipt=receipts.find(candidate=>candidate.providerEventId===item.messageId)||null;
-        results.push(await syncLifeSkillsInboundToSheet({normalized:item,payload,scope:webhookScope,
-          webhookLogId:item.messageId===normalized.messageId?webhookLog.id:null,
-          communicationId:item.messageId===normalized.messageId?communicationResult.communication?.id||null:null,
-          privateReceipt,receiptPool}));
+      if(Array.isArray(lifeSkillsAppInboundResult.receipts)){
+        for(const receipt of receipts){
+          const inquiry=receipt.acceptedInquiry;
+          if(!inquiry||inquiry.providerEventId!==receipt.providerEventId)throw new Error('Life Skills accepted private receipt mismatch');
+          const item=lifeSkillsPrivateInquirySheetRecord(inquiry);
+          results.push(await syncLifeSkillsInboundToSheet({normalized:item,payload,scope:webhookScope,
+            webhookLogId:item.messageId===normalized.messageId?webhookLog.id:null,
+            communicationId:item.messageId===normalized.messageId?communicationResult.communication?.id||null:null,
+            privateReceipt:receipt,receiptPool}));
+        }
+      }else{
+        results.push(await syncLifeSkillsInboundToSheet({normalized,payload,scope:webhookScope,
+          webhookLogId:webhookLog.id,communicationId:communicationResult.communication?.id||null}));
       }
       lifeSkillsSheetCrmResult=results.length?{...results[0],batchCount:results.length,
         status:results.length>1&&new Set(results.map(item=>item.status)).size>1?'mixed_batch':results[0].status}

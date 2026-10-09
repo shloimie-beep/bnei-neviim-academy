@@ -125,7 +125,8 @@ test('actual webhook awaits encrypted capture before communication/ACK; timer dr
   assert.match(server,/await outbox.captureBatch\(inquiries,writer\.epoch\|\|'sheet'\)/);
   assert.ok(handler.indexOf('await captureLifeSkillsAppInbound')<handler.indexOf('const receipts=Array.isArray'));
   assert.ok(handler.indexOf('const receipts=Array.isArray')<handler.indexOf('await syncLifeSkillsInboundToSheet'));
-  assert.match(handler,/privateReceipt,/);
+  assert.match(handler,/privateReceipt:receipt/);
+  assert.doesNotMatch(handler,/inquiries\?\.find/);
   assert.match(server,/lifeSkillsAppInboundPool.query\(createLifeSkillsAppInboundOutboxSQL\)/);
   assert.doesNotMatch(server,/await pool.query\(createLifeSkillsAppInboundOutboxSQL\)/);
   assert.match(server,/new LifeSkillsAppInboundOutbox\(await lifeSkillsAppInboundDatabase\(\), config, fetch/);

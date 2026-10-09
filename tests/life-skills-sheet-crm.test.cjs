@@ -121,6 +121,9 @@ test('capture-only receipt holds and replays durably without touching Sheets; de
   const client = {
     async query(sql, values = []) {
       if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK' || sql.includes('pg_advisory_xact_lock')) return { rows: [] };
+      if (sql.startsWith('SELECT native_binding_sha256,native_event_key')) {
+        const row=rows.get(values[0]);return {rows:row?[{native_binding_sha256:row.native_binding_sha256,native_event_key:row.native_event_key}]:[]};
+      }
       if (sql.startsWith('INSERT INTO bna_life_skills_sheet_crm_sync')) {
         let row = rows.get(values[0]);
         if (row) return { rows: [] };
@@ -149,10 +152,10 @@ test('capture-only receipt holds and replays durably without touching Sheets; de
   };
   const pool = { async connect() { clientCalls += 1; return client; } };
   let writer = { mode: 'capture_only', epoch: 'LS-20260927-CUTOVER-01', ready: true, blockers: [] }, captureAuthorized = true;
-  const sync = new Function('pool', 'process', 'lifeSkillsSheetCrmConfig', 'isLifeSkillsInboundInquiry', 'lifeSkillsCrmWriterState', 'lifeSkillsSheetCrmClient', 'messageAttribution', 'detectedLanguage', 'upsertLifeSkillsSheetLead', 'markLifeSkillsSheetMaterialized',
+  const sync = new Function('pool', 'process', 'lifeSkillsSheetCrmConfig', 'isLifeSkillsInboundInquiry', 'lifeSkillsCrmWriterState', 'lifeSkillsSheetCrmClient', 'messageAttribution', 'detectedLanguage', 'upsertLifeSkillsSheetLead', 'lockLifeSkillsInboundReconciliation', 'markLifeSkillsSheetMaterialized',
     `${source}; return syncLifeSkillsInboundToSheet;`)(pool, { env: {} }, () => ({ ...config(), enabled: captureAuthorized, approved: captureAuthorized }), crm.isLifeSkillsInboundInquiry, () => writer,
     () => { sheetCalls += 1; return { readiness: { ready: sheetReady, blockers: sheetReady ? [] : ['synthetic_google_unavailable'] }, sheets: {} }; }, crm.messageAttribution, crm.detectedLanguage,
-    async () => { sheetCalls += 1; return { action: 'created', row: 2, providerMessageIds: 'provider-message-1' }; }, async()=>{});
+    async () => { sheetCalls += 1; return { action: 'created', row: 2, providerMessageIds: 'provider-message-1' }; }, async()=>{}, async()=>{});
   captureAuthorized = false;
   assert.equal((await sync({ normalized: inbound() })).status, 'blocked_configuration');
   assert.equal(rows.size, 0, 'disabled CRM events must never become a later recovery backlog');
