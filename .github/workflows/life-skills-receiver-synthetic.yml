@@ -1,0 +1,83 @@
+name: Life Skills receiver synthetic
+
+on:
+  pull_request:
+    paths:
+      - server.js
+      - src/lib/bna/life-skills-app-inbound.js
+      - src/lib/bna/life-skills-inbound-reconciliation.js
+      - src/lib/bna/life-skills-sheet-crm.js
+      - tests/life-skills-app-inbound.native.cjs
+      - tests/life-skills-app-inbound.test.cjs
+      - tests/life-skills-inbound-database.test.cjs
+      - tests/life-skills-sheet-crm.test.cjs
+      - .github/workflows/life-skills-receiver-synthetic.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: life-skills-receiver-synthetic-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  receiver-synthetic:
+    name: Life Skills receiver synthetic
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      PUPPETEER_SKIP_DOWNLOAD: "true"
+      LS_CALENDAR_TEST_ALLOW: "true"
+      TEST_DATABASE_URL: postgresql://synthetic:synthetic-only@127.0.0.1:5432/ls_calendar_test_voice_deadbeef_test
+    services:
+      postgres:
+        image: postgres:17.6-alpine
+        env:
+          POSTGRES_USER: synthetic
+          POSTGRES_PASSWORD: synthetic-only
+          POSTGRES_DB: ls_calendar_test_voice_deadbeef_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U synthetic -d ls_calendar_test_voice_deadbeef_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout test merge
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Record exact source identity
+        run: |
+          echo "event_base=${{ github.event.pull_request.base.sha }}"
+          echo "event_head=${{ github.event.pull_request.head.sha }}"
+          echo "checked_out_sha=$(git rev-parse HEAD)"
+          echo "checked_out_tree=$(git show -s --format=%T HEAD)"
+          git cat-file -p HEAD | sed -n 's/^parent /checked_out_parent=/p'
+
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Prepare isolated receiver fixture prerequisites
+        run: >-
+          node -e "const {Client}=require('pg');(async()=>{const c=new Client({connectionString:process.env.TEST_DATABASE_URL,ssl:false});await c.connect();await c.query('CREATE TABLE bna_contact_communications (id SERIAL PRIMARY KEY); CREATE TABLE bna_wapi_webhook_log (id SERIAL PRIMARY KEY)');await c.end()})().catch(error=>{console.error(error);process.exit(1)})"
+
+      - name: Run credential-free receiver checks
+        run: |
+          node --check server.js
+          node --check src/lib/bna/life-skills-app-inbound.js
+          node --check src/lib/bna/life-skills-inbound-reconciliation.js
+          node --check src/lib/bna/life-skills-sheet-crm.js
+          node --test tests/life-skills-app-inbound.test.cjs tests/life-skills-inbound-database.test.cjs tests/life-skills-sheet-crm.test.cjs
+          node --test tests/life-skills-app-inbound.native.cjs
