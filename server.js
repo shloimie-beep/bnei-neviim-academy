@@ -56,6 +56,7 @@ const {
 } = require('./src/lib/bna/life-skills-app-inbound');
 const { createOutboxPool: createLifeSkillsAppInboundPool } = require('./src/lib/bna/life-skills-inbound-database');
 const { deliverNativeProspectMessage, usableLifeSkillsScopedToken } = require('./src/lib/bna/life-skills-native-outbound');
+const { fetchLifeSkillsWhatsAppRoster, LifeSkillsWhatsAppRosterError } = require('./src/lib/bna/life-skills-whatsapp-roster');
 const { readLifeSkillsMarketingSnapshot } = require('./src/lib/bna/life-skills-marketing');
 const { readLifeSkillsMarketingMedia, MarketingMediaError } = require('./src/lib/bna/life-skills-marketing-media');
 const { startScheduler: startLifeSkillsStatusScheduler } = require('./src/lib/bna/life-skills-status-publisher');
@@ -69641,6 +69642,22 @@ app.get('/api/bna/life-skills-app/marketing', async (req, res) => {
     res.json({ success: true, snapshot });
   } catch {
     res.status(503).json({ success: false, error: 'Life Skills marketing workbook read failed' });
+  }
+});
+
+app.get('/api/bna/life-skills-app/whatsapp-group-roster', async (req, res) => {
+  res.setHeader('Cache-Control', 'private, no-store');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  if (!authorizeLifeSkillsAppBridge(req)) return res.status(401).json({ success: false, error: 'Unauthorized Life Skills app bridge' });
+  try {
+    const roster = await fetchLifeSkillsWhatsAppRoster({
+      credentials: wapiCredentialsForScope({ life_skills_native: true }),
+      channelId: process.env.LIFE_SKILLS_WHAPI_CHANNEL_ID || process.env.LIFE_SKILLS_WAPI_CHANNEL_ID,
+    });
+    res.json(roster);
+  } catch (error) {
+    const status = error instanceof LifeSkillsWhatsAppRosterError ? error.statusCode : 503;
+    res.status(status).json({ success: false, error: 'Life Skills WhatsApp roster read unavailable' });
   }
 });
 
