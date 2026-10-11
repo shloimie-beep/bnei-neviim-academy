@@ -304,7 +304,10 @@ async function findLeadRowByPhone(sheets, config, phone, headerMap) {
 }
 
 async function existingLeadContext(sheets, config, row, headerMap) {
-  const fields = { source: headerMap.columns.source, campaign: headerMap.columns.campaign, stage: headerMap.columns.stage, nextAction: headerMap.columns.nextAction, dueDate: headerMap.columns.dueDate, providerIds: headerMap.machine.providerMessageIds, firstInboundAt: headerMap.machine.firstInboundAt, responseOwner: headerMap.machine.responseOwner };
+  const fields = { source: headerMap.columns.source, campaign: headerMap.columns.campaign, stage: headerMap.columns.stage,
+    lastContact: headerMap.columns.lastContact, nextAction: headerMap.columns.nextAction, dueDate: headerMap.columns.dueDate,
+    providerIds: headerMap.machine.providerMessageIds, firstInboundAt: headerMap.machine.firstInboundAt,
+    lastInboundAt: headerMap.machine.lastInboundAt, responseOwner: headerMap.machine.responseOwner };
   const keys = Object.keys(fields);
   const result = await sheets.spreadsheets.values.batchGet({ spreadsheetId: config.spreadsheetId, ranges: keys.map((key) => sheetRange(config, `${fields[key]}${row}`)) });
   return Object.fromEntries(keys.map((key, index) => [key, result.data?.valueRanges?.[index]?.values?.[0]?.[0] || '']));
@@ -316,10 +319,11 @@ async function updateExistingLead({ sheets, config, normalized, payload, row, no
   const occurredIso = Number.isFinite(occurredAt.getTime()) ? occurredAt.toISOString() : new Date(now).toISOString();
   const attribution = messageAttribution(payload);
   const data = [
-    { range: sheetRange(config, `${headerMap.columns.lastContact}${row}`), values: [[occurredIso]] },
     { range: sheetRange(config, `${headerMap.machine.providerMessageIds}${row}`), values: [[providerMessageIds(current.providerIds, normalized.messageId)]] },
-    { range: sheetRange(config, `${headerMap.machine.lastInboundAt}${row}`), values: [[occurredIso]] },
   ];
+  const advances=(value)=>!value||(Number.isFinite(Date.parse(value))&&Date.parse(occurredIso)>Date.parse(value));
+  if(advances(current.lastContact))data.push({range:sheetRange(config,`${headerMap.columns.lastContact}${row}`),values:[[occurredIso]]});
+  if(advances(current.lastInboundAt))data.push({range:sheetRange(config,`${headerMap.machine.lastInboundAt}${row}`),values:[[occurredIso]]});
   if (!current.source && attribution.source) data.push({ range: sheetRange(config, `${headerMap.columns.source}${row}`), values: [[attribution.source]] });
   if (!current.campaign && attribution.campaign) data.push({ range: sheetRange(config, `${headerMap.columns.campaign}${row}`), values: [[attribution.campaign]] });
   if (!current.stage) data.push({ range: sheetRange(config, `${headerMap.columns.stage}${row}`), values: [['New inquiry']] });
