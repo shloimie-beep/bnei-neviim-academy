@@ -35196,6 +35196,12 @@ async function createProviderIntakeRecord({ providerId = null, sessionKey = '', 
 
 // Initialize database
 async function initDb() {
+  // The scoped website release uses the existing database as-is. Do not run
+  // compatibility DDL, seeding, backfills or cleanup during this restart.
+  if (process.env.BNA_WEBSITE_ONLY_NO_DB_BOOT === 'true') {
+    console.log('Website-only release: skipping database initialization.');
+    return;
+  }
   if (ONE_TIME_REVIEW_ONLY_NO_DB && !DATABASE_URL) {
     console.log('Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode');
     return;

@@ -21,8 +21,12 @@
     {
       "id": "ROUTE-04",
       "text": "Scoped security/function regression tests, independent exact source review, CI, current release approval and actual public smoke before enabling"
+    },
+    {
+      "id": "ROUTE-05",
+      "text": "Current human expressly requires databaseunchanged. Existing school boot does compatibilityDDL plus initDbseeds/backfills/cleanup. Exact website-only opt-in BNA_WEBSITE_ONLY_NO_DB_BOOT=true must bypass both before this restart, tested. Default and existing worker dispatch unchanged."
     }
   ],
   "holds": "No Stripe/provider/SQL/database/email/ad/newhost changes. Preserve approved hero/logo/people and all unrelated changes/holds. No duplicate implementation helper or PR. Required new current tests/independent review/normal CI and actual route authority before release.",
-  "next": "Author/test bounded gateway and Academy URL presentation context; keep default off until exact two-repository release gates"
+  "next": "Review/test scoped noDBboot successor; after accepted Academy apprelease and allgates set only the two public nonsecret BNAwebsite flags without triggering deploy, readback currentdeployment unchanged, then normalBNAmerge/release so automaticbranchdeployment never boots with DBsetup enabled. No SQL/auth/providerflags changed."
 }
