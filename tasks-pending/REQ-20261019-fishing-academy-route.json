@@ -24,7 +24,7 @@
     },
     {
       "id": "ROUTE-05",
-      "text": "Current human expressly requires databaseunchanged. Existing school boot does compatibilityDDL plus initDbseeds/backfills/cleanup. Exact website-only opt-in BNA_WEBSITE_ONLY_NO_DB_BOOT=true must bypass both before this restart, tested. Default and existing worker dispatch unchanged."
+      "text": "Current human expressly requires databaseunchanged. Existing school boot does compatibilityDDL plus initDbseeds/backfills/cleanup. Exact website-only opt-in BNA_WEBSITE_ONLY_NO_DB_BOOT=true must bypass both before this restart, tested. Default and existing worker dispatch unchanged. Existing inbound forwarding is live-ready and must keep its policy; in website noDBboot mode its lazy outbox initialization performs only SELECT to_regclass, never DDL, and fails closed if the existing table is absent. Actual pinned-TLS read-only transaction confirms the existing table, with0businessrows/0writes."
     }
   ],
   "holds": "No Stripe/provider/SQL/database/email/ad/newhost changes. Preserve approved hero/logo/people and all unrelated changes/holds. No duplicate implementation helper or PR. Required new current tests/independent review/normal CI and actual route authority before release.",
