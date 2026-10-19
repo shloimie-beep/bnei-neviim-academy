@@ -1,0 +1,32 @@
+{
+  "id": "REQ-20261019-ACADEMY-ROUTE",
+  "owner": "01a14103-1941-7802-811b-b5d641a14f64",
+  "status": "in_progress",
+  "source": "Direct owner COMPLETE BILINGUAL ACADEMY WEBSITE & RELEASE HANDOFF; current JLFA source21",
+  "base": "2c96bfc74dfc2404b38b38e5141522555089bdca",
+  "scope": "Route-only integration of existing Academy app on existing BNA school host. Existing Academy branch owns page implementation. No competing application.",
+  "requirements": [
+    {
+      "id": "ROUTE-01",
+      "text": "EN /fishing-academy and HE /he/fishing-academy, exact four stage/apply/pricing paths; preserve BNA root and all unrelated applications"
+    },
+    {
+      "id": "ROUTE-02",
+      "text": "Proxy only named public Academy pages/assets and exact Academy inquiry API; no auth cookies/private APIs/Stripe/provider forwarding; validated same-origin POST and original16KiB limit"
+    },
+    {
+      "id": "ROUTE-03",
+      "text": "Same-origin browser draft/locale switching and canonical/hreflang metadata with legacy links usable"
+    },
+    {
+      "id": "ROUTE-04",
+      "text": "Scoped security/function regression tests, independent exact source review, CI, current release approval and actual public smoke before enabling"
+    },
+    {
+      "id": "ROUTE-05",
+      "text": "Current human expressly requires databaseunchanged. Existing school boot does compatibilityDDL plus initDbseeds/backfills/cleanup. Exact website-only opt-in BNA_WEBSITE_ONLY_NO_DB_BOOT=true must bypass both before this restart, tested. Default and existing worker dispatch unchanged. Existing inbound forwarding is live-ready and must keep its policy; in website noDBboot mode its lazy outbox initialization performs only SELECT to_regclass, never DDL, and fails closed if the existing table is absent. Actual pinned-TLS read-only transaction confirms the existing table, with0businessrows/0writes."
+    }
+  ],
+  "holds": "No Stripe/provider/SQL/database/email/ad/newhost changes. Preserve approved hero/logo/people and all unrelated changes/holds. No duplicate implementation helper or PR. Required new current tests/independent review/normal CI and actual route authority before release.",
+  "next": "Review/test scoped noDBboot successor; after accepted Academy apprelease and allgates set only the two public nonsecret BNAwebsite flags without triggering deploy, readback currentdeployment unchanged, then normalBNAmerge/release so automaticbranchdeployment never boots with DBsetup enabled. No SQL/auth/providerflags changed."
+}

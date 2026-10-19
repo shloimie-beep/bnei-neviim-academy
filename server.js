@@ -11058,6 +11058,8 @@ app.post('/api/webhooks/stripe/rabbi', express.raw({ type: 'application/json', l
 });
 
 // Middleware
+// Exact public Academy gateway, before body parsing; off until its reviewed release.
+app.use(require('./src/lib/bna/fishing-academy-gateway').createFishingAcademyGateway({ enabled: () => process.env.BNA_ACADEMY_GATEWAY_ENABLED === 'true' }));
 app.use(express.json({
   limit: '25mb',
   verify: (req, res, buf) => {
@@ -35194,6 +35196,12 @@ async function createProviderIntakeRecord({ providerId = null, sessionKey = '', 
 
 // Initialize database
 async function initDb() {
+  // The scoped website release uses the existing database as-is. Do not run
+  // compatibility DDL, seeding, backfills or cleanup during this restart.
+  if (process.env.BNA_WEBSITE_ONLY_NO_DB_BOOT === 'true') {
+    console.log('Website-only release: skipping database initialization.');
+    return;
+  }
   if (ONE_TIME_REVIEW_ONLY_NO_DB && !DATABASE_URL) {
     console.log('Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode');
     return;
@@ -69778,7 +69786,12 @@ let lifeSkillsAppInboundDatabaseReady = null;
 async function lifeSkillsAppInboundDatabase() {
   if (!lifeSkillsAppInboundPool) lifeSkillsAppInboundPool = createLifeSkillsAppInboundPool(process.env);
   if (!lifeSkillsAppInboundDatabaseReady) {
-    lifeSkillsAppInboundDatabaseReady = lifeSkillsAppInboundPool.query(createLifeSkillsAppInboundOutboxSQL)
+    // Keep the existing forwarder's policy and data flow, but a website-only
+    // restart must verify its existing table instead of executing lazy DDL.
+    lifeSkillsAppInboundDatabaseReady = (process.env.BNA_WEBSITE_ONLY_NO_DB_BOOT === 'true'
+      ? lifeSkillsAppInboundPool.query("SELECT to_regclass('public.bna_life_skills_app_inbound_outbox') IS NOT NULL AS present")
+        .then(result => { if (result.rows[0]?.present !== true) throw new Error('EXISTING_INBOUND_OUTBOX_REQUIRED'); })
+      : lifeSkillsAppInboundPool.query(createLifeSkillsAppInboundOutboxSQL))
       .catch(error => { lifeSkillsAppInboundDatabaseReady = null; throw error; });
   }
   await lifeSkillsAppInboundDatabaseReady;

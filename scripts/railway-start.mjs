@@ -33,7 +33,9 @@ if (!selected) {
 
 console.log(`Starting Railway process "${processName}": ${selected.command} ${selected.args.join(' ')}`);
 
-if (processName === 'web' || processName === 'server') {
+// A website-only release must leave the already deployed database unchanged.
+// This explicit switch skips boot-time DDL; worker routing is unaffected.
+if ((processName === 'web' || processName === 'server') && process.env.BNA_WEBSITE_ONLY_NO_DB_BOOT !== 'true') {
   const preflight = spawnSync('node', ['scripts/ensure-content-job-compatibility.mjs'], {
     env: process.env,
     stdio: 'inherit',
