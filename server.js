@@ -11058,6 +11058,8 @@ app.post('/api/webhooks/stripe/rabbi', express.raw({ type: 'application/json', l
 });
 
 // Middleware
+// Exact public Academy gateway, before body parsing; off until its reviewed release.
+app.use(require('./src/lib/bna/fishing-academy-gateway').createFishingAcademyGateway({ enabled: () => process.env.BNA_ACADEMY_GATEWAY_ENABLED === 'true' }));
 app.use(express.json({
   limit: '25mb',
   verify: (req, res, buf) => {
