@@ -12,6 +12,7 @@ const assets = new Set([
   '/groups/testimonials/l-bars-2024.png',
   '/groups/academy/hero-desktop-selected-20261018.png', '/groups/academy/hero-mobile-selected-20261018.png',
   '/groups/academy/hero-desktop-wide-20261019.png',
+  '/groups/academy/hero-desktop-20261018.png', '/groups/academy/hero-mobile-20261018.png',
   '/fonts/Heebo-wght.ttf', '/fonts/FrankRuhlLibre-wght.ttf',
   ...['foundation', 'independent', 'independent-mobile', 'advanced', 'advanced-mobile', 'leadership', 'locations', 'habitat', 'form', 'freshwater', 'freshwater-mobile'].map(name => '/groups/academy/scenes/' + name + '.webp'),
 ]);

@@ -63,5 +63,20 @@ test('only named assets and compiled static JS/CSS/font types are selected', () 
   for (const path of ['/groups/private.png', '/_next/static/secret.map', '/_next/static/%2Fprivate.js', '/_next/static/../private.js', '/_next/hmr']) assert.equal(classify(new URL(path, origin)), null);
 });
 test('strict upstream CSP is retained and cookies are stripped', async () => { const response = await request('/fishing-academy'); await response.text(); assert.equal(response.headers.get('content-security-policy'), "default-src 'none'; script-src 'self' 'nonce-fixture'"); assert.equal(response.headers.get('set-cookie'), null); assert.equal(response.headers.get('x-frame-options'), 'DENY'); });
+
+for (const path of ['/groups/academy/hero-desktop-20261018.png', '/groups/academy/hero-mobile-20261018.png']) {
+  test('exact text-free master is proxied without credentials for GET and HEAD: ' + path, async () => {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await request(path, {method, headers: {Cookie: 'bna_session=never-forward', Authorization: 'Bearer never-forward'}});
+      await response.text(); assert.equal(response.status, 200);
+      const entry = observed.at(-1); assert.equal(entry.path, path); assert.equal(entry.method, method);
+      assert.equal(entry.headers.cookie, undefined); assert.equal(entry.headers.authorization, undefined); assert.equal(response.headers.get('set-cookie'), null);
+    }
+    const count = observed.length; const denied = await request(path, {method: 'POST', body: '{}'}); await denied.text(); assert.equal(denied.status, 405); assert.equal(observed.length, count);
+  });
+}
+test('text-free master additions do not admit variants or arbitrary Academy images', () => {
+  for (const path of ['/groups/academy/private.png', '/groups/academy/hero-desktop-20261018.png.bak', '/groups/academy/hero-mobile-20261018.jpg']) assert.equal(classify(new URL(path, origin)), null);
+});
 test('no redirect can escape to an arbitrary upstream or private route', async () => { const response = await request('/fishing-academy?redirect-test=1'); await response.text(); assert.equal(response.status, 502); assert.equal(response.headers.get('location'), null); });
 test('actual BNA mount precedes body parser, with explicit off-by-default switch', () => { const source = fs.readFileSync(require.resolve('../server.js'), 'utf8'); assert.ok(source.indexOf('createFishingAcademyGateway({ enabled:') < source.indexOf('app.use(express.json(')); assert.match(source, /BNA_ACADEMY_GATEWAY_ENABLED === 'true'/); });
