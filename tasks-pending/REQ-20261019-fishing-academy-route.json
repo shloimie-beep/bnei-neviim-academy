@@ -28,5 +28,17 @@
     }
   ],
   "holds": "No Stripe/provider/SQL/database/email/ad/newhost changes. Preserve approved hero/logo/people and all unrelated changes/holds. No duplicate implementation helper or PR. Required new current tests/independent review/normal CI and actual route authority before release.",
-  "next": "Review/test scoped noDBboot successor; after accepted Academy apprelease and allgates set only the two public nonsecret BNAwebsite flags without triggering deploy, readback currentdeployment unchanged, then normalBNAmerge/release so automaticbranchdeployment never boots with DBsetup enabled. No SQL/auth/providerflags changed."
+  "next": "Review/test scoped noDBboot successor; after accepted Academy apprelease and allgates set only the two public nonsecret BNAwebsite flags without triggering deploy, readback currentdeployment unchanged, then normalBNAmerge/release so automaticbranchdeployment never boots with DBsetup enabled. No SQL/auth/providerflags changed.",
+  "amendments": [
+    {
+      "id": "ROUTE-06-20261020-TEXT-FREE-HERO",
+      "source": "JLFA-REGISTRATION-20261020-01; RM11-LEAD-SOURCE-20261020-206",
+      "owner": "01a14103-1941-7802-811b-b5d641a14f64",
+      "status": "needs_verification",
+      "base": "9a12c55902edadc34f697c3ab44bf860b253438f",
+      "problem": "Live new Academy HTML uses the existing text-free desktop/mobile masters. Both exact paths return200 on the app origin but404 on the Academy gateway; the live screenshot exposed a blank hero.",
+      "implementation": "Add only hero-desktop-20261018.png and hero-mobile-20261018.png to the existing exact public asset allowlist. Keep all earlier assets, private-route denial, CSP, credential stripping, inquiry limits and default-disabled behavior unchanged.",
+      "acceptance": "Focused real loopback GET/HEAD/POST/credential tests and no-DB-boot regressions; independent review; normal merge/release; verify existing no-DB-boot flag before restart; actual public200 bytes/hashes and visible hero screenshot after deployment. No new image generation, SQL or provider effect."
+    }
+  ]
 }
