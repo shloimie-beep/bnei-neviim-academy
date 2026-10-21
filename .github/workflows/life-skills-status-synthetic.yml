@@ -1,0 +1,69 @@
+name: Life Skills Status synthetic
+
+on:
+  pull_request:
+    paths:
+      - package.json
+      - scripts/life-skills-status-reanchor.cjs
+      - src/lib/bna/life-skills-status-publisher.js
+      - src/lib/bna/life-skills-status-reanchor-invocation.js
+      - tests/life-skills-marketing-status-hold.test.js
+      - tests/life-skills-status-publisher.test.cjs
+      - tests/life-skills-status-reanchor-invocation.test.cjs
+      - .github/workflows/life-skills-status-synthetic.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: life-skills-status-synthetic-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  status-synthetic:
+    name: Life Skills Status synthetic
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      PUPPETEER_SKIP_DOWNLOAD: "true"
+    steps:
+      - name: Checkout test merge
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Record exact source identity
+        run: |
+          echo "event_base=${{ github.event.pull_request.base.sha }}"
+          echo "event_head=${{ github.event.pull_request.head.sha }}"
+          echo "checked_out_sha=$(git rev-parse HEAD)"
+          echo "checked_out_tree=$(git show -s --format=%T HEAD)"
+          git cat-file -p HEAD | sed -n 's/^parent /checked_out_parent=/p'
+
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Run credential-free Status synthetic checks
+        run: |
+          node --check scripts/life-skills-status-reanchor.cjs
+          node --check src/lib/bna/life-skills-status-reanchor-invocation.js
+          node --test tests/life-skills-status-publisher.test.cjs tests/life-skills-status-reanchor-invocation.test.cjs tests/life-skills-marketing-status-hold.test.js
+
+      - name: Verify missing authorization fails closed
+        shell: bash
+        run: |
+          set +e
+          output="$(npm run life-skills:status:reanchor 2>&1)"
+          status=$?
+          set -e
+          printf '%s\n' "$output"
+          test "$status" -eq 1
+          grep -F 'Usage: npm run life-skills:status:reanchor -- --apply --authorization-file <short-lived-json>' <<<"$output"
