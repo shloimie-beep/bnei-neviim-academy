@@ -1,0 +1,36 @@
+{
+  "run_id": "BNA-SEP-01",
+  "status": "professional_ceilings_applied_where_baseline_unavailable",
+  "browser_budget_derivation": "blocked_no_30_sample_baseline",
+  "school_admin_static_budgets": {
+    "initial_requests_before_useful_action": {
+      "ceiling": 12,
+      "after_static_count": 4,
+      "status": "pass_static"
+    },
+    "initial_compressed_js_bytes": {
+      "ceiling": 256000,
+      "after_static_gzip_bytes": 3945,
+      "status": "pass_static"
+    },
+    "initial_compressed_css_bytes": {
+      "ceiling": 81920,
+      "after_static_gzip_bytes": 1662,
+      "status": "pass_static"
+    },
+    "html_bytes": {
+      "ceiling": 24576,
+      "after_static_bytes": 3019,
+      "status": "pass_static"
+    }
+  },
+  "browser_latency_budgets": {
+    "mobile_cold_useful_action_p75_ms": 3500,
+    "tablet_cold_useful_action_p75_ms": 3000,
+    "desktop_cold_useful_action_p75_ms": 2500,
+    "mobile_warm_useful_action_p75_ms": 1500,
+    "tablet_warm_useful_action_p75_ms": 1200,
+    "desktop_warm_useful_action_p75_ms": 1000,
+    "status": "not_evaluated_without_browser_samples"
+  }
+}

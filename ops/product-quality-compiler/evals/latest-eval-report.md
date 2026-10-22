@@ -1,6 +1,6 @@
 # Product Quality Compiler Eval Report
 
-Generated: 2026-07-02T18:02:42.670Z
+Generated: 2026-07-15T14:21:48.379Z
 Passed: 8
 Failed: 0
 Invalid fixture checks passed: 7/7

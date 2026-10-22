@@ -1,0 +1,27 @@
+{
+  "run_id": "BNA-SEP-01",
+  "status": "static_budget_passed_browser_samples_blocked",
+  "static_evidence": {
+    "initial_requests_before_useful_action": 4,
+    "school_admin_html_bytes": 3019,
+    "school_admin_html_gzip_bytes": 961,
+    "school_admin_css_bytes": 6210,
+    "school_admin_css_gzip_bytes": 1662,
+    "school_admin_js_bytes": 15586,
+    "school_admin_js_gzip_bytes": 3945,
+    "api_before_useful_action": "/api/bna/school-admin/summary",
+    "excluded_before_useful_action": [
+      "control_plane",
+      "provider_marketplace",
+      "one_time",
+      "global_agents",
+      "deployment",
+      "integration_readiness"
+    ]
+  },
+  "browser_measurement": {
+    "samples_captured": 0,
+    "status": "blocked",
+    "blocker": "No approved authenticated local/staging session and no stable browser/database measurement target were available."
+  }
+}

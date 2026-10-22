@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T07:30:26.009Z",
+  "generated_at": "2026-07-15T14:22:28.761Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,42 +16,42 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "36149deffd4701c4e22e1fb8ba5b52c46c0a3e5d4569527bd7836e3f40d6fba8",
+  "content_hash": "179f52dd7ffba457a88bfe0714d3577563173305fa41a7ac38b0b88801ac764a",
   "source_hashes": {
-    "ops/action-registry.json": "c1a0b39b14f3740d6a8091b0ef8b4c7889179d8812426dd9ecdf53c615ecc1e5",
+    "ops/action-registry.json": "04f6126b2c8299366f89b64ef464f41a1e4e442989e361d0cb7b7169dbae86c0",
     "ops/action-registry/actions.json": "b8caaeae4c15f804b68ba758b8bcb4b801192f6a757415f24c7872c3e1b01c6f",
-    "public/operations.html": "9f501030e484543fefa0ee540ac362d34efbbfd7904620727c74c96e41a01091",
+    "public/operations.html": "3891f111dc391a68d480c5a0693b2a1f92550b9516dee4537432664f7936b293",
     "public/parent.html": "c9928f157d29d6f5da7e6710805315c8403d782f318d63dbd425f157de9f4549",
     "public/student.html": "563a659575d98cac50750e1a73fe8cffa8c45f4efc6fbf63b19d6fd6d5c60dfc",
-    "public/provider.html": "c433affc8e597c0cd455714edfa31e5b463489a13e697ffe5858460fb2a8262e",
+    "public/provider.html": "b29671a63471d13089f49e51e9d5d8293260beae9bdd46509beaee133e5f8c89",
     "src/platform/assistant/control-plane.js": "7eaf0dff452382e9694aa9dae32df76c29f1e0b912cfa69d59dc88eee9721592"
   },
   "summary": {
-    "root_actions": 161,
+    "root_actions": 178,
     "detailed_actions": 87,
-    "total_registry_rows": 248,
+    "total_registry_rows": 265,
     "visible_controls": 71,
     "visible_controls_classified": 71,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
-    "blocked_connector": 14,
-    "risky_actions": 135,
+    "blocked_connector": 15,
+    "risky_actions": 145,
     "risky_without_approval": 0,
     "visible_by_classification": {
+      "preview_then_approve": 46,
       "read_only": 9,
       "secure_deep_link_only": 6,
-      "preview_then_approve": 46,
       "blocked_connector": 4,
       "not_applicable": 2,
       "executable": 4
     },
     "registry_by_classification": {
-      "secure_deep_link_only": 26,
-      "preview_then_approve": 124,
-      "executable": 25,
+      "secure_deep_link_only": 30,
+      "preview_then_approve": 133,
+      "blocked_connector": 15,
+      "executable": 28,
       "read_only": 57,
-      "blocked_connector": 14,
       "not_applicable": 2
     }
   },
@@ -63,16 +63,16 @@
       "count": 80
     },
     "website_assistant_request": {
-      "count": 248
+      "count": 265
     },
     "operations_helper_request": {
-      "count": 216
+      "count": 229
     },
     "automation_action": {
       "count": 114
     },
     "agent_work_handoff": {
-      "count": 106
+      "count": 119
     }
   },
   "release_gate": {
@@ -110,16 +110,30 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 248
+        "value": 265
       },
       {
         "name": "agent_work_handoff_parity_present",
         "passed": true,
-        "value": 106
+        "value": 119
       }
     ]
   },
   "visible_controls": [
+    {
+      "action_id": "ACTION-CRM-CONTACTS-FILTER",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Filters first-party BNA CRM contacts inside the selected workspace/project; performs no email, WhatsApp, social, payment, access, or external CRM writes."
+    },
     {
       "action_id": "ACTION-ONETIME-WORKSPACE-VIEW",
       "file": "public/operations.html",
@@ -259,20 +273,6 @@
       "risk": "low",
       "registry_layer": "root",
       "result_renderer": "Saves PASS/FAIL/BLOCKED through the typed Agent Review result API, attaches the AGR evidence to the original task, and creates or links repair/rerun metadata for FAIL/BLOCKED."
-    },
-    {
-      "action_id": "ACTION-CRM-CONTACTS-FILTER",
-      "file": "public/operations.html",
-      "surface": "operations",
-      "classification": "preview_then_approve",
-      "registered": true,
-      "handler_present": true,
-      "permission_present": true,
-      "test_present": true,
-      "approval_required": true,
-      "risk": "high",
-      "registry_layer": "root",
-      "result_renderer": "Filters first-party BNA CRM contacts inside the selected workspace/project; performs no email, WhatsApp, social, payment, access, or external CRM writes."
     },
     {
       "action_id": "ACTION-CRM-ADD-CONTACT",
@@ -1148,6 +1148,130 @@
       "audit_event": ""
     },
     {
+      "action_id": "ACTION-SCHOOL-ADMIN-TAB-NAV",
+      "label": "School section navigation",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_school_admin",
+      "route": "/operations/school",
+      "permission": "super_admin_or_school_admin",
+      "allowed_roles": [
+        "super_admin_or_school_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "public/js/school-admin.js tab click handler",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "School section navigation"
+      ],
+      "result_renderer": "Switches between the focused School Dashboard, Students, Families, Classes, Attendance, and Progress sections without loading Control Plane, provider, One Time, deployment, integration, or global-agent modules.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-SCHOOL-ADMIN-REFRESH",
+      "label": "Refresh School data",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_school_admin",
+      "route": "/operations/school",
+      "permission": "super_admin_or_school_admin",
+      "allowed_roles": [
+        "super_admin_or_school_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "GET /api/bna/school-admin/summary",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Refresh School data"
+      ],
+      "result_renderer": "Runs the bounded School summary refresh/search request only against /api/bna/school-admin/summary with stale-request cancellation and no external write.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-SCHOOL-ADMIN-ROW-OPEN",
+      "label": "Open School row",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_school_admin",
+      "route": "/operations/school",
+      "permission": "super_admin_or_school_admin",
+      "allowed_roles": [
+        "super_admin_or_school_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "public/js/school-admin.js row-open handler",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open School row"
+      ],
+      "result_renderer": "Opens an already-loaded School student, family, class, attendance, or progress row in the local detail panel without fetching unrelated workspace data or performing a write.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-SCHOOL-ADMIN-PORTAL-LINK",
+      "label": "Open School portal",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_school_admin",
+      "route": "/operations/school",
+      "permission": "super_admin_or_school_admin",
+      "allowed_roles": [
+        "super_admin_or_school_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "same-origin /parent and /student links",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open School portal"
+      ],
+      "result_renderer": "Navigates to the existing parent or student portal route without creating access codes, sends, payments, or cross-workspace grants.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
       "action_id": "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
       "label": "Robot Scheller public helper",
       "registry_layer": "root",
@@ -1238,6 +1362,378 @@
       ],
       "result_renderer": "Resolves the current approved One Time class-link alias server-side, verifies the request is scoped to rabbi_sheller_provider / one_time_mishnah_class, resolves or creates the One Time contact, records class-information permission, sends the raw link only in the final approved channel delivery, and stores only redacted audit metadata. It must not expose the raw link in model context, logs, diagnostics, public API responses, or repo evidence.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-OPEN",
+      "label": "Open communication agent",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "permission": "rabbi_sheller_provider workspace user",
+      "allowed_roles": [
+        "rabbi_sheller_provider workspace user"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "OneTimeProviderAgentsRoute.hydrate client state",
+      "status": "active_client_route",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open communication agent"
+      ],
+      "result_renderer": "Opens the selected One Time communication-agent workspace with Overview, Instructions, Knowledge, Channels, Permissions, Test, and Activity tabs. This is separate from Super Admin Build and QA agent runs.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-RUN-TEST",
+      "label": "Run No-Send Test",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "permission": "rabbi_sheller_provider workspace user",
+      "allowed_roles": [
+        "rabbi_sheller_provider workspace user"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "OneTimeProviderAgentsRoute.hydrate submit handler",
+      "status": "active_no_send_client_test",
+      "classification": "blocked_connector",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Run No-Send Test"
+      ],
+      "result_renderer": "Runs a local no-send communication-agent simulation showing generated response, retrieved knowledge, proposed actions, and blocked actions without email, WhatsApp, Telegram, CRM mutation, payment, access grant, or credential side effects.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-ADD",
+      "label": "Add Agent",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "permission": "super_admin_release_workflow",
+      "allowed_roles": [
+        "super_admin_release_workflow"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "disabled client control",
+      "status": "disabled_blocker",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Add Agent"
+      ],
+      "result_renderer": "Visible but disabled in the Rabbi provider workspace with an exact reason because new-agent creation requires the Super Admin publication workflow.",
+      "rollback_or_correction_path": "New agent creation requires the Super Admin publication workflow.",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-SAVE-DRAFT",
+      "label": "Save Draft",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "permission": "super_admin_release_workflow",
+      "allowed_roles": [
+        "super_admin_release_workflow"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "disabled client control",
+      "status": "disabled_blocker",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Save Draft"
+      ],
+      "result_renderer": "Visible but disabled until editable communication-agent drafts are enabled for the Rabbi provider workspace.",
+      "rollback_or_correction_path": "Draft editing is not enabled in the Rabbi provider workspace yet.",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-PUBLISH",
+      "label": "Publish Version",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "permission": "super_admin_release_workflow",
+      "allowed_roles": [
+        "super_admin_release_workflow"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "disabled client control",
+      "status": "disabled_blocker",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Publish Version"
+      ],
+      "result_renderer": "Visible but disabled because publishing communication-agent versions requires Super Admin release approval.",
+      "rollback_or_correction_path": "Publishing requires Super Admin release approval.",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-PAUSE",
+      "label": "Pause Agent",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "permission": "super_admin_release_workflow",
+      "allowed_roles": [
+        "super_admin_release_workflow"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "disabled client control",
+      "status": "disabled_blocker",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Pause Agent"
+      ],
+      "result_renderer": "Visible but disabled because pausing live channel bindings requires Super Admin release approval.",
+      "rollback_or_correction_path": "Pausing live bindings requires Super Admin release approval.",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-BACK",
+      "label": "Back to Agents",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "permission": "rabbi_sheller_provider workspace user",
+      "allowed_roles": [
+        "rabbi_sheller_provider workspace user"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "OneTimeProviderAgentsRoute.hydrate client state",
+      "status": "active_client_route",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Back to Agents"
+      ],
+      "result_renderer": "Returns from a selected communication-agent workspace to the Communication Agents index without external side effects.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-COMPARE",
+      "label": "Compare Version",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "permission": "super_admin_release_workflow",
+      "allowed_roles": [
+        "super_admin_release_workflow"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "disabled client control",
+      "status": "disabled_blocker",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Compare Version"
+      ],
+      "result_renderer": "Visible but disabled until version comparison is backed by editable communication-agent drafts.",
+      "rollback_or_correction_path": "Version comparison opens after editable drafts are enabled.",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENT-RESTORE",
+      "label": "Restore Prior Version",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "permission": "super_admin_release_workflow",
+      "allowed_roles": [
+        "super_admin_release_workflow"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "disabled client control",
+      "status": "disabled_blocker",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Restore Prior Version"
+      ],
+      "result_renderer": "Visible but disabled because restoring a prior communication-agent version requires Super Admin publication approval.",
+      "rollback_or_correction_path": "Restore requires Super Admin publication approval.",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-BINDING-TEST",
+      "label": "Test Binding",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "permission": "rabbi_sheller_provider workspace user",
+      "allowed_roles": [
+        "rabbi_sheller_provider workspace user"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "OneTimeProviderAgentsRoute.hydrate click handler",
+      "status": "active_no_send_client_test",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Test Binding"
+      ],
+      "result_renderer": "Switches to the no-send test state for the selected Email or WhatsApp binding and confirms contact capture on, automatic tasks off, and no external send.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-BINDING-EDIT",
+      "label": "Edit Binding",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "permission": "super_admin_release_workflow",
+      "allowed_roles": [
+        "super_admin_release_workflow"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "disabled client control",
+      "status": "disabled_blocker",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Edit Binding"
+      ],
+      "result_renderer": "Visible but disabled because channel-binding edits require Super Admin release approval.",
+      "rollback_or_correction_path": "Binding edits require Super Admin release approval.",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-KNOWLEDGE-ADD",
+      "label": "Add Knowledge Source",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_agents",
+      "route": "/provider.html?section=agents",
+      "permission": "super_admin_release_workflow",
+      "allowed_roles": [
+        "super_admin_release_workflow"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "disabled client control",
+      "status": "disabled_blocker",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Add Knowledge Source"
+      ],
+      "result_renderer": "Visible but disabled until knowledge additions can enter the approved review and publication workflow.",
+      "rollback_or_correction_path": "Knowledge additions require review before publication.",
       "audit_event": ""
     },
     {
@@ -2895,8 +3391,8 @@
         "project_owner/project_admin"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Shows scoped One Time machine-work status, queue heartbeat, blockers, and task links for project owner/admin users without exposing Super Admin claim, submit, seal, or production mutation controls.",
-      "status": "active",
+      "execution_handler": "Replaced by ACTION-ONETIME-COMMUNICATION-AGENTS-VIEW for the One Time owner Agents route. The old scoped machine-work status remains in code only for non-One-Time scoped fallbacks and must not expose Super Admin claim, submit, seal, or production mutation controls.",
+      "status": "replaced_by_communication_agents_console",
       "classification": "read_only",
       "risk": "low",
       "preview_required": false,
@@ -2910,8 +3406,39 @@
       "website_examples": [
         "One Time Agent Status"
       ],
-      "result_renderer": "Shows scoped One Time machine-work status, queue heartbeat, blockers, and task links for project owner/admin users without exposing Super Admin claim, submit, seal, or production mutation controls.",
-      "rollback_or_correction_path": "standard_error_state",
+      "result_renderer": "Replaced by ACTION-ONETIME-COMMUNICATION-AGENTS-VIEW for the One Time owner Agents route. The old scoped machine-work status remains in code only for non-One-Time scoped fallbacks and must not expose Super Admin claim, submit, seal, or production mutation controls.",
+      "rollback_or_correction_path": "REQ-20260712-312 changes the One Time owner Agents route from scoped machine-work status to landing-page Communication Agents.",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-COMMUNICATION-AGENTS-VIEW",
+      "label": "Communication Agents",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_communication_agents",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=agents",
+      "permission": "project_owner/project_admin",
+      "allowed_roles": [
+        "project_owner/project_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "GET /api/bna/communication-agents, setCurrentSection, openCommandTarget('contacts','leads')",
+      "status": "active_read_only",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Communication Agents"
+      ],
+      "result_renderer": "Shows the One Time landing-page WhatsApp/form capture communication-agent readiness console with Knowledge, Channels, Test, and Activity tabs. Refresh reads GET /api/bna/communication-agents. Open Leads navigates to scoped leads. The Test tab is readiness-only and the No Live Send control is disabled; no model call, WhatsApp send, checkout, access grant, task creation, or external write is performed from this console.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
     {
@@ -10979,6 +11506,7 @@
       "visible_currently": false,
       "action_ids": [
         "ACTION-ONETIME-PUBLIC-SECTION-NAV",
+        "ACTION-SCHOOL-ADMIN-TAB-NAV",
         "open_internal_calendar",
         "show_child_calendar"
       ],
@@ -11023,6 +11551,10 @@
       "visible_currently": true,
       "action_ids": [
         "ACTION-CRM-REPLY-DRAFT-BLOCKED",
+        "ACTION-ONETIME-COMMUNICATION-AGENT-COMPARE",
+        "ACTION-ONETIME-COMMUNICATION-AGENT-PUBLISH",
+        "ACTION-ONETIME-COMMUNICATION-AGENT-RESTORE",
+        "ACTION-ONETIME-COMMUNICATION-AGENT-SAVE-DRAFT",
         "ACTION-ONETIME-MEMBER-LIBRARY-APPROVE",
         "ACTION-ONETIME-RABBI-TICKET-APPROVE-CODEX",
         "ACTION-PROVIDER-CLASSROOM-DRAFT",
@@ -11233,6 +11765,19 @@
         "ACTION-ONETIME-AGENT-ACCEPTANCE-RUN-LIVE",
         "ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-EVIDENCE",
         "ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS",
+        "ACTION-ONETIME-COMMUNICATION-AGENT-ADD",
+        "ACTION-ONETIME-COMMUNICATION-AGENT-BACK",
+        "ACTION-ONETIME-COMMUNICATION-AGENT-COMPARE",
+        "ACTION-ONETIME-COMMUNICATION-AGENT-OPEN",
+        "ACTION-ONETIME-COMMUNICATION-AGENT-PAUSE",
+        "ACTION-ONETIME-COMMUNICATION-AGENT-PUBLISH",
+        "ACTION-ONETIME-COMMUNICATION-AGENT-RESTORE",
+        "ACTION-ONETIME-COMMUNICATION-AGENT-RUN-TEST",
+        "ACTION-ONETIME-COMMUNICATION-AGENT-SAVE-DRAFT",
+        "ACTION-ONETIME-COMMUNICATION-AGENTS-VIEW",
+        "ACTION-ONETIME-COMMUNICATION-BINDING-EDIT",
+        "ACTION-ONETIME-COMMUNICATION-BINDING-TEST",
+        "ACTION-ONETIME-COMMUNICATION-KNOWLEDGE-ADD",
         "ACTION-ONETIME-GET-CURRENT-CLASS-LINK",
         "ACTION-ONETIME-RABBI-TELEGRAM-TICKET-CREATE",
         "ACTION-ONETIME-RABBI-TICKET-APPROVE-CODEX",
