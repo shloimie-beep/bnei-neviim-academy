@@ -4,8 +4,8 @@ const https = require('node:https');
 const PUBLIC_ORIGIN = 'https://bneineviimacademy.org';
 const UPSTREAM = 'https://life-skills.bneineviimacademy.org';
 const STAGES = '(?:foundation|independent|advanced|leadership)';
-const page = new RegExp('^(/he)?/fishing-academy(/(?:apply|pricing|stages/' + STAGES + '))?/?$');
-const legacy = new RegExp('^/(en|he)/florida(/(?:apply|pricing|stages/' + STAGES + '))?/?$');
+const page = new RegExp('^(/he)?/fishing-academy(/(?:apply|pricing|confirm-interest|stages/' + STAGES + '))?/?$');
+const legacy = new RegExp('^/(en|he)/florida(/(?:apply|pricing|confirm-interest|stages/' + STAGES + '))?/?$');
 const assets = new Set([
   '/groups/brand/jlfa-logo-locked-v1.png',
   '/groups/people/founder-grass-group.webp', '/groups/people/founder-head.jpg',
@@ -15,11 +15,26 @@ const assets = new Set([
   '/groups/academy/hero-owner03-desktop-en.png', '/groups/academy/hero-owner03-mobile-en.png',
   '/groups/academy/hero-owner03-desktop-he.png', '/groups/academy/hero-owner03-mobile-he.png',
   '/groups/academy/hero-desktop-20261018.png', '/groups/academy/hero-mobile-20261018.png',
+  '/groups/academy/prereg-approved-square-20261023.png',
   '/fonts/Heebo-wght.ttf', '/fonts/FrankRuhlLibre-wght.ttf',
   ...['foundation', 'independent', 'independent-mobile', 'advanced', 'advanced-mobile', 'leadership', 'locations', 'habitat', 'form', 'freshwater', 'freshwater-mobile'].map(name => '/groups/academy/scenes/' + name + '.webp'),
 ]);
 const API = '/api/public/group-applications';
+const FOUNDER_API = '/api/public/academy-founder';
+const REGISTRATION_COOKIE = 'ls_academy_registration';
 const unsafePath = /\\|\.\.|%2e|%2f|%5c/i;
+
+function registrationCookie(raw = '') {
+  const values = String(raw).split(';').map(value => value.trim()).filter(value => value.split('=')[0].trim() === REGISTRATION_COOKIE);
+  if (values.length > 1 || (values.length === 1 && !/^ls_academy_registration=[A-Za-z0-9_-]{43}$/.test(values[0]))) return null;
+  return values[0] || '';
+}
+function registrationResponseCookie(raw) {
+  const values = (Array.isArray(raw) ? raw : raw ? [raw] : []).filter(value => value.split('=')[0].trim() === REGISTRATION_COOKIE);
+  if (!values.length) return undefined;
+  if (values.length !== 1 || !/^ls_academy_registration=[A-Za-z0-9_-]{43}; Path=\/; HttpOnly; Secure; SameSite=Strict; Max-Age=31536000$/.test(values[0])) return null;
+  return values[0];
+}
 
 function publicPath(locale, suffix = '') { return (locale === 'he' ? '/he/fishing-academy' : '/fishing-academy') + suffix; }
 function classify(url) {
@@ -32,6 +47,7 @@ function classify(url) {
     if (url.searchParams.size !== 1 || url.searchParams.get('program') !== 'sunday_fishing_academy') return null;
     return { kind: 'inquiry', path: API };
   }
+  if (url.pathname === FOUNDER_API) return url.search ? null : { kind: 'founder', path: FOUNDER_API };
   if (assets.has(url.pathname)) return { kind: 'asset', path: url.pathname };
   // Next's compiled client JS/CSS/fonts are already public. No image proxy,
   // source map, development endpoint, arbitrary file or server/API path.
@@ -54,16 +70,17 @@ function createFishingAcademyGateway({ enabled = () => false, origin = PUBLIC_OR
     try { url = new URL(req.originalUrl || req.url, origin); } catch { return next(); }
     const route = classify(url);
     if (url.origin !== external.origin || !route) {
-      if (/^\/(?:he\/)?fishing-academy(?:\/|$)/.test(url.pathname) || url.pathname === API) return deny(res);
+      if (/^\/(?:he\/)?fishing-academy(?:\/|$)/.test(url.pathname) || url.pathname === API || url.pathname === FOUNDER_API) return deny(res);
       return next();
     }
     const protocol = req.headers['x-forwarded-proto'] || (req.socket.encrypted ? 'https' : 'http');
     if (protocol !== external.protocol.slice(0, -1)) return deny(res, 400);
-    if (route.kind !== 'inquiry' && !['GET', 'HEAD'].includes(req.method)) return deny(res, 405);
+    const publicApi = route.kind === 'inquiry' || route.kind === 'founder';
+    if (!publicApi && !['GET', 'HEAD'].includes(req.method)) return deny(res, 405);
     if (route.kind === 'redirect') {
       res.writeHead(308, { Location: route.path + url.search, 'Cache-Control': 'no-store' }); return res.end();
     }
-    if (route.kind === 'inquiry') {
+    if (publicApi) {
       if (!['GET', 'POST'].includes(req.method)) return deny(res, 405);
       if (req.method === 'POST' && (req.headers.origin !== external.origin || req.headers['sec-fetch-site'] !== 'same-origin' || !/^application\/json(?:;|$)/i.test(req.headers['content-type'] || ''))) return deny(res, 403);
       if (req.method === 'GET' && ((req.headers.origin && req.headers.origin !== external.origin) || ['cross-site', 'same-site'].includes(req.headers['sec-fetch-site']))) return deny(res, 403);
@@ -74,13 +91,30 @@ function createFishingAcademyGateway({ enabled = () => false, origin = PUBLIC_OR
     for (const key of ['rsc', 'next-router-state-tree', 'next-router-prefetch', 'next-router-segment-prefetch']) {
       if (typeof req.headers[key] === 'string' && req.headers[key].length <= 16384) headers[key] = req.headers[key];
     }
-    if (route.kind === 'inquiry') { headers.origin = target.origin; headers['sec-fetch-site'] = 'same-origin'; }
+    if (publicApi) { headers.origin = target.origin; headers['sec-fetch-site'] = 'same-origin'; }
+    let continuation = '';
+    if (route.kind === 'inquiry') {
+      continuation = registrationCookie(req.headers.cookie);
+      if (continuation === null) return deny(res, 400);
+      if (continuation) headers.cookie = continuation;
+    }
     const dispatch = body => {
       if (res.destroyed || req.aborted) return;
       if (body) { headers['content-type'] = 'application/json'; headers['content-length'] = String(body.length); }
       const remote = transport.request(new URL(route.path + url.search, target), { method: req.method, headers, timeout: 15000 }, response => {
         const outgoing = { 'Cache-Control': route.kind === 'asset' ? (response.headers['cache-control'] || 'public, max-age=300') : 'no-store', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-Frame-Options': 'DENY' };
         for (const key of ['content-type', 'content-encoding', 'content-length', 'content-security-policy', 'etag', 'last-modified', 'vary', 'link']) if (response.headers[key] !== undefined) outgoing[key] = response.headers[key];
+        // The application issues its continuation on the initial GET challenge,
+        // before any family/application is saved. POST never creates a new cookie.
+        if (route.kind === 'inquiry' && req.method === 'GET' && response.statusCode >= 200 && response.statusCode < 300) {
+          const issued = registrationResponseCookie(response.headers['set-cookie']);
+          // Never return a usable challenge without its family continuation,
+          // silently rotate an existing token, or invent a substitute token.
+          if (issued === null || (!continuation && !issued) || (continuation && issued && !issued.startsWith(continuation + ';'))) {
+            response.destroy(); return deny(res, 502);
+          }
+          if (issued) outgoing['Set-Cookie'] = issued;
+        }
         if (response.headers.location) {
           let destination;
           try { destination = new URL(response.headers.location, target); } catch { response.destroy(); return deny(res, 502); }

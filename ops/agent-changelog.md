@@ -40593,3 +40593,11 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 ## 2026-09-28 — PR168 independent startup isolation correction
 
 - Independent review of d6cac3eff80dccff9a6038fe2b7149e1e8244a76 found optional outbox startup could skip remaining shared initialization after a fail-closed TLS error. Only optional startup catches a sanitized failure locally; actual webhook database/capture failures still reject before durable write/ACK. Two executable actual-server regressions cover both boundaries. Same eight-path claim, no shared pool/DB/flags/provider changes; exact-head tests and independent re-review required.
+
+## 2026-10-24T21:25:15.670065+00:00 — Academy public signup gateway (local only)
+
+- Added exact founder counter/confirmation API and bilingual confirmation aliases, approved Packet05 square, and strict registration continuation handling matching initial GET challenge issuance.
+- Missing/malformed/duplicate/rotated upstream continuation fails before returning a usable challenge. All BNA/auth credentials remain stripped; CSP, body/time limits and no-retry behavior retained.
+- 56 gateway/no-DB-boot checks pass; existing independent source reviewer passed corrected source. Protocol drift report has zero findings.
+- Not pushed, merged, deployed or live. Browser-through-gateway, current application acceptance, protected CI/schema and actual mail delivery remain open. No provider settings, real sends, credentials or database changes.
+- Requirement: REQ-20261024-ACADEMY-PARENT-LAUNCH; scope129 Control1550/Change1578.
