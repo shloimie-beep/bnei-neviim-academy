@@ -1,0 +1,45 @@
+{
+  "id": "REQ-20261024-ACADEMY-PARENT-LAUNCH",
+  "owner": "01a15d31-30f4-7d80-9fe3-639906d74f04",
+  "status": "in_progress",
+  "source": "Direct owner October24 launch messages; JLFA-PARENT-LAUNCH-PUBLIC-DOMAIN-20261024-129, Control1550/Change1578 literal readback",
+  "raw_quotes": [
+    "deploy",
+    "emails on",
+    "full parent signup production ready form and landing page",
+    "use the bneineviimacademy.org make the sender JLFA office"
+  ],
+  "base": "e006ecf2bef019f624dbf16e248e77d30fc444c9",
+  "scope": "Bounded transport repair of existing reviewed Academy application. No new page, layout, provider account, or competing application. Existing REQ-20261019-ACADEMY-ROUTE retained as history.",
+  "current_state": "Existing gateway lacks founder counter/confirmation API and confirmation pages; strips registration continuation cookie; omits Packet05 square. Current approved Academy app owns all UI and business behavior.",
+  "requirements": [
+    {
+      "id": "LAUNCH-ROUTE-01",
+      "text": "Exact bilingual confirmation page aliases and inert GET; exact query-free founder API; explicit same-origin JSON POST remains enforced upstream and gateway."
+    },
+    {
+      "id": "LAUNCH-ROUTE-02",
+      "text": "Forward only one strictly valid ls_academy_registration token to public inquiry API; reject duplicate/malformed tokens. Actual upstream issues the cookie on initial GET challenge: return only its exact safe cookie on successful inquiry GET. Strip it on POST/pages/founder/assets, and strip BNA/auth cookies and authorization everywhere."
+    },
+    {
+      "id": "LAUNCH-ROUTE-03",
+      "text": "Allow exact approved Packet05 square path only; preserve old assets, school home, CSP, private/API boundaries, no-store, body/time limits and no automatic retry."
+    },
+    {
+      "id": "LAUNCH-ROUTE-04",
+      "text": "Run focused real loopback security/transport tests and independent review; normal CI/release and real bilingual parent signup smoke required before live claim."
+    }
+  ],
+  "definition_of_ready": "Exact source and public route defects inspected; owner domain and launch authority explicit; all owned app fixtures stopped/cleaned; exact paths preregistered; no new visual design requested.",
+  "holds": "No provider mutations, credential changes, payment activation, real test send without recipient, schema adoption or protected-gate bypass in this source batch. No BNA database boot mutation. Coordinate existing BNA gateway release with separate Buffer task.",
+  "evidence": [
+    {
+      "at": "2026-10-24T21:25:15.670065+00:00",
+      "state": "LOCAL_TESTED_SOURCE_REVIEWED_NOT_COMMITTED_OR_LIVE",
+      "tests": "40 gateway + 16 no-DB-boot PASS; six public-domain email cases PASS; protocol drift report has zero findings",
+      "review": "Existing independent reviewer PASS after actual-GET cookie issuance and missing/malformed/rotated-cookie fail-closed corrections",
+      "qualification": "Browser through gateway, protected CI and real email delivery remain pending"
+    }
+  ],
+  "next": "Implement exact transport delta, tests and independent review; reconcile current source, CI/schema/mail delivery and release controls before deployment. No login action required."
+}

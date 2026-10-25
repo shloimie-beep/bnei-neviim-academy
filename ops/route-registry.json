@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-10-04T09:12:00+03:00",
+  "updated_at": "2026-10-24T21:19:29.168Z",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -24,7 +24,10 @@
       "privacy_risk": "private_contact_delivery",
       "security_expectation": "Private no-store route; bridge authorization precedes transport; native writer epoch and binding fail closed; unusable scoped credentials fail before the attempt ledger; no generic or One Time credential fallback; confirmed replays suppress duplicate delivery; unresolved outcomes never resend automatically; no Leads Sheet access.",
       "smoke_expectation": "tests/life-skills-native-outbound.test.cjs verifies anonymous rejection ordering, exact authority and binding fences, scoped-credential normalization, durable pre-send recording, replay and unknown-outcome behavior, and absence of Sheet or scheduler access.",
-      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "route": "/api/bna/life-skills-app/marketing",
@@ -38,7 +41,10 @@
       "privacy_risk": "private_marketing_inventory",
       "security_expectation": "Existing constant-time bridge-secret gate; no client or clinical records; read-only existing Google identity; independent from the CRM writer fence; private no-store.",
       "smoke_expectation": "tests/life-skills-marketing-media.test.cjs verifies the actual registered route denies public access and reports unavailable existing authorization without false empty success.",
-      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "route": "/api/bna/life-skills-app/marketing/assets/:assetId",
@@ -52,7 +58,10 @@
       "privacy_risk": "private_registered_artwork",
       "security_expectation": "Existing bridge authorization before provider access; registry-bound ID/revision/SHA-256; PNG, dimension and 10MiB bounds; private no-store/nosniff; no arbitrary URL proxy or approval/schedule/send mutation.",
       "smoke_expectation": "tests/life-skills-marketing-media.test.cjs verifies actual route authorization, exact bytes, stale conflict, unavailable permission and registry declarations.",
-      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "route": "/",
@@ -2669,6 +2678,601 @@
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/fishing-academy",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/en/florida",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/fishing-academy/apply",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/en/florida/apply",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/fishing-academy/pricing",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/en/florida/pricing",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/fishing-academy/confirm-interest",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/en/florida/confirm-interest",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/fishing-academy/stages/foundation",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/en/florida/stages/foundation",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/fishing-academy/stages/independent",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/en/florida/stages/independent",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/fishing-academy/stages/advanced",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/en/florida/stages/advanced",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/fishing-academy/stages/leadership",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/en/florida/stages/leadership",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/en/florida",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/fishing-academy",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/en/florida/apply",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/fishing-academy/apply",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/en/florida/pricing",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/fishing-academy/pricing",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/en/florida/confirm-interest",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/fishing-academy/confirm-interest",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/en/florida/stages/foundation",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/fishing-academy/stages/foundation",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/en/florida/stages/independent",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/fishing-academy/stages/independent",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/en/florida/stages/advanced",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/fishing-academy/stages/advanced",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/en/florida/stages/leadership",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/fishing-academy/stages/leadership",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/fishing-academy",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/he/florida",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/fishing-academy/apply",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/he/florida/apply",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/fishing-academy/pricing",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/he/florida/pricing",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/fishing-academy/confirm-interest",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/he/florida/confirm-interest",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/fishing-academy/stages/foundation",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/he/florida/stages/foundation",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/fishing-academy/stages/independent",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/he/florida/stages/independent",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/fishing-academy/stages/advanced",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/he/florida/stages/advanced",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/fishing-academy/stages/leadership",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "expected_logged_in_behavior": "proxy anonymous approved Academy page; GET/HEAD only, confirmation GET never confirms",
+      "canonical_target": "/he/florida/stages/leadership",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/florida",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/he/fishing-academy",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/florida/apply",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/he/fishing-academy/apply",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/florida/pricing",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/he/fishing-academy/pricing",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/florida/confirm-interest",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/he/fishing-academy/confirm-interest",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/florida/stages/foundation",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/he/fishing-academy/stages/foundation",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/florida/stages/independent",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/he/fishing-academy/stages/independent",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/florida/stages/advanced",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/he/fishing-academy/stages/advanced",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/he/florida/stages/leadership",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "308 redirect to exact public locale alias",
+      "expected_logged_in_behavior": "308 redirect to exact public locale alias",
+      "canonical_target": "/he/fishing-academy/stages/leadership",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/api/public/academy-founder",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "GET anonymous aggregate; same-origin POST read_confirmation/confirm_interest with strict token schema upstream; no query",
+      "expected_logged_in_behavior": "GET anonymous aggregate; same-origin POST read_confirmation/confirm_interest with strict token schema upstream; no query",
+      "canonical_target": "/api/public/academy-founder",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/api/public/group-applications?program=sunday_fishing_academy",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "GET/POST existing public application; preserve only strict registration continuation cookie; no BNA/auth credentials",
+      "expected_logged_in_behavior": "GET/POST existing public application; preserve only strict registration continuation cookie; no BNA/auth credentials",
+      "canonical_target": "/api/public/group-applications?program=sunday_fishing_academy",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
+      ]
+    },
+    {
+      "route": "/groups/academy/prereg-approved-square-20261023.png",
+      "surface": "fishing_academy_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "GET/HEAD exact approved Packet05 square; no cookies",
+      "expected_logged_in_behavior": "GET/HEAD exact approved Packet05 square; no cookies",
+      "canonical_target": "/groups/academy/prereg-approved-square-20261023.png",
+      "privacy_risk": "bounded_public_signup",
+      "security_expectation": "Fixed BNA host and Life Skills upstream; default-disabled; no-store except static assets; preserve CSP; no private/auth/provider paths; strict same-origin JSON POST and 16KiB/5s/15s bounds; no automatic retries. Only exact registration cookie for inquiry; no identity/session forwarding.",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; live bilingual signup/counter/confirmation and actual email delivery remain pending",
+      "related_requirement_ids": [
+        "REQ-20261024-ACADEMY-PARENT-LAUNCH"
       ]
     }
   ]
