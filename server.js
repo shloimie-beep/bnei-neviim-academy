@@ -11060,6 +11060,7 @@ app.post('/api/webhooks/stripe/rabbi', express.raw({ type: 'application/json', l
 // Middleware
 // Exact public Academy gateway, before body parsing; off until its reviewed release.
 app.use(require('./src/lib/bna/fishing-academy-gateway').createFishingAcademyGateway({ enabled: () => process.env.BNA_ACADEMY_GATEWAY_ENABLED === 'true' }));
+app.use(require('./src/lib/bna/torah-interest-gateway').createTorahInterestGateway({ enabled: () => process.env.BNA_TORAH_INTEREST_GATEWAY_ENABLED === 'true' }));
 app.use(express.json({
   limit: '25mb',
   verify: (req, res, buf) => {
@@ -11397,8 +11398,15 @@ function sendOneTimeStudentShell(req, res) {
 }
 
 app.get(['/', '/index.html', '/public', '/public/'], (req, res, next) => {
-  if (!isOneTimeSingleTenantRuntime()) return next();
-  return sendOneTimePublicLanding(req, res);
+  if (isOneTimeSingleTenantRuntime()) return sendOneTimePublicLanding(req, res);
+  res.setHeader('Cache-Control', 'no-store');
+  return res.sendFile(path.join(__dirname, 'public', 'bna-current-home.html'));
+});
+
+app.get('/he', (req, res) => {
+  if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
+  res.setHeader('Cache-Control', 'no-store');
+  return res.sendFile(path.join(__dirname, 'public', 'bna-current-home.html'));
 });
 
 app.get(['/rabbi.html'], sendOneTimePublicLanding);
@@ -94771,9 +94779,16 @@ app.post('/api/operations/logout', async (req, res) => {
 });
 
 // Public website clean routes
-app.get(['/he'], (req, res) => {
+app.get(['/torah-mornings', '/he/torah-mornings'], (req, res) => {
+  if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
   res.setHeader('Cache-Control', 'no-store');
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'torah-mornings.html'));
+});
+
+app.get(['/support', '/he/support'], (req, res) => {
+  if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'support.html'));
 });
 
 app.get(['/blog', '/he/blog'], (req, res) => {
