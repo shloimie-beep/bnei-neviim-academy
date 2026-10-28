@@ -313,7 +313,7 @@
             </div>
             <div class="bna-site-nav-buttons">
               <button class="bna-site-lang-toggle" id="languageToggle" type="button">${escapeHtml(copy.language)}</button>
-              <a class="bna-site-nav-button bna-site-nav-contact" href="https://wa.me/972534932631" target="_blank" rel="noopener noreferrer">${escapeHtml(copy.contact)}</a>
+              <a class="bna-site-nav-button bna-site-nav-contact" href="${escapeHtml(lang === 'he' ? '/he/torah-mornings' : '/torah-mornings')}">${escapeHtml(copy.contact)}</a>
               <a class="bna-site-nav-button bna-site-nav-provider" href="/providers/join?onboard=provider">${escapeHtml(copy.providerJoin)}</a>
               <a class="bna-site-nav-button bna-site-nav-signup" id="backLink" href="${escapeHtml(signupHref)}">${escapeHtml(signupLabel)}</a>
             </div>
