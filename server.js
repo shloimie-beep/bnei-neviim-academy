@@ -94791,6 +94791,11 @@ app.get(['/torah-mornings', '/he/torah-mornings'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'torah-mornings.html'));
 });
 
+app.get(['/privacy', '/he/privacy'], (req, res) => {
+  if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
+  return require('./src/lib/bna/privacy-policy').privacyPolicyHandler()(req, res);
+});
+
 app.get(['/support', '/he/support'], (req, res) => {
   if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
   res.setHeader('Cache-Control', 'no-store');

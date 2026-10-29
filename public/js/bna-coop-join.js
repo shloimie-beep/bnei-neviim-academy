@@ -18,7 +18,7 @@
       ...(other?{secondaryContact:{channel:secondChannel,value:secondChannel==='phone'?normalizedPhone(other):other.toLowerCase()}}:{}),
       language:value('language'),siteLanguage:locale,townOrZip:value('townOrZip'),childAges:[value('childAge'),value('otherChildAge')].filter(Boolean).map(Number),
       ...(value('availability')?{availability:value('availability')}:{}),...(value('question')?{question:value('question')}:{}),
-      emailUpdates:input('emailUpdates').checked,permission:{confirmed:input('purposeConsent').checked,version:'BNA-COOP-INTEREST-20261029-v1',language:locale}};
+      emailUpdates:input('emailUpdates').checked,permission:{confirmed:input('purposeConsent').checked,version:'BNA-COOP-INTEREST-20261029-v2',language:locale}};
   }
   const attribution={};const params=new URLSearchParams(location.search);
   for(const [key,target] of [['utm_campaign','campaign'],['utm_source','source'],['utm_medium','medium'],['utm_content','content'],['group_ref','groupRef'],['post_ref','postRef']]){
