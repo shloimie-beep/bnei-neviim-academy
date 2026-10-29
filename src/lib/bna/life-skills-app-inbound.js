@@ -46,8 +46,14 @@ function forwardConfig(env = {}) {
   // retired Sheet writer. A conflict fails closed before acknowledging capture.
   const captureEnabled = enabled && (academy305 || (captureConsent.enabled && captureConsent.approved));
   const captureAllowed = academy305 ? !captureConsent.enabled : captureConsent.enabled && captureConsent.approved;
-  return { enabled:captureEnabled, ready:ready && captureAllowed, secret, channelId, businessNumber, inboundUrl:academy305 ? ACADEMY_305_INBOUND_URL : APP_INBOUND_URL,
+  return { enabled:captureEnabled, ready:ready && captureAllowed, drainEnabled:ready && captureAllowed && (!academy305 || env.LIFE_SKILLS_305_FORWARD_ENABLED === 'true'), academy305, secret, channelId, businessNumber, inboundUrl:academy305 ? ACADEMY_305_INBOUND_URL : APP_INBOUND_URL,
     bindingSha256: crypto.createHash('sha256').update(canonical(binding)).digest('hex') };
+}
+function inboundEnvelopeChannel(payload={}) {return String(payload.channel_id || payload.channelId || payload.channel?.id || payload.data?.channel_id || '').trim();}
+function is305Envelope(payload={},scope={},config={}) {
+  if(!config.academy305 || scope.project_key === 'one_time_mishnah_class' || scope.workspace_key === 'rabbi_sheller_provider') return false;
+  const channel=inboundEnvelopeChannel(payload);
+  return Boolean(channel && config.channelId && channel === config.channelId);
 }
 function bounded(value, max, required = false) {
   const text = value == null ? '' : String(value);
@@ -220,4 +226,4 @@ async function boundedResponse(response) {
   return Buffer.concat(parts).toString('utf8');
 }
 
-module.exports = { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inquiriesFromEnvelope, ctwaAttributionFromProviderMessage, receiptDigest, LifeSkillsAppInboundOutbox };
+module.exports = { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inboundEnvelopeChannel, is305Envelope, inquiriesFromEnvelope, ctwaAttributionFromProviderMessage, receiptDigest, LifeSkillsAppInboundOutbox };
