@@ -37,3 +37,13 @@ test('305 contact is one shared configuration and donation is a separate truthfu
   assert.match(support, /verifying the donation destination and payee/);
   assert.doesNotMatch(support, /https:\/\/(?:stripe|paypal)|tax-deductible/i);
 });
+
+
+test('new co-op homepage keeps the locked hero, direct program links and owner entry', () => {
+  for (const copy of ['Raising the Generation of the Geulah','South Florida Integrative Torah Learning Co-op for Boys','An autonomous Torah learning community manifesting Geulah consciousness through authentic relationships, intrinsic motivation, and self-governance.','Join the Learning Co-op','Free to register your interest.']) assert.ok(home.includes(copy));
+  for (const route of ['/fishing-academy/apply','/he/fishing-academy/apply','/fishing-academy','/support','/providers','/blog']) assert.ok(home.includes(`href="${route}"`));
+  assert.match(home,/life-skills\.bneineviimacademy\.org\/en\/login\?next=%2Fen%2Fapp%2Fclients/);
+  assert.match(home,/images\/sitting%20on%20grass\.jpg/);
+  assert.match(home,/Earlier BNA teaching/);
+  assert.match(home,/fishing-academy-logo-locked\.png/);
+});
