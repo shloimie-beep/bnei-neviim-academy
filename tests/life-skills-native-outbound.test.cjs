@@ -42,6 +42,12 @@ test('binding or disabled existing forward consent fails before ledger/provider'
     assert.equal(f.calls.connect,0);
   }
 });
+test('305 inbound mode cannot enable native outbound', async()=>{
+  const f=fixture(); Object.assign(f.d.env,{LIFE_SKILLS_305_INBOUND_ENABLED:'true',LIFE_SKILLS_305_CHANNEL_ID:'synthetic-305',LIFE_SKILLS_SHEET_CRM_ENABLED:'false'});
+  const request={...input(),bindingSha256:forwardConfig(f.d.env).bindingSha256};
+  await assert.rejects(deliverNativeProspectMessage(request,f.d),{code:'NATIVE_SEND_AUTHORITY_HELD'});
+  assert.equal(f.calls.connect,0);assert.equal(f.calls.send,0);
+});
 test('missing or unusable scoped credential fails before an attempt even when a generic token exists',async()=>{
   for (const token of ['', '   ', '"   "', "'   '", '[YOUR-PASSWORD]', 'prefix-[YOUR-PASSWORD]-suffix']) {
     const f=fixture();Object.assign(f.d.env,{LIFE_SKILLS_WAPI_API_TOKEN:token,WAPI_API_TOKEN:'synthetic-unrelated'});
