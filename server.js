@@ -94781,8 +94781,9 @@ app.post('/api/operations/logout', async (req, res) => {
 
 // Public website clean routes
 app.get(['/join', '/he/join'], (req, res) => {
+  if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
   res.set('Cache-Control', 'no-store');
-  res.sendFile(path.join(__dirname, 'public', 'bna-coop-join.html'));
+  res.type('html').send(require('./src/lib/bna/coop-join-page').renderCoopJoinPage());
 });
 
 app.get(['/torah-mornings', '/he/torah-mornings'], (req, res) => {
