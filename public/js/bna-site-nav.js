@@ -313,7 +313,7 @@
           </button>
           <div class="bna-site-nav-actions" id="mainNavActions">
             <div class="bna-site-nav-menu" aria-label="Primary links">
-              ${current ? articleLinks(lang).map(item => renderNavLink(active, item)).join('') : `
+              ${current ? articleLinks(lang).filter(item => !['home','support'].includes(item.id)).map(item => renderNavLink(active, item)).join('') : `
               ${renderNavLink(active, { id: 'home', href: homeUrl(lang), label: copy.home })}
               ${renderNavLink(active, { id: 'school', href: schoolUrl(lang), label: copy.school || COPY.en.school })}
               ${renderNavLink(active, { id: 'parents', href: parentsUrl(lang), label: copy.parents || COPY.en.parents })}
@@ -332,8 +332,8 @@
             </div>
             <div class="bna-site-nav-buttons">
               <button class="bna-site-lang-toggle" id="languageToggle" type="button">${escapeHtml(copy.language)}</button>
-              <a class="bna-site-nav-button bna-site-nav-contact" href="${escapeHtml(current ? 'tel:+13054916674' : lang === 'he' ? '/he/torah-mornings' : '/torah-mornings')}">${escapeHtml(current ? '+1 (305) 491-6674' : copy.contact)}</a>
-              <a class="bna-site-nav-button bna-site-nav-provider" href="/providers/join?onboard=provider">${escapeHtml(copy.providerJoin)}</a>
+              ${current ? '' : `<a class="bna-site-nav-button bna-site-nav-contact" href="${escapeHtml(lang === 'he' ? '/he/torah-mornings' : '/torah-mornings')}">${escapeHtml(copy.contact)}</a>
+              <a class="bna-site-nav-button bna-site-nav-provider" href="/providers/join?onboard=provider">${escapeHtml(copy.providerJoin)}</a>`}
               <a class="bna-site-nav-button bna-site-nav-signup" id="backLink" href="${escapeHtml(signupHref)}">${escapeHtml(signupLabel)}</a>
             </div>
           </div>

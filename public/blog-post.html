@@ -106,6 +106,7 @@
       document.getElementById("articleCard").innerHTML = `
         <div class="article-image"><img src="${BNAPages.escapeHtml(post.image)}" alt=""></div>
         <div class="article-body">
+          <p class="notice">${lang === 'he' ? 'המאמר משקף הוראה קודמת בבני נביאים. למידע על קואופרטיב הלמידה הנוכחי בפלורידה, <a href="/he/join">הירשמו להתעניינות</a>.' : 'This article reflects earlier BNA teaching. For the current Florida co-op, <a href="/join">register your interest</a>.'}</p>
           <nav class="breadcrumb" aria-label="Breadcrumb">
             <a href="${BNAPages.homeUrl(lang)}">${BNAPages.escapeHtml(labels.home)}</a>
             <span>/</span>
