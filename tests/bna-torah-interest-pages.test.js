@@ -13,7 +13,7 @@ test('active BNA root and Hebrew root serve the current hub, while One Time reta
   assert.match(server, /if \(isOneTimeSingleTenantRuntime\(\)\) return sendOneTimePublicLanding\(req, res\);[\s\S]{0,150}bna-current-home\.html/);
   assert.match(server, /app\.get\('\/he', [\s\S]{0,220}bna-current-home\.html/);
   assert.doesNotMatch(home, /7 Spots Left|Registration Is Open for This Year|HaChozeh MiLublin|Beit Shemesh/);
-  assert.match(home, /\/torah-mornings/);
+  assert.match(home, /href="\/join"/);
   assert.match(home, /\/fishing-academy/);
   assert.match(home, /\/support/);
 });
@@ -41,7 +41,7 @@ test('305 contact is one shared configuration and donation is a separate truthfu
 
 test('new co-op homepage keeps the locked hero, direct program links and owner entry', () => {
   for (const copy of ['Raising the Generation of the Geulah','South Florida Integrative Torah Learning Co-op for Boys','An autonomous Torah learning community manifesting Geulah consciousness through authentic relationships, intrinsic motivation, and self-governance.','Join the Learning Co-op','Free to register your interest.']) assert.ok(home.includes(copy));
-  for (const route of ['/fishing-academy/apply','/he/fishing-academy/apply','/fishing-academy','/support','/providers','/blog']) assert.ok(home.includes(`href="${route}"`));
+  for (const route of ['/join','/he/join','/fishing-academy/apply','/he/fishing-academy/apply','/fishing-academy','/support','/providers','/blog']) assert.ok(home.includes(`href="${route}"`));
   assert.match(home,/life-skills\.bneineviimacademy\.org\/en\/login\?next=%2Fen%2Fapp%2Fclients/);
   assert.match(home,/images\/sitting%20on%20grass\.jpg/);
   assert.match(home,/Earlier BNA teaching/);
