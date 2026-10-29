@@ -185,6 +185,7 @@ class LifeSkillsAppInboundOutbox {
     return {captured,conflicts:conflicts.length};
   }
   async deliver(eventKey) {
+    if (!this.config.drainEnabled) throw fail('INBOUND_FORWARD_HELD');
     const db = await this.pool.connect();
     try {
       await db.query('BEGIN');
@@ -217,6 +218,7 @@ class LifeSkillsAppInboundOutbox {
     finally { db.release(); }
   }
   async drain(limit=25) {
+    if (!this.config.drainEnabled) throw fail('INBOUND_FORWARD_HELD');
     if (!Number.isSafeInteger(limit) || limit < 1 || limit > 25) throw fail('INVALID_LIMIT');
     const rows = (await this.pool.query(`SELECT event_key FROM bna_life_skills_app_inbound_outbox WHERE binding_sha256=$1 AND key_sha256=$2 AND status='pending' AND next_attempt_at <= clock_timestamp() ORDER BY stored_at,event_key LIMIT $3`, [this.config.bindingSha256,this.keySha256,limit])).rows;
     const counts={ attempted:0, delivered:0, pending:0, blocked:0 };

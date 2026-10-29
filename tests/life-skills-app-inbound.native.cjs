@@ -24,7 +24,7 @@ after(async()=>{ await pool.end(); });
 
 test('305 outbox sends only the exact new inbox route and confirms its blind acknowledgement',async()=>{
   const next=forwardConfig({LIFE_SKILLS_APP_INBOUND_FORWARD_ENABLED:'true',LIFE_SKILLS_305_INBOUND_ENABLED:'true',
-    LIFE_SKILLS_305_CHANNEL_ID:'synthetic-305',LIFE_SKILLS_SHEET_CRM_ENABLED:'false',LIFE_SKILLS_APP_BRIDGE_SECRET:'synthetic-not-real-credential-0123456789'});
+    LIFE_SKILLS_305_CHANNEL_ID:'synthetic-305',LIFE_SKILLS_305_FORWARD_ENABLED:'true',LIFE_SKILLS_SHEET_CRM_ENABLED:'false',LIFE_SKILLS_APP_BRIDGE_SECRET:'synthetic-not-real-credential-0123456789'});
   const [dto]=inquiriesFromEnvelope({channel_id:'synthetic-305',event:{type:'messages',event:'post'},messages:[{
     id:'synthetic-305-message',from_me:false,type:'text',chat_id:'15555550123@s.whatsapp.net',timestamp:1790500000,
     from:'15555550123',from_name:'Synthetic',text:{body:'Synthetic inquiry'}}]}, {},next);

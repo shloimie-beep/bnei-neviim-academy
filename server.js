@@ -69853,7 +69853,7 @@ app.post('/api/webhooks/wapi', async (req, res) => {
     const inbound305Config=lifeSkillsAppInboundConfig(process.env);
     if (inbound305Config.academy305 && !isOneTimeWapiScope(webhookScope) && (!inbound305Config.ready || !lifeSkillsInboundEnvelopeChannel(payload)))
       return res.status(503).json({success:false,error:'WAPI channel binding unavailable'});
-    if (isLifeSkills305Envelope(payload,webhookScope,inbound305Config)) {
+    if (!isOneTimeWapiScope(webhookScope) && isLifeSkills305Envelope(payload,webhookScope,inbound305Config)) {
       if (!inbound305Config.ready) return res.status(503).json({success:false,error:'305 capture unavailable'});
       try {
         validateLifeSkills305Envelope(payload);
