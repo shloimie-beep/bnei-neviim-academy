@@ -7,6 +7,8 @@ const PUBLIC_PATH = '/api/bna/interest';
 const UPSTREAM_PATH = '/api/public/bna-inquiries';
 const COOP_PUBLIC_PATH = '/api/bna/coop-interest';
 const COOP_UPSTREAM_PATH = '/api/public/bna-coop-inquiries';
+const SUPPORT_PUBLIC_PATH = '/api/bna/support-interest';
+const SUPPORT_UPSTREAM_PATH = '/api/public/bna-support-inquiries';
 
 function deny(res, status = 404) {
   res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer' });
@@ -59,4 +61,5 @@ function createGateway(publicPath, upstreamPath, { enabled = () => false, origin
 
 function createTorahInterestGateway(options) { return createGateway(PUBLIC_PATH, UPSTREAM_PATH, options); }
 function createCoopInterestGateway(options) { return createGateway(COOP_PUBLIC_PATH, COOP_UPSTREAM_PATH, options); }
-module.exports = { createTorahInterestGateway, createCoopInterestGateway, PUBLIC_PATH, UPSTREAM_PATH, COOP_PUBLIC_PATH, COOP_UPSTREAM_PATH };
+function createSupportInterestGateway(options) { return createGateway(SUPPORT_PUBLIC_PATH, SUPPORT_UPSTREAM_PATH, options); }
+module.exports = { createTorahInterestGateway, createCoopInterestGateway, createSupportInterestGateway, PUBLIC_PATH, UPSTREAM_PATH, COOP_PUBLIC_PATH, COOP_UPSTREAM_PATH, SUPPORT_PUBLIC_PATH, SUPPORT_UPSTREAM_PATH };
