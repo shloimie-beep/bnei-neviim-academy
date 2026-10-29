@@ -11066,6 +11066,7 @@ app.use(require('./src/lib/bna/fishing-academy-gateway').createFishingAcademyGat
 app.use(require('./src/lib/bna/torah-interest-gateway').createTorahInterestGateway({ enabled: () => process.env.BNA_TORAH_INTEREST_GATEWAY_ENABLED === 'true' }));
 app.use(require('./src/lib/bna/torah-interest-gateway').createCoopInterestGateway({ enabled: () => process.env.BNA_COOP_INTEREST_GATEWAY_ENABLED === 'true' }));
 app.use(require('./src/lib/bna/torah-interest-gateway').createSupportInterestGateway({ enabled: () => process.env.BNA_SUPPORT_INTEREST_GATEWAY_ENABLED === 'true' }));
+app.use(require('./src/lib/bna/torah-interest-gateway').createBnaPreferencesGateway({ enabled: () => process.env.BNA_EMAIL_PREFERENCES_GATEWAY_ENABLED === 'true' }));
 app.use(express.json({
   limit: '25mb',
   verify: (req, res, buf) => {
@@ -94800,6 +94801,14 @@ app.post('/api/operations/logout', async (req, res) => {
 });
 
 // Public website clean routes
+app.get(['/email-preferences', '/he/email-preferences'], (req, res) => {
+  if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
+  if (Object.keys(req.query).length) return res.status(404).end();
+  res.set('Cache-Control', 'no-store');
+  res.set('Referrer-Policy', 'no-referrer');
+  res.set('X-Frame-Options', 'DENY');
+  res.type('html').send(require('./src/lib/bna/email-preferences-page').renderBnaPreferencesPage(process.env, req.path.startsWith('/he/') ? 'he' : 'en'));
+});
 app.get(['/join', '/he/join'], (req, res) => {
   if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
   res.set('Cache-Control', 'no-store');

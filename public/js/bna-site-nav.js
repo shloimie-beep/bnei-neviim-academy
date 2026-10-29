@@ -133,7 +133,7 @@
 
   function currentArticlePage() {
     return /^\/(?:he\/)?blog(?:\/|$)/.test(window.location.pathname)
-      || /^\/(?:he\/?|(?:he\/)?(?:join|support)\/?)?$/.test(window.location.pathname);
+      || /^\/(?:he\/?|(?:he\/)?(?:join|support|email-preferences)\/?)?$/.test(window.location.pathname);
   }
 
   function currentNavLinks(active,lang) {
@@ -316,7 +316,7 @@
     const signupHref = current ? `${lang === 'he' ? '/he' : ''}/join` : registrationLink(mount, lang);
     const signupLabel = current ? (lang === 'he' ? 'הרשמה להתעניינות' : 'Register your interest') : registrationLabel(mount, lang);
     const switchHref = languageSwitchUrl(lang);
-    const inlineLanguage = current && /^\/(?:he\/)?(?:join|support)\/?$/.test(window.location.pathname);
+    const inlineLanguage = current && /^\/(?:he\/)?(?:join|support|email-preferences)\/?$/.test(window.location.pathname);
     const pagePath = window.location.pathname.replace(/^\/he(?=\/)/, '');
     if (current) document.documentElement.dataset.locale = lang;
 
