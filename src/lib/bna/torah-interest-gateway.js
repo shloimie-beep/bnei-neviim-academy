@@ -62,4 +62,5 @@ function createGateway(publicPath, upstreamPath, { enabled = () => false, origin
 function createTorahInterestGateway(options) { return createGateway(PUBLIC_PATH, UPSTREAM_PATH, options); }
 function createCoopInterestGateway(options) { return createGateway(COOP_PUBLIC_PATH, COOP_UPSTREAM_PATH, options); }
 function createSupportInterestGateway(options) { return createGateway(SUPPORT_PUBLIC_PATH, SUPPORT_UPSTREAM_PATH, options); }
-module.exports = { createTorahInterestGateway, createCoopInterestGateway, createSupportInterestGateway, PUBLIC_PATH, UPSTREAM_PATH, COOP_PUBLIC_PATH, COOP_UPSTREAM_PATH, SUPPORT_PUBLIC_PATH, SUPPORT_UPSTREAM_PATH };
+function createBnaPreferencesGateway(options) { return createGateway('/api/bna/preferences', '/api/public/bna-preferences', options); }
+module.exports = { createTorahInterestGateway, createCoopInterestGateway, createSupportInterestGateway, createBnaPreferencesGateway, PUBLIC_PATH, UPSTREAM_PATH, COOP_PUBLIC_PATH, COOP_UPSTREAM_PATH, SUPPORT_PUBLIC_PATH, SUPPORT_UPSTREAM_PATH };
