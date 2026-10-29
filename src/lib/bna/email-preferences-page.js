@@ -10,7 +10,7 @@ function renderBnaPreferencesPage(env=process.env,locale='en'){
  const enabled=env.BNA_EMAIL_PREFERENCES_ENABLED==='true'&&env.BNA_EMAIL_PREFERENCES_GATEWAY_ENABLED==='true'&&!!policy;
  const head=template.slice(0,template.indexOf('<body')).replace(/<title>[^<]*<\/title>/,`<title>${he?'העדפות דוא״ל':'Email preferences'} | Bnei Neviim Academy</title>`)
   .replace('</head>','<link rel="stylesheet" href="/css/bna-email-preferences.css"></head>')
-  .replace('/js/bna-coop-join.js','/js/bna-email-preferences.js').replace('<html lang="en" dir="ltr" data-locale="en">',`<html lang="${locale}" dir="${he?'rtl':'ltr'}" data-locale="${locale}">`);
+  .replace('/js/bna-coop-join.js','/js/bna-email-preferences.js?v=20261030-01').replace('<html lang="en" dir="ltr" data-locale="en">',`<html lang="${locale}" dir="${he?'rtl':'ltr'}" data-locale="${locale}">`);
  const nav=template.match(/<div id="navMount"[\s\S]*?<\/noscript><\/div>/)?.[0];
  const footer=template.slice(template.indexOf('<div id="footerMount"'),template.indexOf('</body>'));
  if(!head||!nav||!footer)throw Error('BNA_PREFERENCES_SHELL_MISMATCH');
