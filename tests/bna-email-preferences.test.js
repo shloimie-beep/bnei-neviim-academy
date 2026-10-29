@@ -11,6 +11,8 @@ test('recipient page composes the same released BNA shell, remains gated and con
  const html=renderBnaPreferencesPage(ready);assert.ok(html.includes('data-enabled="true"'));assert.ok(html.includes('/css/bna-current-site.css'));assert.ok(html.includes('data-bna-site-nav'));assert.ok(html.includes('data-bna-site-footer'));
  assert.ok(!html.includes('name="name"'));assert.ok(!html.includes('childAge'));assert.ok(!html.includes('name="contact"'));
  assert.ok(html.includes('<fieldset disabled id="preferences-fields">'));assert.ok(!html.includes('name="updates" checked'));
+ assert.ok(html.includes('<div id="preferences-controls" hidden>'));assert.ok(html.includes('/css/bna-email-preferences.css'));
+ assert.match(fs.readFileSync(require.resolve('../public/css/bna-email-preferences.css'),'utf8'),/#email-preferences \[hidden\]\{display:none!important\}/);
  for(const key of Object.keys(ready))assert.ok(renderBnaPreferencesPage({...ready,[key]:''}).includes('data-enabled="false"'));
  const he=renderBnaPreferencesPage(ready,'he');assert.ok(he.includes('<html lang="he" dir="rtl"'));assert.ok(he.includes('<title>העדפות דוא״ל'));
 });
@@ -21,7 +23,7 @@ const notice={version:'BNA-EMAIL-PREFERENCES-20261029-v1',en:'Synthetic explicit
 function readback(version=0,updates=false,canSubscribe=true){return {inquiryId,preferences:{version,program:'bna_learning_coop',locale:'en',updates,deliveryPaused:false},notice,canSubscribe};}
 const tick=async()=>{for(let i=0;i<10;i++)await new Promise(resolve=>setImmediate(resolve));};
 function harness({storage=new Map(),enabled=true,hash='#token='+token,reply=()=>({status:200,data:readback()})}={}){
- const form=new Form(),ids={};for(const name of ['email-preferences','preferences-fields','preferences-status','preferences-retry','preferences-read','preferences-stop-program','preferences-stop-all','preferences-program','preferences-current','preferences-paused','preferences-notice'])ids[name]=new Node();
+ const form=new Form(),ids={};for(const name of ['email-preferences','preferences-controls','preferences-fields','preferences-status','preferences-retry','preferences-read','preferences-stop-program','preferences-stop-all','preferences-program','preferences-current','preferences-paused','preferences-notice'])ids[name]=new Node();
  ids['email-preferences'].dataset.enabled=String(enabled);const toggle=new Node(),calls=[];
  const location={hash,search:'',pathname:'/email-preferences'},document={documentElement:{lang:'en',dir:'ltr',dataset:{}},title:'',querySelector:s=>s==='#preferences-form'?form:ids[s.slice(1)],querySelectorAll:()=>[toggle]};
  const context={document,HTMLFormElement:Form,location,history:{replaceState:(_a,_b,url)=>{location.pathname=url.split('#')[0];location.hash=url.includes('#')?'#'+url.split('#')[1]:'';}},URLSearchParams,TextEncoder,AbortSignal,
