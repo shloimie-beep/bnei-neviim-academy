@@ -9,7 +9,7 @@
   <meta property="og:site_name" content="Bnei Neviim Academy">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Bnei Neviim Academy Blog">
-  <meta property="og:description" content="Articles from Bnei Neviim Academy in Beit Shemesh.">
+  <meta property="og:description" content="Articles on Torah learning, relationships and self-governance from Bnei Neviim Academy.">
   <meta property="og:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
   <meta property="og:image:secure_url" content="https://bneineviimacademy.org/images/bna-social-preview.png">
   <meta property="og:image:width" content="1200">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="Bnei Neviim Academy logo">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Bnei Neviim Academy Blog">
-  <meta name="twitter:description" content="Articles from Bnei Neviim Academy in Beit Shemesh.">
+  <meta name="twitter:description" content="Articles on Torah learning, relationships and self-governance from Bnei Neviim Academy.">
   <meta name="twitter:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -53,12 +53,16 @@
     BNAPages.renderNav();
     BNAPages.renderFooter();
 
-    const labels = {
+    const labels = lang === 'he' ? {
+      home: 'בית', blog: 'מאמרים', related: 'מאמרים נוספים', contact: 'יצירת קשר',
+      signup: 'הרשמה להתעניינות', faq: 'שאלות נפוצות', notFoundTitle: 'המאמר לא נמצא',
+      notFoundDescription: 'המאמר המבוקש אינו זמין.', backToBlog: 'חזרה למאמרים',
+    } : {
       home: "Home",
       blog: "Blog",
       related: "Related Posts",
       contact: "Contact Us",
-      signup: "Sign Up",
+      signup: "Register your interest",
       faq: "FAQ",
       notFoundTitle: "Article not found",
       notFoundDescription: "The requested article is not available.",
@@ -102,6 +106,7 @@
       document.getElementById("articleCard").innerHTML = `
         <div class="article-image"><img src="${BNAPages.escapeHtml(post.image)}" alt=""></div>
         <div class="article-body">
+          <p class="notice">${lang === 'he' ? 'המאמר משקף הוראה קודמת בבני נביאים. למידע על קואופרטיב הלמידה הנוכחי בפלורידה, <a href="/he/join">הירשמו להתעניינות</a>.' : 'This article reflects earlier BNA teaching. For the current Florida co-op, <a href="/join">register your interest</a>.'}</p>
           <nav class="breadcrumb" aria-label="Breadcrumb">
             <a href="${BNAPages.homeUrl(lang)}">${BNAPages.escapeHtml(labels.home)}</a>
             <span>/</span>
@@ -115,9 +120,8 @@
           <div class="article-cta">
             <p>${BNAPages.escapeHtml(post.cta || "")}</p>
             <div class="cta-row">
-              <a class="cta-button" href="/torah-mornings">${BNAPages.escapeHtml(labels.contact)}</a>
-              <a class="cta-button" href="${BNAContent.site.signup}">${BNAPages.escapeHtml(labels.signup)}</a>
-              <a class="cta-button" href="${BNAPages.faqUrl(lang)}">${BNAPages.escapeHtml(labels.faq)}</a>
+              <a class="cta-button" href="tel:+13054916674">${BNAPages.escapeHtml(labels.contact)}</a>
+              <a class="cta-button" href="${lang === 'he' ? '/he/join' : '/join'}">${BNAPages.escapeHtml(labels.signup)}</a>
             </div>
           </div>
         </div>`;

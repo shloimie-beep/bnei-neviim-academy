@@ -131,6 +131,22 @@
     return lang === 'he' ? '/signup-he.html' : '/signup.html';
   }
 
+  function currentArticlePage() {
+    return /^\/(?:he\/)?blog(?:\/|$)/.test(window.location.pathname);
+  }
+
+  function articleLinks(lang) {
+    const he = lang === 'he', prefix = he ? '/he' : '';
+    return [
+      { id: 'home', href: homeUrl(lang), label: he ? 'בית' : 'Home' },
+      { id: 'coop', href: `${prefix}/join`, label: he ? 'קואופרטיב הלמידה' : 'Learning Co-op' },
+      { id: 'fishing', href: `${prefix}/fishing-academy`, label: he ? 'האקדמיה לדיג' : 'Fishing Academy' },
+      { id: 'blog', href: blogUrl(lang), label: he ? 'מאמרים' : 'Articles' },
+      { id: 'service-providers', href: `${prefix}/providers`, label: he ? 'אנשי חינוך וספקים' : 'Providers' },
+      { id: 'support', href: `${prefix}/support`, label: he ? 'תמיכה בבני נביאים' : 'Support BNA' },
+    ];
+  }
+
   function languageSwitchUrl(lang) {
     const next = lang === 'he' ? 'en' : 'he';
     const path = window.location.pathname;
@@ -274,10 +290,11 @@
     if (mount.dataset.bnaSiteNavRendered === 'true') return;
     mount.dataset.bnaSiteNavRendered = 'true';
     const lang = selectedLanguage(mount);
-    const copy = COPY[lang] || COPY.en;
+    const current = currentArticlePage();
+    const copy = current ? { ...COPY[lang], location: lang === 'he' ? 'דרום פלורידה' : 'South Florida' } : COPY[lang] || COPY.en;
     const active = mount?.dataset.navActive || inferActiveNav();
-    const signupHref = registrationLink(mount, lang);
-    const signupLabel = registrationLabel(mount, lang);
+    const signupHref = current ? `${lang === 'he' ? '/he' : ''}/join` : registrationLink(mount, lang);
+    const signupLabel = current ? (lang === 'he' ? 'הרשמה להתעניינות' : 'Register your interest') : registrationLabel(mount, lang);
     const switchHref = languageSwitchUrl(lang);
 
     mount.innerHTML = `
@@ -296,6 +313,7 @@
           </button>
           <div class="bna-site-nav-actions" id="mainNavActions">
             <div class="bna-site-nav-menu" aria-label="Primary links">
+              ${current ? articleLinks(lang).filter(item => !['home','support'].includes(item.id)).map(item => renderNavLink(active, item)).join('') : `
               ${renderNavLink(active, { id: 'home', href: homeUrl(lang), label: copy.home })}
               ${renderNavLink(active, { id: 'school', href: schoolUrl(lang), label: copy.school || COPY.en.school })}
               ${renderNavLink(active, { id: 'parents', href: parentsUrl(lang), label: copy.parents || COPY.en.parents })}
@@ -310,11 +328,12 @@
               ${renderNavLink(active, { id: 'blog', href: blogUrl(lang), label: copy.blog, classes: 'bna-site-nav-mobile-only' })}
               ${renderNavLink(active, { id: 'faq', href: faqUrl(lang), label: copy.faq })}
               ${renderPortalDropdown(copy)}
+              `}
             </div>
             <div class="bna-site-nav-buttons">
               <button class="bna-site-lang-toggle" id="languageToggle" type="button">${escapeHtml(copy.language)}</button>
-              <a class="bna-site-nav-button bna-site-nav-contact" href="${escapeHtml(lang === 'he' ? '/he/torah-mornings' : '/torah-mornings')}">${escapeHtml(copy.contact)}</a>
-              <a class="bna-site-nav-button bna-site-nav-provider" href="/providers/join?onboard=provider">${escapeHtml(copy.providerJoin)}</a>
+              ${current ? '' : `<a class="bna-site-nav-button bna-site-nav-contact" href="${escapeHtml(lang === 'he' ? '/he/torah-mornings' : '/torah-mornings')}">${escapeHtml(copy.contact)}</a>
+              <a class="bna-site-nav-button bna-site-nav-provider" href="/providers/join?onboard=provider">${escapeHtml(copy.providerJoin)}</a>`}
               <a class="bna-site-nav-button bna-site-nav-signup" id="backLink" href="${escapeHtml(signupHref)}">${escapeHtml(signupLabel)}</a>
             </div>
           </div>
@@ -360,7 +379,8 @@
     if (mount.dataset.bnaSiteFooterRendered === 'true') return;
     mount.dataset.bnaSiteFooterRendered = 'true';
     const lang = selectedLanguage(mount);
-    const copy = COPY[lang] || COPY.en;
+    const current = currentArticlePage();
+    const copy = current ? { ...COPY[lang], location: lang === 'he' ? 'דרום פלורידה' : 'South Florida', footerPortals: lang === 'he' ? 'יצירת קשר ופרטיות' : 'Contact and privacy' } : COPY[lang] || COPY.en;
     const active = mount?.dataset.navActive || inferActiveNav();
     const year = new Date().getFullYear();
     const nonprofit = lang === 'he'
@@ -369,7 +389,7 @@
     const copyright = lang === 'he'
       ? `\u00a9 ${year} \u05d0\u05e7\u05d3\u05de\u05d9\u05d9\u05ea \u05d1\u05e0\u05d9 \u05e0\u05d1\u05d9\u05d0\u05d9\u05dd. \u05db\u05dc \u05d4\u05d6\u05db\u05d5\u05d9\u05d5\u05ea \u05e9\u05de\u05d5\u05e8\u05d5\u05ea.`
       : `\u00a9 ${year} Bnei Nevi'im Academy. All rights reserved.`;
-    const exploreLinks = [
+    const exploreLinks = current ? articleLinks(lang) : [
       { id: 'home', href: homeUrl(lang), label: copy.home || COPY.en.home },
       { id: 'school', href: schoolUrl(lang), label: copy.school || COPY.en.school },
       { id: 'parents', href: parentsUrl(lang), label: copy.parents || COPY.en.parents },
@@ -380,7 +400,11 @@
       { id: 'signup', href: signupUrl(lang), label: copy.signup || COPY.en.signup },
       { id: 'provider-join', href: '/providers/join?onboard=provider', label: copy.providerJoin || COPY.en.providerJoin },
     ];
-    const portalLinks = [
+    const portalLinks = current ? [
+      { id: 'owner-login', href: `https://life-skills.bneineviimacademy.org/${lang}/app/clients`, label: lang === 'he' ? 'כניסת מנהל' : 'Owner Login' },
+      { id: 'privacy', href: `${lang === 'he' ? '/he' : ''}/privacy`, label: lang === 'he' ? 'מדיניות הפרטיות' : 'Privacy Policy' },
+      { id: 'contact', href: 'tel:+13054916674', label: '+1 (305) 491-6674' },
+    ] : [
       { id: 'parent-login', href: '/parent/login', label: copy.parentLogin || COPY.en.parentLogin },
       { id: 'student-login', href: '/student/login', label: copy.studentLogin || COPY.en.studentLogin },
       { id: 'provider-login', href: '/provider', label: copy.providerLogin || COPY.en.providerLogin },
@@ -421,7 +445,7 @@
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.88 11.86v-8.39H7.08V12h3.04V9.36c0-3 1.79-4.66 4.52-4.66 1.31 0 2.68.23 2.68.23v2.95h-1.51c-1.49 0-1.96.93-1.96 1.88V12h3.33l-.53 3.47h-2.8v8.39A12 12 0 0 0 24 12Z"/></svg>
             </a>
           </div>
-          <span>${escapeHtml(nonprofit)}</span>
+          ${current ? '' : `<span>${escapeHtml(nonprofit)}</span>`}
           <span>${escapeHtml(copyright)}</span>
         </div>
       </footer>`;
