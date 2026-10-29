@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inquiriesFromEnvelope, ctwaAttributionFromProviderMessage, receiptDigest, LifeSkillsAppInboundOutbox } = require('../src/lib/bna/life-skills-app-inbound');
+const { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inboundEnvelopeChannel, is305Envelope, validate305Envelope, inquiriesFromEnvelope, ctwaAttributionFromProviderMessage, receiptDigest, LifeSkillsAppInboundOutbox } = require('../src/lib/bna/life-skills-app-inbound');
 
 function env(extra={}) { return { LIFE_SKILLS_APP_INBOUND_FORWARD_ENABLED:'true', LIFE_SKILLS_SHEET_CRM_ENABLED:'true',
   LIFE_SKILLS_SHEET_CRM_CONFIRM:'APPROVE_LIFE_SKILLS_SHEET_CRM_INBOUND_UPSERT', LIFE_SKILLS_APP_BRIDGE_SECRET:'synthetic-key-not-a-real-secret-123456789',
@@ -26,6 +26,61 @@ test('binding is the private app canonical SHA-256; no owner-controlled destinat
   const c=forwardConfig(env({LIFE_SKILLS_APP_INBOUND_URL:'https://untrusted.invalid'}));
   assert.equal(c.bindingSha256,crypto.createHash('sha256').update(JSON.stringify({businessNumber:'+972534932631',channelId:'synthetic-channel',provider:'whapi'})).digest('hex'));
   assert.equal(c.ready,true);
+});
+test('305 capture needs an explicit channel and refuses the retired Sheet writer', () => {
+  const mode={LIFE_SKILLS_305_INBOUND_ENABLED:'true',LIFE_SKILLS_305_CHANNEL_ID:'synthetic-305',LIFE_SKILLS_SHEET_CRM_ENABLED:'false'};
+  const config=forwardConfig(env(mode));
+  assert.equal(config.ready,true);
+  assert.equal(config.drainEnabled,false);
+  assert.equal(forwardConfig(env({...mode,LIFE_SKILLS_305_FORWARD_ENABLED:'true'})).drainEnabled,true);
+  assert.equal(config.businessNumber,'+13054916674');
+  assert.equal(config.inboundUrl,'https://life-skills.bneineviimacademy.org/api/private/owner-305-inbound');
+  const payload={...envelope(),channel_id:'synthetic-305'};
+  assert.equal(inquiriesFromEnvelope(payload,{},config)[0].businessNumber,'+13054916674');
+  assert.deepEqual(inquiriesFromEnvelope(envelope(),{},config),[]);
+  assert.throws(()=>inquiriesFromEnvelope(payload,{},forwardConfig(env({...mode,LIFE_SKILLS_SHEET_CRM_ENABLED:'true'}))),/FORWARD_CONFIGURATION_UNAVAILABLE/);
+  assert.equal(forwardConfig(env({...mode,LIFE_SKILLS_305_CHANNEL_ID:''})).ready,false);
+});
+test('305 preserves opaque LID threads and accepts an absent sender only from an exact phone thread',()=>{
+ const config=forwardConfig(env({LIFE_SKILLS_305_INBOUND_ENABLED:'true',LIFE_SKILLS_305_CHANNEL_ID:'synthetic-305',LIFE_SKILLS_SHEET_CRM_ENABLED:'false'}));
+ const phone={...envelope({from:undefined,chat_id:'15555550123@s.whatsapp.net'}),channel_id:'synthetic-305'};
+ assert.equal(inquiriesFromEnvelope(phone,{},config)[0].fromNumber,'+15555550123');
+ const lid={...envelope({from:undefined,chat_id:'123456789@lid'}),channel_id:'synthetic-305'};
+ assert.deepEqual({fromNumber:inquiriesFromEnvelope(lid,{},config)[0].fromNumber,thread:inquiriesFromEnvelope(lid,{},config)[0].providerThreadId},{fromNumber:null,thread:'123456789@lid'});
+ assert.throws(()=>inquiriesFromEnvelope({...envelope({chat_id:'opaque@unknown'}),channel_id:'synthetic-305'},{},config),/UNSUPPORTED_305_THREAD/);
+});
+test('305 webhook captures before ACK and bypasses legacy handlers; unbound events fail closed',async()=>{
+  const server=fs.readFileSync(path.join(__dirname,'..','server.js'),'utf8');
+  const start=server.indexOf('    const inbound305Config=lifeSkillsAppInboundConfig(process.env);');
+  const end=server.indexOf('    // Future-only capture uses the already authenticated provider envelope.',start);
+  assert.ok(start>0&&end>start);let captures=0;
+  const run=async(payload,scope,config,fail=false)=>vm.runInNewContext(`(async()=>{${server.slice(start,end)};return {legacy:true};})()`,{
+    process:{env:{}},payload,webhookScope:scope,lifeSkillsAppInboundConfig:()=>config,isOneTimeWapiScope:s=>String(s.project_key||'').toLowerCase()==='one_time_mishnah_class',
+    lifeSkillsInboundEnvelopeChannel:inboundEnvelopeChannel,isLifeSkills305Envelope:is305Envelope,validateLifeSkills305Envelope:validate305Envelope,
+    captureLifeSkillsAppInbound:async()=>{captures++;if(fail)throw Error('private-message-detail');return {status:'durably_captured',captured:1};},
+    console:{error(){}},
+    res:{status(code){return {json:body=>({code,body})};},json:body=>({code:200,body})},
+  });
+  const config=forwardConfig(env({LIFE_SKILLS_305_INBOUND_ENABLED:'true',LIFE_SKILLS_305_CHANNEL_ID:'synthetic-305',LIFE_SKILLS_SHEET_CRM_ENABLED:'false'}));
+  const valid={...envelope(),channel_id:'synthetic-305'};
+  assert.equal((await run(valid,{},config)).body.status,'durably_captured');assert.equal(captures,1);
+  assert.equal((await run({channel_id:'synthetic-305'}, {},config)).code,503);
+  assert.equal((await run({...valid,messages:[{...valid.messages[0],from_me:undefined}]}, {},config)).code,503);
+  assert.equal((await run({}, {},config)).code,503);assert.equal((await run({channel_id:'synthetic-305'},{},{...config,ready:false})).code,503);
+  const failed=await run(valid,{},config,true);assert.equal(failed.code,503);assert.doesNotMatch(JSON.stringify(failed),/private-message-detail/);
+  assert.equal((await run({channel_id:'different'},{},config)).legacy,true);
+  assert.equal((await run({channel_id:'synthetic-305'},{project_key:'one_time_mishnah_class'},config)).legacy,true);assert.equal(captures,2);
+  assert.equal((await run(valid,{project_key:'ONE_TIME_MISHNAH_CLASS'},config)).legacy,true);
+});
+test('305 capture can remain durable while forwarding is held',async()=>{
+ const server=fs.readFileSync(path.join(__dirname,'..','server.js'),'utf8'),start=server.indexOf('function startLifeSkillsAppInboundScheduler()'),end=server.indexOf("app.post('/api/webhooks/wapi'",start);
+ assert.ok(start>0&&end>start);let tick,drains=0,config={ready:true,drainEnabled:false};
+ vm.runInNewContext(`${server.slice(start,end)};startLifeSkillsAppInboundScheduler();`,{process:{env:{}},lifeSkillsAppInboundConfig:()=>config,
+  setInterval:fn=>{tick=fn;return {unref(){}};},lifeSkillsAppInboundDatabase:async()=>({}),LifeSkillsAppInboundOutbox:class{async drain(){drains++;return {attempted:0};}},console});
+ await tick();assert.equal(drains,0);config={ready:true,drainEnabled:true};await tick();assert.equal(drains,1);
+ const held=forwardConfig(env({LIFE_SKILLS_305_INBOUND_ENABLED:'true',LIFE_SKILLS_305_CHANNEL_ID:'synthetic-305',LIFE_SKILLS_SHEET_CRM_ENABLED:'false'}));
+ const outbox=new LifeSkillsAppInboundOutbox(null,held,async()=>{throw Error('must not send');});
+ await assert.rejects(outbox.deliver('synthetic'),/INBOUND_FORWARD_HELD/);await assert.rejects(outbox.drain(),/INBOUND_FORWARD_HELD/);
 });
 test('blind acknowledgement binds the exact normalized event/body to the existing bridge secret',()=>{
   const config=forwardConfig(env()),[dto]=inquiriesFromEnvelope(envelope(),{},config),digest=receiptDigest(dto,config.secret);

@@ -4,6 +4,7 @@ const { normalizeLifeSkillsPhone, lifeSkillsSheetCrmConfig } = require('./life-s
 // One destination, using the existing bridge credential. No arbitrary URL,
 // provider download/history call, contact/account creation or outbound reply.
 const APP_INBOUND_URL = 'https://life-skills.bneineviimacademy.org/api/private/contact-inbound';
+const ACADEMY_305_INBOUND_URL = 'https://life-skills.bneineviimacademy.org/api/private/owner-305-inbound';
 const OUTBOX_SQL = `CREATE TABLE IF NOT EXISTS bna_life_skills_app_inbound_outbox (
   binding_sha256 TEXT NOT NULL CHECK (binding_sha256 ~ '^[a-f0-9]{64}$'),
   event_key TEXT NOT NULL CHECK (event_key ~ '^[a-f0-9]{64}$'),
@@ -34,14 +35,31 @@ function canonical(value) {
 }
 function forwardConfig(env = {}) {
   const enabled = env.LIFE_SKILLS_APP_INBOUND_FORWARD_ENABLED === 'true';
+  const academy305 = env.LIFE_SKILLS_305_INBOUND_ENABLED === 'true';
   const secret = String(env.LIFE_SKILLS_APP_BRIDGE_SECRET || '').trim();
-  const channelId = String(env.LIFE_SKILLS_WAPI_CHANNEL_ID || env.WHAPI_CHANNEL_ID || '').trim();
-  const businessNumber = normalizeLifeSkillsPhone(env.LIFE_SKILLS_WAPI_REQUIRED_SENDER_DIGITS || '972534932631');
+  const channelId = String(academy305 ? env.LIFE_SKILLS_305_CHANNEL_ID || '' : env.LIFE_SKILLS_WAPI_CHANNEL_ID || env.WHAPI_CHANNEL_ID || '').trim();
+  const businessNumber = normalizeLifeSkillsPhone(academy305 ? '13054916674' : env.LIFE_SKILLS_WAPI_REQUIRED_SENDER_DIGITS || '972534932631');
   const ready = enabled && secret.length >= 32 && secret.length <= 1024 && channelId.length >= 1 && channelId.length <= 180 && Boolean(businessNumber);
   const binding = { provider: 'whapi', channelId, businessNumber };
   const captureConsent = lifeSkillsSheetCrmConfig(env);
-  return { enabled:enabled && captureConsent.enabled && captureConsent.approved, ready:ready && captureConsent.enabled && captureConsent.approved, secret, channelId, businessNumber,
+  // The new channel requires an explicit binding and cannot coexist with the
+  // retired Sheet writer. A conflict fails closed before acknowledging capture.
+  const captureEnabled = enabled && (academy305 || (captureConsent.enabled && captureConsent.approved));
+  const captureAllowed = academy305 ? !captureConsent.enabled : captureConsent.enabled && captureConsent.approved;
+  return { enabled:captureEnabled, ready:ready && captureAllowed, drainEnabled:ready && captureAllowed && (!academy305 || env.LIFE_SKILLS_305_FORWARD_ENABLED === 'true'), academy305, secret, channelId, businessNumber, inboundUrl:academy305 ? ACADEMY_305_INBOUND_URL : APP_INBOUND_URL,
     bindingSha256: crypto.createHash('sha256').update(canonical(binding)).digest('hex') };
+}
+function inboundEnvelopeChannel(payload={}) {return String(payload.channel_id || payload.channelId || payload.channel?.id || payload.data?.channel_id || '').trim();}
+function is305Envelope(payload={},scope={},config={}) {
+  if(!config.academy305 || scope.project_key === 'one_time_mishnah_class' || scope.workspace_key === 'rabbi_sheller_provider') return false;
+  const channel=inboundEnvelopeChannel(payload);
+  return Boolean(channel && config.channelId && channel === config.channelId);
+}
+function validate305Envelope(payload={}) {
+  if(payload.event?.type!=='messages'||payload.event?.event!=='post') throw fail('INVALID_305_ENVELOPE');
+  const messages=payload.messages || payload.data?.messages;
+  if(!Array.isArray(messages)||messages.length<1||messages.length>100) throw fail('INVALID_305_ENVELOPE');
+  for(const message of messages) if(!message||typeof message!=='object'||typeof message.from_me!=='boolean'||typeof message.chat_id!=='string'||!message.chat_id||typeof message.id!=='string'||!message.id) throw fail('INVALID_305_ENVELOPE');
 }
 function bounded(value, max, required = false) {
   const text = value == null ? '' : String(value);
@@ -84,7 +102,8 @@ function inquiriesFromEnvelope(payload = {}, scope = {}, config) {
     if (!message || typeof message !== 'object') throw fail('INVALID_INQUIRY');
     const thread = String(message.chat_id || '');
     if (message.from_me !== false || message.status || /@(?:g\.us|newsletter|broadcast)$/.test(thread)) continue;
-    if (!/^[0-9]+@(?:s\.whatsapp\.net|c\.us)$/.test(thread)) continue;
+    const phoneThread=/^[0-9]+@(?:s\.whatsapp\.net|c\.us)$/.test(thread),lidThread=/^[0-9]+@lid$/.test(thread);
+    if (!phoneThread && !(config.academy305 && lidThread)) { if(config.academy305)throw fail('UNSUPPORTED_305_THREAD'); continue; }
     const suppliedDestination = message.to || payload.to;
     if (suppliedDestination && normalizeLifeSkillsPhone(suppliedDestination) !== config.businessNumber) throw fail('DESTINATION_MISMATCH');
     const type = bounded(message.type, 60, true);
@@ -101,8 +120,8 @@ function inquiriesFromEnvelope(payload = {}, scope = {}, config) {
     if (!Number.isFinite(message.timestamp) || message.timestamp <= 0) throw fail('INVALID_INQUIRY');
     const date = new Date(message.timestamp < 1e12 ? message.timestamp * 1000 : message.timestamp);
     if (!Number.isFinite(date.getTime())) throw fail('INVALID_INQUIRY');
-    const fromNumber = normalizeLifeSkillsPhone(message.from);
-    if (!fromNumber || normalizeLifeSkillsPhone(thread) !== fromNumber) throw fail('INVALID_INQUIRY');
+    const fromNumber = lidThread ? null : normalizeLifeSkillsPhone(message.from || (config.academy305 ? thread : ''));
+    if (!lidThread && (!fromNumber || normalizeLifeSkillsPhone(thread) !== fromNumber)) throw fail('INVALID_INQUIRY');
     const id = bounded(message.id, 180, true);
     const inquiry = { provider:'whapi', channelId:config.channelId, businessNumber:config.businessNumber,
       providerEventId:id, providerMessageId:id, providerThreadId:bounded(thread,180,true), eventType:'inbound_message',
@@ -167,6 +186,7 @@ class LifeSkillsAppInboundOutbox {
     return {captured,conflicts:conflicts.length};
   }
   async deliver(eventKey) {
+    if (!this.config.drainEnabled) throw fail('INBOUND_FORWARD_HELD');
     const db = await this.pool.connect();
     try {
       await db.query('BEGIN');
@@ -177,7 +197,7 @@ class LifeSkillsAppInboundOutbox {
       let status='pending', code='TRANSPORT_UNCONFIRMED';
       try {
         const inquiry = this.unseal(row);
-        const response = await this.fetcher(APP_INBOUND_URL, { method:'POST', redirect:'error', signal:AbortSignal.timeout(8000),
+        const response = await this.fetcher(this.config.inboundUrl, { method:'POST', redirect:'error', signal:AbortSignal.timeout(8000),
           headers:{'Content-Type':'application/json','X-Life-Skills-Bridge-Secret':this.config.secret}, body:JSON.stringify(inquiry) });
         if ([200,201].includes(response.status)) {
           const text = await boundedResponse(response);
@@ -199,6 +219,7 @@ class LifeSkillsAppInboundOutbox {
     finally { db.release(); }
   }
   async drain(limit=25) {
+    if (!this.config.drainEnabled) throw fail('INBOUND_FORWARD_HELD');
     if (!Number.isSafeInteger(limit) || limit < 1 || limit > 25) throw fail('INVALID_LIMIT');
     const rows = (await this.pool.query(`SELECT event_key FROM bna_life_skills_app_inbound_outbox WHERE binding_sha256=$1 AND key_sha256=$2 AND status='pending' AND next_attempt_at <= clock_timestamp() ORDER BY stored_at,event_key LIMIT $3`, [this.config.bindingSha256,this.keySha256,limit])).rows;
     const counts={ attempted:0, delivered:0, pending:0, blocked:0 };
@@ -214,4 +235,4 @@ async function boundedResponse(response) {
   return Buffer.concat(parts).toString('utf8');
 }
 
-module.exports = { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inquiriesFromEnvelope, ctwaAttributionFromProviderMessage, receiptDigest, LifeSkillsAppInboundOutbox };
+module.exports = { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inboundEnvelopeChannel, is305Envelope, validate305Envelope, inquiriesFromEnvelope, ctwaAttributionFromProviderMessage, receiptDigest, LifeSkillsAppInboundOutbox };

@@ -51,6 +51,9 @@ const {
 const {
   OUTBOX_SQL: createLifeSkillsAppInboundOutboxSQL,
   forwardConfig: lifeSkillsAppInboundConfig,
+  is305Envelope: isLifeSkills305Envelope,
+  inboundEnvelopeChannel: lifeSkillsInboundEnvelopeChannel,
+  validate305Envelope: validateLifeSkills305Envelope,
   inquiriesFromEnvelope: lifeSkillsAppInquiries,
   LifeSkillsAppInboundOutbox,
 } = require('./src/lib/bna/life-skills-app-inbound');
@@ -69825,7 +69828,7 @@ function startLifeSkillsAppInboundScheduler() {
   const timer = setInterval(async () => {
     if (running) return;
     const config = lifeSkillsAppInboundConfig(process.env);
-    if (!config.ready) return;
+    if (!config.drainEnabled) return;
     running = true;
     try {
       const result = await new LifeSkillsAppInboundOutbox(await lifeSkillsAppInboundDatabase(), config).drain(25);
@@ -69847,6 +69850,22 @@ app.post('/api/webhooks/wapi', async (req, res) => {
   const webhookScope = authorization.scope || {};
 
   try {
+    // The shared 305 channel must never reach legacy contact matching, task
+    // creation or auto-reply. Capture to its encrypted outbox before ACK.
+    const inbound305Config=lifeSkillsAppInboundConfig(process.env);
+    if (inbound305Config.academy305 && !isOneTimeWapiScope(webhookScope) && (!inbound305Config.ready || !lifeSkillsInboundEnvelopeChannel(payload)))
+      return res.status(503).json({success:false,error:'WAPI channel binding unavailable'});
+    if (!isOneTimeWapiScope(webhookScope) && isLifeSkills305Envelope(payload,webhookScope,inbound305Config)) {
+      if (!inbound305Config.ready) return res.status(503).json({success:false,error:'305 capture unavailable'});
+      try {
+        validateLifeSkills305Envelope(payload);
+        const captured=await captureLifeSkillsAppInbound(payload,webhookScope);
+        return res.json({success:true,status:captured.status,captured:captured.captured||0,conflicts:captured.conflicts||0});
+      } catch {
+        console.error('[wapi] 305 capture unavailable');
+        return res.status(503).json({success:false,error:'305 capture unavailable'});
+      }
+    }
     // Future-only capture uses the already authenticated provider envelope.
     // A DB failure here propagates to the existing failed webhook response.
     const lifeSkillsAppInboundResult=await captureLifeSkillsAppInbound(payload, webhookScope);

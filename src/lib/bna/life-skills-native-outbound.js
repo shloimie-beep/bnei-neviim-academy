@@ -31,6 +31,8 @@ function validateNativeSend(input, env) {
       typeof input.body !== 'string' || !input.body.trim() || input.body !== input.body.trim() || input.body.length > 2000 ||
       input.recordMode !== 'live') throw failure('INVALID_NATIVE_SEND', 400);
   const writer = lifeSkillsCrmWriterState(env), binding = forwardConfig(env);
+  if (env.LIFE_SKILLS_305_INBOUND_ENABLED === 'true')
+    throw failure('NATIVE_SEND_AUTHORITY_HELD', 423);
   if (!writer.ready || writer.mode !== 'capture_only' || writer.epoch !== nativeEpoch(input.authorityEpoch))
     throw failure('NATIVE_SEND_AUTHORITY_HELD', 423);
   if (!binding.ready || input.bindingSha256 !== binding.bindingSha256)
