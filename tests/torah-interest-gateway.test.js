@@ -3,9 +3,9 @@ const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const http = require('node:http');
 const { once } = require('node:events');
-const { createTorahInterestGateway } = require('../src/lib/bna/torah-interest-gateway');
+const { createTorahInterestGateway, createCoopInterestGateway } = require('../src/lib/bna/torah-interest-gateway');
 
-let backend, front, origin, upstream, enabled = true;
+let backend, front, origin, upstream, enabled = true, coopEnabled = true;
 const observed = [];
 before(async () => {
   backend = http.createServer((req, res) => {
@@ -19,7 +19,7 @@ before(async () => {
   });
   backend.listen(0, '127.0.0.1'); await once(backend, 'listening');
   upstream = 'http://127.0.0.1:' + backend.address().port;
-  front = http.createServer((req, res) => createTorahInterestGateway({ enabled: () => enabled, origin, upstream, transport: http })(req, res, () => { res.writeHead(418); res.end('existing route'); }));
+  front = http.createServer((req, res) => createTorahInterestGateway({ enabled: () => enabled, origin, upstream, transport: http })(req, res, () => createCoopInterestGateway({enabled:()=>coopEnabled,origin,upstream,transport:http})(req,res,()=>{res.writeHead(418);res.end('existing route');})));
   front.listen(0, '127.0.0.1'); await once(front, 'listening'); origin = 'http://127.0.0.1:' + front.address().port;
 });
 after(async () => { await Promise.all([new Promise(resolve => front.close(resolve)), new Promise(resolve => backend.close(resolve))]); });
@@ -66,4 +66,15 @@ test('only exact route on configured host is bridged', async () => {
   assert.equal((await request('/api/bna/interest')).status, 418);
   enabled = true;
   assert.equal(observed.length, count);
+});
+
+
+test('co-op gateway has its own exact route and independent gate', async () => {
+  const count=observed.length;
+  const response=await request('/api/bna/coop-interest',{headers:{Cookie:'private=secret',Authorization:'Bearer secret'}});
+  assert.equal(response.status,200);assert.equal(observed.at(-1).path,'/api/public/bna-coop-inquiries');
+  assert.equal(observed.at(-1).headers.cookie,undefined);assert.equal(observed.at(-1).headers.authorization,undefined);
+  assert.equal((await request('/api/bna/coop-interest?program=other')).status,404);
+  coopEnabled=false;assert.equal((await request('/api/bna/coop-interest')).status,418);coopEnabled=true;
+  assert.equal(observed.length,count+1);
 });

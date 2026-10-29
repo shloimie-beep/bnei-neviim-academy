@@ -5,6 +5,8 @@ const PUBLIC_ORIGIN = 'https://bneineviimacademy.org';
 const UPSTREAM = 'https://life-skills.bneineviimacademy.org';
 const PUBLIC_PATH = '/api/bna/interest';
 const UPSTREAM_PATH = '/api/public/bna-inquiries';
+const COOP_PUBLIC_PATH = '/api/bna/coop-interest';
+const COOP_UPSTREAM_PATH = '/api/public/bna-coop-inquiries';
 
 function deny(res, status = 404) {
   res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer' });
@@ -13,13 +15,13 @@ function deny(res, status = 404) {
 
 /** Same-origin, single-effect bridge into the existing Life Skills inquiry store.
  * No BNA session, authorization header or private cookie crosses this boundary. */
-function createTorahInterestGateway({ enabled = () => false, origin = PUBLIC_ORIGIN, upstream = UPSTREAM, transport = https } = {}) {
+function createGateway(publicPath, upstreamPath, { enabled = () => false, origin = PUBLIC_ORIGIN, upstream = UPSTREAM, transport = https } = {}) {
   const external = new URL(origin), target = new URL(upstream);
   return function torahInterestGateway(req, res, next) {
     if (!enabled() || req.headers.host !== external.host) return next();
     let url;
     try { url = new URL(req.originalUrl || req.url, origin); } catch { return next(); }
-    if (url.pathname !== PUBLIC_PATH) return next();
+    if (url.pathname !== publicPath) return next();
     if (url.origin !== external.origin || url.search || /\\|%2e|%2f|%5c/i.test(req.originalUrl || req.url)) return deny(res);
     if (!['GET', 'POST'].includes(req.method)) return deny(res, 405);
     const protocol = req.headers['x-forwarded-proto'] || (req.socket.encrypted ? 'https' : 'http');
@@ -31,7 +33,7 @@ function createTorahInterestGateway({ enabled = () => false, origin = PUBLIC_ORI
       if (res.destroyed || req.aborted) return;
       const headers = { host: target.host, 'x-forwarded-host': target.host, 'x-forwarded-proto': target.protocol.slice(0, -1), origin: target.origin, 'sec-fetch-site': 'same-origin', accept: 'application/json' };
       if (body) { headers['content-type'] = 'application/json'; headers['content-length'] = String(body.length); }
-      const remote = transport.request(new URL(UPSTREAM_PATH, target), { method: req.method, headers, timeout: 15000 }, response => {
+      const remote = transport.request(new URL(upstreamPath, target), { method: req.method, headers, timeout: 15000 }, response => {
         if (response.headers.location || response.headers['set-cookie']) { response.destroy(); return deny(res, 502); }
         const outgoing = { 'Content-Type': response.headers['content-type'] || 'application/json', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-Frame-Options': 'DENY' };
         res.writeHead(response.statusCode || 502, outgoing); response.pipe(res);
@@ -55,4 +57,6 @@ function createTorahInterestGateway({ enabled = () => false, origin = PUBLIC_ORI
   };
 }
 
-module.exports = { createTorahInterestGateway, PUBLIC_PATH, UPSTREAM_PATH };
+function createTorahInterestGateway(options) { return createGateway(PUBLIC_PATH, UPSTREAM_PATH, options); }
+function createCoopInterestGateway(options) { return createGateway(COOP_PUBLIC_PATH, COOP_UPSTREAM_PATH, options); }
+module.exports = { createTorahInterestGateway, createCoopInterestGateway, PUBLIC_PATH, UPSTREAM_PATH, COOP_PUBLIC_PATH, COOP_UPSTREAM_PATH };

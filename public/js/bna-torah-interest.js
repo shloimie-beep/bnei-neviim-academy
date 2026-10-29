@@ -18,6 +18,9 @@
   const form = document.querySelector('#torah-interest-form');
   if (!(form instanceof HTMLFormElement)) return;
   form.elements.namedItem('language').value = locale;
+  const syncConsentLanguage = () => { const language = form.elements.namedItem('language').value; form.querySelectorAll('[data-consent-lang]').forEach(node => { node.hidden = node.dataset.consentLang !== language; }); };
+  form.elements.namedItem('language').addEventListener('change', () => { form.elements.namedItem('purposeConsent').checked = false; syncConsentLanguage(); });
+  syncConsentLanguage();
   const status = document.querySelector('#save-status');
   const submit = form.querySelector('[type=submit]');
   let operationId = crypto.randomUUID(), attempted = null, unknown = false;
@@ -43,7 +46,7 @@
     return { name:get('name'), contactChannel:channel, contact:channel === 'phone' ? normalizedPhone : rawContact.toLowerCase(), language:get('language'), townOrZip:get('townOrZip'), childAges:ages,
       ...(get('readiness') ? {readiness:get('readiness')} : {}), ...(get('availability') ? {availability:get('availability')} : {}),
       ...(get('startPreference') ? {startPreference:get('startPreference')} : {}), ...(get('question') ? {question:get('question')} : {}),
-      permission:{confirmed:true,version:'BNA-TORAH-MORNING-INTEREST-20261028-v1',language:get('language')} };
+      permission:{confirmed:form.elements.namedItem('purposeConsent').checked,version:'BNA-TORAH-MORNING-INTEREST-20261028-v1',language:get('language')} };
   }
   function setContactInput() {
     const input = form.elements.namedItem('contact');
@@ -55,19 +58,26 @@
   form.elements.namedItem('contactChannel')?.addEventListener('change', setContactInput);
   setContactInput();
   try {
-    const pending = JSON.parse(sessionStorage.getItem(pendingKey) || 'null');
-    if (pending?.operationId && pending.fields?.name && pending.fields?.contact) {
-      attempted = pending; operationId = pending.operationId; unknown = true;
-      for (const name of ['name','contactChannel','contact','language','townOrZip','readiness','availability','startPreference','question']) {
-        const input = form.elements.namedItem(name);
-        if (input) input.value = pending.fields[name] || '';
-      }
-      form.elements.namedItem('childAge').value = String(pending.fields.childAges?.[0] ?? '');
-      form.elements.namedItem('otherChildAge').value = String(pending.fields.childAges?.[1] ?? '');
-      setContactInput(); lockFields(true);
-      say('We could not confirm the save. Your answers are still here. Retry this same inquiry to reconcile it.','לא הצלחנו לאשר שהפנייה נשמרה. הפרטים עדיין כאן. נסו שוב את אותה הפנייה כדי לברר את מצבה.','unknown');
+    const stored = sessionStorage.getItem(pendingKey);
+    let pendingId = stored;
+    // Older versions stored a full payload. Reduce it to the operation ID.
+    if (stored?.startsWith('{')) { try { pendingId = JSON.parse(stored)?.operationId; } catch { pendingId = null; } }
+    if (typeof pendingId === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(pendingId)) {
+      try { sessionStorage.setItem(pendingKey, pendingId); } catch {} lockFields(true); submit.disabled = true;
+      say(`We could not confirm your earlier inquiry. Please call +1 (305) 491-6674 and mention operation ${pendingId} before submitting again.`,`לא הצלחנו לאשר את הפנייה הקודמת. אנא התקשרו למספר +1 (305) 491-6674 וציינו את הפעולה ${pendingId} לפני שליחה נוספת.`,'unknown');
+      return;
     }
-  } catch { clearPending(); }
+    if (stored) {
+      try { sessionStorage.setItem(pendingKey, 'unresolved'); } catch {}
+      lockFields(true); submit.disabled = true;
+      say('A previous inquiry could not be reconciled. Please call +1 (305) 491-6674 before submitting again.','לא ניתן לברר את מצב הפנייה הקודמת. אנא התקשרו למספר +1 (305) 491-6674 לפני שליחה נוספת.','unknown');
+      return;
+    }
+  } catch {
+    lockFields(true); submit.disabled = true;
+    say('We cannot safely check a previous inquiry on this device. Please call +1 (305) 491-6674.','לא ניתן לבדוק בבטחה פנייה קודמת במכשיר זה. אנא התקשרו למספר +1 (305) 491-6674.','unknown');
+    return;
+  }
   form.addEventListener('submit', async event => {
     event.preventDefault();
     if (!form.reportValidity()) return;
@@ -89,13 +99,15 @@
       // The server requires a short challenge age; the form remains intact while waiting.
       await new Promise(resolve => setTimeout(resolve,1600));
       if (!attempted) attempted = payload;
-      try { sessionStorage.setItem(pendingKey, JSON.stringify(payload)); } catch {}
+      // Do not send if a reload could lose the only safe reconciliation marker.
+      sessionStorage.setItem(pendingKey, payload.operationId);
+      if (sessionStorage.getItem(pendingKey) !== payload.operationId) throw new Error('RECOVERY_MARKER_UNAVAILABLE');
       posted = true;
       const response = await fetch('/api/bna/interest', { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body:JSON.stringify({...payload,challenge}), cache:'no-store', credentials:'omit' });
       const result = (await response.json().catch(() => null))?.data;
       if (response.ok && result?.saved === true && typeof result.reference === 'string') {
         say(`Your inquiry was saved. Reference: ${result.reference}. This is not enrollment or a reserved place. No reply message has been sent.`,`פנייתכם נשמרה. מספר פנייה: ${result.reference}. אין בכך הרשמה או שמירת מקום. עדיין לא נשלחה הודעת תשובה.`,'saved');
-        unknown = false; attempted = null; clearPending(); operationId = crypto.randomUUID(); lockFields(false); form.reset(); form.elements.namedItem('language').value = locale; setContactInput();
+        unknown = false; attempted = null; clearPending(); operationId = crypto.randomUUID(); lockFields(false); form.reset(); form.elements.namedItem('language').value = locale; syncConsentLanguage(); setContactInput();
       } else if (response.status >= 400 && response.status < 500 && !unknown) {
         unknown = false; attempted = null; clearPending(); operationId = crypto.randomUUID();
         lockFields(false);
@@ -107,7 +119,7 @@
     } catch {
       // An unavailable GET has not sent any data; a failed POST may have committed.
       unknown = posted;
-      if (!unknown) { clearPending(); lockFields(false); }
+      if (!unknown) { attempted = null; clearPending(); lockFields(false); }
       say(posted ? 'We could not confirm the save. Your answers are still here. Retry this same inquiry to reconcile it.' : 'The form is temporarily unavailable. Your answers are still here. Please try again.', posted ? 'לא הצלחנו לאשר שהפנייה נשמרה. הפרטים עדיין כאן. נסו שוב את אותה הפנייה כדי לברר את מצבה.' : 'הטופס אינו זמין כרגע. הפרטים עדיין כאן. נסו שוב.', posted ? 'unknown' : 'error');
     } finally { submit.disabled = false; }
   });
