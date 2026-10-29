@@ -22,14 +22,29 @@ before(async()=>{ await pool.query(OUTBOX_SQL); await pool.query(OUTBOX_SQL); })
 beforeEach(async()=>{ await pool.query('TRUNCATE bna_life_skills_app_inbound_outbox'); });
 after(async()=>{ await pool.end(); });
 
+test('305 outbox sends only the exact new inbox route and confirms its blind acknowledgement',async()=>{
+  const next=forwardConfig({LIFE_SKILLS_APP_INBOUND_FORWARD_ENABLED:'true',LIFE_SKILLS_305_INBOUND_ENABLED:'true',
+    LIFE_SKILLS_305_CHANNEL_ID:'synthetic-305',LIFE_SKILLS_SHEET_CRM_ENABLED:'false',LIFE_SKILLS_APP_BRIDGE_SECRET:'synthetic-not-real-credential-0123456789'});
+  const [dto]=inquiriesFromEnvelope({channel_id:'synthetic-305',event:{type:'messages',event:'post'},messages:[{
+    id:'synthetic-305-message',from_me:false,type:'text',chat_id:'15555550123@s.whatsapp.net',timestamp:1790500000,
+    from:'15555550123',from_name:'Synthetic',text:{body:'Synthetic inquiry'}}]}, {},next);
+  let calls=0;const outbox=new LifeSkillsAppInboundOutbox(pool,next,async(url,options)=>{calls++;
+    assert.equal(url,'https://life-skills.bneineviimacademy.org/api/private/owner-305-inbound');
+    assert.deepEqual(JSON.parse(options.body),dto);
+    return Response.json({ok:true,data:{replayed:false,storedAt:'2026-10-29T00:00:00.000Z',ackDigest:receiptDigest(dto,next.secret)}},{status:201});});
+  const saved=await outbox.capture(dto);assert.equal((await outbox.deliver(saved.eventKey)).status,'delivered');
+  assert.equal(calls,1);assert.equal(await count(),1);
+});
+
 test('native schema is idempotent, owner-only and rejects malformed identifiers/ciphertext',async()=>{
   const permissions=(await pool.query(`SELECT count(*)::int AS n FROM pg_class c CROSS JOIN LATERAL aclexplode(coalesce(c.relacl,acldefault('r',c.relowner))) a WHERE c.oid='bna_life_skills_app_inbound_outbox'::regclass AND a.grantee<>c.relowner`)).rows[0].n;
   assert.equal(permissions,0);
   await assert.rejects(()=>pool.query(`INSERT INTO bna_life_skills_app_inbound_outbox(binding_sha256,event_key,key_sha256,payload_digest,payload_ciphertext) VALUES('bad','bad','bad','bad',decode('00','hex'))`),{code:'23514'});
   assert.equal(await count(),0);
   await pool.query('CREATE ROLE ls_inbound_denied NOSUPERUSER');
+  await pool.query('GRANT ls_inbound_denied TO synthetic WITH SET TRUE');
   const deniedPool={connect:async()=>{
-    const db=await pool.connect(); await db.query('SET ROLE ls_inbound_denied');
+    const db=await pool.connect(); try { await db.query('SET ROLE ls_inbound_denied'); } catch(error) { db.release(true); throw error; }
     return {query:db.query.bind(db),release:()=>db.release(true)};
   }};
   let sent=0; const denied=new LifeSkillsAppInboundOutbox(deniedPool,config,async()=>{sent++;return receipt();});
