@@ -18,6 +18,9 @@
   const form = document.querySelector('#torah-interest-form');
   if (!(form instanceof HTMLFormElement)) return;
   form.elements.namedItem('language').value = locale;
+  const syncConsentLanguage = () => { const language = form.elements.namedItem('language').value; form.querySelectorAll('[data-consent-lang]').forEach(node => { node.hidden = node.dataset.consentLang !== language; }); };
+  form.elements.namedItem('language').addEventListener('change', () => { form.elements.namedItem('purposeConsent').checked = false; syncConsentLanguage(); });
+  syncConsentLanguage();
   const status = document.querySelector('#save-status');
   const submit = form.querySelector('[type=submit]');
   let operationId = crypto.randomUUID(), attempted = null, unknown = false;
@@ -64,7 +67,7 @@
       }
       form.elements.namedItem('childAge').value = String(pending.fields.childAges?.[0] ?? '');
       form.elements.namedItem('otherChildAge').value = String(pending.fields.childAges?.[1] ?? '');
-      setContactInput(); lockFields(true);
+      setContactInput(); syncConsentLanguage(); lockFields(true);
       say('We could not confirm the save. Your answers are still here. Retry this same inquiry to reconcile it.','לא הצלחנו לאשר שהפנייה נשמרה. הפרטים עדיין כאן. נסו שוב את אותה הפנייה כדי לברר את מצבה.','unknown');
     }
   } catch { clearPending(); }
@@ -95,7 +98,7 @@
       const result = (await response.json().catch(() => null))?.data;
       if (response.ok && result?.saved === true && typeof result.reference === 'string') {
         say(`Your inquiry was saved. Reference: ${result.reference}. This is not enrollment or a reserved place. No reply message has been sent.`,`פנייתכם נשמרה. מספר פנייה: ${result.reference}. אין בכך הרשמה או שמירת מקום. עדיין לא נשלחה הודעת תשובה.`,'saved');
-        unknown = false; attempted = null; clearPending(); operationId = crypto.randomUUID(); lockFields(false); form.reset(); form.elements.namedItem('language').value = locale; setContactInput();
+        unknown = false; attempted = null; clearPending(); operationId = crypto.randomUUID(); lockFields(false); form.reset(); form.elements.namedItem('language').value = locale; syncConsentLanguage(); setContactInput();
       } else if (response.status >= 400 && response.status < 500 && !unknown) {
         unknown = false; attempted = null; clearPending(); operationId = crypto.randomUUID();
         lockFields(false);
