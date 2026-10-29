@@ -7,7 +7,7 @@ html[lang=he] h1,html[lang=he] h2,html[lang=he] blockquote{font-family:'Noto Ser
 #navMount{min-height:81px}
 .bna-site-nav--current{position:relative;background:#fff;backdrop-filter:none;padding:12px 24px}
 .bna-site-nav--current .bna-site-nav-inner{max-width:1160px;min-height:56px;gap:16px}
-.bna-site-nav--current .bna-site-brand{flex:0 1 240px;min-width:215px;gap:10px}
+.bna-site-nav--current .bna-site-brand{flex:0 1 300px;min-width:270px;gap:10px}
 .bna-site-nav--current .bna-site-brand img{width:52px;height:52px}
 .bna-site-nav--current .bna-site-nav-actions{min-width:0;gap:12px}
 .bna-site-nav--current .bna-site-nav-menu{gap:2px}
