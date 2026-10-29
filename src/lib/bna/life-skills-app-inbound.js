@@ -4,6 +4,7 @@ const { normalizeLifeSkillsPhone, lifeSkillsSheetCrmConfig } = require('./life-s
 // One destination, using the existing bridge credential. No arbitrary URL,
 // provider download/history call, contact/account creation or outbound reply.
 const APP_INBOUND_URL = 'https://life-skills.bneineviimacademy.org/api/private/contact-inbound';
+const ACADEMY_305_INBOUND_URL = 'https://life-skills.bneineviimacademy.org/api/private/owner-305-inbound';
 const OUTBOX_SQL = `CREATE TABLE IF NOT EXISTS bna_life_skills_app_inbound_outbox (
   binding_sha256 TEXT NOT NULL CHECK (binding_sha256 ~ '^[a-f0-9]{64}$'),
   event_key TEXT NOT NULL CHECK (event_key ~ '^[a-f0-9]{64}$'),
@@ -45,7 +46,7 @@ function forwardConfig(env = {}) {
   // retired Sheet writer. A conflict fails closed before acknowledging capture.
   const captureEnabled = enabled && (academy305 || (captureConsent.enabled && captureConsent.approved));
   const captureAllowed = academy305 ? !captureConsent.enabled : captureConsent.enabled && captureConsent.approved;
-  return { enabled:captureEnabled, ready:ready && captureAllowed, secret, channelId, businessNumber,
+  return { enabled:captureEnabled, ready:ready && captureAllowed, secret, channelId, businessNumber, inboundUrl:academy305 ? ACADEMY_305_INBOUND_URL : APP_INBOUND_URL,
     bindingSha256: crypto.createHash('sha256').update(canonical(binding)).digest('hex') };
 }
 function bounded(value, max, required = false) {
@@ -182,7 +183,7 @@ class LifeSkillsAppInboundOutbox {
       let status='pending', code='TRANSPORT_UNCONFIRMED';
       try {
         const inquiry = this.unseal(row);
-        const response = await this.fetcher(APP_INBOUND_URL, { method:'POST', redirect:'error', signal:AbortSignal.timeout(8000),
+        const response = await this.fetcher(this.config.inboundUrl, { method:'POST', redirect:'error', signal:AbortSignal.timeout(8000),
           headers:{'Content-Type':'application/json','X-Life-Skills-Bridge-Secret':this.config.secret}, body:JSON.stringify(inquiry) });
         if ([200,201].includes(response.status)) {
           const text = await boundedResponse(response);

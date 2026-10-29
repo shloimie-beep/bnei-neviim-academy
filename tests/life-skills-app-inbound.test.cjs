@@ -32,6 +32,7 @@ test('305 capture needs an explicit channel and refuses the retired Sheet writer
   const config=forwardConfig(env(mode));
   assert.equal(config.ready,true);
   assert.equal(config.businessNumber,'+13054916674');
+  assert.equal(config.inboundUrl,'https://life-skills.bneineviimacademy.org/api/private/owner-305-inbound');
   const payload={...envelope(),channel_id:'synthetic-305'};
   assert.equal(inquiriesFromEnvelope(payload,{},config)[0].businessNumber,'+13054916674');
   assert.deepEqual(inquiriesFromEnvelope(envelope(),{},config),[]);
