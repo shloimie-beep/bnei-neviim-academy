@@ -43,7 +43,7 @@
     return { name:get('name'), contactChannel:channel, contact:channel === 'phone' ? normalizedPhone : rawContact.toLowerCase(), language:get('language'), townOrZip:get('townOrZip'), childAges:ages,
       ...(get('readiness') ? {readiness:get('readiness')} : {}), ...(get('availability') ? {availability:get('availability')} : {}),
       ...(get('startPreference') ? {startPreference:get('startPreference')} : {}), ...(get('question') ? {question:get('question')} : {}),
-      permission:{confirmed:true,version:'BNA-TORAH-MORNING-INTEREST-20261028-v1',language:get('language')} };
+      permission:{confirmed:form.elements.namedItem('purposeConsent').checked,version:'BNA-TORAH-MORNING-INTEREST-20261028-v1',language:get('language')} };
   }
   function setContactInput() {
     const input = form.elements.namedItem('contact');

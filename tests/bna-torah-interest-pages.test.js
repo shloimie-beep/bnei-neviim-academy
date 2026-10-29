@@ -22,6 +22,8 @@ test('short BNA inquiry is distinct from historical registration and preserves e
   for (const name of ['name','contactChannel','contact','language','townOrZip','childAge']) assert.match(inquiry, new RegExp('name="'+name+'"'));
   assert.match(inquiry, /Please keep my inquiry privately and contact me about the first Torah-morning group/);
   assert.match(inquiry, /פנייה זו אינה רושמת ילד/);
+  assert.match(inquiry, /<input type="checkbox" name="purposeConsent" required>/);
+  assert.match(client, /confirmed:form\.elements\.namedItem\('purposeConsent'\)\.checked/);
   assert.match(client, /BNA-TORAH-MORNING-INTEREST-20261028-v1/);
   assert.match(client, /\/api\/bna\/interest/);
   assert.doesNotMatch(inquiry, /\/api\/submit|payment_method|full name of child/i);
