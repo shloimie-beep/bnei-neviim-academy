@@ -43,6 +43,7 @@
   </header>
 
   <main class="page-main">
+    <p class="notice" id="articleContext">These articles reflect earlier BNA teaching. For the current Florida co-op, <a href="/join">register your interest</a>.</p>
     <p class="notice" id="blogNotice">Bnei Neviim is not a clinical program or formal special education provider. It is an alternative Torah learning environment that may be a better fit for some boys who need a smaller, calmer, more movement-friendly and relationship-based structure.</p>
     <div class="filter-row" id="categoryFilters" aria-label="Blog categories"></div>
     <section class="blog-grid" id="blogGrid" aria-live="polite"></section>
@@ -79,6 +80,7 @@
 
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
+    if (lang === 'he') document.getElementById('articleContext').innerHTML = 'המאמרים משקפים הוראה קודמת בבני נביאים. למידע על קואופרטיב הלמידה הנוכחי בפלורידה, <a href="/he/join">הירשמו להתעניינות</a>.';
     document.getElementById("blogTitle").textContent = copy.title;
     document.getElementById("blogSubtitle").textContent = copy.subtitle;
     document.getElementById("blogNotice").textContent = copy.notice;
