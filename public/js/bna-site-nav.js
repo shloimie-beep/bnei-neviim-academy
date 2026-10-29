@@ -132,7 +132,18 @@
   }
 
   function currentArticlePage() {
-    return /^\/(?:he\/)?blog(?:\/|$)/.test(window.location.pathname);
+    return /^\/(?:he\/)?blog(?:\/|$)/.test(window.location.pathname)
+      || /^\/(?:he\/?|(?:he\/)?(?:join|support)\/?)?$/.test(window.location.pathname);
+  }
+
+  function currentNavLinks(active,lang) {
+    return [
+      ['vision', '/#vision', '/he#vision', 'Our Vision', 'החזון שלנו'],
+      ['programs', '/#programs', '/he#programs', 'Programs', 'תוכניות'],
+      ['blog', '/blog', '/he/blog', 'Articles', 'מאמרים'],
+      ['service-providers', '/providers', '/he/providers', 'Providers', 'אנשי חינוך וספקים'],
+      ['support', '/support', '/he/support', 'Support BNA', 'תמיכה בבני נביאים'],
+    ].map(([id,en,he,label,heLabel]) => `<a class="bna-site-nav-link${active===id?' is-active':''}" data-bna-current-link data-en-href="${en}" data-he-href="${he}" href="${lang==='he'?he:en}"${active===id?' aria-current="page"':''}><span data-lang="en">${label}</span><span data-lang="he">${heLabel}</span></a>`).join('');
   }
 
   function articleLinks(lang) {
@@ -258,6 +269,10 @@
   }
 
   function skipTarget(active) {
+    if (currentArticlePage()) {
+      const main = document.querySelector('main');
+      if (main?.id) return `#${main.id}`;
+    }
     const targetId = 'mainContent';
     const assignTarget = () => {
       const target = active === 'home'
@@ -291,17 +306,20 @@
     mount.dataset.bnaSiteNavRendered = 'true';
     const lang = selectedLanguage(mount);
     const current = currentArticlePage();
-    const copy = current ? { ...COPY[lang], location: lang === 'he' ? 'דרום פלורידה' : 'South Florida' } : COPY[lang] || COPY.en;
+    const copy = current ? { ...COPY[lang], brand:'Bnei Neviim Academy', location: lang === 'he' ? 'דרום פלורידה' : 'South Florida' } : COPY[lang] || COPY.en;
     const active = mount?.dataset.navActive || inferActiveNav();
     const signupHref = current ? `${lang === 'he' ? '/he' : ''}/join` : registrationLink(mount, lang);
     const signupLabel = current ? (lang === 'he' ? 'הרשמה להתעניינות' : 'Register your interest') : registrationLabel(mount, lang);
     const switchHref = languageSwitchUrl(lang);
+    const inlineLanguage = current && /^\/(?:he\/)?(?:join|support)\/?$/.test(window.location.pathname);
+    const pagePath = window.location.pathname.replace(/^\/he(?=\/)/, '');
+    if (current) document.documentElement.dataset.locale = lang;
 
     mount.innerHTML = `
-      <nav class="bna-site-nav" aria-label="Primary navigation">
+      <nav class="bna-site-nav${current?' bna-site-nav--current':''}" aria-label="Primary navigation">
         <a class="bna-site-skip-link" href="${escapeHtml(skipTarget(active))}">${escapeHtml(copy.skipToContent || COPY.en.skipToContent)}</a>
         <div class="bna-site-nav-inner">
-          <a class="bna-site-brand" href="${homeUrl(lang)}">
+          <a class="bna-site-brand"${current?' data-bna-current-link data-en-href="/" data-he-href="/he"':''} href="${homeUrl(lang)}">
             <img src="/images/bna-logo-nobg.png" alt="Bnei Neviim Academy">
             <span class="bna-site-brand-text">
               <span class="bna-site-brand-name">${escapeHtml(copy.brand)}</span>
@@ -313,7 +331,7 @@
           </button>
           <div class="bna-site-nav-actions" id="mainNavActions">
             <div class="bna-site-nav-menu" aria-label="Primary links">
-              ${current ? articleLinks(lang).filter(item => !['home','support'].includes(item.id)).map(item => renderNavLink(active, item)).join('') : `
+              ${current ? currentNavLinks(active,lang) : `
               ${renderNavLink(active, { id: 'home', href: homeUrl(lang), label: copy.home })}
               ${renderNavLink(active, { id: 'school', href: schoolUrl(lang), label: copy.school || COPY.en.school })}
               ${renderNavLink(active, { id: 'parents', href: parentsUrl(lang), label: copy.parents || COPY.en.parents })}
@@ -331,10 +349,10 @@
               `}
             </div>
             <div class="bna-site-nav-buttons">
-              <button class="bna-site-lang-toggle" id="languageToggle" type="button">${escapeHtml(copy.language)}</button>
+              ${inlineLanguage ? `<a class="bna-site-lang-toggle" id="languageToggle" data-lang-toggle data-en-href="${escapeHtml(pagePath)}" data-he-href="/he${escapeHtml(pagePath)}" href="${escapeHtml(switchHref)}"><span data-lang="en">עברית</span><span data-lang="he">English</span></a>` : `<button class="bna-site-lang-toggle" id="languageToggle" type="button">${escapeHtml(copy.language)}</button>`}
               ${current ? '' : `<a class="bna-site-nav-button bna-site-nav-contact" href="${escapeHtml(lang === 'he' ? '/he/torah-mornings' : '/torah-mornings')}">${escapeHtml(copy.contact)}</a>
               <a class="bna-site-nav-button bna-site-nav-provider" href="/providers/join?onboard=provider">${escapeHtml(copy.providerJoin)}</a>`}
-              <a class="bna-site-nav-button bna-site-nav-signup" id="backLink" href="${escapeHtml(signupHref)}">${escapeHtml(signupLabel)}</a>
+              <a class="bna-site-nav-button bna-site-nav-signup" id="backLink"${current?' data-bna-current-link data-en-href="/join" data-he-href="/he/join"':''} href="${escapeHtml(signupHref)}">${current?'<span data-lang="en">Join the Learning Co-op</span><span data-lang="he">הצטרפו לקואופרטיב הלמידה</span>':escapeHtml(signupLabel)}</a>
             </div>
           </div>
         </div>
@@ -355,9 +373,22 @@
       }
     });
 
-    languageToggle?.addEventListener('click', () => {
+    if (!inlineLanguage) languageToggle?.addEventListener('click', () => {
       window.location.href = switchHref;
     });
+
+    if (current) {
+      const syncLocale = () => {
+        const locale = document.documentElement.lang === 'he' ? 'he' : 'en';
+        mount.querySelectorAll('[data-bna-current-link]').forEach(link => {
+          link.setAttribute('href',locale==='he'?link.dataset.heHref:link.dataset.enHref);
+        });
+        const subtitle=mount.querySelector('#brandSubtitle');
+        if(subtitle)subtitle.textContent=locale==='he'?'דרום פלורידה':'South Florida';
+      };
+      syncLocale();
+      if(typeof MutationObserver==='function')new MutationObserver(syncLocale).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+    }
 
     links?.querySelectorAll('a').forEach((link) => {
       link.addEventListener('click', () => closeNav(mount));
@@ -380,7 +411,7 @@
     mount.dataset.bnaSiteFooterRendered = 'true';
     const lang = selectedLanguage(mount);
     const current = currentArticlePage();
-    const copy = current ? { ...COPY[lang], location: lang === 'he' ? 'דרום פלורידה' : 'South Florida', footerPortals: lang === 'he' ? 'יצירת קשר ופרטיות' : 'Contact and privacy' } : COPY[lang] || COPY.en;
+    const copy = current ? { ...COPY[lang], brand:'Bnei Neviim Academy', location: lang === 'he' ? 'דרום פלורידה' : 'South Florida', footerPortals: lang === 'he' ? 'יצירת קשר ופרטיות' : 'Contact and privacy' } : COPY[lang] || COPY.en;
     const active = mount?.dataset.navActive || inferActiveNav();
     const year = new Date().getFullYear();
     const nonprofit = lang === 'he'
@@ -414,7 +445,7 @@
       return `<a href="${escapeHtml(item.href)}"${activeAttr}>${escapeHtml(item.label)}</a>`;
     };
     mount.innerHTML = `
-      <footer class="bna-site-footer">
+      <footer class="bna-site-footer${current?' bna-site-footer--current':''}">
         <div class="bna-site-footer-inner">
           <div class="bna-site-footer-brand">
             <strong>${escapeHtml(copy.brand)}</strong>
@@ -449,6 +480,14 @@
           <span>${escapeHtml(copyright)}</span>
         </div>
       </footer>`;
+    if(current&&typeof MutationObserver==='function'&&!mount.dataset.localeObserver){
+      mount.dataset.localeObserver='true';
+      new MutationObserver(()=>{
+        mount.dataset.navLanguage=document.documentElement.lang==='he'?'he':'en';
+        mount.dataset.bnaSiteFooterRendered='false';
+        renderSiteFooter(mount);
+      }).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+    }
   }
 
   function init() {

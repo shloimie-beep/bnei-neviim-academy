@@ -1512,6 +1512,8 @@
   }
 
   function schedulePublicFollowup() {
+    // Keep reading surfaces quiet; the existing helper remains available.
+    if (/^\/(?:he\/)?blog(?:\/|$)/.test(window.location.pathname)) return;
     if (!isPublicLeadSurface() || dismissedPublicPrompt) return;
     if (publicAutoPromptTimer || publicFollowupTimer) return;
     const firstDelay = surface === 'one_time_public' ? ONE_TIME_PUBLIC_FIRST_NUDGE_DELAY_MS : HELPER_FIRST_NUDGE_DELAY_MS;
