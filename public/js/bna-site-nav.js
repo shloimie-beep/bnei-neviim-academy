@@ -186,6 +186,11 @@
       return `${path}?${params.toString()}`;
     }
 
+    const article = path.match(/^\/(?:he\/)?blog\/([^/]+)\/?$/);
+    if (article && !window.BNAContent?.getPost(next, article[1])) {
+      return next === 'he' ? '/he/blog' : '/blog';
+    }
+
     if (next === 'he') {
       if (path === '/' || path === '/index.html') return '/he';
       if (path.startsWith('/he')) return path;

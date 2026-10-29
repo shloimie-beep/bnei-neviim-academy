@@ -45,3 +45,20 @@ test('article-shell change preserves existing provider and historical portal nav
   assert.ok(nav.includes('/parent/login'));assert.ok(nav.includes('/student/login'));
   assert.ok(nav.includes('/signup.html'));assert.ok(footer.includes('/provider'));
 });
+
+test('article language control opens a real translation or its language article list',()=>{
+ for(const [path,lang,expected] of [
+  ['/blog/torah-that-answers-real-life','en','/he/blog'],
+  ['/blog/alternative-school-beit-shemesh','en','/he/blog/alternative-school-beit-shemesh'],
+  ['/he/blog/alternative-school-beit-shemesh','he','/blog/alternative-school-beit-shemesh']]){
+  let click;
+  const document={documentElement:{lang,dataset:{}},readyState:'complete',querySelector:()=>null,querySelectorAll:()=>[],addEventListener:()=>{}};
+  const window={location:{pathname:path,search:''}};
+  const context=vm.createContext({window,document,URLSearchParams,Element:class {}});
+  vm.runInContext(fs.readFileSync('public/js/bna-content.js','utf8'),context);
+  vm.runInContext(source,context);
+  const mount={dataset:{},innerHTML:'',querySelector:selector=>selector==='#languageToggle'?{addEventListener:(_,handler)=>{click=handler;}}:null,querySelectorAll:()=>[]};
+  window.BNASiteNav.render(mount);assert.equal(typeof click,'function');click();
+  assert.equal(window.location.href,expected);
+ }
+});
