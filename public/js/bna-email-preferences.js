@@ -16,12 +16,12 @@
   document.querySelector('#preferences-notice').textContent=data.notice[locale];
   lock();
  }
- document.querySelectorAll('[data-lang-toggle]').forEach(a=>a.addEventListener('click',event=>{
+ document.querySelectorAll('[data-lang-toggle]').forEach(a=>{const sync=()=>{a.href=locale==='he'?a.dataset.enHref:a.dataset.heHref;};sync();a.addEventListener('click',event=>{
   event.preventDefault();if(posting||unknown)return;locale=locale==='he'?'en':'he';document.documentElement.lang=locale;document.documentElement.dir=locale==='he'?'rtl':'ltr';document.documentElement.dataset.locale=locale;
   document.title=(locale==='he'?'העדפות דוא״ל':'Email preferences')+' | Bnei Neviim Academy';
   history.replaceState(null,'',(locale==='he'?'/he/email-preferences':'/email-preferences')+location.hash);
-  render();if(savedMessage)say(savedMessage.en,savedMessage.he,savedMessage.state);
- }));
+  sync();render();if(savedMessage)say(savedMessage.en,savedMessage.he,savedMessage.state);
+ });});
  const params=new URLSearchParams(location.hash.slice(1)),token=params.get('token');
  if(location.search||[...params.keys()].join()!=='token'||params.getAll('token').length!==1||!/^[A-Za-z0-9_-]{100,2048}$/.test(token||'')){
   say('Open the personal preference link from your BNA message, or email the office for help.','פתחו את קישור ההעדפות האישי מהודעת בני נביאים, או פנו למשרד בדוא״ל.','error');return;

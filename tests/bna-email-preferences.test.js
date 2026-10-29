@@ -24,7 +24,7 @@ function readback(version=0,updates=false,canSubscribe=true){return {inquiryId,p
 const tick=async()=>{for(let i=0;i<10;i++)await new Promise(resolve=>setImmediate(resolve));};
 function harness({storage=new Map(),enabled=true,hash='#token='+token,reply=()=>({status:200,data:readback()})}={}){
  const form=new Form(),ids={};for(const name of ['email-preferences','preferences-controls','preferences-fields','preferences-status','preferences-retry','preferences-read','preferences-stop-program','preferences-stop-all','preferences-program','preferences-current','preferences-paused','preferences-notice'])ids[name]=new Node();
- ids['email-preferences'].dataset.enabled=String(enabled);const toggle=new Node(),calls=[];
+ ids['email-preferences'].dataset.enabled=String(enabled);const toggle=new Node(),calls=[];toggle.dataset={enHref:'/email-preferences',heHref:'/he/email-preferences'};
  const location={hash,search:'',pathname:'/email-preferences'},document={documentElement:{lang:'en',dir:'ltr',dataset:{}},title:'',querySelector:s=>s==='#preferences-form'?form:ids[s.slice(1)],querySelectorAll:()=>[toggle]};
  const context={document,HTMLFormElement:Form,location,history:{replaceState:(_a,_b,url)=>{location.pathname=url.split('#')[0];location.hash=url.includes('#')?'#'+url.split('#')[1]:'';}},URLSearchParams,TextEncoder,AbortSignal,
   crypto:{subtle:webcrypto.subtle,randomUUID},sessionStorage:{getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,value),removeItem:key=>storage.delete(key)},
@@ -33,7 +33,7 @@ function harness({storage=new Map(),enabled=true,hash='#token='+token,reply=()=>
 }
 test('loading a link reads only; no token is stored and no opt-in is inferred',async()=>{
  const h=harness();await tick();assert.equal(h.calls.length,1);assert.equal(h.calls[0].action,'read');assert.equal(h.form.inputs.updates.checked,false);assert.equal(h.ids['preferences-fields'].disabled,false);assert.equal(h.storage.size,0);
- const oldHash=h.location.hash;h.toggle.events.click({preventDefault(){}});assert.equal(h.location.hash,oldHash);assert.equal(h.document.documentElement.lang,'he');assert.equal(h.calls.length,1);assert.equal(h.form.inputs.updates.checked,false);
+ const oldHash=h.location.hash;assert.equal(h.toggle.href,'/he/email-preferences');h.toggle.events.click({preventDefault(){}});assert.equal(h.location.hash,oldHash);assert.equal(h.document.documentElement.lang,'he');assert.equal(h.toggle.href,'/email-preferences');assert.equal(h.calls.length,1);assert.equal(h.form.inputs.updates.checked,false);
  const invalid=harness({hash:'#token=invalid'});await tick();assert.equal(invalid.calls.length,0);
  const off=harness({enabled:false});await tick();assert.equal(off.calls.length,0);
 });
