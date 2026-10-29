@@ -8,7 +8,13 @@
  const updatesNotice={version:'BNA-SUPPORT-UPDATES-20261029-v1',en:'Send me BNA project updates by email. I can unsubscribe at any time.',he:'שלחו לי עדכונים על פרויקט בני נביאים בדוא״ל. אוכל להסיר את ההרשמה בכל עת.'};
  let operationId=crypto.randomUUID(),pending=null,unknown=false,posting=false;
  input('language').value=locale;
- document.querySelectorAll('[data-lang-toggle]').forEach(a=>{const sync=()=>{a.href=locale==='he'?a.dataset.enHref:a.dataset.heHref;};sync();a.addEventListener('click',event=>{event.preventDefault();if(unknown||posting)return;locale=locale==='en'?'he':'en';document.documentElement.lang=locale;document.documentElement.dir=locale==='he'?'rtl':'ltr';document.documentElement.dataset.locale=locale;input('purposeConsent').checked=false;input('emailUpdates').checked=false;history.replaceState(null,'',(locale==='he'?a.dataset.heHref:a.dataset.enHref)+(location.search||''));sync();});});
+ function syncMetadata(){
+  document.title=locale==='he'?'תמכו בדור הגאולה | אקדמיית בני נביאים':'Support the Generation of the Geulah | Bnei Neviim Academy';
+  const head=document.head;if(head){head.querySelector('[rel="canonical"]')?.setAttribute('href','https://bneineviimacademy.org'+(locale==='he'?'/he/support':'/support'));head.querySelector('meta[name="description"]')?.setAttribute('content',locale==='he'?'תמיכתכם מחזקת את העשייה החינוכית של אקדמיית בני נביאים ואת התפתחותה של קהילת לימוד תורה אינטגרטיבית בפלורידה.':"Support BNA's educational work and its long-term vision for a nature-centered Torah learning community in Florida.");}
+  const home=document.querySelector('a.identity');if(home)home.href=locale==='he'?'/he':'/';
+ }
+ syncMetadata();
+ document.querySelectorAll('[data-lang-toggle]').forEach(a=>{const sync=()=>{a.href=locale==='he'?a.dataset.enHref:a.dataset.heHref;};sync();a.addEventListener('click',event=>{event.preventDefault();if(unknown||posting)return;locale=locale==='en'?'he':'en';document.documentElement.lang=locale;document.documentElement.dir=locale==='he'?'rtl':'ltr';document.documentElement.dataset.locale=locale;input('purposeConsent').checked=false;input('emailUpdates').checked=false;history.replaceState(null,'',(locale==='he'?a.dataset.heHref:a.dataset.enHref)+(location.search||''));syncMetadata();sync();});});
  const say=(en,he,state)=>{status.textContent=locale==='he'?he:en;status.dataset.state=state;};
  const lock=locked=>form.querySelectorAll('input,select,textarea').forEach(node=>{node.disabled=locked;});
  const clearMarker=()=>{try{sessionStorage.removeItem(markerKey);}catch{}};

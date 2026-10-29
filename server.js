@@ -94801,7 +94801,7 @@ app.get(['/privacy', '/he/privacy'], (req, res) => {
 app.get(['/support', '/he/support'], (req, res) => {
   if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
   res.setHeader('Cache-Control', 'no-store');
-  res.type('html').send(require('./src/lib/bna/support-page').renderSupportPage());
+  res.type('html').send(require('./src/lib/bna/support-page').renderSupportPage(process.env, req.path === '/he/support' ? 'he' : 'en'));
 });
 
 app.get(['/blog', '/he/blog'], (req, res) => {
