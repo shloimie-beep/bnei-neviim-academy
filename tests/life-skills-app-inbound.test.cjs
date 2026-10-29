@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inboundEnvelopeChannel, is305Envelope, inquiriesFromEnvelope, ctwaAttributionFromProviderMessage, receiptDigest, LifeSkillsAppInboundOutbox } = require('../src/lib/bna/life-skills-app-inbound');
+const { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inboundEnvelopeChannel, is305Envelope, validate305Envelope, inquiriesFromEnvelope, ctwaAttributionFromProviderMessage, receiptDigest, LifeSkillsAppInboundOutbox } = require('../src/lib/bna/life-skills-app-inbound');
 
 function env(extra={}) { return { LIFE_SKILLS_APP_INBOUND_FORWARD_ENABLED:'true', LIFE_SKILLS_SHEET_CRM_ENABLED:'true',
   LIFE_SKILLS_SHEET_CRM_CONFIRM:'APPROVE_LIFE_SKILLS_SHEET_CRM_INBOUND_UPSERT', LIFE_SKILLS_APP_BRIDGE_SECRET:'synthetic-key-not-a-real-secret-123456789',
@@ -46,17 +46,22 @@ test('305 webhook captures before ACK and bypasses legacy handlers; unbound even
   const start=server.indexOf('    const inbound305Config=lifeSkillsAppInboundConfig(process.env);');
   const end=server.indexOf('    // Future-only capture uses the already authenticated provider envelope.',start);
   assert.ok(start>0&&end>start);let captures=0;
-  const run=async(payload,scope,config)=>vm.runInNewContext(`(async()=>{${server.slice(start,end)};return {legacy:true};})()`,{
+  const run=async(payload,scope,config,fail=false)=>vm.runInNewContext(`(async()=>{${server.slice(start,end)};return {legacy:true};})()`,{
     process:{env:{}},payload,webhookScope:scope,lifeSkillsAppInboundConfig:()=>config,isOneTimeWapiScope:s=>s.project_key==='one_time_mishnah_class',
-    lifeSkillsInboundEnvelopeChannel:inboundEnvelopeChannel,isLifeSkills305Envelope:is305Envelope,
-    captureLifeSkillsAppInbound:async()=>{captures++;return {status:'durably_captured',captured:1};},
+    lifeSkillsInboundEnvelopeChannel:inboundEnvelopeChannel,isLifeSkills305Envelope:is305Envelope,validateLifeSkills305Envelope:validate305Envelope,
+    captureLifeSkillsAppInbound:async()=>{captures++;if(fail)throw Error('private-message-detail');return {status:'durably_captured',captured:1};},
+    console:{error(){}},
     res:{status(code){return {json:body=>({code,body})};},json:body=>({code:200,body})},
   });
   const config=forwardConfig(env({LIFE_SKILLS_305_INBOUND_ENABLED:'true',LIFE_SKILLS_305_CHANNEL_ID:'synthetic-305',LIFE_SKILLS_SHEET_CRM_ENABLED:'false'}));
-  assert.equal((await run({channel_id:'synthetic-305'},{},config)).body.status,'durably_captured');assert.equal(captures,1);
+  const valid={...envelope(),channel_id:'synthetic-305'};
+  assert.equal((await run(valid,{},config)).body.status,'durably_captured');assert.equal(captures,1);
+  assert.equal((await run({channel_id:'synthetic-305'}, {},config)).code,503);
+  assert.equal((await run({...valid,messages:[{...valid.messages[0],from_me:undefined}]}, {},config)).code,503);
   assert.equal((await run({}, {},config)).code,503);assert.equal((await run({channel_id:'synthetic-305'},{},{...config,ready:false})).code,503);
+  const failed=await run(valid,{},config,true);assert.equal(failed.code,503);assert.doesNotMatch(JSON.stringify(failed),/private-message-detail/);
   assert.equal((await run({channel_id:'different'},{},config)).legacy,true);
-  assert.equal((await run({channel_id:'synthetic-305'},{project_key:'one_time_mishnah_class'},config)).legacy,true);assert.equal(captures,1);
+  assert.equal((await run({channel_id:'synthetic-305'},{project_key:'one_time_mishnah_class'},config)).legacy,true);assert.equal(captures,2);
 });
 test('305 capture can remain durable while forwarding is held',async()=>{
  const server=fs.readFileSync(path.join(__dirname,'..','server.js'),'utf8'),start=server.indexOf('function startLifeSkillsAppInboundScheduler()'),end=server.indexOf("app.post('/api/webhooks/wapi'",start);

@@ -55,6 +55,12 @@ function is305Envelope(payload={},scope={},config={}) {
   const channel=inboundEnvelopeChannel(payload);
   return Boolean(channel && config.channelId && channel === config.channelId);
 }
+function validate305Envelope(payload={}) {
+  if(payload.event?.type!=='messages'||payload.event?.event!=='post') throw fail('INVALID_305_ENVELOPE');
+  const messages=payload.messages || payload.data?.messages;
+  if(!Array.isArray(messages)||messages.length<1||messages.length>100) throw fail('INVALID_305_ENVELOPE');
+  for(const message of messages) if(!message||typeof message!=='object'||typeof message.from_me!=='boolean'||typeof message.chat_id!=='string'||!message.chat_id||typeof message.id!=='string'||!message.id) throw fail('INVALID_305_ENVELOPE');
+}
 function bounded(value, max, required = false) {
   const text = value == null ? '' : String(value);
   if (text.length > max || (required && !text.length)) throw fail('INVALID_INQUIRY');
@@ -226,4 +232,4 @@ async function boundedResponse(response) {
   return Buffer.concat(parts).toString('utf8');
 }
 
-module.exports = { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inboundEnvelopeChannel, is305Envelope, inquiriesFromEnvelope, ctwaAttributionFromProviderMessage, receiptDigest, LifeSkillsAppInboundOutbox };
+module.exports = { APP_INBOUND_URL, OUTBOX_SQL, forwardConfig, inboundEnvelopeChannel, is305Envelope, validate305Envelope, inquiriesFromEnvelope, ctwaAttributionFromProviderMessage, receiptDigest, LifeSkillsAppInboundOutbox };

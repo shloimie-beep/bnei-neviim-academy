@@ -53,6 +53,7 @@ const {
   forwardConfig: lifeSkillsAppInboundConfig,
   is305Envelope: isLifeSkills305Envelope,
   inboundEnvelopeChannel: lifeSkillsInboundEnvelopeChannel,
+  validate305Envelope: validateLifeSkills305Envelope,
   inquiriesFromEnvelope: lifeSkillsAppInquiries,
   LifeSkillsAppInboundOutbox,
 } = require('./src/lib/bna/life-skills-app-inbound');
@@ -69854,8 +69855,14 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       return res.status(503).json({success:false,error:'WAPI channel binding unavailable'});
     if (isLifeSkills305Envelope(payload,webhookScope,inbound305Config)) {
       if (!inbound305Config.ready) return res.status(503).json({success:false,error:'305 capture unavailable'});
-      const captured=await captureLifeSkillsAppInbound(payload,webhookScope);
-      return res.json({success:true,status:captured.status,captured:captured.captured||0,conflicts:captured.conflicts||0});
+      try {
+        validateLifeSkills305Envelope(payload);
+        const captured=await captureLifeSkillsAppInbound(payload,webhookScope);
+        return res.json({success:true,status:captured.status,captured:captured.captured||0,conflicts:captured.conflicts||0});
+      } catch {
+        console.error('[wapi] 305 capture unavailable');
+        return res.status(503).json({success:false,error:'305 capture unavailable'});
+      }
     }
     // Future-only capture uses the already authenticated provider envelope.
     // A DB failure here propagates to the existing failed webhook response.
