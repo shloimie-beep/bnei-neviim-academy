@@ -21,7 +21,8 @@ test('current EN and HE article entry points lead to the released co-op and owne
     const {nav,footer}=render(path,lang),prefix=lang==='he'?'/he':'';
     assert.ok(nav.includes(`href="${prefix}/join"`));
     assert.ok(nav.includes(`href="${prefix}/fishing-academy"`));
-    assert.ok(nav.includes('href="tel:+13054916674"'));
+    assert.ok(footer.includes('href="tel:+13054916674"'));
+    assert.doesNotMatch(nav,/bna-site-nav-contact|bna-site-nav-provider/);
     assert.ok(footer.includes(`https://life-skills.bneineviimacademy.org/${lang}/app/clients`));
     assert.ok(footer.includes(`href="${prefix}/privacy"`));
     assert.doesNotMatch(nav+footer,/Beit Shemesh|בית שמש|signup(?:-he)?\.html|\/parent\/login|\/student\/login|Registered nonprofit/);
