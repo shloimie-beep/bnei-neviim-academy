@@ -34,13 +34,18 @@ function canonical(value) {
 }
 function forwardConfig(env = {}) {
   const enabled = env.LIFE_SKILLS_APP_INBOUND_FORWARD_ENABLED === 'true';
+  const academy305 = env.LIFE_SKILLS_305_INBOUND_ENABLED === 'true';
   const secret = String(env.LIFE_SKILLS_APP_BRIDGE_SECRET || '').trim();
-  const channelId = String(env.LIFE_SKILLS_WAPI_CHANNEL_ID || env.WHAPI_CHANNEL_ID || '').trim();
-  const businessNumber = normalizeLifeSkillsPhone(env.LIFE_SKILLS_WAPI_REQUIRED_SENDER_DIGITS || '972534932631');
+  const channelId = String(academy305 ? env.LIFE_SKILLS_305_CHANNEL_ID || '' : env.LIFE_SKILLS_WAPI_CHANNEL_ID || env.WHAPI_CHANNEL_ID || '').trim();
+  const businessNumber = normalizeLifeSkillsPhone(academy305 ? '13054916674' : env.LIFE_SKILLS_WAPI_REQUIRED_SENDER_DIGITS || '972534932631');
   const ready = enabled && secret.length >= 32 && secret.length <= 1024 && channelId.length >= 1 && channelId.length <= 180 && Boolean(businessNumber);
   const binding = { provider: 'whapi', channelId, businessNumber };
   const captureConsent = lifeSkillsSheetCrmConfig(env);
-  return { enabled:enabled && captureConsent.enabled && captureConsent.approved, ready:ready && captureConsent.enabled && captureConsent.approved, secret, channelId, businessNumber,
+  // The new channel requires an explicit binding and cannot coexist with the
+  // retired Sheet writer. A conflict fails closed before acknowledging capture.
+  const captureEnabled = enabled && (academy305 || (captureConsent.enabled && captureConsent.approved));
+  const captureAllowed = academy305 ? !captureConsent.enabled : captureConsent.enabled && captureConsent.approved;
+  return { enabled:captureEnabled, ready:ready && captureAllowed, secret, channelId, businessNumber,
     bindingSha256: crypto.createHash('sha256').update(canonical(binding)).digest('hex') };
 }
 function bounded(value, max, required = false) {

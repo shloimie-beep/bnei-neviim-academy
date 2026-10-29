@@ -27,6 +27,17 @@ test('binding is the private app canonical SHA-256; no owner-controlled destinat
   assert.equal(c.bindingSha256,crypto.createHash('sha256').update(JSON.stringify({businessNumber:'+972534932631',channelId:'synthetic-channel',provider:'whapi'})).digest('hex'));
   assert.equal(c.ready,true);
 });
+test('305 capture needs an explicit channel and refuses the retired Sheet writer', () => {
+  const mode={LIFE_SKILLS_305_INBOUND_ENABLED:'true',LIFE_SKILLS_305_CHANNEL_ID:'synthetic-305',LIFE_SKILLS_SHEET_CRM_ENABLED:'false'};
+  const config=forwardConfig(env(mode));
+  assert.equal(config.ready,true);
+  assert.equal(config.businessNumber,'+13054916674');
+  const payload={...envelope(),channel_id:'synthetic-305'};
+  assert.equal(inquiriesFromEnvelope(payload,{},config)[0].businessNumber,'+13054916674');
+  assert.deepEqual(inquiriesFromEnvelope(envelope(),{},config),[]);
+  assert.throws(()=>inquiriesFromEnvelope(payload,{},forwardConfig(env({...mode,LIFE_SKILLS_SHEET_CRM_ENABLED:'true'}))),/FORWARD_CONFIGURATION_UNAVAILABLE/);
+  assert.equal(forwardConfig(env({...mode,LIFE_SKILLS_305_CHANNEL_ID:''})).ready,false);
+});
 test('blind acknowledgement binds the exact normalized event/body to the existing bridge secret',()=>{
   const config=forwardConfig(env()),[dto]=inquiriesFromEnvelope(envelope(),{},config),digest=receiptDigest(dto,config.secret);
   assert.match(digest,/^[a-f0-9]{64}$/);
