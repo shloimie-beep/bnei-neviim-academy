@@ -6,7 +6,7 @@ const test = require('node:test');
 const source = fs.readFileSync('public/js/bna-site-nav.js', 'utf8');
 
 function render(pathname, lang) {
-  const document = {documentElement:{lang},readyState:'complete',querySelector:()=>null,
+  const document = {documentElement:{lang,dataset:{}},readyState:'complete',querySelector:()=>null,
     querySelectorAll:()=>[],addEventListener:()=>{}};
   const window = {location:{pathname,search:''}};
   vm.runInNewContext(source,{window,document,URLSearchParams,Element:class {}});
@@ -20,7 +20,8 @@ test('current EN and HE article entry points lead to the released co-op and owne
   for(const [path,lang] of [['/blog','en'],['/blog/torah-that-answers-real-life','en'],['/he/blog','he'],['/he/blog/torah-that-answers-real-life','he']]){
     const {nav,footer}=render(path,lang),prefix=lang==='he'?'/he':'';
     assert.ok(nav.includes(`href="${prefix}/join"`));
-    assert.ok(nav.includes(`href="${prefix}/fishing-academy"`));
+    assert.ok(nav.includes(`href="${prefix || '/'}#programs"`));
+    assert.ok(footer.includes(`href="${prefix}/fishing-academy"`));
     assert.ok(footer.includes('href="tel:+13054916674"'));
     assert.doesNotMatch(nav,/bna-site-nav-contact|bna-site-nav-provider/);
     assert.ok(footer.includes(`https://life-skills.bneineviimacademy.org/${lang}/app/clients`));
@@ -29,8 +30,35 @@ test('current EN and HE article entry points lead to the released co-op and owne
   }
 });
 
+test('current homepage, co-op and Support share the article shell without legacy portals',()=>{
+ for(const [path,lang] of [['/','en'],['/he','he'],['/join','en'],['/he/join','he'],['/support','en'],['/he/support','he']]){
+  const {nav,footer}=render(path,lang);
+  assert.match(nav,/bna-site-nav--current/);assert.match(footer,/bna-site-footer--current/);
+  assert.match(nav,/Join the Learning Co-op/);assert.match(nav,/aria-expanded="false"/);
+  assert.doesNotMatch(nav+footer,/Ramat Beit Shemesh|\/signup\.html|Registered nonprofit|\/student\/login/);
+  if(/join|support/.test(path)){assert.match(nav,/data-lang-toggle/);assert.match(nav,/data-en-href="\/(?:join|support)"/);}
+ }
+});
+
 test('article-shell change preserves existing provider and historical portal navigation',()=>{
   const {nav,footer}=render('/providers','en');
   assert.ok(nav.includes('/parent/login'));assert.ok(nav.includes('/student/login'));
   assert.ok(nav.includes('/signup.html'));assert.ok(footer.includes('/provider'));
+});
+
+test('article language control opens a real translation or its language article list',()=>{
+ for(const [path,lang,expected] of [
+  ['/blog/torah-that-answers-real-life','en','/he/blog'],
+  ['/blog/alternative-school-beit-shemesh','en','/he/blog/alternative-school-beit-shemesh'],
+  ['/he/blog/alternative-school-beit-shemesh','he','/blog/alternative-school-beit-shemesh']]){
+  let click;
+  const document={documentElement:{lang,dataset:{}},readyState:'complete',querySelector:()=>null,querySelectorAll:()=>[],addEventListener:()=>{}};
+  const window={location:{pathname:path,search:''}};
+  const context=vm.createContext({window,document,URLSearchParams,Element:class {}});
+  vm.runInContext(fs.readFileSync('public/js/bna-content.js','utf8'),context);
+  vm.runInContext(source,context);
+  const mount={dataset:{},innerHTML:'',querySelector:selector=>selector==='#languageToggle'?{addEventListener:(_,handler)=>{click=handler;}}:null,querySelectorAll:()=>[]};
+  window.BNASiteNav.render(mount);assert.equal(typeof click,'function');click();
+  assert.equal(window.location.href,expected);
+ }
 });
