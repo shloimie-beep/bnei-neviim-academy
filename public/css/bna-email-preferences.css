@@ -1,0 +1,2 @@
+/* Preserve the native hidden state against shared .button display rules. */
+#email-preferences [hidden]{display:none!important}

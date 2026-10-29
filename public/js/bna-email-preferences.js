@@ -2,13 +2,13 @@
  'use strict';
  const root=document.querySelector('#email-preferences'),form=document.querySelector('#preferences-form');
  if(!root||!(form instanceof HTMLFormElement))return;
- const fields=document.querySelector('#preferences-fields'),status=document.querySelector('#preferences-status');
+ const controls=document.querySelector('#preferences-controls'),fields=document.querySelector('#preferences-fields'),status=document.querySelector('#preferences-status');
  const retry=document.querySelector('#preferences-retry'),reload=document.querySelector('#preferences-read');
  const stopProgram=document.querySelector('#preferences-stop-program'),stopAll=document.querySelector('#preferences-stop-all');
  const updates=form.elements.namedItem('updates'),language=form.elements.namedItem('locale');
  let locale=document.documentElement.lang==='he'?'he':'en',data=null,pending=null,posting=false,unknown=false,markerKey='',savedMessage=null;
  const say=(en,he,state='')=>{savedMessage={en,he,state};status.textContent=locale==='he'?he:en;status.dataset.state=state;};
- function lock(){fields.disabled=posting||unknown||!data||!data.canSubscribe;stopProgram.disabled=posting||unknown||!data;stopAll.disabled=posting||unknown||!data;retry.disabled=posting;retry.hidden=!unknown;reload.hidden=posting||unknown;}
+ function lock(){controls.hidden=!data;fields.disabled=posting||unknown||!data||!data.canSubscribe;stopProgram.disabled=posting||unknown||!data;stopAll.disabled=posting||unknown||!data;retry.disabled=posting;retry.hidden=!unknown;reload.hidden=posting||unknown;}
  function render(){if(!data)return;const p=data.preferences;
   document.querySelector('#preferences-program').textContent=locale==='he'?(p.program==='bna_learning_coop'?'קואופרטיב הלמידה':'עדכוני פרויקט ותמיכה'):(p.program==='bna_learning_coop'?'Learning Co-op':'Project and supporter updates');
   document.querySelector('#preferences-current').textContent=locale==='he'?(p.updates?'הרשאה לעדכוני דוא״ל שמורה.':'לא התבקשו עדכוני דוא״ל, או שבוטלה ההרשמה.'):(p.updates?'Email-updates permission is recorded.':'Email updates are not requested or have been unsubscribed.');
