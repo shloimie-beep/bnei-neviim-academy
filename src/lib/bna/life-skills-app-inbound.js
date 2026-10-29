@@ -102,7 +102,8 @@ function inquiriesFromEnvelope(payload = {}, scope = {}, config) {
     if (!message || typeof message !== 'object') throw fail('INVALID_INQUIRY');
     const thread = String(message.chat_id || '');
     if (message.from_me !== false || message.status || /@(?:g\.us|newsletter|broadcast)$/.test(thread)) continue;
-    if (!/^[0-9]+@(?:s\.whatsapp\.net|c\.us)$/.test(thread)) continue;
+    const phoneThread=/^[0-9]+@(?:s\.whatsapp\.net|c\.us)$/.test(thread),lidThread=/^[0-9]+@lid$/.test(thread);
+    if (!phoneThread && !(config.academy305 && lidThread)) { if(config.academy305)throw fail('UNSUPPORTED_305_THREAD'); continue; }
     const suppliedDestination = message.to || payload.to;
     if (suppliedDestination && normalizeLifeSkillsPhone(suppliedDestination) !== config.businessNumber) throw fail('DESTINATION_MISMATCH');
     const type = bounded(message.type, 60, true);
@@ -119,8 +120,8 @@ function inquiriesFromEnvelope(payload = {}, scope = {}, config) {
     if (!Number.isFinite(message.timestamp) || message.timestamp <= 0) throw fail('INVALID_INQUIRY');
     const date = new Date(message.timestamp < 1e12 ? message.timestamp * 1000 : message.timestamp);
     if (!Number.isFinite(date.getTime())) throw fail('INVALID_INQUIRY');
-    const fromNumber = normalizeLifeSkillsPhone(message.from);
-    if (!fromNumber || normalizeLifeSkillsPhone(thread) !== fromNumber) throw fail('INVALID_INQUIRY');
+    const fromNumber = lidThread ? null : normalizeLifeSkillsPhone(message.from || (config.academy305 ? thread : ''));
+    if (!lidThread && (!fromNumber || normalizeLifeSkillsPhone(thread) !== fromNumber)) throw fail('INVALID_INQUIRY');
     const id = bounded(message.id, 180, true);
     const inquiry = { provider:'whapi', channelId:config.channelId, businessNumber:config.businessNumber,
       providerEventId:id, providerMessageId:id, providerThreadId:bounded(thread,180,true), eventType:'inbound_message',

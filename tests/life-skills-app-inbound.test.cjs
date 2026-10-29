@@ -41,6 +41,14 @@ test('305 capture needs an explicit channel and refuses the retired Sheet writer
   assert.throws(()=>inquiriesFromEnvelope(payload,{},forwardConfig(env({...mode,LIFE_SKILLS_SHEET_CRM_ENABLED:'true'}))),/FORWARD_CONFIGURATION_UNAVAILABLE/);
   assert.equal(forwardConfig(env({...mode,LIFE_SKILLS_305_CHANNEL_ID:''})).ready,false);
 });
+test('305 preserves opaque LID threads and accepts an absent sender only from an exact phone thread',()=>{
+ const config=forwardConfig(env({LIFE_SKILLS_305_INBOUND_ENABLED:'true',LIFE_SKILLS_305_CHANNEL_ID:'synthetic-305',LIFE_SKILLS_SHEET_CRM_ENABLED:'false'}));
+ const phone={...envelope({from:undefined,chat_id:'15555550123@s.whatsapp.net'}),channel_id:'synthetic-305'};
+ assert.equal(inquiriesFromEnvelope(phone,{},config)[0].fromNumber,'+15555550123');
+ const lid={...envelope({from:undefined,chat_id:'123456789@lid'}),channel_id:'synthetic-305'};
+ assert.deepEqual({fromNumber:inquiriesFromEnvelope(lid,{},config)[0].fromNumber,thread:inquiriesFromEnvelope(lid,{},config)[0].providerThreadId},{fromNumber:null,thread:'123456789@lid'});
+ assert.throws(()=>inquiriesFromEnvelope({...envelope({chat_id:'opaque@unknown'}),channel_id:'synthetic-305'},{},config),/UNSUPPORTED_305_THREAD/);
+});
 test('305 webhook captures before ACK and bypasses legacy handlers; unbound events fail closed',async()=>{
   const server=fs.readFileSync(path.join(__dirname,'..','server.js'),'utf8');
   const start=server.indexOf('    const inbound305Config=lifeSkillsAppInboundConfig(process.env);');
