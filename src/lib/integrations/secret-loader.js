@@ -93,7 +93,7 @@ function defaultKeyholderRoots(repoRoot = process.cwd()) {
   ]);
 }
 
-function readValueFromFile(filePath, envName) {
+function readValueFromFile(filePath, envName, allowRawValue = true) {
   let raw = '';
   try {
     raw = fs.readFileSync(filePath, 'utf8');
@@ -104,17 +104,18 @@ function readValueFromFile(filePath, envName) {
     const blockValue = envBlockValue(raw, envName);
     if (blockValue) return blockValue;
   }
-  return usableSecretValue(raw);
+  return allowRawValue ? usableSecretValue(raw) : '';
 }
 
-function loadFromRoots(roots, names, envName) {
+function loadFromRoots(roots, names, envName, rawFileNames) {
   for (const root of roots) {
     const resolvedRoot = safeResolveRoot(root);
     if (!resolvedRoot) continue;
     for (const name of names) {
       const filePath = safeResolveCandidate(resolvedRoot, name);
       if (!filePath) continue;
-      const value = readValueFromFile(filePath, envName);
+      const allowRawValue = rawFileNames === undefined || rawFileNames.includes(name);
+      const value = readValueFromFile(filePath, envName, allowRawValue);
       if (value) return { value, source_type: resolvedRoot.includes('.secrets') ? '.secrets' : 'keyholder' };
     }
   }
@@ -141,6 +142,9 @@ function loadSecret({
   envName,
   names = [],
   fileNames = [],
+  // Shared files can supply named fields, but only these files can supply raw
+  // values. Omission preserves the existing raw secret-file behavior.
+  rawFileNames,
   repoRoot = process.cwd(),
   keyholderRoots = defaultKeyholderRoots(repoRoot),
   secretsRoot = path.join(repoRoot, '.secrets'),
@@ -163,7 +167,7 @@ function loadSecret({
   }
 
   const candidates = candidateFileNames({ envName, names, fileNames });
-  const keyholder = loadFromRoots(keyholderRoots, candidates, envName);
+  const keyholder = loadFromRoots(keyholderRoots, candidates, envName, rawFileNames);
   if (keyholder.value) {
     return {
       configured: true,
@@ -174,7 +178,7 @@ function loadSecret({
     };
   }
 
-  const secrets = loadFromRoots([secretsRoot], candidates, envName);
+  const secrets = loadFromRoots([secretsRoot], candidates, envName, rawFileNames);
   if (secrets.value) {
     return {
       configured: true,
