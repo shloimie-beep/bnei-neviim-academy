@@ -1,4 +1,5 @@
 const {
+  candidateFileNames,
   loadConfigValue,
   loadSecret,
   redactSecretText,
@@ -21,18 +22,21 @@ function getBufferConfig(options = {}) {
     }).value;
   const apiBase = String(options.apiBase || loadConfigValue({
     envName: 'BUFFER_API_BASE',
+    rawFileNames: candidateFileNames({ envName: 'BUFFER_API_BASE' }),
     names: ['buffer-api-key', 'buffer'],
     fileNames: ['buffer-api-key.txt', 'BUFFER_API_KEY.txt', 'buffer.txt'],
     repoRoot,
   }) || 'https://api.buffer.com').replace(/\/+$/, '');
   const organizationId = String(options.organizationId || loadConfigValue({
     envName: 'BUFFER_ORGANIZATION_ID',
+    rawFileNames: candidateFileNames({ envName: 'BUFFER_ORGANIZATION_ID' }),
     names: ['buffer-api-key', 'buffer-organization-id', 'buffer'],
     fileNames: ['buffer-api-key.txt', 'BUFFER_ORGANIZATION_ID.txt', 'buffer.txt'],
     repoRoot,
   }) || '').trim();
   const defaultChannelIds = parseList(options.defaultChannelIds || loadConfigValue({
     envName: 'BUFFER_DEFAULT_CHANNEL_IDS',
+    rawFileNames: candidateFileNames({ envName: 'BUFFER_DEFAULT_CHANNEL_IDS' }),
     names: ['buffer-api-key', 'buffer-default-channel-ids', 'buffer'],
     fileNames: ['buffer-api-key.txt', 'BUFFER_DEFAULT_CHANNEL_IDS.txt', 'buffer.txt'],
     repoRoot,
