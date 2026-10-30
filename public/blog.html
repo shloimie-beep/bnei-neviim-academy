@@ -44,8 +44,11 @@
   </header>
 
   <main class="page-main">
-    <p class="notice" id="articleContext">These articles reflect earlier BNA teaching. For the current Florida co-op, <a href="/join">register your interest</a>.</p>
-    <p class="notice" id="blogNotice">Bnei Neviim is not a clinical program or formal special education provider. It is an alternative Torah learning environment that may be a better fit for some boys who need a smaller, calmer, more movement-friendly and relationship-based structure.</p>
+    <aside class="article-context">
+      <p id="articleContext">These articles reflect earlier BNA teaching. For the current Florida co-op, <a href="/join">register your interest</a>.</p>
+      <p id="blogNotice">Bnei Neviim is not a clinical program or formal special education provider. It is an alternative Torah learning environment that may be a better fit for some boys who need a smaller, calmer, more movement-friendly and relationship-based structure.</p>
+    </aside>
+    <div class="blog-category-control"><label for="categorySelect" id="categoryLabel">Browse by topic</label><select id="categorySelect"></select></div>
     <div class="filter-row" id="categoryFilters" aria-label="Blog categories"></div>
     <section class="blog-grid" id="blogGrid" aria-live="polite"></section>
   </main>
@@ -67,6 +70,7 @@
           subtitle: "לימוד תורה, קשרים אותנטיים, הורות, הנהגה עצמית ועתיד החינוך היהודי.",
           notice: "בני נביאים אינה תוכנית טיפולית, קלינית או מסגרת חינוך מיוחד פורמלית. זו סביבת לימוד תורה אלטרנטיבית שיכולה להתאים לחלק מהבנים שצריכים מבנה קטן יותר, רגוע יותר, עם יותר תנועה וקשר אישי.",
           all: "הכל",
+          categoryLabel: "עיון לפי נושא",
           metaTitle: "מאמרי בני נביאים | לימוד תורה והנהגה עצמית",
           metaDescription: "מאמרים על לימוד תורה, מסגרות אלטרנטיביות, חינוך ביתי, קשב וריכוז, אחריות אישית, הורות, טכנולוגיה ועתיד החינוך היהודי.",
         }
@@ -75,6 +79,7 @@
           subtitle: "Torah learning, authentic relationships, parenting, self-governance and the future of Jewish education.",
           notice: "Bnei Neviim is not a clinical program or formal special education provider. It is an alternative Torah learning environment that may be a better fit for some boys who need a smaller, calmer, more movement-friendly and relationship-based structure.",
           all: "All",
+          categoryLabel: "Browse by topic",
           metaTitle: "Bnei Neviim Articles | Torah Learning and Self-Governance",
           metaDescription: "Articles on alternative Torah learning, Jewish unschooling, ADHD-friendly environments, homeschooling support, self-governance, parenting, and the future of Jewish education.",
         };
@@ -102,6 +107,10 @@
       if (activeCategory !== "All" && activeCategory !== copy.all && !categories.includes(activeCategory)) {
         activeCategory = "All";
       }
+      document.getElementById("categoryLabel").textContent = copy.categoryLabel;
+      const select = document.getElementById("categorySelect");
+      select.innerHTML = categories.map((category) => `<option value="${BNAPages.escapeHtml(category === copy.all ? "All" : category)}">${BNAPages.escapeHtml(category)}</option>`).join("");
+      select.value = activeCategory === copy.all ? "All" : activeCategory;
       document.getElementById("categoryFilters").innerHTML = categories.map((category) => {
         const isAll = category === copy.all;
         const normalizedActive = activeCategory === "All" ? copy.all : activeCategory;
@@ -109,16 +118,23 @@
       }).join("");
       document.querySelectorAll(".filter-btn").forEach((button) => {
         button.addEventListener("click", () => {
-          activeCategory = button.dataset.category;
-          const nextUrl = activeCategory === "All"
-            ? BNAPages.blogUrl(lang)
-            : `${BNAPages.blogUrl(lang)}?category=${encodeURIComponent(activeCategory)}`;
-          window.history.replaceState({}, "", nextUrl);
-          renderFilters();
-          renderPosts();
+          selectCategory(button.dataset.category);
         });
       });
     }
+
+    function selectCategory(category) {
+      const restoreFilterFocus = document.activeElement?.classList.contains("filter-btn");
+      activeCategory = category;
+      const nextUrl = activeCategory === "All"
+        ? BNAPages.blogUrl(lang)
+        : `${BNAPages.blogUrl(lang)}?category=${encodeURIComponent(activeCategory)}`;
+      window.history.replaceState({}, "", nextUrl);
+      renderFilters();
+      renderPosts();
+      if (restoreFilterFocus) Array.from(document.querySelectorAll(".filter-btn")).find((button) => button.dataset.category === activeCategory)?.focus();
+    }
+    document.getElementById("categorySelect").addEventListener("change", (event) => selectCategory(event.target.value));
 
     function renderPosts() {
       const visible = activeCategory === "All" || activeCategory === copy.all

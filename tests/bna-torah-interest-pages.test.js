@@ -33,8 +33,10 @@ test('305 contact is one shared configuration and donation is a separate truthfu
   assert.match(client, /display: '\+1 \(305\) 491-6674'/);
   assert.match(client, /tel: 'tel:\+13054916674'/);
   assert.match(client, /whatsapp: 'https:\/\/wa\.me\/13054916674'/);
-  for (const page of [home,inquiry,support]) assert.match(page, /data-bna-phone/);
-  assert.match(support, /verifying the donation destination and payee/);
+  for (const page of [home,inquiry]) assert.match(page, /data-bna-phone/);
+  assert.match(support, /href="tel:\+13054916674"/);
+  assert.match(support, /This form saves a support inquiry\. No donation or payment is collected here\./);
+  assert.match(support, /name="purpose"/);
   assert.doesNotMatch(support, /https:\/\/(?:stripe|paypal)|tax-deductible/i);
 });
 

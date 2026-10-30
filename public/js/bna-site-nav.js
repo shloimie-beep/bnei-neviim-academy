@@ -46,6 +46,7 @@
       backToRegistration: 'Back to registration',
       language: 'עברית',
       openMenu: 'Open navigation menu',
+      closeMenu: 'Close navigation menu',
       skipToContent: 'Skip to main content',
       footerExplore: 'Explore',
       footerPortals: 'Portals',
@@ -74,6 +75,7 @@
       footerExplore: '\u05e0\u05d9\u05d5\u05d5\u05d8',
       footerPortals: '\u05e4\u05d5\u05e8\u05d8\u05dc\u05d9\u05dd',
       openMenu: 'פתיחת תפריט ניווט',
+      closeMenu: 'סגירת תפריט ניווט',
     },
   };
 
@@ -295,11 +297,16 @@
     return `#${targetId}`;
   }
 
+  function menuCopy(mount) {
+    return COPY[currentArticlePage() ? (document.documentElement.lang === 'he' ? 'he' : 'en') : selectedLanguage(mount)];
+  }
+
   function closeNav(mount) {
     const links = mount.querySelector('.bna-site-nav-actions');
     const toggle = mount.querySelector('.bna-site-nav-toggle');
     links?.classList.remove('is-open');
     toggle?.setAttribute('aria-expanded', 'false');
+    toggle?.setAttribute('aria-label', menuCopy(mount).openMenu);
     mount.querySelectorAll('.bna-site-nav-dropdown[open]').forEach((dropdown) => {
       dropdown.removeAttribute('open');
     });
@@ -331,7 +338,7 @@
               <span class="bna-site-brand-location" id="brandSubtitle">${escapeHtml(copy.location)}</span>
             </span>
           </a>
-          <button class="bna-site-nav-toggle" type="button" aria-label="${escapeHtml(copy.openMenu)}" aria-expanded="false">
+          <button class="bna-site-nav-toggle" type="button" aria-label="${escapeHtml(copy.openMenu)}" aria-controls="mainNavActions" aria-expanded="false">
             <span class="bna-site-nav-toggle-lines" aria-hidden="true"></span>
           </button>
           <div class="bna-site-nav-actions" id="mainNavActions">
@@ -371,6 +378,7 @@
       if (!links) return;
       const isOpen = links.classList.toggle('is-open');
       toggle.setAttribute('aria-expanded', String(isOpen));
+      toggle.setAttribute('aria-label', menuCopy(mount)[isOpen ? 'closeMenu' : 'openMenu']);
       if (isOpen) {
         mount.querySelectorAll('.bna-site-nav-dropdown[open]').forEach((dropdown) => {
           dropdown.removeAttribute('open');
@@ -385,6 +393,7 @@
     if (current) {
       const syncLocale = () => {
         const locale = document.documentElement.lang === 'he' ? 'he' : 'en';
+        toggle?.setAttribute('aria-label', COPY[locale][toggle.getAttribute('aria-expanded') === 'true' ? 'closeMenu' : 'openMenu']);
         mount.querySelectorAll('[data-bna-current-link]').forEach(link => {
           link.setAttribute('href',locale==='he'?link.dataset.heHref:link.dataset.enHref);
         });
@@ -406,7 +415,11 @@
     });
 
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') closeNav(mount);
+      if (event.key === 'Escape') {
+        const wasOpen = toggle?.getAttribute('aria-expanded') === 'true';
+        closeNav(mount);
+        if (wasOpen) toggle?.focus();
+      }
     });
   }
 
