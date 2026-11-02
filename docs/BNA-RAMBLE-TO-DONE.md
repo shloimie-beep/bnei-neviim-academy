@@ -3,6 +3,10 @@
 This protocol exists so large operator rambles, GPT outputs, and Codex prompt
 packets turn into resumable execution instead of half-finished task piles.
 
+## Current source maintenance
+
+Use BNA-START-HERE.md for the current BNA route and shared Drive Ramble procedure. Preserve original input privately; tracked intake/registers keep redacted provenance only. Corrections update the actual owning source with revision guards, verified readback, a Delivery receipt and pending code adoption. Preserve concurrent Fishing sections. Reuse existing registers and logs.
+
 ## Core Rule
 
 Natural language is source input. A broad ramble or correction packet must
@@ -114,7 +118,7 @@ Product Quality Compiler packet.
 Current brand and pipeline corrections:
 
 - Rabbi / One Time brand = black + yellow.
-- BNA brand = cream + navy + teal/cyan.
+- Current BNA public website Brand is routed through BNA-START-HERE.md; the former cream/navy/teal-cyan rule is historical and not a Florida website authority.
 - Rabbi / One Time uses a separate provider-specific classroom/content/
   community pipeline scoped to `rabbi_sheller_provider` /
   `one_time_mishnah_class`.

@@ -40601,3 +40601,9 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - 56 gateway/no-DB-boot checks pass; existing independent source reviewer passed corrected source. Protocol drift report has zero findings.
 - Not pushed, merged, deployed or live. Browser-through-gateway, current application acceptance, protected CI/schema and actual mail delivery remain open. No provider settings, real sends, credentials or database changes.
 - Requirement: REQ-20261024-ACADEMY-PARENT-LAUNCH; scope129 Control1550/Change1578.
+
+## 2026-11-02 — BNA repository and project skills setup
+
+- BNA-REPOSITORY-SKILLS-SETUP-20261102-01 / RAW-20261102-001 / REQ-20261102-001 through REQ-20261102-006: current source pointers reconciled; three repo-only workflows discovered, validated and exercised. Thirteen source assets verified; exact heroes match Brand. Desktop/mobile source-asset screenshots inspected.
+- Existing BNA log and Delivery saved with required revisions and verified readback; Fishing/unrelated sections preserved. Register: tasks-pending/2026-11-02-bna-repository-skills-setup.md. Private raw/assets/screenshots remain ignored.
+- Separate setup branch preserves Buffer HEAD/PR195 and four untracked audits. Local setup commit only; no push, merge, deploy, runtime/site/database/provider changes or Buffer/Fishing resumption. Next separate BNA task is bounded homepage/form audit and design readiness.

@@ -1,6 +1,10 @@
 # BNA Memory
 
-## Identity
+## Current BNA Florida scope
+
+Read BNA-START-HERE.md and its current live owners. Older Beit Shemesh identity, schedule, brand and launch statements below are dated provenance where newer Florida decisions supersede them. Public copy, school facts and review proposals retain separate owners; this setup changes no runtime.
+
+## Historical identity and earlier planning
 
 - **BNA** = **Bnei Neviim Academy** = **Whole Child Torah Learning Community**
 - A family-based Torah learning community in Beit Shemesh, Israel

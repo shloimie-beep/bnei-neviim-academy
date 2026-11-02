@@ -1,5 +1,7 @@
 # Current Learning Model
 
+Historical source snapshot: read BNA-START-HERE.md for current Florida school/website owners. Older model, palette, illustration-only, provider and styling statements below are provenance where later scoped decisions supersede them. Internal Operations requires its own design scope.
+
 Status: curated seed
 
 Use this file as the current BNA learning-model note for brand, parent copy,

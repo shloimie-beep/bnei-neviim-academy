@@ -3,6 +3,10 @@
 This repository is the shared brain for BNA work across terminal, Telegram,
 and future automation channels.
 
+## BNA Florida routing and project skills
+
+For current BNA sources, read BNA-START-HERE.md and its linked live clauses before using older repo snapshots. Use $bna-source-updates for corrections, $bna-frontend-design for public website design, and $bna-browser-visual-qa for browser/visual checks. Skills live only in this repo under .agents/skills/. Public website rules do not automatically restyle internal Operations.
+
 ## Purpose
 
 - Build and operate BNA's school systems, website, internal workflows, and
@@ -75,7 +79,7 @@ stale memory.
 Current durable corrections:
 
 - Rabbi / One Time brand uses black + yellow.
-- BNA brand uses cream + navy + teal/cyan.
+- Current BNA public website Brand is reached through BNA-START-HERE.md. The older cream/navy/teal-cyan rule is historical; internal Operations runtime config is separately scoped.
 - Rabbi / One Time has a separate provider-specific classroom/content/
   community pipeline scoped to `rabbi_sheller_provider` /
   `one_time_mishnah_class`.

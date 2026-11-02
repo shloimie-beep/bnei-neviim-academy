@@ -2,9 +2,32 @@
 
 Every new GitHub-connected ChatGPT or Codex session for this repo starts here.
 
-## Current Handoff
+## Current BNA Florida source routing
 
-As of 2026-06-25, the latest execution run is closed:
+Setup receipt: BNA-REPOSITORY-SKILLS-SETUP-20261102-01.
+Start with the [current BNA route](https://docs.google.com/document/d/1AwB6My_ZrXf09j5ZFXvu42UKW30kCnlWU7_sLDpFHIA/edit?tab=t.7vzmudr7zlyq), then read the relevant live owning clauses:
+
+- [BNA decisions](https://docs.google.com/document/d/1PExKb2PwAFAHlBtgmQ9RU-JdfTfQ-jTk41SpWetn7w8/edit?tab=t.t9isykp3kvlt) and [transition history](https://docs.google.com/document/d/1PExKb2PwAFAHlBtgmQ9RU-JdfTfQ-jTk41SpWetn7w8/edit?tab=t.okoz0o58voe1).
+- [School operating model](https://docs.google.com/document/d/1PExKb2PwAFAHlBtgmQ9RU-JdfTfQ-jTk41SpWetn7w8/edit?tab=t.eazsk2ki6crr).
+- [Website/publication scope](https://docs.google.com/document/d/1jw0shI2DSfUH9RpJc2WdeIqXwO1OYOUEiwuv3mdNngU/edit) and [selected bilingual copybook](https://drive.google.com/file/d/1vC2S0GYmK0cw7sxG-i8D-2G_zUVKRxDA/view). [November 2 homepage/badges candidate](https://drive.google.com/file/d/1F32tAIZKaaH5kwwTREpgtBVklmIJgHLV/view) is review input, not final approved wording.
+- [BNA Brand and image catalog](https://docs.google.com/document/d/1Ru0oxW_2OFU7IN_aGDpuzIayOrpvB7wCi-HhK5VFyUQ/edit?tab=t.cgjbt0l3wr1y) and its [current hero owner](https://docs.google.com/document/d/1Ru0oxW_2OFU7IN_aGDpuzIayOrpvB7wCi-HhK5VFyUQ/edit?tab=t.0). Fetch current bytes even when IDs are unchanged.
+- [Shared voice](https://drive.google.com/file/d/174-EqMG0QIH5rCuRgn2xYYPMX-XWJZNn/view), applying current BNA channel-specific amendments.
+- [Shared Ramble procedure](https://drive.google.com/file/d/1g9-8LNBF2LMKhRq6WWHlcdXnaZWzqYWN/view): original private intake, correct owning-source update, guarded write, verified readback and implementation-pending receipt.
+- [Existing implementation handoff](https://docs.google.com/document/d/1q-GDEaL9JmmVfy1meQrGvu3V4H2XNJ4jp2b17ZrP6bE/edit?tab=t.5ucllbuab4bn) and [Delivery receipts](https://docs.google.com/document/d/19Bm3Fw9toL1yaoATi3XtbITGK8GhxS6e64h6twEtEi4/edit). Shared documents retain separate BNA/Fishing sections and writers.
+- [Product](https://docs.google.com/document/d/1kJug8ojFwdGgZoPUx8BJt9fLKBjGYvX0wwbtarGTIIg/edit), [Architecture](https://docs.google.com/document/d/1h-bnQ94uxuTrs8BPeDg-1uwZFcQEONdmYccd9Inacgw/edit) and [UI](https://docs.google.com/document/d/1KokAca2V-UhCPj1czP28TQ4i5E2Wd1JKJFbuXfmAPu4/edit) for their scoped contracts.
+
+These are routing pointers, not a second master. Latest explicit scoped decisions supersede dated ZIPs and repo snapshots. Keep approved copy/assets separate from review proposals. Public BNA website direction does not automatically restyle internal Operations or another provider.
+
+Repo workflows: `.agents/skills/bna-source-updates/SKILL.md`,
+`.agents/skills/bna-frontend-design/SKILL.md`,
+`.agents/skills/bna-browser-visual-qa/SKILL.md`.
+Load the relevant workflow explicitly if discovery is unavailable.
+
+This setup was authorized for instructions/skills/receipts only: no Fishing, Buffer resumption, website implementation, push, merge or deploy. Future work needs its own scoped request. The old execution pointer below is historical continuity, not permission to resume unrelated work. Recheck actual branch, owners and current sources before selecting work.
+
+## Historical handoff (June 2026 snapshot)
+
+Historical claim as of 2026-06-25 (not the current run pointer):
 `ops/execution-runs/2026-06-24-issue-20-parent-run/`.
 
 Verified baseline:

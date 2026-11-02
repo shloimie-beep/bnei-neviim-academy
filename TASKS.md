@@ -1,5 +1,9 @@
 # BNA Tasks
 
+## BNA repository setup checkpoint — 2026-11-02
+
+REQ-20261102-001 through REQ-20261102-006: setup completed locally; register tasks-pending/2026-11-02-bna-repository-skills-setup.md. Commit-only/no-push checkpoint. Existing Buffer/Fishing and prior execution queues remain paused or with their current owners. Next BNA request is bounded homepage/form visual audit and design readiness; no website implementation started.
+
 Completed older entries that mention former GHL/legacy-CRM work are historical
 changelog context only. They are superseded by the current no-GHL policy and do
 not authorize active GHL runtime paths.

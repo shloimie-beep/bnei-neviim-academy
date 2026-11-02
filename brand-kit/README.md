@@ -1,8 +1,8 @@
 # BNA Brand Kit
 
-This folder is the repo-side source of truth for BNA voice, beliefs, parent messaging, and teaching principles.
+This folder preserves repo-side BNA principles and historical source snapshots. Current Florida voice, public copy, brand and approved imagery are owned by the live sources routed in BNA-START-HERE.md. Read those clauses first; dated local notes are not a competing current authority.
 
-Google Drive mirrors this as `BNA V2 / BNA Brand Kit` so the working docs are easy to access from the phone and browser.
+Historical Drive location: `BNA V2 / BNA Brand Kit`. Use the current routed owners for Florida work.
 
 ## Rules
 
