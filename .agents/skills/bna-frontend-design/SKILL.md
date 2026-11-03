@@ -1,9 +1,11 @@
 ---
 name: bna-frontend-design
-description: Prepare or implement BNA Florida public website design using current approved bilingual copy, protected heroes, logo and supporting photos. Keeps Operations design and review proposals separately scoped.
+description: Guide authorized BNA Florida public website design using approved copy, heroes, logo and photos. Preparation-only work edits instructions and pointers without demos, visual exercises or implementation.
 ---
 
-Read BNA-START-HERE.md, then current Website, selected copybook, Brand, BNA decisions and implementation handoff. Read docs/PRODUCT-QUALITY-COMPILER.md and docs/DESIGN-REFERENCE-CAPTURE.md for a product/UI task. Setup or design-readiness work does not authorize implementation.
+For later authorized design/implementation, read BNA-START-HERE.md, then current Website, selected copybook, Brand, BNA decisions and implementation handoff. Read docs/PRODUCT-QUALITY-COMPILER.md and docs/DESIGN-REFERENCE-CAPTURE.md for a product/UI task. Setup or design-readiness work does not authorize implementation.
+
+For repository preparation, reuse existing source pointers and dated receipts; inspect only edited instructions, pointers, skill metadata and Git diff. The asset/design/browser steps below are requirements for a later authorized website task. Do not create sample pages, inspect screenshots, run browsers/servers/builds/tests, change dependencies or launch agents to demonstrate this skill. BNA website coding waits for a separate explicit operator instruction. Keep approved content and proposals distinct; preserve Fishing and Operations scope.
 
 Compare current source decisions with repo snapshots/config. Record contradictions; source pointers control future design while runtime config changes require an implementation packet. The public website palette does not automatically apply to internal Operations.
 

@@ -40607,3 +40607,9 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - BNA-REPOSITORY-SKILLS-SETUP-20261102-01 / RAW-20261102-001 / REQ-20261102-001 through REQ-20261102-006: current source pointers reconciled; three repo-only workflows discovered, validated and exercised. Thirteen source assets verified; exact heroes match Brand. Desktop/mobile source-asset screenshots inspected.
 - Existing BNA log and Delivery saved with required revisions and verified readback; Fishing/unrelated sections preserved. Register: tasks-pending/2026-11-02-bna-repository-skills-setup.md. Private raw/assets/screenshots remain ignored.
 - Separate setup branch preserves Buffer HEAD/PR195 and four untracked audits. Local setup commit only; no push, merge, deploy, runtime/site/database/provider changes or Buffer/Fishing resumption. Next separate BNA task is bounded homepage/form audit and design readiness.
+
+## 2026-11-03 — BNA preparation-only scope correction
+
+- RAW-20261103-001 / REQ-20261103-001: existing source/start/Ramble and three BNA skill instructions now distinguish documentation preparation from later visual QA, demonstrations and website implementation. Evidence-based lessons use the existing records.
+- Checks confined to edited instructions, source pointers, skill metadata and Git diff. No code/assets/dependencies/tests, browser, demo, server, build or agent work. Source access was not revalidated; prior receipts retained as dated evidence.
+- Existing setup branch, Buffer work, Fishing and four untracked watchdog files preserved. One local documentation commit only, no push/merge/deploy. Stop; await separate explicit instruction before BNA website coding.

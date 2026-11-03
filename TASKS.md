@@ -1,5 +1,9 @@
 # BNA Tasks
 
+## BNA preparation-only correction — 2026-11-03
+
+REQ-20261103-001: instruction/skill scope correction; reuse completed setup. BNA website coding is on hold pending a separate explicit operator instruction. Visual audits and demonstrations are later requirements, not an active next task. Fishing remains the current priority with its existing owner; Buffer and unrelated queues are not resumed. See the November 3 supplement in `tasks-pending/2026-11-02-bna-repository-skills-setup.md`. Local documentation commit only; stop here.
+
 ## BNA repository setup checkpoint — 2026-11-02
 
 REQ-20261102-001 through REQ-20261102-006: setup completed locally; register tasks-pending/2026-11-02-bna-repository-skills-setup.md. Commit-only/no-push checkpoint. Existing Buffer/Fishing and prior execution queues remain paused or with their current owners. Next BNA request is bounded homepage/form visual audit and design readiness; no website implementation started.

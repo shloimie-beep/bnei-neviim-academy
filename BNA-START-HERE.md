@@ -5,14 +5,17 @@ Every new GitHub-connected ChatGPT or Codex session for this repo starts here.
 ## Current BNA Florida source routing
 
 Setup receipt: BNA-REPOSITORY-SKILLS-SETUP-20261102-01.
+Current scope correction (3 November 2026): reuse this completed setup. Repository preparation checks instructions, source pointers, skill metadata and Git diff only. No demos, browser/screenshots, servers, builds/tests, dependency changes or extra agents. Visual QA and demonstrations belong to a later separately authorized website task. Wait for a separate explicit instruction before BNA website coding; do not resume Fishing, Buffer or historical queues. Local documentation commit only, then stop. Prior setup observations below remain dated evidence, not instructions to repeat them.
+
 Start with the [current BNA route](https://docs.google.com/document/d/1AwB6My_ZrXf09j5ZFXvu42UKW30kCnlWU7_sLDpFHIA/edit?tab=t.7vzmudr7zlyq), then read the relevant live owning clauses:
 
 - [BNA decisions](https://docs.google.com/document/d/1PExKb2PwAFAHlBtgmQ9RU-JdfTfQ-jTk41SpWetn7w8/edit?tab=t.t9isykp3kvlt) and [transition history](https://docs.google.com/document/d/1PExKb2PwAFAHlBtgmQ9RU-JdfTfQ-jTk41SpWetn7w8/edit?tab=t.okoz0o58voe1).
 - [School operating model](https://docs.google.com/document/d/1PExKb2PwAFAHlBtgmQ9RU-JdfTfQ-jTk41SpWetn7w8/edit?tab=t.eazsk2ki6crr).
 - [Website/publication scope](https://docs.google.com/document/d/1jw0shI2DSfUH9RpJc2WdeIqXwO1OYOUEiwuv3mdNngU/edit) and [selected bilingual copybook](https://drive.google.com/file/d/1vC2S0GYmK0cw7sxG-i8D-2G_zUVKRxDA/view). [November 2 homepage/badges candidate](https://drive.google.com/file/d/1F32tAIZKaaH5kwwTREpgtBVklmIJgHLV/view) is review input, not final approved wording.
-- [BNA Brand and image catalog](https://docs.google.com/document/d/1Ru0oxW_2OFU7IN_aGDpuzIayOrpvB7wCi-HhK5VFyUQ/edit?tab=t.cgjbt0l3wr1y) and its [current hero owner](https://docs.google.com/document/d/1Ru0oxW_2OFU7IN_aGDpuzIayOrpvB7wCi-HhK5VFyUQ/edit?tab=t.0). Fetch current bytes even when IDs are unchanged.
+- [BNA Brand and image catalog](https://docs.google.com/document/d/1Ru0oxW_2OFU7IN_aGDpuzIayOrpvB7wCi-HhK5VFyUQ/edit?tab=t.cgjbt0l3wr1y) and its [current hero owner](https://docs.google.com/document/d/1Ru0oxW_2OFU7IN_aGDpuzIayOrpvB7wCi-HhK5VFyUQ/edit?tab=t.0). When a later authorized task consumes assets, fetch current bytes even when IDs are unchanged; preparation-only pointer checks do not repeat downloads.
 - [Shared voice](https://drive.google.com/file/d/174-EqMG0QIH5rCuRgn2xYYPMX-XWJZNn/view), applying current BNA channel-specific amendments.
 - [Shared Ramble procedure](https://drive.google.com/file/d/1g9-8LNBF2LMKhRq6WWHlcdXnaZWzqYWN/view): original private intake, correct owning-source update, guarded write, verified readback and implementation-pending receipt.
+- Shared design-quality rules: `docs/PRODUCT-QUALITY-COMPILER.md`, `docs/DESIGN-REFERENCE-CAPTURE.md`, `docs/VISUAL-QUALITY-HARNESS.md` and `ops/visual-quality-rubric.md`. Their visual/browser requirements apply to later authorized website work, not a preparation-only demonstration.
 - [Existing implementation handoff](https://docs.google.com/document/d/1q-GDEaL9JmmVfy1meQrGvu3V4H2XNJ4jp2b17ZrP6bE/edit?tab=t.5ucllbuab4bn) and [Delivery receipts](https://docs.google.com/document/d/19Bm3Fw9toL1yaoATi3XtbITGK8GhxS6e64h6twEtEi4/edit). Shared documents retain separate BNA/Fishing sections and writers.
 - [Product](https://docs.google.com/document/d/1kJug8ojFwdGgZoPUx8BJt9fLKBjGYvX0wwbtarGTIIg/edit), [Architecture](https://docs.google.com/document/d/1h-bnQ94uxuTrs8BPeDg-1uwZFcQEONdmYccd9Inacgw/edit) and [UI](https://docs.google.com/document/d/1KokAca2V-UhCPj1czP28TQ4i5E2Wd1JKJFbuXfmAPu4/edit) for their scoped contracts.
 

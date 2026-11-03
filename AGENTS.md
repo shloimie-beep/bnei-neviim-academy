@@ -7,6 +7,8 @@ and future automation channels.
 
 For current BNA sources, read BNA-START-HERE.md and its linked live clauses before using older repo snapshots. Use $bna-source-updates for corrections, $bna-frontend-design for public website design, and $bna-browser-visual-qa for browser/visual checks. Skills live only in this repo under .agents/skills/. Public website rules do not automatically restyle internal Operations.
 
+BNA repository preparation is documentation/skills work only. Reuse completed setup; inspect only edited instructions, source pointers, skill metadata and Git diff. Do not demonstrate skills by creating sample pages, opening browsers, capturing screenshots, starting servers, running builds/tests, installing dependencies or launching agents. Record visual QA and demonstrations as requirements for a later authorized website task. BNA website coding is on hold until the operator gives a separate explicit instruction; historical next steps and skill discovery do not resume it. Preserve Fishing, Buffer and unrelated work. For preparation-only closeout, make only the scoped local commit and stop; no push, merge or deploy.
+
 ## Purpose
 
 - Build and operate BNA's school systems, website, internal workflows, and

@@ -114,3 +114,17 @@ Publish state: LOCAL COMMIT ONLY. Exact SHA is Git HEAD after scoped closeout an
 - `tasks-pending/2026-11-02-bna-repository-skills-setup.md`
 
 Final source-save verification recorded 2026-11-02, 16:41 Asia/Jerusalem; final commit closure is in Delivery.
+
+## Preparation-only scope correction — 3 November 2026
+
+RAW-20261103-001 / REQ-20261103-001. Owner: this existing setup chat. Original operator input is private in ignored .runtime/bna-setup-20261102/raw-input/RAW-20261103-001.md; daily capture in the same ignored evidence folder's memory/2026-11-03.md. Raw SHA-256: c34d7ad0021ee4ba459b983c3ed1a5edb646c15306a3eb4bcda050800be55302. Source codex_chat; original message clock unavailable. No private raw content committed.
+
+Latest operator correction supersedes any suggestion to demonstrate workflows or automatically advance the prior next checkpoint. Reuse the completed setup and preserve the November 2 receipts as dated history. This correction edits only instructions, skills and existing records. No website/application code, CSS, components, forms, public copy, images, dependencies or executable tests. No browser/screenshots, demos, servers, builds/full suites, extra agents, push, merge or deploy.
+
+Changed owners: AGENTS.md, BNA-START-HERE.md, docs/BNA-RAMBLE-TO-DONE.md, the three existing BNA SKILL.md entrypoints, TASKS.md and existing ledger/changelog. Correct current route and approved-versus-review pointers retained. Shared PQC/design-reference/visual-quality contracts remain requirements for later website work. Ramble capture, guarded source updates, verified saves and evidence-based lessons retained; lessons use existing records rather than another system.
+
+Checks limited to edited instructions, source pointers, skill metadata and Git diff. Existing skill names and implicit-invocation policy preserved; description scope clarified. No skill execution/demonstration or repeat source/asset audit. Access state: live Drive/source/asset access not revalidated by design; November 2 access receipts are historical evidence, not a current-access claim. No new access gap established.
+
+Baseline: branch codex/bna-florida-repository-skills-20261102 at 981d715ba72a616803c85439d55ff27750375567, only four pre-existing untracked watchdog files. No website/application edits present in the starting working tree; prior setup commit contains documentation/skills/records only. Prior ignored setup artifacts left untouched. Buffer branch remains d4e5330ec6e3d19849c7b954380ae1ebfe43c238. No Fishing changes or other queue resumption.
+
+Acceptance: instruction and metadata readback, correct source pointers, documentation/skill/receipt-only scoped diff, one local commit and stop. REQ-20261103-001 status: verified documentation correction, closed by this scoped local commit. No implementation is authorized or pending execution in this chat. Later website task must receive a separate explicit instruction, then meet current source/copy/asset review, desktop/mobile visual QA and Definition of Ready/Done requirements appropriate to its scope. GitHub-connected consumers cannot see this unpushed correction.

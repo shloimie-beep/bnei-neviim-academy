@@ -7,6 +7,10 @@ packets turn into resumable execution instead of half-finished task piles.
 
 Use BNA-START-HERE.md for the current BNA route and shared Drive Ramble procedure. Preserve original input privately; tracked intake/registers keep redacted provenance only. Corrections update the actual owning source with revision guards, verified readback, a Delivery receipt and pending code adoption. Preserve concurrent Fishing sections. Reuse existing registers and logs.
 
+Preparation-only corrections reuse completed setup and stay within instruction/source-pointer/skill-metadata/Git-diff checks. Preserve the current authorization boundary in the owning instructions and existing task/changelog records; do not repeat source/asset audits or perform remote writes unless the current task authorizes them. Visual inspection, demonstrations and implementation remain later requirements, not work to execute now. BNA website coding awaits a separate explicit operator instruction.
+
+For lessons learned, retain the actual correction, its scope and the superseded guidance in the existing register/history. Apply only the smallest evidence-supported change to the owning instruction and verify its readback. Record remaining implementation separately; create no parallel lessons system, recurring loop or demonstration task.
+
 ## Core Rule
 
 Natural language is source input. A broad ramble or correction packet must
