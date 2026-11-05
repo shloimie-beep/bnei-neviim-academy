@@ -1,5 +1,9 @@
 # BNA Tasks
 
+## BNA interest launch completed — 2026-11-05
+
+REQ-20261105-001 through REQ-20261105-008 are Done under BNA-INTEREST-LAUNCH-20261105-01. The explicit launch instruction superseded the earlier preparation-only stop for this scope. Landing/shared durable form, approved new-inquiry receipt, existing-owner filters and fixed reversible legacy archive are implemented and live verified at7d0a02a4/deployment3854b4ba. Final evidence and local/live boundaries: `ops/bna-interest-launch/2026-11-05/RESULT.md`. Existing PR196 remains open for integration review; donation checkout is separate future scope. Do not replay the synthetic test or resume unrelated queues.
+
 ## BNA preparation-only correction — 2026-11-03
 
 REQ-20261103-001: instruction/skill scope correction; reuse completed setup. BNA website coding is on hold pending a separate explicit operator instruction. Visual audits and demonstrations are later requirements, not an active next task. Fishing remains the current priority with its existing owner; Buffer and unrelated queues are not resumed. See the November 3 supplement in `tasks-pending/2026-11-02-bna-repository-skills-setup.md`. Local documentation commit only; stop here.

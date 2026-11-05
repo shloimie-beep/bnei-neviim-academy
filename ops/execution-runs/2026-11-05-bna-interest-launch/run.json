@@ -2,9 +2,11 @@
   "run_id": "2026-11-05-bna-interest-launch",
   "title": "BNA November 5 interest launch",
   "created_at": "2026-11-05T10:37:10.471Z",
-  "updated_at": "2026-11-05T10:37:10.471Z",
+  "updated_at": "2026-11-05T11:58:43.252Z",
   "active": false,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
-  "scope_note": "Explicit --run selection for this existing chat; preserve the unrelated active July owner run and latest pointer."
+  "scope_note": "Explicit --run selection for this existing chat; preserve the unrelated active July owner run and latest pointer.",
+  "completed_at": "2026-11-05T11:58:43.252Z",
+  "status": "complete"
 }

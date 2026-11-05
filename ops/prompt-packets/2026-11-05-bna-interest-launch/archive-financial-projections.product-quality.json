@@ -25,7 +25,7 @@
   },
   "stage": "STAGE_3_CODEX_IMPLEMENTATION",
   "packet_role": "IMPLEMENTATION_PACKET",
-  "status": "ready_for_codex",
+  "status": "verified",
   "title": "BNA archive-financial-projections",
   "created_at": "2026-11-05T11:00:00+02:00",
   "workspace_key": "bna",
@@ -538,7 +538,8 @@
     "expected_paths": [
       ".runtime/bna-interest-launch-20261105/before/baseline.json",
       ".runtime/bna-interest-launch-20261105/verification.json",
-      "tasks-pending/2026-11-05-bna-interest-launch.md"
+      "tasks-pending/2026-11-05-bna-interest-launch.md",
+      "ops/bna-interest-launch/2026-11-05/RESULT.md"
     ]
   },
   "app_visible": true,
@@ -569,7 +570,8 @@
     "evidence_paths": [
       ".runtime/bna-interest-launch-20261105/before/baseline.json",
       ".runtime/bna-interest-launch-20261105/verification.json",
-      "tasks-pending/2026-11-05-bna-interest-launch.md"
+      "tasks-pending/2026-11-05-bna-interest-launch.md",
+      "ops/bna-interest-launch/2026-11-05/RESULT.md"
     ],
     "final_status_path": "tasks-pending/2026-11-05-bna-interest-launch.md",
     "next_packet_path": "ops/prompt-packets/2026-11-05-bna-interest-launch/05-verifier-closeout.md"

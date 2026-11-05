@@ -2,6 +2,10 @@
 
 Every new GitHub-connected ChatGPT or Codex session for this repo starts here.
 
+## BNA interest launch execution — 5 November 2026
+
+The operator separately authorized BNA-INTEREST-LAUNCH-20261105-01 in goal mode, superseding the earlier preparation-only stop for this launch. REQ-20261105-001 through008 are Done: exact bilingual website and durable shared form, approved transactional receipt, existing-owner controls and reversible legacy archive. Production is pinned to verified application7d0a02a4 (Railway SUCCESS3854b4ba); PR196 contains the scoped implementation. Read `ops/bna-interest-launch/2026-11-05/RESULT.md` and `tasks-pending/2026-11-05-bna-interest-launch.md` for separate implementation/live evidence and limitations. BNA-only Delivery/Continuation receipts have exact native readback. Donation checkout follows separately. The November3 preparation rule below remains historical setup guidance; it does not reopen this completed launch or authorize unrelated work.
+
 ## Current BNA Florida source routing
 
 Setup receipt: BNA-REPOSITORY-SKILLS-SETUP-20261102-01.

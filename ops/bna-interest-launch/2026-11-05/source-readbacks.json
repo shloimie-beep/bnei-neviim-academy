@@ -1,0 +1,21 @@
+{
+  "decision": "BNA-INTEREST-LAUNCH-20261105-01",
+  "writtenScope": "BNA execution status only; original prepared provenance and shared-document neighbors retained",
+  "delivery": {
+    "documentId": "19Bm3Fw9toL1yaoATi3XtbITGK8GhxS6e64h6twEtEi4",
+    "tabId": "t.0",
+    "revisionId": "AHj4eMQIPofZDVAma1OUgqtnfiM_bezhE5c25gFNyaypx4vutCbo7JmuvyW55mYe4ulPazxkrtP8j8R8Cjbu1uZChz2msOVfXlPRvHVJ1FQ",
+    "exactReceiptReadback": true,
+    "insertedAt": 32270,
+    "url": "https://docs.google.com/document/d/19Bm3Fw9toL1yaoATi3XtbITGK8GhxS6e64h6twEtEi4"
+  },
+  "continuation": {
+    "documentId": "1q-GDEaL9JmmVfy1meQrGvu3V4H2XNJ4jp2b17ZrP6bE",
+    "tabId": "t.5ucllbuab4bn",
+    "revisionId": "AHj4eMTzDUVgtY5_mfLfWGwD1sVtLK6T0BW6jfoAO2Z9Wfr49EkyuZkKpjqFZO99KVWit0EsDWts4u6f-42bgBM5qcBgL7HudRPf0n2x3V0",
+    "exactReceiptReadback": true,
+    "preservedOriginalHeading": 2436,
+    "headingCount": 1,
+    "url": "https://docs.google.com/document/d/1q-GDEaL9JmmVfy1meQrGvu3V4H2XNJ4jp2b17ZrP6bE"
+  }
+}
