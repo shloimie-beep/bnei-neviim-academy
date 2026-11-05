@@ -10992,7 +10992,7 @@ function leadPipelineStatuses(visibleLeads) {
 function renderLeadPipeline(visibleLeads) {
     const statuses = leadPipelineStatuses(visibleLeads);
     return `
-        <div class="lead-pipeline-board" aria-label="Interested parent pipeline">
+        <div class="lead-pipeline-board ${currentWorkspaceId === 'bna' ? 'bna-interest-board' : ''}" aria-label="Interested parent pipeline">
             ${statuses.map(status => {
                 const leads = visibleLeads.filter(lead => leadStatusKey(lead) === status);
                 return `
