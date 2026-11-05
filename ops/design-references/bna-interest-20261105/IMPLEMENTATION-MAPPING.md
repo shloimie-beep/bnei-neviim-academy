@@ -1,0 +1,3 @@
+# Implementation mapping
+
+REQ-20261105-002: src/lib/bna/interest-pages.js and public/css/bna-interest-launch.css; verbatim selected source and original public/images/bna-launch bytes. REQ-20261105-003: existing /join and /he/join, native BNA transaction and capability recovery. REQ-20261105-004: exact reviewed draft plus BNA-scoped mail transport. REQ-20261105-005/006: public/operations.html canonical source, private owner component and fixed-inventory archive sidecars. REQ-20261105-007/008: focused tests, registered actions/routes, private actual browser captures, controlled release and live owner proof.

@@ -284,6 +284,7 @@
     "stripe": "^18.5.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "@remotion/cli": "4.0.471",
     "@remotion/media-utils": "4.0.471",
     "@remotion/renderer": "4.0.471",

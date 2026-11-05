@@ -1,0 +1,291 @@
+{
+  "decision": "BNA-INTEREST-LAUNCH-20261105-01",
+  "checked_at": "2026-11-05T11:59:41.053Z",
+  "application_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+  "railway": {
+    "deployment_id": "3854b4ba-e2dc-4007-8781-6d837f229f82",
+    "status": "SUCCESS",
+    "project_id": "bd5b6d78-5e83-4e83-89b2-cd5f52ed7889",
+    "environment_id": "3ce30933-49c7-4b90-8c36-a5afd67df329",
+    "service_id": "4079db35-5f4a-44ef-a767-3406c74f6005",
+    "provider_readback": true,
+    "live_http_status": 200,
+    "live_full_commit_matches": true
+  },
+  "public": {
+    "results": [
+      {
+        "name": "home-desktop",
+        "route": "/",
+        "width": 1440,
+        "height": 900,
+        "status": 200,
+        "overflow": false,
+        "missing": [],
+        "errors": [],
+        "violations": []
+      },
+      {
+        "name": "home-mobile",
+        "route": "/",
+        "width": 390,
+        "height": 844,
+        "status": 200,
+        "overflow": false,
+        "missing": [],
+        "errors": [],
+        "violations": []
+      },
+      {
+        "name": "home-tablet",
+        "route": "/",
+        "width": 768,
+        "height": 1024,
+        "status": 200,
+        "overflow": false,
+        "missing": [],
+        "errors": [],
+        "violations": []
+      },
+      {
+        "name": "home-he-mobile",
+        "route": "/he",
+        "width": 390,
+        "height": 844,
+        "status": 200,
+        "overflow": false,
+        "missing": [],
+        "errors": [],
+        "violations": []
+      },
+      {
+        "name": "join-desktop",
+        "route": "/join",
+        "width": 1440,
+        "height": 900,
+        "status": 200,
+        "overflow": false,
+        "missing": [],
+        "errors": [],
+        "violations": []
+      },
+      {
+        "name": "join-mobile",
+        "route": "/join",
+        "width": 390,
+        "height": 844,
+        "status": 200,
+        "overflow": false,
+        "missing": [],
+        "errors": [],
+        "violations": []
+      },
+      {
+        "name": "join-he-mobile",
+        "route": "/he/join",
+        "width": 390,
+        "height": 844,
+        "status": 200,
+        "overflow": false,
+        "missing": [],
+        "errors": [],
+        "violations": []
+      },
+      {
+        "name": "article-mobile",
+        "route": "/blog/a23",
+        "width": 390,
+        "height": 844,
+        "status": 200,
+        "overflow": false,
+        "missing": [],
+        "errors": [],
+        "violations": []
+      }
+    ],
+    "assetHashesMatched": 12,
+    "internalLinksResolved": 53,
+    "publicPrivacyDenied": true,
+    "formPosts": 0,
+    "newLiveInquiries": 0,
+    "physicalDeviceTest": false,
+    "browser": "isolated Chrome desktop/mobile viewport",
+    "checkedAt": "2026-11-05T11:44:45.940Z"
+  },
+  "inquiry": {
+    "reference": "bb2cc6a1-56dc-49ce-825c-44fa7635ebb8",
+    "lead_id": 3072,
+    "program": "both",
+    "outside_area_retained": true,
+    "preferred_area_retained": true,
+    "separate_ordinary_owner_readback": true,
+    "owner_reload": true,
+    "synthetic_status": "not_now",
+    "follow_up_cleared": true,
+    "inquiries": 1,
+    "receipt_intents": 1
+  },
+  "owner": {
+    "ordinary_owner_session": true,
+    "new_inquiry_survived_archive": true,
+    "note_saved_once": true,
+    "follow_up_saved_reloaded": true,
+    "follow_up_filter_persisted": true,
+    "receipt_preview_active": true,
+    "contrast_corrected": true,
+    "mobile_overflow": false,
+    "page_errors": [],
+    "fresh_post_archive_login": true,
+    "fresh_scoped_read": true,
+    "fresh_lead_count": 1
+  },
+  "email": {
+    "synthetic_tests": 1,
+    "language_live_tested": "en",
+    "provider_message_id": "1a1ab7279ab13e9c",
+    "outbox_attempts": 1,
+    "recipient_visible_readback": true,
+    "inbox_label_visible": true,
+    "template_version": "BNA-INTEREST-ACK-20261105-v1",
+    "template_hashes": [
+      "e70828c1e1b51a5de82578c86b752befe1c48513959c47091754d9fe8c718d27",
+      "04244a20e8f4bac36e038f37c1ad8c855ee7520283ffcfda773d426c482e21d8"
+    ],
+    "active": true,
+    "activation_scope": "newly saved BNA inquiries only",
+    "hebrew_live_sent": false,
+    "hebrew_local_sql_mime_verified": true,
+    "no_historic_backfill": true
+  },
+  "archive": {
+    "migration_id": "BNA-INTEREST-LAUNCH-20261105-01-legacy-archive",
+    "cutoff": "2026-11-05T11:19:15.351Z",
+    "state": "applied",
+    "inventory_count": 9988,
+    "archived_count": 9988,
+    "originals_retained": 9988,
+    "tables": [
+      {
+        "table": "bna_contacts",
+        "originals": 2,
+        "archived": 2
+      },
+      {
+        "table": "bna_parent_leads",
+        "originals": 6,
+        "archived": 6
+      },
+      {
+        "table": "bna_tasks",
+        "originals": 2238,
+        "archived": 2238
+      },
+      {
+        "table": "bna_automations",
+        "originals": 8,
+        "archived": 8
+      },
+      {
+        "table": "bna_communications",
+        "originals": 902,
+        "archived": 902
+      },
+      {
+        "table": "bna_contact_communications",
+        "originals": 3897,
+        "archived": 3897
+      },
+      {
+        "table": "bna_email_log",
+        "originals": 1,
+        "archived": 1
+      },
+      {
+        "table": "bna_payment_intake",
+        "originals": 5,
+        "archived": 5
+      },
+      {
+        "table": "bna_payment_log",
+        "originals": 5,
+        "archived": 5
+      },
+      {
+        "table": "bna_content_jobs",
+        "originals": 96,
+        "archived": 96
+      },
+      {
+        "table": "bna_content_bundles",
+        "originals": 1,
+        "archived": 1
+      },
+      {
+        "table": "bna_in_app_notifications",
+        "originals": 957,
+        "archived": 957
+      },
+      {
+        "table": "bna_learning_communities",
+        "originals": 1,
+        "archived": 1
+      },
+      {
+        "table": "bna_support_tickets",
+        "originals": 16,
+        "archived": 16
+      },
+      {
+        "table": "bna_tickets",
+        "originals": 1830,
+        "archived": 1830
+      },
+      {
+        "table": "bna_assistant_threads",
+        "originals": 23,
+        "archived": 23
+      }
+    ],
+    "protected_counts": {
+      "signups": 8,
+      "bna_tasks": 2,
+      "bna_tickets": 36,
+      "bna_contacts": 213,
+      "bna_students": 12,
+      "bna_group_goals": 1,
+      "bna_parent_leads": 1,
+      "bna_assistant_threads": 90,
+      "bna_in_app_notifications": 5,
+      "bna_contact_communications": 2,
+      "bna_assistant_onboarding_intakes": 7
+    },
+    "active_legacy_leads": 0,
+    "legacy_parent_leads": 6,
+    "linked_history_entries": 87,
+    "repeat_apply_no_op": true,
+    "wrong_workspace_denied": true,
+    "cross_site_restore_denied": true,
+    "positive_restore_environment": "real disposable SQL",
+    "former_family_restored_for_test": false
+  },
+  "local_checks": {
+    "focused_sql_http_source_owner_archive": 22,
+    "existing_join_page": 1,
+    "related_regressions": 85,
+    "execution_run_tests": 28,
+    "pqc_packets": 18,
+    "canonical_operations": true,
+    "generated_operations": true,
+    "action_findings": 0,
+    "security_route_findings": 0,
+    "protocol_drift_findings": 0
+  },
+  "limitations": [
+    "Browser viewport evidence; physical phone not tested.",
+    "One English live owner test; Hebrew preview approved and local SQL/MIME verified.",
+    "Positive restore in disposable SQL; production invalid restore access denied, no former family restored for test.",
+    "Global audit governance retains unrelated historical backlog.",
+    "PR196 remains open; production pinned to verified application commit.",
+    "Donation checkout follows separately."
+  ]
+}

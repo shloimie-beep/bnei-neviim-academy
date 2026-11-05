@@ -1,0 +1,510 @@
+{
+  "run_id": "2026-11-05-bna-interest-launch",
+  "title": "BNA November 5 interest launch",
+  "updated_at": "2026-11-05T11:58:43.252Z",
+  "sources": [
+    {
+      "source_id": "RAW-20261105-001",
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "captured_at": "2026-11-05T10:37:10.471Z",
+      "content_fingerprint": "sha256:94ff433a432ea8c1e5fb08fe75df78555f153667ade8936f3ae45d918db5fba9",
+      "privacy_classification": "internal_redacted",
+      "workspace": "bna",
+      "project": "bnei_neviim_academy",
+      "source_type": "codex_chat_goal_mode_packet"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "SRC-20261105-001",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Consume refreshed same-ID packet and current Website/Brand/Product/Architecture/decisions; register source-to-section map, actual surface audit and validated PQC/Definition of Ready before product edits.",
+      "requirement_id": "REQ-20261105-001"
+    },
+    {
+      "statement_id": "SRC-20261105-002",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Landing EN/HE uses exact selected copy/assets and current structure with specified logistics omissions only; pod/school CTA uses same changeable form; no donation checkout.",
+      "requirement_id": "REQ-20261105-002"
+    },
+    {
+      "statement_id": "SRC-20261105-003",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "/join and /he/join save one durable inquiry with Learning pod / Academy 2027–28 / Both, required email, conditional phone, family area and optional preferred area; out-of-area retained; purpose consent separate from optional unchecked marketing. Stable reference, validation, retry/conflict and unknown-save recovery.",
+      "requirement_id": "REQ-20261105-003"
+    },
+    {
+      "statement_id": "SRC-20261105-004",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Persist exact EN/HE transactional draft and preview; queue only after save using verified sender, safe name fallback, explicit per-message state, durable dedupe and failure-safe inquiry retention.",
+      "requirement_id": "REQ-20261105-004"
+    },
+    {
+      "statement_id": "SRC-20261105-005",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Existing ordinary BNA owner view filters program, area and follow-up; detail/notes and email state survive refresh/reopen; wrong-scope and anonymous denial.",
+      "requirement_id": "REQ-20261105-005"
+    },
+    {
+      "statement_id": "SRC-20261105-006",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Fixed-cutoff BNA-only reversible legacy archive with preflight inventory, backup/restore and repeat-safe migration; preserve history, admin access and new arrivals including inquiries from old contacts; exclude archive from active counts and send selection.",
+      "requirement_id": "REQ-20261105-006"
+    },
+    {
+      "statement_id": "SRC-20261105-007",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Inspect/fix/recheck desktop 1440×900, mobile 390×844 and relevant Hebrew/RTL; exercise all scoped actions, errors/retry, keyboard/accessibility and owner save/readback. Registries and focused tests pass.",
+      "requirement_id": "REQ-20261105-007"
+    },
+    {
+      "statement_id": "SRC-20261105-008",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Scoped commit/push/PR and approved deployment path; independently record local, reviewed, deployed, live durable save, ordinary-owner readback and actual email provider evidence.",
+      "requirement_id": "REQ-20261105-008"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20261105-001",
+      "title": "Source and current-state acceptance",
+      "expected_result": "Consume refreshed same-ID packet and current Website/Brand/Product/Architecture/decisions; register source-to-section map, actual surface audit and validated PQC/Definition of Ready before product edits.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-001"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "0",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "Current sources, refreshed packet hash, original assets, actual baseline and 18 validated PQC children; BNA-only Delivery/Continuation writes read back exactly.",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining work in this requirement; retain evidence. Donation checkout is separate scope.",
+      "acceptance_criteria": [
+        "Consume refreshed same-ID packet and current Website/Brand/Product/Architecture/decisions; register source-to-section map, actual surface audit and validated PQC/Definition of Ready before product edits."
+      ],
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/source-readbacks.json"
+      ],
+      "verification": [
+        "Current sources, refreshed packet hash, original assets, actual baseline and 18 validated PQC children; BNA-only Delivery/Continuation writes read back exactly.",
+        "Final scoped run/PQC/action/security/protocol and canonical Operations checks pass; detailed local versus live evidence in RESULT.md."
+      ],
+      "implementation_files": [
+        "BNA-START-HERE.md",
+        "ops/surface-maps/2026-11-05-bna-interest-launch.json"
+      ],
+      "deployment_required": false,
+      "implementation_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pushed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "3854b4ba-e2dc-4007-8781-6d837f229f82",
+      "deployed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "live_smoke": "Railway deployment SUCCESS 3854b4ba-e2dc-4007-8781-6d837f229f82; production verified https://bneineviimacademy.org/api/deploy-info; Current sources, refreshed packet hash, original assets, actual baseline and 18 validated PQC children; BNA-only Delivery/Continuation writes read back exactly.",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T11:58:43.252Z",
+      "deployment_evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "Railway deployment 3854b4ba-e2dc-4007-8781-6d837f229f82 SUCCESS at 7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+        "https://bneineviimacademy.org/api/deploy-info"
+      ]
+    },
+    {
+      "id": "REQ-20261105-002",
+      "title": "Exact bilingual public launch",
+      "expected_result": "Landing EN/HE uses exact selected copy/assets and current structure with specified logistics omissions only; pod/school CTA uses same changeable form; no donation checkout.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-002"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "1",
+      "depends_on": [
+        "REQ-20261105-001"
+      ],
+      "status": "done",
+      "implementation_status": "Exact bilingual landing/information/article pages deployed; all12 served original asset hashes match; 53 links resolve; only approved logistics omissions.",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining work in this requirement; retain evidence. Donation checkout is separate scope.",
+      "acceptance_criteria": [
+        "Landing EN/HE uses exact selected copy/assets and current structure with specified logistics omissions only; pod/school CTA uses same changeable form; no donation checkout."
+      ],
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/source-readbacks.json"
+      ],
+      "verification": [
+        "Exact bilingual landing/information/article pages deployed; all12 served original asset hashes match; 53 links resolve; only approved logistics omissions.",
+        "Final scoped run/PQC/action/security/protocol and canonical Operations checks pass; detailed local versus live evidence in RESULT.md."
+      ],
+      "implementation_files": [
+        "config/bna-interest-copy.json",
+        "src/lib/bna/interest-pages.js",
+        "public/css/bna-interest-launch.css"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pushed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "3854b4ba-e2dc-4007-8781-6d837f229f82",
+      "deployed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "live_smoke": "Railway deployment SUCCESS 3854b4ba-e2dc-4007-8781-6d837f229f82; production verified https://bneineviimacademy.org/api/deploy-info; Exact bilingual landing/information/article pages deployed; all12 served original asset hashes match; 53 links resolve; only approved logistics omissions.",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T11:58:43.252Z",
+      "deployment_evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "Railway deployment 3854b4ba-e2dc-4007-8781-6d837f229f82 SUCCESS at 7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+        "https://bneineviimacademy.org/api/deploy-info"
+      ]
+    },
+    {
+      "id": "REQ-20261105-003",
+      "title": "Durable shared BNA interest capture",
+      "expected_result": "/join and /he/join save one durable inquiry with Learning pod / Academy 2027–28 / Both, required email, conditional phone, family area and optional preferred area; out-of-area retained; purpose consent separate from optional unchecked marketing. Stable reference, validation, retry/conflict and unknown-save recovery.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-003"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "1",
+      "depends_on": [
+        "REQ-20261105-001"
+      ],
+      "status": "done",
+      "implementation_status": "One live Both/outside-area inquiry saved and recovered after public reload; separate ordinary owner readback; one durable inquiry and receipt intent; local SQL covers dedupe/conflict/lost response.",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining work in this requirement; retain evidence. Donation checkout is separate scope.",
+      "acceptance_criteria": [
+        "/join and /he/join save one durable inquiry with Learning pod / Academy 2027–28 / Both, required email, conditional phone, family area and optional preferred area; out-of-area retained; purpose consent separate from optional unchecked marketing. Stable reference, validation, retry/conflict and unknown-save recovery."
+      ],
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/source-readbacks.json"
+      ],
+      "verification": [
+        "One live Both/outside-area inquiry saved and recovered after public reload; separate ordinary owner readback; one durable inquiry and receipt intent; local SQL covers dedupe/conflict/lost response.",
+        "Final scoped run/PQC/action/security/protocol and canonical Operations checks pass; detailed local versus live evidence in RESULT.md."
+      ],
+      "implementation_files": [
+        "src/lib/bna/interest-store.js",
+        "src/lib/bna/interest-http.js",
+        "public/js/bna-coop-join.js"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pushed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "3854b4ba-e2dc-4007-8781-6d837f229f82",
+      "deployed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "live_smoke": "Railway deployment SUCCESS 3854b4ba-e2dc-4007-8781-6d837f229f82; production verified https://bneineviimacademy.org/api/deploy-info; One live Both/outside-area inquiry saved and recovered after public reload; separate ordinary owner readback; one durable inquiry and receipt intent; local SQL covers dedupe/conflict/lost response.",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T11:58:43.252Z",
+      "deployment_evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "Railway deployment 3854b4ba-e2dc-4007-8781-6d837f229f82 SUCCESS at 7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+        "https://bneineviimacademy.org/api/deploy-info"
+      ]
+    },
+    {
+      "id": "REQ-20261105-004",
+      "title": "Approved transactional acknowledgement",
+      "expected_result": "Persist exact EN/HE transactional draft and preview; queue only after save using verified sender, safe name fallback, explicit per-message state, durable dedupe and failure-safe inquiry retention.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-004"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "2",
+      "depends_on": [
+        "REQ-20261105-003"
+      ],
+      "status": "done",
+      "implementation_status": "Exact EN/HE preview approved; one English owner receipt delivered and read in recipient mailbox, attempts1; both templates enabled for new inquiries only. Local SQL/MIME covers Hebrew and failure/uncertain-send retention.",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining work in this requirement; retain evidence. Donation checkout is separate scope.",
+      "acceptance_criteria": [
+        "Persist exact EN/HE transactional draft and preview; queue only after save using verified sender, safe name fallback, explicit per-message state, durable dedupe and failure-safe inquiry retention."
+      ],
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/source-readbacks.json"
+      ],
+      "verification": [
+        "Exact EN/HE preview approved; one English owner receipt delivered and read in recipient mailbox, attempts1; both templates enabled for new inquiries only. Local SQL/MIME covers Hebrew and failure/uncertain-send retention.",
+        "Final scoped run/PQC/action/security/protocol and canonical Operations checks pass; detailed local versus live evidence in RESULT.md."
+      ],
+      "implementation_files": [
+        "src/lib/bna/interest-email.js",
+        "src/lib/bna/interest-mail-runtime.js",
+        "scripts/bna-interest-launch-admin.cjs"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pushed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "3854b4ba-e2dc-4007-8781-6d837f229f82",
+      "deployed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "live_smoke": "Railway deployment SUCCESS 3854b4ba-e2dc-4007-8781-6d837f229f82; production verified https://bneineviimacademy.org/api/deploy-info; Exact EN/HE preview approved; one English owner receipt delivered and read in recipient mailbox, attempts1; both templates enabled for new inquiries only. Local SQL/MIME covers Hebrew and failure/uncertain-send retention.",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T11:58:43.252Z",
+      "deployment_evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "Railway deployment 3854b4ba-e2dc-4007-8781-6d837f229f82 SUCCESS at 7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+        "https://bneineviimacademy.org/api/deploy-info"
+      ]
+    },
+    {
+      "id": "REQ-20261105-005",
+      "title": "Existing owner inquiry workflow",
+      "expected_result": "Existing ordinary BNA owner view filters program, area and follow-up; detail/notes and email state survive refresh/reopen; wrong-scope and anonymous denial.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-005"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "3",
+      "depends_on": [
+        "REQ-20261105-003"
+      ],
+      "status": "done",
+      "implementation_status": "Ordinary owner filters, detail, saved note and follow-up survive reload; Both includes either program; current synthetic lead retained Not now with test follow-up cleared. Fresh post-archive admin login succeeds.",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining work in this requirement; retain evidence. Donation checkout is separate scope.",
+      "acceptance_criteria": [
+        "Existing ordinary BNA owner view filters program, area and follow-up; detail/notes and email state survive refresh/reopen; wrong-scope and anonymous denial."
+      ],
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/source-readbacks.json"
+      ],
+      "verification": [
+        "Ordinary owner filters, detail, saved note and follow-up survive reload; Both includes either program; current synthetic lead retained Not now with test follow-up cleared. Fresh post-archive admin login succeeds.",
+        "Final scoped run/PQC/action/security/protocol and canonical Operations checks pass; detailed local versus live evidence in RESULT.md."
+      ],
+      "implementation_files": [
+        "src/lib/bna/interest-owner.js",
+        "public/js/bna-interest-owner.js",
+        "public/operations.html",
+        "public/css/bna-interest-owner.css"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pushed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "3854b4ba-e2dc-4007-8781-6d837f229f82",
+      "deployed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "live_smoke": "Railway deployment SUCCESS 3854b4ba-e2dc-4007-8781-6d837f229f82; production verified https://bneineviimacademy.org/api/deploy-info; Ordinary owner filters, detail, saved note and follow-up survive reload; Both includes either program; current synthetic lead retained Not now with test follow-up cleared. Fresh post-archive admin login succeeds.",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T11:58:43.252Z",
+      "deployment_evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "Railway deployment 3854b4ba-e2dc-4007-8781-6d837f229f82 SUCCESS at 7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+        "https://bneineviimacademy.org/api/deploy-info"
+      ]
+    },
+    {
+      "id": "REQ-20261105-006",
+      "title": "Reversible legacy business archive",
+      "expected_result": "Fixed-cutoff BNA-only reversible legacy archive with preflight inventory, backup/restore and repeat-safe migration; preserve history, admin access and new arrivals including inquiries from old contacts; exclude archive from active counts and send selection.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-006"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "3",
+      "depends_on": [
+        "REQ-20261105-005"
+      ],
+      "status": "done",
+      "implementation_status": "Fixed BNA inventory9988 archived with all9988 originals retained; repeat no-op; six legacy leads and87 linked history read; new lead/auth/cross-scope preserved. Positive restore/rollback/retry tested in real disposable SQL; live invalid restore403.",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining work in this requirement; retain evidence. Donation checkout is separate scope.",
+      "acceptance_criteria": [
+        "Fixed-cutoff BNA-only reversible legacy archive with preflight inventory, backup/restore and repeat-safe migration; preserve history, admin access and new arrivals including inquiries from old contacts; exclude archive from active counts and send selection."
+      ],
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/source-readbacks.json"
+      ],
+      "verification": [
+        "Fixed BNA inventory9988 archived with all9988 originals retained; repeat no-op; six legacy leads and87 linked history read; new lead/auth/cross-scope preserved. Positive restore/rollback/retry tested in real disposable SQL; live invalid restore403.",
+        "Final scoped run/PQC/action/security/protocol and canonical Operations checks pass; detailed local versus live evidence in RESULT.md."
+      ],
+      "implementation_files": [
+        "src/lib/bna/interest-archive.js",
+        "server.js",
+        "scripts/bna-interest-launch-admin.cjs"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pushed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "3854b4ba-e2dc-4007-8781-6d837f229f82",
+      "deployed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "live_smoke": "Railway deployment SUCCESS 3854b4ba-e2dc-4007-8781-6d837f229f82; production verified https://bneineviimacademy.org/api/deploy-info; Fixed BNA inventory9988 archived with all9988 originals retained; repeat no-op; six legacy leads and87 linked history read; new lead/auth/cross-scope preserved. Positive restore/rollback/retry tested in real disposable SQL; live invalid restore403.",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T11:58:43.252Z",
+      "deployment_evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "Railway deployment 3854b4ba-e2dc-4007-8781-6d837f229f82 SUCCESS at 7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+        "https://bneineviimacademy.org/api/deploy-info"
+      ]
+    },
+    {
+      "id": "REQ-20261105-007",
+      "title": "Responsive action and accessibility proof",
+      "expected_result": "Inspect/fix/recheck desktop 1440×900, mobile 390×844 and relevant Hebrew/RTL; exercise all scoped actions, errors/retry, keyboard/accessibility and owner save/readback. Registries and focused tests pass.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-007"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "4",
+      "depends_on": [
+        "REQ-20261105-002",
+        "REQ-20261105-003",
+        "REQ-20261105-004",
+        "REQ-20261105-005",
+        "REQ-20261105-006"
+      ],
+      "status": "done",
+      "implementation_status": "Eight live Chrome viewport/RTL states: zero page errors, missing images, overflow or axe A/AA findings; owner/archive layouts inspected; local503 Retry recovery; action/security/protocol watchdogs zero.",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining work in this requirement; retain evidence. Donation checkout is separate scope.",
+      "acceptance_criteria": [
+        "Inspect/fix/recheck desktop 1440×900, mobile 390×844 and relevant Hebrew/RTL; exercise all scoped actions, errors/retry, keyboard/accessibility and owner save/readback. Registries and focused tests pass."
+      ],
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/source-readbacks.json"
+      ],
+      "verification": [
+        "Eight live Chrome viewport/RTL states: zero page errors, missing images, overflow or axe A/AA findings; owner/archive layouts inspected; local503 Retry recovery; action/security/protocol watchdogs zero.",
+        "Final scoped run/PQC/action/security/protocol and canonical Operations checks pass; detailed local versus live evidence in RESULT.md."
+      ],
+      "implementation_files": [
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "public/css/bna-interest-owner.css"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pushed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "3854b4ba-e2dc-4007-8781-6d837f229f82",
+      "deployed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "live_smoke": "Railway deployment SUCCESS 3854b4ba-e2dc-4007-8781-6d837f229f82; production verified https://bneineviimacademy.org/api/deploy-info; Eight live Chrome viewport/RTL states: zero page errors, missing images, overflow or axe A/AA findings; owner/archive layouts inspected; local503 Retry recovery; action/security/protocol watchdogs zero.",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T11:58:43.252Z",
+      "deployment_evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "Railway deployment 3854b4ba-e2dc-4007-8781-6d837f229f82 SUCCESS at 7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+        "https://bneineviimacademy.org/api/deploy-info"
+      ]
+    },
+    {
+      "id": "REQ-20261105-008",
+      "title": "Scoped deployment and live acceptance",
+      "expected_result": "Scoped commit/push/PR and approved deployment path; independently record local, reviewed, deployed, live durable save, ordinary-owner readback and actual email provider evidence.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-008"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "4",
+      "depends_on": [
+        "REQ-20261105-007"
+      ],
+      "status": "done",
+      "implementation_status": "Scoped branch/PR pushed, exact authorized existing BNA production service deployed SUCCESS3854 at7d; provider and live SHA agree; source receipts and final register saved.",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining work in this requirement; retain evidence. Donation checkout is separate scope.",
+      "acceptance_criteria": [
+        "Scoped commit/push/PR and approved deployment path; independently record local, reviewed, deployed, live durable save, ordinary-owner readback and actual email provider evidence."
+      ],
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/source-readbacks.json"
+      ],
+      "verification": [
+        "Scoped branch/PR pushed, exact authorized existing BNA production service deployed SUCCESS3854 at7d; provider and live SHA agree; source receipts and final register saved.",
+        "Final scoped run/PQC/action/security/protocol and canonical Operations checks pass; detailed local versus live evidence in RESULT.md."
+      ],
+      "implementation_files": [
+        "server.js",
+        "scripts/bna-interest-launch-admin.cjs"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pushed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "3854b4ba-e2dc-4007-8781-6d837f229f82",
+      "deployed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "live_smoke": "Railway deployment SUCCESS 3854b4ba-e2dc-4007-8781-6d837f229f82; production verified https://bneineviimacademy.org/api/deploy-info; Scoped branch/PR pushed, exact authorized existing BNA production service deployed SUCCESS3854 at7d; provider and live SHA agree; source receipts and final register saved.",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T11:58:43.252Z",
+      "deployment_evidence": [
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "Railway deployment 3854b4ba-e2dc-4007-8781-6d837f229f82 SUCCESS at 7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+        "https://bneineviimacademy.org/api/deploy-info"
+      ]
+    }
+  ]
+}

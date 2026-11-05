@@ -670,7 +670,7 @@ comparison, contradictions, and exact implementation target.
 For current brand scope:
 
 - Rabbi / One Time = black + yellow.
-- BNA = cream + navy + teal/cyan.
+- BNA public website = current Brand owner reached through BNA-START-HERE.md. Earlier cream/navy/teal-cyan guidance is historical; internal Operations is separately scoped.
 
 Do not mix those palettes unless a later explicit design Decision says to do
 so.

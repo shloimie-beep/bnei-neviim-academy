@@ -402,7 +402,7 @@ function validateDeploymentCommitOrder(root, requirement, errors, warnings) {
   }
 }
 
-function validateActiveRunUniqueness(root, selectedRunDir, errors) {
+function validateActiveRunUniqueness(root, selectedRunDir, errors, explicitSelection = false) {
   const runsDir = path.join(root, 'ops', 'execution-runs');
   if (!fs.existsSync(runsDir)) {
     return;
@@ -432,7 +432,7 @@ function validateActiveRunUniqueness(root, selectedRunDir, errors) {
     );
   }
 
-  if (selectedRunDir && activeRuns.length === 1 && path.resolve(activeRuns[0]) !== path.resolve(selectedRunDir)) {
+  if (!explicitSelection && selectedRunDir && activeRuns.length === 1 && path.resolve(activeRuns[0]) !== path.resolve(selectedRunDir)) {
     errors.push(
       `latest.json selected ${relativeTo(root, selectedRunDir)}, but active run is ${relativeTo(
         root,
@@ -964,7 +964,10 @@ export function validateExecutionRun(rootInput = process.cwd(), runInput = null)
     return { ...context, errors, warnings, requirements: [], counts: {}, workRemains: false };
   }
 
-  validateActiveRunUniqueness(context.root, context.runDir, errors);
+  // A bounded --run selection may inspect/resume an inactive scoped register
+  // without taking over another integrator's global active/latest pointer.
+  // Multiple active global runs remain invalid in either mode.
+  validateActiveRunUniqueness(context.root, context.runDir, errors, Boolean(runInput));
 
   for (const fileName of REQUIRED_RUN_FILES) {
     const filePath = path.join(context.runDir, fileName);
