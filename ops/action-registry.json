@@ -3801,6 +3801,26 @@
       "related_requirement_ids": [
         "REQ-20261105-007"
       ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-OWNER-RETRY",
+      "label": "Retry",
+      "surface": "bna_interest_owner",
+      "route": "/operations",
+      "selector_hint": "[data-action-id=\"ACTION-BNA-INTEREST-OWNER-RETRY\"]",
+      "expected_behavior": "Reload BNA inquiries after an actual API failure, preserving saved records and never presenting failed loading as an empty inbox.",
+      "handler": "loadData().then(() => render())",
+      "permission": "existing authenticated BNA owner",
+      "status": "implemented_pending_live_verification",
+      "mobile_expectation": "Accessible 44px target, role=alert and keyboard action",
+      "test": {
+        "type": "ordinary owner live browser with one simulated read failure",
+        "expected_result": "Error message appears then Retry restores saved reference without mutation"
+      },
+      "related_requirement_ids": [
+        "REQ-20261105-005",
+        "REQ-20261105-007"
+      ]
     }
   ]
 }

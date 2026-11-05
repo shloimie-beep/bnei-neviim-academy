@@ -10740,6 +10740,9 @@ function leadMatchesFilters(lead) {
 }
 
 function renderInterestedParentLeads() {
+    if (currentWorkspaceId === 'bna' && bnaInterestLeadsLoadError) {
+        return `<div class="contact-empty-card" role="alert">BNA inquiries could not be loaded. Your saved records are retained. <button type="button" class="task-action" onclick="loadData().then(() => render())" data-action-id="ACTION-BNA-INTEREST-OWNER-RETRY">Retry</button></div>`;
+    }
     const sectionLeads = parentLeads.filter(lead => leadMatchesSection(lead, 'interested_parents'));
     const visibleLeads = sectionLeads.filter(leadMatchesFilters);
     if (!visibleLeads.some(lead => Number(lead.id) === Number(selectedLeadId))) {
